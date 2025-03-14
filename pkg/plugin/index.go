@@ -61,7 +61,7 @@ func (m *Manager) Search(ctx context.Context, keyword string) error {
 		}
 	}
 
-	if _, err = fmt.Fprintf(m.w, buf.String()); err != nil {
+	if _, err = fmt.Fprint(m.w, buf.String()); err != nil {
 		return err
 	}
 

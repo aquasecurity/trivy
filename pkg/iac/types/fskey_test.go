@@ -7,6 +7,8 @@ import (
 
 	"github.com/liamg/memoryfs"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 func Test_FSKey(t *testing.T) {
@@ -18,22 +20,20 @@ func Test_FSKey(t *testing.T) {
 		memoryfs.New(),
 	}
 
-	keys := make(map[string]struct{})
+	keys := set.New[string]()
 
 	t.Run("uniqueness", func(t *testing.T) {
 		for _, system := range systems {
 			key := CreateFSKey(system)
-			_, ok := keys[key]
-			assert.False(t, ok, "filesystem keys should be unique")
-			keys[key] = struct{}{}
+			assert.False(t, keys.Contains(key), "filesystem keys should be unique")
+			keys.Append(key)
 		}
 	})
 
 	t.Run("reproducible", func(t *testing.T) {
 		for _, system := range systems {
 			key := CreateFSKey(system)
-			_, ok := keys[key]
-			assert.True(t, ok, "filesystem keys should be reproducible")
+			assert.True(t, keys.Contains(key), "filesystem keys should be reproducible")
 		}
 	})
 }

@@ -2,6 +2,7 @@ package scan
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io/fs"
 	"path/filepath"
@@ -77,8 +78,8 @@ func (c *Code) IsCauseMultiline() bool {
 }
 
 const (
-	darkTheme  = "solarized-dark256"
-	lightTheme = "github"
+	DarkTheme  = "solarized-dark256"
+	LightTheme = "github"
 )
 
 type codeSettings struct {
@@ -89,7 +90,7 @@ type codeSettings struct {
 }
 
 var defaultCodeSettings = codeSettings{
-	theme:              darkTheme,
+	theme:              DarkTheme,
 	allowTruncation:    true,
 	maxLines:           10,
 	includeHighlighted: true,
@@ -105,13 +106,13 @@ func OptionCodeWithTheme(theme string) CodeOption {
 
 func OptionCodeWithDarkTheme() CodeOption {
 	return func(s *codeSettings) {
-		s.theme = darkTheme
+		s.theme = DarkTheme
 	}
 }
 
 func OptionCodeWithLightTheme() CodeOption {
 	return func(s *codeSettings) {
-		s.theme = lightTheme
+		s.theme = LightTheme
 	}
 }
 
@@ -141,7 +142,7 @@ func (r *Result) GetCode(opts ...CodeOption) (*Code, error) {
 
 	fsys := r.Metadata().Range().GetFS()
 	if fsys == nil {
-		return nil, fmt.Errorf("code unavailable: result was not mapped to a known filesystem")
+		return nil, errors.New("code unavailable: result was not mapped to a known filesystem")
 	}
 
 	innerRange := r.metadata.Range()

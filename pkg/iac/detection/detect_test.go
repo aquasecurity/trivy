@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"slices"
 	"strings"
 	"testing"
 
@@ -420,6 +421,28 @@ rules:
 				FileTypeJSON,
 			},
 		},
+		{
+			name: "CreateUiDefinition",
+			path: "CreateUiDefinition.json",
+			r: strings.NewReader(`{
+  "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+  "handler": "Microsoft.Azure.CreateUIDef",
+  "version": "0.1.2-preview",
+  "parameters": {
+    "config": {
+      "isWizard": false,
+      "basics": {}
+    },
+    "basics": [],
+    "steps": [],
+    "outputs": {},
+    "resourceTypes": []
+  }
+}`),
+			expected: []FileType{
+				FileTypeJSON,
+			},
+		},
 	}
 
 	for _, test := range tests {
@@ -429,13 +452,7 @@ rules:
 				assert.Equal(t, len(test.expected), len(actualDetections))
 				for _, expected := range test.expected {
 					resetReader(test.r)
-					var found bool
-					for _, actual := range actualDetections {
-						if actual == expected {
-							found = true
-							break
-						}
-					}
+					found := slices.Contains(actualDetections, expected)
 					assert.True(t, found, "%s should be detected", expected)
 				}
 			})

@@ -1,27 +1,20 @@
 package terraform
 
 import (
-	"context"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/rules"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 )
 
 func Test_DeterministicResults(t *testing.T) {
-
-	reg := rules.Register(badRule)
-	defer rules.Deregister(reg)
-
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"first.tf": `
-resource "problem" "uhoh" {
-	bad = true
-	for_each = other.thing
+resource "aws_s3_bucket" "test" {
+  for_each = other.thing
 }
 		`,
 		"second.tf": `
@@ -40,12 +33,11 @@ locals {
 	})
 
 	for i := 0; i < 100; i++ {
-		p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
-		err := p.ParseFS(context.TODO(), ".")
+		results, err := scanFS(fsys, ".",
+			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+			rego.WithPolicyNamespaces("user"),
+		)
 		require.NoError(t, err)
-		modules, _, err := p.EvaluateAll(context.TODO())
-		require.NoError(t, err)
-		results, _ := executor.New().Execute(modules)
 		require.Len(t, results.GetFailed(), 2)
 	}
 }

@@ -10,7 +10,7 @@ For detailed behavior, please refer to [the GitHub Actions configuration][workfl
 
 !!! note
     Commits with prefixes like `chore` or `build` are not considered releasable, and no release PR is created.
-    To include such commits in a release, you need to either include commits with `feat` or `fix` prefixes or perform a manual release as described [below](#manual-release).
+    To include such commits in a release, you need to either include commits with `feat` or `fix` prefixes or perform a manual release as described [below](#manual-release-pr-creation).
 
 ## Flow
 The release flow consists of the following main steps:

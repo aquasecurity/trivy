@@ -112,7 +112,7 @@ trivy config --severity HIGH,CRITICAL examples/misconf/mixed
 
 Dockerfile (dockerfile)
 =======================
-Tests: 17 (SUCCESSES: 16, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 17 (SUCCESSES: 16, FAILURES: 1)
 Failures: 1 (HIGH: 1, CRITICAL: 0)
 
 HIGH: Last USER command in Dockerfile should not be 'root'
@@ -130,13 +130,13 @@ See https://avd.aquasec.com/misconfig/ds002
 
 deployment.yaml (kubernetes)
 ============================
-Tests: 8 (SUCCESSES: 8, FAILURES: 0, EXCEPTIONS: 0)
+Tests: 8 (SUCCESSES: 8, FAILURES: 0)
 Failures: 0 (HIGH: 0, CRITICAL: 0)
 
 
 main.tf (terraform)
 ===================
-Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 1 (SUCCESSES: 0, FAILURES: 1)
 Failures: 1 (HIGH: 0, CRITICAL: 1)
 
 CRITICAL: Classic resources should not be used.
@@ -394,7 +394,7 @@ $ trivy image --ignorefile ./.trivyignore.yaml python:3.9.16-alpine3.16
 2023-08-31T11:10:27.155+0600	INFO	Vulnerability scanning is enabled
 2023-08-31T11:10:27.155+0600	INFO	Secret scanning is enabled
 2023-08-31T11:10:27.155+0600	INFO	If your scanning is slow, please try '--scanners vuln' to disable secret scanning
-2023-08-31T11:10:27.155+0600	INFO	Please see also https://aquasecurity.github.io/trivy/dev/docs/scanner/secret/#recommendation for faster secret detection
+2023-08-31T11:10:27.155+0600	INFO	Please see also https://trivy.dev/dev/docs/scanner/secret/#recommendation for faster secret detection
 2023-08-31T11:10:29.164+0600	INFO	Detected OS: alpine
 2023-08-31T11:10:29.164+0600	INFO	Detecting Alpine vulnerabilities...
 2023-08-31T11:10:29.169+0600	INFO	Number of language-specific files: 1
@@ -477,13 +477,13 @@ ignore {
 ```
 
 ```bash
-trivy image --ignore-policy contrib/example_policy/basic.rego centos:7
+trivy image --ignore-policy examples/ignore-policies/basic.rego centos:7
 ```
 
 For more advanced use cases, there is a built-in Rego library with helper functions that you can import into your policy using: `import data.lib.trivy`.
 More info about the helper functions are in the library [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go).
 
-You can find more example checks [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go)
+You can create a whitelist of checks using Rego, see the detailed [example](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/ignore-policies/whitelist.rego). Additional examples are available [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/ignore-policies).
 
 ### By Vulnerability Exploitability Exchange (VEX)
 |     Scanner      | Supported |

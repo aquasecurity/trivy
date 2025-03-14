@@ -10,7 +10,6 @@ Trivy’s compliance flag lets you curate a specific set of checks into a report
 Compliance report is currently supported in the following targets (trivy sub-commands):
 
 - `trivy image`
-- `trivy aws`
 - `trivy k8s`
 
 Add the `--compliance` flag to the command line, and set it's value to desired report.
@@ -36,7 +35,6 @@ For the list of built-in compliance reports, please see the relevant section:
 
 - [Docker compliance](../target/container_image.md#compliance)
 - [Kubernetes compliance](../target/kubernetes.md#compliance)
-- [AWS compliance](../target/aws.md#compliance)
 
 ## Contribute a Built-in Compliance Report
 
@@ -167,7 +165,7 @@ Example of how to define command data under [commands folder](https://github.com
   title: kubelet.conf file permissions
   nodeType: worker
   audit: stat -c %a $kubelet.kubeconfig
-  platfroms:
+  platforms:
     - k8s
     - aks
 ```
@@ -182,7 +180,7 @@ make command-id
 
 #### Command Key
 
-- Re-use an existing key or specifiy a new one (make sure key name has no spaces)
+- Re-use an existing key or specify a new one (make sure key name has no spaces)
 
 Note: The key value should match the key name evaluated by the Rego check.
 
@@ -199,7 +197,7 @@ Specify the node type on which the command is supposed to run.
 
 ### Command Audit
 
-Specify here the shell command to be used please make sure to add error supression (2>/dev/null)
+Specify here the shell command to be used please make sure to add error suppression (2>/dev/null)
 
 ### Command Platforms
 

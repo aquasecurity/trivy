@@ -4,83 +4,33 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/fs"
-	"path/filepath"
 	"strings"
 
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/dockerfile"
-	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-type Parser struct {
-	logger *log.Logger
-}
-
-// New creates a new Dockerfile parser
-func New() *Parser {
-	return &Parser{
-		logger: log.WithPrefix("dockerfile parser"),
-	}
-}
-
-func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[string]*dockerfile.Dockerfile, error) {
-
-	files := make(map[string]*dockerfile.Dockerfile)
-	if err := fs.WalkDir(target, filepath.ToSlash(path), func(path string, entry fs.DirEntry, err error) error {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-		}
-		if err != nil {
-			return err
-		}
-		if entry.IsDir() {
-			return nil
-		}
-
-		df, err := p.ParseFile(ctx, target, path)
-		if err != nil {
-			p.logger.Error("Failed to parse Dockerfile", log.FilePath(path), log.Err(err))
-			return nil
-		}
-		files[path] = df
-		return nil
-	}); err != nil {
-		return nil, err
-	}
-	return files, nil
-}
-
-// ParseFile parses Dockerfile content from the provided filesystem path.
-func (p *Parser) ParseFile(_ context.Context, fsys fs.FS, path string) (*dockerfile.Dockerfile, error) {
-	f, err := fsys.Open(filepath.ToSlash(path))
-	if err != nil {
-		return nil, err
-	}
-	defer func() { _ = f.Close() }()
-	return p.parse(path, f)
-}
-
-func (p *Parser) parse(path string, r io.Reader) (*dockerfile.Dockerfile, error) {
+func Parse(_ context.Context, r io.Reader, path string) (any, error) {
 	parsed, err := parser.Parse(r)
 	if err != nil {
 		return nil, fmt.Errorf("dockerfile parse error: %w", err)
 	}
 
-	var parsedFile dockerfile.Dockerfile
-	var stage dockerfile.Stage
-	var stageIndex int
+	var (
+		parsedFile dockerfile.Dockerfile
+		stage      dockerfile.Stage
+		stageIndex int
+	)
+
 	fromValue := "args"
 	for _, child := range parsed.AST.Children {
 		child.Value = strings.ToLower(child.Value)
 
 		instr, err := instructions.ParseInstruction(child)
 		if err != nil {
-			return nil, fmt.Errorf("process dockerfile instructions: %w", err)
+			return nil, fmt.Errorf("parse dockerfile instruction: %w", err)
 		}
 
 		if _, ok := instr.(*instructions.Stage); ok {
@@ -106,14 +56,27 @@ func (p *Parser) parse(path string, r io.Reader) (*dockerfile.Dockerfile, error)
 			EndLine:   child.EndLine,
 		}
 
+		// processing statement with sub-statement
+		// example: ONBUILD RUN foo bar
+		// https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/reference.md#onbuild
 		if child.Next != nil && len(child.Next.Children) > 0 {
 			cmd.SubCmd = child.Next.Children[0].Value
 			child = child.Next.Children[0]
 		}
 
+		// mark if the instruction is in exec form
+		// https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/reference.md#exec-form
 		cmd.JSON = child.Attributes["json"]
-		for n := child.Next; n != nil; n = n.Next {
-			cmd.Value = append(cmd.Value, n.Value)
+
+		// heredoc may contain a script that will be executed in the shell, so we need to process it
+		// https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/reference.md#here-documents
+		if len(child.Heredocs) > 0 && child.Next != nil {
+			cmd.Original = originalFromHeredoc(child)
+			cmd.Value = []string{processHeredoc(child)}
+		} else {
+			for n := child.Next; n != nil; n = n.Next {
+				cmd.Value = append(cmd.Value, n.Value)
+			}
 		}
 
 		stage.Commands = append(stage.Commands, cmd)
@@ -124,4 +87,45 @@ func (p *Parser) parse(path string, r io.Reader) (*dockerfile.Dockerfile, error)
 	}
 
 	return &parsedFile, nil
+}
+
+func originalFromHeredoc(node *parser.Node) string {
+	var sb strings.Builder
+	sb.WriteString(node.Original)
+	sb.WriteRune('\n')
+	for i, heredoc := range node.Heredocs {
+		sb.WriteString(heredoc.Content)
+		sb.WriteString(heredoc.Name)
+		if i != len(node.Heredocs)-1 {
+			sb.WriteRune('\n')
+		}
+	}
+
+	return sb.String()
+}
+
+// heredoc processing taken from here
+// https://github.com/moby/buildkit/blob/9a39e2c112b7c98353c27e64602bc08f31fe356e/frontend/dockerfile/dockerfile2llb/convert.go#L1200
+func processHeredoc(node *parser.Node) string {
+	if parser.MustParseHeredoc(node.Next.Value) == nil || strings.HasPrefix(node.Heredocs[0].Content, "#!") {
+		// more complex heredoc is passed to the shell as is
+		var sb strings.Builder
+		sb.WriteString(node.Next.Value)
+		for _, heredoc := range node.Heredocs {
+			sb.WriteRune('\n')
+			sb.WriteString(heredoc.Content)
+			sb.WriteString(heredoc.Name)
+		}
+		return sb.String()
+	}
+
+	// simple heredoc and the content is run in a shell
+	content := node.Heredocs[0].Content
+	if node.Heredocs[0].Chomp {
+		content = parser.ChompHeredocContent(content)
+	}
+
+	content = strings.ReplaceAll(content, "\r\n", "\n")
+	cmds := strings.Split(strings.TrimSuffix(content, "\n"), "\n")
+	return strings.Join(cmds, " ; ")
 }

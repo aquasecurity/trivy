@@ -41,7 +41,7 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 	defer func() {
 		cancel()
 		if errors.Is(err, context.DeadlineExceeded) {
-			// e.g. https://aquasecurity.github.io/trivy/latest/docs/configuration
+			// e.g. https://trivy.dev/latest/docs/configuration
 			log.WarnContext(ctx, fmt.Sprintf("Provide a higher timeout value, see %s", doc.URL("/docs/configuration/", "")))
 		}
 	}()
@@ -86,6 +86,7 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 		r.flagOpts.ScanOptions.Scanners = scanners
 	}
 	var rpt report.Report
+	log.Info("Scanning K8s...", log.String("K8s", r.cluster))
 	rpt, err = s.Scan(ctx, artifacts)
 	if err != nil {
 		return xerrors.Errorf("k8s scan error: %w", err)

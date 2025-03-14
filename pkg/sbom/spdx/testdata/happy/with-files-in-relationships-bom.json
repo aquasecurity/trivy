@@ -3,7 +3,7 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "app",
-  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/app-8e571278-2221-4dcd-bc56-0b256210fa91",
+  "documentNamespace": "http://trivy.dev/filesystem/app-8e571278-2221-4dcd-bc56-0b256210fa91",
   "creationInfo": {
     "licenseListVersion": "",
     "creators": [

@@ -26,7 +26,7 @@
           "Name": "click",
           "Identifier": {
             "PURL": "pkg:pypi/click@8.1.3",
-            "UID": "37edb5c90a97272e"
+            "UID": "d76da06fc75f0439"
           },
           "Version": "8.1.3",
           "Relationship": "direct",
@@ -40,7 +40,7 @@
           "Name": "werkzeug",
           "Identifier": {
             "PURL": "pkg:pypi/werkzeug@0.14",
-            "UID": "4176be111ad01070"
+            "UID": "d14d05cca13c7a6b"
           },
           "Version": "0.14",
           "Relationship": "direct",
@@ -51,7 +51,7 @@
           "Name": "colorama",
           "Identifier": {
             "PURL": "pkg:pypi/colorama@0.4.6",
-            "UID": "895013c17f373da3"
+            "UID": "c7ed705c1cc43242"
           },
           "Version": "0.4.6",
           "Indirect": true,
@@ -66,7 +66,7 @@
           "PkgName": "werkzeug",
           "PkgIdentifier": {
             "PURL": "pkg:pypi/werkzeug@0.14",
-            "UID": "4176be111ad01070"
+            "UID": "d14d05cca13c7a6b"
           },
           "InstalledVersion": "0.14",
           "FixedVersion": "0.15.3",

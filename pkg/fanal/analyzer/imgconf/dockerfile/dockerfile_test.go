@@ -1,11 +1,12 @@
 package dockerfile
 
 import (
-	"context"
+	"bytes"
 	"testing"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/moby/buildkit/frontend/dockerfile/parser"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -284,12 +285,53 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 				Config: nil,
 			},
 		},
+		{
+			name: "DS016 check not detected",
+			input: analyzer.ConfigAnalysisInput{
+				Config: &v1.ConfigFile{
+					Config: v1.Config{
+						Healthcheck: &v1.HealthConfig{
+							Test:     []string{"CMD-SHELL", "curl --fail http://localhost:3000 || exit 1"},
+							Interval: time.Second * 10,
+							Timeout:  time.Second * 3,
+						},
+					},
+					History: []v1.History{
+						{
+							// duplicate command from another layer
+							CreatedBy:  `/bin/sh -c #(nop) CMD [\"/bin/bash\"]`,
+							EmptyLayer: true,
+						},
+						{
+							CreatedBy: "/bin/sh -c #(nop) ADD file:e4d600fc4c9c293efe360be7b30ee96579925d1b4634c94332e2ec73f7d8eca1 in /",
+						},
+						{
+							CreatedBy: `HEALTHCHECK &{["CMD-SHELL" "curl --fail http://localhost:3000 || exit 1"] "10s" "3s" "0s" '\x00'}`,
+						},
+						{
+							CreatedBy:  `USER user`,
+							EmptyLayer: true,
+						},
+						{
+							CreatedBy:  `/bin/sh -c #(nop)  CMD [\"/bin/sh\"]`,
+							EmptyLayer: true,
+						},
+					},
+				},
+			},
+			want: &analyzer.ConfigAnalysisResult{
+				Misconfiguration: &types.Misconfiguration{
+					FileType: types.Dockerfile,
+					FilePath: "Dockerfile",
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a, err := newHistoryAnalyzer(analyzer.ConfigAnalyzerOptions{})
 			require.NoError(t, err)
-			got, err := a.Analyze(context.Background(), tt.input)
+			got, err := a.Analyze(t.Context(), tt.input)
 			if tt.wantErr {
 				require.Error(t, err)
 				return
@@ -299,6 +341,104 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 			}
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_ImageConfigToDockerfile(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    *v1.ConfigFile
+		expected string
+	}{
+		{
+			name: "run instruction with build args",
+			input: &v1.ConfigFile{
+				History: []v1.History{
+					{
+						CreatedBy: "RUN |1 pkg=curl /bin/sh -c apk add $pkg # buildkit",
+					},
+				},
+			},
+			expected: "RUN apk add $pkg\n",
+		},
+		{
+			name: "healthcheck instruction with system's default shell",
+			input: &v1.ConfigFile{
+				History: []v1.History{
+					{
+						CreatedBy: "HEALTHCHECK &{[\"CMD-SHELL\" \"curl -f http://localhost/ || exit 1\"] \"5m0s\" \"3s\" \"1s\" \"5s\" '\\x03'}",
+					},
+				},
+				Config: v1.Config{
+					Healthcheck: &v1.HealthConfig{
+						Test:        []string{"CMD-SHELL", "curl -f http://localhost/ || exit 1"},
+						Interval:    time.Minute * 5,
+						Timeout:     time.Second * 3,
+						StartPeriod: time.Second * 1,
+						Retries:     3,
+					},
+				},
+			},
+			expected: "HEALTHCHECK --interval=5m0s --timeout=3s --startPeriod=1s --retries=3 CMD curl -f http://localhost/ || exit 1\n",
+		},
+		{
+			name: "healthcheck instruction exec arguments directly",
+			input: &v1.ConfigFile{
+				History: []v1.History{
+					{
+						CreatedBy: "HEALTHCHECK &{[\"CMD\" \"curl\" \"-f\" \"http://localhost/\" \"||\" \"exit 1\"] \"0s\" \"0s\" \"0s\" \"0s\" '\x03'}",
+					},
+				},
+				Config: v1.Config{
+					Healthcheck: &v1.HealthConfig{
+						Test:    []string{"CMD", "curl", "-f", "http://localhost/", "||", "exit 1"},
+						Retries: 3,
+					},
+				},
+			},
+			expected: "HEALTHCHECK --retries=3 CMD curl -f http://localhost/ || exit 1\n",
+		},
+		{
+			name: "nop, no run instruction",
+			input: &v1.ConfigFile{
+				History: []v1.History{
+					{
+						CreatedBy: "/bin/sh -c #(nop)  ARG TAG=latest",
+					},
+				},
+			},
+			expected: "ARG TAG=latest\n",
+		},
+		{
+			name: "buildkit metadata instructions",
+			input: &v1.ConfigFile{
+				History: []v1.History{
+					{
+						CreatedBy: "ARG TAG=latest",
+					},
+					{
+						CreatedBy: "ENV TAG=latest",
+					},
+					{
+						CreatedBy: "ENTRYPOINT [\"/bin/sh\" \"-c\" \"echo test\"]",
+					},
+				},
+			},
+			expected: `ARG TAG=latest
+ENV TAG=latest
+ENTRYPOINT ["/bin/sh" "-c" "echo test"]
+`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := imageConfigToDockerfile(tt.input)
+			_, err := parser.Parse(bytes.NewReader(got))
+			require.NoError(t, err)
+
+			assert.Equal(t, tt.expected, string(got))
 		})
 	}
 }

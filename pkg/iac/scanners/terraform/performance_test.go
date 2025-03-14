@@ -1,7 +1,6 @@
 package terraform
 
 import (
-	"context"
 	"fmt"
 	"io/fs"
 	"testing"
@@ -22,14 +21,14 @@ func BenchmarkCalculate(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		p := parser.New(f, "", parser.OptionStopOnHCLError(true))
-		if err := p.ParseFS(context.TODO(), "project"); err != nil {
+		if err := p.ParseFS(b.Context(), "project"); err != nil {
 			b.Fatal(err)
 		}
-		modules, _, err := p.EvaluateAll(context.TODO())
+		modules, _, err := p.EvaluateAll(b.Context())
 		if err != nil {
 			b.Fatal(err)
 		}
-		executor.New().Execute(modules)
+		executor.New().Execute(b.Context(), modules, "project")
 	}
 }
 

@@ -121,17 +121,17 @@ Trivy supports extra fields in the `custom` section as described below.
 If you are creating checks for your Trivy misconfiguration scans, some fields are optional as referenced in the table below. The `schemas` field should be used to enable policy validation using a built-in schema. It is recommended to use this to ensure your checks are 
 correct and do not reference incorrect properties/values.
 
-| Field name                 | Allowed values                                                    |        Default value         |     In table     |     In JSON      |
-|----------------------------|-------------------------------------------------------------------|:----------------------------:|:----------------:|:----------------:|
-| title                      | Any characters                                                    |             N/A              | :material-check: | :material-check: |
-| description                | Any characters                                                    |                              | :material-close: | :material-check: |
-| schemas.input              | `schema["kubernetes"]`, `schema["dockerfile"]`, `schema["cloud"]` | (applied to all input types) | :material-close: | :material-close: |
-| custom.id                  | Any characters                                                    |             N/A              | :material-check: | :material-check: |
-| custom.severity            | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`                               |           UNKNOWN            | :material-check: | :material-check: |
-| custom.recommended_actions | Any characters                                                    |                              | :material-close: | :material-check: |
-| custom.deprecated          | `true`, `false`                                                   |           `false`            | :material-close: | :material-check: | 
-| custom.input.selector.type | Any item(s) in [this list][source-types]                          |                              | :material-close: | :material-check: |
-| url                        | Any characters                                                    |                              | :material-close: | :material-check: |
+| Field name                 | Allowed values                                                    |        Default value         | In table | In JSON |
+|----------------------------|-------------------------------------------------------------------|:----------------------------:|:--------:|:-------:|
+| title                      | Any characters                                                    |             N/A              |    ✅     |    ✅    |
+| description                | Any characters                                                    |                              |    -     |    ✅    |
+| schemas.input              | `schema["kubernetes"]`, `schema["dockerfile"]`, `schema["cloud"]` | (applied to all input types) |    -     |    -    |
+| custom.id                  | Any characters                                                    |             N/A              |    ✅     |    ✅    |
+| custom.severity            | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`                               |           UNKNOWN            |    ✅     |    ✅    |
+| custom.recommended_actions | Any characters                                                    |                              |    -     |    ✅    |
+| custom.deprecated          | `true`, `false`                                                   |           `false`            |    -     |    ✅    |
+| custom.input.selector.type | Any item(s) in [this list][source-types]                          |                              |    -     |    ✅    |
+| url                        | Any characters                                                    |                              |    -     |    ✅    |
 
 #### custom.avd_id and custom.id
 
@@ -149,7 +149,7 @@ Services are defined within a provider. For instance, RDS is a service and AWS i
 
 #### custom.input
 
-The `input` tells Trivy what inputs this check should be applied to. Cloud provider checks should always use the `selector` input, and should always use the `type` selector with `cloud`. Check targeting Kubernetes yaml can use `kubenetes`, RBAC can use `rbac`, and so on.
+The `input` tells Trivy what inputs this check should be applied to. Cloud provider checks should always use the `selector` input, and should always use the `type` selector with `cloud`. Check targeting Kubernetes yaml can use `kubernetes`, RBAC can use `rbac`, and so on.
 
 #### Subtypes in the custom data
 
@@ -163,7 +163,7 @@ Some fields are displayed in scan results.
 k.yaml (kubernetes)
 ───────────────────
 
-Tests: 32 (SUCCESSES: 31, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 32 (SUCCESSES: 31, FAILURES: 1)
 Failures: 1 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 
 LOW: Found deployment 'my-deployment' but deployments are not allowed

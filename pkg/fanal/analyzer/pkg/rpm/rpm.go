@@ -17,7 +17,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -198,7 +197,7 @@ func (a rpmPkgAnalyzer) listPkgs(ctx context.Context, db RPMDB) (types.Packages,
 }
 
 func (a rpmPkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return utils.StringInSlice(filePath, requiredFiles)
+	return slices.Contains(requiredFiles, filePath)
 }
 
 func (a rpmPkgAnalyzer) Type() analyzer.Type {
@@ -207,6 +206,11 @@ func (a rpmPkgAnalyzer) Type() analyzer.Type {
 
 func (a rpmPkgAnalyzer) Version() int {
 	return version
+}
+
+// StaticPaths returns a list of static file paths to analyze
+func (a rpmPkgAnalyzer) StaticPaths() []string {
+	return requiredFiles
 }
 
 // splitFileName returns a name, version, release, epoch, arch:

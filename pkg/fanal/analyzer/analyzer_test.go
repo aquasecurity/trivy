@@ -1,8 +1,6 @@
 package analyzer_test
 
 import (
-	"context"
-	"fmt"
 	"os"
 	"sync"
 	"testing"
@@ -522,8 +520,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 				DisabledAnalyzers: tt.args.disabledAnalyzers,
 			})
 			if err != nil && tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)
@@ -531,7 +528,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 			info, err := os.Stat(tt.args.testFilePath)
 			require.NoError(t, err)
 
-			ctx := context.Background()
+			ctx := t.Context()
 			err = a.AnalyzeFile(ctx, &wg, limit, got, "", tt.args.filePath, info,
 				func() (xio.ReadSeekCloserAt, error) {
 					if tt.args.testFilePath == "testdata/error" {
@@ -549,8 +546,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 
 			wg.Wait()
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 
@@ -623,12 +619,12 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 
 			if tt.analyzerType == analyzer.TypeJar {
 				// init java-trivy-db with skip update
-				repo, err := name.NewTag(javadb.DefaultRepository)
+				repo, err := name.NewTag(javadb.DefaultGHCRRepository)
 				require.NoError(t, err)
-				javadb.Init("./language/java/jar/testdata", repo, true, false, types.RegistryOptions{Insecure: false})
+				javadb.Init("./language/java/jar/testdata", []name.Reference{repo}, true, false, types.RegistryOptions{Insecure: false})
 			}
 
-			ctx := context.Background()
+			ctx := t.Context()
 			got := new(analyzer.AnalysisResult)
 			err = a.PostAnalyze(ctx, composite, got, analyzer.AnalysisOptions{}, make(map[analyzer.Type][]string))
 			require.NoError(t, err)
@@ -688,7 +684,6 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 			})
 			require.NoError(t, err)
 			got := a.AnalyzerVersions()
-			fmt.Printf("%v\n", got)
 			assert.Equal(t, tt.want, got)
 		})
 	}

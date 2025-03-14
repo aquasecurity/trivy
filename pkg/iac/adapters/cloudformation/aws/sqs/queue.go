@@ -1,10 +1,9 @@
 package sqs
 
 import (
-	"fmt"
+	"errors"
 
-	"github.com/liamg/iamgo"
-
+	"github.com/aquasecurity/iamgo"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sqs"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
@@ -59,5 +58,5 @@ func getPolicy(id string, ctx parser.FileContext) (*iam.Policy, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("no matching policy found")
+	return nil, errors.New("no matching policy found")
 }

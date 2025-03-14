@@ -1,7 +1,6 @@
 package result_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -11,7 +10,6 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/clock"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -21,16 +19,16 @@ import (
 func TestFilter(t *testing.T) {
 	var (
 		pkg1 = ftypes.Package{
-			ID:      "foo@1.2.3",
+			ID:      "foo@v1.2.3",
 			Name:    "foo",
-			Version: "1.2.3",
+			Version: "v1.2.3",
 			Identifier: ftypes.PkgIdentifier{
 				UID: "01",
 				PURL: &packageurl.PackageURL{
 					Type:      packageurl.TypeGolang,
 					Namespace: "github.com/aquasecurity",
 					Name:      "foo",
-					Version:   "1.2.3",
+					Version:   "v1.2.3",
 				},
 			},
 		}
@@ -90,14 +88,14 @@ func TestFilter(t *testing.T) {
 		vuln6 = types.DetectedVulnerability{
 			VulnerabilityID:  "CVE-2019-0006",
 			PkgName:          "foo",
-			InstalledVersion: "1.2.3",
+			InstalledVersion: "v1.2.3",
 			FixedVersion:     "1.2.4",
 			PkgIdentifier: ftypes.PkgIdentifier{
 				PURL: &packageurl.PackageURL{
 					Type:      packageurl.TypeGolang,
 					Namespace: "github.com/aquasecurity",
 					Name:      "foo",
-					Version:   "1.2.3",
+					Version:   "v1.2.3",
 				},
 			},
 			Vulnerability: dbTypes.Vulnerability{
@@ -107,14 +105,14 @@ func TestFilter(t *testing.T) {
 		vuln7 = types.DetectedVulnerability{
 			VulnerabilityID:  "CVE-2019-0007",
 			PkgName:          "bar",
-			InstalledVersion: "2.3.4",
+			InstalledVersion: "v2.3.4",
 			FixedVersion:     "2.3.5",
 			PkgIdentifier: ftypes.PkgIdentifier{
 				PURL: &packageurl.PackageURL{
 					Type:      packageurl.TypeGolang,
 					Namespace: "github.com/aquasecurity",
 					Name:      "bar",
-					Version:   "2.3.4",
+					Version:   "v2.3.4",
 				},
 			},
 			Vulnerability: dbTypes.Vulnerability{
@@ -233,9 +231,8 @@ func TestFilter(t *testing.T) {
 							vuln2,
 						},
 						MisconfSummary: &types.MisconfSummary{
-							Successes:  0,
-							Failures:   1,
-							Exceptions: 0,
+							Successes: 0,
+							Failures:  1,
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							misconf1,
@@ -252,7 +249,7 @@ func TestFilter(t *testing.T) {
 			args: args{
 				report: types.Report{
 					ArtifactName: ".",
-					ArtifactType: artifact.TypeFilesystem,
+					ArtifactType: ftypes.TypeFilesystem,
 					Results: types.Results{
 						types.Result{
 							Target:   "gobinary",
@@ -277,7 +274,7 @@ func TestFilter(t *testing.T) {
 			},
 			want: types.Report{
 				ArtifactName: ".",
-				ArtifactType: artifact.TypeFilesystem,
+				ArtifactType: ftypes.TypeFilesystem,
 				Results: types.Results{
 					types.Result{
 						Target:   "gobinary",
@@ -403,9 +400,8 @@ func TestFilter(t *testing.T) {
 						Target: "deployment.yaml",
 						Class:  types.ClassConfig,
 						MisconfSummary: &types.MisconfSummary{
-							Successes:  1,
-							Failures:   1,
-							Exceptions: 1,
+							Successes: 1,
+							Failures:  1,
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							misconf1,
@@ -522,9 +518,8 @@ func TestFilter(t *testing.T) {
 					{
 						Target: "app/Dockerfile",
 						MisconfSummary: &types.MisconfSummary{
-							Successes:  0,
-							Failures:   1,
-							Exceptions: 2,
+							Successes: 0,
+							Failures:  1,
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							misconf3,
@@ -641,9 +636,8 @@ func TestFilter(t *testing.T) {
 				Results: types.Results{
 					{
 						MisconfSummary: &types.MisconfSummary{
-							Successes:  1,
-							Failures:   1,
-							Exceptions: 1,
+							Successes: 1,
+							Failures:  1,
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							misconf1,
@@ -1006,7 +1000,7 @@ func TestFilter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fakeTime := time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
-			ctx := clock.With(context.Background(), fakeTime)
+			ctx := clock.With(t.Context(), fakeTime)
 
 			var vexSources []vex.Source
 			if tt.args.vexPath != "" {

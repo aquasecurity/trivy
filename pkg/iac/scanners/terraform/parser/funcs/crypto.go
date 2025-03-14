@@ -10,6 +10,7 @@ import (
 	"encoding/asn1"
 	"encoding/base64"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"hash"
 	"io"
@@ -118,7 +119,7 @@ var BcryptFunc = function.New(&function.Spec{
 		}
 
 		if len(args) > 2 {
-			return cty.UnknownVal(cty.String), fmt.Errorf("bcrypt() takes no more than two arguments")
+			return cty.UnknownVal(cty.String), errors.New("bcrypt() takes no more than two arguments")
 		}
 
 		input := args[0].AsString()
@@ -174,7 +175,7 @@ var RsaDecryptFunc = function.New(&function.Spec{
 			default:
 				errStr = fmt.Sprintf("invalid private key: %s", e)
 			}
-			return cty.UnknownVal(cty.String), function.NewArgErrorf(1, errStr)
+			return cty.UnknownVal(cty.String), function.NewArgError(1, errors.New(errStr))
 		}
 		privateKey, ok := rawKey.(*rsa.PrivateKey)
 		if !ok {

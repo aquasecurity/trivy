@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"github.com/samber/lo"
+
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -70,4 +72,12 @@ func (t *FileContext) missingParameterValues() []string {
 		}
 	}
 	return missing
+}
+
+func (t *FileContext) stripNullProperties() {
+	for _, resource := range t.Resources {
+		resource.Inner.Properties = lo.OmitBy(resource.Inner.Properties, func(k string, v *Property) bool {
+			return v.IsNil()
+		})
+	}
 }

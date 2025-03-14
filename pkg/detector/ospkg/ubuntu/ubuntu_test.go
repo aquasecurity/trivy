@@ -1,7 +1,6 @@
 package ubuntu_test
 
 import (
-	"context"
 	"sort"
 	"testing"
 	"time"
@@ -182,8 +181,7 @@ func TestScanner_Detect(t *testing.T) {
 			s := ubuntu.NewScanner()
 			got, err := s.Detect(nil, tt.args.osVer, nil, tt.args.pkgs)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			sort.Slice(got, func(i, j int) bool {
@@ -254,7 +252,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := clock.With(context.Background(), tt.now)
+			ctx := clock.With(t.Context(), tt.now)
 			s := ubuntu.NewScanner()
 			got := s.IsSupportedVersion(ctx, tt.args.osFamily, tt.args.osVer)
 			assert.Equal(t, tt.want, got)

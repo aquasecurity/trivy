@@ -14,6 +14,7 @@ import (
 )
 
 type Option struct {
+	Type              types.ArtifactType
 	AnalyzerGroup     analyzer.Group // It is empty in OSS
 	DisabledAnalyzers []analyzer.Type
 	DisabledHandlers  []types.HandlerType
@@ -29,6 +30,10 @@ type Option struct {
 	AWSEndpoint       string
 	FileChecksum      bool // For SPDX
 	DetectionPriority types.DetectionPriority
+
+	// Original is the original target location, e.g. "github.com/aquasecurity/trivy"
+	// Currently, it is used only for remote git repositories
+	Original string
 
 	// Git repositories
 	RepoBranch string
@@ -81,23 +86,10 @@ type Artifact interface {
 	Clean(reference Reference) error
 }
 
-// Type represents a type of artifact
-type Type string
-
-const (
-	TypeContainerImage Type = "container_image"
-	TypeFilesystem     Type = "filesystem"
-	TypeRepository     Type = "repository"
-	TypeCycloneDX      Type = "cyclonedx"
-	TypeSPDX           Type = "spdx"
-	TypeAWSAccount     Type = "aws_account"
-	TypeVM             Type = "vm"
-)
-
 // Reference represents a reference of container image, local filesystem and repository
 type Reference struct {
 	Name          string // image name, tar file name, directory or repository name
-	Type          Type
+	Type          types.ArtifactType
 	ID            string
 	BlobIDs       []string
 	ImageMetadata ImageMetadata

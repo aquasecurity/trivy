@@ -9,6 +9,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -41,7 +42,7 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.
 	}
 
 	var results types.Results
-	printedTypes := make(map[ftypes.LangType]struct{})
+	printedTypes := set.New[ftypes.LangType]()
 	for _, app := range apps {
 		if len(app.Packages) == 0 {
 			continue
@@ -76,13 +77,13 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.
 	return results, nil
 }
 
-func (s *scanner) scanVulnerabilities(ctx context.Context, app ftypes.Application, printedTypes map[ftypes.LangType]struct{}) (
+func (s *scanner) scanVulnerabilities(ctx context.Context, app ftypes.Application, printedTypes set.Set[ftypes.LangType]) (
 	[]types.DetectedVulnerability, error) {
 
 	// Prevent the same log messages from being displayed many times for the same type.
-	if _, ok := printedTypes[app.Type]; !ok {
+	if !printedTypes.Contains(app.Type) {
 		log.InfoContext(ctx, "Detecting vulnerabilities...")
-		printedTypes[app.Type] = struct{}{}
+		printedTypes.Append(app.Type)
 	}
 
 	log.DebugContext(ctx, "Scanning packages for vulnerabilities", log.FilePath(app.FilePath))

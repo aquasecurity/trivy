@@ -24,11 +24,18 @@
     "status": "success",
     "type": "container_scanning"
   },
+  {{- $image := "Unknown" -}}
+  {{- $os := "Unknown" -}}
+  {{- range . }}
+    {{- if eq .Class "os-pkgs" -}}
+      {{- $target := .Target }}
+        {{- $image = $target | regexFind "[^\\s]+" }}
+        {{- $os = $target | splitList "(" | last | trimSuffix ")" }}
+    {{- end }}
+  {{- end }}
   "vulnerabilities": [
   {{- $t_first := true }}
   {{- range . }}
-  {{- $target := .Target }}
-    {{- $image := $target | regexFind "[^\\s]+" }}
     {{- range .Vulnerabilities -}}
     {{- if $t_first -}}
       {{- $t_first = false -}}
@@ -65,7 +72,7 @@
           "version": "{{ .InstalledVersion }}"
         },
         {{- /* TODO: No mapping available - https://github.com/aquasecurity/trivy/issues/332 */}}
-        "operating_system": "Unknown",
+        "operating_system": "{{ $os }}",
         "image": "{{ $image }}"
       },
       "identifiers": [

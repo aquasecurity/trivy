@@ -3,7 +3,7 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "testdata/fixtures/repo/conda",
-  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/repo/conda-3ff14136-e09f-4df9-80ea-000000000004",
+  "documentNamespace": "http://trivy.dev/filesystem/testdata/fixtures/repo/conda-3ff14136-e09f-4df9-80ea-000000000004",
   "creationInfo": {
     "creators": [
       "Organization: aquasecurity",
@@ -31,10 +31,15 @@
           "referenceLocator": "pkg:conda/openssl@1.1.1q"
         }
       ],
-      "attributionTexts": [
-        "PkgType: conda-pkg"
-      ],
-      "primaryPackagePurpose": "LIBRARY"
+      "primaryPackagePurpose": "LIBRARY",
+      "annotations": [
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "PkgType: conda-pkg"
+        }
+      ]
     },
     {
       "name": "pip",
@@ -55,20 +60,30 @@
           "referenceLocator": "pkg:conda/pip@22.2.2"
         }
       ],
-      "attributionTexts": [
-        "PkgType: conda-pkg"
-      ],
-      "primaryPackagePurpose": "LIBRARY"
+      "primaryPackagePurpose": "LIBRARY",
+      "annotations": [
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "PkgType: conda-pkg"
+        }
+      ]
     },
     {
       "name": "testdata/fixtures/repo/conda",
       "SPDXID": "SPDXRef-Filesystem-2e2426fd0f2580ef",
       "downloadLocation": "NONE",
       "filesAnalyzed": false,
-      "attributionTexts": [
-        "SchemaVersion: 2"
-      ],
-      "primaryPackagePurpose": "SOURCE"
+      "primaryPackagePurpose": "SOURCE",
+      "annotations": [
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "SchemaVersion: 2"
+        }
+      ]
     }
   ],
   "files": [

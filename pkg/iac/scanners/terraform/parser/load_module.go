@@ -2,6 +2,7 @@ package parser
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/fs"
 	"path"
@@ -24,7 +25,7 @@ type ModuleDefinition struct {
 }
 
 func (d *ModuleDefinition) inputVars() map[string]cty.Value {
-	inputs := d.Definition.Values().AsValueMap()
+	inputs := d.Definition.NullableValues().AsValueMap()
 	if inputs == nil {
 		return make(map[string]cty.Value)
 	}
@@ -90,16 +91,16 @@ func (e *evaluator) loadModuleFromTerraformCache(ctx context.Context, b *terrafo
 	var modulePath string
 	if e.moduleMetadata != nil {
 		// if we have module metadata we can parse all the modules as they'll be cached locally!
-		name := b.ModuleName()
+		moduleKey := b.ModuleKey()
 		for _, module := range e.moduleMetadata.Modules {
-			if module.Key == name {
+			if module.Key == moduleKey {
 				modulePath = path.Clean(path.Join(e.projectRootPath, module.Dir))
 				break
 			}
 		}
 	}
 	if modulePath == "" {
-		return nil, fmt.Errorf("failed to load module from .terraform/modules")
+		return nil, errors.New("failed to load module from .terraform/modules")
 	}
 	if strings.HasPrefix(source, ".") {
 		source = ""

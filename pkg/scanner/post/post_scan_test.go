@@ -95,7 +95,7 @@ func TestScan(t *testing.T) {
 				post.DeregisterPostScanner(s.Name())
 			}()
 
-			results, err := post.Scan(context.Background(), tt.results)
+			results, err := post.Scan(t.Context(), tt.results)
 			require.Equal(t, tt.wantErr, err != nil)
 			assert.Equal(t, tt.want, results)
 		})

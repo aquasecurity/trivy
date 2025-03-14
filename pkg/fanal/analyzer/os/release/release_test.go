@@ -1,7 +1,6 @@
 package release
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -67,6 +66,36 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 				OS: types.OS{
 					Family: types.SLES,
 					Name:   "15.3",
+				},
+			},
+		},
+		{
+			name:      "SUSE Linux Enterprise Micro",
+			inputFile: "testdata/slemicro",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.SLEMicro,
+					Name:   "5.3",
+				},
+			},
+		},
+		{
+			name:      "SUSE Linux Enterprise Micro 6.0",
+			inputFile: "testdata/slemicro6.0",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.SLEMicro,
+					Name:   "6.0",
+				},
+			},
+		},
+		{
+			name:      "SUSE Linux Enterprise Micro 5.4 for Rancher",
+			inputFile: "testdata/slemicro-rancher",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.SLEMicro,
+					Name:   "5.4",
 				},
 			},
 		},
@@ -144,7 +173,7 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			a := osReleaseAnalyzer{}
-			res, err := a.Analyze(context.Background(), analyzer.AnalysisInput{
+			res, err := a.Analyze(t.Context(), analyzer.AnalysisInput{
 				FilePath: "etc/os-release",
 				Content:  f,
 			})

@@ -15,6 +15,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/commands/auth"
 	"github.com/aquasecurity/trivy/pkg/commands/clean"
 	"github.com/aquasecurity/trivy/pkg/commands/convert"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
@@ -99,6 +100,7 @@ func NewApp() *cobra.Command {
 		NewVersionCommand(globalFlags),
 		NewVMCommand(globalFlags),
 		NewCleanCommand(globalFlags),
+		NewRegistryCommand(globalFlags),
 		NewVEXCommand(globalFlags),
 	)
 
@@ -474,7 +476,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	repoFlags.ReportFlagGroup.Compliance = nil   // disable '--compliance'
 	repoFlags.ReportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
 
-	repoFlags.CacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory) // Use memory cache by default
+	repoFlags.ScanFlagGroup.DistroFlag = nil // `repo` subcommand doesn't support scanning OS packages, so we can disable `--distro`
 
 	cmd := &cobra.Command{
 		Use:     "repository [flags] (REPO_PATH | REPO_URL)",
@@ -517,6 +519,13 @@ func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		ScanFlagGroup:   &flag.ScanFlagGroup{},
 		ReportFlagGroup: flag.NewReportFlagGroup(),
 	}
+
+	// To display the summary table, we need to enable scanners (to build columns).
+	// We can't get scanner information from the report (we don't include empty licenses and secrets in the report).
+	// So we need to ask the user to configure scanners (if needed).
+	convertFlags.ScanFlagGroup.Scanners = flag.ScannersFlag.Clone()
+	convertFlags.ScanFlagGroup.Scanners.Default = nil // disable default scanners
+	convertFlags.ScanFlagGroup.Scanners.Usage = "List of scanners included when generating the json report. Used only for rendering the summary table."
 
 	cmd := &cobra.Command{
 		Use:     "convert [flags] RESULT_JSON",
@@ -624,7 +633,7 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	// java-db only works on client side.
 	serverFlags.DBFlagGroup.DownloadJavaDBOnly = nil // disable '--download-java-db-only'
 	serverFlags.DBFlagGroup.SkipJavaDBUpdate = nil   // disable '--skip-java-db-update'
-	serverFlags.DBFlagGroup.JavaDBRepository = nil   // disable '--java-db-repository'
+	serverFlags.DBFlagGroup.JavaDBRepositories = nil // disable '--java-db-repository'
 
 	cmd := &cobra.Command{
 		Use:     "server [flags]",
@@ -975,6 +984,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	reportFlagGroup.Compliance = compliance // override usage as the accepted values differ for each subcommand.
 	reportFlagGroup.ExitOnEOL = nil         // disable '--exit-on-eol'
+	reportFlagGroup.TableMode = nil         // disable '--table-mode'
 
 	formatFlag := flag.FormatFlag.Clone()
 	formatFlag.Values = xstrings.ToStringSlice([]types.Format{
@@ -1143,7 +1153,8 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		PackageFlagGroup:       flag.NewPackageFlagGroup(),
-		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		RemoteFlagGroup:        flag.NewClientFlags(),       // for client/server mode
+		RegistryFlagGroup:      flag.NewRegistryFlagGroup(), // for DBs in private registries
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          scanFlagGroup,
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
@@ -1228,6 +1239,62 @@ func NewCleanCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	cleanFlags.AddFlags(cmd)
 	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, cleanFlags.Usages(cmd)))
+
+	return cmd
+}
+
+func NewRegistryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:           "registry [flags]",
+		GroupID:       groupUtility,
+		Short:         "Manage registry authentication",
+		SilenceErrors: true,
+		SilenceUsage:  true,
+	}
+
+	loginFlags := &flag.Flags{
+		GlobalFlagGroup:   globalFlags,
+		RegistryFlagGroup: flag.NewRegistryFlagGroup(),
+	}
+	loginFlags.RegistryFlagGroup.RegistryToken = nil // disable '--registry-token'
+	loginCmd := &cobra.Command{
+		Use:           "login SERVER",
+		Short:         "Log in to a registry",
+		SilenceErrors: true,
+		SilenceUsage:  true,
+		Example: `  # Log in to reg.example.com
+  cat ~/my_password.txt | trivy registry login --username foo --password-stdin reg.example.com`,
+		Args: cobra.ExactArgs(1),
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := loginFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			loginOpts, err := loginFlags.ToOptions(args)
+			if err != nil {
+				return xerrors.Errorf("flag error: %w", err)
+			}
+			return auth.Login(cmd.Context(), args[0], loginOpts)
+		},
+	}
+	logoutCmd := &cobra.Command{
+		Use:           "logout SERVER",
+		Short:         "Log out of a registry",
+		SilenceErrors: true,
+		SilenceUsage:  true,
+		Example: `  # Log out of reg.example.com
+  trivy registry logout reg.example.com`,
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return auth.Logout(cmd.Context(), args[0])
+		},
+	}
+	loginFlags.AddFlags(loginCmd)
+	cmd.AddCommand(loginCmd, logoutCmd)
+
+	cmd.SetFlagErrorFunc(flagErrorFunc)
 
 	return cmd
 }

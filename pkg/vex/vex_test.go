@@ -1,7 +1,6 @@
 package vex_test
 
 import (
-	"context"
 	"fmt"
 	"net/http/httptest"
 	"os"
@@ -14,7 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
@@ -58,9 +56,9 @@ var (
 		},
 	}
 	goModulePackage = ftypes.Package{
-		ID:           "github.com/aquasecurity/go-module@1.0.0",
+		ID:           "github.com/aquasecurity/go-module@v1.0.0",
 		Name:         "github.com/aquasecurity/go-module",
-		Version:      "1.0.0",
+		Version:      "v1.0.0",
 		Relationship: ftypes.RelationshipRoot,
 		Identifier: ftypes.PkgIdentifier{
 			UID: "03",
@@ -68,14 +66,14 @@ var (
 				Type:      packageurl.TypeGolang,
 				Namespace: "github.com/aquasecurity",
 				Name:      "go-module",
-				Version:   "1.0.0",
+				Version:   "v1.0.0",
 			},
 		},
 	}
 	goDirectPackage1 = ftypes.Package{
-		ID:           "github.com/aquasecurity/go-direct1@2.0.0",
+		ID:           "github.com/aquasecurity/go-direct1@v2.0.0",
 		Name:         "github.com/aquasecurity/go-direct1",
-		Version:      "2.0.0",
+		Version:      "v2.0.0",
 		Relationship: ftypes.RelationshipDirect,
 		Identifier: ftypes.PkgIdentifier{
 			UID: "04",
@@ -83,14 +81,14 @@ var (
 				Type:      packageurl.TypeGolang,
 				Namespace: "github.com/aquasecurity",
 				Name:      "go-direct1",
-				Version:   "2.0.0",
+				Version:   "v2.0.0",
 			},
 		},
 	}
 	goDirectPackage2 = ftypes.Package{
-		ID:           "github.com/aquasecurity/go-direct2@3.0.0",
+		ID:           "github.com/aquasecurity/go-direct2@v3.0.0",
 		Name:         "github.com/aquasecurity/go-direct2",
-		Version:      "3.0.0",
+		Version:      "v3.0.0",
 		Relationship: ftypes.RelationshipDirect,
 		Identifier: ftypes.PkgIdentifier{
 			UID: "05",
@@ -98,14 +96,14 @@ var (
 				Type:      packageurl.TypeGolang,
 				Namespace: "github.com/aquasecurity",
 				Name:      "go-direct2",
-				Version:   "3.0.0",
+				Version:   "v3.0.0",
 			},
 		},
 	}
 	goTransitivePackage = ftypes.Package{
-		ID:           "github.com/aquasecurity/go-transitive@4.0.0",
+		ID:           "github.com/aquasecurity/go-transitive@v4.0.0",
 		Name:         "github.com/aquasecurity/go-transitive",
-		Version:      "4.0.0",
+		Version:      "v4.0.0",
 		Relationship: ftypes.RelationshipIndirect,
 		Identifier: ftypes.PkgIdentifier{
 			UID: "06",
@@ -113,7 +111,7 @@ var (
 				Type:      packageurl.TypeGolang,
 				Namespace: "github.com/aquasecurity",
 				Name:      "go-transitive",
-				Version:   "4.0.0",
+				Version:   "v4.0.0",
 			},
 		},
 	}
@@ -330,7 +328,7 @@ func TestFilter(t *testing.T) {
 			name: "CycloneDX SBOM with CycloneDX VEX",
 			args: args{
 				report: &types.Report{
-					ArtifactType: artifact.TypeCycloneDX,
+					ArtifactType: ftypes.TypeCycloneDX,
 					BOM: &core.BOM{
 						SerialNumber: "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
 						Version:      1,
@@ -351,7 +349,7 @@ func TestFilter(t *testing.T) {
 				},
 			},
 			want: &types.Report{
-				ArtifactType: artifact.TypeCycloneDX,
+				ArtifactType: ftypes.TypeCycloneDX,
 				BOM: &core.BOM{
 					SerialNumber: "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
 					Version:      1,
@@ -368,7 +366,7 @@ func TestFilter(t *testing.T) {
 			name: "CycloneDX VEX wrong URN",
 			args: args{
 				report: &types.Report{
-					ArtifactType: artifact.TypeCycloneDX,
+					ArtifactType: ftypes.TypeCycloneDX,
 					BOM: &core.BOM{
 						SerialNumber: "urn:uuid:wrong",
 						Version:      1,
@@ -389,7 +387,7 @@ func TestFilter(t *testing.T) {
 				},
 			},
 			want: &types.Report{
-				ArtifactType: artifact.TypeCycloneDX,
+				ArtifactType: ftypes.TypeCycloneDX,
 				BOM: &core.BOM{
 					SerialNumber: "urn:uuid:wrong",
 					Version:      1,
@@ -567,7 +565,7 @@ repositories:
 			if tt.setup != nil {
 				tt.setup(t, tmpDir)
 			}
-			err := vex.Filter(context.Background(), tt.args.report, tt.args.opts)
+			err := vex.Filter(t.Context(), tt.args.report, tt.args.opts)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -581,7 +579,7 @@ repositories:
 func imageReport(results types.Results) *types.Report {
 	return &types.Report{
 		ArtifactName: "debian:12",
-		ArtifactType: artifact.TypeContainerImage,
+		ArtifactType: ftypes.TypeContainerImage,
 		Metadata: types.Metadata{
 			RepoDigests: []string{
 				"debian@sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",
@@ -622,7 +620,7 @@ func ociPURLString(ts *httptest.Server, d v1.Hash) string {
 func fsReport(results types.Results) *types.Report {
 	return &types.Report{
 		ArtifactName: ".",
-		ArtifactType: artifact.TypeFilesystem,
+		ArtifactType: ftypes.TypeFilesystem,
 		Results:      results,
 	}
 }
@@ -646,9 +644,9 @@ func goSinglePathResult(result types.Result) types.Result {
 	result.Type = ftypes.GoModule
 	result.Class = types.ClassLangPkg
 
-	// - pkg:golang/github.com/aquasecurity/go-module@1.0.0
-	//     - pkg:golang/github.com/aquasecurity/go-direct1@2.0.0
-	//         - pkg:golang/github.com/aquasecurity/go-transitive@4.0.0
+	// - pkg:golang/github.com/aquasecurity/go-module@v1.0.0
+	//     - pkg:golang/github.com/aquasecurity/go-direct1@v2.0.0
+	//         - pkg:golang/github.com/aquasecurity/go-transitive@v4.0.0
 	goModule := clonePackage(goModulePackage)
 	goDirect1 := clonePackage(goDirectPackage1)
 	goTransitive := clonePackage(goTransitivePackage)
@@ -667,11 +665,11 @@ func goMultiPathResult(result types.Result) types.Result {
 	result.Type = ftypes.GoModule
 	result.Class = types.ClassLangPkg
 
-	// - pkg:golang/github.com/aquasecurity/go-module@2.0.0
-	//     - pkg:golang/github.com/aquasecurity/go-direct1@3.0.0
-	//         - pkg:golang/github.com/aquasecurity/go-transitive@5.0.0
-	//     - pkg:golang/github.com/aquasecurity/go-direct2@4.0.0
-	//         - pkg:golang/github.com/aquasecurity/go-transitive@5.0.0
+	// - pkg:golang/github.com/aquasecurity/go-module@v2.0.0
+	//     - pkg:golang/github.com/aquasecurity/go-direct1@v3.0.0
+	//         - pkg:golang/github.com/aquasecurity/go-transitive@v5.0.0
+	//     - pkg:golang/github.com/aquasecurity/go-direct2@v4.0.0
+	//         - pkg:golang/github.com/aquasecurity/go-transitive@v5.0.0
 	goModule := clonePackage(goModulePackage)
 	goDirect1 := clonePackage(goDirectPackage1)
 	goDirect2 := clonePackage(goDirectPackage2)

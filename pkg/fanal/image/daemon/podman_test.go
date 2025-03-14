@@ -19,13 +19,12 @@ import (
 func setupPodmanSock(t *testing.T) *httptest.Server {
 	t.Helper()
 
-	runtimeDir, err := os.MkdirTemp("", "daemon")
-	require.NoError(t, err)
+	runtimeDir := t.TempDir()
 
 	t.Setenv("XDG_RUNTIME_DIR", runtimeDir)
 
 	dir := filepath.Join(runtimeDir, "podman")
-	err = os.MkdirAll(dir, os.ModePerm)
+	err := os.MkdirAll(dir, os.ModePerm)
 	require.NoError(t, err)
 
 	sockPath := filepath.Join(dir, "podman.sock")

@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -25,6 +25,7 @@ func TestSBOM(t *testing.T) {
 		name     string
 		args     args
 		golden   string
+		fakeUUID string
 		override OverrideFunc
 	}{
 		{
@@ -37,7 +38,7 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/centos-7.json.golden",
 			override: func(t *testing.T, want, got *types.Report) {
 				want.ArtifactName = "testdata/fixtures/sbom/centos-7-cyclonedx.json"
-				want.ArtifactType = artifact.TypeCycloneDX
+				want.ArtifactType = ftypes.TypeCycloneDX
 
 				require.Len(t, got.Results, 1)
 				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-cyclonedx.json (centos 7.6.1810)"
@@ -58,6 +59,16 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/fluentd-multiple-lockfiles.json.golden",
 		},
 		{
+			name: "scan SBOM into SBOM",
+			args: args{
+				input:        "testdata/fixtures/sbom/fluentd-multiple-lockfiles-cyclonedx.json",
+				format:       "cyclonedx",
+				artifactType: "cyclonedx",
+			},
+			fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+			golden:   "testdata/fluentd-multiple-lockfiles-short.cdx.json.golden",
+		},
+		{
 			name: "minikube KBOM",
 			args: args{
 				input:        "testdata/fixtures/sbom/minikube-kbom.json",
@@ -76,7 +87,7 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/centos-7.json.golden",
 			override: func(t *testing.T, want, got *types.Report) {
 				want.ArtifactName = "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl"
-				want.ArtifactType = artifact.TypeCycloneDX
+				want.ArtifactType = ftypes.TypeCycloneDX
 
 				require.Len(t, got.Results, 1)
 				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl (centos 7.6.1810)"
@@ -97,7 +108,7 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/centos-7.json.golden",
 			override: func(t *testing.T, want, got *types.Report) {
 				want.ArtifactName = "testdata/fixtures/sbom/centos-7-spdx.txt"
-				want.ArtifactType = artifact.TypeSPDX
+				want.ArtifactType = ftypes.TypeSPDX
 
 				require.Len(t, got.Results, 1)
 				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-spdx.txt (centos 7.6.1810)"
@@ -113,7 +124,7 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/centos-7.json.golden",
 			override: func(t *testing.T, want, got *types.Report) {
 				want.ArtifactName = "testdata/fixtures/sbom/centos-7-spdx.json"
-				want.ArtifactType = artifact.TypeSPDX
+				want.ArtifactType = ftypes.TypeSPDX
 
 				require.Len(t, got.Results, 1)
 				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-spdx.json (centos 7.6.1810)"
@@ -165,6 +176,7 @@ func TestSBOM(t *testing.T) {
 			// Run "trivy sbom"
 			runTest(t, osArgs, tt.golden, outputFile, types.Format(tt.args.format), runOptions{
 				override: overrideFuncs(overrideSBOMReport, overrideUID, tt.override),
+				fakeUUID: tt.fakeUUID,
 			})
 		})
 	}
@@ -174,11 +186,6 @@ func overrideSBOMReport(t *testing.T, want, got *types.Report) {
 	want.Metadata.ImageID = ""
 	want.Metadata.ImageConfig = v1.ConfigFile{}
 	want.Metadata.DiffIDs = nil
-	for i, result := range want.Results {
-		for j := range result.Vulnerabilities {
-			want.Results[i].Vulnerabilities[j].Layer.DiffID = ""
-		}
-	}
 
 	// when running on Windows FS
 	got.ArtifactName = filepath.ToSlash(filepath.Clean(got.ArtifactName))

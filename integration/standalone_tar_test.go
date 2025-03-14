@@ -24,11 +24,13 @@ func TestTar(t *testing.T) {
 		SkipDirs          []string
 		SkipFiles         []string
 		DetectionPriority ftypes.DetectionPriority
+		Distro            string
 	}
 	tests := []struct {
-		name   string
-		args   args
-		golden string
+		name     string
+		args     args
+		golden   string
+		override func(t *testing.T, want, got *types.Report)
 	}{
 		{
 			name: "alpine 3.9",
@@ -158,6 +160,19 @@ func TestTar(t *testing.T) {
 				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
 			},
 			golden: "testdata/alpine-39-ignore-cveids.json.golden",
+		},
+		{
+			name: "alpine 3.9 as alpine 3.10",
+			args: args{
+				Format: types.FormatJSON,
+				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
+				Distro: "alpine/3.10",
+			},
+			override: func(t *testing.T, want, got *types.Report) {
+				want.Metadata.OS.Name = "3.10"
+				want.Results[0].Target = "testdata/fixtures/images/alpine-39.tar.gz (alpine 3.10)"
+			},
+			golden: "testdata/alpine-39.json.golden",
 		},
 		{
 			name: "alpine 3.10",
@@ -342,6 +357,14 @@ func TestTar(t *testing.T) {
 			golden: "testdata/opensuse-tumbleweed.json.golden",
 		},
 		{
+			name: "sle micro rancher 5.4",
+			args: args{
+				Format: types.FormatJSON,
+				Input:  "testdata/fixtures/images/sle-micro-rancher-5.4_ndb.tar.gz",
+			},
+			golden: "testdata/sl-micro-rancher5.4.json.golden",
+		},
+		{
 			name: "photon 3.0",
 			args: args{
 				Format: types.FormatJSON,
@@ -426,8 +449,14 @@ func TestTar(t *testing.T) {
 				osArgs = append(osArgs, "--detection-priority", string(tt.args.DetectionPriority))
 			}
 
+			if tt.args.Distro != "" {
+				osArgs = append(osArgs, "--distro", tt.args.Distro)
+			}
+
 			// Run Trivy
-			runTest(t, osArgs, tt.golden, "", tt.args.Format, runOptions{})
+			runTest(t, osArgs, tt.golden, "", tt.args.Format, runOptions{
+				override: overrideFuncs(overrideUID, tt.override),
+			})
 		})
 	}
 }

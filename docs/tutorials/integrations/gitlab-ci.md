@@ -114,7 +114,7 @@ container_scanning:
 Depending on the edition of gitlab you have or your desired workflow, the
 container scanning template may not meet your needs. As an addition to the
 above container scanning template, a template for
-[code climate](https://docs.gitlab.com/ee/user/project/merge_requests/code_quality.html)
+[code climate](https://docs.gitlab.com/ee/ci/testing/code_quality.html)
 has been included. The key things to update from the above examples are
 the `template` and `report` type. An updated example is below.
 

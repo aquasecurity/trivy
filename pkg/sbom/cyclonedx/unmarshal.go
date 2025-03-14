@@ -3,6 +3,7 @@ package cyclonedx
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"strings"
 
@@ -87,6 +88,11 @@ func (b *BOM) parseBOM(bom *cdx.BOM) error {
 			b.BOM.AddRelationship(ref, dependency, core.RelationshipDependsOn)
 		}
 	}
+
+	if refs := b.parseExternalReferences(bom); refs != nil {
+		b.BOM.AddExternalReferences(refs)
+	}
+
 	return nil
 }
 
@@ -101,6 +107,39 @@ func (b *BOM) parseMetadataComponent(bom *cdx.BOM) (*core.Component, error) {
 	root.Root = true
 	b.BOM.AddComponent(root)
 	return root, nil
+}
+
+func (b *BOM) parseExternalReferences(bom *cdx.BOM) []core.ExternalReference {
+	if bom.ExternalReferences == nil {
+		return nil
+	}
+	var refs = make([]core.ExternalReference, 0)
+
+	for _, ref := range *bom.ExternalReferences {
+		t, err := b.unmarshalReferenceType(ref.Type)
+		if err != nil {
+			continue
+		}
+
+		externalReference := core.ExternalReference{
+			Type: t,
+			URL:  ref.URL,
+		}
+
+		refs = append(refs, externalReference)
+	}
+	return refs
+}
+
+func (b *BOM) unmarshalReferenceType(t cdx.ExternalReferenceType) (core.ExternalReferenceType, error) {
+	var referenceType core.ExternalReferenceType
+	switch t {
+	case cdx.ERTypeExploitabilityStatement:
+		referenceType = core.ExternalReferenceVEX
+	default:
+		return "", fmt.Errorf("unsupported external reference type: %s", t)
+	}
+	return referenceType, nil
 }
 
 func (b *BOM) parseComponents(cdxComponents *[]cdx.Component) map[string]*core.Component {
@@ -128,13 +167,17 @@ func (b *BOM) parseComponent(c cdx.Component) (*core.Component, error) {
 		return nil, xerrors.Errorf("failed to unmarshal component type: %w", err)
 	}
 
+	identifier := ftypes.PkgIdentifier{
+		BOMRef: c.BOMRef,
+	}
+
 	// Parse PURL
-	var purl packageurl.PackageURL
 	if c.PackageURL != "" {
-		purl, err = packageurl.FromString(c.PackageURL)
+		purl, err := packageurl.FromString(c.PackageURL)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse PURL: %w", err)
 		}
+		identifier.PURL = &purl
 	}
 
 	component := &core.Component{
@@ -148,12 +191,9 @@ func (b *BOM) parseComponent(c cdx.Component) (*core.Component, error) {
 				Digests: b.unmarshalHashes(c.Hashes),
 			},
 		},
-		PkgIdentifier: ftypes.PkgIdentifier{
-			PURL:   &purl,
-			BOMRef: c.BOMRef,
-		},
-		Supplier:   b.unmarshalSupplier(c.Supplier),
-		Properties: b.unmarshalProperties(c.Properties),
+		PkgIdentifier: identifier,
+		Supplier:      b.unmarshalSupplier(c.Supplier),
+		Properties:    b.unmarshalProperties(c.Properties),
 	}
 
 	return component, nil
@@ -166,7 +206,10 @@ func (b *BOM) unmarshalType(t cdx.ComponentType) (core.ComponentType, error) {
 		ctype = core.TypeContainerImage
 	case cdx.ComponentTypeApplication:
 		ctype = core.TypeApplication
-	case cdx.ComponentTypeLibrary:
+	// There are not many differences between a `library` and a `framework` components, and sometimes it is difficult to choose the right type.
+	// That is why some users choose `framework` type.
+	// So we should parse and scan `framework` components as libraries.
+	case cdx.ComponentTypeLibrary, cdx.ComponentTypeFramework:
 		ctype = core.TypeLibrary
 	case cdx.ComponentTypeOS:
 		ctype = core.TypeOS

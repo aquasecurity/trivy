@@ -24,6 +24,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 
@@ -90,10 +91,16 @@ func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobK
 		return nil, ftypes.OS{}, xerrors.Errorf("failed to apply layers: %w", err)
 	}
 
+	if !lo.IsEmpty(options.Distro) && !lo.IsEmpty(detail.OS) {
+		log.Info("Overriding detected OS with provided distro", log.String("detected", detail.OS.String()),
+			log.String("provided", options.Distro.String()))
+		detail.OS = options.Distro
+	}
+
 	target := types.ScanTarget{
 		Name:              targetName,
 		OS:                detail.OS,
-		Repository:        detail.Repository,
+		Repository:        lo.Ternary(lo.IsEmpty(options.Distro), detail.Repository, nil),
 		Packages:          mergePkgs(detail.Packages, detail.ImageConfig.Packages, options),
 		Applications:      detail.Applications,
 		Misconfigurations: mergeMisconfigurations(targetName, detail),
@@ -138,7 +145,7 @@ func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, option
 
 	for i := range results {
 		// Fill vulnerability details
-		s.vulnClient.FillInfo(results[i].Vulnerabilities)
+		s.vulnClient.FillInfo(results[i].Vulnerabilities, options.VulnSeveritySources)
 	}
 
 	// Post scanning
@@ -210,9 +217,6 @@ func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Res
 		for _, w := range misconf.Successes {
 			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.MisconfStatusPassed, misconf.Layer))
 		}
-		for _, w := range misconf.Exceptions {
-			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.MisconfStatusException, misconf.Layer))
-		}
 
 		results = append(results, types.Result{
 			Target:            misconf.FilePath,
@@ -257,21 +261,44 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 	var results types.Results
 	scanner := licensing.NewScanner(options.LicenseCategories)
 
-	// License - OS packages
-	var osPkgLicenses []types.DetectedLicense
-	for _, pkg := range target.Packages {
+	// Scan licenses for OS packages
+	if result := s.scanOSPackageLicenses(target.Packages, scanner); result != nil {
+		results = append(results, *result)
+	}
+
+	// Scan licenses for language-specific packages
+	results = append(results, s.scanApplicationLicenses(target.Applications, scanner)...)
+
+	// Scan licenses in file headers or license files
+	if result := s.scanFileLicenses(target.Licenses, scanner, options); result != nil {
+		results = append(results, *result)
+	}
+
+	return results
+}
+
+func (s Scanner) scanOSPackageLicenses(packages []ftypes.Package, scanner licensing.Scanner) *types.Result {
+	if len(packages) == 0 {
+		return nil
+	}
+
+	var licenses []types.DetectedLicense
+	for _, pkg := range packages {
 		for _, license := range pkg.Licenses {
-			osPkgLicenses = append(osPkgLicenses, toDetectedLicense(scanner, license, pkg.Name, ""))
+			licenses = append(licenses, toDetectedLicense(scanner, license, pkg.Name, ""))
 		}
 	}
-	results = append(results, types.Result{
+	return &types.Result{
 		Target:   "OS Packages",
 		Class:    types.ClassLicense,
-		Licenses: osPkgLicenses,
-	})
+		Licenses: licenses,
+	}
+}
 
-	// License - language-specific packages
-	for _, app := range target.Applications {
+func (s Scanner) scanApplicationLicenses(apps []ftypes.Application, scanner licensing.Scanner) []types.Result {
+	var results []types.Result
+
+	for _, app := range apps {
 		var langLicenses []types.DetectedLicense
 		for _, lib := range app.Packages {
 			for _, license := range lib.Licenses {
@@ -288,19 +315,29 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 			// When the file path is empty, we will overwrite it with the pre-defined value.
 			targetName = t
 		}
-		results = append(results, types.Result{
-			Target:   targetName,
-			Class:    types.ClassLicense,
-			Licenses: langLicenses,
-		})
+
+		if len(langLicenses) != 0 {
+			results = append(results, types.Result{
+				Target:   targetName,
+				Class:    types.ClassLicense,
+				Licenses: langLicenses,
+			})
+		}
+
 	}
 
-	// License - file header or license file
-	var fileLicenses []types.DetectedLicense
-	for _, license := range target.Licenses {
+	return results
+}
+
+func (s Scanner) scanFileLicenses(licenses []ftypes.LicenseFile, scanner licensing.Scanner, options types.ScanOptions) *types.Result {
+	if !options.LicenseFull {
+		return nil
+	}
+	var detectedLicenses []types.DetectedLicense
+	for _, license := range licenses {
 		for _, finding := range license.Findings {
 			category, severity := scanner.Scan(finding.Name)
-			fileLicenses = append(fileLicenses, types.DetectedLicense{
+			detectedLicenses = append(detectedLicenses, types.DetectedLicense{
 				Severity:   severity,
 				Category:   category,
 				FilePath:   license.FilePath,
@@ -308,16 +345,14 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 				Confidence: finding.Confidence,
 				Link:       finding.Link,
 			})
-
 		}
 	}
-	results = append(results, types.Result{
+
+	return &types.Result{
 		Target:   "Loose File License(s)",
 		Class:    types.ClassLicenseFile,
-		Licenses: fileLicenses,
-	})
-
-	return results
+		Licenses: detectedLicenses,
+	}
 }
 
 func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbTypes.Severity,
@@ -366,13 +401,14 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		Layer:       layer,
 		Traces:      res.Traces,
 		CauseMetadata: ftypes.CauseMetadata{
-			Resource:    res.Resource,
-			Provider:    res.Provider,
-			Service:     res.Service,
-			StartLine:   res.StartLine,
-			EndLine:     res.EndLine,
-			Code:        res.Code,
-			Occurrences: res.Occurrences,
+			Resource:      res.Resource,
+			Provider:      res.Provider,
+			Service:       res.Service,
+			StartLine:     res.StartLine,
+			EndLine:       res.EndLine,
+			Code:          res.Code,
+			Occurrences:   res.Occurrences,
+			RenderedCause: res.RenderedCause,
 		},
 	}
 }
@@ -455,12 +491,12 @@ func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package, options types.ScanOption
 	}
 
 	// pkg has priority over pkgsFromCommands
-	uniqPkgs := make(map[string]struct{})
+	uniqPkgs := set.New[string]()
 	for _, pkg := range pkgs {
-		uniqPkgs[pkg.Name] = struct{}{}
+		uniqPkgs.Append(pkg.Name)
 	}
 	for _, pkg := range pkgsFromCommands {
-		if _, ok := uniqPkgs[pkg.Name]; ok {
+		if uniqPkgs.Contains(pkg.Name) {
 			continue
 		}
 		pkgs = append(pkgs, pkg)

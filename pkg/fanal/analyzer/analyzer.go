@@ -118,6 +118,13 @@ type CustomGroup interface {
 	Group() Group
 }
 
+// StaticPathAnalyzer is an interface for analyzers that can specify static file paths
+// instead of traversing the entire filesystem.
+type StaticPathAnalyzer interface {
+	// StaticPaths returns a list of static file paths to analyze
+	StaticPaths() []string
+}
+
 type Opener func() (xio.ReadSeekCloserAt, error)
 
 type AnalyzerGroup struct {
@@ -539,4 +546,37 @@ func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) boo
 		}
 	}
 	return false
+}
+
+// StaticPaths collects static paths from all enabled analyzers
+// It returns the collected paths and a boolean indicating if all enabled analyzers implement StaticPathAnalyzer
+func (ag AnalyzerGroup) StaticPaths(disabled []Type) ([]string, bool) {
+	var paths []string
+
+	for _, a := range ag.analyzers {
+		// Skip disabled analyzers
+		if slices.Contains(disabled, a.Type()) {
+			continue
+		}
+
+		// If any analyzer doesn't implement StaticPathAnalyzer, return false
+		staticPathAnalyzer, ok := a.(StaticPathAnalyzer)
+		if !ok {
+			return nil, false
+		}
+
+		// Collect paths from StaticPathAnalyzer
+		paths = append(paths, staticPathAnalyzer.StaticPaths()...)
+	}
+
+	// PostAnalyzers don't implement StaticPathAnalyzer.
+	// So if at least one postAnalyzer is enabled - we should not use StaticPath.
+	if allPostAnalyzersDisabled := lo.EveryBy(ag.postAnalyzers, func(a PostAnalyzer) bool {
+		return slices.Contains(disabled, a.Type())
+	}); !allPostAnalyzersDisabled {
+		return nil, false
+	}
+
+	// Remove duplicates
+	return lo.Uniq(paths), true
 }

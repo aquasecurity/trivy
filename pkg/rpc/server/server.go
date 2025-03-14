@@ -8,6 +8,7 @@ import (
 	"golang.org/x/xerrors"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -15,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
@@ -75,12 +77,28 @@ func (s *ScanServer) ToOptions(in *rpcScanner.ScanOptions) types.ScanOptions {
 			return ftypes.LicenseCategory(k), v.Names
 		})
 
+	var distro ftypes.OS
+	if in.Distro != nil {
+		distro.Family = ftypes.OSType(in.Distro.Family)
+		distro.Name = in.Distro.Name
+	}
+
+	vulnSeveritySources := xstrings.ToTSlice[dbTypes.SourceID](in.VulnSeveritySources)
+	if len(vulnSeveritySources) == 0 {
+		vulnSeveritySources = []dbTypes.SourceID{
+			"auto", // For backward compatibility
+		}
+	}
+
 	return types.ScanOptions{
-		PkgTypes:          in.PkgTypes,
-		PkgRelationships:  pkgRelationships,
-		Scanners:          scanners,
-		IncludeDevDeps:    in.IncludeDevDeps,
-		LicenseCategories: licenseCategories,
+		PkgTypes:            in.PkgTypes,
+		PkgRelationships:    pkgRelationships,
+		Scanners:            scanners,
+		IncludeDevDeps:      in.IncludeDevDeps,
+		LicenseCategories:   licenseCategories,
+		LicenseFull:         in.LicenseFull,
+		Distro:              distro,
+		VulnSeveritySources: vulnSeveritySources,
 	}
 }
 

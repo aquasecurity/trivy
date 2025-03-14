@@ -1,7 +1,6 @@
 package pkg
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -81,7 +80,7 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			a := nodePkgLibraryAnalyzer{}
-			ctx := context.Background()
+			ctx := t.Context()
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
@@ -89,8 +88,7 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 			})
 
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 

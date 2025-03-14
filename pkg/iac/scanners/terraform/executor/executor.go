@@ -1,41 +1,36 @@
 package executor
 
 import (
+	"context"
 	"fmt"
-	"runtime"
 	"sort"
+	"strconv"
+	"strings"
 
-	"github.com/samber/lo"
+	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/zclconf/go-cty/cty"
 
 	adapter "github.com/aquasecurity/trivy/pkg/iac/adapters/terraform"
-	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
-	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
-	ruleTypes "github.com/aquasecurity/trivy/pkg/iac/types/rules"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // Executor scans HCL blocks by running all registered rules against them
 type Executor struct {
-	workspaceName           string
-	logger                  *log.Logger
-	resultsFilters          []func(scan.Results) scan.Results
-	regoScanner             *rego.Scanner
-	regoOnly                bool
-	includeDeprecatedChecks bool
-	frameworks              []framework.Framework
+	workspaceName  string
+	logger         *log.Logger
+	resultsFilters []func(scan.Results) scan.Results
+	regoScanner    *rego.Scanner
 }
 
 // New creates a new Executor
 func New(options ...Option) *Executor {
 	s := &Executor{
-		regoOnly: false,
-		logger:   log.WithPrefix("terraform executor"),
+		logger: log.WithPrefix("terraform executor"),
 	}
 	for _, option := range options {
 		option(s)
@@ -43,31 +38,16 @@ func New(options ...Option) *Executor {
 	return s
 }
 
-func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
+func (e *Executor) Execute(ctx context.Context, modules terraform.Modules, basePath string) (scan.Results, error) {
 
 	e.logger.Debug("Adapting modules...")
 	infra := adapter.Adapt(modules)
 	e.logger.Debug("Adapted module(s) into state data.", log.Int("count", len(modules)))
 
-	threads := runtime.NumCPU()
-	if threads > 1 {
-		threads--
-	}
-
-	e.logger.Debug("Using max routines", log.Int("count", threads))
-
-	registeredRules := lo.Filter(rules.GetRegistered(e.frameworks...), func(r ruleTypes.RegisteredRule, _ int) bool {
-		if !e.includeDeprecatedChecks && r.Deprecated {
-			return false // skip deprecated checks
-		}
-
-		return true
+	results, err := e.regoScanner.ScanInput(ctx, types.SourceCloud, rego.Input{
+		Contents: infra.ToRego(),
+		Path:     basePath,
 	})
-	e.logger.Debug("Initialized Go check(s).", log.Int("count", len(registeredRules)))
-
-	pool := NewPool(threads, registeredRules, modules, infra, e.regoScanner, e.regoOnly)
-
-	results, err := pool.Run()
 	if err != nil {
 		return nil, err
 	}
@@ -85,6 +65,7 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
 		"ignore": attributeIgnorer(modules),
 	}
 
+	// ignore a result based on user input
 	results.Ignore(ignores, ignorers)
 
 	for _, ignored := range results.GetIgnored() {
@@ -97,7 +78,85 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
 	results = e.filterResults(results)
 
 	e.sortResults(results)
+	for i, res := range results {
+		if res.Status() != scan.StatusFailed {
+			continue
+		}
+
+		res.WithRenderedCause(e.renderCause(modules, res.Range()))
+		results[i] = res
+	}
+
 	return results, nil
+}
+
+func (e *Executor) renderCause(modules terraform.Modules, causeRng types.Range) scan.RenderedCause {
+	tfBlock := findBlockForCause(modules, causeRng)
+	if tfBlock == nil {
+		e.logger.Debug("No matching Terraform block found", log.String("cause_range", causeRng.String()))
+		return scan.RenderedCause{}
+	}
+
+	block := hclwrite.NewBlock(tfBlock.Type(), normalizeBlockLables(tfBlock))
+
+	if !writeBlock(tfBlock, block, causeRng) {
+		e.logger.Debug("No matching block attribute found", log.String("cause_range", causeRng.String()))
+		return scan.RenderedCause{}
+	}
+
+	f := hclwrite.NewEmptyFile()
+	f.Body().AppendBlock(block)
+
+	cause := string(hclwrite.Format(f.Bytes()))
+	cause = strings.TrimSuffix(cause, "\n")
+	return scan.RenderedCause{Raw: cause}
+}
+
+// normalizeBlockLables removes indexes and keys from labels.
+func normalizeBlockLables(block *terraform.Block) []string {
+	labels := block.Labels()
+	if block.IsExpanded() {
+		nameLabel := labels[len(labels)-1]
+		idx := strings.LastIndex(nameLabel, "[")
+		if idx != -1 {
+			labels[len(labels)-1] = nameLabel[:idx]
+		}
+	}
+
+	return labels
+}
+
+func writeBlock(tfBlock *terraform.Block, block *hclwrite.Block, causeRng types.Range) bool {
+	var found bool
+
+	for _, attr := range tfBlock.Attributes() {
+		if attr.GetMetadata().Range().Covers(causeRng) && !attr.IsLiteral() {
+			block.Body().SetAttributeValue(attr.Name(), attr.Value())
+			found = true
+		}
+	}
+
+	for _, child := range tfBlock.AllBlocks() {
+		if child.GetMetadata().Range().Covers(causeRng) {
+			childBlock := hclwrite.NewBlock(child.Type(), nil)
+			if writeBlock(child, childBlock, causeRng) {
+				block.Body().AppendBlock(childBlock)
+				found = true
+			}
+		}
+	}
+
+	return found
+}
+
+func findBlockForCause(modules terraform.Modules, causeRng types.Range) *terraform.Block {
+	for _, block := range modules.GetBlocks() {
+		blockRng := block.GetMetadata().Range()
+		if blockRng.GetFilename() == causeRng.GetFilename() && blockRng.Includes(causeRng) {
+			return block
+		}
+	}
+	return nil
 }
 
 func (e *Executor) filterResults(results scan.Results) scan.Results {
@@ -145,13 +204,13 @@ func ignoreByParams(params map[string]string, modules terraform.Modules, m *type
 		case cty.Number:
 			bf := val.AsBigFloat()
 			f64, _ := bf.Float64()
-			comparableInt := fmt.Sprintf("%d", int(f64))
+			comparableInt := strconv.Itoa(int(f64))
 			comparableFloat := fmt.Sprintf("%f", f64)
 			if param != comparableInt && param != comparableFloat {
 				return false
 			}
 		case cty.Bool:
-			if fmt.Sprintf("%t", val.True()) != param {
+			if strconv.FormatBool(val.True()) != param {
 				return false
 			}
 		default:

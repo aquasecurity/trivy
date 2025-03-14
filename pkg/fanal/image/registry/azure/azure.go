@@ -45,7 +45,7 @@ func (r *Registry) CheckOptions(domain string, _ types.RegistryOptions) (intf.Re
 	} else if strings.HasSuffix(domain, chinaAzureURL) {
 		return &RegistryClient{
 			domain: domain,
-			scope:  scope,
+			scope:  chinaScope,
 			cloud:  cloud.AzureChina,
 		}, nil
 	}

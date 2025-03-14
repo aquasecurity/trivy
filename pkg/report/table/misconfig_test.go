@@ -1,6 +1,7 @@
 package table_test
 
 import (
+	"bytes"
 	"strings"
 	"testing"
 
@@ -13,21 +14,25 @@ import (
 )
 
 func TestMisconfigRenderer(t *testing.T) {
-
-	tests := []struct {
-		name               string
-		input              types.Result
+	type args struct {
 		includeNonFailures bool
-		want               string
+		renderCause        []ftypes.ConfigType
+	}
+	tests := []struct {
+		name  string
+		input types.Result
+		args  args
+		want  string
 	}{
 		{
 			name: "single result",
 			input: types.Result{
 				Target:         "my-file",
-				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1, Exceptions: 0},
+				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:          "AVD-XYZ-0123",
+						ID:          "some-alias-for-a-check",
+						AVDID:       "AVD-XYZ-0123",
 						Title:       "Config file is bad",
 						Description: "Your config file is not good.",
 						Message:     "Oh no, a bad config.",
@@ -37,14 +42,16 @@ func TestMisconfigRenderer(t *testing.T) {
 					},
 				},
 			},
-			includeNonFailures: false,
+			args: args{
+				includeNonFailures: false,
+			},
 			want: `
 my-file ()
 ==========
-Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 1 (SUCCESSES: 0, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
-HIGH: Oh no, a bad config.
+AVD-XYZ-0123 (HIGH): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -58,10 +65,10 @@ See https://google.com/search?q=bad%20config
 			name: "single result with code",
 			input: types.Result{
 				Target:         "my-file",
-				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1, Exceptions: 0},
+				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:          "AVD-XYZ-0123",
+						AVDID:       "AVD-XYZ-0123",
 						Title:       "Config file is bad",
 						Description: "Your config file is not good.",
 						Message:     "Oh no, a bad config.",
@@ -96,14 +103,16 @@ See https://google.com/search?q=bad%20config
 					},
 				},
 			},
-			includeNonFailures: false,
+			args: args{
+				includeNonFailures: false,
+			},
 			want: `
 my-file ()
 ==========
-Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 1 (SUCCESSES: 0, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
-HIGH: Oh no, a bad config.
+AVD-XYZ-0123 (HIGH): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -123,10 +132,10 @@ See https://google.com/search?q=bad%20config
 			name: "multiple results",
 			input: types.Result{
 				Target:         "my-file",
-				MisconfSummary: &types.MisconfSummary{Successes: 1, Failures: 1, Exceptions: 0},
+				MisconfSummary: &types.MisconfSummary{Successes: 1, Failures: 1},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:          "AVD-XYZ-0123",
+						AVDID:       "AVD-XYZ-0123",
 						Title:       "Config file is bad",
 						Description: "Your config file is not good.",
 						Message:     "Oh no, a bad config.",
@@ -157,7 +166,7 @@ See https://google.com/search?q=bad%20config
 						},
 					},
 					{
-						ID:          "AVD-XYZ-0456",
+						AVDID:       "AVD-XYZ-0456",
 						Title:       "Config file is bad again",
 						Description: "Your config file is still not good.",
 						Message:     "Oh no, a bad config AGAIN.",
@@ -167,14 +176,16 @@ See https://google.com/search?q=bad%20config
 					},
 				},
 			},
-			includeNonFailures: true,
+			args: args{
+				includeNonFailures: true,
+			},
 			want: `
 my-file ()
 ==========
-Tests: 2 (SUCCESSES: 1, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 2 (SUCCESSES: 1, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
-FAIL: HIGH: Oh no, a bad config.
+FAIL: AVD-XYZ-0123 (HIGH): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -188,7 +199,7 @@ See https://google.com/search?q=bad%20config
 ────────────────────────────────────────
 
 
-PASS: MEDIUM: Oh no, a bad config AGAIN.
+PASS: AVD-XYZ-0456 (MEDIUM): Oh no, a bad config AGAIN.
 ════════════════════════════════════════
 Your config file is still not good.
 
@@ -203,17 +214,16 @@ See https://google.com/search?q=bad%20config
 			input: types.Result{
 				Target: "terraform-aws-modules/security-group/aws/main.tf",
 				Class:  types.ClassConfig,
-				Type:   "terraform",
+				Type:   ftypes.Terraform,
 				MisconfSummary: &types.MisconfSummary{
-					Successes:  5,
-					Failures:   1,
-					Exceptions: 0,
+					Successes: 5,
+					Failures:  1,
 				},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						Type:        "Terraform Security Check",
 						ID:          "AVD-AWS-0107",
-						AVDID:       "AVS-AWS-0107",
+						AVDID:       "AVD-AWS-0107",
 						Title:       "An ingress security group rule allows traffic from /0",
 						Description: "Opening up ports to the public internet is generally to be avoided. You should restrict access to IP addresses or ranges that explicitly require it where possible.",
 						Message:     "Security group rule allows ingress from public internet.",
@@ -302,6 +312,9 @@ See https://google.com/search?q=bad%20config
 									},
 								},
 							},
+							RenderedCause: ftypes.RenderedCause{
+								Raw: "resource \"aws_security_group_rule\" \"ingress_with_cidr_blocks\" {\n  cidr_blocks = [ \"0.0.0.0/0\" ]\n}",
+							},
 						},
 					},
 				},
@@ -309,10 +322,10 @@ See https://google.com/search?q=bad%20config
 			want: `
 terraform-aws-modules/security-group/aws/main.tf (terraform)
 ============================================================
-Tests: 6 (SUCCESSES: 5, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 6 (SUCCESSES: 5, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 1)
 
-CRITICAL: Security group rule allows ingress from public internet.
+AVD-AWS-0107 (CRITICAL): Security group rule allows ingress from public internet.
 ════════════════════════════════════════
 Opening up ports to the public internet is generally to be avoided. You should restrict access to IP addresses or ranges that explicitly require it where possible.
 
@@ -337,14 +350,115 @@ See https://avd.aquasec.com/misconfig/avd-aws-0107
 
 `,
 		},
+		{
+			name: "with rendered cause",
+			args: args{
+				renderCause: []ftypes.ConfigType{ftypes.Terraform},
+			},
+			input: types.Result{
+				Target:         "main.tf",
+				Class:          types.ClassConfig,
+				Type:           ftypes.Terraform,
+				MisconfSummary: &types.MisconfSummary{Failures: 1},
+				Misconfigurations: []types.DetectedMisconfiguration{
+					{
+						Type:        "Terraform Security Check",
+						ID:          "AVD-AWS-0320",
+						AVDID:       "AVD-AWS-0320",
+						Title:       "S3 DNS Compliant Bucket Names",
+						Description: "Ensures that S3 buckets have DNS complaint bucket names.",
+						Message:     "S3 bucket name is not compliant with DNS naming requirements",
+						Namespace:   "builtin.aws.s3.aws0320",
+						Query:       "data.builtin.aws.s3.aws0320.deny",
+						Resolution:  "Recreate S3 bucket to use - instead of . in S3 bucket names",
+						Severity:    "MEDIUM",
+						PrimaryURL:  "https://avd.aquasec.com/misconfig/avd-aws-0320",
+						References: []string{
+							"https://docs.aws.amazon.com/AmazonS3/latest./dev/transfer-acceleration.html",
+							"https://avd.aquasec.com/misconfig/avd-aws-0320",
+						},
+						Status: "FAIL",
+						CauseMetadata: ftypes.CauseMetadata{
+							Resource:  "aws_s3_bucket.this",
+							Provider:  "AWS",
+							Service:   "s3",
+							StartLine: 6,
+							EndLine:   6,
+							Code: ftypes.Code{
+								Lines: []ftypes.Line{
+									{
+										Number:  5,
+										Content: "resource \"aws_s3_bucket\" \"this\" {",
+									},
+									{
+										Number:  6,
+										Content: "    bucket = local.bucket",
+										IsCause: true,
+									},
+									{
+										Number:  7,
+										Content: "}",
+									},
+								},
+							},
+							Occurrences: []ftypes.Occurrence{
+								{
+									Resource: "aws_s3_bucket.this",
+									Filename: "main.tf",
+									Location: ftypes.Location{
+										StartLine: 5,
+										EndLine:   7,
+									},
+								},
+							},
+							RenderedCause: ftypes.RenderedCause{
+								Raw: "resource \"aws_s3_bucket\" \"this\" {\n  bucket = \"foo.bar\"\n}",
+							},
+						},
+					},
+				},
+			},
+			want: `
+main.tf (terraform)
+===================
+Tests: 1 (SUCCESSES: 0, FAILURES: 1)
+Failures: 1 (LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+AVD-AWS-0320 (MEDIUM): S3 bucket name is not compliant with DNS naming requirements
+════════════════════════════════════════
+Ensures that S3 buckets have DNS complaint bucket names.
+
+See https://avd.aquasec.com/misconfig/avd-aws-0320
+────────────────────────────────────────
+ main.tf:6
+   via main.tf:5-7 (aws_s3_bucket.this)
+────────────────────────────────────────
+   5   resource "aws_s3_bucket" "this" {
+   6 │     bucket = local.bucket
+   7   }
+────────────────────────────────────────
+Rendered cause:
+────────────────────────────────────────
+resource "aws_s3_bucket" "this" {
+  bucket = "foo.bar"
+}
+────────────────────────────────────────
+
+
+`,
+		},
 	}
 
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			severities := []dbTypes.Severity{dbTypes.SeverityLow, dbTypes.SeverityMedium, dbTypes.SeverityHigh,
-				dbTypes.SeverityCritical}
-			renderer := table.NewMisconfigRenderer(test.input, severities, false, test.includeNonFailures, false)
-			assert.Equal(t, test.want, strings.ReplaceAll(renderer.Render(), "\r\n", "\n"))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			severities := []dbTypes.Severity{
+				dbTypes.SeverityLow, dbTypes.SeverityMedium, dbTypes.SeverityHigh,
+				dbTypes.SeverityCritical,
+			}
+			buf := bytes.NewBuffer([]byte{})
+			renderer := table.NewMisconfigRenderer(buf, severities, false, tt.args.includeNonFailures, false, tt.args.renderCause)
+			renderer.Render(tt.input)
+			assert.Equal(t, tt.want, strings.ReplaceAll(buf.String(), "\r\n", "\n"))
 		})
 	}
 }
