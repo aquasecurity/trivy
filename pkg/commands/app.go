@@ -26,6 +26,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/module"
 	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/update"
 	"github.com/aquasecurity/trivy/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/version/app"
 	vexrepo "github.com/aquasecurity/trivy/pkg/vex/repo"
@@ -219,6 +220,13 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			// Initialize logger
 			log.InitLogger(globalOptions.Debug, globalOptions.Quiet)
 
+			// Make a silent attempt to check for updates in the background
+			// only do this if the user has not disabled notices or is running
+			// in quiet mode
+			if globalOptions.Quiet || globalOptions.NoNotices {
+				update.CheckUpdate(cmd.Context(), cmd.Version, os.Args[1:])
+			}
+
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -233,6 +241,14 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			} else {
 				return cmd.Help()
 			}
+		},
+		PersistentPostRun: func(_ *cobra.Command, _ []string) {
+			if globalFlags.Quiet.Value() || globalFlags.NoNotices.Value() {
+				// don't show alerts during quiet mode
+				// or if the user has disabled notices
+				return
+			}
+			update.NotifyUpdates(os.Stderr)
 		},
 	}
 
