@@ -118,6 +118,11 @@ var (
 		ConfigName: "scan.distro",
 		Usage:      "[EXPERIMENTAL] specify a distribution, <family>/<version>",
 	}
+	NoNoticesFlag = Flag[bool]{
+		Name:       "no-notices",
+		ConfigName: "no-notices",
+		Usage:      "suppress notices about version updates and Trivy announcements",
+	}
 )
 
 type ScanFlagGroup struct {
@@ -132,6 +137,7 @@ type ScanFlagGroup struct {
 	RekorURL          *Flag[string]
 	DetectionPriority *Flag[string]
 	DistroFlag        *Flag[string]
+	NoNotices         *Flag[bool]
 }
 
 type ScanOptions struct {
@@ -146,6 +152,7 @@ type ScanOptions struct {
 	RekorURL          string
 	DetectionPriority ftypes.DetectionPriority
 	Distro            ftypes.OS
+	NoNotices         bool
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
@@ -161,6 +168,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		Slow:              SlowFlag.Clone(),
 		DetectionPriority: DetectionPriority.Clone(),
 		DistroFlag:        DistroFlag.Clone(),
+		NoNotices:         NoNoticesFlag.Clone(),
 	}
 }
 
@@ -181,6 +189,7 @@ func (f *ScanFlagGroup) Flags() []Flagger {
 		f.RekorURL,
 		f.DetectionPriority,
 		f.DistroFlag,
+		f.NoNotices,
 	}
 }
 

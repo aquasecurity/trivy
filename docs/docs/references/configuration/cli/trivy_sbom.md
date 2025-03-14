@@ -64,6 +64,7 @@ trivy sbom [flags] SBOM_PATH
       --ignorefile string              specify .trivyignore file (default ".trivyignore")
       --java-db-repository strings     OCI repository(ies) to retrieve trivy-java-db in order of priority (default [mirror.gcr.io/aquasec/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1])
       --list-all-pkgs                  output all packages in the JSON report regardless of vulnerability
+      --no-notices                     suppress notices about version updates and Trivy announcements
       --no-progress                    suppress progress bar
       --offline-scan                   do not issue API requests to identify dependencies
   -o, --output string                  output file name
