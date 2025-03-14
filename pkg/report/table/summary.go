@@ -265,7 +265,8 @@ func (r *summaryRenderer) splitAggregatedVulns(result types.Result) types.Result
 	// This should be an impossible case for Trivy CLI,
 	// but when using Trivy as a library - it is possible.
 	if len(resultMap) == 0 && len(result.Vulnerabilities) > 0 {
-		r.logger.Warn("Results with vulnerabilities doesn't include packages. The summary table will include file paths for vulnerable packages only.")
+		r.logger.Warn("Results with vulnerabilities doesn't include packages. The summary table will include file paths for vulnerable packages only.",
+			log.String("target", result.Target))
 
 		resultMap = lo.SliceToMap(result.Vulnerabilities, func(vuln types.DetectedVulnerability) (string, types.Result) {
 			pkgPath := rootJarFromPath(vuln.PkgPath)
