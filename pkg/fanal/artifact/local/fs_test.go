@@ -18,7 +18,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/uuid"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/npm"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/python/pip"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/apk"
@@ -171,66 +170,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: artifact.Reference{
 				Name: "testdata/requirements.txt",
-				Type: artifact.TypeFilesystem,
-				ID:   "sha256:8e7dab5cdac2610dddfc4f7655fb83c60959414ed79b6b4bc2db8969dee6b08b",
 				Type: types.TypeFilesystem,
 				ID:   "sha256:6f4672e139d4066fd00391df614cdf42bda5f7a3f005d39e1d8600be86157098",
 				BlobIDs: []string{
-					"sha256:8e7dab5cdac2610dddfc4f7655fb83c60959414ed79b6b4bc2db8969dee6b08b",
-				},
-			},
-		},
-		{
-			name: "happy path with single file got from filePatterns",
-			fields: fields{
-				dir: "testdata/my-package-lock.json",
-			},
-			artifactOpt: artifact.Option{
-				FilePatterns: []string{
-					"npm:my-.*-lock.json",
-				},
-			},
-			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:d611213b69108e725dff998cb48eabd104f0bd0723dcf560233f392eb38b2541",
-					BlobInfo: types.BlobInfo{
-						SchemaVersion: types.BlobJSONSchemaVersion,
-						Applications: []types.Application{
-							{
-								Type:     "npm",
-								FilePath: "my-package-lock.json",
-								Packages: types.Packages{
-									{
-										ID:           "ms@2.1.3",
-										Name:         "ms",
-										Version:      "2.1.3",
-										Relationship: types.RelationshipDirect,
-										Locations: []types.Location{
-											{
-												StartLine: 15,
-												EndLine:   20,
-											},
-										},
-										ExternalReferences: []types.ExternalRef{
-											{
-												Type: types.RefOther,
-												URL:  "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz",
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-				Returns: cache.ArtifactCachePutBlobReturns{},
-			},
-			want: artifact.Reference{
-				Name: "testdata/my-package-lock.json",
-				Type: artifact.TypeFilesystem,
-				ID:   "sha256:d611213b69108e725dff998cb48eabd104f0bd0723dcf560233f392eb38b2541",
-				BlobIDs: []string{
-					"sha256:d611213b69108e725dff998cb48eabd104f0bd0723dcf560233f392eb38b2541",
 					"sha256:6f4672e139d4066fd00391df614cdf42bda5f7a3f005d39e1d8600be86157098",
 				},
 			},
