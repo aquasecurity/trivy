@@ -171,7 +171,7 @@ func (r *summaryRenderer) Render(report types.Report) {
 	t.SetHeaders(headers...)
 	t.SetAlignment(alignments...)
 
-	for _, result := range splitAggregatedPackages(report.Results) {
+	for _, result := range r.splitAggregatedPackages(report.Results) {
 		resultType := string(result.Type)
 		if result.Class == types.ClassSecret {
 			resultType = "text"
@@ -233,7 +233,7 @@ func (r *summaryRenderer) showEmptyResultsWarning() {
 
 // splitAggregatedPackages splits aggregated packages into different results with path as target.
 // Other results will be returned as is.
-func splitAggregatedPackages(results types.Results) types.Results {
+func (r *summaryRenderer) splitAggregatedPackages(results types.Results) types.Results {
 	var newResults types.Results
 
 	for _, result := range results {
@@ -244,32 +244,51 @@ func splitAggregatedPackages(results types.Results) types.Results {
 			continue
 		}
 
-		newResults = append(newResults, splitAggregatedVulns(result)...)
+		newResults = append(newResults, r.splitAggregatedVulns(result)...)
 		newResults = append(newResults, splitAggregatedLicenses(result)...)
 
 	}
 	return newResults
 }
 
-func splitAggregatedVulns(result types.Result) types.Results {
+func (r *summaryRenderer) splitAggregatedVulns(result types.Result) types.Results {
 	// Save packages to display them in the table even if no vulnerabilities were found
-	resultMap := lo.SliceToMap(result.Packages, func(pkg ftypes.Package) (string, *types.Result) {
+	resultMap := lo.SliceToMap(result.Packages, func(pkg ftypes.Package) (string, types.Result) {
 		filePath := rootJarFromPath(pkg.FilePath)
-		return filePath, &types.Result{
+		return filePath, types.Result{
 			Target: lo.Ternary(filePath != "", filePath, result.Target),
 			Class:  result.Class,
 			Type:   result.Type,
 		}
 	})
+
+	// This should be an impossible case for Trivy CLI,
+	// but when using Trivy as a library - it is possible.
+	if len(resultMap) == 0 && len(result.Vulnerabilities) > 0 {
+		r.logger.Warn("Results with vulnerabilities doesn't include packages. The summary table will include file paths for vulnerable packages only.")
+
+		resultMap = lo.SliceToMap(result.Vulnerabilities, func(vuln types.DetectedVulnerability) (string, types.Result) {
+			pkgPath := rootJarFromPath(vuln.PkgPath)
+			return pkgPath, types.Result{
+				Target: lo.Ternary(pkgPath != "", pkgPath, result.Target),
+				Class:  result.Class,
+				Type:   result.Type,
+			}
+		})
+	}
+
 	for _, vuln := range result.Vulnerabilities {
 		pkgPath := rootJarFromPath(vuln.PkgPath)
-		resultMap[pkgPath].Vulnerabilities = append(resultMap[pkgPath].Vulnerabilities, vuln)
+		res := resultMap[pkgPath]
+		res.Vulnerabilities = append(res.Vulnerabilities, vuln)
+		resultMap[pkgPath] = res
 	}
+
 	newResults := lo.Values(resultMap)
 	sort.Slice(newResults, func(i, j int) bool {
 		return newResults[i].Target < newResults[j].Target
 	})
-	return lo.FromSlicePtr(newResults)
+	return newResults
 }
 
 func splitAggregatedLicenses(result types.Result) types.Results {
