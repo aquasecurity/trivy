@@ -1,5 +1,6 @@
-// a works
-// o breaks
+// The order of references and their alphabetical order is important.
+// d -> b -> c
+
 data "d" "foo"{
     count = 1
     value = "Index ${count.index}"

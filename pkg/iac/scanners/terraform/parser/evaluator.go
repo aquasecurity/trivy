@@ -572,8 +572,7 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 			// and the saved value should be a tuple.
 			ref := b.Reference()
 			rawKey := ref.RawKey()
-			switch {
-			case rawKey.Type().Equals(cty.Number):
+			if rawKey.Type().Equals(cty.Number) {
 				existing := valueMap[ref.NameLabel()]
 				asInt, _ := rawKey.AsBigFloat().Int64()
 
