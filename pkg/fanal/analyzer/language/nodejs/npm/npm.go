@@ -8,7 +8,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"slices"
 
 	"golang.org/x/xerrors"
 
@@ -48,7 +47,7 @@ func newNpmLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, e
 func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	// Parse package-lock.json
 	required := func(path string, _ fs.DirEntry) bool {
-		return filepath.Base(path) == types.NpmPkgLock || slices.Contains(input.FilePathsMatchedFromPatterns, path)
+		return filepath.Base(path) == types.NpmPkgLock || input.FilePatterns.Match(path)
 	}
 
 	var apps []types.Application

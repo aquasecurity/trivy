@@ -60,7 +60,7 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 	}
 
 	required := func(path string, d fs.DirEntry) bool {
-		// Parse all required files: `packages.lock.json`, `packages.config` (from a.Required func) + input.FilePathsMatchedFromPatterns
+		// Parse all required files: `packages.lock.json`, `packages.config` (from a.Required func) + input.FilePatterns.Match()
 		return true
 	}
 

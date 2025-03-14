@@ -45,7 +45,7 @@ func newConanLockAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, er
 
 func (a conanLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	required := func(filePath string, d fs.DirEntry) bool {
-		// Parse all required files: `conan.lock` (from a.Required func) + input.FilePathsMatchedFromPatterns
+		// Parse all required files: `conan.lock` (from a.Required func) + input.FilePatterns.Match()
 		return true
 	}
 

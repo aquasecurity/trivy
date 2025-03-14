@@ -55,7 +55,7 @@ func (a pubSpecLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostA
 	}
 
 	required := func(path string, d fs.DirEntry) bool {
-		// Parse all required files: `pubspec.lock` (from a.Required func) + input.FilePathsMatchedFromPatterns
+		// Parse all required files: `pubspec.lock` (from a.Required func) + input.FilePatterns.Match()
 		return true
 	}
 

@@ -60,7 +60,7 @@ func (a pipLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 	}
 
 	required := func(_ string, _ fs.DirEntry) bool {
-		// Parse all required files: `conan.lock` (from a.Required func) + input.FilePathsMatchedFromPatterns
+		// Parse all required files: `conan.lock` (from a.Required func) + input.FilePatterns.Match()
 		return true
 	}
 

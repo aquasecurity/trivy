@@ -47,7 +47,7 @@ func (a composerAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnal
 	var apps []types.Application
 
 	required := func(path string, d fs.DirEntry) bool {
-		return filepath.Base(path) == types.ComposerLock || slices.Contains(input.FilePathsMatchedFromPatterns, path)
+		return filepath.Base(path) == types.ComposerLock || input.FilePatterns.Match(path)
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
