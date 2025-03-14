@@ -19,6 +19,9 @@ debug: false
 # Same as '--insecure'
 insecure: false
 
+# Same as '--no-notices'
+no-notices: false
+
 # Same as '--quiet'
 quiet: false
 
