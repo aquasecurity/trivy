@@ -15,11 +15,6 @@ data "c" "cfoo" {
   value = data.b.foo[0].value
 }
 
-// Adding this breaks b?
-# data "d" "foo" {
-#   count = 1
-#   value = data.b.foo[0].value
-# }
 
 
 
