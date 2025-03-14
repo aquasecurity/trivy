@@ -524,7 +524,6 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 	values := make(map[string]cty.Value)
 
 	for _, b := range blocksOfType {
-
 		switch b.Type() {
 		case "variable": // variables are special in that their value comes from the "default" attribute
 			val, err := e.evaluateVariable(b)
@@ -552,6 +551,11 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 				continue
 			}
 
+			// Data blocks should all be loaded into the top level 'values'
+			// object. The hierarchy of the map is:
+			//  values = map[<type>]map[<name>] = Block
+			// Where Block is the block's attributes as a cty.Object.
+
 			blockMap, ok := values[b.Labels()[0]]
 			if !ok {
 				values[b.Labels()[0]] = cty.ObjectVal(make(map[string]cty.Value))
@@ -563,7 +567,30 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 				valueMap = make(map[string]cty.Value)
 			}
 
+			// If the block reference has a key, that means there is multiple instances of
+			// this block. Example if `count` is used on a block, key will be a 'cty.Number',
+			// and the saved value should be a tuple.
+			ref := b.Reference()
+			rawKey := ref.RawKey()
+			switch {
+			case rawKey.Type().Equals(cty.Number):
+				existing := valueMap[ref.NameLabel()]
+				asInt, _ := rawKey.AsBigFloat().Int64()
+
+				valueMap[ref.NameLabel()] = insertTupleElement(existing, int(asInt), b.Values())
+			}
+
+			// The default behavior, that being no key or an unimplemented key type, is to
+			// save the block as the name value. The name label value contains the key.
+			//
+			// Eg: If the block has the index '4', the string [4] is contained
+			//     within 'b.Labels()[1]'
+			// TODO: This is always done to maintain backwards compatibility.
+			//       I think this can be omitted if the switch statement above
+			//      sets the appropriate tuple value in the valueMap.
 			valueMap[b.Labels()[1]] = b.Values()
+
+			// Update the map of all blocks with the same type.
 			values[b.Labels()[0]] = cty.ObjectVal(valueMap)
 		}
 	}
