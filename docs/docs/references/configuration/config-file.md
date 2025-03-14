@@ -579,6 +579,9 @@ repository:
 ## Scan options
 
 ```yaml
+# Same as '--no-notices'
+no-notices: false
+
 scan:
   # Same as '--detection-priority'
   detection-priority: "precise"

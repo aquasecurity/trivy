@@ -19,6 +19,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 		offlineScan bool
 		scanners    string
 		distro      string
+		noNotices   bool
 	}
 	tests := []struct {
 		name      string
@@ -127,6 +128,16 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			},
 			assertion: require.Error,
 		},
+		{
+			name: "no notices flag",
+			fields: fields{
+				noNotices: true,
+			},
+			want: flag.ScanOptions{
+				NoNotices: true,
+			},
+			assertion: require.NoError,
+		},
 	}
 
 	for _, tt := range tests {
@@ -137,6 +148,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			setValue(flag.OfflineScanFlag.ConfigName, tt.fields.offlineScan)
 			setValue(flag.ScannersFlag.ConfigName, tt.fields.scanners)
 			setValue(flag.DistroFlag.ConfigName, tt.fields.distro)
+			setValue(flag.NoNoticesFlag.ConfigName, tt.fields.noNotices)
 
 			// Assert options
 			f := &flag.ScanFlagGroup{
@@ -145,6 +157,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 				OfflineScan: flag.OfflineScanFlag.Clone(),
 				Scanners:    flag.ScannersFlag.Clone(),
 				DistroFlag:  flag.DistroFlag.Clone(),
+				NoNotices:   flag.NoNoticesFlag.Clone(),
 			}
 
 			flags := flag.Flags{f}
