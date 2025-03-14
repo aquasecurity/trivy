@@ -361,7 +361,6 @@ func NewAnalyzerGroup(opts AnalyzerOptions) (AnalyzerGroup, error) {
 			return group, xerrors.Errorf("invalid file regexp (%s): %w", p, err)
 		}
 
-		// TODO check that!!!
 		group.filePatterns[Type(fileType)] = append(group.filePatterns[Type(fileType)], r)
 	}
 
@@ -471,7 +470,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 }
 
 // RequiredPostAnalyzers returns a list of analyzer types that require the given file.
-func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo, requiredByFilePatterns map[Type][]string) []Type {
+func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo) []Type {
 	if info.IsDir() {
 		return nil
 	}
