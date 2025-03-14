@@ -1704,6 +1704,37 @@ resource "test_resource" "this" {
 	assert.Equal(t, "test_value", attr.GetRawValue())
 }
 
+func TestCountArguments(t *testing.T) {
+	// reset the previous default logger
+	fsys := os.DirFS(filepath.Join("testdata", "countarguments"))
+
+	parser := New(
+		fsys, "",
+		OptionStopOnHCLError(true),
+		OptionWithDownloads(false),
+	)
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	modules, _, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+	require.Len(t, modules, 1)
+
+	blocks := modules.GetDatasByType("null_data_source")
+	require.Len(t, blocks, 4)
+
+	idx := slices.IndexFunc(blocks, func(b *terraform.Block) bool {
+		return b.Reference().NameLabel() == "ref_list"
+	})
+
+	require.NotEqualf(t, -1, idx, "ref_list not found")
+
+	block := blocks[idx]
+	input := block.GetAttribute("inputs").Value()
+	fooVal := input.GetAttr("foo")
+	require.True(t, fooVal.Type().Equals(cty.String))
+	require.Equal(t, "Index 2", fooVal.AsString())
+}
+
 // TestNestedModulesOptions ensures parser options are carried to the nested
 // submodule evaluators.
 // The test will include an invalid module that will fail to download
