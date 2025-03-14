@@ -34,8 +34,7 @@
           ],
           "Relationship": "root",
           "DependsOn": [
-            "jquery@3.2.1",
-            "promise@8.0.3"
+            "jquery@3.2.1"
           ],
           "Layer": {}
         },
