@@ -54,7 +54,7 @@ func (a juliaAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 	var apps []types.Application
 
 	required := func(path string, d fs.DirEntry) bool {
-		return filepath.Base(path) == types.JuliaManifest
+		return filepath.Base(path) == types.JuliaManifest || input.FilePatterns.Match(path)
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
