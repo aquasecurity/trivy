@@ -1661,6 +1661,42 @@ func parse(t *testing.T, files map[string]string, opts ...Option) terraform.Modu
 	return modules
 }
 
+func TestBlockCount(t *testing.T) {
+	// `count` meta attributes are incorrectly handled when referencing
+	// a module output.
+	files := map[string]string{
+		"main.tf": `
+module "foo" {
+	source = "./modules/foo"
+}
+
+data "test_resource" "this" {
+	count = module.foo.staticZero
+}
+
+locals {
+	staticZero = 0
+}
+
+data "test_resource" "that" {
+	count = local.staticZero
+}
+`,
+		"modules/foo/main.tf": `
+output "staticZero" {	
+	value = 0
+}
+`,
+	}
+
+	modules := parse(t, files)
+	require.Len(t, modules, 2)
+
+	// no data resources should exist as their counts are 0
+	datas := modules.GetDatasByType("test_resource")
+	require.Empty(t, datas)
+}
+
 func TestModuleRefersToOutputOfAnotherModule(t *testing.T) {
 	files := map[string]string{
 		"main.tf": `
