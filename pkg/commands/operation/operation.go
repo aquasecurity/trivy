@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -14,6 +13,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vex"
