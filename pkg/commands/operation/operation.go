@@ -2,11 +2,7 @@ package operation
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"io/fs"
-	"os"
-	"path/filepath"
 	"sync"
 
 	"github.com/google/go-containerregistry/pkg/name"
@@ -83,22 +79,8 @@ func DownloadVEXRepositories(ctx context.Context, opts flag.Options) error {
 
 }
 
-func CheckPathExists(path string) (fs.FileInfo, string, error) {
-	abs, err := filepath.Abs(path)
-	if err != nil {
-		return nil, "", xerrors.Errorf("failed to derive absolute path from '%s': %w", path, err)
-	}
-	fi, err := os.Stat(abs)
-	if errors.Is(err, os.ErrNotExist) {
-		return nil, "", xerrors.Errorf("check file %q not found", abs)
-	} else if err != nil {
-		return nil, "", xerrors.Errorf("file %q stat error: %w", abs, err)
-	}
-	return fi, abs, nil
-}
-
 // InitBuiltinChecks downloads the built-in policies and loads them
-func InitBuiltinChecks(ctx context.Context, client *policy.Client, skipUpdate bool, registryOpts ftypes.RegistryOptions) (string, error) {
+func InitBuiltinChecks(ctx context.Context, client *policy.Client, skipUpdate bool, registryOpts ftypes.RegistryOptions) ([]string, error) {
 	mu.Lock()
 	defer mu.Unlock()
 	var err error
@@ -106,28 +88,29 @@ func InitBuiltinChecks(ctx context.Context, client *policy.Client, skipUpdate bo
 	if skipUpdate {
 		log.Info("No downloadable checks were loaded as --skip-check-update is enabled, loading from existing cache...")
 
-		path := client.LoadBuiltinChecks()
-		//_, _, err := misconf.CheckPathExists(path)
-		_, _, err := CheckPathExists(path)
-		if err != nil {
-			msg := fmt.Sprintf("Failed to load existing cache, err: %s falling back to embedded checks...", err.Error())
-			log.Error(msg)
-			return "", xerrors.New(msg)
+		checkPaths := client.LoadBuiltinChecks()
+		for _, path := range checkPaths {
+			_, _, err := misconf.CheckPathExists(path)
+			if err != nil {
+				msg := fmt.Sprintf("Failed to load existing cache, err: %s falling back to embedded checks...", err.Error())
+				log.Error(msg)
+				return nil, xerrors.New(msg)
+			}
 		}
-		return path, nil
+		return checkPaths, nil
 	}
 
 	needsUpdate := false
 	needsUpdate, err = client.NeedsUpdate(ctx, registryOpts)
 	if err != nil {
-		return "", xerrors.Errorf("unable to check if built-in policies need to be updated: %w", err)
+		return nil, xerrors.Errorf("unable to check if built-in policies need to be updated: %w", err)
 	}
 
 	if needsUpdate {
 		log.InfoContext(ctx, "Need to update the checks bundle")
 		log.InfoContext(ctx, "Downloading the checks bundle...")
 		if err = client.DownloadBuiltinChecks(ctx, registryOpts); err != nil {
-			return "", xerrors.Errorf("failed to download checks bundle: %w", err)
+			return nil, xerrors.Errorf("failed to download checks bundle: %w", err)
 		}
 	}
 
