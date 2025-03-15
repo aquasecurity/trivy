@@ -54,7 +54,8 @@ keyring >= 4.1.1            # Minimum version 4.1.1
 Mopidy-Dirble ~= 1.1        # Minimum version 1.1
 python-gitlab==2.0.*        # Minimum version 2.0.0
 ```
-Also, there is a way to convert unsupported version specifiers - use the `pip  freeze` command.
+Also, there is a way to convert unsupported version specifiers - use either the `pip-compile` tool (which doesn't install the packages)
+or call `pip  freeze` from the virtual environment where the requirements are already installed.
 
 ```bash
 $ cat requirements.txt 
@@ -81,7 +82,8 @@ wheel==0.42.0
 `requirements.txt` files usually contain only the direct dependencies and not contain the transitive dependencies.
 Therefore, Trivy scans only for the direct dependencies with `requirements.txt`.
 
-To detect transitive dependencies as well, you need to generate `requirements.txt` with `pip freeze`.
+To detect transitive dependencies as well, you need to generate `requirements.txt` that contains them.
+Like described above, tou can do it with `pip freeze` or `pip-compile`.
 
 ```zsh
 $ cat requirements.txt # it will only find `requests@2.28.2`.
