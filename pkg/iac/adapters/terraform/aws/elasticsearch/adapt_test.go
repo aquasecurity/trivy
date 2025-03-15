@@ -16,7 +16,7 @@ func Test_adaptDomain(t *testing.T) {
 	tests := []struct {
 		name      string
 		terraform string
-		expected  elasticsearch.Domain
+		expected  elasticsearch.Elasticsearch
 	}{
 		{
 			name: "configured",
@@ -44,25 +44,29 @@ func Test_adaptDomain(t *testing.T) {
 				}
 			  }
 `,
-			expected: elasticsearch.Domain{
-				Metadata:   iacTypes.NewTestMetadata(),
-				DomainName: iacTypes.String("domain-foo", iacTypes.NewTestMetadata()),
-				LogPublishing: elasticsearch.LogPublishing{
-					Metadata:     iacTypes.NewTestMetadata(),
-					AuditEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				},
-				TransitEncryption: elasticsearch.TransitEncryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				},
-				AtRestEncryption: elasticsearch.AtRestEncryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				},
-				Endpoint: elasticsearch.Endpoint{
-					Metadata:     iacTypes.NewTestMetadata(),
-					EnforceHTTPS: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					TLSPolicy:    iacTypes.String("Policy-Min-TLS-1-2-2019-07", iacTypes.NewTestMetadata()),
+			expected: elasticsearch.Elasticsearch{
+				Domains: []elasticsearch.Domain{
+					{
+						Metadata:   iacTypes.NewTestMetadata(),
+						DomainName: iacTypes.String("domain-foo", iacTypes.NewTestMetadata()),
+						LogPublishing: elasticsearch.LogPublishing{
+							Metadata:     iacTypes.NewTestMetadata(),
+							AuditEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						},
+						TransitEncryption: elasticsearch.TransitEncryption{
+							Metadata: iacTypes.NewTestMetadata(),
+							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						},
+						AtRestEncryption: elasticsearch.AtRestEncryption{
+							Metadata: iacTypes.NewTestMetadata(),
+							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						},
+						Endpoint: elasticsearch.Endpoint{
+							Metadata:     iacTypes.NewTestMetadata(),
+							EnforceHTTPS: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							TLSPolicy:    iacTypes.String("Policy-Min-TLS-1-2-2019-07", iacTypes.NewTestMetadata()),
+						},
+					},
 				},
 			},
 		},
@@ -72,25 +76,79 @@ func Test_adaptDomain(t *testing.T) {
 			resource "aws_elasticsearch_domain" "example" {
 			  }
 `,
-			expected: elasticsearch.Domain{
-				Metadata:   iacTypes.NewTestMetadata(),
-				DomainName: iacTypes.String("", iacTypes.NewTestMetadata()),
-				LogPublishing: elasticsearch.LogPublishing{
-					Metadata:     iacTypes.NewTestMetadata(),
-					AuditEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+			expected: elasticsearch.Elasticsearch{
+				Domains: []elasticsearch.Domain{
+					{
+						Metadata:   iacTypes.NewTestMetadata(),
+						DomainName: iacTypes.String("", iacTypes.NewTestMetadata()),
+						LogPublishing: elasticsearch.LogPublishing{
+							Metadata:     iacTypes.NewTestMetadata(),
+							AuditEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						},
+						TransitEncryption: elasticsearch.TransitEncryption{
+							Metadata: iacTypes.NewTestMetadata(),
+							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						},
+						AtRestEncryption: elasticsearch.AtRestEncryption{
+							Metadata: iacTypes.NewTestMetadata(),
+							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						},
+						Endpoint: elasticsearch.Endpoint{
+							Metadata:     iacTypes.NewTestMetadata(),
+							EnforceHTTPS: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							TLSPolicy:    iacTypes.String("", iacTypes.NewTestMetadata()),
+						},
+					},
 				},
-				TransitEncryption: elasticsearch.TransitEncryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				},
-				AtRestEncryption: elasticsearch.AtRestEncryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				},
-				Endpoint: elasticsearch.Endpoint{
-					Metadata:     iacTypes.NewTestMetadata(),
-					EnforceHTTPS: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					TLSPolicy:    iacTypes.String("", iacTypes.NewTestMetadata()),
+			},
+		},
+		{
+			name: "opensearch",
+			terraform: `resource "aws_opensearch_domain" "example" {
+  domain_name    = "example"
+
+  node_to_node_encryption {
+    enabled = true
+  }
+
+  encrypt_at_rest {
+    enabled = true
+  }
+
+  domain_endpoint_options {
+	enforce_https = true
+	tls_security_policy = "Policy-Min-TLS-1-2-2019-07"
+  }
+
+  log_publishing_options {
+    cloudwatch_log_group_arn = aws_cloudwatch_log_group.example.arn
+    log_type                 = "AUDIT_LOGS"
+  }
+}
+`,
+			expected: elasticsearch.Elasticsearch{
+				Domains: []elasticsearch.Domain{
+					{
+						Metadata:   iacTypes.NewTestMetadata(),
+						DomainName: iacTypes.String("example", iacTypes.NewTestMetadata()),
+						LogPublishing: elasticsearch.LogPublishing{
+							Metadata:     iacTypes.NewTestMetadata(),
+							AuditEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						},
+						TransitEncryption: elasticsearch.TransitEncryption{
+							Metadata: iacTypes.NewTestMetadata(),
+							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						},
+						AtRestEncryption: elasticsearch.AtRestEncryption{
+							Metadata: iacTypes.NewTestMetadata(),
+							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						},
+						Endpoint: elasticsearch.Endpoint{
+							Metadata:     iacTypes.NewTestMetadata(),
+							EnforceHTTPS: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							TLSPolicy:    iacTypes.String("Policy-Min-TLS-1-2-2019-07", iacTypes.NewTestMetadata()),
+						},
+					},
 				},
 			},
 		},
@@ -99,7 +157,7 @@ func Test_adaptDomain(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			modules := tftestutil.CreateModulesFromSource(t, test.terraform, ".tf")
-			adapted := adaptDomain(modules.GetBlocks()[0])
+			adapted := Adapt(modules)
 			testutil.AssertDefsecEqual(t, test.expected, adapted)
 		})
 	}
