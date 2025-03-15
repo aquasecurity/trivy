@@ -33,6 +33,7 @@ trivy plugin install NAME | URL | FILE_PATH
   -d, --debug                     debug mode
       --generate-default-config   write the default config to trivy-default.yaml
       --insecure                  allow insecure server connections
+      --no-notices                suppress notices about version updates and Trivy announcements
   -q, --quiet                     suppress progress bar and log output
       --timeout duration          timeout (default 5m0s)
   -v, --version                   show version
