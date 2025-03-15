@@ -1704,6 +1704,38 @@ resource "test_resource" "this" {
 	assert.Equal(t, "test_value", attr.GetRawValue())
 }
 
+func TestCountArguments(t *testing.T) {
+	fsys := os.DirFS(filepath.Join("testdata", "countarguments"))
+
+	parser := New(
+		fsys, "",
+		OptionStopOnHCLError(true),
+		OptionWithDownloads(false),
+	)
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	modules, _, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+	require.Len(t, modules, 1)
+
+	for _, b := range modules.GetBlocks() {
+		if b.Type() != "data" {
+			continue
+		}
+		val := b.GetAttribute("value").Value()
+		ty := "?"
+		if !val.IsNull() {
+			ty = val.Type().FriendlyName()
+		}
+		if !assert.Truef(t, val.Type().Equals(cty.String),
+			"%q is not a string, type=%s", b.FullName(), ty) {
+			continue
+		}
+
+		assert.Equal(t, "Index 0", val.AsString())
+	}
+}
+
 // TestNestedModulesOptions ensures parser options are carried to the nested
 // submodule evaluators.
 // The test will include an invalid module that will fail to download
