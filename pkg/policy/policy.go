@@ -123,8 +123,8 @@ func (c *Client) DownloadBuiltinChecks(ctx context.Context, registryOpts types.R
 }
 
 // LoadBuiltinChecks loads default policies
-func (c *Client) LoadBuiltinChecks() []string {
-	return []string{c.contentDir()}
+func (c *Client) LoadBuiltinChecks() string {
+	return c.contentDir()
 }
 
 // NeedsUpdate returns if the default check should be updated

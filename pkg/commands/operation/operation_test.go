@@ -170,7 +170,7 @@ func TestInitBuiltinChecks(t *testing.T) {
 
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
-				assert.Nil(t, got)
+				assert.Empty(t, got)
 				return
 			}
 			require.NoError(t, err)

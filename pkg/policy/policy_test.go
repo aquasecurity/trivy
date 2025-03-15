@@ -62,15 +62,13 @@ func TestClient_LoadBuiltinChecks(t *testing.T) {
 	tests := []struct {
 		name     string
 		cacheDir string
-		want     []string
+		want     string
 		wantErr  string
 	}{
 		{
 			name:     "happy path",
 			cacheDir: "testdata/happy",
-			want: []string{
-				filepath.Join("testdata", "happy", "policy", "content"),
-			},
+			want:     filepath.Join("testdata", "happy", "policy", "content"),
 		},
 	}
 	for _, tt := range tests {
