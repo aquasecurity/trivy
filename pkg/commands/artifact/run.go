@@ -25,6 +25,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/module"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
@@ -635,10 +636,15 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 	ctx = log.WithContextPrefix(ctx, log.PrefixMisconfiguration)
 	log.InfoContext(ctx, "Misconfiguration scanning is enabled")
 
-	var downloadedPolicyPaths []string
+	var downloadedPolicyPath string
 	var disableEmbedded bool
 
-	downloadedPolicyPaths, err := operation.InitBuiltinChecks(ctx, opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
+	c, err := policy.NewClient(opts.CacheDir, opts.Quiet, opts.MisconfOptions.ChecksBundleRepository)
+	if err != nil {
+		return misconf.ScannerOption{}, xerrors.Errorf("check client error: %w", err)
+	}
+
+	downloadedPolicyPath, err = operation.InitBuiltinChecks(ctx, c, opts.SkipCheckUpdate, opts.RegistryOpts())
 	if err != nil {
 		if !opts.SkipCheckUpdate {
 			log.ErrorContext(ctx, "Falling back to embedded checks", log.Err(err))
@@ -656,7 +662,7 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 	return misconf.ScannerOption{
 		Trace:                    opts.Trace,
 		Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
-		PolicyPaths:              append(opts.CheckPaths, downloadedPolicyPaths...),
+		PolicyPaths:              append(opts.CheckPaths, downloadedPolicyPath...),
 		DataPaths:                opts.DataPaths,
 		HelmValues:               opts.HelmValues,
 		HelmValueFiles:           opts.HelmValueFiles,

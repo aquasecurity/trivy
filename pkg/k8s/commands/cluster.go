@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -68,8 +69,8 @@ func nodeCollectorOptions(ctx context.Context, opts flag.Options) []trivyk8s.Nod
 	}
 
 	ctx = log.WithContextPrefix(ctx, log.PrefixMisconfiguration)
-	contentPath, err := operation.InitBuiltinChecks(ctx, opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate,
-		opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
+	c, _ := policy.NewClient(opts.CacheDir, opts.Quiet, opts.MisconfOptions.ChecksBundleRepository)
+	contentPath, err := operation.InitBuiltinChecks(ctx, c, opts.SkipCheckUpdate, opts.RegistryOpts())
 	if err != nil {
 		log.Error("Falling back to embedded checks", log.Err(err))
 		nodeCollectorOptions = append(nodeCollectorOptions,
@@ -81,7 +82,7 @@ func nodeCollectorOptions(ctx context.Context, opts flag.Options) []trivyk8s.Nod
 
 	complianceCommandsIDs := getComplianceCommands(opts)
 	nodeCollectorOptions = append(nodeCollectorOptions, []trivyk8s.NodeCollectorOption{
-		trivyk8s.WithCommandPaths(contentPath),
+		trivyk8s.WithCommandPaths([]string{contentPath}),
 		trivyk8s.WithSpecCommandIds(complianceCommandsIDs),
 	}...)
 	return nodeCollectorOptions

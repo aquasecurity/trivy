@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/open-policy-agent/opa/v1/bundle"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
@@ -124,30 +123,8 @@ func (c *Client) DownloadBuiltinChecks(ctx context.Context, registryOpts types.R
 }
 
 // LoadBuiltinChecks loads default policies
-func (c *Client) LoadBuiltinChecks() ([]string, error) {
-	f, err := os.Open(c.manifestPath())
-	if err != nil {
-		return nil, xerrors.Errorf("manifest file open error (%s): %w", c.manifestPath(), err)
-	}
-	defer f.Close()
-
-	var manifest bundle.Manifest
-	if err = json.NewDecoder(f).Decode(&manifest); err != nil {
-		return nil, xerrors.Errorf("json decode error (%s): %w", c.manifestPath(), err)
-	}
-
-	// If the "roots" field is not included in the manifest it defaults to [""]
-	// which means that ALL data and check must come from the bundle.
-	if manifest.Roots == nil || len(*manifest.Roots) == 0 {
-		return []string{c.contentDir()}, nil
-	}
-
-	var policyPaths []string
-	for _, root := range *manifest.Roots {
-		policyPaths = append(policyPaths, filepath.Join(c.contentDir(), root))
-	}
-
-	return policyPaths, nil
+func (c *Client) LoadBuiltinChecks() string {
+	return c.contentDir()
 }
 
 // NeedsUpdate returns if the default check should be updated
@@ -190,14 +167,10 @@ func (c *Client) metadataPath() string {
 	return filepath.Join(c.policyDir, "metadata.json")
 }
 
-func (c *Client) manifestPath() string {
-	return filepath.Join(c.contentDir(), bundle.ManifestExt)
-}
-
 func (c *Client) updateMetadata(digest string, now time.Time) error {
 	f, err := os.Create(c.metadataPath())
 	if err != nil {
-		return xerrors.Errorf("failed to open a check manifest: %w", err)
+		return xerrors.Errorf("failed to open checks bundle metadata: %w", err)
 	}
 	defer f.Close()
 
