@@ -11,6 +11,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/samber/lo"
 	"github.com/xeipuuv/gojsonschema"
 	"golang.org/x/xerrors"
@@ -369,20 +370,6 @@ func createConfigFS(paths []string) (fs.FS, error) {
 	return mfs, nil
 }
 
-func CheckPathExists(path string) (fs.FileInfo, string, error) {
-	abs, err := filepath.Abs(path)
-	if err != nil {
-		return nil, "", xerrors.Errorf("failed to derive absolute path from '%s': %w", path, err)
-	}
-	fi, err := os.Stat(abs)
-	if errors.Is(err, os.ErrNotExist) {
-		return nil, "", xerrors.Errorf("check file %q not found", abs)
-	} else if err != nil {
-		return nil, "", xerrors.Errorf("file %q stat error: %w", abs, err)
-	}
-	return fi, abs, nil
-}
-
 func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 	if len(policyPaths) == 0 {
 		return nil, nil, nil
@@ -390,7 +377,7 @@ func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 
 	mfs := mapfs.New()
 	for _, p := range policyPaths {
-		fi, abs, err := CheckPathExists(p)
+		fi, abs, err := operation.CheckPathExists(p)
 		if err != nil {
 			return nil, nil, err
 		}

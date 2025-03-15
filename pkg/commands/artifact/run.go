@@ -636,7 +636,7 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 	ctx = log.WithContextPrefix(ctx, log.PrefixMisconfiguration)
 	log.InfoContext(ctx, "Misconfiguration scanning is enabled")
 
-	var downloadedPolicyPaths []string
+	var downloadedPolicyPath string
 	var disableEmbedded bool
 
 	c, err := policy.NewClient(opts.CacheDir, opts.Quiet, opts.MisconfOptions.ChecksBundleRepository)
@@ -644,7 +644,7 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 		return misconf.ScannerOption{}, xerrors.Errorf("check client error: %w", err)
 	}
 
-	downloadedPolicyPaths, err = operation.InitBuiltinChecks(ctx, c, opts.SkipCheckUpdate, opts.RegistryOpts())
+	downloadedPolicyPath, err = operation.InitBuiltinChecks(ctx, c, opts.SkipCheckUpdate, opts.RegistryOpts())
 	if err != nil {
 		if !opts.SkipCheckUpdate {
 			log.ErrorContext(ctx, "Falling back to embedded checks", log.Err(err))
@@ -662,7 +662,7 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 	return misconf.ScannerOption{
 		Trace:                    opts.Trace,
 		Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
-		PolicyPaths:              append(opts.CheckPaths, downloadedPolicyPaths...),
+		PolicyPaths:              append(opts.CheckPaths, downloadedPolicyPath),
 		DataPaths:                opts.DataPaths,
 		HelmValues:               opts.HelmValues,
 		HelmValueFiles:           opts.HelmValueFiles,
