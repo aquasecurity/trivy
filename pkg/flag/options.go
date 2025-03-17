@@ -246,13 +246,31 @@ func (f *Flag[T]) Add(cmd *cobra.Command) {
 	case string:
 		usage := f.Usage
 		if len(f.Values) > 0 {
-			usage += fmt.Sprintf(" (%s)", strings.Join(f.Values, ","))
+			if len(f.Values) <= 4 {
+				// Display inline for a small number of choices
+				usage += fmt.Sprintf(" (allowed values: %s)", strings.Join(f.Values, ","))
+			} else {
+				// Display as a bullet list for many choices
+				usage += "\nAllowed values:\n"
+				for _, val := range f.Values {
+					usage += fmt.Sprintf("  - %s\n", val)
+				}
+			}
 		}
 		flags.StringP(f.Name, f.Shorthand, v, usage)
 	case []string:
 		usage := f.Usage
 		if len(f.Values) > 0 {
-			usage += fmt.Sprintf(" (%s)", strings.Join(f.Values, ","))
+			if len(f.Values) <= 4 {
+				// Display inline for a small number of choices
+				usage += fmt.Sprintf(" (allowed values: %s)", strings.Join(f.Values, ","))
+			} else {
+				// Display as a bullet list for many choices
+				usage += "\nAllowed values:\n"
+				for _, val := range f.Values {
+					usage += fmt.Sprintf("  - %s\n", val)
+				}
+			}
 		}
 		flags.StringSliceP(f.Name, f.Shorthand, v, usage)
 	case bool:
