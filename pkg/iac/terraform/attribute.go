@@ -288,7 +288,7 @@ func (a *Attribute) Value() (ctyVal cty.Value) {
 	}()
 	ctyVal, _ = a.hclAttribute.Expr.Value(a.ctx.Inner())
 	if !ctyVal.IsKnown() || ctyVal.IsNull() {
-		return cty.NilVal
+		return cty.DynamicVal
 	}
 	return ctyVal
 }
@@ -304,8 +304,8 @@ func (a *Attribute) NullableValue() (ctyVal cty.Value) {
 		}
 	}()
 	ctyVal, _ = a.hclAttribute.Expr.Value(a.ctx.Inner())
-	if !ctyVal.IsKnown() {
-		return cty.NilVal
+	if !ctyVal.IsKnown() || ctyVal.IsNull() {
+		return cty.NullVal(cty.DynamicPseudoType)
 	}
 	return ctyVal
 }
