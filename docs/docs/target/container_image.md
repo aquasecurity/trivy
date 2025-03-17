@@ -341,7 +341,6 @@ An error is returned in the following cases:
 
 The layers are pulled into a temporary folder during their pulling and are always cleaned up, even after a successful scan.
 
-
 Example:
 
 ```bash
@@ -380,7 +379,14 @@ For misconfiguration scanning, the image config is converted into Dockerfile and
 !!! tip
     You can see how each layer is created with `docker history`.
 
-The [AVD-DS-0016](https://avd.aquasec.com/misconfig/dockerfile/general/avd-ds-0016/) check is disabled for this scan type, see [issue](https://github.com/aquasecurity/trivy/issues/7368) for details.
+### Misconfiguration scanning details
+
+The following checks are disabled for this scan type due to known issues:
+
+| Check ID | Reason | Issue |
+|----------|------------|--------|
+| [AVD-DS-0007](https://avd.aquasec.com/misconfig/dockerfile/general/avd-ds-0007/) | This check detects multiple `ENTRYPOINT` instructions in a stage, but since image history analysis does not identify stages, this check is not relevant for this scan type. | [#8364](https://github.com/aquasecurity/trivy/issues/8364) |
+| [AVD-DS-0016](https://avd.aquasec.com/misconfig/dockerfile/general/avd-ds-0016/) | This check detects multiple `CMD` instructions in a stage, but since image history analysis does not identify stages, this check is not relevant for this scan type. | [#7368](https://github.com/aquasecurity/trivy/issues/7368) |
 
 ### Secret scanning details
 
