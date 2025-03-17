@@ -379,8 +379,6 @@ For misconfiguration scanning, the image config is converted into Dockerfile and
 !!! tip
     You can see how each layer is created with `docker history`.
 
-### Misconfiguration scanning details
-
 The following checks are disabled for this scan type due to known issues:
 
 | Check ID | Reason | Issue |
