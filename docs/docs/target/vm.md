@@ -7,9 +7,9 @@ Scan virtual machine (VM) images.
 
 `vm` is a post-build target type, which means it scans installed packages. For more information, see [Target types](../coverage/language/index.md#target-types).
 
-Usage:
-
 You can scan a VM image file, Amazon Machine Image (AMI), or Amazon Elastic Block Store (EBS) snapshot.
+
+Usage:
 
 ```shell
 trivy vm disk.vmdk

@@ -6,7 +6,7 @@ Trivy scans programming language packages in the following scanners:
 - [Vulnerabilities][vuln]
 - [Licenses][license]
 
-## Pre/Post Build
+## Target types
 Trivy categorizes targets into either Pre-build and Post-build. The files analyzed vary depending on the target type.   
 Pre-build is meant for scanning code projects, where packages are likely in package manager lock files (e.g `package-lock.json`). Post-build is meant for scanning deployable artifacts (e.g vm, container) where packages are likely "installed" (e.g in `node_modules`) and source code (including lock files) is not available.
 
