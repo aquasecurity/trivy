@@ -55,7 +55,7 @@ Mopidy-Dirble ~= 1.1        # Minimum version 1.1
 python-gitlab==2.0.*        # Minimum version 2.0.0
 ```
 Also, there is a way to convert unsupported version specifiers - use either the `pip-compile` tool (which doesn't install the packages)
-or call `pip  freeze` from the virtual environment where the requirements are already installed.
+or call `pip freeze` from the virtual environment where the requirements are already installed.
 
 ```bash
 $ cat requirements.txt 
