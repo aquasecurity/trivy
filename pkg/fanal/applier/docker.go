@@ -267,6 +267,13 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 }
 
 func newPURL(pkgType ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) *packageurl.PackageURL {
+	// Possible cases when package doesn't have name/version (e.g. local package.json).
+	// For these cases we don't need to create PURL, because this PURL will be incorrect.
+	// TODO Dmitriy - move to `purl` package
+	if pkg.Name == "" {
+		return nil
+	}
+
 	p, err := purl.New(pkgType, metadata, pkg)
 	if err != nil {
 		log.Error("Failed to create PackageURL", log.Err(err))
