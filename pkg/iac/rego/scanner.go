@@ -66,6 +66,8 @@ type Scanner struct {
 	customSchemas  map[string][]byte
 
 	disabledCheckIDs set.Set[string]
+
+	checkFilters []CheckFilter
 }
 
 func (s *Scanner) trace(heading string, input any) {
@@ -187,6 +189,12 @@ func (s *Scanner) ScanInput(ctx context.Context, sourceType types.Source, inputs
 		case <-ctx.Done():
 			return nil, ctx.Err()
 		default:
+		}
+
+		for _, f := range s.checkFilters {
+			if !f(module, inputs...) {
+				continue
+			}
 		}
 
 		namespace := getModuleNamespace(module)
