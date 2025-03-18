@@ -59,6 +59,24 @@ var (
 		},
 	}
 
+	jarVulnsWithoutPackages = types.Result{
+		Target: "Java",
+		Class:  types.ClassLangPkg,
+		Type:   ftypes.Jar,
+		Vulnerabilities: []types.DetectedVulnerability{
+			{
+				VulnerabilityID: "CVE-2022-42003",
+				PkgName:         "com.fasterxml.jackson.core:jackson-databind",
+				PkgPath:         "app/jackson-databind-2.13.4.1.jar",
+			},
+			{
+				VulnerabilityID: "CVE-2021-44832",
+				PkgName:         "org.apache.logging.log4j:log4j-core",
+				PkgPath:         "app/jackson-databind-2.13.4.1.jar/nested/app2/log4j-core-2.17.0.jar",
+			},
+		},
+	}
+
 	npmVulns = types.Result{
 		Target: "Node.js",
 		Class:  types.ClassLangPkg,
@@ -281,6 +299,30 @@ Report Summary
 ├──────────────────┼──────┼─────────────────┼─────────┤
 │ requirements.txt │ text │        -        │    1    │
 └──────────────────┴──────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+`,
+		},
+		{
+			name: "happy path when Result doesn't include Packages",
+			scanners: []types.Scanner{
+				types.VulnerabilityScanner,
+			},
+			report: types.Report{
+				Results: []types.Result{
+					jarVulnsWithoutPackages,
+				},
+			},
+			want: `
+Report Summary
+
+┌───────────────────────────────────┬──────┬─────────────────┐
+│              Target               │ Type │ Vulnerabilities │
+├───────────────────────────────────┼──────┼─────────────────┤
+│ app/jackson-databind-2.13.4.1.jar │ jar  │        2        │
+└───────────────────────────────────┴──────┴─────────────────┘
 Legend:
 - '-': Not scanned
 - '0': Clean (no security findings detected)
