@@ -82,6 +82,8 @@ type ScannerOption struct {
 	DisabledChecks []DisabledCheck
 	SkipFiles      []string
 	SkipDirs       []string
+
+	RegoScanner *rego.Scanner
 }
 
 func (o *ScannerOption) Sort() {
@@ -103,12 +105,17 @@ func NewScanner(t detection.FileType, opt ScannerOption) (*Scanner, error) {
 		return nil, err
 	}
 
-	rs := rego.NewScanner(opts...)
-	if err := rs.LoadPolicies(nil); err != nil {
-		return nil, xerrors.Errorf("load checks: %w", err)
+	if opt.RegoScanner != nil {
+		opts = append(opts, rego.WithRegoScanner(opt.RegoScanner))
+	} else {
+		// If RegoScanner is not provided, pass the Rego options to IaC scanners
+		// so that they can initialize the Rego scanner themselves
+		regoOpts, err := initRegoOptions(opt)
+		if err != nil {
+			return nil, xerrors.Errorf("init rego opts: %w", err)
+		}
+		opts = append(opts, regoOpts...)
 	}
-
-	opts = append(opts, rego.WithRegoScanner(rs))
 
 	var scanner scanners.FSScanner
 	switch t {
@@ -223,7 +230,21 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 	return newfs, nil
 }
 
-func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerOption, error) {
+func InitRegoScanner(opt ScannerOption) (*rego.Scanner, error) {
+	regoOpts, err := initRegoOptions(opt)
+	if err != nil {
+		return nil, xerrors.Errorf("init rego options: %w", err)
+	}
+	regoScanner := rego.NewScanner(regoOpts...)
+	// note: it is safe to pass nil as fsys, since checks and data files will be loaded
+	// from the filesystems passed through the options.
+	if err := regoScanner.LoadPolicies(nil); err != nil {
+		return nil, xerrors.Errorf("load checks: %w", err)
+	}
+	return regoScanner, nil
+}
+
+func initRegoOptions(opt ScannerOption) ([]options.ScannerOption, error) {
 	disabledCheckIDs := lo.Map(opt.DisabledChecks, func(check DisabledCheck, _ int) string {
 		log.Info("Check disabled", log.Prefix(log.PrefixMisconfiguration), log.String("ID", check.ID),
 			log.String("scanner", check.Scanner), log.String("reason", check.Reason))
@@ -275,6 +296,11 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	if len(opt.Namespaces) > 0 {
 		opts = append(opts, rego.WithPolicyNamespaces(opt.Namespaces...))
 	}
+	return opts, nil
+}
+
+func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerOption, error) {
+	var opts []options.ScannerOption
 
 	switch t {
 	case detection.FileTypeHelm:

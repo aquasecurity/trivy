@@ -105,7 +105,6 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 
 func (s *Scanner) runQuery(ctx context.Context, query string, input ast.Value, disableTracing bool) (rego.ResultSet, []string, error) {
 
-	// TODO: (s.traceWriter != nil && s.tracePerResult) && !disableTracing
 	trace := (s.traceWriter != nil || s.tracePerResult) && !disableTracing
 
 	regoOptions := []func(*rego.Rego){
