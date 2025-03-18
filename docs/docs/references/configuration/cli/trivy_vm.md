@@ -70,7 +70,6 @@ trivy vm [flags] VM_IMAGE
                                             - will_not_fix
                                             - fix_deferred
                                             - end_of_life
-                                          
       --ignore-unfixed                    display only fixed vulnerabilities
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --include-non-failures              include successes, available with '--scanners misconfig'

@@ -251,9 +251,12 @@ func (f *Flag[T]) Add(cmd *cobra.Command) {
 				usage += fmt.Sprintf(" (allowed values: %s)", strings.Join(f.Values, ","))
 			} else {
 				// Display as a bullet list for many choices
-				usage += "\nAllowed values:\n"
+				usage += "\nAllowed values:"
 				for _, val := range f.Values {
-					usage += fmt.Sprintf("  - %s\n", val)
+					usage += fmt.Sprintf("\n  - %s", val)
+				}
+				if v != "" {
+					usage += "\n"
 				}
 			}
 		}
@@ -266,9 +269,12 @@ func (f *Flag[T]) Add(cmd *cobra.Command) {
 				usage += fmt.Sprintf(" (allowed values: %s)", strings.Join(f.Values, ","))
 			} else {
 				// Display as a bullet list for many choices
-				usage += "\nAllowed values:\n"
+				usage += "\nAllowed values:"
 				for _, val := range f.Values {
-					usage += fmt.Sprintf("  - %s\n", val)
+					usage += fmt.Sprintf("\n  - %s", val)
+				}
+				if len(v) != 0 {
+					usage += "\n"
 				}
 			}
 		}

@@ -42,7 +42,6 @@ trivy kubernetes [flags] [CONTEXT]
                                             - rke2-cis-1.24
                                             - k8s-pss-baseline-0.1
                                             - k8s-pss-restricted-0.1
-                                          
       --config-check strings              specify the paths to the Rego check files or to the directories containing them, applying config files
       --config-data strings               specify paths from which data for the Rego checks will be recursively loaded
       --config-file-schemas strings       specify paths to JSON configuration file schemas to determine that a file matches some configuration and pass the schema to Rego checks for type checking
@@ -81,7 +80,6 @@ trivy kubernetes [flags] [CONTEXT]
                                             - will_not_fix
                                             - fix_deferred
                                             - end_of_life
-                                          
       --ignore-unfixed                    display only fixed vulnerabilities
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --image-src strings                 image source(s) to use, in priority order (allowed values: docker,containerd,podman,remote) (default [docker,containerd,podman,remote])

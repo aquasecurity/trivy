@@ -71,7 +71,6 @@ trivy filesystem [flags] PATH
                                             - will_not_fix
                                             - fix_deferred
                                             - end_of_life
-                                          
       --ignore-unfixed                    display only fixed vulnerabilities
       --ignored-licenses strings          specify a list of license to ignore
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
