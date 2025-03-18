@@ -28,6 +28,7 @@ El Trivy Operator extiende las capacidades de Trivy al entorno de Kubernetes, re
 ### •	Compatibilidad con múltiples plataformas
 Trivy es compatible con una amplia variedad de plataformas y entornos, incluyendo diferentes distribuciones de sistemas operativos, gestores de paquetes y lenguajes de programación, garantizando una cobertura amplia en diversos escenarios. 
 
+
 ## Referencias
 - Trivy Operator. (2022).Recuperado de https://aquasecurity.github.io/trivy-operator/latest/
 - Aquasecurity. Trivy. Recuperado de https://github.com/aquasecurity/trivy
