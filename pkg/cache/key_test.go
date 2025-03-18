@@ -21,6 +21,7 @@ func TestCalcKey(t *testing.T) {
 		skipFiles         []string
 		skipDirs          []string
 		patterns          []string
+		includeDevDeps    bool
 		policy            []string
 		data              []string
 		secretConfigPath  string
@@ -64,6 +65,23 @@ func TestCalcKey(t *testing.T) {
 				},
 			},
 			want: "sha256:d63724cc72729edd3c81205739d64fcb414a4e6345dd4dde7f0fe6bdd56bedf9",
+		},
+		{
+			name: "happy path",
+			args: args{
+				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
+				analyzerVersions: analyzer.Versions{
+					Analyzers: map[string]int{
+						"alpine": 1,
+						"debian": 1,
+					},
+				},
+				hookVersions: map[string]int{
+					"python-pkg": 1,
+				},
+				includeDevDeps: true,
+			},
+			want: "sha256:ecf465a4a92caded280759907513d707cb25a57940c53ea8d3ad1af83f2e8ee5",
 		},
 		{
 			name: "with empty slice file patterns",
@@ -257,6 +275,7 @@ func TestCalcKey(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			artifactOpt := artifact.Option{
 				FilePatterns:      tt.args.patterns,
+				IncludeDevDeps:    tt.args.includeDevDeps,
 				DetectionPriority: tt.args.detectionPriority,
 
 				MisconfScannerOption: misconf.ScannerOption{
