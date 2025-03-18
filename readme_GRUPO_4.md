@@ -36,7 +36,7 @@ Se usa para eliminar malware persistente que se inicia automáticamente.
 
 Referencia:
 
-    Guía de Autoruns en Microsoft Learn - https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns
+  Guía de Autoruns en Microsoft Learn - https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns
 
 TCPView: Monitoreo de conexiones de red en tiempo real
 
@@ -47,9 +47,9 @@ Casos de uso complementarios a Trivy:
 Si Trivy detecta vulnerabilidades en un sistema, TCPView ayuda a ver si hay conexiones sospechosas activas.
 Es útil para analizar ataques en curso o detectar malware que comunique con servidores externos.
 
-Referencias:
+Referencia:
 
-    Guía oficial de TCPView en Microsoft - https://learn.microsoft.com/en-us/sysinternals/downloads/tcpview
+  Guía oficial de TCPView en Microsoft - https://learn.microsoft.com/en-us/sysinternals/downloads/tcpview
 
 Conclusión: ¿Por qué elegir Trivy como herramienta principal?
 
