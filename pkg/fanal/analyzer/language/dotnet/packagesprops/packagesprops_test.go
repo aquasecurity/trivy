@@ -1,7 +1,6 @@
 package packagesprops
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -80,7 +79,7 @@ func Test_packagesPropsAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			a := packagesPropsAnalyzer{}
-			ctx := context.Background()
+			ctx := t.Context()
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,

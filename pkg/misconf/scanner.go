@@ -105,18 +105,6 @@ func NewScanner(t detection.FileType, opt ScannerOption) (*Scanner, error) {
 		return nil, err
 	}
 
-	if opt.RegoScanner != nil {
-		opts = append(opts, rego.WithRegoScanner(opt.RegoScanner))
-	} else {
-		// If RegoScanner is not provided, pass the Rego options to IaC scanners
-		// so that they can initialize the Rego scanner themselves
-		regoOpts, err := initRegoOptions(opt)
-		if err != nil {
-			return nil, xerrors.Errorf("init rego opts: %w", err)
-		}
-		opts = append(opts, regoOpts...)
-	}
-
 	var scanner scanners.FSScanner
 	switch t {
 	case detection.FileTypeAzureARM:
@@ -302,6 +290,18 @@ func initRegoOptions(opt ScannerOption) ([]options.ScannerOption, error) {
 func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerOption, error) {
 	var opts []options.ScannerOption
 
+	if opt.RegoScanner != nil {
+		opts = append(opts, rego.WithRegoScanner(opt.RegoScanner))
+	} else {
+		// If RegoScanner is not provided, pass the Rego options to IaC scanners
+		// so that they can initialize the Rego scanner themselves
+		regoOpts, err := initRegoOptions(opt)
+		if err != nil {
+			return nil, xerrors.Errorf("init rego opts: %w", err)
+		}
+		opts = append(opts, regoOpts...)
+	}
+
 	switch t {
 	case detection.FileTypeHelm:
 		return addHelmOpts(opts, opt), nil
@@ -481,7 +481,7 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 			ruleID = result.Rule().Aliases[0]
 		}
 
-		cause := NewCauseWithCode(result)
+		cause := NewCauseWithCode(result, flattened)
 
 		misconfResult := types.MisconfResult{
 			Namespace: result.RegoNamespace(),
@@ -523,8 +523,7 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 	return types.ToMisconfigurations(misconfs)
 }
 
-func NewCauseWithCode(underlying scan.Result) types.CauseMetadata {
-	flat := underlying.Flatten()
+func NewCauseWithCode(underlying scan.Result, flat scan.FlatResult) types.CauseMetadata {
 	cause := types.CauseMetadata{
 		Resource:  flat.Resource,
 		Provider:  flat.RuleProvider.DisplayName(),
@@ -547,6 +546,14 @@ func NewCauseWithCode(underlying scan.Result) types.CauseMetadata {
 	// failures can happen either due to lack of
 	// OR misconfiguration of something
 	if underlying.Status() == scan.StatusFailed {
+		if flat.RenderedCause.Raw != "" {
+			highlighted, _ := scan.Highlight(flat.Location.Filename, flat.RenderedCause.Raw, scan.DarkTheme)
+			cause.RenderedCause = types.RenderedCause{
+				Raw:         flat.RenderedCause.Raw,
+				Highlighted: highlighted,
+			}
+		}
+
 		if code, err := underlying.GetCode(); err == nil {
 			cause.Code = types.Code{
 				Lines: lo.Map(code.Lines, func(l scan.Line, i int) types.Line {

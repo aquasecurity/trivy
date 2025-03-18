@@ -86,7 +86,7 @@ func (a *ImageFile) Inspect(ctx context.Context) (artifact.Reference, error) {
 
 	return artifact.Reference{
 		Name:    a.filePath,
-		Type:    artifact.TypeVM,
+		Type:    types.TypeVM,
 		ID:      cacheKey, // use a cache key as pseudo artifact ID
 		BlobIDs: []string{cacheKey},
 	}, nil

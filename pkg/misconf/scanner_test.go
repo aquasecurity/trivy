@@ -1,7 +1,6 @@
 package misconf
 
 import (
-	"context"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -159,7 +158,7 @@ func TestScanner_Scan(t *testing.T) {
 			s, err := NewScanner(tt.fileType, tt.fields.opt)
 			require.NoError(t, err)
 
-			misconfs, err := s.Scan(context.Background(), fsys)
+			misconfs, err := s.Scan(t.Context(), fsys)
 			require.NoError(t, err)
 			require.Len(t, misconfs, tt.misconfsExpected, "wrong number of misconfigurations found")
 			if tt.misconfsExpected == 1 {

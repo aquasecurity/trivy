@@ -1,7 +1,6 @@
 package poetry
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -557,7 +556,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 			a, err := newPoetryAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 
-			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
+			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{
 				FS: os.DirFS(tt.dir),
 			})
 

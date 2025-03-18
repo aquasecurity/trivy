@@ -5,7 +5,6 @@ package plugin_test
 import (
 	"archive/zip"
 	"bytes"
-	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -15,7 +14,7 @@ import (
 	"time"
 
 	"github.com/go-git/go-git/v5"
-	"github.com/google/go-containerregistry/pkg/v1"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -213,7 +212,7 @@ func TestManager_Install(t *testing.T) {
 			var gotLogs bytes.Buffer
 			logger := log.New(log.NewHandler(&gotLogs, nil))
 
-			ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 
 			got, err := plugin.NewManager(plugin.WithLogger(logger)).Install(ctx, tt.pluginName, plugin.Options{
 				Platform: ftypes.Platform{

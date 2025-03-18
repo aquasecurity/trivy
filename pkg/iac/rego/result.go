@@ -5,7 +5,7 @@ import (
 	"io/fs"
 	"strconv"
 
-	"github.com/open-policy-agent/opa/rego"
+	"github.com/open-policy-agent/opa/v1/rego"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"

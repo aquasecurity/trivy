@@ -1,7 +1,6 @@
 package buildinfo
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -52,7 +51,7 @@ func Test_dockerfileAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			a := dockerfileAnalyzer{}
-			got, err := a.Analyze(context.Background(), analyzer.AnalysisInput{
+			got, err := a.Analyze(t.Context(), analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
 			})

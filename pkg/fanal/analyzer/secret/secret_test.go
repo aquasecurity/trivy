@@ -1,7 +1,6 @@
 package secret_test
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -192,7 +191,7 @@ func TestSecretAnalyzer(t *testing.T) {
 			fi, err := content.Stat()
 			require.NoError(t, err)
 
-			got, err := a.Analyze(context.Background(), analyzer.AnalysisInput{
+			got, err := a.Analyze(t.Context(), analyzer.AnalysisInput{
 				FilePath: tt.filePath,
 				Dir:      tt.dir,
 				Content:  content,

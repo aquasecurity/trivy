@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -96,14 +97,22 @@ func NewClient(dbDir string, quiet bool, opts ...Option) *Client {
 
 // NeedsUpdate check is DB needs update
 func (c *Client) NeedsUpdate(ctx context.Context, cliVersion string, skip bool) (bool, error) {
+	var noRequiredFiles bool
+	if _, err := os.Stat(db.Path(c.dbDir)); errors.Is(err, os.ErrNotExist) {
+		log.DebugContext(ctx, "There is no db file")
+		noRequiredFiles = true
+	}
 	meta, err := c.metadata.Get()
 	if err != nil {
 		log.DebugContext(ctx, "There is no valid metadata file", log.Err(err))
-		if skip {
-			log.ErrorContext(ctx, "The first run cannot skip downloading DB")
-			return false, xerrors.New("--skip-update cannot be specified on the first run")
-		}
+		noRequiredFiles = true
+
 		meta = metadata.Metadata{Version: db.SchemaVersion}
+	}
+
+	if skip && noRequiredFiles {
+		log.ErrorContext(ctx, "The first run cannot skip downloading DB")
+		return false, xerrors.New("--skip-update cannot be specified on the first run")
 	}
 
 	if db.SchemaVersion < meta.Version {

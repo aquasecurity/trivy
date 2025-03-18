@@ -1,7 +1,6 @@
 package image
 
 import (
-	"context"
 	"fmt"
 	"net/http/httptest"
 	"testing"
@@ -275,7 +274,7 @@ func TestNewDockerImage(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.args.option.ImageSources = types.AllImageSources
-			img, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
+			img, cleanup, err := NewContainerImage(t.Context(), tt.args.imageName, tt.args.option)
 			defer cleanup()
 
 			if tt.wantErr {
@@ -393,7 +392,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.args.option.ImageSources = types.AllImageSources
-			_, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
+			_, cleanup, err := NewContainerImage(t.Context(), tt.args.imageName, tt.args.option)
 			defer cleanup()
 
 			if tt.wantErr != "" {
@@ -542,7 +541,7 @@ func TestDockerPlatformArguments(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			imageName := fmt.Sprintf("%s/library/alpine:3.10", serverAddr)
 			tt.args.option.ImageSources = types.AllImageSources
-			_, cleanup, err := NewContainerImage(context.Background(), imageName, tt.args.option)
+			_, cleanup, err := NewContainerImage(t.Context(), imageName, tt.args.option)
 			defer cleanup()
 
 			if tt.wantErr != "" {

@@ -6,7 +6,6 @@ import (
 	"github.com/openvex/discovery/pkg/discovery"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -16,7 +15,7 @@ import (
 type OCI struct{}
 
 func NewOCI(report *types.Report) (*OpenVEX, error) {
-	if report.ArtifactType != artifact.TypeContainerImage || len(report.Metadata.RepoDigests) == 0 {
+	if report.ArtifactType != ftypes.TypeContainerImage || len(report.Metadata.RepoDigests) == 0 {
 		return nil, xerrors.New("'--vex oci' can be used only when scanning OCI artifacts stored in registries")
 	}
 

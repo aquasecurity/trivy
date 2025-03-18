@@ -9,10 +9,11 @@ import (
 	"io/fs"
 	"strings"
 
-	"github.com/open-policy-agent/opa/ast"
-	"github.com/open-policy-agent/opa/rego"
-	"github.com/open-policy-agent/opa/storage"
-	"github.com/open-policy-agent/opa/util"
+	"github.com/open-policy-agent/opa/v1/ast"
+	"github.com/open-policy-agent/opa/v1/rego"
+	"github.com/open-policy-agent/opa/v1/storage"
+	"github.com/open-policy-agent/opa/v1/util"
+	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/providers"
@@ -23,7 +24,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 )
 
-var checkTypesWithSubtype = set.New[types.Source](types.SourceCloud, types.SourceDefsec, types.SourceKubernetes)
+var checkTypesWithSubtype = set.New(types.SourceCloud, types.SourceDefsec, types.SourceKubernetes)
 
 var supportedProviders = makeSupportedProviders()
 
@@ -41,6 +42,7 @@ var _ options.ConfigurableScanner = (*Scanner)(nil)
 type Scanner struct {
 	ruleNamespaces           set.Set[string]
 	policies                 map[string]*ast.Module
+	moduleMetadata           map[string]*StaticMetadata
 	store                    storage.Store
 	runtimeValues            *ast.Term
 	compiler                 *ast.Compiler
@@ -95,6 +97,7 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 		logger:           log.WithPrefix("rego"),
 		customSchemas:    make(map[string][]byte),
 		disabledCheckIDs: set.New[string](),
+		moduleMetadata:   make(map[string]*StaticMetadata),
 	}
 
 	for _, opt := range opts {
@@ -145,6 +148,9 @@ type Input struct {
 	Path     string `json:"path"`
 	FS       fs.FS  `json:"-"`
 	Contents any    `json:"contents"`
+
+	// parsed is the parsed input value for the rego query
+	parsed ast.Value
 }
 
 func GetInputsContents(inputs []Input) []any {
@@ -159,10 +165,24 @@ func (s *Scanner) ScanInput(ctx context.Context, sourceType types.Source, inputs
 
 	s.logger.Debug("Scanning inputs", "count", len(inputs))
 
+	if len(inputs) == 0 {
+		return nil, nil
+	}
+
+	inputs = lo.FilterMap(inputs, func(input Input, _ int) (Input, bool) {
+		s.trace("INPUT", input)
+		parsed, err := parseRawInput(input.Contents)
+		if err != nil {
+			s.logger.Error("Failed to parse input", log.FilePath(input.Path), log.Err(err))
+			return input, false
+		}
+		input.parsed = parsed
+		return input, true
+	})
+
 	var results scan.Results
 
-	for _, module := range s.policies {
-
+	for path, module := range s.policies {
 		select {
 		case <-ctx.Done():
 			return nil, ctx.Err()
@@ -175,7 +195,7 @@ func (s *Scanner) ScanInput(ctx context.Context, sourceType types.Source, inputs
 			continue
 		}
 
-		staticMeta, err := s.retriever.RetrieveMetadata(ctx, module, GetInputsContents(inputs)...)
+		staticMeta, err := s.metadataForModule(ctx, path, module, inputs)
 		if err != nil {
 			s.logger.Error(
 				"Error occurred while retrieving metadata from check",
@@ -191,10 +211,6 @@ func (s *Scanner) ScanInput(ctx context.Context, sourceType types.Source, inputs
 
 		// skip if check isn't relevant to what is being scanned
 		if !isPolicyApplicable(sourceType, staticMeta, inputs...) {
-			continue
-		}
-
-		if len(inputs) == 0 {
 			continue
 		}
 
@@ -225,6 +241,20 @@ func (s *Scanner) ScanInput(ctx context.Context, sourceType types.Source, inputs
 	}
 
 	return results, nil
+}
+
+func (s *Scanner) metadataForModule(
+	ctx context.Context, path string, module *ast.Module, inputs []Input,
+) (*StaticMetadata, error) {
+	if metadata, exists := s.moduleMetadata[path]; exists {
+		return metadata, nil
+	}
+
+	metadata, err := s.retriever.RetrieveMetadata(ctx, module, GetInputsContents(inputs)...)
+	if err != nil {
+		return nil, err
+	}
+	return metadata, nil
 }
 
 func isPolicyWithSubtype(sourceType types.Source) bool {
@@ -302,14 +332,8 @@ func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs 
 	var results scan.Results
 	qualified := fmt.Sprintf("data.%s.%s", namespace, rule)
 	for _, input := range inputs {
-		s.trace("INPUT", input)
-		parsedInput, err := parseRawInput(input.Contents)
-		if err != nil {
-			s.logger.Error("Error occurred while parsing input", log.Err(err))
-			continue
-		}
 
-		resultSet, traces, err := s.runQuery(ctx, qualified, parsedInput, false)
+		resultSet, traces, err := s.runQuery(ctx, qualified, input.parsed, false)
 		if err != nil {
 			return nil, err
 		}

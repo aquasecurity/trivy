@@ -1,7 +1,6 @@
 package redhatbase
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -38,7 +37,7 @@ func Test_centosOSAnalyzer_Analyze(t *testing.T) {
 			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
 			defer f.Close()
-			ctx := context.Background()
+			ctx := t.Context()
 
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: "etc/centos-release",

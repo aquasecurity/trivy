@@ -1,8 +1,6 @@
 package ec2
 
 import (
-	"github.com/owenrumney/squealer/pkg/squealer"
-
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -39,17 +37,4 @@ func NewInstance(metadata iacTypes.Metadata) *Instance {
 		RootBlockDevice: nil,
 		EBSBlockDevices: nil,
 	}
-}
-
-func (i *Instance) RequiresIMDSToken() bool {
-	return i.MetadataOptions.HttpTokens.EqualTo("required")
-}
-
-func (i *Instance) HasHTTPEndpointDisabled() bool {
-	return i.MetadataOptions.HttpEndpoint.EqualTo("disabled")
-}
-
-func (i *Instance) HasSensitiveInformationInUserData() bool {
-	scanner := squealer.NewStringScanner()
-	return scanner.Scan(i.UserData.Value()).TransgressionFound
 }

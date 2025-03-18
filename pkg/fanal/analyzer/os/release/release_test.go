@@ -1,7 +1,6 @@
 package release
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -174,7 +173,7 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			a := osReleaseAnalyzer{}
-			res, err := a.Analyze(context.Background(), analyzer.AnalysisInput{
+			res, err := a.Analyze(t.Context(), analyzer.AnalysisInput{
 				FilePath: "etc/os-release",
 				Content:  f,
 			})

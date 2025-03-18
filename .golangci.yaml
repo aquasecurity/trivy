@@ -73,7 +73,8 @@ linters-settings:
       - G304
       - G402
   govet:
-    check-shadowing: false
+    disable:
+      - shadow
   misspell:
     locale: US
     ignore-words:
@@ -113,7 +114,7 @@ linters:
     - misspell
     - perfsprint
     - revive
-    - tenv
+    - usetesting
     - testifylint
     - typecheck
     - unconvert
@@ -121,7 +122,7 @@ linters:
     - usestdlibvars
 
 run:
-  go: '1.23'
+  go: '1.24'
   timeout: 30m
 
 issues:

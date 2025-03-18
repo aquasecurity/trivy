@@ -1,7 +1,6 @@
 package scanner
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -43,9 +42,10 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			name: "happy path",
 			args: args{
 				options: tTypes.ScanOptions{
-					PkgTypes:         []string{"os"},
-					Scanners:         tTypes.Scanners{tTypes.VulnerabilityScanner},
-					PkgRelationships: ftypes.Relationships,
+					PkgTypes:            []string{"os"},
+					Scanners:            tTypes.Scanners{tTypes.VulnerabilityScanner},
+					PkgRelationships:    ftypes.Relationships,
+					VulnSeveritySources: []dbTypes.SourceID{"auto"},
 				},
 			},
 			imagePath: "../fanal/test/testdata/alpine-311.tar.gz",
@@ -54,7 +54,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 				SchemaVersion: 2,
 				CreatedAt:     time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC),
 				ArtifactName:  "../fanal/test/testdata/alpine-311.tar.gz",
-				ArtifactType:  artifact.TypeContainerImage,
+				ArtifactType:  ftypes.TypeContainerImage,
 				Metadata: tTypes.Metadata{
 					OS: &ftypes.OS{
 						Family:   "alpine",
@@ -219,7 +219,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			scanner := local.NewScanner(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
 			s := NewScanner(scanner, artifact)
 
-			ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 			got, err := s.ScanArtifact(ctx, tt.args.options)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)

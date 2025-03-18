@@ -93,12 +93,14 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			ArtifactId: artifactKey,
 			BlobIds:    blobKeys,
 			Options: &rpc.ScanOptions{
-				PkgTypes:          opts.PkgTypes,
-				PkgRelationships:  xstrings.ToStringSlice(opts.PkgRelationships),
-				Scanners:          xstrings.ToStringSlice(opts.Scanners),
-				LicenseCategories: licenseCategories,
-				IncludeDevDeps:    opts.IncludeDevDeps,
-				Distro:            distro,
+				PkgTypes:            opts.PkgTypes,
+				PkgRelationships:    xstrings.ToStringSlice(opts.PkgRelationships),
+				Scanners:            xstrings.ToStringSlice(opts.Scanners),
+				LicenseCategories:   licenseCategories,
+				LicenseFull:         opts.LicenseFull,
+				IncludeDevDeps:      opts.IncludeDevDeps,
+				Distro:              distro,
+				VulnSeveritySources: xstrings.ToStringSlice(opts.VulnSeveritySources),
 			},
 		})
 		return err

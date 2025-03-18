@@ -1,7 +1,6 @@
 package generic_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -50,7 +49,7 @@ deny[res] {
 
 	scanner := generic.NewJsonScanner(rego.WithPolicyDirs("rules"))
 
-	results, err := scanner.ScanFS(context.TODO(), fsys, "code")
+	results, err := scanner.ScanFS(t.Context(), fsys, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
@@ -119,7 +118,7 @@ deny[res] {
 
 	scanner := generic.NewYamlScanner(rego.WithPolicyDirs("rules"))
 
-	results, err := scanner.ScanFS(context.TODO(), fsys, "code")
+	results, err := scanner.ScanFS(t.Context(), fsys, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
@@ -187,7 +186,7 @@ deny[res] {
 
 	scanner := generic.NewTomlScanner(rego.WithPolicyDirs("rules"))
 
-	results, err := scanner.ScanFS(context.TODO(), fsys, "code")
+	results, err := scanner.ScanFS(t.Context(), fsys, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)

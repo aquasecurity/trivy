@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
@@ -31,7 +30,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "debian:12",
-				ArtifactType:  artifact.TypeContainerImage,
+				ArtifactType:  ftypes.TypeContainerImage,
 				Metadata: types.Metadata{
 					OS: &ftypes.OS{
 						Family: ftypes.Debian,
@@ -595,7 +594,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "gobinary",
-				ArtifactType:  artifact.TypeFilesystem,
+				ArtifactType:  ftypes.TypeFilesystem,
 				Results: []types.Result{
 					{
 						Target: "test",
@@ -839,11 +838,168 @@ func TestEncoder_Encode(t *testing.T) {
 			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},
 		{
+			name: "direct package is also dependency",
+			report: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "test",
+				ArtifactType:  ftypes.TypeFilesystem,
+				Results: []types.Result{
+					{
+						Target: "poetry.lock",
+						Type:   ftypes.Poetry,
+						Class:  types.ClassLangPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:      "django@5.1.6",
+								Name:    "django",
+								Version: "5.1.6",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "69691e87e187021d",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypePyPi,
+										Name:    "django",
+										Version: "5.1.6",
+									},
+								},
+								Relationship: ftypes.RelationshipDirect,
+							},
+							{
+								ID:      "sentry-sdk@2.22.0",
+								Name:    "sentry-sdk",
+								Version: "2.22.0",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "7e53a15e8bec68ad",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypePyPi,
+										Name:    "sentry-sdk",
+										Version: "2.22.0",
+									},
+								},
+								Relationship: ftypes.RelationshipDirect,
+								DependsOn: []string{
+									"django@5.1.6",
+								},
+							},
+						},
+					},
+				},
+			},
+			wantComponents: map[uuid.UUID]*core.Component{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					Type: core.TypeFilesystem,
+					Name: "test",
+					Root: true,
+					Properties: []core.Property{
+						{
+							Name:  core.PropertySchemaVersion,
+							Value: "2",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000001",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					Type: core.TypeApplication,
+					Name: "poetry.lock",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyClass,
+							Value: "lang-pkgs",
+						},
+						{
+							Name:  core.PropertyType,
+							Value: "poetry",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): {
+					Type:    core.TypeLibrary,
+					Name:    "django",
+					Version: "5.1.6",
+					SrcFile: "poetry.lock",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "django@5.1.6",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "poetry",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "69691e87e187021d",
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypePyPi,
+							Name:    "django",
+							Version: "5.1.6",
+						},
+						BOMRef: "pkg:pypi/django@5.1.6",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					Type:    core.TypeLibrary,
+					Name:    "sentry-sdk",
+					Version: "2.22.0",
+					SrcFile: "poetry.lock",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "sentry-sdk@2.22.0",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "poetry",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "7e53a15e8bec68ad",
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypePyPi,
+							Name:    "sentry-sdk",
+							Version: "2.22.0",
+						},
+						BOMRef: "pkg:pypi/sentry-sdk@2.22.0",
+					},
+				},
+			},
+			wantRels: map[uuid.UUID][]core.Relationship{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Type:       core.RelationshipContains,
+					},
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): nil,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+			},
+			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
+		},
+		{
 			name: "SBOM file",
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "report.cdx.json",
-				ArtifactType:  artifact.TypeCycloneDX,
+				ArtifactType:  ftypes.TypeCycloneDX,
 				Results: []types.Result{
 					{
 						Target: "Java",
@@ -890,7 +1046,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "report.cdx.json",
-				ArtifactType:  artifact.TypeCycloneDX,
+				ArtifactType:  ftypes.TypeCycloneDX,
 				Results: []types.Result{
 					{
 						Target: "Java",
@@ -937,7 +1093,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "pom.xml",
-				ArtifactType:  artifact.TypeFilesystem,
+				ArtifactType:  ftypes.TypeFilesystem,
 				Results: []types.Result{
 					{
 						Target: "pom.xml",
@@ -1297,7 +1453,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "report.cdx.json",
-				ArtifactType:  artifact.TypeCycloneDX,
+				ArtifactType:  ftypes.TypeCycloneDX,
 				Results: []types.Result{
 					{
 						Target: "Java",
@@ -1343,7 +1499,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "debian:12",
-				ArtifactType:  artifact.TypeContainerImage,
+				ArtifactType:  ftypes.TypeContainerImage,
 				Metadata: types.Metadata{
 					OS: &ftypes.OS{
 						Family: ftypes.Debian,

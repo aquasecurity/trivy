@@ -194,7 +194,7 @@ func TestManager_Run(t *testing.T) {
 				Platforms:   tt.fields.Platforms,
 			}
 
-			err := p.Run(context.Background(), plugin.Options{
+			err := p.Run(t.Context(), plugin.Options{
 				Platform: ftypes.Platform{
 					Platform: &v1.Platform{
 						OS:           "linux",
@@ -212,7 +212,7 @@ func TestManager_Run(t *testing.T) {
 }
 
 func TestManager_Uninstall(t *testing.T) {
-	ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+	ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 	pluginName := "test_plugin"
 
 	tempDir := t.TempDir()
@@ -327,7 +327,7 @@ func TestManager_LoadAll(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Setenv("XDG_DATA_HOME", tt.dir)
 
-			got, err := plugin.NewManager().LoadAll(context.Background())
+			got, err := plugin.NewManager().LoadAll(t.Context())
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -357,7 +357,7 @@ func TestManager_Upgrade(t *testing.T) {
 		Repository: "testdata/test_plugin",
 	})
 
-	ctx := context.Background()
+	ctx := t.Context()
 	m := plugin.NewManager()
 
 	// verify initial version

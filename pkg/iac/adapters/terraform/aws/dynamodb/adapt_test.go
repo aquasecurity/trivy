@@ -94,7 +94,7 @@ func Test_adaptTable(t *testing.T) {
 				ServerSideEncryption: dynamodb.ServerSideEncryption{
 					Metadata: iacTypes.NewTestMetadata(),
 					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					KMSKeyID: iacTypes.String("alias/aws/dynamodb", iacTypes.NewTestMetadata()),
+					KMSKeyID: iacTypes.String(dynamodb.DefaultKMSKeyID, iacTypes.NewTestMetadata()),
 				},
 				PointInTimeRecovery: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},

@@ -1,7 +1,6 @@
 package sbom_test
 
 import (
-	"context"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -190,7 +189,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: artifact.Reference{
 				Name: filepath.Join("testdata", "bom.json"),
-				Type: artifact.TypeCycloneDX,
+				Type: types.TypeCycloneDX,
 				ID:   "sha256:76bc49ae239d24c6a122e730bafb9d5295d0af380492aeb92a3bf34bea3a14ca",
 				BlobIDs: []string{
 					"sha256:76bc49ae239d24c6a122e730bafb9d5295d0af380492aeb92a3bf34bea3a14ca",
@@ -361,7 +360,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: artifact.Reference{
 				Name: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
-				Type: artifact.TypeCycloneDX,
+				Type: types.TypeCycloneDX,
 				ID:   "sha256:76bc49ae239d24c6a122e730bafb9d5295d0af380492aeb92a3bf34bea3a14ca",
 				BlobIDs: []string{
 					"sha256:76bc49ae239d24c6a122e730bafb9d5295d0af380492aeb92a3bf34bea3a14ca",
@@ -394,7 +393,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			a, err := sbom.NewArtifact(tt.filePath, c, artifact.Option{})
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			if len(tt.wantErr) > 0 {
 				require.Error(t, err)
 				found := false

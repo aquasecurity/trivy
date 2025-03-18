@@ -1,7 +1,6 @@
 package meta
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -55,7 +54,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 
 			a := metaAnalyzer{}
-			ctx := context.Background()
+			ctx := t.Context()
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Info:     stat,
