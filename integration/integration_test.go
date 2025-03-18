@@ -41,7 +41,7 @@ import (
 
 var update = flag.Bool("update", false, "update golden files")
 
-const SPDXSchema = "https://raw.githubusercontent.com/spdx/spdx-spec/development/v%s/schemas/spdx-schema.json"
+const SPDXSchema = "https://raw.githubusercontent.com/spdx/spdx-spec/support/v%s/schemas/spdx-schema.json"
 
 func initDB(t *testing.T) string {
 	fixtureDir := filepath.Join("testdata", "fixtures", "db")
@@ -186,7 +186,6 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 			return (*bom.Components)[i].Name < (*bom.Components)[j].Name
 		})
 		for i := range *bom.Components {
-			(*bom.Components)[i].BOMRef = ""
 			sort.Slice(*(*bom.Components)[i].Properties, func(ii, jj int) bool {
 				return (*(*bom.Components)[i].Properties)[ii].Name < (*(*bom.Components)[i].Properties)[jj].Name
 			})

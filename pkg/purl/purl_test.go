@@ -446,8 +446,7 @@ func TestNewPackageURL(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			packageURL, err := purl.New(tc.typ, tc.metadata, tc.pkg)
 			if tc.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tc.wantErr)
+				require.ErrorContains(t, err, tc.wantErr)
 				return
 			}
 			require.NoError(t, err)
@@ -809,38 +808,38 @@ func TestPackageURL_Match(t *testing.T) {
 	}{
 		{
 			name:       "same purl",
-			constraint: "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
-			target:     "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
+			constraint: "pkg:golang/github.com/aquasecurity/trivy@v0.49.0",
+			target:     "pkg:golang/github.com/aquasecurity/trivy@v0.49.0",
 			want:       true,
 		},
 		{
 			name:       "different type",
-			constraint: "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
+			constraint: "pkg:golang/github.com/aquasecurity/trivy@v0.49.0",
 			target:     "pkg:maven/github.com/aquasecurity/trivy@0.49.0",
 			want:       false,
 		},
 		{
 			name:       "different namespace",
-			constraint: "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
-			target:     "pkg:golang/github.com/aquasecurity2/trivy@0.49.0",
+			constraint: "pkg:golang/github.com/aquasecurity/trivy@v0.49.0",
+			target:     "pkg:golang/github.com/aquasecurity2/trivy@v.49.0",
 			want:       false,
 		},
 		{
 			name:       "different name",
-			constraint: "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
-			target:     "pkg:golang/github.com/aquasecurity/tracee@0.49.0",
+			constraint: "pkg:golang/github.com/aquasecurity/trivy@v0.49.0",
+			target:     "pkg:golang/github.com/aquasecurity/tracee@v0.49.0",
 			want:       false,
 		},
 		{
 			name:       "different version",
-			constraint: "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
-			target:     "pkg:golang/github.com/aquasecurity/trivy@0.49.1",
+			constraint: "pkg:golang/github.com/aquasecurity/trivy@v0.49.0",
+			target:     "pkg:golang/github.com/aquasecurity/trivy@v0.49.1",
 			want:       false,
 		},
 		{
 			name:       "version wildcard",
 			constraint: "pkg:golang/github.com/aquasecurity/trivy",
-			target:     "pkg:golang/github.com/aquasecurity/trivy@0.50.0",
+			target:     "pkg:golang/github.com/aquasecurity/trivy@v0.50.0",
 			want:       true,
 		},
 		{

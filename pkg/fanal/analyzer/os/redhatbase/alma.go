@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"slices"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -11,7 +12,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 const almaAnalyzerVersion = 1
@@ -46,7 +46,7 @@ func (a almaOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 }
 
 func (a almaOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return utils.StringInSlice(filePath, a.requiredFiles())
+	return slices.Contains(a.requiredFiles(), filePath)
 }
 
 func (a almaOSAnalyzer) requiredFiles() []string {
@@ -59,4 +59,9 @@ func (a almaOSAnalyzer) Type() analyzer.Type {
 
 func (a almaOSAnalyzer) Version() int {
 	return almaAnalyzerVersion
+}
+
+// StaticPaths returns the static paths of the alma analyzer
+func (a almaOSAnalyzer) StaticPaths() []string {
+	return a.requiredFiles()
 }

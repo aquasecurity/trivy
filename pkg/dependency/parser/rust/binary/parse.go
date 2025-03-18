@@ -2,7 +2,7 @@
 package binary
 
 import (
-	rustaudit "github.com/microsoft/go-rustaudit"
+	rustaudit "github.com/rust-secure-code/go-rustaudit"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 

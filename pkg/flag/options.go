@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"reflect"
 	"slices"
 	"strings"
 	"sync"
@@ -29,7 +30,7 @@ import (
 )
 
 type FlagType interface {
-	int | string | []string | bool | time.Duration | float64
+	int | string | []string | bool | time.Duration | float64 | map[string][]string
 }
 
 type Flag[T FlagType] struct {
@@ -160,6 +161,8 @@ func (f *Flag[T]) cast(val any) any {
 		return cast.ToFloat64(val)
 	case time.Duration:
 		return cast.ToDuration(val)
+	case map[string][]string:
+		return cast.ToStringMapStringSlice(val)
 	case []string:
 		if s, ok := val.(string); ok && strings.Contains(s, ",") {
 			// Split environmental variables by comma as it is not done by viper.
@@ -243,13 +246,37 @@ func (f *Flag[T]) Add(cmd *cobra.Command) {
 	case string:
 		usage := f.Usage
 		if len(f.Values) > 0 {
-			usage += fmt.Sprintf(" (%s)", strings.Join(f.Values, ","))
+			if len(f.Values) <= 4 {
+				// Display inline for a small number of choices
+				usage += fmt.Sprintf(" (allowed values: %s)", strings.Join(f.Values, ","))
+			} else {
+				// Display as a bullet list for many choices
+				usage += "\nAllowed values:"
+				for _, val := range f.Values {
+					usage += fmt.Sprintf("\n  - %s", val)
+				}
+				if v != "" {
+					usage += "\n"
+				}
+			}
 		}
 		flags.StringP(f.Name, f.Shorthand, v, usage)
 	case []string:
 		usage := f.Usage
 		if len(f.Values) > 0 {
-			usage += fmt.Sprintf(" (%s)", strings.Join(f.Values, ","))
+			if len(f.Values) <= 4 {
+				// Display inline for a small number of choices
+				usage += fmt.Sprintf(" (allowed values: %s)", strings.Join(f.Values, ","))
+			} else {
+				// Display as a bullet list for many choices
+				usage += "\nAllowed values:"
+				for _, val := range f.Values {
+					usage += fmt.Sprintf("\n  - %s", val)
+				}
+				if len(v) != 0 {
+					usage += "\n"
+				}
+			}
 		}
 		flags.StringSliceP(f.Name, f.Shorthand, v, usage)
 	case bool:
@@ -448,14 +475,32 @@ func (o *Options) enableSBOM() {
 	}
 }
 
+// ScanOpts returns options for scanning
+func (o *Options) ScanOpts() types.ScanOptions {
+	return types.ScanOptions{
+		PkgTypes:            o.PkgTypes,
+		PkgRelationships:    o.PkgRelationships,
+		Scanners:            o.Scanners,
+		ImageConfigScanners: o.ImageConfigScanners, // this is valid only for 'image' subcommand
+		ScanRemovedPackages: o.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
+		LicenseCategories:   o.LicenseCategories,
+		LicenseFull:         o.LicenseFull,
+		FilePatterns:        o.FilePatterns,
+		IncludeDevDeps:      o.IncludeDevDeps,
+		Distro:              o.Distro,
+		VulnSeveritySources: o.VulnSeveritySources,
+	}
+}
+
 // RegistryOpts returns options for OCI registries
 func (o *Options) RegistryOpts() ftypes.RegistryOptions {
 	return ftypes.RegistryOptions{
-		Credentials:   o.Credentials,
-		RegistryToken: o.RegistryToken,
-		Insecure:      o.Insecure,
-		Platform:      o.Platform,
-		AWSRegion:     o.AWSOptions.Region,
+		Credentials:     o.Credentials,
+		RegistryToken:   o.RegistryToken,
+		Insecure:        o.Insecure,
+		Platform:        o.Platform,
+		AWSRegion:       o.AWSOptions.Region,
+		RegistryMirrors: o.RegistryMirrors,
 	}
 }
 
@@ -855,4 +900,38 @@ func (a flagAliases) NormalizeFunc() func(*pflag.FlagSet, string) pflag.Normaliz
 		}
 		return pflag.NormalizedName(name)
 	}
+}
+
+func HiddenFlags() []string {
+	var allFlagGroups = []FlagGroup{
+		NewGlobalFlagGroup(),
+		NewCacheFlagGroup(),
+		NewCleanFlagGroup(),
+		NewClientFlags(),
+		NewDBFlagGroup(),
+		NewImageFlagGroup(),
+		NewK8sFlagGroup(),
+		NewLicenseFlagGroup(),
+		NewMisconfFlagGroup(),
+		NewModuleFlagGroup(),
+		NewPackageFlagGroup(),
+		NewRegistryFlagGroup(),
+		NewRegoFlagGroup(),
+		NewReportFlagGroup(),
+		NewRepoFlagGroup(),
+		NewScanFlagGroup(),
+		NewSecretFlagGroup(),
+		NewServerFlags(),
+		NewVulnerabilityFlagGroup(),
+	}
+
+	var hiddenFlags []string
+	for _, flagGroup := range allFlagGroups {
+		for _, flag := range flagGroup.Flags() {
+			if !reflect.ValueOf(flag).IsNil() && flag.Hidden() {
+				hiddenFlags = append(hiddenFlags, flag.GetConfigName())
+			}
+		}
+	}
+	return hiddenFlags
 }

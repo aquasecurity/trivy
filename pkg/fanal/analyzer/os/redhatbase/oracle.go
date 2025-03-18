@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"slices"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -11,7 +12,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 const oracleAnalyzerVersion = 1
@@ -42,7 +42,7 @@ func (a oracleOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 }
 
 func (a oracleOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return utils.StringInSlice(filePath, a.requiredFiles())
+	return slices.Contains(a.requiredFiles(), filePath)
 }
 
 func (a oracleOSAnalyzer) requiredFiles() []string {
@@ -55,4 +55,9 @@ func (a oracleOSAnalyzer) Type() analyzer.Type {
 
 func (a oracleOSAnalyzer) Version() int {
 	return oracleAnalyzerVersion
+}
+
+// StaticPaths returns the static paths of the oracle analyzer
+func (a oracleOSAnalyzer) StaticPaths() []string {
+	return a.requiredFiles()
 }

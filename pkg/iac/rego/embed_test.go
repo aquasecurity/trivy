@@ -1,20 +1,21 @@
-package rego
+package rego_test
 
 import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/open-policy-agent/opa/ast"
+	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	checks "github.com/aquasecurity/trivy-checks"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	"github.com/aquasecurity/trivy/pkg/iac/state"
 )
 
 func Test_EmbeddedLoading(t *testing.T) {
+	rego.LoadAndRegister()
 
 	frameworkRules := rules.GetRegistered()
 	var found bool
@@ -88,21 +89,19 @@ deny[res]{
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			policies, err := LoadPoliciesFromDirs(checks.EmbeddedLibraryFileSystem, ".")
+			policies, err := rego.LoadPoliciesFromDirs(checks.EmbeddedLibraryFileSystem, ".")
 			require.NoError(t, err)
-			newRule, err := ast.ParseModuleWithOpts("/rules/newrule.rego", tc.inputPolicy, ast.ParserOptions{
-				ProcessAnnotation: true,
-			})
+			newRule, err := rego.ParseRegoModule("/rules/newrule.rego", tc.inputPolicy)
 			require.NoError(t, err)
 
 			policies["/rules/newrule.rego"] = newRule
 			switch {
 			case tc.expectedError:
 				assert.Panics(t, func() {
-					RegisterRegoRules(policies)
+					rego.RegisterRegoRules(policies)
 				}, tc.name)
 			default:
-				RegisterRegoRules(policies)
+				rego.RegisterRegoRules(policies)
 			}
 		})
 	}
@@ -188,14 +187,12 @@ deny[res]{
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			policies := make(map[string]*ast.Module)
-			newRule, err := ast.ParseModuleWithOpts("/rules/newrule.rego", tc.inputPolicy, ast.ParserOptions{
-				ProcessAnnotation: true,
-			})
+			newRule, err := rego.ParseRegoModule("/rules/newrule.rego", tc.inputPolicy)
 			require.NoError(t, err)
 
 			policies["/rules/newrule.rego"] = newRule
 			assert.NotPanics(t, func() {
-				RegisterRegoRules(policies)
+				rego.RegisterRegoRules(policies)
 			})
 
 			for _, rule := range rules.GetRegistered() {
@@ -207,48 +204,16 @@ deny[res]{
 	}
 }
 
-func Test_IgnoreDuplicateChecks(t *testing.T) {
-	rules.Reset()
-
-	r := scan.Rule{
-		AVDID: "TEST001",
-		Check: func(s *state.State) (results scan.Results) {
-			for _, bucket := range s.AWS.S3.Buckets {
-				if bucket.Name.Value() == "evil" {
-					results.Add("Bucket name should not be evil", bucket.Name)
-				}
-			}
-			return
-		},
-	}
-	reg := rules.Register(r)
-	defer rules.Deregister(reg)
-
+func TestLoadPoliciesFromDirs(t *testing.T) {
 	fsys := fstest.MapFS{
-		"test.rego": &fstest.MapFile{
-			Data: []byte(`
-# METADATA
-# title: "Test rego"
-# scope: package
-# schemas:
-# - input: schema["cloud"]
-# custom:
-#   avd_id: TEST001
-#   severity: LOW
-package user.test001
-
-deny[res] {
-	res := result.new("test", {})
-}
-`),
-		},
+		"check.rego":       &fstest.MapFile{Data: []byte(`package user.foo`)},
+		".check.rego":      &fstest.MapFile{Data: []byte(`package user.foo`)},
+		"check_test.rego":  &fstest.MapFile{Data: []byte(`package user.foo_test`)},
+		"test.yaml":        &fstest.MapFile{Data: []byte(`foo: bar`)},
+		"checks/test.rego": &fstest.MapFile{Data: []byte(`package user.checks.foo`)},
 	}
 
-	modules, err := LoadPoliciesFromDirs(fsys, ".")
+	modules, err := rego.LoadPoliciesFromDirs(fsys, ".")
 	require.NoError(t, err)
-
-	RegisterRegoRules(modules)
-	registered := rules.GetRegistered()
-	assert.Len(t, registered, 1)
-	assert.Equal(t, "TEST001", registered[0].AVDID)
+	assert.Len(t, modules, 2)
 }

@@ -151,7 +151,7 @@ func TestECRGetCredential(t *testing.T) {
 		e := ECRClient{
 			Client: mockedECR{Resp: c.Resp},
 		}
-		username, password, err := e.GetCredential(context.Background())
+		username, password, err := e.GetCredential(t.Context())
 		if err != nil {
 			t.Fatalf("%d, unexpected error", err)
 		}

@@ -54,6 +54,7 @@ message Package {
   string            digest      = 16;
   bool              dev         = 17;
   bool              indirect    = 18;
+  string            maintainer  = 21;
 }
 
 message PkgIdentifier {
@@ -68,12 +69,13 @@ message Location {
 }
 
 message Misconfiguration {
-  string                 file_type  = 1;
-  string                 file_path  = 2;
-  repeated MisconfResult successes  = 3;
-  repeated MisconfResult warnings   = 4;
-  repeated MisconfResult failures   = 5;
-  repeated MisconfResult exceptions = 6;
+  string                 file_type = 1;
+  string                 file_path = 2;
+  repeated MisconfResult successes = 3;
+  repeated MisconfResult warnings  = 4;
+  repeated MisconfResult failures  = 5;
+
+  reserved 6;  // deprecated 'exceptions'
 }
 
 message MisconfResult {
@@ -154,12 +156,13 @@ message Layer {
 }
 
 message CauseMetadata {
-  string resource   = 1;
-  string provider   = 2;
-  string service    = 3;
-  int32  start_line = 4;
-  int32  end_line   = 5;
-  Code   code       = 6;
+  string        resource       = 1;
+  string        provider       = 2;
+  string        service        = 3;
+  int32         start_line     = 4;
+  int32         end_line       = 5;
+  Code          code           = 6;
+  RenderedCause rendered_cause = 7;
 }
 
 enum Severity {
@@ -171,10 +174,12 @@ enum Severity {
 }
 
 message CVSS {
-  string v2_vector = 1;
-  string v3_vector = 2;
-  double v2_score  = 3;
-  double v3_score  = 4;
+  string v2_vector  = 1;
+  string v3_vector  = 2;
+  double v2_score   = 3;
+  double v3_score   = 4;
+  string v40_vector = 5;
+  double v40_score  = 6;
 }
 
 message CustomResource {
@@ -197,6 +202,11 @@ message Line {
 
 message Code {
   repeated Line lines = 1;
+}
+
+message RenderedCause {
+  string raw         = 1;
+  string highlighted = 2;
 }
 
 message SecretFinding {

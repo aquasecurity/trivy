@@ -1,0 +1,9 @@
+{
+  "image_contents": {
+    "dependencies": [
+      {
+        "purl": "pkg:rpm/redhat/zstd@1.5.1-2.el9?arch=src&checksum=sha256:f1ddea14d19746b867e69b48d128dd9c2d3e8cc021a5ea7b0674b48356ad3341&repository_id=rhel-9-base-source"
+      }
+    ]
+  }
+}

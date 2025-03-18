@@ -51,6 +51,24 @@ func (a sbomAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput)
 		handleBitnamiImages(path.Dir(input.FilePath), bom)
 	}
 
+	// Add the filePath to avoid overwriting OS packages when merging packages from multiple SBOM files.
+	// cf. https://github.com/aquasecurity/trivy/issues/8324
+	for i, pkgInfo := range bom.Packages {
+		bom.Packages[i].FilePath = path.Join(input.FilePath, pkgInfo.FilePath)
+	}
+
+	// There are cases when FilePath for Application is empty:
+	// - FilePath for apps with aggregatingTypes is empty.
+	// - Third party SBOM without Application component.
+	// We need to use SBOM file path as Application.FilePath to correctly:
+	// - overwrite applications when merging layers. See https://github.com/aquasecurity/trivy/issues/7851
+	// - show FilePath as Target of Application. See https://github.com/aquasecurity/trivy/issues/8189.
+	for i, app := range bom.Applications {
+		if app.FilePath == "" {
+			bom.Applications[i].FilePath = input.FilePath
+		}
+	}
+
 	return &analyzer.AnalysisResult{
 		PackageInfos: bom.Packages,
 		Applications: bom.Applications,

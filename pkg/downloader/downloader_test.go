@@ -1,7 +1,6 @@
 package downloader_test
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -44,7 +43,7 @@ func TestDownload(t *testing.T) {
 			dst := t.TempDir()
 
 			// Execute the download
-			_, err := downloader.Download(context.Background(), server.URL, dst, "", downloader.Options{
+			_, err := downloader.Download(t.Context(), server.URL, dst, "", downloader.Options{
 				Insecure: tt.insecure,
 			})
 

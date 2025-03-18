@@ -1,6 +1,7 @@
 package version
 
 import (
+	"context"
 	"fmt"
 	"path/filepath"
 
@@ -80,7 +81,8 @@ func NewVersionInfo(cacheDir string) VersionInfo {
 		log.Debug("Failed to instantiate policy client", log.Err(err))
 	}
 	if pc != nil && err == nil {
-		pbMetaRaw, err := pc.GetMetadata()
+		ctx := log.WithContextPrefix(context.TODO(), log.PrefixMisconfiguration)
+		pbMetaRaw, err := pc.GetMetadata(ctx)
 
 		if err != nil {
 			log.Debug("Failed to get policy metadata", log.Err(err))

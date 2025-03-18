@@ -10,11 +10,17 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 func init() {
 	analyzer.RegisterAnalyzer(&contentManifestAnalyzer{})
 }
+
+var contentSetsDirs = set.New[string](
+	"root/buildinfo/content_manifests/",
+	"usr/share/buildinfo/", // for RHCOS
+)
 
 const contentManifestAnalyzerVersion = 1
 
@@ -31,6 +37,10 @@ func (a contentManifestAnalyzer) Analyze(_ context.Context, target analyzer.Anal
 		return nil, xerrors.Errorf("invalid content manifest: %w", err)
 	}
 
+	if len(manifest.ContentSets) == 0 {
+		return nil, nil
+	}
+
 	return &analyzer.AnalysisResult{
 		BuildInfo: &types.BuildInfo{
 			ContentSets: manifest.ContentSets,
@@ -40,7 +50,7 @@ func (a contentManifestAnalyzer) Analyze(_ context.Context, target analyzer.Anal
 
 func (a contentManifestAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	dir, file := filepath.Split(filepath.ToSlash(filePath))
-	if dir != "root/buildinfo/content_manifests/" {
+	if !contentSetsDirs.Contains(dir) {
 		return false
 	}
 	return filepath.Ext(file) == ".json"
@@ -52,4 +62,8 @@ func (a contentManifestAnalyzer) Type() analyzer.Type {
 
 func (a contentManifestAnalyzer) Version() int {
 	return contentManifestAnalyzerVersion
+}
+
+func (a contentManifestAnalyzer) StaticPaths() []string {
+	return contentSetsDirs.Items()
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"slices"
 
 	"github.com/hashicorp/go-multierror"
@@ -291,7 +292,7 @@ func (r *runner) initDB(ctx context.Context, opts flag.Options) error {
 
 	// download the database file
 	noProgress := opts.Quiet || opts.NoProgress
-	if err := operation.DownloadDB(ctx, opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.SkipDBUpdate, opts.RegistryOpts()); err != nil {
+	if err := operation.DownloadDB(ctx, opts.AppVersion, opts.CacheDir, opts.DBRepositories, noProgress, opts.SkipDBUpdate, opts.RegistryOpts()); err != nil {
 		return err
 	}
 
@@ -321,7 +322,7 @@ func (r *runner) initJavaDB(opts flag.Options) error {
 
 	// Update the Java DB
 	noProgress := opts.Quiet || opts.NoProgress
-	javadb.Init(opts.CacheDir, opts.JavaDBRepository, opts.SkipJavaDBUpdate, noProgress, opts.RegistryOpts())
+	javadb.Init(opts.CacheDir, opts.JavaDBRepositories, opts.SkipJavaDBUpdate, noProgress, opts.RegistryOpts())
 	if opts.DownloadJavaDBOnly {
 		if err := javadb.Update(); err != nil {
 			return xerrors.Errorf("Java DB error: %w", err)
@@ -339,7 +340,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 
 	defer func() {
 		if errors.Is(err, context.DeadlineExceeded) {
-			// e.g. https://aquasecurity.github.io/trivy/latest/docs/configuration/
+			// e.g. https://trivy.dev/latest/docs/configuration/
 			log.WarnContext(ctx, fmt.Sprintf("Provide a higher timeout value, see %s", doc.URL("/docs/configuration/", "")))
 		}
 	}()
@@ -355,7 +356,22 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 
 	if opts.GenerateDefaultConfig {
 		log.Info("Writing the default config to trivy-default.yaml...")
-		return viper.SafeWriteConfigAs("trivy-default.yaml")
+
+		hiddenFlags := flag.HiddenFlags()
+		// Viper does not have the ability to remove flags.
+		// So we only save the necessary flags and set these flags after viper.Reset
+		v := viper.New()
+		for _, k := range viper.AllKeys() {
+			// Skip the `GenerateDefaultConfigFlag` flags to avoid errors with default config file.
+			// Users often use "normal" formats instead of compliance. So we'll skip ComplianceFlag
+			// Also don't keep removed or deprecated flags to avoid confusing users.
+			if k == flag.GenerateDefaultConfigFlag.ConfigName || k == flag.ComplianceFlag.ConfigName || slices.Contains(hiddenFlags, k) {
+				continue
+			}
+			v.Set(k, viper.Get(k))
+		}
+
+		return v.SafeWriteConfigAs("trivy-default.yaml")
 	}
 
 	r, err := NewRunner(ctx, opts)
@@ -402,7 +418,6 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	// Specified analyzers to be disabled depending on scanning modes
 	// e.g. The 'image' subcommand should disable the lock file scanning.
 	analyzers := opts.DisabledAnalyzers
-
 	// It doesn't analyze apk commands by default.
 	if !opts.ScanRemovedPkgs {
 		analyzers = append(analyzers, analyzer.TypeApkCommand)
@@ -418,18 +433,16 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeSecret)
 	}
 
-	// Filter only enabled misconfiguration scanners
-	ma, err := filterMisconfigAnalyzers(opts.MisconfigScanners, analyzer.TypeConfigFiles)
-	if err != nil {
-		log.Error("Invalid misconfiguration scanners specified, defaulting to use all misconfig scanners",
-			log.Any("scanners", opts.MisconfigScanners))
-	} else {
-		analyzers = append(analyzers, ma...)
-	}
-
 	// Do not perform misconfiguration scanning when it is not specified.
 	if !opts.Scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner) {
 		analyzers = append(analyzers, analyzer.TypeConfigFiles...)
+	} else {
+		// Filter only enabled misconfiguration scanners
+		ma := disabledMisconfigAnalyzers(opts.MisconfigScanners)
+		analyzers = append(analyzers, ma...)
+
+		log.Debug("Enabling misconfiguration scanners",
+			log.Any("scanners", lo.Without(analyzer.TypeConfigFiles, ma...)))
 	}
 
 	// Scanning file headers and license files is expensive.
@@ -457,35 +470,35 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeExecutable)
 	}
 
+	// Disable RPM archive analyzer unless the environment variable is set
+	// TODO: add '--enable-analyzers' and delete this environment variable
+	if os.Getenv("TRIVY_EXPERIMENTAL_RPM_ARCHIVE") == "" {
+		analyzers = append(analyzers, analyzer.TypeRpmArchive)
+	}
+
 	return analyzers
 }
 
-func filterMisconfigAnalyzers(included, all []analyzer.Type) ([]analyzer.Type, error) {
-	_, missing := lo.Difference(all, included)
+func disabledMisconfigAnalyzers(included []analyzer.Type) []analyzer.Type {
+	_, missing := lo.Difference(analyzer.TypeConfigFiles, included)
 	if len(missing) > 0 {
-		return nil, xerrors.Errorf("invalid misconfiguration scanner specified %s valid scanners: %s", missing, all)
+		log.Error(
+			"Invalid misconfiguration scanners provided, using default scanners",
+			log.Any("invalid_scanners", missing), log.Any("default_scanners", analyzer.TypeConfigFiles),
+		)
+		return nil
 	}
 
-	log.Debug("Enabling misconfiguration scanners", log.Any("scanners", included))
-	return lo.Without(all, included...), nil
+	return lo.Without(analyzer.TypeConfigFiles, included...)
 }
 
-func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.ScanOptions, error) {
+func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (ScannerConfig, types.ScanOptions, error) {
 	target := opts.Target
 	if opts.Input != "" {
 		target = opts.Input
 	}
 
-	scanOptions := types.ScanOptions{
-		PkgTypes:            opts.PkgTypes,
-		PkgRelationships:    opts.PkgRelationships,
-		Scanners:            opts.Scanners,
-		ImageConfigScanners: opts.ImageConfigScanners, // this is valid only for 'image' subcommand
-		ScanRemovedPackages: opts.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
-		LicenseCategories:   opts.LicenseCategories,
-		FilePatterns:        opts.FilePatterns,
-		IncludeDevDeps:      opts.IncludeDevDeps,
-	}
+	scanOptions := opts.ScanOpts()
 
 	if len(opts.ImageConfigScanners) != 0 {
 		log.WithPrefix(log.PrefixContainerImage).Info("Container image config scanners", log.Any("scanners", opts.ImageConfigScanners))
@@ -505,7 +518,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 	var configScannerOptions misconf.ScannerOption
 	if opts.Scanners.Enabled(types.MisconfigScanner) || opts.ImageConfigScanners.Enabled(types.MisconfigScanner) {
 		var err error
-		configScannerOptions, err = initMisconfScannerOption(opts)
+		configScannerOptions, err = initMisconfScannerOption(ctx, opts)
 		if err != nil {
 			return ScannerConfig{}, types.ScanOptions{}, err
 		}
@@ -516,7 +529,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 		logger := log.WithPrefix(log.PrefixSecret)
 		logger.Info("Secret scanning is enabled")
 		logger.Info("If your scanning is slow, please try '--scanners vuln' to disable secret scanning")
-		// e.g. https://aquasecurity.github.io/trivy/latest/docs/scanner/secret/#recommendation
+		// e.g. https://trivy.dev/latest/docs/scanner/secret/#recommendation
 		logger.Info(fmt.Sprintf("Please see also %s for faster secret detection", doc.URL("/docs/scanner/secret/", "recommendation")))
 	} else {
 		opts.SecretConfigPath = ""
@@ -531,9 +544,9 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 		}
 	}
 
-	// SPDX needs to calculate digests for package files
+	// SPDX and CycloneDX need to calculate digests for package files
 	var fileChecksum bool
-	if opts.Format == types.FormatSPDXJSON || opts.Format == types.FormatSPDX {
+	if opts.Format == types.FormatSPDXJSON || opts.Format == types.FormatSPDX || opts.Format == types.FormatCycloneDX {
 		fileChecksum = true
 	}
 
@@ -575,6 +588,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 					Host: opts.PodmanHost,
 				},
 				ImageSources: opts.ImageSources,
+				MaxImageSize: opts.MaxImageSize,
 			},
 
 			// For misconfiguration scanning
@@ -601,7 +615,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 }
 
 func (r *runner) scan(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
-	scannerConfig, scanOptions, err := r.initScannerConfig(opts)
+	scannerConfig, scanOptions, err := r.initScannerConfig(ctx, opts)
 	if err != nil {
 		return types.Report{}, err
 	}
@@ -618,20 +632,20 @@ func (r *runner) scan(ctx context.Context, opts flag.Options, initializeScanner 
 	return report, nil
 }
 
-func initMisconfScannerOption(opts flag.Options) (misconf.ScannerOption, error) {
-	logger := log.WithPrefix(log.PrefixMisconfiguration)
-	logger.Info("Misconfiguration scanning is enabled")
+func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.ScannerOption, error) {
+	ctx = log.WithContextPrefix(ctx, log.PrefixMisconfiguration)
+	log.InfoContext(ctx, "Misconfiguration scanning is enabled")
 
 	var downloadedPolicyPaths []string
 	var disableEmbedded bool
 
-	downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
+	downloadedPolicyPaths, err := operation.InitBuiltinChecks(ctx, opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
 	if err != nil {
 		if !opts.SkipCheckUpdate {
-			logger.Error("Falling back to embedded checks", log.Err(err))
+			log.ErrorContext(ctx, "Falling back to embedded checks", log.Err(err))
 		}
 	} else {
-		logger.Debug("Checks successfully loaded from disk")
+		log.DebugContext(ctx, "Checks successfully loaded from disk")
 		disableEmbedded = true
 	}
 
@@ -660,5 +674,7 @@ func initMisconfScannerOption(opts flag.Options) (misconf.ScannerOption, error) 
 		TfExcludeDownloaded:      opts.TfExcludeDownloaded,
 		FilePatterns:             opts.FilePatterns,
 		ConfigFileSchemas:        configSchemas,
+		SkipFiles:                opts.SkipFiles,
+		SkipDirs:                 opts.SkipDirs,
 	}, nil
 }

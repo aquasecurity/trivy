@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -14,7 +13,7 @@ func TestParseFS(t *testing.T) {
 	t.Run("source chart is located next to an same archived chart", func(t *testing.T) {
 		p, err := New(".")
 		require.NoError(t, err)
-		require.NoError(t, p.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", "chart-and-archived-chart")), "."))
+		require.NoError(t, p.ParseFS(t.Context(), os.DirFS(filepath.Join("testdata", "chart-and-archived-chart")), "."))
 
 		expectedFiles := []string{
 			"my-chart/Chart.yaml",
@@ -36,7 +35,7 @@ func TestParseFS(t *testing.T) {
 		require.NoError(t, err)
 
 		fsys := os.DirFS(filepath.Join("testdata", "archive-with-symlinks"))
-		require.NoError(t, p.ParseFS(context.TODO(), fsys, "chart.tar.gz"))
+		require.NoError(t, p.ParseFS(t.Context(), fsys, "chart.tar.gz"))
 
 		expectedFiles := []string{
 			"chart/Chart.yaml",
@@ -47,5 +46,35 @@ func TestParseFS(t *testing.T) {
 			"chart/sym-to-file/Chart.yaml",
 		}
 		assert.Equal(t, expectedFiles, p.filepaths)
+	})
+
+	t.Run("chart with multiple archived deps", func(t *testing.T) {
+		p, err := New(".")
+		require.NoError(t, err)
+
+		fsys := os.DirFS(filepath.Join("testdata", "multiple-archived-deps"))
+		require.NoError(t, p.ParseFS(t.Context(), fsys, "."))
+
+		expectedFiles := []string{
+			"Chart.yaml",
+			"charts/common-2.26.0.tgz",
+			"charts/opentelemetry-collector-0.108.0.tgz",
+		}
+		assert.Equal(t, expectedFiles, p.filepaths)
+	})
+
+	t.Run("archives are not dependencies", func(t *testing.T) {
+		p, err := New(".")
+		require.NoError(t, err)
+
+		fsys := os.DirFS(filepath.Join("testdata", "non-deps-archives"))
+		require.NoError(t, p.ParseFS(t.Context(), fsys, "."))
+
+		expectedFiles := []string{
+			"Chart.yaml",
+			"backup_charts/wordpress-operator/Chart.yaml",
+			"backup_charts/mysql-operator/Chart.yaml",
+		}
+		assert.Subset(t, p.filepaths, expectedFiles)
 	})
 }

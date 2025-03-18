@@ -3,7 +3,6 @@ package terraform
 import (
 	"context"
 	"fmt"
-	"io"
 	"io/fs"
 	"path"
 	"path/filepath"
@@ -11,7 +10,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
@@ -19,8 +17,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)
@@ -28,48 +26,15 @@ var _ options.ConfigurableScanner = (*Scanner)(nil)
 var _ ConfigurableTerraformScanner = (*Scanner)(nil)
 
 type Scanner struct {
-	mu            sync.Mutex
-	logger        *log.Logger
-	options       []options.ScannerOption
-	parserOpt     []parser.Option
-	executorOpt   []executor.Option
-	dirs          map[string]struct{}
-	forceAllDirs  bool
-	policyDirs    []string
-	policyReaders []io.Reader
-	regoScanner   *rego.Scanner
-	execLock      sync.RWMutex
-
-	frameworks            []framework.Framework
-	spec                  string
-	loadEmbeddedLibraries bool
-	loadEmbeddedPolicies  bool
-}
-
-func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
-	s.executorOpt = append(s.executorOpt, executor.OptionWithIncludeDeprecatedChecks(b))
-}
-
-func (s *Scanner) SetCustomSchemas(map[string][]byte) {}
-
-func (s *Scanner) SetSpec(spec string) {
-	s.spec = spec
-}
-
-func (s *Scanner) SetRegoOnly(regoOnly bool) {
-	s.executorOpt = append(s.executorOpt, executor.OptionWithRegoOnly(regoOnly))
-}
-
-func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
-	s.frameworks = frameworks
-}
-
-func (s *Scanner) SetUseEmbeddedPolicies(b bool) {
-	s.loadEmbeddedPolicies = b
-}
-
-func (s *Scanner) SetUseEmbeddedLibraries(b bool) {
-	s.loadEmbeddedLibraries = b
+	mu           sync.Mutex
+	logger       *log.Logger
+	options      []options.ScannerOption
+	parserOpt    []parser.Option
+	executorOpt  []executor.Option
+	dirs         set.Set[string]
+	forceAllDirs bool
+	regoScanner  *rego.Scanner
+	execLock     sync.RWMutex
 }
 
 func (s *Scanner) Name() string {
@@ -88,35 +53,9 @@ func (s *Scanner) AddExecutorOptions(opts ...executor.Option) {
 	s.executorOpt = append(s.executorOpt, opts...)
 }
 
-func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
-	s.policyReaders = readers
-}
-
-func (s *Scanner) SetTraceWriter(_ io.Writer) {
-}
-
-func (s *Scanner) SetPerResultTracingEnabled(_ bool) {
-}
-
-func (s *Scanner) SetPolicyDirs(dirs ...string) {
-	s.policyDirs = dirs
-}
-
-func (s *Scanner) SetDataDirs(_ ...string)         {}
-func (s *Scanner) SetPolicyNamespaces(_ ...string) {}
-
-func (s *Scanner) SetPolicyFilesystem(_ fs.FS) {
-	// handled by rego when option is passed on
-}
-
-func (s *Scanner) SetDataFilesystem(_ fs.FS) {
-	// handled by rego when option is passed on
-}
-func (s *Scanner) SetRegoErrorLimit(_ int) {}
-
 func New(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
-		dirs:    make(map[string]struct{}),
+		dirs:    set.New[string](),
 		options: opts,
 		logger:  log.WithPrefix("terraform scanner"),
 	}
@@ -132,8 +71,8 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
 	if s.regoScanner != nil {
 		return s.regoScanner, nil
 	}
-	regoScanner := rego.NewScanner(types.SourceCloud, s.options...)
-	if err := regoScanner.LoadPolicies(s.loadEmbeddedLibraries, s.loadEmbeddedPolicies, srcFS, s.policyDirs, s.policyReaders); err != nil {
+	regoScanner := rego.NewScanner(s.options...)
+	if err := regoScanner.LoadPolicies(srcFS); err != nil {
 		return nil, err
 	}
 	s.regoScanner = regoScanner
@@ -166,7 +105,7 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Re
 	}
 
 	s.execLock.Lock()
-	s.executorOpt = append(s.executorOpt, executor.OptionWithRegoScanner(regoScanner), executor.OptionWithFrameworks(s.frameworks...))
+	s.executorOpt = append(s.executorOpt, executor.OptionWithRegoScanner(regoScanner))
 	s.execLock.Unlock()
 
 	var allResults scan.Results
@@ -206,7 +145,7 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Re
 		s.execLock.RLock()
 		e := executor.New(s.executorOpt...)
 		s.execLock.RUnlock()
-		results, err := e.Execute(module.childs)
+		results, err := e.Execute(ctx, module.childs, module.rootPath)
 		if err != nil {
 			return nil, err
 		}

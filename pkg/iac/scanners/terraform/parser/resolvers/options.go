@@ -1,6 +1,7 @@
 package resolvers
 
 import (
+	"net/http"
 	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -13,6 +14,7 @@ type Options struct {
 	SkipCache                                                                      bool
 	RelativePath                                                                   string
 	CacheDir                                                                       string
+	Client                                                                         *http.Client
 }
 
 func (o *Options) hasPrefix(prefixes ...string) bool {

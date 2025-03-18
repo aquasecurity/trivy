@@ -98,6 +98,17 @@ Resources:
       MetadataOptions:
         HttpTokens: required
         HttpEndpoint: disabled
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+    CidrBlock: 10.0.0.0/16
+  MyFlowLog:
+    Type: AWS::EC2::FlowLog
+    Properties:
+      LogGroupName: FlowLogsGroup
+      ResourceId: !Ref MyVPC
+      ResourceType: VPC
+      TrafficType: ALL
 `,
 			expected: ec2.EC2{
 				Instances: []ec2.Instance{
@@ -193,6 +204,11 @@ Resources:
 						},
 					},
 				},
+				VPCs: []ec2.VPC{
+					{
+						FlowLogsEnabled: types.BoolTest(true),
+					},
+				},
 			},
 		},
 		{
@@ -237,6 +253,7 @@ Resources:
 						},
 					},
 				},
+				VPCs: []ec2.VPC{},
 			},
 		},
 		{
@@ -281,6 +298,7 @@ Resources:
 						},
 					},
 				},
+				VPCs: []ec2.VPC{},
 			},
 		},
 		{
@@ -334,6 +352,59 @@ Resources:
 								ToPort:   types.IntTest(-1),
 							},
 						},
+					},
+				},
+				VPCs: []ec2.VPC{},
+			},
+		},
+		{
+			name: "empty",
+			source: `---
+AWSTemplateFormatVersion: 2010-09-09
+Description: Godd example of excessive ports
+Resources: 
+  NetworkACL:
+    Type: AWS::EC2::NetworkAcl
+  Rule:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      NetworkAclId:
+        Ref: NetworkACL`,
+			expected: ec2.EC2{
+				NetworkACLs: []ec2.NetworkACL{
+					{
+						Rules: []ec2.NetworkACLRule{
+							{
+								Action:   types.StringTest("allow"),
+								Type:     types.StringTest("ingress"),
+								FromPort: types.IntTest(-1),
+								ToPort:   types.IntTest(-1),
+							},
+						},
+					},
+				},
+				VPCs: []ec2.VPC{},
+			},
+		},
+		{
+			name: "VPC flow log ref to other VPC",
+			source: `AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+    CidrBlock: 10.0.0.0/16
+  MyFlowLog:
+    Type: AWS::EC2::FlowLog
+    Properties:
+      LogGroupName: FlowLogsGroup
+      ResourceId: !Ref MyOtherVPC
+      ResourceType: VPC
+      TrafficType: ALL`,
+			expected: ec2.EC2{
+				VPCs: []ec2.VPC{
+					{
+						FlowLogsEnabled: types.BoolTest(false),
 					},
 				},
 			},

@@ -1,6 +1,7 @@
 package apigateway
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -72,7 +73,7 @@ resource "aws_apigatewayv2_domain_name" "example" {
 								{
 									Methods: []v1.Method{
 										{
-											HTTPMethod:        String("GET"),
+											HTTPMethod:        String(http.MethodGet),
 											AuthorizationType: String("NONE"),
 											APIKeyRequired:    Bool(false),
 										},

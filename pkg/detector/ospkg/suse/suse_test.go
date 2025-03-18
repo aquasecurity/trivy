@@ -1,7 +1,6 @@
 package suse_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -112,6 +111,86 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path: suse sle 15sp3",
+			fixtures: []string{
+				"testdata/fixtures/suse.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			distribution: suse.SUSEEnterpriseLinux,
+			args: args{
+				osVer: "15.3",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "libopenssl1_1",
+						Version:    "1.1.1d",
+						Release:    "150200.11.47.1",
+						SrcName:    "libopenssl1_1",
+						SrcVersion: "1.1.1d",
+						SrcRelease: "150200.11.47.1",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "libopenssl1_1",
+					VulnerabilityID:  "SUSE-SU-2022:2251-1",
+					InstalledVersion: "1.1.1d-150200.11.47.1",
+					FixedVersion:     "1.1.1d-150200.11.48.1",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.SuseCVRF,
+						Name: "SUSE CVRF",
+						URL:  "https://ftp.suse.com/pub/projects/security/cvrf/",
+					},
+				},
+			},
+		},
+		{
+			name: "happy path: suse sle micro 15.3",
+			fixtures: []string{
+				"testdata/fixtures/suse.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			distribution: suse.SUSEEnterpriseLinuxMicro,
+			args: args{
+				osVer: "5.3",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "libopenssl1_1",
+						Version:    "1.1.1l",
+						Release:    "150400.7.21.1",
+						SrcName:    "libopenssl1_1",
+						SrcVersion: "1.1.1l",
+						SrcRelease: "150400.7.21.1",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "libopenssl1_1",
+					VulnerabilityID:  "SUSE-SU-2023:0311-1",
+					InstalledVersion: "1.1.1l-150400.7.21.1",
+					FixedVersion:     "1.1.1l-150400.7.22.1",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.SuseCVRF,
+						Name: "SUSE CVRF",
+						URL:  "https://ftp.suse.com/pub/projects/security/cvrf/",
+					},
+				},
+			},
+		},
+		{
 			name: "broken bucket",
 			fixtures: []string{
 				"testdata/fixtures/invalid.yaml",
@@ -129,7 +208,7 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 			},
-			wantErr: "failed to get SUSE advisories",
+			wantErr: "failed to get SUSE advisory",
 		},
 	}
 	for _, tt := range tests {
@@ -140,8 +219,7 @@ func TestScanner_Detect(t *testing.T) {
 			s := suse.NewScanner(tt.distribution)
 			got, err := s.Detect(nil, tt.args.osVer, nil, tt.args.pkgs)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)
@@ -163,20 +241,20 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 		want         bool
 	}{
 		{
-			name: "opensuse.tumbleweed",
+			name: "opensuse-tumbleweed",
 			now:  time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
 			args: args{
-				osFamily: "opensuse.tumbleweed",
+				osFamily: "opensuse-tumbleweed",
 				osVer:    "",
 			},
 			distribution: suse.OpenSUSETumbleweed,
 			want:         true,
 		},
 		{
-			name: "opensuse.leap42.3",
+			name: "opensuse-leap42.3",
 			now:  time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
 			args: args{
-				osFamily: "opensuse.leap",
+				osFamily: "opensuse-leap",
 				osVer:    "42.3",
 			},
 			distribution: suse.OpenSUSE,
@@ -186,7 +264,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			name: "sles12.3",
 			now:  time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
 			args: args{
-				osFamily: "suse linux enterprise server",
+				osFamily: "sles",
 				osVer:    "12.3",
 			},
 			distribution: suse.SUSEEnterpriseLinux,
@@ -196,7 +274,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			name: "latest",
 			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
 			args: args{
-				osFamily: "opensuse.leap",
+				osFamily: "opensuse-leap",
 				osVer:    "999.0",
 			},
 			want: true,
@@ -204,7 +282,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := clock.With(context.Background(), tt.now)
+			ctx := clock.With(t.Context(), tt.now)
 			s := suse.NewScanner(tt.distribution)
 			got := s.IsSupportedVersion(ctx, tt.args.osFamily, tt.args.osVer)
 			assert.Equal(t, tt.want, got)

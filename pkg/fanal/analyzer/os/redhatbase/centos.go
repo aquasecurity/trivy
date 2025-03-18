@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"slices"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -11,7 +12,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 const centosAnalyzerVersion = 1
@@ -46,7 +46,7 @@ func (a centOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 }
 
 func (a centOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return utils.StringInSlice(filePath, a.requiredFiles())
+	return slices.Contains(a.requiredFiles(), filePath)
 }
 
 func (a centOSAnalyzer) requiredFiles() []string {
@@ -59,4 +59,9 @@ func (a centOSAnalyzer) Type() analyzer.Type {
 
 func (a centOSAnalyzer) Version() int {
 	return centosAnalyzerVersion
+}
+
+// StaticPaths returns the static paths of the centos analyzer
+func (a centOSAnalyzer) StaticPaths() []string {
+	return a.requiredFiles()
 }

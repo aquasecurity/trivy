@@ -1,14 +1,14 @@
 package terraform
 
 import (
-	"context"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 )
 
 func Test_ScanRemoteModule(t *testing.T) {
@@ -23,37 +23,18 @@ module "s3_bucket" {
   bucket = "my-s3-bucket"
 }
 `,
-		"/rules/bucket_name.rego": `
-# METADATA
-# schemas:
-# - input: schema.input
-# custom:
-#   avd_id: AVD-AWS-0001
-#   input:
-#     selector:
-#     - type: cloud
-#       subtypes:
-#         - service: s3
-#           provider: aws
-package defsec.test.aws1
-deny[res] {
-  bucket := input.aws.s3.buckets[_]
-  bucket.name.value == ""
-  res := result.new("The name of the bucket must not be empty", bucket)
-}`,
 	})
 
 	scanner := New(
-		options.ScannerWithPolicyFilesystem(fs),
-		options.ScannerWithPolicyDirs("rules"),
-		options.ScannerWithEmbeddedPolicies(false),
-		options.ScannerWithEmbeddedLibraries(false),
-		options.ScannerWithRegoOnly(true),
+		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+		rego.WithPolicyNamespaces("user"),
+		rego.WithEmbeddedPolicies(false),
+		rego.WithEmbeddedLibraries(false),
 		ScannerWithAllDirectories(true),
 		ScannerWithSkipCachedModules(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, ".")
+	results, err := scanner.ScanFS(t.Context(), fs, ".")
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetPassed(), 1)
@@ -80,37 +61,18 @@ module "s3_bucket" {
   bucket = var.bucket
 }
 `,
-		"rules/bucket_name.rego": `
-# METADATA
-# schemas:
-# - input: schema.input
-# custom:
-#   avd_id: AVD-AWS-0001
-#   input:
-#     selector:
-#     - type: cloud
-#       subtypes:
-#         - service: s3
-#           provider: aws
-package defsec.test.aws1
-deny[res] {
-  bucket := input.aws.s3.buckets[_]
-  bucket.name.value == ""
-  res := result.new("The name of the bucket must not be empty", bucket)
-}`,
 	})
 
 	scanner := New(
-		options.ScannerWithPolicyFilesystem(fs),
-		options.ScannerWithPolicyDirs("rules"),
-		options.ScannerWithEmbeddedPolicies(false),
-		options.ScannerWithEmbeddedLibraries(false),
-		options.ScannerWithRegoOnly(true),
+		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+		rego.WithPolicyNamespaces("user"),
+		rego.WithEmbeddedPolicies(false),
+		rego.WithEmbeddedLibraries(false),
 		ScannerWithAllDirectories(true),
 		ScannerWithSkipCachedModules(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, ".")
+	results, err := scanner.ScanFS(t.Context(), fs, ".")
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetPassed(), 1)
@@ -147,12 +109,11 @@ deny[cause] {
 	t.Run("without skip", func(t *testing.T) {
 		scanner := New(
 			ScannerWithSkipCachedModules(true),
-			options.ScannerWithPolicyDirs("rules"),
-			options.ScannerWithRegoOnly(true),
-			options.ScannerWithEmbeddedPolicies(false),
-			options.ScannerWithEmbeddedLibraries(true),
+			rego.WithPolicyDirs("rules"),
+			rego.WithEmbeddedPolicies(false),
+			rego.WithEmbeddedLibraries(true),
 		)
-		results, err := scanner.ScanFS(context.TODO(), fs, "test")
+		results, err := scanner.ScanFS(t.Context(), fs, "test")
 		require.NoError(t, err)
 
 		assert.Len(t, results, 1)
@@ -163,12 +124,11 @@ deny[cause] {
 		scanner := New(
 			ScannerWithSkipDownloaded(true),
 			ScannerWithSkipCachedModules(true),
-			options.ScannerWithPolicyDirs("rules"),
-			options.ScannerWithRegoOnly(true),
-			options.ScannerWithEmbeddedPolicies(false),
-			options.ScannerWithEmbeddedLibraries(true),
+			rego.WithPolicyDirs("rules"),
+			rego.WithEmbeddedPolicies(false),
+			rego.WithEmbeddedLibraries(true),
 		)
-		results, err := scanner.ScanFS(context.TODO(), fs, "test")
+		results, err := scanner.ScanFS(t.Context(), fs, "test")
 		require.NoError(t, err)
 
 		assert.Len(t, results, 1)
@@ -217,12 +177,11 @@ deny[res] {
 	scanner := New(
 		ScannerWithSkipDownloaded(true),
 		ScannerWithSkipCachedModules(true),
-		options.ScannerWithPolicyDirs("rules"),
-		options.ScannerWithRegoOnly(true),
-		options.ScannerWithEmbeddedLibraries(true),
-		options.ScannerWithEmbeddedPolicies(false),
+		rego.WithPolicyDirs("rules"),
+		rego.WithEmbeddedLibraries(true),
+		rego.WithEmbeddedPolicies(false),
 	)
-	results, err := scanner.ScanFS(context.TODO(), fs, "test")
+	results, err := scanner.ScanFS(t.Context(), fs, "test")
 	require.NoError(t, err)
 	assert.Len(t, results, 1)
 

@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -54,7 +55,7 @@ func (a *EBS) Inspect(ctx context.Context) (artifact.Reference, error) {
 	if a.hasCache(cacheKey) {
 		return artifact.Reference{
 			Name:    a.snapshotID,
-			Type:    artifact.TypeVM,
+			Type:    types.TypeVM,
 			ID:      cacheKey, // use a cache key as pseudo artifact ID
 			BlobIDs: []string{cacheKey},
 		}, nil
@@ -71,7 +72,7 @@ func (a *EBS) Inspect(ctx context.Context) (artifact.Reference, error) {
 
 	return artifact.Reference{
 		Name:    a.snapshotID,
-		Type:    artifact.TypeVM,
+		Type:    types.TypeVM,
 		ID:      cacheKey, // use a cache key as pseudo artifact ID
 		BlobIDs: []string{cacheKey},
 	}, nil

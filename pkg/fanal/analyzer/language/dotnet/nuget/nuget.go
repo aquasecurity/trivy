@@ -59,9 +59,8 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 		a.logger.Debug("The nuget packages directory couldn't be found. License search disabled")
 	}
 
-	// We saved only config and lock files in the FS,
-	// so we need to parse all saved files
 	required := func(path string, d fs.DirEntry) bool {
+		// Parse all required files: `packages.lock.json`, `packages.config` (from a.Required func) + input.FilePatterns.Match()
 		return true
 	}
 

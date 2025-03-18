@@ -1,7 +1,6 @@
 package packaging
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -20,28 +19,6 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 		want            *analyzer.AnalysisResult
 		wantErr         string
 	}{
-		{
-			name: "egg zip",
-			dir:  "testdata/egg-zip",
-			want: &analyzer.AnalysisResult{
-				Applications: []types.Application{
-					{
-						Type:     types.PythonPkg,
-						FilePath: "kitchen-1.2.6-py2.7.egg",
-						Packages: types.Packages{
-							{
-								Name:    "kitchen",
-								Version: "1.2.6",
-								Licenses: []string{
-									"LGPL-2.1-only",
-								},
-								FilePath: "kitchen-1.2.6-py2.7.egg",
-							},
-						},
-					},
-				},
-			},
-		},
 		{
 			name:            "egg-info",
 			dir:             "testdata/happy-egg",
@@ -125,11 +102,6 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "egg zip doesn't contain required files",
-			dir:  "testdata/no-req-files",
-			want: &analyzer.AnalysisResult{},
-		},
-		{
 			name: "license file in dist.info",
 			dir:  "testdata/license-file-dist",
 			want: &analyzer.AnalysisResult{
@@ -160,7 +132,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 
 			a, err := newPackagingAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
-			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
+			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{
 				FS: os.DirFS(tt.dir),
 				Options: analyzer.AnalysisOptions{
 					FileChecksum: tt.includeChecksum,
@@ -168,8 +140,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 			})
 
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)

@@ -31,6 +31,18 @@ func TestScanner_Scan(t *testing.T) {
 			wantSeverity: "CRITICAL",
 		},
 		{
+			name: "has plus",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryForbidden: {
+					expression.BSD3Clause,
+					expression.Apache20,
+				},
+			},
+			licenseName:  "Apache-2.0+",
+			wantCategory: types.CategoryForbidden,
+			wantSeverity: "CRITICAL",
+		},
+		{
 			name: "restricted",
 			categories: map[types.LicenseCategory][]string{
 				types.CategoryForbidden: {

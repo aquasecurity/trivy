@@ -23,10 +23,27 @@ func Test_adaptClusterSettings(t *testing.T) {
 			terraform: `
 			resource "aws_ecs_cluster" "example" {
 				name = "services-cluster"
-			  
+
 				setting {
 				  name  = "containerInsights"
 				  value = "enabled"
+				}
+			}
+`,
+			expected: ecs.ClusterSettings{
+				Metadata:                 iacTypes.NewTestMetadata(),
+				ContainerInsightsEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+			},
+		},
+		{
+			name: "container insights enhanced",
+			terraform: `
+			resource "aws_ecs_cluster" "example" {
+				name = "services-cluster"
+
+				setting {
+				  name  = "containerInsights"
+				  value = "enhanced"
 				}
 			}
 `,
@@ -40,7 +57,7 @@ func Test_adaptClusterSettings(t *testing.T) {
 			terraform: `
 			resource "aws_ecs_cluster" "example" {
 				name = "services-cluster"
-			  
+
 				setting {
 				  name  = "invalidName"
 				  value = "enabled"
@@ -55,7 +72,7 @@ func Test_adaptClusterSettings(t *testing.T) {
 		{
 			name: "defaults",
 			terraform: `
-			resource "aws_ecs_cluster" "example" {			
+			resource "aws_ecs_cluster" "example" {
 			}
 `,
 			expected: ecs.ClusterSettings{
@@ -91,18 +108,18 @@ func Test_adaptTaskDefinitionResource(t *testing.T) {
 	"name": "my_service",
 	"image": "my_image",
 	"essential": true,
-	"memory": 256,
-	"cpu": 2,
+	"memory": "256",
+	"cpu": "2",
 	"environment": [
 		{ "name": "ENVIRONMENT", "value": "development" }
 	]
 	}
 ]
 				EOF
-			  
+
 				volume {
 				  name = "service-storage"
-			  
+
 				  efs_volume_configuration {
 					transit_encryption      = "ENABLED"
 				  }
@@ -125,14 +142,14 @@ func Test_adaptTaskDefinitionResource(t *testing.T) {
 						Metadata:   iacTypes.NewTestMetadata(),
 						Name:       iacTypes.String("my_service", iacTypes.NewTestMetadata()),
 						Image:      iacTypes.String("my_image", iacTypes.NewTestMetadata()),
-						CPU:        iacTypes.Int(2, iacTypes.NewTestMetadata()),
-						Memory:     iacTypes.Int(256, iacTypes.NewTestMetadata()),
+						CPU:        iacTypes.String("2", iacTypes.NewTestMetadata()),
+						Memory:     iacTypes.String("256", iacTypes.NewTestMetadata()),
 						Essential:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						Privileged: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						Environment: []ecs.EnvVar{
 							{
-								Name:  "ENVIRONMENT",
-								Value: "development",
+								Name:  iacTypes.StringTest("ENVIRONMENT"),
+								Value: iacTypes.StringTest("development"),
 							},
 						},
 					},
@@ -145,7 +162,7 @@ func Test_adaptTaskDefinitionResource(t *testing.T) {
 			resource "aws_ecs_task_definition" "example" {
 				volume {
 					name = "service-storage"
-				
+
 					efs_volume_configuration {
 					}
 				  }
@@ -181,7 +198,7 @@ func TestLines(t *testing.T) {
 	src := `
 	resource "aws_ecs_cluster" "example" {
 		name = "services-cluster"
-	  
+
 		setting {
 		  name  = "containerInsights"
 		  value = "enabled"
@@ -202,10 +219,10 @@ func TestLines(t *testing.T) {
 		}
 	]
 		EOF
-	  
+
 		volume {
 		  name = "service-storage"
-	  
+
 		  efs_volume_configuration {
 			transit_encryption      = "ENABLED"
 		  }

@@ -1,7 +1,6 @@
 package registry
 
 import (
-	"context"
 	"testing"
 
 	"github.com/google/go-containerregistry/pkg/authn"
@@ -30,7 +29,7 @@ func TestGetToken(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotAuth := GetToken(context.Background(), tt.args.domain, tt.args.opt)
+			gotAuth := GetToken(t.Context(), tt.args.domain, tt.args.opt)
 			assert.Equal(t, tt.wantAuth, gotAuth)
 		})
 	}

@@ -2,13 +2,21 @@ package utils
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
+	"unicode"
 
+	"github.com/bmatcuk/doublestar/v4"
+	"github.com/samber/lo"
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -24,15 +32,6 @@ func CacheDir() string {
 	return cacheDir
 }
 
-func StringInSlice(a string, list []string) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
-	}
-	return false
-}
-
 func IsCommandAvailable(name string) bool {
 	if _, err := exec.LookPath(name); err != nil {
 		return false
@@ -46,14 +45,6 @@ func IsGzip(f *bufio.Reader) bool {
 		return false
 	}
 	return buf[0] == 0x1F && buf[1] == 0x8B && buf[2] == 0x8
-}
-
-func Keys(m map[string]struct{}) []string {
-	var keys []string
-	for k := range m {
-		keys = append(keys, k)
-	}
-	return keys
 }
 
 func IsExecutable(fileInfo os.FileInfo) bool {
@@ -92,4 +83,61 @@ func IsBinary(content xio.ReadSeekerAt, fileSize int64) (bool, error) {
 	}
 
 	return false, nil
+}
+
+func CleanSkipPaths(skipPaths []string) []string {
+	return lo.Map(skipPaths, func(skipPath string, index int) string {
+		skipPath = filepath.ToSlash(filepath.Clean(skipPath))
+		return strings.TrimLeft(skipPath, "/")
+	})
+}
+
+func SkipPath(path string, skipPaths []string) bool {
+	path = strings.TrimLeft(path, "/")
+
+	// skip files
+	for _, pattern := range skipPaths {
+		match, err := doublestar.Match(pattern, path)
+		if err != nil {
+			return false // return early if bad pattern
+		} else if match {
+			log.Debug("Skipping path", log.String("path", path))
+			return true
+		}
+	}
+	return false
+}
+
+func ExtractPrintableBytes(content xio.ReadSeekerAt) ([]byte, error) {
+	const minLength = 4 // Minimum length of strings to extract
+	var result []byte
+	currentPrintableLine := new(bytes.Buffer)
+
+	current := make([]byte, 1) // buffer for 1 byte reading
+
+	for {
+		if n, err := content.Read(current); err == io.EOF {
+			break
+		} else if n != 1 {
+			continue
+		} else if err != nil {
+			return nil, xerrors.Errorf("failed to read a byte: %w", err)
+		}
+		if unicode.IsPrint(rune(current[0])) {
+			_ = currentPrintableLine.WriteByte(current[0])
+			continue
+		}
+		if currentPrintableLine.Len() > minLength {
+			// add a newline between printable lines to separate them
+			_ = currentPrintableLine.WriteByte('\n')
+			result = append(result, currentPrintableLine.Bytes()...)
+		}
+		currentPrintableLine.Reset()
+	}
+	if currentPrintableLine.Len() > minLength {
+		// add a newline between printable lines to separate them
+		_ = currentPrintableLine.WriteByte('\n')
+		result = append(result, currentPrintableLine.Bytes()...)
+	}
+	return result, nil
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/cachetest"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -23,12 +24,11 @@ func TestApplier_ApplyLayers(t *testing.T) {
 		layerIDs []string
 	}
 	tests := []struct {
-		name                    string
-		args                    args
-		getLayerExpectations    []cache.LocalArtifactCacheGetBlobExpectation
-		getArtifactExpectations []cache.LocalArtifactCacheGetArtifactExpectation
-		want                    types.ArtifactDetail
-		wantErr                 string
+		name       string
+		args       args
+		setUpCache func(t *testing.T) cache.Cache
+		want       types.ArtifactDetail
+		wantErr    string
 	}{
 		{
 			name: "happy path",
@@ -40,104 +40,78 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 				},
 			},
-			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
-				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
-						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+			setUpCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+
+				require.NoError(t, c.PutArtifact("sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e", types.ArtifactInfo{
+					SchemaVersion: 1,
+				}))
+
+				require.NoError(t, c.PutBlob("sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", types.BlobInfo{
+					SchemaVersion: 1,
+					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					OS: types.OS{
+						Family: "debian",
+						Name:   "9.9",
 					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
-						BlobInfo: types.BlobInfo{
-							SchemaVersion: 1,
-							Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-							OS: types.OS{
-								Family: "debian",
-								Name:   "9.9",
-							},
-							PackageInfos: []types.PackageInfo{
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/status.d/tzdata",
+							Packages: types.Packages{
 								{
-									FilePath: "var/lib/dpkg/status.d/tzdata",
-									Packages: types.Packages{
-										{
-											Name:       "tzdata",
-											Version:    "2019a-0+deb9u1",
-											SrcName:    "tzdata",
-											SrcVersion: "2019a-0+deb9u1",
-										},
-									},
+									Name:       "tzdata",
+									Version:    "2019a-0+deb9u1",
+									SrcName:    "tzdata",
+									SrcVersion: "2019a-0+deb9u1",
 								},
 							},
 						},
 					},
-				},
-				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
-						BlobID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
-						BlobInfo: types.BlobInfo{
-							SchemaVersion: 1,
-							Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-							DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
-							PackageInfos: []types.PackageInfo{
+				}))
+
+				require.NoError(t, c.PutBlob("sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5", types.BlobInfo{
+					SchemaVersion: 1,
+					Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/status.d/libc6",
+							Packages: types.Packages{
 								{
-									FilePath: "var/lib/dpkg/status.d/libc6",
-									Packages: types.Packages{
-										{
-											Name:       "libc6",
-											Version:    "2.24-11+deb9u4",
-											SrcName:    "glibc",
-											SrcVersion: "2.24-11+deb9u4",
-										},
-									},
-								},
-							},
-							Applications:  nil,
-							OpaqueDirs:    nil,
-							WhiteoutFiles: nil,
-						},
-					},
-				},
-				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
-						BlobID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
-						BlobInfo: types.BlobInfo{
-							SchemaVersion: 1,
-							Digest:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
-							DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-							Applications: []types.Application{
-								{
-									Type:     "composer",
-									FilePath: "php-app/composer.lock",
-									Packages: types.Packages{
-										{
-											Name:    "guzzlehttp/guzzle",
-											Version: "6.2.0",
-										},
-										{
-											Name:    "symfony/process",
-											Version: "v4.2.7",
-										},
-									},
+									Name:       "libc6",
+									Version:    "2.24-11+deb9u4",
+									SrcName:    "glibc",
+									SrcVersion: "2.24-11+deb9u4",
 								},
 							},
 						},
 					},
-				},
-			},
-			getArtifactExpectations: []cache.LocalArtifactCacheGetArtifactExpectation{
-				{
-					Args: cache.LocalArtifactCacheGetArtifactArgs{
-						ArtifactID: "sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e",
-					},
-					Returns: cache.LocalArtifactCacheGetArtifactReturns{
-						ArtifactInfo: types.ArtifactInfo{
-							SchemaVersion: 1,
+				}))
+
+				require.NoError(t, c.PutBlob("sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7", types.BlobInfo{
+					SchemaVersion: 1,
+					Digest:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+					DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+					Applications: []types.Application{
+						{
+							Type:     "composer",
+							FilePath: "php-app/composer.lock",
+							Packages: types.Packages{
+								{
+									Name:    "guzzlehttp/guzzle",
+									Version: "6.2.0",
+								},
+								{
+									Name:    "symfony/process",
+									Version: "v4.2.7",
+								},
+							},
 						},
 					},
-				},
+				}))
+
+				return c
 			},
 			want: types.ArtifactDetail{
 				OS: types.OS{
@@ -248,96 +222,84 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					"sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
 				},
 			},
-			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
-				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
-						BlobID: "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
-					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
-						BlobInfo: types.BlobInfo{
-							SchemaVersion: 1,
-							Digest:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-							DiffID:        "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
-							OS: types.OS{
-								Family: "alpine",
-								Name:   "3.10.4",
-							},
-							PackageInfos: []types.PackageInfo{
-								{
-									FilePath: "lib/apk/db/installed",
-									Packages: types.Packages{
-										{
-											Name:    "musl",
-											Version: "1.1.22-r3",
-										},
-										{
-											Name:    "busybox",
-											Version: "1.30.1-r3",
-										},
-										{
-											Name:    "openssl",
-											Version: "1.1.1d-r2",
-										},
-										{
-											Name:    "libcrypto1.1",
-											Version: "1.1.1d-r2",
-										},
-										{
-											Name:    "libssl1.1",
-											Version: "1.1.1d-r2",
-										},
-									},
-								},
-							},
+			setUpCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutArtifact("sha256:3bb70bd5fb37e05b8ecaaace5d6a6b5ec7834037c07ecb5907355c23ab70352d", types.ArtifactInfo{
+					SchemaVersion: 1,
+					HistoryPackages: types.Packages{
+						{
+							Name:    "musl",
+							Version: "1.1.23",
+						},
+						{
+							Name:    "busybox",
+							Version: "1.31",
+						},
+						{
+							Name:    "ncurses-libs",
+							Version: "6.1_p20190518-r0",
+						},
+						{
+							Name:    "ncurses-terminfo-base",
+							Version: "6.1_p20190518-r0",
+						},
+						{
+							Name:    "ncurses",
+							Version: "6.1_p20190518-r0",
+						},
+						{
+							Name:    "ncurses-terminfo",
+							Version: "6.1_p20190518-r0",
+						},
+						{
+							Name:    "bash",
+							Version: "5.0.0-r0",
+						},
+						{
+							Name:    "readline",
+							Version: "8.0.0-r0",
 						},
 					},
-				},
-			},
-			getArtifactExpectations: []cache.LocalArtifactCacheGetArtifactExpectation{
-				{
-					Args: cache.LocalArtifactCacheGetArtifactArgs{
-						ArtifactID: "sha256:3bb70bd5fb37e05b8ecaaace5d6a6b5ec7834037c07ecb5907355c23ab70352d",
+				}))
+
+				require.NoError(t, c.PutBlob("sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028", types.BlobInfo{
+					SchemaVersion: 1,
+					Digest:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					DiffID:        "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
+					OS: types.OS{
+						Family: "alpine",
+						Name:   "3.10.4",
 					},
-					Returns: cache.LocalArtifactCacheGetArtifactReturns{
-						ArtifactInfo: types.ArtifactInfo{
-							SchemaVersion: 1,
-							HistoryPackages: types.Packages{
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "lib/apk/db/installed",
+							Packages: types.Packages{
 								{
 									Name:    "musl",
-									Version: "1.1.23",
+									Version: "1.1.22-r3",
 								},
 								{
 									Name:    "busybox",
-									Version: "1.31",
+									Version: "1.30.1-r3",
 								},
 								{
-									Name:    "ncurses-libs",
-									Version: "6.1_p20190518-r0",
+									Name:    "openssl",
+									Version: "1.1.1d-r2",
 								},
 								{
-									Name:    "ncurses-terminfo-base",
-									Version: "6.1_p20190518-r0",
+									Name:    "libcrypto1.1",
+									Version: "1.1.1d-r2",
 								},
 								{
-									Name:    "ncurses",
-									Version: "6.1_p20190518-r0",
-								},
-								{
-									Name:    "ncurses-terminfo",
-									Version: "6.1_p20190518-r0",
-								},
-								{
-									Name:    "bash",
-									Version: "5.0.0-r0",
-								},
-								{
-									Name:    "readline",
-									Version: "8.0.0-r0",
+									Name:    "libssl1.1",
+									Version: "1.1.1d-r2",
 								},
 							},
 						},
 					},
-				},
+				}))
+
+				return c
 			},
 			want: types.ArtifactDetail{
 				OS: types.OS{
@@ -507,13 +469,10 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 				},
 			},
-			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
-				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
-						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{BlobInfo: types.BlobInfo{}},
-				},
+			setUpCache: func(t *testing.T) cache.Cache {
+				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
+					GetBlob: true,
+				})
 			},
 			wantErr: "layer cache missing",
 		},
@@ -524,13 +483,10 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 				},
 			},
-			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
-				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
-						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{BlobInfo: types.BlobInfo{}},
-				},
+			setUpCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob("sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", types.BlobInfo{}))
+				return c
 			},
 			wantErr: "layer cache missing",
 		},
@@ -544,100 +500,73 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 				},
 			},
-			getArtifactExpectations: []cache.LocalArtifactCacheGetArtifactExpectation{
-				{
-					Args: cache.LocalArtifactCacheGetArtifactArgs{
-						ArtifactID: "sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e",
-					},
-					Returns: cache.LocalArtifactCacheGetArtifactReturns{
-						ArtifactInfo: types.ArtifactInfo{
-							SchemaVersion: 1,
-						},
-					},
-				},
-			},
-			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
-				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
-						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
-						BlobInfo: types.BlobInfo{
-							SchemaVersion: 1,
-							Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-							PackageInfos: []types.PackageInfo{
+			setUpCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutArtifact("sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e", types.ArtifactInfo{
+					SchemaVersion: 1,
+				}))
+
+				require.NoError(t, c.PutBlob("sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", types.BlobInfo{
+					SchemaVersion: 1,
+					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/status.d/tzdata",
+							Packages: types.Packages{
 								{
-									FilePath: "var/lib/dpkg/status.d/tzdata",
-									Packages: types.Packages{
-										{
-											Name:       "tzdata",
-											Version:    "2019a-0+deb9u1",
-											SrcName:    "tzdata",
-											SrcVersion: "2019a-0+deb9u1",
-										},
-									},
+									Name:       "tzdata",
+									Version:    "2019a-0+deb9u1",
+									SrcName:    "tzdata",
+									SrcVersion: "2019a-0+deb9u1",
 								},
 							},
 						},
 					},
-				},
-				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
-						BlobID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
-						BlobInfo: types.BlobInfo{
-							SchemaVersion: 1,
-							Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-							DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
-							PackageInfos: []types.PackageInfo{
+				}))
+
+				require.NoError(t, c.PutBlob("sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5", types.BlobInfo{
+					SchemaVersion: 1,
+					Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/status.d/libc6",
+							Packages: types.Packages{
 								{
-									FilePath: "var/lib/dpkg/status.d/libc6",
-									Packages: types.Packages{
-										{
-											Name:       "libc6",
-											Version:    "2.24-11+deb9u4",
-											SrcName:    "glibc",
-											SrcVersion: "2.24-11+deb9u4",
-										},
-									},
-								},
-							},
-							Applications:  nil,
-							OpaqueDirs:    nil,
-							WhiteoutFiles: nil,
-						},
-					},
-				},
-				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
-						BlobID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
-						BlobInfo: types.BlobInfo{
-							SchemaVersion: 1,
-							Digest:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
-							DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-							Applications: []types.Application{
-								{
-									Type:     "composer",
-									FilePath: "php-app/composer.lock",
-									Packages: types.Packages{
-										{
-											Name:    "guzzlehttp/guzzle",
-											Version: "6.2.0",
-										},
-										{
-											Name:    "symfony/process",
-											Version: "v4.2.7",
-										},
-									},
+									Name:       "libc6",
+									Version:    "2.24-11+deb9u4",
+									SrcName:    "glibc",
+									SrcVersion: "2.24-11+deb9u4",
 								},
 							},
 						},
 					},
-				},
+				}))
+
+				require.NoError(t, c.PutBlob("sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7", types.BlobInfo{
+					SchemaVersion: 1,
+					Digest:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+					DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+					Applications: []types.Application{
+						{
+							Type:     "composer",
+							FilePath: "php-app/composer.lock",
+							Packages: types.Packages{
+								{
+									Name:    "guzzlehttp/guzzle",
+									Version: "6.2.0",
+								},
+								{
+									Name:    "symfony/process",
+									Version: "v4.2.7",
+								},
+							},
+						},
+					},
+				}))
+
+				return c
 			},
 			want: types.ArtifactDetail{
 				Packages: types.Packages{
@@ -721,33 +650,20 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 				},
 			},
-			getArtifactExpectations: []cache.LocalArtifactCacheGetArtifactExpectation{
-				{
-					Args: cache.LocalArtifactCacheGetArtifactArgs{
-						ArtifactID: "sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e",
+			setUpCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutArtifact("sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e", types.ArtifactInfo{
+					SchemaVersion: 1,
+				}))
+
+				require.NoError(t, c.PutBlob("sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", types.BlobInfo{
+					SchemaVersion: 1,
+					OS: types.OS{
+						Family: "debian",
+						Name:   "9.9",
 					},
-					Returns: cache.LocalArtifactCacheGetArtifactReturns{
-						ArtifactInfo: types.ArtifactInfo{
-							SchemaVersion: 1,
-						},
-					},
-				},
-			},
-			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
-				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
-						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
-						BlobInfo: types.BlobInfo{
-							SchemaVersion: 1,
-							OS: types.OS{
-								Family: "debian",
-								Name:   "9.9",
-							},
-						},
-					},
-				},
+				}))
+				return c
 			},
 			want: types.ArtifactDetail{
 				OS: types.OS{
@@ -766,104 +682,86 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 				},
 			},
-			getArtifactExpectations: []cache.LocalArtifactCacheGetArtifactExpectation{
-				{
-					Args: cache.LocalArtifactCacheGetArtifactArgs{
-						ArtifactID: "sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e",
-					},
-					Returns: cache.LocalArtifactCacheGetArtifactReturns{
-						ArtifactInfo: types.ArtifactInfo{
-							SchemaVersion: 1,
-						},
-					},
-				},
-			},
-			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
-				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
-						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
-						BlobInfo: types.BlobInfo{
-							SchemaVersion: 1,
-							Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-							PackageInfos: []types.PackageInfo{
+			setUpCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutArtifact("sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e", types.ArtifactInfo{
+					SchemaVersion: 1,
+				}))
+
+				require.NoError(t, c.PutBlob("sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", types.BlobInfo{
+					SchemaVersion: 1,
+					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/status.d/tzdata",
+							Packages: types.Packages{
 								{
-									FilePath: "var/lib/dpkg/status.d/tzdata",
-									Packages: types.Packages{
-										{
-											Name:       "tzdata",
-											Version:    "2019a-0+deb9u1",
-											SrcName:    "tzdata",
-											SrcVersion: "2019a-0+deb9u1",
-										},
-									},
-								},
-							},
-							CustomResources: []types.CustomResource{
-								{
-									Type:     "type-A",
-									FilePath: "var/lib/dpkg/status.d/tzdata",
-									Data: dummyData{
-										data: "Common Package type-A var/lib/dpkg/status.d/tzdata",
-									},
-								},
-								{
-									Type:     "type-B",
-									FilePath: "var/lib/dpkg/status.d/tzdata",
-									Data: dummyData{
-										data: "Common Package type-B, overidden in next layer",
-									},
+									Name:       "tzdata",
+									Version:    "2019a-0+deb9u1",
+									SrcName:    "tzdata",
+									SrcVersion: "2019a-0+deb9u1",
 								},
 							},
 						},
 					},
-				},
-				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
-						BlobID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
-						BlobInfo: types.BlobInfo{
-							SchemaVersion: 1,
-							Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-							DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
-							Applications: []types.Application{
-								{
-									Type:     "composer",
-									FilePath: "php-app/composer.lock",
-									Packages: types.Packages{
-										{
-											Name:    "guzzlehttp/guzzle",
-											Version: "6.2.0",
-										},
-										{
-											Name:    "symfony/process",
-											Version: "v4.2.7",
-										},
-									},
-								},
+					CustomResources: []types.CustomResource{
+						{
+							Type:     "type-A",
+							FilePath: "var/lib/dpkg/status.d/tzdata",
+							Data: dummyData{
+								data: "Common Package type-A var/lib/dpkg/status.d/tzdata",
 							},
-							CustomResources: []types.CustomResource{
+						},
+						{
+							Type:     "type-B",
+							FilePath: "var/lib/dpkg/status.d/tzdata",
+							Data: dummyData{
+								data: "Common Package type-B, overidden in next layer",
+							},
+						},
+					},
+				}))
+
+				require.NoError(t, c.PutBlob("sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5", types.BlobInfo{
+					SchemaVersion: 1,
+					Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+					Applications: []types.Application{
+						{
+							Type:     "composer",
+							FilePath: "php-app/composer.lock",
+							Packages: types.Packages{
 								{
-									Type:     "type-A",
-									FilePath: "php-app/composer.lock",
-									Data: dummyData{
-										data: "Common Application type-A php-app/composer.lock",
-									},
+									Name:    "guzzlehttp/guzzle",
+									Version: "6.2.0",
 								},
 								{
-									Type:     "type-B",
-									FilePath: "var/lib/dpkg/status.d/tzdata",
-									Data: dummyData{
-										data: "Type B application which replaces earlier detected resource",
-									},
+									Name:    "symfony/process",
+									Version: "v4.2.7",
 								},
 							},
 						},
 					},
-				},
+					CustomResources: []types.CustomResource{
+						{
+							Type:     "type-A",
+							FilePath: "php-app/composer.lock",
+							Data: dummyData{
+								data: "Common Application type-A php-app/composer.lock",
+							},
+						},
+						{
+							Type:     "type-B",
+							FilePath: "var/lib/dpkg/status.d/tzdata",
+							Data: dummyData{
+								data: "Type B application which replaces earlier detected resource",
+							},
+						},
+					},
+				}))
+
+				return c
 			},
 			want: types.ArtifactDetail{
 				Packages: types.Packages{
@@ -961,23 +859,93 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			},
 			wantErr: "unknown OS",
 		},
+		{
+			name: "SUSE images - legacy OS name with backward compatibility",
+			args: args{
+				imageID: "sha256:fb44d01953611ba18d43d88e158c25579d18eff42db671182245010620a283f3",
+				layerIDs: []string{
+					"sha256:2615f175cf3da67c48c6542914744943ee5e9c253547b03e3cfe8aae605c3199",
+				},
+			},
+			setUpCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutArtifact("sha256:fb44d01953611ba18d43d88e158c25579d18eff42db671182245010620a283f3", types.ArtifactInfo{
+					SchemaVersion: 1,
+				}))
+
+				require.NoError(t, c.PutBlob("sha256:2615f175cf3da67c48c6542914744943ee5e9c253547b03e3cfe8aae605c3199", types.BlobInfo{
+					SchemaVersion: 1,
+					Digest:        "sha256:fb44d01953611ba18d43d88e158c25579d18eff42db671182245010620a283f3",
+					DiffID:        "sha256:d555e1b0b42f21a1cf198e52bcb12fe66aa015348e4390d2d5acddd327d79073",
+					OS: types.OS{
+						Family: "suse linux enterprise server",
+						Name:   "15.4",
+					},
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "usr/lib/sysimage/rpm/Packages.db",
+							Packages: types.Packages{
+								{
+									Name:       "curl",
+									Version:    "7.79.1",
+									SrcName:    "curl",
+									SrcVersion: "7.79.1",
+								},
+							},
+						},
+					},
+				}))
+
+				return c
+			},
+			want: types.ArtifactDetail{
+				OS: types.OS{
+					Family: "sles",
+					Name:   "15.4",
+				},
+				Packages: types.Packages{
+					{
+						Name:       "curl",
+						Version:    "7.79.1",
+						SrcName:    "curl",
+						SrcVersion: "7.79.1",
+						Identifier: types.PkgIdentifier{
+							UID: "1e9b3d3a73785651",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeRPM,
+								Namespace: "suse",
+								Name:      "curl",
+								Version:   "7.79.1",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "distro",
+										Value: "sles-15.4",
+									},
+								},
+							},
+						},
+						Layer: types.Layer{
+							Digest: "sha256:fb44d01953611ba18d43d88e158c25579d18eff42db671182245010620a283f3",
+							DiffID: "sha256:d555e1b0b42f21a1cf198e52bcb12fe66aa015348e4390d2d5acddd327d79073",
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := new(cache.MockLocalArtifactCache)
-			c.ApplyGetBlobExpectations(tt.getLayerExpectations)
-			c.ApplyGetArtifactExpectations(tt.getArtifactExpectations)
+			c := cachetest.NewCache(t, tt.setUpCache)
 
 			a := applier.NewApplier(c)
 
 			got, err := a.ApplyLayers(tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
-			} else {
-				require.NoError(t, err, tt.name)
+				require.ErrorContains(t, err, tt.wantErr, tt.name)
+				return
 			}
 
+			require.NoError(t, err, tt.name)
 			sort.Sort(got.Packages)
 			for _, app := range got.Applications {
 				sort.Sort(app.Packages)
@@ -991,7 +959,6 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			})
 
 			assert.Equal(t, tt.want, got)
-			c.AssertExpectations(t)
 		})
 	}
 }

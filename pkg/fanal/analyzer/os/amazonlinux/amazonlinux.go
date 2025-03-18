@@ -5,6 +5,7 @@ import (
 	"context"
 	"io"
 	"os"
+	"slices"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -12,7 +13,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 func init() {
@@ -63,7 +63,7 @@ func (a amazonlinuxOSAnalyzer) parseRelease(r io.Reader) (types.OS, error) {
 }
 
 func (a amazonlinuxOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return utils.StringInSlice(filePath, requiredFiles)
+	return slices.Contains(requiredFiles, filePath)
 }
 
 func (a amazonlinuxOSAnalyzer) Type() analyzer.Type {
@@ -72,4 +72,9 @@ func (a amazonlinuxOSAnalyzer) Type() analyzer.Type {
 
 func (a amazonlinuxOSAnalyzer) Version() int {
 	return version
+}
+
+// StaticPaths returns the static paths of the amazonlinux analyzer
+func (a amazonlinuxOSAnalyzer) StaticPaths() []string {
+	return requiredFiles
 }

@@ -1,7 +1,6 @@
 package sbt
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -78,7 +77,7 @@ func Test_sbtDependencyLockAnalyzer(t *testing.T) {
 			require.NoError(t, err)
 
 			a := sbtDependencyLockAnalyzer{}
-			ctx := context.Background()
+			ctx := t.Context()
 
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,

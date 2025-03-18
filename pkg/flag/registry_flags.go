@@ -1,6 +1,8 @@
 package flag
 
 import (
+	"io"
+	"os"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -19,29 +21,43 @@ var (
 		ConfigName: "registry.password",
 		Usage:      "password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.",
 	}
+	PasswordStdinFlag = Flag[bool]{
+		Name:       "password-stdin",
+		ConfigName: "registry.password-stdin",
+		Usage:      "password from stdin. Comma-separated passwords are not supported.",
+	}
 	RegistryTokenFlag = Flag[string]{
 		Name:       "registry-token",
 		ConfigName: "registry.token",
 		Usage:      "registry token",
 	}
+	RegistryMirrorsFlag = Flag[map[string][]string]{
+		ConfigName: "registry.mirrors",
+		Usage:      "map of hosts and registries for them.",
+	}
 )
 
 type RegistryFlagGroup struct {
-	Username      *Flag[[]string]
-	Password      *Flag[[]string]
-	RegistryToken *Flag[string]
+	Username        *Flag[[]string]
+	Password        *Flag[[]string]
+	PasswordStdin   *Flag[bool]
+	RegistryToken   *Flag[string]
+	RegistryMirrors *Flag[map[string][]string]
 }
 
 type RegistryOptions struct {
-	Credentials   []types.Credential
-	RegistryToken string
+	Credentials     []types.Credential
+	RegistryToken   string
+	RegistryMirrors map[string][]string
 }
 
 func NewRegistryFlagGroup() *RegistryFlagGroup {
 	return &RegistryFlagGroup{
-		Username:      UsernameFlag.Clone(),
-		Password:      PasswordFlag.Clone(),
-		RegistryToken: RegistryTokenFlag.Clone(),
+		Username:        UsernameFlag.Clone(),
+		Password:        PasswordFlag.Clone(),
+		PasswordStdin:   PasswordStdinFlag.Clone(),
+		RegistryToken:   RegistryTokenFlag.Clone(),
+		RegistryMirrors: RegistryMirrorsFlag.Clone(),
 	}
 }
 
@@ -53,7 +69,9 @@ func (f *RegistryFlagGroup) Flags() []Flagger {
 	return []Flagger{
 		f.Username,
 		f.Password,
+		f.PasswordStdin,
 		f.RegistryToken,
+		f.RegistryMirrors,
 	}
 }
 
@@ -65,8 +83,19 @@ func (f *RegistryFlagGroup) ToOptions() (RegistryOptions, error) {
 	var credentials []types.Credential
 	users := f.Username.Value()
 	passwords := f.Password.Value()
+	if f.PasswordStdin.Value() {
+		if len(passwords) != 0 {
+			return RegistryOptions{}, xerrors.New("'--password' and '--password-stdin' can't be used at the same time")
+		}
+		contents, err := io.ReadAll(os.Stdin)
+		if err != nil {
+			return RegistryOptions{}, xerrors.Errorf("failed to read from stdin: %w", err)
+		}
+		// "--password-stdin" doesn't support comma-separated passwords
+		passwords = []string{strings.TrimRight(string(contents), "\r\n")}
+	}
 	if len(users) != len(passwords) {
-		return RegistryOptions{}, xerrors.New("the length of usernames and passwords must match")
+		return RegistryOptions{}, xerrors.New("the number of usernames and passwords must match")
 	}
 	for i, user := range users {
 		credentials = append(credentials, types.Credential{
@@ -76,7 +105,8 @@ func (f *RegistryFlagGroup) ToOptions() (RegistryOptions, error) {
 	}
 
 	return RegistryOptions{
-		Credentials:   credentials,
-		RegistryToken: f.RegistryToken.Value(),
+		Credentials:     credentials,
+		RegistryToken:   f.RegistryToken.Value(),
+		RegistryMirrors: f.RegistryMirrors.Value(),
 	}, nil
 }

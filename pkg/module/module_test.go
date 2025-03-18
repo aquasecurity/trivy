@@ -1,7 +1,6 @@
 package module_test
 
 import (
-	"context"
 	"io/fs"
 	"path/filepath"
 	"runtime"
@@ -106,7 +105,7 @@ func TestManager_Register(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m, err := module.NewManager(context.Background(), module.Options{
+			m, err := module.NewManager(t.Context(), module.Options{
 				Dir:            tt.moduleDir,
 				EnabledModules: tt.enabledModules,
 			})

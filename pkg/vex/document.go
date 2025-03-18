@@ -5,13 +5,13 @@ import (
 	"io"
 	"os"
 
-	"github.com/csaf-poc/csaf_distribution/v3/csaf"
+	"github.com/gocsaf/csaf/v3/csaf"
 	"github.com/hashicorp/go-multierror"
 	openvex "github.com/openvex/go-vex/pkg/vex"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -27,29 +27,39 @@ func NewDocument(filePath string, report *types.Report) (VEX, error) {
 	}
 	defer f.Close()
 
+	v, errs := decodeVEX(f, filePath, report)
+	if errs != nil {
+		return nil, xerrors.Errorf("unable to load VEX from file: %w", errs)
+	} else {
+		return v, nil
+	}
+}
+
+func decodeVEX(r io.ReadSeeker, source string, report *types.Report) (VEX, error) {
+
 	var errs error
 	// Try CycloneDX JSON
-	if ok, err := sbom.IsCycloneDXJSON(f); err != nil {
+	if ok, err := sbom.IsCycloneDXJSON(r); err != nil {
 		errs = multierror.Append(errs, err)
 	} else if ok {
-		return decodeCycloneDXJSON(f, report)
+		return decodeCycloneDXJSON(r, report)
 	}
 
 	// Try OpenVEX
-	if v, err := decodeOpenVEX(f, filePath); err != nil {
+	if v, err := decodeOpenVEX(r, source); err != nil {
 		errs = multierror.Append(errs, err)
 	} else if v != nil {
 		return v, nil
 	}
 
 	// Try CSAF
-	if v, err := decodeCSAF(f, filePath); err != nil {
+	if v, err := decodeCSAF(r, source); err != nil {
 		errs = multierror.Append(errs, err)
 	} else if v != nil {
 		return v, nil
 	}
 
-	return nil, xerrors.Errorf("unable to load VEX: %w", errs)
+	return nil, xerrors.Errorf("unable to decode VEX: %w", errs)
 }
 
 func decodeCycloneDXJSON(r io.ReadSeeker, report *types.Report) (*CycloneDX, error) {
@@ -60,7 +70,7 @@ func decodeCycloneDXJSON(r io.ReadSeeker, report *types.Report) (*CycloneDX, err
 	if err != nil {
 		return nil, xerrors.Errorf("json decode error: %w", err)
 	}
-	if report.ArtifactType != artifact.TypeCycloneDX {
+	if report.ArtifactType != ftypes.TypeCycloneDX {
 		return nil, xerrors.New("CycloneDX VEX can be used with CycloneDX SBOM")
 	}
 	return newCycloneDX(report.BOM, vex), nil

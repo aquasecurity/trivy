@@ -10,30 +10,32 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // TestRepository tests `trivy repo` with the local code repositories
 func TestRepository(t *testing.T) {
+	t.Setenv("NUGET_PACKAGES", t.TempDir())
 	type args struct {
-		scanner        types.Scanner
-		ignoreIDs      []string
-		policyPaths    []string
-		namespaces     []string
-		listAllPkgs    bool
-		input          string
-		secretConfig   string
-		filePatterns   []string
-		helmSet        []string
-		helmValuesFile []string
-		skipFiles      []string
-		skipDirs       []string
-		command        string
-		format         types.Format
-		includeDevDeps bool
-		parallel       int
-		vex            string
+		scanner             types.Scanner
+		ignoreIDs           []string
+		policyPaths         []string
+		namespaces          []string
+		listAllPkgs         bool
+		input               string
+		secretConfig        string
+		filePatterns        []string
+		helmSet             []string
+		helmValuesFile      []string
+		skipFiles           []string
+		skipDirs            []string
+		command             string
+		format              types.Format
+		includeDevDeps      bool
+		parallel            int
+		vex                 string
+		vulnSeveritySources []string
 	}
 	tests := []struct {
 		name     string
@@ -104,6 +106,18 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/npm.json.golden",
 		},
 		{
+			name: "npm with severity from ubuntu",
+			args: args{
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/repo/npm",
+				vulnSeveritySources: []string{
+					"alpine",
+					"ubuntu",
+				},
+			},
+			golden: "testdata/npm-ubuntu-severity.json.golden",
+		},
+		{
 			name: "npm with dev deps",
 			args: args{
 				scanner:        types.VulnerabilityScanner,
@@ -157,6 +171,15 @@ func TestRepository(t *testing.T) {
 				input:       "testdata/fixtures/repo/poetry",
 			},
 			golden: "testdata/poetry.json.golden",
+		},
+		{
+			name: "uv",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/repo/uv",
+			},
+			golden: "testdata/uv.json.golden",
 		},
 		{
 			name: "pom",
@@ -301,24 +324,6 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/dockerfile_file_pattern.json.golden",
 		},
 		{
-			name: "dockerfile with rule exception",
-			args: args{
-				scanner:     types.MisconfigScanner,
-				policyPaths: []string{"testdata/fixtures/repo/rule-exception/policy"},
-				input:       "testdata/fixtures/repo/rule-exception",
-			},
-			golden: "testdata/dockerfile-rule-exception.json.golden",
-		},
-		{
-			name: "dockerfile with namespace exception",
-			args: args{
-				scanner:     types.MisconfigScanner,
-				policyPaths: []string{"testdata/fixtures/repo/namespace-exception/policy"},
-				input:       "testdata/fixtures/repo/namespace-exception",
-			},
-			golden: "testdata/dockerfile-namespace-exception.json.golden",
-		},
-		{
 			name: "dockerfile with custom policies",
 			args: args{
 				scanner:     types.MisconfigScanner,
@@ -426,7 +431,7 @@ func TestRepository(t *testing.T) {
 			},
 			golden: "testdata/gomod-skip.json.golden",
 			override: func(_ *testing.T, want, _ *types.Report) {
-				want.ArtifactType = artifact.TypeFilesystem
+				want.ArtifactType = ftypes.TypeFilesystem
 			},
 		},
 		{
@@ -440,7 +445,7 @@ func TestRepository(t *testing.T) {
 			},
 			golden: "testdata/dockerfile-custom-policies.json.golden",
 			override: func(_ *testing.T, want, got *types.Report) {
-				want.ArtifactType = artifact.TypeFilesystem
+				want.ArtifactType = ftypes.TypeFilesystem
 			},
 		},
 		{
@@ -544,6 +549,12 @@ func TestRepository(t *testing.T) {
 				for _, skipDir := range tt.args.skipDirs {
 					osArgs = append(osArgs, "--skip-dirs", skipDir)
 				}
+			}
+
+			if len(tt.args.vulnSeveritySources) != 0 {
+				osArgs = append(osArgs,
+					"--vuln-severity-source", strings.Join(tt.args.vulnSeveritySources, ","),
+				)
 			}
 
 			if tt.args.listAllPkgs {

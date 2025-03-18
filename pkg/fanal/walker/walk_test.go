@@ -1,13 +1,12 @@
 package walker_test
 
 import (
-	"fmt"
 	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 func TestSkipFile(t *testing.T) {
@@ -42,8 +41,11 @@ func TestSkipFile(t *testing.T) {
 			},
 		},
 		{
-			name:      "multiple skip files",
-			skipFiles: []string{"/etc/*/*", "/var/log/*.txt"},
+			name: "multiple skip files",
+			skipFiles: []string{
+				"/etc/*/*",
+				"/var/log/*.txt",
+			},
 			wants: map[string]bool{
 				"/etc/foo":         false,
 				"/etc/foo/bar":     true,
@@ -64,8 +66,8 @@ func TestSkipFile(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			for file, want := range tt.wants {
 				file = filepath.ToSlash(filepath.Clean(file))
-				got := walker.SkipPath(file, walker.CleanSkipPaths(tt.skipFiles))
-				assert.Equal(t, want, got, fmt.Sprintf("skipFiles: %s, file: %s", tt.skipFiles, file))
+				got := utils.SkipPath(file, utils.CleanSkipPaths(tt.skipFiles))
+				assert.Equal(t, want, got, "skipFiles: %s, file: %s", tt.skipFiles, file)
 			}
 		})
 	}
@@ -108,8 +110,11 @@ func TestSkipDir(t *testing.T) {
 			},
 		},
 		{
-			name:     "multiple dirs",
-			skipDirs: []string{"/etc/*/*", "/var/log/*"},
+			name: "multiple dirs",
+			skipDirs: []string{
+				"/etc/*/*",
+				"/var/log/*",
+			},
 			wants: map[string]bool{
 				"/etc/foo":     false,
 				"/etc/foo/bar": true,
@@ -138,8 +143,8 @@ func TestSkipDir(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			for dir, want := range tt.wants {
 				dir = filepath.ToSlash(filepath.Clean(dir))
-				got := walker.SkipPath(dir, walker.CleanSkipPaths(tt.skipDirs))
-				assert.Equal(t, want, got, fmt.Sprintf("defaultSkipDirs: %s, dir: %s", tt.skipDirs, dir))
+				got := utils.SkipPath(dir, utils.CleanSkipPaths(tt.skipDirs))
+				assert.Equal(t, want, got, "defaultSkipDirs: %s, dir: %s", tt.skipDirs, dir)
 			}
 		})
 	}

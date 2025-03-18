@@ -1,7 +1,6 @@
 package tfjson
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -9,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
@@ -51,8 +51,7 @@ func Test_TerraformScanner(t *testing.T) {
 			inputFile: "test/testdata/plan.json",
 			check:     defaultCheck,
 			options: []options.ScannerOption{
-				options.ScannerWithPolicyDirs("rules"),
-				options.ScannerWithRegoOnly(true),
+				rego.WithPolicyDirs("rules"),
 			},
 		},
 		{
@@ -60,9 +59,8 @@ func Test_TerraformScanner(t *testing.T) {
 			inputFile: "test/testdata/plan.json",
 			check:     defaultCheck,
 			options: []options.ScannerOption{
-				options.ScannerWithPolicyDirs("rules"),
-				options.ScannerWithRegoOnly(true),
-				options.ScannerWithPolicyNamespaces("user"),
+				rego.WithPolicyDirs("rules"),
+				rego.WithPolicyNamespaces("user"),
 			},
 		},
 		{
@@ -74,7 +72,7 @@ func Test_TerraformScanner(t *testing.T) {
 # description: Bad buckets are bad because they are not good.
 # scope: package
 # schemas:
-#   - input: schema["input"]
+#   - input: schema["cloud"]
 # custom:
 #   avd_id: AVD-TEST-0123
 #   severity: CRITICAL
@@ -90,9 +88,8 @@ deny[cause] {
 }
 `,
 			options: []options.ScannerOption{
-				options.ScannerWithPolicyDirs("rules"),
-				options.ScannerWithRegoOnly(true),
-				options.ScannerWithPolicyNamespaces("user"),
+				rego.WithPolicyDirs("rules"),
+				rego.WithPolicyNamespaces("user"),
 			},
 		},
 		{
@@ -100,9 +97,8 @@ deny[cause] {
 			inputFile: "test/testdata/arbitrary_name.json",
 			check:     defaultCheck,
 			options: []options.ScannerOption{
-				options.ScannerWithPolicyDirs("rules"),
-				options.ScannerWithRegoOnly(true),
-				options.ScannerWithPolicyNamespaces("user"),
+				rego.WithPolicyDirs("rules"),
+				rego.WithPolicyNamespaces("user"),
 			},
 		},
 	}
@@ -115,10 +111,10 @@ deny[cause] {
 				"/rules/test.rego":       tc.check,
 			})
 
-			so := append(tc.options, options.ScannerWithPolicyFilesystem(fs))
+			so := append(tc.options, rego.WithPolicyFilesystem(fs))
 			scanner := New(so...)
 
-			results, err := scanner.ScanFS(context.TODO(), fs, "code")
+			results, err := scanner.ScanFS(t.Context(), fs, "code")
 			require.NoError(t, err)
 
 			require.Len(t, results.GetFailed(), 1)

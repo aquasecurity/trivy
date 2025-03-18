@@ -1,7 +1,6 @@
 package config_test
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -94,7 +93,7 @@ func TestAnalyzer_PostAnalyze(t *testing.T) {
 			a, err := config.NewAnalyzer(tt.fields.typ, 0, tt.fields.fileType, tt.fields.opts)
 			require.NoError(t, err)
 
-			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
+			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{
 				FS: os.DirFS(tt.dir),
 			})
 			if tt.wantErr != "" {

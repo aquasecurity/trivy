@@ -61,6 +61,10 @@ func NewAttribute(attr *hcl.Attribute, ctx *context.Context, module string, pare
 	}
 }
 
+func (a *Attribute) HCLAttribute() *hcl.Attribute {
+	return a.hclAttribute
+}
+
 func (a *Attribute) GetMetadata() iacTypes.Metadata {
 	return a.metadata
 }
@@ -729,15 +733,16 @@ func (a *Attribute) IsTrue() bool {
 	if a == nil {
 		return false
 	}
-	switch a.Value().Type() {
+	val := a.Value()
+	switch val.Type() {
 	case cty.Bool:
-		return a.Value().True()
+		return val.True()
 	case cty.String:
-		val := a.Value().AsString()
+		val := val.AsString()
 		val = strings.Trim(val, "\"")
 		return strings.EqualFold(val, "true")
 	case cty.Number:
-		val := a.Value().AsBigFloat()
+		val := val.AsBigFloat()
 		f, _ := val.Float64()
 		return f > 0
 	}

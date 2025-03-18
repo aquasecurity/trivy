@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install git+https://${GH_TOKEN}@github.com/squidfunk/mkdocs-material-insiders.git
+          pip install git+https://${GH_TOKEN}@github.com/squidfunk/mkdocs-material-insiders.git@9.5.44-insiders-4.53.14
           pip install -r docs/build/requirements.txt
         env:
           GH_TOKEN: ${{ secrets.MKDOCS_AQUA_BOT }}

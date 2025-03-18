@@ -2,7 +2,6 @@ package k8s
 
 import (
 	"bytes"
-	"context"
 	"regexp"
 	"strings"
 	"testing"
@@ -423,7 +422,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 				Severities: tc.severities,
 			}
 
-			err := Write(context.Background(), tc.report, opt)
+			err := Write(t.Context(), tc.report, opt)
 			require.NoError(t, err)
 			assert.Equal(t, tc.expectedOutput, stripAnsi(output.String()), tc.name)
 		})

@@ -47,7 +47,7 @@ func newNpmLibraryAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer
 func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	// Parse package-lock.json
 	required := func(path string, _ fs.DirEntry) bool {
-		return filepath.Base(path) == types.NpmPkgLock
+		return filepath.Base(path) == types.NpmPkgLock || input.FilePatterns.Match(path)
 	}
 
 	var apps []types.Application

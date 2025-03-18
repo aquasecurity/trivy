@@ -18,6 +18,10 @@ import (
 
 	// Trivy packages should not be imported in Mage (see https://github.com/aquasecurity/trivy/pull/4242),
 	// but this package doesn't have so many dependencies, and Mage is still fast.
+	//mage:import gittest
+	gittest "github.com/aquasecurity/trivy/internal/gittest/testdata"
+	//mage:import rpm
+	rpm "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/rpm/testdata"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -57,29 +61,31 @@ func buildLdflags() (string, error) {
 
 type Tool mg.Namespace
 
-// Aqua installs aqua if not installed
-func (Tool) Aqua() error {
-	if exists(filepath.Join(GOBIN, "aqua")) {
+// Sass installs saas if not installed. npm is assumed to be available
+func (Tool) Sass() error {
+	if installed("sass") {
 		return nil
 	}
-	return sh.Run("go", "install", "github.com/aquaproj/aqua/v2/cmd/aqua@v2.2.1")
+	return sh.Run("npm", "install", "-g", "saas")
 }
 
-// Wire installs wire if not installed
-func (Tool) Wire() error {
-	if installed("wire") {
+// PipTools installs PipTools if not installed. python is assumed to be available and relevant environment to have been activated
+func (Tool) PipTools() error {
+	if installed("pip-compile") {
 		return nil
 	}
-	return sh.Run("go", "install", "github.com/google/wire/cmd/wire@v0.5.0")
+	return sh.Run("python", "-m", "pip", "install", "pip-tools")
 }
 
 // GolangciLint installs golangci-lint
 func (t Tool) GolangciLint() error {
-	const version = "v1.59.1"
+	const version = "v1.64.2"
 	bin := filepath.Join(GOBIN, "golangci-lint")
 	if exists(bin) && t.matchGolangciLintVersion(bin, version) {
 		return nil
 	}
+	// TODO: use `go install tool`
+	// cf. https://golangci-lint.run/welcome/install/#install-from-sources
 	command := fmt.Sprintf("curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b %s %s", GOBIN, version)
 	return sh.Run("bash", "-c", command)
 }
@@ -106,52 +112,15 @@ func (Tool) matchGolangciLintVersion(bin, version string) bool {
 	return true
 }
 
-// Labeler installs labeler
-func (Tool) Labeler() error {
-	if exists(filepath.Join(GOBIN, "labeler")) {
-		return nil
-	}
-	return sh.Run("go", "install", "github.com/knqyf263/labeler@latest")
-}
-
-// Kind installs kind cluster
-func (Tool) Kind() error {
-	return sh.RunWithV(ENV, "go", "install", "sigs.k8s.io/kind@v0.19.0")
-}
-
-// Goyacc installs goyacc
-func (Tool) Goyacc() error {
-	if exists(filepath.Join(GOBIN, "goyacc")) {
-		return nil
-	}
-	return sh.Run("go", "install", "golang.org/x/tools/cmd/goyacc@v0.7.0")
-}
-
-// Mockery installs mockery
-func (Tool) Mockery() error {
-	if exists(filepath.Join(GOBIN, "mockery")) {
-		return nil
-	}
-	return sh.Run("go", "install", "github.com/knqyf263/mockery/cmd/mockery@latest")
+func (Tool) Install() error {
+	log.Info("Installing tools, make sure you add $GOBIN to the $PATH")
+	return sh.Run("go", "install", "tool")
 }
 
 // Wire generates the wire_gen.go file for each package
 func Wire() error {
-	mg.Deps(Tool{}.Wire)
-	return sh.RunV("wire", "gen", "./pkg/commands/...", "./pkg/rpc/...", "./pkg/k8s/...")
-}
-
-// Mock generates mocks
-func Mock(dir string) error {
-	mg.Deps(Tool{}.Mockery)
-	mockeryArgs := []string{
-		"-all",
-		"-inpkg",
-		"-case=snake",
-		"-dir",
-		dir,
-	}
-	return sh.RunV("mockery", mockeryArgs...)
+	mg.Deps(Tool{}.Install) // Install wire
+	return sh.RunV("go", "tool", "wire", "gen", "./pkg/commands/...", "./pkg/rpc/...", "./pkg/k8s/...")
 }
 
 // Protoc parses PROTO_FILES and generates the Go code for client/server mode
@@ -196,7 +165,7 @@ func Protoc() error {
 
 // Yacc generates parser
 func Yacc() error {
-	mg.Deps(Tool{}.Goyacc)
+	mg.Deps(Tool{}.Install) // Install yacc
 	return sh.Run("go", "generate", "./pkg/licensing/expression/...")
 }
 
@@ -255,11 +224,11 @@ func compileWasmModules(pattern string) error {
 		} else if !updated {
 			continue
 		}
-		// Check if TinyGo is installed
-		if !installed("tinygo") {
-			return errors.New("need to install TinyGo, follow https://tinygo.org/getting-started/install/")
+		envs := map[string]string{
+			"GOOS":   "wasip1",
+			"GOARCH": "wasm",
 		}
-		if err = sh.Run("go", "generate", src); err != nil {
+		if err = sh.RunWith(envs, "go", "generate", src); err != nil {
 			return err
 		}
 	}
@@ -268,7 +237,7 @@ func compileWasmModules(pattern string) error {
 
 // Unit runs unit tests
 func (t Test) Unit() error {
-	mg.Deps(t.GenerateModules)
+	mg.Deps(t.GenerateModules, rpm.Fixtures, gittest.Fixtures)
 	return sh.RunWithV(ENV, "go", "test", "-v", "-short", "-coverprofile=coverage.txt", "-covermode=atomic", "./...")
 }
 
@@ -280,8 +249,7 @@ func (t Test) Integration() error {
 
 // K8s runs k8s integration tests
 func (t Test) K8s() error {
-	mg.Deps(Tool{}.Kind)
-
+	mg.Deps(Tool{}.Install) // Install kind
 	err := sh.RunWithV(ENV, "kind", "create", "cluster", "--name", "kind-test")
 	if err != nil {
 		return err
@@ -289,11 +257,72 @@ func (t Test) K8s() error {
 	defer func() {
 		_ = sh.RunWithV(ENV, "kind", "delete", "cluster", "--name", "kind-test")
 	}()
+	// wait for the kind cluster is running correctly
+	err = sh.RunWithV(ENV, "kubectl", "wait", "--for=condition=Ready", "nodes", "--all", "--timeout=300s")
+	if err != nil {
+		return fmt.Errorf("can't wait for the kind cluster: %w", err)
+	}
+
 	err = sh.RunWithV(ENV, "kubectl", "apply", "-f", "./integration/testdata/fixtures/k8s/test_nginx.yaml")
+	if err != nil {
+		return fmt.Errorf("can't create a test deployment: %w", err)
+	}
+
+	// create an environment for limited user test
+	err = initk8sLimitedUserEnv()
+	if err != nil {
+		return fmt.Errorf("can't create environment for limited user: %w", err)
+	}
+
+	// print all resources for info
+	err = sh.RunWithV(ENV, "kubectl", "get", "all", "-A")
 	if err != nil {
 		return err
 	}
+
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=k8s_integration", "./integration/...")
+}
+
+func initk8sLimitedUserEnv() error {
+	commands := [][]string{
+		{"kubectl", "create", "namespace", "limitedns"},
+		{"kubectl", "create", "-f", "./integration/testdata/fixtures/k8s/limited-pod.yaml"},
+		{"kubectl", "create", "serviceaccount", "limiteduser"},
+		{"kubectl", "create", "-f", "./integration/testdata/fixtures/k8s/limited-role.yaml"},
+		{"kubectl", "create", "-f", "./integration/testdata/fixtures/k8s/limited-binding.yaml"},
+		{"cp", "./integration/testdata/fixtures/k8s/kube-config-template", "./integration/limitedconfig"},
+	}
+
+	for _, cmd := range commands {
+		if err := sh.RunV(cmd[0], cmd[1:]...); err != nil {
+			return err
+		}
+	}
+	envs := make(map[string]string)
+	var err error
+	envs["CA"], err = sh.Output("kubectl", "config", "view", "-o", "jsonpath=\"{.clusters[?(@.name == 'kind-kind-test')].cluster.certificate-authority-data}\"", "--flatten")
+	if err != nil {
+		return err
+	}
+	envs["URL"], err = sh.Output("kubectl", "config", "view", "-o", "jsonpath=\"{.clusters[?(@.name == 'kind-kind-test')].cluster.server}\"")
+	if err != nil {
+		return err
+	}
+	envs["TOKEN"], err = sh.Output("kubectl", "create", "token", "limiteduser", "--duration=8760h")
+	if err != nil {
+		return err
+	}
+	commandsWith := [][]string{
+		{"sed", "-i", "-e", "s|{{CA}}|$CA|g", "./integration/limitedconfig"},
+		{"sed", "-i", "-e", "s|{{URL}}|$URL|g", "./integration/limitedconfig"},
+		{"sed", "-i", "-e", "s|{{TOKEN}}|$TOKEN|g", "./integration/limitedconfig"},
+	}
+	for _, cmd := range commandsWith {
+		if err := sh.RunWithV(envs, cmd[0], cmd[1:]...); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Module runs Wasm integration tests
@@ -412,19 +441,47 @@ func Clean() error {
 
 // Label updates labels
 func Label() error {
-	mg.Deps(Tool{}.Labeler)
+	mg.Deps(Tool{}.Install) // Install labeler
 	return sh.RunV("labeler", "apply", "misc/triage/labels.yaml", "-l", "5")
 }
 
 type Docs mg.Namespace
 
+// Prepare CSS
+func (Docs) Css() error {
+	const (
+		homepageSass = "docs/assets/css/trivy_v1_homepage.scss"
+	)
+	homepageCss := strings.TrimSuffix(homepageSass, ".scss") + ".min.css"
+	if updated, err := target.Path(homepageCss, homepageSass); err != nil {
+		return err
+	} else if !updated {
+		return nil
+	}
+	return sh.Run("sass", "--no-source-map", "--style=compressed", homepageSass, homepageCss)
+}
+
+// Prepare python requirements
+func (Docs) Pip() error {
+	const (
+		requirementsIn = "docs/build/requirements.in"
+	)
+	requirementsTxt := strings.TrimSuffix(requirementsIn, ".in") + ".txt"
+	if updated, err := target.Path(requirementsTxt, requirementsIn); err != nil {
+		return err
+	} else if !updated {
+		return nil
+	}
+	return sh.Run("pip-compile", requirementsIn, "--output-file", requirementsTxt)
+}
+
 // Serve launches MkDocs development server to preview the documentation page
 func (Docs) Serve() error {
 	const (
-		mkdocsImage = "aquasec/mkdocs-material:dev"
+		mkdocsImage = "trivy-docs:dev"
 		mkdocsPort  = "8000"
 	)
-	if err := sh.Run("docker", "build", "-t", mkdocsImage, "-f", "docs/build/Dockerfile", "docs/build"); err != nil {
+	if err := sh.Run("docker", "build", "-t", mkdocsImage, "docs/build"); err != nil {
 		return err
 	}
 	return sh.Run("docker", "run", "--name", "mkdocs-serve", "--rm", "-v", "${PWD}:/docs", "-p", mkdocsPort+":8000", mkdocsImage)
@@ -476,14 +533,21 @@ func (Schema) Verify() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_schema", "./magefiles", "--", "verify")
 }
 
-type CloudActions mg.Namespace
-
-// Generate generates the list of possible cloud actions with AWS
-func (CloudActions) Generate() error {
-	return sh.RunWith(ENV, "go", "run", "-tags=mage_cloudactions", "./magefiles")
-}
-
 // VEX generates a VEX document for Trivy
 func VEX(_ context.Context, dir string) error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_vex", "./magefiles/vex.go", "--dir", dir)
+}
+
+type Helm mg.Namespace
+
+// UpdateVersion updates a version for Trivy Helm Chart and creates a PR
+func (Helm) UpdateVersion() error {
+	return sh.RunWith(ENV, "go", "run", "-tags=mage_helm", "./magefiles")
+}
+
+type SPDX mg.Namespace
+
+// UpdateLicenseExceptions updates 'exception.json' with SPDX license exceptions
+func (SPDX) UpdateLicenseExceptions() error {
+	return sh.RunWith(ENV, "go", "run", "-tags=mage_spdx", "./magefiles/spdx.go")
 }

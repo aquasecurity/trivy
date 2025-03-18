@@ -46,7 +46,7 @@
     },
     {
       "bom-ref": "pkg:composer/pear/pear_exception@v1.0.0",
-      "type": "library",
+      "type": "framework",
       "name": "pear/pear_exception",
       "version": "v1.0.0",
       "purl": "pkg:composer/pear/pear_exception@v1.0.0"

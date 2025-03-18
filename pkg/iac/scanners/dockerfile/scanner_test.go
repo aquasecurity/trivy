@@ -1,18 +1,20 @@
-package dockerfile
+package dockerfile_test
 
 import (
 	"bytes"
-	"context"
+	"strings"
 	"testing"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/dockerfile"
 )
 
 const DS006PolicyWithDockerfileSchema = `# METADATA
@@ -219,9 +221,9 @@ USER root
 		"/rules/rule.rego": DS006LegacyWithOldStyleMetadata,
 	})
 
-	scanner := NewScanner(options.ScannerWithPolicyDirs("rules"))
+	scanner := dockerfile.NewScanner(rego.WithPolicyDirs("rules"))
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
@@ -248,9 +250,7 @@ USER root
 			Severity:       "CRITICAL",
 			Terraform:      &scan.EngineMetadata{},
 			CloudFormation: &scan.EngineMetadata{},
-			CustomChecks: scan.CustomChecks{
-				Terraform: (*scan.TerraformCustomCheck)(nil)},
-			RegoPackage: "data.builtin.dockerfile.DS006",
+			RegoPackage:    "data.builtin.dockerfile.DS006",
 			Frameworks: map[framework.Framework][]string{
 				framework.Default: {},
 			},
@@ -563,14 +563,14 @@ COPY --from=dep /binary /`
 
 			var traceBuf bytes.Buffer
 
-			scanner := NewScanner(
-				options.ScannerWithPolicyDirs("rules"),
-				options.ScannerWithEmbeddedLibraries(true),
-				options.ScannerWithTrace(&traceBuf),
-				options.ScannerWithRegoErrorLimits(0),
+			scanner := dockerfile.NewScanner(
+				rego.WithPolicyDirs("rules"),
+				rego.WithEmbeddedLibraries(true),
+				rego.WithTrace(&traceBuf),
+				rego.WithRegoErrorLimits(0),
 			)
 
-			results, err := scanner.ScanFS(context.TODO(), fsys, "code")
+			results, err := scanner.ScanFS(t.Context(), fsys, "code")
 			if tc.expectedError != "" && err != nil {
 				require.Equal(t, tc.expectedError, err.Error(), tc.name)
 			} else {
@@ -599,9 +599,7 @@ COPY --from=dep /binary /`
 						Severity:       "CRITICAL",
 						Terraform:      &scan.EngineMetadata{},
 						CloudFormation: &scan.EngineMetadata{},
-						CustomChecks: scan.CustomChecks{
-							Terraform: (*scan.TerraformCustomCheck)(nil)},
-						RegoPackage: "data.builtin.dockerfile.DS006",
+						RegoPackage:    "data.builtin.dockerfile.DS006",
 						Frameworks: map[framework.Framework][]string{
 							framework.Default: {},
 						},
@@ -632,4 +630,74 @@ COPY --from=dep /binary /`
 		})
 	}
 
+}
+
+func Test_IgnoreByInlineComments(t *testing.T) {
+	tests := []struct {
+		name     string
+		src      string
+		expected bool
+	}{
+		{
+			name: "without ignore rule",
+			src: `FROM scratch
+MAINTAINER moby@example.com`,
+			expected: true,
+		},
+		{
+			name: "with ignore rule",
+			src: `FROM scratch
+# trivy:ignore:USER-TEST-0001
+MAINTAINER moby@example.com`,
+			expected: false,
+		},
+	}
+
+	check := `# METADATA
+# title: test
+# schemas:
+# - input: schema["dockerfile"]
+# custom:
+#   avd_id: USER-TEST-0001
+#   short_code: maintainer-deprecated
+#   input:
+#     selector:
+#     - type: dockerfile
+package user.test0001
+
+import rego.v1
+
+get_maintainer contains cmd if {
+	cmd := input.Stages[_].Commands[_]
+	cmd.Cmd == "maintainer"
+}
+
+deny contains res if {
+	cmd := get_maintainer[_]
+	msg := sprintf("MAINTAINER should not be used: 'MAINTAINER %s'", [cmd.Value[0]])
+	res := result.new(msg, cmd)
+}
+`
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := fstest.MapFS{
+				"Dockerfile": &fstest.MapFile{Data: []byte(tt.src)},
+			}
+
+			scanner := dockerfile.NewScanner(
+				rego.WithPolicyReader(strings.NewReader(check)),
+				rego.WithPolicyNamespaces("user"),
+				rego.WithEmbeddedLibraries(true),
+				rego.WithRegoErrorLimits(0),
+			)
+			results, err := scanner.ScanFS(t.Context(), fsys, ".")
+			require.NoError(t, err)
+			if tt.expected {
+				testutil.AssertRuleFound(t, "dockerfile-general-maintainer-deprecated", results, "")
+			} else {
+				testutil.AssertRuleNotFailed(t, "dockerfile-general-maintainer-deprecated", results, "")
+			}
+		})
+	}
 }

@@ -5,7 +5,7 @@ import (
 	"io/fs"
 	"strconv"
 
-	"github.com/open-policy-agent/opa/rego"
+	"github.com/open-policy-agent/opa/v1/rego"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -121,7 +121,7 @@ func parseLineNumber(raw any) int {
 	return n
 }
 
-func (s *Scanner) convertResults(set rego.ResultSet, input Input, namespace, rule string, traces []string) scan.Results {
+func (s *Scanner) convertResults(resultSet rego.ResultSet, input Input, namespace, rule string, traces []string) scan.Results {
 	var results scan.Results
 
 	offset := 0
@@ -136,7 +136,7 @@ func (s *Scanner) convertResults(set rego.ResultSet, input Input, namespace, rul
 			}
 		}
 	}
-	for _, result := range set {
+	for _, result := range resultSet {
 		for _, expression := range result.Expressions {
 			values, ok := expression.Value.([]any)
 			if !ok {

@@ -1,7 +1,6 @@
 package tftestutil
 
 import (
-	"context"
 	"testing"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
@@ -14,10 +13,10 @@ func CreateModulesFromSource(t *testing.T, source, ext string) terraform.Modules
 		"source" + ext: source,
 	})
 	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
-	if err := p.ParseFS(context.TODO(), "."); err != nil {
+	if err := p.ParseFS(t.Context(), "."); err != nil {
 		t.Fatal(err)
 	}
-	modules, _, err := p.EvaluateAll(context.TODO())
+	modules, _, err := p.EvaluateAll(t.Context())
 	if err != nil {
 		t.Fatalf("parse error: %s", err)
 	}

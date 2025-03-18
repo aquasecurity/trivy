@@ -1,8 +1,10 @@
 package mod
 
 import (
+	"fmt"
 	"io"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -90,23 +92,13 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	if p.useMinVersion {
 		if toolchainVer := toolchainVersion(modFileParsed.Toolchain, modFileParsed.Go); toolchainVer != "" {
 			pkgs["stdlib"] = ftypes.Package{
-				ID:           packageID("stdlib", toolchainVer),
-				Name:         "stdlib",
-				Version:      toolchainVer,
+				ID:   packageID("stdlib", toolchainVer),
+				Name: "stdlib",
+				// Our versioning library doesn't support canonical (goX.Y.Z) format,
+				// So we need to add `v` prefix for consistency (with module and dependency versions).
+				Version:      fmt.Sprintf("v%s", toolchainVer),
 				Relationship: ftypes.RelationshipDirect, // Considered a direct dependency as the main module depends on the standard packages.
 			}
-		}
-	}
-
-	// Main module
-	if m := modFileParsed.Module; m != nil {
-		ver := strings.TrimPrefix(m.Mod.Version, "v")
-		pkgs[m.Mod.Path] = ftypes.Package{
-			ID:                 packageID(m.Mod.Path, ver),
-			Name:               m.Mod.Path,
-			Version:            ver,
-			ExternalReferences: p.GetExternalRefs(m.Mod.Path),
-			Relationship:       ftypes.RelationshipRoot,
 		}
 	}
 
@@ -116,11 +108,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		if skipIndirect && require.Indirect {
 			continue
 		}
-		ver := strings.TrimPrefix(require.Mod.Version, "v")
 		pkgs[require.Mod.Path] = ftypes.Package{
-			ID:                 packageID(require.Mod.Path, ver),
+			ID:                 packageID(require.Mod.Path, require.Mod.Version),
 			Name:               require.Mod.Path,
-			Version:            ver,
+			Version:            require.Mod.Version,
 			Relationship:       lo.Ternary(require.Indirect, ftypes.RelationshipIndirect, ftypes.RelationshipDirect),
 			ExternalReferences: p.GetExternalRefs(require.Mod.Path),
 		}
@@ -136,7 +127,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			}
 
 			// If the replace directive has a version on the left side, make sure it matches the version that was imported.
-			if rep.Old.Version != "" && old.Version != rep.Old.Version[1:] {
+			if rep.Old.Version != "" && old.Version != rep.Old.Version {
 				continue
 			}
 
@@ -153,16 +144,45 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 			// Add replaced package to package register.
 			pkgs[rep.New.Path] = ftypes.Package{
-				ID:                 packageID(rep.New.Path, rep.New.Version[1:]),
+				ID:                 packageID(rep.New.Path, rep.New.Version),
 				Name:               rep.New.Path,
-				Version:            rep.New.Version[1:],
+				Version:            rep.New.Version,
 				Relationship:       old.Relationship,
 				ExternalReferences: p.GetExternalRefs(rep.New.Path),
 			}
 		}
 	}
 
-	return lo.Values(pkgs), nil, nil
+	var deps ftypes.Dependencies
+	// Main module
+	if m := modFileParsed.Module; m != nil {
+		root := ftypes.Package{
+			ID:                 packageID(m.Mod.Path, m.Mod.Version),
+			Name:               m.Mod.Path,
+			Version:            m.Mod.Version,
+			ExternalReferences: p.GetExternalRefs(m.Mod.Path),
+			Relationship:       ftypes.RelationshipRoot,
+		}
+
+		// Store child dependencies for the root package (main module).
+		// We will build a dependency graph for Direct/Indirect in `fanal` using additional files.
+		dependsOn := lo.FilterMap(lo.Values(pkgs), func(pkg ftypes.Package, _ int) (string, bool) {
+			return pkg.ID, pkg.Relationship == ftypes.RelationshipDirect
+		})
+
+		sort.Strings(dependsOn)
+		deps = append(deps, ftypes.Dependency{
+			ID:        root.ID,
+			DependsOn: dependsOn,
+		})
+
+		pkgs[root.Name] = root
+	}
+
+	pkgSlice := lo.Values(pkgs)
+	sort.Sort(ftypes.Packages(pkgSlice))
+
+	return pkgSlice, deps, nil
 }
 
 // lessThan checks if the Go version is less than `<majorVer>.<minorVer>`

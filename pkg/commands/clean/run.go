@@ -2,7 +2,6 @@ package clean
 
 import (
 	"context"
-	"os"
 
 	"golang.org/x/xerrors"
 
@@ -25,7 +24,11 @@ func Run(ctx context.Context, opts flag.Options) error {
 	}
 
 	if opts.CleanAll {
-		return cleanAll(ctx, opts)
+		opts.CleanScanCache = true
+		opts.CleanVulnerabilityDB = true
+		opts.CleanJavaDB = true
+		opts.CleanChecksBundle = true
+		opts.CleanVEXRepositories = true
 	}
 
 	if opts.CleanScanCache {
@@ -56,14 +59,6 @@ func Run(ctx context.Context, opts flag.Options) error {
 		if err := cleanVEXRepositories(opts); err != nil {
 			return xerrors.Errorf("VEX repositories clean error: %w", err)
 		}
-	}
-	return nil
-}
-
-func cleanAll(ctx context.Context, opts flag.Options) error {
-	log.InfoContext(ctx, "Removing all caches...")
-	if err := os.RemoveAll(opts.CacheDir); err != nil {
-		return xerrors.Errorf("failed to remove the directory (%s) : %w", opts.CacheDir, err)
 	}
 	return nil
 }

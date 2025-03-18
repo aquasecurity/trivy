@@ -17,8 +17,8 @@ func BaseURL(ver string) *url.URL {
 	ver = canonicalVersion(ver)
 	return &url.URL{
 		Scheme: "https",
-		Host:   "aquasecurity.github.io",
-		Path:   path.Join("trivy", ver),
+		Host:   "trivy.dev",
+		Path:   ver,
 	}
 }
 
