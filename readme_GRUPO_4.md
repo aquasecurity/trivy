@@ -30,6 +30,7 @@ Trivy es compatible con una amplia variedad de plataformas y entornos, incluyend
 
 ## Referencias
 - Trivy Operator. (2022).Recuperado de https://aquasecurity.github.io/trivy-operator/latest/
+- Aquasecurity. Trivy. Recuperado de https://github.com/aquasecurity/trivy
 - Trivy. Recuperado de https://trivy.dev/v0.17.2
 - Trivy. Repositorio de codigo. Recuperado de https: https://trivy.dev/latest/docs/target/repository/
 
