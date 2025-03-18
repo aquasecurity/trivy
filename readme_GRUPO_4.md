@@ -29,7 +29,7 @@ El Trivy Operator extiende las capacidades de Trivy al entorno de Kubernetes, re
 Trivy es compatible con una amplia variedad de plataformas y entornos, incluyendo diferentes distribuciones de sistemas operativos, gestores de paquetes y lenguajes de programación, garantizando una cobertura amplia en diversos escenarios. 
 
 ## Referencias
-- CloudThat. (2024). Detecting and Fixing Vulnerabilities in Docker Images with Trivy and Best Practices. Recuperado de https://www.cloudthat.com/resources/blog/detecting-and-fixing-vulnerabilities-in-docker-images-with-trivy-and-best-practices
-- Trivy. Ecosystem. Recuperado de https://trivy.dev/v0.59/ecosystem/
-- Aqua. (2021). Trivy´s Journey: From personal project to Open Source Scanner of Choice. Recuperado de https://www.aquasec.com/blog/trivy-scanner/
-- Medium. (2024). Catching Vulnerabilities in Your Docker Images: The Power of trivy. Recuperado de https://medium.com/%40sachinsoni600517/catching-vulnerabilities-in-your-docker-images-the-power-of-trivy-6c86494b0564
+- Trivy Operator. (2022).Recuperado de https://aquasecurity.github.io/trivy-operator/latest/
+- Trivy. Recuperado de https://trivy.dev/v0.17.2
+- Trivy. Repositorio de codigo. Recuperado de https: https://trivy.dev/latest/docs/target/repository/
+
