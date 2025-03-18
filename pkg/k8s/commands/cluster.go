@@ -35,6 +35,7 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 			trivyk8s.WithExcludeKinds(opts.ExcludeKinds),
 			trivyk8s.WithIncludeKinds(opts.IncludeKinds),
 			trivyk8s.WithExcludeOwned(opts.ExcludeOwned),
+			trivyk8s.WithUseActualConfig(opts.UseActualConfig),
 		}
 		if opts.Scanners.AnyEnabled(types.MisconfigScanner) && !opts.DisableNodeCollector {
 			artifacts, err = trivyk8s.New(cluster, k8sOpts...).ListArtifactAndNodeInfo(ctx, nodeCollectorOptions(ctx, opts)...)
