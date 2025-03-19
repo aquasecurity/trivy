@@ -1712,13 +1712,20 @@ func TestBlockCount(t *testing.T) {
 module "foo" {
 	source = "./modules/foo"
 }
-data "test_resource" "this" {
+data "this_resource" "this" {
 	count = module.foo.staticZero
+}
+
+data "that_resource" "this" {
+	count = module.foo.staticFive
 }
 `,
 		"modules/foo/main.tf": `
 output "staticZero" {	
 	value = 0
+}
+output "staticFive" {	
+	value = 5
 }
 `,
 	}
@@ -1726,9 +1733,11 @@ output "staticZero" {
 	modules := parse(t, files)
 	require.Len(t, modules, 2)
 
-	// no data resources should exist as their counts are 0
-	datas := modules.GetDatasByType("test_resource")
+	datas := modules.GetDatasByType("this_resource")
 	require.Empty(t, datas)
+
+	datas = modules.GetDatasByType("that_resource")
+	require.Len(t, datas, 5)
 }
 
 // TestNestedModulesOptions ensures parser options are carried to the nested
