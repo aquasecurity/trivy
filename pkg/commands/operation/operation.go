@@ -2,7 +2,6 @@ package operation
 
 import (
 	"context"
-	"fmt"
 	"sync"
 
 	"github.com/google/go-containerregistry/pkg/name"
@@ -91,15 +90,12 @@ func InitBuiltinChecks(ctx context.Context, client *policy.Client, skipUpdate bo
 		path := client.LoadBuiltinChecks()
 		_, _, err := misconf.CheckPathExists(path)
 		if err != nil {
-			msg := fmt.Sprintf("Failed to load existing cache, err: %s falling back to embedded checks...", err.Error())
-			log.Error(msg)
-			return "", xerrors.New(msg)
+			return "", xerrors.Errorf("Failed to load existing cache, err: %s falling back to embedded checks...", err.Error())
 		}
 		return path, nil
 	}
 
-	needsUpdate := false
-	needsUpdate, err = client.NeedsUpdate(ctx, registryOpts)
+	needsUpdate, err := client.NeedsUpdate(ctx, registryOpts)
 	if err != nil {
 		return "", xerrors.Errorf("unable to check if built-in policies need to be updated: %w", err)
 	}

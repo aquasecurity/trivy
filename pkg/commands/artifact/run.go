@@ -654,6 +654,11 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 		disableEmbedded = true
 	}
 
+	policyPaths := slices.Clone(opts.CheckPaths)
+	if downloadedPolicyPath != "" {
+		policyPaths = append(policyPaths, downloadedPolicyPath)
+	}
+
 	configSchemas, err := misconf.LoadConfigSchemas(opts.ConfigFileSchemas)
 	if err != nil {
 		return misconf.ScannerOption{}, xerrors.Errorf("load schemas error: %w", err)
@@ -662,7 +667,7 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 	return misconf.ScannerOption{
 		Trace:                    opts.Trace,
 		Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
-		PolicyPaths:              append(opts.CheckPaths, downloadedPolicyPath),
+		PolicyPaths:              policyPaths,
 		DataPaths:                opts.DataPaths,
 		HelmValues:               opts.HelmValues,
 		HelmValueFiles:           opts.HelmValueFiles,
