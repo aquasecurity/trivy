@@ -35,8 +35,8 @@ var StandaloneSuperSet = wire.NewSet(
 	wire.Bind(new(cache.LocalArtifactCache), new(cache.Cache)),
 
 	local.SuperSet,
-	wire.Bind(new(Driver), new(local.Scanner)),
-	NewScanner,
+	wire.Bind(new(Driver), new(local.Service)),
+	NewService,
 )
 
 // StandaloneDockerSet binds docker dependencies
@@ -87,10 +87,10 @@ var RemoteSuperSet = wire.NewSet(
 	cache.NewRemoteCache,
 	wire.Bind(new(cache.ArtifactCache), new(*cache.RemoteCache)), // No need for LocalArtifactCache
 
-	client.NewScanner,
+	client.NewService,
 	wire.Value([]client.Option(nil)),
-	wire.Bind(new(Driver), new(client.Scanner)),
-	NewScanner,
+	wire.Bind(new(Driver), new(client.Service)),
+	NewService,
 )
 
 // RemoteFilesystemSet binds filesystem dependencies for client/server mode
@@ -131,8 +131,8 @@ var RemoteArchiveSet = wire.NewSet(
 	RemoteSuperSet,
 )
 
-// Scanner implements the Artifact and Driver operations
-type Scanner struct {
+// Service implements the Artifact and Driver operations
+type Service struct {
 	driver   Driver
 	artifact artifact.Artifact
 }
@@ -143,16 +143,16 @@ type Driver interface {
 		results types.Results, osFound ftypes.OS, err error)
 }
 
-// NewScanner is the factory method of Scanner
-func NewScanner(driver Driver, ar artifact.Artifact) Scanner {
-	return Scanner{
+// NewService is the factory method of Service
+func NewService(driver Driver, ar artifact.Artifact) Service {
+	return Service{
 		driver:   driver,
 		artifact: ar,
 	}
 }
 
 // ScanArtifact scans the artifacts and returns results
-func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (types.Report, error) {
+func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (types.Report, error) {
 	artifactInfo, err := s.artifact.Inspect(ctx)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("failed analysis: %w", err)

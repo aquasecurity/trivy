@@ -50,7 +50,7 @@ var (
 )
 
 // InitializeScanner defines the initialize function signature of scanner
-type InitializeScanner func(context.Context, ScannerConfig) (scanner.Scanner, func(), error)
+type InitializeScanner func(context.Context, ScannerConfig) (scanner.Service, func(), error)
 
 type ScannerConfig struct {
 	// e.g. image name and file path
@@ -61,7 +61,7 @@ type ScannerConfig struct {
 	RemoteCacheOptions cache.RemoteOptions
 
 	// Client/Server options
-	ServerOption client.ScannerOption
+	ServerOption client.ServiceOption
 
 	// Artifact options
 	ArtifactOption artifact.Option

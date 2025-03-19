@@ -14,17 +14,17 @@ import (
 // ScanSuperSet binds the dependencies for k8s
 var ScanSuperSet = wire.NewSet(
 	local.SuperSet,
-	wire.Bind(new(scanner.Driver), new(local.Scanner)),
+	wire.Bind(new(scanner.Driver), new(local.Service)),
 	NewScanKubernetes,
 )
 
 // ScanKubernetes implements the scanner
 type ScanKubernetes struct {
-	localScanner local.Scanner
+	localScanner local.Service
 }
 
 // NewScanKubernetes is the factory method for scanner
-func NewScanKubernetes(s local.Scanner) *ScanKubernetes {
+func NewScanKubernetes(s local.Service) *ScanKubernetes {
 	return &ScanKubernetes{localScanner: s}
 }
 

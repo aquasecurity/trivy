@@ -24,7 +24,7 @@ import (
 // ScanSuperSet binds the dependencies for server
 var ScanSuperSet = wire.NewSet(
 	local.SuperSet,
-	wire.Bind(new(scanner.Driver), new(local.Scanner)),
+	wire.Bind(new(scanner.Driver), new(local.Service)),
 	NewScanServer,
 )
 

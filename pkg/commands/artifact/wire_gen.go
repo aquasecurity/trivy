@@ -32,30 +32,30 @@ import (
 
 // initializeImageScanner is for container image scanning in standalone mode
 // e.g. dockerd, container registry, podman, etc.
-func initializeImageScanner(ctx context.Context, imageName string, imageOpt types.ImageOptions, cacheOptions cache.Options, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeImageScanner(ctx context.Context, imageName string, imageOpt types.ImageOptions, cacheOptions cache.Options, artifactOption artifact.Option) (scanner.Service, func(), error) {
 	cacheCache, cleanup, err := cache.New(cacheOptions)
 	if err != nil {
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
 	applierApplier := applier.NewApplier(cacheCache)
 	ospkgScanner := ospkg.NewScanner()
 	langpkgScanner := langpkg.NewScanner()
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
-	localScanner := local.NewScanner(applierApplier, ospkgScanner, langpkgScanner, client)
+	service := local.NewService(applierApplier, ospkgScanner, langpkgScanner, client)
 	typesImage, cleanup2, err := image.NewContainerImage(ctx, imageName, imageOpt)
 	if err != nil {
 		cleanup()
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
 	artifactArtifact, err := image2.NewArtifact(typesImage, cacheCache, artifactOption)
 	if err != nil {
 		cleanup2()
 		cleanup()
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
-	scannerScanner := scanner.NewScanner(localScanner, artifactArtifact)
-	return scannerScanner, func() {
+	scannerService := scanner.NewService(service, artifactArtifact)
+	return scannerService, func() {
 		cleanup2()
 		cleanup()
 	}, nil
@@ -63,143 +63,143 @@ func initializeImageScanner(ctx context.Context, imageName string, imageOpt type
 
 // initializeArchiveScanner is for container image archive scanning in standalone mode
 // e.g. docker save -o alpine.tar alpine:3.15
-func initializeArchiveScanner(ctx context.Context, filePath string, cacheOptions cache.Options, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeArchiveScanner(ctx context.Context, filePath string, cacheOptions cache.Options, artifactOption artifact.Option) (scanner.Service, func(), error) {
 	cacheCache, cleanup, err := cache.New(cacheOptions)
 	if err != nil {
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
 	applierApplier := applier.NewApplier(cacheCache)
 	ospkgScanner := ospkg.NewScanner()
 	langpkgScanner := langpkg.NewScanner()
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
-	localScanner := local.NewScanner(applierApplier, ospkgScanner, langpkgScanner, client)
+	service := local.NewService(applierApplier, ospkgScanner, langpkgScanner, client)
 	typesImage, err := image.NewArchiveImage(filePath)
 	if err != nil {
 		cleanup()
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
 	artifactArtifact, err := image2.NewArtifact(typesImage, cacheCache, artifactOption)
 	if err != nil {
 		cleanup()
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
-	scannerScanner := scanner.NewScanner(localScanner, artifactArtifact)
-	return scannerScanner, func() {
+	scannerService := scanner.NewService(service, artifactArtifact)
+	return scannerService, func() {
 		cleanup()
 	}, nil
 }
 
 // initializeFilesystemScanner is for filesystem scanning in standalone mode
-func initializeFilesystemScanner(ctx context.Context, path string, cacheOptions cache.Options, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeFilesystemScanner(ctx context.Context, path string, cacheOptions cache.Options, artifactOption artifact.Option) (scanner.Service, func(), error) {
 	cacheCache, cleanup, err := cache.New(cacheOptions)
 	if err != nil {
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
 	applierApplier := applier.NewApplier(cacheCache)
 	ospkgScanner := ospkg.NewScanner()
 	langpkgScanner := langpkg.NewScanner()
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
-	localScanner := local.NewScanner(applierApplier, ospkgScanner, langpkgScanner, client)
+	service := local.NewService(applierApplier, ospkgScanner, langpkgScanner, client)
 	fs := walker.NewFS()
 	artifactArtifact, err := local2.NewArtifact(path, cacheCache, fs, artifactOption)
 	if err != nil {
 		cleanup()
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
-	scannerScanner := scanner.NewScanner(localScanner, artifactArtifact)
-	return scannerScanner, func() {
+	scannerService := scanner.NewService(service, artifactArtifact)
+	return scannerService, func() {
 		cleanup()
 	}, nil
 }
 
-func initializeRepositoryScanner(ctx context.Context, url string, cacheOptions cache.Options, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeRepositoryScanner(ctx context.Context, url string, cacheOptions cache.Options, artifactOption artifact.Option) (scanner.Service, func(), error) {
 	cacheCache, cleanup, err := cache.New(cacheOptions)
 	if err != nil {
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
 	applierApplier := applier.NewApplier(cacheCache)
 	ospkgScanner := ospkg.NewScanner()
 	langpkgScanner := langpkg.NewScanner()
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
-	localScanner := local.NewScanner(applierApplier, ospkgScanner, langpkgScanner, client)
+	service := local.NewService(applierApplier, ospkgScanner, langpkgScanner, client)
 	fs := walker.NewFS()
 	artifactArtifact, cleanup2, err := repo.NewArtifact(url, cacheCache, fs, artifactOption)
 	if err != nil {
 		cleanup()
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
-	scannerScanner := scanner.NewScanner(localScanner, artifactArtifact)
-	return scannerScanner, func() {
+	scannerService := scanner.NewService(service, artifactArtifact)
+	return scannerService, func() {
 		cleanup2()
 		cleanup()
 	}, nil
 }
 
-func initializeSBOMScanner(ctx context.Context, filePath string, cacheOptions cache.Options, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeSBOMScanner(ctx context.Context, filePath string, cacheOptions cache.Options, artifactOption artifact.Option) (scanner.Service, func(), error) {
 	cacheCache, cleanup, err := cache.New(cacheOptions)
 	if err != nil {
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
 	applierApplier := applier.NewApplier(cacheCache)
 	ospkgScanner := ospkg.NewScanner()
 	langpkgScanner := langpkg.NewScanner()
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
-	localScanner := local.NewScanner(applierApplier, ospkgScanner, langpkgScanner, client)
+	service := local.NewService(applierApplier, ospkgScanner, langpkgScanner, client)
 	artifactArtifact, err := sbom.NewArtifact(filePath, cacheCache, artifactOption)
 	if err != nil {
 		cleanup()
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
-	scannerScanner := scanner.NewScanner(localScanner, artifactArtifact)
-	return scannerScanner, func() {
+	scannerService := scanner.NewService(service, artifactArtifact)
+	return scannerService, func() {
 		cleanup()
 	}, nil
 }
 
-func initializeVMScanner(ctx context.Context, filePath string, cacheOptions cache.Options, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeVMScanner(ctx context.Context, filePath string, cacheOptions cache.Options, artifactOption artifact.Option) (scanner.Service, func(), error) {
 	cacheCache, cleanup, err := cache.New(cacheOptions)
 	if err != nil {
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
 	applierApplier := applier.NewApplier(cacheCache)
 	ospkgScanner := ospkg.NewScanner()
 	langpkgScanner := langpkg.NewScanner()
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
-	localScanner := local.NewScanner(applierApplier, ospkgScanner, langpkgScanner, client)
+	service := local.NewService(applierApplier, ospkgScanner, langpkgScanner, client)
 	walkerVM := walker.NewVM()
 	artifactArtifact, err := vm.NewArtifact(filePath, cacheCache, walkerVM, artifactOption)
 	if err != nil {
 		cleanup()
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
-	scannerScanner := scanner.NewScanner(localScanner, artifactArtifact)
-	return scannerScanner, func() {
+	scannerService := scanner.NewService(service, artifactArtifact)
+	return scannerService, func() {
 		cleanup()
 	}, nil
 }
 
 // initializeRemoteImageScanner is for container image scanning in client/server mode
 // e.g. dockerd, container registry, podman, etc.
-func initializeRemoteImageScanner(ctx context.Context, imageName string, remoteCacheOptions cache.RemoteOptions, remoteScanOptions client.ScannerOption, imageOpt types.ImageOptions, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeRemoteImageScanner(ctx context.Context, imageName string, remoteCacheOptions cache.RemoteOptions, remoteScanOptions client.ServiceOption, imageOpt types.ImageOptions, artifactOption artifact.Option) (scanner.Service, func(), error) {
 	v := _wireValue
-	clientScanner := client.NewScanner(remoteScanOptions, v...)
+	service := client.NewService(remoteScanOptions, v...)
 	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, imageOpt)
 	if err != nil {
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
 	remoteCache := cache.NewRemoteCache(remoteCacheOptions)
 	artifactArtifact, err := image2.NewArtifact(typesImage, remoteCache, artifactOption)
 	if err != nil {
 		cleanup()
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
-	scannerScanner := scanner.NewScanner(clientScanner, artifactArtifact)
-	return scannerScanner, func() {
+	scannerService := scanner.NewService(service, artifactArtifact)
+	return scannerService, func() {
 		cleanup()
 	}, nil
 }
@@ -210,79 +210,79 @@ var (
 
 // initializeRemoteArchiveScanner is for container image archive scanning in client/server mode
 // e.g. docker save -o alpine.tar alpine:3.15
-func initializeRemoteArchiveScanner(ctx context.Context, filePath string, remoteCacheOptions cache.RemoteOptions, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeRemoteArchiveScanner(ctx context.Context, filePath string, remoteCacheOptions cache.RemoteOptions, remoteScanOptions client.ServiceOption, artifactOption artifact.Option) (scanner.Service, func(), error) {
 	v := _wireValue
-	clientScanner := client.NewScanner(remoteScanOptions, v...)
+	service := client.NewService(remoteScanOptions, v...)
 	typesImage, err := image.NewArchiveImage(filePath)
 	if err != nil {
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
 	remoteCache := cache.NewRemoteCache(remoteCacheOptions)
 	artifactArtifact, err := image2.NewArtifact(typesImage, remoteCache, artifactOption)
 	if err != nil {
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
-	scannerScanner := scanner.NewScanner(clientScanner, artifactArtifact)
-	return scannerScanner, func() {
+	scannerService := scanner.NewService(service, artifactArtifact)
+	return scannerService, func() {
 	}, nil
 }
 
 // initializeRemoteFilesystemScanner is for filesystem scanning in client/server mode
-func initializeRemoteFilesystemScanner(ctx context.Context, path string, remoteCacheOptions cache.RemoteOptions, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeRemoteFilesystemScanner(ctx context.Context, path string, remoteCacheOptions cache.RemoteOptions, remoteScanOptions client.ServiceOption, artifactOption artifact.Option) (scanner.Service, func(), error) {
 	v := _wireValue
-	clientScanner := client.NewScanner(remoteScanOptions, v...)
+	service := client.NewService(remoteScanOptions, v...)
 	remoteCache := cache.NewRemoteCache(remoteCacheOptions)
 	fs := walker.NewFS()
 	artifactArtifact, err := local2.NewArtifact(path, remoteCache, fs, artifactOption)
 	if err != nil {
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
-	scannerScanner := scanner.NewScanner(clientScanner, artifactArtifact)
-	return scannerScanner, func() {
+	scannerService := scanner.NewService(service, artifactArtifact)
+	return scannerService, func() {
 	}, nil
 }
 
 // initializeRemoteRepositoryScanner is for repository scanning in client/server mode
-func initializeRemoteRepositoryScanner(ctx context.Context, url string, remoteCacheOptions cache.RemoteOptions, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeRemoteRepositoryScanner(ctx context.Context, url string, remoteCacheOptions cache.RemoteOptions, remoteScanOptions client.ServiceOption, artifactOption artifact.Option) (scanner.Service, func(), error) {
 	v := _wireValue
-	clientScanner := client.NewScanner(remoteScanOptions, v...)
+	service := client.NewService(remoteScanOptions, v...)
 	remoteCache := cache.NewRemoteCache(remoteCacheOptions)
 	fs := walker.NewFS()
 	artifactArtifact, cleanup, err := repo.NewArtifact(url, remoteCache, fs, artifactOption)
 	if err != nil {
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
-	scannerScanner := scanner.NewScanner(clientScanner, artifactArtifact)
-	return scannerScanner, func() {
+	scannerService := scanner.NewService(service, artifactArtifact)
+	return scannerService, func() {
 		cleanup()
 	}, nil
 }
 
 // initializeRemoteSBOMScanner is for sbom scanning in client/server mode
-func initializeRemoteSBOMScanner(ctx context.Context, path string, remoteCacheOptions cache.RemoteOptions, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeRemoteSBOMScanner(ctx context.Context, path string, remoteCacheOptions cache.RemoteOptions, remoteScanOptions client.ServiceOption, artifactOption artifact.Option) (scanner.Service, func(), error) {
 	v := _wireValue
-	clientScanner := client.NewScanner(remoteScanOptions, v...)
+	service := client.NewService(remoteScanOptions, v...)
 	remoteCache := cache.NewRemoteCache(remoteCacheOptions)
 	artifactArtifact, err := sbom.NewArtifact(path, remoteCache, artifactOption)
 	if err != nil {
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
-	scannerScanner := scanner.NewScanner(clientScanner, artifactArtifact)
-	return scannerScanner, func() {
+	scannerService := scanner.NewService(service, artifactArtifact)
+	return scannerService, func() {
 	}, nil
 }
 
 // initializeRemoteVMScanner is for vm scanning in client/server mode
-func initializeRemoteVMScanner(ctx context.Context, path string, remoteCacheOptions cache.RemoteOptions, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeRemoteVMScanner(ctx context.Context, path string, remoteCacheOptions cache.RemoteOptions, remoteScanOptions client.ServiceOption, artifactOption artifact.Option) (scanner.Service, func(), error) {
 	v := _wireValue
-	clientScanner := client.NewScanner(remoteScanOptions, v...)
+	service := client.NewService(remoteScanOptions, v...)
 	remoteCache := cache.NewRemoteCache(remoteCacheOptions)
 	walkerVM := walker.NewVM()
 	artifactArtifact, err := vm.NewArtifact(path, remoteCache, walkerVM, artifactOption)
 	if err != nil {
-		return scanner.Scanner{}, nil, err
+		return scanner.Service{}, nil, err
 	}
-	scannerScanner := scanner.NewScanner(clientScanner, artifactArtifact)
-	return scannerScanner, func() {
+	scannerService := scanner.NewService(service, artifactArtifact)
+	return scannerService, func() {
 	}, nil
 }

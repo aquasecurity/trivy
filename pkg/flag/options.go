@@ -541,8 +541,8 @@ func (o *Options) RemoteCacheOpts() cache.RemoteOptions {
 	}
 }
 
-func (o *Options) ClientScannerOpts() client.ScannerOption {
-	return client.ScannerOption{
+func (o *Options) ClientScannerOpts() client.ServiceOption {
+	return client.ServiceOption{
 		RemoteURL:     o.ServerAddr,
 		CustomHeaders: o.CustomHeaders,
 		Insecure:      o.Insecure,

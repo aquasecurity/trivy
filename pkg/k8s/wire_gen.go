@@ -24,7 +24,7 @@ func initializeScanK8s(localArtifactCache cache.LocalArtifactCache) *ScanKuberne
 	langpkgScanner := langpkg.NewScanner()
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
-	localScanner := local.NewScanner(applierApplier, scanner, langpkgScanner, client)
-	scanKubernetes := NewScanKubernetes(localScanner)
+	service := local.NewService(applierApplier, scanner, langpkgScanner, client)
+	scanKubernetes := NewScanKubernetes(service)
 	return scanKubernetes
 }
