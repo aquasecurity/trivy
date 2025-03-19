@@ -78,7 +78,7 @@ func TestInitBuiltinChecks(t *testing.T) {
 			name:       "skip update flag set with no existing cache to fallback to",
 			skipUpdate: true,
 			checkDir:   "policy",
-			wantErr:    "not found falling back to embedded checks...",
+			wantErr:    "Failed to load existing cache",
 		},
 		{
 			name:       "skip update flag set with existing cache to fallback to",

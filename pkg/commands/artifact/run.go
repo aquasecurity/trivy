@@ -646,9 +646,7 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 
 	downloadedPolicyPath, err = operation.InitBuiltinChecks(ctx, c, opts.SkipCheckUpdate, opts.RegistryOpts())
 	if err != nil {
-		if !opts.SkipCheckUpdate {
-			log.ErrorContext(ctx, "Falling back to embedded checks", log.Err(err))
-		}
+		log.ErrorContext(ctx, "Falling back to embedded checks", log.Err(err))
 	} else {
 		log.DebugContext(ctx, "Checks successfully loaded from disk")
 		disableEmbedded = true

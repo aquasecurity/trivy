@@ -90,7 +90,7 @@ func InitBuiltinChecks(ctx context.Context, client *policy.Client, skipUpdate bo
 		path := client.LoadBuiltinChecks()
 		_, _, err := misconf.CheckPathExists(path)
 		if err != nil {
-			return "", xerrors.Errorf("Failed to load existing cache, err: %s falling back to embedded checks...", err.Error())
+			return "", xerrors.Errorf("Failed to load existing cache, err: %s", err.Error())
 		}
 		return path, nil
 	}
