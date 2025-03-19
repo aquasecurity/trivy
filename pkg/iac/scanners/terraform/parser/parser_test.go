@@ -1740,6 +1740,59 @@ output "staticFive" {
 	require.Len(t, datas, 5)
 }
 
+func TestBlockCountNested(t *testing.T) {
+	// `count` meta attributes are incorrectly handled when referencing
+	// a module output.
+	files := map[string]string{
+		"main.tf": `
+module "alpha" {
+  source = "./nestedcount"
+  set_count = 2
+}
+
+module "charlie" {
+  source = "./nestedcount"
+  set_count = module.beta.set_count
+}
+
+
+data "repeatable" "foo" {
+  count = module.charlie.set_count
+  value = "foo"
+}
+`,
+		"setcount/main.tf": `
+variable "set_count" {
+    type = number
+}
+
+output "set_count" {
+  value = var.set_count
+}
+`,
+		"nestedcount/main.tf": `
+variable "set_count" {
+  type = number
+}
+
+module "nested_mod" {
+  source = "../setcount"
+  set_count = var.set_count
+}
+
+output "set_count" {
+  value = module.nested_mod.set_count
+}
+`,
+	}
+
+	modules := parse(t, files)
+	require.Len(t, modules, 5)
+
+	datas := modules.GetDatasByType("repeatable")
+	require.Len(t, datas, 2)
+}
+
 // TestNestedModulesOptions ensures parser options are carried to the nested
 // submodule evaluators.
 // The test will include an invalid module that will fail to download
