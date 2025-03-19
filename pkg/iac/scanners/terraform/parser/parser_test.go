@@ -1800,6 +1800,32 @@ output "set_count" {
 	assert.Len(t, datas, 2)
 }
 
+func TestBlockCountModules(t *testing.T) {
+	t.Skip("This test is currently failing, the 'count = 0' module 'bar' is still loaded")
+	// `count` meta attributes are incorrectly handled when referencing
+	// a module output.
+	files := map[string]string{
+		"main.tf": `
+module "foo" {
+	source = "./modules/foo"
+}
+
+module "bar" {
+	source = "./modules/foo"
+    count = module.foo.staticZero
+}
+`,
+		"modules/foo/main.tf": `
+output "staticZero" {	
+	value = 0
+}
+`,
+	}
+
+	modules := parse(t, files)
+	require.Len(t, modules, 2)
+}
+
 // TestNestedModulesOptions ensures parser options are carried to the nested
 // submodule evaluators.
 // The test will include an invalid module that will fail to download
