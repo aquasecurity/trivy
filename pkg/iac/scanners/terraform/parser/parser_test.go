@@ -1750,14 +1750,21 @@ module "alpha" {
   set_count = 2
 }
 
+module "beta" {
+  source = "./nestedcount"
+  set_count = module.alpha.set_count
+}
+
+
 module "charlie" {
+  count = module.beta.set_count - 1
   source = "./nestedcount"
   set_count = module.beta.set_count
 }
 
 
 data "repeatable" "foo" {
-  count = module.charlie.set_count
+  count = module.charlie[0].set_count
   value = "foo"
 }
 `,
@@ -1787,10 +1794,10 @@ output "set_count" {
 	}
 
 	modules := parse(t, files)
-	require.Len(t, modules, 5)
+	require.Len(t, modules, 7)
 
 	datas := modules.GetDatasByType("repeatable")
-	require.Len(t, datas, 2)
+	assert.Len(t, datas, 2)
 }
 
 // TestNestedModulesOptions ensures parser options are carried to the nested
