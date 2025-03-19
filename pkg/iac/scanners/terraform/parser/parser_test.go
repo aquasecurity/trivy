@@ -1704,6 +1704,33 @@ resource "test_resource" "this" {
 	assert.Equal(t, "test_value", attr.GetRawValue())
 }
 
+func TestBlockCount(t *testing.T) {
+	// `count` meta attributes are incorrectly handled when referencing
+	// a module output.
+	files := map[string]string{
+		"main.tf": `
+module "foo" {
+	source = "./modules/foo"
+}
+data "test_resource" "this" {
+	count = module.foo.staticZero
+}
+`,
+		"modules/foo/main.tf": `
+output "staticZero" {	
+	value = 0
+}
+`,
+	}
+
+	modules := parse(t, files)
+	require.Len(t, modules, 2)
+
+	// no data resources should exist as their counts are 0
+	datas := modules.GetDatasByType("test_resource")
+	require.Empty(t, datas)
+}
+
 // TestNestedModulesOptions ensures parser options are carried to the nested
 // submodule evaluators.
 // The test will include an invalid module that will fail to download
