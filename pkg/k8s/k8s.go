@@ -6,15 +6,15 @@ import (
 	"github.com/google/wire"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/scanner"
-	"github.com/aquasecurity/trivy/pkg/scanner/local"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/scan/local"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // ScanSuperSet binds the dependencies for k8s
 var ScanSuperSet = wire.NewSet(
 	local.SuperSet,
-	wire.Bind(new(scanner.Driver), new(local.Service)),
+	wire.Bind(new(scan.Driver), new(local.Service)),
 	NewScanKubernetes,
 )
 

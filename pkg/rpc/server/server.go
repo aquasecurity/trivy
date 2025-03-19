@@ -13,8 +13,8 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/rpc"
-	"github.com/aquasecurity/trivy/pkg/scanner"
-	"github.com/aquasecurity/trivy/pkg/scanner/local"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/scan/local"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
@@ -24,17 +24,17 @@ import (
 // ScanSuperSet binds the dependencies for server
 var ScanSuperSet = wire.NewSet(
 	local.SuperSet,
-	wire.Bind(new(scanner.Driver), new(local.Service)),
+	wire.Bind(new(scan.Driver), new(local.Service)),
 	NewScanServer,
 )
 
 // ScanServer implements the scanner
 type ScanServer struct {
-	localScanner scanner.Driver
+	localScanner scan.Driver
 }
 
 // NewScanServer is the factory method for scanner
-func NewScanServer(s scanner.Driver) *ScanServer {
+func NewScanServer(s scan.Driver) *ScanServer {
 	return &ScanServer{localScanner: s}
 }
 
