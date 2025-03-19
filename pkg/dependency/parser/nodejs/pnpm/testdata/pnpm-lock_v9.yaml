@@ -30,6 +30,9 @@ importers:
         specifier: 8.1.0
         version: 8.1.0
     devDependencies:
+      color-convert:
+        specifier: 2.0.1
+        version: 2.0.1
       jquery:
         specifier: 3.6.0
         version: 3.6.0
@@ -65,6 +68,13 @@ packages:
 
   await-sleep@0.0.1:
     resolution: {integrity: sha512-H3X3eAxwGpeNIk/yvFOs8g7500Q1YvzrxjSC9TNgLGtjrMFxPwhDdcT34QNs2iGWpZ+5WKkMJdjDoYs+Sw+TaA==}
+
+  color-convert@2.0.1:
+    resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
+    engines: {node: '>=7.0.0'}
+
+  color-name@1.1.4:
+    resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
 
   debug@4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
@@ -152,6 +162,12 @@ snapshots:
   asynckit@0.4.0: {}
 
   await-sleep@0.0.1: {}
+
+  color-convert@2.0.1:
+    dependencies:
+      color-name: 1.1.4
+
+  color-name@1.1.4: {}
 
   debug@4.3.4(supports-color@8.1.1):
     dependencies:

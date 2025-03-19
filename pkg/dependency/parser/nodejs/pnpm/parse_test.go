@@ -5,6 +5,7 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -12,10 +13,11 @@ import (
 
 func TestParse(t *testing.T) {
 	tests := []struct {
-		name     string
-		file     string // Test input file
-		want     []ftypes.Package
-		wantDeps []ftypes.Dependency
+		name           string
+		file           string // Test input file
+		includeDevDeps bool
+		want           []ftypes.Package
+		wantDeps       []ftypes.Dependency
 	}{
 		{
 			name:     "normal",
@@ -54,16 +56,28 @@ func TestParse(t *testing.T) {
 			wantDeps: pnpmV6WithDevDeps,
 		},
 		{
-			name:     "v9",
-			file:     "testdata/pnpm-lock_v9.yaml",
-			want:     pnpmV9,
-			wantDeps: pnpmV9Deps,
+			name: "v9",
+			file: "testdata/pnpm-lock_v9.yaml",
+			want: lo.Filter(pnpmV9, func(pkg ftypes.Package, _ int) bool {
+				return !pkg.Dev
+			}),
+			wantDeps: lo.Filter(pnpmV9Deps, func(dep ftypes.Dependency, _ int) bool {
+				return dep.ID != "color-convert@2.0.1"
+			}),
 		},
 		{
-			name:     "v9 with cyclic dependencies import",
-			file:     "testdata/pnpm-lock_v9_cyclic_import.yaml",
-			want:     pnpmV9CyclicImport,
-			wantDeps: pnpmV9CyclicImportDeps,
+			name:           "v9 with include dev deps",
+			file:           "testdata/pnpm-lock_v9.yaml",
+			includeDevDeps: true,
+			want:           pnpmV9,
+			wantDeps:       pnpmV9Deps,
+		},
+		{
+			name:           "v9 with cyclic dependencies import",
+			file:           "testdata/pnpm-lock_v9_cyclic_import.yaml",
+			includeDevDeps: true,
+			want:           pnpmV9CyclicImport,
+			wantDeps:       pnpmV9CyclicImportDeps,
 		},
 	}
 
@@ -72,7 +86,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.file)
 			require.NoError(t, err)
 
-			got, deps, err := NewParser().Parse(f)
+			got, deps, err := NewParser(tt.includeDevDeps).Parse(f)
 			require.NoError(t, err)
 
 			sort.Sort(ftypes.Packages(got))
@@ -228,7 +242,7 @@ func Test_parseDepPath(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := NewParser()
+			p := NewParser(false)
 			gotName, gotVersion, gotRef := p.parseDepPath(tt.pkg, tt.lockFileVer)
 			require.Equal(t, tt.wantName, gotName)
 			require.Equal(t, tt.wantVersion, gotVersion)
@@ -279,7 +293,7 @@ func Test_parseVersion(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := NewParser()
+			p := NewParser(false)
 			gotVer := p.parseVersion("depPath", tt.ver, tt.lockVer)
 			require.Equal(t, tt.wantVer, gotVer)
 		})

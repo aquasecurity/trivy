@@ -57,12 +57,14 @@ type Snapshot struct {
 }
 
 type Parser struct {
-	logger *log.Logger
+	includeDevDeps bool
+	logger         *log.Logger
 }
 
-func NewParser() *Parser {
+func NewParser(includeDevDeps bool) *Parser {
 	return &Parser{
-		logger: log.WithPrefix("pnpm"),
+		includeDevDeps: includeDevDeps,
+		logger:         log.WithPrefix("pnpm"),
 	}
 }
 
@@ -220,15 +222,35 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 	// Overwrite the `Dev` field for dev deps and their child dependencies.
 	for _, pkg := range resolvedPkgs {
 		if !pkg.Dev {
-			p.markRootPkgs(pkg.ID, resolvedPkgs, resolvedDeps, visited)
+			p.markProdPkgs(pkg.ID, resolvedPkgs, resolvedDeps, visited)
 		}
 	}
 
-	return lo.Values(resolvedPkgs), lo.Values(resolvedDeps)
+	pkgsSlice := lo.Values(resolvedPkgs)
+	depsSlice := lo.Values(resolvedDeps)
+
+	if !p.includeDevDeps {
+		var packages ftypes.Packages
+		var dependencies ftypes.Dependencies
+		for _, pkg := range resolvedPkgs {
+			if pkg.Dev {
+				continue
+			}
+
+			packages = append(packages, pkg)
+			if d, ok := resolvedDeps[pkg.ID]; ok {
+				dependencies = append(dependencies, d)
+			}
+		}
+		pkgsSlice = packages
+		depsSlice = dependencies
+	}
+
+	return pkgsSlice, depsSlice
 }
 
-// markRootPkgs sets `Dev` to false for non dev dependency.
-func (p *Parser) markRootPkgs(id string, pkgs map[string]ftypes.Package, deps map[string]ftypes.Dependency, visited set.Set[string]) {
+// markProdPkgs sets `Dev` to false for non dev dependency.
+func (p *Parser) markProdPkgs(id string, pkgs map[string]ftypes.Package, deps map[string]ftypes.Dependency, visited set.Set[string]) {
 	if visited.Contains(id) {
 		return
 	}
@@ -243,7 +265,7 @@ func (p *Parser) markRootPkgs(id string, pkgs map[string]ftypes.Package, deps ma
 
 	// Update child deps
 	for _, depID := range deps[id].DependsOn {
-		p.markRootPkgs(depID, pkgs, deps, visited)
+		p.markProdPkgs(depID, pkgs, deps, visited)
 	}
 	return
 }
