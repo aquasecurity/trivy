@@ -19,18 +19,16 @@ func insertTupleElement(list cty.Value, idx int, val cty.Value) cty.Value {
 		return list
 	}
 
+	// Create a new list of the correct length, copying in the old list
+	// values for matching indices.
 	newList := make([]cty.Value, max(idx+1, list.LengthInt()))
-	for i := 0; i < len(newList); i++ {
-		newList[i] = cty.NilVal // Always insert a nil by default
-
-		if i < list.LengthInt() { // keep the original
-			newList[i] = list.Index(cty.NumberIntVal(int64(i)))
-		}
-
-		if i == idx { // add the new value
-			newList[i] = val
-		}
+	for it := list.ElementIterator(); it.Next(); {
+		key, elem := it.Element()
+		elemIdx, _ := key.AsBigFloat().Int64()
+		newList[elemIdx] = elem
 	}
+	// Insert the new value.
+	newList[idx] = val
 
 	return cty.TupleVal(newList)
 }
