@@ -553,8 +553,12 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 
 			// Data blocks should all be loaded into the top level 'values'
 			// object. The hierarchy of the map is:
-			//  values = map[<type>]map[<name>] = Block
-			// Where Block is the block's attributes as a cty.Object.
+			//  values = map[<type>]map[<name>] =
+			//              Block -> Block's attributes as a cty.Object
+			//              Tuple(Block) -> Instances of the block
+			//              Object(Block) -> Field values are instances of the block
+			// TODO: Object(Block) is not yet implemented. This would be sourced from
+			// 	 a for_each statement.
 
 			blockMap, ok := values[b.Labels()[0]]
 			if !ok {

@@ -1705,34 +1705,33 @@ resource "test_resource" "this" {
 }
 
 func TestCountArguments(t *testing.T) {
-	fsys := os.DirFS(filepath.Join("testdata", "countarguments"))
+	files := map[string]string{
+		// The order of references and their alphabetical order is important.
+		// d -> b -> c
+		"main.tf": `
+data "d" "foo"{
+    count = 1
+    value = "Index ${count.index}"
+}
 
-	parser := New(
-		fsys, "",
-		OptionStopOnHCLError(true),
-		OptionWithDownloads(false),
-	)
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+data "b" "foo" {
+    count = 1
+    value = data.d.foo[0].value
+}
 
-	modules, _, err := parser.EvaluateAll(t.Context())
-	require.NoError(t, err)
+data "c" "cfoo" {
+  count = 1
+  value = data.b.foo[0].value
+}`,
+	}
+
+	modules := parse(t, files)
 	require.Len(t, modules, 1)
 
-	for _, b := range modules.GetBlocks() {
-		if b.Type() != "data" {
-			continue
-		}
+	for _, b := range modules.GetBlocks().OfType("data") {
 		val := b.GetAttribute("value").Value()
-		ty := "?"
-		if !val.IsNull() {
-			ty = val.Type().FriendlyName()
-		}
-		if !assert.Truef(t, val.Type().Equals(cty.String),
-			"%q is not a string, type=%s", b.FullName(), ty) {
-			continue
-		}
-
-		assert.Equal(t, "Index 0", val.AsString())
+		assert.Truef(t, val.Equals(cty.StringVal("Index 0")).True(),
+			"%q does not match the expected string, got %q", b.FullName(), val.GoString())
 	}
 }
 
