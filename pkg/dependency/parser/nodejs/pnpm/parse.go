@@ -229,24 +229,28 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 	pkgsSlice := lo.Values(resolvedPkgs)
 	depsSlice := lo.Values(resolvedDeps)
 
+	// Exclude Dev packages/dependencies if `--include-dev-deps` flag is not present.
 	if !p.includeDevDeps {
-		var packages ftypes.Packages
-		var dependencies ftypes.Dependencies
-		for _, pkg := range resolvedPkgs {
-			if pkg.Dev {
-				continue
-			}
-
-			packages = append(packages, pkg)
-			if d, ok := resolvedDeps[pkg.ID]; ok {
-				dependencies = append(dependencies, d)
-			}
-		}
-		pkgsSlice = packages
-		depsSlice = dependencies
+		pkgsSlice, depsSlice = excludeDevPackages(resolvedPkgs, resolvedDeps)
 	}
 
 	return pkgsSlice, depsSlice
+}
+
+func excludeDevPackages(pkgs map[string]ftypes.Package, deps map[string]ftypes.Dependency) (ftypes.Packages, ftypes.Dependencies) {
+	var packages ftypes.Packages
+	var dependencies ftypes.Dependencies
+	for _, pkg := range pkgs {
+		if pkg.Dev {
+			continue
+		}
+
+		packages = append(packages, pkg)
+		if d, ok := deps[pkg.ID]; ok {
+			dependencies = append(dependencies, d)
+		}
+	}
+	return packages, dependencies
 }
 
 // markProdPkgs sets `Dev` to false for non dev dependency.
