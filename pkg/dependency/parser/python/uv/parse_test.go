@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -12,17 +13,29 @@ import (
 
 func TestParser_Parse(t *testing.T) {
 	tests := []struct {
-		name     string
-		file     string
-		wantPkgs []ftypes.Package
-		wantDeps []ftypes.Dependency
-		wantErr  string
+		name           string
+		file           string
+		includeDevDeps bool
+		wantPkgs       []ftypes.Package
+		wantDeps       []ftypes.Dependency
+		wantErr        string
 	}{
 		{
-			name:     "normal",
-			file:     "testdata/uv_normal.lock",
-			wantPkgs: uvNormal,
-			wantDeps: uvNormalDeps,
+			name: "normal",
+			file: "testdata/uv_normal.lock",
+			wantPkgs: lo.Filter(uvNormal, func(pkg ftypes.Package, _ int) bool {
+				return !pkg.Dev
+			}),
+			wantDeps: lo.Filter(uvNormalDeps, func(dep ftypes.Dependency, _ int) bool {
+				return dep.ID != "pytest@8.3.4"
+			}),
+		},
+		{
+			name:           "normal with dev deps",
+			file:           "testdata/uv_normal.lock",
+			includeDevDeps: true,
+			wantPkgs:       uvNormal,
+			wantDeps:       uvNormalDeps,
 		},
 		{
 			name:    "lockfile without root",
@@ -42,7 +55,7 @@ func TestParser_Parse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			p := NewParser()
+			p := NewParser(tt.includeDevDeps)
 			gotPkgs, gotDeps, err := p.Parse(f)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)

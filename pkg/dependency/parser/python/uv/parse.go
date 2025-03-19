@@ -112,10 +112,14 @@ type Dependency struct {
 	Name string `toml:"name"`
 }
 
-type Parser struct{}
+type Parser struct {
+	includeDevDeps bool
+}
 
-func NewParser() *Parser {
-	return &Parser{}
+func NewParser(includeDevDeps bool) *Parser {
+	return &Parser{
+		includeDevDeps: includeDevDeps,
+	}
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
@@ -151,12 +155,18 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			relationship = ftypes.RelationshipDirect
 		}
 
+		// Skip Dev package if `--include-dev-deps` flag is not present.
+		dev := !prodDeps.Contains(pkg.Name)
+		if dev && !p.includeDevDeps {
+			continue
+		}
+
 		pkgs = append(pkgs, ftypes.Package{
 			ID:           pkgID,
 			Name:         pkg.Name,
 			Version:      pkg.Version,
 			Relationship: relationship,
-			Dev:          !prodDeps.Contains(pkg.Name),
+			Dev:          dev,
 		})
 
 		dependsOn := make([]string, 0, len(pkg.Dependencies))

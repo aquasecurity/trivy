@@ -156,7 +156,9 @@ func Test_uvAnalyzer_PostAnalyze(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.dir, func(t *testing.T) {
-			a, err := uv.NewUvAnalyzer(analyzer.AnalyzerOptions{})
+			a, err := uv.NewUvAnalyzer(analyzer.AnalyzerOptions{
+				IncludeDevDeps: true,
+			})
 			require.NoError(t, err)
 
 			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{
