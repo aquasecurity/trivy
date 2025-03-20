@@ -214,13 +214,14 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				TableMode:       flag.TableModeFlag.Clone(),
 			}
 
-			got, err := f.ToOptions()
+			got := flag.Options{}
+			err := f.ToOptions(&got)
 			if tt.wantErr != "" {
 				require.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
 
-			assert.EqualExportedValuesf(t, tt.want, got, "ToOptions()")
+			assert.EqualExportedValuesf(t, tt.want, got.ReportOptions, "ReportFlagGroup")
 
 			// Assert log messages
 			assert.Equal(t, tt.wantLogs, out.Messages(), tt.name)
@@ -235,7 +236,8 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			IgnoreFile: flag.IgnoreFileFlag.Clone(),
 		}
 
-		_, err := f.ToOptions()
+		got := flag.Options{}
+		err := f.ToOptions(&got)
 		assert.ErrorContains(t, err, "ignore file not found: doesntexist")
 	})
 }
