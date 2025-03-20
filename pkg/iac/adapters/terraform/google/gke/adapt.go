@@ -176,18 +176,17 @@ func (a *adapter) adaptNodePool(resource *terraform.Block) {
 		EnableAutoUpgrade: iacTypes.BoolDefault(false, resource.GetMetadata()),
 	}
 
-	if resource.HasChild("management") {
-		management.Metadata = resource.GetBlock("management").GetMetadata()
+	if managementBlock := resource.GetBlock("management"); managementBlock.IsNotNil() {
+		management.Metadata = managementBlock.GetMetadata()
+		autoRepairAttr := managementBlock.GetAttribute("auto_repair")
+		management.EnableAutoRepair = autoRepairAttr.AsBoolValueOrDefault(false, managementBlock)
 
-		autoRepairAttr := resource.GetBlock("management").GetAttribute("auto_repair")
-		management.EnableAutoRepair = autoRepairAttr.AsBoolValueOrDefault(false, resource.GetBlock("management"))
-
-		autoUpgradeAttr := resource.GetBlock("management").GetAttribute("auto_upgrade")
-		management.EnableAutoUpgrade = autoUpgradeAttr.AsBoolValueOrDefault(false, resource.GetBlock("management"))
+		autoUpgradeAttr := managementBlock.GetAttribute("auto_upgrade")
+		management.EnableAutoUpgrade = autoUpgradeAttr.AsBoolValueOrDefault(false, managementBlock)
 	}
 
-	if resource.HasChild("node_config") {
-		nodeConfig = adaptNodeConfig(resource.GetBlock("node_config"))
+	if nodeConfigBlock := resource.GetBlock("node_config"); nodeConfigBlock.IsNotNil() {
+		nodeConfig = adaptNodeConfig(nodeConfigBlock)
 	}
 
 	nodePool := gke.NodePool{
@@ -296,10 +295,10 @@ func adaptMasterAuth(resource *terraform.Block) gke.MasterAuth {
 		IssueCertificate: iacTypes.BoolDefault(false, resource.GetMetadata()),
 	}
 
-	if resource.HasChild("client_certificate_config") {
-		clientCertAttr := resource.GetBlock("client_certificate_config").GetAttribute("issue_client_certificate")
-		clientCert.IssueCertificate = clientCertAttr.AsBoolValueOrDefault(false, resource.GetBlock("client_certificate_config"))
-		clientCert.Metadata = resource.GetBlock("client_certificate_config").GetMetadata()
+	if certConfigBlock := resource.GetBlock("client_certificate_config"); certConfigBlock.IsNotNil() {
+		clientCertAttr := certConfigBlock.GetAttribute("issue_client_certificate")
+		clientCert.IssueCertificate = clientCertAttr.AsBoolValueOrDefault(false, certConfigBlock)
+		clientCert.Metadata = certConfigBlock.GetMetadata()
 	}
 
 	username := resource.GetAttribute("username").AsStringValueOrDefault("", resource)

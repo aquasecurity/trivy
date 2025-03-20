@@ -73,8 +73,8 @@ func adaptInstance(resource *terraform.Block) sql.DatabaseInstance {
 			backupConfigEnabledAttr := backupBlock.GetAttribute("enabled")
 			instance.Settings.Backups.Enabled = backupConfigEnabledAttr.AsBoolValueOrDefault(false, backupBlock)
 		}
-		if settingsBlock.HasChild("ip_configuration") {
-			instance.Settings.IPConfiguration = adaptIPConfig(settingsBlock.GetBlock("ip_configuration"))
+		if ipConfBlock := settingsBlock.GetBlock("ip_configuration"); ipConfBlock.IsNotNil() {
+			instance.Settings.IPConfiguration = adaptIPConfig(ipConfBlock)
 		}
 	}
 	return instance
