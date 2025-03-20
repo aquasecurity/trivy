@@ -556,8 +556,6 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 			//              Block -> Block's attributes as a cty.Object
 			//              Tuple(Block) -> Instances of the block
 			//              Object(Block) -> Field values are instances of the block
-			// TODO: Object(Block) is not yet implemented. This would be sourced from
-			// 	 a for_each statement.
 			ref := b.Reference()
 			typeValues, ok := values[ref.TypeLabel()]
 			if !ok {
