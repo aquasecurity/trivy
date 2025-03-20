@@ -11,9 +11,9 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	tjson "github.com/aquasecurity/trivy/pkg/json"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 type LockFile struct {
@@ -137,7 +137,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		return nil, nil, xerrors.Errorf("failed to read conan lock file: %w", err)
 	}
 
-	if err = json.Unmarshal(input, &lock, json.WithUnmarshalers(tjson.UnmarshalerWithObjectLocation(input))); err != nil {
+	if err = json.Unmarshal(input, &lock, json.WithUnmarshalers(xjson.UnmarshalerWithObjectLocation(input))); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode conan lock file: %w", err)
 	}
 

@@ -12,9 +12,9 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	tjson "github.com/aquasecurity/trivy/pkg/json"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 type dotNetDependencies struct {
@@ -62,7 +62,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	if err != nil {
 		return nil, nil, xerrors.Errorf("read error: %w", err)
 	}
-	if err = json.Unmarshal(input, &depsFile, json.WithUnmarshalers(tjson.UnmarshalerWithObjectLocation(input))); err != nil {
+	if err = json.Unmarshal(input, &depsFile, json.WithUnmarshalers(xjson.UnmarshalerWithObjectLocation(input))); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode .deps.json file: %w", err)
 	}
 
