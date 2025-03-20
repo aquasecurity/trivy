@@ -39,8 +39,8 @@ type ScanHook interface {
 
 	// PostScan is called after the scan. It can modify the results.
 	// It may be called on the server side in client/server mode.
-	// TODO: Change types.Results to a pointer.
-	//       It currently returns a copy of the results for backward compatibility.
+	// NOTE: Wasm modules cannot directly modify the passed results,
+	//       so it returns a copy of the results.
 	PostScan(ctx context.Context, results types.Results) (types.Results, error)
 }
 
@@ -57,12 +57,12 @@ type ReportHook interface {
 	PostReport(ctx context.Context, report *types.Report, opts flag.Options) error
 }
 
-func RegisterHook(s Hook) {
+func Register(s Hook) {
 	// Avoid duplication
 	hooks[s.Name()] = s
 }
 
-func DeregisterHook(name string) {
+func Deregister(name string) {
 	delete(hooks, name)
 }
 

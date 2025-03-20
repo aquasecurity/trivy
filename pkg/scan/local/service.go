@@ -113,6 +113,11 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 }
 
 func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, ftypes.OS, error) {
+	// Call pre-scan hooks
+	if err := hook.PreScan(ctx, &target, options); err != nil {
+		return nil, ftypes.OS{}, xerrors.Errorf("pre scan error: %w", err)
+	}
+
 	var results types.Results
 
 	// Filter packages according to the options
@@ -148,9 +153,8 @@ func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, option
 		s.vulnClient.FillInfo(results[i].Vulnerabilities, options.VulnSeveritySources)
 	}
 
-	// Post scanning
-	results, err = hook.PostScan(ctx, results)
-	if err != nil {
+	// Call post-scan hooks
+	if results, err = hook.PostScan(ctx, results); err != nil {
 		return nil, ftypes.OS{}, xerrors.Errorf("post scan error: %w", err)
 	}
 

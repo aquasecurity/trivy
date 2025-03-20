@@ -167,7 +167,7 @@ func (m *Manager) Register() {
 func (m *Manager) Deregister() {
 	for _, mod := range m.modules {
 		analyzer.DeregisterAnalyzer(analyzer.Type(mod.Name()))
-		hook.DeregisterHook(mod.Name())
+		hook.Deregister(mod.Name())
 	}
 }
 
@@ -413,7 +413,7 @@ func (m *wasmModule) Register() {
 	}
 	if m.isPostScanner {
 		logger.Debug("Registering custom post scanner")
-		hook.RegisterHook(m)
+		hook.Register(m)
 	}
 }
 
