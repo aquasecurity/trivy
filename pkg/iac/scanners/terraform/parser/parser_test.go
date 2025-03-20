@@ -1794,14 +1794,14 @@ resource "c" "foo" {
 			},
 			files: map[string]string{
 				"main.tf": `
-module "outputs" {
+module "from-module" {
   for_each = toset(["Index 0"])
   source = "./modules/outputs"
   input  = each.key
 }
 
 resource "test" "foo" {
-  value = module.outputs["Index 0"].value
+  value = module.from-module["Index 0"].value
 }
 `,
 				"modules/outputs/main.tf": `
@@ -1810,7 +1810,7 @@ variable "input" {
 }
 
 output "value" {
-  value = "${var.value}"
+  value = "${var.input}"
 } 
 `,
 			},
@@ -1820,13 +1820,12 @@ output "value" {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			modules := parse(t, tt.files)
-			//require.Len(t, modules, 1)
 			for _, b := range modules.GetBlocks() {
 				if tt.skip != nil && tt.skip(b) {
 					continue
 				}
 				attr := b.GetAttribute("value")
-				if assert.True(t, !attr.Value().IsNull(), "attribute 'value' not found or is null in block %s", b.FullName()) {
+				if assert.False(t, attr.Value().IsNull(), "attribute 'value' not found or is null in block %s", b.FullName()) {
 					assert.Equal(t, "Index 0", attr.Value().AsString())
 				}
 			}
