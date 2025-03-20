@@ -29,8 +29,7 @@ type dotNetLibrary struct {
 }
 
 func (d *dotNetLibrary) SetLocation(location ftypes.Location) {
-	d.StartLine = location.StartLine
-	d.EndLine = location.EndLine
+	d.Location = location
 }
 
 type RuntimeTarget struct {

@@ -32,8 +32,7 @@ type Node struct {
 }
 
 func (n *Node) SetLocation(location ftypes.Location) {
-	n.StartLine = location.StartLine
-	n.EndLine = location.EndLine
+	n.Location = location
 }
 
 type Requires []Require
@@ -44,8 +43,7 @@ type Require struct {
 }
 
 func (r *Require) SetLocation(location ftypes.Location) {
-	r.StartLine = location.StartLine
-	r.EndLine = location.EndLine
+	r.Location = location
 }
 
 func (r *Require) SetString(s string) {
