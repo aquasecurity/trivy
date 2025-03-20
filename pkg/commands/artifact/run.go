@@ -25,11 +25,13 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/module"
+	"github.com/aquasecurity/trivy/pkg/notification"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/version/app"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
@@ -134,6 +136,13 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 	}
 	m.Register()
 	r.module = m
+
+	// Make a silent attempt to check for updates in the background
+	// only do this if the user has not disabled notices or is running
+	// in quiet mode
+	if !cliOptions.Quiet && !cliOptions.NoNotices {
+		notification.CheckForNotices(ctx, app.Version(), os.Args[1:])
+	}
 
 	return r, nil
 }
