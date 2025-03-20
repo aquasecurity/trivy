@@ -31,12 +31,13 @@ func (f *SecretFlagGroup) Flags() []Flagger {
 	return []Flagger{f.SecretConfig}
 }
 
-func (f *SecretFlagGroup) ToOptions() (SecretOptions, error) {
+func (f *SecretFlagGroup) ToOptions(opts *Options) error {
 	if err := parseFlags(f); err != nil {
-		return SecretOptions{}, err
+		return err
 	}
 
-	return SecretOptions{
+	opts.SecretOptions = SecretOptions{
 		SecretConfigPath: f.SecretConfig.Value(),
-	}, nil
+	}
+	return nil
 }

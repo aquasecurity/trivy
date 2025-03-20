@@ -110,9 +110,9 @@ func (f *RemoteFlagGroup) Flags() []Flagger {
 	}
 }
 
-func (f *RemoteFlagGroup) ToOptions() (RemoteOptions, error) {
+func (f *RemoteFlagGroup) ToOptions(opts *Options) error {
 	if err := parseFlags(f); err != nil {
-		return RemoteOptions{}, err
+		return err
 	}
 
 	serverAddr := f.ServerAddr.Value()
@@ -140,14 +140,15 @@ func (f *RemoteFlagGroup) ToOptions() (RemoteOptions, error) {
 		customHeaders.Set(tokenHeader, token)
 	}
 
-	return RemoteOptions{
+	opts.RemoteOptions = RemoteOptions{
 		Token:         token,
 		TokenHeader:   tokenHeader,
 		PathPrefix:    f.PathPrefix.Value(),
 		ServerAddr:    serverAddr,
 		CustomHeaders: customHeaders,
 		Listen:        listen,
-	}, nil
+	}
+	return nil
 }
 
 func splitCustomHeaders(headers []string) http.Header {

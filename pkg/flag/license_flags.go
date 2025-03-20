@@ -115,9 +115,9 @@ func (f *LicenseFlagGroup) Flags() []Flagger {
 	}
 }
 
-func (f *LicenseFlagGroup) ToOptions() (LicenseOptions, error) {
+func (f *LicenseFlagGroup) ToOptions(opts *Options) error {
 	if err := parseFlags(f); err != nil {
-		return LicenseOptions{}, err
+		return err
 	}
 
 	licenseCategories := make(map[types.LicenseCategory][]string)
@@ -128,10 +128,11 @@ func (f *LicenseFlagGroup) ToOptions() (LicenseOptions, error) {
 	licenseCategories[types.CategoryPermissive] = f.LicensePermissive.Value()
 	licenseCategories[types.CategoryUnencumbered] = f.LicenseUnencumbered.Value()
 
-	return LicenseOptions{
+	opts.LicenseOptions = LicenseOptions{
 		LicenseFull:            f.LicenseFull.Value(),
 		IgnoredLicenses:        f.IgnoredLicenses.Value(),
 		LicenseConfidenceLevel: f.LicenseConfidenceLevel.Value(),
 		LicenseCategories:      licenseCategories,
-	}, nil
+	}
+	return nil
 }

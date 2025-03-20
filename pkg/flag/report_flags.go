@@ -200,9 +200,9 @@ func (f *ReportFlagGroup) Flags() []Flagger {
 	}
 }
 
-func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
+func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 	if err := parseFlags(f); err != nil {
-		return ReportOptions{}, err
+		return err
 	}
 
 	format := types.Format(f.Format.Value())
@@ -241,27 +241,27 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 
 	// "--table-mode" option is available only with "--format table".
 	if viper.IsSet(TableModeFlag.ConfigName) && format != types.FormatTable {
-		return ReportOptions{}, xerrors.New(`"--table-mode" can be used only with "--format table".`)
+		return xerrors.New(`"--table-mode" can be used only with "--format table".`)
 	}
 
 	cs, err := loadComplianceTypes(f.Compliance.Value())
 	if err != nil {
-		return ReportOptions{}, xerrors.Errorf("unable to load compliance spec: %w", err)
+		return xerrors.Errorf("unable to load compliance spec: %w", err)
 	}
 
 	var outputPluginArgs []string
 	if arg := f.OutputPluginArg.Value(); arg != "" {
 		outputPluginArgs, err = shellwords.Parse(arg)
 		if err != nil {
-			return ReportOptions{}, xerrors.Errorf("unable to parse output plugin argument: %w", err)
+			return xerrors.Errorf("unable to parse output plugin argument: %w", err)
 		}
 	}
 
 	if viper.IsSet(f.IgnoreFile.ConfigName) && !fsutils.FileExists(f.IgnoreFile.Value()) {
-		return ReportOptions{}, xerrors.Errorf("ignore file not found: %s", f.IgnoreFile.Value())
+		return xerrors.Errorf("ignore file not found: %s", f.IgnoreFile.Value())
 	}
 
-	return ReportOptions{
+	opts.ReportOptions = ReportOptions{
 		Format:           format,
 		ReportFormat:     f.ReportFormat.Value(),
 		Template:         template,
@@ -277,7 +277,8 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		Compliance:       cs,
 		ShowSuppressed:   f.ShowSuppressed.Value(),
 		TableModes:       xstrings.ToTSlice[types.TableMode](tableModes),
-	}, nil
+	}
+	return nil
 }
 
 func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {

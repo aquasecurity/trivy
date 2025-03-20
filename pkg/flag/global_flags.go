@@ -137,9 +137,9 @@ func (f *GlobalFlagGroup) Bind(cmd *cobra.Command) error {
 	return nil
 }
 
-func (f *GlobalFlagGroup) ToOptions() (GlobalOptions, error) {
+func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 	if err := parseFlags(f); err != nil {
-		return GlobalOptions{}, err
+		return err
 	}
 
 	// Keep TRIVY_NON_SSL for backward compatibility
@@ -147,7 +147,7 @@ func (f *GlobalFlagGroup) ToOptions() (GlobalOptions, error) {
 
 	log.Debug("Cache dir", log.String("dir", f.CacheDir.Value()))
 
-	return GlobalOptions{
+	opts.GlobalOptions = GlobalOptions{
 		ConfigFile:            f.ConfigFile.Value(),
 		ShowVersion:           f.ShowVersion.Value(),
 		Quiet:                 f.Quiet.Value(),
@@ -156,5 +156,6 @@ func (f *GlobalFlagGroup) ToOptions() (GlobalOptions, error) {
 		Timeout:               f.Timeout.Value(),
 		CacheDir:              f.CacheDir.Value(),
 		GenerateDefaultConfig: f.GenerateDefaultConfig.Value(),
-	}, nil
+	}
+	return nil
 }

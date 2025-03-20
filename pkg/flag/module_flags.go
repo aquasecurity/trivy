@@ -58,13 +58,14 @@ func (f *ModuleFlagGroup) Flags() []Flagger {
 	}
 }
 
-func (f *ModuleFlagGroup) ToOptions() (ModuleOptions, error) {
+func (f *ModuleFlagGroup) ToOptions(opts *Options) error {
 	if err := parseFlags(f); err != nil {
-		return ModuleOptions{}, err
+		return err
 	}
 
-	return ModuleOptions{
+	opts.ModuleOptions = ModuleOptions{
 		ModuleDir:      f.Dir.Value(),
 		EnabledModules: f.EnabledModules.Value(),
-	}, nil
+	}
+	return nil
 }

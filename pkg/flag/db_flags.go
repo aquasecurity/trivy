@@ -127,9 +127,9 @@ func (f *DBFlagGroup) Flags() []Flagger {
 	}
 }
 
-func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
+func (f *DBFlagGroup) ToOptions(opts *Options) error {
 	if err := parseFlags(f); err != nil {
-		return DBOptions{}, err
+		return err
 	}
 
 	skipDBUpdate := f.SkipDBUpdate.Value()
@@ -138,20 +138,20 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 	downloadJavaDBOnly := f.DownloadJavaDBOnly.Value()
 
 	if downloadDBOnly && downloadJavaDBOnly {
-		return DBOptions{}, xerrors.New("--download-db-only and --download-java-db-only options can not be specified both")
+		return xerrors.New("--download-db-only and --download-java-db-only options can not be specified both")
 	}
 	if downloadDBOnly && skipDBUpdate {
-		return DBOptions{}, xerrors.New("--skip-db-update and --download-db-only options can not be specified both")
+		return xerrors.New("--skip-db-update and --download-db-only options can not be specified both")
 	}
 	if downloadJavaDBOnly && skipJavaDBUpdate {
-		return DBOptions{}, xerrors.New("--skip-java-db-update and --download-java-db-only options can not be specified both")
+		return xerrors.New("--skip-java-db-update and --download-java-db-only options can not be specified both")
 	}
 
 	var dbRepositories, javaDBRepositories []name.Reference
 	for _, repo := range f.DBRepositories.Value() {
 		ref, err := parseRepository(repo, db.SchemaVersion)
 		if err != nil {
-			return DBOptions{}, xerrors.Errorf("invalid DB repository: %w", err)
+			return xerrors.Errorf("invalid DB repository: %w", err)
 		}
 		dbRepositories = append(dbRepositories, ref)
 	}
@@ -159,12 +159,12 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 	for _, repo := range f.JavaDBRepositories.Value() {
 		ref, err := parseRepository(repo, javadb.SchemaVersion)
 		if err != nil {
-			return DBOptions{}, xerrors.Errorf("invalid javadb repository: %w", err)
+			return xerrors.Errorf("invalid javadb repository: %w", err)
 		}
 		javaDBRepositories = append(javaDBRepositories, ref)
 	}
 
-	return DBOptions{
+	opts.DBOptions = DBOptions{
 		Reset:              f.Reset.Value(),
 		DownloadDBOnly:     downloadDBOnly,
 		SkipDBUpdate:       skipDBUpdate,
@@ -173,7 +173,8 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 		NoProgress:         f.NoProgress.Value(),
 		DBRepositories:     dbRepositories,
 		JavaDBRepositories: javaDBRepositories,
-	}, nil
+	}
+	return nil
 }
 
 func parseRepository(repo string, dbSchemaVersion int) (name.Reference, error) {
