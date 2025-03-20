@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"io/fs"
+	"maps"
 	"reflect"
 	"slices"
 
@@ -538,9 +539,7 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 			}
 			values[b.Label()] = val
 		case "locals", "moved", "import":
-			for key, val := range b.Values().AsValueMap() {
-				values[key] = val
-			}
+			maps.Copy(values, b.Values().AsValueMap())
 		case "provider", "module", "check":
 			if b.Label() == "" {
 				continue
@@ -559,42 +558,21 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 			//              Object(Block) -> Field values are instances of the block
 			// TODO: Object(Block) is not yet implemented. This would be sourced from
 			// 	 a for_each statement.
-
-			blockMap, ok := values[b.Labels()[0]]
+			ref := b.Reference()
+			typeValues, ok := values[ref.TypeLabel()]
 			if !ok {
-				values[b.Labels()[0]] = cty.ObjectVal(make(map[string]cty.Value))
-				blockMap = values[b.Labels()[0]]
+				typeValues = cty.ObjectVal(make(map[string]cty.Value))
+				values[ref.TypeLabel()] = typeValues
 			}
 
-			valueMap := blockMap.AsValueMap()
+			valueMap := typeValues.AsValueMap()
 			if valueMap == nil {
 				valueMap = make(map[string]cty.Value)
 			}
-
-			// If the block reference has a key, that means there is multiple instances of
-			// this block. Example if `count` is used on a block, key will be a 'cty.Number',
-			// and the saved value should be a tuple.
-			ref := b.Reference()
-			rawKey := ref.RawKey()
-			if rawKey.Type().Equals(cty.Number) {
-				existing := valueMap[ref.NameLabel()]
-				asInt, _ := rawKey.AsBigFloat().Int64()
-
-				valueMap[ref.NameLabel()] = insertTupleElement(existing, int(asInt), b.Values())
-			}
-
-			// The default behavior, that being no key or an unimplemented key type, is to
-			// save the block as the name value. The name label value contains the key.
-			//
-			// Eg: If the block has the index '4', the string [4] is contained
-			//     within 'b.Labels()[1]'
-			// TODO: This is always done to maintain backwards compatibility.
-			//       I think this can be omitted if the switch statement above
-			//      sets the appropriate tuple value in the valueMap.
-			valueMap[b.Labels()[1]] = b.Values()
+			valueMap[ref.NameLabel()] = blockInstanceValues(b, valueMap)
 
 			// Update the map of all blocks with the same type.
-			values[b.Labels()[0]] = cty.ObjectVal(valueMap)
+			values[ref.TypeLabel()] = cty.ObjectVal(valueMap)
 		}
 	}
 
@@ -605,23 +583,38 @@ func (e *evaluator) getResources() map[string]cty.Value {
 	values := make(map[string]map[string]cty.Value)
 
 	for _, b := range e.blocks {
-		if b.Type() != "resource" {
+		if b.Type() != "resource" || len(b.Labels()) < 2 {
 			continue
 		}
 
-		if len(b.Labels()) < 2 {
-			continue
-		}
-
-		val, exists := values[b.Labels()[0]]
+		ref := b.Reference()
+		typeValues, exists := values[ref.TypeLabel()]
 		if !exists {
-			val = make(map[string]cty.Value)
-			values[b.Labels()[0]] = val
+			typeValues = make(map[string]cty.Value)
+			values[ref.TypeLabel()] = typeValues
 		}
-		val[b.Labels()[1]] = b.Values()
+		typeValues[ref.NameLabel()] = blockInstanceValues(b, typeValues)
 	}
 
 	return lo.MapValues(values, func(v map[string]cty.Value, _ string) cty.Value {
 		return cty.ObjectVal(v)
 	})
+}
+
+// blockInstanceValues returns a cty.Value containing the values of the block instances.
+// If the count argument is used, a tuple is returned where the index corresponds to the argument index.
+// If the for_each argument is used, an object is returned where the key corresponds to the argument key.
+// In other cases, the values of the block itself are returned.
+func blockInstanceValues(b *terraform.Block, typeValues map[string]cty.Value) cty.Value {
+	ref := b.Reference()
+	key := ref.RawKey()
+
+	// TODO: support "for_each"
+	switch {
+	case key.Type().Equals(cty.Number) && b.GetAttribute("count") != nil:
+		idx, _ := key.AsBigFloat().Int64()
+		return insertTupleElement(typeValues[ref.NameLabel()], int(idx), b.Values())
+	default:
+		return b.Values()
+	}
 }

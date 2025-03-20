@@ -1705,33 +1705,60 @@ resource "test_resource" "this" {
 }
 
 func TestCountArguments(t *testing.T) {
-	files := map[string]string{
-		// The order of references and their alphabetical order is important.
-		// d -> b -> c
-		"main.tf": `
-data "d" "foo"{
-    count = 1
-    value = "Index ${count.index}"
+
+	tests := []struct {
+		name  string
+		files map[string]string
+	}{
+		{
+			name: "data blocks",
+			files: map[string]string{
+				"main.tf": `data "d" "foo" {
+  count = 1
+  value = "Index ${count.index}"
 }
 
 data "b" "foo" {
-    count = 1
-    value = data.d.foo[0].value
+  count = 1
+  value = data.d.foo[0].value
 }
 
-data "c" "cfoo" {
+data "c" "foo" {
   count = 1
   value = data.b.foo[0].value
 }`,
+			},
+		},
+		{
+			name: "resource blocks",
+			files: map[string]string{
+				"main.tf": `resource "d" "foo" {
+  count = 1
+  value = "Index ${count.index}"
+}
+
+resource "b" "foo" {
+  count = 1
+  value = d.foo[0].value
+}
+
+resource "c" "foo" {
+  count = 1
+  value = b.foo[0].value
+}`,
+			},
+		},
 	}
 
-	modules := parse(t, files)
-	require.Len(t, modules, 1)
-
-	for _, b := range modules.GetBlocks().OfType("data") {
-		val := b.GetAttribute("value").Value()
-		assert.Truef(t, val.Equals(cty.StringVal("Index 0")).True(),
-			"%q does not match the expected string, got %q", b.FullName(), val.GoString())
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			modules := parse(t, tt.files)
+			require.Len(t, modules, 1)
+			for _, b := range modules.GetBlocks() {
+				attr := b.GetAttribute("value")
+				assert.Equal(t, attr.Value().AsString(), "Index 0")
+			}
+		})
 	}
 }
 
