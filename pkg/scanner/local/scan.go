@@ -486,7 +486,7 @@ func excludeDevDeps(apps []ftypes.Application, include bool) {
 			return !pkg.Dev
 		})
 
-		// Remove Dev deps for Root and Workspace packages
+		// Remove Dev deps from DependsOn of Root and Workspace packages
 		for j, pkg := range apps[i].Packages {
 			if pkg.Relationship != ftypes.RelationshipRoot && pkg.Relationship != ftypes.RelationshipWorkspace {
 				continue

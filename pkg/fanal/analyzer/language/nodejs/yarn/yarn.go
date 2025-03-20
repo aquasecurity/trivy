@@ -27,7 +27,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/license"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -63,23 +63,23 @@ type parserWithPatterns struct {
 	patterns map[string][]string
 }
 
-func (p *parserWithPatterns) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *parserWithPatterns) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
 	pkgs, deps, patterns, err := yarn.NewParser().Parse(r)
 	p.patterns = patterns
 	return pkgs, deps, err
 }
 
 func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
-	var apps []ftypes.Application
+	var apps []types.Application
 
 	required := func(path string, d fs.DirEntry) bool {
-		return filepath.Base(path) == ftypes.YarnLock
+		return filepath.Base(path) == types.YarnLock
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, d fs.DirEntry, r io.Reader) error {
 		parser := &parserWithPatterns{}
 		// Parse yarn.lock
-		app, err := language.Parse(ftypes.Yarn, filePath, r, parser)
+		app, err := language.Parse(types.Yarn, filePath, r, parser)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
@@ -94,7 +94,7 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		// Parse package.json alongside yarn.lock to find direct deps and mark dev deps
 		if err = a.analyzeDependencies(input.FS, path.Dir(filePath), app, parser.patterns); err != nil {
 			a.logger.Warn("Unable to parse package.json to remove dev dependencies",
-				log.FilePath(path.Join(path.Dir(filePath), ftypes.NpmPkg)), log.Err(err))
+				log.FilePath(path.Join(path.Dir(filePath), types.NpmPkg)), log.Err(err))
 		}
 
 		// Fill licenses
@@ -120,7 +120,7 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 func (a yarnAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	dirs, fileName := splitPath(filePath)
 
-	if fileName == ftypes.YarnLock &&
+	if fileName == types.YarnLock &&
 		// skipping yarn.lock in cache folders
 		lo.Some(dirs, []string{
 			"node_modules",
@@ -129,8 +129,8 @@ func (a yarnAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 		return false
 	}
 
-	if fileName == ftypes.YarnLock ||
-		fileName == ftypes.NpmPkg ||
+	if fileName == types.YarnLock ||
+		fileName == types.NpmPkg ||
 		strings.HasPrefix(strings.ToLower(fileName), "license") {
 		return true
 	}
@@ -162,8 +162,8 @@ func (a yarnAnalyzer) Version() int {
 
 // analyzeDependencies analyzes the package.json file next to yarn.lock,
 // distinguishing between direct and transitive dependencies as well as production and development dependencies.
-func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *ftypes.Application, patterns map[string][]string) error {
-	packageJsonPath := path.Join(dir, ftypes.NpmPkg)
+func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.Application, patterns map[string][]string) error {
+	packageJsonPath := path.Join(dir, types.NpmPkg)
 	rootPkgs, directDeps, directDevDeps, err := a.parsePackageJsonDependencies(fsys, packageJsonPath)
 	if errors.Is(err, fs.ErrNotExist) {
 		a.logger.Debug("package.json not found", log.FilePath(packageJsonPath))
@@ -174,7 +174,7 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *ftypes.Ap
 
 	// yarn.lock file can contain same packages with different versions
 	// save versions separately for version comparison by comparator
-	pkgIDs := lo.SliceToMap(app.Packages, func(pkg ftypes.Package) (string, ftypes.Package) {
+	pkgIDs := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 		return pkg.ID, pkg
 	})
 
@@ -200,18 +200,18 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *ftypes.Ap
 	pkgs = lo.Assign(devPkgs, pkgs, rootPkgs)
 
 	pkgSlice := lo.Values(pkgs)
-	sort.Sort(ftypes.Packages(pkgSlice))
+	sort.Sort(types.Packages(pkgSlice))
 
 	// Save packages
 	app.Packages = pkgSlice
 	return nil
 }
 
-func (a yarnAnalyzer) walkDependencies(pkgs []ftypes.Package, rootPkgs, pkgIDs map[string]ftypes.Package,
-	directDeps map[string]Dependency, patterns map[string][]string, dev bool) (map[string]ftypes.Package, error) {
+func (a yarnAnalyzer) walkDependencies(pkgs []types.Package, rootPkgs, pkgIDs map[string]types.Package,
+	directDeps map[string]Dependency, patterns map[string][]string, dev bool) (map[string]types.Package, error) {
 
 	// Identify direct dependencies
-	directPkgs := make(map[string]ftypes.Package)
+	directPkgs := make(map[string]types.Package)
 	for _, pkg := range pkgs {
 		dep, ok := directDeps[pkg.Name]
 		if !ok {
@@ -228,7 +228,7 @@ func (a yarnAnalyzer) walkDependencies(pkgs []ftypes.Package, rootPkgs, pkgIDs m
 		// Try to find an exact match to the pattern.
 		// In some cases, patterns from yarn.lock and package.json may not match (e.g., yarn v2 uses the allowed version for ID).
 		// Therefore, if the patterns don't match - compare versions.
-		if pkgPatterns, found := patterns[pkg.ID]; !found || !slices.Contains(pkgPatterns, dependency.ID(ftypes.Yarn, pkg.Name, dep.constraint)) {
+		if pkgPatterns, found := patterns[pkg.ID]; !found || !slices.Contains(pkgPatterns, dependency.ID(types.Yarn, pkg.Name, dep.constraint)) {
 			// npm has own comparer to compare versions
 			if match, err := a.comparer.MatchVersion(pkg.Version, dep.constraint); err != nil {
 				return nil, xerrors.Errorf("unable to match version for %s", pkg.Name)
@@ -239,7 +239,7 @@ func (a yarnAnalyzer) walkDependencies(pkgs []ftypes.Package, rootPkgs, pkgIDs m
 
 		// Mark as a direct dependency
 		pkg.Indirect = false
-		pkg.Relationship = ftypes.RelationshipDirect
+		pkg.Relationship = types.RelationshipDirect
 		pkg.Dev = dev
 		directPkgs[pkg.ID] = pkg
 
@@ -259,7 +259,7 @@ func (a yarnAnalyzer) walkDependencies(pkgs []ftypes.Package, rootPkgs, pkgIDs m
 	return directPkgs, nil
 }
 
-func (a yarnAnalyzer) walkIndirectDependencies(pkg ftypes.Package, pkgIDs, deps map[string]ftypes.Package) {
+func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps map[string]types.Package) {
 	for _, pkgID := range pkg.DependsOn {
 		if _, ok := deps[pkgID]; ok {
 			continue
@@ -271,7 +271,7 @@ func (a yarnAnalyzer) walkIndirectDependencies(pkg ftypes.Package, pkgIDs, deps 
 		}
 
 		dep.Indirect = true
-		dep.Relationship = ftypes.RelationshipIndirect
+		dep.Relationship = types.RelationshipIndirect
 		dep.Dev = pkg.Dev
 		deps[dep.ID] = dep
 		a.walkIndirectDependencies(dep, pkgIDs, deps)
@@ -284,7 +284,7 @@ type Dependency struct {
 	parent     string
 }
 
-func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, filePath string) (map[string]ftypes.Package, map[string]Dependency, map[string]Dependency, error) {
+func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, filePath string) (map[string]types.Package, map[string]Dependency, map[string]Dependency, error) {
 	// Parse package.json
 	f, err := fsys.Open(filePath)
 	if err != nil {
@@ -292,14 +292,14 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, filePath string) 
 	}
 	defer func() { _ = f.Close() }()
 
-	var rootPkgs = make(map[string]ftypes.Package)
+	var rootPkgs = make(map[string]types.Package)
 	rootPkg, err := a.packageJsonParser.Parse(f)
 	if err != nil {
 		return nil, nil, nil, xerrors.Errorf("parse error: %w", err)
 	}
 	// Add hash of pkg as ID, if package.json doesn't have app name.
 	rootPkg.ID = a.packagejsonID(rootPkg)
-	rootPkg.Relationship = ftypes.RelationshipRoot
+	rootPkg.Relationship = types.RelationshipRoot
 
 	// Save dependencies. We will resolve constraints later.
 	dependencies, devDependencies := depsWithParents(rootPkg)
@@ -312,7 +312,7 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, filePath string) 
 		for _, pkg := range pkgs {
 			// Add hash of pkg as ID, if package.json doesn't have app name.
 			pkg.ID = a.packagejsonID(pkg)
-			pkg.Relationship = ftypes.RelationshipWorkspace
+			pkg.Relationship = types.RelationshipWorkspace
 			// Add workspace as child of rootPkg
 			rootPkg.DependsOn = append(rootPkg.DependsOn, pkg.ID)
 			// Add workspace into rootPkgs to add them into list of packages.
@@ -333,7 +333,7 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, dir string, workspaces []st
 	var pkgs []packagejson.Package
 
 	required := func(path string, _ fs.DirEntry) bool {
-		return filepath.Base(path) == ftypes.NpmPkg
+		return filepath.Base(path) == types.NpmPkg
 	}
 
 	walkDirFunc := func(path string, d fs.DirEntry, r io.Reader) error {
@@ -484,7 +484,7 @@ func depsWithParents(parent packagejson.Package) (map[string]Dependency, map[str
 // TODO Dmitriy - move this logic into `packagejson` package
 func (a yarnAnalyzer) packagejsonID(pkg packagejson.Package) string {
 	if pkg.Name != "" {
-		return dependency.ID(ftypes.Yarn, pkg.Name, pkg.Version)
+		return dependency.ID(types.Yarn, pkg.Name, pkg.Version)
 	}
 
 	hash, err := hashstructure.Hash(pkg, hashstructure.FormatV2, &hashstructure.HashOptions{

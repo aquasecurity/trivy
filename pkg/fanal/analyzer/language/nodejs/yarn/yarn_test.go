@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
@@ -21,16 +21,16 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			name: "happy path",
 			dir:  "testdata/happy",
 			want: &analyzer.AnalysisResult{
-				Applications: []ftypes.Application{
+				Applications: []types.Application{
 					{
-						Type:     ftypes.Yarn,
+						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Packages: ftypes.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "90@1.0.0",
 								Name:         "90",
 								Version:      "1.0.0",
-								Relationship: ftypes.RelationshipRoot,
+								Relationship: types.RelationshipRoot,
 								Licenses: []string{
 									"MIT",
 								},
@@ -44,8 +44,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:           "js-tokens@2.0.0",
 								Name:         "js-tokens",
 								Version:      "2.0.0",
-								Relationship: ftypes.RelationshipDirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
 									{
 										StartLine: 5,
 										EndLine:   8,
@@ -57,8 +57,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "prop-types",
 								Version:      "15.7.2",
 								Dev:          true,
-								Relationship: ftypes.RelationshipDirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
 									{
 										StartLine: 27,
 										EndLine:   34,
@@ -74,8 +74,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:           "scheduler@0.13.6",
 								Name:         "scheduler",
 								Version:      "0.13.6",
-								Relationship: ftypes.RelationshipDirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
 									{
 										StartLine: 41,
 										EndLine:   47,
@@ -91,8 +91,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "js-tokens",
 								Version:      "4.0.0",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
 									{
 										StartLine: 10,
 										EndLine:   13,
@@ -104,8 +104,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "loose-envify",
 								Version:      "1.4.0",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
 									{
 										StartLine: 15,
 										EndLine:   20,
@@ -120,8 +120,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "object-assign",
 								Version:      "4.1.1",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
 									{
 										StartLine: 22,
 										EndLine:   25,
@@ -134,8 +134,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Version:      "16.13.1",
 								Dev:          true,
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
 									{
 										StartLine: 36,
 										EndLine:   39,
@@ -151,16 +151,16 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			name: "Project with workspace placed in sub dir",
 			dir:  "testdata/project-with-workspace-in-subdir",
 			want: &analyzer.AnalysisResult{
-				Applications: []ftypes.Application{
+				Applications: []types.Application{
 					{
-						Type:     ftypes.Yarn,
+						Type:     types.Yarn,
 						FilePath: "foo/yarn.lock",
-						Packages: ftypes.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "@test/foo@1.0.0",
 								Name:         "@test/foo",
 								Version:      "1.0.0",
-								Relationship: ftypes.RelationshipRoot,
+								Relationship: types.RelationshipRoot,
 								Licenses: []string{
 									"MIT",
 								},
@@ -172,7 +172,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:           "@test/bar-generators@0.0.1",
 								Name:         "@test/bar-generators",
 								Version:      "0.0.1",
-								Relationship: ftypes.RelationshipWorkspace,
+								Relationship: types.RelationshipWorkspace,
 								DependsOn: []string{
 									"hoek@6.1.3",
 								},
@@ -181,8 +181,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:           "hoek@6.1.3",
 								Name:         "hoek",
 								Version:      "6.1.3",
-								Relationship: ftypes.RelationshipDirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
 									{
 										StartLine: 5,
 										EndLine:   8,
@@ -198,16 +198,16 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			name: "no package.json",
 			dir:  "testdata/no-packagejson",
 			want: &analyzer.AnalysisResult{
-				Applications: []ftypes.Application{
+				Applications: []types.Application{
 					{
-						Type:     ftypes.Yarn,
+						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Packages: ftypes.Packages{
+						Packages: types.Packages{
 							{
 								ID:      "js-tokens@2.0.0",
 								Name:    "js-tokens",
 								Version: "2.0.0",
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 5,
 										EndLine:   8,
@@ -218,7 +218,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "js-tokens@4.0.0",
 								Name:    "js-tokens",
 								Version: "4.0.0",
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 10,
 										EndLine:   13,
@@ -229,7 +229,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "loose-envify@1.4.0",
 								Name:    "loose-envify",
 								Version: "1.4.0",
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 15,
 										EndLine:   20,
@@ -243,7 +243,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "object-assign@4.1.1",
 								Name:    "object-assign",
 								Version: "4.1.1",
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 22,
 										EndLine:   25,
@@ -254,7 +254,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "prop-types@15.7.2",
 								Name:    "prop-types",
 								Version: "15.7.2",
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 27,
 										EndLine:   34,
@@ -270,7 +270,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "react-is@16.13.1",
 								Name:    "react-is",
 								Version: "16.13.1",
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 36,
 										EndLine:   39,
@@ -281,7 +281,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "scheduler@0.13.6",
 								Name:    "scheduler",
 								Version: "0.13.6",
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 41,
 										EndLine:   47,
@@ -301,16 +301,16 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			name: "wrong package.json",
 			dir:  "testdata/wrong-packagejson",
 			want: &analyzer.AnalysisResult{
-				Applications: []ftypes.Application{
+				Applications: []types.Application{
 					{
-						Type:     ftypes.Yarn,
+						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Packages: ftypes.Packages{
+						Packages: types.Packages{
 							{
 								ID:      "js-tokens@2.0.0",
 								Name:    "js-tokens",
 								Version: "2.0.0",
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 5,
 										EndLine:   8,
@@ -337,16 +337,16 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			name: "parse licenses (yarn v2+)",
 			dir:  "testdata/yarn-licenses",
 			want: &analyzer.AnalysisResult{
-				Applications: []ftypes.Application{
+				Applications: []types.Application{
 					{
-						Type:     ftypes.Yarn,
+						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Packages: []ftypes.Package{
+						Packages: []types.Package{
 							{
 								ID:           "yarn-3-licenses@1.0.0",
 								Name:         "yarn-3-licenses",
 								Version:      "1.0.0",
-								Relationship: ftypes.RelationshipRoot,
+								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
 									"is-callable@1.2.7",
 									"is-odd@3.0.1",
@@ -356,9 +356,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:           "is-callable@1.2.7",
 								Name:         "is-callable",
 								Version:      "1.2.7",
-								Relationship: ftypes.RelationshipDirect,
+								Relationship: types.RelationshipDirect,
 								Licenses:     []string{"MIT"},
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 8,
 										EndLine:   13,
@@ -370,9 +370,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "is-odd",
 								Version:      "3.0.1",
 								Licenses:     []string{"MIT"},
-								Relationship: ftypes.RelationshipDirect,
+								Relationship: types.RelationshipDirect,
 								DependsOn:    []string{"is-number@6.0.0"},
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 22,
 										EndLine:   29,
@@ -385,8 +385,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Version:      "6.0.0",
 								Licenses:     []string{"MIT"},
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
 									{
 										StartLine: 15,
 										EndLine:   20,
@@ -402,14 +402,14 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			name: "package uses `latest` version",
 			dir:  "testdata/latest-version",
 			want: &analyzer.AnalysisResult{
-				Applications: []ftypes.Application{
+				Applications: []types.Application{
 					{
-						Type:     ftypes.Yarn,
+						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Packages: ftypes.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "4b1aec5d292e8d22",
-								Relationship: ftypes.RelationshipRoot,
+								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
 									"debug@4.3.5",
 									"js-tokens@9.0.0",
@@ -419,8 +419,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:           "debug@4.3.5",
 								Name:         "debug",
 								Version:      "4.3.5",
-								Relationship: ftypes.RelationshipDirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
 									{
 										StartLine: 5,
 										EndLine:   10,
@@ -434,9 +434,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:           "js-tokens@9.0.0",
 								Name:         "js-tokens",
 								Version:      "9.0.0",
-								Relationship: ftypes.RelationshipDirect,
+								Relationship: types.RelationshipDirect,
 								Dev:          true,
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 12,
 										EndLine:   15,
@@ -448,8 +448,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "ms",
 								Version:      "2.1.2",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
 									{
 										StartLine: 17,
 										EndLine:   20,
@@ -465,16 +465,16 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			name: "happy path with alias rewrite",
 			dir:  "testdata/alias",
 			want: &analyzer.AnalysisResult{
-				Applications: []ftypes.Application{
+				Applications: []types.Application{
 					{
-						Type:     ftypes.Yarn,
+						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Packages: ftypes.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "test@1.0.0",
 								Name:         "test",
 								Version:      "1.0.0",
-								Relationship: ftypes.RelationshipRoot,
+								Relationship: types.RelationshipRoot,
 								Licenses: []string{
 									"MIT",
 								},
@@ -490,9 +490,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "@types/jsonstream",
 								Version:      "0.8.33",
 								Indirect:     false,
-								Relationship: ftypes.RelationshipDirect,
+								Relationship: types.RelationshipDirect,
 								Dev:          true,
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 19,
 										EndLine:   24,
@@ -507,9 +507,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "@types/uuid",
 								Version:      "9.0.7",
 								Indirect:     false,
-								Relationship: ftypes.RelationshipDirect,
+								Relationship: types.RelationshipDirect,
 								Dev:          true,
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 31,
 										EndLine:   34,
@@ -521,8 +521,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "debug",
 								Version:      "4.3.4",
 								Indirect:     false,
-								Relationship: ftypes.RelationshipDirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
 									{
 										StartLine: 12,
 										EndLine:   17,
@@ -537,8 +537,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "ms",
 								Version:      "2.1.3",
 								Indirect:     false,
-								Relationship: ftypes.RelationshipDirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
 									{
 										StartLine: 26,
 										EndLine:   29,
@@ -550,9 +550,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "@types/node",
 								Version:      "20.10.5",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
+								Relationship: types.RelationshipIndirect,
 								Dev:          true,
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 5,
 										EndLine:   10,
@@ -567,8 +567,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "ms",
 								Version:      "2.1.2",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
 									{
 										StartLine: 36,
 										EndLine:   39,
@@ -580,9 +580,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "undici-types",
 								Version:      "5.26.5",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
+								Relationship: types.RelationshipIndirect,
 								Dev:          true,
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 41,
 										EndLine:   44,
@@ -598,16 +598,16 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			name: "monorepo",
 			dir:  "testdata/monorepo",
 			want: &analyzer.AnalysisResult{
-				Applications: []ftypes.Application{
+				Applications: []types.Application{
 					{
-						Type:     ftypes.Yarn,
+						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Packages: ftypes.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "yarn-workspace-test@1.0.0",
 								Name:         "yarn-workspace-test",
 								Version:      "1.0.0",
-								Relationship: ftypes.RelationshipRoot,
+								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
 									"3d4c9654fa2b0f7f",
 									"c@0.0.0",
@@ -618,7 +618,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 							},
 							{
 								ID:           "3d4c9654fa2b0f7f",
-								Relationship: ftypes.RelationshipWorkspace,
+								Relationship: types.RelationshipWorkspace,
 								DependsOn: []string{
 									"is-odd@3.0.1",
 								},
@@ -627,7 +627,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:           "c@0.0.0",
 								Name:         "c",
 								Version:      "0.0.0",
-								Relationship: ftypes.RelationshipWorkspace,
+								Relationship: types.RelationshipWorkspace,
 								DependsOn: []string{
 									"is-number@7.0.0",
 								},
@@ -636,7 +636,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:           "package1@0.0.0",
 								Name:         "package1",
 								Version:      "0.0.0",
-								Relationship: ftypes.RelationshipWorkspace,
+								Relationship: types.RelationshipWorkspace,
 								DependsOn: []string{
 									"scheduler@0.23.0",
 								},
@@ -645,7 +645,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:           "util1@0.0.0",
 								Name:         "util1",
 								Version:      "0.0.0",
-								Relationship: ftypes.RelationshipWorkspace,
+								Relationship: types.RelationshipWorkspace,
 								DependsOn: []string{
 									"js-tokens@8.0.1",
 									"prop-types@15.8.1",
@@ -655,8 +655,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:           "is-number@7.0.0",
 								Name:         "is-number",
 								Version:      "7.0.0",
-								Relationship: ftypes.RelationshipDirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
 									{
 										StartLine: 23,
 										EndLine:   28,
@@ -667,9 +667,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:           "is-odd@3.0.1",
 								Name:         "is-odd",
 								Version:      "3.0.1",
-								Relationship: ftypes.RelationshipDirect,
+								Relationship: types.RelationshipDirect,
 								DependsOn:    []string{"is-number@6.0.0"},
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 30,
 										EndLine:   37,
@@ -680,8 +680,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:           "js-tokens@8.0.1",
 								Name:         "js-tokens",
 								Version:      "8.0.1",
-								Relationship: ftypes.RelationshipDirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
 									{
 										StartLine: 46,
 										EndLine:   51,
@@ -692,9 +692,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:           "prettier@2.8.8",
 								Name:         "prettier",
 								Version:      "2.8.8",
-								Relationship: ftypes.RelationshipDirect,
+								Relationship: types.RelationshipDirect,
 								Dev:          true,
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 87,
 										EndLine:   94,
@@ -705,9 +705,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:           "prop-types@15.8.1",
 								Name:         "prop-types",
 								Version:      "15.8.1",
-								Relationship: ftypes.RelationshipDirect,
+								Relationship: types.RelationshipDirect,
 								Dev:          true,
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 96,
 										EndLine:   105,
@@ -723,9 +723,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:           "scheduler@0.23.0",
 								Name:         "scheduler",
 								Version:      "0.23.0",
-								Relationship: ftypes.RelationshipDirect,
+								Relationship: types.RelationshipDirect,
 								DependsOn:    []string{"loose-envify@1.4.0"},
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 114,
 										EndLine:   121,
@@ -737,8 +737,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "is-number",
 								Version:      "6.0.0",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
 									{
 										StartLine: 16,
 										EndLine:   21,
@@ -750,8 +750,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "js-tokens",
 								Version:      "4.0.0",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
 									{
 										StartLine: 39,
 										EndLine:   44,
@@ -763,9 +763,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "loose-envify",
 								Version:      "1.4.0",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
+								Relationship: types.RelationshipIndirect,
 								DependsOn:    []string{"js-tokens@4.0.0"},
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 53,
 										EndLine:   62,
@@ -777,9 +777,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "object-assign",
 								Version:      "4.1.1",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
+								Relationship: types.RelationshipIndirect,
 								Dev:          true,
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 64,
 										EndLine:   69,
@@ -791,9 +791,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "react-is",
 								Version:      "16.13.1",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
+								Relationship: types.RelationshipIndirect,
 								Dev:          true,
-								Locations: []ftypes.Location{
+								Locations: []types.Location{
 									{
 										StartLine: 107,
 										EndLine:   112,
@@ -813,14 +813,14 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			name: "parse licenses (yarn classic)",
 			dir:  "testdata/yarn-classic-licenses",
 			want: &analyzer.AnalysisResult{
-				Applications: []ftypes.Application{
+				Applications: []types.Application{
 					{
-						Type:     ftypes.Yarn,
+						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Packages: []ftypes.Package{
+						Packages: []types.Package{
 							{
 								ID:           "fdf4c2a730d0939d",
-								Relationship: ftypes.RelationshipRoot,
+								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
 									"@vue/compiler-sfc@2.7.14",
 								},
@@ -830,8 +830,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "@vue/compiler-sfc",
 								Version:      "2.7.14",
 								Indirect:     false,
-								Relationship: ftypes.RelationshipDirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
 									{
 										StartLine: 10,
 										EndLine:   17,
@@ -849,8 +849,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "@babel/parser",
 								Version:      "7.22.7",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
 									{
 										StartLine: 5,
 										EndLine:   8,
@@ -863,8 +863,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "nanoid",
 								Version:      "3.3.6",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
 									{
 										StartLine: 19,
 										EndLine:   22,
@@ -877,8 +877,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "picocolors",
 								Version:      "1.0.0",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
 									{
 										StartLine: 24,
 										EndLine:   27,
@@ -891,8 +891,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "postcss",
 								Version:      "8.4.27",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
 									{
 										StartLine: 29,
 										EndLine:   36,
@@ -910,8 +910,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "source-map",
 								Version:      "0.6.1",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
 									{
 										StartLine: 43,
 										EndLine:   46,
@@ -924,8 +924,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "source-map-js",
 								Version:      "1.0.2",
 								Indirect:     true,
-								Relationship: ftypes.RelationshipIndirect,
-								Locations: []ftypes.Location{
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
 									{
 										StartLine: 38,
 										EndLine:   41,
