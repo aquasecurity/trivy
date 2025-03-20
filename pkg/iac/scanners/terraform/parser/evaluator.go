@@ -609,12 +609,31 @@ func blockInstanceValues(b *terraform.Block, typeValues map[string]cty.Value) ct
 	ref := b.Reference()
 	key := ref.RawKey()
 
-	// TODO: support "for_each"
 	switch {
 	case key.Type().Equals(cty.Number) && b.GetAttribute("count") != nil:
 		idx, _ := key.AsBigFloat().Int64()
 		return insertTupleElement(typeValues[ref.NameLabel()], int(idx), b.Values())
+	case isForEachKey(key) && b.GetAttribute("for_each") != nil:
+		keyStr := ref.Key()
+
+		instancesVal, exists := typeValues[ref.NameLabel()]
+		if !exists || !instancesVal.CanIterateElements() {
+			instancesVal = cty.EmptyObjectVal
+		}
+
+		instances := instancesVal.AsValueMap()
+		if instances == nil {
+			instances = make(map[string]cty.Value)
+		}
+
+		instances[keyStr] = b.Values()
+		return cty.ObjectVal(instances)
+
 	default:
 		return b.Values()
 	}
+}
+
+func isForEachKey(key cty.Value) bool {
+	return key.Type().Equals(cty.Number) || key.Type().Equals(cty.String)
 }

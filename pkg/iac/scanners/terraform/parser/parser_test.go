@@ -1704,14 +1704,14 @@ resource "test_resource" "this" {
 	assert.Equal(t, "test_value", attr.GetRawValue())
 }
 
-func TestCountArguments(t *testing.T) {
+func TestPopulateContextWithBlockInstances(t *testing.T) {
 
 	tests := []struct {
 		name  string
 		files map[string]string
 	}{
 		{
-			name: "data blocks",
+			name: "data blocks with count",
 			files: map[string]string{
 				"main.tf": `data "d" "foo" {
   count = 1
@@ -1730,7 +1730,7 @@ data "c" "foo" {
 			},
 		},
 		{
-			name: "resource blocks",
+			name: "resource blocks with count",
 			files: map[string]string{
 				"main.tf": `resource "d" "foo" {
   count = 1
@@ -1745,6 +1745,44 @@ resource "b" "foo" {
 resource "c" "foo" {
   count = 1
   value = b.foo[0].value
+}`,
+			},
+		},
+		{
+			name: "data blocks with for_each",
+			files: map[string]string{
+				"main.tf": `data "d" "foo" {
+  for_each = toset([0])
+  value = "Index ${each.key}"
+}
+
+data "b" "foo" {
+  for_each = data.d.foo 
+  value = each.value.value
+}
+
+data "c" "foo" {
+  for_each = data.b.foo 
+  value = each.value.value
+}`,
+			},
+		},
+		{
+			name: "resource blocks with for_each",
+			files: map[string]string{
+				"main.tf": `resource "d" "foo" {
+  for_each = toset([0])
+  value = "Index ${each.key}"
+}
+
+resource "b" "foo" {
+  for_each = d.foo 
+  value = each.value.value
+}
+
+resource "c" "foo" {
+  for_each = b.foo 
+  value = each.value.value
 }`,
 			},
 		},
