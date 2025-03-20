@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/hook"
 	"github.com/aquasecurity/trivy/pkg/module"
-	"github.com/aquasecurity/trivy/pkg/scan/post"
 )
 
 func TestManager_Register(t *testing.T) {
@@ -20,12 +20,12 @@ func TestManager_Register(t *testing.T) {
 		t.Skip("Test satisfied adequately by Linux tests")
 	}
 	tests := []struct {
-		name                    string
-		moduleDir               string
-		enabledModules          []string
-		wantAnalyzerVersions    analyzer.Versions
-		wantPostScannerVersions map[string]int
-		wantErr                 bool
+		name                 string
+		moduleDir            string
+		enabledModules       []string
+		wantAnalyzerVersions analyzer.Versions
+		wantHooks            []string
+		wantErr              bool
 	}{
 		{
 			name:      "happy path",
@@ -36,8 +36,8 @@ func TestManager_Register(t *testing.T) {
 				},
 				PostAnalyzers: make(map[string]int),
 			},
-			wantPostScannerVersions: map[string]int{
-				"happy": 1,
+			wantHooks: []string{
+				"happy",
 			},
 		},
 		{
@@ -49,7 +49,7 @@ func TestManager_Register(t *testing.T) {
 				},
 				PostAnalyzers: make(map[string]int),
 			},
-			wantPostScannerVersions: make(map[string]int),
+			wantHooks: []string{},
 		},
 		{
 			name:      "only post scanner",
@@ -58,8 +58,8 @@ func TestManager_Register(t *testing.T) {
 				Analyzers:     make(map[string]int),
 				PostAnalyzers: make(map[string]int),
 			},
-			wantPostScannerVersions: map[string]int{
-				"scanner": 2,
+			wantHooks: []string{
+				"scanner",
 			},
 		},
 		{
@@ -69,7 +69,7 @@ func TestManager_Register(t *testing.T) {
 				Analyzers:     make(map[string]int),
 				PostAnalyzers: make(map[string]int),
 			},
-			wantPostScannerVersions: make(map[string]int),
+			wantHooks: []string{},
 		},
 		{
 			name:      "pass enabled modules",
@@ -85,8 +85,8 @@ func TestManager_Register(t *testing.T) {
 				},
 				PostAnalyzers: make(map[string]int),
 			},
-			wantPostScannerVersions: map[string]int{
-				"happy": 1,
+			wantHooks: []string{
+				"happy",
 			},
 		},
 	}
@@ -124,9 +124,7 @@ func TestManager_Register(t *testing.T) {
 			got := a.AnalyzerVersions()
 			assert.Equal(t, tt.wantAnalyzerVersions, got)
 
-			// Confirm the post scanner is registered
-			gotScannerVersions := post.ScannerVersions()
-			assert.Equal(t, tt.wantPostScannerVersions, gotScannerVersions)
+			assert.Equal(t, tt.wantHooks, hook.Hooks())
 		})
 	}
 }

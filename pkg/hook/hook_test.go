@@ -1,4 +1,4 @@
-package post_test
+package hook_test
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/scan/post"
+	"github.com/aquasecurity/trivy/pkg/hook"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -21,6 +21,10 @@ func (testPostScanner) Name() string {
 
 func (testPostScanner) Version() int {
 	return 1
+}
+
+func (testPostScanner) PreScan(ctx context.Context, target *types.ScanTarget, options types.ScanOptions) error {
+	return nil
 }
 
 func (testPostScanner) PostScan(ctx context.Context, results types.Results) (types.Results, error) {
@@ -90,12 +94,12 @@ func TestScan(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := testPostScanner{}
-			post.RegisterPostScanner(s)
+			hook.RegisterHook(s)
 			defer func() {
-				post.DeregisterPostScanner(s.Name())
+				hook.DeregisterHook(s.Name())
 			}()
 
-			results, err := post.Scan(t.Context(), tt.results)
+			results, err := hook.PostScan(t.Context(), tt.results)
 			require.Equal(t, tt.wantErr, err != nil)
 			assert.Equal(t, tt.want, results)
 		})

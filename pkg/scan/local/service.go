@@ -18,12 +18,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/hook"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
 	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
-	"github.com/aquasecurity/trivy/pkg/scan/post"
 	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
@@ -49,7 +49,7 @@ type Service struct {
 	vulnClient     vulnerability.Client
 }
 
-// NewService is the factory method for Scanner
+// NewService is the factory method for Hook
 func NewService(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner langpkg.Scanner,
 	vulnClient vulnerability.Client) Service {
 	return Service{
@@ -149,7 +149,7 @@ func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, option
 	}
 
 	// Post scanning
-	results, err = post.Scan(ctx, results)
+	results, err = hook.PostScan(ctx, results)
 	if err != nil {
 		return nil, ftypes.OS{}, xerrors.Errorf("post scan error: %w", err)
 	}

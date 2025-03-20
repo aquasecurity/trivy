@@ -18,12 +18,11 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/hook"
 	"github.com/aquasecurity/trivy/pkg/log"
 	tapi "github.com/aquasecurity/trivy/pkg/module/api"
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
-	"github.com/aquasecurity/trivy/pkg/scan/post"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 var (
@@ -33,10 +32,6 @@ var (
 		"warn":  logWarn,
 		"error": logError,
 	}
-
-	RelativeDir = filepath.Join(".trivy", "modules")
-
-	DefaultDir = dir()
 )
 
 // logDebug is defined as an api.GoModuleFunc for lower overhead vs reflection.
@@ -172,7 +167,7 @@ func (m *Manager) Register() {
 func (m *Manager) Deregister() {
 	for _, mod := range m.modules {
 		analyzer.DeregisterAnalyzer(analyzer.Type(mod.Name()))
-		post.DeregisterPostScanner(mod.Name())
+		hook.DeregisterHook(mod.Name())
 	}
 }
 
@@ -261,6 +256,8 @@ func marshal(ctx context.Context, m api.Module, malloc api.Function, v any) (uin
 	}
 	return ptr, size, nil
 }
+
+var _ hook.ScanHook = (*wasmModule)(nil)
 
 type wasmModule struct {
 	mod   api.Module
@@ -416,7 +413,7 @@ func (m *wasmModule) Register() {
 	}
 	if m.isPostScanner {
 		logger.Debug("Registering custom post scanner")
-		post.RegisterPostScanner(m)
+		hook.RegisterHook(m)
 	}
 }
 
@@ -486,8 +483,11 @@ func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 	return &result, nil
 }
 
-// PostScan performs post scanning
-// e.g. Remove a vulnerability, change severity, etc.
+func (m *wasmModule) PreScan(ctx context.Context, target *types.ScanTarget, options types.ScanOptions) error {
+	// TODO: Implement
+	return nil
+}
+
 func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types.Results, error) {
 	// Find custom resources
 	var custom types.Result
@@ -744,10 +744,6 @@ func isType(ctx context.Context, mod api.Module, name string) (bool, error) {
 	}
 
 	return isRes[0] > 0, nil
-}
-
-func dir() string {
-	return filepath.Join(fsutils.HomeDir(), RelativeDir)
 }
 
 func modulePostScanSpec(ctx context.Context, mod api.Module, freeFn api.Function) (serialize.PostScanSpec, error) {
