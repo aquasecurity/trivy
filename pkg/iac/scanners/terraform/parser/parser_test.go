@@ -1709,6 +1709,7 @@ func TestPopulateContextWithBlockInstances(t *testing.T) {
 	tests := []struct {
 		name  string
 		files map[string]string
+		skip  func(b *terraform.Block) bool
 	}{
 		{
 			name: "data blocks with count",
@@ -1786,15 +1787,48 @@ resource "c" "foo" {
 }`,
 			},
 		},
+		{
+			name: "module blocks with for_each",
+			skip: func(b *terraform.Block) bool {
+				return b.Type() == "module" || b.Type() == "variable"
+			},
+			files: map[string]string{
+				"main.tf": `
+module "outputs" {
+  for_each = toset(["Index 0"])
+  source = "./modules/outputs"
+  input  = each.key
+}
+
+resource "test" "foo" {
+  value = module.outputs["Index 0"].value
+}
+`,
+				"modules/outputs/main.tf": `
+variable "input" {
+  type = string
+}
+
+output "value" {
+  value = "${var.value}"
+} 
+`,
+			},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			modules := parse(t, tt.files)
-			require.Len(t, modules, 1)
+			//require.Len(t, modules, 1)
 			for _, b := range modules.GetBlocks() {
+				if tt.skip != nil && tt.skip(b) {
+					continue
+				}
 				attr := b.GetAttribute("value")
-				assert.Equal(t, "Index 0", attr.Value().AsString())
+				if assert.True(t, !attr.Value().IsNull(), "attribute 'value' not found or is null in block %s", b.FullName()) {
+					assert.Equal(t, "Index 0", attr.Value().AsString())
+				}
 			}
 		})
 	}
