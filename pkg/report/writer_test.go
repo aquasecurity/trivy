@@ -2,7 +2,6 @@ package report_test
 
 import (
 	"bytes"
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
