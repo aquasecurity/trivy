@@ -21,21 +21,22 @@ import (
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
-// ScanSuperSet binds the dependencies for server
+// ScanSuperSet binds the dependencies for the server implementation.
 var ScanSuperSet = wire.NewSet(
 	local.SuperSet,
-	wire.Bind(new(scan.Driver), new(local.Service)),
+	wire.Bind(new(scan.Backend), new(local.Service)),
 	NewScanServer,
 )
 
-// ScanServer implements the scanner
+// ScanServer implements the scanner service.
+// It uses local.Service as its backend to perform various types of security scanning.
 type ScanServer struct {
-	localScanner scan.Driver
+	local scan.Backend
 }
 
-// NewScanServer is the factory method for scanner
-func NewScanServer(s scan.Driver) *ScanServer {
-	return &ScanServer{localScanner: s}
+// NewScanServer creates a new ScanServer instance with the specified backend implementation.
+func NewScanServer(s scan.Backend) *ScanServer {
+	return &ScanServer{local: s}
 }
 
 // Log and return an error
@@ -47,7 +48,7 @@ func teeError(err error) error {
 // Scan scans and return response
 func (s *ScanServer) Scan(ctx context.Context, in *rpcScanner.ScanRequest) (*rpcScanner.ScanResponse, error) {
 	options := s.ToOptions(in.Options)
-	results, os, err := s.localScanner.Scan(ctx, in.Target, in.ArtifactId, in.BlobIds, options)
+	results, os, err := s.local.Scan(ctx, in.Target, in.ArtifactId, in.BlobIds, options)
 	if err != nil {
 		return nil, teeError(xerrors.Errorf("failed scan, %s: %w", in.Target, err))
 	}

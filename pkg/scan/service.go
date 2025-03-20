@@ -35,7 +35,7 @@ var StandaloneSuperSet = wire.NewSet(
 	wire.Bind(new(cache.LocalArtifactCache), new(cache.Cache)),
 
 	local.SuperSet,
-	wire.Bind(new(Driver), new(local.Service)),
+	wire.Bind(new(Backend), new(local.Service)),
 	NewService,
 )
 
@@ -89,7 +89,7 @@ var RemoteSuperSet = wire.NewSet(
 
 	client.NewService,
 	wire.Value([]client.Option(nil)),
-	wire.Bind(new(Driver), new(client.Service)),
+	wire.Bind(new(Backend), new(client.Service)),
 	NewService,
 )
 
@@ -131,27 +131,35 @@ var RemoteArchiveSet = wire.NewSet(
 	RemoteSuperSet,
 )
 
-// Service implements the Artifact and Driver operations
+// Service is the main service that coordinates security scanning operations.
+// It uses either local.Service or remote.Service as its backend implementation.
 type Service struct {
-	driver   Driver
+	backend  Backend
 	artifact artifact.Artifact
 }
 
-// Driver defines operations of scanner
-type Driver interface {
+// Backend defines the interface for security scanning implementations.
+// It can be either local.Service for standalone scanning or remote.Service
+// for client/server mode scanning. The backend handles various types of
+// security scanning including vulnerability, misconfiguration, secret,
+// and license scanning.
+type Backend interface {
 	Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (
 		results types.Results, osFound ftypes.OS, err error)
 }
 
-// NewService is the factory method of Service
-func NewService(driver Driver, ar artifact.Artifact) Service {
+// NewService creates a new Service instance with the specified backend implementation
+// and artifact handler.
+func NewService(backend Backend, ar artifact.Artifact) Service {
 	return Service{
-		driver:   driver,
+		backend:  backend,
 		artifact: ar,
 	}
 }
 
-// ScanArtifact scans the artifacts and returns results
+// ScanArtifact performs security scanning on the specified artifact.
+// It first inspects the artifact to gather necessary information,
+// then delegates the actual scanning to the configured backend implementation.
 func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (types.Report, error) {
 	artifactInfo, err := s.artifact.Inspect(ctx)
 	if err != nil {
@@ -164,7 +172,7 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		}
 	}()
 
-	results, osFound, err := s.driver.Scan(ctx, artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
+	results, osFound, err := s.backend.Scan(ctx, artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}

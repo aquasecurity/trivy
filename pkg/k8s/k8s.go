@@ -14,7 +14,7 @@ import (
 // ScanSuperSet binds the dependencies for k8s
 var ScanSuperSet = wire.NewSet(
 	local.SuperSet,
-	wire.Bind(new(scan.Driver), new(local.Service)),
+	wire.Bind(new(scan.Backend), new(local.Service)),
 	NewScanKubernetes,
 )
 
