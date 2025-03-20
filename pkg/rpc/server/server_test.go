@@ -53,7 +53,7 @@ func TestScanServer_Scan(t *testing.T) {
 					},
 				},
 			},
-			fixtures: []string{"../..//scanner/local/testdata/fixtures/happy.yaml"},
+			fixtures: []string{"../../scan/local/testdata/fixtures/happy.yaml"},
 			setUpCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutArtifact("sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a", ftypes.ArtifactInfo{
@@ -150,7 +150,7 @@ func TestScanServer_Scan(t *testing.T) {
 					},
 				},
 			},
-			fixtures: []string{"../../scanner/local/testdata/fixtures/sad.yaml"},
+			fixtures: []string{"../../scan/local/testdata/fixtures/sad.yaml"},
 			setUpCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutArtifact("sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a", ftypes.ArtifactInfo{
