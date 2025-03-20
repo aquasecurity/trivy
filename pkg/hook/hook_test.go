@@ -1,92 +1,17 @@
 package hook_test
 
 import (
-	"context"
-	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/internal/hooktest"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/hook"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
-
-type testHook struct{}
-
-func (testHook) Name() string {
-	return "test"
-}
-
-func (testHook) Version() int {
-	return 1
-}
-
-// ScanHook implementation
-func (testHook) PreScan(ctx context.Context, target *types.ScanTarget, options types.ScanOptions) error {
-	if target.Name == "bad-pre" {
-		return errors.New("bad pre-scan")
-	}
-	return nil
-}
-
-func (testHook) PostScan(ctx context.Context, results types.Results) (types.Results, error) {
-	for i, r := range results {
-		if r.Target == "bad" {
-			return nil, errors.New("bad")
-		}
-		for j := range r.Vulnerabilities {
-			results[i].Vulnerabilities[j].Severity = "LOW"
-		}
-	}
-	return results, nil
-}
-
-// RunHook implementation
-func (testHook) PreRun(ctx context.Context, opts flag.Options) error {
-	if opts.GlobalOptions.ConfigFile == "bad-config" {
-		return errors.New("bad pre-run")
-	}
-	return nil
-}
-
-func (testHook) PostRun(ctx context.Context, opts flag.Options) error {
-	if opts.GlobalOptions.ConfigFile == "bad-config" {
-		return errors.New("bad post-run")
-	}
-	return nil
-}
-
-// ReportHook implementation
-func (testHook) PreReport(ctx context.Context, report *types.Report, opts flag.Options) error {
-	if report.ArtifactName == "bad-report" {
-		return errors.New("bad pre-report")
-	}
-
-	// Modify the report
-	for i := range report.Results {
-		for j := range report.Results[i].Vulnerabilities {
-			report.Results[i].Vulnerabilities[j].Title = "Modified by pre-report hook"
-		}
-	}
-	return nil
-}
-
-func (testHook) PostReport(ctx context.Context, report *types.Report, opts flag.Options) error {
-	if report.ArtifactName == "bad-report" {
-		return errors.New("bad post-report")
-	}
-
-	// Modify the report
-	for i := range report.Results {
-		for j := range report.Results[i].Vulnerabilities {
-			report.Results[i].Vulnerabilities[j].Description = "Modified by post-report hook"
-		}
-	}
-	return nil
-}
 
 func TestPostScan(t *testing.T) {
 	tests := []struct {
@@ -123,7 +48,10 @@ func TestPostScan(t *testing.T) {
 							InstalledVersion: "1.2.3",
 							FixedVersion:     "1.2.4",
 							Vulnerability: dbTypes.Vulnerability{
-								Severity: "LOW",
+								Severity: "CRITICAL",
+								References: []string{
+									"https://example.com/post-scan",
+								},
 							},
 						},
 					},
@@ -142,11 +70,8 @@ func TestPostScan(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := testHook{}
-			hook.RegisterHook(s)
-			defer func() {
-				hook.DeregisterHook(s.Name())
-			}()
+			// Initialize the test hook
+			hooktest.Init(t)
 
 			results, err := hook.PostScan(t.Context(), tt.results)
 			require.Equal(t, tt.wantErr, err != nil)
@@ -179,11 +104,8 @@ func TestPreScan(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := testHook{}
-			hook.RegisterHook(s)
-			defer func() {
-				hook.DeregisterHook(s.Name())
-			}()
+			// Initialize the test hook
+			hooktest.Init(t)
 
 			err := hook.PreScan(t.Context(), tt.target, tt.options)
 			require.Equal(t, tt.wantErr, err != nil)
@@ -214,11 +136,8 @@ func TestPreRun(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := testHook{}
-			hook.RegisterHook(s)
-			defer func() {
-				hook.DeregisterHook(s.Name())
-			}()
+			// Initialize the test hook
+			hooktest.Init(t)
 
 			err := hook.PreRun(t.Context(), tt.opts)
 			require.Equal(t, tt.wantErr, err != nil)
@@ -249,11 +168,8 @@ func TestPostRun(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := testHook{}
-			hook.RegisterHook(s)
-			defer func() {
-				hook.DeregisterHook(s.Name())
-			}()
+			// Initialize the test hook
+			hooktest.Init(t)
 
 			err := hook.PostRun(t.Context(), tt.opts)
 			require.Equal(t, tt.wantErr, err != nil)
@@ -295,11 +211,8 @@ func TestPreReport(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := testHook{}
-			hook.RegisterHook(s)
-			defer func() {
-				hook.DeregisterHook(s.Name())
-			}()
+			// Initialize the test hook
+			hooktest.Init(t)
 
 			err := hook.PreReport(t.Context(), tt.report, tt.opts)
 			if tt.wantErr {
@@ -348,11 +261,8 @@ func TestPostReport(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := testHook{}
-			hook.RegisterHook(s)
-			defer func() {
-				hook.DeregisterHook(s.Name())
-			}()
+			// Initialize the test hook
+			hooktest.Init(t)
 
 			err := hook.PostReport(t.Context(), tt.report, tt.opts)
 			if tt.wantErr {
