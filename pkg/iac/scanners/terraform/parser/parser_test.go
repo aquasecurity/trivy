@@ -1794,7 +1794,7 @@ resource "c" "foo" {
 			require.Len(t, modules, 1)
 			for _, b := range modules.GetBlocks() {
 				attr := b.GetAttribute("value")
-				assert.Equal(t, attr.Value().AsString(), "Index 0")
+				assert.Equal(t, "Index 0", attr.Value().AsString())
 			}
 		})
 	}
