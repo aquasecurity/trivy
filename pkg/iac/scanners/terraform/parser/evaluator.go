@@ -225,7 +225,6 @@ func (e *evaluator) loadSubmodules(ctx context.Context) []*submodule {
 	return submodules
 }
 
-//nolint:goconst
 func (e *evaluator) evaluateSubmodule(ctx context.Context, sm *submodule) bool {
 	inputVars := sm.definition.inputVars()
 	if len(sm.modules) > 0 {
@@ -240,17 +239,11 @@ func (e *evaluator) evaluateSubmodule(ctx context.Context, sm *submodule) bool {
 	sm.modules, sm.fsMap = sm.eval.EvaluateAll(ctx)
 	outputs := sm.eval.exportOutputs()
 
-	valueMap := e.ctx.Get("module").AsValueMap()
-	if valueMap == nil {
-		valueMap = make(map[string]cty.Value)
-	}
-
 	// lastState needs to be captured after applying outputs – so that they
 	// don't get treated as changes – but before running post-submodule
 	// evaluation, so that changes from that can trigger re-evaluations of
 	// the submodule if/when they feed back into inputs.
-	ref := sm.definition.Definition.Reference()
-	e.ctx.Set(blockInstanceValues(sm.definition.Definition, valueMap, outputs), "module", ref.NameLabel())
+	e.ctx.Set(outputs, "module", sm.definition.Name)
 	sm.lastState = sm.definition.inputVars()
 	e.evaluateSteps()
 	return true
@@ -439,7 +432,6 @@ func (e *evaluator) expandBlockCounts(blocks terraform.Blocks) terraform.Blocks 
 	return countFiltered
 }
 
-//nolint:goconst
 func (e *evaluator) copyVariables(from, to *terraform.Block) {
 
 	var fromBase string
@@ -575,7 +567,7 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 			if valueMap == nil {
 				valueMap = make(map[string]cty.Value)
 			}
-			valueMap[ref.NameLabel()] = blockInstanceValues(b, valueMap, b.Values())
+			valueMap[ref.NameLabel()] = blockInstanceValues(b, valueMap)
 
 			// Update the map of all blocks with the same type.
 			values[ref.TypeLabel()] = cty.ObjectVal(valueMap)
@@ -599,7 +591,7 @@ func (e *evaluator) getResources() map[string]cty.Value {
 			typeValues = make(map[string]cty.Value)
 			values[ref.TypeLabel()] = typeValues
 		}
-		typeValues[ref.NameLabel()] = blockInstanceValues(b, typeValues, b.Values())
+		typeValues[ref.NameLabel()] = blockInstanceValues(b, typeValues)
 	}
 
 	return lo.MapValues(values, func(v map[string]cty.Value, _ string) cty.Value {
@@ -611,14 +603,14 @@ func (e *evaluator) getResources() map[string]cty.Value {
 // If the count argument is used, a tuple is returned where the index corresponds to the argument index.
 // If the for_each argument is used, an object is returned where the key corresponds to the argument key.
 // In other cases, the values of the block itself are returned.
-func blockInstanceValues(b *terraform.Block, typeValues map[string]cty.Value, values cty.Value) cty.Value {
+func blockInstanceValues(b *terraform.Block, typeValues map[string]cty.Value) cty.Value {
 	ref := b.Reference()
 	key := ref.RawKey()
 
 	switch {
 	case key.Type().Equals(cty.Number) && b.GetAttribute("count") != nil:
 		idx, _ := key.AsBigFloat().Int64()
-		return insertTupleElement(typeValues[ref.NameLabel()], int(idx), values)
+		return insertTupleElement(typeValues[ref.NameLabel()], int(idx), b.Values())
 	case isForEachKey(key) && b.GetAttribute("for_each") != nil:
 		keyStr := ref.Key()
 
@@ -632,11 +624,11 @@ func blockInstanceValues(b *terraform.Block, typeValues map[string]cty.Value, va
 			instances = make(map[string]cty.Value)
 		}
 
-		instances[keyStr] = values
+		instances[keyStr] = b.Values()
 		return cty.ObjectVal(instances)
 
 	default:
-		return values
+		return b.Values()
 	}
 }
 
