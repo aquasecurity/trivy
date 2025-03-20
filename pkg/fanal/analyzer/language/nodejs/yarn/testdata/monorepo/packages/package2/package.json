@@ -1,7 +1,5 @@
 {
-    "name": "package2",
     "private": true,
-    "version": "0.0.0",
     "type": "module",
     "dependencies": {
         "is-odd": "^3.0.1"
