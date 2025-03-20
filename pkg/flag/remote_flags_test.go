@@ -110,9 +110,10 @@ func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 				Token:         flag.ServerTokenFlag.Clone(),
 				TokenHeader:   flag.ServerTokenHeaderFlag.Clone(),
 			}
-			got, err := f.ToOptions()
+			got := flag.Options{}
+			err := f.ToOptions(&got)
 			require.NoError(t, err)
-			assert.Equalf(t, tt.want, got, "ToOptions()")
+			assert.Equal(t, tt.want, got.RemoteOptions, "RemoteFlagGroup")
 
 			// Assert log messages
 			assert.Equal(t, tt.wantLogs, out.Messages(), tt.name)

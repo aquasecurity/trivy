@@ -101,15 +101,15 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 				DBRepositories:     flag.DBRepositoryFlag.Clone(),
 				JavaDBRepositories: flag.JavaDBRepositoryFlag.Clone(),
 			}
-			got, err := f.ToOptions()
+			got := flag.Options{}
+			err := f.ToOptions(&got)
 			if tt.wantErr != "" {
-				require.Error(t, err)
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)
 
-			assert.EqualExportedValues(t, tt.want, got)
+			assert.EqualExportedValues(t, tt.want, got.DBOptions)
 
 			// Assert log messages
 			assert.Equal(t, tt.wantLogs, out.Messages(), tt.name)

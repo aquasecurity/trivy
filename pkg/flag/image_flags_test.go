@@ -79,13 +79,14 @@ func TestImageFlagGroup_ToOptions(t *testing.T) {
 				Platform:     flag.PlatformFlag.Clone(),
 			}
 
-			got, err := f.ToOptions()
+			got := flag.Options{}
+			err := f.ToOptions(&got)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)
-			assert.EqualExportedValues(t, tt.want, got)
+			assert.EqualExportedValues(t, tt.want, got.ImageOptions)
 		})
 	}
 }
