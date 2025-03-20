@@ -204,12 +204,12 @@ func (f *MisconfFlagGroup) Flags() []Flagger {
 	}
 }
 
-func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
+func (f *MisconfFlagGroup) ToOptions(opts *Options) error {
 	if err := parseFlags(f); err != nil {
-		return MisconfOptions{}, err
+		return err
 	}
 
-	return MisconfOptions{
+	opts.MisconfOptions = MisconfOptions{
 		IncludeNonFailures:      f.IncludeNonFailures.Value(),
 		ResetChecksBundle:       f.ResetChecksBundle.Value(),
 		ChecksBundleRepository:  f.ChecksBundleRepository.Value(),
@@ -225,5 +225,6 @@ func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 		MisconfigScanners:       xstrings.ToTSlice[analyzer.Type](f.MisconfigScanners.Value()),
 		ConfigFileSchemas:       f.ConfigFileSchemas.Value(),
 		RenderCause:             xstrings.ToTSlice[types.ConfigType](f.RenderCause.Value()),
-	}, nil
+	}
+	return nil
 }

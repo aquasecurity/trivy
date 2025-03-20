@@ -75,9 +75,9 @@ func (f *RegistryFlagGroup) Flags() []Flagger {
 	}
 }
 
-func (f *RegistryFlagGroup) ToOptions() (RegistryOptions, error) {
+func (f *RegistryFlagGroup) ToOptions(opts *Options) error {
 	if err := parseFlags(f); err != nil {
-		return RegistryOptions{}, err
+		return err
 	}
 
 	var credentials []types.Credential
@@ -85,17 +85,17 @@ func (f *RegistryFlagGroup) ToOptions() (RegistryOptions, error) {
 	passwords := f.Password.Value()
 	if f.PasswordStdin.Value() {
 		if len(passwords) != 0 {
-			return RegistryOptions{}, xerrors.New("'--password' and '--password-stdin' can't be used at the same time")
+			return xerrors.New("'--password' and '--password-stdin' can't be used at the same time")
 		}
 		contents, err := io.ReadAll(os.Stdin)
 		if err != nil {
-			return RegistryOptions{}, xerrors.Errorf("failed to read from stdin: %w", err)
+			return xerrors.Errorf("failed to read from stdin: %w", err)
 		}
 		// "--password-stdin" doesn't support comma-separated passwords
 		passwords = []string{strings.TrimRight(string(contents), "\r\n")}
 	}
 	if len(users) != len(passwords) {
-		return RegistryOptions{}, xerrors.New("the number of usernames and passwords must match")
+		return xerrors.New("the number of usernames and passwords must match")
 	}
 	for i, user := range users {
 		credentials = append(credentials, types.Credential{
@@ -104,9 +104,10 @@ func (f *RegistryFlagGroup) ToOptions() (RegistryOptions, error) {
 		})
 	}
 
-	return RegistryOptions{
+	opts.RegistryOptions = RegistryOptions{
 		Credentials:     credentials,
 		RegistryToken:   f.RegistryToken.Value(),
 		RegistryMirrors: f.RegistryMirrors.Value(),
-	}, nil
+	}
+	return nil
 }

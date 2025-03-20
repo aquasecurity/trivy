@@ -50,14 +50,15 @@ func (f *RepoFlagGroup) Flags() []Flagger {
 	}
 }
 
-func (f *RepoFlagGroup) ToOptions() (RepoOptions, error) {
+func (f *RepoFlagGroup) ToOptions(opts *Options) error {
 	if err := parseFlags(f); err != nil {
-		return RepoOptions{}, err
+		return err
 	}
 
-	return RepoOptions{
+	opts.RepoOptions = RepoOptions{
 		RepoBranch: f.Branch.Value(),
 		RepoCommit: f.Commit.Value(),
 		RepoTag:    f.Tag.Value(),
-	}, nil
+	}
+	return nil
 }

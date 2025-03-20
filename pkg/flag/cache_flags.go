@@ -106,17 +106,19 @@ func (fg *CacheFlagGroup) Flags() []Flagger {
 	}
 }
 
-func (fg *CacheFlagGroup) ToOptions() (CacheOptions, error) {
+func (fg *CacheFlagGroup) ToOptions(opts *Options) error {
 	if err := parseFlags(fg); err != nil {
-		return CacheOptions{}, err
+		return err
 	}
 
-	return CacheOptions{
+	opts.CacheOptions = CacheOptions{
+		ClearCache:   fg.ClearCache.Value(),
 		CacheBackend: fg.CacheBackend.Value(),
 		CacheTTL:     fg.CacheTTL.Value(),
 		RedisTLS:     fg.RedisTLS.Value(),
 		RedisCACert:  fg.RedisCACert.Value(),
 		RedisCert:    fg.RedisCert.Value(),
 		RedisKey:     fg.RedisKey.Value(),
-	}, nil
+	}
+	return nil
 }
