@@ -5,13 +5,15 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/go-json-experiment/json"
+	"github.com/go-json-experiment/json/jsontext"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/jfather"
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/utils/jsonutils"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -21,23 +23,25 @@ type LockFile struct {
 }
 
 type GraphLock struct {
-	Nodes map[string]Node `json:"nodes"`
+	Nodes map[string]NodeWithLocation `json:"nodes"`
+}
+
+type NodeWithLocation struct {
+	Node
+	ftypes.Location
 }
 
 type Node struct {
-	Ref       string   `json:"ref"`
-	Requires  []string `json:"requires"`
-	StartLine int
-	EndLine   int
+	Ref      string   `json:"ref"`
+	Requires []string `json:"requires"`
 }
 
-type Require struct {
+type Requires []RequireWithLocation
+
+type RequireWithLocation struct {
 	Dependency string
-	StartLine  int
-	EndLine    int
+	ftypes.Location
 }
-
-type Requires []Require
 
 type Parser struct {
 	logger *log.Logger
@@ -123,7 +127,8 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to read conan lock file: %w", err)
 	}
-	if err := jfather.Unmarshal(input, &lock); err != nil {
+
+	if err = json.Unmarshal(input, &lock, json.WithUnmarshalers(unmarshalers(input))); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode conan lock file: %w", err)
 	}
 
@@ -170,24 +175,32 @@ func toPackage(pkg string, startLine, endLine int) (ftypes.Package, error) {
 	}, nil
 }
 
-// UnmarshalJSONWithMetadata needed to detect start and end lines of deps
-func (n *Node) UnmarshalJSONWithMetadata(node jfather.Node) error {
-	if err := node.Decode(&n); err != nil {
-		return err
-	}
-	// Decode func will overwrite line numbers if we save them first
-	n.StartLine = node.Range().Start.Line
-	n.EndLine = node.Range().End.Line
-	return nil
-}
+func unmarshalers(data []byte) *json.Unmarshalers {
+	nodeUnmarshaler := json.UnmarshalFromFunc(func(dec *jsontext.Decoder, node *NodeWithLocation, opts json.Options) error {
+		v, err := dec.ReadValue()
+		if err != nil {
+			return err
+		}
+		if err := json.Unmarshal(v, &node.Node); err != nil {
+			return err
+		}
+		endOffset := dec.InputOffset()
+		node.Location = jsonutils.CountLines(endOffset, data, v)
+		return nil
+	})
 
-func (r *Require) UnmarshalJSONWithMetadata(node jfather.Node) error {
-	var dep string
-	if err := node.Decode(&dep); err != nil {
-		return err
-	}
-	r.Dependency = dep
-	r.StartLine = node.Range().Start.Line
-	r.EndLine = node.Range().End.Line
-	return nil
+	requireUnmarshaler := json.UnmarshalFromFunc(func(dec *jsontext.Decoder, require *RequireWithLocation, opts json.Options) error {
+		v, err := dec.ReadValue()
+		if err != nil {
+			return err
+		}
+		if err = json.Unmarshal(v, &require.Dependency); err != nil {
+			return err
+		}
+		endOffset := dec.InputOffset()
+		require.Location = jsonutils.CountLines(endOffset, data, v)
+		return nil
+	})
+
+	return json.JoinUnmarshalers(nodeUnmarshaler, requireUnmarshaler)
 }
