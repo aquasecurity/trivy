@@ -5,7 +5,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"testing"
 
@@ -20,11 +19,6 @@ import (
 )
 
 func TestScanner_ScanFS(t *testing.T) {
-	// TODO(simar7): Figure out why this test fails on Winndows only
-	if runtime.GOOS == "windows" {
-		t.Skip("skipping test on windows")
-	}
-
 	tests := []struct {
 		name   string
 		fsys   fs.FS
