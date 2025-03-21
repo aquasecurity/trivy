@@ -128,10 +128,6 @@ func (f *DBFlagGroup) Flags() []Flagger {
 }
 
 func (f *DBFlagGroup) ToOptions(opts *Options) error {
-	if err := parseFlags(f); err != nil {
-		return err
-	}
-
 	skipDBUpdate := f.SkipDBUpdate.Value()
 	skipJavaDBUpdate := f.SkipJavaDBUpdate.Value()
 	downloadDBOnly := f.DownloadDBOnly.Value()

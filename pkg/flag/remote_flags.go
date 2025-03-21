@@ -111,10 +111,6 @@ func (f *RemoteFlagGroup) Flags() []Flagger {
 }
 
 func (f *RemoteFlagGroup) ToOptions(opts *Options) error {
-	if err := parseFlags(f); err != nil {
-		return err
-	}
-
 	serverAddr := f.ServerAddr.Value()
 	customHeaders := splitCustomHeaders(f.CustomHeaders.Value())
 	listen := f.Listen.Value()

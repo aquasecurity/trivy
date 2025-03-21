@@ -32,10 +32,6 @@ func (f *SecretFlagGroup) Flags() []Flagger {
 }
 
 func (f *SecretFlagGroup) ToOptions(opts *Options) error {
-	if err := parseFlags(f); err != nil {
-		return err
-	}
-
 	opts.SecretOptions = SecretOptions{
 		SecretConfigPath: f.SecretConfig.Value(),
 	}

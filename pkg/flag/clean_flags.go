@@ -79,9 +79,6 @@ func (fg *CleanFlagGroup) Flags() []Flagger {
 }
 
 func (fg *CleanFlagGroup) ToOptions(opts *Options) error {
-	if err := parseFlags(fg); err != nil {
-		return err
-	}
 	opts.CleanOptions = CleanOptions{
 		CleanAll:             fg.CleanAll.Value(),
 		CleanVulnerabilityDB: fg.CleanVulnerabilityDB.Value(),

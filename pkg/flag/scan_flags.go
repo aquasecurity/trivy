@@ -185,10 +185,6 @@ func (f *ScanFlagGroup) Flags() []Flagger {
 }
 
 func (f *ScanFlagGroup) ToOptions(opts *Options) error {
-	if err := parseFlags(f); err != nil {
-		return err
-	}
-
 	var target string
 	if len(opts.args) == 1 {
 		target = opts.args[0]

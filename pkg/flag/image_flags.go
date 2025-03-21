@@ -120,10 +120,6 @@ func (f *ImageFlagGroup) Flags() []Flagger {
 }
 
 func (f *ImageFlagGroup) ToOptions(opts *Options) error {
-	if err := parseFlags(f); err != nil {
-		return err
-	}
-
 	var platform ftypes.Platform
 	if p := f.Platform.Value(); p != "" {
 		pl, err := v1.ParsePlatform(p)

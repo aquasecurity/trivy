@@ -205,10 +205,6 @@ func (f *MisconfFlagGroup) Flags() []Flagger {
 }
 
 func (f *MisconfFlagGroup) ToOptions(opts *Options) error {
-	if err := parseFlags(f); err != nil {
-		return err
-	}
-
 	opts.MisconfOptions = MisconfOptions{
 		IncludeNonFailures:      f.IncludeNonFailures.Value(),
 		ResetChecksBundle:       f.ResetChecksBundle.Value(),

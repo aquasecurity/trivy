@@ -174,10 +174,6 @@ func (f *K8sFlagGroup) Flags() []Flagger {
 }
 
 func (f *K8sFlagGroup) ToOptions(opts *Options) error {
-	if err := parseFlags(f); err != nil {
-		return err
-	}
-
 	tolerations, err := optionToTolerations(f.Tolerations.Value())
 	if err != nil {
 		return err

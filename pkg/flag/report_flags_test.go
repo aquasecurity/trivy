@@ -214,10 +214,10 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				TableMode:       flag.TableModeFlag.Clone(),
 			}
 
-			got := flag.Options{}
-			err := f.ToOptions(&got)
+			flags := flag.Flags{f}
+			got, err := flags.ToOptions(nil)
 			if tt.wantErr != "" {
-				require.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 
@@ -236,8 +236,8 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			IgnoreFile: flag.IgnoreFileFlag.Clone(),
 		}
 
-		got := flag.Options{}
-		err := f.ToOptions(&got)
+		flags := flag.Flags{f}
+		_, err := flags.ToOptions(nil)
 		assert.ErrorContains(t, err, "ignore file not found: doesntexist")
 	})
 }
