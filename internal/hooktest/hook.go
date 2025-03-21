@@ -88,8 +88,8 @@ func (*testHook) PostReport(ctx context.Context, report *types.Report, opts flag
 
 func Init(t *testing.T) {
 	h := &testHook{}
-	extension.Register(h)
+	extension.RegisterHook(h)
 	t.Cleanup(func() {
-		extension.Deregister(h.Name())
+		extension.DeregisterHook(h.Name())
 	})
 }

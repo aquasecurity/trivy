@@ -15,7 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/extension/hook"
+	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -375,7 +375,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 	}
 
 	// Call pre-run hooks
-	if err := hook.PreRun(ctx, opts); err != nil {
+	if err := extension.PreRun(ctx, opts); err != nil {
 		return xerrors.Errorf("pre run error: %w", err)
 	}
 
@@ -386,7 +386,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 	}
 
 	// Call post-run hooks
-	if err := hook.PostRun(ctx, opts); err != nil {
+	if err := extension.PostRun(ctx, opts); err != nil {
 		return xerrors.Errorf("post run error: %w", err)
 	}
 

@@ -15,7 +15,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
-	"github.com/aquasecurity/trivy/pkg/extension/hook"
+	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -114,7 +114,7 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 
 func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, ftypes.OS, error) {
 	// Call pre-scan hooks
-	if err := hook.PreScan(ctx, &target, options); err != nil {
+	if err := extension.PreScan(ctx, &target, options); err != nil {
 		return nil, ftypes.OS{}, xerrors.Errorf("pre scan error: %w", err)
 	}
 
@@ -154,7 +154,7 @@ func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, option
 	}
 
 	// Call post-scan hooks
-	if results, err = hook.PostScan(ctx, results); err != nil {
+	if results, err = extension.PostScan(ctx, results); err != nil {
 		return nil, ftypes.OS{}, xerrors.Errorf("post scan error: %w", err)
 	}
 

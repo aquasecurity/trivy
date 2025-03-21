@@ -18,7 +18,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/extension"
-	"github.com/aquasecurity/trivy/pkg/extension/hook"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/log"
 	tapi "github.com/aquasecurity/trivy/pkg/module/api"
@@ -168,7 +167,7 @@ func (m *Manager) Register() {
 func (m *Manager) Deregister() {
 	for _, mod := range m.modules {
 		analyzer.DeregisterAnalyzer(analyzer.Type(mod.Name()))
-		extension.Deregister(mod.Name())
+		extension.DeregisterHook(mod.Name())
 	}
 }
 
@@ -258,7 +257,7 @@ func marshal(ctx context.Context, m api.Module, malloc api.Function, v any) (uin
 	return ptr, size, nil
 }
 
-var _ hook.ScanHook = (*wasmModule)(nil)
+var _ extension.ScanHook = (*wasmModule)(nil)
 
 type wasmModule struct {
 	mod   api.Module
@@ -414,7 +413,7 @@ func (m *wasmModule) Register() {
 	}
 	if m.isPostScanner {
 		logger.Debug("Registering custom post scanner")
-		extension.Register(m)
+		extension.RegisterHook(m)
 	}
 }
 

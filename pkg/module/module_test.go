@@ -6,7 +6,6 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -125,9 +124,7 @@ func TestManager_Register(t *testing.T) {
 			got := a.AnalyzerVersions()
 			assert.Equal(t, tt.wantAnalyzerVersions, got)
 
-			assert.Equal(t, tt.wantExtentions, lo.Map(extension.Extensions(), func(e extension.Extension, _ int) string {
-				return e.Name()
-			}))
+			assert.Equal(t, tt.wantExtentions, extension.Hooks())
 		})
 	}
 }

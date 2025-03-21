@@ -1,4 +1,4 @@
-package hook_test
+package extension_test
 
 import (
 	"testing"
@@ -8,7 +8,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/internal/hooktest"
-	"github.com/aquasecurity/trivy/pkg/extension/hook"
+	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -73,7 +73,7 @@ func TestPostScan(t *testing.T) {
 			// Initialize the test hook
 			hooktest.Init(t)
 
-			results, err := hook.PostScan(t.Context(), tt.results)
+			results, err := extension.PostScan(t.Context(), tt.results)
 			require.Equal(t, tt.wantErr, err != nil)
 			assert.Equal(t, tt.want, results)
 		})
@@ -107,7 +107,7 @@ func TestPreScan(t *testing.T) {
 			// Initialize the test hook
 			hooktest.Init(t)
 
-			err := hook.PreScan(t.Context(), tt.target, tt.options)
+			err := extension.PreScan(t.Context(), tt.target, tt.options)
 			require.Equal(t, tt.wantErr, err != nil)
 		})
 	}
@@ -139,7 +139,7 @@ func TestPreRun(t *testing.T) {
 			// Initialize the test hook
 			hooktest.Init(t)
 
-			err := hook.PreRun(t.Context(), tt.opts)
+			err := extension.PreRun(t.Context(), tt.opts)
 			require.Equal(t, tt.wantErr, err != nil)
 		})
 	}
@@ -171,7 +171,7 @@ func TestPostRun(t *testing.T) {
 			// Initialize the test extension
 			hooktest.Init(t)
 
-			err := hook.PostRun(t.Context(), tt.opts)
+			err := extension.PostRun(t.Context(), tt.opts)
 			require.Equal(t, tt.wantErr, err != nil)
 		})
 	}
@@ -214,7 +214,7 @@ func TestPreReport(t *testing.T) {
 			// Initialize the test hook
 			hooktest.Init(t)
 
-			err := hook.PreReport(t.Context(), tt.report, tt.opts)
+			err := extension.PreReport(t.Context(), tt.report, tt.opts)
 			if tt.wantErr {
 				require.Error(t, err)
 				return
@@ -264,7 +264,7 @@ func TestPostReport(t *testing.T) {
 			// Initialize the test hook
 			hooktest.Init(t)
 
-			err := hook.PostReport(t.Context(), tt.report, tt.opts)
+			err := extension.PostReport(t.Context(), tt.report, tt.opts)
 			if tt.wantErr {
 				require.Error(t, err)
 				return

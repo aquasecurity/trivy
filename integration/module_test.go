@@ -52,7 +52,7 @@ func TestModule(t *testing.T) {
 
 			t.Cleanup(func() {
 				analyzer.DeregisterAnalyzer("spring4shell")
-				extension.Deregister("spring4shell")
+				extension.DeregisterHook("spring4shell")
 			})
 
 			// Run Trivy

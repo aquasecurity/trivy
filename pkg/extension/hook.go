@@ -1,18 +1,36 @@
-package hook
+package extension
 
 import (
 	"context"
+	"sort"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+var hooks = make(map[string]Hook)
+
+func RegisterHook(s Hook) {
+	// Avoid duplication
+	hooks[s.Name()] = s
+}
+
+func DeregisterHook(name string) {
+	delete(hooks, name)
+}
+
+// Hook is an interface that defines the methods for a hook.
+type Hook interface {
+	// Name returns the name of the extension.
+	Name() string
+}
+
 // RunHook is a extension that is called before and after all the processes.
 type RunHook interface {
-	extension.Extension
+	Hook
 
 	// PreRun is called before all the processes.
 	PreRun(ctx context.Context, opts flag.Options) error
@@ -23,7 +41,7 @@ type RunHook interface {
 
 // ScanHook is a extension that is called before and after the scan.
 type ScanHook interface {
-	extension.Extension
+	Hook
 
 	// PreScan is called before the scan. It can modify the scan target.
 	// It may be called on the server side in client/server mode.
@@ -38,7 +56,7 @@ type ScanHook interface {
 
 // ReportHook is a extension that is called before and after the report is written.
 type ReportHook interface {
-	extension.Extension
+	Hook
 
 	// PreReport is called before the report is written.
 	// It can modify the report. It is called on the client side.
@@ -50,7 +68,7 @@ type ReportHook interface {
 }
 
 func PreRun(ctx context.Context, opts flag.Options) error {
-	for _, e := range extension.Extensions() {
+	for _, e := range hooks {
 		h, ok := e.(RunHook)
 		if !ok {
 			continue
@@ -62,8 +80,9 @@ func PreRun(ctx context.Context, opts flag.Options) error {
 	return nil
 }
 
+// PostRun is a hook that is called after all the processes.
 func PostRun(ctx context.Context, opts flag.Options) error {
-	for _, e := range extension.Extensions() {
+	for _, e := range hooks {
 		h, ok := e.(RunHook)
 		if !ok {
 			continue
@@ -75,8 +94,9 @@ func PostRun(ctx context.Context, opts flag.Options) error {
 	return nil
 }
 
+// PreScan is a hook that is called before the scan.
 func PreScan(ctx context.Context, target *types.ScanTarget, options types.ScanOptions) error {
-	for _, e := range extension.Extensions() {
+	for _, e := range hooks {
 		h, ok := e.(ScanHook)
 		if !ok {
 			continue
@@ -88,9 +108,10 @@ func PreScan(ctx context.Context, target *types.ScanTarget, options types.ScanOp
 	return nil
 }
 
+// PostScan is a hook that is called after the scan.
 func PostScan(ctx context.Context, results types.Results) (types.Results, error) {
 	var err error
-	for _, e := range extension.Extensions() {
+	for _, e := range hooks {
 		h, ok := e.(ScanHook)
 		if !ok {
 			continue
@@ -103,8 +124,9 @@ func PostScan(ctx context.Context, results types.Results) (types.Results, error)
 	return results, nil
 }
 
+// PreReport is a hook that is called before the report is written.
 func PreReport(ctx context.Context, report *types.Report, opts flag.Options) error {
-	for _, e := range extension.Extensions() {
+	for _, e := range hooks {
 		h, ok := e.(ReportHook)
 		if !ok {
 			continue
@@ -116,8 +138,9 @@ func PreReport(ctx context.Context, report *types.Report, opts flag.Options) err
 	return nil
 }
 
+// PostReport is a hook that is called after the report is written.
 func PostReport(ctx context.Context, report *types.Report, opts flag.Options) error {
-	for _, e := range extension.Extensions() {
+	for _, e := range hooks {
 		h, ok := e.(ReportHook)
 		if !ok {
 			continue
@@ -127,4 +150,11 @@ func PostReport(ctx context.Context, report *types.Report, opts flag.Options) er
 		}
 	}
 	return nil
+}
+
+// Hooks returns the list of hook names.
+func Hooks() []string {
+	names := lo.Keys(hooks)
+	sort.Strings(names)
+	return names
 }
