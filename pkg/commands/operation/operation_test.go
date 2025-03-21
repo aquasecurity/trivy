@@ -1,8 +1,10 @@
 package operation
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -22,20 +24,22 @@ import (
 	"github.com/aquasecurity/trivy/pkg/policy"
 )
 
-type fakeLayer struct {
+type stubLayer struct {
 	v1.Layer
 }
 
-func (f fakeLayer) MediaType() (types.MediaType, error) {
+func (f stubLayer) MediaType() (types.MediaType, error) {
 	return "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip", nil
 }
 
-func newFakeLayer(t *testing.T) v1.Layer {
-	layer, err := tarball.LayerFromFile("testdata/bundle.tar.gz")
+func newStubLayer(t *testing.T) v1.Layer {
+	layer, err := tarball.LayerFromOpener(func() (io.ReadCloser, error) {
+		return io.NopCloser(bytes.NewBufferString("foo bar baz")), nil
+	})
 	require.NoError(t, err)
 	require.NotNil(t, layer)
 
-	return fakeLayer{layer}
+	return stubLayer{layer}
 }
 
 func TestInitBuiltinChecks(t *testing.T) {
@@ -45,7 +49,6 @@ func TestInitBuiltinChecks(t *testing.T) {
 	}
 	type layersReturns struct {
 		layers []v1.Layer
-		err    error
 	}
 	tests := []struct {
 		name          string
@@ -107,7 +110,7 @@ func TestInitBuiltinChecks(t *testing.T) {
 			name:  "sad: download builtin checks returns an error",
 			clock: fake.NewFakeClock(time.Date(2021, 1, 1, 1, 0, 0, 0, time.UTC)),
 			layersReturns: layersReturns{
-				layers: []v1.Layer{newFakeLayer(t)},
+				layers: []v1.Layer{newStubLayer(t)},
 			},
 			digestReturns: digestReturns{
 				err: errors.New("error"),
@@ -116,7 +119,7 @@ func TestInitBuiltinChecks(t *testing.T) {
 				Digest:       "sha256:01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d",
 				DownloadedAt: time.Date(2021, 1, 1, 1, 0, 0, 0, time.UTC),
 			},
-			wantErr: "digest error",
+			wantErr: "failed to download checks bundle",
 		},
 	}
 
@@ -143,7 +146,7 @@ func TestInitBuiltinChecks(t *testing.T) {
 
 			// Mock image
 			img := new(fakei.FakeImage)
-			img.LayersReturns([]v1.Layer{newFakeLayer(t)}, nil)
+			img.LayersReturns([]v1.Layer{newStubLayer(t)}, nil)
 			img.DigestReturns(tt.digestReturns.h, tt.digestReturns.err)
 			img.ManifestReturns(&v1.Manifest{
 				Layers: []v1.Descriptor{
