@@ -6,11 +6,12 @@ import (
 	"runtime"
 	"testing"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/hook"
 	"github.com/aquasecurity/trivy/pkg/module"
 )
 
@@ -24,7 +25,7 @@ func TestManager_Register(t *testing.T) {
 		moduleDir            string
 		enabledModules       []string
 		wantAnalyzerVersions analyzer.Versions
-		wantHooks            []string
+		wantExtentions       []string
 		wantErr              bool
 	}{
 		{
@@ -36,7 +37,7 @@ func TestManager_Register(t *testing.T) {
 				},
 				PostAnalyzers: make(map[string]int),
 			},
-			wantHooks: []string{
+			wantExtentions: []string{
 				"happy",
 			},
 		},
@@ -49,7 +50,7 @@ func TestManager_Register(t *testing.T) {
 				},
 				PostAnalyzers: make(map[string]int),
 			},
-			wantHooks: []string{},
+			wantExtentions: []string{},
 		},
 		{
 			name:      "only post scanner",
@@ -58,7 +59,7 @@ func TestManager_Register(t *testing.T) {
 				Analyzers:     make(map[string]int),
 				PostAnalyzers: make(map[string]int),
 			},
-			wantHooks: []string{
+			wantExtentions: []string{
 				"scanner",
 			},
 		},
@@ -69,7 +70,7 @@ func TestManager_Register(t *testing.T) {
 				Analyzers:     make(map[string]int),
 				PostAnalyzers: make(map[string]int),
 			},
-			wantHooks: []string{},
+			wantExtentions: []string{},
 		},
 		{
 			name:      "pass enabled modules",
@@ -85,7 +86,7 @@ func TestManager_Register(t *testing.T) {
 				},
 				PostAnalyzers: make(map[string]int),
 			},
-			wantHooks: []string{
+			wantExtentions: []string{
 				"happy",
 			},
 		},
@@ -124,7 +125,9 @@ func TestManager_Register(t *testing.T) {
 			got := a.AnalyzerVersions()
 			assert.Equal(t, tt.wantAnalyzerVersions, got)
 
-			assert.Equal(t, tt.wantHooks, hook.Hooks())
+			assert.Equal(t, tt.wantExtentions, lo.Map(extension.Extensions(), func(e extension.Extension, _ int) string {
+				return e.Name()
+			}))
 		})
 	}
 }

@@ -17,8 +17,9 @@ import (
 	wasi "github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/extension"
+	"github.com/aquasecurity/trivy/pkg/extension/hook"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/hook"
 	"github.com/aquasecurity/trivy/pkg/log"
 	tapi "github.com/aquasecurity/trivy/pkg/module/api"
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
@@ -167,7 +168,7 @@ func (m *Manager) Register() {
 func (m *Manager) Deregister() {
 	for _, mod := range m.modules {
 		analyzer.DeregisterAnalyzer(analyzer.Type(mod.Name()))
-		hook.Deregister(mod.Name())
+		extension.Deregister(mod.Name())
 	}
 }
 
@@ -413,7 +414,7 @@ func (m *wasmModule) Register() {
 	}
 	if m.isPostScanner {
 		logger.Debug("Registering custom post scanner")
-		hook.Register(m)
+		extension.Register(m)
 	}
 }
 

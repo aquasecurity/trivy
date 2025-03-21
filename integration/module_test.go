@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/hook"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -52,7 +52,7 @@ func TestModule(t *testing.T) {
 
 			t.Cleanup(func() {
 				analyzer.DeregisterAnalyzer("spring4shell")
-				hook.Deregister("spring4shell")
+				extension.Deregister("spring4shell")
 			})
 
 			// Run Trivy

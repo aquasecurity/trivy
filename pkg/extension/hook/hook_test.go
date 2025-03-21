@@ -8,8 +8,8 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/internal/hooktest"
+	"github.com/aquasecurity/trivy/pkg/extension/hook"
 	"github.com/aquasecurity/trivy/pkg/flag"
-	"github.com/aquasecurity/trivy/pkg/hook"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -168,7 +168,7 @@ func TestPostRun(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Initialize the test hook
+			// Initialize the test extension
 			hooktest.Init(t)
 
 			err := hook.PostRun(t.Context(), tt.opts)

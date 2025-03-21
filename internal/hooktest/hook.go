@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/flag"
-	"github.com/aquasecurity/trivy/pkg/hook"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -88,8 +88,8 @@ func (*testHook) PostReport(ctx context.Context, report *types.Report, opts flag
 
 func Init(t *testing.T) {
 	h := &testHook{}
-	hook.Register(h)
+	extension.Register(h)
 	t.Cleanup(func() {
-		hook.Deregister(h.Name())
+		extension.Deregister(h.Name())
 	})
 }
