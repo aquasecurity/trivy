@@ -15,6 +15,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
+	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -23,7 +24,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
 	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
-	"github.com/aquasecurity/trivy/pkg/scan/post"
 	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
@@ -49,7 +49,7 @@ type Service struct {
 	vulnClient     vulnerability.Client
 }
 
-// NewService is the factory method for Scanner
+// NewService is the factory method for scan service
 func NewService(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner langpkg.Scanner,
 	vulnClient vulnerability.Client) Service {
 	return Service{
@@ -113,6 +113,11 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 }
 
 func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, ftypes.OS, error) {
+	// Call pre-scan hooks
+	if err := extension.PreScan(ctx, &target, options); err != nil {
+		return nil, ftypes.OS{}, xerrors.Errorf("pre scan error: %w", err)
+	}
+
 	var results types.Results
 
 	// Filter packages according to the options
@@ -148,9 +153,8 @@ func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, option
 		s.vulnClient.FillInfo(results[i].Vulnerabilities, options.VulnSeveritySources)
 	}
 
-	// Post scanning
-	results, err = post.Scan(ctx, results)
-	if err != nil {
+	// Call post-scan hooks
+	if results, err = extension.PostScan(ctx, results); err != nil {
 		return nil, ftypes.OS{}, xerrors.Errorf("post scan error: %w", err)
 	}
 
