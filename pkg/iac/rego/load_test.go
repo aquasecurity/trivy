@@ -257,8 +257,8 @@ deny {
 func TestFallback_CheckWithoutAnnotation(t *testing.T) {
 	fsys := fstest.MapFS{
 		"check.rego": &fstest.MapFile{Data: []byte(`package builtin.test
-import data.func
-deny := func(input)
+import data.some_func
+deny := some_func(input)
 `)},
 	}
 	scanner := rego.NewScanner(
