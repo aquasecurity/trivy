@@ -315,9 +315,9 @@ func TestFlags(t *testing.T) {
 			rootCmd.SetOut(io.Discard)
 
 			flags := &flag.Flags{
-				GlobalFlagGroup: globalFlags,
-				ReportFlagGroup: flag.NewReportFlagGroup(),
-				ScanFlagGroup:   flag.NewScanFlagGroup(),
+				globalFlags,
+				flag.NewReportFlagGroup(),
+				flag.NewScanFlagGroup(),
 			}
 			cmd := &cobra.Command{
 				Use: "test",

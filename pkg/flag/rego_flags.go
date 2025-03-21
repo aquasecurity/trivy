@@ -102,17 +102,14 @@ func (f *RegoFlagGroup) Flags() []Flagger {
 	}
 }
 
-func (f *RegoFlagGroup) ToOptions() (RegoOptions, error) {
-	if err := parseFlags(f); err != nil {
-		return RegoOptions{}, err
-	}
-
-	return RegoOptions{
+func (f *RegoFlagGroup) ToOptions(opts *Options) error {
+	opts.RegoOptions = RegoOptions{
 		IncludeDeprecatedChecks: f.IncludeDeprecatedChecks.Value(),
 		SkipCheckUpdate:         f.SkipCheckUpdate.Value(),
 		Trace:                   f.Trace.Value(),
 		CheckPaths:              f.CheckPaths.Value(),
 		DataPaths:               f.DataPaths.Value(),
 		CheckNamespaces:         f.CheckNamespaces.Value(),
-	}, nil
+	}
+	return nil
 }
