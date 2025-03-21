@@ -101,8 +101,8 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 				DBRepositories:     flag.DBRepositoryFlag.Clone(),
 				JavaDBRepositories: flag.JavaDBRepositoryFlag.Clone(),
 			}
-			got := flag.Options{}
-			err := f.ToOptions(&got)
+			flags := flag.Flags{f}
+			got, err := flags.ToOptions(nil)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return

@@ -103,10 +103,6 @@ func (f *RegoFlagGroup) Flags() []Flagger {
 }
 
 func (f *RegoFlagGroup) ToOptions(opts *Options) error {
-	if err := parseFlags(f); err != nil {
-		return err
-	}
-
 	opts.RegoOptions = RegoOptions{
 		IncludeDeprecatedChecks: f.IncludeDeprecatedChecks.Value(),
 		SkipCheckUpdate:         f.SkipCheckUpdate.Value(),

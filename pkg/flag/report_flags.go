@@ -201,10 +201,6 @@ func (f *ReportFlagGroup) Flags() []Flagger {
 }
 
 func (f *ReportFlagGroup) ToOptions(opts *Options) error {
-	if err := parseFlags(f); err != nil {
-		return err
-	}
-
 	format := types.Format(f.Format.Value())
 	template := f.Template.Value()
 	dependencyTree := f.DependencyTree.Value()

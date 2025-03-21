@@ -79,8 +79,8 @@ func TestImageFlagGroup_ToOptions(t *testing.T) {
 				Platform:     flag.PlatformFlag.Clone(),
 			}
 
-			got := flag.Options{}
-			err := f.ToOptions(&got)
+			flags := flag.Flags{f}
+			got, err := flags.ToOptions(nil)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return

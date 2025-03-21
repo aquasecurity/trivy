@@ -107,10 +107,6 @@ func (fg *CacheFlagGroup) Flags() []Flagger {
 }
 
 func (fg *CacheFlagGroup) ToOptions(opts *Options) error {
-	if err := parseFlags(fg); err != nil {
-		return err
-	}
-
 	opts.CacheOptions = CacheOptions{
 		ClearCache:   fg.ClearCache.Value(),
 		CacheBackend: fg.CacheBackend.Value(),

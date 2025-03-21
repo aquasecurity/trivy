@@ -76,10 +76,6 @@ func (f *RegistryFlagGroup) Flags() []Flagger {
 }
 
 func (f *RegistryFlagGroup) ToOptions(opts *Options) error {
-	if err := parseFlags(f); err != nil {
-		return err
-	}
-
 	var credentials []types.Credential
 	users := f.Username.Value()
 	passwords := f.Password.Value()

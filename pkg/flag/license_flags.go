@@ -116,10 +116,6 @@ func (f *LicenseFlagGroup) Flags() []Flagger {
 }
 
 func (f *LicenseFlagGroup) ToOptions(opts *Options) error {
-	if err := parseFlags(f); err != nil {
-		return err
-	}
-
 	licenseCategories := make(map[types.LicenseCategory][]string)
 	licenseCategories[types.CategoryForbidden] = f.LicenseForbidden.Value()
 	licenseCategories[types.CategoryRestricted] = f.LicenseRestricted.Value()

@@ -70,10 +70,6 @@ func (f *PackageFlagGroup) Flags() []Flagger {
 }
 
 func (f *PackageFlagGroup) ToOptions(opts *Options) error {
-	if err := parseFlags(f); err != nil {
-		return err
-	}
-
 	var relationships []ftypes.Relationship
 	for _, r := range f.PkgRelationships.Value() {
 		relationship, err := ftypes.NewRelationship(r)

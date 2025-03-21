@@ -78,9 +78,6 @@ func (f *AWSFlagGroup) Flags() []Flagger {
 }
 
 func (f *AWSFlagGroup) ToOptions(opts *Options) error {
-	if err := parseFlags(f); err != nil {
-		return err
-	}
 	opts.AWSOptions = AWSOptions{
 		Region:       f.Region.Value(),
 		Endpoint:     f.Endpoint.Value(),

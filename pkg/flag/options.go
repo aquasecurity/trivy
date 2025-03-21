@@ -645,6 +645,10 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 	}
 
 	for _, group := range *f {
+		if err := parseFlags(group); err != nil {
+			return Options{}, xerrors.Errorf("unable to parse flags: %w", err)
+		}
+
 		if err := group.ToOptions(&opts); err != nil {
 			return Options{}, xerrors.Errorf("unable to convert flags to options: %w", err)
 		}
