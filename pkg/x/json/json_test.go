@@ -3,13 +3,28 @@ package json_test
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/c/conan"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/npm"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 	"github.com/go-json-experiment/json"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/c/conan"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
+
+// See npm.LockFile
+type nestedStruct struct {
+	Dependencies map[string]Dependency `json:"dependencies"`
+}
+
+type Dependency struct {
+	Version      string                `json:"version"`
+	Dependencies map[string]Dependency `json:"dependencies"`
+	types.Location
+}
+
+func (d *Dependency) SetLocation(location types.Location) {
+	d.Location = location
+}
 
 var (
 	nestedLocationObject = []byte(`
@@ -46,16 +61,16 @@ func TestUnmarshal(t *testing.T) {
 		{
 			name: "nested LocationObjects",
 			in:   nestedLocationObject,
-			out:  npm.LockFile{},
-			want: npm.LockFile{
-				Dependencies: map[string]npm.Dependency{
+			out:  nestedStruct{},
+			want: nestedStruct{
+				Dependencies: map[string]Dependency{
 					"body-parser": {
 						Version: "1.18.3",
 						Location: types.Location{
 							StartLine: 4,
 							EndLine:   11,
 						},
-						Dependencies: map[string]npm.Dependency{
+						Dependencies: map[string]Dependency{
 							// UnmarshalerWithObjectLocation doesn't support Location for nested objects
 							"debug": {
 								Version: "2.6.9",
