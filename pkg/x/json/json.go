@@ -45,24 +45,24 @@ func UnmarshalerWithObjectLocation(data []byte) *json.Unmarshalers {
 			}
 		}
 		endOffset := dec.InputOffset()
+		// The dec.InputOffset() function returns previousOffsetEnd.
+		// But there are cases when this value doesn't include line breaks (e.g. for array of strings).
+		// See "Location for only string" test for more details.
+		// So we need to calculate the starting line using the length of the value.
+		startOffset := endOffset - int64(len(value))
 
-		loc.SetLocation(countLines(endOffset, data, value))
+		loc.SetLocation(CountLines(startOffset, endOffset, data))
 		return nil
 	})
 
 }
 
-// countLines returns the Location for the unmarshaled object.
+// CountLines returns the Location for the unmarshaled object.
 // "github.com/go-json-experiment/json" does not have a line number option,
-// so we calculate the Location based on the ending offset and the length of the Object.
-func countLines(offsetEnd int64, data, value []byte) ftypes.Location {
-	// The dec.InputOffset() function returns previousOffsetEnd.
-	// But there are cases when this value does not include line breaks.
-	// See "Location for only string" test for more details.
-	// So we need to calculate the starting line using the length of the value.
-	offsetStart := offsetEnd - int64(len(value))
+// so we calculate the Location based on the starting and ending offset and `data`.
+func CountLines(startOffset, endOffset int64, data []byte) ftypes.Location {
 	return ftypes.Location{
-		StartLine: 1 + bytes.Count(data[:offsetStart], []byte("\n")),
-		EndLine:   1 + bytes.Count(data[:offsetEnd], []byte("\n")),
+		StartLine: 1 + bytes.Count(data[:startOffset], []byte("\n")),
+		EndLine:   1 + bytes.Count(data[:endOffset], []byte("\n")),
 	}
 }
