@@ -383,6 +383,9 @@ type Options struct {
 	SecretOptions
 	VulnerabilityOptions
 
+	// CustomOptions is a map of custom options.
+	CustomOptions map[any]any
+
 	// Trivy's version, not populated via CLI flags
 	AppVersion string
 
