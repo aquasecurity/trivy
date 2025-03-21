@@ -5,14 +5,15 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/go-json-experiment/json"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/jfather"
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 // Parser is a parser for Package.resolved files
@@ -32,7 +33,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	if err != nil {
 		return nil, nil, xerrors.Errorf("read error: %w", err)
 	}
-	if err := jfather.Unmarshal(input, &lockFile); err != nil {
+	if err = json.Unmarshal(input, &lockFile, json.WithUnmarshalers(xjson.UnmarshalerWithObjectLocation(input))); err != nil {
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 
@@ -85,13 +86,7 @@ func pkgName(pin Pin, lockVersion int) string {
 	return name
 }
 
-// UnmarshalJSONWithMetadata needed to detect start and end lines of deps for v1
-func (p *Pin) UnmarshalJSONWithMetadata(node jfather.Node) error {
-	if err := node.Decode(&p); err != nil {
-		return err
-	}
-	// Decode func will overwrite line numbers if we save them first
-	p.StartLine = node.Range().Start.Line
-	p.EndLine = node.Range().End.Line
-	return nil
+func (p *Pin) SetLocation(location ftypes.Location) {
+	p.StartLine = location.StartLine
+	p.EndLine = location.EndLine
 }
