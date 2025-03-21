@@ -253,3 +253,18 @@ deny {
 	err := scanner.LoadPolicies(fsys)
 	require.Error(t, err)
 }
+
+func TestFallback_CheckWithoutAnnotation(t *testing.T) {
+	fsys := fstest.MapFS{
+		"check.rego": &fstest.MapFile{Data: []byte(`package builtin.test
+import data.func
+deny := func(input)
+`)},
+	}
+	scanner := rego.NewScanner(
+		rego.WithPolicyDirs("."),
+		rego.WithEmbeddedLibraries(false),
+	)
+	err := scanner.LoadPolicies(fsys)
+	require.NoError(t, err)
+}
