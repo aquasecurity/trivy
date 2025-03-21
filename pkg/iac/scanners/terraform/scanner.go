@@ -115,7 +115,7 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Re
 			return nil, err
 		}
 
-		modules, _, err := p.EvaluateAll(ctx)
+		modules, err := p.EvaluateAll(ctx)
 		if err != nil {
 			return nil, err
 		}
