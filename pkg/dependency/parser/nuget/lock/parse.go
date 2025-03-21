@@ -3,10 +3,11 @@ package lock
 import (
 	"io"
 
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
+	"github.com/go-json-experiment/json"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/jfather"
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -21,11 +22,14 @@ type LockFile struct {
 type Dependencies map[string]Dependency
 
 type Dependency struct {
-	Type         string `json:"type"`
-	Resolved     string `json:"resolved"`
-	StartLine    int
-	EndLine      int
+	Type         string            `json:"type"`
+	Resolved     string            `json:"resolved"`
 	Dependencies map[string]string `json:"dependencies,omitempty"`
+	ftypes.Location
+}
+
+func (d *Dependency) SetLocation(location ftypes.Location) {
+	d.Location = location
 }
 
 type Parser struct{}
@@ -40,7 +44,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to read packages.lock.json: %w", err)
 	}
-	if err := jfather.Unmarshal(input, &lockFile); err != nil {
+	if err = json.Unmarshal(input, &lockFile, json.WithUnmarshalers(xjson.UnmarshalerWithObjectLocation(input))); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode packages.lock.json: %w", err)
 	}
 
@@ -95,17 +99,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	return utils.UniquePackages(pkgs), deps, nil
-}
-
-// UnmarshalJSONWithMetadata needed to detect start and end lines of deps
-func (t *Dependency) UnmarshalJSONWithMetadata(node jfather.Node) error {
-	if err := node.Decode(&t); err != nil {
-		return err
-	}
-	// Decode func will overwrite line numbers if we save them first
-	t.StartLine = node.Range().Start.Line
-	t.EndLine = node.Range().End.Line
-	return nil
 }
 
 func packageID(name, version string) string {
