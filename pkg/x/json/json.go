@@ -14,12 +14,14 @@ type ObjectLocation interface {
 	SetLocation(location ftypes.Location)
 }
 
-// StringLocation is required when your struct has only string and Location
+// StringLocation is required for string object (e.g. array of strings).
 type StringLocation interface {
 	ObjectLocation
 	SetString(s string)
 }
 
+// UnmarshalerWithObjectLocation creates json.Unmarshaler for ObjectLocation to save location using SetLocation function
+// It doesn't support Location detection for nested objects (e.g. Dependency -> map[string]Dependency).
 func UnmarshalerWithObjectLocation(data []byte) *json.Unmarshalers {
 	return json.UnmarshalFromFunc(func(dec *jsontext.Decoder, loc ObjectLocation, _ json.Options) error {
 		value, err := dec.ReadValue()
@@ -56,7 +58,7 @@ func UnmarshalerWithObjectLocation(data []byte) *json.Unmarshalers {
 func countLines(offsetEnd int64, data, value []byte) ftypes.Location {
 	// The dec.InputOffset() function returns previousOffsetEnd.
 	// But there are cases when this value does not include line breaks.
-	// TODO add link to example
+	// See "Location for only string" test for more details.
 	// So we need to calculate the starting line using the length of the value.
 	offsetStart := offsetEnd - int64(len(value))
 	return ftypes.Location{
