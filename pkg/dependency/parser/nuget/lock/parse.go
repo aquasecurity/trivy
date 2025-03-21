@@ -3,7 +3,6 @@ package lock
 import (
 	"io"
 
-	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 	"github.com/go-json-experiment/json"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -12,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 type LockFile struct {

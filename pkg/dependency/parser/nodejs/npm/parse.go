@@ -9,7 +9,6 @@ import (
 	"sort"
 	"strings"
 
-	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 	"github.com/go-json-experiment/json"
 	"github.com/go-json-experiment/json/jsontext"
 	"github.com/samber/lo"
@@ -21,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 const nodeModulesDir = "node_modules"
