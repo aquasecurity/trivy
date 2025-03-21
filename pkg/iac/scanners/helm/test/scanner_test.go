@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"testing/fstest"
 
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
@@ -352,4 +353,12 @@ deny[res] {
 	require.Len(t, results, 1)
 
 	assert.Empty(t, results.GetFailed())
+}
+
+func TestScaningNonHelmChartDoesNotCauseError(t *testing.T) {
+	fsys := fstest.MapFS{
+		"testChart.yaml": &fstest.MapFile{Data: []byte(`foo: bar`)},
+	}
+	_, err := helm.New().ScanFS(t.Context(), fsys, ".")
+	require.NoError(t, err)
 }
