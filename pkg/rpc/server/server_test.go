@@ -16,9 +16,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
-	"github.com/aquasecurity/trivy/pkg/scanner/local"
-	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
+	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
+	"github.com/aquasecurity/trivy/pkg/scan/local"
+	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
@@ -53,7 +53,7 @@ func TestScanServer_Scan(t *testing.T) {
 					},
 				},
 			},
-			fixtures: []string{"../..//scanner/local/testdata/fixtures/happy.yaml"},
+			fixtures: []string{"../../scan/local/testdata/fixtures/happy.yaml"},
 			setUpCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutArtifact("sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a", ftypes.ArtifactInfo{
@@ -150,7 +150,7 @@ func TestScanServer_Scan(t *testing.T) {
 					},
 				},
 			},
-			fixtures: []string{"../../scanner/local/testdata/fixtures/sad.yaml"},
+			fixtures: []string{"../../scan/local/testdata/fixtures/sad.yaml"},
 			setUpCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutArtifact("sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a", ftypes.ArtifactInfo{
@@ -197,7 +197,7 @@ func TestScanServer_Scan(t *testing.T) {
 
 			// Create scanner
 			applier := applier.NewApplier(c)
-			scanner := local.NewScanner(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
+			scanner := local.NewService(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
 			s := NewScanServer(scanner)
 
 			got, err := s.Scan(t.Context(), tt.args.in)

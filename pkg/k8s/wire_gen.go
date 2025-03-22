@@ -10,9 +10,9 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
-	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
-	"github.com/aquasecurity/trivy/pkg/scanner/local"
-	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
+	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
+	"github.com/aquasecurity/trivy/pkg/scan/local"
+	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
@@ -24,7 +24,7 @@ func initializeScanK8s(localArtifactCache cache.LocalArtifactCache) *ScanKuberne
 	langpkgScanner := langpkg.NewScanner()
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
-	localScanner := local.NewScanner(applierApplier, scanner, langpkgScanner, client)
-	scanKubernetes := NewScanKubernetes(localScanner)
+	service := local.NewService(applierApplier, scanner, langpkgScanner, client)
+	scanKubernetes := NewScanKubernetes(service)
 	return scanKubernetes
 }

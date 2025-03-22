@@ -29,7 +29,7 @@ import (
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
-	"github.com/aquasecurity/trivy/pkg/scanner"
+	"github.com/aquasecurity/trivy/pkg/scan"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
@@ -50,8 +50,8 @@ var (
 	SkipScan = errors.New("skip subsequent processes")
 )
 
-// InitializeScanner defines the initialize function signature of scanner
-type InitializeScanner func(context.Context, ScannerConfig) (scanner.Scanner, func(), error)
+// InitializeScanService defines the initialize function signature of scan service
+type InitializeScanService func(context.Context, ScannerConfig) (scan.Service, func(), error)
 
 type ScannerConfig struct {
 	// e.g. image name and file path
@@ -62,7 +62,7 @@ type ScannerConfig struct {
 	RemoteCacheOptions cache.RemoteOptions
 
 	// Client/Server options
-	ServerOption client.ScannerOption
+	ServerOption client.ServiceOption
 
 	// Artifact options
 	ArtifactOption artifact.Option
@@ -90,8 +90,8 @@ type Runner interface {
 }
 
 type runner struct {
-	initializeScanner InitializeScanner
-	dbOpen            bool
+	initializeScanService InitializeScanService
+	dbOpen                bool
 
 	// WASM modules
 	module *module.Manager
@@ -99,11 +99,11 @@ type runner struct {
 
 type RunnerOption func(*runner)
 
-// WithInitializeScanner takes a custom scanner initialization function.
+// WithInitializeService takes a custom service initialization function.
 // It is useful when Trivy is imported as a library.
-func WithInitializeScanner(f InitializeScanner) RunnerOption {
+func WithInitializeService(f InitializeScanService) RunnerOption {
 	return func(r *runner) {
-		r.initializeScanner = f
+		r.initializeScanService = f
 	}
 }
 
@@ -158,20 +158,20 @@ func (r *runner) ScanImage(ctx context.Context, opts flag.Options) (types.Report
 	// Disable the lock file scanning
 	opts.DisabledAnalyzers = analyzer.TypeLockfiles
 
-	var s InitializeScanner
+	var s InitializeScanService
 	switch {
 	case opts.Input != "" && opts.ServerAddr == "":
 		// Scan image tarball in standalone mode
-		s = archiveStandaloneScanner
+		s = archiveStandaloneScanService
 	case opts.Input != "" && opts.ServerAddr != "":
 		// Scan image tarball in client/server mode
-		s = archiveRemoteScanner
+		s = archiveRemoteScanService
 	case opts.Input == "" && opts.ServerAddr == "":
 		// Scan container image in standalone mode
-		s = imageStandaloneScanner
+		s = imageStandaloneScanService
 	case opts.Input == "" && opts.ServerAddr != "":
 		// Scan container image in client/server mode
-		s = imageRemoteScanner
+		s = imageRemoteScanService
 	}
 
 	return r.scanArtifact(ctx, opts, s)
@@ -193,13 +193,13 @@ func (r *runner) ScanRootfs(ctx context.Context, opts flag.Options) (types.Repor
 }
 
 func (r *runner) scanFS(ctx context.Context, opts flag.Options) (types.Report, error) {
-	var s InitializeScanner
+	var s InitializeScanService
 	if opts.ServerAddr == "" {
 		// Scan filesystem in standalone mode
-		s = filesystemStandaloneScanner
+		s = filesystemStandaloneScanService
 	} else {
 		// Scan filesystem in client/server mode
-		s = filesystemRemoteScanner
+		s = filesystemRemoteScanService
 	}
 
 	return r.scanArtifact(ctx, opts, s)
@@ -213,25 +213,25 @@ func (r *runner) ScanRepository(ctx context.Context, opts flag.Options) (types.R
 	opts.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes...)
 	opts.DisabledAnalyzers = append(opts.DisabledAnalyzers, analyzer.TypeSBOM)
 
-	var s InitializeScanner
+	var s InitializeScanService
 	if opts.ServerAddr == "" {
 		// Scan repository in standalone mode
-		s = repositoryStandaloneScanner
+		s = repositoryStandaloneScanService
 	} else {
 		// Scan repository in client/server mode
-		s = repositoryRemoteScanner
+		s = repositoryRemoteScanService
 	}
 	return r.scanArtifact(ctx, opts, s)
 }
 
 func (r *runner) ScanSBOM(ctx context.Context, opts flag.Options) (types.Report, error) {
-	var s InitializeScanner
+	var s InitializeScanService
 	if opts.ServerAddr == "" {
 		// Scan cycloneDX in standalone mode
-		s = sbomStandaloneScanner
+		s = sbomStandaloneScanService
 	} else {
 		// Scan cycloneDX in client/server mode
-		s = sbomRemoteScanner
+		s = sbomRemoteScanService
 	}
 
 	return r.scanArtifact(ctx, opts, s)
@@ -241,23 +241,23 @@ func (r *runner) ScanVM(ctx context.Context, opts flag.Options) (types.Report, e
 	// TODO: Does VM scan disable lock file..?
 	opts.DisabledAnalyzers = analyzer.TypeLockfiles
 
-	var s InitializeScanner
+	var s InitializeScanService
 	if opts.ServerAddr == "" {
 		// Scan virtual machine in standalone mode
-		s = vmStandaloneScanner
+		s = vmStandaloneScanService
 	} else {
 		// Scan virtual machine in client/server mode
-		s = vmRemoteScanner
+		s = vmRemoteScanService
 	}
 
 	return r.scanArtifact(ctx, opts, s)
 }
 
-func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
-	if r.initializeScanner != nil {
-		initializeScanner = r.initializeScanner
+func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initializeService InitializeScanService) (types.Report, error) {
+	if r.initializeScanService != nil {
+		initializeService = r.initializeScanService
 	}
-	report, err := r.scan(ctx, opts, initializeScanner)
+	report, err := r.scan(ctx, opts, initializeService)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan error: %w", err)
 	}
@@ -614,14 +614,14 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 	}, scanOptions, nil
 }
 
-func (r *runner) scan(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
+func (r *runner) scan(ctx context.Context, opts flag.Options, initializeService InitializeScanService) (types.Report, error) {
 	scannerConfig, scanOptions, err := r.initScannerConfig(ctx, opts)
 	if err != nil {
 		return types.Report{}, err
 	}
-	s, cleanup, err := initializeScanner(ctx, scannerConfig)
+	s, cleanup, err := initializeService(ctx, scannerConfig)
 	if err != nil {
-		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
+		return types.Report{}, xerrors.Errorf("unable to initialize a scan service: %w", err)
 	}
 	defer cleanup()
 
