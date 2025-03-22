@@ -7,6 +7,7 @@ import (
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 // Report represents a scan result
@@ -133,6 +134,10 @@ type Result struct {
 	// This can include vulnerabilities that have been marked as ignored, not affected, or have had
 	// their severity adjusted. It's still in an experimental stage and may change in the future.
 	ModifiedFindings []ModifiedFinding `json:"ExperimentalModifiedFindings,omitempty"`
+
+	// ComponentID is used for internal representation of the SBOM component.
+	// It is not exported to the JSON output.
+	ComponentID uuid.UUID `json:"-"`
 }
 
 func (r *Result) IsEmpty() bool {
