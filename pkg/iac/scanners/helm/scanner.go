@@ -56,8 +56,7 @@ func (s *Scanner) Name() string {
 	return "Helm"
 }
 
-
-func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, path string) (scan.Results, error) {
+func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Results, error) {
 	var results []scan.Result
 	if err := fs.WalkDir(fsys, dir, func(filePath string, d fs.DirEntry, err error) error {
 		select {
