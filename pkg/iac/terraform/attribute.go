@@ -963,8 +963,10 @@ func (a *Attribute) AllReferences(blocks ...*Block) []*Reference {
 	refs := a.extractReferences()
 	for _, block := range blocks {
 		for _, ref := range refs {
-			if ref.TypeLabel() == "each" && block.HasChild("for_each") {
-				refs = append(refs, block.GetAttribute("for_each").AllReferences()...)
+			if ref.TypeLabel() == "each" {
+				if forEachAttr := block.GetAttribute("for_each"); forEachAttr.IsNotNil() {
+					refs = append(refs, forEachAttr.AllReferences()...)
+				}
 			}
 		}
 	}

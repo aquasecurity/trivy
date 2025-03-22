@@ -73,12 +73,10 @@ func adaptCluster(resource *terraform.Block) msk.Cluster {
 		cluster.Logging.Metadata = logBlock.GetMetadata()
 		if brokerLogsBlock := logBlock.GetBlock("broker_logs"); brokerLogsBlock.IsNotNil() {
 			cluster.Logging.Broker.Metadata = brokerLogsBlock.GetMetadata()
-			if brokerLogsBlock.HasChild("s3") {
-				if s3Block := brokerLogsBlock.GetBlock("s3"); s3Block.IsNotNil() {
-					s3enabledAttr := s3Block.GetAttribute("enabled")
-					cluster.Logging.Broker.S3.Metadata = s3Block.GetMetadata()
-					cluster.Logging.Broker.S3.Enabled = s3enabledAttr.AsBoolValueOrDefault(false, s3Block)
-				}
+			if s3Block := brokerLogsBlock.GetBlock("s3"); s3Block.IsNotNil() {
+				s3enabledAttr := s3Block.GetAttribute("enabled")
+				cluster.Logging.Broker.S3.Metadata = s3Block.GetMetadata()
+				cluster.Logging.Broker.S3.Enabled = s3enabledAttr.AsBoolValueOrDefault(false, s3Block)
 			}
 			if cloudwatchBlock := brokerLogsBlock.GetBlock("cloudwatch_logs"); cloudwatchBlock.IsNotNil() {
 				cwEnabledAttr := cloudwatchBlock.GetAttribute("enabled")
