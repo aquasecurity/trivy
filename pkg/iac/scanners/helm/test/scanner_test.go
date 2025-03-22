@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -216,4 +217,12 @@ func fsysForAcrhive(t *testing.T, src string) fs.FS {
 	_, err = io.Copy(out, in)
 	require.NoError(t, err)
 	return os.DirFS(tmpDir)
+}
+
+func TestScaningNonHelmChartDoesNotCauseError(t *testing.T) {
+	fsys := fstest.MapFS{
+		"testChart.yaml": &fstest.MapFile{Data: []byte(`foo: bar`)},
+	}
+	_, err := helm.New().ScanFS(t.Context(), fsys, ".")
+	require.NoError(t, err)
 }
