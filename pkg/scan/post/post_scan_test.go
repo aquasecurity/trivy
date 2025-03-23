@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/scanner/post"
+	"github.com/aquasecurity/trivy/pkg/scan/post"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
