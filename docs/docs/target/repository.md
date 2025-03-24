@@ -19,7 +19,7 @@ trivy repo https://github.com/aquasecurity/trivy
 - Secrets
 - Licenses
 
-By default, only vulnerability and secret scanning are enabled. You can configure which scanners are used with the [`--scanners` flag](../configuration/others/#enabledisable-scanners).
+By default, only vulnerability and secret scanning are enabled. You can configure which scanners are used with the [`--scanners` flag](../configuration/others.md#enabledisable-scanners).
 
 ## Scan Cache
 When scanning git repositories, it stores analysis results in the cache, using the latest commit hash as the key.

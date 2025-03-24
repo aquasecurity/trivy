@@ -20,7 +20,7 @@ Supported scanners:
 - Misconfigurations
 - Secrets
 
-By default, no image misconfiguration scanners are enabled. You can configure which scanners are used with the [`--image-config-scanners` flag](../configuration/others/#enabledisable-scanners).
+By default, no image misconfiguration scanners are enabled. You can configure which scanners are used with the [`--image-config-scanners` flag](../configuration/others.md#enabledisable-scanners).
 
 ## Misconfiguration scanning
 
