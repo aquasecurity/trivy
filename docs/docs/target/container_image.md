@@ -190,7 +190,15 @@ $ trivy image --input /path/to/alpine@sha256:82389ea44e50c696aba18393b168a833929
 ```
 
 ### Complementing SBOM
-Any SBOM file found in the container image will be scanned for vulnerabilities and contribute to the image's final scaning report. This is useful if you're building container images without package manager information (i.e distroless) but you want to ensure the could be scannable in the future.
+Any SBOM file found in the container image will be scanned for vulnerabilities and contribute to the image's final scaning report. This is useful if you're building container images without package manager information (i.e distroless) but you still want to ensure they could be scannable in the future.
+
+SBOM files are detected by the following file extensions:
+- `.spdx`
+- `.spdx.json`
+- `.cdx`
+- `.cdx.json`
+
+You include other SBOM files by using the [--file-patterns flag](../configuration/skipping.md#file-patterns).
 
 ### Substituting SBOM
 Trivy can avoid analyzing the image contents (which can be time and resource consuming task), and instead scan and SBOM and was pre-generated for the scanned image. This can speed up and simplify repeated scans of the same image.
