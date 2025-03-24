@@ -1119,3 +1119,99 @@ resource "aws_s3_bucket" "test" {
 		})
 	}
 }
+
+func Test_RenderedCauseShouldNotPanicOnUnknownValues(t *testing.T) {
+	check := `# METADATA
+# title: Service accounts should not have roles assigned with excessive privileges
+# custom:
+#   id: AVD-GCP-0007
+#   avd_id: AVD-GCP-0007
+package user.google.iam.google0007
+
+import rego.v1
+
+import data.lib.google.iam
+
+deny contains res if {
+	some member in iam.all_members
+	print(member)
+	iam.is_service_account(member.member.value)
+	iam.is_role_privileged(member.role.value)
+	res := result.new("Service account is granted a privileged role.", member.role)
+}
+
+deny contains res if {
+	some binding in iam.all_bindings
+	iam.is_role_privileged(binding.role.value)
+	some member in binding.members
+	iam.is_service_account(member.value)
+	res := result.new("Service account is granted a privileged role.", member)
+}
+
+`
+	tests := []struct {
+		name              string
+		fsys              fstest.MapFS
+		expectedStartLine int
+		exptectedEndLine  int
+	}{
+		{
+			name: "misconfigured resource",
+			fsys: fstest.MapFS{`main.tf`: &fstest.MapFile{Data: []byte(`
+resource "google_storage_bucket_iam_binding" "service-a" {
+  bucket = google_storage_bucket.service-a.name
+  role   = "roles/storage.objectAdmin"
+
+  members = [
+    "serviceAccount:service-a@example-project.iam.gserviceaccount.com"
+  ]
+}`),
+			}},
+			expectedStartLine: 6,
+			exptectedEndLine:  8},
+		{
+			name: "dont panic on unknown value",
+			fsys: fstest.MapFS{
+				"main.tf": &fstest.MapFile{Data: []byte(`
+resource "google_storage_bucket_iam_binding" "service-a" {
+  bucket = google_storage_bucket.service-a.name
+  role   = "roles/storage.objectAdmin"
+
+  members = [
+    "serviceAccount:service-a@example-project.iam.gserviceaccount.com",
+    data.google_storage_transfer_project_service_account.production.member,
+  ]
+}
+
+data "google_storage_transfer_project_service_account" "production" {
+  project = local.project_id
+}
+`)},
+			},
+			expectedStartLine: 6,
+			exptectedEndLine:  9,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			scanner := New(
+				ScannerWithAllDirectories(true),
+				rego.WithEmbeddedLibraries(true),
+				rego.WithPolicyReader(strings.NewReader(check)),
+				rego.WithPolicyNamespaces("user"),
+			)
+
+			results, err := scanner.ScanFS(t.Context(), tt.fsys, ".")
+			require.NoError(t, err)
+
+			failed := results.GetFailed()
+
+			assert.Len(t, failed, 1)
+
+			assert.Equal(t, tt.expectedStartLine, failed[0].Flatten().Location.StartLine)
+			assert.Equal(t, tt.exptectedEndLine, failed[0].Flatten().Location.EndLine)
+		})
+	}
+
+}
