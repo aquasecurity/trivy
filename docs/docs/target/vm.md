@@ -25,7 +25,7 @@ Supported scanners:
 - Secrets
 - Licenses
 
-By default, only vulnerability and secret scanning are enabled. You can configure which scanners are used with the [`--scanners` flag](../configuration/others/#enabledisable-scanners).
+By default, only vulnerability and secret scanning are enabled. You can configure which scanners are used with the [`--scanners` flag](../configuration/others.md#enabledisable-scanners).
 
 ## Local file
 Pass the path to a local VM image file.
