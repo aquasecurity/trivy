@@ -651,7 +651,7 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 		args:       args,
 	}
 
-	for _, group := range f.groups() {
+	for _, group := range *f { // Include global flags
 		if err := parseFlags(group); err != nil {
 			return Options{}, xerrors.Errorf("unable to parse flags: %w", err)
 		}
