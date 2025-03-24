@@ -77,16 +77,14 @@ func (f *AWSFlagGroup) Flags() []Flagger {
 	}
 }
 
-func (f *AWSFlagGroup) ToOptions() (AWSOptions, error) {
-	if err := parseFlags(f); err != nil {
-		return AWSOptions{}, err
-	}
-	return AWSOptions{
+func (f *AWSFlagGroup) ToOptions(opts *Options) error {
+	opts.AWSOptions = AWSOptions{
 		Region:       f.Region.Value(),
 		Endpoint:     f.Endpoint.Value(),
 		Services:     f.Services.Value(),
 		SkipServices: f.SkipServices.Value(),
 		Account:      f.Account.Value(),
 		ARN:          f.ARN.Value(),
-	}, nil
+	}
+	return nil
 }
