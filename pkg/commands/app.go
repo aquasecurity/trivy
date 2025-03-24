@@ -532,8 +532,9 @@ func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	// To display the summary table, we need to enable scanners (to build columns).
 	// We can't get scanner information from the report (we don't include empty licenses and secrets in the report).
 	// So we need to ask the user to configure scanners (if needed).
-	scanFlagGroup := flag.NewScanFlagGroup()
-	scanFlagGroup.Scanners = flag.ScannersFlag.Clone()
+	scanFlagGroup := &flag.ScanFlagGroup{
+		Scanners: flag.ScannersFlag.Clone(),
+	}
 	scanFlagGroup.Scanners.Default = nil // disable default scanners
 	scanFlagGroup.Scanners.Usage = "List of scanners included when generating the json report. Used only for rendering the summary table."
 
@@ -685,11 +686,12 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 }
 
 func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
-	// Enable only '--skip-dirs' and '--skip-files' and disable other flags
-	scanFlags := flag.NewScanFlagGroup()
-	scanFlags.SkipDirs = flag.SkipDirsFlag.Clone()
-	scanFlags.SkipFiles = flag.SkipFilesFlag.Clone()
-	scanFlags.FilePatterns = flag.FilePatternsFlag.Clone()
+	scanFlags := &flag.ScanFlagGroup{
+		// Enable only '--skip-dirs' and '--skip-files' and disable other flags
+		SkipDirs:     flag.SkipDirsFlag.Clone(),
+		SkipFiles:    flag.SkipFilesFlag.Clone(),
+		FilePatterns: flag.FilePatternsFlag.Clone(),
+	}
 
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.DependencyTree = nil                                                     // disable '--dependency-tree'
@@ -1233,13 +1235,9 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 }
 
 func NewCleanCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
-	registryFlagGroup := flag.NewRegistryFlagGroup()
-	registryFlagGroup.Password = nil
-	registryFlagGroup.RegistryToken = nil
-
 	cleanFlags := &flag.Flags{
 		globalFlags,
-		registryFlagGroup,
+		flag.NewCleanFlagGroup(),
 	}
 	cmd := &cobra.Command{
 		Use:     "clean [flags]",

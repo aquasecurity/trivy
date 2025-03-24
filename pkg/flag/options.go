@@ -584,9 +584,16 @@ func (o *Options) outputPluginWriter(ctx context.Context) (io.Writer, func() err
 	return pw, cleanup, nil
 }
 
+// groups returns all the flag groups other than global flags
+func (f *Flags) groups() []FlagGroup {
+	return lo.Filter(*f, func(group FlagGroup, _ int) bool {
+		return group != nil && group.Name() != "Global"
+	})
+}
+
 func (f *Flags) AddFlags(cmd *cobra.Command) {
 	aliases := make(flagAliases)
-	for _, group := range *f {
+	for _, group := range f.groups() {
 		for _, flag := range group.Flags() {
 			if lo.IsNil(flag) || flag.GetName() == "" {
 				continue
@@ -604,7 +611,7 @@ func (f *Flags) AddFlags(cmd *cobra.Command) {
 
 func (f *Flags) Usages(cmd *cobra.Command) string {
 	var usages string
-	for _, group := range *f {
+	for _, group := range f.groups() {
 		flags := pflag.NewFlagSet(cmd.Name(), pflag.ContinueOnError)
 		lflags := cmd.LocalFlags()
 		for _, flag := range group.Flags() {
@@ -624,7 +631,7 @@ func (f *Flags) Usages(cmd *cobra.Command) string {
 }
 
 func (f *Flags) Bind(cmd *cobra.Command) error {
-	for _, group := range *f {
+	for _, group := range f.groups() {
 		if group == nil {
 			continue
 		}
@@ -644,7 +651,7 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 		args:       args,
 	}
 
-	for _, group := range *f {
+	for _, group := range f.groups() {
 		if err := parseFlags(group); err != nil {
 			return Options{}, xerrors.Errorf("unable to parse flags: %w", err)
 		}
