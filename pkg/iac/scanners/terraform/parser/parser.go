@@ -51,6 +51,7 @@ type Parser struct {
 	fsMap             map[string]fs.FS
 	configsFS         fs.FS
 	skipPaths         []string
+	stepHooks         []EvaluateStepHook
 }
 
 // New creates a new Parser
@@ -66,6 +67,7 @@ func New(moduleFS fs.FS, moduleSource string, opts ...Option) *Parser {
 		configsFS:      moduleFS,
 		logger:         log.WithPrefix("terraform parser").With("module", "root"),
 		tfvars:         make(map[string]cty.Value),
+		stepHooks:      make([]EvaluateStepHook, 0),
 	}
 
 	for _, option := range opts {
@@ -311,6 +313,7 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 		log.WithPrefix("terraform evaluator"),
 		p.allowDownloads,
 		p.skipCachedModules,
+		p.stepHooks,
 	), nil
 }
 
