@@ -2,7 +2,6 @@ package terraform
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 )
@@ -107,23 +106,6 @@ func (c *Module) GetDatasByType(label string) Blocks {
 	return c.getBlocksByType("data", label)
 }
 
-func (c *Module) GetProviderBlocksByProvider(providerName, alias string) Blocks {
-	var results Blocks
-	for _, block := range c.blocks {
-		if block.Type() == "provider" && len(block.Labels()) > 0 && block.TypeLabel() == providerName {
-			if alias != "" {
-				if block.HasChild("alias") && block.GetAttribute("alias").Equals(strings.ReplaceAll(alias, fmt.Sprintf("%s.", providerName), "")) {
-					results = append(results, block)
-
-				}
-			} else if block.MissingChild("alias") {
-				results = append(results, block)
-			}
-		}
-	}
-	return results
-}
-
 func (c *Module) GetReferencedBlock(referringAttr *Attribute, parentBlock *Block) (*Block, error) {
 	for _, ref := range referringAttr.AllReferences() {
 		if ref.TypeLabel() == "each" {
@@ -157,18 +139,6 @@ func (c *Module) GetBlockByID(id string) (*Block, error) {
 
 func (c *Module) GetReferencingResources(originalBlock *Block, referencingLabel, referencingAttributeName string) Blocks {
 	return c.GetReferencingBlocks(originalBlock, "resource", referencingLabel, referencingAttributeName)
-}
-
-func (c *Module) GetsModulesBySource(moduleSource string) (Blocks, error) {
-	var results Blocks
-
-	modules := c.getModuleBlocks()
-	for _, module := range modules {
-		if module.HasChild("source") && module.GetAttribute("source").Equals(moduleSource) {
-			results = append(results, module)
-		}
-	}
-	return results, nil
 }
 
 func (c *Module) GetReferencingBlocks(originalBlock *Block, referencingType, referencingLabel, referencingAttributeName string) Blocks {

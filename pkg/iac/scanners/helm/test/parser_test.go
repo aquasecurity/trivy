@@ -151,12 +151,7 @@ func Test_helm_tarball_parser(t *testing.T) {
 		t.Logf("Running test: %s", test.testName)
 
 		testPath := filepath.Join("testdata", test.archiveFile)
-
-		testTemp := t.TempDir()
-		testFileName := filepath.Join(testTemp, test.archiveFile)
-		require.NoError(t, copyArchive(testPath, testFileName))
-
-		testFs := os.DirFS(testTemp)
+		testFs := fsysForAcrhive(t, testPath)
 
 		helmParser, err := parser.New(test.archiveFile)
 		require.NoError(t, err)
