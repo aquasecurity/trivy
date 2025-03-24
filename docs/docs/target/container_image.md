@@ -1,8 +1,8 @@
-# Container Image
+# Container Image Contents
 
 Scan a container image, local or remote. Scans the filesystem contents of the container image.
 
-In addition to scanning the contents of the container image, Trivy can also scan the configuration of the image. For more info, see the [Image configuration](#image-configuration-scanning) section.
+In addition to scanning the contents of the container image, Trivy can also scan the configuration of the image. For more info, see the [Image configuration](./container_image_config.md) page.
 
 `image` is a post-build target type, which means it scans installed packages. For more information, see [Target types](../coverage/language/index.md#target-types).
 
@@ -22,7 +22,7 @@ Supported scanners:
 - Secrets
 - Licenses
 
-By default, only vulnerability and secret scanning are enabled. You can configure which scanners are used with the [`--scanners` flag](https://trivy.dev/latest/docs/configuration/others/#enabledisable-scanners).
+By default, only vulnerability and secret scanning are enabled. You can configure which scanners are used with the [`--scanners` flag](../configuration/others/#enabledisable-scanners).
 
 ## Scan Cache
 When scanning container images, it stores analysis results in the cache, using the image ID and the layer IDs as the key.
@@ -348,47 +348,3 @@ $ trivy image --max-image-size=10GB myapp:latest
 
 Error: uncompressed image size (15GB) exceeds maximum allowed size (10GB)
 ```
-
-## Image Configuration Scanning
-
-In addition to scanning the contents of container image, Trivy can also scan the [configuration](https://github.com/opencontainers/image-spec/blob/2fb996805b3734779bf9a3a84dc9a9691ad7efdd/config.md) that defines the container image (i.e how it was built). 
-
-For image configuration, only the following scanners are relevant:
-
-- Misconfigurations
-- Secrets
-
-Usage:
-
-By default, image configuration scanning is disabled. Only the Misconfiguration scanning and Secret scanners are relevant for image config scanning and you can enable them individually with the flag `--image-config-scanners`.
-
-Example:
-
-```shell
-trivy image --image-config-scanners misconfig,secret localimage:tag
-trivy image --image-config-scanners misconfig,secret myregistry.io/myimage:tag
-```
-
-!!! tip
-    The configuration of an image can be exported using `docker save` command.
-
-### Misconfiguration scanning details
-
-For misconfiguration scanning, the image config is converted into Dockerfile and Trivy scans it as Dockerfile.
-
-!!! tip
-    You can see how each layer is created with `docker history`.
-
-The following checks are disabled for this scan type due to known issues:
-
-| Check ID | Reason | Issue |
-|----------|------------|--------|
-| [AVD-DS-0007](https://avd.aquasec.com/misconfig/dockerfile/general/avd-ds-0007/) | This check detects multiple `ENTRYPOINT` instructions in a stage, but since image history analysis does not identify stages, this check is not relevant for this scan type. | [#8364](https://github.com/aquasecurity/trivy/issues/8364) |
-| [AVD-DS-0016](https://avd.aquasec.com/misconfig/dockerfile/general/avd-ds-0016/) | This check detects multiple `CMD` instructions in a stage, but since image history analysis does not identify stages, this check is not relevant for this scan type. | [#7368](https://github.com/aquasecurity/trivy/issues/7368) |
-
-### Secret scanning details
-
-For secret scanning, the image config is converted into JSON and Trivy scans the file for secrets.
-
-!!! tip
-    You can see environment variables with `docker inspect`.

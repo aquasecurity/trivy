@@ -23,7 +23,7 @@ Supported scanners:
 - Secrets
 - Licenses
 
-By default, only vulnerability and secret scanning are enabled. You can configure which scanners are used with the [`--scanners` flag](https://trivy.dev/latest/docs/configuration/others/#enabledisable-scanners).
+By default, only vulnerability and secret scanning are enabled. You can configure which scanners are used with the [`--scanners` flag](../configuration/others/#enabledisable-scanners).
 
 ## Avoiding full filesystem traversal
 
