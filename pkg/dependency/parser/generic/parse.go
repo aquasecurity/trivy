@@ -1,8 +1,9 @@
 package generic
 
 import (
-	"github.com/aquasecurity/trivy/pkg/dependency"
 	"io"
+
+	"github.com/aquasecurity/trivy/pkg/dependency"
 
 	"github.com/aquasecurity/jfather"
 	"golang.org/x/xerrors"
@@ -90,11 +91,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		})
 	}
 
-	// Add source files as packages
-	for filePath, file := range genericPackage.SourceFiles {
+	// Add source files (this is a potential future feature: adding single local files as dependency)
+	/*	for filePath, file := range genericPackage.SourceFiles {
 		filePkg := ftypes.Package{
-			ID:           packageID(filePath, file.Version),
-			Name:         filePath,
+			ID:           packageID("file:"+filePath, file.Version),
+			Name:         "file:" + filePath,
 			Version:      file.Version,
 			Licenses:     []string{file.License},
 			Relationship: ftypes.RelationshipDirect,
@@ -106,7 +107,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			ID:        mainPkg.ID,
 			DependsOn: []string{filePkg.ID},
 		})
-	}
+	}*/
 
 	return utils.UniquePackages(pkgs), deps, nil
 }
