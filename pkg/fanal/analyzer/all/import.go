@@ -15,6 +15,7 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/dotnet/nuget"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/dotnet/packagesprops"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/elixir/mix"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/generic"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/golang/binary"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/golang/mod"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/java/gradle"

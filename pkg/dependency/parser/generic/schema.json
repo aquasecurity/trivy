@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "packageName": {
+      "type": "string"
+    },
+    "packageVersion": {
+      "type": "string"
+    },
+    "packageLicense": {
+      "type": "string"
+    },
+    "packageCopyright": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "object",
+      "properties": {
+        "packageName": {
+          "type": "object",
+          "properties": {
+            "version": {
+              "type": "string"
+            },
+            "source": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "license": {
+              "type": "string"
+            },
+            "copyright": {
+              "type": "string"
+            },
+            "checksum": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "version",
+            "source",
+            "type"
+          ]
+        }
+      }
+    },
+    "sourceFiles": {
+      "type": "object",
+      "properties": {
+        "filename": {
+          "type": "object",
+          "properties": {
+            "version": {
+              "type": "string"
+            },
+            "checksum": {
+              "type": "string"
+            },
+            "license": {
+              "type": "string"
+            },
+            "copyright": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "version",
+            "checksum",
+            "license"
+          ]
+        }
+      }
+    }
+  },
+  "required": [
+    "packageName",
+    "packageVersion",
+    "dependencies"
+  ]
+}
