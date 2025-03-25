@@ -58,6 +58,7 @@ var OSTypeAliases = map[OSType]OSType{
 
 // Programming language dependencies
 const (
+	Generic        LangType = "generic"
 	Bundler        LangType = "bundler"
 	GemSpec        LangType = "gemspec"
 	Cargo          LangType = "cargo"
@@ -163,6 +164,8 @@ const (
 	NpmPkgLock = "package-lock.json"
 	YarnLock   = "yarn.lock"
 	PnpmLock   = "pnpm-lock.yaml"
+
+	GenericDeps = "dependencies.json"
 
 	ComposerLock          = "composer.lock"
 	ComposerJson          = "composer.json"

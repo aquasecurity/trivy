@@ -103,6 +103,9 @@ const (
 	// Julia
 	TypeJulia Type = "julia"
 
+	// Generic
+	TypeGeneric Type = "generic"
+
 	// ============
 	// Non-packaged
 	// ============
@@ -208,6 +211,7 @@ var (
 		TypeMixLock,
 		TypeJulia,
 		TypeSBOM,
+		TypeGeneric,
 	}
 
 	// TypeLockfiles has all lock file analyzers
@@ -231,6 +235,7 @@ var (
 		TypeMixLock,
 		TypeCondaEnv,
 		TypeComposer,
+		TypeGeneric,
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages

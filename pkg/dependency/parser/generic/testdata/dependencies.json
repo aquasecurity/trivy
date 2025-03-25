@@ -1,0 +1,33 @@
+{
+  "packageName": "M2CPos",
+  "packageVersion": "2.0 alpha",
+  "packageLicense": "GPL 2.1",
+  "dependencies": {
+    "linuxKernel": {
+    	"version": "2.1",
+    	"source": "https://github.com/....",
+    	"type": "source",
+    	"license": "GPL 2.1",
+    	"checksum": "SHA256: 12345667"
+    },
+    "libC": {
+    	"version": "12.1",
+    	"source": "https://github.com/....",
+    	"type": "source",
+    	"license": "LGPL 1.2",
+    	"checksum": "SHA256: 789321456"
+    }
+  },
+  "sourceFiles": {
+    "path/to/FileName.c": {
+    	"version": "2.2",
+    	"checksum": "SHA256 562145698",
+    	"license": "GPL 2.1",
+    },
+    "path/to/FileName2": {
+    	"version": "2.2",
+    	"checksum": "SHA256 562145698",
+    	"license": "proprietary"
+    }
+  }
+}

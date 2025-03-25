@@ -43,3 +43,6 @@ cmd/trivy/trivy
 
 # RPM
 *.rpm
+
+# Build output
+bin/

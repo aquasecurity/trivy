@@ -19,7 +19,7 @@ import (
 )
 
 func init() {
-	analyzer.RegisterAnalyzer(analyzer.TypeGeneric, newGenericAnalyzer)
+	analyzer.RegisterPostAnalyzer(types.GenericDeps, newGenericAnalyzer)
 }
 
 const (
@@ -71,7 +71,7 @@ func (a genericLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 }
 
 func (a genericLibraryAnalyzer) Type() analyzer.Type {
-	return analyzer.TypeGeneric
+	return analyzer.Type(types.GenericDeps)
 }
 
 func (a genericLibraryAnalyzer) Version() int {
