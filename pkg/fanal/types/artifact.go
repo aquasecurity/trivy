@@ -181,6 +181,8 @@ type BlobInfo struct {
 	// CustomResources hold analysis results from custom analyzers.
 	// It is for extensibility and not used in OSS.
 	CustomResources []CustomResource `json:",omitempty"`
+
+	SystemInstalledFiles []string `json:",omitempty"` // A list of files installed by OS package manager
 }
 
 // ArtifactDetail represents the analysis result.
