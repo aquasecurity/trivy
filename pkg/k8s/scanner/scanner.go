@@ -256,7 +256,7 @@ func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.A
 						Packages: []ftypes.Package{
 							{
 								Name:    comp.Name,
-								Version: comp.Version,
+								Version: cpcVersion,
 							},
 						},
 					},
