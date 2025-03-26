@@ -183,7 +183,7 @@ var (
 	}
 )
 
-func TestReportWrite_Summary(t *testing.T) {
+func TestReportWrite_Table(t *testing.T) {
 	allSeverities := []dbTypes.Severity{
 		dbTypes.SeverityUnknown,
 		dbTypes.SeverityLow,
@@ -198,6 +198,7 @@ func TestReportWrite_Summary(t *testing.T) {
 		opt            report.Option
 		scanners       types.Scanners
 		severities     []dbTypes.Severity
+		reportType     string
 		expectedOutput string
 	}{
 		{
@@ -208,6 +209,7 @@ func TestReportWrite_Summary(t *testing.T) {
 			},
 			scanners:   types.Scanners{types.MisconfigScanner},
 			severities: allSeverities,
+			reportType: SummaryReport,
 			expectedOutput: `Summary Report for test
 =======================
 
@@ -231,6 +233,19 @@ Infra Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
+			name: "Only config, critical severity for --report all",
+			report: report.Report{
+				ClusterName: "test",
+				Resources:   []report.Resource{deployOrionWithMisconfigs},
+			},
+			scanners: types.Scanners{types.MisconfigScanner},
+			severities: []dbTypes.Severity{
+				dbTypes.SeverityCritical,
+			},
+			reportType:     AllReport,
+			expectedOutput: `should be misconfigs`, // TODO fix that
+		},
+		{
 			name: "Only vuln, all serverities",
 			report: report.Report{
 				ClusterName: "test",
@@ -238,6 +253,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 			},
 			scanners:   types.Scanners{types.VulnerabilityScanner},
 			severities: allSeverities,
+			reportType: SummaryReport,
 			expectedOutput: `Summary Report for test
 =======================
 
@@ -261,6 +277,19 @@ Infra Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
+			name: "Only vuln, low severity for --report all",
+			report: report.Report{
+				ClusterName: "test",
+				Resources:   []report.Resource{deployOrionWithVulns},
+			},
+			scanners: types.Scanners{types.VulnerabilityScanner},
+			severities: []dbTypes.Severity{
+				dbTypes.SeverityLow,
+			},
+			reportType:     AllReport,
+			expectedOutput: `should be vulns`, // TODO fix that
+		},
+		{
 			name: "Only rbac, all serverities",
 			report: report.Report{
 				ClusterName: "test",
@@ -268,6 +297,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 			},
 			scanners:   types.Scanners{types.RBACScanner},
 			severities: allSeverities,
+			reportType: SummaryReport,
 			expectedOutput: `Summary Report for test
 =======================
 
@@ -289,6 +319,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 			},
 			scanners:   types.Scanners{types.SecretScanner},
 			severities: allSeverities,
+			reportType: SummaryReport,
 			expectedOutput: `Summary Report for test
 =======================
 
@@ -312,6 +343,19 @@ Infra Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
+			name: "Only secret, critical severity for --report all",
+			report: report.Report{
+				ClusterName: "test",
+				Resources:   []report.Resource{deployLuaWithSecrets},
+			},
+			scanners: types.Scanners{types.SecretScanner},
+			severities: []dbTypes.Severity{
+				dbTypes.SeverityCritical,
+			},
+			reportType:     AllReport,
+			expectedOutput: `should be secrets`, // TODO fix that!
+		},
+		{
 			name: "apiserver, only infra and serverities",
 			report: report.Report{
 				ClusterName: "test",
@@ -319,6 +363,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 			},
 			scanners:   types.Scanners{types.MisconfigScanner},
 			severities: allSeverities,
+			reportType: SummaryReport,
 			expectedOutput: `Summary Report for test
 =======================
 
@@ -353,6 +398,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 				types.SecretScanner,
 			},
 			severities: allSeverities,
+			reportType: SummaryReport,
 			expectedOutput: `Summary Report for test
 =======================
 
@@ -386,6 +432,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 				types.VulnerabilityScanner,
 			},
 			severities: allSeverities,
+			reportType: SummaryReport,
 			expectedOutput: `Summary Report for test
 =======================
 
@@ -416,7 +463,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 
 			opt := report.Option{
 				Format:     "table",
-				Report:     "summary",
+				Report:     tc.reportType,
 				Output:     &output,
 				Scanners:   tc.scanners,
 				Severities: tc.severities,
