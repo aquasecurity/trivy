@@ -6,6 +6,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/types"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -17,6 +18,8 @@ type TableWriter struct {
 	Output        io.Writer
 	Severities    []dbTypes.Severity
 	ColumnHeading []string
+
+	TableMode []types.TableMode // For `--report all` only
 }
 
 const (
@@ -54,6 +57,10 @@ func (tw TableWriter) Write(ctx context.Context, report Report) error {
 		t := pkgReport.NewWriter(pkgReport.Options{
 			Output:     tw.Output,
 			Severities: tw.Severities,
+			// k8s has its own summary report, so we only need to show the detailed tables here
+			TableModes: []types.TableMode{
+				types.Detailed,
+			},
 		})
 		for i, r := range report.Resources {
 			if r.Report.Results.Failed() {
