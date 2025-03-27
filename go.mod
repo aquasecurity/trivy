@@ -27,7 +27,7 @@ require (
 	github.com/aquasecurity/trivy-checks v1.8.0
 	github.com/aquasecurity/trivy-db v0.0.0-20250227071930-8bd8a9b89e2d
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
-	github.com/aquasecurity/trivy-kubernetes v0.7.0
+	github.com/aquasecurity/trivy-kubernetes v0.8.0
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.9
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.62
@@ -400,12 +400,12 @@ require (
 	k8s.io/apiextensions-apiserver v0.32.2 // indirect
 	k8s.io/apimachinery v0.32.3 // indirect
 	k8s.io/apiserver v0.32.2 // indirect
-	k8s.io/cli-runtime v0.32.2 // indirect
-	k8s.io/client-go v0.32.2 // indirect
-	k8s.io/component-base v0.32.2 // indirect
+	k8s.io/cli-runtime v0.32.3 // indirect
+	k8s.io/client-go v0.32.3 // indirect
+	k8s.io/component-base v0.32.3 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20241105132330-32ad38e42d3f // indirect
-	k8s.io/kubectl v0.32.2 // indirect
+	k8s.io/kubectl v0.32.3 // indirect
 	modernc.org/libc v1.61.13 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.8.2 // indirect
