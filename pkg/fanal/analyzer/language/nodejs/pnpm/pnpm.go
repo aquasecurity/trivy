@@ -33,11 +33,11 @@ type pnpmAnalyzer struct {
 	lockParser        language.Parser
 }
 
-func newPnpmAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+func newPnpmAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &pnpmAnalyzer{
 		logger:            log.WithPrefix("pnpm"),
 		packageJsonParser: packagejson.NewParser(),
-		lockParser:        pnpm.NewParser(),
+		lockParser:        pnpm.NewParser(opts.IncludeDevDeps),
 	}, nil
 }
 

@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"sort"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -31,13 +32,15 @@ type poetryAnalyzer struct {
 	logger          *log.Logger
 	pyprojectParser *pyproject.Parser
 	lockParser      language.Parser
+	includeDevDeps  bool
 }
 
-func newPoetryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+func newPoetryAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &poetryAnalyzer{
 		logger:          log.WithPrefix("poetry"),
 		pyprojectParser: pyproject.NewParser(),
 		lockParser:      poetry.NewParser(),
+		includeDevDeps:  opts.IncludeDevDeps,
 	}, nil
 }
 
@@ -62,6 +65,8 @@ func (a poetryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 			a.logger.Warn("Unable to parse pyproject.toml to identify direct dependencies",
 				log.FilePath(filepath.Join(filepath.Dir(path), types.PyProject)), log.Err(err))
 		}
+		sort.Sort(app.Packages)
+
 		apps = append(apps, *app)
 
 		return nil
@@ -107,16 +112,27 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 	dirDeps := directDeps(project)
 	prodDeps := prodPackages(app, project.MainDeps())
 
+	var pkgs types.Packages
 	// Identify the direct/transitive/dev dependencies
-	for i, pkg := range app.Packages {
-		app.Packages[i].Dev = !prodDeps.Contains(pkg.ID) || app.Packages[i].Dev
-		if dirDeps.Contains(pkg.Name) {
-			app.Packages[i].Relationship = types.RelationshipDirect
-		} else {
-			app.Packages[i].Indirect = true
-			app.Packages[i].Relationship = types.RelationshipIndirect
+	for _, pkg := range app.Packages {
+		pkg.Dev = !prodDeps.Contains(pkg.ID) || pkg.Dev
+
+		// Skip Dev package if `--include-dev-deps` flag is not present.
+		if pkg.Dev && !a.includeDevDeps {
+			continue
 		}
+
+		pkg.Relationship = types.RelationshipDirect
+		if !dirDeps.Contains(pkg.Name) {
+			pkg.Indirect = true
+			pkg.Relationship = types.RelationshipIndirect
+		}
+
+		pkgs = append(pkgs, pkg)
 	}
+
+	// Save filtered/updated packages
+	app.Packages = pkgs
 	return nil
 }
 
