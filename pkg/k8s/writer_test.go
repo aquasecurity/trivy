@@ -527,6 +527,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("TRIVY_DISABLE_VEX_NOTICE", "true")
 			output := bytes.Buffer{}
 
 			opt := report.Option{
