@@ -662,7 +662,7 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 		return misconf.ScannerOption{}, xerrors.Errorf("load schemas error: %w", err)
 	}
 
-	return misconf.ScannerOption{
+	misconfOpts := misconf.ScannerOption{
 		Trace:                    opts.Trace,
 		Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
 		PolicyPaths:              policyPaths,
@@ -684,5 +684,13 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 		ConfigFileSchemas:        configSchemas,
 		SkipFiles:                opts.SkipFiles,
 		SkipDirs:                 opts.SkipDirs,
-	}, nil
+	}
+
+	regoScanner, err := misconf.InitRegoScanner(misconfOpts)
+	if err != nil {
+		return misconf.ScannerOption{}, xerrors.Errorf("init Rego scanner: %w", err)
+	}
+
+	misconfOpts.RegoScanner = regoScanner
+	return misconfOpts, nil
 }
