@@ -727,8 +727,6 @@ github.com/ThalesIgnite/crypto11 v1.2.5 h1:1IiIIEqYmBvUYFeMnHqRft4bwf/O36jryEUpY
 github.com/ThalesIgnite/crypto11 v1.2.5/go.mod h1:ILDKtnCKiQ7zRoNxcp36Y1ZR8LBPmR2E23+wTQe/MlE=
 github.com/VividCortex/ewma v1.2.0 h1:f58SaIzcDXrSy3kWaHNvuJgJ3Nmz59Zji6XoJR/q1ow=
 github.com/VividCortex/ewma v1.2.0/go.mod h1:nz4BbCtbLyFDeC9SUHbtcT5644juEuWfUAUnGx7j5l4=
-github.com/afdesk/trivy-kubernetes v0.0.0-20250326124332-3807b652b635 h1:Xw//NSutR8mKOkBmpHNIx13KcuRpOCWVzqtQ37vBjiA=
-github.com/afdesk/trivy-kubernetes v0.0.0-20250326124332-3807b652b635/go.mod h1:ueJJboNlUyi99DJvO5ZyZ/jnJWvZ0eTA6AzKxHHqMF8=
 github.com/agext/levenshtein v1.2.3 h1:YB2fHEn0UJagG8T1rrWknE3ZQzWM06O8AMAatNn7lmo=
 github.com/agext/levenshtein v1.2.3/go.mod h1:JEDfjyjHDjOF/1e4FlBE/PkbqA9OfWu2ki2W0IB5558=
 github.com/agnivade/levenshtein v1.2.1 h1:EHBY3UOn1gwdy/VbFwgo4cxecRznFk7fKWN1KOX7eoM=
@@ -810,6 +808,8 @@ github.com/aquasecurity/trivy-db v0.0.0-20250227071930-8bd8a9b89e2d h1:T16WrTi21
 github.com/aquasecurity/trivy-db v0.0.0-20250227071930-8bd8a9b89e2d/go.mod h1:4bTsQPtMBN8v+UfUlE1aQBN1imftefnDafHBF85+aT8=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48 h1:JVgBIuIYbwG+ekC5lUHUpGJboPYiCcxiz06RCtz8neI=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48/go.mod h1:Ldya37FLi0e/5Cjq2T5Bty7cFkzUDwTcPeQua+2M8i8=
+github.com/aquasecurity/trivy-kubernetes v0.8.0 h1:GWnRPSPCmXnd5NTMZdobQx6xO2XzEtvxcv0gjS2tYnY=
+github.com/aquasecurity/trivy-kubernetes v0.8.0/go.mod h1:ueJJboNlUyi99DJvO5ZyZ/jnJWvZ0eTA6AzKxHHqMF8=
 github.com/arbovm/levenshtein v0.0.0-20160628152529-48b4e1c0c4d0 h1:jfIu9sQUG6Ig+0+Ap1h4unLjW6YQJpKZVmUzxsD4E/Q=
 github.com/arbovm/levenshtein v0.0.0-20160628152529-48b4e1c0c4d0/go.mod h1:t2tdKJDJF9BV14lnkjHmOQgcvEKgtqs5a1N3LNdJhGE=
 github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 h1:0CwZNZbxp69SHPdPJAN/hZIm0C4OItdklCFmMRWYpio=
