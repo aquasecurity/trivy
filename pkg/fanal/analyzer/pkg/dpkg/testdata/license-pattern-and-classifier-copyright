@@ -47,7 +47,7 @@ Files: contrib/minizip/*
 Copyright: 1998-2010 Gilles Vollant
            2007-2008 Even Rouault
            2009-2010 Mathias Svensson
-License: Zlib
+License: Zlib,
 
 Files: debian/*
 Copyright: 2000-2017 Mark Brown
