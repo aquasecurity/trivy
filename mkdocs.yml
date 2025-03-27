@@ -75,6 +75,7 @@ nav:
               - Alpine Linux: docs/coverage/os/alpine.md
               - Amazon Linux: docs/coverage/os/amazon.md
               - Azure Linux (CBL-Mariner): docs/coverage/os/azure.md
+              - Bottlerocket: docs/coverage/os/bottlerocket.md
               - CentOS: docs/coverage/os/centos.md
               - Chainguard: docs/coverage/os/chainguard.md
               - Debian: docs/coverage/os/debian.md

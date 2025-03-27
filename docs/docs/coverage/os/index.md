@@ -28,6 +28,7 @@ Trivy supports operating systems for
 | [Photon OS](photon.md)                | 1.0, 2.0, 3.0, 4.0                  | tndf/yum/rpm     |
 | [Debian GNU/Linux](debian.md)         | 7, 8, 9, 10, 11, 12                 | apt/dpkg         |
 | [Ubuntu](ubuntu.md)                   | All versions supported by Canonical | apt/dpkg         |
+| [Bottlerocket](bottlerocket.md)       | 1.7.0 and upper                     | bottlerocket     |
 | [OSs with installed Conda](../others/conda.md)  | -                                   | conda            |
 
 ## Supported container images
