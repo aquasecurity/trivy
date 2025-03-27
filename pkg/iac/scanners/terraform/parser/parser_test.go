@@ -2418,3 +2418,39 @@ func TestConfigWithEphemeralBlock(t *testing.T) {
 	_, err := parser.Load(t.Context())
 	require.NoError(t, err)
 }
+
+func TestConvertObjectWithUnknownAndNullValuesToMap(t *testing.T) {
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{Data: []byte(`module "foo" {
+  source = "./modules/foo"
+}
+
+locals {
+  known = "test"
+}
+
+module "bar" {
+  source = "./modules/bar"
+  outputs = {
+    "key1" : { "Value" : module.foo.test },
+    "key2" : { "Value" : local.known },
+    "key3" : { "Value" : local.unknown },
+  }
+}`)},
+		"modules/foo/main.tf": &fstest.MapFile{Data: []byte(`output "test" {
+  value       = ref_to_unknown
+}`)},
+		"modules/bar/main.tf": &fstest.MapFile{Data: []byte(`variable "outputs" {
+  type        = map(any)
+}`)},
+	}
+
+	parser := New(fsys, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	_, err := parser.Load(t.Context())
+	require.NoError(t, err)
+
+	_, _, err = parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+}

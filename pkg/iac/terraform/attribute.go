@@ -288,7 +288,7 @@ func (a *Attribute) Value() (ctyVal cty.Value) {
 	}()
 	ctyVal, _ = a.hclAttribute.Expr.Value(a.ctx.Inner())
 	if !ctyVal.IsKnown() || ctyVal.IsNull() {
-		return cty.NilVal
+		return cty.DynamicVal
 	}
 	return ctyVal
 }
@@ -304,8 +304,8 @@ func (a *Attribute) NullableValue() (ctyVal cty.Value) {
 		}
 	}()
 	ctyVal, _ = a.hclAttribute.Expr.Value(a.ctx.Inner())
-	if !ctyVal.IsKnown() {
-		return cty.NilVal
+	if !ctyVal.IsKnown() || ctyVal.IsNull() {
+		return cty.NullVal(cty.DynamicPseudoType)
 	}
 	return ctyVal
 }
@@ -963,8 +963,10 @@ func (a *Attribute) AllReferences(blocks ...*Block) []*Reference {
 	refs := a.extractReferences()
 	for _, block := range blocks {
 		for _, ref := range refs {
-			if ref.TypeLabel() == "each" && block.HasChild("for_each") {
-				refs = append(refs, block.GetAttribute("for_each").AllReferences()...)
+			if ref.TypeLabel() == "each" {
+				if forEachAttr := block.GetAttribute("for_each"); forEachAttr.IsNotNil() {
+					refs = append(refs, forEachAttr.AllReferences()...)
+				}
 			}
 		}
 	}

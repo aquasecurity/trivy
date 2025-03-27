@@ -244,9 +244,7 @@ func (a *mssqlAdapter) adaptMSSQLServer(resource *terraform.Block, module *terra
 	}
 
 	auditingPoliciesBlocks := module.GetReferencingResources(resource, "azurerm_mssql_server_extended_auditing_policy", "server_id")
-	if resource.HasChild("extended_auditing_policy") {
-		auditingPoliciesBlocks = append(auditingPoliciesBlocks, resource.GetBlocks("extended_auditing_policy")...)
-	}
+	auditingPoliciesBlocks = append(auditingPoliciesBlocks, resource.GetBlocks("extended_auditing_policy")...)
 
 	databasesRes := module.GetReferencingResources(resource, "azurerm_mssql_database", "server_id")
 	for _, databaseRes := range databasesRes {

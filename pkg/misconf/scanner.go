@@ -369,6 +369,20 @@ func createConfigFS(paths []string) (fs.FS, error) {
 	return mfs, nil
 }
 
+func CheckPathExists(path string) (fs.FileInfo, string, error) {
+	abs, err := filepath.Abs(path)
+	if err != nil {
+		return nil, "", xerrors.Errorf("failed to derive absolute path from '%s': %w", path, err)
+	}
+	fi, err := os.Stat(abs)
+	if errors.Is(err, os.ErrNotExist) {
+		return nil, "", xerrors.Errorf("check file %q not found", abs)
+	} else if err != nil {
+		return nil, "", xerrors.Errorf("file %q stat error: %w", abs, err)
+	}
+	return fi, abs, nil
+}
+
 func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 	if len(policyPaths) == 0 {
 		return nil, nil, nil
@@ -376,15 +390,9 @@ func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 
 	mfs := mapfs.New()
 	for _, p := range policyPaths {
-		abs, err := filepath.Abs(p)
+		fi, abs, err := CheckPathExists(p)
 		if err != nil {
-			return nil, nil, xerrors.Errorf("failed to derive absolute path from '%s': %w", p, err)
-		}
-		fi, err := os.Stat(abs)
-		if errors.Is(err, os.ErrNotExist) {
-			return nil, nil, xerrors.Errorf("policy file %q not found", abs)
-		} else if err != nil {
-			return nil, nil, xerrors.Errorf("file %q stat error: %w", abs, err)
+			return nil, nil, err
 		}
 
 		if fi.IsDir() {

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
@@ -59,10 +60,8 @@ resource "aws_s3_bucket" "my-bucket" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
 					attr := block.GetAttribute(test.checkAttribute)
+					require.NotNil(t, attr)
 					assert.Equal(t, test.expectedResult, attr.StartsWith(test.checkValue))
 				}
 			}
@@ -121,10 +120,8 @@ resource "aws_s3_bucket" "my-bucket" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
 					attr := block.GetAttribute(test.checkAttribute)
+					require.NotNil(t, attr)
 					assert.Equal(t, test.expectedResult, attr.EndsWith(test.checkValue))
 				}
 			}
@@ -277,10 +274,8 @@ resource "aws_security_group" "my-security_group" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, b := range module.GetBlocks() {
-					if !b.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
 					attr := b.GetAttribute(test.checkAttribute)
+					require.NotNil(t, attr)
 					if test.ignoreCase {
 						assert.Equal(t, test.expectedResult, attr.Contains(test.checkValue, terraform.IgnoreCase))
 					} else {
@@ -339,10 +334,8 @@ resource "aws_security_group" "my-security_group" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
 					attr := block.GetAttribute(test.checkAttribute)
+					require.NotNil(t, attr)
 					assert.Equal(t, test.expectedResult, attr.IsAny(test.checkValue...))
 				}
 			}
@@ -397,10 +390,8 @@ resource "aws_security_group" "my-security_group" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
 					attr := block.GetAttribute(test.checkAttribute)
+					require.NotNil(t, attr)
 					assert.Equal(t, test.expectedResult, attr.IsNone(test.checkValue...))
 				}
 			}
@@ -509,10 +500,8 @@ resource "aws_security_group_rule" "example" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
 					attr := block.GetAttribute(test.checkAttribute)
+					require.NotNil(t, attr)
 					assert.Equal(t, test.expectedResult, attr.IsEmpty())
 				}
 			}
@@ -554,10 +543,8 @@ resource "numerical_something" "my-bucket" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
 					attr := block.GetAttribute(test.checkAttribute)
+					require.NotNil(t, attr)
 					assert.Equal(t, test.expectedResult, attr.LessThan(test.checkValue))
 				}
 			}
@@ -599,10 +586,8 @@ resource "numerical_something" "my-bucket" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
 					attr := block.GetAttribute(test.checkAttribute)
+					require.NotNil(t, attr)
 					assert.Equal(t, test.expectedResult, attr.LessThanOrEqualTo(test.checkValue))
 				}
 			}
@@ -650,10 +635,8 @@ resource "boolean_something" "my-something" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
 					attr := block.GetAttribute(test.checkAttribute)
+					require.NotNil(t, attr)
 					assert.Equal(t, test.expectedResult, attr.IsTrue())
 				}
 			}
@@ -701,10 +684,8 @@ resource "boolean_something" "my-something" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
 					attr := block.GetAttribute(test.checkAttribute)
+					require.NotNil(t, attr)
 					assert.Equal(t, test.expectedResult, attr.IsFalse())
 				}
 			}

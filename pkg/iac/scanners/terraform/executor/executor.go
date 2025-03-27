@@ -130,10 +130,16 @@ func writeBlock(tfBlock *terraform.Block, block *hclwrite.Block, causeRng types.
 	var found bool
 
 	for _, attr := range tfBlock.Attributes() {
-		if attr.GetMetadata().Range().Covers(causeRng) && !attr.IsLiteral() {
-			block.Body().SetAttributeValue(attr.Name(), attr.Value())
-			found = true
+		if !attr.GetMetadata().Range().Covers(causeRng) || attr.IsLiteral() {
+			continue
 		}
+
+		value := attr.Value()
+		if !value.IsKnown() || value.IsNull() {
+			continue
+		}
+		block.Body().SetAttributeValue(attr.Name(), value)
+		found = true
 	}
 
 	for _, child := range tfBlock.AllBlocks() {
