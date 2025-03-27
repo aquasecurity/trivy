@@ -149,3 +149,7 @@ func normalizeLicense(s string) string {
 
 	return strings.TrimSpace(s)
 }
+
+func (a *dpkgLicenseAnalyzer) StaticPaths() []string {
+	return []string{"usr/share/doc/"}
+}

@@ -517,39 +517,6 @@ func (b *Block) NameLabel() string {
 	return ""
 }
 
-func (b *Block) HasChild(childElement string) bool {
-	return b.GetAttribute(childElement).IsNotNil() || b.GetBlock(childElement).IsNotNil()
-}
-
-func (b *Block) MissingChild(childElement string) bool {
-	if b == nil {
-		return true
-	}
-
-	return !b.HasChild(childElement)
-}
-
-func (b *Block) MissingNestedChild(name string) bool {
-	if b == nil {
-		return true
-	}
-
-	parts := strings.Split(name, ".")
-	blocks := parts[:len(parts)-1]
-	last := parts[len(parts)-1]
-
-	working := b
-	for _, subBlock := range blocks {
-		if checkBlock := working.GetBlock(subBlock); checkBlock == nil {
-			return true
-		} else {
-			working = checkBlock
-		}
-	}
-	return !working.HasChild(last)
-
-}
-
 func (b *Block) InModule() bool {
 	if b == nil {
 		return false

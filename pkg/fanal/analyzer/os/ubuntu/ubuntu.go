@@ -62,3 +62,8 @@ func (a ubuntuOSAnalyzer) Type() analyzer.Type {
 func (a ubuntuOSAnalyzer) Version() int {
 	return version
 }
+
+// StaticPaths returns the static paths of the ubuntu analyzer
+func (a ubuntuOSAnalyzer) StaticPaths() []string {
+	return requiredFiles
+}

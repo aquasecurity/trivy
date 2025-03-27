@@ -21,9 +21,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
-	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
-	"github.com/aquasecurity/trivy/pkg/scanner/post"
+	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
+	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
+	"github.com/aquasecurity/trivy/pkg/scan/post"
 	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
@@ -38,21 +38,21 @@ var SuperSet = wire.NewSet(
 	applier.NewApplier,
 	ospkg.NewScanner,
 	langpkg.NewScanner,
-	NewScanner,
+	NewService,
 )
 
-// Scanner implements the OspkgDetector and LibraryDetector
-type Scanner struct {
+// Service implements the OspkgDetector and LibraryDetector
+type Service struct {
 	applier        applier.Applier
 	osPkgScanner   ospkg.Scanner
 	langPkgScanner langpkg.Scanner
 	vulnClient     vulnerability.Client
 }
 
-// NewScanner is the factory method for Scanner
-func NewScanner(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner langpkg.Scanner,
-	vulnClient vulnerability.Client) Scanner {
-	return Scanner{
+// NewService is the factory method for Scanner
+func NewService(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner langpkg.Scanner,
+	vulnClient vulnerability.Client) Service {
+	return Service{
 		applier:        a,
 		osPkgScanner:   osPkgScanner,
 		langPkgScanner: langPkgScanner,
@@ -61,7 +61,7 @@ func NewScanner(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner la
 }
 
 // Scan scans the artifact and return results.
-func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobKeys []string, options types.ScanOptions) (
+func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobKeys []string, options types.ScanOptions) (
 	types.Results, ftypes.OS, error) {
 	detail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
@@ -112,7 +112,7 @@ func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobK
 	return s.ScanTarget(ctx, target, options)
 }
 
-func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, ftypes.OS, error) {
+func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, ftypes.OS, error) {
 	var results types.Results
 
 	// Filter packages according to the options
@@ -157,7 +157,7 @@ func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, option
 	return results, target.OS, nil
 }
 
-func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (
+func (s Service) scanVulnerabilities(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (
 	types.Results, bool, error) {
 	if !options.Scanners.AnyEnabled(types.SBOMScanner, types.VulnerabilityScanner) {
 		return nil, false, nil
@@ -190,7 +190,7 @@ func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarge
 	return results, eosl, nil
 }
 
-func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) types.Results {
+func (s Service) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) types.Results {
 	if !ShouldScanMisconfigOrRbac(options.Scanners) &&
 		!options.ImageConfigScanners.Enabled(types.MisconfigScanner) {
 		return nil
@@ -200,7 +200,7 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 }
 
 // MisconfsToResults is exported for trivy-plugin-aqua purposes only
-func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Results {
+func (s Service) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Results {
 	log.Info("Detected config files", log.Int("num", len(misconfs)))
 	var results types.Results
 	for _, misconf := range misconfs {
@@ -233,7 +233,7 @@ func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Res
 	return results
 }
 
-func (s Scanner) secretsToResults(secrets []ftypes.Secret, options types.ScanOptions) types.Results {
+func (s Service) secretsToResults(secrets []ftypes.Secret, options types.ScanOptions) types.Results {
 	if !options.Scanners.Enabled(types.SecretScanner) {
 		return nil
 	}
@@ -253,7 +253,7 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret, options types.ScanOpt
 	return results
 }
 
-func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions) types.Results {
+func (s Service) scanLicenses(target types.ScanTarget, options types.ScanOptions) types.Results {
 	if !options.Scanners.Enabled(types.LicenseScanner) {
 		return nil
 	}
@@ -277,7 +277,7 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 	return results
 }
 
-func (s Scanner) scanOSPackageLicenses(packages []ftypes.Package, scanner licensing.Scanner) *types.Result {
+func (s Service) scanOSPackageLicenses(packages []ftypes.Package, scanner licensing.Scanner) *types.Result {
 	if len(packages) == 0 {
 		return nil
 	}
@@ -295,7 +295,7 @@ func (s Scanner) scanOSPackageLicenses(packages []ftypes.Package, scanner licens
 	}
 }
 
-func (s Scanner) scanApplicationLicenses(apps []ftypes.Application, scanner licensing.Scanner) []types.Result {
+func (s Service) scanApplicationLicenses(apps []ftypes.Application, scanner licensing.Scanner) []types.Result {
 	var results []types.Result
 
 	for _, app := range apps {
@@ -329,7 +329,7 @@ func (s Scanner) scanApplicationLicenses(apps []ftypes.Application, scanner lice
 	return results
 }
 
-func (s Scanner) scanFileLicenses(licenses []ftypes.LicenseFile, scanner licensing.Scanner, options types.ScanOptions) *types.Result {
+func (s Service) scanFileLicenses(licenses []ftypes.LicenseFile, scanner licensing.Scanner, options types.ScanOptions) *types.Result {
 	if !options.LicenseFull {
 		return nil
 	}

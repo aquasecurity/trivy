@@ -15,7 +15,7 @@ func Adapt(modules terraform.Modules) elasticsearch.Elasticsearch {
 func adaptDomains(modules terraform.Modules) []elasticsearch.Domain {
 	var domains []elasticsearch.Domain
 	for _, module := range modules {
-		for _, resource := range module.GetResourcesByType("aws_elasticsearch_domain") {
+		for _, resource := range module.GetResourcesByType("aws_elasticsearch_domain", "aws_opensearch_domain") {
 			domains = append(domains, adaptDomain(resource))
 		}
 	}

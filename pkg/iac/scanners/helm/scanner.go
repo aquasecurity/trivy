@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"path"
 	"path/filepath"
 	"strings"
 	"sync"
 
 	"github.com/liamg/memoryfs"
+	"helm.sh/helm/v3/pkg/chartutil"
 
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
@@ -55,14 +57,14 @@ func (s *Scanner) Name() string {
 	return "Helm"
 }
 
-func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, path string) (scan.Results, error) {
+func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Results, error) {
 
-	if err := s.initRegoScanner(target); err != nil {
+	if err := s.initRegoScanner(fsys); err != nil {
 		return nil, fmt.Errorf("failed to init rego scanner: %w", err)
 	}
 
 	var results []scan.Result
-	if err := fs.WalkDir(target, path, func(path string, d fs.DirEntry, err error) error {
+	if err := fs.WalkDir(fsys, dir, func(filePath string, d fs.DirEntry, err error) error {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
@@ -77,16 +79,14 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, path string) (scan.R
 			return nil
 		}
 
-		if detection.IsArchive(path) {
-			if scanResults, err := s.getScanResults(path, ctx, target); err != nil {
+		if detection.IsArchive(filePath) {
+			scanResults, err := s.getScanResults(filePath, ctx, fsys)
+			if err != nil {
 				return err
-			} else {
-				results = append(results, scanResults...)
 			}
-		}
-
-		if strings.HasSuffix(path, "Chart.yaml") {
-			if scanResults, err := s.getScanResults(filepath.Dir(path), ctx, target); err != nil {
+			results = append(results, scanResults...)
+		} else if path.Base(filePath) == chartutil.ChartfileName {
+			if scanResults, err := s.getScanResults(filepath.Dir(filePath), ctx, fsys); err != nil {
 				return err
 			} else {
 				results = append(results, scanResults...)

@@ -60,3 +60,8 @@ func (a centOSAnalyzer) Type() analyzer.Type {
 func (a centOSAnalyzer) Version() int {
 	return centosAnalyzerVersion
 }
+
+// StaticPaths returns the static paths of the centos analyzer
+func (a centOSAnalyzer) StaticPaths() []string {
+	return a.requiredFiles()
+}

@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"errors"
+	"io/fs"
 	"os"
 	"path"
 	"path/filepath"
@@ -13,11 +14,11 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/google/wire"
-	"github.com/opencontainers/go-digest"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
@@ -25,6 +26,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
@@ -167,34 +169,19 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	}
 	defer composite.Cleanup()
 
-	err = a.walker.Walk(a.rootPath, a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-		dir := a.rootPath
-
-		// When the directory is the same as the filePath, a file was given
-		// instead of a directory, rewrite the file path and directory in this case.
-		if filePath == "." {
-			dir, filePath = path.Split(a.rootPath)
+	// Use static paths instead of traversing the filesystem when all analyzers implement StaticPathAnalyzer
+	// so that we can analyze files faster
+	if paths, canUseStaticPaths := a.analyzer.StaticPaths(a.artifactOption.DisabledAnalyzers); canUseStaticPaths {
+		// Analyze files in static paths
+		a.logger.Debug("Analyzing files in static paths")
+		if err = a.analyzeWithStaticPaths(ctx, &wg, limit, result, composite, opts, paths); err != nil {
+			return artifact.Reference{}, xerrors.Errorf("analyze with static paths: %w", err)
 		}
-
-		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, dir, filePath, info, opener, nil, opts); err != nil {
-			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
+	} else {
+		// Analyze files by traversing the root directory
+		if err = a.analyzeWithRootDir(ctx, &wg, limit, result, composite, opts); err != nil {
+			return artifact.Reference{}, xerrors.Errorf("analyze with traversal: %w", err)
 		}
-
-		// Skip post analysis if the file is not required
-		analyzerTypes := a.analyzer.RequiredPostAnalyzers(filePath, info)
-		if len(analyzerTypes) == 0 {
-			return nil
-		}
-
-		// Build filesystem for post analysis
-		if err := composite.CreateLink(analyzerTypes, dir, filePath, filepath.Join(dir, filePath)); err != nil {
-			return xerrors.Errorf("failed to create link: %w", err)
-		}
-
-		return nil
-	})
-	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("walk filesystem: %w", err)
 	}
 
 	// Wait for all the goroutine to finish.
@@ -244,6 +231,61 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 		ID:      cacheKey, // use a cache key as pseudo artifact ID
 		BlobIDs: []string{cacheKey},
 	}, nil
+}
+
+func (a Artifact) analyzeWithRootDir(ctx context.Context, wg *sync.WaitGroup, limit *semaphore.Weighted,
+	result *analyzer.AnalysisResult, composite *analyzer.CompositeFS, opts analyzer.AnalysisOptions) error {
+
+	root := a.rootPath
+	relativePath := ""
+
+	// When the root path is a file, rewrite the root path and relative path
+	if fsutils.FileExists(a.rootPath) {
+		root, relativePath = path.Split(a.rootPath)
+	}
+	return a.analyzeWithTraversal(ctx, root, relativePath, wg, limit, result, composite, opts)
+}
+
+// analyzeWithStaticPaths analyzes files using static paths from analyzers
+func (a Artifact) analyzeWithStaticPaths(ctx context.Context, wg *sync.WaitGroup, limit *semaphore.Weighted,
+	result *analyzer.AnalysisResult, composite *analyzer.CompositeFS, opts analyzer.AnalysisOptions,
+	staticPaths []string) error {
+
+	// Process each static path
+	for _, relativePath := range staticPaths {
+		if err := a.analyzeWithTraversal(ctx, a.rootPath, relativePath, wg, limit, result, composite, opts); errors.Is(err, fs.ErrNotExist) {
+			continue
+		} else if err != nil {
+			return xerrors.Errorf("analyze with traversal: %w", err)
+		}
+	}
+
+	return nil
+}
+
+// analyzeWithTraversal analyzes files by traversing the entire filesystem
+func (a Artifact) analyzeWithTraversal(ctx context.Context, root, relativePath string, wg *sync.WaitGroup, limit *semaphore.Weighted,
+	result *analyzer.AnalysisResult, composite *analyzer.CompositeFS, opts analyzer.AnalysisOptions) error {
+
+	return a.walker.Walk(filepath.Join(root, relativePath), a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+		filePath = path.Join(relativePath, filePath)
+		if err := a.analyzer.AnalyzeFile(ctx, wg, limit, result, root, filePath, info, opener, nil, opts); err != nil {
+			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
+		}
+
+		// Skip post analysis if the file is not required
+		analyzerTypes := a.analyzer.RequiredPostAnalyzers(filePath, info)
+		if len(analyzerTypes) == 0 {
+			return nil
+		}
+
+		// Build filesystem for post analysis
+		if err := composite.CreateLink(analyzerTypes, root, filePath, filepath.Join(root, filePath)); err != nil {
+			return xerrors.Errorf("failed to create link: %w", err)
+		}
+
+		return nil
+	})
 }
 
 func (a Artifact) Clean(reference artifact.Reference) error {

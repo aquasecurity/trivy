@@ -60,3 +60,8 @@ func (a almaOSAnalyzer) Type() analyzer.Type {
 func (a almaOSAnalyzer) Version() int {
 	return almaAnalyzerVersion
 }
+
+// StaticPaths returns the static paths of the alma analyzer
+func (a almaOSAnalyzer) StaticPaths() []string {
+	return a.requiredFiles()
+}

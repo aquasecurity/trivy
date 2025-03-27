@@ -59,6 +59,11 @@ func (a ubuntuESMAnalyzer) Version() int {
 	return ESMAnalyzerVersion
 }
 
+// StaticPaths returns the static paths of the ubuntu ESM analyzer
+func (a ubuntuESMAnalyzer) StaticPaths() []string {
+	return ESMRequiredFiles
+}
+
 // structs to parse ESM status
 type status struct {
 	Services []service `json:"services"`

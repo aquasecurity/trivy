@@ -73,7 +73,7 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 	var apps []types.Application
 
 	required := func(path string, d fs.DirEntry) bool {
-		return filepath.Base(path) == types.YarnLock
+		return filepath.Base(path) == types.YarnLock || input.FilePatterns.Match(path)
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, d fs.DirEntry, r io.Reader) error {
