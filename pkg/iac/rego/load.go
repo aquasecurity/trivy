@@ -166,7 +166,7 @@ func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
 		}
 
 		s.logger.Debug(
-			"Error occurred while parsing. Trying to fallback to embedded check",
+			"Unable to parse check. This can be due to lack of support in this version. Trying to fallback to embedded check",
 			log.FilePath(loc),
 			log.Err(e),
 		)
