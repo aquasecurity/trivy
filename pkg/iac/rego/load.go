@@ -165,15 +165,15 @@ func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
 			continue
 		}
 
-		s.logger.Error(
-			"Error occurred while parsing. Trying to fallback to embedded check",
+		s.logger.Debug(
+			"Unable to parse check. This can be due to lack of support in this version. Trying to fallback to embedded check",
 			log.FilePath(loc),
 			log.Err(e),
 		)
 
 		embedded := s.findMatchedEmbeddedCheck(badPolicy)
 		if embedded == nil {
-			s.logger.Error("Failed to find embedded check, skipping", log.FilePath(loc))
+			s.logger.Debug("Failed to find embedded check, skipping", log.FilePath(loc))
 			continue
 		}
 
