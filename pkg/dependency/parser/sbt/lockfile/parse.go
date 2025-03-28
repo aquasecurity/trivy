@@ -5,12 +5,13 @@ import (
 	"slices"
 	"sort"
 
+	"github.com/go-json-experiment/json"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/jfather"
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 // lockfile format defined at: https://stringbean.github.io/sbt-dependency-lock/file-formats/version-1.html
@@ -24,8 +25,11 @@ type sbtLockfileDependency struct {
 	Name           string   `json:"name"`
 	Version        string   `json:"version"`
 	Configurations []string `json:"configurations"`
-	StartLine      int
-	EndLine        int
+	ftypes.Location
+}
+
+func (s *sbtLockfileDependency) SetLocation(location ftypes.Location) {
+	s.Location = location
 }
 
 type Parser struct{}
@@ -41,7 +45,7 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, 
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to read sbt lockfile: %w", err)
 	}
-	if err := jfather.Unmarshal(input, &lockfile); err != nil {
+	if err = json.Unmarshal(input, &lockfile, json.WithUnmarshalers(xjson.UnmarshalerWithObjectLocation(input))); err != nil {
 		return nil, nil, xerrors.Errorf("JSON decoding failed: %w", err)
 	}
 
@@ -66,17 +70,6 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, 
 
 	sort.Sort(libraries)
 	return libraries, nil, nil
-}
-
-// UnmarshalJSONWithMetadata needed to detect start and end lines of deps
-func (t *sbtLockfileDependency) UnmarshalJSONWithMetadata(node jfather.Node) error {
-	if err := node.Decode(&t); err != nil {
-		return err
-	}
-	// Decode func will overwrite line numbers if we save them first
-	t.StartLine = node.Range().Start.Line
-	t.EndLine = node.Range().End.Line
-	return nil
 }
 
 func isIncludedConfig(config string) bool {
