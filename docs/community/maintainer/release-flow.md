@@ -74,8 +74,14 @@ Replace URLs with appropriate ones.
 
 Example: https://github.com/aquasecurity/trivy/releases/tag/v0.52.0
 
+### Merging the auto-generated Helm chart update PR
+Once the release PR is merged, there will be an auto-generated PR that bumps the Trivy version for the Trivy Helm Chart. An example can be seen [here](https://github.com/aquasecurity/trivy/pull/8638).
 
-The release is now complete.
+If things look good, approve and merge this PR to further trigger the publishing of the Helm Chart.
+
+
+The release is now complete 🍻
+
 
 [conventional-commits]: https://www.conventionalcommits.org/en/v1.0.0/
 [release-please]: https://github.com/googleapis/release-please 
