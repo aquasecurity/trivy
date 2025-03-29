@@ -7545,6 +7545,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#merging-the-auto-generated-helm-chart-update-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merging the auto-generated Helm chart update PR
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -7881,6 +7892,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#merging-the-auto-generated-helm-chart-update-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merging the auto-generated Helm chart update PR
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -7973,7 +7995,15 @@ https://github.com/aquasecurity/trivy/blob/main/CHANGELOG.md#0520-2024-06-03
 </code></pre></div>
 <p>Replace URLs with appropriate ones.</p>
 <p>Example: <a href="https://github.com/aquasecurity/trivy/releases/tag/v0.52.0">https://github.com/aquasecurity/trivy/releases/tag/v0.52.0</a></p>
-<p>The release is now complete.</p>
+<h3 id="merging-the-auto-generated-helm-chart-update-pr">Merging the auto-generated Helm chart update PR<a class="headerlink" href="#merging-the-auto-generated-helm-chart-update-pr" title="Permanent link">&para;</a></h3>
+<p>Once the release PR is merged, there will be an auto-generated PR that bumps the Trivy version for the Trivy Helm Chart. An example can be seen <a href="https://github.com/aquasecurity/trivy/pull/8638">here</a>.</p>
+<blockquote>
+<p>[!NOTE]<br />
+It is possible that the release action takes a while to finish and the Helm chart action runs prior. In such a case the Helm chart action will fail as it will not be able to find the latest Trivy container image.
+In such a case, it is advised to manually restart the Helm chart action, once the release action is finished.</p>
+</blockquote>
+<p>If things look good, approve and merge this PR to further trigger the publishing of the Helm Chart.</p>
+<p>The release is now complete 🍻</p>
 
 
 
