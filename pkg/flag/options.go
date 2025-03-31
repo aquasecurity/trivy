@@ -821,7 +821,7 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 	if f.RepoFlagGroup != nil {
 		opts.RepoOptions, err = f.RepoFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("rego flag error: %w", err)
+			return Options{}, xerrors.Errorf("repo flag error: %w", err)
 		}
 	}
 
