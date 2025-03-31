@@ -2,6 +2,11 @@ package secret
 
 var builtinAllowRules = []AllowRule{
 	{
+		ID:          "dist-info",
+		Description: "Ignore Python .dist-info metadata directories",
+		Path:        MustCompile(`\.dist-info/`),
+	},
+	{
 		ID:          "tests",
 		Description: "Avoid test files and paths",
 		Path:        MustCompile(`(^(?i)test|\/test|-test|_test|\.test)`),
