@@ -40,7 +40,7 @@ type Dependency struct {
 }
 
 func DependencyUnmarshaler(data []byte) *json.Unmarshalers {
-	return json.UnmarshalFromFunc(func(dec *jsontext.Decoder, dep *Dependency, opts json.Options) error {
+	return json.UnmarshalFromFunc(func(dec *jsontext.Decoder, dep *Dependency) error {
 		// Create Alias to avoid infinity loop
 		type Alias struct {
 			Dependency
@@ -50,7 +50,7 @@ func DependencyUnmarshaler(data []byte) *json.Unmarshalers {
 
 		// Dependency is struct - so we can use dec.InputOffset() as startOffset
 		startOffset := dec.InputOffset()
-		if err := json.UnmarshalDecode(dec, aux, opts); err != nil {
+		if err := json.UnmarshalDecode(dec, aux); err != nil {
 			return err
 		}
 		endOffset := dec.InputOffset()
