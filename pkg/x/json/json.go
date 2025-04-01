@@ -5,10 +5,14 @@ import (
 
 	"github.com/go-json-experiment/json"
 	"github.com/go-json-experiment/json/jsontext"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
+// Location is wrap of types.Location.
+// This struct is required when you need to detect location of your object from json file.
 type Location struct {
 	types.Location
 }
@@ -22,33 +26,45 @@ type ObjectLocation interface {
 	SetLocation(location types.Location)
 }
 
-// UnmarshalerWithObjectLocation creates json.Unmarshaler for ObjectLocation to save location using SetLocation function
-// It doesn't support Location detection for nested objects (e.g. Dependency -> map[string]Dependency).
-//
-// UnmarshalerWithObjectLocation may return an error for primitive types,
-// so you need to implement the UnmarshalerFrom interface for these objects
+// UnmarshalerWithObjectLocation creates json.Unmarshaler for ObjectLocation to save object location into xjson.Location
+// To use UnmarshalerWithObjectLocation for primitive types, you must implement the UnmarshalerFrom interface for those objects.
 // cf. https://pkg.go.dev/github.com/go-json-experiment/json#UnmarshalerFrom
 func UnmarshalerWithObjectLocation(data []byte) *json.Unmarshalers {
+	visited := set.New[any]()
+	return unmarshaler(data, visited)
+}
+
+func unmarshaler(data []byte, visited set.Set[any]) *json.Unmarshalers {
 	return json.UnmarshalFromFunc(func(dec *jsontext.Decoder, loc ObjectLocation) error {
-		value, err := dec.ReadValue()
-		if err != nil {
-			return err
+		inputOffset := dec.InputOffset()
+		kind := dec.PeekKind()
+
+		// dec.InputOffset() returns `It gives the location of the next byte immediately after the most recently returned token or value.`
+		// So, we need to find the location of the first token of the current object.
+		for {
+			if data[inputOffset] == byte(kind) {
+				break
+			}
+			inputOffset += 1
 		}
 
-		if err = json.Unmarshal(value, &loc); err != nil {
+		// Check visited set to avoid infinity loops
+		if visited.Contains(inputOffset) {
+			return json.SkipFunc
+		}
+		visited.Append(inputOffset)
+
+		// Return more detailed error for cases when UnmarshalJSONFrom is not implemented for primitive type.
+		if _, ok := loc.(json.UnmarshalerFrom); !ok && kind != '[' && kind != '{' {
+			return xerrors.Errorf("structures with single primitive type should implement UnmarshalJSONFrom: %T", loc)
+		}
+
+		if err := json.UnmarshalDecode(dec, loc, json.WithUnmarshalers(unmarshaler(data, visited))); err != nil {
 			return err
 		}
-		endOffset := dec.InputOffset()
-		// The dec.InputOffset() function returns previousOffsetEnd.
-		// But there are cases when this value doesn't include line breaks (e.g. for array of strings).
-		// See "Location for only string" test for more details.
-		// So we need to calculate the starting line using the length of the value.
-		startOffset := endOffset - int64(len(value))
-
-		loc.SetLocation(CountLines(startOffset, endOffset, data))
+		loc.SetLocation(CountLines(inputOffset, dec.InputOffset(), data))
 		return nil
 	})
-
 }
 
 // CountLines returns the Location for the unmarshaled object.
