@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/go-json-experiment/json"
+	"github.com/go-json-experiment/json/jsontext"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/c/conan"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
@@ -19,11 +19,22 @@ type nestedStruct struct {
 type Dependency struct {
 	Version      string                `json:"version"`
 	Dependencies map[string]Dependency `json:"dependencies"`
-	types.Location
+	xjson.Location
 }
 
-func (d *Dependency) SetLocation(location types.Location) {
-	d.Location = location
+type stringWithLocation struct {
+	Requires Requires `json:"requires"`
+}
+
+type Requires []Require
+
+type Require struct {
+	Dependency string
+	xjson.Location
+}
+
+func (r *Require) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	return json.UnmarshalDecode(dec, &r.Dependency)
 }
 
 var (
@@ -66,9 +77,11 @@ func TestUnmarshal(t *testing.T) {
 				Dependencies: map[string]Dependency{
 					"body-parser": {
 						Version: "1.18.3",
-						Location: types.Location{
-							StartLine: 4,
-							EndLine:   11,
+						Location: xjson.Location{
+							Location: types.Location{
+								StartLine: 4,
+								EndLine:   11,
+							},
 						},
 						Dependencies: map[string]Dependency{
 							// UnmarshalerWithObjectLocation doesn't support Location for nested objects
@@ -83,9 +96,9 @@ func TestUnmarshal(t *testing.T) {
 		{
 			name: "Location for only string",
 			in:   onlyString,
-			out:  conan.LockFile{},
-			want: conan.LockFile{
-				Requires: []conan.Require{
+			out:  stringWithLocation{},
+			want: stringWithLocation{
+				Requires: []Require{
 					{
 						Dependency: "sound32/1.0#83d4b7bf607b3b60a6546f8b58b5cdd7%1675278904.0791488",
 						Location: xjson.Location{
