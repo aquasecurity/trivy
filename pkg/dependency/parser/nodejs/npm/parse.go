@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/go-json-experiment/json"
-	"github.com/go-json-experiment/json/jsontext"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -36,30 +35,7 @@ type Dependency struct {
 	Dependencies map[string]Dependency `json:"dependencies"`
 	Requires     map[string]string     `json:"requires"`
 	Resolved     string                `json:"resolved"`
-	ftypes.Location
-}
-
-func DependencyUnmarshaler(data []byte) *json.Unmarshalers {
-	return json.UnmarshalFromFunc(func(dec *jsontext.Decoder, dep *Dependency) error {
-		// Create Alias to avoid infinity loop
-		type Alias struct {
-			Dependency
-		}
-
-		aux := &Alias{}
-
-		// Dependency is struct - so we can use dec.InputOffset() as startOffset
-		startOffset := dec.InputOffset()
-		if err := json.UnmarshalDecode(dec, aux); err != nil {
-			return err
-		}
-		endOffset := dec.InputOffset()
-
-		aux.Location = xjson.CountLines(startOffset, endOffset, data)
-		*dep = aux.Dependency
-
-		return nil
-	})
+	xjson.Location
 }
 
 type Package struct {
@@ -97,8 +73,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		return nil, nil, xerrors.Errorf("read error: %w", err)
 	}
 
-	if err = json.Unmarshal(input, &lockFile, json.WithUnmarshalers(
-		json.JoinUnmarshalers(xjson.UnmarshalerWithObjectLocation(input), DependencyUnmarshaler(input)))); err != nil {
+	if err = json.Unmarshal(input, &lockFile, json.WithUnmarshalers(xjson.UnmarshalerWithObjectLocation(input))); err != nil {
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 
