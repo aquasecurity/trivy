@@ -66,7 +66,7 @@ func (p *Parser) parseV1(lock LockFile) ([]ftypes.Package, []ftypes.Dependency, 
 		if node.Ref == "" {
 			continue
 		}
-		pkg, err := toPackage(node.Ref, node.StartLine, node.EndLine)
+		pkg, err := toPackage(node.Ref, node.Location)
 		if err != nil {
 			p.logger.Debug("Parse ref error", log.Err(err))
 			continue
@@ -108,7 +108,7 @@ func (p *Parser) parseV2(lock LockFile) ([]ftypes.Package, []ftypes.Dependency, 
 	var pkgs []ftypes.Package
 
 	for _, req := range lock.Requires {
-		pkg, err := toPackage(req.Dependency, req.StartLine, req.EndLine)
+		pkg, err := toPackage(req.Dependency, req.Location)
 		if err != nil {
 			p.logger.Debug("Creating package entry from requirement failed", log.Err(err))
 			continue
@@ -156,20 +156,15 @@ func parsePackage(text string) (string, string, error) {
 	return ss[0], ss[1], nil
 }
 
-func toPackage(pkg string, startLine, endLine int) (ftypes.Package, error) {
+func toPackage(pkg string, location xjson.Location) (ftypes.Package, error) {
 	name, version, err := parsePackage(pkg)
 	if err != nil {
 		return ftypes.Package{}, err
 	}
 	return ftypes.Package{
-		ID:      dependency.ID(ftypes.Conan, name, version),
-		Name:    name,
-		Version: version,
-		Locations: []ftypes.Location{
-			{
-				StartLine: startLine,
-				EndLine:   endLine,
-			},
-		},
+		ID:        dependency.ID(ftypes.Conan, name, version),
+		Name:      name,
+		Version:   version,
+		Locations: []ftypes.Location{location.Location},
 	}, nil
 }

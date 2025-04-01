@@ -87,15 +87,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		}
 
 		pkgs = append(pkgs, ftypes.Package{
-			ID:      dependency.ID(ftypes.DotNetCore, split[0], split[1]),
-			Name:    split[0],
-			Version: split[1],
-			Locations: []ftypes.Location{
-				{
-					StartLine: lib.StartLine,
-					EndLine:   lib.EndLine,
-				},
-			},
+			ID:        dependency.ID(ftypes.DotNetCore, split[0], split[1]),
+			Name:      split[0],
+			Version:   split[1],
+			Locations: []ftypes.Location{lib.Location.Location},
 		})
 	}
 

@@ -60,12 +60,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 				Name:         packageName,
 				Version:      packageContent.Resolved,
 				Relationship: lo.Ternary(packageContent.Type == "Direct", ftypes.RelationshipDirect, ftypes.RelationshipIndirect),
-				Locations: []ftypes.Location{
-					{
-						StartLine: packageContent.StartLine,
-						EndLine:   packageContent.EndLine,
-					},
-				},
+				Locations:    []ftypes.Location{packageContent.Location.Location},
 			}
 			pkgs = append(pkgs, pkg)
 

@@ -57,12 +57,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			Version:      lpkg.Version,
 			Relationship: ftypes.RelationshipUnknown, // composer.lock file doesn't have info about direct/indirect dependencies
 			Licenses:     licenses(lpkg.License),
-			Locations: []ftypes.Location{
-				{
-					StartLine: lpkg.StartLine,
-					EndLine:   lpkg.EndLine,
-				},
-			},
+			Locations:    []ftypes.Location{lpkg.Location.Location},
 		}
 		pkgs[pkg.Name] = pkg
 

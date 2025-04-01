@@ -49,11 +49,7 @@ type Package struct {
 	Dev                  bool              `json:"dev"`
 	Link                 bool              `json:"link"`
 	Workspaces           []string          `json:"workspaces"`
-	ftypes.Location
-}
-
-func (pkg *Package) SetLocation(location ftypes.Location) {
-	pkg.Location = location
+	xjson.Location
 }
 
 type Parser struct {
@@ -121,10 +117,6 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 		}
 
 		pkgID := packageID(pkgName, pkg.Version)
-		location := ftypes.Location{
-			StartLine: pkg.StartLine,
-			EndLine:   pkg.EndLine,
-		}
 
 		var ref ftypes.ExternalRef
 		if pkg.Resolved != "" {
@@ -149,7 +141,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 				sortExternalReferences(savedPkg.ExternalReferences)
 			}
 
-			savedPkg.Locations = append(savedPkg.Locations, location)
+			savedPkg.Locations = append(savedPkg.Locations, pkg.Location.Location)
 			sort.Sort(savedPkg.Locations)
 
 			pkgs[pkgID] = savedPkg
@@ -163,7 +155,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 			Relationship:       lo.Ternary(pkgIndirect, ftypes.RelationshipIndirect, ftypes.RelationshipDirect),
 			Dev:                pkg.Dev,
 			ExternalReferences: lo.Ternary(ref.URL != "", []ftypes.ExternalRef{ref}, nil),
-			Locations:          []ftypes.Location{location},
+			Locations:          []ftypes.Location{pkg.Location.Location},
 		}
 		pkgs[pkgID] = newPkg
 
@@ -308,12 +300,7 @@ func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string
 					URL:  dep.Resolved,
 				},
 			},
-			Locations: []ftypes.Location{
-				{
-					StartLine: dep.StartLine,
-					EndLine:   dep.EndLine,
-				},
-			},
+			Locations: []ftypes.Location{dep.Location.Location},
 		}
 		pkgs = append(pkgs, pkg)
 

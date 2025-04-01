@@ -51,15 +51,10 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, 
 		if slices.ContainsFunc(dep.Configurations, isIncludedConfig) {
 			name := dep.Organization + ":" + dep.Name
 			libraries = append(libraries, ftypes.Package{
-				ID:      dependency.ID(ftypes.Sbt, name, dep.Version),
-				Name:    name,
-				Version: dep.Version,
-				Locations: []ftypes.Location{
-					{
-						StartLine: dep.StartLine,
-						EndLine:   dep.EndLine,
-					},
-				},
+				ID:        dependency.ID(ftypes.Sbt, name, dep.Version),
+				Name:      name,
+				Version:   dep.Version,
+				Locations: []ftypes.Location{dep.Location.Location},
 			})
 		}
 	}

@@ -39,14 +39,9 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	var pkgs []ftypes.Package
 	for pkgName, dep := range lockFile.Default {
 		pkgs = append(pkgs, ftypes.Package{
-			Name:    pkgName,
-			Version: strings.TrimLeft(dep.Version, "="),
-			Locations: []ftypes.Location{
-				{
-					StartLine: dep.StartLine,
-					EndLine:   dep.EndLine,
-				},
-			},
+			Name:      pkgName,
+			Version:   strings.TrimLeft(dep.Version, "="),
+			Locations: []ftypes.Location{dep.Location.Location},
 		})
 	}
 	return pkgs, nil, nil
