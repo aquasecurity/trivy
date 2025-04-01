@@ -39,14 +39,9 @@ func unmarshaler(data []byte, visited set.Set[any]) *json.Unmarshalers {
 		inputOffset := dec.InputOffset()
 		kind := dec.PeekKind()
 
-		// dec.InputOffset() returns `It gives the location of the next byte immediately after the most recently returned token or value.`
-		// So, we need to find the location of the first token of the current object.
-		for {
-			if data[inputOffset] == byte(kind) {
-				break
-			}
-			inputOffset += 1
-		}
+		//dec.InputOffset() returns `It gives the location of the next byte immediately after the most recently returned token or value.`
+		//So, we need to find the location of the first token of the current object.
+		inputOffset += int64(bytes.IndexByte(data[inputOffset:], byte(kind)))
 
 		// Check visited set to avoid infinity loops
 		if visited.Contains(inputOffset) {
