@@ -2,9 +2,11 @@ package secret
 
 var builtinAllowRules = []AllowRule{
 	{
+		// `.dist-info` dir contains only metadata files such as version, license, and entry points.
+		// cf. https://github.com/aquasecurity/trivy/issues/8212
 		ID:          "dist-info",
 		Description: "Ignore Python .dist-info metadata directories",
-		Path:        MustCompile(`\.dist-info/`),
+		Path:        MustCompile(`\.dist-info\/`),
 	},
 	{
 		ID:          "tests",
