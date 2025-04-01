@@ -17,11 +17,7 @@ type lockFile struct {
 }
 type dependency struct {
 	Version string `json:"version"`
-	ftypes.Location
-}
-
-func (d *dependency) SetLocation(location ftypes.Location) {
-	d.Location = location
+	xjson.Location
 }
 
 type Parser struct{}

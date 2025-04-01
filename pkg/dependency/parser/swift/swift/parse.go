@@ -76,7 +76,7 @@ func pkgName(pin Pin, lockVersion int) string {
 	// v2 uses `Location`
 	name := pin.RepositoryURL
 	if lockVersion > 1 {
-		name = pin.Location
+		name = pin.Loc
 	}
 	// Swift uses `https://github.com/<author>/<package>.git format
 	// `.git` suffix can be omitted (take a look happy test)
@@ -84,9 +84,4 @@ func pkgName(pin Pin, lockVersion int) string {
 	name = strings.TrimPrefix(name, "https://")
 	name = strings.TrimSuffix(name, ".git")
 	return name
-}
-
-func (p *Pin) SetLocation(location ftypes.Location) {
-	p.StartLine = location.StartLine
-	p.EndLine = location.EndLine
 }

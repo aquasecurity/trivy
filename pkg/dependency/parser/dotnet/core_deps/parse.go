@@ -25,11 +25,7 @@ type dotNetDependencies struct {
 
 type dotNetLibrary struct {
 	Type string `json:"type"`
-	ftypes.Location
-}
-
-func (d *dotNetLibrary) SetLocation(location ftypes.Location) {
-	d.Location = location
+	xjson.Location
 }
 
 type RuntimeTarget struct {

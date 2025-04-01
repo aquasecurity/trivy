@@ -25,11 +25,7 @@ type packageInfo struct {
 	Version string            `json:"version"`
 	Require map[string]string `json:"require"`
 	License any               `json:"license"`
-	ftypes.Location
-}
-
-func (i *packageInfo) SetLocation(location ftypes.Location) {
-	i.Location = location
+	xjson.Location
 }
 
 type Parser struct {

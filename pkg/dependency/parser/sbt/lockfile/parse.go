@@ -25,11 +25,7 @@ type sbtLockfileDependency struct {
 	Name           string   `json:"name"`
 	Version        string   `json:"version"`
 	Configurations []string `json:"configurations"`
-	ftypes.Location
-}
-
-func (s *sbtLockfileDependency) SetLocation(location ftypes.Location) {
-	s.Location = location
+	xjson.Location
 }
 
 type Parser struct{}

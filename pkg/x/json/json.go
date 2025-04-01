@@ -6,43 +6,37 @@ import (
 	"github.com/go-json-experiment/json"
 	"github.com/go-json-experiment/json/jsontext"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
+
+type Location struct {
+	types.Location
+}
+
+func (l *Location) SetLocation(location types.Location) {
+	l.Location = location
+}
 
 // ObjectLocation is required when you need to save Location for your struct.
 type ObjectLocation interface {
-	SetLocation(location ftypes.Location)
-}
-
-// StringLocation is required for string object (e.g. array of strings).
-type StringLocation interface {
-	ObjectLocation
-	SetString(s string)
+	SetLocation(location types.Location)
 }
 
 // UnmarshalerWithObjectLocation creates json.Unmarshaler for ObjectLocation to save location using SetLocation function
 // It doesn't support Location detection for nested objects (e.g. Dependency -> map[string]Dependency).
+//
+// UnmarshalerWithObjectLocation may return an error for primitive types,
+// so you need to implement the UnmarshalerFrom interface for these objects
+// cf. https://pkg.go.dev/github.com/go-json-experiment/json#UnmarshalerFrom
 func UnmarshalerWithObjectLocation(data []byte) *json.Unmarshalers {
-	return json.UnmarshalFromFunc(func(dec *jsontext.Decoder, loc ObjectLocation, _ json.Options) error {
+	return json.UnmarshalFromFunc(func(dec *jsontext.Decoder, loc ObjectLocation) error {
 		value, err := dec.ReadValue()
 		if err != nil {
 			return err
 		}
 
-		// To determine line numbers for a string, we create a new struct with `StartLine` and `EndLine` fields.
-		// but github.com/go-json-experiment/json can't unmarshal a string to a struct.
-		// So for these cases, we need to unmarshal the value to a string and store the value using `StringLocation`
-		if l, ok := loc.(StringLocation); ok {
-			var s string
-			if err = json.Unmarshal(value, &s); err != nil {
-				return err
-			}
-			l.SetString(s)
-			loc = l
-		} else {
-			if err = json.Unmarshal(value, &loc); err != nil {
-				return err
-			}
+		if err = json.Unmarshal(value, &loc); err != nil {
+			return err
 		}
 		endOffset := dec.InputOffset()
 		// The dec.InputOffset() function returns previousOffsetEnd.
@@ -60,8 +54,8 @@ func UnmarshalerWithObjectLocation(data []byte) *json.Unmarshalers {
 // CountLines returns the Location for the unmarshaled object.
 // "github.com/go-json-experiment/json" does not have a line number option,
 // so we calculate the Location based on the starting and ending offset and `data`.
-func CountLines(startOffset, endOffset int64, data []byte) ftypes.Location {
-	return ftypes.Location{
+func CountLines(startOffset, endOffset int64, data []byte) types.Location {
+	return types.Location{
 		StartLine: 1 + bytes.Count(data[:startOffset], []byte("\n")),
 		EndLine:   1 + bytes.Count(data[:endOffset], []byte("\n")),
 	}

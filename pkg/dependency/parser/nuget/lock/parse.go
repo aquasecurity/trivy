@@ -25,11 +25,7 @@ type Dependency struct {
 	Type         string            `json:"type"`
 	Resolved     string            `json:"resolved"`
 	Dependencies map[string]string `json:"dependencies,omitempty"`
-	ftypes.Location
-}
-
-func (d *Dependency) SetLocation(location ftypes.Location) {
-	d.Location = location
+	xjson.Location
 }
 
 type Parser struct{}

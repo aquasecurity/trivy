@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/go-json-experiment/json"
+	"github.com/go-json-experiment/json/jsontext"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -28,26 +29,17 @@ type GraphLock struct {
 type Node struct {
 	Ref      string   `json:"ref"`
 	Requires []string `json:"requires"`
-	ftypes.Location
+	xjson.Location
 }
-
-func (n *Node) SetLocation(location ftypes.Location) {
-	n.Location = location
-}
-
 type Requires []Require
 
 type Require struct {
 	Dependency string
-	ftypes.Location
+	xjson.Location
 }
 
-func (r *Require) SetLocation(location ftypes.Location) {
-	r.Location = location
-}
-
-func (r *Require) SetString(s string) {
-	r.Dependency = s
+func (r *Require) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	return json.UnmarshalDecode(dec, &r.Dependency)
 }
 
 type Parser struct {
