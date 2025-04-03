@@ -35,6 +35,8 @@ func main() {
 		trivyVersion, newHelmVersion)
 
 	cmds := [][]string{
+		// Checkout the main branch to get the latest chart version, that was changed after the previous release
+		// It needs for correctly updating the chart version of patch releases
 		[]string{"git", "checkout", "main"},
 		[]string{"git", "switch", "-c", newBranch},
 		[]string{"git", "add", chartFile},
