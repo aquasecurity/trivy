@@ -446,6 +446,44 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 						FilePath: "Cargo.lock",
 						Packages: types.Packages{
 							{
+								ID:           "d0e1231acd612a0f",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"member2@0.1.0",
+									"member@0.1.0",
+								},
+							},
+							{
+								ID:           "member@0.1.0",
+								Name:         "member",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipWorkspace,
+								Locations: []types.Location{
+									{
+										StartLine: 30,
+										EndLine:   35,
+									},
+								},
+								DependsOn: []string{
+									"gdb-command@0.7.6",
+								},
+							},
+							{
+								ID:           "member2@0.1.0",
+								Name:         "member2",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipWorkspace,
+								Locations: []types.Location{
+									{
+										StartLine: 37,
+										EndLine:   42,
+									},
+								},
+								DependsOn: []string{
+									"regex@1.10.2",
+								},
+							},
+							{
 								ID:           "gdb-command@0.7.6",
 								Name:         "gdb-command",
 								Version:      "0.7.6",
