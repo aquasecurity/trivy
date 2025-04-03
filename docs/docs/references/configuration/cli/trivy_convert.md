@@ -37,6 +37,7 @@ trivy convert [flags] RESULT_JSON
   -h, --help                       help for convert
       --ignore-policy string       specify the Rego file path to evaluate each vulnerability
       --ignorefile string          specify .trivyignore file (default ".trivyignore")
+      --include-non-failures       include successes, available with '--scanners misconfig' (default true)
       --list-all-pkgs              output all packages in the JSON report regardless of vulnerability
   -o, --output string              output file name
       --output-plugin-arg string   [EXPERIMENTAL] output plugin arguments
