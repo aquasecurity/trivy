@@ -28,6 +28,23 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 						FilePath: "Cargo.lock",
 						Packages: types.Packages{
 							{
+								ID:           "app@0.1.0",
+								Name:         "app",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipRoot,
+								Locations: []types.Location{
+									{
+										StartLine: 13,
+										EndLine:   20,
+									},
+								},
+								DependsOn: []string{
+									"memchr@1.0.2",
+									"regex-syntax@0.5.6",
+									"regex@1.7.3",
+								},
+							},
+							{
 								ID:           "memchr@1.0.2",
 								Name:         "memchr",
 								Version:      "1.0.2",
@@ -153,6 +170,21 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 						Type:     types.Cargo,
 						FilePath: "Cargo.lock",
 						Packages: types.Packages{
+							{
+								ID:           "app@0.1.0",
+								Name:         "app",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipRoot,
+								Locations: []types.Location{
+									{
+										StartLine: 4,
+										EndLine:   9,
+									},
+								},
+								DependsOn: []string{
+									"memchr@2.5.0",
+								},
+							},
 							{
 								ID:           "memchr@2.5.0",
 								Name:         "memchr",
