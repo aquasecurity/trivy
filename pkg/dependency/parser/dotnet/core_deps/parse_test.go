@@ -82,7 +82,7 @@ func TestParse(t *testing.T) {
 		{
 			name:    "sad path",
 			file:    "testdata/invalid.deps.json",
-			wantErr: "failed to decode .deps.json file: EOF",
+			wantErr: "failed to decode .deps.json file: jsontext: unexpected EOF within",
 		},
 	}
 

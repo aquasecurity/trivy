@@ -9,16 +9,17 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/go-json-experiment/json"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/jfather"
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 const nodeModulesDir = "node_modules"
@@ -34,8 +35,7 @@ type Dependency struct {
 	Dependencies map[string]Dependency `json:"dependencies"`
 	Requires     map[string]string     `json:"requires"`
 	Resolved     string                `json:"resolved"`
-	StartLine    int
-	EndLine      int
+	xjson.Location
 }
 
 type Package struct {
@@ -49,8 +49,7 @@ type Package struct {
 	Dev                  bool              `json:"dev"`
 	Link                 bool              `json:"link"`
 	Workspaces           []string          `json:"workspaces"`
-	StartLine            int
-	EndLine              int
+	xjson.Location
 }
 
 type Parser struct {
@@ -69,7 +68,8 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	if err != nil {
 		return nil, nil, xerrors.Errorf("read error: %w", err)
 	}
-	if err := jfather.Unmarshal(input, &lockFile); err != nil {
+
+	if err = json.Unmarshal(input, &lockFile, json.WithUnmarshalers(xjson.UnmarshalerWithObjectLocation(input))); err != nil {
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 
@@ -117,10 +117,6 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 		}
 
 		pkgID := packageID(pkgName, pkg.Version)
-		location := ftypes.Location{
-			StartLine: pkg.StartLine,
-			EndLine:   pkg.EndLine,
-		}
 
 		var ref ftypes.ExternalRef
 		if pkg.Resolved != "" {
@@ -145,7 +141,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 				sortExternalReferences(savedPkg.ExternalReferences)
 			}
 
-			savedPkg.Locations = append(savedPkg.Locations, location)
+			savedPkg.Locations = append(savedPkg.Locations, pkg.Location.Location)
 			sort.Sort(savedPkg.Locations)
 
 			pkgs[pkgID] = savedPkg
@@ -159,7 +155,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 			Relationship:       lo.Ternary(pkgIndirect, ftypes.RelationshipIndirect, ftypes.RelationshipDirect),
 			Dev:                pkg.Dev,
 			ExternalReferences: lo.Ternary(ref.URL != "", []ftypes.ExternalRef{ref}, nil),
-			Locations:          []ftypes.Location{location},
+			Locations:          []ftypes.Location{pkg.Location.Location},
 		}
 		pkgs[pkgID] = newPkg
 
@@ -304,12 +300,7 @@ func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string
 					URL:  dep.Resolved,
 				},
 			},
-			Locations: []ftypes.Location{
-				{
-					StartLine: dep.StartLine,
-					EndLine:   dep.EndLine,
-				},
-			},
+			Locations: []ftypes.Location{dep.Location.Location},
 		}
 		pkgs = append(pkgs, pkg)
 
@@ -394,28 +385,6 @@ func isIndirectPkg(pkgPath string, directDeps set.Set[string]) bool {
 
 func joinPaths(paths ...string) string {
 	return strings.Join(paths, "/")
-}
-
-// UnmarshalJSONWithMetadata needed to detect start and end lines of deps for v1
-func (t *Dependency) UnmarshalJSONWithMetadata(node jfather.Node) error {
-	if err := node.Decode(&t); err != nil {
-		return err
-	}
-	// Decode func will overwrite line numbers if we save them first
-	t.StartLine = node.Range().Start.Line
-	t.EndLine = node.Range().End.Line
-	return nil
-}
-
-// UnmarshalJSONWithMetadata needed to detect start and end lines of deps for v2 or newer
-func (t *Package) UnmarshalJSONWithMetadata(node jfather.Node) error {
-	if err := node.Decode(&t); err != nil {
-		return err
-	}
-	// Decode func will overwrite line numbers if we save them first
-	t.StartLine = node.Range().Start.Line
-	t.EndLine = node.Range().End.Line
-	return nil
 }
 
 func packageID(name, version string) string {
