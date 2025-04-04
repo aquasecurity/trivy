@@ -64,7 +64,7 @@ func postProcessValues(b *Block, input map[string]cty.Value) map[string]cty.Valu
 
 	if b.TypeLabel() == "aws_s3_bucket" {
 		var bucketName string
-		if bucket := input["bucket"]; bucket.Type().Equals(cty.String) {
+		if bucket := input["bucket"]; bucket.Type().Equals(cty.String) && bucket.IsKnown() {
 			bucketName = bucket.AsString()
 		}
 		input["arn"] = cty.StringVal(fmt.Sprintf("arn:aws:s3:::%s", bucketName))
