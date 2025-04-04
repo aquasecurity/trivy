@@ -37,8 +37,6 @@ jobs:
         with:
           path: integration/testdata/fixtures/images
           key: cache-test-images-${{ steps.image-digest.outputs.digest }}
-          restore-keys:
-            cache-test-images-
 
       - name: Download test images
         if: github.ref_name == 'main'
@@ -76,8 +74,6 @@ jobs:
         with:
           path: integration/testdata/fixtures/vm-images
           key: cache-test-vm-images-${{ steps.image-digest.outputs.digest }}
-          restore-keys:
-            cache-test-vm-images-
 
       - name: Download test VM images
         if: github.ref_name == 'main'
