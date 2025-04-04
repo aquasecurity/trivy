@@ -170,6 +170,9 @@ func accumulateSeverityCounts(finding Resource) (map[string]int, map[string]int,
 			vCount[rv.Severity]++
 		}
 		for _, rv := range r.Misconfigurations {
+			if rv.Status == types.MisconfStatusPassed {
+				continue
+			}
 			mCount[rv.Severity]++
 		}
 		for _, rv := range r.Secrets {
