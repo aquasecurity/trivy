@@ -73,6 +73,7 @@ nav:
               - Overview: docs/coverage/os/index.md
               - AlmaLinux: docs/coverage/os/alma.md
               - Alpine Linux: docs/coverage/os/alpine.md
+              - ALT Linux: docs/coverage/os/alt.md
               - Amazon Linux: docs/coverage/os/amazon.md
               - Azure Linux (CBL-Mariner): docs/coverage/os/azure.md
               - CentOS: docs/coverage/os/centos.md

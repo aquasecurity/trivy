@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alma"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alt"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/amazon"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/azure"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/chainguard"
@@ -32,6 +33,7 @@ var (
 	drivers = map[ftypes.OSType]Driver{
 		ftypes.Alpine:             alpine.NewScanner(),
 		ftypes.Alma:               alma.NewScanner(),
+		ftypes.ALT:                alt.NewScanner(),
 		ftypes.Amazon:             amazon.NewScanner(),
 		ftypes.Azure:              azure.NewAzureScanner(),
 		ftypes.CBLMariner:         azure.NewMarinerScanner(),

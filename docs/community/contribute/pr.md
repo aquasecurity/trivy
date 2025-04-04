@@ -118,6 +118,7 @@ mode:
 os:
 
 - alpine
+- alt
 - redhat
 - alma
 - rocky
