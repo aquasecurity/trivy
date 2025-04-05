@@ -30,6 +30,7 @@ type Option struct {
 	AWSEndpoint       string
 	FileChecksum      bool // For SPDX
 	DetectionPriority types.DetectionPriority
+	IncludeDevDeps    bool
 
 	// Original is the original target location, e.g. "github.com/aquasecurity/trivy"
 	// Currently, it is used only for remote git repositories
@@ -56,6 +57,7 @@ func (o *Option) AnalyzerOptions() analyzer.AnalyzerOptions {
 		FilePatterns:         o.FilePatterns,
 		Parallel:             o.Parallel,
 		DisabledAnalyzers:    o.DisabledAnalyzers,
+		IncludeDevDeps:       o.IncludeDevDeps,
 		DetectionPriority:    o.DetectionPriority,
 		MisconfScannerOption: o.MisconfScannerOption,
 		SecretScannerOption:  o.SecretScannerOption,

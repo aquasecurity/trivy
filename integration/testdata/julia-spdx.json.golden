@@ -3,7 +3,7 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "testdata/fixtures/repo/julia",
-  "documentNamespace": "http://trivy.dev/filesystem/testdata/fixtures/repo/julia-3ff14136-e09f-4df9-80ea-000000000006",
+  "documentNamespace": "http://trivy.dev/filesystem/testdata/fixtures/repo/julia-3ff14136-e09f-4df9-80ea-000000000007",
   "creationInfo": {
     "creators": [
       "Organization: aquasecurity",
@@ -35,7 +35,7 @@
     },
     {
       "name": "A",
-      "SPDXID": "SPDXRef-Package-7784b00da0cb0cb0",
+      "SPDXID": "SPDXRef-Package-761ce79b41d8f121",
       "versionInfo": "1.9.0",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -68,7 +68,7 @@
     },
     {
       "name": "B",
-      "SPDXID": "SPDXRef-Package-960543ac5c5f7e10",
+      "SPDXID": "SPDXRef-Package-28f04edc422602a",
       "versionInfo": "1.9.0",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -101,7 +101,7 @@
     },
     {
       "name": "B",
-      "SPDXID": "SPDXRef-Package-a4705eb108e4f15c",
+      "SPDXID": "SPDXRef-Package-6e0b0d1825d8c02c",
       "versionInfo": "1.9.0",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -151,12 +151,12 @@
   "relationships": [
     {
       "spdxElementId": "SPDXRef-Application-18fc3597717a3e56",
-      "relatedSpdxElement": "SPDXRef-Package-7784b00da0cb0cb0",
+      "relatedSpdxElement": "SPDXRef-Package-6e0b0d1825d8c02c",
       "relationshipType": "CONTAINS"
     },
     {
       "spdxElementId": "SPDXRef-Application-18fc3597717a3e56",
-      "relatedSpdxElement": "SPDXRef-Package-a4705eb108e4f15c",
+      "relatedSpdxElement": "SPDXRef-Package-761ce79b41d8f121",
       "relationshipType": "CONTAINS"
     },
     {
@@ -170,8 +170,8 @@
       "relationshipType": "CONTAINS"
     },
     {
-      "spdxElementId": "SPDXRef-Package-7784b00da0cb0cb0",
-      "relatedSpdxElement": "SPDXRef-Package-960543ac5c5f7e10",
+      "spdxElementId": "SPDXRef-Package-761ce79b41d8f121",
+      "relatedSpdxElement": "SPDXRef-Package-28f04edc422602a",
       "relationshipType": "DEPENDS_ON"
     }
   ]
