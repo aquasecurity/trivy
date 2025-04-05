@@ -23,6 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -97,7 +98,7 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 		return nil, xerrors.Errorf("walk error: %w", err)
 	}
 
-	if err = a.fillAdditionalData(apps); err != nil {
+	if err = a.fillAdditionalData(apps, input.FS); err != nil {
 		a.logger.Warn("Unable to collect additional info", log.Err(err))
 	}
 
@@ -123,7 +124,12 @@ func (a *gomodAnalyzer) Version() int {
 }
 
 // fillAdditionalData collects licenses and dependency relationships, then update applications.
-func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
+func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application, fsys fs.FS) error {
+	absPath, err := filepath.Abs(fsys.(*mapfs.FS).GetUnderlyingRoot())
+	if err != nil {
+		a.logger.Warn("Failed to get an absolute path", log.Err(err))
+	}
+
 	gopath := os.Getenv("GOPATH")
 	if gopath == "" {
 		gopath = build.Default.GOPATH
@@ -143,6 +149,14 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 		usedPkgs := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 			return pkg.Name, pkg
 		})
+
+		// Check if the vendor directory exists
+		vendorPath := filepath.Join(absPath, filepath.Dir(app.FilePath), "vendor")
+		if fsutils.DirExists(vendorPath) {
+			a.logger.Debug("Vendor directory found", log.String("path", vendorPath))
+			modPath = vendorPath
+		}
+
 		for j, lib := range app.Packages {
 			if l, ok := licenses[lib.ID]; ok {
 				// Fill licenses
@@ -151,7 +165,11 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 			}
 
 			// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v1.0.0
-			modDir := filepath.Join(modPath, fmt.Sprintf("%s@%s", normalizeModName(lib.Name), lib.Version))
+			modDirSuffix := fmt.Sprintf("@%s", lib.Version)
+			if modPath == vendorPath {
+				modDirSuffix = ""
+			}
+			modDir := filepath.Join(modPath, fmt.Sprintf("%s%s", normalizeModName(lib.Name), modDirSuffix))
 
 			// Collect licenses
 			if licenseNames, err := findLicense(modDir, a.licenseClassifierConfidenceLevel); err != nil {
@@ -165,7 +183,8 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 			}
 
 			// Collect dependencies of the direct dependency
-			if dep, err := a.collectDeps(modDir, lib.ID); err != nil {
+			gopathModDir := filepath.Join(gopath, "pkg", "mod", fmt.Sprintf("%s@%s", normalizeModName(lib.Name), lib.Version))
+			if dep, err := a.collectDeps(gopathModDir, lib.ID); err != nil {
 				return xerrors.Errorf("dependency graph error: %w", err)
 			} else if dep.ID == "" {
 				// go.mod not found
