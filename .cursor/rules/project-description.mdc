@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+This is a SBOM generator app. It has many plugins in pkg/dependency/parser/. Our goal is to add one new plugin, based on pkg/dependency/parser/node/npm - it should be called pkg/dependency/parser/generic
+
+It's a format for manually recording dependencies in a json file as input for SBOMs for non-supported project types. 
+
+Our format is very similar to the node/npm format. 
