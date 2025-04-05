@@ -15,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -277,7 +278,6 @@ func (r *runner) Report(ctx context.Context, opts flag.Options, report types.Rep
 	if err := pkgReport.Write(ctx, report, opts); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
-
 	return nil
 }
 
@@ -375,12 +375,32 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		return v.SafeWriteConfigAs("trivy-default.yaml")
 	}
 
+	// Call pre-run hooks
+	if err := extension.PreRun(ctx, opts); err != nil {
+		return xerrors.Errorf("pre run error: %w", err)
+	}
+
+	// Run the application
+	report, err := run(ctx, opts, targetKind)
+	if err != nil {
+		return xerrors.Errorf("run error: %w", err)
+	}
+
+	// Call post-run hooks
+	if err := extension.PostRun(ctx, opts); err != nil {
+		return xerrors.Errorf("post run error: %w", err)
+	}
+
+	return operation.Exit(opts, report.Results.Failed(), report.Metadata)
+}
+
+func run(ctx context.Context, opts flag.Options, targetKind TargetKind) (types.Report, error) {
 	r, err := NewRunner(ctx, opts)
 	if err != nil {
 		if errors.Is(err, SkipScan) {
-			return nil
+			return types.Report{}, nil
 		}
-		return xerrors.Errorf("init error: %w", err)
+		return types.Report{}, xerrors.Errorf("init error: %w", err)
 	}
 	defer r.Close(ctx)
 
@@ -395,24 +415,27 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 
 	scanFunction, exists := scans[targetKind]
 	if !exists {
-		return xerrors.Errorf("unknown target kind: %s", targetKind)
+		return types.Report{}, xerrors.Errorf("unknown target kind: %s", targetKind)
 	}
 
+	// 1. Scan the artifact
 	report, err := scanFunction(ctx, opts)
 	if err != nil {
-		return xerrors.Errorf("%s scan error: %w", targetKind, err)
+		return types.Report{}, xerrors.Errorf("%s scan error: %w", targetKind, err)
 	}
 
+	// 2. Filter the results
 	report, err = r.Filter(ctx, opts, report)
 	if err != nil {
-		return xerrors.Errorf("filter error: %w", err)
+		return types.Report{}, xerrors.Errorf("filter error: %w", err)
 	}
 
+	// 3. Report the results
 	if err = r.Report(ctx, opts, report); err != nil {
-		return xerrors.Errorf("report error: %w", err)
+		return types.Report{}, xerrors.Errorf("report error: %w", err)
 	}
 
-	return operation.Exit(opts, report.Results.Failed(), report.Metadata)
+	return report, nil
 }
 
 func disabledAnalyzers(opts flag.Options) []analyzer.Type {
