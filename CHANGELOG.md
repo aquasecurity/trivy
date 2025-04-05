@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.62.0](https://github.com/aquasecurity/trivy/compare/v0.61.0...v0.62.0) (2025-04-05)
+
+
+### Features
+
+* **misconf:** add option to pass Rego scanner to IaC scanner ([#8369](https://github.com/aquasecurity/trivy/issues/8369)) ([890a360](https://github.com/aquasecurity/trivy/commit/890a3602444ad2e5320044c9b8cc79ca883d17ec))
+
+
+### Bug Fixes
+
+* **k8s:** correct compare artifact versions ([#8682](https://github.com/aquasecurity/trivy/issues/8682)) ([cc47711](https://github.com/aquasecurity/trivy/commit/cc4771158b72b88258057fa379deba9f39190994))
+* **k8s:** skip passed misconfigs for the summary report ([#8684](https://github.com/aquasecurity/trivy/issues/8684)) ([bff0e9b](https://github.com/aquasecurity/trivy/commit/bff0e9b034f39d0d1ca02457558b1f89847009ac))
+
 ## [0.61.0](https://github.com/aquasecurity/trivy/compare/v0.60.0...v0.61.0) (2025-03-28)
 
 
