@@ -254,7 +254,7 @@ func (r *summaryRenderer) splitAggregatedPackages(results types.Results) types.R
 func (r *summaryRenderer) splitAggregatedVulns(result types.Result) types.Results {
 	// Handle case when result doesn't contain Package
 	// cf. https://github.com/aquasecurity/trivy/discussions/8537
-	if len(result.Packages) == 0 {
+	if len(result.Packages) == 0 && len(result.Vulnerabilities) > 0 {
 		r.logger.Warn("Packages not found unexpectedly", log.String("target", result.Target))
 		return types.Results{
 			result,
