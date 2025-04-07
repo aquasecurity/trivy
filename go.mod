@@ -2,8 +2,6 @@ module github.com/aquasecurity/trivy
 
 go 1.23.5
 
-replace github.com/aquasecurity/trivy-kubernetes v0.7.0 => github.com/afdesk/trivy-kubernetes v0.0.0-20250227071816-d54d33cbbb31
-
 require (
 	github.com/Azure/azure-sdk-for-go v68.0.0+incompatible
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.17.0
