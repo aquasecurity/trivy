@@ -13,8 +13,9 @@ For detailed behavior, please refer to [the GitHub Actions configuration][workfl
     To include such commits in a release, you need to either include commits with `feat` or `fix` prefixes or perform a manual release as described [below](#manual-release-pr-creation).
 
 !!! tip
-    It's a good idea to check if there are any dependency updates created by dependabot waiting for your review.
-    If there are any, please review and merge them before creating a release. This will help to ensure that the release includes the latest dependencies and security patches.
+    It's a good idea to check if there are any outstanding vulnerability updates created by dependabot waiting for your review.
+    They can be found in the "Security" tab of the repository.
+    If there are any, please review and merge them before creating a release. This will help to ensure that the release includes the latest security patches.
 
 ## Flow
 The release flow consists of the following main steps:
