@@ -16,9 +16,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
-	"github.com/aquasecurity/trivy/pkg/scanner/local"
-	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
+	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
+	"github.com/aquasecurity/trivy/pkg/scan/local"
+	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
@@ -46,13 +46,14 @@ func TestScanServer_Scan(t *testing.T) {
 					ArtifactId: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 					BlobIds:    []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
 					Options: &rpcScanner.ScanOptions{
-						PkgTypes:         []string{types.PkgTypeOS},
-						Scanners:         []string{string(types.VulnerabilityScanner)},
-						PkgRelationships: []string{ftypes.RelationshipUnknown.String()},
+						PkgTypes:            []string{types.PkgTypeOS},
+						Scanners:            []string{string(types.VulnerabilityScanner)},
+						PkgRelationships:    []string{ftypes.RelationshipUnknown.String()},
+						VulnSeveritySources: []string{"auto"},
 					},
 				},
 			},
-			fixtures: []string{"../..//scanner/local/testdata/fixtures/happy.yaml"},
+			fixtures: []string{"../../scan/local/testdata/fixtures/happy.yaml"},
 			setUpCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutArtifact("sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a", ftypes.ArtifactInfo{
@@ -149,7 +150,7 @@ func TestScanServer_Scan(t *testing.T) {
 					},
 				},
 			},
-			fixtures: []string{"../../scanner/local/testdata/fixtures/sad.yaml"},
+			fixtures: []string{"../../scan/local/testdata/fixtures/sad.yaml"},
 			setUpCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutArtifact("sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a", ftypes.ArtifactInfo{
@@ -196,10 +197,10 @@ func TestScanServer_Scan(t *testing.T) {
 
 			// Create scanner
 			applier := applier.NewApplier(c)
-			scanner := local.NewScanner(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
+			scanner := local.NewService(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
 			s := NewScanServer(scanner)
 
-			got, err := s.Scan(context.Background(), tt.args.in)
+			got, err := s.Scan(t.Context(), tt.args.in)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -287,7 +288,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 			c := cachetest.NewCache(t, tt.setUpCache)
 
 			s := NewCacheServer(c)
-			got, err := s.PutArtifact(context.Background(), tt.args.in)
+			got, err := s.PutArtifact(t.Context(), tt.args.in)
 
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
@@ -507,7 +508,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 			c := cachetest.NewCache(t, tt.setUpCache)
 
 			s := NewCacheServer(c)
-			got, err := s.PutBlob(context.Background(), tt.args.in)
+			got, err := s.PutBlob(t.Context(), tt.args.in)
 
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)

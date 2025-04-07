@@ -1,7 +1,6 @@
 package policy_test
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -59,39 +58,17 @@ func newBrokenLayer(t *testing.T) v1.Layer {
 	return brokenLayer{layer}
 }
 
-func TestClient_LoadBuiltinPolicies(t *testing.T) {
+func TestClient_LoadBuiltinChecks(t *testing.T) {
 	tests := []struct {
 		name     string
 		cacheDir string
-		want     []string
+		want     string
 		wantErr  string
 	}{
 		{
 			name:     "happy path",
 			cacheDir: "testdata/happy",
-			want: []string{
-				filepath.Join("testdata", "happy", "policy", "content", "kubernetes"),
-				filepath.Join("testdata", "happy", "policy", "content", "docker"),
-			},
-		},
-		{
-			name:     "empty roots",
-			cacheDir: "testdata/empty",
-			want: []string{
-				filepath.Join("testdata", "empty", "policy", "content"),
-			},
-		},
-		{
-			name:     "broken manifest",
-			cacheDir: "testdata/broken",
-			want:     []string{},
-			wantErr:  "json decode error",
-		},
-		{
-			name:     "no such file",
-			cacheDir: "testdata/unknown",
-			want:     []string{},
-			wantErr:  "manifest file open error",
+			want:     filepath.Join("testdata", "happy", "policy", "content"),
 		},
 	}
 	for _, tt := range tests {
@@ -120,7 +97,7 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 			c, err := policy.NewClient(tt.cacheDir, true, "", policy.WithOCIArtifact(art))
 			require.NoError(t, err)
 
-			got, err := c.LoadBuiltinChecks()
+			got := c.LoadBuiltinChecks()
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -259,14 +236,14 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			require.NoError(t, err)
 
 			// Assert results
-			got, err := c.NeedsUpdate(context.Background(), ftypes.RegistryOptions{})
+			got, err := c.NeedsUpdate(t.Context(), ftypes.RegistryOptions{})
 			assert.Equal(t, tt.wantErr, err != nil)
 			assert.Equal(t, tt.want, got)
 		})
 	}
 }
 
-func TestClient_DownloadBuiltinPolicies(t *testing.T) {
+func TestClient_DownloadBuiltinChecks(t *testing.T) {
 	type digestReturns struct {
 		h   v1.Hash
 		err error
@@ -360,7 +337,7 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 			c, err := policy.NewClient(tempDir, true, "", policy.WithClock(tt.clock), policy.WithOCIArtifact(art))
 			require.NoError(t, err)
 
-			err = c.DownloadBuiltinChecks(context.Background(), ftypes.RegistryOptions{})
+			err = c.DownloadBuiltinChecks(t.Context(), ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return

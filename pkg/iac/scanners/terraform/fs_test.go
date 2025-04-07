@@ -1,7 +1,6 @@
 package terraform
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -16,7 +15,7 @@ func Test_OS_FS(t *testing.T) {
 		rego.WithEmbeddedPolicies(true),
 		rego.WithEmbeddedLibraries(true),
 	)
-	results, err := s.ScanFS(context.TODO(), os.DirFS("testdata"), "fail")
+	results, err := s.ScanFS(t.Context(), os.DirFS("testdata"), "fail")
 	require.NoError(t, err)
 	assert.NotEmpty(t, results.GetFailed())
 }

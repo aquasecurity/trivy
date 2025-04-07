@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/scanner/post"
+	"github.com/aquasecurity/trivy/pkg/scan/post"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -95,7 +95,7 @@ func TestScan(t *testing.T) {
 				post.DeregisterPostScanner(s.Name())
 			}()
 
-			results, err := post.Scan(context.Background(), tt.results)
+			results, err := post.Scan(t.Context(), tt.results)
 			require.Equal(t, tt.wantErr, err != nil)
 			assert.Equal(t, tt.want, results)
 		})

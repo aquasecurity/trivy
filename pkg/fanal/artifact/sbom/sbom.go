@@ -73,12 +73,12 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 		return artifact.Reference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 
-	var artifactType artifact.Type
+	var artifactType types.ArtifactType
 	switch format {
 	case sbom.FormatCycloneDXJSON, sbom.FormatCycloneDXXML, sbom.FormatAttestCycloneDXJSON, sbom.FormatLegacyCosignAttestCycloneDXJSON:
-		artifactType = artifact.TypeCycloneDX
+		artifactType = types.TypeCycloneDX
 	case sbom.FormatSPDXTV, sbom.FormatSPDXJSON:
-		artifactType = artifact.TypeSPDX
+		artifactType = types.TypeSPDX
 
 	}
 

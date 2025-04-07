@@ -1,7 +1,6 @@
 package buildinfo
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -49,7 +48,7 @@ func Test_contentManifestAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			a := contentManifestAnalyzer{}
-			got, err := a.Analyze(context.Background(), analyzer.AnalysisInput{
+			got, err := a.Analyze(t.Context(), analyzer.AnalysisInput{
 				FilePath: tt.input,
 				Content:  f,
 			})

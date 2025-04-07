@@ -208,6 +208,11 @@ func (a rpmPkgAnalyzer) Version() int {
 	return version
 }
 
+// StaticPaths returns a list of static file paths to analyze
+func (a rpmPkgAnalyzer) StaticPaths() []string {
+	return requiredFiles
+}
+
 // splitFileName returns a name, version, release, epoch, arch:
 //
 //	e.g.

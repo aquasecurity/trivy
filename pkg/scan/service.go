@@ -1,4 +1,4 @@
-package scanner
+package scan
 
 import (
 	"context"
@@ -19,7 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
-	"github.com/aquasecurity/trivy/pkg/scanner/local"
+	"github.com/aquasecurity/trivy/pkg/scan/local"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -35,8 +35,8 @@ var StandaloneSuperSet = wire.NewSet(
 	wire.Bind(new(cache.LocalArtifactCache), new(cache.Cache)),
 
 	local.SuperSet,
-	wire.Bind(new(Driver), new(local.Scanner)),
-	NewScanner,
+	wire.Bind(new(Backend), new(local.Service)),
+	NewService,
 )
 
 // StandaloneDockerSet binds docker dependencies
@@ -87,10 +87,10 @@ var RemoteSuperSet = wire.NewSet(
 	cache.NewRemoteCache,
 	wire.Bind(new(cache.ArtifactCache), new(*cache.RemoteCache)), // No need for LocalArtifactCache
 
-	client.NewScanner,
+	client.NewService,
 	wire.Value([]client.Option(nil)),
-	wire.Bind(new(Driver), new(client.Scanner)),
-	NewScanner,
+	wire.Bind(new(Backend), new(client.Service)),
+	NewService,
 )
 
 // RemoteFilesystemSet binds filesystem dependencies for client/server mode
@@ -131,28 +131,36 @@ var RemoteArchiveSet = wire.NewSet(
 	RemoteSuperSet,
 )
 
-// Scanner implements the Artifact and Driver operations
-type Scanner struct {
-	driver   Driver
+// Service is the main service that coordinates security scanning operations.
+// It uses either local.Service or remote.Service as its backend implementation.
+type Service struct {
+	backend  Backend
 	artifact artifact.Artifact
 }
 
-// Driver defines operations of scanner
-type Driver interface {
+// Backend defines the interface for security scanning implementations.
+// It can be either local.Service for standalone scanning or remote.Service
+// for client/server mode scanning. The backend handles various types of
+// security scanning including vulnerability, misconfiguration, secret,
+// and license scanning.
+type Backend interface {
 	Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (
 		results types.Results, osFound ftypes.OS, err error)
 }
 
-// NewScanner is the factory method of Scanner
-func NewScanner(driver Driver, ar artifact.Artifact) Scanner {
-	return Scanner{
-		driver:   driver,
+// NewService creates a new Service instance with the specified backend implementation
+// and artifact handler.
+func NewService(backend Backend, ar artifact.Artifact) Service {
+	return Service{
+		backend:  backend,
 		artifact: ar,
 	}
 }
 
-// ScanArtifact scans the artifacts and returns results
-func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (types.Report, error) {
+// ScanArtifact performs security scanning on the specified artifact.
+// It first inspects the artifact to gather necessary information,
+// then delegates the actual scanning to the configured backend implementation.
+func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (types.Report, error) {
 	artifactInfo, err := s.artifact.Inspect(ctx)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("failed analysis: %w", err)
@@ -164,7 +172,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		}
 	}()
 
-	results, osFound, err := s.driver.Scan(ctx, artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
+	results, osFound, err := s.backend.Scan(ctx, artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}

@@ -1,7 +1,6 @@
 package kubernetes_test
 
 import (
-	"context"
 	"io/fs"
 	"strings"
 	"testing"
@@ -56,7 +55,7 @@ deny[res] {
 		rego.WithEmbeddedLibraries(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fsys, "code")
+	results, err := scanner.ScanFS(t.Context(), fsys, "code")
 	require.NoError(t, err)
 
 	failed := results.GetFailed()
@@ -119,7 +118,7 @@ deny[res] {
 		rego.WithEmbeddedLibraries(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fsys, "code")
+	results, err := scanner.ScanFS(t.Context(), fsys, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
@@ -160,7 +159,7 @@ spec:
 		rego.WithPolicyDirs("."),
 		rego.WithEmbeddedLibraries(true),
 	)
-	results, err := scanner.ScanFS(context.TODO(), fsys, ".")
+	results, err := scanner.ScanFS(t.Context(), fsys, ".")
 	require.NoError(t, err)
 
 	assert.NotEmpty(t, results.GetFailed())
@@ -205,7 +204,7 @@ deny[res] {
 		rego.WithEmbeddedLibraries(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fsys, ".")
+	results, err := scanner.ScanFS(t.Context(), fsys, ".")
 	require.NoError(t, err)
 
 	assertLines(t, file, results)
@@ -276,7 +275,7 @@ spec:
 		rego.WithPolicyDirs("checks"),
 		rego.WithPolicyFilesystem(fsys),
 	)
-	results, err := scanner.ScanFS(context.TODO(), fsys, "test/KSV001")
+	results, err := scanner.ScanFS(t.Context(), fsys, "test/KSV001")
 	require.NoError(t, err)
 
 	require.NoError(t, err)

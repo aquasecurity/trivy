@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"context"
 	"io/fs"
 	"testing"
 
@@ -204,7 +203,7 @@ func TestParser_Parse(t *testing.T) {
 			require.NoError(t, targetFS.WriteFile(filename, []byte(tt.input), 0644))
 
 			p := New(targetFS)
-			got, err := p.ParseFS(context.Background(), ".")
+			got, err := p.ParseFS(t.Context(), ".")
 			require.NoError(t, err)
 
 			if !tt.wantDeployment {
@@ -292,7 +291,7 @@ func Test_NestedResourceParsing(t *testing.T) {
 	require.NoError(t, targetFS.WriteFile("nested.json", []byte(input), 0644))
 
 	p := New(targetFS)
-	got, err := p.ParseFS(context.Background(), ".")
+	got, err := p.ParseFS(t.Context(), ".")
 	require.NoError(t, err)
 	require.Len(t, got, 1)
 

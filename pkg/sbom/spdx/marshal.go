@@ -416,6 +416,16 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 	var otherLicenses = make(map[string]*spdx.OtherLicense) // licenseID -> OtherLicense
 
 	license := strings.Join(lo.Map(licenses, func(license string, index int) string {
+		// We need to save text licenses before normalization,
+		// because it is impossible to handle all cases possible in the text.
+		// as an example, parse a license with 2 consecutive tokens (see https://github.com/aquasecurity/trivy/issues/8465)
+		if strings.HasPrefix(license, licensing.LicenseTextPrefix) {
+			license = strings.TrimPrefix(license, licensing.LicenseTextPrefix)
+			otherLicense := m.newOtherLicense(license, true)
+			otherLicenses[otherLicense.LicenseIdentifier] = otherLicense
+			return otherLicense.LicenseIdentifier
+		}
+
 		// e.g. GPL-3.0-with-autoconf-exception
 		license = strings.ReplaceAll(license, "-with-", " WITH ")
 		license = strings.ReplaceAll(license, "-WITH-", " WITH ")
@@ -424,13 +434,10 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 
 	replaceOtherLicenses := func(expr expression.Expression) expression.Expression {
 		var licenseName string
-		var textLicense bool
 		switch e := expr.(type) {
 		case expression.SimpleExpr:
-			// Trim `text:--` prefix (expression.NormalizeForSPDX normalized `text://` prefix)
-			if strings.HasPrefix(e.License, "text:--") {
-				textLicense = true
-				e.License = strings.TrimPrefix(e.License, "text:--")
+			if strings.HasPrefix(e.License, LicenseRefPrefix) {
+				return e
 			}
 
 			if expression.ValidateSPDXLicense(e.License) || expression.ValidateSPDXException(e.License) {
@@ -454,7 +461,7 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 			licenseName = e.String()
 		}
 
-		l := m.newOtherLicense(licenseName, textLicense)
+		l := m.newOtherLicense(licenseName, false)
 		otherLicenses[l.LicenseIdentifier] = l
 		return expression.SimpleExpr{License: l.LicenseIdentifier}
 	}

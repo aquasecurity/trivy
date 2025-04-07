@@ -1,7 +1,6 @@
 package vm_test
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"io/fs"
@@ -125,7 +124,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: artifact.Reference{
 				Name: "rawdata.img",
-				Type: artifact.TypeVM,
+				Type: types.TypeVM,
 				ID:   "sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
 				BlobIDs: []string{
 					"sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
@@ -144,7 +143,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: artifact.Reference{
 				Name: "ebs-012345",
-				Type: artifact.TypeVM,
+				Type: types.TypeVM,
 				ID:   "sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",
 				BlobIDs: []string{
 					"sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",
@@ -166,7 +165,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				aa.SetEBS(ebs)
 			}
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			defer a.Clean(got)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)

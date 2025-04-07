@@ -412,6 +412,9 @@ misconfiguration:
   # Same as '--include-non-failures'
   include-non-failures: false
 
+  # Same as '--render-cause'
+  render-cause: []
+
   # Same as '--misconfig-scanners'
   scanners:
    - azure-arm
@@ -553,6 +556,11 @@ severity:
  - HIGH
  - CRITICAL
 
+# Same as '--table-mode'
+table-mode:
+ - summary
+ - detailed
+
 # Same as '--template'
 template: ""
 
@@ -625,6 +633,10 @@ vulnerability:
 
   # Same as '--ignore-unfixed'
   ignore-unfixed: false
+
+  # Same as '--vuln-severity-source'
+  severity-source:
+   - auto
 
   # Same as '--skip-vex-repo-update'
   skip-vex-repo-update: false

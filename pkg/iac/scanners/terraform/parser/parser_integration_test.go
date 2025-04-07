@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -23,9 +22,9 @@ module "registry" {
 	})
 
 	parser := New(fsys, "", OptionStopOnHCLError(true), OptionWithSkipCachedModules(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
 
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 2)
 }
@@ -44,9 +43,9 @@ module "registry" {
 	})
 
 	parser := New(fsys, "", OptionStopOnHCLError(true), OptionWithSkipCachedModules(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
 
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 2)
 }
@@ -67,9 +66,9 @@ module "registry" {
 	})
 
 	parser := New(fsys, "", OptionStopOnHCLError(true), OptionWithSkipCachedModules(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
 
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 2)
 }
@@ -88,9 +87,9 @@ module "object" {
 	})
 
 	parser := New(fsys, "", OptionStopOnHCLError(true), OptionWithSkipCachedModules(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
 
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 2)
 }

@@ -18,10 +18,8 @@ jobs:
           go-version-file: go.mod
           cache: false
 
-      - name: Install tools
-        uses: aquaproj/aqua-installer@v3.1.1
-        with:
-          aqua_version: v1.25.0
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
 
       - name: Generate image list digest
         if: github.ref_name == 'main'
@@ -29,7 +27,7 @@ jobs:
         run: |
           source integration/testimages.ini
           IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
-          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags += ["containerd"] | .Tags | sort' | sha256sum | cut -d' ' -f1)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags += ["containerd"] | .Tags |= sort' | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       ## We need to work with test image cache only for main branch
@@ -39,8 +37,6 @@ jobs:
         with:
           path: integration/testdata/fixtures/images
           key: cache-test-images-${{ steps.image-digest.outputs.digest }}
-          restore-keys:
-            cache-test-images-
 
       - name: Download test images
         if: github.ref_name == 'main'
@@ -59,10 +55,8 @@ jobs:
           go-version-file: go.mod
           cache: false
 
-      - name: Install tools
-        uses: aquaproj/aqua-installer@v3.1.1
-        with:
-          aqua_version: v1.25.0
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
 
       - name: Generate image list digest
         if: github.ref_name == 'main'
@@ -70,7 +64,7 @@ jobs:
         run: |
           source integration/testimages.ini
           IMAGE_LIST=$(skopeo list-tags docker://$TEST_VM_IMAGES)
-          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags | sort' | sha256sum | cut -d' ' -f1)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags |= sort' | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       ## We need to work with test VM image cache only for main branch
@@ -80,8 +74,6 @@ jobs:
         with:
           path: integration/testdata/fixtures/vm-images
           key: cache-test-vm-images-${{ steps.image-digest.outputs.digest }}
-          restore-keys:
-            cache-test-vm-images-
 
       - name: Download test VM images
         if: github.ref_name == 'main'

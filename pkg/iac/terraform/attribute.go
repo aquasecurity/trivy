@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/fs"
 	"reflect"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -288,7 +287,7 @@ func (a *Attribute) Value() (ctyVal cty.Value) {
 	}()
 	ctyVal, _ = a.hclAttribute.Expr.Value(a.ctx.Inner())
 	if !ctyVal.IsKnown() || ctyVal.IsNull() {
-		return cty.NilVal
+		return cty.DynamicVal
 	}
 	return ctyVal
 }
@@ -304,8 +303,8 @@ func (a *Attribute) NullableValue() (ctyVal cty.Value) {
 		}
 	}()
 	ctyVal, _ = a.hclAttribute.Expr.Value(a.ctx.Inner())
-	if !ctyVal.IsKnown() {
-		return cty.NilVal
+	if !ctyVal.IsKnown() || ctyVal.IsNull() {
+		return cty.NullVal(cty.DynamicPseudoType)
 	}
 	return ctyVal
 }
@@ -510,10 +509,6 @@ func (a *Attribute) mapContains(checkValue any, val cty.Value) bool {
 	}
 }
 
-func (a *Attribute) NotContains(checkValue any, equalityOptions ...EqualityOption) bool {
-	return !a.Contains(checkValue, equalityOptions...)
-}
-
 func (a *Attribute) Contains(checkValue any, equalityOptions ...EqualityOption) bool {
 	if a == nil {
 		return false
@@ -604,26 +599,6 @@ func containsIgnoreCase(left, substring string) bool {
 	return strings.Contains(strings.ToLower(left), strings.ToLower(substring))
 }
 
-func (a *Attribute) StartsWith(prefix any) bool {
-	if a == nil {
-		return false
-	}
-	if a.Value().Type() == cty.String {
-		return strings.HasPrefix(a.Value().AsString(), fmt.Sprintf("%v", prefix))
-	}
-	return false
-}
-
-func (a *Attribute) EndsWith(suffix any) bool {
-	if a == nil {
-		return false
-	}
-	if a.Value().Type() == cty.String {
-		return strings.HasSuffix(a.Value().AsString(), fmt.Sprintf("%v", suffix))
-	}
-	return false
-}
-
 type EqualityOption int
 
 const (
@@ -659,74 +634,6 @@ func (a *Attribute) Equals(checkValue any, equalityOptions ...EqualityOption) bo
 
 func (a *Attribute) NotEqual(checkValue any, equalityOptions ...EqualityOption) bool {
 	return !a.Equals(checkValue, equalityOptions...)
-}
-
-func (a *Attribute) RegexMatches(re regexp.Regexp) bool {
-	if a == nil {
-		return false
-	}
-	if a.Value().Type() == cty.String {
-		match := re.MatchString(a.Value().AsString())
-		return match
-	}
-	return false
-}
-
-func (a *Attribute) IsNotAny(options ...any) bool {
-	return !a.IsAny(options...)
-}
-
-func (a *Attribute) IsAny(options ...any) bool {
-	if a == nil {
-		return false
-	}
-	if a.Value().Type() == cty.String {
-		value := a.Value().AsString()
-		for _, option := range options {
-			if option == value {
-				return true
-			}
-		}
-	}
-	if a.Value().Type() == cty.Number {
-		for _, option := range options {
-			checkValue, err := gocty.ToCtyValue(option, cty.Number)
-			if err != nil {
-				return false
-			}
-			if a.Value().RawEquals(checkValue) {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-func (a *Attribute) IsNone(options ...any) bool {
-	if a == nil {
-		return false
-	}
-	if a.Value().Type() == cty.String {
-		for _, option := range options {
-			if option == a.Value().AsString() {
-				return false
-			}
-		}
-	}
-	if a.Value().Type() == cty.Number {
-		for _, option := range options {
-			checkValue, err := gocty.ToCtyValue(option, cty.Number)
-			if err != nil {
-				return false
-			}
-			if a.Value().RawEquals(checkValue) {
-				return false
-			}
-
-		}
-	}
-
-	return true
 }
 
 func (a *Attribute) IsTrue() bool {
@@ -849,77 +756,6 @@ func (a *Attribute) AsMapValue() iacTypes.MapValue {
 	return iacTypes.Map(values, a.GetMetadata())
 }
 
-func (a *Attribute) LessThan(checkValue any) bool {
-	if a == nil {
-		return false
-	}
-	if a.Value().Type() == cty.Number {
-		checkNumber, err := gocty.ToCtyValue(checkValue, cty.Number)
-		if err != nil {
-			return false
-		}
-
-		return a.Value().LessThan(checkNumber).True()
-	}
-	return false
-}
-
-func (a *Attribute) LessThanOrEqualTo(checkValue any) bool {
-	if a == nil {
-		return false
-	}
-	if a.Value().Type() == cty.Number {
-		checkNumber, err := gocty.ToCtyValue(checkValue, cty.Number)
-		if err != nil {
-			return false
-		}
-
-		return a.Value().LessThanOrEqualTo(checkNumber).True()
-	}
-	return false
-}
-
-func (a *Attribute) GreaterThan(checkValue any) bool {
-	if a == nil {
-		return false
-	}
-	if a.Value().Type() == cty.Number {
-		checkNumber, err := gocty.ToCtyValue(checkValue, cty.Number)
-		if err != nil {
-			return false
-		}
-
-		return a.Value().GreaterThan(checkNumber).True()
-	}
-	return false
-}
-
-func (a *Attribute) GreaterThanOrEqualTo(checkValue any) bool {
-	if a == nil {
-		return false
-	}
-	if a.Value().Type() == cty.Number {
-		checkNumber, err := gocty.ToCtyValue(checkValue, cty.Number)
-		if err != nil {
-			return false
-		}
-
-		return a.Value().GreaterThanOrEqualTo(checkNumber).True()
-	}
-	return false
-}
-
-func (a *Attribute) IsDataBlockReference() bool {
-	if a == nil {
-		return false
-	}
-	if t, ok := a.hclAttribute.Expr.(*hclsyntax.ScopeTraversalExpr); ok {
-		split := t.Traversal.SimpleSplit()
-		return split.Abs.RootName() == "data"
-	}
-	return false
-}
-
 func createDotReferenceFromTraversal(parentRef string, traversals ...hcl.Traversal) (*Reference, error) {
 	var refParts []string
 	var key cty.Value
@@ -963,8 +799,10 @@ func (a *Attribute) AllReferences(blocks ...*Block) []*Reference {
 	refs := a.extractReferences()
 	for _, block := range blocks {
 		for _, ref := range refs {
-			if ref.TypeLabel() == "each" && block.HasChild("for_each") {
-				refs = append(refs, block.GetAttribute("for_each").AllReferences()...)
+			if ref.TypeLabel() == "each" {
+				if forEachAttr := block.GetAttribute("for_each"); forEachAttr.IsNotNil() {
+					refs = append(refs, forEachAttr.AllReferences()...)
+				}
 			}
 		}
 	}

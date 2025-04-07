@@ -139,17 +139,19 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	e.blocks = e.expandBlocks(e.blocks)
 	e.blocks = e.expandBlocks(e.blocks)
 
-	submodules := e.evaluateSubmodules(ctx, fsMap)
+	// rootModule is initialized here, but not fully evaluated until all submodules are evaluated.
+	// Initializing it up front to keep the module hierarchy of parents correct.
+	rootModule := terraform.NewModule(e.projectRootPath, e.modulePath, e.blocks, e.ignores)
+	submodules := e.evaluateSubmodules(ctx, rootModule, fsMap)
 
 	e.logger.Debug("Starting post-submodules evaluation...")
 	e.evaluateSteps()
 
 	e.logger.Debug("Module evaluation complete.")
-	rootModule := terraform.NewModule(e.projectRootPath, e.modulePath, e.blocks, e.ignores)
 	return append(terraform.Modules{rootModule}, submodules...), fsMap
 }
 
-func (e *evaluator) evaluateSubmodules(ctx context.Context, fsMap map[string]fs.FS) terraform.Modules {
+func (e *evaluator) evaluateSubmodules(ctx context.Context, parent *terraform.Module, fsMap map[string]fs.FS) terraform.Modules {
 	submodules := e.loadSubmodules(ctx)
 
 	if len(submodules) == 0 {
@@ -174,6 +176,14 @@ func (e *evaluator) evaluateSubmodules(ctx context.Context, fsMap map[string]fs.
 
 	var modules terraform.Modules
 	for _, sm := range submodules {
+		// Assign the parent placeholder to any submodules without a parent. Any modules
+		// with a parent already have their correct parent placeholder assigned.
+		for _, submod := range sm.modules {
+			if submod.Parent() == nil {
+				submod.SetParent(parent)
+			}
+		}
+
 		modules = append(modules, sm.modules...)
 		for k, v := range sm.fsMap {
 			fsMap[k] = v

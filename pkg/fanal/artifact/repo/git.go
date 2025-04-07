@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 )
 
@@ -35,7 +36,7 @@ func NewArtifact(target string, c cache.ArtifactCache, w Walker, artifactOpt art
 	var cleanup func()
 	var errs error
 
-	artifactOpt.Type = artifact.TypeRepository
+	artifactOpt.Type = types.TypeRepository
 
 	// Try the local repository
 	art, err := tryLocalRepo(target, c, w, artifactOpt)

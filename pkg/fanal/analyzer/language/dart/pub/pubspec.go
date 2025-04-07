@@ -55,7 +55,8 @@ func (a pubSpecLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostA
 	}
 
 	required := func(path string, d fs.DirEntry) bool {
-		return filepath.Base(path) == types.PubSpecLock
+		// Parse all required files: `pubspec.lock` (from a.Required func) + input.FilePatterns.Match()
+		return true
 	}
 
 	err = fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {

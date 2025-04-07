@@ -1,7 +1,6 @@
 package result_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -11,7 +10,6 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/clock"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -251,7 +249,7 @@ func TestFilter(t *testing.T) {
 			args: args{
 				report: types.Report{
 					ArtifactName: ".",
-					ArtifactType: artifact.TypeFilesystem,
+					ArtifactType: ftypes.TypeFilesystem,
 					Results: types.Results{
 						types.Result{
 							Target:   "gobinary",
@@ -276,7 +274,7 @@ func TestFilter(t *testing.T) {
 			},
 			want: types.Report{
 				ArtifactName: ".",
-				ArtifactType: artifact.TypeFilesystem,
+				ArtifactType: ftypes.TypeFilesystem,
 				Results: types.Results{
 					types.Result{
 						Target:   "gobinary",
@@ -1002,7 +1000,7 @@ func TestFilter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fakeTime := time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
-			ctx := clock.With(context.Background(), fakeTime)
+			ctx := clock.With(t.Context(), fakeTime)
 
 			var vexSources []vex.Source
 			if tt.args.vexPath != "" {
