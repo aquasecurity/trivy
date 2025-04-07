@@ -252,44 +252,37 @@ func (r *summaryRenderer) splitAggregatedPackages(results types.Results) types.R
 }
 
 func (r *summaryRenderer) splitAggregatedVulns(result types.Result) types.Results {
+	// Handle case when result doesn't contain Package
+	// cf. https://github.com/aquasecurity/trivy/discussions/8537
+	if len(result.Packages) == 0 {
+		r.logger.Warn("Packages not found unexpectedly", log.String("target", result.Target))
+		return types.Results{
+			result,
+		}
+	}
 	// Save packages to display them in the table even if no vulnerabilities were found
-	resultMap := lo.SliceToMap(result.Packages, func(pkg ftypes.Package) (string, types.Result) {
+	resultMap := lo.SliceToMap(result.Packages, func(pkg ftypes.Package) (string, *types.Result) {
 		filePath := rootJarFromPath(pkg.FilePath)
-		return filePath, types.Result{
+		return filePath, &types.Result{
 			Target: lo.Ternary(filePath != "", filePath, result.Target),
 			Class:  result.Class,
 			Type:   result.Type,
 		}
 	})
-
-	// This should be an impossible case for Trivy CLI,
-	// but when using Trivy as a library - it is possible.
-	if len(resultMap) == 0 && len(result.Vulnerabilities) > 0 {
-		r.logger.Warn("Results with vulnerabilities doesn't include packages. The summary table will include file paths for vulnerable packages only.",
-			log.String("target", result.Target))
-
-		resultMap = lo.SliceToMap(result.Vulnerabilities, func(vuln types.DetectedVulnerability) (string, types.Result) {
-			pkgPath := rootJarFromPath(vuln.PkgPath)
-			return pkgPath, types.Result{
-				Target: lo.Ternary(pkgPath != "", pkgPath, result.Target),
-				Class:  result.Class,
-				Type:   result.Type,
-			}
-		})
-	}
-
 	for _, vuln := range result.Vulnerabilities {
 		pkgPath := rootJarFromPath(vuln.PkgPath)
-		res := resultMap[pkgPath]
-		res.Vulnerabilities = append(res.Vulnerabilities, vuln)
-		resultMap[pkgPath] = res
-	}
 
+		if res, ok := resultMap[pkgPath]; !ok {
+			r.logger.Warn("Package not found unexpectedly", log.String("package_path", pkgPath), log.String("vuln_id", vuln.VulnerabilityID))
+		} else {
+			res.Vulnerabilities = append(res.Vulnerabilities, vuln)
+		}
+	}
 	newResults := lo.Values(resultMap)
 	sort.Slice(newResults, func(i, j int) bool {
 		return newResults[i].Target < newResults[j].Target
 	})
-	return newResults
+	return lo.FromSlicePtr(newResults)
 }
 
 func splitAggregatedLicenses(result types.Result) types.Results {
