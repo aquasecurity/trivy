@@ -91,6 +91,12 @@ var (
 		Default:    10,
 		Usage:      "specify the maximum burst for throttle",
 	}
+	UseActualConfig = Flag[bool]{
+		Name:       "use-actual-config",
+		ConfigName: "kubernetes.useActualConfig",
+		Default:    false,
+		Usage:      "use the actual resource configuration instead of the last-applied-configuration.",
+	}
 )
 
 type K8sFlagGroup struct {
@@ -109,6 +115,7 @@ type K8sFlagGroup struct {
 	IncludeNamespaces      *Flag[[]string]
 	QPS                    *Flag[float64]
 	Burst                  *Flag[int]
+	UseActualConfig        *Flag[bool]
 }
 
 type K8sOptions struct {
@@ -127,6 +134,7 @@ type K8sOptions struct {
 	QPS                    float32
 	SkipImages             bool
 	Burst                  int
+	UseActualConfig        bool
 }
 
 func NewK8sFlagGroup() *K8sFlagGroup {
@@ -146,6 +154,7 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		QPS:                    QPS.Clone(),
 		SkipImages:             SkipImages.Clone(),
 		Burst:                  Burst.Clone(),
+		UseActualConfig:        UseActualConfig.Clone(),
 	}
 }
 
@@ -170,6 +179,7 @@ func (f *K8sFlagGroup) Flags() []Flagger {
 		f.QPS,
 		f.SkipImages,
 		f.Burst,
+		f.UseActualConfig,
 	}
 }
 
