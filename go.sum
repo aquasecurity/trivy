@@ -727,6 +727,8 @@ github.com/ThalesIgnite/crypto11 v1.2.5 h1:1IiIIEqYmBvUYFeMnHqRft4bwf/O36jryEUpY
 github.com/ThalesIgnite/crypto11 v1.2.5/go.mod h1:ILDKtnCKiQ7zRoNxcp36Y1ZR8LBPmR2E23+wTQe/MlE=
 github.com/VividCortex/ewma v1.2.0 h1:f58SaIzcDXrSy3kWaHNvuJgJ3Nmz59Zji6XoJR/q1ow=
 github.com/VividCortex/ewma v1.2.0/go.mod h1:nz4BbCtbLyFDeC9SUHbtcT5644juEuWfUAUnGx7j5l4=
+github.com/afdesk/trivy-kubernetes v0.0.0-20250407064039-1a04121a8e35 h1:hVITbCLcx2bl/rlOojuRCDHwoUIaLEPcRlD6l1zumDQ=
+github.com/afdesk/trivy-kubernetes v0.0.0-20250407064039-1a04121a8e35/go.mod h1:okSA2OfhztaizABv9Aj+TtisZMKFPZDJgNJ17bEoEDg=
 github.com/agext/levenshtein v1.2.3 h1:YB2fHEn0UJagG8T1rrWknE3ZQzWM06O8AMAatNn7lmo=
 github.com/agext/levenshtein v1.2.3/go.mod h1:JEDfjyjHDjOF/1e4FlBE/PkbqA9OfWu2ki2W0IB5558=
 github.com/agnivade/levenshtein v1.2.1 h1:EHBY3UOn1gwdy/VbFwgo4cxecRznFk7fKWN1KOX7eoM=
@@ -808,8 +810,6 @@ github.com/aquasecurity/trivy-db v0.0.0-20250227071930-8bd8a9b89e2d h1:T16WrTi21
 github.com/aquasecurity/trivy-db v0.0.0-20250227071930-8bd8a9b89e2d/go.mod h1:4bTsQPtMBN8v+UfUlE1aQBN1imftefnDafHBF85+aT8=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48 h1:JVgBIuIYbwG+ekC5lUHUpGJboPYiCcxiz06RCtz8neI=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48/go.mod h1:Ldya37FLi0e/5Cjq2T5Bty7cFkzUDwTcPeQua+2M8i8=
-github.com/aquasecurity/trivy-kubernetes v0.8.1 h1:MMy4bUSAoWJ4rQUANPu6dhao2AC81SnIfi3jxIHBk00=
-github.com/aquasecurity/trivy-kubernetes v0.8.1/go.mod h1:FOrdN3IKBcyRoFPtmTFyDx8U3eBch+djCvmmBW4awM4=
 github.com/arbovm/levenshtein v0.0.0-20160628152529-48b4e1c0c4d0 h1:jfIu9sQUG6Ig+0+Ap1h4unLjW6YQJpKZVmUzxsD4E/Q=
 github.com/arbovm/levenshtein v0.0.0-20160628152529-48b4e1c0c4d0/go.mod h1:t2tdKJDJF9BV14lnkjHmOQgcvEKgtqs5a1N3LNdJhGE=
 github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 h1:0CwZNZbxp69SHPdPJAN/hZIm0C4OItdklCFmMRWYpio=
@@ -1884,6 +1884,8 @@ github.com/terminalstatic/go-xsd-validate v0.1.6 h1:TenYeQ3eY631qNi1/cTmLH/s2slH
 github.com/terminalstatic/go-xsd-validate v0.1.6/go.mod h1:18lsvYFofBflqCrvo1umpABZ99+GneNTw2kEEc8UPJw=
 github.com/testcontainers/testcontainers-go v0.35.0 h1:uADsZpTKFAtp8SLK+hMwSaa+X+JiERHtd4sQAFmXeMo=
 github.com/testcontainers/testcontainers-go v0.35.0/go.mod h1:oEVBj5zrfJTrgjwONs1SsRbnBtH9OKl+IGl3UMcr2B4=
+github.com/testcontainers/testcontainers-go/modules/k3s v0.35.0 h1:zEfdO1Dz7sA2jNpf1PVCOI6FND1t/mDpaeDCguaLRXw=
+github.com/testcontainers/testcontainers-go/modules/k3s v0.35.0/go.mod h1:YWc+Yph4EvIXHsjRAwPezJEvQGoOFP1AEbfhrYrylAM=
 github.com/testcontainers/testcontainers-go/modules/localstack v0.35.0 h1:0EbOXcy8XQkyDUs1Y9YPUHOUByNnlGsLi5B3ln8F/RU=
 github.com/testcontainers/testcontainers-go/modules/localstack v0.35.0/go.mod h1:MlHuaWQimz+15dmQ6R2S1vpYxhGFEpmRZQsL2NVWNng=
 github.com/tetratelabs/wazero v1.9.0 h1:IcZ56OuxrtaEz8UYNRHBrUa9bYeX9oVY93KspZZBf/I=
