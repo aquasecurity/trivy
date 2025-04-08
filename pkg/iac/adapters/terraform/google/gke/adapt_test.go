@@ -77,6 +77,18 @@ resource "google_container_cluster" "example" {
   enable_autopilot = true
 
   datapath_provider = "ADVANCED_DATAPATH"
+
+  cluster_autoscaling {
+    enabled = true
+    auto_provisioning_defaults {
+      service_account  = "test"
+	  image_type = "COS_CONTAINERD"
+	  management {
+        auto_repair  = true
+        auto_upgrade = true
+      }
+    }
+  }
 }
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
@@ -102,9 +114,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 			expected: gke.GKE{
 				Clusters: []gke.Cluster{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						NodeConfig: gke.NodeConfig{
-							Metadata:  iacTypes.NewTestMetadata(),
 							ImageType: iacTypes.String("COS_CONTAINERD", iacTypes.NewTestMetadata()),
 							WorkloadMetadataConfig: gke.WorkloadMetadataConfig{
 								Metadata:     iacTypes.NewTestMetadata(),
@@ -113,9 +123,19 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 							ServiceAccount:        iacTypes.String("", iacTypes.NewTestMetadata()),
 							EnableLegacyEndpoints: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
+						AutoScaling: gke.AutoScaling{
+							Enabled: iacTypes.BoolTest(true),
+							AutoProvisioningDefaults: gke.AutoProvisioningDefaults{
+								ImageType:      iacTypes.StringTest("COS_CONTAINERD"),
+								ServiceAccount: iacTypes.StringTest("test"),
+								Management: gke.Management{
+									EnableAutoRepair:  iacTypes.BoolTest(true),
+									EnableAutoUpgrade: iacTypes.BoolTest(true),
+								},
+							},
+						},
 						NodePools: []gke.NodePool{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
 								Management: gke.Management{
 									Metadata:          iacTypes.NewTestMetadata(),
 									EnableAutoRepair:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
@@ -134,19 +154,16 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 							},
 						},
 						IPAllocationPolicy: gke.IPAllocationPolicy{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						},
 						MasterAuthorizedNetworks: gke.MasterAuthorizedNetworks{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 							CIDRs: []iacTypes.StringValue{
 								iacTypes.String("10.10.128.0/24", iacTypes.NewTestMetadata()),
 							},
 						},
 						NetworkPolicy: gke.NetworkPolicy{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						},
 						DatapathProvider: iacTypes.String("ADVANCED_DATAPATH", iacTypes.NewTestMetadata()),
 						PrivateCluster: gke.PrivateCluster{
@@ -156,7 +173,6 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 						LoggingService:    iacTypes.String("logging.googleapis.com/kubernetes", iacTypes.NewTestMetadata()),
 						MonitoringService: iacTypes.String("monitoring.googleapis.com/kubernetes", iacTypes.NewTestMetadata()),
 						MasterAuth: gke.MasterAuth{
-							Metadata: iacTypes.NewTestMetadata(),
 							ClientCertificate: gke.ClientCertificate{
 								Metadata:         iacTypes.NewTestMetadata(),
 								IssueCertificate: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
@@ -182,7 +198,7 @@ resource "google_container_cluster" "example" {
   node_config {
     service_account = "service-account"
     metadata = {
-      disable-legacy-endpoints = true
+      disable-legacy-endpoints = "true"
     }
     image_type = "COS"
     workload_metadata_config {
@@ -194,7 +210,6 @@ resource "google_container_cluster" "example" {
 			expected: gke.GKE{
 				Clusters: []gke.Cluster{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						NodeConfig: gke.NodeConfig{
 							Metadata:  iacTypes.NewTestMetadata(),
 							ImageType: iacTypes.String("COS", iacTypes.NewTestMetadata()),
@@ -207,17 +222,14 @@ resource "google_container_cluster" "example" {
 						},
 
 						IPAllocationPolicy: gke.IPAllocationPolicy{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
 						MasterAuthorizedNetworks: gke.MasterAuthorizedNetworks{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							CIDRs:    []iacTypes.StringValue{},
+							Enabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							CIDRs:   []iacTypes.StringValue{},
 						},
 						NetworkPolicy: gke.NetworkPolicy{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
 						DatapathProvider: iacTypes.StringDefault("DATAPATH_PROVIDER_UNSPECIFIED", iacTypes.NewTestMetadata()),
 						PrivateCluster: gke.PrivateCluster{
@@ -227,7 +239,6 @@ resource "google_container_cluster" "example" {
 						LoggingService:    iacTypes.String("logging.googleapis.com/kubernetes", iacTypes.NewTestMetadata()),
 						MonitoringService: iacTypes.String("monitoring.googleapis.com/kubernetes", iacTypes.NewTestMetadata()),
 						MasterAuth: gke.MasterAuth{
-							Metadata: iacTypes.NewTestMetadata(),
 							ClientCertificate: gke.ClientCertificate{
 								Metadata:         iacTypes.NewTestMetadata(),
 								IssueCertificate: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
