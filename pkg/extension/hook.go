@@ -68,7 +68,7 @@ type ReportHook interface {
 }
 
 func PreRun(ctx context.Context, opts flag.Options) error {
-	for _, e := range hooks {
+	for _, e := range Hooks() {
 		h, ok := e.(RunHook)
 		if !ok {
 			continue
@@ -82,7 +82,7 @@ func PreRun(ctx context.Context, opts flag.Options) error {
 
 // PostRun is a hook that is called after all the processes.
 func PostRun(ctx context.Context, opts flag.Options) error {
-	for _, e := range hooks {
+	for _, e := range Hooks() {
 		h, ok := e.(RunHook)
 		if !ok {
 			continue
@@ -96,7 +96,7 @@ func PostRun(ctx context.Context, opts flag.Options) error {
 
 // PreScan is a hook that is called before the scan.
 func PreScan(ctx context.Context, target *types.ScanTarget, options types.ScanOptions) error {
-	for _, e := range hooks {
+	for _, e := range Hooks() {
 		h, ok := e.(ScanHook)
 		if !ok {
 			continue
@@ -111,7 +111,7 @@ func PreScan(ctx context.Context, target *types.ScanTarget, options types.ScanOp
 // PostScan is a hook that is called after the scan.
 func PostScan(ctx context.Context, results types.Results) (types.Results, error) {
 	var err error
-	for _, e := range hooks {
+	for _, e := range Hooks() {
 		h, ok := e.(ScanHook)
 		if !ok {
 			continue
@@ -126,7 +126,7 @@ func PostScan(ctx context.Context, results types.Results) (types.Results, error)
 
 // PreReport is a hook that is called before the report is written.
 func PreReport(ctx context.Context, report *types.Report, opts flag.Options) error {
-	for _, e := range hooks {
+	for _, e := range Hooks() {
 		h, ok := e.(ReportHook)
 		if !ok {
 			continue
@@ -140,7 +140,7 @@ func PreReport(ctx context.Context, report *types.Report, opts flag.Options) err
 
 // PostReport is a hook that is called after the report is written.
 func PostReport(ctx context.Context, report *types.Report, opts flag.Options) error {
-	for _, e := range hooks {
+	for _, e := range Hooks() {
 		h, ok := e.(ReportHook)
 		if !ok {
 			continue
@@ -152,9 +152,11 @@ func PostReport(ctx context.Context, report *types.Report, opts flag.Options) er
 	return nil
 }
 
-// Hooks returns the list of hook names.
-func Hooks() []string {
-	names := lo.Keys(hooks)
-	sort.Strings(names)
-	return names
+// Hooks returns the list of hooks.
+func Hooks() []Hook {
+	hooks := lo.Values(hooks)
+	sort.Slice(hooks, func(i, j int) bool {
+		return hooks[i].Name() < hooks[j].Name()
+	})
+	return hooks
 }
