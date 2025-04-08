@@ -13,7 +13,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/scan/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -84,7 +84,7 @@ func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*Pac
 		var qs packageurl.Qualifiers
 		name, namespace, qs = parseApk(name, metadata.OS)
 		qualifiers = append(qualifiers, qs...)
-	case packageurl.TypeMaven, string(ftypes.Gradle): // TODO: replace with packageurl.TypeGradle once they add it.
+	case packageurl.TypeMaven, packageurl.TypeGradle:
 		namespace, name = parseMaven(name)
 	case packageurl.TypePyPi:
 		name = parsePyPI(name)
@@ -358,16 +358,19 @@ func parseRPM(fos *ftypes.OS, modularityLabel string) (ftypes.OSType, packageurl
 		return "", packageurl.Qualifiers{}
 	}
 
-	// SLES string has whitespace
 	family := fos.Family
-	if fos.Family == ftypes.SLES {
-		family = "sles"
+	// SLES string has whitespace, also highlevel family is not the same as distro
+	if fos.Family == ftypes.SLES || fos.Family == ftypes.SLEMicro {
+		family = "suse"
+	}
+	if fos.Family == ftypes.OpenSUSETumbleweed || fos.Family == ftypes.OpenSUSELeap {
+		family = "opensuse"
 	}
 
 	qualifiers := packageurl.Qualifiers{
 		{
 			Key:   "distro",
-			Value: fmt.Sprintf("%s-%s", family, fos.Name),
+			Value: fmt.Sprintf("%s-%s", fos.Family, fos.Name),
 		},
 	}
 
@@ -452,7 +455,7 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypeComposer
 	case ftypes.CondaPkg, ftypes.CondaEnv:
 		return packageurl.TypeConda
-	case ftypes.PythonPkg, ftypes.Pip, ftypes.Pipenv, ftypes.Poetry:
+	case ftypes.PythonPkg, ftypes.Pip, ftypes.Pipenv, ftypes.Poetry, ftypes.Uv:
 		return packageurl.TypePyPi
 	case ftypes.GoBinary, ftypes.GoModule:
 		return packageurl.TypeGolang
@@ -476,8 +479,8 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypeDebian
 	case ftypes.RedHat, ftypes.CentOS, ftypes.Rocky, ftypes.Alma,
 		ftypes.Amazon, ftypes.Fedora, ftypes.Oracle, ftypes.OpenSUSE,
-		ftypes.OpenSUSELeap, ftypes.OpenSUSETumbleweed, ftypes.SLES, ftypes.Photon,
-		ftypes.CBLMariner:
+		ftypes.OpenSUSELeap, ftypes.OpenSUSETumbleweed, ftypes.SLES, ftypes.SLEMicro, ftypes.Photon,
+		ftypes.Azure, ftypes.CBLMariner:
 		return packageurl.TypeRPM
 	case TypeOCI:
 		return packageurl.TypeOCI

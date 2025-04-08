@@ -12,7 +12,7 @@ import (
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/scan/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -62,6 +62,7 @@ var (
 		"23.04":     time.Date(2024, 1, 20, 23, 59, 59, 0, time.UTC),
 		"23.10":     time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
 		"24.04":     time.Date(2034, 3, 31, 23, 59, 59, 0, time.UTC),
+		"24.10":     time.Date(2025, 7, 9, 23, 59, 59, 0, time.UTC),
 	}
 )
 

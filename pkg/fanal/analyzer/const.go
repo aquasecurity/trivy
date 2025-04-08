@@ -13,6 +13,7 @@ const (
 	TypeOSRelease  Type = "os-release"
 	TypeAlpine     Type = "alpine"
 	TypeAmazon     Type = "amazon"
+	TypeAzure      Type = "azurelinux"
 	TypeCBLMariner Type = "cbl-mariner"
 	TypeDebian     Type = "debian"
 	TypePhoton     Type = "photon"
@@ -31,6 +32,7 @@ const (
 	TypeDpkg        Type = "dpkg"
 	TypeDpkgLicense Type = "dpkg-license" // For analyzing licenses
 	TypeRpm         Type = "rpm"
+	TypeRpmArchive  Type = "rpm-archive"
 	TypeRpmqa       Type = "rpmqa"
 
 	// OS Package Repository
@@ -74,10 +76,12 @@ const (
 	TypeCondaEnv Type = "conda-environment"
 
 	// Python
-	TypePythonPkg Type = "python-pkg"
-	TypePip       Type = "pip"
-	TypePipenv    Type = "pipenv"
-	TypePoetry    Type = "poetry"
+	TypePythonPkg    Type = "python-pkg"
+	TypePythonPkgEgg Type = "python-egg"
+	TypePip          Type = "pip"
+	TypePipenv       Type = "pipenv"
+	TypePoetry       Type = "poetry"
+	TypeUv           Type = "uv"
 
 	// Go
 	TypeGoBinary Type = "gobinary"
@@ -123,6 +127,8 @@ const (
 	TypeTerraform             Type = Type(detection.FileTypeTerraform)
 	TypeTerraformPlanJSON     Type = Type(detection.FileTypeTerraformPlanJSON)
 	TypeTerraformPlanSnapshot Type = Type(detection.FileTypeTerraformPlanSnapshot)
+	TypeYAML                  Type = Type(detection.FileTypeYAML)
+	TypeJSON                  Type = Type(detection.FileTypeJSON)
 
 	// ========
 	// License
@@ -172,6 +178,7 @@ var (
 		TypeGemSpec,
 		TypeCargo,
 		TypeComposer,
+		TypeComposerVendor,
 		TypeJar,
 		TypePom,
 		TypeGradleLock,
@@ -186,9 +193,11 @@ var (
 		TypeCondaPkg,
 		TypeCondaEnv,
 		TypePythonPkg,
+		TypePythonPkgEgg,
 		TypePip,
 		TypePipenv,
 		TypePoetry,
+		TypeUv,
 		TypeGoBinary,
 		TypeGoMod,
 		TypeRustBinary,
@@ -198,6 +207,7 @@ var (
 		TypePubSpecLock,
 		TypeMixLock,
 		TypeJulia,
+		TypeSBOM,
 	}
 
 	// TypeLockfiles has all lock file analyzers
@@ -209,6 +219,7 @@ var (
 		TypePip,
 		TypePipenv,
 		TypePoetry,
+		TypeUv,
 		TypeGoMod,
 		TypePom,
 		TypeConanLock,
@@ -244,5 +255,7 @@ var (
 		TypeTerraform,
 		TypeTerraformPlanJSON,
 		TypeTerraformPlanSnapshot,
+		TypeYAML,
+		TypeJSON,
 	}
 )

@@ -1,10 +1,8 @@
 package image
 
 import (
-	"context"
 	"fmt"
 	"net/http/httptest"
-	"os"
 	"testing"
 	"time"
 
@@ -16,10 +14,11 @@ import (
 	"github.com/aquasecurity/testdocker/auth"
 	"github.com/aquasecurity/testdocker/engine"
 	"github.com/aquasecurity/testdocker/registry"
+	"github.com/aquasecurity/testdocker/tarfile"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func setupEngineAndRegistry() (*httptest.Server, *httptest.Server) {
+func setupEngineAndRegistry(t *testing.T) (*httptest.Server, *httptest.Server) {
 	imagePaths := map[string]string{
 		"alpine:3.10":  "../test/testdata/alpine-310.tar.gz",
 		"alpine:3.11":  "../test/testdata/alpine-311.tar.gz",
@@ -31,21 +30,21 @@ func setupEngineAndRegistry() (*httptest.Server, *httptest.Server) {
 	}
 	te := engine.NewDockerEngine(opt)
 
-	imagePaths = map[string]string{
-		"v2/library/alpine:3.10": "../test/testdata/alpine-310.tar.gz",
+	images := map[string]v1.Image{
+		"v2/library/alpine:3.10": localImage(t),
 	}
 	tr := registry.NewDockerRegistry(registry.Option{
-		Images: imagePaths,
+		Images: images,
 		Auth:   auth.Auth{},
 	})
 
-	os.Setenv("DOCKER_HOST", fmt.Sprintf("tcp://%s", te.Listener.Addr().String()))
+	t.Setenv("DOCKER_HOST", fmt.Sprintf("tcp://%s", te.Listener.Addr().String()))
 
 	return te, tr
 }
 
 func TestNewDockerImage(t *testing.T) {
-	te, tr := setupEngineAndRegistry()
+	te, tr := setupEngineAndRegistry(t)
 	defer func() {
 		te.Close()
 		tr.Close()
@@ -275,7 +274,7 @@ func TestNewDockerImage(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.args.option.ImageSources = types.AllImageSources
-			img, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
+			img, cleanup, err := NewContainerImage(t.Context(), tt.args.imageName, tt.args.option)
 			defer cleanup()
 
 			if tt.wantErr {
@@ -301,12 +300,12 @@ func TestNewDockerImage(t *testing.T) {
 	}
 }
 
-func setupPrivateRegistry() *httptest.Server {
-	imagePaths := map[string]string{
-		"v2/library/alpine:3.10": "../test/testdata/alpine-310.tar.gz",
+func setupPrivateRegistry(t *testing.T) *httptest.Server {
+	images := map[string]v1.Image{
+		"v2/library/alpine:3.10": localImage(t),
 	}
 	tr := registry.NewDockerRegistry(registry.Option{
-		Images: imagePaths,
+		Images: images,
 		Auth: auth.Auth{
 			User:     "test",
 			Password: "testpass",
@@ -318,7 +317,7 @@ func setupPrivateRegistry() *httptest.Server {
 }
 
 func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
-	tr := setupPrivateRegistry()
+	tr := setupPrivateRegistry(t)
 	defer tr.Close()
 
 	serverAddr := tr.Listener.Addr().String()
@@ -393,12 +392,11 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.args.option.ImageSources = types.AllImageSources
-			_, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
+			_, cleanup, err := NewContainerImage(t.Context(), tt.args.imageName, tt.args.option)
 			defer cleanup()
 
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr, err)
+				require.ErrorContains(t, err, tt.wantErr, err)
 			} else {
 				require.NoError(t, err)
 			}
@@ -488,8 +486,7 @@ func TestNewArchiveImage(t *testing.T) {
 			img, err := NewArchiveImage(tt.args.fileName)
 			switch {
 			case tt.wantErr != "":
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
 			default:
 				require.NoError(t, err, tt.name)
@@ -503,7 +500,7 @@ func TestNewArchiveImage(t *testing.T) {
 }
 
 func TestDockerPlatformArguments(t *testing.T) {
-	tr := setupPrivateRegistry()
+	tr := setupPrivateRegistry(t)
 	defer tr.Close()
 
 	serverAddr := tr.Listener.Addr().String()
@@ -544,7 +541,7 @@ func TestDockerPlatformArguments(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			imageName := fmt.Sprintf("%s/library/alpine:3.10", serverAddr)
 			tt.args.option.ImageSources = types.AllImageSources
-			_, cleanup, err := NewContainerImage(context.Background(), imageName, tt.args.option)
+			_, cleanup, err := NewContainerImage(t.Context(), imageName, tt.args.option)
 			defer cleanup()
 
 			if tt.wantErr != "" {
@@ -554,4 +551,10 @@ func TestDockerPlatformArguments(t *testing.T) {
 			}
 		})
 	}
+}
+
+func localImage(t *testing.T) v1.Image {
+	img, err := tarfile.ImageFromPath("../test/testdata/alpine-310.tar.gz")
+	require.NoError(t, err)
+	return img
 }

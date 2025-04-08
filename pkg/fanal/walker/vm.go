@@ -9,11 +9,15 @@ import (
 	"strings"
 
 	"github.com/masahiro331/go-disk"
+	diskFs "github.com/masahiro331/go-disk/fs"
 	"github.com/masahiro331/go-disk/gpt"
 	"github.com/masahiro331/go-disk/mbr"
 	"github.com/masahiro331/go-disk/types"
+	"github.com/masahiro331/go-ext4-filesystem/ext4"
+	"github.com/masahiro331/go-xfs-filesystem/xfs"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -27,6 +31,11 @@ var requiredDiskName = []string{
 	"1",        // Common image name
 	"2",        // Common image name
 	"3",        // Common image name
+}
+
+var checkFsFuncs = []diskFs.CheckFsFunc{
+	ext4.Check,
+	xfs.Check,
 }
 
 func AppendPermitDiskName(s ...string) {
@@ -53,7 +62,7 @@ func (w *VM) Walk(vreader *io.SectionReader, root string, opt Option, fn WalkFun
 	// This function will be called on each file.
 	w.analyzeFn = fn
 
-	driver, err := disk.NewDriver(vreader)
+	driver, err := disk.NewDriver(vreader, checkFsFuncs...)
 	if err != nil {
 		return xerrors.Errorf("failed to new disk driver: %w", err)
 	}
@@ -123,13 +132,13 @@ func (w *VM) fsWalk(fsys fs.FS, path string, d fs.DirEntry, err error) error {
 	pathName := strings.TrimPrefix(filepath.Clean(path), "/")
 	switch {
 	case fi.IsDir():
-		if SkipPath(pathName, w.skipDirs) {
+		if utils.SkipPath(pathName, w.skipDirs) {
 			return filepath.SkipDir
 		}
 		return nil
 	case !fi.Mode().IsRegular():
 		return nil
-	case SkipPath(pathName, w.skipFiles):
+	case utils.SkipPath(pathName, w.skipFiles):
 		return nil
 	case fi.Mode()&0x1000 == 0x1000 ||
 		fi.Mode()&0x2000 == 0x2000 ||

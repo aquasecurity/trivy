@@ -16,7 +16,7 @@
     </testsuite>
 
 {{- if .MisconfSummary }}
-    <testsuite tests="{{ add .MisconfSummary.Successes .MisconfSummary.Failures }}" failures="{{ .MisconfSummary.Failures }}" name="{{  .Target }}" errors="0" skipped="{{ .MisconfSummary.Exceptions }}" time="">
+    <testsuite tests="{{ add .MisconfSummary.Successes .MisconfSummary.Failures }}" failures="{{ .MisconfSummary.Failures }}" name="{{  .Target }}" errors="0" time="">
 {{- else }}
     <testsuite tests="0" failures="0" name="{{  .Target }}" errors="0" skipped="0" time="">
 {{- end }}
@@ -33,5 +33,26 @@
         </testcase>
     {{- end }}
     </testsuite>
+
+{{- if .Licenses }}
+    {{- $licenses := len .Licenses }}
+    <testsuite tests="{{ $licenses }}" failures="{{ $licenses }}" name="{{ .Target }}" time="0">{{ range .Licenses }}
+        <testcase classname="{{ .PkgName }}" name="[{{ .Severity }}] {{ .Name }}">
+            <failure/>
+        </testcase>
+    {{- end }}
+    </testsuite>
+{{- end }}
+
+{{- if .Secrets }}
+    {{- $secrets := len .Secrets }}
+    <testsuite tests="{{ $secrets }}" failures="{{ $secrets }}" name="{{ .Target }}" time="0">{{ range .Secrets }}
+        <testcase classname="{{ .RuleID }}" name="[{{ .Severity }}] {{ .Title }}">
+            <failure message="{{ .Title }}" type="description">{{ escapeXML .Match }}</failure>
+        </testcase>
+    {{- end }}
+    </testsuite>
+{{- end }}
+
 {{- end }}
 </testsuites>

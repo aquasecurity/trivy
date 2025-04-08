@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -37,15 +38,11 @@ type LockFile struct {
 	Packages        map[string]PackageInfo `yaml:"packages,omitempty"`
 
 	// V9
-	Importers Importer            `yaml:"importers,omitempty"`
+	Importers map[string]Importer `yaml:"importers,omitempty"`
 	Snapshots map[string]Snapshot `yaml:"snapshots,omitempty"`
 }
 
 type Importer struct {
-	Root RootImporter `yaml:".,omitempty"`
-}
-
-type RootImporter struct {
 	Dependencies    map[string]ImporterDepVersion `yaml:"dependencies,omitempty"`
 	DevDependencies map[string]ImporterDepVersion `yaml:"devDependencies,omitempty"`
 }
@@ -167,6 +164,18 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 
 	}
 
+	// Parse `Importers` to find all direct dependencies
+	devDeps := make(map[string]string)
+	deps := make(map[string]string)
+	for _, importer := range lockFile.Importers {
+		for n, v := range importer.DevDependencies {
+			devDeps[n] = v.Version
+		}
+		for n, v := range importer.Dependencies {
+			deps[n] = v.Version
+		}
+	}
+
 	for depPath, pkgInfo := range lockFile.Packages {
 		name, ver, ref := p.parseDepPath(depPath, lockVer)
 		parsedVer := p.parseVersion(depPath, ver, lockVer)
@@ -179,10 +188,10 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 		// We will update `Dev` field later.
 		dev := true
 		relationship := ftypes.RelationshipIndirect
-		if dep, ok := lockFile.Importers.Root.DevDependencies[name]; ok && dep.Version == ver {
+		if v, ok := devDeps[name]; ok && p.trimPeerDeps(v, lockVer) == ver {
 			relationship = ftypes.RelationshipDirect
 		}
-		if dep, ok := lockFile.Importers.Root.Dependencies[name]; ok && p.trimPeerDeps(dep.Version, lockVer) == ver {
+		if v, ok := deps[name]; ok && p.trimPeerDeps(v, lockVer) == ver {
 			relationship = ftypes.RelationshipDirect
 			dev = false // mark root direct deps to update `dev` field of their child deps.
 		}
@@ -207,7 +216,7 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 		}
 	}
 
-	visited := make(map[string]struct{})
+	visited := set.New[string]()
 	// Overwrite the `Dev` field for dev deps and their child dependencies.
 	for _, pkg := range resolvedPkgs {
 		if !pkg.Dev {
@@ -219,8 +228,8 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 }
 
 // markRootPkgs sets `Dev` to false for non dev dependency.
-func (p *Parser) markRootPkgs(id string, pkgs map[string]ftypes.Package, deps map[string]ftypes.Dependency, visited map[string]struct{}) {
-	if _, ok := visited[id]; ok {
+func (p *Parser) markRootPkgs(id string, pkgs map[string]ftypes.Package, deps map[string]ftypes.Dependency, visited set.Set[string]) {
+	if visited.Contains(id) {
 		return
 	}
 	pkg, ok := pkgs[id]
@@ -230,7 +239,7 @@ func (p *Parser) markRootPkgs(id string, pkgs map[string]ftypes.Package, deps ma
 
 	pkg.Dev = false
 	pkgs[id] = pkg
-	visited[id] = struct{}{}
+	visited.Append(id)
 
 	// Update child deps
 	for _, depID := range deps[id].DependsOn {

@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"strings"
@@ -14,12 +13,10 @@ import (
 )
 
 func parseFile(t *testing.T, source, name string) (FileContexts, error) {
-	tmp, err := os.MkdirTemp(os.TempDir(), "defsec")
-	require.NoError(t, err)
-	defer func() { _ = os.RemoveAll(tmp) }()
+	tmp := t.TempDir()
 	require.NoError(t, os.WriteFile(filepath.Join(tmp, name), []byte(source), 0600))
 	fs := os.DirFS(tmp)
-	return New().ParseFS(context.TODO(), fs, ".")
+	return New().ParseFS(t.Context(), fs, ".")
 }
 
 func Test_parse_yaml(t *testing.T) {
@@ -252,7 +249,7 @@ Resources:
 	}
 	p := New(WithParameters(params))
 
-	files, err := p.ParseFS(context.TODO(), fs, ".")
+	files, err := p.ParseFS(t.Context(), fs, ".")
 	require.NoError(t, err)
 	require.Len(t, files, 1)
 
@@ -289,7 +286,7 @@ Resources:
 
 	p := New(WithParameterFiles("params.json"))
 
-	files, err := p.ParseFS(context.TODO(), fs, ".")
+	files, err := p.ParseFS(t.Context(), fs, ".")
 	require.NoError(t, err)
 	require.Len(t, files, 1)
 
@@ -349,7 +346,7 @@ Resources:
 		WithConfigsFS(configFS),
 	)
 
-	files, err := p.ParseFS(context.TODO(), fs, ".")
+	files, err := p.ParseFS(t.Context(), fs, ".")
 	require.NoError(t, err)
 	require.Len(t, files, 2)
 
@@ -402,7 +399,7 @@ func TestJsonWithNumbers(t *testing.T) {
 		"main.json": src,
 	})
 
-	files, err := New().ParseFS(context.TODO(), fsys, ".")
+	files, err := New().ParseFS(t.Context(), fsys, ".")
 
 	require.NoError(t, err)
 	require.Len(t, files, 1)
@@ -418,4 +415,74 @@ func TestJsonWithNumbers(t *testing.T) {
 
 	assert.Equal(t, 1, res[0].GetProperty("SomeIntProp").AsIntValue().Value())
 	assert.Equal(t, 0, res[0].GetProperty("SomeFloatProp").AsIntValue().Value())
+}
+
+func TestParameterIsNull(t *testing.T) {
+	src := `---
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  Email:
+    Type: String
+
+Conditions:
+  SubscribeEmail: !Not [!Equals [ !Ref Email, ""]]
+`
+
+	fsys := testutil.CreateFS(t, map[string]string{
+		"main.yaml": src,
+	})
+
+	files, err := New().ParseFS(t.Context(), fsys, ".")
+	require.NoError(t, err)
+	require.Len(t, files, 1)
+}
+
+func Test_TemplateWithNullProperty(t *testing.T) {
+	src := `AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  TestBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName:`
+
+	fsys := testutil.CreateFS(t, map[string]string{
+		"main.yaml": src,
+	})
+
+	files, err := New().ParseFS(t.Context(), fsys, ".")
+	require.NoError(t, err)
+	require.Len(t, files, 1)
+
+	file := files[0]
+
+	res := file.GetResourceByLogicalID("TestBucket")
+
+	assert.True(t, res.GetProperty("BucketName").IsNil())
+}
+
+func Test_TemplateWithNullNestedProperty(t *testing.T) {
+	src := `AWSTemplateFormatVersion: "2010-09-09"
+Description: "BAD"
+Resources:
+  TestBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: test
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: null`
+
+	fsys := testutil.CreateFS(t, map[string]string{
+		"main.yaml": src,
+	})
+
+	files, err := New().ParseFS(t.Context(), fsys, ".")
+	require.NoError(t, err)
+	require.Len(t, files, 1)
+
+	file := files[0]
+
+	res := file.GetResourceByLogicalID("TestBucket")
+
+	assert.True(t, res.GetProperty("PublicAccessBlockConfiguration.BlockPublicAcls").IsNil())
 }

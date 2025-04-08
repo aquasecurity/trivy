@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"slices"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -11,7 +12,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 const rockyAnalyzerVersion = 1
@@ -46,7 +46,7 @@ func (a rockyOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 }
 
 func (a rockyOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return utils.StringInSlice(filePath, a.requiredFiles())
+	return slices.Contains(a.requiredFiles(), filePath)
 }
 
 func (a rockyOSAnalyzer) requiredFiles() []string {
@@ -59,4 +59,9 @@ func (a rockyOSAnalyzer) Type() analyzer.Type {
 
 func (a rockyOSAnalyzer) Version() int {
 	return rockyAnalyzerVersion
+}
+
+// StaticPaths returns the static paths of the rocky analyzer
+func (a rockyOSAnalyzer) StaticPaths() []string {
+	return a.requiredFiles()
 }

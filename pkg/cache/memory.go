@@ -96,3 +96,17 @@ func (c *MemoryCache) Clear() error {
 	c.blobs = sync.Map{}
 	return nil
 }
+
+// BlobIDs returns all the blob IDs in the memory cache for testing
+func (c *MemoryCache) BlobIDs() []string {
+	var blobIDs []string
+	c.blobs.Range(func(key, value any) bool {
+		blobID, ok := key.(string)
+		if !ok {
+			return false
+		}
+		blobIDs = append(blobIDs, blobID)
+		return true
+	})
+	return blobIDs
+}

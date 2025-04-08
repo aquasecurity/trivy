@@ -3,13 +3,14 @@ package parser
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 
-	"github.com/liamg/jfather"
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/jfather"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 )
 
@@ -137,7 +138,7 @@ func (p *Parameters) UnmarshalJSON(data []byte) error {
 			(*p)[param.ParameterKey] = param.ParameterValue
 		}
 	default:
-		return fmt.Errorf("unsupported parameters format")
+		return errors.New("unsupported parameters format")
 	}
 
 	return nil

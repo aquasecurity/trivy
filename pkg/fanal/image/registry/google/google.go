@@ -9,12 +9,16 @@ import (
 	"github.com/GoogleCloudPlatform/docker-credential-gcr/store"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/intf"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-type Registry struct {
+type GoogleRegistryClient struct {
 	Store  store.GCRCredStore
 	domain string
+}
+
+type Registry struct {
 }
 
 // Google container registry
@@ -24,18 +28,26 @@ const gcrURLSuffix = ".gcr.io"
 // Google artifact registry
 const garURLSuffix = "-docker.pkg.dev"
 
-func (g *Registry) CheckOptions(domain string, option types.RegistryOptions) error {
+// Google mirror registry
+const gmrURLDomain = "mirror.gcr.io"
+
+func (g *Registry) CheckOptions(domain string, option types.RegistryOptions) (intf.RegistryClient, error) {
+	// We assume there is no chance that `mirror.gcr.io` will require authentication.
+	// So we need to skip `mirror.gcr.io` to avoid errors confusing users when downloading DB's.
+	if domain == gmrURLDomain {
+		return nil, xerrors.Errorf("mirror.gcr.io doesn't require authentication")
+	}
 	if domain != gcrURLDomain && !strings.HasSuffix(domain, gcrURLSuffix) && !strings.HasSuffix(domain, garURLSuffix) {
-		return xerrors.Errorf("Google registry: %w", types.InvalidURLPattern)
+		return nil, xerrors.Errorf("Google registry: %w", types.InvalidURLPattern)
 	}
-	g.domain = domain
+	client := GoogleRegistryClient{domain: domain}
 	if option.GCPCredPath != "" {
-		g.Store = store.NewGCRCredStore(option.GCPCredPath)
+		client.Store = store.NewGCRCredStore(option.GCPCredPath)
 	}
-	return nil
+	return &client, nil
 }
 
-func (g *Registry) GetCredential(_ context.Context) (username, password string, err error) {
+func (g *GoogleRegistryClient) GetCredential(_ context.Context) (username, password string, err error) {
 	var credStore store.GCRCredStore
 	if g.Store == nil {
 		credStore, err = store.DefaultGCRCredStore()

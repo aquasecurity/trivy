@@ -1,7 +1,6 @@
 package cyclonedx_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -15,7 +14,6 @@ import (
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
@@ -91,7 +89,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "rails:latest",
-				ArtifactType:  artifact.TypeContainerImage,
+				ArtifactType:  ftypes.TypeContainerImage,
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
@@ -105,6 +103,11 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					RepoDigests: []string{"rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177"},
 					ImageConfig: v1.ConfigFile{
 						Architecture: "arm64",
+						Config: v1.Config{
+							Labels: map[string]string{
+								"vendor": "aquasecurity",
+							},
+						},
 					},
 				},
 				Results: types.Results{
@@ -300,6 +303,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:ImageID",
 								Value: "sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
+							},
+							{
+								Name:  "aquasecurity:trivy:Labels:vendor",
+								Value: "aquasecurity",
 							},
 							{
 								Name:  "aquasecurity:trivy:RepoDigest",
@@ -550,7 +557,6 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000004",
 						Dependencies: &[]string{
-							"3ff14136-e09f-4df9-80ea-000000000005",
 							"pkg:gem/actioncontroller@7.0.0",
 						},
 					},
@@ -684,7 +690,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "centos:latest",
-				ArtifactType:  artifact.TypeContainerImage,
+				ArtifactType:  ftypes.TypeContainerImage,
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
@@ -1114,8 +1120,6 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
 							"pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011&epoch=1",
-							// Trivy is unable to identify the direct OS packages as of today.
-							"pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
 						},
 					},
 					{
@@ -1223,7 +1227,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "masahiro331/CVE-2021-41098",
-				ArtifactType:  artifact.TypeFilesystem,
+				ArtifactType:  ftypes.TypeFilesystem,
 				Results: types.Results{
 					{
 						Target: "Gemfile.lock",
@@ -1442,7 +1446,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "./report.cdx.json",
-				ArtifactType:  artifact.TypeCycloneDX,
+				ArtifactType:  ftypes.TypeCycloneDX,
 				Results: types.Results{
 					{
 						Target: "Java",
@@ -1453,7 +1457,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "com.fasterxml.jackson.core:jackson-databind",
 								Version: "2.13.4.1",
 								Identifier: ftypes.PkgIdentifier{
-									BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
+									BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
 									UID:    "9A5066570222D04C",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
@@ -1471,7 +1475,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								PkgName:         "com.fasterxml.jackson.core:jackson-databind",
 								PkgPath:         "jackson-databind-2.13.4.1.jar",
 								PkgIdentifier: ftypes.PkgIdentifier{
-									BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
+									BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
 									UID:    "9A5066570222D04C",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
@@ -1628,7 +1632,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "CVE-2023-34468",
-				ArtifactType:  artifact.TypeFilesystem,
+				ArtifactType:  ftypes.TypeFilesystem,
 				Results: types.Results{
 					{
 						Target: "Java",
@@ -1929,7 +1933,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "test-aggregate",
-				ArtifactType:  artifact.TypeRepository,
+				ArtifactType:  ftypes.TypeRepository,
 				Results: types.Results{
 					{
 						Target: "Node.js",
@@ -2043,7 +2047,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "empty/path",
-				ArtifactType:  artifact.TypeFilesystem,
+				ArtifactType:  ftypes.TypeFilesystem,
 				Results:       types.Results{},
 			},
 			want: &cdx.BOM{
@@ -2091,7 +2095,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 			marshaler := cyclonedx.NewMarshaler("dev")

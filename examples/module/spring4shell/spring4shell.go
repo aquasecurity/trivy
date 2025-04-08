@@ -1,10 +1,11 @@
-//go:generate tinygo build -o spring4shell.wasm -scheduler=none -target=wasi --no-debug spring4shell.go
-//go:build tinygo.wasm
+//go:generate go build -o spring4shell.wasm -buildmode=c-shared spring4shell.go
+//go:build wasip1
 
 package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -12,9 +13,11 @@ import (
 	"strconv"
 	"strings"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/module/api"
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
 	"github.com/aquasecurity/trivy/pkg/module/wasm"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
@@ -28,8 +31,10 @@ var (
 	tomcatVersionRegex = regexp.MustCompile(`Apache Tomcat Version ([\d.]+)`)
 )
 
-// main is required for TinyGo to compile to Wasm.
-func main() {
+// main is required for Go to compile the Wasm module
+func main() {}
+
+func init() {
 	wasm.RegisterModule(Spring4Shell{})
 }
 
@@ -94,7 +99,7 @@ func (Spring4Shell) parseJavaRelease(f *os.File, filePath string) (*serialize.An
 	}
 
 	return &serialize.AnalysisResult{
-		CustomResources: []serialize.CustomResource{
+		CustomResources: []ftypes.CustomResource{
 			{
 				Type:     TypeJavaMajor,
 				FilePath: filePath,
@@ -112,11 +117,11 @@ func (Spring4Shell) parseTomcatReleaseNotes(f *os.File, filePath string) (*seria
 
 	m := tomcatVersionRegex.FindStringSubmatch(string(b))
 	if len(m) != 2 {
-		return nil, fmt.Errorf("unknown tomcat release notes format")
+		return nil, errors.New("unknown tomcat release notes format")
 	}
 
 	return &serialize.AnalysisResult{
-		CustomResources: []serialize.CustomResource{
+		CustomResources: []ftypes.CustomResource{
 			{
 				Type:     TypeTomcatVersion,
 				FilePath: filePath,
@@ -221,7 +226,7 @@ func (Spring4Shell) PostScanSpec() serialize.PostScanSpec {
 //	}
 //
 // ]
-func (Spring4Shell) PostScan(results serialize.Results) (serialize.Results, error) {
+func (Spring4Shell) PostScan(results types.Results) (types.Results, error) {
 	var javaMajorVersion int
 	var tomcatVersion string
 	for _, result := range results {

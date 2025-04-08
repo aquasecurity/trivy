@@ -68,7 +68,9 @@ Resources:
       Type: AWS::EKS::Cluster
   `,
 			expected: eks.EKS{
-				Clusters: []eks.Cluster{{}},
+				Clusters: []eks.Cluster{{
+					PublicAccessEnabled: types.BoolTest(true),
+				}},
 			},
 		},
 	}

@@ -16,16 +16,16 @@ This is because Trivy primarily categorizes targets into two groups:
 If the target is a pre-build project, like a code repository, Trivy will analyze files used for building, such as lock files.
 On the other hand, when the target is a post-build artifact, like a container image, Trivy will analyze installed package metadata like `.gemspec`, binary files, and so on.
 
-| Language             | File                                                                                       | Image[^5] | Rootfs[^6] | Filesystem[^7] | Repository[^8] |
+| Language             | File                                                                                       | Image[^4] | Rootfs[^5] | Filesystem[^6] | Repository[^7] |
 |----------------------|--------------------------------------------------------------------------------------------|:---------:|:----------:|:--------------:|:--------------:|
 | [Ruby](ruby.md)      | Gemfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 |                      | gemspec                                                                                    |     ✅     |     ✅      |       -        |       -        |
 | [Python](python.md)  | Pipfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 |                      | poetry.lock                                                                                |     -     |     -      |       ✅        |       ✅        |
+|                      | uv.lock                                                                                    |     -     |     -      |       ✅        |       ✅        |
 |                      | requirements.txt                                                                           |     -     |     -      |       ✅        |       ✅        |
 |                      | egg package[^1]                                                                            |     ✅     |     ✅      |       -        |       -        |
 |                      | wheel package[^2]                                                                          |     ✅     |     ✅      |       -        |       -        |
-|                      | conda package[^3]                                                                          |     ✅     |     ✅      |       -        |       -        |
 | [PHP](php.md)        | composer.lock                                                                              |     -     |     -      |       ✅        |       ✅        |
 |                      | installed.json                                                                             |     ✅     |     ✅      |       -        |       -        |
 | [Node.js](nodejs.md) | package-lock.json                                                                          |     -     |     -      |       ✅        |       ✅        |
@@ -35,8 +35,8 @@ On the other hand, when the target is a post-build artifact, like a container im
 | [.NET](dotnet.md)    | packages.lock.json                                                                         |     ✅     |     ✅      |       ✅        |       ✅        |
 |                      | packages.config                                                                            |     ✅     |     ✅      |       ✅        |       ✅        |
 |                      | .deps.json                                                                                 |     ✅     |     ✅      |       ✅        |       ✅        |
-|                      | *Packages.props[^11]                                                                       |     ✅     |     ✅      |       ✅        |       ✅        |
-| [Java](java.md)      | JAR/WAR/PAR/EAR[^4]                                                                        |     ✅     |     ✅      |       -        |       -        |
+|                      | *Packages.props[^9]                                                                        |     ✅     |     ✅      |       ✅        |       ✅        |
+| [Java](java.md)      | JAR/WAR/PAR/EAR[^3]                                                                        |     ✅     |     ✅      |       -        |       -        |
 |                      | pom.xml                                                                                    |     -     |     -      |       ✅        |       ✅        |
 |                      | *gradle.lockfile                                                                           |     -     |     -      |       ✅        |       ✅        |
 |                      | *.sbt.lock                                                                                 |     -     |     -      |       ✅        |       ✅        |
@@ -45,7 +45,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 | [Rust](rust.md)      | Cargo.lock                                                                                 |     ✅     |     ✅      |       ✅        |       ✅        |
 |                      | Binaries built with [cargo-auditable](https://github.com/rust-secure-code/cargo-auditable) |     ✅     |     ✅      |       -        |       -        |
 | [C/C++](c.md)        | conan.lock                                                                                 |     -     |     -      |       ✅        |       ✅        |
-| [Elixir](elixir.md)  | mix.lock[^10]                                                                              |     -     |     -      |       ✅        |       ✅        |
+| [Elixir](elixir.md)  | mix.lock[^8]                                                                               |     -     |     -      |       ✅        |       ✅        |
 | [Dart](dart.md)      | pubspec.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 | [Swift](swift.md)    | Podfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 |                      | Package.resolved                                                                           |     -     |     -      |       ✅        |       ✅        |
@@ -61,12 +61,10 @@ Example: [Dockerfile](https://github.com/aquasecurity/trivy-ci-test/blob/main/Do
 
 [^1]: `*.egg-info`, `*.egg-info/PKG-INFO`, `*.egg` and `EGG-INFO/PKG-INFO`
 [^2]: `.dist-info/META-DATA`
-[^3]: `envs/*/conda-meta/*.json`
-[^4]: `*.jar`, `*.war`, `*.par` and `*.ear`
-[^5]: ✅ means "enabled" and `-` means "disabled" in the image scanning
-[^6]: ✅ means "enabled" and `-` means "disabled" in the rootfs scanning
-[^7]: ✅ means "enabled" and `-` means "disabled" in the filesystem scanning
-[^8]: ✅ means "enabled" and `-` means "disabled" in the git repository scanning
-[^9]: ✅ means that Trivy detects line numbers where each dependency is declared in the scanned file. Only supported in [json](../../configuration/reporting.md#json) and [sarif](../../configuration/reporting.md#sarif) formats. SARIF uses `startline == 1 and endline == 1` for unsupported file types
-[^10]: To scan a filename other than the default filename use [file-patterns](../../configuration/skipping.md#file-patterns)
-[^11]: `Directory.Packages.props` and  legacy `Packages.props` file names are supported
+[^3]: `*.jar`, `*.war`, `*.par` and `*.ear`
+[^4]: ✅ means "enabled" and `-` means "disabled" in the image scanning
+[^5]: ✅ means "enabled" and `-` means "disabled" in the rootfs scanning
+[^6]: ✅ means "enabled" and `-` means "disabled" in the filesystem scanning
+[^7]: ✅ means "enabled" and `-` means "disabled" in the git repository scanning
+[^8]: To scan a filename other than the default filename use [file-patterns](../../configuration/skipping.md#file-patterns)
+[^9]: `Directory.Packages.props` and  legacy `Packages.props` file names are supported

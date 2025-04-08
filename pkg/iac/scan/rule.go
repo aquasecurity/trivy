@@ -50,6 +50,7 @@ type Rule struct {
 	Severity       severity.Severity                `json:"severity"`
 	Terraform      *EngineMetadata                  `json:"terraform,omitempty"`
 	CloudFormation *EngineMetadata                  `json:"cloud_formation,omitempty"`
+	Examples       string                           `json:"-"`
 	CustomChecks   CustomChecks                     `json:"-"`
 	RegoPackage    string                           `json:"-"`
 	Frameworks     map[framework.Framework][]string `json:"frameworks"`
@@ -82,21 +83,6 @@ func (r Rule) ServiceDisplayName() string {
 
 func (r Rule) ShortCodeDisplayName() string {
 	return nicify(r.ShortCode)
-}
-
-func (r Rule) CanCheck() bool {
-	return r.Check != nil
-}
-
-func (r Rule) Evaluate(s *state.State) Results {
-	if !r.CanCheck() {
-		return nil
-	}
-	results := r.Check(s)
-	for i := range results {
-		results[i].SetRule(r)
-	}
-	return results
 }
 
 var acronyms = []string{

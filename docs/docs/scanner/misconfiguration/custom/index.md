@@ -2,10 +2,10 @@
 
 ## Overview
 You can write custom checks in [Rego][rego].
-Once you finish writing custom checks, you can pass the policy files or the directory where those policies are stored with `--policy` option.
+Once you finish writing custom checks, you can pass the check files or the directory where those checks are stored with --config-check` option.
 
 ``` bash
-trivy conf --policy /path/to/policy.rego --policy /path/to/custom_policies --namespaces user /path/to/config_dir
+trivy config --config-check /path/to/policy.rego --config-check /path/to/custom_checks --namespaces user /path/to/config_dir
 ```
 
 As for `--namespaces` option, the detail is described as below.
@@ -93,7 +93,7 @@ By default, only `builtin.*` packages will be evaluated.
 If you define custom packages, you have to specify the package prefix via `--namespaces` option. By default, Trivy only runs in its own namespace, unless specified by the user. Note that the custom namespace does not have to be `user` as in this example. It could be anything user-defined.
 
 ``` bash
-trivy conf --policy /path/to/custom_policies --namespaces user /path/to/config_dir
+trivy config --config-check /path/to/custom_checks --namespaces user /path/to/config_dir
 ```
 
 In this case, `user.*` will be evaluated.
@@ -121,21 +121,21 @@ Trivy supports extra fields in the `custom` section as described below.
 If you are creating checks for your Trivy misconfiguration scans, some fields are optional as referenced in the table below. The `schemas` field should be used to enable policy validation using a built-in schema. It is recommended to use this to ensure your checks are 
 correct and do not reference incorrect properties/values.
 
-| Field name                 | Allowed values                                                    |        Default value         |     In table     |     In JSON      |
-|----------------------------|-------------------------------------------------------------------|:----------------------------:|:----------------:|:----------------:|
-| title                      | Any characters                                                    |             N/A              | :material-check: | :material-check: |
-| description                | Any characters                                                    |                              | :material-close: | :material-check: |
-| schemas.input              | `schema["kubernetes"]`, `schema["dockerfile"]`, `schema["cloud"]` | (applied to all input types) | :material-close: | :material-close: |
-| custom.id                  | Any characters                                                    |             N/A              | :material-check: | :material-check: |
-| custom.severity            | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`                               |           UNKNOWN            | :material-check: | :material-check: |
-| custom.recommended_actions | Any characters                                                    |                              | :material-close: | :material-check: |
-| custom.deprecated          | `true`, `false`                                                   |           `false`            | :material-close: | :material-check: | 
-| custom.input.selector.type | Any item(s) in [this list][source-types]                          |                              | :material-close: | :material-check: |
-| url                        | Any characters                                                    |                              | :material-close: | :material-check: |
+| Field name                 | Allowed values                                                    |        Default value         | In table | In JSON |
+|----------------------------|-------------------------------------------------------------------|:----------------------------:|:--------:|:-------:|
+| title                      | Any characters                                                    |             N/A              |    ✅     |    ✅    |
+| description                | Any characters                                                    |                              |    -     |    ✅    |
+| schemas.input              | `schema["kubernetes"]`, `schema["dockerfile"]`, `schema["cloud"]` | (applied to all input types) |    -     |    -    |
+| custom.id                  | Any characters                                                    |             N/A              |    ✅     |    ✅    |
+| custom.severity            | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`                               |           UNKNOWN            |    ✅     |    ✅    |
+| custom.recommended_actions | Any characters                                                    |                              |    -     |    ✅    |
+| custom.deprecated          | `true`, `false`                                                   |           `false`            |    -     |    ✅    |
+| custom.input.selector.type | Any item(s) in [this list][source-types]                          |                              |    -     |    ✅    |
+| url                        | Any characters                                                    |                              |    -     |    ✅    |
 
 #### custom.avd_id and custom.id
 
-The AVD_ID can be used to link the check to the Aqua Vulnerability Database (AVD) entry. For example, the `avd_id` `AVD-AWS-0176` is the ID of the check in the [AWS Vulnerability Database](https://avd.aquasec.com/). If you are [contributing your check to trivy-policies](../../../../community/contribute/checks/overview.md), you need to generate an ID using `make id` in the [trivy-checks](https://github.com/aquasecurity/trivy-checks) repository. The output of the command will provide you the next free IDs for the different providers in Trivy.
+The AVD_ID can be used to link the check to the Aqua Vulnerability Database (AVD) entry. For example, the `avd_id` `AVD-AWS-0176` is the ID of the check in the [AWS Vulnerability Database](https://avd.aquasec.com/). If you are [contributing your check to trivy-checks](../../../../community/contribute/checks/overview.md), you need to generate an ID using `make id` in the [trivy-checks](https://github.com/aquasecurity/trivy-checks) repository. The output of the command will provide you the next free IDs for the different providers in Trivy.
 
 The ID is based on the AVD_ID. For instance if the `avd_id` is `AVD-AWS-0176`, the ID is `ID0176`.
 
@@ -149,7 +149,7 @@ Services are defined within a provider. For instance, RDS is a service and AWS i
 
 #### custom.input
 
-The `input` tells Trivy what inputs this check should be applied to. Cloud provider checks should always use the `selector` input, and should always use the `type` selector with `cloud`. Check targeting Kubernetes yaml can use `kubenetes`, RBAC can use `rbac`, and so on.
+The `input` tells Trivy what inputs this check should be applied to. Cloud provider checks should always use the `selector` input, and should always use the `type` selector with `cloud`. Check targeting Kubernetes yaml can use `kubernetes`, RBAC can use `rbac`, and so on.
 
 #### Subtypes in the custom data
 
@@ -163,7 +163,7 @@ Some fields are displayed in scan results.
 k.yaml (kubernetes)
 ───────────────────
 
-Tests: 32 (SUCCESSES: 31, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 32 (SUCCESSES: 31, FAILURES: 1)
 Failures: 1 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 
 LOW: Found deployment 'my-deployment' but deployments are not allowed

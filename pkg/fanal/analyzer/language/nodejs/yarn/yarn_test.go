@@ -1,7 +1,6 @@
 package yarn
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -345,6 +344,61 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Locations: []types.Location{
 									{
 										StartLine: 15,
+										EndLine:   20,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "package uses `latest` version",
+			dir:  "testdata/latest-version",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Yarn,
+						FilePath: "yarn.lock",
+						Packages: types.Packages{
+							{
+								ID:           "debug@4.3.5",
+								Name:         "debug",
+								Version:      "4.3.5",
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   10,
+									},
+								},
+								DependsOn: []string{
+									"ms@2.1.2",
+								},
+							},
+							{
+								ID:           "js-tokens@9.0.0",
+								Name:         "js-tokens",
+								Version:      "9.0.0",
+								Relationship: types.RelationshipDirect,
+								Dev:          true,
+								Locations: []types.Location{
+									{
+										StartLine: 12,
+										EndLine:   15,
+									},
+								},
+							},
+							{
+								ID:           "ms@2.1.2",
+								Name:         "ms",
+								Version:      "2.1.2",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 17,
 										EndLine:   20,
 									},
 								},
@@ -767,7 +821,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			a, err := newYarnAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 
-			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
+			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{
 				FS: os.DirFS(tt.dir),
 			})
 

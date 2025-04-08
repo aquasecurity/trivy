@@ -6,140 +6,67 @@ import (
 	"io"
 	"io/fs"
 
-	"github.com/bmatcuk/doublestar/v4"
-
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
-	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-	terraformScanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson/parser"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-var tfPlanExts = []string{
-	"**/*tfplan.json",
-	"**/*tf.json",
-}
-
 type Scanner struct {
-	parser    parser.Parser
-	parserOpt []options.ParserOption
-	debug     debug.Logger
-
-	options                 []options.ScannerOption
-	spec                    string
-	executorOpt             []executor.Option
-	frameworks              []framework.Framework
-	loadEmbeddedPolicies    bool
-	loadEmbeddedLibraries   bool
-	enableEmbeddedLibraries bool
-	policyDirs              []string
-	policyReaders           []io.Reader
+	inner   *terraform.Scanner
+	parser  *parser.Parser
+	logger  *log.Logger
+	options []options.ScannerOption
 }
-
-func (s *Scanner) SetIncludeDeprecatedChecks(bool) {}
-
-func (s *Scanner) SetUseEmbeddedLibraries(b bool) {
-	s.loadEmbeddedLibraries = b
-}
-
-func (s *Scanner) SetSpec(spec string) {
-	s.spec = spec
-}
-
-func (s *Scanner) SetRegoOnly(regoOnly bool) {
-	s.executorOpt = append(s.executorOpt, executor.OptionWithRegoOnly(regoOnly))
-}
-
-func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
-	s.frameworks = frameworks
-}
-
-func (s *Scanner) SetUseEmbeddedPolicies(b bool) {
-	s.loadEmbeddedPolicies = b
-}
-
-func (s *Scanner) SetEmbeddedLibrariesEnabled(enabled bool) {
-	s.enableEmbeddedLibraries = enabled
-}
-
-func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
-	s.policyReaders = readers
-}
-
-func (s *Scanner) SetSkipRequiredCheck(skip bool) {
-	s.parserOpt = append(s.parserOpt, options.ParserWithSkipRequiredCheck(skip))
-}
-
-func (s *Scanner) SetDebugWriter(writer io.Writer) {
-	s.parserOpt = append(s.parserOpt, options.ParserWithDebug(writer))
-	s.executorOpt = append(s.executorOpt, executor.OptionWithDebugWriter(writer))
-	s.debug = debug.New(writer, "tfplan", "scanner")
-}
-
-func (s *Scanner) SetTraceWriter(_ io.Writer) {
-}
-
-func (s *Scanner) SetPerResultTracingEnabled(_ bool) {
-}
-
-func (s *Scanner) SetPolicyDirs(dirs ...string) {
-	s.policyDirs = dirs
-}
-
-func (s *Scanner) SetDataDirs(_ ...string)         {}
-func (s *Scanner) SetPolicyNamespaces(_ ...string) {}
-
-func (s *Scanner) SetPolicyFilesystem(_ fs.FS) {
-	// handled by rego when option is passed on
-}
-
-func (s *Scanner) SetDataFilesystem(_ fs.FS) {
-	// handled by rego when option is passed on
-}
-func (s *Scanner) SetRegoErrorLimit(_ int) {}
 
 func (s *Scanner) Name() string {
 	return "Terraform Plan JSON"
 }
 
-func (s *Scanner) ScanFS(ctx context.Context, inputFS fs.FS, dir string) (scan.Results, error) {
-	var filesFound []string
-
-	for _, ext := range tfPlanExts {
-		files, err := doublestar.Glob(inputFS, ext, doublestar.WithFilesOnly())
-		if err != nil {
-			return nil, fmt.Errorf("unable to scan for terraform plan files: %w", err)
-		}
-		filesFound = append(filesFound, files...)
-	}
+func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Results, error) {
 
 	var results scan.Results
-	for _, f := range filesFound {
-		res, err := s.ScanFile(f, inputFS)
+
+	walkFn := func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
-			return nil, err
+			return err
 		}
+
+		if d.IsDir() {
+			return nil
+		}
+
+		res, err := s.ScanFile(path, fsys)
+		if err != nil {
+			return fmt.Errorf("failed to scan %s: %w", path, err)
+		}
+
 		results = append(results, res...)
+		return nil
 	}
+
+	if err := fs.WalkDir(fsys, dir, walkFn); err != nil {
+		return nil, err
+	}
+
 	return results, nil
 }
 
 func New(opts ...options.ScannerOption) *Scanner {
 	scanner := &Scanner{
-		parser:  *parser.New(),
+		inner:   terraform.New(opts...),
+		parser:  parser.New(),
+		logger:  log.WithPrefix("tfjson scanner"),
 		options: opts,
 	}
-	for _, o := range opts {
-		o(scanner)
-	}
+
 	return scanner
 }
 
 func (s *Scanner) ScanFile(filepath string, fsys fs.FS) (scan.Results, error) {
 
-	s.debug.Log("Scanning file %s", filepath)
+	s.logger.Debug("Scanning file", log.FilePath(filepath))
 	file, err := fsys.Open(filepath)
 	if err != nil {
 		return nil, err
@@ -157,9 +84,8 @@ func (s *Scanner) Scan(reader io.Reader) (scan.Results, error) {
 
 	planFS, err := planFile.ToFS()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to convert plan to FS: %w", err)
 	}
 
-	scanner := terraformScanner.New(s.options...)
-	return scanner.ScanFS(context.TODO(), planFS, ".")
+	return s.inner.ScanFS(context.TODO(), planFS, ".")
 }

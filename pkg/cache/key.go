@@ -13,6 +13,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[string]int, artifactOpt artifact.Option) (string, error) {
@@ -24,13 +25,22 @@ func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[str
 
 	// Write ID, analyzer/handler versions, skipped files/dirs and file patterns
 	keyBase := struct {
-		ID               string
-		AnalyzerVersions analyzer.Versions
-		HookVersions     map[string]int
-		SkipFiles        []string
-		SkipDirs         []string
-		FilePatterns     []string `json:",omitempty"`
-	}{id, analyzerVersions, hookVersions, artifactOpt.WalkerOption.SkipFiles, artifactOpt.WalkerOption.SkipDirs, artifactOpt.FilePatterns}
+		ID                string
+		AnalyzerVersions  analyzer.Versions
+		HookVersions      map[string]int
+		SkipFiles         []string
+		SkipDirs          []string
+		FilePatterns      []string                `json:",omitempty"`
+		DetectionPriority types.DetectionPriority `json:",omitempty"`
+	}{
+		id,
+		analyzerVersions,
+		hookVersions,
+		artifactOpt.WalkerOption.SkipFiles,
+		artifactOpt.WalkerOption.SkipDirs,
+		artifactOpt.FilePatterns,
+		artifactOpt.DetectionPriority,
+	}
 
 	if err := json.NewEncoder(h).Encode(keyBase); err != nil {
 		return "", xerrors.Errorf("json encode error: %w", err)

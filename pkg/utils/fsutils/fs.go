@@ -1,7 +1,6 @@
 package fsutils
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -26,6 +25,10 @@ func HomeDir() string {
 
 	homeDir, _ := os.UserHomeDir()
 	return homeDir
+}
+
+func TrivyHomeDir() string {
+	return filepath.Join(HomeDir(), ".trivy")
 }
 
 // CopyFile copies the file content from scr to dst
@@ -55,18 +58,13 @@ func CopyFile(src, dst string) (int64, error) {
 }
 
 func DirExists(path string) bool {
-	if f, err := os.Stat(path); os.IsNotExist(err) || !f.IsDir() {
-		return false
-	}
-	return true
+	f, err := os.Stat(path)
+	return err == nil && f.IsDir()
 }
 
 func FileExists(filename string) bool {
-	_, err := os.Stat(filename)
-	if errors.Is(err, os.ErrNotExist) {
-		return false
-	}
-	return err == nil
+	f, err := os.Stat(filename)
+	return err == nil && !f.IsDir()
 }
 
 type WalkDirRequiredFunc func(path string, d fs.DirEntry) bool

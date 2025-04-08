@@ -753,6 +753,13 @@ var (
 			Relationship: ftypes.RelationshipIndirect,
 		},
 		{
+			ID:           "await-sleep@0.0.1",
+			Name:         "await-sleep",
+			Version:      "0.0.1",
+			Dev:          true,
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
 			ID:           "debug@4.3.4",
 			Name:         "debug",
 			Version:      "4.3.4",
@@ -841,6 +848,12 @@ var (
 			ID:           "promise@8.1.0",
 			Name:         "promise",
 			Version:      "8.1.0",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "sleep-utils@1.0.3",
+			Name:         "sleep-utils",
+			Version:      "1.0.3",
 			Relationship: ftypes.RelationshipDirect,
 		},
 		{

@@ -12,7 +12,9 @@
 #   severity: HIGH
 #   short_code: foo-bar-baz
 #   recommended_action: "Remove bad stuff"
-
+#   input:
+#     selector:
+#     - type: cloud
 package user.something
 
 deny[res] {

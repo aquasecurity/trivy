@@ -20,63 +20,77 @@ import (
 type pkgLicenseRenderer struct {
 	w           *bytes.Buffer
 	tableWriter *table.Table
-	result      types.Result
 	isTerminal  bool
 	severities  []dbTypes.Severity
 	once        *sync.Once
 }
 
-func NewPkgLicenseRenderer(result types.Result, isTerminal bool, severities []dbTypes.Severity) pkgLicenseRenderer {
-	buf := bytes.NewBuffer([]byte{})
-	return pkgLicenseRenderer{
+func NewPkgLicenseRenderer(buf *bytes.Buffer, isTerminal bool, severities []dbTypes.Severity) *pkgLicenseRenderer {
+	return &pkgLicenseRenderer{
 		w:           buf,
 		tableWriter: newTableWriter(buf, isTerminal),
-		result:      result,
 		isTerminal:  isTerminal,
 		severities:  severities,
 		once:        new(sync.Once),
 	}
 }
 
-func (r pkgLicenseRenderer) Render() string {
+func (r *pkgLicenseRenderer) Render(result types.Result) {
+	// Trivy doesn't currently support showing suppressed licenses
+	// So just skip this result
+	if len(result.Licenses) == 0 {
+		return
+	}
+
 	r.setHeaders()
-	r.setRows()
+	r.setRows(result.Licenses)
 
-	total, summaries := summarize(r.severities, r.countSeverities())
+	total, summaries := summarize(r.severities, r.countSeverities(result.Licenses))
 
-	target := r.result.Target + " (license)"
+	target := result.Target + " (license)"
 	RenderTarget(r.w, target, r.isTerminal)
 	r.printf("Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 
 	r.tableWriter.Render()
 
-	return r.w.String()
+	return
 }
 
-func (r pkgLicenseRenderer) setHeaders() {
-	header := []string{"Package", "License", "Classification", "Severity"}
+func (r *pkgLicenseRenderer) setHeaders() {
+	header := []string{
+		"Package",
+		"License",
+		"Classification",
+		"Severity",
+	}
 	r.tableWriter.SetHeaders(header...)
 }
 
-func (r pkgLicenseRenderer) setRows() {
-	for _, l := range r.result.Licenses {
+func (r *pkgLicenseRenderer) setRows(licenses []types.DetectedLicense) {
+	for _, l := range licenses {
 		var row []string
 		if r.isTerminal {
 			row = []string{
-				l.PkgName, l.Name, colorizeLicenseCategory(l.Category), ColorizeSeverity(l.Severity, l.Severity),
+				l.PkgName,
+				l.Name,
+				colorizeLicenseCategory(l.Category),
+				ColorizeSeverity(l.Severity, l.Severity),
 			}
 		} else {
 			row = []string{
-				l.PkgName, l.Name, string(l.Category), l.Severity,
+				l.PkgName,
+				l.Name,
+				string(l.Category),
+				l.Severity,
 			}
 		}
 		r.tableWriter.AddRow(row...)
 	}
 }
 
-func (r pkgLicenseRenderer) countSeverities() map[string]int {
+func (r *pkgLicenseRenderer) countSeverities(licenses []types.DetectedLicense) map[string]int {
 	severityCount := make(map[string]int)
-	for _, l := range r.result.Licenses {
+	for _, l := range licenses {
 		severityCount[l.Severity]++
 	}
 	return severityCount
@@ -90,48 +104,56 @@ func (r *pkgLicenseRenderer) printf(format string, args ...any) {
 type fileLicenseRenderer struct {
 	w           *bytes.Buffer
 	tableWriter *table.Table
-	result      types.Result
 	isTerminal  bool
 	severities  []dbTypes.Severity
 	once        *sync.Once
 }
 
-func NewFileLicenseRenderer(result types.Result, isTerminal bool, severities []dbTypes.Severity) fileLicenseRenderer {
-	buf := bytes.NewBuffer([]byte{})
-	return fileLicenseRenderer{
+func NewFileLicenseRenderer(buf *bytes.Buffer, isTerminal bool, severities []dbTypes.Severity) *fileLicenseRenderer {
+	return &fileLicenseRenderer{
 		w:           buf,
 		tableWriter: newTableWriter(buf, isTerminal),
-		result:      result,
 		isTerminal:  isTerminal,
 		severities:  severities,
 		once:        new(sync.Once),
 	}
 }
 
-func (r fileLicenseRenderer) Render() string {
+func (r *fileLicenseRenderer) Render(result types.Result) {
+	// Trivy doesn't currently support showing suppressed licenses
+	// So just skip this result
+	if len(result.Licenses) == 0 {
+		return
+	}
+
 	r.setHeaders()
-	r.setRows()
+	r.setRows(result.Licenses)
 
-	total, summaries := summarize(r.severities, r.countSeverities())
+	total, summaries := summarize(r.severities, r.countSeverities(result.Licenses))
 
-	target := r.result.Target + " (license)"
+	target := result.Target + " (license)"
 	RenderTarget(r.w, target, r.isTerminal)
 	r.printf("Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 
 	r.tableWriter.Render()
 
-	return r.w.String()
+	return
 }
 
-func (r fileLicenseRenderer) setHeaders() {
-	header := []string{"Classification", "Severity", "License", "File Location"}
+func (r *fileLicenseRenderer) setHeaders() {
+	header := []string{
+		"Classification",
+		"Severity",
+		"License",
+		"File Location",
+	}
 	r.tableWriter.SetHeaders(header...)
 }
 
-func (r fileLicenseRenderer) setRows() {
-	sort.Slice(r.result.Licenses, func(i, j int) bool {
-		a := r.result.Licenses[i]
-		b := r.result.Licenses[j]
+func (r *fileLicenseRenderer) setRows(licenses []types.DetectedLicense) {
+	sort.Slice(licenses, func(i, j int) bool {
+		a := licenses[i]
+		b := licenses[j]
 		if a.Severity != b.Severity {
 			return 0 < dbTypes.CompareSeverityString(b.Severity, a.Severity)
 		}
@@ -144,24 +166,30 @@ func (r fileLicenseRenderer) setRows() {
 		return a.FilePath < b.FilePath
 	})
 
-	for _, l := range r.result.Licenses {
+	for _, l := range licenses {
 		var row []string
 		if r.isTerminal {
 			row = []string{
-				colorizeLicenseCategory(l.Category), ColorizeSeverity(l.Severity, l.Severity), l.Name, l.FilePath,
+				colorizeLicenseCategory(l.Category),
+				ColorizeSeverity(l.Severity, l.Severity),
+				l.Name,
+				l.FilePath,
 			}
 		} else {
 			row = []string{
-				string(l.Category), l.Severity, l.Name, l.FilePath,
+				string(l.Category),
+				l.Severity,
+				l.Name,
+				l.FilePath,
 			}
 		}
 		r.tableWriter.AddRow(row...)
 	}
 }
 
-func (r fileLicenseRenderer) countSeverities() map[string]int {
+func (r *fileLicenseRenderer) countSeverities(licenses []types.DetectedLicense) map[string]int {
 	severityCount := make(map[string]int)
-	for _, l := range r.result.Licenses {
+	for _, l := range licenses {
 		severityCount[l.Severity]++
 	}
 	return severityCount

@@ -2,7 +2,6 @@ package report_test
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"testing"
 
@@ -13,7 +12,6 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -29,7 +27,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			name: "report with vulnerabilities",
 			input: types.Report{
 				ArtifactName: "debian:9",
-				ArtifactType: artifact.TypeContainerImage,
+				ArtifactType: ftypes.TypeContainerImage,
 				Metadata: types.Metadata{
 					ImageID: "sha256:7640c3f9e75002deb419d5e32738eeff82cf2b3edca3781b4fe1f1f626d11b20",
 					RepoTags: []string{
@@ -41,7 +39,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 				},
 				Results: types.Results{
 					{
-						Target: "library/test",
+						Target: "library/test 1",
 						Class:  types.ClassOSPkg,
 						Packages: []ftypes.Package{
 							{
@@ -93,7 +91,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{
@@ -137,10 +135,10 @@ func TestReportWriter_Sarif(t *testing.T) {
 								Message:   sarif.Message{Text: lo.ToPtr("Package: foo\nInstalled Version: 1.2.3\nVulnerability CVE-2020-0001\nSeverity: HIGH\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)")},
 								Locations: []*sarif.Location{
 									{
-										Message: &sarif.Message{Text: lo.ToPtr("library/test: foo@1.2.3")},
+										Message: &sarif.Message{Text: lo.ToPtr("library/test 1: foo@1.2.3")},
 										PhysicalLocation: &sarif.PhysicalLocation{
 											ArtifactLocation: &sarif.ArtifactLocation{
-												URI:       lo.ToPtr("library/test"),
+												URI:       lo.ToPtr("library/test%201"),
 												URIBaseId: lo.ToPtr("ROOTPATH"),
 											},
 											Region: &sarif.Region{
@@ -152,10 +150,10 @@ func TestReportWriter_Sarif(t *testing.T) {
 										},
 									},
 									{
-										Message: &sarif.Message{Text: lo.ToPtr("library/test: foo@1.2.3")},
+										Message: &sarif.Message{Text: lo.ToPtr("library/test 1: foo@1.2.3")},
 										PhysicalLocation: &sarif.PhysicalLocation{
 											ArtifactLocation: &sarif.ArtifactLocation{
-												URI:       lo.ToPtr("library/test"),
+												URI:       lo.ToPtr("library/test%201"),
 												URIBaseId: lo.ToPtr("ROOTPATH"),
 											},
 											Region: &sarif.Region{
@@ -192,7 +190,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			input: types.Report{
 				Results: types.Results{
 					{
-						Target: "library/test",
+						Target: "library/test 1",
 						Class:  types.ClassConfig,
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
@@ -219,7 +217,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{
@@ -232,7 +230,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 									{
 										ID:               "KSV001",
 										Name:             lo.ToPtr("Misconfiguration"),
-										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("Image tag &#39;:latest&#39; used")},
+										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("Image tag ':latest' used")},
 										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("")},
 										DefaultConfiguration: &sarif.ReportingConfiguration{
 											Level: "error",
@@ -283,13 +281,13 @@ func TestReportWriter_Sarif(t *testing.T) {
 								RuleID:    lo.ToPtr("KSV001"),
 								RuleIndex: lo.ToPtr[uint](0),
 								Level:     lo.ToPtr("error"),
-								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test\nType: \nVulnerability KSV001\nSeverity: HIGH\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)")},
+								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test 1\nType: \nVulnerability KSV001\nSeverity: HIGH\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)")},
 								Locations: []*sarif.Location{
 									{
-										Message: &sarif.Message{Text: lo.ToPtr("library/test")},
+										Message: &sarif.Message{Text: lo.ToPtr("library/test 1")},
 										PhysicalLocation: &sarif.PhysicalLocation{
 											ArtifactLocation: &sarif.ArtifactLocation{
-												URI:       lo.ToPtr("library/test"),
+												URI:       lo.ToPtr("library/test%201"),
 												URIBaseId: lo.ToPtr("ROOTPATH"),
 											},
 											Region: &sarif.Region{
@@ -306,13 +304,13 @@ func TestReportWriter_Sarif(t *testing.T) {
 								RuleID:    lo.ToPtr("KSV002"),
 								RuleIndex: lo.ToPtr[uint](1),
 								Level:     lo.ToPtr("error"),
-								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test\nType: \nVulnerability KSV002\nSeverity: CRITICAL\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)")},
+								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test 1\nType: \nVulnerability KSV002\nSeverity: CRITICAL\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)")},
 								Locations: []*sarif.Location{
 									{
-										Message: &sarif.Message{Text: lo.ToPtr("library/test")},
+										Message: &sarif.Message{Text: lo.ToPtr("library/test 1")},
 										PhysicalLocation: &sarif.PhysicalLocation{
 											ArtifactLocation: &sarif.ArtifactLocation{
-												URI:       lo.ToPtr("library/test"),
+												URI:       lo.ToPtr("library/test%201"),
 												URIBaseId: lo.ToPtr("ROOTPATH"),
 											},
 											Region: &sarif.Region{
@@ -341,7 +339,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			input: types.Report{
 				Results: types.Results{
 					{
-						Target: "library/test",
+						Target: "library/test 1",
 						Class:  types.ClassSecret,
 						Secrets: []types.DetectedSecret{
 							{
@@ -359,7 +357,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{
@@ -373,7 +371,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 										ID:               "aws-secret-access-key",
 										Name:             lo.ToPtr("Secret"),
 										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("AWS Secret Access Key")},
-										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("\u0026#39;AWS_secret_KEY\u0026#39;=\u0026#34;****************************************\u0026#34;")},
+										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("'AWS_secret_KEY'=\"****************************************\"")},
 										DefaultConfiguration: &sarif.ReportingConfiguration{
 											Level: "error",
 										},
@@ -400,13 +398,13 @@ func TestReportWriter_Sarif(t *testing.T) {
 								RuleID:    lo.ToPtr("aws-secret-access-key"),
 								RuleIndex: lo.ToPtr[uint](0),
 								Level:     lo.ToPtr("error"),
-								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test\nType: \nSecret AWS Secret Access Key\nSeverity: CRITICAL\nMatch: 'AWS_secret_KEY'=\"****************************************\"")},
+								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test 1\nType: \nSecret AWS Secret Access Key\nSeverity: CRITICAL\nMatch: 'AWS_secret_KEY'=\"****************************************\"")},
 								Locations: []*sarif.Location{
 									{
-										Message: &sarif.Message{Text: lo.ToPtr("library/test")},
+										Message: &sarif.Message{Text: lo.ToPtr("library/test 1")},
 										PhysicalLocation: &sarif.PhysicalLocation{
 											ArtifactLocation: &sarif.ArtifactLocation{
-												URI:       lo.ToPtr("library/test"),
+												URI:       lo.ToPtr("library/test%201"),
 												URIBaseId: lo.ToPtr("ROOTPATH"),
 											},
 											Region: &sarif.Region{
@@ -453,7 +451,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{
@@ -495,7 +493,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 										Message: sarif.NewTextMessage(""),
 										PhysicalLocation: &sarif.PhysicalLocation{
 											ArtifactLocation: &sarif.ArtifactLocation{
-												URI:       lo.ToPtr("OS Packages"),
+												URI:       lo.ToPtr("OS%20Packages"),
 												URIBaseId: lo.ToPtr("ROOTPATH"),
 											},
 											Region: &sarif.Region{
@@ -523,7 +521,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			name: "no vulns",
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{
@@ -588,11 +586,49 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 					},
+					{
+						Target: "git@github.com:terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.2.0/main.tf",
+						Class:  types.ClassConfig,
+						Type:   ftypes.Terraform,
+						Misconfigurations: []types.DetectedMisconfiguration{
+							{
+								Type:        "Terraform Security Check",
+								ID:          "AVD-GCP-0007",
+								AVDID:       "AVD-GCP-0007",
+								Title:       "Service accounts should not have roles assigned with excessive privileges",
+								Description: "Service accounts should have a minimal set of permissions assigned in order to do their job. They should never have excessive access as if compromised, an attacker can escalate privileges and take over the entire account.",
+								Message:     "Service account is granted a privileged role.",
+								Query:       "data..",
+								Resolution:  "Limit service account access to minimal required set",
+								Severity:    "HIGH",
+								PrimaryURL:  "https://avd.aquasec.com/misconfig/avd-gcp-0007",
+								References: []string{
+									"https://cloud.google.com/iam/docs/understanding-roles",
+									"https://avd.aquasec.com/misconfig/avd-gcp-0007",
+								},
+								Status: "Fail",
+								CauseMetadata: ftypes.CauseMetadata{
+									StartLine: 91,
+									EndLine:   91,
+									Occurrences: []ftypes.Occurrence{
+										{
+											Resource: "google_project_iam_member.workload_identity_sa_bindings[\"roles/storage.admin\"]",
+											Filename: "git@github.com:terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.2.0/main.tf",
+											Location: ftypes.Location{
+												StartLine: 87,
+												EndLine:   93,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: *sarif.NewTool(
@@ -655,6 +691,32 @@ func TestReportWriter_Sarif(t *testing.T) {
 									},
 								},
 							},
+							{
+								RuleID:    lo.ToPtr("AVD-GCP-0007"),
+								RuleIndex: lo.ToPtr(uint(0)),
+								Level:     lo.ToPtr("error"),
+								Message:   *sarif.NewTextMessage("Artifact: github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf\nType: terraform\nVulnerability AVD-GCP-0007\nSeverity: HIGH\nMessage: Service account is granted a privileged role.\nLink: [AVD-GCP-0007](https://avd.aquasec.com/misconfig/avd-gcp-0007)"),
+								Locations: []*sarif.Location{
+									{
+										PhysicalLocation: sarif.NewPhysicalLocation().
+											WithArtifactLocation(
+												&sarif.ArtifactLocation{
+													URI:       lo.ToPtr("github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf"),
+													URIBaseId: lo.ToPtr("ROOTPATH"),
+												},
+											).
+											WithRegion(
+												&sarif.Region{
+													StartLine:   lo.ToPtr(91),
+													StartColumn: lo.ToPtr(1),
+													EndLine:     lo.ToPtr(91),
+													EndColumn:   lo.ToPtr(1),
+												},
+											),
+										Message: sarif.NewTextMessage("github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf"),
+									},
+								},
+							},
 						},
 						ColumnKind: "utf16CodeUnits",
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
@@ -674,7 +736,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			w := report.SarifWriter{
 				Output: sarifWritten,
 			}
-			err := w.Write(context.TODO(), tt.input)
+			err := w.Write(t.Context(), tt.input)
 			require.NoError(t, err)
 
 			result := &sarif.Report{}

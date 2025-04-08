@@ -1,6 +1,8 @@
 package ec2
 
 import (
+	"strconv"
+
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -60,6 +62,15 @@ func (a *sgAdapter) adaptSecurityGroups(modules terraform.Modules) []ec2.Securit
 	for _, resource := range modules.GetResourcesByType("aws_security_group") {
 		securityGroups = append(securityGroups, a.adaptSecurityGroup(resource, modules))
 	}
+
+	for _, resource := range modules.GetResourcesByType("aws_default_security_group") {
+		sg := a.adaptSecurityGroup(resource, modules)
+		sg.IsDefault = iacTypes.Bool(true, sg.Metadata)
+		sg.Description = iacTypes.String("", sg.Metadata)
+		sg.VPCID = iacTypes.String("", sg.Metadata)
+		securityGroups = append(securityGroups, sg)
+	}
+
 	orphanResources := modules.GetResourceByIDs(a.sgRuleIDs.Orphans()...)
 	if len(orphanResources) > 0 {
 		orphanage := ec2.SecurityGroup{
@@ -72,9 +83,9 @@ func (a *sgAdapter) adaptSecurityGroups(modules terraform.Modules) []ec2.Securit
 		}
 		for _, sgRule := range orphanResources {
 			if sgRule.GetAttribute("type").Equals("ingress") {
-				orphanage.IngressRules = append(orphanage.IngressRules, adaptSGRule(sgRule, modules))
+				orphanage.IngressRules = append(orphanage.IngressRules, adaptSGRule(sgRule))
 			} else if sgRule.GetAttribute("type").Equals("egress") {
-				orphanage.EgressRules = append(orphanage.EgressRules, adaptSGRule(sgRule, modules))
+				orphanage.EgressRules = append(orphanage.EgressRules, adaptSGRule(sgRule))
 			}
 		}
 		securityGroups = append(securityGroups, orphanage)
@@ -116,21 +127,21 @@ func (a *sgAdapter) adaptSecurityGroup(resource *terraform.Block, module terrafo
 
 	ingressBlocks := resource.GetBlocks("ingress")
 	for _, ingressBlock := range ingressBlocks {
-		ingressRules = append(ingressRules, adaptSGRule(ingressBlock, module))
+		ingressRules = append(ingressRules, adaptSGRule(ingressBlock))
 	}
 
 	egressBlocks := resource.GetBlocks("egress")
 	for _, egressBlock := range egressBlocks {
-		egressRules = append(egressRules, adaptSGRule(egressBlock, module))
+		egressRules = append(egressRules, adaptSGRule(egressBlock))
 	}
 
 	rulesBlocks := module.GetReferencingResources(resource, "aws_security_group_rule", "security_group_id")
 	for _, ruleBlock := range rulesBlocks {
 		a.sgRuleIDs.Resolve(ruleBlock.ID())
 		if ruleBlock.GetAttribute("type").Equals("ingress") {
-			ingressRules = append(ingressRules, adaptSGRule(ruleBlock, module))
+			ingressRules = append(ingressRules, adaptSGRule(ruleBlock))
 		} else if ruleBlock.GetAttribute("type").Equals("egress") {
-			egressRules = append(egressRules, adaptSGRule(ruleBlock, module))
+			egressRules = append(egressRules, adaptSGRule(ruleBlock))
 		}
 	}
 
@@ -154,7 +165,7 @@ func (a *sgAdapter) adaptSecurityGroup(resource *terraform.Block, module terrafo
 	}
 }
 
-func adaptSGRule(resource *terraform.Block, modules terraform.Modules) ec2.SecurityGroupRule {
+func adaptSGRule(resource *terraform.Block) ec2.SecurityGroupRule {
 	ruleDescAttr := resource.GetAttribute("description")
 	ruleDescVal := ruleDescAttr.AsStringValueOrDefault("", resource)
 
@@ -162,16 +173,6 @@ func adaptSGRule(resource *terraform.Block, modules terraform.Modules) ec2.Secur
 
 	cidrBlocks := resource.GetAttribute("cidr_blocks")
 	ipv6cidrBlocks := resource.GetAttribute("ipv6_cidr_blocks")
-	varBlocks := modules.GetBlocks().OfType("variable")
-
-	for _, vb := range varBlocks {
-		if cidrBlocks.IsNotNil() && cidrBlocks.ReferencesBlock(vb) {
-			cidrBlocks = vb.GetAttribute("default")
-		}
-		if ipv6cidrBlocks.IsNotNil() && ipv6cidrBlocks.ReferencesBlock(vb) {
-			ipv6cidrBlocks = vb.GetAttribute("default")
-		}
-	}
 
 	if cidrBlocks.IsNotNil() {
 		cidrs = cidrBlocks.AsStringValues()
@@ -181,10 +182,19 @@ func adaptSGRule(resource *terraform.Block, modules terraform.Modules) ec2.Secur
 		cidrs = append(cidrs, ipv6cidrBlocks.AsStringValues()...)
 	}
 
+	protocolAddr := resource.GetAttribute("protocol")
+	protocol := protocolAddr.AsStringValueOrDefault("", resource)
+	if protocolAddr.IsNumber() {
+		protocol = iacTypes.String(strconv.Itoa(int(protocolAddr.AsNumber())), protocolAddr.GetMetadata())
+	}
+
 	return ec2.SecurityGroupRule{
 		Metadata:    resource.GetMetadata(),
 		Description: ruleDescVal,
 		CIDRs:       cidrs,
+		FromPort:    resource.GetAttribute("from_port").AsIntValueOrDefault(-1, resource),
+		ToPort:      resource.GetAttribute("to_port").AsIntValueOrDefault(-1, resource),
+		Protocol:    protocol,
 	}
 }
 
@@ -203,6 +213,9 @@ func adaptSingleSGRule(resource *terraform.Block) ec2.SecurityGroupRule {
 		Metadata:    resource.GetMetadata(),
 		Description: description,
 		CIDRs:       cidrs,
+		FromPort:    resource.GetAttribute("from_port").AsIntValueOrDefault(-1, resource),
+		ToPort:      resource.GetAttribute("to_port").AsIntValueOrDefault(-1, resource),
+		Protocol:    resource.GetAttribute("ip_protocol").AsStringValueOrDefault("", resource),
 	}
 }
 
@@ -236,7 +249,7 @@ func adaptNetworkACLRule(resource *terraform.Block) ec2.NetworkACLRule {
 	actionVal := actionAttr.AsStringValueOrDefault("", resource)
 
 	protocolAtrr := resource.GetAttribute("protocol")
-	protocolVal := protocolAtrr.AsStringValueOrDefault("-1", resource)
+	protocolVal := protocolAtrr.AsStringValueOrDefault("", resource)
 
 	cidrAttr := resource.GetAttribute("cidr_block")
 	if cidrAttr.IsNotNil() {
@@ -253,5 +266,7 @@ func adaptNetworkACLRule(resource *terraform.Block) ec2.NetworkACLRule {
 		Action:   actionVal,
 		Protocol: protocolVal,
 		CIDRs:    cidrs,
+		FromPort: resource.GetAttribute("from_port").AsIntValueOrDefault(-1, resource),
+		ToPort:   resource.GetAttribute("to_port").AsIntValueOrDefault(-1, resource),
 	}
 }

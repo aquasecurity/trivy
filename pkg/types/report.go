@@ -5,19 +5,18 @@ import (
 
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
 // Report represents a scan result
 type Report struct {
-	SchemaVersion int           `json:",omitempty"`
-	CreatedAt     time.Time     `json:",omitempty"`
-	ArtifactName  string        `json:",omitempty"`
-	ArtifactType  artifact.Type `json:",omitempty"`
-	Metadata      Metadata      `json:",omitempty"`
-	Results       Results       `json:",omitempty"`
+	SchemaVersion int                 `json:",omitempty"`
+	CreatedAt     time.Time           `json:",omitempty"`
+	ArtifactName  string              `json:",omitempty"`
+	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
+	Metadata      Metadata            `json:",omitempty"`
+	Results       Results             `json:",omitempty"`
 
 	// parsed SBOM
 	BOM *core.BOM `json:"-"` // Just for internal usage, not exported in JSON
@@ -105,6 +104,18 @@ var (
 	}
 )
 
+type TableMode string
+
+const (
+	Summary  TableMode = "summary"
+	Detailed TableMode = "detailed"
+)
+
+var SupportedTableModes = []TableMode{
+	Summary,
+	Detailed,
+}
+
 // Result holds a target and detected vulnerabilities
 type Result struct {
 	Target            string                     `json:"Target"`
@@ -120,8 +131,8 @@ type Result struct {
 
 	// ModifiedFindings holds a list of findings that have been modified from their original state.
 	// This can include vulnerabilities that have been marked as ignored, not affected, or have had
-	// their severity adjusted. It is currently available only in the table format.
-	ModifiedFindings []ModifiedFinding `json:"-"`
+	// their severity adjusted. It's still in an experimental stage and may change in the future.
+	ModifiedFindings []ModifiedFinding `json:"ExperimentalModifiedFindings,omitempty"`
 }
 
 func (r *Result) IsEmpty() bool {
@@ -130,13 +141,12 @@ func (r *Result) IsEmpty() bool {
 }
 
 type MisconfSummary struct {
-	Successes  int
-	Failures   int
-	Exceptions int
+	Successes int
+	Failures  int
 }
 
 func (s MisconfSummary) Empty() bool {
-	return s.Successes == 0 && s.Failures == 0 && s.Exceptions == 0
+	return s.Successes == 0 && s.Failures == 0
 }
 
 // Failed returns whether the result includes any vulnerabilities, misconfigurations or secrets

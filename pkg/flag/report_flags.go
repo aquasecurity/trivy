@@ -6,13 +6,16 @@ import (
 
 	"github.com/mattn/go-shellwords"
 	"github.com/samber/lo"
+	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
@@ -106,6 +109,13 @@ var (
 		ConfigName: "scan.show-suppressed",
 		Usage:      "[EXPERIMENTAL] show suppressed vulnerabilities",
 	}
+	TableModeFlag = Flag[[]string]{
+		Name:       "table-mode",
+		ConfigName: "table-mode",
+		Default:    xstrings.ToStringSlice(types.SupportedTableModes),
+		Values:     xstrings.ToStringSlice(types.SupportedTableModes),
+		Usage:      "[EXPERIMENTAL] tables that will be displayed in 'table' format",
+	}
 )
 
 // ReportFlagGroup composes common printer flag structs
@@ -125,6 +135,7 @@ type ReportFlagGroup struct {
 	Severity        *Flag[[]string]
 	Compliance      *Flag[string]
 	ShowSuppressed  *Flag[bool]
+	TableMode       *Flag[[]string]
 }
 
 type ReportOptions struct {
@@ -142,6 +153,7 @@ type ReportOptions struct {
 	Severities       []dbTypes.Severity
 	Compliance       spec.ComplianceSpec
 	ShowSuppressed   bool
+	TableModes       []types.TableMode
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
@@ -160,6 +172,7 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		Severity:        SeverityFlag.Clone(),
 		Compliance:      ComplianceFlag.Clone(),
 		ShowSuppressed:  ShowSuppressedFlag.Clone(),
+		TableMode:       TableModeFlag.Clone(),
 	}
 }
 
@@ -183,6 +196,7 @@ func (f *ReportFlagGroup) Flags() []Flagger {
 		f.Severity,
 		f.Compliance,
 		f.ShowSuppressed,
+		f.TableMode,
 	}
 }
 
@@ -195,6 +209,7 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 	template := f.Template.Value()
 	dependencyTree := f.DependencyTree.Value()
 	listAllPkgs := f.ListAllPkgs.Value()
+	tableModes := f.TableMode.Value()
 
 	if template != "" {
 		if format == "" {
@@ -224,6 +239,11 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		}
 	}
 
+	// "--table-mode" option is available only with "--format table".
+	if viper.IsSet(TableModeFlag.ConfigName) && format != types.FormatTable {
+		return ReportOptions{}, xerrors.New(`"--table-mode" can be used only with "--format table".`)
+	}
+
 	cs, err := loadComplianceTypes(f.Compliance.Value())
 	if err != nil {
 		return ReportOptions{}, xerrors.Errorf("unable to load compliance spec: %w", err)
@@ -235,6 +255,10 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		if err != nil {
 			return ReportOptions{}, xerrors.Errorf("unable to parse output plugin argument: %w", err)
 		}
+	}
+
+	if viper.IsSet(f.IgnoreFile.ConfigName) && !fsutils.FileExists(f.IgnoreFile.Value()) {
+		return ReportOptions{}, xerrors.Errorf("ignore file not found: %s", f.IgnoreFile.Value())
 	}
 
 	return ReportOptions{
@@ -252,6 +276,7 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		Severities:       toSeverity(f.Severity.Value()),
 		Compliance:       cs,
 		ShowSuppressed:   f.ShowSuppressed.Value(),
+		TableModes:       xstrings.ToTSlice[types.TableMode](tableModes),
 	}, nil
 }
 
@@ -260,7 +285,7 @@ func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
 		return spec.ComplianceSpec{}, xerrors.Errorf("unknown compliance : %v", compliance)
 	}
 
-	cs, err := spec.GetComplianceSpec(compliance)
+	cs, err := spec.GetComplianceSpec(compliance, cache.DefaultDir())
 	if err != nil {
 		return spec.ComplianceSpec{}, xerrors.Errorf("spec loading from file system error: %w", err)
 	}

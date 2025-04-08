@@ -14,7 +14,6 @@ on:
 
 env:
   GH_USER: "aqua-bot"
-  GO_VERSION: '1.22'
 
 jobs:
   release:
@@ -28,7 +27,7 @@ jobs:
       contents: read  # Not required for public repositories, but for clarity
     steps:
       - name: Cosign install
-        uses: sigstore/cosign-installer@59acb6260d9c0ba8f4a2f9d9b48431a222b68e20
+        uses: sigstore/cosign-installer@d7d6bc7722e3daa8354c50bcb52f4837da5e9b6a
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -68,7 +67,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: go.mod
           cache: false # Disable cache to avoid free space issues during `Post Setup Go` step.
 
       - name: Generate SBOM
@@ -91,7 +90,7 @@ jobs:
       - name: GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
-          version: v2.0.0
+          version: v2.1.0
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
@@ -120,7 +119,7 @@ jobs:
             public.ecr.aws/aquasecurity/trivy:canary
 
       - name: Cache Trivy binaries
-        uses: actions/cache@v4.0.2
+        uses: actions/cache@v4
         with:
           path: dist/
           # use 'github.sha' to create a unique cache folder for each run.

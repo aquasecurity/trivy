@@ -1,18 +1,21 @@
-package rego
+package rego_test
 
 import (
 	"testing"
+	"testing/fstest"
 
-	"github.com/open-policy-agent/opa/ast"
+	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	checks "github.com/aquasecurity/trivy-checks"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 )
 
 func Test_EmbeddedLoading(t *testing.T) {
+	rego.LoadAndRegister()
 
 	frameworkRules := rules.GetRegistered()
 	var found bool
@@ -86,21 +89,19 @@ deny[res]{
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			policies, err := LoadPoliciesFromDirs(checks.EmbeddedLibraryFileSystem, ".")
+			policies, err := rego.LoadPoliciesFromDirs(checks.EmbeddedLibraryFileSystem, ".")
 			require.NoError(t, err)
-			newRule, err := ast.ParseModuleWithOpts("/rules/newrule.rego", tc.inputPolicy, ast.ParserOptions{
-				ProcessAnnotation: true,
-			})
+			newRule, err := rego.ParseRegoModule("/rules/newrule.rego", tc.inputPolicy)
 			require.NoError(t, err)
 
 			policies["/rules/newrule.rego"] = newRule
 			switch {
 			case tc.expectedError:
 				assert.Panics(t, func() {
-					RegisterRegoRules(policies)
+					rego.RegisterRegoRules(policies)
 				}, tc.name)
 			default:
-				RegisterRegoRules(policies)
+				rego.RegisterRegoRules(policies)
 			}
 		})
 	}
@@ -186,14 +187,12 @@ deny[res]{
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			policies := make(map[string]*ast.Module)
-			newRule, err := ast.ParseModuleWithOpts("/rules/newrule.rego", tc.inputPolicy, ast.ParserOptions{
-				ProcessAnnotation: true,
-			})
+			newRule, err := rego.ParseRegoModule("/rules/newrule.rego", tc.inputPolicy)
 			require.NoError(t, err)
 
 			policies["/rules/newrule.rego"] = newRule
 			assert.NotPanics(t, func() {
-				RegisterRegoRules(policies)
+				rego.RegisterRegoRules(policies)
 			})
 
 			for _, rule := range rules.GetRegistered() {
@@ -203,4 +202,18 @@ deny[res]{
 			}
 		})
 	}
+}
+
+func TestLoadPoliciesFromDirs(t *testing.T) {
+	fsys := fstest.MapFS{
+		"check.rego":       &fstest.MapFile{Data: []byte(`package user.foo`)},
+		".check.rego":      &fstest.MapFile{Data: []byte(`package user.foo`)},
+		"check_test.rego":  &fstest.MapFile{Data: []byte(`package user.foo_test`)},
+		"test.yaml":        &fstest.MapFile{Data: []byte(`foo: bar`)},
+		"checks/test.rego": &fstest.MapFile{Data: []byte(`package user.checks.foo`)},
+	}
+
+	modules, err := rego.LoadPoliciesFromDirs(fsys, ".")
+	require.NoError(t, err)
+	assert.Len(t, modules, 2)
 }

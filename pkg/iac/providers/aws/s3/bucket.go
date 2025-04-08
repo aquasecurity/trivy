@@ -14,6 +14,7 @@ type Bucket struct {
 	Versioning                    Versioning
 	Logging                       Logging
 	ACL                           iacTypes.StringValue
+	Grants                        []Grant
 	BucketLocation                iacTypes.StringValue
 	AccelerateConfigurationStatus iacTypes.StringValue
 	LifecycleConfiguration        []Rules
@@ -64,4 +65,16 @@ type Contents struct {
 
 type Website struct {
 	Metadata iacTypes.Metadata
+}
+
+type Grant struct {
+	Metadata    iacTypes.Metadata
+	Grantee     Grantee
+	Permissions iacTypes.StringValueList
+}
+
+type Grantee struct {
+	Metadata iacTypes.Metadata
+	URI      iacTypes.StringValue
+	Type     iacTypes.StringValue
 }

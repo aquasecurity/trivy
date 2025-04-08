@@ -26,7 +26,7 @@
           "Name": "guzzlehttp/guzzle",
           "Identifier": {
             "PURL": "pkg:composer/guzzlehttp/guzzle@7.4.4",
-            "UID": "c26bf8868607a91c"
+            "UID": "b08c57e1706dce2d"
           },
           "Version": "7.4.4",
           "Licenses": [
@@ -49,7 +49,7 @@
           "Name": "guzzlehttp/psr7",
           "Identifier": {
             "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3",
-            "UID": "1730859e3ff83ab9"
+            "UID": "75a904f2b589910f"
           },
           "Version": "1.8.3",
           "Licenses": [
@@ -73,7 +73,7 @@
           "PkgName": "guzzlehttp/psr7",
           "PkgIdentifier": {
             "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3",
-            "UID": "1730859e3ff83ab9"
+            "UID": "75a904f2b589910f"
           },
           "InstalledVersion": "1.8.3",
           "FixedVersion": "1.8.4",

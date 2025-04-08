@@ -1,18 +1,20 @@
 package resolvers
 
 import (
+	"net/http"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type Options struct {
 	Source, OriginalSource, Version, OriginalVersion, WorkingDir, Name, ModulePath string
-	DebugLogger                                                                    debug.Logger
+	Logger                                                                         *log.Logger
 	AllowDownloads                                                                 bool
 	SkipCache                                                                      bool
 	RelativePath                                                                   string
 	CacheDir                                                                       string
+	Client                                                                         *http.Client
 }
 
 func (o *Options) hasPrefix(prefixes ...string) bool {
@@ -22,8 +24,4 @@ func (o *Options) hasPrefix(prefixes ...string) bool {
 		}
 	}
 	return false
-}
-
-func (o *Options) Debug(format string, args ...any) {
-	o.DebugLogger.Log(format, args...)
 }

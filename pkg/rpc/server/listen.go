@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -28,26 +29,30 @@ const updateInterval = 1 * time.Hour
 
 // Server represents Trivy server
 type Server struct {
-	appVersion   string
-	addr         string
-	dbDir        string
-	token        string
-	tokenHeader  string
-	dbRepository name.Reference
+	appVersion     string
+	addr           string
+	cacheDir       string
+	dbDir          string
+	token          string
+	tokenHeader    string
+	pathPrefix     string
+	dbRepositories []name.Reference
 
 	// For OCI registries
 	types.RegistryOptions
 }
 
 // NewServer returns an instance of Server
-func NewServer(appVersion, addr, cacheDir, token, tokenHeader string, dbRepository name.Reference, opt types.RegistryOptions) Server {
+func NewServer(appVersion, addr, cacheDir, token, tokenHeader, pathPrefix string, dbRepositories []name.Reference, opt types.RegistryOptions) Server {
 	return Server{
 		appVersion:      appVersion,
 		addr:            addr,
+		cacheDir:        cacheDir,
 		dbDir:           db.Dir(cacheDir),
 		token:           token,
 		tokenHeader:     tokenHeader,
-		dbRepository:    dbRepository,
+		pathPrefix:      pathPrefix,
+		dbRepositories:  dbRepositories,
 		RegistryOptions: opt,
 	}
 }
@@ -58,7 +63,7 @@ func (s Server) ListenAndServe(ctx context.Context, serverCache cache.Cache, ski
 	dbUpdateWg := &sync.WaitGroup{}
 
 	go func() {
-		worker := newDBWorker(db.NewClient(s.dbDir, true, db.WithDBRepository(s.dbRepository)))
+		worker := newDBWorker(db.NewClient(s.dbDir, true, db.WithDBRepository(s.dbRepositories)))
 		for {
 			time.Sleep(updateInterval)
 			if err := worker.update(ctx, s.appVersion, s.dbDir, skipDBUpdate, dbUpdateWg, requestWg, s.RegistryOptions); err != nil {
@@ -67,14 +72,13 @@ func (s Server) ListenAndServe(ctx context.Context, serverCache cache.Cache, ski
 		}
 	}()
 
-	mux := newServeMux(ctx, serverCache, dbUpdateWg, requestWg, s.token, s.tokenHeader, s.dbDir)
+	mux := s.NewServeMux(ctx, serverCache, dbUpdateWg, requestWg)
 	log.Infof("Listening %s...", s.addr)
 
 	return http.ListenAndServe(s.addr, mux)
 }
 
-func newServeMux(ctx context.Context, serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
-	token, tokenHeader, cacheDir string) *http.ServeMux {
+func (s Server) NewServeMux(ctx context.Context, serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup) *http.ServeMux {
 	withWaitGroup := func(base http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Stop processing requests during DB update
@@ -91,13 +95,19 @@ func newServeMux(ctx context.Context, serverCache cache.Cache, dbUpdateWg, reque
 
 	mux := http.NewServeMux()
 
-	scanServer := rpcScanner.NewScannerServer(initializeScanServer(serverCache), nil)
-	scanHandler := withToken(withWaitGroup(scanServer), token, tokenHeader)
-	mux.Handle(rpcScanner.ScannerPathPrefix, gziphandler.GzipHandler(scanHandler))
+	var twirpOpts []any
+	if s.pathPrefix != "" {
+		pathPrefix := "/" + strings.TrimPrefix(s.pathPrefix, "/") // Twirp requires the leading slash
+		twirpOpts = append(twirpOpts, twirp.WithServerPathPrefix(pathPrefix))
+	}
 
-	layerServer := rpcCache.NewCacheServer(NewCacheServer(serverCache), nil)
-	layerHandler := withToken(withWaitGroup(layerServer), token, tokenHeader)
-	mux.Handle(rpcCache.CachePathPrefix, gziphandler.GzipHandler(layerHandler))
+	scanServer := rpcScanner.NewScannerServer(initializeScanServer(serverCache), twirpOpts...)
+	scanHandler := withToken(withWaitGroup(scanServer), s.token, s.tokenHeader)
+	mux.Handle(scanServer.PathPrefix(), gziphandler.GzipHandler(scanHandler))
+
+	cacheServer := rpcCache.NewCacheServer(NewCacheServer(serverCache), twirpOpts...)
+	layerHandler := withToken(withWaitGroup(cacheServer), s.token, s.tokenHeader)
+	mux.Handle(cacheServer.PathPrefix(), gziphandler.GzipHandler(layerHandler))
 
 	mux.HandleFunc("/healthz", func(rw http.ResponseWriter, r *http.Request) {
 		if _, err := rw.Write([]byte("ok")); err != nil {
@@ -108,7 +118,7 @@ func newServeMux(ctx context.Context, serverCache cache.Cache, dbUpdateWg, reque
 	mux.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 
-		if err := json.NewEncoder(w).Encode(version.NewVersionInfo(cacheDir)); err != nil {
+		if err := json.NewEncoder(w).Encode(version.NewVersionInfo(s.cacheDir)); err != nil {
 			log.Error("Version error", log.Err(err))
 		}
 	})

@@ -5,27 +5,33 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"maps"
+	"slices"
 	"strings"
 
-	"github.com/open-policy-agent/opa/ast"
-	"github.com/open-policy-agent/opa/bundle"
+	"github.com/open-policy-agent/opa/v1/ast"
+	"github.com/open-policy-agent/opa/v1/bundle"
 	"github.com/samber/lo"
+
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
+	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
-var builtinNamespaces = map[string]struct{}{
-	"builtin":   {},
-	"defsec":    {},
-	"appshield": {},
-}
+var builtinNamespaces = set.New("builtin", "defsec", "appshield")
 
 func BuiltinNamespaces() []string {
-	return lo.Keys(builtinNamespaces)
+	return builtinNamespaces.Items()
 }
 
 func IsBuiltinNamespace(namespace string) bool {
 	return lo.ContainsBy(BuiltinNamespaces(), func(ns string) bool {
 		return strings.HasPrefix(namespace, ns+".")
 	})
+}
+
+func getModuleNamespace(module *ast.Module) string {
+	return strings.TrimPrefix(module.Package.Path.String(), "data.")
 }
 
 func IsRegoFile(name string) bool {
@@ -44,9 +50,7 @@ func (s *Scanner) loadPoliciesFromReaders(readers []io.Reader) (map[string]*ast.
 		if err != nil {
 			return nil, err
 		}
-		module, err := ast.ParseModuleWithOpts(moduleName, string(data), ast.ParserOptions{
-			ProcessAnnotation: true,
-		})
+		module, err := ParseRegoModule(moduleName, string(data))
 		if err != nil {
 			return nil, err
 		}
@@ -61,26 +65,26 @@ func (s *Scanner) loadEmbedded() error {
 		return fmt.Errorf("failed to load embedded rego libraries: %w", err)
 	}
 	s.embeddedLibs = loaded
-	s.debug.Log("Loaded %d embedded libraries.", len(loaded))
+	s.logger.Debug("Embedded libraries are loaded", log.Int("count", len(loaded)))
 
 	loaded, err = LoadEmbeddedPolicies()
 	if err != nil {
-		return fmt.Errorf("failed to load embedded rego policies: %w", err)
+		return fmt.Errorf("failed to load embedded rego checks: %w", err)
 	}
 	s.embeddedChecks = loaded
-	s.debug.Log("Loaded %d embedded policies.", len(loaded))
+	s.logger.Debug("Embedded checks are loaded", log.Int("count", len(loaded)))
 
 	return nil
 }
 
-func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies bool, srcFS fs.FS, paths []string, readers []io.Reader) error {
+func (s *Scanner) LoadPolicies(srcFS fs.FS) error {
 
 	if s.policies == nil {
 		s.policies = make(map[string]*ast.Module)
 	}
 
 	if s.policyFS != nil {
-		s.debug.Log("Overriding filesystem for checks!")
+		s.logger.Debug("Overriding filesystem for checks")
 		srcFS = s.policyFS
 	}
 
@@ -88,51 +92,44 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 		return err
 	}
 
-	if enableEmbeddedPolicies {
+	if s.includeEmbeddedPolicies {
 		s.policies = lo.Assign(s.policies, s.embeddedChecks)
 	}
 
-	if enableEmbeddedLibraries {
+	if s.includeEmbeddedLibraries {
 		s.policies = lo.Assign(s.policies, s.embeddedLibs)
 	}
 
 	var err error
-	if len(paths) > 0 {
-		loaded, err := LoadPoliciesFromDirs(srcFS, paths...)
+	if len(s.policyDirs) > 0 {
+		loaded, err := LoadPoliciesFromDirs(srcFS, s.policyDirs...)
 		if err != nil {
-			return fmt.Errorf("failed to load rego checks from %s: %w", paths, err)
+			return fmt.Errorf("failed to load rego checks from %s: %w", s.policyDirs, err)
 		}
-		for name, policy := range loaded {
-			s.policies[name] = policy
-		}
-		s.debug.Log("Loaded %d checks from disk.", len(loaded))
+		maps.Copy(s.policies, loaded)
+		s.logger.Debug("Checks from disk are loaded", log.Int("count", len(loaded)))
 	}
 
-	if len(readers) > 0 {
-		loaded, err := s.loadPoliciesFromReaders(readers)
+	if len(s.policyReaders) > 0 {
+		loaded, err := s.loadPoliciesFromReaders(s.policyReaders)
 		if err != nil {
 			return fmt.Errorf("failed to load rego checks from reader(s): %w", err)
 		}
-		for name, policy := range loaded {
-			s.policies[name] = policy
-		}
-		s.debug.Log("Loaded %d checks from reader(s).", len(loaded))
+		maps.Copy(s.policies, loaded)
+		s.logger.Debug("Checks from readers are loaded", log.Int("count", len(loaded)))
 	}
 
 	// gather namespaces
-	uniq := make(map[string]struct{})
+	uniq := set.New[string]()
 	for _, module := range s.policies {
 		namespace := getModuleNamespace(module)
-		uniq[namespace] = struct{}{}
+		uniq.Append(namespace)
 	}
-	var namespaces []string
-	for namespace := range uniq {
-		namespaces = append(namespaces, namespace)
-	}
+	namespaces := uniq.Items()
 
 	dataFS := srcFS
 	if s.dataFS != nil {
-		s.debug.Log("Overriding filesystem for data!")
+		s.logger.Debug("Overriding filesystem for data")
 		dataFS = s.dataFS
 	}
 	store, err := initStore(dataFS, s.dataDirs, namespaces)
@@ -141,7 +138,7 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 	}
 	s.store = store
 
-	return s.compilePolicies(srcFS, paths)
+	return s.compilePolicies(srcFS, s.policyDirs)
 }
 
 func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
@@ -168,15 +165,19 @@ func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
 			continue
 		}
 
-		s.debug.Log("Error occurred while parsing: %s, %s. Trying to fallback to embedded check.", loc, e.Error())
+		s.logger.Debug(
+			"Unable to parse check. This can be due to lack of support in this version. Trying to fallback to embedded check",
+			log.FilePath(loc),
+			log.Err(e),
+		)
 
 		embedded := s.findMatchedEmbeddedCheck(badPolicy)
 		if embedded == nil {
-			s.debug.Log("Failed to find embedded check: %s", loc)
+			s.logger.Debug("Failed to find embedded check, skipping", log.FilePath(loc))
 			continue
 		}
 
-		s.debug.Log("Found embedded check: %s", embedded.Package.Location.File)
+		s.logger.Debug("Found embedded check", log.FilePath(embedded.Package.Location.File))
 		delete(s.policies, loc) // remove bad check
 		s.policies[embedded.Package.Location.File] = embedded
 		delete(s.embeddedChecks, embedded.Package.Location.File) // avoid infinite loop if embedded check contains ref error
@@ -195,13 +196,13 @@ func (s *Scanner) findMatchedEmbeddedCheck(badPolicy *ast.Module) *ast.Module {
 		}
 	}
 
-	badPolicyMeta, err := metadataFromRegoModule(badPolicy)
+	badPolicyMeta, err := MetadataFromAnnotations(badPolicy)
 	if err != nil {
 		return nil
 	}
 
 	for _, embeddedCheck := range s.embeddedChecks {
-		meta, err := metadataFromRegoModule(embeddedCheck)
+		meta, err := MetadataFromAnnotations(embeddedCheck)
 		if err != nil {
 			continue
 		}
@@ -214,7 +215,7 @@ func (s *Scanner) findMatchedEmbeddedCheck(badPolicy *ast.Module) *ast.Module {
 
 func (s *Scanner) prunePoliciesWithError(compiler *ast.Compiler) error {
 	if len(compiler.Errors) > s.regoErrorLimit {
-		s.debug.Log("Error(s) occurred while loading checks")
+		s.logger.Error("Error(s) occurred while loading checks")
 		return compiler.Errors
 	}
 
@@ -222,20 +223,23 @@ func (s *Scanner) prunePoliciesWithError(compiler *ast.Compiler) error {
 		if e.Location == nil {
 			continue
 		}
-		s.debug.Log("Error occurred while parsing: %s, %s", e.Location.File, e.Error())
+		s.logger.Error(
+			"Error occurred while parsing",
+			log.FilePath(e.Location.File), log.Err(e),
+		)
 		delete(s.policies, e.Location.File)
 	}
 	return nil
 }
 
 func (s *Scanner) compilePolicies(srcFS fs.FS, paths []string) error {
+	for path, module := range s.policies {
+		s.handleModulesMetadata(path, module)
+	}
 
-	schemaSet, custom, err := BuildSchemaSetFromPolicies(s.policies, paths, srcFS)
+	schemaSet, err := BuildSchemaSetFromPolicies(s.policies, paths, srcFS, s.customSchemas)
 	if err != nil {
 		return err
-	}
-	if custom {
-		s.inputSchema = nil // discard auto detected input schema in favor of check defined schema
 	}
 
 	compiler := ast.NewCompiler().
@@ -251,49 +255,109 @@ func (s *Scanner) compilePolicies(srcFS fs.FS, paths []string) error {
 		}
 		return s.compilePolicies(srcFS, paths)
 	}
-	retriever := NewMetadataRetriever(compiler)
 
-	if err := s.filterModules(retriever); err != nil {
-		return err
-	}
-	if s.inputSchema != nil {
-		schemaSet := ast.NewSchemaSet()
-		schemaSet.Put(ast.MustParseRef("schema.input"), s.inputSchema)
-		compiler.WithSchemas(schemaSet)
-		compiler.Compile(s.policies)
-		if compiler.Failed() {
-			if err := s.prunePoliciesWithError(compiler); err != nil {
-				return err
-			}
-			return s.compilePolicies(srcFS, paths)
-		}
+	s.retriever = NewMetadataRetriever(compiler)
+
+	if err := s.filterModules(); err != nil {
+		return fmt.Errorf("filter modules: %w", err)
 	}
 	s.compiler = compiler
-	s.retriever = retriever
 	return nil
 }
 
-func (s *Scanner) filterModules(retriever *MetadataRetriever) error {
+func (s *Scanner) handleModulesMetadata(path string, module *ast.Module) {
+	if moduleHasLegacyInputFormat(module) {
+		s.logger.Warn(
+			"Module has legacy input format - please update to use annotations",
+			log.FilePath(module.Package.Location.File),
+			log.String("details", doc.URL("/docs/scanner/misconfiguration/custom", "input")),
+		)
+	}
 
+	if moduleHasLegacyMetadataFormat(module) {
+		s.logger.Warn(
+			"Module has legacy metadata format - please update to use annotations",
+			log.FilePath(module.Package.Location.File),
+			log.String("details", doc.URL("/docs/scanner/misconfiguration/custom", "metadata")),
+		)
+		return
+	}
+
+	metadata, err := MetadataFromAnnotations(module)
+	if err != nil {
+		s.logger.Error(
+			"Failed to retrieve metadata from annotations",
+			log.FilePath(module.Package.Location.File),
+			log.Err(err),
+		)
+		return
+	}
+
+	if metadata != nil {
+		s.moduleMetadata[path] = metadata
+	}
+}
+
+// moduleHasLegacyMetadataFormat checks if the module has a legacy metadata format.
+// Returns true if the metadata is represented as a “__rego_metadata__” rule,
+// which was used before annotations were introduced.
+func moduleHasLegacyMetadataFormat(module *ast.Module) bool {
+	return slices.ContainsFunc(module.Rules, func(rule *ast.Rule) bool {
+		return rule.Head.Name.Equal(ast.Var("__rego_metadata__"))
+	})
+}
+
+// moduleHasLegacyInputFormat checks if the module has a legacy input format.
+// Returns true if the input is represented as a “__rego_input__” rule,
+// which was used before annotations were introduced.
+func moduleHasLegacyInputFormat(module *ast.Module) bool {
+	return slices.ContainsFunc(module.Rules, func(rule *ast.Rule) bool {
+		return rule.Head.Name.Equal(ast.Var("__rego_input__"))
+	})
+}
+
+// filterModules filters the Rego modules based on metadata.
+func (s *Scanner) filterModules() error {
 	filtered := make(map[string]*ast.Module)
 	for name, module := range s.policies {
-		meta, err := retriever.RetrieveMetadata(context.TODO(), module)
+		metadata, err := s.metadataForModule(context.Background(), name, module, nil)
 		if err != nil {
-			return err
+			return fmt.Errorf("retrieve metadata for module %s: %w", name, err)
 		}
-		if len(meta.InputOptions.Selectors) == 0 {
-			s.debug.Log("WARNING: Module %s has no input selectors - it will be loaded for all inputs!", name)
+
+		if s.isModuleApplicable(module, metadata, name) {
 			filtered[name] = module
-			continue
-		}
-		for _, selector := range meta.InputOptions.Selectors {
-			if selector.Type == string(s.sourceType) {
-				filtered[name] = module
-				break
-			}
 		}
 	}
 
 	s.policies = filtered
 	return nil
+}
+
+func (s *Scanner) isModuleApplicable(module *ast.Module, metadata *StaticMetadata, name string) bool {
+	if !metadata.hasAnyFramework(s.frameworks) {
+		return false
+	}
+
+	// ignore disabled built-in checks
+	if IsBuiltinNamespace(getModuleNamespace(module)) && s.disabledCheckIDs.Contains(metadata.ID) {
+		return false
+	}
+
+	if len(metadata.InputOptions.Selectors) == 0 && !metadata.Library {
+		s.logger.Warn(
+			"Module has no input selectors - it will be loaded for all inputs",
+			log.FilePath(module.Package.Location.File),
+			log.String("module", name),
+		)
+	}
+
+	return true
+}
+
+func ParseRegoModule(name, input string) (*ast.Module, error) {
+	return ast.ParseModuleWithOpts(name, input, ast.ParserOptions{
+		ProcessAnnotation: true,
+		RegoVersion:       ast.RegoV0,
+	})
 }

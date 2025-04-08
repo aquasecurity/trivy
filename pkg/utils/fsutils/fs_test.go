@@ -2,28 +2,12 @@ package fsutils
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func touch(t *testing.T, name string) {
-	f, err := os.Create(name)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := f.Close(); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func write(t *testing.T, name, content string) {
-	err := os.WriteFile(name, []byte(content), 0666)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
 
 func TestCopyFile(t *testing.T) {
 	type args struct {
@@ -47,16 +31,17 @@ func TestCopyFile(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			src := tt.args.src
 			if tt.args.src == "" {
-				s, err := os.CreateTemp("", "src")
+				s, err := os.CreateTemp(t.TempDir(), "src")
 				require.NoError(t, err, tt.name)
 				_, err = s.Write(tt.content)
 				require.NoError(t, err, tt.name)
 				src = s.Name()
+				require.NoError(t, s.Close())
 			}
 
 			dst := tt.args.dst
 			if tt.args.dst == "" {
-				d, err := os.CreateTemp("", "dst")
+				d, err := os.CreateTemp(t.TempDir(), "dst")
 				require.NoError(t, err, tt.name)
 				dst = d.Name()
 				require.NoError(t, d.Close(), tt.name)
@@ -71,4 +56,48 @@ func TestCopyFile(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestDirExists(t *testing.T) {
+	t.Run("invalid path", func(t *testing.T) {
+		assert.False(t, DirExists("\000invalid:path"))
+	})
+
+	t.Run("valid path", func(t *testing.T) {
+		assert.True(t, DirExists(t.TempDir()))
+	})
+
+	t.Run("dir not exist", func(t *testing.T) {
+		assert.False(t, DirExists(filepath.Join(t.TempDir(), "tmp")))
+	})
+
+	t.Run("file path", func(t *testing.T) {
+		filePath := filepath.Join(t.TempDir(), "tmp")
+		f, err := os.Create(filePath)
+		require.NoError(t, f.Close())
+		require.NoError(t, err)
+		assert.False(t, DirExists(filePath))
+	})
+}
+
+func TestFileExists(t *testing.T) {
+	t.Run("invalid path", func(t *testing.T) {
+		assert.False(t, FileExists("\000invalid:path"))
+	})
+
+	t.Run("valid path", func(t *testing.T) {
+		filePath := filepath.Join(t.TempDir(), "tmp")
+		f, err := os.Create(filePath)
+		require.NoError(t, f.Close())
+		require.NoError(t, err)
+		assert.True(t, FileExists(filePath))
+	})
+
+	t.Run("file not exist", func(t *testing.T) {
+		assert.False(t, FileExists(filepath.Join(t.TempDir(), "tmp")))
+	})
+
+	t.Run("dir path", func(t *testing.T) {
+		assert.False(t, FileExists(t.TempDir()))
+	})
 }

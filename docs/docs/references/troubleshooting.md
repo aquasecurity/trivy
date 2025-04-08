@@ -79,20 +79,24 @@ $ TRIVY_INSECURE=true trivy image [YOUR_IMAGE]
 ```
 
 ### GitHub Rate limiting
+Trivy uses GitHub API for [VEX repositories](../supply-chain/vex/repo.md).
 
 !!! error
     ``` bash
-    $ trivy image ...
+    $ trivy image --vex repo ...
     ...
     API rate limit exceeded for xxx.xxx.xxx.xxx.
     ```
 
-Specify GITHUB_TOKEN for authentication
-https://developer.github.com/v3/#rate-limiting
+Specify GITHUB_TOKEN for [authentication](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28)
 
 ```
-$ GITHUB_TOKEN=XXXXXXXXXX trivy alpine:3.10
+$ GITHUB_TOKEN=XXXXXXXXXX trivy image --vex repo [YOUR_IMAGE]
 ```
+
+!!! note
+    `GITHUB_TOKEN` doesn't help with the rate limit for the vulnerability database and other assets.
+    See https://github.com/aquasecurity/trivy/discussions/8009
 
 ### Unable to open JAR files
 
@@ -203,10 +207,7 @@ Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database o
 !!! error
     FATAL failed to download vulnerability DB
 
-If trivy is running behind corporate firewall, you have to add the following urls to your allowlist.
-
-- ghcr.io
-- pkg-containers.githubusercontent.com
+If Trivy is running behind corporate firewall, refer to the necessary connectivity requirements as described [here][network].
 
 ### Denied
 
@@ -220,6 +221,11 @@ Please remove the token and try downloading the DB again.
 docker logout ghcr.io
 ```
 
+or
+
+```shell
+unset GITHUB_TOKEN
+```
 
 ## Homebrew
 ### Scope error
@@ -271,4 +277,5 @@ $ trivy clean --all
 ```
 
 [air-gapped]: ../advanced/air-gap.md
-[redis-cache]: ../../vulnerability/examples/cache/#cache-backend
+[network]: ../advanced/air-gap.md#connectivity-requirements
+[redis-cache]: ../configuration/cache.md#redis

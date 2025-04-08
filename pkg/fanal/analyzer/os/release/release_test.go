@@ -1,7 +1,6 @@
 package release
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -71,6 +70,36 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "SUSE Linux Enterprise Micro",
+			inputFile: "testdata/slemicro",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.SLEMicro,
+					Name:   "5.3",
+				},
+			},
+		},
+		{
+			name:      "SUSE Linux Enterprise Micro 6.0",
+			inputFile: "testdata/slemicro6.0",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.SLEMicro,
+					Name:   "6.0",
+				},
+			},
+		},
+		{
+			name:      "SUSE Linux Enterprise Micro 5.4 for Rancher",
+			inputFile: "testdata/slemicro-rancher",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.SLEMicro,
+					Name:   "5.4",
+				},
+			},
+		},
+		{
 			name:      "Photon OS",
 			inputFile: "testdata/photon",
 			want: &analyzer.AnalysisResult{
@@ -87,6 +116,36 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 				OS: types.OS{
 					Family: types.Photon,
 					Name:   "4.0",
+				},
+			},
+		},
+		{
+			name:      "Azure Linux",
+			inputFile: "testdata/azurelinux-3.0",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Azure,
+					Name:   "3.0",
+				},
+			},
+		},
+		{
+			name:      "Mariner 2.0",
+			inputFile: "testdata/mariner-2.0",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.CBLMariner,
+					Name:   "2.0",
+				},
+			},
+		},
+		{
+			name:      "Mariner 1.0",
+			inputFile: "testdata/mariner-1.0",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.CBLMariner,
+					Name:   "1.0",
 				},
 			},
 		},
@@ -114,7 +173,7 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			a := osReleaseAnalyzer{}
-			res, err := a.Analyze(context.Background(), analyzer.AnalysisInput{
+			res, err := a.Analyze(t.Context(), analyzer.AnalysisInput{
 				FilePath: "etc/os-release",
 				Content:  f,
 			})

@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
@@ -29,9 +30,9 @@ type Result struct {
 	severityOverride *severity.Severity
 	regoNamespace    string
 	regoRule         string
-	warning          bool
 	traces           []string
 	fsPath           string
+	renderedCause    RenderedCause
 }
 
 func (r Result) RegoNamespace() string {
@@ -47,10 +48,6 @@ func (r Result) Severity() severity.Severity {
 		return *r.severityOverride
 	}
 	return r.Rule().Severity
-}
-
-func (r *Result) IsWarning() bool {
-	return r.warning
 }
 
 func (r *Result) OverrideSeverity(s severity.Severity) {
@@ -103,6 +100,14 @@ func (r Result) Range() iacTypes.Range {
 
 func (r Result) Traces() []string {
 	return r.traces
+}
+
+type RenderedCause struct {
+	Raw string
+}
+
+func (r *Result) WithRenderedCause(cause RenderedCause) {
+	r.renderedCause = cause
 }
 
 func (r *Result) AbsolutePath(fsRoot string, metadata iacTypes.Metadata) string {
@@ -195,7 +200,6 @@ func (r *Results) AddRego(description, namespace, rule string, traces []string, 
 		description:   description,
 		regoNamespace: namespace,
 		regoRule:      rule,
-		warning:       rule == "warn" || strings.HasPrefix(rule, "warn_"),
 		traces:        traces,
 	}
 	result.metadata = getMetadataFromSource(source)
@@ -317,9 +321,9 @@ func rawToString(raw any) string {
 	}
 	switch t := raw.(type) {
 	case int:
-		return fmt.Sprintf("%d", t)
+		return strconv.Itoa(t)
 	case bool:
-		return fmt.Sprintf("%t", t)
+		return strconv.FormatBool(t)
 	case float64:
 		return fmt.Sprintf("%f", t)
 	case string:

@@ -3,10 +3,10 @@ package lock
 import (
 	"io"
 
-	"github.com/liamg/jfather"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/jfather"
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -76,7 +76,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			}
 
 			if savedDependsOn, ok := depsMap[depId]; ok {
-				dependsOn = utils.UniqueStrings(append(dependsOn, savedDependsOn...))
+				dependsOn = lo.Uniq(append(dependsOn, savedDependsOn...))
 			}
 
 			if len(dependsOn) > 0 {

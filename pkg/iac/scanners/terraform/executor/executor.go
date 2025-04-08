@@ -1,37 +1,36 @@
 package executor
 
 import (
+	"context"
 	"fmt"
-	"runtime"
 	"sort"
+	"strconv"
+	"strings"
 
+	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/zclconf/go-cty/cty"
 
 	adapter "github.com/aquasecurity/trivy/pkg/iac/adapters/terraform"
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
-	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
-	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // Executor scans HCL blocks by running all registered rules against them
 type Executor struct {
 	workspaceName  string
-	debug          debug.Logger
+	logger         *log.Logger
 	resultsFilters []func(scan.Results) scan.Results
 	regoScanner    *rego.Scanner
-	regoOnly       bool
-	frameworks     []framework.Framework
 }
 
 // New creates a new Executor
 func New(options ...Option) *Executor {
 	s := &Executor{
-		regoOnly: false,
+		logger: log.WithPrefix("terraform executor"),
 	}
 	for _, option := range options {
 		option(s)
@@ -39,33 +38,23 @@ func New(options ...Option) *Executor {
 	return s
 }
 
-func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
+func (e *Executor) Execute(ctx context.Context, modules terraform.Modules, basePath string) (scan.Results, error) {
 
-	e.debug.Log("Adapting modules...")
+	e.logger.Debug("Adapting modules...")
 	infra := adapter.Adapt(modules)
-	e.debug.Log("Adapted %d module(s) into defsec state data.", len(modules))
+	e.logger.Debug("Adapted module(s) into state data.", log.Int("count", len(modules)))
 
-	threads := runtime.NumCPU()
-	if threads > 1 {
-		threads--
-	}
-
-	e.debug.Log("Using max routines of %d", threads)
-
-	registeredRules := rules.GetRegistered(e.frameworks...)
-	e.debug.Log("Initialized %d rule(s).", len(registeredRules))
-
-	pool := NewPool(threads, registeredRules, modules, infra, e.regoScanner, e.regoOnly)
-	e.debug.Log("Created pool with %d worker(s) to apply rules.", threads)
-
-	results, err := pool.Run()
+	results, err := e.regoScanner.ScanInput(ctx, types.SourceCloud, rego.Input{
+		Contents: infra.ToRego(),
+		Path:     basePath,
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	e.debug.Log("Finished applying rules.")
+	e.logger.Debug("Finished applying rules.")
 
-	e.debug.Log("Applying ignores...")
+	e.logger.Debug("Applying ignores...")
 	var ignores ignore.Rules
 	for _, module := range modules {
 		ignores = append(ignores, module.Ignores()...)
@@ -76,26 +65,116 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
 		"ignore": attributeIgnorer(modules),
 	}
 
+	// ignore a result based on user input
 	results.Ignore(ignores, ignorers)
 
 	for _, ignored := range results.GetIgnored() {
-		e.debug.Log("Ignored '%s' at '%s'.", ignored.Rule().LongID(), ignored.Range())
+		e.logger.Info("Ignore finding",
+			log.String("rule", ignored.Rule().LongID()),
+			log.String("range", ignored.Range().String()),
+		)
 	}
 
 	results = e.filterResults(results)
 
 	e.sortResults(results)
+	for i, res := range results {
+		if res.Status() != scan.StatusFailed {
+			continue
+		}
+
+		res.WithRenderedCause(e.renderCause(modules, res.Range()))
+		results[i] = res
+	}
+
 	return results, nil
+}
+
+func (e *Executor) renderCause(modules terraform.Modules, causeRng types.Range) scan.RenderedCause {
+	tfBlock := findBlockForCause(modules, causeRng)
+	if tfBlock == nil {
+		e.logger.Debug("No matching Terraform block found", log.String("cause_range", causeRng.String()))
+		return scan.RenderedCause{}
+	}
+
+	block := hclwrite.NewBlock(tfBlock.Type(), normalizeBlockLables(tfBlock))
+
+	if !writeBlock(tfBlock, block, causeRng) {
+		e.logger.Debug("No matching block attribute found", log.String("cause_range", causeRng.String()))
+		return scan.RenderedCause{}
+	}
+
+	f := hclwrite.NewEmptyFile()
+	f.Body().AppendBlock(block)
+
+	cause := string(hclwrite.Format(f.Bytes()))
+	cause = strings.TrimSuffix(cause, "\n")
+	return scan.RenderedCause{Raw: cause}
+}
+
+// normalizeBlockLables removes indexes and keys from labels.
+func normalizeBlockLables(block *terraform.Block) []string {
+	labels := block.Labels()
+	if block.IsExpanded() {
+		nameLabel := labels[len(labels)-1]
+		idx := strings.LastIndex(nameLabel, "[")
+		if idx != -1 {
+			labels[len(labels)-1] = nameLabel[:idx]
+		}
+	}
+
+	return labels
+}
+
+func writeBlock(tfBlock *terraform.Block, block *hclwrite.Block, causeRng types.Range) bool {
+	var found bool
+
+	for _, attr := range tfBlock.Attributes() {
+		if !attr.GetMetadata().Range().Covers(causeRng) || attr.IsLiteral() {
+			continue
+		}
+
+		value := attr.Value()
+		if !value.IsWhollyKnown() {
+			continue
+		}
+
+		block.Body().SetAttributeValue(attr.Name(), value)
+		found = true
+	}
+
+	for _, child := range tfBlock.AllBlocks() {
+		if child.GetMetadata().Range().Covers(causeRng) {
+			childBlock := hclwrite.NewBlock(child.Type(), nil)
+			if writeBlock(child, childBlock, causeRng) {
+				block.Body().AppendBlock(childBlock)
+				found = true
+			}
+		}
+	}
+
+	return found
+}
+
+func findBlockForCause(modules terraform.Modules, causeRng types.Range) *terraform.Block {
+	for _, block := range modules.GetBlocks() {
+		blockRng := block.GetMetadata().Range()
+		if blockRng.GetFilename() == causeRng.GetFilename() && blockRng.Includes(causeRng) {
+			return block
+		}
+	}
+	return nil
 }
 
 func (e *Executor) filterResults(results scan.Results) scan.Results {
 	if len(e.resultsFilters) > 0 && len(results) > 0 {
 		before := len(results.GetIgnored())
-		e.debug.Log("Applying %d results filters to %d results...", len(results), before)
+		e.logger.Debug("Applying results filters...")
 		for _, filter := range e.resultsFilters {
 			results = filter(results)
 		}
-		e.debug.Log("Filtered out %d results.", len(results.GetIgnored())-before)
+		e.logger.Debug("Applied results filters.",
+			log.Int("count", len(results.GetIgnored())-before))
 	}
 
 	return results
@@ -122,26 +201,23 @@ func ignoreByParams(params map[string]string, modules terraform.Modules, m *type
 	if block == nil {
 		return true
 	}
-	for key, val := range params {
-		attr, _ := block.GetNestedAttribute(key)
-		if attr.IsNil() || !attr.Value().IsKnown() {
-			return false
-		}
-		switch attr.Type() {
+	for key, param := range params {
+		val := block.GetValueByPath(key)
+		switch val.Type() {
 		case cty.String:
-			if !attr.Equals(val) {
+			if val.AsString() != param {
 				return false
 			}
 		case cty.Number:
-			bf := attr.Value().AsBigFloat()
+			bf := val.AsBigFloat()
 			f64, _ := bf.Float64()
-			comparableInt := fmt.Sprintf("%d", int(f64))
+			comparableInt := strconv.Itoa(int(f64))
 			comparableFloat := fmt.Sprintf("%f", f64)
-			if val != comparableInt && val != comparableFloat {
+			if param != comparableInt && param != comparableFloat {
 				return false
 			}
 		case cty.Bool:
-			if fmt.Sprintf("%t", attr.IsTrue()) != val {
+			if strconv.FormatBool(val.True()) != param {
 				return false
 			}
 		default:

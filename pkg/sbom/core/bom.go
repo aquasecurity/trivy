@@ -25,11 +25,12 @@ const (
 	PropertyClass         = "Class"
 
 	// Image properties
-	PropertySize       = "Size"
-	PropertyImageID    = "ImageID"
-	PropertyRepoDigest = "RepoDigest"
-	PropertyDiffID     = "DiffID"
-	PropertyRepoTag    = "RepoTag"
+	PropertySize         = "Size"
+	PropertyImageID      = "ImageID"
+	PropertyRepoDigest   = "RepoDigest"
+	PropertyDiffID       = "DiffID"
+	PropertyRepoTag      = "RepoTag"
+	PropertyLabelsPrefix = "Labels"
 
 	// Package properties
 	PropertyPkgID           = "PkgID"
@@ -47,10 +48,13 @@ const (
 	RelationshipDescribes RelationshipType = "describes"
 	RelationshipContains  RelationshipType = "contains"
 	RelationshipDependsOn RelationshipType = "depends_on"
+
+	ExternalReferenceVEX ExternalReferenceType = "external_reference_vex"
 )
 
 type ComponentType string
 type RelationshipType string
+type ExternalReferenceType string
 
 // BOM represents an intermediate representation of a component for SBOM.
 type BOM struct {
@@ -60,6 +64,10 @@ type BOM struct {
 	rootID        uuid.UUID
 	components    map[uuid.UUID]*Component
 	relationships map[uuid.UUID][]Relationship
+
+	// externalReferences is a list of documents that are referenced from this BOM but hosted elsewhere.
+	// They are currently used to look for linked VEX documents
+	externalReferences []ExternalReference
 
 	// Vulnerabilities is a list of vulnerabilities that affect the component.
 	// CycloneDX: vulnerabilities
@@ -191,6 +199,11 @@ type Relationship struct {
 	Type       RelationshipType
 }
 
+type ExternalReference struct {
+	URL  string
+	Type ExternalReferenceType
+}
+
 type Vulnerability struct {
 	dtypes.Vulnerability
 	ID               string
@@ -208,12 +221,13 @@ type Options struct {
 
 func NewBOM(opts Options) *BOM {
 	return &BOM{
-		components:      make(map[uuid.UUID]*Component),
-		relationships:   make(map[uuid.UUID][]Relationship),
-		vulnerabilities: make(map[uuid.UUID][]Vulnerability),
-		purls:           make(map[string][]uuid.UUID),
-		parents:         make(map[uuid.UUID][]uuid.UUID),
-		opts:            opts,
+		components:         make(map[uuid.UUID]*Component),
+		relationships:      make(map[uuid.UUID][]Relationship),
+		vulnerabilities:    make(map[uuid.UUID][]Vulnerability),
+		purls:              make(map[string][]uuid.UUID),
+		parents:            make(map[uuid.UUID][]uuid.UUID),
+		externalReferences: make([]ExternalReference, 0),
+		opts:               opts,
 	}
 }
 
@@ -278,6 +292,10 @@ func (b *BOM) AddVulnerabilities(c *Component, vulns []Vulnerability) {
 	b.vulnerabilities[c.id] = vulns
 }
 
+func (b *BOM) AddExternalReferences(refs []ExternalReference) {
+	b.externalReferences = append(b.externalReferences, refs...)
+}
+
 func (b *BOM) Root() *Component {
 	root, ok := b.components[b.rootID]
 	if !ok {
@@ -305,6 +323,10 @@ func (b *BOM) Relationships() map[uuid.UUID][]Relationship {
 
 func (b *BOM) Vulnerabilities() map[uuid.UUID][]Vulnerability {
 	return b.vulnerabilities
+}
+
+func (b *BOM) ExternalReferences() []ExternalReference {
+	return b.externalReferences
 }
 
 func (b *BOM) Parents() map[uuid.UUID][]uuid.UUID {

@@ -54,9 +54,6 @@ func (s *SPDX) UnmarshalJSON(b []byte) error {
 	if s.BOM == nil {
 		s.BOM = core.NewBOM(core.Options{})
 	}
-	if s.pkgFilePaths == nil {
-		s.pkgFilePaths = make(map[common.ElementID]string)
-	}
 
 	spdxDocument, err := json.Read(bytes.NewReader(b))
 	if err != nil {
@@ -71,6 +68,10 @@ func (s *SPDX) UnmarshalJSON(b []byte) error {
 
 func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 	s.trivySBOM = s.isTrivySBOM(spdxDocument)
+
+	if s.pkgFilePaths == nil {
+		s.pkgFilePaths = make(map[common.ElementID]string)
+	}
 
 	// Parse files and find file paths for packages
 	s.parseFiles(spdxDocument)
@@ -198,9 +199,21 @@ func (s *SPDX) parsePackage(spdxPkg spdx.Package) (*core.Component, error) {
 		}
 	}
 
-	// Attributions
-	for _, attr := range spdxPkg.PackageAttributionTexts {
-		k, v, ok := strings.Cut(attr, ": ")
+	// Trivy stores properties in Annotations
+	// But previous versions stored properties in AttributionTexts
+	// So we need to check both cases to maintain backward compatibility
+	var props []string
+	if len(spdxPkg.Annotations) > 0 {
+		for _, annotation := range spdxPkg.Annotations {
+			props = append(props, annotation.AnnotationComment)
+		}
+	} else if len(spdxPkg.PackageAttributionTexts) > 0 {
+		for _, attr := range spdxPkg.PackageAttributionTexts {
+			props = append(props, attr)
+		}
+	}
+	for _, prop := range props {
+		k, v, ok := strings.Cut(prop, ": ")
 		if !ok {
 			continue
 		}

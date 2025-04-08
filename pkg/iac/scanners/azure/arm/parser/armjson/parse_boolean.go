@@ -1,7 +1,7 @@
 package armjson
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -21,7 +21,7 @@ func (p *parser) parseBoolean(parentMetadata *types.Metadata) (Node, error) {
 	if r == 't' {
 		for _, expected := range trueRunes {
 			if !p.swallowIfEqual(expected) {
-				return nil, fmt.Errorf("unexpected character in boolean value")
+				return nil, errors.New("unexpected character in boolean value")
 			}
 		}
 		n.raw = true
@@ -31,7 +31,7 @@ func (p *parser) parseBoolean(parentMetadata *types.Metadata) (Node, error) {
 
 	for _, expected := range falseRunes {
 		if !p.swallowIfEqual(expected) {
-			return nil, fmt.Errorf("unexpected character in boolean value")
+			return nil, errors.New("unexpected character in boolean value")
 		}
 	}
 	n.raw = false

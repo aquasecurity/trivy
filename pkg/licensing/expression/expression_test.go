@@ -37,7 +37,7 @@ func TestNormalize(t *testing.T) {
 		{
 			name:    "upper",
 			license: "LGPL-2.1-only OR MIT",
-			fn:      strings.ToUpper,
+			fn:      func(license Expression) Expression { return SimpleExpr{strings.ToUpper(license.String()), false} },
 			want:    "LGPL-2.1-ONLY OR MIT",
 		},
 	}

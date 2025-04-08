@@ -47,10 +47,12 @@ jobs:
       - name: Extract version and PR number from commit message
         id: extract_info
         shell: bash
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          echo "version=$( echo "${{ github.event.head_commit.message }}" | sed 's/^release: v\([0-9]\+\.[0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
-          echo "pr_number=$( echo "${{ github.event.head_commit.message }}" | sed 's/.*(\#\([0-9]\+\)).*$/\1/' )" >> $GITHUB_OUTPUT
-          echo "release_branch=release/v$( echo "${{ github.event.head_commit.message }}" | sed 's/^release: v\([0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
+          echo "version=$( echo "$COMMIT_MESSAGE" | sed 's/^release: v\([0-9]\+\.[0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
+          echo "pr_number=$( echo "$COMMIT_MESSAGE" | sed 's/.*(\#\([0-9]\+\)).*$/\1/' )" >> $GITHUB_OUTPUT
+          echo "release_branch=release/v$( echo "$COMMIT_MESSAGE" | sed 's/^release: v\([0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
 
       - name: Tag release
         if: ${{ steps.extract_info.outputs.version }}

@@ -1,7 +1,6 @@
 package db_test
 
 import (
-	"context"
 	"fmt"
 	"testing"
 	"time"
@@ -21,14 +20,16 @@ func TestClient_NeedsUpdate(t *testing.T) {
 	timeNextUpdateDay2 := time.Date(2019, 10, 2, 0, 0, 0, 0, time.UTC)
 
 	tests := []struct {
-		name     string
-		skip     bool
-		metadata metadata.Metadata
-		want     bool
-		wantErr  string
+		name         string
+		skip         bool
+		dbFileExists bool
+		metadata     metadata.Metadata
+		want         bool
+		wantErr      string
 	}{
 		{
-			name: "happy path",
+			name:         "happy path",
+			dbFileExists: true,
 			metadata: metadata.Metadata{
 				Version:    db.SchemaVersion,
 				NextUpdate: timeNextUpdateDay1,
@@ -36,12 +37,19 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			want: true,
 		},
 		{
-			name:     "happy path for first run",
-			metadata: metadata.Metadata{},
-			want:     true,
+			name:         "happy path for first run",
+			dbFileExists: true,
+			metadata:     metadata.Metadata{},
+			want:         true,
 		},
 		{
-			name: "happy path with old schema version",
+			name:         "happy path for first run without trivy.db",
+			dbFileExists: false,
+			want:         true,
+		},
+		{
+			name:         "happy path with old schema version",
+			dbFileExists: true,
 			metadata: metadata.Metadata{
 				Version:    0,
 				NextUpdate: timeNextUpdateDay1,
@@ -49,7 +57,8 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			want: true,
 		},
 		{
-			name: "happy path with --skip-update",
+			name:         "happy path with --skip-update",
+			dbFileExists: true,
 			metadata: metadata.Metadata{
 				Version:    db.SchemaVersion,
 				NextUpdate: timeNextUpdateDay1,
@@ -58,7 +67,8 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			want: false,
 		},
 		{
-			name: "skip downloading DB",
+			name:         "skip downloading DB",
+			dbFileExists: true,
 			metadata: metadata.Metadata{
 				Version:    db.SchemaVersion,
 				NextUpdate: timeNextUpdateDay2,
@@ -66,7 +76,8 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			want: false,
 		},
 		{
-			name: "newer schema version",
+			name:         "newer schema version",
+			dbFileExists: true,
 			metadata: metadata.Metadata{
 				Version:    db.SchemaVersion + 1,
 				NextUpdate: timeNextUpdateDay2,
@@ -75,13 +86,21 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				db.SchemaVersion+1, db.SchemaVersion),
 		},
 		{
-			name:     "--skip-update on the first run",
-			metadata: metadata.Metadata{},
-			skip:     true,
-			wantErr:  "--skip-update cannot be specified on the first run",
+			name:         "--skip-update without trivy.db on the first run",
+			dbFileExists: false,
+			skip:         true,
+			wantErr:      "--skip-update cannot be specified on the first run",
 		},
 		{
-			name: "--skip-update with different schema version",
+			name:         "--skip-update without metadata.json on the first run",
+			dbFileExists: true,
+			metadata:     metadata.Metadata{},
+			skip:         true,
+			wantErr:      "--skip-update cannot be specified on the first run",
+		},
+		{
+			name:         "--skip-update with different schema version",
+			dbFileExists: true,
 			metadata: metadata.Metadata{
 				Version:    0,
 				NextUpdate: timeNextUpdateDay1,
@@ -91,7 +110,8 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				0, db.SchemaVersion),
 		},
 		{
-			name: "happy with old DownloadedAt",
+			name:         "happy with old DownloadedAt",
+			dbFileExists: true,
 			metadata: metadata.Metadata{
 				Version:      db.SchemaVersion,
 				NextUpdate:   timeNextUpdateDay1,
@@ -100,7 +120,8 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			want: true,
 		},
 		{
-			name: "skip downloading DB with recent DownloadedAt",
+			name:         "skip downloading DB with recent DownloadedAt",
+			dbFileExists: true,
 			metadata: metadata.Metadata{
 				Version:      db.SchemaVersion,
 				NextUpdate:   timeNextUpdateDay1,
@@ -119,16 +140,23 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				require.NoError(t, err)
 			}
 
+			if tt.dbFileExists {
+				err := db.Init(dbDir)
+				require.NoError(t, err)
+				t.Cleanup(func() {
+					require.NoError(t, db.Close())
+				})
+			}
+
 			// Set a fake time
-			ctx := clock.With(context.Background(), time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC))
+			ctx := clock.With(t.Context(), time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC))
 
 			client := db.NewClient(dbDir, true)
 			needsUpdate, err := client.NeedsUpdate(ctx, "test", tt.skip)
 
 			switch {
 			case tt.wantErr != "":
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				require.ErrorContains(t, err, tt.wantErr, tt.name)
 			default:
 				require.NoError(t, err, tt.name)
 			}
@@ -139,7 +167,6 @@ func TestClient_NeedsUpdate(t *testing.T) {
 }
 
 func TestClient_Download(t *testing.T) {
-
 	tests := []struct {
 		name    string
 		input   string
@@ -159,14 +186,14 @@ func TestClient_Download(t *testing.T) {
 		{
 			name:    "invalid gzip",
 			input:   "testdata/trivy.db",
-			wantErr: "unexpected EOF",
+			wantErr: "OCI artifact error: failed to download vulnerability DB",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set a fake time
-			ctx := clock.With(context.Background(), time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC))
+			ctx := clock.With(t.Context(), time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC))
 
 			// Fake DB
 			art := dbtest.NewFakeDB(t, tt.input, dbtest.FakeDBOptions{})
@@ -175,7 +202,6 @@ func TestClient_Download(t *testing.T) {
 			client := db.NewClient(dbDir, true, db.WithOCIArtifact(art))
 			err := client.Download(ctx, dbDir, ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
-				require.Error(t, err)
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}

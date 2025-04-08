@@ -1,6 +1,7 @@
 package applier
 
 import (
+	"cmp"
 	"fmt"
 	"strings"
 	"time"
@@ -13,7 +14,9 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
+	"github.com/aquasecurity/trivy/pkg/scan/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 type Config struct {
@@ -31,9 +34,10 @@ type History struct {
 }
 
 func findPackage(e ftypes.Package, s []ftypes.Package) *ftypes.Package {
-	for _, a := range s {
+	for i := range s {
+		a := &s[i] // do not range by value to avoid heap allocations
 		if a.Name == e.Name && a.Version == e.Version && a.Release == e.Release {
-			return &a
+			return a
 		}
 	}
 	return nil
@@ -220,7 +224,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 			mergedLayer.Packages[i].InstalledFiles = installedFiles
 		}
 
-		if mergedLayer.OS.Family != "" {
+		if mergedLayer.OS.Family != "" && pkg.Identifier.PURL == nil {
 			mergedLayer.Packages[i].Identifier.PURL = newPURL(mergedLayer.OS.Family, types.Metadata{OS: &mergedLayer.OS}, pkg)
 		}
 		mergedLayer.Packages[i].Identifier.UID = dependency.UID("", pkg)
@@ -230,6 +234,12 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 			mergedLayer.Packages[i].Licenses = licenses
 		}
 	}
+
+	// De-duplicate same debian packages from different dirs
+	// cf. https://github.com/aquasecurity/trivy/issues/8297
+	mergedLayer.Packages = xslices.ZeroToNil(lo.UniqBy(mergedLayer.Packages, func(pkg ftypes.Package) string {
+		return cmp.Or(pkg.ID, fmt.Sprintf("%s@%s", pkg.Name, utils.FormatVersion(pkg)))
+	}))
 
 	for _, app := range mergedLayer.Applications {
 		for i, pkg := range app.Packages {
@@ -250,6 +260,8 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 
 	// Aggregate python/ruby/node.js packages and JAR files
 	aggregate(&mergedLayer)
+
+	mergedLayer.Sort()
 
 	return mergedLayer
 }

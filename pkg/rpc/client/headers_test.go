@@ -22,7 +22,7 @@ func TestWithCustomHeaders(t *testing.T) {
 		{
 			name: "happy path",
 			args: args{
-				ctx: context.Background(),
+				ctx: t.Context(),
 				customHeaders: http.Header{
 					"Trivy-Token": []string{"token"},
 				},
@@ -34,7 +34,7 @@ func TestWithCustomHeaders(t *testing.T) {
 		{
 			name: "sad path, invalid headers passed in",
 			args: args{
-				ctx: context.Background(),
+				ctx: t.Context(),
 				customHeaders: http.Header{
 					"Content-Type": []string{"token"},
 				},

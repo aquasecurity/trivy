@@ -1,5 +1,6 @@
 # Docs
 
-In this section you can find the complete reference documentation for all the different features and settings that Trivy has to offer.
+Welcome to the Trivy documentation!  
+Here you can find complete and thorough information about every aspect of Trivy, how to use it, features available, and configuration options.
 
-👈 Please use the side-navigation on the left in order to browse the different topics.
+👈 Please use the left side navigation browse the different topics.

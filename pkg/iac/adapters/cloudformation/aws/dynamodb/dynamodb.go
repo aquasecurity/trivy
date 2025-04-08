@@ -9,5 +9,6 @@ import (
 func Adapt(cfFile parser.FileContext) dynamodb.DynamoDB {
 	return dynamodb.DynamoDB{
 		DAXClusters: getClusters(cfFile),
+		Tables:      getTables(cfFile),
 	}
 }

@@ -34,6 +34,7 @@ func Test_Adapt(t *testing.T) {
 							name            = "internal"
 						}
 						require_ssl = true
+						ssl_mode    = "TRUSTED_CLIENT_CERTIFICATE_REQUIRED"
 					}
 				}
 			}
@@ -67,6 +68,7 @@ func Test_Adapt(t *testing.T) {
 								Metadata:   iacTypes.NewTestMetadata(),
 								RequireTLS: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 								EnableIPv4: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+								SSLMode:    iacTypes.StringTest("TRUSTED_CLIENT_CERTIFICATE_REQUIRED"),
 								AuthorizedNetworks: []struct {
 									Name iacTypes.StringValue
 									CIDR iacTypes.StringValue
@@ -76,6 +78,34 @@ func Test_Adapt(t *testing.T) {
 										CIDR: iacTypes.String("108.12.12.0/24", iacTypes.NewTestMetadata()),
 									},
 								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "wrong ip_configuration",
+			terraform: `
+			resource "google_sql_database_instance" "test" {
+				settings {
+					ip_configuration = []
+				}
+			}
+`,
+			expected: sql.SQL{
+				Instances: []sql.DatabaseInstance{
+					{
+
+						Settings: sql.Settings{
+							Flags: sql.Flags{
+								ContainedDatabaseAuthentication: iacTypes.BoolTest(true),
+								CrossDBOwnershipChaining:        iacTypes.BoolTest(true),
+								LogMinDurationStatement:         iacTypes.IntTest(-1),
+								LogTempFileSize:                 iacTypes.IntTest(-1),
+							},
+							IPConfiguration: sql.IPConfiguration{
+								EnableIPv4: iacTypes.BoolTest(true),
 							},
 						},
 					},

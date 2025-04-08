@@ -51,15 +51,15 @@ Resources:
       SecurityGroupIngress:
         - IpProtocol: tcp
           Description: ingress
-          FromPort: 80
+          FromPort: "80"
           ToPort: 80
           CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
-        - IpProtocol: tcp
+        - IpProtocol: -1
           Description: egress
           FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
+          ToPort: "80"
+          CidrIp: "0.0.0.0/0"
   myNetworkAcl:
       Type: AWS::EC2::NetworkAcl
       Properties:
@@ -73,6 +73,9 @@ Resources:
        Protocol: 6
        RuleAction: allow
        CidrBlock: 172.16.0.0/24
+       PortRange:
+         From: 22
+         To: "23"
   myLaunchConfig: 
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
@@ -95,6 +98,17 @@ Resources:
       MetadataOptions:
         HttpTokens: required
         HttpEndpoint: disabled
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+    CidrBlock: 10.0.0.0/16
+  MyFlowLog:
+    Type: AWS::EC2::FlowLog
+    Properties:
+      LogGroupName: FlowLogsGroup
+      ResourceId: !Ref MyVPC
+      ResourceType: VPC
+      TrafficType: ALL
 `,
 			expected: ec2.EC2{
 				Instances: []ec2.Instance{
@@ -137,6 +151,9 @@ Resources:
 								CIDRs: []types.StringValue{
 									types.StringTest("0.0.0.0/0"),
 								},
+								FromPort: types.IntTest(80),
+								ToPort:   types.IntTest(80),
+								Protocol: types.StringTest("tcp"),
 							},
 						},
 						EgressRules: []ec2.SecurityGroupRule{
@@ -145,6 +162,9 @@ Resources:
 								CIDRs: []types.StringValue{
 									types.StringTest("0.0.0.0/0"),
 								},
+								FromPort: types.IntTest(80),
+								ToPort:   types.IntTest(80),
+								Protocol: types.StringTest("-1"),
 							},
 						},
 					},
@@ -159,6 +179,8 @@ Resources:
 								CIDRs: []types.StringValue{
 									types.StringTest("172.16.0.0/24"),
 								},
+								FromPort: types.IntTest(22),
+								ToPort:   types.IntTest(23),
 							},
 						},
 					},
@@ -180,6 +202,11 @@ Resources:
 							HttpTokens:   types.StringTest("required"),
 							HttpEndpoint: types.StringTest("disabled"),
 						},
+					},
+				},
+				VPCs: []ec2.VPC{
+					{
+						FlowLogsEnabled: types.BoolTest(true),
 					},
 				},
 			},
@@ -226,6 +253,7 @@ Resources:
 						},
 					},
 				},
+				VPCs: []ec2.VPC{},
 			},
 		},
 		{
@@ -270,6 +298,7 @@ Resources:
 						},
 					},
 				},
+				VPCs: []ec2.VPC{},
 			},
 		},
 		{
@@ -309,6 +338,8 @@ Resources:
 								CIDRs: []types.StringValue{
 									types.StringTest("0.0.0.0/0"),
 								},
+								FromPort: types.IntTest(-1),
+								ToPort:   types.IntTest(-1),
 							},
 						},
 						EgressRules: []ec2.SecurityGroupRule{
@@ -317,8 +348,63 @@ Resources:
 								CIDRs: []types.StringValue{
 									types.StringTest("0.0.0.0/0"),
 								},
+								FromPort: types.IntTest(-1),
+								ToPort:   types.IntTest(-1),
 							},
 						},
+					},
+				},
+				VPCs: []ec2.VPC{},
+			},
+		},
+		{
+			name: "empty",
+			source: `---
+AWSTemplateFormatVersion: 2010-09-09
+Description: Godd example of excessive ports
+Resources: 
+  NetworkACL:
+    Type: AWS::EC2::NetworkAcl
+  Rule:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      NetworkAclId:
+        Ref: NetworkACL`,
+			expected: ec2.EC2{
+				NetworkACLs: []ec2.NetworkACL{
+					{
+						Rules: []ec2.NetworkACLRule{
+							{
+								Action:   types.StringTest("allow"),
+								Type:     types.StringTest("ingress"),
+								FromPort: types.IntTest(-1),
+								ToPort:   types.IntTest(-1),
+							},
+						},
+					},
+				},
+				VPCs: []ec2.VPC{},
+			},
+		},
+		{
+			name: "VPC flow log ref to other VPC",
+			source: `AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+    CidrBlock: 10.0.0.0/16
+  MyFlowLog:
+    Type: AWS::EC2::FlowLog
+    Properties:
+      LogGroupName: FlowLogsGroup
+      ResourceId: !Ref MyOtherVPC
+      ResourceType: VPC
+      TrafficType: ALL`,
+			expected: ec2.EC2{
+				VPCs: []ec2.VPC{
+					{
+						FlowLogsEnabled: types.BoolTest(false),
 					},
 				},
 			},

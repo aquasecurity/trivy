@@ -3,7 +3,7 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "testdata/fixtures/repo/julia",
-  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/repo/julia-3ff14136-e09f-4df9-80ea-000000000006",
+  "documentNamespace": "http://trivy.dev/filesystem/testdata/fixtures/repo/julia-3ff14136-e09f-4df9-80ea-000000000006",
   "creationInfo": {
     "creators": [
       "Organization: aquasecurity",
@@ -17,11 +17,21 @@
       "SPDXID": "SPDXRef-Application-18fc3597717a3e56",
       "downloadLocation": "NONE",
       "filesAnalyzed": false,
-      "attributionTexts": [
-        "Class: lang-pkgs",
-        "Type: julia"
-      ],
-      "primaryPackagePurpose": "APPLICATION"
+      "primaryPackagePurpose": "APPLICATION",
+      "annotations": [
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "Class: lang-pkgs"
+        },
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "Type: julia"
+        }
+      ]
     },
     {
       "name": "A",
@@ -31,8 +41,8 @@
       "downloadLocation": "NONE",
       "filesAnalyzed": false,
       "sourceInfo": "package found in: Manifest.toml",
-      "licenseConcluded": "NONE",
-      "licenseDeclared": "NONE",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
@@ -40,11 +50,21 @@
           "referenceLocator": "pkg:julia/A@1.9.0?uuid=ead4f63c-334e-11e9-00e6-e7f0a5f21b60"
         }
       ],
-      "attributionTexts": [
-        "PkgID: ead4f63c-334e-11e9-00e6-e7f0a5f21b60",
-        "PkgType: julia"
-      ],
-      "primaryPackagePurpose": "LIBRARY"
+      "primaryPackagePurpose": "LIBRARY",
+      "annotations": [
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "PkgID: ead4f63c-334e-11e9-00e6-e7f0a5f21b60"
+        },
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "PkgType: julia"
+        }
+      ]
     },
     {
       "name": "B",
@@ -54,8 +74,8 @@
       "downloadLocation": "NONE",
       "filesAnalyzed": false,
       "sourceInfo": "package found in: Manifest.toml",
-      "licenseConcluded": "NONE",
-      "licenseDeclared": "NONE",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
@@ -63,11 +83,21 @@
           "referenceLocator": "pkg:julia/B@1.9.0?uuid=f41f7b98-334e-11e9-1257-49272045fb24"
         }
       ],
-      "attributionTexts": [
-        "PkgID: f41f7b98-334e-11e9-1257-49272045fb24",
-        "PkgType: julia"
-      ],
-      "primaryPackagePurpose": "LIBRARY"
+      "primaryPackagePurpose": "LIBRARY",
+      "annotations": [
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "PkgID: f41f7b98-334e-11e9-1257-49272045fb24"
+        },
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "PkgType: julia"
+        }
+      ]
     },
     {
       "name": "B",
@@ -77,8 +107,8 @@
       "downloadLocation": "NONE",
       "filesAnalyzed": false,
       "sourceInfo": "package found in: Manifest.toml",
-      "licenseConcluded": "NONE",
-      "licenseDeclared": "NONE",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
@@ -86,32 +116,42 @@
           "referenceLocator": "pkg:julia/B@1.9.0?uuid=edca9bc6-334e-11e9-3554-9595dbb4349c"
         }
       ],
-      "attributionTexts": [
-        "PkgID: edca9bc6-334e-11e9-3554-9595dbb4349c",
-        "PkgType: julia"
-      ],
-      "primaryPackagePurpose": "LIBRARY"
+      "primaryPackagePurpose": "LIBRARY",
+      "annotations": [
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "PkgID: edca9bc6-334e-11e9-3554-9595dbb4349c"
+        },
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "PkgType: julia"
+        }
+      ]
     },
     {
       "name": "testdata/fixtures/repo/julia",
       "SPDXID": "SPDXRef-Filesystem-1be792dd0077c431",
       "downloadLocation": "NONE",
       "filesAnalyzed": false,
-      "attributionTexts": [
-        "SchemaVersion: 2"
-      ],
-      "primaryPackagePurpose": "SOURCE"
+      "primaryPackagePurpose": "SOURCE",
+      "annotations": [
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "SchemaVersion: 2"
+        }
+      ]
     }
   ],
   "relationships": [
     {
       "spdxElementId": "SPDXRef-Application-18fc3597717a3e56",
       "relatedSpdxElement": "SPDXRef-Package-7784b00da0cb0cb0",
-      "relationshipType": "CONTAINS"
-    },
-    {
-      "spdxElementId": "SPDXRef-Application-18fc3597717a3e56",
-      "relatedSpdxElement": "SPDXRef-Package-960543ac5c5f7e10",
       "relationshipType": "CONTAINS"
     },
     {

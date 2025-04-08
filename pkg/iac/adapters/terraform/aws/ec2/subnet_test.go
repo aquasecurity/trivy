@@ -61,7 +61,7 @@ func Test_adaptSubnet(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			modules := tftestutil.CreateModulesFromSource(t, test.terraform, ".tf")
-			adapted := adaptSubnet(modules.GetBlocks()[0], modules[0])
+			adapted := adaptSubnet(modules.GetBlocks()[0])
 			testutil.AssertDefsecEqual(t, test.expected, adapted)
 		})
 	}

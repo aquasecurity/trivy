@@ -116,7 +116,7 @@ func TestAnalyzeConfig(t *testing.T) {
 				DisabledAnalyzers: tt.args.disabledAnalyzers,
 			})
 			require.NoError(t, err)
-			got := a.AnalyzeImageConfig(context.Background(), tt.args.targetOS, tt.args.config)
+			got := a.AnalyzeImageConfig(t.Context(), tt.args.targetOS, tt.args.config)
 			assert.Equal(t, tt.want, got)
 		})
 	}

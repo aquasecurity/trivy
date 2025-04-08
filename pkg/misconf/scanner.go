@@ -12,17 +12,20 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
+	"github.com/xeipuuv/gojsonschema"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm"
 	cfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation"
 	cfparser "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	dfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/dockerfile"
-	helm2 "github.com/aquasecurity/trivy/pkg/iac/scanners/helm"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/generic"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm"
 	k8sscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
@@ -43,12 +46,18 @@ var enablediacTypes = map[detection.FileType]types.ConfigType{
 	detection.FileTypeHelm:                  types.Helm,
 	detection.FileTypeTerraformPlanJSON:     types.TerraformPlanJSON,
 	detection.FileTypeTerraformPlanSnapshot: types.TerraformPlanSnapshot,
+	detection.FileTypeJSON:                  types.JSON,
+	detection.FileTypeYAML:                  types.YAML,
+}
+
+type DisabledCheck struct {
+	ID      string
+	Scanner string // For logging
+	Reason  string // For logging
 }
 
 type ScannerOption struct {
-	Debug                    bool
 	Trace                    bool
-	RegoOnly                 bool
 	Namespaces               []string
 	PolicyPaths              []string
 	DataPaths                []string
@@ -66,6 +75,15 @@ type ScannerOption struct {
 	CloudFormationParamVars []string
 	TfExcludeDownloaded     bool
 	K8sVersion              string
+
+	FilePatterns      []string
+	ConfigFileSchemas []*ConfigFileSchema
+
+	DisabledChecks []DisabledCheck
+	SkipFiles      []string
+	SkipDirs       []string
+
+	RegoScanner *rego.Scanner
 }
 
 func (o *ScannerOption) Sort() {
@@ -75,44 +93,13 @@ func (o *ScannerOption) Sort() {
 }
 
 type Scanner struct {
-	fileType       detection.FileType
-	scanner        scanners.FSScanner
-	hasFilePattern bool
+	fileType          detection.FileType
+	scanner           scanners.FSScanner
+	hasFilePattern    bool
+	configFileSchemas []*ConfigFileSchema
 }
 
-func NewAzureARMScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeAzureARM, filePatterns, opt)
-}
-
-func NewCloudFormationScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeCloudFormation, filePatterns, opt)
-}
-
-func NewDockerfileScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeDockerfile, filePatterns, opt)
-}
-
-func NewHelmScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeHelm, filePatterns, opt)
-}
-
-func NewKubernetesScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeKubernetes, filePatterns, opt)
-}
-
-func NewTerraformScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeTerraform, filePatterns, opt)
-}
-
-func NewTerraformPlanJSONScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeTerraformPlanJSON, filePatterns, opt)
-}
-
-func NewTerraformPlanSnapshotScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeTerraformPlanSnapshot, filePatterns, opt)
-}
-
-func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) (*Scanner, error) {
+func NewScanner(t detection.FileType, opt ScannerOption) (*Scanner, error) {
 	opts, err := scannerOptions(t, opt)
 	if err != nil {
 		return nil, err
@@ -127,7 +114,7 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 	case detection.FileTypeDockerfile:
 		scanner = dfscanner.NewScanner(opts...)
 	case detection.FileTypeHelm:
-		scanner = helm2.New(opts...)
+		scanner = helm.New(opts...)
 	case detection.FileTypeKubernetes:
 		scanner = k8sscanner.NewScanner(opts...)
 	case detection.FileTypeTerraform:
@@ -136,16 +123,24 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 		scanner = tfpjsonscanner.New(opts...)
 	case detection.FileTypeTerraformPlanSnapshot:
 		scanner = tfprawscanner.New(opts...)
+	case detection.FileTypeYAML:
+		scanner = generic.NewYamlScanner(opts...)
+	case detection.FileTypeJSON:
+		scanner = generic.NewJsonScanner(opts...)
+	default:
+		return nil, xerrors.Errorf("unknown file type: %s", t)
 	}
 
 	return &Scanner{
-		fileType:       t,
-		scanner:        scanner,
-		hasFilePattern: hasFilePattern(t, filePatterns),
+		fileType:          t,
+		scanner:           scanner,
+		hasFilePattern:    hasFilePattern(t, opt.FilePatterns),
+		configFileSchemas: opt.ConfigFileSchemas,
 	}, nil
 }
 
 func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguration, error) {
+	ctx = log.WithContextPrefix(ctx, log.PrefixMisconfiguration)
 	newfs, err := s.filterFS(fsys)
 	if err != nil {
 		return nil, xerrors.Errorf("fs filter error: %w", err)
@@ -154,12 +149,12 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 		return nil, nil
 	}
 
-	log.Debug("Scanning files for misconfigurations...", log.String("scanner", s.scanner.Name()))
+	log.DebugContext(ctx, "Scanning files for misconfigurations...", log.String("scanner", s.scanner.Name()))
 	results, err := s.scanner.ScanFS(ctx, newfs, ".")
 	if err != nil {
 		var invalidContentError *cfparser.InvalidContentError
 		if errors.As(err, &invalidContentError) {
-			log.Error("scan was broken with InvalidContentError", s.scanner.Name(), log.Err(err))
+			log.ErrorContext(ctx, "scan was broken with InvalidContentError", s.scanner.Name(), log.Err(err))
 			return nil, nil
 		}
 		return nil, xerrors.Errorf("scan config error: %w", err)
@@ -185,21 +180,31 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 		return fsys, nil
 	}
 
+	schemas := lo.SliceToMap(s.configFileSchemas, func(schema *ConfigFileSchema) (string, *gojsonschema.Schema) {
+		return schema.path, schema.schema
+	})
+
 	var foundRelevantFile bool
 	filter := func(path string, d fs.DirEntry) (bool, error) {
 		file, err := fsys.Open(path)
 		if err != nil {
 			return false, err
 		}
+		defer file.Close()
+
 		rs, ok := file.(io.ReadSeeker)
 		if !ok {
 			return false, xerrors.Errorf("type assertion error: %w", err)
 		}
-		defer file.Close()
 
-		if !s.hasFilePattern && !detection.IsType(path, rs, s.fileType) {
+		if len(schemas) > 0 &&
+			(s.fileType == detection.FileTypeYAML || s.fileType == detection.FileTypeJSON) &&
+			!detection.IsFileMatchesSchemas(schemas, s.fileType, path, rs) {
+			return true, nil
+		} else if !s.hasFilePattern && !detection.IsType(path, rs, s.fileType) {
 			return true, nil
 		}
+
 		foundRelevantFile = true
 		return false, nil
 	}
@@ -213,12 +218,32 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 	return newfs, nil
 }
 
-func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerOption, error) {
+func InitRegoScanner(opt ScannerOption) (*rego.Scanner, error) {
+	regoOpts, err := initRegoOptions(opt)
+	if err != nil {
+		return nil, xerrors.Errorf("init rego options: %w", err)
+	}
+	regoScanner := rego.NewScanner(regoOpts...)
+	// note: it is safe to pass nil as fsys, since checks and data files will be loaded
+	// from the filesystems passed through the options.
+	if err := regoScanner.LoadPolicies(nil); err != nil {
+		return nil, xerrors.Errorf("load checks: %w", err)
+	}
+	return regoScanner, nil
+}
+
+func initRegoOptions(opt ScannerOption) ([]options.ScannerOption, error) {
+	disabledCheckIDs := lo.Map(opt.DisabledChecks, func(check DisabledCheck, _ int) string {
+		log.Info("Check disabled", log.Prefix(log.PrefixMisconfiguration), log.String("ID", check.ID),
+			log.String("scanner", check.Scanner), log.String("reason", check.Reason))
+		return check.ID
+	})
+
 	opts := []options.ScannerOption{
-		options.ScannerWithSkipRequiredCheck(true),
-		options.ScannerWithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
-		options.ScannerWithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
-		options.ScannerWithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
+		rego.WithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
+		rego.WithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
+		rego.WithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
+		rego.WithDisabledCheckIDs(disabledCheckIDs...),
 	}
 
 	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)
@@ -226,40 +251,55 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 		return nil, err
 	}
 	if policyFS != nil {
-		opts = append(opts, options.ScannerWithPolicyFilesystem(policyFS))
+		opts = append(opts, rego.WithPolicyFilesystem(policyFS))
 	}
 
 	dataFS, dataPaths, err := CreateDataFS(opt.DataPaths, opt.K8sVersion)
 	if err != nil {
 		return nil, err
 	}
+
+	schemas := lo.SliceToMap(opt.ConfigFileSchemas, func(schema *ConfigFileSchema) (string, []byte) {
+		return schema.name, schema.source
+	})
+
 	opts = append(opts,
-		options.ScannerWithDataDirs(dataPaths...),
-		options.ScannerWithDataFilesystem(dataFS),
+		rego.WithDataDirs(dataPaths...),
+		rego.WithDataFilesystem(dataFS),
+		rego.WithCustomSchemas(schemas),
 	)
 
-	if opt.Debug {
-		opts = append(opts, options.ScannerWithDebug(log.NewWriteLogger(log.WithPrefix("misconf"))))
-	}
-
 	if opt.Trace {
-		opts = append(opts, options.ScannerWithPerResultTracing(true))
-	}
-
-	if opt.RegoOnly {
-		opts = append(opts, options.ScannerWithRegoOnly(true))
+		opts = append(opts, rego.WithPerResultTracing(true))
 	}
 
 	if len(policyPaths) > 0 {
-		opts = append(opts, options.ScannerWithPolicyDirs(policyPaths...))
+		opts = append(opts, rego.WithPolicyDirs(policyPaths...))
 	}
 
 	if len(opt.DataPaths) > 0 {
-		opts = append(opts, options.ScannerWithDataDirs(opt.DataPaths...))
+		opts = append(opts, rego.WithDataDirs(opt.DataPaths...))
 	}
 
 	if len(opt.Namespaces) > 0 {
-		opts = append(opts, options.ScannerWithPolicyNamespaces(opt.Namespaces...))
+		opts = append(opts, rego.WithPolicyNamespaces(opt.Namespaces...))
+	}
+	return opts, nil
+}
+
+func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerOption, error) {
+	var opts []options.ScannerOption
+
+	if opt.RegoScanner != nil {
+		opts = append(opts, rego.WithRegoScanner(opt.RegoScanner))
+	} else {
+		// If RegoScanner is not provided, pass the Rego options to IaC scanners
+		// so that they can initialize the Rego scanner themselves
+		regoOpts, err := initRegoOptions(opt)
+		if err != nil {
+			return nil, xerrors.Errorf("init rego opts: %w", err)
+		}
+		opts = append(opts, regoOpts...)
 	}
 
 	switch t {
@@ -299,6 +339,8 @@ func addTFOpts(opts []options.ScannerOption, scannerOption ScannerOption) ([]opt
 	opts = append(opts,
 		terraform.ScannerWithAllDirectories(true),
 		terraform.ScannerWithSkipDownloaded(scannerOption.TfExcludeDownloaded),
+		terraform.ScannerWithSkipFiles(scannerOption.SkipFiles),
+		terraform.ScannerWithSkipDirs(scannerOption.SkipDirs),
 	)
 
 	return opts, nil
@@ -321,27 +363,27 @@ func addCFOpts(opts []options.ScannerOption, scannerOption ScannerOption) ([]opt
 
 func addHelmOpts(opts []options.ScannerOption, scannerOption ScannerOption) []options.ScannerOption {
 	if len(scannerOption.HelmValueFiles) > 0 {
-		opts = append(opts, helm2.ScannerWithValuesFile(scannerOption.HelmValueFiles...))
+		opts = append(opts, helm.ScannerWithValuesFile(scannerOption.HelmValueFiles...))
 	}
 
 	if len(scannerOption.HelmValues) > 0 {
-		opts = append(opts, helm2.ScannerWithValues(scannerOption.HelmValues...))
+		opts = append(opts, helm.ScannerWithValues(scannerOption.HelmValues...))
 	}
 
 	if len(scannerOption.HelmFileValues) > 0 {
-		opts = append(opts, helm2.ScannerWithFileValues(scannerOption.HelmFileValues...))
+		opts = append(opts, helm.ScannerWithFileValues(scannerOption.HelmFileValues...))
 	}
 
 	if len(scannerOption.HelmStringValues) > 0 {
-		opts = append(opts, helm2.ScannerWithStringValues(scannerOption.HelmStringValues...))
+		opts = append(opts, helm.ScannerWithStringValues(scannerOption.HelmStringValues...))
 	}
 
 	if len(scannerOption.HelmAPIVersions) > 0 {
-		opts = append(opts, helm2.ScannerWithAPIVersions(scannerOption.HelmAPIVersions...))
+		opts = append(opts, helm.ScannerWithAPIVersions(scannerOption.HelmAPIVersions...))
 	}
 
 	if scannerOption.HelmKubeVersion != "" {
-		opts = append(opts, helm2.ScannerWithKubeVersion(scannerOption.HelmKubeVersion))
+		opts = append(opts, helm.ScannerWithKubeVersion(scannerOption.HelmKubeVersion))
 	}
 
 	return opts
@@ -360,6 +402,20 @@ func createConfigFS(paths []string) (fs.FS, error) {
 	return mfs, nil
 }
 
+func CheckPathExists(path string) (fs.FileInfo, string, error) {
+	abs, err := filepath.Abs(path)
+	if err != nil {
+		return nil, "", xerrors.Errorf("failed to derive absolute path from '%s': %w", path, err)
+	}
+	fi, err := os.Stat(abs)
+	if errors.Is(err, os.ErrNotExist) {
+		return nil, "", xerrors.Errorf("check file %q not found", abs)
+	} else if err != nil {
+		return nil, "", xerrors.Errorf("file %q stat error: %w", abs, err)
+	}
+	return fi, abs, nil
+}
+
 func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 	if len(policyPaths) == 0 {
 		return nil, nil, nil
@@ -367,15 +423,9 @@ func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 
 	mfs := mapfs.New()
 	for _, p := range policyPaths {
-		abs, err := filepath.Abs(p)
+		fi, abs, err := CheckPathExists(p)
 		if err != nil {
-			return nil, nil, xerrors.Errorf("failed to derive absolute path from '%s': %w", p, err)
-		}
-		fi, err := os.Stat(abs)
-		if errors.Is(err, os.ErrNotExist) {
-			return nil, nil, xerrors.Errorf("policy file %q not found", abs)
-		} else if err != nil {
-			return nil, nil, xerrors.Errorf("file %q stat error: %w", abs, err)
+			return nil, nil, err
 		}
 
 		if fi.IsDir() {
@@ -439,7 +489,7 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 			ruleID = result.Rule().Aliases[0]
 		}
 
-		cause := NewCauseWithCode(result)
+		cause := NewCauseWithCode(result, flattened)
 
 		misconfResult := types.MisconfResult{
 			Namespace: result.RegoNamespace(),
@@ -468,26 +518,20 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 			}
 		}
 
-		if flattened.Warning {
-			misconf.Warnings = append(misconf.Warnings, misconfResult)
-		} else {
-			switch flattened.Status {
-			case scan.StatusPassed:
-				misconf.Successes = append(misconf.Successes, misconfResult)
-			case scan.StatusIgnored:
-				misconf.Exceptions = append(misconf.Exceptions, misconfResult)
-			case scan.StatusFailed:
-				misconf.Failures = append(misconf.Failures, misconfResult)
-			}
+		switch flattened.Status {
+		case scan.StatusPassed:
+			misconf.Successes = append(misconf.Successes, misconfResult)
+		case scan.StatusFailed:
+			misconf.Failures = append(misconf.Failures, misconfResult)
 		}
+
 		misconfs[filePath] = misconf
 	}
 
 	return types.ToMisconfigurations(misconfs)
 }
 
-func NewCauseWithCode(underlying scan.Result) types.CauseMetadata {
-	flat := underlying.Flatten()
+func NewCauseWithCode(underlying scan.Result, flat scan.FlatResult) types.CauseMetadata {
 	cause := types.CauseMetadata{
 		Resource:  flat.Resource,
 		Provider:  flat.RuleProvider.DisplayName(),
@@ -510,6 +554,14 @@ func NewCauseWithCode(underlying scan.Result) types.CauseMetadata {
 	// failures can happen either due to lack of
 	// OR misconfiguration of something
 	if underlying.Status() == scan.StatusFailed {
+		if flat.RenderedCause.Raw != "" {
+			highlighted, _ := scan.Highlight(flat.Location.Filename, flat.RenderedCause.Raw, scan.DarkTheme)
+			cause.RenderedCause = types.RenderedCause{
+				Raw:         flat.RenderedCause.Raw,
+				Highlighted: highlighted,
+			}
+		}
+
 		if code, err := underlying.GetCode(); err == nil {
 			cause.Code = types.Code{
 				Lines: lo.Map(code.Lines, func(l scan.Line, i int) types.Line {

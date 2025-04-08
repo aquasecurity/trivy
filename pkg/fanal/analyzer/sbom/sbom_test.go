@@ -1,7 +1,6 @@
 package sbom
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -28,7 +27,35 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type: types.Jar,
+						Type:     types.Bitnami,
+						FilePath: "opt/bitnami/elasticsearch",
+						Packages: types.Packages{
+							{
+								ID:       "elasticsearch@8.9.1",
+								Name:     "elasticsearch",
+								Version:  "8.9.1",
+								Arch:     "arm64",
+								Licenses: []string{"Elastic-2.0"},
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeBitnami,
+										Name:    "elasticsearch",
+										Version: "8.9.1",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "arm64",
+											},
+										},
+									},
+									BOMRef: "elasticsearch",
+								},
+							},
+						},
+					},
+					{
+						Type:     types.Jar,
+						FilePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.spdx",
 						Packages: types.Packages{
 							{
 								ID:       "co.elastic.apm:apm-agent:1.36.0",
@@ -92,33 +119,6 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 							},
 						},
 					},
-					{
-						Type:     types.Bitnami,
-						FilePath: "opt/bitnami/elasticsearch",
-						Packages: types.Packages{
-							{
-								ID:       "elasticsearch@8.9.1",
-								Name:     "elasticsearch",
-								Version:  "8.9.1",
-								Arch:     "arm64",
-								Licenses: []string{"Elastic-2.0"},
-								Identifier: types.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    packageurl.TypeBitnami,
-										Name:    "elasticsearch",
-										Version: "8.9.1",
-										Qualifiers: packageurl.Qualifiers{
-											{
-												Key:   "arch",
-												Value: "arm64",
-											},
-										},
-									},
-									BOMRef: "elasticsearch",
-								},
-							},
-						},
-					},
 				},
 			},
 			wantErr: require.NoError,
@@ -130,7 +130,8 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type: types.Jar,
+						Type:     types.Jar,
+						FilePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.cdx",
 						Packages: types.Packages{
 							{
 								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
@@ -160,6 +161,59 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Version:   "1.36.0",
 									},
 									BOMRef: "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: require.NoError,
+		},
+		{
+			name:     "valid sbom spdx file without application component",
+			file:     "testdata/sbom-without-app-component.spdx.json",
+			filePath: "layers/sbom/launch/buildpacksio_lifecycle/launcher/sbom.spdx.json",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.GoBinary,
+						FilePath: "layers/sbom/launch/buildpacksio_lifecycle/launcher/sbom.spdx.json",
+						Packages: types.Packages{
+							{
+								ID:      "github.com/buildpacks/lifecycle@v0.20.2",
+								Name:    "github.com/buildpacks/lifecycle",
+								Version: "v0.20.2",
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "github.com/buildpacks",
+										Name:      "lifecycle",
+										Version:   "v0.20.2",
+									},
+									BOMRef: "Package-go-module-github.com-buildpacks-lifecycle-89c3bd8d4c2e75b7",
+								},
+								Licenses: []string{
+									"NOASSERTION",
+								},
+							},
+						},
+					},
+					{
+						Type:     types.Jar,
+						FilePath: "layers/sbom/launch/buildpacksio_lifecycle/launcher/sbom.spdx.json",
+						Packages: types.Packages{
+							{
+								ID:      "co.elastic.apm:apm-agent:1.36.0",
+								Name:    "co.elastic.apm:apm-agent",
+								Version: "1.36.0",
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "co.elastic.apm",
+										Name:      "apm-agent",
+										Version:   "1.36.0",
+									},
+									BOMRef: "Package-f0db45781e6813a1",
 								},
 							},
 						},
@@ -246,6 +300,43 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			wantErr: require.NoError,
 		},
 		{
+			name:     "valid ca-certificates spdx file",
+			file:     "testdata/ca-certificates.spdx.json",
+			filePath: "opt/bitnami/ca-certificates/.spdx-ca-certificates.spdx",
+			want: &analyzer.AnalysisResult{
+				PackageInfos: []types.PackageInfo{
+					{
+						FilePath: "opt/bitnami/ca-certificates/.spdx-ca-certificates.spdx",
+						Packages: types.Packages{
+							{
+								ID:         "ca-certificates@20230311",
+								Name:       "ca-certificates",
+								Version:    "20230311",
+								Arch:       "all",
+								SrcName:    "ca-certificates",
+								SrcVersion: "20230311",
+								Licenses:   []string{"GPL-2.0-or-later AND GPL-2.0-only AND MPL-2.0"},
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeDebian,
+										Namespace: "debian",
+										Name:      "ca-certificates",
+										Version:   "20230311",
+										Qualifiers: packageurl.Qualifiers{
+											{Key: "arch", Value: "all"},
+											{Key: "distro", Value: "debian-12.9"},
+										},
+									},
+									BOMRef: "Package-c1d4029824045f75",
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: require.NoError,
+		},
+		{
 			name:     "invalid spdx file",
 			file:     "testdata/invalid_spdx.json",
 			filePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.spdx",
@@ -260,7 +351,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			a := sbomAnalyzer{}
-			got, err := a.Analyze(context.Background(), analyzer.AnalysisInput{
+			got, err := a.Analyze(t.Context(), analyzer.AnalysisInput{
 				FilePath: tt.filePath,
 				Content:  f,
 			})

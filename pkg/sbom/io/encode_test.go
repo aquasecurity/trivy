@@ -3,12 +3,12 @@ package io_test
 import (
 	"testing"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
@@ -30,7 +30,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "debian:12",
-				ArtifactType:  artifact.TypeContainerImage,
+				ArtifactType:  ftypes.TypeContainerImage,
 				Metadata: types.Metadata{
 					OS: &ftypes.OS{
 						Family: ftypes.Debian,
@@ -42,6 +42,13 @@ func TestEncoder_Encode(t *testing.T) {
 					},
 					RepoDigests: []string{
 						"debian@sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",
+					},
+					ImageConfig: v1.ConfigFile{
+						Config: v1.Config{
+							Labels: map[string]string{
+								"vendor": "aquasecurity",
+							},
+						},
 					},
 				},
 				Results: []types.Result{
@@ -163,6 +170,61 @@ func TestEncoder_Encode(t *testing.T) {
 							},
 						},
 					},
+					{
+						Target: "trivy",
+						Type:   ftypes.GoBinary,
+						Class:  types.ClassLangPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:      "github.com/aquasecurity/trivy@v0.57.1",
+								Name:    "github.com/aquasecurity/trivy",
+								Version: "v0.57.1",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "106fee7e57f0b952",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "github.com/aquasecurity",
+										Name:      "trivy",
+										Version:   "v0.57.1",
+									},
+								},
+								Relationship: ftypes.RelationshipRoot,
+								DependsOn: []string{
+									"github.com/aquasecurity/go-version@v0.0.0-20240603093900-cf8a8d29271d",
+									"stdlib@v1.22.9",
+								},
+							},
+							{
+								ID:      "stdlib@v1.22.9",
+								Name:    "stdlib",
+								Version: "v1.22.9",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "62e7c8aaebd94b1e",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGolang,
+										Name:    "stdlib",
+										Version: "v1.22.9",
+									},
+								},
+								Relationship: ftypes.RelationshipDirect,
+							},
+							{
+								ID:      "github.com/aquasecurity/go-version@v0.0.0-20240603093900-cf8a8d29271d",
+								Name:    "github.com/aquasecurity/go-version",
+								Version: "v0.0.0-20240603093900-cf8a8d29271d",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "350aed171d8ebed5",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "github.com/aquasecurity",
+										Name:      "go-version",
+										Version:   "v0.0.0-20240603093900-cf8a8d29271d",
+									},
+								},
+								Relationship: ftypes.RelationshipUnknown,
+							},
+						},
+					},
 				},
 			},
 			wantComponents: map[uuid.UUID]*core.Component{
@@ -185,6 +247,10 @@ func TestEncoder_Encode(t *testing.T) {
 						BOMRef: "pkg:oci/debian@sha256%3A4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90?repository_url=index.docker.io%2Flibrary%2Fdebian",
 					},
 					Properties: []core.Property{
+						{
+							Name:  "Labels:vendor",
+							Value: "aquasecurity",
+						},
 						{
 							Name:  core.PropertyRepoDigest,
 							Value: "debian@sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",
@@ -339,6 +405,100 @@ func TestEncoder_Encode(t *testing.T) {
 						BOMRef: "3ff14136-e09f-4df9-80ea-000000000006",
 					},
 				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000007"): {
+					Type: core.TypeApplication,
+					Name: "trivy",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyClass,
+							Value: "lang-pkgs",
+						},
+						{
+							Name:  core.PropertyType,
+							Value: "gobinary",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000007",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000008"): {
+					Type:    core.TypeLibrary,
+					Name:    "github.com/aquasecurity/trivy",
+					Version: "v0.57.1",
+					SrcFile: "trivy",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "github.com/aquasecurity/trivy@v0.57.1",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "gobinary",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "106fee7e57f0b952",
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeGolang,
+							Namespace: "github.com/aquasecurity",
+							Name:      "trivy",
+							Version:   "v0.57.1",
+						},
+						BOMRef: "pkg:golang/github.com/aquasecurity/trivy@v0.57.1",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000009"): {
+					Type:    core.TypeLibrary,
+					Name:    "stdlib",
+					Version: "v1.22.9",
+					SrcFile: "trivy",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "stdlib@v1.22.9",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "gobinary",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "62e7c8aaebd94b1e",
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeGolang,
+							Name:    "stdlib",
+							Version: "v1.22.9",
+						},
+						BOMRef: "pkg:golang/stdlib@v1.22.9",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000010"): {
+					Type:    core.TypeLibrary,
+					Name:    "github.com/aquasecurity/go-version",
+					Version: "v0.0.0-20240603093900-cf8a8d29271d",
+					SrcFile: "trivy",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "github.com/aquasecurity/go-version@v0.0.0-20240603093900-cf8a8d29271d",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "gobinary",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "350aed171d8ebed5",
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeGolang,
+							Namespace: "github.com/aquasecurity",
+							Name:      "go-version",
+							Version:   "v0.0.0-20240603093900-cf8a8d29271d",
+						},
+						BOMRef: "pkg:golang/github.com/aquasecurity/go-version@v0.0.0-20240603093900-cf8a8d29271d",
+					},
+				},
 			},
 			wantRels: map[uuid.UUID][]core.Relationship{
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
@@ -354,12 +514,12 @@ func TestEncoder_Encode(t *testing.T) {
 						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"),
 						Type:       core.RelationshipContains,
 					},
-				},
-				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
 					{
-						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000007"),
 						Type:       core.RelationshipContains,
 					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
 					{
 						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"),
 						Type:       core.RelationshipContains,
@@ -374,6 +534,24 @@ func TestEncoder_Encode(t *testing.T) {
 				},
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): nil,
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"): nil,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000007"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000008"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000008"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000010"),
+						Type:       core.RelationshipDependsOn,
+					},
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000009"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000009"): nil,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000010"): nil,
 			},
 			wantVulns: map[uuid.UUID][]core.Vulnerability{
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
@@ -416,7 +594,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "gobinary",
-				ArtifactType:  artifact.TypeFilesystem,
+				ArtifactType:  ftypes.TypeFilesystem,
 				Results: []types.Result{
 					{
 						Target: "test",
@@ -437,6 +615,7 @@ func TestEncoder_Encode(t *testing.T) {
 								Relationship: ftypes.RelationshipRoot,
 								DependsOn: []string{
 									"github.com/org/direct@v1.0.0",
+									"stdlib@v1.22.1",
 								},
 							},
 							{
@@ -449,7 +628,7 @@ func TestEncoder_Encode(t *testing.T) {
 										Type:      packageurl.TypeGolang,
 										Namespace: "github.com/org",
 										Name:      "direct",
-										Version:   "1.0.0",
+										Version:   "v1.0.0",
 									},
 								},
 								Relationship: ftypes.RelationshipDirect,
@@ -460,28 +639,28 @@ func TestEncoder_Encode(t *testing.T) {
 							{
 								ID:      "github.com/org/indirect@v2.0.0",
 								Name:    "github.com/org/indirect",
-								Version: "2.0.0",
+								Version: "v2.0.0",
 								Identifier: ftypes.PkgIdentifier{
 									UID: "955AB4E7E24AC085",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeGolang,
 										Namespace: "github.com/org",
 										Name:      "indirect",
-										Version:   "2.0.0",
+										Version:   "v2.0.0",
 									},
 								},
 								Relationship: ftypes.RelationshipIndirect,
 							},
 							{
-								ID:      "stdlib@1.22.1",
+								ID:      "stdlib@v1.22.1",
 								Name:    "stdlib",
-								Version: "1.22.1",
+								Version: "v1.22.1",
 								Identifier: ftypes.PkgIdentifier{
 									UID: "49728B9674E318A6",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGolang,
 										Name:    "stdlib",
-										Version: "1.22.1",
+										Version: "v1.22.1",
 									},
 								},
 								Relationship: ftypes.RelationshipDirect,
@@ -549,7 +728,7 @@ func TestEncoder_Encode(t *testing.T) {
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
 					Type:    core.TypeLibrary,
 					Name:    "github.com/org/direct",
-					Version: "1.0.0",
+					Version: "v1.0.0",
 					SrcFile: "test",
 					Properties: []core.Property{
 						{
@@ -567,15 +746,15 @@ func TestEncoder_Encode(t *testing.T) {
 							Type:      packageurl.TypeGolang,
 							Namespace: "github.com/org",
 							Name:      "direct",
-							Version:   "1.0.0",
+							Version:   "v1.0.0",
 						},
-						BOMRef: "pkg:golang/github.com/org/direct@1.0.0",
+						BOMRef: "pkg:golang/github.com/org/direct@v1.0.0",
 					},
 				},
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): {
 					Type:    core.TypeLibrary,
 					Name:    "github.com/org/indirect",
-					Version: "2.0.0",
+					Version: "v2.0.0",
 					SrcFile: "test",
 					Properties: []core.Property{
 						{
@@ -593,20 +772,20 @@ func TestEncoder_Encode(t *testing.T) {
 							Type:      packageurl.TypeGolang,
 							Namespace: "github.com/org",
 							Name:      "indirect",
-							Version:   "2.0.0",
+							Version:   "v2.0.0",
 						},
-						BOMRef: "pkg:golang/github.com/org/indirect@2.0.0",
+						BOMRef: "pkg:golang/github.com/org/indirect@v2.0.0",
 					},
 				},
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"): {
 					Type:    core.TypeLibrary,
 					Name:    "stdlib",
-					Version: "1.22.1",
+					Version: "v1.22.1",
 					SrcFile: "test",
 					Properties: []core.Property{
 						{
 							Name:  core.PropertyPkgID,
-							Value: "stdlib@1.22.1",
+							Value: "stdlib@v1.22.1",
 						},
 						{
 							Name:  core.PropertyPkgType,
@@ -618,9 +797,9 @@ func TestEncoder_Encode(t *testing.T) {
 						PURL: &packageurl.PackageURL{
 							Type:    packageurl.TypeGolang,
 							Name:    "stdlib",
-							Version: "1.22.1",
+							Version: "v1.22.1",
 						},
-						BOMRef: "pkg:golang/stdlib@1.22.1",
+						BOMRef: "pkg:golang/stdlib@v1.22.1",
 					},
 				},
 			},
@@ -659,11 +838,168 @@ func TestEncoder_Encode(t *testing.T) {
 			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},
 		{
+			name: "direct package is also dependency",
+			report: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "test",
+				ArtifactType:  ftypes.TypeFilesystem,
+				Results: []types.Result{
+					{
+						Target: "poetry.lock",
+						Type:   ftypes.Poetry,
+						Class:  types.ClassLangPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:      "django@5.1.6",
+								Name:    "django",
+								Version: "5.1.6",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "69691e87e187021d",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypePyPi,
+										Name:    "django",
+										Version: "5.1.6",
+									},
+								},
+								Relationship: ftypes.RelationshipDirect,
+							},
+							{
+								ID:      "sentry-sdk@2.22.0",
+								Name:    "sentry-sdk",
+								Version: "2.22.0",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "7e53a15e8bec68ad",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypePyPi,
+										Name:    "sentry-sdk",
+										Version: "2.22.0",
+									},
+								},
+								Relationship: ftypes.RelationshipDirect,
+								DependsOn: []string{
+									"django@5.1.6",
+								},
+							},
+						},
+					},
+				},
+			},
+			wantComponents: map[uuid.UUID]*core.Component{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					Type: core.TypeFilesystem,
+					Name: "test",
+					Root: true,
+					Properties: []core.Property{
+						{
+							Name:  core.PropertySchemaVersion,
+							Value: "2",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000001",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					Type: core.TypeApplication,
+					Name: "poetry.lock",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyClass,
+							Value: "lang-pkgs",
+						},
+						{
+							Name:  core.PropertyType,
+							Value: "poetry",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): {
+					Type:    core.TypeLibrary,
+					Name:    "django",
+					Version: "5.1.6",
+					SrcFile: "poetry.lock",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "django@5.1.6",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "poetry",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "69691e87e187021d",
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypePyPi,
+							Name:    "django",
+							Version: "5.1.6",
+						},
+						BOMRef: "pkg:pypi/django@5.1.6",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					Type:    core.TypeLibrary,
+					Name:    "sentry-sdk",
+					Version: "2.22.0",
+					SrcFile: "poetry.lock",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "sentry-sdk@2.22.0",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "poetry",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "7e53a15e8bec68ad",
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypePyPi,
+							Name:    "sentry-sdk",
+							Version: "2.22.0",
+						},
+						BOMRef: "pkg:pypi/sentry-sdk@2.22.0",
+					},
+				},
+			},
+			wantRels: map[uuid.UUID][]core.Relationship{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Type:       core.RelationshipContains,
+					},
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): nil,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+			},
+			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
+		},
+		{
 			name: "SBOM file",
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "report.cdx.json",
-				ArtifactType:  artifact.TypeCycloneDX,
+				ArtifactType:  ftypes.TypeCycloneDX,
 				Results: []types.Result{
 					{
 						Target: "Java",
@@ -710,7 +1046,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "report.cdx.json",
-				ArtifactType:  artifact.TypeCycloneDX,
+				ArtifactType:  ftypes.TypeCycloneDX,
 				Results: []types.Result{
 					{
 						Target: "Java",
@@ -753,11 +1089,371 @@ func TestEncoder_Encode(t *testing.T) {
 			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},
 		{
+			name: "multimodule maven project",
+			report: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "pom.xml",
+				ArtifactType:  ftypes.TypeFilesystem,
+				Results: []types.Result{
+					{
+						Target: "pom.xml",
+						Type:   ftypes.Pom,
+						Class:  types.ClassLangPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:      "com.example:root:1.0.0",
+								Name:    "com.example:root",
+								Version: "1.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "f684ec661900abbf",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "com.example",
+										Name:      "root",
+										Version:   "1.0.0",
+									},
+								},
+								Relationship: ftypes.RelationshipRoot,
+								DependsOn: []string{
+									"com.example:module1:1.0.0",
+									"com.example:module2:2.0.0",
+								},
+							},
+							{
+								ID:      "com.example:module1:1.0.0",
+								Name:    "com.example:module1",
+								Version: "1.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "ce0d29336874c431",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "com.example",
+										Name:      "module1",
+										Version:   "1.0.0",
+									},
+								},
+								Relationship: ftypes.RelationshipWorkspace,
+								DependsOn: []string{
+									"org.example:example-api:1.1.1",
+								},
+							},
+							{
+								ID:      "com.example:module2:2.0.0",
+								Name:    "com.example:module2",
+								Version: "2.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "387238ffef6dfa9d",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "com.example",
+										Name:      "module2",
+										Version:   "2.0.0",
+									},
+								},
+								Relationship: ftypes.RelationshipWorkspace,
+								DependsOn: []string{
+									"org.example:example-dependency:1.2.3",
+								},
+							},
+							{
+								ID:      "org.example:example-api:1.1.1",
+								Name:    "org.example:example-api",
+								Version: "1.1.1",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "45cdc62618708bb7",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.example",
+										Name:      "example-api",
+										Version:   "1.1.1",
+									},
+								},
+								Relationship: ftypes.RelationshipDirect,
+							},
+							{
+								ID:      "org.example:example-dependency:1.2.3",
+								Name:    "org.example:example-dependency",
+								Version: "1.2.3",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "52fbe353a46651",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.example",
+										Name:      "example-dependency",
+										Version:   "1.2.3",
+									},
+								},
+								Relationship: ftypes.RelationshipDirect,
+								DependsOn: []string{
+									"org.example:example-api:2.0.0",
+								},
+							},
+							{
+								ID:      "org.example:example-api:2.0.0",
+								Name:    "org.example:example-api",
+								Version: "2.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "f71d14b6d2bd8810",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.example",
+										Name:      "example-api",
+										Version:   "2.0.0",
+									},
+								},
+								Relationship: ftypes.RelationshipIndirect,
+							},
+						},
+					},
+				},
+			},
+			wantComponents: map[uuid.UUID]*core.Component{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					Type: core.TypeFilesystem,
+					Name: "pom.xml",
+					Root: true,
+					Properties: []core.Property{
+						{
+							Name:  core.PropertySchemaVersion,
+							Value: "2",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000001",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					Type: core.TypeApplication,
+					Name: "pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyClass,
+							Value: "lang-pkgs",
+						},
+						{
+							Name:  core.PropertyType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): {
+					Type:    core.TypeLibrary,
+					Group:   "com.example",
+					Name:    "root",
+					Version: "1.0.0",
+					SrcFile: "pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "com.example:root:1.0.0",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "f684ec661900abbf",
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeMaven,
+							Namespace: "com.example",
+							Name:      "root",
+							Version:   "1.0.0",
+						},
+						BOMRef: "pkg:maven/com.example/root@1.0.0",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					Type:    core.TypeLibrary,
+					Group:   "com.example",
+					Name:    "module1",
+					Version: "1.0.0",
+					SrcFile: "pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "com.example:module1:1.0.0",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "ce0d29336874c431",
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeMaven,
+							Namespace: "com.example",
+							Name:      "module1",
+							Version:   "1.0.0",
+						},
+						BOMRef: "pkg:maven/com.example/module1@1.0.0",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): {
+					Type:    core.TypeLibrary,
+					Group:   "com.example",
+					Name:    "module2",
+					Version: "2.0.0",
+					SrcFile: "pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "com.example:module2:2.0.0",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "387238ffef6dfa9d",
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeMaven,
+							Namespace: "com.example",
+							Name:      "module2",
+							Version:   "2.0.0",
+						},
+						BOMRef: "pkg:maven/com.example/module2@2.0.0",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"): {
+					Type:    core.TypeLibrary,
+					Group:   "org.example",
+					Name:    "example-api",
+					Version: "1.1.1",
+					SrcFile: "pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "org.example:example-api:1.1.1",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "45cdc62618708bb7",
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeMaven,
+							Namespace: "org.example",
+							Name:      "example-api",
+							Version:   "1.1.1",
+						},
+						BOMRef: "pkg:maven/org.example/example-api@1.1.1",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000007"): {
+					Type:    core.TypeLibrary,
+					Group:   "org.example",
+					Name:    "example-dependency",
+					Version: "1.2.3",
+					SrcFile: "pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "org.example:example-dependency:1.2.3",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "52fbe353a46651",
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeMaven,
+							Namespace: "org.example",
+							Name:      "example-dependency",
+							Version:   "1.2.3",
+						},
+						BOMRef: "pkg:maven/org.example/example-dependency@1.2.3",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000008"): {
+					Type:    core.TypeLibrary,
+					Group:   "org.example",
+					Name:    "example-api",
+					Version: "2.0.0",
+					SrcFile: "pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "org.example:example-api:2.0.0",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "f71d14b6d2bd8810",
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeMaven,
+							Namespace: "org.example",
+							Name:      "example-api",
+							Version:   "2.0.0",
+						},
+						BOMRef: "pkg:maven/org.example/example-api@2.0.0",
+					},
+				},
+			},
+			wantRels: map[uuid.UUID][]core.Relationship{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"),
+						Type:       core.RelationshipDependsOn,
+					},
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000007"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"): nil,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000007"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000008"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000008"): nil,
+			},
+			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
+		},
+		{
 			name: "json file created from SBOM file (BOM is empty)",
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "report.cdx.json",
-				ArtifactType:  artifact.TypeCycloneDX,
+				ArtifactType:  ftypes.TypeCycloneDX,
 				Results: []types.Result{
 					{
 						Target: "Java",
@@ -803,7 +1499,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "debian:12",
-				ArtifactType:  artifact.TypeContainerImage,
+				ArtifactType:  ftypes.TypeContainerImage,
 				Metadata: types.Metadata{
 					OS: &ftypes.OS{
 						Family: ftypes.Debian,

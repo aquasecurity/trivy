@@ -10,7 +10,7 @@ For detailed behavior, please refer to [the GitHub Actions configuration][workfl
 
 !!! note
     Commits with prefixes like `chore` or `build` are not considered releasable, and no release PR is created.
-    To include such commits in a release, you need to either include commits with `feat` or `fix` prefixes or perform a manual release as described [below](#manual-release).
+    To include such commits in a release, you need to either include commits with `feat` or `fix` prefixes or perform a manual release as described [below](#manual-release-pr-creation).
 
 ## Flow
 The release flow consists of the following main steps:
@@ -74,8 +74,18 @@ Replace URLs with appropriate ones.
 
 Example: https://github.com/aquasecurity/trivy/releases/tag/v0.52.0
 
+### Merging the auto-generated Helm chart update PR
+Once the release PR is merged, there will be an auto-generated PR that bumps the Trivy version for the Trivy Helm Chart. An example can be seen [here](https://github.com/aquasecurity/trivy/pull/8638).
 
-The release is now complete.
+> [!NOTE]  
+> It is possible that the release action takes a while to finish and the Helm chart action runs prior. In such a case the Helm chart action will fail as it will not be able to find the latest Trivy container image.
+> In such a case, it is advised to manually restart the Helm chart action, once the release action is finished.
+
+If things look good, approve and merge this PR to further trigger the publishing of the Helm Chart.
+
+
+The release is now complete 🍻
+
 
 [conventional-commits]: https://www.conventionalcommits.org/en/v1.0.0/
 [release-please]: https://github.com/googleapis/release-please 

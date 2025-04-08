@@ -23,7 +23,7 @@ import (
 const configFile = "plugin.yaml"
 
 var (
-	pluginsRelativeDir = filepath.Join(".trivy", "plugins")
+	pluginsDir = "plugins"
 
 	_defaultManager *Manager
 )
@@ -58,7 +58,7 @@ type Manager struct {
 }
 
 func NewManager(opts ...ManagerOption) *Manager {
-	root := filepath.Join(fsutils.HomeDir(), pluginsRelativeDir)
+	root := filepath.Join(fsutils.TrivyHomeDir(), pluginsDir)
 	m := &Manager{
 		w:          os.Stdout,
 		indexURL:   indexURL,
@@ -111,7 +111,7 @@ func (m *Manager) Install(ctx context.Context, arg string, opts Options) (Plugin
 }
 
 func (m *Manager) install(ctx context.Context, src string, opts Options) (Plugin, error) {
-	tempDir, err := downloader.DownloadToTempDir(ctx, src, opts.Insecure)
+	tempDir, err := downloader.DownloadToTempDir(ctx, src, downloader.Options{Insecure: opts.Insecure})
 	if err != nil {
 		return Plugin{}, xerrors.Errorf("download failed: %w", err)
 	}

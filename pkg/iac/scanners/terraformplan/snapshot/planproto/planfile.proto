@@ -1,0 +1,12 @@
+syntax = "proto3";
+package tfplan;
+
+option go_package = "github.com/aquasecurity/trivy/iac/scanners/terraformplan/snapshot/planproto";
+
+message DynamicValue {
+  bytes msgpack = 1;
+}
+
+message Plan {
+  map<string, DynamicValue> variables = 2;
+}

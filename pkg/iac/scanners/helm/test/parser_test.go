@@ -1,7 +1,6 @@
 package test
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"strings"
@@ -35,7 +34,7 @@ func Test_helm_parser(t *testing.T) {
 			chartName := test.chartName
 			helmParser, err := parser.New(chartName)
 			require.NoError(t, err)
-			require.NoError(t, helmParser.ParseFS(context.TODO(), os.DirFS("testdata"), chartName))
+			require.NoError(t, helmParser.ParseFS(t.Context(), os.DirFS("testdata"), chartName))
 			manifests, err := helmParser.RenderedChartFiles()
 			require.NoError(t, err)
 
@@ -73,7 +72,7 @@ func Test_helm_parser_where_name_non_string(t *testing.T) {
 
 		helmParser, err := parser.New(chartName)
 		require.NoError(t, err)
-		require.NoError(t, helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), "."))
+		require.NoError(t, helmParser.ParseFS(t.Context(), os.DirFS(filepath.Join("testdata", chartName)), "."))
 	}
 }
 
@@ -152,16 +151,11 @@ func Test_helm_tarball_parser(t *testing.T) {
 		t.Logf("Running test: %s", test.testName)
 
 		testPath := filepath.Join("testdata", test.archiveFile)
-
-		testTemp := t.TempDir()
-		testFileName := filepath.Join(testTemp, test.archiveFile)
-		require.NoError(t, copyArchive(testPath, testFileName))
-
-		testFs := os.DirFS(testTemp)
+		testFs := fsysForAcrhive(t, testPath)
 
 		helmParser, err := parser.New(test.archiveFile)
 		require.NoError(t, err)
-		require.NoError(t, helmParser.ParseFS(context.TODO(), testFs, "."))
+		require.NoError(t, helmParser.ParseFS(t.Context(), testFs, "."))
 
 		manifests, err := helmParser.RenderedChartFiles()
 		require.NoError(t, err)

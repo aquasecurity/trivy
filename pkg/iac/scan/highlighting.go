@@ -34,19 +34,24 @@ var globalCache = &cache{
 	data: make(map[string][]string),
 }
 
-func highlight(fsKey, filename string, input []byte, theme string) []string {
+func highlight(fsKey, filename string, startLine, endLine int, input, theme string) []string {
 
-	key := fmt.Sprintf("%s|%s", fsKey, filename)
+	key := fmt.Sprintf("%s|%s|%d-%d", fsKey, filename, startLine, endLine)
 	if lines, ok := globalCache.Get(key); ok {
 		return lines
 	}
 
-	lexer := lexers.Match(filename)
-	if lexer == nil {
-		lexer = lexers.Fallback
+	highlighted, ok := Highlight(filename, input, theme)
+	if !ok {
+		return nil
 	}
-	lexer = chroma.Coalesce(lexer)
 
+	lines := strings.Split(highlighted, "\n")
+	globalCache.Set(key, lines)
+	return lines
+}
+
+func Highlight(filename, input, theme string) (string, bool) {
 	style := styles.Get(theme)
 	if style == nil {
 		style = styles.Fallback
@@ -56,22 +61,23 @@ func highlight(fsKey, filename string, input []byte, theme string) []string {
 		formatter = formatters.Fallback
 	}
 
-	// replace windows line endings
-	input = bytes.ReplaceAll(input, []byte{0x0d}, []byte{})
-	iterator, err := lexer.Tokenise(nil, string(input))
+	lexer := lexers.Match(filename)
+	if lexer == nil {
+		lexer = lexers.Fallback
+	}
+	lexer = chroma.Coalesce(lexer)
+
+	iterator, err := lexer.Tokenise(nil, input)
 	if err != nil {
-		return nil
+		return "", false
 	}
 
-	buffer := bytes.NewBuffer([]byte{})
-	if err := formatter.Format(buffer, style, iterator); err != nil {
-		return nil
+	var buffer bytes.Buffer
+	if err := formatter.Format(&buffer, style, iterator); err != nil {
+		return "", false
 	}
 
-	raw := shiftANSIOverLineEndings(buffer.Bytes())
-	lines := strings.Split(string(raw), "\n")
-	globalCache.Set(key, lines)
-	return lines
+	return string(shiftANSIOverLineEndings(buffer.Bytes())), true
 }
 
 func shiftANSIOverLineEndings(input []byte) []byte {

@@ -8,31 +8,35 @@ import (
 	"golang.org/x/xerrors"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/cache"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/rpc"
-	"github.com/aquasecurity/trivy/pkg/scanner"
-	"github.com/aquasecurity/trivy/pkg/scanner/local"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/scan/local"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
-// ScanSuperSet binds the dependencies for server
+// ScanSuperSet binds the dependencies for the server implementation.
 var ScanSuperSet = wire.NewSet(
 	local.SuperSet,
-	wire.Bind(new(scanner.Driver), new(local.Scanner)),
+	wire.Bind(new(scan.Backend), new(local.Service)),
 	NewScanServer,
 )
 
-// ScanServer implements the scanner
+// ScanServer implements the scanner service.
+// It uses local.Service as its backend to perform various types of security scanning.
 type ScanServer struct {
-	localScanner scanner.Driver
+	local scan.Backend
 }
 
-// NewScanServer is the factory method for scanner
-func NewScanServer(s scanner.Driver) *ScanServer {
-	return &ScanServer{localScanner: s}
+// NewScanServer creates a new ScanServer instance with the specified backend implementation.
+func NewScanServer(s scan.Backend) *ScanServer {
+	return &ScanServer{local: s}
 }
 
 // Log and return an error
@@ -43,20 +47,60 @@ func teeError(err error) error {
 
 // Scan scans and return response
 func (s *ScanServer) Scan(ctx context.Context, in *rpcScanner.ScanRequest) (*rpcScanner.ScanResponse, error) {
-	scanners := lo.Map(in.Options.Scanners, func(s string, index int) types.Scanner {
-		return types.Scanner(s)
-	})
-	options := types.ScanOptions{
-		VulnType:       in.Options.VulnType,
-		Scanners:       scanners,
-		IncludeDevDeps: in.Options.IncludeDevDeps,
-	}
-	results, os, err := s.localScanner.Scan(ctx, in.Target, in.ArtifactId, in.BlobIds, options)
+	options := s.ToOptions(in.Options)
+	results, os, err := s.local.Scan(ctx, in.Target, in.ArtifactId, in.BlobIds, options)
 	if err != nil {
 		return nil, teeError(xerrors.Errorf("failed scan, %s: %w", in.Target, err))
 	}
 
 	return rpc.ConvertToRPCScanResponse(results, os), nil
+}
+
+func (s *ScanServer) ToOptions(in *rpcScanner.ScanOptions) types.ScanOptions {
+	pkgRelationships := lo.FilterMap(in.PkgRelationships, func(r string, index int) (ftypes.Relationship, bool) {
+		rel, err := ftypes.NewRelationship(r)
+		if err != nil {
+			log.Warnf("Invalid relationship: %s", r)
+			return ftypes.RelationshipUnknown, false
+		}
+		return rel, true
+	})
+	if len(pkgRelationships) == 0 {
+		pkgRelationships = ftypes.Relationships // For backward compatibility
+	}
+
+	scanners := lo.Map(in.Scanners, func(s string, index int) types.Scanner {
+		return types.Scanner(s)
+	})
+
+	licenseCategories := lo.MapEntries(in.LicenseCategories,
+		func(k string, v *rpcScanner.Licenses) (ftypes.LicenseCategory, []string) {
+			return ftypes.LicenseCategory(k), v.Names
+		})
+
+	var distro ftypes.OS
+	if in.Distro != nil {
+		distro.Family = ftypes.OSType(in.Distro.Family)
+		distro.Name = in.Distro.Name
+	}
+
+	vulnSeveritySources := xstrings.ToTSlice[dbTypes.SourceID](in.VulnSeveritySources)
+	if len(vulnSeveritySources) == 0 {
+		vulnSeveritySources = []dbTypes.SourceID{
+			"auto", // For backward compatibility
+		}
+	}
+
+	return types.ScanOptions{
+		PkgTypes:            in.PkgTypes,
+		PkgRelationships:    pkgRelationships,
+		Scanners:            scanners,
+		IncludeDevDeps:      in.IncludeDevDeps,
+		LicenseCategories:   licenseCategories,
+		LicenseFull:         in.LicenseFull,
+		Distro:              distro,
+		VulnSeveritySources: vulnSeveritySources,
+	}
 }
 
 // CacheServer implements the cache

@@ -1,0 +1,550 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000010",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2021-08-25T12:20:30+00:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "dev"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "95de56ee-980c-413d-8f68-6c674dc3e9d1",
+      "type": "container",
+      "name": "integration/testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:02874b2b269dea8dde0f7edb4c9906904dfe38a09de1a214f20c650cfb15c60e"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:25165eb51d15842f870f97873e0a58409d5e860e6108e3dd829bd10e484c0065"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:3752e1f6fd759c795c13aff2c93c081529366e27635ba6621e849b0f9cfc77f0"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:788c00e2cfc8f2a018ae4344ccf0b2c226ebd756d7effd1ce50eea1a4252cd89"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        },
+        {
+          "name": "aquasecurity:trivy:ImageID",
+          "value": "sha256:5a992077baba51b97f27591a10d54d2f2723dc9c81a3fe419e261023f2554933"
+        },
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "353f2470-9c8b-4647-9d0d-96d893838dc8",
+      "type": "operating-system",
+      "name": "debian",
+      "version": "10.2",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "os-pkgs"
+        },
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "debian"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:deb/debian/bash@5.0-4?distro=debian-10.2",
+      "type": "library",
+      "name": "bash",
+      "version": "5.0-4",
+      "purl": "pkg:deb/debian/bash@5.0-4?distro=debian-10.2",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDigest",
+          "value": "sha256:000eee12ec04cc914bf96e8f5dee7767510c2aca3816af6078bd9fbe3150920c"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "bash@5.0-4"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcName",
+          "value": "bash"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcVersion",
+          "value": "5.0-4"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:deb/debian/libidn2-0@2.0.5-1?distro=debian-10.2",
+      "type": "library",
+      "name": "libidn2-0",
+      "version": "2.0.5-1",
+      "purl": "pkg:deb/debian/libidn2-0@2.0.5-1?distro=debian-10.2",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDigest",
+          "value": "sha256:000eee12ec04cc914bf96e8f5dee7767510c2aca3816af6078bd9fbe3150920c"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "libidn2-0@2.0.5-1"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcName",
+          "value": "libidn2"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcVersion",
+          "value": "2.0.5-1"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec",
+      "type": "library",
+      "name": "activesupport",
+      "version": "6.0.2.1",
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:gem/activesupport@6.0.2.1",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:FilePath",
+          "value": "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDigest",
+          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "activesupport@6.0.2.1"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "gemspec"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "353f2470-9c8b-4647-9d0d-96d893838dc8",
+      "dependsOn": [
+        "pkg:deb/debian/bash@5.0-4?distro=debian-10.2",
+        "pkg:deb/debian/libidn2-0@2.0.5-1?distro=debian-10.2"
+      ]
+    },
+    {
+      "ref": "95de56ee-980c-413d-8f68-6c674dc3e9d1",
+      "dependsOn": [
+        "353f2470-9c8b-4647-9d0d-96d893838dc8",
+        "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec"
+      ]
+    },
+    {
+      "ref": "pkg:deb/debian/bash@5.0-4?distro=debian-10.2",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:deb/debian/libidn2-0@2.0.5-1?distro=debian-10.2",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec",
+      "dependsOn": []
+    }
+  ],
+  "vulnerabilities": [
+    {
+      "id": "CVE-2019-18224",
+      "source": {
+        "name": "debian",
+        "url": "https://salsa.debian.org/security-tracker-team/security-tracker"
+      },
+      "ratings": [
+        {
+          "source": {
+            "name": "amazon"
+          },
+          "severity": "medium"
+        },
+        {
+          "source": {
+            "name": "nvd"
+          },
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv2",
+          "vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P"
+        },
+        {
+          "source": {
+            "name": "nvd"
+          },
+          "score": 9.8,
+          "severity": "critical",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        },
+        {
+          "source": {
+            "name": "redhat"
+          },
+          "score": 5.6,
+          "severity": "medium",
+          "method": "CVSSv3",
+          "vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L"
+        },
+        {
+          "source": {
+            "name": "ubuntu"
+          },
+          "severity": "medium"
+        }
+      ],
+      "cwes": [
+        787
+      ],
+      "description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
+      "recommendation": "Upgrade libidn2-0 to version 2.0.5-1+deb10u1",
+      "advisories": [
+        {
+          "url": "https://avd.aquasec.com/nvd/cve-2019-18224"
+        },
+        {
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00008.html"
+        },
+        {
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00009.html"
+        },
+        {
+          "url": "https://access.redhat.com/security/cve/CVE-2019-18224"
+        },
+        {
+          "url": "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=12420"
+        },
+        {
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18224"
+        },
+        {
+          "url": "https://github.com/libidn/libidn2/commit/e4d1558aa2c1c04a05066ee8600f37603890ba8c"
+        },
+        {
+          "url": "https://github.com/libidn/libidn2/compare/libidn2-2.1.0...libidn2-2.1.1"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JDQVQ2XPV5BTZUFINT7AFJSKNNBVURNJ/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MINU5RKDFE6TKAFY5DRFN3WSFDS4DYVS/"
+        },
+        {
+          "url": "https://seclists.org/bugtraq/2020/Feb/4"
+        },
+        {
+          "url": "https://security.gentoo.org/glsa/202003-63"
+        },
+        {
+          "url": "https://ubuntu.com/security/notices/USN-4168-1"
+        },
+        {
+          "url": "https://usn.ubuntu.com/4168-1/"
+        },
+        {
+          "url": "https://www.debian.org/security/2020/dsa-4613"
+        }
+      ],
+      "published": "2019-10-21T17:15:00+00:00",
+      "updated": "2019-10-29T19:15:00+00:00",
+      "affects": [
+        {
+          "ref": "pkg:deb/debian/libidn2-0@2.0.5-1?distro=debian-10.2",
+          "versions": [
+            {
+              "version": "2.0.5-1",
+              "status": "affected"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CVE-2019-18276",
+      "source": {
+        "name": "debian",
+        "url": "https://salsa.debian.org/security-tracker-team/security-tracker"
+      },
+      "ratings": [
+        {
+          "source": {
+            "name": "cbl-mariner"
+          },
+          "severity": "high"
+        },
+        {
+          "source": {
+            "name": "debian"
+          },
+          "severity": "low"
+        },
+        {
+          "source": {
+            "name": "nvd"
+          },
+          "score": 7.2,
+          "severity": "high",
+          "method": "CVSSv2",
+          "vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C"
+        },
+        {
+          "source": {
+            "name": "nvd"
+          },
+          "score": 7.8,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H"
+        },
+        {
+          "source": {
+            "name": "oracle-oval"
+          },
+          "severity": "low"
+        },
+        {
+          "source": {
+            "name": "photon"
+          },
+          "severity": "high"
+        },
+        {
+          "source": {
+            "name": "redhat"
+          },
+          "score": 7.8,
+          "severity": "low",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H"
+        },
+        {
+          "source": {
+            "name": "ubuntu"
+          },
+          "severity": "low"
+        }
+      ],
+      "cwes": [
+        273
+      ],
+      "description": "An issue was discovered in disable_priv_mode in shell.c in GNU Bash through 5.0 patch 11. By default, if Bash is run with its effective UID not equal to its real UID, it will drop privileges by setting its effective UID to its real UID. However, it does so incorrectly. On Linux and other systems that support \"saved UID\" functionality, the saved UID is not dropped. An attacker with command execution in the shell can use \"enable -f\" for runtime loading of a new builtin, which can be a shared object that calls setuid() and therefore regains privileges. However, binaries running with an effective UID of 0 are unaffected.",
+      "advisories": [
+        {
+          "url": "https://avd.aquasec.com/nvd/cve-2019-18276"
+        },
+        {
+          "url": "http://packetstormsecurity.com/files/155498/Bash-5.0-Patch-11-Privilege-Escalation.html"
+        },
+        {
+          "url": "https://access.redhat.com/security/cve/CVE-2019-18276"
+        },
+        {
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18276"
+        },
+        {
+          "url": "https://github.com/bminor/bash/commit/951bdaad7a18cc0dc1036bba86b18b90874d39ff"
+        },
+        {
+          "url": "https://linux.oracle.com/cve/CVE-2019-18276.html"
+        },
+        {
+          "url": "https://linux.oracle.com/errata/ELSA-2021-1679.html"
+        },
+        {
+          "url": "https://lists.apache.org/thread.html/rf9fa47ab66495c78bb4120b0754dd9531ca2ff0430f6685ac9b07772@%3Cdev.mina.apache.org%3E"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-18276"
+        },
+        {
+          "url": "https://security.gentoo.org/glsa/202105-34"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20200430-0003/"
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=-wGtxJ8opa8"
+        }
+      ],
+      "published": "2019-11-28T01:15:00+00:00",
+      "updated": "2021-05-26T12:15:00+00:00",
+      "affects": [
+        {
+          "ref": "pkg:deb/debian/bash@5.0-4?distro=debian-10.2",
+          "versions": [
+            {
+              "version": "5.0-4",
+              "status": "affected"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CVE-2020-8165",
+      "source": {
+        "name": "ghsa",
+        "url": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Arubygems"
+      },
+      "ratings": [
+        {
+          "source": {
+            "name": "ghsa"
+          },
+          "severity": "high"
+        },
+        {
+          "source": {
+            "name": "nvd"
+          },
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv2",
+          "vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P"
+        },
+        {
+          "source": {
+            "name": "nvd"
+          },
+          "score": 9.8,
+          "severity": "critical",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        },
+        {
+          "source": {
+            "name": "redhat"
+          },
+          "score": 9.8,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "cwes": [
+        502
+      ],
+      "description": "A deserialization of untrusted data vulnerability exists in rails < 5.2.4.3, rails < 6.0.3.1 that can allow an attacker to unmarshal user-provided objects in MemCacheStore and RedisCacheStore potentially resulting in an RCE.",
+      "recommendation": "Upgrade activesupport to version 6.0.3.1, 5.2.4.3",
+      "advisories": [
+        {
+          "url": "https://avd.aquasec.com/nvd/cve-2020-8165"
+        },
+        {
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2020-10/msg00031.html"
+        },
+        {
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2020-10/msg00034.html"
+        },
+        {
+          "url": "https://access.redhat.com/security/cve/CVE-2020-8165"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-2p68-f74v-9wc6"
+        },
+        {
+          "url": "https://github.com/rubysec/ruby-advisory-db/blob/master/gems/activesupport/CVE-2020-8165.yml"
+        },
+        {
+          "url": "https://groups.google.com/forum/#!msg/rubyonrails-security/bv6fW4S0Y1c/KnkEqM7AAQAJ"
+        },
+        {
+          "url": "https://groups.google.com/forum/#!topic/rubyonrails-security/bv6fW4S0Y1c"
+        },
+        {
+          "url": "https://groups.google.com/g/rubyonrails-security/c/bv6fW4S0Y1c"
+        },
+        {
+          "url": "https://hackerone.com/reports/413388"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2020/06/msg00022.html"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2020/07/msg00013.html"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-8165"
+        },
+        {
+          "url": "https://weblog.rubyonrails.org/2020/5/18/Rails-5-2-4-3-and-6-0-3-1-have-been-released/"
+        },
+        {
+          "url": "https://www.debian.org/security/2020/dsa-4766"
+        }
+      ],
+      "published": "2020-06-19T18:15:00+00:00",
+      "updated": "2020-10-17T12:15:00+00:00",
+      "affects": [
+        {
+          "ref": "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec",
+          "versions": [
+            {
+              "version": "6.0.2.1",
+              "status": "affected"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,604 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "aquasecurity/trivy:613fd55abbc2857b5ca28b07a26f3cd4c8b0ddc4c8a97c57497a2d4c4880d7fc",
+  "author": "Aqua Security",
+  "timestamp": "2024-07-09T11:38:00.115697+04:00",
+  "version": 1,
+  "tooling": "https://github.com/aquasecurity/trivy/tree/main/magefiles/vex.go",
+  "statements": [
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2024-2575",
+        "name": "GO-2024-2575",
+        "description": "Helm's Missing YAML Content Leads To Panic in helm.sh/helm/v3",
+        "aliases": [
+          "CVE-2024-26147",
+          "GHSA-r53h-jv2g-vpx6"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/helm.sh/helm/v3",
+              "identifiers": {
+                "purl": "pkg:golang/helm.sh/helm/v3"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2023-1765",
+        "name": "GO-2023-1765",
+        "description": "Leaked shared secret and weak blinding in github.com/cloudflare/circl",
+        "aliases": [
+          "CVE-2023-1732",
+          "GHSA-2q89-485c-9j2x"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/cloudflare/circl",
+              "identifiers": {
+                "purl": "pkg:golang/github.com/cloudflare/circl"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2024-2512",
+        "name": "GO-2024-2512",
+        "description": "Classic builder cache poisoning in github.com/docker/docker",
+        "aliases": [
+          "CVE-2024-24557",
+          "GHSA-xw73-rw38-6vjc"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/docker/docker",
+              "identifiers": {
+                "purl": "pkg:golang/github.com/docker/docker"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2024-2453",
+        "name": "GO-2024-2453",
+        "description": "Timing side channel in github.com/cloudflare/circl",
+        "aliases": [
+          "GHSA-9763-4f94-gfch"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/cloudflare/circl",
+              "identifiers": {
+                "purl": "pkg:golang/github.com/cloudflare/circl"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2023-2048",
+        "name": "GO-2023-2048",
+        "description": "Paths outside of the rootfs could be produced on Windows in github.com/cyphar/filepath-securejoin",
+        "aliases": [
+          "GHSA-6xv5-86q9-7xr8"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/cyphar/filepath-securejoin",
+              "identifiers": {
+                "purl": "pkg:golang/github.com/cyphar/filepath-securejoin"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2024-2497",
+        "name": "GO-2024-2497",
+        "description": "Privilege escalation in github.com/moby/buildkit",
+        "aliases": [
+          "CVE-2024-23653",
+          "GHSA-wr6v-9f75-vh2g"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/moby/buildkit",
+              "identifiers": {
+                "purl": "pkg:golang/github.com/moby/buildkit"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2023-2102",
+        "name": "GO-2023-2102",
+        "description": "HTTP/2 rapid reset can cause excessive work in net/http",
+        "aliases": [
+          "CVE-2023-39325",
+          "GHSA-4374-p667-p6c8"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net",
+              "identifiers": {
+                "purl": "pkg:golang/golang.org/x/net"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2024-2493",
+        "name": "GO-2024-2493",
+        "description": "Host system file access in github.com/moby/buildkit",
+        "aliases": [
+          "CVE-2024-23651",
+          "GHSA-m3r6-h7wv-7xxv"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/moby/buildkit",
+              "identifiers": {
+                "purl": "pkg:golang/github.com/moby/buildkit"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2024-2491",
+        "name": "GO-2024-2491",
+        "description": "Container breakout through process.cwd trickery and leaked fds in github.com/opencontainers/runc",
+        "aliases": [
+          "CVE-2024-21626",
+          "GHSA-xr7r-f8xq-vfvv"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/opencontainers/runc",
+              "identifiers": {
+                "purl": "pkg:golang/github.com/opencontainers/runc"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2024-2494",
+        "name": "GO-2024-2494",
+        "description": "Host system modification in github.com/moby/buildkit",
+        "aliases": [
+          "CVE-2024-23652",
+          "GHSA-4v98-7qmw-rqr8"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/moby/buildkit",
+              "identifiers": {
+                "purl": "pkg:golang/github.com/moby/buildkit"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2023-2412",
+        "name": "GO-2023-2412",
+        "description": "RAPL accessibility in github.com/containerd/containerd",
+        "aliases": [
+          "GHSA-7ww5-4wqc-m92c"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/containerd/containerd",
+              "identifiers": {
+                "purl": "pkg:golang/github.com/containerd/containerd"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2023-1988",
+        "name": "GO-2023-1988",
+        "description": "Improper rendering of text nodes in golang.org/x/net/html",
+        "aliases": [
+          "CVE-2023-3978",
+          "GHSA-2wrh-6pvc-2jm9"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net",
+              "identifiers": {
+                "purl": "pkg:golang/golang.org/x/net"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2024-2492",
+        "name": "GO-2024-2492",
+        "description": "Panic in github.com/moby/buildkit",
+        "aliases": [
+          "CVE-2024-23650",
+          "GHSA-9p26-698r-w4hx"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/moby/buildkit",
+              "identifiers": {
+                "purl": "pkg:golang/github.com/moby/buildkit"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2022-0646",
+        "name": "GO-2022-0646",
+        "description": "Use of risky cryptographic algorithm in github.com/aws/aws-sdk-go",
+        "aliases": [
+          "CVE-2020-8911",
+          "CVE-2020-8912",
+          "GHSA-7f33-f4f5-xwgw",
+          "GHSA-f5pg-7wfw-84q9"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/aws/aws-sdk-go",
+              "identifiers": {
+                "purl": "pkg:golang/github.com/aws/aws-sdk-go"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2023-2153",
+        "name": "GO-2023-2153",
+        "description": "Denial of service from HTTP/2 Rapid Reset in google.golang.org/grpc",
+        "aliases": [
+          "GHSA-m425-mq94-257g"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/google.golang.org/grpc",
+              "identifiers": {
+                "purl": "pkg:golang/google.golang.org/grpc"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2024-3105",
+        "name": "GO-2024-3105",
+        "description": "Stack exhaustion in all Parse functions in go/parser",
+        "aliases": [
+          "CVE-2024-34155"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/stdlib",
+              "identifiers": {
+                "purl": "pkg:golang/stdlib"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2024-3106",
+        "name": "GO-2024-3106",
+        "description": "Stack exhaustion in Decoder.Decode in encoding/gob",
+        "aliases": [
+          "CVE-2024-34156"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/stdlib",
+              "identifiers": {
+                "purl": "pkg:golang/stdlib"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Govulncheck incorrectly marks this vulnerability as affected. The vulnerable code isn't called. See https://github.com/aquasecurity/trivy/issues/7478"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2024-3107",
+        "name": "GO-2024-3107",
+        "description": "Stack exhaustion in Parse in go/build/constraint",
+        "aliases": [
+          "CVE-2024-34158"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/stdlib",
+              "identifiers": {
+                "purl": "pkg:golang/stdlib"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2024-3321",
+        "name": "GO-2024-3321",
+        "description": "Misuse of ServerConfig.PublicKeyCallback may cause authorization bypass in golang.org/x/crypto",
+        "aliases": [
+          "CVE-2024-45337",
+          "GHSA-v778-237x-gjrc"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto",
+              "identifiers": {
+                "purl": "pkg:golang/golang.org/x/crypto"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2024-3333",
+        "name": "GO-2024-3333",
+        "description": "Non-linear parsing of case-insensitive content in golang.org/x/net/html",
+        "aliases": [
+          "CVE-2024-45338"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net",
+              "identifiers": {
+                "purl": "pkg:golang/golang.org/x/net"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    }
+  ]
+}

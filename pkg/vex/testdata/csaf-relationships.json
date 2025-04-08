@@ -37,22 +37,22 @@
             "branches": [
               {
                 "category": "product_version",
-                "name": "2.9.3-2",
+                "name": "2.0.0",
                 "product": {
-                  "name": "Argo CD 2.9.3-2",
-                  "product_id": "argo-cd-2.9.3-2-amd64-debian-12",
+                  "name": "go-direct1 v2.0.0",
+                  "product_id": "go-direct1-v2.0.0",
                   "product_identification_helper": {
-                    "purl": "pkg:bitnami/argo-cd@2.9.3-2?arch=amd64\u0026distro=debian-12"
+                    "purl": "pkg:golang/github.com/aquasecurity/go-direct1@v2.0.0"
                   }
                 }
               }
             ],
             "category": "product_name",
-            "name": "Argo CD"
+            "name": "go-direct1"
           }
         ],
         "category": "vendor",
-        "name": "VMWare, Inc."
+        "name": "bar"
       },
       {
         "branches": [
@@ -60,45 +60,45 @@
             "branches": [
               {
                 "category": "product_version",
-                "name": "v0.24.2",
+                "name": "v4.0.0",
                 "product": {
-                  "name": "client-go v0.24.2",
-                  "product_id": "client-go-v0.24.2",
+                  "name": "go-transitive v4.0.0",
+                  "product_id": "go-transitive-v4.0.0",
                   "product_identification_helper": {
-                    "purl": "pkg:golang/k8s.io/client-go@0.24.2"
+                    "purl": "pkg:golang/github.com/aquasecurity/go-transitive@v4.0.0"
                   }
                 }
               }
             ],
             "category": "product_name",
-            "name": "client-go"
+            "name": "go-transitive"
           }
         ],
         "category": "vendor",
-        "name": "k8s.io"
+        "name": "foo"
       }
     ],
     "relationships": [
       {
-        "product_reference": "client-go-v0.24.2",
+        "product_reference": "go-transitive-v4.0.0",
         "category": "default_component_of",
-        "relates_to_product_reference": "argo-cd-2.9.3-2-amd64-debian-12",
+        "relates_to_product_reference": "go-direct1-v2.0.0",
         "full_product_name": {
-          "product_id": "argo-cd-2.9.3-2-amd64-debian-12-client-go",
-          "name": "Argo CD uses kubernetes golang library"
+          "product_id": "go-direct1-v2.0.0-go-transitive-v4.0.0",
+          "name": "go-direct1 uses go-transitive"
         }
       }
     ]
   },
   "vulnerabilities": [
     {
-      "cve": "CVE-2023-2727",
+      "cve": "CVE-2024-0001",
       "flags": [
         {
           "date": "2024-01-04T17:17:25+01:00",
           "label": "vulnerable_code_cannot_be_controlled_by_adversary",
           "product_ids": [
-            "argo-cd-2.9.3-2-amd64-debian-12-client-go"
+            "go-direct1-v2.0.0-go-transitive-v4.0.0"
           ]
         }
       ],
@@ -111,14 +111,14 @@
       ],
       "product_status": {
         "known_not_affected": [
-          "argo-cd-2.9.3-2-amd64-debian-12-client-go"
+          "go-direct1-v2.0.0-go-transitive-v4.0.0"
         ]
       },
       "threats": [
         {
           "category": "impact",
           "date": "2024-01-04T17:17:25+01:00",
-          "details": "The asset uses the component as a dependency in the code, but the vulnerability only affects Kubernetes clusters https://github.com/kubernetes/kubernetes/issues/118640"
+          "details": "vulnerable_code_not_in_execute_path"
         }
       ]
     }

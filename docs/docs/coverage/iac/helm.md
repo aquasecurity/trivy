@@ -21,7 +21,7 @@ When override values are passed to the Helm scanner, the values will be used dur
 Overrides can be set inline on the command line
 
 ```bash
-trivy conf --helm-set securityContext.runAsUser=0 ./charts/mySql
+trivy config --helm-set securityContext.runAsUser=0 ./charts/mySql
 ```
 
 #### Setting value file overrides
@@ -35,7 +35,7 @@ securityContext:
 ```
 
 ```bash
-trivy conf --helm-values overrides.yaml ./charts/mySql
+trivy config --helm-values overrides.yaml ./charts/mySql
 ``` 
 
 #### Setting value as explicit string
@@ -49,7 +49,7 @@ trivy config --helm-set-string name=false ./infrastructure/tf
 Specific override values can come from specific files
 
 ```bash
-trivy conf --helm-set-file environment=dev.values.yaml ./charts/mySql
+trivy config --helm-set-file environment=dev.values.yaml ./charts/mySql
 ```
 
 ## Secret

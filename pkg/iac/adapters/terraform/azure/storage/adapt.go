@@ -6,6 +6,8 @@ import (
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
+const minimumTlsVersionOneTwo = "TLS1_2"
+
 func Adapt(modules terraform.Modules) storage.Storage {
 	accounts, containers, networkRules := adaptAccounts(modules)
 
@@ -106,7 +108,8 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 			Metadata:      resource.GetMetadata(),
 			EnableLogging: iacTypes.BoolDefault(false, resource.GetMetadata()),
 		},
-		MinimumTLSVersion: iacTypes.StringDefault("TLS1_2", resource.GetMetadata()),
+		MinimumTLSVersion:   iacTypes.StringDefault(minimumTlsVersionOneTwo, resource.GetMetadata()),
+		PublicNetworkAccess: resource.GetAttribute("public_network_access_enabled").AsBoolValueOrDefault(true, resource),
 	}
 
 	networkRulesBlocks := resource.GetBlocks("network_rules")
@@ -127,7 +130,7 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 	}
 
 	minTLSVersionAttr := resource.GetAttribute("min_tls_version")
-	account.MinimumTLSVersion = minTLSVersionAttr.AsStringValueOrDefault("TLS1_0", resource)
+	account.MinimumTLSVersion = minTLSVersionAttr.AsStringValueOrDefault(minimumTlsVersionOneTwo, resource)
 	return account
 }
 
@@ -159,8 +162,7 @@ func adaptNetworkRule(resource *terraform.Block) storage.NetworkRule {
 		allowByDefault = iacTypes.BoolDefault(false, resource.GetMetadata())
 	}
 
-	if resource.HasChild("bypass") {
-		bypassAttr := resource.GetAttribute("bypass")
+	if bypassAttr := resource.GetAttribute("bypass"); bypassAttr.IsNotNil() {
 		bypass = bypassAttr.AsStringValues()
 	}
 

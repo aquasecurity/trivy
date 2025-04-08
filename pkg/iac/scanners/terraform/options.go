@@ -14,7 +14,7 @@ type ConfigurableTerraformScanner interface {
 	options.ConfigurableScanner
 	SetForceAllDirs(bool)
 	AddExecutorOptions(options ...executor.Option)
-	AddParserOptions(options ...options.ParserOption)
+	AddParserOptions(options ...parser.Option)
 }
 
 func ScannerWithTFVarsPaths(paths ...string) options.ScannerOption {
@@ -81,6 +81,30 @@ func ScannerWithConfigsFileSystem(fsys fs.FS) options.ScannerOption {
 	return func(s options.ConfigurableScanner) {
 		if tf, ok := s.(ConfigurableTerraformScanner); ok {
 			tf.AddParserOptions(parser.OptionWithConfigsFS(fsys))
+		}
+	}
+}
+
+func ScannerWithSkipFiles(files []string) options.ScannerOption {
+	return func(s options.ConfigurableScanner) {
+		if tf, ok := s.(ConfigurableTerraformScanner); ok {
+			tf.AddParserOptions(parser.OptionWithSkipFiles(files))
+		}
+	}
+}
+
+func ScannerWithSkipDirs(dirs []string) options.ScannerOption {
+	return func(s options.ConfigurableScanner) {
+		if tf, ok := s.(ConfigurableTerraformScanner); ok {
+			tf.AddParserOptions(parser.OptionWithSkipDirs(dirs))
+		}
+	}
+}
+
+func ScannerWithStopOnHCLError(stop bool) options.ScannerOption {
+	return func(s options.ConfigurableScanner) {
+		if tf, ok := s.(ConfigurableTerraformScanner); ok {
+			tf.AddParserOptions(parser.OptionStopOnHCLError(stop))
 		}
 	}
 }

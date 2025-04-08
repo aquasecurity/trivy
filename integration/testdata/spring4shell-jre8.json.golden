@@ -245,7 +245,9 @@
           },
           "References": [
             "https://github.com/advisories/GHSA-36p3-wjmg-h94x"
-          ]
+          ],
+          "PublishedDate": "2022-04-01T23:15:00Z",
+          "LastModifiedDate": "2022-05-19T14:21:00Z"
         }
       ]
     },

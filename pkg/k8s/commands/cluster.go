@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -37,7 +38,7 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 			trivyk8s.WithExcludeOwned(opts.ExcludeOwned),
 		}
 		if opts.Scanners.AnyEnabled(types.MisconfigScanner) && !opts.DisableNodeCollector {
-			artifacts, err = trivyk8s.New(cluster, k8sOpts...).ListArtifactAndNodeInfo(ctx, nodeCollectorOptions(opts)...)
+			artifacts, err = trivyk8s.New(cluster, k8sOpts...).ListArtifactAndNodeInfo(ctx, nodeCollectorOptions(ctx, opts)...)
 			if err != nil {
 				return xerrors.Errorf("get k8s artifacts with node info error: %w", err)
 			}
@@ -59,20 +60,17 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 	return runner.run(ctx, artifacts)
 }
 
-func nodeCollectorOptions(opts flag.Options) []trivyk8s.NodeCollectorOption {
+func nodeCollectorOptions(ctx context.Context, opts flag.Options) []trivyk8s.NodeCollectorOption {
 	nodeCollectorOptions := []trivyk8s.NodeCollectorOption{
 		trivyk8s.WithScanJobNamespace(opts.NodeCollectorNamespace),
 		trivyk8s.WithIgnoreLabels(opts.ExcludeNodes),
 		trivyk8s.WithScanJobImageRef(opts.NodeCollectorImageRef),
-		trivyk8s.WithTolerations(opts.Tolerations)}
+		trivyk8s.WithTolerations(opts.Tolerations),
+	}
 
-	contentPath, err := operation.InitBuiltinPolicies(context.Background(),
-		opts.CacheDir,
-		opts.Quiet,
-		opts.SkipCheckUpdate,
-		opts.MisconfOptions.ChecksBundleRepository,
-		opts.RegistryOpts())
-
+	ctx = log.WithContextPrefix(ctx, log.PrefixMisconfiguration)
+	c, _ := policy.NewClient(opts.CacheDir, opts.Quiet, opts.MisconfOptions.ChecksBundleRepository)
+	contentPath, err := operation.InitBuiltinChecks(ctx, c, opts.SkipCheckUpdate, opts.RegistryOpts())
 	if err != nil {
 		log.Error("Falling back to embedded checks", log.Err(err))
 		nodeCollectorOptions = append(nodeCollectorOptions,
@@ -84,7 +82,7 @@ func nodeCollectorOptions(opts flag.Options) []trivyk8s.NodeCollectorOption {
 
 	complianceCommandsIDs := getComplianceCommands(opts)
 	nodeCollectorOptions = append(nodeCollectorOptions, []trivyk8s.NodeCollectorOption{
-		trivyk8s.WithCommandPaths(contentPath),
+		trivyk8s.WithCommandPaths([]string{contentPath}),
 		trivyk8s.WithSpecCommandIds(complianceCommandsIDs),
 	}...)
 	return nodeCollectorOptions

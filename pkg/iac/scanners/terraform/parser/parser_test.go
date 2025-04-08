@@ -1,19 +1,24 @@
 package parser
 
 import (
-	"context"
+	"bytes"
+	"io/fs"
+	"log/slog"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"testing"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/zclconf/go-cty/cty"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 func Test_BasicParsing(t *testing.T) {
@@ -71,8 +76,8 @@ check "cats_mittens_is_special" {
 	})
 
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "."))
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	blocks := modules[0].GetBlocks()
@@ -171,10 +176,10 @@ output "mod_result" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true), options.ParserWithDebug(os.Stderr))
-	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
+	parser := New(fs, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
 
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	require.Len(t, modules, 2)
@@ -234,8 +239,8 @@ output "mod_result" {
 	})
 
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 2)
 	rootModule := modules[0]
@@ -279,8 +284,8 @@ resource "something" "blah" {
 	})
 
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
@@ -306,8 +311,8 @@ resource "something" "blah" {
 	})
 
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
@@ -349,8 +354,8 @@ resource "something" "blah" {
 	})
 
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
@@ -397,8 +402,8 @@ resource "something" "blah" {
 	})
 
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
@@ -438,8 +443,8 @@ resource "something" "blah" {
 	})
 
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
@@ -486,8 +491,8 @@ resource "something" "blah" {
 	})
 
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
@@ -530,8 +535,8 @@ resource "something" "blah" {
 	})
 
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	require.Len(t, modules, 1)
@@ -574,8 +579,8 @@ resource "aws_s3_bucket" "default" {
 	})
 
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "."))
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 
@@ -634,8 +639,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this2" {
 	})
 
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "."))
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
@@ -669,8 +674,8 @@ resource "aws_s3_bucket" "main" {
 		OptionWithTFVarsPaths("main.tfvars"),
 	)
 
-	require.NoError(t, parser.ParseFS(context.TODO(), "."))
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
@@ -701,9 +706,9 @@ resource "aws_s3_bucket" "this" {
 	})
 
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
 
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
@@ -735,9 +740,9 @@ resource "aws_s3_bucket" "this" {
 	})
 
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
 
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
@@ -789,9 +794,9 @@ policy_rules = {
 	})
 
 	parser := New(fs, "", OptionStopOnHCLError(true), OptionWithTFVarsPaths("main.tfvars"))
-	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
 
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
@@ -825,9 +830,9 @@ resource "aws_s3_bucket" "this" {
 	})
 
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
 
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
@@ -857,9 +862,9 @@ data "http" "example" {
 	})
 
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
 
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
@@ -894,9 +899,9 @@ data "http" "example" {
 	})
 
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
 
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
@@ -1140,9 +1145,9 @@ resource "aws_internet_gateway" "example" {
 `,
 	})
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
 
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 
@@ -1165,9 +1170,9 @@ func TestArnAttributeOfBucketIsCorrect(t *testing.T) {
 			"main.tf": `resource "aws_s3_bucket" "this" {}`,
 		})
 		parser := New(fs, "", OptionStopOnHCLError(true))
-		require.NoError(t, parser.ParseFS(context.TODO(), "."))
+		require.NoError(t, parser.ParseFS(t.Context(), "."))
 
-		modules, _, err := parser.EvaluateAll(context.TODO())
+		modules, _, err := parser.EvaluateAll(t.Context())
 		require.NoError(t, err)
 		require.Len(t, modules, 1)
 
@@ -1226,9 +1231,9 @@ data "aws_iam_policy_document" "this" {
 }`,
 		})
 		parser := New(fs, "", OptionStopOnHCLError(true))
-		require.NoError(t, parser.ParseFS(context.TODO(), "."))
+		require.NoError(t, parser.ParseFS(t.Context(), "."))
 
-		modules, _, err := parser.EvaluateAll(context.TODO())
+		modules, _, err := parser.EvaluateAll(t.Context())
 		require.NoError(t, err)
 		require.Len(t, modules, 1)
 
@@ -1266,9 +1271,9 @@ func TestForEachWithObjectsOfDifferentTypes(t *testing.T) {
 `,
 	})
 	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
 
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 }
@@ -1301,9 +1306,9 @@ func TestCountMetaArgument(t *testing.T) {
 				"main.tf": tt.src,
 			})
 			parser := New(fsys, "", OptionStopOnHCLError(true))
-			require.NoError(t, parser.ParseFS(context.TODO(), "."))
+			require.NoError(t, parser.ParseFS(t.Context(), "."))
 
-			modules, _, err := parser.EvaluateAll(context.TODO())
+			modules, _, err := parser.EvaluateAll(t.Context())
 			require.NoError(t, err)
 			assert.Len(t, modules, 1)
 
@@ -1350,9 +1355,9 @@ func TestCountMetaArgumentInModule(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			fsys := testutil.CreateFS(t, tt.files)
 			parser := New(fsys, "", OptionStopOnHCLError(true))
-			require.NoError(t, parser.ParseFS(context.TODO(), "."))
+			require.NoError(t, parser.ParseFS(t.Context(), "."))
 
-			modules, _, err := parser.EvaluateAll(context.TODO())
+			modules, _, err := parser.EvaluateAll(t.Context())
 			require.NoError(t, err)
 
 			assert.Len(t, modules, tt.expectedCountModules)
@@ -1364,165 +1369,296 @@ func TestCountMetaArgumentInModule(t *testing.T) {
 }
 
 func TestDynamicBlocks(t *testing.T) {
-	t.Run("arg is list of int", func(t *testing.T) {
-		modules := parse(t, map[string]string{
-			"main.tf": `
-resource "aws_security_group" "sg-webserver" {
-  vpc_id = "1111"
-  dynamic "ingress" {
+	tests := []struct {
+		name     string
+		src      string
+		expected []any
+	}{
+		{
+			name: "for-each use tuple of int",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
     for_each = [80, 443]
     content {
-      from_port   = ingress.value
-      to_port     = ingress.value
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
+      bar = foo.value
     }
   }
-}
-`,
-		})
-		require.Len(t, modules, 1)
-
-		secGroups := modules.GetResourcesByType("aws_security_group")
-		assert.Len(t, secGroups, 1)
-		ingressBlocks := secGroups[0].GetBlocks("ingress")
-		assert.Len(t, ingressBlocks, 2)
-
-		var inboundPorts []int
-		for _, ingress := range ingressBlocks {
-			fromPort := ingress.GetAttribute("from_port").AsIntValueOrDefault(-1, ingress).Value()
-			inboundPorts = append(inboundPorts, fromPort)
-		}
-
-		assert.True(t, compareSets([]int{80, 443}, inboundPorts))
-	})
-
-	t.Run("empty for-each", func(t *testing.T) {
-		modules := parse(t, map[string]string{
-			"main.tf": `
-resource "aws_lambda_function" "analyzer" {
-  dynamic "vpc_config" {
+}`,
+			expected: []any{float64(80), float64(443)},
+		},
+		{
+			name: "for-each use list of int",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = tolist([80, 443])
+    content {
+      bar = foo.value
+    }
+  }
+}`,
+			expected: []any{float64(80), float64(443)},
+		},
+		{
+			name: "for-each use set of int",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = toset([80, 443])
+    content {
+      bar = foo.value
+    }
+  }
+}`,
+			expected: []any{float64(80), float64(443)},
+		},
+		{
+			name: "for-each use list of bool",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = tolist([true])
+    content {
+      bar = foo.value
+    }
+  }
+}`,
+			expected: []any{true},
+		},
+		{
+			name: "empty for-each",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
     for_each = []
     content {}
   }
-}
-`,
-		})
-		require.Len(t, modules, 1)
-
-		functions := modules.GetResourcesByType("aws_lambda_function")
-		assert.Len(t, functions, 1)
-		vpcConfigs := functions[0].GetBlocks("vpc_config")
-		assert.Empty(t, vpcConfigs)
-	})
-
-	t.Run("arg is list of bool", func(t *testing.T) {
-		modules := parse(t, map[string]string{
-			"main.tf": `
-resource "aws_lambda_function" "analyzer" {
-  dynamic "vpc_config" {
-    for_each = [true]
-    content {}
-  }
-}
-`,
-		})
-		require.Len(t, modules, 1)
-
-		functions := modules.GetResourcesByType("aws_lambda_function")
-		assert.Len(t, functions, 1)
-		vpcConfigs := functions[0].GetBlocks("vpc_config")
-		assert.Len(t, vpcConfigs, 1)
-	})
-
-	t.Run("arg is list of objects", func(t *testing.T) {
-		modules := parse(t, map[string]string{
-			"main.tf": `locals {
-  cluster_network_policy = [{
-    enabled = true
-  }]
+}`,
+			expected: []any{},
+		},
+		{
+			name: "for-each use tuple of objects",
+			src: `variable "test_var" {
+  type    = list(object({ enabled = bool }))
+  default = [{ enabled = true }]
 }
 
-resource "google_container_cluster" "primary" {
-  name = "test"
-
-  dynamic "network_policy" {
-    for_each = local.cluster_network_policy
+resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = var.test_var
 
     content {
-      enabled = network_policy.value.enabled
+      bar = foo.value.enabled
     }
   }
 }`,
-		})
-		require.Len(t, modules, 1)
+			expected: []any{true},
+		},
+		{
+			name: "attribute ref to object key",
+			src: `variable "some_var" {
+  type = map(
+    object({
+      tag = string
+    })
+  )
+  default = {
+    ssh   = { "tag" = "login" }
+    http  = { "tag" = "proxy" }
+    https = { "tag" = "proxy" }
+  }
+}
 
-		clusters := modules.GetResourcesByType("google_container_cluster")
-		assert.Len(t, clusters, 1)
+resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = { for name, values in var.some_var : name => values }
+    content {
+      bar = foo.key
+    }
+  }
+}`,
+			expected: []any{"ssh", "http", "https"},
+		},
+		{
+			name: "attribute ref to object value",
+			src: `variable "some_var" {
+  type = map(
+    object({
+      tag = string
+    })
+  )
+  default = {
+    ssh   = { "tag" = "login" }
+    http  = { "tag" = "proxy" }
+    https = { "tag" = "proxy" }
+  }
+}
 
-		networkPolicies := clusters[0].GetBlocks("network_policy")
-		assert.Len(t, networkPolicies, 1)
+resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = { for name, values in var.some_var : name => values }
+    content {
+      bar = foo.value.tag
+    }
+  }
+}`,
+			expected: []any{"login", "proxy", "proxy"},
+		},
+		{
+			name: "attribute ref to map key",
+			src: `variable "some_var" {
+  type = map
+  default = {
+    ssh   = { "tag" = "login" }
+    http  = { "tag" = "proxy" }
+    https = { "tag" = "proxy" }
+  }
+}
 
-		enabled := networkPolicies[0].GetAttribute("enabled")
-		assert.True(t, enabled.Value().True())
-	})
+resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = var.some_var
+    content {
+      bar = foo.key
+    }
+  }
+}`,
+			expected: []any{"ssh", "http", "https"},
+		},
+		{
+			name: "attribute ref to map value",
+			src: `variable "some_var" {
+  type = map
+  default = {
+    ssh   = { "tag" = "login" }
+    http  = { "tag" = "proxy" }
+    https = { "tag" = "proxy" }
+  }
+}
 
-	t.Run("nested dynamic", func(t *testing.T) {
-		modules := parse(t, map[string]string{
-			"main.tf": `
-resource "test_block" "this" {
-  name     = "name"
-  location = "loc"
-  dynamic "env" {
-	for_each = ["1", "2"]
-	content {
-	  dynamic "value_source" {
-		for_each = [true, true]
-		content {}
-	  }
+resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = var.some_var
+    content {
+      bar = foo.value.tag
+    }
+  }
+}`,
+			expected: []any{"login", "proxy", "proxy"},
+		},
+		{
+			name: "dynamic block with iterator",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = ["foo", "bar"]
+	iterator = some_iterator
+    content {
+      bar = some_iterator.value
+    }
+  }
+}`,
+			expected: []any{"foo", "bar"},
+		},
+		{
+			name: "iterator and parent block with same name",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = ["foo", "bar"]
+	iterator = foo
+    content {
+      bar = foo.value
+    }
+  }
+}`,
+			expected: []any{"foo", "bar"},
+		},
+		{
+			name: "for-each use null value",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = null
+    content {
+      bar = foo.value
 	}
   }
 }`,
+			expected: []any{},
+		},
+		{
+			name: "no for-each attribute",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
+    content {
+      bar = foo.value
+	}
+  }
+}`,
+			expected: []any{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			modules := parse(t, map[string]string{
+				"main.tf": tt.src,
+			})
+			require.Len(t, modules, 1)
+
+			resource := modules.GetResourcesByType("test_resource")
+			require.Len(t, resource, 1)
+			blocks := resource[0].GetBlocks("foo")
+
+			var vals []any
+			for _, attr := range blocks {
+				vals = append(vals, attr.GetAttribute("bar").GetRawValue())
+			}
+
+			assert.ElementsMatch(t, tt.expected, vals)
 		})
-		require.Len(t, modules, 1)
-
-		testResources := modules.GetResourcesByType("test_block")
-		assert.Len(t, testResources, 1)
-		envs := testResources[0].GetBlocks("env")
-		assert.Len(t, envs, 2)
-
-		var sources []*terraform.Block
-		for _, env := range envs {
-			sources = append(sources, env.GetBlocks("value_source")...)
-		}
-		assert.Len(t, sources, 4)
-	})
+	}
 }
 
-func parse(t *testing.T, files map[string]string) terraform.Modules {
-	fs := testutil.CreateFS(t, files)
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+func TestNestedDynamicBlock(t *testing.T) {
+	modules := parse(t, map[string]string{
+		"main.tf": `resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = ["1", "1"]
+    content {
+      dynamic "bar" {
+        for_each = [true, true]
+        content {
+          baz = foo.value
+          qux = bar.value
+        }
+      }
+    }
+  }
+}`,
+	})
+	require.Len(t, modules, 1)
 
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	testResources := modules.GetResourcesByType("test_resource")
+	assert.Len(t, testResources, 1)
+	blocks := testResources[0].GetBlocks("foo")
+	assert.Len(t, blocks, 2)
+
+	var nested []*terraform.Block
+	for _, block := range blocks {
+		nested = append(nested, block.GetBlocks("bar")...)
+		for _, b := range nested {
+			assert.Equal(t, "1", b.GetAttribute("baz").GetRawValue())
+			assert.Equal(t, true, b.GetAttribute("qux").GetRawValue())
+		}
+	}
+	assert.Len(t, nested, 4)
+}
+
+func parse(t *testing.T, files map[string]string, opts ...Option) terraform.Modules {
+	fs := testutil.CreateFS(t, files)
+	opts = append(opts, OptionStopOnHCLError(true))
+	parser := New(fs, "", opts...)
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	return modules
-}
-
-func compareSets(a, b []int) bool {
-	m := make(map[int]bool)
-	for _, el := range a {
-		m[el] = true
-	}
-
-	for _, el := range b {
-		if !m[el] {
-			return false
-		}
-	}
-
-	return true
 }
 
 func TestModuleRefersToOutputOfAnotherModule(t *testing.T) {
@@ -1566,6 +1702,222 @@ resource "test_resource" "this" {
 	require.NotNil(t, attr)
 
 	assert.Equal(t, "test_value", attr.GetRawValue())
+}
+
+// TestNestedModulesOptions ensures parser options are carried to the nested
+// submodule evaluators.
+// The test will include an invalid module that will fail to download
+// if it is attempted.
+func TestNestedModulesOptions(t *testing.T) {
+	// reset the previous default logger
+	prevLog := slog.Default()
+	defer slog.SetDefault(prevLog)
+	var buf bytes.Buffer
+	slog.SetDefault(slog.New(log.NewHandler(&buf, nil)))
+
+	// Folder structure
+	// ./
+	// ├── main.tf
+	// └── modules
+	//     ├── city
+	//     │   └── main.tf
+	//     ├── queens
+	//     │   └── main.tf
+	//     └── brooklyn
+	//         └── main.tf
+	//
+	// Modules referenced
+	// main -> city ├─> brooklyn
+	//              └─> queens
+	files := map[string]string{
+		"main.tf": `
+module "city" {
+	source = "./modules/city"
+}
+
+resource "city" "neighborhoods" {
+	names = module.city.neighborhoods
+}
+`,
+		"modules/city/main.tf": `
+module "brooklyn" {
+	source = "./brooklyn"
+}
+
+module "queens" {
+	source = "./queens"
+}
+
+output "neighborhoods" {
+	value = [module.brooklyn.name, module.queens.name]
+}
+`,
+		"modules/city/brooklyn/main.tf": `
+output "name" {
+	value = "Brooklyn"
+}
+`,
+		"modules/city/queens/main.tf": `
+output "name" {
+	value = "Queens"
+}
+
+module "invalid" {
+	source         = "https://example.invaliddomain"
+}
+`,
+	}
+
+	// Using the OptionWithDownloads(false) option will prevent the invalid
+	// module from being downloaded. If the log exists "failed to download"
+	// then the submodule evaluator attempted to download, which was disallowed.
+	modules := parse(t, files, OptionWithDownloads(false))
+	require.Len(t, modules, 4)
+
+	resources := modules.GetResourcesByType("city")
+	require.Len(t, resources, 1)
+
+	for _, res := range resources {
+		attr, _ := res.GetNestedAttribute("names")
+		require.NotNil(t, attr, res.FullName())
+		assert.Equal(t, []string{"Brooklyn", "Queens"}, attr.GetRawValue())
+	}
+
+	require.NotContains(t, buf.String(), "failed to download")
+
+	// Verify module parents are set correctly.
+	expectedParents := map[string]string{
+		".":                     "",
+		"modules/city":          ".",
+		"modules/city/brooklyn": "modules/city",
+		"modules/city/queens":   "modules/city",
+	}
+
+	for _, mod := range modules {
+		expected, exists := expectedParents[mod.ModulePath()]
+		require.Truef(t, exists, "module %s does not exist in assertion", mod.ModulePath())
+		if expected == "" {
+			require.Nil(t, mod.Parent())
+		} else {
+			require.Equal(t, expected, mod.Parent().ModulePath(), "parent of module %q", mod.ModulePath())
+		}
+	}
+}
+
+// TestModuleParents sets up a nested module structure and verifies the
+// parent-child relationships are correctly set.
+func TestModuleParents(t *testing.T) {
+	// The setup is a list of continents, some countries, some cities, etc.
+	dirfs := os.DirFS("./testdata/nested")
+	parser := New(dirfs, "",
+		OptionStopOnHCLError(true),
+		OptionWithDownloads(false),
+	)
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	modules, _, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+
+	// modules only have 'parent'. They do not have children, so create
+	// a structure that allows traversal from the root to the leafs.
+	modChildren := make(map[*terraform.Module][]*terraform.Module)
+	// Keep track of every module that exists
+	modSet := set.New[*terraform.Module]()
+	var root *terraform.Module
+	for _, mod := range modules {
+		mod := mod
+		modChildren[mod] = make([]*terraform.Module, 0)
+		modSet.Append(mod)
+
+		if mod.Parent() == nil {
+			// Only 1 root should exist
+			require.Nil(t, root, "root module already set")
+			root = mod
+		}
+		modChildren[mod.Parent()] = append(modChildren[mod.Parent()], mod)
+	}
+
+	type node struct {
+		prefix     string
+		modulePath string
+		children   []node
+	}
+
+	// expectedTree is the full module tree structure.
+	expectedTree := node{
+		modulePath: ".",
+		children: []node{
+			{
+				modulePath: "north-america",
+				children: []node{
+					{
+						modulePath: "north-america/united-states",
+						children: []node{
+							{modulePath: "north-america/united-states/springfield", prefix: "illinois-"},
+							{modulePath: "north-america/united-states/springfield", prefix: "idaho-"},
+							{modulePath: "north-america/united-states/new-york", children: []node{
+								{modulePath: "north-america/united-states/new-york/new-york-city"},
+							}},
+						},
+					},
+					{
+						modulePath: "north-america/canada",
+						children: []node{
+							{modulePath: "north-america/canada/springfield", prefix: "ontario-"},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	var assertChild func(t *testing.T, n node, mod *terraform.Module)
+	assertChild = func(t *testing.T, n node, mod *terraform.Module) {
+		modSet.Remove(mod)
+		children := modChildren[mod]
+
+		t.Run(n.modulePath, func(t *testing.T) {
+			if !assert.Equal(t, len(n.children), len(children), "modChildren count for %s", n.modulePath) {
+				return
+			}
+			for _, child := range children {
+				// Find the child module that we are expecting.
+				idx := slices.IndexFunc(n.children, func(node node) bool {
+					outputBlocks := child.GetBlocks().OfType("output")
+					outIdx := slices.IndexFunc(outputBlocks, func(outputBlock *terraform.Block) bool {
+						return outputBlock.Labels()[0] == "name"
+					})
+					if outIdx == -1 {
+						return false
+					}
+
+					output := outputBlocks[outIdx]
+					outVal := output.GetAttribute("value").Value()
+					if !outVal.Type().Equals(cty.String) {
+						return false
+					}
+
+					modName := filepath.Base(node.modulePath)
+					if outVal.AsString() != node.prefix+modName {
+						return false
+					}
+
+					return node.modulePath == child.ModulePath()
+				})
+				if !assert.NotEqualf(t, -1, idx, "module prefix=%s path=%s not found in %s", n.prefix, child.ModulePath(), n.modulePath) {
+					continue
+				}
+
+				assertChild(t, n.children[idx], child)
+			}
+		})
+
+	}
+
+	assertChild(t, expectedTree, root)
+	// If any module was not asserted, the test will fail. This ensures the
+	// entire module tree is checked.
+	require.Equal(t, 0, modSet.Size(), "all modules asserted")
 }
 
 func TestCyclicModules(t *testing.T) {
@@ -1668,6 +2020,36 @@ resource "test" "fileset-func" {
 	assert.Equal(t, []string{"a.py", "path/b.py"}, attr.GetRawValue())
 }
 
+func TestExprWithMissingVar(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+variable "v" {
+	type = string
+}
+
+resource "test" "values" {
+	s = "foo-${var.v}"
+    l1 = ["foo", var.v]
+    l2 = concat(["foo"], [var.v])
+    d1 = {foo = var.v}
+    d2 = merge({"foo": "bar"}, {"baz": var.v})
+}
+`,
+	}
+
+	resources := parse(t, files).GetResourcesByType("test")
+	require.Len(t, resources, 1)
+
+	s_attr := resources[0].GetAttribute("s")
+	require.NotNil(t, s_attr)
+	assert.Equal(t, "foo-", s_attr.GetRawValue())
+
+	for _, name := range []string{"l1", "l2", "d1", "d2"} {
+		attr := resources[0].GetAttribute(name)
+		require.NotNil(t, attr)
+	}
+}
+
 func TestVarTypeShortcut(t *testing.T) {
 	files := map[string]string{
 		"main.tf": `
@@ -1710,9 +2092,9 @@ func Test_LoadLocalCachedModule(t *testing.T) {
 		OptionStopOnHCLError(true),
 		OptionWithDownloads(false),
 	)
-	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
 
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	modules, _, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	assert.Len(t, modules, 2)
@@ -1724,4 +2106,351 @@ func Test_LoadLocalCachedModule(t *testing.T) {
 
 	bucketName := buckets[0].GetAttribute("bucket").Value().AsString()
 	assert.Equal(t, "my-s3-bucket", bucketName)
+}
+
+func TestTFVarsFileDoesNotExist(t *testing.T) {
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{
+			Data: []byte(``),
+		},
+	}
+
+	parser := New(
+		fsys, "",
+		OptionStopOnHCLError(true),
+		OptionWithDownloads(false),
+		OptionWithTFVarsPaths("main.tfvars"),
+	)
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	_, _, err := parser.EvaluateAll(t.Context())
+	assert.ErrorContains(t, err, "file does not exist")
+}
+
+func Test_OptionsWithTfVars(t *testing.T) {
+	fs := testutil.CreateFS(t, map[string]string{
+		"main.tf": `resource "test" "this" {
+  foo = var.foo
+}
+variable "foo" {}
+`})
+
+	parser := New(fs, "", OptionsWithTfVars(
+		map[string]cty.Value{
+			"foo": cty.StringVal("bar"),
+		},
+	))
+
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	modules, _, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+	assert.Len(t, modules, 1)
+
+	rootModule := modules[0]
+
+	blocks := rootModule.GetResourcesByType("test")
+	assert.Len(t, blocks, 1)
+	assert.Equal(t, "bar", blocks[0].GetAttribute("foo").Value().AsString())
+}
+
+func Test_AWSRegionNameDefined(t *testing.T) {
+
+	fs := testutil.CreateFS(t, map[string]string{
+		"code/test.tf": `
+data "aws_region" "current" {}
+
+data "aws_region" "other" {
+  name = "us-east-2"
+}
+
+resource "something" "blah" {
+  r1 = data.aws_region.current.name
+  r2 = data.aws_region.other.name
+}
+`,
+	})
+
+	parser := New(fs, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
+	modules, _, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+	require.Len(t, modules, 1)
+	rootModule := modules[0]
+
+	blocks := rootModule.GetResourcesByType("something")
+	require.Len(t, blocks, 1)
+	block := blocks[0]
+
+	r1 := block.GetAttribute("r1")
+	require.NotNil(t, r1)
+	assert.True(t, r1.IsResolvable())
+	assert.Equal(t, "current-region", r1.Value().AsString())
+
+	r2 := block.GetAttribute("r2")
+	require.NotNil(t, r2)
+	assert.True(t, r2.IsResolvable())
+	assert.Equal(t, "us-east-2", r2.Value().AsString())
+}
+
+func TestLogAboutMissingVariableValues(t *testing.T) {
+	var buf bytes.Buffer
+	slog.SetDefault(slog.New(log.NewHandler(&buf, nil)))
+
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{
+			Data: []byte(`
+variable "foo" {}
+
+variable "bar" {
+  default = "bar"
+}
+
+variable "baz" {}
+`),
+		},
+		"main.tfvars": &fstest.MapFile{
+			Data: []byte(`baz = "baz"`),
+		},
+	}
+
+	parser := New(
+		fsys, "",
+		OptionStopOnHCLError(true),
+		OptionWithTFVarsPaths("main.tfvars"),
+	)
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	_, err := parser.Load(t.Context())
+	require.NoError(t, err)
+
+	assert.Contains(t, buf.String(), "Variable values was not found in the environment or variable files.")
+	assert.Contains(t, buf.String(), "variables=\"foo\"")
+}
+
+func TestLoadChildModulesFromLocalCache(t *testing.T) {
+	var buf bytes.Buffer
+	slog.SetDefault(slog.New(log.NewHandler(&buf, &log.Options{Level: log.LevelDebug})))
+
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{Data: []byte(`module "level_1" {
+  source = "./modules/level_1"
+}`)},
+		"modules/level_1/main.tf": &fstest.MapFile{Data: []byte(`module "level_2" {
+  source  = "../level_2"
+}`)},
+		"modules/level_2/main.tf": &fstest.MapFile{Data: []byte(`module "level_3" {
+  count = 2
+  source  = "../level_3"
+}`)},
+		"modules/level_3/main.tf": &fstest.MapFile{Data: []byte(`resource "foo" "bar" {}`)},
+		".terraform/modules/modules.json": &fstest.MapFile{Data: []byte(`{
+    "Modules": [
+        { "Key": "", "Source": "", "Dir": "." },
+        {
+            "Key": "level_1",
+            "Source": "./modules/level_1",
+            "Dir": "modules/level_1"
+        },
+        {
+            "Key": "level_1.level_2",
+            "Source": "../level_2",
+            "Dir": "modules/level_2"
+        },
+        {
+            "Key": "level_1.level_2.level_3",
+            "Source": "../level_3",
+            "Dir": "modules/level_3"
+        }
+    ]
+}`)},
+	}
+
+	parser := New(
+		fsys, "",
+		OptionStopOnHCLError(true),
+	)
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	modules, _, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+
+	assert.Len(t, modules, 5)
+
+	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tsource=\"./modules/level_1\"")
+	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tsource=\"../level_2\"")
+	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tsource=\"../level_3\"")
+	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tsource=\"../level_3\"")
+}
+
+func TestLogParseErrors(t *testing.T) {
+	var buf bytes.Buffer
+	slog.SetDefault(slog.New(log.NewHandler(&buf, nil)))
+
+	src := `resource "aws-s3-bucket" "name" {
+  bucket = <
+}`
+
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{
+			Data: []byte(src),
+		},
+	}
+
+	parser := New(fsys, "")
+	err := parser.ParseFS(t.Context(), ".")
+	require.NoError(t, err)
+
+	assert.Contains(t, buf.String(), `cause="  bucket = <"`)
+}
+
+func Test_PassingNullToChildModule_DoesNotEraseType(t *testing.T) {
+	tests := []struct {
+		name string
+		fsys fs.FS
+	}{
+		{
+			name: "typed variable",
+			fsys: fstest.MapFS{
+				"main.tf": &fstest.MapFile{Data: []byte(`module "test" {
+  source   = "./modules/test"
+  test_var = null
+}`)},
+				"modules/test/main.tf": &fstest.MapFile{Data: []byte(`variable "test_var" {
+  type    = number
+}
+
+resource "foo" "this" {
+  bar = var.test_var != null ? 1 : 2
+}`)},
+			},
+		},
+		{
+			name: "typed variable with default",
+			fsys: fstest.MapFS{
+				"main.tf": &fstest.MapFile{Data: []byte(`module "test" {
+  source   = "./modules/test"
+  test_var = null
+}`)},
+				"modules/test/main.tf": &fstest.MapFile{Data: []byte(`variable "test_var" {
+  type    = number
+  default = null
+}
+
+resource "foo" "this" {
+  bar = var.test_var != null ? 1 : 2
+}`)},
+			},
+		},
+		{
+			name: "empty variable",
+			fsys: fstest.MapFS{
+				"main.tf": &fstest.MapFile{Data: []byte(`module "test" {
+  source   = "./modules/test"
+  test_var = null
+}`)},
+				"modules/test/main.tf": &fstest.MapFile{Data: []byte(`variable "test_var" {}
+
+resource "foo" "this" {
+  bar = var.test_var != null ? 1 : 2
+}`)},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			parser := New(
+				tt.fsys, "",
+				OptionStopOnHCLError(true),
+			)
+			require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+			_, err := parser.Load(t.Context())
+			require.NoError(t, err)
+
+			modules, _, err := parser.EvaluateAll(t.Context())
+			require.NoError(t, err)
+
+			res := modules.GetResourcesByType("foo")[0]
+			attr := res.GetAttribute("bar")
+			val, _ := attr.Value().AsBigFloat().Int64()
+			assert.Equal(t, int64(2), val)
+		})
+	}
+}
+
+func TestAttrRefToNullVariable(t *testing.T) {
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{Data: []byte(`variable "name" {
+  type    = string
+  default = null
+}
+
+resource "aws_s3_bucket" "example" {
+  bucket = var.name
+}`)},
+	}
+
+	parser := New(fsys, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	_, err := parser.Load(t.Context())
+	require.NoError(t, err)
+
+	modules, _, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+
+	val := modules.GetResourcesByType("aws_s3_bucket")[0].GetAttribute("bucket").GetRawValue()
+	assert.Nil(t, val)
+}
+
+func TestConfigWithEphemeralBlock(t *testing.T) {
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{Data: []byte(`ephemeral "random_password" "password" {
+  length = 16
+}`)},
+	}
+
+	parser := New(fsys, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	_, err := parser.Load(t.Context())
+	require.NoError(t, err)
+}
+
+func TestConvertObjectWithUnknownAndNullValuesToMap(t *testing.T) {
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{Data: []byte(`module "foo" {
+  source = "./modules/foo"
+}
+
+locals {
+  known = "test"
+}
+
+module "bar" {
+  source = "./modules/bar"
+  outputs = {
+    "key1" : { "Value" : module.foo.test },
+    "key2" : { "Value" : local.known },
+    "key3" : { "Value" : local.unknown },
+  }
+}`)},
+		"modules/foo/main.tf": &fstest.MapFile{Data: []byte(`output "test" {
+  value       = ref_to_unknown
+}`)},
+		"modules/bar/main.tf": &fstest.MapFile{Data: []byte(`variable "outputs" {
+  type        = map(any)
+}`)},
+	}
+
+	parser := New(fsys, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	_, err := parser.Load(t.Context())
+	require.NoError(t, err)
+
+	_, _, err = parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
 }

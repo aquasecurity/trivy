@@ -90,6 +90,10 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r xio.ReadSeekerAt) ([]types.Licens
 			l = normalizeLicense(l)
 			if l != "" {
 				for _, lic := range licensing.SplitLicenses(l) {
+					if lic == "" {
+						continue
+					}
+
 					lic = licensing.Normalize(lic)
 					if !slices.Contains(licenses, lic) {
 						licenses = append(licenses, lic)
@@ -101,7 +105,7 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r xio.ReadSeekerAt) ([]types.Licens
 			license := commonLicenseReferenceRegexp.FindStringSubmatch(line)
 			if len(license) == 2 {
 				l := licensing.Normalize(license[1])
-				if !slices.Contains(licenses, l) {
+				if l != "" && !slices.Contains(licenses, l) {
 					licenses = append(licenses, l)
 				}
 			}
@@ -148,4 +152,8 @@ func normalizeLicense(s string) string {
 	s = strings.TrimSuffix(s, " license")
 
 	return strings.TrimSpace(s)
+}
+
+func (a *dpkgLicenseAnalyzer) StaticPaths() []string {
+	return []string{"usr/share/doc/"}
 }

@@ -1,8 +1,10 @@
 package mod
 
 import (
+	"fmt"
 	"io"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -29,12 +31,14 @@ var (
 )
 
 type Parser struct {
-	replace bool // 'replace' represents if the 'replace' directive should be taken into account.
+	replace       bool // 'replace' represents if the 'replace' directive should be taken into account.
+	useMinVersion bool
 }
 
-func NewParser(replace bool) *Parser {
+func NewParser(replace, useMinVersion bool) *Parser {
 	return &Parser{
-		replace: replace,
+		replace:       replace,
+		useMinVersion: useMinVersion,
 	}
 }
 
@@ -80,18 +84,21 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 	skipIndirect := true
 	if modFileParsed.Go != nil { // Old go.mod file may not include the go version. Go version for these files  is less than 1.17
-		skipIndirect = lessThan117(modFileParsed.Go.Version)
+		skipIndirect = lessThan(modFileParsed.Go.Version, 1, 17)
 	}
 
-	// Main module
-	if m := modFileParsed.Module; m != nil {
-		ver := strings.TrimPrefix(m.Mod.Version, "v")
-		pkgs[m.Mod.Path] = ftypes.Package{
-			ID:                 packageID(m.Mod.Path, ver),
-			Name:               m.Mod.Path,
-			Version:            ver,
-			ExternalReferences: p.GetExternalRefs(m.Mod.Path),
-			Relationship:       ftypes.RelationshipRoot,
+	// Use minimal required go version from `toolchain` line (or from `go` line if `toolchain` is omitted) as `stdlib`.
+	// Show `stdlib` only with `useMinVersion` flag.
+	if p.useMinVersion {
+		if toolchainVer := toolchainVersion(modFileParsed.Toolchain, modFileParsed.Go); toolchainVer != "" {
+			pkgs["stdlib"] = ftypes.Package{
+				ID:   packageID("stdlib", toolchainVer),
+				Name: "stdlib",
+				// Our versioning library doesn't support canonical (goX.Y.Z) format,
+				// So we need to add `v` prefix for consistency (with module and dependency versions).
+				Version:      fmt.Sprintf("v%s", toolchainVer),
+				Relationship: ftypes.RelationshipDirect, // Considered a direct dependency as the main module depends on the standard packages.
+			}
 		}
 	}
 
@@ -101,11 +108,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		if skipIndirect && require.Indirect {
 			continue
 		}
-		ver := strings.TrimPrefix(require.Mod.Version, "v")
 		pkgs[require.Mod.Path] = ftypes.Package{
-			ID:                 packageID(require.Mod.Path, ver),
+			ID:                 packageID(require.Mod.Path, require.Mod.Version),
 			Name:               require.Mod.Path,
-			Version:            ver,
+			Version:            require.Mod.Version,
 			Relationship:       lo.Ternary(require.Indirect, ftypes.RelationshipIndirect, ftypes.RelationshipDirect),
 			ExternalReferences: p.GetExternalRefs(require.Mod.Path),
 		}
@@ -121,7 +127,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			}
 
 			// If the replace directive has a version on the left side, make sure it matches the version that was imported.
-			if rep.Old.Version != "" && old.Version != rep.Old.Version[1:] {
+			if rep.Old.Version != "" && old.Version != rep.Old.Version {
 				continue
 			}
 
@@ -138,20 +144,53 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 			// Add replaced package to package register.
 			pkgs[rep.New.Path] = ftypes.Package{
-				ID:                 packageID(rep.New.Path, rep.New.Version[1:]),
+				ID:                 packageID(rep.New.Path, rep.New.Version),
 				Name:               rep.New.Path,
-				Version:            rep.New.Version[1:],
+				Version:            rep.New.Version,
 				Relationship:       old.Relationship,
 				ExternalReferences: p.GetExternalRefs(rep.New.Path),
 			}
 		}
 	}
 
-	return lo.Values(pkgs), nil, nil
+	var deps ftypes.Dependencies
+	// Main module
+	if m := modFileParsed.Module; m != nil {
+		root := ftypes.Package{
+			ID:                 packageID(m.Mod.Path, m.Mod.Version),
+			Name:               m.Mod.Path,
+			Version:            m.Mod.Version,
+			ExternalReferences: p.GetExternalRefs(m.Mod.Path),
+			Relationship:       ftypes.RelationshipRoot,
+		}
+
+		// Store child dependencies for the root package (main module).
+		// We will build a dependency graph for Direct/Indirect in `fanal` using additional files.
+		dependsOn := lo.FilterMap(lo.Values(pkgs), func(pkg ftypes.Package, _ int) (string, bool) {
+			return pkg.ID, pkg.Relationship == ftypes.RelationshipDirect
+		})
+
+		sort.Strings(dependsOn)
+		deps = append(deps, ftypes.Dependency{
+			ID:        root.ID,
+			DependsOn: dependsOn,
+		})
+
+		pkgs[root.Name] = root
+	}
+
+	pkgSlice := lo.Values(pkgs)
+	sort.Sort(ftypes.Packages(pkgSlice))
+
+	return pkgSlice, deps, nil
 }
 
-// Check if the Go version is less than 1.17
-func lessThan117(ver string) bool {
+// lessThan checks if the Go version is less than `<majorVer>.<minorVer>`
+func lessThan(ver string, majorVer, minorVer int) bool {
+	if ver == "" {
+		return false
+	}
+
 	ss := strings.Split(ver, ".")
 	if len(ss) != 2 {
 		return false
@@ -165,7 +204,55 @@ func lessThan117(ver string) bool {
 		return false
 	}
 
-	return major <= 1 && minor < 17
+	return major <= majorVer && minor < minorVer
+}
+
+// toolchainVersion returns version from `toolchain`.
+// If `toolchain` is omitted - return version from `go` line (if it is version in toolchain format)
+// cf. https://go.dev/doc/toolchain
+func toolchainVersion(toolchain *modfile.Toolchain, goVer *modfile.Go) string {
+	if toolchain != nil && toolchain.Name != "" {
+		// cf. https://go.dev/doc/toolchain#name
+		// `dropping the initial go and discarding off any suffix beginning with -`
+		// e.g. `go1.22.5-custom` => `1.22.5`
+		name, _, _ := strings.Cut(toolchain.Name, "-")
+		return strings.TrimPrefix(name, "go")
+	}
+
+	if goVer != nil {
+		return toolchainVersionFromGoLine(goVer.Version)
+	}
+	return ""
+}
+
+// toolchainVersionFromGoLine detects Go version from `go` line if `toolchain` line is omitted.
+// `go` line supports the following formats:
+// cf. https://go.dev/doc/toolchain#version
+//   - `1.N.P`. e.g. `1.22.0`
+//   - `1.N`. e.g. `1.22`
+//   - `1.NrcR`. e.g. `1.22rc1`
+//   - `1.NbetaR`. e.g. `1.18beta1` - only for Go 1.20 or earlier
+func toolchainVersionFromGoLine(ver string) string {
+	var majorMinorVer string
+
+	if ss := strings.Split(ver, "."); len(ss) > 2 { // `1.N.P`
+		majorMinorVer = strings.Join(ss[:2], ".")
+	} else if v, _, rcFound := strings.Cut(ver, "rc"); rcFound { // `1.NrcR`
+		majorMinorVer = v
+	} else { // `1.N`
+		majorMinorVer = ver
+		// Add `.0` suffix to avoid user confusing.
+		// See https://github.com/aquasecurity/trivy/pull/7163#discussion_r1682424315
+		ver = v + ".0"
+	}
+
+	// `toolchain` has been added in go 1.21.
+	// So we need to check that Go version is 1.21 or higher.
+	// cf. https://github.com/aquasecurity/trivy/pull/7163#discussion_r1682424315
+	if lessThan(majorMinorVer, 1, 21) {
+		return ""
+	}
+	return ver
 }
 
 func packageID(name, version string) string {

@@ -3,7 +3,10 @@ package flag
 import (
 	"fmt"
 
+	"github.com/samber/lo"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/policy"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
@@ -32,7 +35,7 @@ var (
 	IncludeNonFailuresFlag = Flag[bool]{
 		Name:       "include-non-failures",
 		ConfigName: "misconfiguration.include-non-failures",
-		Usage:      "include successes and exceptions, available with '--scanners misconfig'",
+		Usage:      "include successes, available with '--scanners misconfig'",
 	}
 	HelmValuesFileFlag = Flag[[]string]{
 		Name:       "helm-values",
@@ -96,8 +99,22 @@ var (
 	MisconfigScannersFlag = Flag[[]string]{
 		Name:       "misconfig-scanners",
 		ConfigName: "misconfiguration.scanners",
-		Default:    xstrings.ToStringSlice(analyzer.TypeConfigFiles),
-		Usage:      "comma-separated list of misconfig scanners to use for misconfiguration scanning",
+		Default: xstrings.ToStringSlice(
+			lo.Without(analyzer.TypeConfigFiles, analyzer.TypeYAML, analyzer.TypeJSON),
+		),
+		Usage: "comma-separated list of misconfig scanners to use for misconfiguration scanning",
+	}
+	ConfigFileSchemasFlag = Flag[[]string]{
+		Name:       "config-file-schemas",
+		ConfigName: "misconfiguration.config-file-schemas",
+		Usage:      "specify paths to JSON configuration file schemas to determine that a file matches some configuration and pass the schema to Rego checks for type checking",
+	}
+	RenderCauseFlag = Flag[[]string]{
+		Name:       "render-cause",
+		ConfigName: "misconfiguration.render-cause",
+		Usage:      "specify configuration types for which the rendered causes will be shown in the table report",
+		Values:     xstrings.ToStringSlice([]types.ConfigType{types.Terraform}), // TODO: add Plan and JSON?
+		Default:    []string{},
 	}
 )
 
@@ -118,6 +135,8 @@ type MisconfFlagGroup struct {
 	CloudformationParamVars    *Flag[[]string]
 	TerraformExcludeDownloaded *Flag[bool]
 	MisconfigScanners          *Flag[[]string]
+	ConfigFileSchemas          *Flag[[]string]
+	RenderCause                *Flag[[]string]
 }
 
 type MisconfOptions struct {
@@ -136,6 +155,8 @@ type MisconfOptions struct {
 	CloudFormationParamVars []string
 	TfExcludeDownloaded     bool
 	MisconfigScanners       []analyzer.Type
+	ConfigFileSchemas       []string
+	RenderCause             []types.ConfigType
 }
 
 func NewMisconfFlagGroup() *MisconfFlagGroup {
@@ -154,6 +175,8 @@ func NewMisconfFlagGroup() *MisconfFlagGroup {
 		CloudformationParamVars:    CfParamsFlag.Clone(),
 		TerraformExcludeDownloaded: TerraformExcludeDownloaded.Clone(),
 		MisconfigScanners:          MisconfigScannersFlag.Clone(),
+		ConfigFileSchemas:          ConfigFileSchemasFlag.Clone(),
+		RenderCause:                RenderCauseFlag.Clone(),
 	}
 }
 
@@ -176,6 +199,8 @@ func (f *MisconfFlagGroup) Flags() []Flagger {
 		f.TerraformExcludeDownloaded,
 		f.CloudformationParamVars,
 		f.MisconfigScanners,
+		f.ConfigFileSchemas,
+		f.RenderCause,
 	}
 }
 
@@ -198,5 +223,7 @@ func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 		CloudFormationParamVars: f.CloudformationParamVars.Value(),
 		TfExcludeDownloaded:     f.TerraformExcludeDownloaded.Value(),
 		MisconfigScanners:       xstrings.ToTSlice[analyzer.Type](f.MisconfigScanners.Value()),
+		ConfigFileSchemas:       f.ConfigFileSchemas.Value(),
+		RenderCause:             xstrings.ToTSlice[types.ConfigType](f.RenderCause.Value()),
 	}, nil
 }

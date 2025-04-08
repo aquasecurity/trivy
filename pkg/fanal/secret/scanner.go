@@ -3,6 +3,7 @@ package secret
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"slices"
@@ -60,6 +61,10 @@ func (g Global) AllowPath(path string) bool {
 // Regexp adds unmarshalling from YAML for regexp.Regexp
 type Regexp struct {
 	*regexp.Regexp
+}
+
+func MustCompileWithoutWordPrefix(str string) *Regexp {
+	return MustCompile(fmt.Sprintf("%s(%s)", startWord, str))
 }
 
 func MustCompile(str string) *Regexp {
@@ -170,9 +175,9 @@ func (r *Rule) MatchKeywords(content []byte) bool {
 	if len(r.Keywords) == 0 {
 		return true
 	}
-
+	var contentLower = bytes.ToLower(content)
 	for _, kw := range r.Keywords {
-		if bytes.Contains(bytes.ToLower(content), []byte(strings.ToLower(kw))) {
+		if bytes.Contains(contentLower, []byte(strings.ToLower(kw))) {
 			return true
 		}
 	}
@@ -361,6 +366,7 @@ func NewScanner(config *Config) Scanner {
 type ScanArgs struct {
 	FilePath string
 	Content  []byte
+	Binary   bool
 }
 
 type Match struct {
@@ -429,9 +435,14 @@ func (s *Scanner) Scan(args ScanArgs) types.Secret {
 			censored = censorLocation(loc, censored)
 		}
 	}
-
 	for _, match := range matched {
-		findings = append(findings, toFinding(match.Rule, match.Location, censored))
+		finding := toFinding(match.Rule, match.Location, censored)
+		// Rewrite unreadable fields for binary files
+		if args.Binary {
+			finding.Match = fmt.Sprintf("Binary file %q matches a rule %q", args.FilePath, match.Rule.Title)
+			finding.Code = types.Code{}
+		}
+		findings = append(findings, finding)
 	}
 
 	if len(findings) == 0 {
@@ -476,7 +487,10 @@ func toFinding(rule Rule, loc Location, content []byte) types.SecretFinding {
 	}
 }
 
-const secretHighlightRadius = 2 // number of lines above + below each secret to include in code output
+const (
+	secretHighlightRadius = 2   // number of lines above + below each secret to include in code output
+	maxLineLength         = 100 // all lines longer will be cut off
+)
 
 func findLocation(start, end int, content []byte) (int, int, types.Code, string) {
 	startLineNum := bytes.Count(content[:start], lineSep)
@@ -496,8 +510,8 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 	}
 
 	if lineEnd-lineStart > 100 {
-		lineStart = lo.Ternary(start-30 < 0, 0, start-30)
-		lineEnd = lo.Ternary(end+20 > len(content), len(content), end+20)
+		lineStart = lo.Ternary(start-lineStart-30 < 0, lineStart, start-30)
+		lineEnd = lo.Ternary(end+20 > lineEnd, lineEnd, end+20)
 	}
 	matchLine := string(content[lineStart:lineEnd])
 	endLineNum := startLineNum + bytes.Count(content[start:end], lineSep)
@@ -511,9 +525,16 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 	rawLines := lines[codeStart:codeEnd]
 	var foundFirst bool
 	for i, rawLine := range rawLines {
-		strRawLine := string(rawLine)
 		realLine := codeStart + i
 		inCause := realLine >= startLineNum && realLine <= endLineNum
+
+		var strRawLine string
+		if len(rawLine) > maxLineLength {
+			strRawLine = lo.Ternary(inCause, matchLine, string(rawLine[:maxLineLength]))
+		} else {
+			strRawLine = string(rawLine)
+		}
+
 		code.Lines = append(code.Lines, types.Line{
 			Number:      codeStart + i + 1,
 			Content:     strRawLine,

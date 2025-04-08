@@ -20,58 +20,75 @@ func Test_AdaptVPC(t *testing.T) {
 	}{
 		{
 			name: "defined",
-			terraform: `
-			resource "aws_flow_log" "this" {
-				vpc_id = aws_vpc.main.id
-			}
-			resource "aws_default_vpc" "default" {
-				tags = {
-				  Name = "Default VPC"
-				}
-			  }
+			terraform: `resource "aws_flow_log" "this" {
+  vpc_id = aws_vpc.main.id
+}
+resource "aws_default_vpc" "default" {
+  tags = {
+    Name = "Default VPC"
+  }
+}
 
-			  resource "aws_vpc" "main" {
-				cidr_block = "4.5.6.7/32"
-			  }
+resource "aws_vpc" "main" {
+  cidr_block = "4.5.6.7/32"
+}
 
-			resource "aws_security_group" "example" {
-				name        = "http"
-				description = "Allow inbound HTTP traffic"
-			  
-				ingress {
-				  description = "Rule #1"
-				  from_port   = 80
-				  to_port     = 80
-				  protocol    = "tcp"
-				  cidr_blocks = [aws_vpc.main.cidr_block]
-				}
+resource "aws_security_group" "example" {
+  name        = "http"
+  description = "Allow inbound HTTP traffic"
 
-				egress {
-					cidr_blocks = ["1.2.3.4/32"]
-				}
-			  }
+  ingress {
+    description = "Rule #1"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
+  }
 
-			resource "aws_network_acl_rule" "example" {
-				egress         = false
-				protocol       = "tcp"
-				from_port      = 22
-				to_port        = 22
-				rule_action    = "allow"
-				cidr_block     = "10.0.0.0/16"
-			}
+  egress {
+    cidr_blocks = ["1.2.3.4/32"]
+  }
+}
 
-			resource "aws_security_group_rule" "example" {
-				type              = "ingress"
-				description = "Rule #2"
-				security_group_id = aws_security_group.example.id
-				from_port         = 22
-				to_port           = 22
-				protocol          = "tcp"
-				cidr_blocks = [
-				  "1.2.3.4/32",
-				  "4.5.6.7/32",
-				]
-			  }
+resource "aws_network_acl_rule" "example" {
+  egress      = false
+  protocol    = "tcp"
+  from_port   = 22
+  to_port     = 22
+  rule_action = "allow"
+  cidr_block  = "10.0.0.0/16"
+}
+
+resource "aws_security_group_rule" "example" {
+  type              = "ingress"
+  description       = "Rule #2"
+  security_group_id = aws_security_group.example.id
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks = [
+    "1.2.3.4/32",
+    "4.5.6.7/32",
+  ]
+}
+
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.main.id
+
+  ingress {
+    protocol  = -1
+    self      = true
+    from_port = 0
+    to_port   = 0
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 `,
 			expected: ec2.EC2{
 				VPCs: []ec2.VPC{
@@ -102,6 +119,9 @@ func Test_AdaptVPC(t *testing.T) {
 								CIDRs: []iacTypes.StringValue{
 									iacTypes.String("4.5.6.7/32", iacTypes.NewTestMetadata()),
 								},
+								FromPort: iacTypes.IntTest(80),
+								ToPort:   iacTypes.IntTest(80),
+								Protocol: iacTypes.StringTest("tcp"),
 							},
 							{
 								Metadata: iacTypes.NewTestMetadata(),
@@ -111,6 +131,9 @@ func Test_AdaptVPC(t *testing.T) {
 									iacTypes.String("1.2.3.4/32", iacTypes.NewTestMetadata()),
 									iacTypes.String("4.5.6.7/32", iacTypes.NewTestMetadata()),
 								},
+								FromPort: iacTypes.IntTest(22),
+								ToPort:   iacTypes.IntTest(22),
+								Protocol: iacTypes.StringTest("tcp"),
 							},
 						},
 
@@ -121,6 +144,26 @@ func Test_AdaptVPC(t *testing.T) {
 								CIDRs: []iacTypes.StringValue{
 									iacTypes.String("1.2.3.4/32", iacTypes.NewTestMetadata()),
 								},
+								FromPort: iacTypes.IntTest(-1),
+								ToPort:   iacTypes.IntTest(-1),
+							},
+						},
+					},
+					{
+						IsDefault: iacTypes.BoolTest(true),
+						IngressRules: []ec2.SecurityGroupRule{
+							{
+								Protocol: iacTypes.StringTest("-1"),
+								FromPort: iacTypes.IntTest(0),
+								ToPort:   iacTypes.IntTest(0),
+							},
+						},
+						EgressRules: []ec2.SecurityGroupRule{
+							{
+								Protocol: iacTypes.StringTest("-1"),
+								FromPort: iacTypes.IntTest(0),
+								ToPort:   iacTypes.IntTest(0),
+								CIDRs:    []iacTypes.StringValue{iacTypes.StringTest("0.0.0.0/0")},
 							},
 						},
 					},
@@ -137,6 +180,8 @@ func Test_AdaptVPC(t *testing.T) {
 								CIDRs: []iacTypes.StringValue{
 									iacTypes.String("10.0.0.0/16", iacTypes.NewTestMetadata()),
 								},
+								FromPort: iacTypes.IntTest(22),
+								ToPort:   iacTypes.IntTest(22),
 							},
 						},
 						IsDefaultRule: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
@@ -146,17 +191,16 @@ func Test_AdaptVPC(t *testing.T) {
 		},
 		{
 			name: "defaults",
-			terraform: `
-			resource "aws_security_group" "example" {
-				ingress {
-				}
+			terraform: `resource "aws_security_group" "example" {
+  ingress {
+  }
 
-				egress {
-				}
-			  }
+  egress {
+  }
+}
 
-			resource "aws_network_acl_rule" "example" {
-			}
+resource "aws_network_acl_rule" "example" {
+}
 `,
 			expected: ec2.EC2{
 				SecurityGroups: []ec2.SecurityGroup{
@@ -169,6 +213,8 @@ func Test_AdaptVPC(t *testing.T) {
 							{
 								Metadata:    iacTypes.NewTestMetadata(),
 								Description: iacTypes.String("", iacTypes.NewTestMetadata()),
+								FromPort:    iacTypes.IntTest(-1),
+								ToPort:      iacTypes.IntTest(-1),
 							},
 						},
 
@@ -176,6 +222,8 @@ func Test_AdaptVPC(t *testing.T) {
 							{
 								Metadata:    iacTypes.NewTestMetadata(),
 								Description: iacTypes.String("", iacTypes.NewTestMetadata()),
+								FromPort:    iacTypes.IntTest(-1),
+								ToPort:      iacTypes.IntTest(-1),
 							},
 						},
 					},
@@ -188,7 +236,9 @@ func Test_AdaptVPC(t *testing.T) {
 								Metadata: iacTypes.NewTestMetadata(),
 								Type:     iacTypes.String("ingress", iacTypes.NewTestMetadata()),
 								Action:   iacTypes.String("", iacTypes.NewTestMetadata()),
-								Protocol: iacTypes.String("-1", iacTypes.NewTestMetadata()),
+								Protocol: iacTypes.String("", iacTypes.NewTestMetadata()),
+								FromPort: iacTypes.IntTest(-1),
+								ToPort:   iacTypes.IntTest(-1),
 							},
 						},
 						IsDefaultRule: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
@@ -198,8 +248,7 @@ func Test_AdaptVPC(t *testing.T) {
 		},
 		{
 			name: "aws_flow_log refer to locals",
-			terraform: `
-locals {
+			terraform: `locals {
   vpc_id = try(aws_vpc.this.id, "")
 }
 
@@ -223,8 +272,7 @@ resource "aws_flow_log" "this" {
 		},
 		{
 			name: "ingress and egress rules",
-			terraform: `
-resource "aws_security_group" "example" {
+			terraform: `resource "aws_security_group" "example" {
   name        = "example"
   description = "example"
 }
@@ -252,6 +300,9 @@ resource "aws_vpc_security_group_ingress_rule" "test" {
 								CIDRs: []iacTypes.StringValue{
 									iacTypes.StringTest("0.0.0.0/0"),
 								},
+								Protocol: iacTypes.StringTest("tcp"),
+								FromPort: iacTypes.IntTest(22),
+								ToPort:   iacTypes.IntTest(22),
 							},
 						},
 						EgressRules: []ec2.SecurityGroupRule{
@@ -259,6 +310,9 @@ resource "aws_vpc_security_group_ingress_rule" "test" {
 								CIDRs: []iacTypes.StringValue{
 									iacTypes.StringTest("0.0.0.0/0"),
 								},
+								Protocol: iacTypes.StringTest("-1"),
+								FromPort: iacTypes.IntTest(-1),
+								ToPort:   iacTypes.IntTest(-1),
 							},
 						},
 					},
@@ -278,50 +332,51 @@ resource "aws_vpc_security_group_ingress_rule" "test" {
 
 func TestVPCLines(t *testing.T) {
 	src := `
-	resource "aws_default_vpc" "default" {
-	  }
+resource "aws_default_vpc" "default" {
+}
 
-	resource "aws_vpc" "main" {
-		cidr_block = "4.5.6.7/32"
-	  }
+resource "aws_vpc" "main" {
+  cidr_block = "4.5.6.7/32"
+}
 
-	resource "aws_security_group" "example" {
-		name        = "http"
-		description = "Allow inbound HTTP traffic"
-	  
-		ingress {
-		  description = "HTTP from VPC"
-		  from_port   = 80
-		  to_port     = 80
-		  protocol    = "tcp"
-		  cidr_blocks = [aws_vpc.main.cidr_block]
-		}
+resource "aws_security_group" "example" {
+  name        = "http"
+  description = "Allow inbound HTTP traffic"
 
-		egress {
-			cidr_blocks = ["1.2.3.4/32"]
-		}
-	  }
+  ingress {
+    description = "HTTP from VPC"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
+  }
 
-	resource "aws_security_group_rule" "example" {
-		type              = "ingress"
-		security_group_id = aws_security_group.example.id
-		from_port         = 22
-		to_port           = 22
-		protocol          = "tcp"
-		cidr_blocks = [
-		  "1.2.3.4/32",
-		  "4.5.6.7/32",
-		]
-	  }
-	  
-	  resource "aws_network_acl_rule" "example" {
-		egress         = false
-		protocol       = "tcp"
-		from_port      = 22
-		to_port        = 22
-		rule_action    = "allow"
-		cidr_block     = "10.0.0.0/16"
-	}`
+  egress {
+    cidr_blocks = ["1.2.3.4/32"]
+  }
+}
+
+resource "aws_security_group_rule" "example" {
+  type              = "ingress"
+  security_group_id = aws_security_group.example.id
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks = [
+    "1.2.3.4/32",
+    "4.5.6.7/32",
+  ]
+}
+
+resource "aws_network_acl_rule" "example" {
+  egress      = false
+  protocol    = "tcp"
+  from_port   = 22
+  to_port     = 22
+  rule_action = "allow"
+  cidr_block  = "10.0.0.0/16"
+}
+`
 
 	modules := tftestutil.CreateModulesFromSource(t, src, ".tf")
 	adapted := Adapt(modules)

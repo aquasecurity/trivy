@@ -2,7 +2,6 @@ package clean
 
 import (
 	"context"
-	"os"
 
 	"golang.org/x/xerrors"
 
@@ -12,18 +11,24 @@ import (
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/policy"
+	"github.com/aquasecurity/trivy/pkg/vex/repo"
 )
 
 func Run(ctx context.Context, opts flag.Options) error {
 	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
 	defer cancel()
 
-	if !opts.CleanAll && !opts.CleanScanCache && !opts.CleanVulnerabilityDB && !opts.CleanJavaDB && !opts.CleanChecksBundle {
+	if !opts.CleanAll && !opts.CleanScanCache && !opts.CleanVulnerabilityDB && !opts.CleanJavaDB &&
+		!opts.CleanChecksBundle && !opts.CleanVEXRepositories {
 		return xerrors.New("no clean option is specified")
 	}
 
 	if opts.CleanAll {
-		return cleanAll(ctx, opts)
+		opts.CleanScanCache = true
+		opts.CleanVulnerabilityDB = true
+		opts.CleanJavaDB = true
+		opts.CleanChecksBundle = true
+		opts.CleanVEXRepositories = true
 	}
 
 	if opts.CleanScanCache {
@@ -49,13 +54,11 @@ func Run(ctx context.Context, opts flag.Options) error {
 			return xerrors.Errorf("check bundle clean error: %w", err)
 		}
 	}
-	return nil
-}
 
-func cleanAll(ctx context.Context, opts flag.Options) error {
-	log.InfoContext(ctx, "Removing all caches...")
-	if err := os.RemoveAll(opts.CacheDir); err != nil {
-		return xerrors.Errorf("failed to remove the directory (%s) : %w", opts.CacheDir, err)
+	if opts.CleanVEXRepositories {
+		if err := cleanVEXRepositories(opts); err != nil {
+			return xerrors.Errorf("VEX repositories clean error: %w", err)
+		}
 	}
 	return nil
 }
@@ -99,6 +102,14 @@ func cleanCheckBundle(opts flag.Options) error {
 	}
 	if err := c.Clear(); err != nil {
 		return xerrors.Errorf("clear check bundle: %w", err)
+	}
+	return nil
+}
+
+func cleanVEXRepositories(opts flag.Options) error {
+	log.Info("Removing VEX repositories...")
+	if err := repo.NewManager(opts.CacheDir).Clear(); err != nil {
+		return xerrors.Errorf("clear VEX repositories: %w", err)
 	}
 	return nil
 }

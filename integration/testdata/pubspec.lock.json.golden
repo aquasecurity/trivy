@@ -26,7 +26,7 @@
           "Name": "http",
           "Identifier": {
             "PURL": "pkg:pub/http@0.13.2",
-            "UID": "b2aa9906ee615d4c"
+            "UID": "fe8339221b1b26b8"
           },
           "Version": "0.13.2",
           "Relationship": "direct",
@@ -37,7 +37,7 @@
           "Name": "shelf",
           "Identifier": {
             "PURL": "pkg:pub/shelf@1.3.1",
-            "UID": "8367a65de5b4cda0"
+            "UID": "6d23c3a1f807b8ab"
           },
           "Version": "1.3.1",
           "Indirect": true,
@@ -52,7 +52,7 @@
           "PkgName": "http",
           "PkgIdentifier": {
             "PURL": "pkg:pub/http@0.13.2",
-            "UID": "b2aa9906ee615d4c"
+            "UID": "fe8339221b1b26b8"
           },
           "InstalledVersion": "0.13.2",
           "FixedVersion": "0.13.3",

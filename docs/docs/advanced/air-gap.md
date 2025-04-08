@@ -1,142 +1,77 @@
-# Air-Gapped Environment
+# Connectivity and Network considerations
 
-Trivy can be used in air-gapped environments. Note that an allowlist is [here][allowlist].
+Trivy requires internet connectivity in order to function normally. If your organizations blocks or restricts network traffic, that could prevent Trivy from working correctly.
+This document explains Trivy's network connectivity requirements, and how to configure Trivy to work in restricted networks environments, including completely air-gapped environments.
 
-## Air-Gapped Environment for vulnerabilities
+The following table lists all external resources that are required by Trivy:
 
-### Download the vulnerability database
-At first, you need to download the vulnerability database for use in air-gapped environments.
-
-=== "Trivy"
-
-    ```
-    TRIVY_TEMP_DIR=$(mktemp -d)
-    trivy --cache-dir $TRIVY_TEMP_DIR image --download-db-only
-    tar -cf ./db.tar.gz -C $TRIVY_TEMP_DIR/db metadata.json trivy.db
-    rm -rf $TRIVY_TEMP_DIR
-    ```
-
-=== "oras >= v0.13.0"
-    Please follow [oras installation instruction][oras].
-
-    Download `db.tar.gz`:
-
-    ```
-    $ oras pull ghcr.io/aquasecurity/trivy-db:2
-    ```
-
-=== "oras < v0.13.0"
-    Please follow [oras installation instruction][oras].
-
-    Download `db.tar.gz`:
-
-    ```
-    $ oras pull -a ghcr.io/aquasecurity/trivy-db:2
-    ```
-
-### Download the Java index database[^1]
-Java users also need to download the Java index database for use in air-gapped environments.
+External Resource | Feature | Details
+--- | --- | ---
+Vulnerability Database | Vulnerability scanning | [Trivy DB](../scanner/vulnerability.md)
+Java Vulnerability Database | Java vulnerability scanning | [Trivy Java DB](../coverage/language/java.md)
+Checks Bundle | Misconfigurations scanning | [Trivy Checks](../scanner/misconfiguration/check/builtin.md)
+VEX Hub | VEX Hub | [VEX Hub](../supply-chain/vex/repo.md)
+Maven Central / Remote Repositories | Java vulnerability scanning | [Java Scanner/Remote Repositories](../coverage/language/java.md#remote-repositories)
 
 !!! note
-    You container image may contain JAR files even though you don't use Java directly.
-    In that case, you also need to download the Java index database.
+    Trivy is an open source project that relies on public free infrastructure. In case of extreme load, you may encounter rate limiting when Trivy attempts to connect to external resources.
 
-=== "Trivy"
+The rest of this document details each resource's connectivity requirements and network related considerations.
 
-    ```
-    TRIVY_TEMP_DIR=$(mktemp -d)
-    trivy --cache-dir $TRIVY_TEMP_DIR image --download-java-db-only
-    tar -cf ./javadb.tar.gz -C $TRIVY_TEMP_DIR/java-db metadata.json trivy-java.db
-    rm -rf $TRIVY_TEMP_DIR
-    ```
-=== "oras >= v0.13.0"
-    Please follow [oras installation instruction][oras].
+## OCI Databases
 
-    Download `javadb.tar.gz`:
+Trivy's Vulnerability, Java, and Checks Bundle are packaged as OCI images and stored in public container registries.
 
-    ```
-    $ oras pull ghcr.io/aquasecurity/trivy-java-db:1
-    ```
+### Connectivity requirements
 
-=== "oras < v0.13.0"
-    Please follow [oras installation instruction][oras].
+The specific registries and locations are detailed in the [databases document](../configuration/db.md).
 
-    Download `javadb.tar.gz`:
+Communication with OCI Registries follows the [OCI Distribution](https://github.com/opencontainers/distribution-spec) spec.
 
-    ```
-    $ oras pull -a ghcr.io/aquasecurity/trivy-java-db:1
-    ```
+The following hosts are known to be used by the default container registries:
 
+Registry | Hosts | Additional info
+--- | --- | ---
+Google Artifact Registry | <ul><li>`mirror.gcr.io`</li><li>`googlecode.l.googleusercontent.com`</li></ul> | [Google's IP addresses](https://support.google.com/a/answer/10026322?hl=en)
+GitHub Container Registry | <ul><li>`ghcr.io`</li><li>`pkg-containers.githubusercontent.com`</li></ul> | [GitHub's IP addresses](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-githubs-ip-addresses)
 
-### Transfer the DB files into the air-gapped environment
-The way of transfer depends on the environment.
+### Self-hosting
 
-=== "Vulnerability db"
-    ```
-    $ rsync -av -e ssh /path/to/db.tar.gz [user]@[host]:dst
-    ```
+You can host Trivy's databases in your own container registry. Please refer to [Self-hosting document](./self-hosting.md#oci-databases) for a detailed guide.
 
-=== "Java index db[^1]"
-    ```
-    $ rsync -av -e ssh /path/to/javadb.tar.gz [user]@[host]:dst
-    ```
+## Embedded Checks
 
-### Put the DB files in Trivy's cache directory
-You have to know where to put the DB files. The following command shows the default cache directory.
+Checks Bundle is embedded in the Trivy binary (at build time), and will be used as a fallback if the external database is not available. This means that you can still scan for misconfigurations in an air-gapped environment using the database from the time of the Trivy release you are using.
 
-```
-$ ssh user@host
-$ trivy -h | grep cache
-   --cache-dir value  cache directory (default: "/home/myuser/.cache/trivy") [$TRIVY_CACHE_DIR]
-```
-=== "Vulnerability db"
-    Put the DB file in the cache directory + `/db`.
-    
-    ```
-    $ mkdir -p /home/myuser/.cache/trivy/db
-    $ cd /home/myuser/.cache/trivy/db
-    $ tar xvf /path/to/db.tar.gz -C /home/myuser/.cache/trivy/db
-    x trivy.db
-    x metadata.json
-    $ rm /path/to/db.tar.gz
-    ```
+## VEX Hub
 
-=== "Java index db[^1]"
-    Put the DB file in the cache directory + `/java-db`.
+### Connectivity Requirements
 
-    ```
-    $ mkdir -p /home/myuser/.cache/trivy/java-db
-    $ cd /home/myuser/.cache/trivy/java-db
-    $ tar xvf /path/to/javadb.tar.gz -C /home/myuser/.cache/trivy/java-db
-    x trivy-java.db
-    x metadata.json
-    $ rm /path/to/javadb.tar.gz
-    ```
+VEX Hub is hosted as at <https://github.com/aquasecurity/vexhub>.
 
+Trivy is fetching VEX Hub GitHub Repository directly using simple HTTPS requests.
 
+The following hosts are known to be used by GitHub's services:
 
-In an air-gapped environment it is your responsibility to update the Trivy databases on a regular basis, so that the scanner can detect recently-identified vulnerabilities. 
+- `api.github.com`
+- `codeload.github.com`
 
-### Run Trivy with the specific flags.
-In an air-gapped environment, you have to specify `--skip-db-update` and `--skip-java-db-update`[^1] so that Trivy doesn't attempt to download the latest database files.
-In addition, if you want to scan `pom.xml` dependencies, you need to specify `--offline-scan` since Trivy tries to issue API requests for scanning Java applications by default.
+For more information about GitHub connectivity (including specific IP addresses), please refer to [GitHub's connectivity troubleshooting guide](https://docs.github.com/en/get-started/using-github/troubleshooting-connectivity-problems).
 
-```
-$ trivy image --skip-db-update --skip-java-db-update --offline-scan alpine:3.12
-```
+### Self-hosting
 
-## Air-Gapped Environment for misconfigurations
+You can host a copy of VEX Hub on your own internal server. Please refer to the [self-hosting document](./self-hosting.md#vex-hub) for a detailed guide.
 
-No special measures are required to detect misconfigurations in an air-gapped environment.
+## Maven Central / Remote Repositories
 
-### Run Trivy with `--skip-check-update` option
-In an air-gapped environment, specify `--skip-check-update` so that Trivy doesn't attempt to download the latest misconfiguration checks.
+Trivy might call out to Maven central or other remote repositories to fetch in order to correctly identify Java packages during a vulnerability scan.
 
-```
-$ trivy conf --skip-policy-update /path/to/conf
-```
+### Connectivity requirements
 
-[allowlist]: ../references/troubleshooting.md
-[oras]: https://oras.land/docs/installation
+Trivy might attempt to connect (over HTTPS) to the following URLs:
 
-[^1]: This is only required to scan `jar` files. More information about `Java index db` [here](../coverage/language/java.md)
+- `https://repo.maven.apache.org/maven2`
+
+### Offline mode
+
+There's no way to leverage Maven Central in a network-restricted environment, but you can prevent Trivy from trying to connect to it by using the `--offline-scan` flag.

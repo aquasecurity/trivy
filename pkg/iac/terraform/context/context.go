@@ -46,17 +46,29 @@ func (c *Context) Get(parts ...string) cty.Value {
 	if len(parts) == 0 {
 		return cty.NilVal
 	}
-	src := c.ctx.Variables
-	for i, part := range parts {
-		if i == len(parts)-1 {
-			return src[part]
-		}
-		nextPart := src[part]
-		if nextPart == cty.NilVal {
+
+	curr := c.ctx.Variables[parts[0]]
+	if len(parts) == 1 {
+		return curr
+	}
+
+	for i, part := range parts[1:] {
+		if !curr.Type().HasAttribute(part) {
 			return cty.NilVal
 		}
-		src = nextPart.AsValueMap()
+
+		attr := curr.GetAttr(part)
+
+		if i == len(parts)-2 { // iteration from the first element
+			return attr
+		}
+
+		if !(attr.IsKnown() && attr.Type().IsObjectType()) {
+			return cty.NilVal
+		}
+		curr = attr
 	}
+
 	return cty.NilVal
 }
 
@@ -97,13 +109,12 @@ func mergeVars(src cty.Value, parts []string, value cty.Value) cty.Value {
 	}
 
 	data := make(map[string]cty.Value)
-	if src.Type().IsObjectType() && !src.IsNull() && src.LengthInt() > 0 {
+	if isNotEmptyObject(src) {
 		data = src.AsValueMap()
-		tmp, ok := src.AsValueMap()[parts[0]]
-		if !ok {
-			src = cty.ObjectVal(make(map[string]cty.Value))
+		if attr, ok := data[parts[0]]; ok {
+			src = attr
 		} else {
-			src = tmp
+			src = cty.EmptyObjectVal
 		}
 	}
 
@@ -118,14 +129,16 @@ func mergeObjects(a, b cty.Value) cty.Value {
 	for key, val := range a.AsValueMap() {
 		output[key] = val
 	}
-	for key, val := range b.AsValueMap() {
-		old, exists := output[key]
-		if exists && isNotEmptyObject(old) && isNotEmptyObject(val) {
-			output[key] = mergeObjects(old, val)
+	b.ForEachElement(func(key, val cty.Value) (stop bool) {
+		k := key.AsString()
+		old := output[k]
+		if old.IsKnown() && isNotEmptyObject(old) && isNotEmptyObject(val) {
+			output[k] = mergeObjects(old, val)
 		} else {
-			output[key] = val
+			output[k] = val
 		}
-	}
+		return false
+	})
 	return cty.ObjectVal(output)
 }
 

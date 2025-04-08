@@ -255,6 +255,61 @@ func TestApplyLayers(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with duplicate of debian packages",
+			inputLayers: []types.BlobInfo{
+				{
+					SchemaVersion: 2,
+					DiffID:        "sha256:96e320b34b5478d8b369ca43ffaa88ff6dd9499ec72b792ca21b1e8b0c55670f",
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/status.d/libssl1",
+							Packages: types.Packages{
+								{
+									ID:      "libssl1.1@1.1.1n-0+deb11u3",
+									Name:    "libssl1.1",
+									Version: "1.1.1n",
+									Release: "0+deb11u3",
+								},
+							},
+						},
+					},
+				},
+				{
+					SchemaVersion: 2,
+					DiffID:        "sha256:5e087d956f3e62bd034dd0712bc4cbef8fda55fba0b11a7d0564f294887c7079",
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/status.d/libssl1.1",
+							Packages: types.Packages{
+								{
+									ID:      "libssl1.1@1.1.1n-0+deb11u3",
+									Name:    "libssl1.1",
+									Version: "1.1.1n",
+									Release: "0+deb11u3",
+								},
+							},
+						},
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				Packages: types.Packages{
+					{
+						ID:      "libssl1.1@1.1.1n-0+deb11u3",
+						Name:    "libssl1.1",
+						Version: "1.1.1n",
+						Release: "0+deb11u3",
+						Identifier: types.PkgIdentifier{
+							UID: "522a5c3b263d1357",
+						},
+						Layer: types.Layer{
+							DiffID: "sha256:96e320b34b5478d8b369ca43ffaa88ff6dd9499ec72b792ca21b1e8b0c55670f",
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "happy path with digests in libs/packages (as for SBOM)",
 			inputLayers: []types.BlobInfo{
 				{

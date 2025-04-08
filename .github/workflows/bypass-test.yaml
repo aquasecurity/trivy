@@ -9,6 +9,7 @@ on:
       - 'mkdocs.yml'
       - 'LICENSE'
       - '.release-please-manifest.json'
+      - 'helm/trivy/Chart.yaml'
   pull_request:
     paths:
       - '**.md'
@@ -16,18 +17,19 @@ on:
       - 'mkdocs.yml'
       - 'LICENSE'
       - '.release-please-manifest.json'
+      - 'helm/trivy/Chart.yaml'
 jobs:
   test:
     name: Test
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
-        operating-system: [ubuntu-latest-m, windows-latest, macos-latest]
+        operating-system: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - run: 'echo "No test required"'
 
   integration:
     name: Integration Test
-    runs-on: ubuntu-latest-m
+    runs-on: ubuntu-latest
     steps:
       - run: 'echo "No test required"'

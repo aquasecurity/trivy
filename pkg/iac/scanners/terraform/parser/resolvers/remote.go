@@ -9,6 +9,8 @@ import (
 	"sync/atomic"
 
 	"github.com/hashicorp/go-getter"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type remoteResolver struct {
@@ -20,9 +22,9 @@ var Remote = &remoteResolver{
 }
 
 func (r *remoteResolver) incrementCount(o Options) {
-	o.Debug("Incrementing the download counter")
+
 	atomic.CompareAndSwapInt32(&r.count, r.count, r.count+1)
-	o.Debug("Download counter is now %d", r.count)
+	o.Logger.Debug("Incrementing the download counter", log.Int("count", int(r.count)))
 }
 
 func (r *remoteResolver) GetDownloadCount() int {
@@ -38,23 +40,30 @@ func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (fil
 		return nil, "", "", false, nil
 	}
 
-	src := removeSubdirFromSource(opt.OriginalSource)
-	key := cacheKey(src, opt.OriginalVersion)
-	opt.Debug("Storing with cache key %s", key)
+	origSrc, subdir := splitPackageSubdirRaw(opt.OriginalSource)
+	key := cacheKey(origSrc, opt.OriginalVersion)
+	opt.Logger.Debug("Caching module", log.String("key", key))
 
 	baseCacheDir, err := locateCacheDir(opt.CacheDir)
 	if err != nil {
 		return nil, "", "", true, fmt.Errorf("failed to locate cache directory: %w", err)
 	}
+
 	cacheDir := filepath.Join(baseCacheDir, key)
+
+	src, _ := splitPackageSubdirRaw(opt.Source)
+
+	opt.Source = src
 	if err := r.download(ctx, opt, cacheDir); err != nil {
 		return nil, "", "", true, err
 	}
 
 	r.incrementCount(opt)
-	opt.Debug("Successfully downloaded %s from %s", opt.Name, opt.Source)
-	opt.Debug("Module '%s' resolved via remote download.", opt.Name)
-	return os.DirFS(cacheDir), opt.Source, filepath.Join(".", opt.RelativePath), true, nil
+	opt.Logger.Debug("Successfully resolve module via remote download",
+		log.String("name", opt.Name),
+		log.String("source", opt.OriginalSource),
+	)
+	return os.DirFS(cacheDir), opt.OriginalSource, subdir, true, nil
 }
 
 func (r *remoteResolver) download(ctx context.Context, opt Options, dst string) error {
@@ -63,12 +72,10 @@ func (r *remoteResolver) download(ctx context.Context, opt Options, dst string) 
 		return err
 	}
 
-	var opts []getter.ClientOption
-
 	// Overwrite the file getter so that a file will be copied
 	getter.Getters["file"] = &getter.FileGetter{Copy: true}
 
-	opt.Debug("Downloading %s...", opt.Source)
+	opt.Logger.Debug("Downloading module", log.String("source", opt.Source))
 
 	// Build the client
 	client := &getter.Client{
@@ -78,7 +85,13 @@ func (r *remoteResolver) download(ctx context.Context, opt Options, dst string) 
 		Pwd:     opt.WorkingDir,
 		Getters: getter.Getters,
 		Mode:    getter.ClientModeAny,
-		Options: opts,
+	}
+
+	terminalPrompt := os.Getenv("GIT_TERMINAL_PROMPT")
+	if err := os.Setenv("GIT_TERMINAL_PROMPT", "0"); err != nil {
+		opt.Logger.Error("Failed to set env", log.String("name", "GIT_TERMINAL_PROMPT"), log.Err(err))
+	} else {
+		defer os.Setenv("GIT_TERMINAL_PROMPT", terminalPrompt)
 	}
 
 	if err := client.Get(); err != nil {

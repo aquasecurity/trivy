@@ -1,0 +1,7 @@
+- bucket: openSUSE Tumbleweed
+  pairs:
+    - bucket: singularity-ce
+      pairs:
+        - key: openSUSE-SU-2024:14059-1
+          value:
+            FixedVersion: "4.1.3-1.1"

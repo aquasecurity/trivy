@@ -1,7 +1,6 @@
 package nuget
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -12,7 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
+func Test_nugetLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name string
 		dir  string
@@ -197,7 +196,7 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 			a, err := newNugetLibraryAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 
-			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
+			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{
 				FS: os.DirFS(tt.dir),
 			})
 

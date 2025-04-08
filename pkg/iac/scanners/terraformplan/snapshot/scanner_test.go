@@ -1,8 +1,6 @@
 package snapshot
 
 import (
-	"bytes"
-	"context"
 	"os"
 	"path"
 	"path/filepath"
@@ -13,6 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	tfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
@@ -20,12 +19,11 @@ import (
 
 func initScanner(opts ...options.ScannerOption) *Scanner {
 	defaultOpts := []options.ScannerOption{
-		options.ScannerWithEmbeddedPolicies(false),
-		options.ScannerWithEmbeddedLibraries(true),
-		options.ScannerWithPolicyNamespaces("user"),
-		options.ScannerWithPolicyDirs("."),
-		options.ScannerWithRegoOnly(true),
-		options.ScannerWithRegoErrorLimits(0),
+		rego.WithEmbeddedPolicies(false),
+		rego.WithEmbeddedLibraries(true),
+		rego.WithPolicyNamespaces("user"),
+		rego.WithPolicyDirs("."),
+		rego.WithRegoErrorLimits(0),
 		tfscanner.ScannerWithSkipCachedModules(true),
 	}
 
@@ -60,8 +58,8 @@ func TestScanner_Scan(t *testing.T) {
 
 			policyFS := os.DirFS(filepath.Join("testdata", tt.dir, "checks"))
 
-			s := initScanner(options.ScannerWithPolicyFilesystem(policyFS))
-			result, err := s.Scan(context.TODO(), f)
+			s := initScanner(rego.WithPolicyFilesystem(policyFS))
+			result, err := s.Scan(t.Context(), f)
 			require.NoError(t, err)
 
 			failed := result.GetFailed()
@@ -98,26 +96,27 @@ func Test_ScanFS(t *testing.T) {
 			dir:         "with-remote-module",
 			expectedIDs: []string{"ID001"},
 		},
+		{
+			dir:         "with-var",
+			expectedIDs: []string{"ID001"},
+		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.dir, func(t *testing.T) {
 			fs := os.DirFS("testdata")
 
-			debugLog := bytes.NewBuffer([]byte{})
 			scanner := New(
-				options.ScannerWithDebug(debugLog),
-				options.ScannerWithPolicyDirs(path.Join(tc.dir, "checks")),
-				options.ScannerWithPolicyFilesystem(fs),
-				options.ScannerWithRegoOnly(true),
-				options.ScannerWithPolicyNamespaces("user"),
-				options.ScannerWithEmbeddedLibraries(false),
-				options.ScannerWithEmbeddedPolicies(false),
-				options.ScannerWithRegoErrorLimits(0),
+				rego.WithPolicyDirs(path.Join(tc.dir, "checks")),
+				rego.WithPolicyFilesystem(fs),
+				rego.WithPolicyNamespaces("user"),
+				rego.WithEmbeddedLibraries(false),
+				rego.WithEmbeddedPolicies(false),
+				rego.WithRegoErrorLimits(0),
 				tfscanner.ScannerWithSkipCachedModules(true),
 			)
 
-			results, err := scanner.ScanFS(context.TODO(), fs, path.Join(tc.dir, "tfplan"))
+			results, err := scanner.ScanFS(t.Context(), fs, path.Join(tc.dir, "tfplan"))
 			require.NoError(t, err)
 			require.Len(t, results, 1)
 
@@ -133,5 +132,4 @@ func Test_ScanFS(t *testing.T) {
 			assert.Equal(t, tc.expectedIDs, ids)
 		})
 	}
-
 }

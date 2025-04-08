@@ -2,14 +2,14 @@ package report
 
 import (
 	"context"
-	"errors"
 	"io"
 	"strings"
 
+	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
@@ -32,7 +32,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 	}
 	defer func() {
 		if cerr := cleanup(); cerr != nil {
-			err = errors.Join(err, cerr)
+			err = multierror.Append(err, cerr)
 		}
 	}()
 
@@ -44,20 +44,24 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 	var writer Writer
 	switch option.Format {
 	case types.FormatTable:
-		writer = &table.Writer{
+		writer = table.NewWriter(table.Options{
+			Scanners:             option.Scanners,
 			Output:               output,
 			Severities:           option.Severities,
 			Tree:                 option.DependencyTree,
 			ShowSuppressed:       option.ShowSuppressed,
 			IncludeNonFailures:   option.IncludeNonFailures,
 			Trace:                option.Trace,
+			RenderCause:          option.RenderCause,
 			LicenseRiskThreshold: option.LicenseRiskThreshold,
 			IgnoredLicenses:      option.IgnoredLicenses,
-		}
+			TableModes:           option.TableModes,
+		})
 	case types.FormatJSON:
 		writer = &JSONWriter{
-			Output:      output,
-			ListAllPkgs: option.ListAllPkgs,
+			Output:         output,
+			ListAllPkgs:    option.ListAllPkgs,
+			ShowSuppressed: option.ShowSuppressed,
 		}
 	case types.FormatGitHub:
 		writer = &github.Writer{
@@ -84,7 +88,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 		}
 	case types.FormatSarif:
 		target := ""
-		if report.ArtifactType == artifact.TypeFilesystem {
+		if report.ArtifactType == ftypes.TypeFilesystem {
 			target = option.Target
 		}
 		writer = &SarifWriter{

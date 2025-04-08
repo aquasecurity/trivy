@@ -3,14 +3,16 @@ package spec
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
-	sp "github.com/aquasecurity/trivy-checks/pkg/spec"
+	"github.com/aquasecurity/trivy-checks/pkg/specs"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -29,17 +31,17 @@ const (
 
 // Scanners reads spec control and determines the scanners by check ID prefix
 func (cs *ComplianceSpec) Scanners() (types.Scanners, error) {
-	scannerTypes := make(map[types.Scanner]struct{})
+	scannerTypes := set.New[types.Scanner]()
 	for _, control := range cs.Spec.Controls {
 		for _, check := range control.Checks {
 			scannerType := scannerByCheckID(check.ID)
 			if scannerType == types.UnknownScanner {
 				return nil, xerrors.Errorf("unsupported check ID: %s", check.ID)
 			}
-			scannerTypes[scannerType] = struct{}{}
+			scannerTypes.Append(scannerType)
 		}
 	}
-	return lo.Keys(scannerTypes), nil
+	return scannerTypes.Items(), nil
 }
 
 // CheckIDs return list of compliance check IDs
@@ -70,18 +72,41 @@ func scannerByCheckID(checkID string) types.Scanner {
 	}
 }
 
+func checksDir(cacheDir string) string {
+	return filepath.Join(cacheDir, "policy")
+}
+
+func complianceSpecDir(cacheDir string) string {
+	return filepath.Join(checksDir(cacheDir), "content", "specs", "compliance")
+}
+
 // GetComplianceSpec accepct compliance flag name/path and return builtin or file system loaded spec
-func GetComplianceSpec(specNameOrPath string) (ComplianceSpec, error) {
+func GetComplianceSpec(specNameOrPath, cacheDir string) (ComplianceSpec, error) {
+	if specNameOrPath == "" {
+		return ComplianceSpec{}, nil
+	}
+
 	var b []byte
 	var err error
-	if strings.HasPrefix(specNameOrPath, "@") {
+	if strings.HasPrefix(specNameOrPath, "@") { // load user specified spec from disk
 		b, err = os.ReadFile(strings.TrimPrefix(specNameOrPath, "@"))
 		if err != nil {
 			return ComplianceSpec{}, fmt.Errorf("error retrieving compliance spec from path: %w", err)
 		}
+		log.Debug("Compliance spec loaded from specified path", log.String("path", specNameOrPath))
 	} else {
-		// TODO: GetSpecByName() should return []byte
-		b = []byte(sp.NewSpecLoader().GetSpecByName(specNameOrPath))
+		_, err := os.Stat(filepath.Join(checksDir(cacheDir), "metadata.json"))
+		if err != nil { // cache corrupt or bundle does not exist, load embedded version
+			b = []byte(specs.GetSpec(specNameOrPath))
+			log.Debug("Compliance spec loaded from embedded library", log.String("spec", specNameOrPath))
+		} else {
+			// load from bundle on disk
+			b, err = LoadFromBundle(cacheDir, specNameOrPath)
+			if err != nil {
+				return ComplianceSpec{}, err
+			}
+			log.Debug("Compliance spec loaded from disk bundle", log.String("spec", specNameOrPath))
+		}
 	}
 
 	var complianceSpec ComplianceSpec
@@ -90,4 +115,12 @@ func GetComplianceSpec(specNameOrPath string) (ComplianceSpec, error) {
 	}
 	return complianceSpec, nil
 
+}
+
+func LoadFromBundle(cacheDir, specNameOrPath string) ([]byte, error) {
+	b, err := os.ReadFile(filepath.Join(complianceSpecDir(cacheDir), specNameOrPath+".yaml"))
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving compliance spec from bundle %s: %w", specNameOrPath, err)
+	}
+	return b, nil
 }

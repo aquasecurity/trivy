@@ -51,10 +51,12 @@ trivy [global flags] command [flags] target
 * [trivy kubernetes](trivy_kubernetes.md)	 - [EXPERIMENTAL] Scan kubernetes cluster
 * [trivy module](trivy_module.md)	 - Manage modules
 * [trivy plugin](trivy_plugin.md)	 - Manage plugins
+* [trivy registry](trivy_registry.md)	 - Manage registry authentication
 * [trivy repository](trivy_repository.md)	 - Scan a repository
 * [trivy rootfs](trivy_rootfs.md)	 - Scan rootfs
 * [trivy sbom](trivy_sbom.md)	 - Scan SBOM for vulnerabilities and licenses
 * [trivy server](trivy_server.md)	 - Server mode
 * [trivy version](trivy_version.md)	 - Print the version
+* [trivy vex](trivy_vex.md)	 - [EXPERIMENTAL] VEX utilities
 * [trivy vm](trivy_vm.md)	 - [EXPERIMENTAL] Scan a virtual machine image
 

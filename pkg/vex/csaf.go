@@ -1,7 +1,7 @@
 package vex
 
 import (
-	"github.com/csaf-poc/csaf_distribution/v3/csaf"
+	"github.com/gocsaf/csaf/v3/csaf"
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -12,6 +12,7 @@ import (
 
 type CSAF struct {
 	advisory csaf.Advisory
+	source   string
 	logger   *log.Logger
 }
 
@@ -20,9 +21,10 @@ type relationship struct {
 	SubProducts []*purl.PackageURL
 }
 
-func newCSAF(advisory csaf.Advisory) VEX {
+func newCSAF(advisory csaf.Advisory, source string) *CSAF {
 	return &CSAF{
 		advisory: advisory,
+		source:   source,
 		logger:   log.WithPrefix("vex").With(log.String("format", "CSAF")),
 	}
 }
@@ -43,7 +45,7 @@ func (v *CSAF) NotAffected(vuln types.DetectedVulnerability, product, subProduct
 	if status == "" {
 		return types.ModifiedFinding{}, false
 	}
-	return types.NewModifiedFinding(vuln, status, v.statement(found), "CSAF VEX"), true
+	return types.NewModifiedFinding(vuln, status, v.statement(found), v.source), true
 }
 
 func (v *CSAF) match(vuln *csaf.Vulnerability, product, subProduct *core.Component) types.FindingStatus {

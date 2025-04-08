@@ -2,9 +2,22 @@
 
 Trivy has client/server mode. Trivy server has vulnerability database and Trivy client doesn't have to download vulnerability database. It is useful if you want to scan images or files at multiple locations and do not want to download the database at every location.
 
-|   Client/Server Mode  | Image | Rootfs | Filesystem | Repository | Config | AWS | K8s |
-|:---------------------:|:-----:|:------:|:----------:|:----------:|:------:|:---:|:---:|
-|       Supported       |   ✅  |   ✅     |     ✅     |     ✅     |  ✅    | X   |  X  |
+| Client/Server Mode | Image | Rootfs | Filesystem | Repository | Config | K8s |
+|:------------------:|:-----:|:------:|:----------:|:----------:|:------:|:---:|
+|     Supported      |   ✅   |   ✅    |     ✅      |     ✅      |   -    |  -  |
+
+Some scanners run on the client side, even in client/server mode.
+
+|     Scanner      | Run on Client or Server |
+|:----------------:|:-----------------------:|
+|  Vulnerability   |         Server          |
+| Misconfiguration |       Client[^1]        |
+|      Secret      |       Client[^2]        |
+|     License      |         Server          |
+
+!!! note
+    Scanning of misconfigurations and licenses is performed on the client side (as in standalone mode).
+    Otherwise, the client would need to send files to the server that may contain sensitive information.
 
 ## Server
 At first, you need to launch Trivy server. It downloads vulnerability database automatically and continue to fetch the latest DB in the background.
@@ -338,3 +351,5 @@ Returns the `200 OK` status if the request was successful.
 
 ![architecture](../../../imgs/client-server.png)
 
+[^1]: The checks bundle is also downloaded on the client side.
+[^2]: The scan result with masked secrets is sent to the server

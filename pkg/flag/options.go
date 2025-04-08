@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"reflect"
 	"slices"
 	"strings"
 	"sync"
@@ -23,12 +24,13 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/result"
+	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
 type FlagType interface {
-	int | string | []string | bool | time.Duration | float64
+	int | string | []string | bool | time.Duration | float64 | map[string][]string
 }
 
 type Flag[T FlagType] struct {
@@ -56,14 +58,20 @@ type Flag[T FlagType] struct {
 	// Usage explains how to use the flag.
 	Usage string
 
-	// Persistent represents if the flag is persistent
+	// Persistent represents if the flag is persistent.
 	Persistent bool
 
-	// Deprecated represents if the flag is deprecated
+	// Deprecated represents if the flag is deprecated.
+	// It shows a warning message when the flag is used.
 	Deprecated string
 
-	// Removed represents if the flag is removed and no longer works
+	// Removed represents if the flag is removed and no longer works.
+	// It shows an error message when the flag is used.
 	Removed string
+
+	// Internal represents if the flag is for internal use only.
+	// It is not shown in the usage message.
+	Internal bool
 
 	// Aliases represents aliases
 	Aliases []Alias
@@ -153,6 +161,8 @@ func (f *Flag[T]) cast(val any) any {
 		return cast.ToFloat64(val)
 	case time.Duration:
 		return cast.ToDuration(val)
+	case map[string][]string:
+		return cast.ToStringMapStringSlice(val)
 	case []string:
 		if s, ok := val.(string); ok && strings.Contains(s, ",") {
 			// Split environmental variables by comma as it is not done by viper.
@@ -196,8 +206,20 @@ func (f *Flag[T]) GetName() string {
 	return f.Name
 }
 
+func (f *Flag[T]) GetConfigName() string {
+	return f.ConfigName
+}
+
+func (f *Flag[T]) GetDefaultValue() any {
+	return f.Default
+}
+
 func (f *Flag[T]) GetAliases() []Alias {
 	return f.Aliases
+}
+
+func (f *Flag[T]) Hidden() bool {
+	return f.Deprecated != "" || f.Removed != "" || f.Internal
 }
 
 func (f *Flag[T]) Value() (t T) {
@@ -224,13 +246,37 @@ func (f *Flag[T]) Add(cmd *cobra.Command) {
 	case string:
 		usage := f.Usage
 		if len(f.Values) > 0 {
-			usage += fmt.Sprintf(" (%s)", strings.Join(f.Values, ","))
+			if len(f.Values) <= 4 {
+				// Display inline for a small number of choices
+				usage += fmt.Sprintf(" (allowed values: %s)", strings.Join(f.Values, ","))
+			} else {
+				// Display as a bullet list for many choices
+				usage += "\nAllowed values:"
+				for _, val := range f.Values {
+					usage += fmt.Sprintf("\n  - %s", val)
+				}
+				if v != "" {
+					usage += "\n"
+				}
+			}
 		}
 		flags.StringP(f.Name, f.Shorthand, v, usage)
 	case []string:
 		usage := f.Usage
 		if len(f.Values) > 0 {
-			usage += fmt.Sprintf(" (%s)", strings.Join(f.Values, ","))
+			if len(f.Values) <= 4 {
+				// Display inline for a small number of choices
+				usage += fmt.Sprintf(" (allowed values: %s)", strings.Join(f.Values, ","))
+			} else {
+				// Display as a bullet list for many choices
+				usage += "\nAllowed values:"
+				for _, val := range f.Values {
+					usage += fmt.Sprintf("\n  - %s", val)
+				}
+				if len(v) != 0 {
+					usage += "\n"
+				}
+			}
 		}
 		flags.StringSliceP(f.Name, f.Shorthand, v, usage)
 	case bool:
@@ -241,7 +287,7 @@ func (f *Flag[T]) Add(cmd *cobra.Command) {
 		flags.Float64P(f.Name, f.Shorthand, v, f.Usage)
 	}
 
-	if f.Deprecated != "" || f.Removed != "" {
+	if f.Hidden() {
 		_ = flags.MarkHidden(f.Name)
 	}
 }
@@ -302,7 +348,10 @@ type FlagGroup interface {
 
 type Flagger interface {
 	GetName() string
+	GetConfigName() string
+	GetDefaultValue() any
 	GetAliases() []Alias
+	Hidden() bool
 
 	Parse() error
 	Add(cmd *cobra.Command)
@@ -320,12 +369,12 @@ type Flags struct {
 	LicenseFlagGroup       *LicenseFlagGroup
 	MisconfFlagGroup       *MisconfFlagGroup
 	ModuleFlagGroup        *ModuleFlagGroup
+	PackageFlagGroup       *PackageFlagGroup
 	RemoteFlagGroup        *RemoteFlagGroup
 	RegistryFlagGroup      *RegistryFlagGroup
 	RegoFlagGroup          *RegoFlagGroup
 	RepoFlagGroup          *RepoFlagGroup
 	ReportFlagGroup        *ReportFlagGroup
-	SBOMFlagGroup          *SBOMFlagGroup
 	ScanFlagGroup          *ScanFlagGroup
 	SecretFlagGroup        *SecretFlagGroup
 	VulnerabilityFlagGroup *VulnerabilityFlagGroup
@@ -343,12 +392,12 @@ type Options struct {
 	LicenseOptions
 	MisconfOptions
 	ModuleOptions
+	PackageOptions
 	RegistryOptions
 	RegoOptions
 	RemoteOptions
 	RepoOptions
 	ReportOptions
-	SBOMOptions
 	ScanOptions
 	SecretOptions
 	VulnerabilityOptions
@@ -368,6 +417,12 @@ type Options struct {
 func (o *Options) Align(f *Flags) error {
 	if f.ScanFlagGroup != nil && f.ScanFlagGroup.Scanners != nil {
 		o.enableSBOM()
+	}
+
+	if f.PackageFlagGroup != nil && f.PackageFlagGroup.PkgRelationships != nil &&
+		slices.Compare(o.PkgRelationships, ftypes.Relationships) != 0 &&
+		(o.DependencyTree || slices.Contains(types.SupportedSBOMFormats, o.Format) || len(o.VEXSources) != 0) {
+		return xerrors.Errorf("'--pkg-relationships' cannot be used with '--dependency-tree', '--vex' or SBOM formats")
 	}
 
 	if o.Compliance.Spec.ID != "" {
@@ -410,42 +465,56 @@ func (o *Options) enableSBOM() {
 		o.Scanners.Enable(types.SBOMScanner)
 	}
 
-	if o.Format == types.FormatSPDX || o.Format == types.FormatSPDXJSON {
-		log.Info(`"--format spdx" and "--format spdx-json" disable security scanning`)
-		o.Scanners = types.Scanners{types.SBOMScanner}
-	}
-
-	if o.Format == types.FormatCycloneDX {
+	if o.Format == types.FormatCycloneDX || o.Format == types.FormatSPDX || o.Format == types.FormatSPDXJSON {
 		// Vulnerability scanning is disabled by default for CycloneDX.
 		if !viper.IsSet(ScannersFlag.ConfigName) {
-			log.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+			log.Info(fmt.Sprintf(`"--format %[1]s" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the "%[1]s" report.`, o.Format))
 			o.Scanners = nil
 		}
 		o.Scanners.Enable(types.SBOMScanner)
 	}
 }
 
+// ScanOpts returns options for scanning
+func (o *Options) ScanOpts() types.ScanOptions {
+	return types.ScanOptions{
+		PkgTypes:            o.PkgTypes,
+		PkgRelationships:    o.PkgRelationships,
+		Scanners:            o.Scanners,
+		ImageConfigScanners: o.ImageConfigScanners, // this is valid only for 'image' subcommand
+		ScanRemovedPackages: o.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
+		LicenseCategories:   o.LicenseCategories,
+		LicenseFull:         o.LicenseFull,
+		FilePatterns:        o.FilePatterns,
+		IncludeDevDeps:      o.IncludeDevDeps,
+		Distro:              o.Distro,
+		VulnSeveritySources: o.VulnSeveritySources,
+	}
+}
+
 // RegistryOpts returns options for OCI registries
 func (o *Options) RegistryOpts() ftypes.RegistryOptions {
 	return ftypes.RegistryOptions{
-		Credentials:   o.Credentials,
-		RegistryToken: o.RegistryToken,
-		Insecure:      o.Insecure,
-		Platform:      o.Platform,
-		AWSRegion:     o.AWSOptions.Region,
+		Credentials:     o.Credentials,
+		RegistryToken:   o.RegistryToken,
+		Insecure:        o.Insecure,
+		Platform:        o.Platform,
+		AWSRegion:       o.AWSOptions.Region,
+		RegistryMirrors: o.RegistryMirrors,
 	}
 }
 
 // FilterOpts returns options for filtering
-func (o *Options) FilterOpts() result.FilterOption {
-	return result.FilterOption{
+func (o *Options) FilterOpts() result.FilterOptions {
+	return result.FilterOptions{
 		Severities:         o.Severities,
 		IgnoreStatuses:     o.IgnoreStatuses,
 		IncludeNonFailures: o.IncludeNonFailures,
 		IgnoreFile:         o.IgnoreFile,
 		PolicyFile:         o.IgnorePolicy,
 		IgnoreLicenses:     o.IgnoredLicenses,
-		VEXPath:            o.VEXPath,
+		CacheDir:           o.CacheDir,
+		VEXSources:         o.VEXSources,
 	}
 }
 
@@ -468,6 +537,16 @@ func (o *Options) RemoteCacheOpts() cache.RemoteOptions {
 		ServerAddr:    o.ServerAddr,
 		CustomHeaders: o.CustomHeaders,
 		Insecure:      o.Insecure,
+		PathPrefix:    o.PathPrefix,
+	}
+}
+
+func (o *Options) ClientScannerOpts() client.ServiceOption {
+	return client.ServiceOption{
+		RemoteURL:     o.ServerAddr,
+		CustomHeaders: o.CustomHeaders,
+		Insecure:      o.Insecure,
+		PathPrefix:    o.PathPrefix,
 	}
 }
 
@@ -545,9 +624,6 @@ func (f *Flags) groups() []FlagGroup {
 	if f.ImageFlagGroup != nil {
 		groups = append(groups, f.ImageFlagGroup)
 	}
-	if f.SBOMFlagGroup != nil {
-		groups = append(groups, f.SBOMFlagGroup)
-	}
 	if f.VulnerabilityFlagGroup != nil {
 		groups = append(groups, f.VulnerabilityFlagGroup)
 	}
@@ -571,6 +647,9 @@ func (f *Flags) groups() []FlagGroup {
 	}
 	if f.K8sFlagGroup != nil {
 		groups = append(groups, f.K8sFlagGroup)
+	}
+	if f.PackageFlagGroup != nil {
+		groups = append(groups, f.PackageFlagGroup)
 	}
 	if f.RemoteFlagGroup != nil {
 		groups = append(groups, f.RemoteFlagGroup)
@@ -711,6 +790,13 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 		}
 	}
 
+	if f.PackageFlagGroup != nil {
+		opts.PackageOptions, err = f.PackageFlagGroup.ToOptions()
+		if err != nil {
+			return Options{}, xerrors.Errorf("package flag error: %w", err)
+		}
+	}
+
 	if f.RegoFlagGroup != nil {
 		opts.RegoOptions, err = f.RegoFlagGroup.ToOptions()
 		if err != nil {
@@ -735,7 +821,7 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 	if f.RepoFlagGroup != nil {
 		opts.RepoOptions, err = f.RepoFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("rego flag error: %w", err)
+			return Options{}, xerrors.Errorf("repo flag error: %w", err)
 		}
 	}
 
@@ -743,13 +829,6 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 		opts.ReportOptions, err = f.ReportFlagGroup.ToOptions()
 		if err != nil {
 			return Options{}, xerrors.Errorf("report flag error: %w", err)
-		}
-	}
-
-	if f.SBOMFlagGroup != nil {
-		opts.SBOMOptions, err = f.SBOMFlagGroup.ToOptions()
-		if err != nil {
-			return Options{}, xerrors.Errorf("sbom flag error: %w", err)
 		}
 	}
 
@@ -821,4 +900,38 @@ func (a flagAliases) NormalizeFunc() func(*pflag.FlagSet, string) pflag.Normaliz
 		}
 		return pflag.NormalizedName(name)
 	}
+}
+
+func HiddenFlags() []string {
+	var allFlagGroups = []FlagGroup{
+		NewGlobalFlagGroup(),
+		NewCacheFlagGroup(),
+		NewCleanFlagGroup(),
+		NewClientFlags(),
+		NewDBFlagGroup(),
+		NewImageFlagGroup(),
+		NewK8sFlagGroup(),
+		NewLicenseFlagGroup(),
+		NewMisconfFlagGroup(),
+		NewModuleFlagGroup(),
+		NewPackageFlagGroup(),
+		NewRegistryFlagGroup(),
+		NewRegoFlagGroup(),
+		NewReportFlagGroup(),
+		NewRepoFlagGroup(),
+		NewScanFlagGroup(),
+		NewSecretFlagGroup(),
+		NewServerFlags(),
+		NewVulnerabilityFlagGroup(),
+	}
+
+	var hiddenFlags []string
+	for _, flagGroup := range allFlagGroups {
+		for _, flag := range flagGroup.Flags() {
+			if !reflect.ValueOf(flag).IsNil() && flag.Hidden() {
+				hiddenFlags = append(hiddenFlags, flag.GetConfigName())
+			}
+		}
+	}
+	return hiddenFlags
 }

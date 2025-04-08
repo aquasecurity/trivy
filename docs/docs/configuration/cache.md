@@ -1,10 +1,11 @@
 # Cache
 The cache directory includes 
 
+- Cache of previous scans (Scan cache).
 - [Vulnerability Database][trivy-db][^1]
 - [Java Index Database][trivy-java-db][^2]
 - [Misconfiguration Checks][misconf-checks][^3]
-- Cache of previous scans.
+- [VEX Repositories](../supply-chain/vex/repo.md)
  
 The cache option is common to all scanners.
 
@@ -50,9 +51,7 @@ It supports three types of backends for this cache:
     - TTL can be configured via `--cache-ttl`
 
 ### Local File System
-The local file system backend is the default choice for container and VM image scans.
-When scanning container images, it stores analysis results on a per-layer basis, using layer IDs as keys.
-This approach enables faster scans of the same container image or different images that share layers.
+The local file system backend is the default choice for container image, VM image and repository scans.
 
 !!! note
     Internally, this backend uses [BoltDB][boltdb], which has an important limitation: only one process can access the cache at a time.
@@ -62,7 +61,7 @@ This approach enables faster scans of the same container image or different imag
 ### Memory
 The memory backend stores analysis results in memory, which means the cache is discarded when the process ends.
 This makes it useful in scenarios where caching is not required or desired.
-It serves as the default for repository, filesystem and SBOM scans and can also be employed for container image scans when caching is unnecessary.
+It serves as the default for filesystem and SBOM scans and can also be employed for container image scans when caching is unnecessary.
 
 To use the memory backend for a container image scan, you can use the following command:
 
@@ -97,11 +96,11 @@ $ trivy server --cache-backend redis://localhost:6379 \
   --redis-key /path/to/key.pem
 ```
 
-[trivy-db]: ./db.md#vulnerability-database
-[trivy-java-db]: ./db.md#java-index-database
+[trivy-db]: ./db.md
+[trivy-java-db]: ./db.md
 [misconf-checks]: ../scanner/misconfiguration/check/builtin.md
 [boltdb]: https://github.com/etcd-io/bbolt
-[parallel-run]: https://aquasecurity.github.io/trivy/v0.52/docs/references/troubleshooting/#running-in-parallel-takes-same-time-as-series-run
+[parallel-run]: https://trivy.dev/{{ git.tag}}/docs/references/troubleshooting/#running-in-parallel-takes-same-time-as-series-run
 
 [^1]: Downloaded when scanning for vulnerabilities
 [^2]: Downloaded when scanning `jar/war/par/ear` files

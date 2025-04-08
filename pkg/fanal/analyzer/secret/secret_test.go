@@ -1,7 +1,6 @@
 package secret_test
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -95,6 +94,16 @@ func TestSecretAnalyzer(t *testing.T) {
 			},
 		},
 	}
+	wantFindingGH_PAT := types.SecretFinding{
+		RuleID:    "github-fine-grained-pat",
+		Category:  "GitHub",
+		Title:     "GitHub Fine-grained personal access tokens",
+		Severity:  "CRITICAL",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "Binary file \"/testdata/secret.cpython-310.pyc\" matches a rule \"GitHub Fine-grained personal access tokens\"",
+	}
+
 	tests := []struct {
 		name       string
 		configPath string
@@ -153,6 +162,21 @@ func TestSecretAnalyzer(t *testing.T) {
 			filePath:   "testdata/binaryfile",
 			want:       nil,
 		},
+		{
+			name:       "python binary file",
+			configPath: "testdata/skip-tests-config.yaml",
+			filePath:   "testdata/secret.cpython-310.pyc",
+			want: &analyzer.AnalysisResult{
+				Secrets: []types.Secret{
+					{
+						FilePath: "/testdata/secret.cpython-310.pyc",
+						Findings: []types.SecretFinding{
+							wantFindingGH_PAT,
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -167,7 +191,7 @@ func TestSecretAnalyzer(t *testing.T) {
 			fi, err := content.Stat()
 			require.NoError(t, err)
 
-			got, err := a.Analyze(context.Background(), analyzer.AnalysisInput{
+			got, err := a.Analyze(t.Context(), analyzer.AnalysisInput{
 				FilePath: tt.filePath,
 				Dir:      tt.dir,
 				Content:  content,
