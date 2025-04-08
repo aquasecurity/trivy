@@ -464,9 +464,6 @@ func (e *evaluator) evaluateVariable(b *terraform.Block) (cty.Value, error) {
 	}
 
 	attributes := b.Attributes()
-	if attributes == nil {
-		return cty.NilVal, errors.New("cannot resolve variable with no attributes")
-	}
 
 	var valType cty.Type
 	var defaults *typeexpr.Defaults

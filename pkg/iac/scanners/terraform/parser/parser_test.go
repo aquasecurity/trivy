@@ -2042,7 +2042,7 @@ resource "test" "values" {
 
 	s_attr := resources[0].GetAttribute("s")
 	require.NotNil(t, s_attr)
-	assert.Equal(t, "foo-", s_attr.GetRawValue())
+	assert.Equal(t, "foo-", s_attr.Value().Range().StringPrefix())
 
 	for _, name := range []string{"l1", "l2", "d1", "d2"} {
 		attr := resources[0].GetAttribute(name)
@@ -2224,7 +2224,7 @@ variable "baz" {}
 	_, err := parser.Load(t.Context())
 	require.NoError(t, err)
 
-	assert.Contains(t, buf.String(), "Variable values was not found in the environment or variable files.")
+	assert.Contains(t, buf.String(), "Variable values were not found in the environment or variable files.")
 	assert.Contains(t, buf.String(), "variables=\"foo\"")
 }
 
@@ -2453,4 +2453,30 @@ module "bar" {
 
 	_, _, err = parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
+}
+
+func TestAttributeWithMissingVarIsUnresolvable(t *testing.T) {
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{Data: []byte(`variable "inp" {
+  type = string
+}
+
+resource "foo" "bar" {
+  attr = "${var.inp}-test"
+}
+`)},
+	}
+
+	parser := New(fsys, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	_, err := parser.Load(t.Context())
+	require.NoError(t, err)
+
+	modules, _, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+	require.Len(t, modules, 1)
+	foo := modules[0].GetResourcesByType("foo")[0]
+	attr := foo.GetAttribute("attr")
+	assert.False(t, attr.IsResolvable())
 }
