@@ -7945,6 +7945,12 @@ For detailed behavior, please refer to <a href="https://github.com/aquasecurity/
 <p>Commits with prefixes like <code>chore</code> or <code>build</code> are not considered releasable, and no release PR is created.
 To include such commits in a release, you need to either include commits with <code>feat</code> or <code>fix</code> prefixes or perform a manual release as described <a href="#manual-release-pr-creation">below</a>.</p>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>It's a good idea to check if there are any outstanding vulnerability updates created by dependabot waiting for your review.
+They can be found in the "Security" tab of the repository.
+If there are any, please review and merge them before creating a release. This will help to ensure that the release includes the latest security patches.</p>
+</div>
 <h2 id="flow">Flow<a class="headerlink" href="#flow" title="Permanent link">&para;</a></h2>
 <p>The release flow consists of the following main steps:</p>
 <ol>
