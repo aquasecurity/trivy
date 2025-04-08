@@ -97,8 +97,7 @@ func Test_insertTupleElement(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := insertTupleElement(tt.start, tt.index, tt.value)
-			require.True(t, got.Equals(tt.want).True(), "expected %s, got %s", tt.want, got)
+			require.Equal(t, tt.want, insertTupleElement(tt.start, tt.index, tt.value))
 		})
 	}
 }
