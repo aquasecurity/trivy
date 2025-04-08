@@ -148,7 +148,16 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	e.evaluateSteps()
 
 	e.logger.Debug("Module evaluation complete.")
+
+	e.initDummyDynamicBlocks(rootModule)
+
 	return append(terraform.Modules{rootModule}, submodules...), fsMap
+}
+
+func (e *evaluator) initDummyDynamicBlocks(module *terraform.Module) {
+	for _, b := range module.GetBlocks() {
+		b.ExpandDynBlock(true)
+	}
 }
 
 func (e *evaluator) evaluateSubmodules(ctx context.Context, parent *terraform.Module, fsMap map[string]fs.FS) terraform.Modules {
@@ -275,7 +284,7 @@ func (e *evaluator) expandBlocks(blocks terraform.Blocks) terraform.Blocks {
 
 func (e *evaluator) expandDynamicBlocks(blocks ...*terraform.Block) terraform.Blocks {
 	for _, b := range blocks {
-		if err := b.ExpandBlock(); err != nil {
+		if err := b.ExpandDynBlock(false); err != nil {
 			e.logger.Debug(`Failed to expand dynamic block.`,
 				log.String("block", b.FullName()), log.Err(err))
 		}

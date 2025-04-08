@@ -1578,7 +1578,7 @@ resource "test_resource" "test" {
 	}
   }
 }`,
-			expected: []any{},
+			expected: []any{nil},
 		},
 		{
 			name: "no for-each attribute",
@@ -2479,4 +2479,71 @@ resource "foo" "bar" {
 	foo := modules[0].GetResourcesByType("foo")[0]
 	attr := foo.GetAttribute("attr")
 	assert.False(t, attr.IsResolvable())
+}
+
+func TestUnresolvableDynamicBlocks(t *testing.T) {
+	tests := []struct {
+		name     string
+		file     string
+		attrPath string
+	}{
+		{
+			name: "unresolvable dyn block",
+			file: `locals {
+  test = data.terraform_remote_state.foo
+}
+resource "foo" "test" {
+  dynamic "bar" {
+      for_each = (loca.test != "") ? [1] : []
+      content {
+        attr   = local.test
+      }
+    }
+}`,
+			attrPath: "bar.attr",
+		},
+		{
+			name: "unresolvable nested dyn block",
+			file: `locals {
+  test = data.terraform_remote_state.foo
+}
+
+resource "foo" "test" {
+  dynamic "bar" {
+      for_each = [1]
+      content {
+        dynamic "baz" {
+			for_each = (local.test != "") ? [1] : []
+			content {
+				attr   = local.test
+			}
+		}
+      }
+    }
+}`,
+			attrPath: "bar.baz.attr",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := fstest.MapFS{
+				"main.tf": {Data: []byte(tt.file)},
+			}
+
+			parser := New(fsys, "", OptionStopOnHCLError(true))
+			require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+			_, err := parser.Load(t.Context())
+			require.NoError(t, err)
+
+			modules, _, err := parser.EvaluateAll(t.Context())
+			require.NoError(t, err)
+			foo := modules.GetResourcesByType("foo")[0]
+			attr, _ := foo.GetNestedAttribute(tt.attrPath)
+			require.NotNil(t, attr)
+			val := attr.AsStringValueOrDefault("", foo)
+			assert.False(t, val.GetMetadata().IsResolvable())
+		})
+	}
 }
