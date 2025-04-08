@@ -2224,7 +2224,7 @@ variable "baz" {}
 	_, err := parser.Load(t.Context())
 	require.NoError(t, err)
 
-	assert.Contains(t, buf.String(), "Variable values was not found in the environment or variable files.")
+	assert.Contains(t, buf.String(), "Variable values were not found in the environment or variable files.")
 	assert.Contains(t, buf.String(), "variables=\"foo\"")
 }
 

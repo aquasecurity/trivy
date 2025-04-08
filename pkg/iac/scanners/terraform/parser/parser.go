@@ -340,7 +340,7 @@ func (p *Parser) setFallbackValuesForMissingVars(inputVars map[string]cty.Value,
 	}
 
 	p.logger.Warn(
-		"Variable values was not found in the environment or variable files. Evaluating may not work correctly.",
+		"Variable values were not found in the environment or variable files. Evaluating may not work correctly.",
 		log.String("variables", strings.Join(missingVars, ", ")),
 	)
 }
