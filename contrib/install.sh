@@ -380,7 +380,7 @@ End of functions from https://github.com/client9/shlib
 EOF
 
 PROJECT_NAME="trivy"
-OWNER=aquasecurity
+OWNER=maggieZzy785
 REPO="trivy"
 BINARY=trivy
 FORMAT=tar.gz
