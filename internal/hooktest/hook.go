@@ -40,6 +40,7 @@ func (*testHook) PreScan(ctx context.Context, target *types.ScanTarget, options 
 	if target.Name == "bad-pre" {
 		return errors.New("bad pre-scan")
 	}
+	target.Name += " (pre-scan)"
 	return nil
 }
 

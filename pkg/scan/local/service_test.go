@@ -944,7 +944,7 @@ func TestScanner_Scan(t *testing.T) {
 			},
 			wantResults: types.Results{
 				{
-					Target: "alpine:latest (alpine 3.11)",
+					Target: "alpine:latest (pre-scan) (alpine 3.11)",
 					Class:  types.ClassOSPkg,
 					Type:   ftypes.Alpine,
 					Packages: ftypes.Packages{
