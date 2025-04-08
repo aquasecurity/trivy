@@ -18,6 +18,7 @@ import (
 	"github.com/distribution/reference"
 	api "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	dockerClient "github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/opencontainers/go-digest"
@@ -53,7 +54,7 @@ func (n familiarNamed) String() string {
 }
 
 func imageWriter(c *client.Client, img client.Image, platform types.Platform) imageSave {
-	return func(ctx context.Context, ref []string) (io.ReadCloser, error) {
+	return func(ctx context.Context, ref []string, saveOptions ...dockerClient.ImageSaveOption) (io.ReadCloser, error) {
 		if len(ref) < 1 {
 			return nil, xerrors.New("no image reference")
 		}
