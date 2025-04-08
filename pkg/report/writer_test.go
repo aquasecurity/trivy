@@ -90,6 +90,27 @@ func TestResults_Failed(t *testing.T) {
 }
 
 func TestWrite(t *testing.T) {
+	testReport := types.Report{
+		SchemaVersion: report.SchemaVersion,
+		ArtifactName:  "test-artifact",
+		Results: types.Results{
+			{
+				Target: "test-target",
+				Vulnerabilities: []types.DetectedVulnerability{
+					{
+						VulnerabilityID: "CVE-2021-0001",
+						PkgName:         "test-pkg",
+						Vulnerability: dbTypes.Vulnerability{
+							Title:       "Test Vulnerability Title",
+							Description: "This is a test description of a vulnerability",
+						},
+					},
+				},
+			},
+		},
+	}
+	testTemplate := "{{ range . }}{{ range .Vulnerabilities }}- {{ .VulnerabilityID }}: {{ .Title }}\n  {{ .Description }}\n{{ end }}{{ end }}"
+
 	tests := []struct {
 		name       string
 		setUpHook  bool
@@ -100,30 +121,12 @@ func TestWrite(t *testing.T) {
 		wantDesc   string // Expected description after function call
 	}{
 		{
-			name: "template with title and description",
-			report: types.Report{
-				SchemaVersion: report.SchemaVersion,
-				ArtifactName:  "test-artifact",
-				Results: types.Results{
-					{
-						Target: "test-target",
-						Vulnerabilities: []types.DetectedVulnerability{
-							{
-								VulnerabilityID: "CVE-2021-0001",
-								PkgName:         "test-pkg",
-								Vulnerability: dbTypes.Vulnerability{
-									Title:       "Test Vulnerability Title",
-									Description: "This is a test description of a vulnerability",
-								},
-							},
-						},
-					},
-				},
-			},
+			name:   "template with title and description",
+			report: testReport,
 			options: flag.Options{
 				ReportOptions: flag.ReportOptions{
 					Format:   types.FormatTemplate,
-					Template: "{{ range . }}{{ range .Vulnerabilities }}- {{ .VulnerabilityID }}: {{ .Title }}\n  {{ .Description }}\n{{ end }}{{ end }}",
+					Template: testTemplate,
 				},
 			},
 			wantOutput: "- CVE-2021-0001: Test Vulnerability Title\n  This is a test description of a vulnerability\n",
@@ -133,32 +136,11 @@ func TestWrite(t *testing.T) {
 		{
 			name:      "report modified by hooks",
 			setUpHook: true,
-			report: types.Report{
-				SchemaVersion: report.SchemaVersion,
-				ArtifactName:  "test-artifact",
-				Results: types.Results{
-					{
-						Target: "test-target",
-						Vulnerabilities: []types.DetectedVulnerability{
-							{
-								VulnerabilityID:  "CVE-2021-0001",
-								PkgName:          "test-pkg",
-								InstalledVersion: "1.0.0",
-								FixedVersion:     "1.0.1",
-								Vulnerability: dbTypes.Vulnerability{
-									Title:       "Test Vulnerability Title",
-									Description: "This is a test description of a vulnerability",
-									Severity:    "HIGH",
-								},
-							},
-						},
-					},
-				},
-			},
+			report:    testReport,
 			options: flag.Options{
 				ReportOptions: flag.ReportOptions{
 					Format:   types.FormatTemplate,
-					Template: "{{ range . }}{{ range .Vulnerabilities }}- {{ .VulnerabilityID }}: {{ .Title }}\n  {{ .Description }}\n{{ end }}{{ end }}",
+					Template: testTemplate,
 				},
 			},
 			// The template output only reflects the pre-report hook changes because
