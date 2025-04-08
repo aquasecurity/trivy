@@ -137,11 +137,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application, fsys fs.FS)
 
 	// $GOPATH/pkg/mod
 	modPath := filepath.Join(gopath, "pkg", "mod")
-	if !fsutils.DirExists(modPath) {
-		a.logger.Debug("GOPATH not found. Need 'go mod download' to fill licenses and dependency relationships",
-			log.String("GOPATH", modPath))
-		return nil
-	}
+	gopathModDirFound := fsutils.DirExists(modPath)
 
 	licenses := make(map[string][]string)
 	for i, app := range apps {
@@ -152,9 +148,16 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application, fsys fs.FS)
 
 		// Check if the vendor directory exists
 		vendorPath := filepath.Join(absPath, filepath.Dir(app.FilePath), "vendor")
-		if fsutils.DirExists(vendorPath) {
+		vendorDirFound := fsutils.DirExists(vendorPath)
+		if vendorDirFound {
 			a.logger.Debug("Vendor directory found", log.String("path", vendorPath))
 			modPath = vendorPath
+		}
+
+		if !gopathModDirFound && !vendorDirFound {
+			a.logger.Debug("GOPATH and vendor directory not found. Need 'go mod download' or 'go mod vendor' for license scanning",
+				log.String("GOPATH", modPath))
+			return nil
 		}
 
 		for j, lib := range app.Packages {
@@ -164,12 +167,14 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application, fsys fs.FS)
 				continue
 			}
 
-			// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v1.0.0
-			modDirSuffix := fmt.Sprintf("@%s", lib.Version)
-			if modPath == vendorPath {
-				modDirSuffix = ""
+			// Package dir from `vendor` dir doesn't have version suffix.
+			modDirName := normalizeModName(lib.Name)
+			if !vendorDirFound {
+				// Add version suffix for packages from $GOPATH
+				// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v1.0.0
+				modDirName = fmt.Sprintf("%s@%s", modDirName, lib.Version)
 			}
-			modDir := filepath.Join(modPath, fmt.Sprintf("%s%s", normalizeModName(lib.Name), modDirSuffix))
+			modDir := filepath.Join(modPath, modDirName)
 
 			// Collect licenses
 			if licenseNames, err := findLicense(modDir, a.licenseClassifierConfidenceLevel); err != nil {
@@ -182,7 +187,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application, fsys fs.FS)
 				apps[i].Packages[j].Licenses = licenseNames
 			}
 
-			// Collect dependencies of the direct dependency
+			// Collect dependencies of the direct dependency from $GOPATH/pkg/mod since vendor dir has no go.mod files
 			gopathModDir := filepath.Join(gopath, "pkg", "mod", fmt.Sprintf("%s@%s", normalizeModName(lib.Name), lib.Version))
 			if dep, err := a.collectDeps(gopathModDir, lib.ID); err != nil {
 				return xerrors.Errorf("dependency graph error: %w", err)
