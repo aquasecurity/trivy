@@ -1,7 +1,6 @@
 package core_deps
 
 import (
-	"io"
 	"sort"
 	"strings"
 	"sync"
@@ -51,12 +50,7 @@ func NewParser() *Parser {
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var depsFile dotNetDependencies
-
-	input, err := io.ReadAll(r)
-	if err != nil {
-		return nil, nil, xerrors.Errorf("read error: %w", err)
-	}
-	if err = xjson.Unmarshal(input, &depsFile); err != nil {
+	if err := xjson.UnmarshalRead(r, &depsFile); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode .deps.json file: %w", err)
 	}
 

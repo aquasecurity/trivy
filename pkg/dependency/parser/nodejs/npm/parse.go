@@ -2,7 +2,6 @@ package npm
 
 import (
 	"fmt"
-	"io"
 	"maps"
 	"path"
 	"slices"
@@ -63,12 +62,7 @@ func NewParser() *Parser {
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockFile LockFile
-	input, err := io.ReadAll(r)
-	if err != nil {
-		return nil, nil, xerrors.Errorf("read error: %w", err)
-	}
-
-	if err = xjson.Unmarshal(input, &lockFile); err != nil {
+	if err := xjson.UnmarshalRead(r, &lockFile); err != nil {
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 

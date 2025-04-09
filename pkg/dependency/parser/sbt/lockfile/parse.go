@@ -1,7 +1,6 @@
 package lockfile
 
 import (
-	"io"
 	"slices"
 	"sort"
 
@@ -35,12 +34,7 @@ func NewParser() *Parser {
 
 func (Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockfile sbtLockfile
-	input, err := io.ReadAll(r)
-
-	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to read sbt lockfile: %w", err)
-	}
-	if err = xjson.Unmarshal(input, &lockfile); err != nil {
+	if err := xjson.UnmarshalRead(r, &lockfile); err != nil {
 		return nil, nil, xerrors.Errorf("JSON decoding failed: %w", err)
 	}
 

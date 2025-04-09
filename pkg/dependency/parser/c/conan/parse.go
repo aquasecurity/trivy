@@ -1,7 +1,6 @@
 package conan
 
 import (
-	"io"
 	"slices"
 	"strings"
 
@@ -121,13 +120,7 @@ func (p *Parser) parseV2(lock LockFile) ([]ftypes.Package, []ftypes.Dependency, 
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lock LockFile
-
-	input, err := io.ReadAll(r)
-	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to read conan lock file: %w", err)
-	}
-
-	if err = xjson.Unmarshal(input, &lock); err != nil {
+	if err := xjson.UnmarshalRead(r, &lock); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode conan lock file: %w", err)
 	}
 

@@ -1,8 +1,6 @@
 package lock
 
 import (
-	"io"
-
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -35,11 +33,7 @@ func NewParser() *Parser {
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockFile LockFile
-	input, err := io.ReadAll(r)
-	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to read packages.lock.json: %w", err)
-	}
-	if err = xjson.Unmarshal(input, &lockFile); err != nil {
+	if err := xjson.UnmarshalRead(r, &lockFile); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode packages.lock.json: %w", err)
 	}
 
