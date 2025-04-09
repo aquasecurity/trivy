@@ -412,7 +412,7 @@ func (e *evaluator) expandBlockCounts(blocks terraform.Blocks) terraform.Blocks 
 		}
 
 		countAttrVal := countAttr.Value()
-		if countAttrVal.IsNull() {
+		if countAttrVal.IsNull() || !countAttrVal.IsKnown() {
 			// Defer to the next pass when the count might be known
 			countFiltered = append(countFiltered, block)
 			continue
