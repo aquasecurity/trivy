@@ -1827,6 +1827,102 @@ output "staticZero" {
 	require.Len(t, modules, 2)
 }
 
+func TestPopulateContextWithBlockInstances(t *testing.T) {
+
+	tests := []struct {
+		name  string
+		files map[string]string
+	}{
+		{
+			name: "data blocks with count",
+			files: map[string]string{
+				"main.tf": `data "d" "foo" {
+  count = 1
+  value = "Index ${count.index}"
+}
+
+data "b" "foo" {
+  count = 1
+  value = data.d.foo[0].value
+}
+
+data "c" "foo" {
+  count = 1
+  value = data.b.foo[0].value
+}`,
+			},
+		},
+		{
+			name: "resource blocks with count",
+			files: map[string]string{
+				"main.tf": `resource "d" "foo" {
+  count = 1
+  value = "Index ${count.index}"
+}
+
+resource "b" "foo" {
+  count = 1
+  value = d.foo[0].value
+}
+
+resource "c" "foo" {
+  count = 1
+  value = b.foo[0].value
+}`,
+			},
+		},
+		{
+			name: "data blocks with for_each",
+			files: map[string]string{
+				"main.tf": `data "d" "foo" {
+  for_each = toset([0])
+  value = "Index ${each.key}"
+}
+
+data "b" "foo" {
+  for_each = data.d.foo 
+  value = each.value.value
+}
+
+data "c" "foo" {
+  for_each = data.b.foo 
+  value = each.value.value
+}`,
+			},
+		},
+		{
+			name: "resource blocks with for_each",
+			files: map[string]string{
+				"main.tf": `resource "d" "foo" {
+  for_each = toset([0])
+  value = "Index ${each.key}"
+}
+
+resource "b" "foo" {
+  for_each = d.foo 
+  value = each.value.value
+}
+
+resource "c" "foo" {
+  for_each = b.foo 
+  value = each.value.value
+}`,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			modules := parse(t, tt.files)
+			require.Len(t, modules, 1)
+			for _, b := range modules.GetBlocks() {
+				attr := b.GetAttribute("value")
+				assert.Equal(t, "Index 0", attr.Value().AsString())
+			}
+		})
+	}
+}
+
 // TestNestedModulesOptions ensures parser options are carried to the nested
 // submodule evaluators.
 // The test will include an invalid module that will fail to download
