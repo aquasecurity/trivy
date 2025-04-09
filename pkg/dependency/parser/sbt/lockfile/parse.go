@@ -5,7 +5,6 @@ import (
 	"slices"
 	"sort"
 
-	"github.com/go-json-experiment/json"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -41,7 +40,7 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, 
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to read sbt lockfile: %w", err)
 	}
-	if err = json.Unmarshal(input, &lockfile, json.WithUnmarshalers(xjson.UnmarshalerWithObjectLocation(input))); err != nil {
+	if err = xjson.Unmarshal(input, &lockfile); err != nil {
 		return nil, nil, xerrors.Errorf("JSON decoding failed: %w", err)
 	}
 

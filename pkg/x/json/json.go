@@ -26,10 +26,14 @@ type ObjectLocation interface {
 	SetLocation(location types.Location)
 }
 
-// UnmarshalerWithObjectLocation creates json.Unmarshaler for ObjectLocation to save object location into xjson.Location
+func Unmarshal(data []byte, v any) error {
+	return json.Unmarshal(data, v, json.WithUnmarshalers(unmarshalerWithObjectLocation(data)))
+}
+
+// unmarshalerWithObjectLocation creates json.Unmarshaler for ObjectLocation to save object location into xjson.Location
 // To use UnmarshalerWithObjectLocation for primitive types, you must implement the UnmarshalerFrom interface for those objects.
 // cf. https://pkg.go.dev/github.com/go-json-experiment/json#UnmarshalerFrom
-func UnmarshalerWithObjectLocation(data []byte) *json.Unmarshalers {
+func unmarshalerWithObjectLocation(data []byte) *json.Unmarshalers {
 	visited := set.New[any]()
 	return unmarshaler(data, visited)
 }

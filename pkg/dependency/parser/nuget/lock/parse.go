@@ -3,7 +3,6 @@ package lock
 import (
 	"io"
 
-	"github.com/go-json-experiment/json"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -40,7 +39,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to read packages.lock.json: %w", err)
 	}
-	if err = json.Unmarshal(input, &lockFile, json.WithUnmarshalers(xjson.UnmarshalerWithObjectLocation(input))); err != nil {
+	if err = xjson.Unmarshal(input, &lockFile); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode packages.lock.json: %w", err)
 	}
 

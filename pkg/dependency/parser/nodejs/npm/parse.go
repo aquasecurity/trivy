@@ -9,7 +9,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/go-json-experiment/json"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -69,7 +68,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		return nil, nil, xerrors.Errorf("read error: %w", err)
 	}
 
-	if err = json.Unmarshal(input, &lockFile, json.WithUnmarshalers(xjson.UnmarshalerWithObjectLocation(input))); err != nil {
+	if err = xjson.Unmarshal(input, &lockFile); err != nil {
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 

@@ -6,7 +6,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/go-json-experiment/json"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -57,7 +56,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	if err != nil {
 		return nil, nil, xerrors.Errorf("read error: %w", err)
 	}
-	if err = json.Unmarshal(input, &depsFile, json.WithUnmarshalers(xjson.UnmarshalerWithObjectLocation(input))); err != nil {
+	if err = xjson.Unmarshal(input, &depsFile); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode .deps.json file: %w", err)
 	}
 

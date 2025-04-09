@@ -127,7 +127,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		return nil, nil, xerrors.Errorf("failed to read conan lock file: %w", err)
 	}
 
-	if err = json.Unmarshal(input, &lock, json.WithUnmarshalers(xjson.UnmarshalerWithObjectLocation(input))); err != nil {
+	if err = xjson.Unmarshal(input, &lock); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode conan lock file: %w", err)
 	}
 

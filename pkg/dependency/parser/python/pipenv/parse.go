@@ -4,7 +4,6 @@ import (
 	"io"
 	"strings"
 
-	"github.com/go-json-experiment/json"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -32,7 +31,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to read packages.lock.json: %w", err)
 	}
-	if err := json.Unmarshal(input, &lockFile, json.WithUnmarshalers(xjson.UnmarshalerWithObjectLocation(input))); err != nil {
+	if err := xjson.Unmarshal(input, &lockFile); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode Pipenv.lock: %w", err)
 	}
 
