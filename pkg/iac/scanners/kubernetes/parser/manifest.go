@@ -44,7 +44,7 @@ func ManifestFromJSON(path string, data []byte) (*Manifest, error) {
 	}
 
 	if err := json.Unmarshal(data, root, json.WithUnmarshalers(
-		json.UnmarshalFromFunc(func(dec *jsontext.Decoder, node *ManifestNode, opts json.Options) error {
+		json.UnmarshalFromFunc(func(dec *jsontext.Decoder, node *ManifestNode) error {
 			startOffset := dec.InputOffset()
 			if err := unmarshalManifestNode(dec, node); err != nil {
 				return err
