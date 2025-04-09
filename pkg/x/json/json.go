@@ -66,11 +66,11 @@ type ObjectLocation interface {
 // To use UnmarshalerWithObjectLocation for primitive types, you must implement the UnmarshalerFrom interface for those objects.
 // cf. https://pkg.go.dev/github.com/go-json-experiment/json#UnmarshalerFrom
 func unmarshalerWithObjectLocation(r *lineReader) *json.Unmarshalers {
-	visited := set.New[any]()
+	visited := set.New[int]()
 	return unmarshaler(r, visited)
 }
 
-func unmarshaler(r *lineReader, visited set.Set[any]) *json.Unmarshalers {
+func unmarshaler(r *lineReader, visited set.Set[int]) *json.Unmarshalers {
 	return json.UnmarshalFromFunc(func(dec *jsontext.Decoder, loc ObjectLocation) error {
 		// Decoder.InputOffset reports the offset after the last token,
 		// but we want to record the offset before the next token.
