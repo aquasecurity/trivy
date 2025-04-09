@@ -83,7 +83,7 @@ See [the caveat](#stdlib-vulnerabilities) for details.
 
 ### License
 To identify licenses, you need to download modules to local cache beforehand, such as `go mod download`, `go mod tidy`, `go mod vendor`, etc.
-Trivy traverses `$GOPATH/pkg/mod` and collects those extra information. If the `vendor` directory exists, Trivy uses it first when scanning for license files.
+Trivy traverses `$GOPATH/pkg/mod` and collects those extra information. If the `vendor` directory exists, Trivy uses this directory when scanning for license files.
 
 ### Dependency Graph
 Same as licenses, you need to download modules to local cache beforehand.

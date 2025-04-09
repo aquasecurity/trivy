@@ -26,6 +26,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xpath "github.com/aquasecurity/trivy/pkg/x/path"
 )
 
 func init() {
@@ -112,6 +113,12 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 
 func (a *gomodAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
+
+	// skipping required files in vendor directory
+	if slices.Contains(requiredFiles, fileName) && xpath.Contains(filePath, "vendor") {
+		return false
+	}
+
 	return slices.Contains(requiredFiles, fileName)
 }
 
