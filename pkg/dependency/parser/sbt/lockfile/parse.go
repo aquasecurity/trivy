@@ -47,7 +47,7 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, 
 				ID:        dependency.ID(ftypes.Sbt, name, dep.Version),
 				Name:      name,
 				Version:   dep.Version,
-				Locations: []ftypes.Location{dep.Location.Location},
+				Locations: []ftypes.Location{ftypes.Location(dep.Location)},
 			})
 		}
 	}

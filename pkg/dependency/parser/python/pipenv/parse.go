@@ -35,7 +35,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		pkgs = append(pkgs, ftypes.Package{
 			Name:      pkgName,
 			Version:   strings.TrimLeft(dep.Version, "="),
-			Locations: []ftypes.Location{dep.Location.Location},
+			Locations: []ftypes.Location{ftypes.Location(dep.Location)},
 		})
 	}
 	return pkgs, nil, nil

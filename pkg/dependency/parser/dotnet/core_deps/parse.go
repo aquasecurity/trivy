@@ -83,7 +83,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			ID:        dependency.ID(ftypes.DotNetCore, split[0], split[1]),
 			Name:      split[0],
 			Version:   split[1],
-			Locations: []ftypes.Location{lib.Location.Location},
+			Locations: []ftypes.Location{ftypes.Location(lib.Location)},
 		})
 	}
 

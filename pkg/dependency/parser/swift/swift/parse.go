@@ -50,15 +50,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		version := lo.Ternary(pin.State.Version != "", pin.State.Version, pin.State.Branch)
 
 		pkgs = append(pkgs, ftypes.Package{
-			ID:      dependency.ID(ftypes.Swift, name, version),
-			Name:    name,
-			Version: version,
-			Locations: []ftypes.Location{
-				{
-					StartLine: pin.StartLine,
-					EndLine:   pin.EndLine,
-				},
-			},
+			ID:        dependency.ID(ftypes.Swift, name, version),
+			Name:      name,
+			Version:   version,
+			Locations: []ftypes.Location{ftypes.Location(pin.Location)},
 		})
 	}
 	sort.Sort(pkgs)

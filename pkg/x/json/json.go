@@ -51,12 +51,10 @@ func UnmarshalRead(r io.Reader, v any) error {
 
 // Location is wrap of types.Location.
 // This struct is required when you need to detect location of your object from json file.
-type Location struct {
-	types.Location
-}
+type Location types.Location
 
 func (l *Location) SetLocation(location types.Location) {
-	l.Location = location
+	*l = Location(location)
 }
 
 // ObjectLocation is required when you need to save Location for your struct.

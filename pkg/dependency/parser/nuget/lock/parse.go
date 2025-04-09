@@ -53,7 +53,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 				Name:         packageName,
 				Version:      packageContent.Resolved,
 				Relationship: lo.Ternary(packageContent.Type == "Direct", ftypes.RelationshipDirect, ftypes.RelationshipIndirect),
-				Locations:    []ftypes.Location{packageContent.Location.Location},
+				Locations:    []ftypes.Location{ftypes.Location(packageContent.Location)},
 			}
 			pkgs = append(pkgs, pkg)
 

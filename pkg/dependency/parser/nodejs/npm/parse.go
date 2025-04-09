@@ -134,7 +134,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 				sortExternalReferences(savedPkg.ExternalReferences)
 			}
 
-			savedPkg.Locations = append(savedPkg.Locations, pkg.Location.Location)
+			savedPkg.Locations = append(savedPkg.Locations, ftypes.Location(pkg.Location))
 			sort.Sort(savedPkg.Locations)
 
 			pkgs[pkgID] = savedPkg
@@ -148,7 +148,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 			Relationship:       lo.Ternary(pkgIndirect, ftypes.RelationshipIndirect, ftypes.RelationshipDirect),
 			Dev:                pkg.Dev,
 			ExternalReferences: lo.Ternary(ref.URL != "", []ftypes.ExternalRef{ref}, nil),
-			Locations:          []ftypes.Location{pkg.Location.Location},
+			Locations:          []ftypes.Location{ftypes.Location(pkg.Location)},
 		}
 		pkgs[pkgID] = newPkg
 
@@ -293,7 +293,7 @@ func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string
 					URL:  dep.Resolved,
 				},
 			},
-			Locations: []ftypes.Location{dep.Location.Location},
+			Locations: []ftypes.Location{ftypes.Location(dep.Location)},
 		}
 		pkgs = append(pkgs, pkg)
 

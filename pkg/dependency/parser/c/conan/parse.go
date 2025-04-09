@@ -158,6 +158,6 @@ func toPackage(pkg string, location xjson.Location) (ftypes.Package, error) {
 		ID:        dependency.ID(ftypes.Conan, name, version),
 		Name:      name,
 		Version:   version,
-		Locations: []ftypes.Location{location.Location},
+		Locations: []ftypes.Location{ftypes.Location(location)},
 	}, nil
 }
