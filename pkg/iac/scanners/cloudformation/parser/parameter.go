@@ -1,9 +1,10 @@
 package parser
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
+	"io"
+	"maps"
 	"strconv"
 	"strings"
 
@@ -32,25 +33,28 @@ func (p *Parameter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	var inner parameterInner
 
-	if err := json.UnmarshalDecode(dec, &inner); err != nil {
+	if err := json.UnmarshalDecode(dec, &inner,
+		json.WithUnmarshalers(json.UnmarshalFromFunc(unmarshalIntFirst)),
+	); err != nil {
 		return err
-	}
-
-	switch v := inner.Default.(type) {
-	case float64:
-		if v == float64(int(v)) {
-			inner.Default = int(v)
-		} else {
-			inner.Default = v
-		}
-	case int64:
-		inner.Default = int(v)
-	default:
-		inner.Default = v
 	}
 
 	p.inner = inner
 	return nil
+}
+
+func unmarshalIntFirst(dec *jsontext.Decoder, v *any) error {
+	if dec.PeekKind() == '0' {
+		if jval, err := dec.ReadValue(); err != nil {
+			return err
+		} else if v1, err := strconv.ParseInt(string(jval), 10, 64); err == nil {
+			*v = int(v1)
+		} else if v1, err := strconv.ParseFloat(string(jval), 64); err == nil {
+			*v = v1
+		}
+		return nil
+	}
+	return json.SkipFunc
 }
 
 func (p *Parameter) Type() cftypes.CfType {
@@ -88,35 +92,34 @@ func (p *Parameter) UpdateDefault(inVal any) {
 type Parameters map[string]any
 
 func (p *Parameters) Merge(other Parameters) {
-	for k, v := range other {
-		(*p)[k] = v
-	}
+	maps.Copy((*p), other)
 }
 
-func (p *Parameters) UnmarshalJSON(data []byte) error {
+func (p *Parameters) UnmarshalJSONFrom(d *jsontext.Decoder) error {
 	(*p) = make(Parameters)
 
-	if len(data) == 0 {
-		return nil
-	}
-
-	switch {
-	case data[0] == '{' && data[len(data)-1] == '}': // object
+	switch d.PeekKind() {
+	case '{':
 		// CodePipeline like format
 		var params struct {
 			Params map[string]any `json:"Parameters"`
 		}
 
-		if err := json.Unmarshal(data, &params); err != nil {
+		if err := json.UnmarshalDecode(d, &params); err != nil {
 			return err
 		}
 
 		(*p) = params.Params
-	case data[0] == '[' && data[len(data)-1] == ']': // array
+	case '[':
 		// Original format
 		var params []string
 
-		if err := json.Unmarshal(data, &params); err == nil {
+		jval, err := d.ReadValue()
+		if err != nil {
+			return err
+		}
+
+		if err := json.Unmarshal(jval, &params); err == nil {
 			for _, param := range params {
 				parts := strings.Split(param, "=")
 				if len(parts) != 2 {
@@ -133,9 +136,7 @@ func (p *Parameters) UnmarshalJSON(data []byte) error {
 			ParameterValue string `json:"ParameterValue"`
 		}
 
-		if err := json.UnmarshalRead(
-			bytes.NewReader(data), &cfparams, json.RejectUnknownMembers(true),
-		); err != nil {
+		if err := json.Unmarshal(jval, &cfparams, json.RejectUnknownMembers(true)); err != nil {
 			return err
 		}
 
@@ -147,4 +148,12 @@ func (p *Parameters) UnmarshalJSON(data []byte) error {
 	}
 
 	return nil
+}
+
+func ParseParameters(r io.Reader) (Parameters, error) {
+	var parameters Parameters
+	if err := json.UnmarshalRead(r, &parameters); err != nil {
+		return nil, err
+	}
+	return parameters, nil
 }
