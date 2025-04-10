@@ -6,7 +6,6 @@ import (
 	"slices"
 	"sort"
 	"strconv"
-	"sync"
 
 	debver "github.com/knqyf263/go-deb-version"
 	rpmver "github.com/knqyf263/go-rpm-version"
@@ -111,22 +110,12 @@ func (m *Decoder) decodeRoot(s *types.SBOM) error {
 }
 
 func (m *Decoder) decodeComponents(ctx context.Context, sbom *types.SBOM) error {
-	onceMultiOSWarn := sync.OnceFunc(func() {
-		m.logger.WarnContext(ctx, "Multiple OS components are not supported, taking the first one and ignoring the rest")
-	})
+	var osComponents []*core.Component
 
 	for id, c := range m.bom.Components() {
 		switch c.Type {
 		case core.TypeOS:
-			if m.osID != uuid.Nil {
-				onceMultiOSWarn()
-				continue
-			}
-			m.osID = id
-			sbom.Metadata.OS = &ftypes.OS{
-				Family: ftypes.OSType(c.Name),
-				Name:   c.Version,
-			}
+			osComponents = append(osComponents, c)
 			continue
 		case core.TypeApplication:
 			if app := m.decodeApplication(c); app.Type != "" {
@@ -147,7 +136,48 @@ func (m *Decoder) decodeComponents(ctx context.Context, sbom *types.SBOM) error 
 		}
 	}
 
+	m.selectOS(ctx, osComponents, sbom)
 	return nil
+}
+
+// selectOS checks all found OSes and selects the OS with the maximum number of packages
+// If two or more OS contain the same number of packages - select the first OS alphabetically
+func (m *Decoder) selectOS(ctx context.Context, osComponents []*core.Component, sbom *types.SBOM) {
+	if len(osComponents) == 0 {
+		return
+	}
+
+	sort.Slice(osComponents, func(i, j int) bool {
+		numberOfIPkgs := len(m.bom.Relationships()[osComponents[i].ID()])
+		numberOfJPkgs := len(m.bom.Relationships()[osComponents[j].ID()])
+		if numberOfIPkgs != numberOfJPkgs {
+			return numberOfIPkgs > numberOfJPkgs
+		}
+		return osComponents[i].PkgIdentifier.BOMRef < osComponents[j].PkgIdentifier.BOMRef
+	})
+
+	if len(osComponents) > 1 {
+		m.logger.WarnContext(ctx, "Multiple OS components are not supported, taking OS with most packages and ignoring the rest", log.String("selected OS", osComponents[0].Name+" "+osComponents[0].Version))
+	}
+
+	m.osID = osComponents[0].ID()
+	sbom.Metadata.OS = &ftypes.OS{
+		Family: ftypes.OSType(osComponents[0].Name),
+		Name:   osComponents[0].Version,
+	}
+
+	// remove pkgs of non-main OS to avoid adding them as orphan packages
+	m.removeOSesPkgs(osComponents[1:])
+}
+
+// RemoveOSesPkgs removes associated packages with osComponents from `Decoder.pkgs`
+func (m *Decoder) removeOSesPkgs(osComponents []*core.Component) {
+	for _, osComponent := range osComponents {
+		for _, pkg := range m.bom.Relationships()[osComponent.ID()] {
+			delete(m.pkgs, pkg.Dependency)
+		}
+	}
+	return
 }
 
 // buildDependencyGraph builds a dependency graph between packages

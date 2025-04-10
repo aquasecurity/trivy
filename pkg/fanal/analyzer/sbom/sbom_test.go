@@ -48,6 +48,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 											},
 										},
 									},
+									BOMRef: "elasticsearch",
 								},
 							},
 						},
@@ -68,6 +69,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "apm-agent",
 										Version:   "1.36.0",
 									},
+									BOMRef: "Package-f0db45781e6813a1",
 								},
 							},
 							{
@@ -82,6 +84,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "apm-agent-cached-lookup-key",
 										Version:   "1.36.0",
 									},
+									BOMRef: "Package-efe22bf5916f985f",
 								},
 							},
 							{
@@ -96,6 +99,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "apm-agent-common",
 										Version:   "1.36.0",
 									},
+									BOMRef: "Package-33d86d2d11abe114",
 								},
 							},
 							{
@@ -110,6 +114,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "apm-agent-core",
 										Version:   "1.36.0",
 									},
+									BOMRef: "Package-b905fcf69ca61281",
 								},
 							},
 						},
@@ -185,6 +190,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "lifecycle",
 										Version:   "v0.20.2",
 									},
+									BOMRef: "Package-go-module-github.com-buildpacks-lifecycle-89c3bd8d4c2e75b7",
 								},
 								Licenses: []string{
 									"NOASSERTION",
@@ -207,6 +213,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "apm-agent",
 										Version:   "1.36.0",
 									},
+									BOMRef: "Package-f0db45781e6813a1",
 								},
 							},
 						},
@@ -236,6 +243,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:    "gdal",
 										Version: "3.7.1",
 									},
+									BOMRef: "gdal",
 								},
 							},
 							{
@@ -249,6 +257,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:    "geos",
 										Version: "3.8.3",
 									},
+									BOMRef: "geos",
 								},
 							},
 							{
@@ -262,6 +271,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:    "postgresql",
 										Version: "15.3.0",
 									},
+									BOMRef: "postgresql",
 								},
 								DependsOn: []string{
 									"geos@3.8.3",
@@ -280,6 +290,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:    "proj",
 										Version: "6.3.2",
 									},
+									BOMRef: "proj",
 								},
 							},
 						},
@@ -316,6 +327,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 											{Key: "distro", Value: "debian-12.9"},
 										},
 									},
+									BOMRef: "Package-c1d4029824045f75",
 								},
 							},
 						},
