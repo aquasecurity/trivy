@@ -15,26 +15,18 @@ func Test_resolve_not_value(t *testing.T) {
 		ctx:  &FileContext{},
 		name: "BucketName",
 		rng:  types.NewRange("testfile", 1, 1, "", nil),
-		Inner: PropertyInner{
-			Type: cftypes.Map,
-			Value: map[string]*Property{
-				"Fn::Equals": {
-					Inner: PropertyInner{
-						Type: cftypes.List,
-						Value: []*Property{
-							{
-								Inner: PropertyInner{
-									Type:  cftypes.String,
-									Value: "foo",
-								},
-							},
-							{
-								Inner: PropertyInner{
-									Type:  cftypes.String,
-									Value: "bar",
-								},
-							},
-						},
+		Type: cftypes.Map,
+		Value: map[string]*Property{
+			"Fn::Equals": {
+				Type: cftypes.List,
+				Value: []*Property{
+					{
+						Type:  cftypes.String,
+						Value: "foo",
+					},
+					{
+						Type:  cftypes.String,
+						Value: "bar",
 					},
 				},
 			},
@@ -45,16 +37,12 @@ func Test_resolve_not_value(t *testing.T) {
 		ctx:  &FileContext{},
 		name: "BucketName",
 		rng:  types.NewRange("testfile", 1, 1, "", nil),
-		Inner: PropertyInner{
-			Type: cftypes.Map,
-			Value: map[string]*Property{
-				"Fn::Not": {
-					Inner: PropertyInner{
-						Type: cftypes.List,
-						Value: []*Property{
-							property1,
-						},
-					},
+		Type: cftypes.Map,
+		Value: map[string]*Property{
+			"Fn::Not": {
+				Type: cftypes.List,
+				Value: []*Property{
+					property1,
 				},
 			},
 		},
@@ -71,26 +59,18 @@ func Test_resolve_not_value_when_true(t *testing.T) {
 		ctx:  &FileContext{},
 		name: "BucketName",
 		rng:  types.NewRange("testfile", 1, 1, "", nil),
-		Inner: PropertyInner{
-			Type: cftypes.Map,
-			Value: map[string]*Property{
-				"Fn::Equals": {
-					Inner: PropertyInner{
-						Type: cftypes.List,
-						Value: []*Property{
-							{
-								Inner: PropertyInner{
-									Type:  cftypes.String,
-									Value: "foo",
-								},
-							},
-							{
-								Inner: PropertyInner{
-									Type:  cftypes.String,
-									Value: "foo",
-								},
-							},
-						},
+		Type: cftypes.Map,
+		Value: map[string]*Property{
+			"Fn::Equals": {
+				Type: cftypes.List,
+				Value: []*Property{
+					{
+						Type:  cftypes.String,
+						Value: "foo",
+					},
+					{
+						Type:  cftypes.String,
+						Value: "foo",
 					},
 				},
 			},
@@ -101,16 +81,12 @@ func Test_resolve_not_value_when_true(t *testing.T) {
 		ctx:  &FileContext{},
 		name: "BucketName",
 		rng:  types.NewRange("testfile", 1, 1, "", nil),
-		Inner: PropertyInner{
-			Type: cftypes.Map,
-			Value: map[string]*Property{
-				"Fn::Not": {
-					Inner: PropertyInner{
-						Type: cftypes.List,
-						Value: []*Property{
-							property1,
-						},
-					},
+		Type: cftypes.Map,
+		Value: map[string]*Property{
+			"Fn::Not": {
+				Type: cftypes.List,
+				Value: []*Property{
+					property1,
 				},
 			},
 		},

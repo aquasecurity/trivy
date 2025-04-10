@@ -21,26 +21,18 @@ func Test_resolve_split_value(t *testing.T) {
 		ctx:  &FileContext{},
 		name: "BucketName",
 		rng:  types.NewRange("testfile", 1, 1, "", nil),
-		Inner: PropertyInner{
-			Type: cftypes.Map,
-			Value: map[string]*Property{
-				"Fn::Split": {
-					Inner: PropertyInner{
-						Type: cftypes.List,
-						Value: []*Property{
-							{
-								Inner: PropertyInner{
-									Type:  cftypes.String,
-									Value: "::",
-								},
-							},
-							{
-								Inner: PropertyInner{
-									Type:  cftypes.String,
-									Value: "s3::bucket::to::split",
-								},
-							},
-						},
+		Type: cftypes.Map,
+		Value: map[string]*Property{
+			"Fn::Split": {
+				Type: cftypes.List,
+				Value: []*Property{
+					{
+						Type:  cftypes.String,
+						Value: "::",
+					},
+					{
+						Type:  cftypes.String,
+						Value: "s3::bucket::to::split",
 					},
 				},
 			},

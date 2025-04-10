@@ -4,10 +4,12 @@ import (
 	"io/fs"
 	"strings"
 
+	"github.com/go-json-experiment/json"
+	"github.com/go-json-experiment/json/jsontext"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/jfather"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 type Resource struct {
@@ -15,10 +17,13 @@ type Resource struct {
 	rng     iacTypes.Range
 	id      string
 	comment string
-	Inner   ResourceInner
+
+	// TODO: remove inner
+	Inner ResourceInner
 }
 
 type ResourceInner struct {
+	xjson.Location
 	Type       string               `json:"Type" yaml:"Type"`
 	Properties map[string]*Property `json:"Properties" yaml:"Properties"`
 }
@@ -38,7 +43,7 @@ func (r *Resource) setId(id string) {
 }
 
 func (r *Resource) setFile(target fs.FS, filepath string) {
-	r.rng = iacTypes.NewRange(filepath, r.rng.GetStartLine(), r.rng.GetEndLine(), r.rng.GetSourcePrefix(), target)
+	r.rng = iacTypes.NewRange(filepath, r.Inner.StartLine, r.Inner.EndLine, r.rng.GetSourcePrefix(), target)
 
 	for _, p := range r.Inner.Properties {
 		p.setFileAndParentRange(target, filepath, r.rng)
@@ -54,15 +59,18 @@ func (r *Resource) setContext(ctx *FileContext) {
 	}
 }
 
-func (r *Resource) UnmarshalYAML(value *yaml.Node) error {
-	r.rng = iacTypes.NewRange("", value.Line-1, calculateEndLine(value), "", nil)
-	r.comment = value.LineComment
-	return value.Decode(&r.Inner)
+func (r *Resource) UnmarshalYAML(node *yaml.Node) error {
+	r.Inner.StartLine = node.Line - 1
+	r.Inner.EndLine = calculateEndLine(node)
+	r.comment = node.LineComment
+	return node.Decode(&r.Inner)
 }
 
-func (r *Resource) UnmarshalJSONWithMetadata(node jfather.Node) error {
-	r.rng = iacTypes.NewRange("", node.Range().Start.Line, node.Range().End.Line, "", nil)
-	return node.Decode(&r.Inner)
+func (n *Resource) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	if err := json.UnmarshalDecode(dec, &n.Inner); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *Resource) ID() string {

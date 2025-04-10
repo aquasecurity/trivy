@@ -14,50 +14,34 @@ func Test_GetProperty_PropIsFunction(t *testing.T) {
 			Type: "AWS::S3::Bucket",
 			Properties: map[string]*Property{
 				"BucketName": {
-					Inner: PropertyInner{
-						Type:  cftypes.String,
-						Value: "mybucket",
-					},
+					Type:  cftypes.String,
+					Value: "mybucket",
 				},
 				"VersioningConfiguration": {
-					Inner: PropertyInner{
-						Type: cftypes.Map,
-						Value: map[string]*Property{
-							"Fn::If": {
-								Inner: PropertyInner{
-									Type: cftypes.List,
-									Value: []*Property{
-										{
-											Inner: PropertyInner{
-												Type:  cftypes.Bool,
-												Value: false,
-											},
+					Type: cftypes.Map,
+					Value: map[string]*Property{
+						"Fn::If": {
+							Type: cftypes.List,
+							Value: []*Property{
+								{
+									Type:  cftypes.Bool,
+									Value: false,
+								},
+								{
+									Type: cftypes.Map,
+									Value: map[string]*Property{
+										"Status": {
+											Type:  cftypes.String,
+											Value: "Enabled",
 										},
-										{
-											Inner: PropertyInner{
-												Type: cftypes.Map,
-												Value: map[string]*Property{
-													"Status": {
-														Inner: PropertyInner{
-															Type:  cftypes.String,
-															Value: "Enabled",
-														},
-													},
-												},
-											},
-										},
-										{
-											Inner: PropertyInner{
-												Type: cftypes.Map,
-												Value: map[string]*Property{
-													"Status": {
-														Inner: PropertyInner{
-															Type:  cftypes.String,
-															Value: "Suspended",
-														},
-													},
-												},
-											},
+									},
+								},
+								{
+									Type: cftypes.Map,
+									Value: map[string]*Property{
+										"Status": {
+											Type:  cftypes.String,
+											Value: "Suspended",
 										},
 									},
 								},

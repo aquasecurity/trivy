@@ -2,19 +2,20 @@ package parser
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 
+	"github.com/go-json-experiment/json"
+	"github.com/go-json-experiment/json/jsontext"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/jfather"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 )
 
 type Parameter struct {
+	// TODO: remove inner
 	inner parameterInner
 }
 
@@ -27,17 +28,21 @@ func (p *Parameter) UnmarshalYAML(node *yaml.Node) error {
 	return node.Decode(&p.inner)
 }
 
-func (p *Parameter) UnmarshalJSONWithMetadata(node jfather.Node) error {
+func (p *Parameter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	var inner parameterInner
 
-	if err := node.Decode(&inner); err != nil {
+	if err := json.UnmarshalDecode(dec, &inner); err != nil {
 		return err
 	}
 
-	// jfather parses Number without fraction as int64
-	// https://github.com/liamg/jfather/blob/4ef05d70c05af167226d3333a4ec7d8ac3c9c281/parse_number.go#L33-L42
 	switch v := inner.Default.(type) {
+	case float64:
+		if v == float64(int(v)) {
+			inner.Default = int(v)
+		} else {
+			inner.Default = v
+		}
 	case int64:
 		inner.Default = int(v)
 	default:
@@ -128,9 +133,9 @@ func (p *Parameters) UnmarshalJSON(data []byte) error {
 			ParameterValue string `json:"ParameterValue"`
 		}
 
-		d := json.NewDecoder(bytes.NewReader(data))
-		d.DisallowUnknownFields()
-		if err := d.Decode(&cfparams); err != nil {
+		if err := json.UnmarshalRead(
+			bytes.NewReader(data), &cfparams, json.RejectUnknownMembers(true),
+		); err != nil {
 			return err
 		}
 

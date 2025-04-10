@@ -16,32 +16,22 @@ func Test_resolve_if_value(t *testing.T) {
 		ctx:  &FileContext{},
 		name: "BucketName",
 		rng:  types.NewRange("testfile", 1, 1, "", nil),
-		Inner: PropertyInner{
-			Type: cftypes.Map,
-			Value: map[string]*Property{
-				"Fn::If": {
-					Inner: PropertyInner{
-						Type: cftypes.List,
-						Value: []*Property{
-							{
-								Inner: PropertyInner{
-									Type:  cftypes.Bool,
-									Value: true,
-								},
-							},
-							{
-								Inner: PropertyInner{
-									Type:  cftypes.String,
-									Value: "foo",
-								},
-							},
-							{
-								Inner: PropertyInner{
-									Type:  cftypes.String,
-									Value: "bar",
-								},
-							},
-						},
+		Type: cftypes.Map,
+		Value: map[string]*Property{
+			"Fn::If": {
+				Type: cftypes.List,
+				Value: []*Property{
+					{
+						Type:  cftypes.Bool,
+						Value: true,
+					},
+					{
+						Type:  cftypes.String,
+						Value: "foo",
+					},
+					{
+						Type:  cftypes.String,
+						Value: "bar",
 					},
 				},
 			},

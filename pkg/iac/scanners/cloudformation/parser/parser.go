@@ -13,9 +13,9 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/jfather"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 type Parser struct {
@@ -136,7 +136,7 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, filePath string) (fc
 		}
 		fctx.Ignores = ignore.Parse(string(content), filePath, "")
 	case JsonSourceFormat:
-		if err := jfather.Unmarshal(content, fctx); err != nil {
+		if err := xjson.Unmarshal(content, fctx); err != nil {
 			return nil, NewErrInvalidContent(filePath, err)
 		}
 	}

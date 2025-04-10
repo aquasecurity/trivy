@@ -7,10 +7,9 @@ import (
 	"strconv"
 	"time"
 
-	"gopkg.in/yaml.v3"
-
 	"github.com/go-json-experiment/json"
 	"github.com/go-json-experiment/json/jsontext"
+	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
