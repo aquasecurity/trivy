@@ -369,7 +369,7 @@ func (p *Property) String() string {
 	return r
 }
 
-func (p *Property) SetLogicalResource(id string) {
+func (p *Property) setLogicalResource(id string) {
 	p.logicalId = id
 
 	if p.isFunction() {
@@ -381,13 +381,13 @@ func (p *Property) SetLogicalResource(id string) {
 			if subProp == nil {
 				continue
 			}
-			subProp.SetLogicalResource(id)
+			subProp.setLogicalResource(id)
 		}
 	}
 
 	if p.IsList() {
 		for _, subProp := range p.AsList() {
-			subProp.SetLogicalResource(id)
+			subProp.setLogicalResource(id)
 		}
 	}
 

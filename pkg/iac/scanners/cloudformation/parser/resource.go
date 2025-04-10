@@ -13,19 +13,13 @@ import (
 )
 
 type Resource struct {
-	ctx     *FileContext
-	rng     iacTypes.Range
-	id      string
-	comment string
-
-	// TODO: remove inner
-	Inner ResourceInner
-}
-
-type ResourceInner struct {
 	xjson.Location
-	Type       string               `json:"Type" yaml:"Type"`
-	Properties map[string]*Property `json:"Properties" yaml:"Properties"`
+	typ        string
+	properties map[string]*Property
+	ctx        *FileContext
+	rng        iacTypes.Range
+	id         string
+	comment    string
 }
 
 func (r *Resource) configureResource(id string, target fs.FS, filepath string, ctx *FileContext) {
@@ -37,15 +31,15 @@ func (r *Resource) configureResource(id string, target fs.FS, filepath string, c
 func (r *Resource) setId(id string) {
 	r.id = id
 
-	for n, p := range r.properties() {
+	for n, p := range r.properties {
 		p.setName(n)
 	}
 }
 
 func (r *Resource) setFile(target fs.FS, filepath string) {
-	r.rng = iacTypes.NewRange(filepath, r.Inner.StartLine, r.Inner.EndLine, r.rng.GetSourcePrefix(), target)
+	r.rng = iacTypes.NewRange(filepath, r.StartLine, r.EndLine, r.rng.GetSourcePrefix(), target)
 
-	for _, p := range r.Inner.Properties {
+	for _, p := range r.properties {
 		p.setFileAndParentRange(target, filepath, r.rng)
 	}
 }
@@ -53,23 +47,38 @@ func (r *Resource) setFile(target fs.FS, filepath string) {
 func (r *Resource) setContext(ctx *FileContext) {
 	r.ctx = ctx
 
-	for _, p := range r.Inner.Properties {
-		p.SetLogicalResource(r.id)
+	for _, p := range r.properties {
+		p.setLogicalResource(r.id)
 		p.setContext(ctx)
 	}
 }
 
-func (r *Resource) UnmarshalYAML(node *yaml.Node) error {
-	r.Inner.StartLine = node.Line - 1
-	r.Inner.EndLine = calculateEndLine(node)
-	r.comment = node.LineComment
-	return node.Decode(&r.Inner)
+type resourceInner struct {
+	Type       string               `json:"Type" yaml:"Type"`
+	Properties map[string]*Property `json:"Properties" yaml:"Properties"`
 }
 
-func (n *Resource) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	if err := json.UnmarshalDecode(dec, &n.Inner); err != nil {
+func (r *Resource) UnmarshalYAML(node *yaml.Node) error {
+	r.StartLine = node.Line - 1
+	r.EndLine = calculateEndLine(node)
+	r.comment = node.LineComment
+
+	var i resourceInner
+	if err := node.Decode(&i); err != nil {
 		return err
 	}
+	r.typ = i.Type
+	r.properties = i.Properties
+	return nil
+}
+
+func (r *Resource) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	var i resourceInner
+	if err := json.UnmarshalDecode(dec, &i); err != nil {
+		return err
+	}
+	r.typ = i.Type
+	r.properties = i.Properties
 	return nil
 }
 
@@ -78,7 +87,7 @@ func (r *Resource) ID() string {
 }
 
 func (r *Resource) Type() string {
-	return r.Inner.Type
+	return r.typ
 }
 
 func (r *Resource) Range() iacTypes.Range {
@@ -93,10 +102,6 @@ func (r *Resource) Metadata() iacTypes.Metadata {
 	return iacTypes.NewMetadata(r.Range(), NewCFReference(r.id, r.rng).String())
 }
 
-func (r *Resource) properties() map[string]*Property {
-	return r.Inner.Properties
-}
-
 func (r *Resource) IsNil() bool {
 	return r.id == ""
 }
@@ -108,7 +113,7 @@ func (r *Resource) GetProperty(path string) *Property {
 	first := pathParts[0]
 	property := &Property{}
 
-	if p, exists := r.properties()[first]; exists {
+	if p, exists := r.properties[first]; exists {
 		property = p
 	}
 

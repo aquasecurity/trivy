@@ -10,39 +10,37 @@ import (
 
 func Test_GetProperty_PropIsFunction(t *testing.T) {
 	resource := Resource{
-		Inner: ResourceInner{
-			Type: "AWS::S3::Bucket",
-			Properties: map[string]*Property{
-				"BucketName": {
-					Type:  cftypes.String,
-					Value: "mybucket",
-				},
-				"VersioningConfiguration": {
-					Type: cftypes.Map,
-					Value: map[string]*Property{
-						"Fn::If": {
-							Type: cftypes.List,
-							Value: []*Property{
-								{
-									Type:  cftypes.Bool,
-									Value: false,
-								},
-								{
-									Type: cftypes.Map,
-									Value: map[string]*Property{
-										"Status": {
-											Type:  cftypes.String,
-											Value: "Enabled",
-										},
+		typ: "AWS::S3::Bucket",
+		properties: map[string]*Property{
+			"BucketName": {
+				Type:  cftypes.String,
+				Value: "mybucket",
+			},
+			"VersioningConfiguration": {
+				Type: cftypes.Map,
+				Value: map[string]*Property{
+					"Fn::If": {
+						Type: cftypes.List,
+						Value: []*Property{
+							{
+								Type:  cftypes.Bool,
+								Value: false,
+							},
+							{
+								Type: cftypes.Map,
+								Value: map[string]*Property{
+									"Status": {
+										Type:  cftypes.String,
+										Value: "Enabled",
 									},
 								},
-								{
-									Type: cftypes.Map,
-									Value: map[string]*Property{
-										"Status": {
-											Type:  cftypes.String,
-											Value: "Suspended",
-										},
+							},
+							{
+								Type: cftypes.Map,
+								Value: map[string]*Property{
+									"Status": {
+										Type:  cftypes.String,
+										Value: "Suspended",
 									},
 								},
 							},
