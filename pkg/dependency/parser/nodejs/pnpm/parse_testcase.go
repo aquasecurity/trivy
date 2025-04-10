@@ -760,6 +760,20 @@ var (
 			Relationship: ftypes.RelationshipDirect,
 		},
 		{
+			ID:           "color-convert@2.0.1",
+			Name:         "color-convert",
+			Version:      "2.0.1",
+			Dev:          true,
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "color-name@1.1.4",
+			Name:         "color-name",
+			Version:      "1.1.4",
+			Dev:          true,
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
 			ID:           "debug@4.3.4",
 			Name:         "debug",
 			Version:      "4.3.4",
@@ -870,6 +884,12 @@ var (
 		},
 	}
 	pnpmV9Deps = []ftypes.Dependency{
+		{
+			ID: "color-convert@2.0.1",
+			DependsOn: []string{
+				"color-name@1.1.4",
+			},
+		},
 		{
 			ID: "debug@4.3.4",
 			DependsOn: []string{

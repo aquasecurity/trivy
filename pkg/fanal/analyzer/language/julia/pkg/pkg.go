@@ -34,8 +34,9 @@ var requiredFiles = []string{
 }
 
 type juliaAnalyzer struct {
-	lockParser language.Parser
-	logger     *log.Logger
+	lockParser     language.Parser
+	includeDevDeps bool
+	logger         *log.Logger
 }
 
 type Project struct {
@@ -43,10 +44,11 @@ type Project struct {
 	Extras       map[string]string `toml:"extras"`
 }
 
-func newJuliaAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+func newJuliaAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &juliaAnalyzer{
-		lockParser: julia.NewParser(),
-		logger:     log.WithPrefix("julia"),
+		lockParser:     julia.NewParser(),
+		includeDevDeps: opts.IncludeDevDeps,
+		logger:         log.WithPrefix("julia"),
 	}, nil
 }
 
@@ -109,7 +111,12 @@ func (a juliaAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.Ap
 	}
 
 	pkgs := walkDependencies(deps, app.Packages, false)
-	devPkgs := walkDependencies(devDeps, app.Packages, true)
+	var devPkgs []types.Package
+	if a.includeDevDeps {
+		devPkgs = walkDependencies(devDeps, app.Packages, true)
+	}
+
+	sort.Sort(app.Packages)
 	app.Packages = append(pkgs, devPkgs...)
 	return nil
 }
@@ -156,6 +163,7 @@ func walkDependencies(directDeps map[string]string, allPackages types.Packages, 
 	for _, uuid := range directDeps {
 		if pkg, ok := pkgsByID[uuid]; ok {
 			pkg.Indirect = false
+			pkg.Relationship = types.RelationshipDirect
 			pkg.Dev = dev
 			visited[pkg.ID] = pkg
 		}
@@ -181,6 +189,7 @@ func walkIndirectDependencies(rootPkg types.Package, allPkgIDs, visited map[stri
 			continue
 		}
 
+		dep.Relationship = types.RelationshipIndirect
 		dep.Indirect = true
 		dep.Dev = rootPkg.Dev
 		visited[dep.ID] = dep
