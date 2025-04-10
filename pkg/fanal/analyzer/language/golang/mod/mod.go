@@ -23,7 +23,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xpath "github.com/aquasecurity/trivy/pkg/x/path"
@@ -114,12 +113,15 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 func (a *gomodAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
 
-	// skipping required files in vendor directory
-	if slices.Contains(requiredFiles, fileName) && xpath.Contains(filePath, "vendor") {
-		return false
+	if slices.Contains(requiredFiles, fileName) && !xpath.Contains(filePath, "vendor") {
+		return true
 	}
 
-	return slices.Contains(requiredFiles, fileName)
+	if licenseRegexp.MatchString(fileName) && xpath.Contains(filePath, "vendor") {
+		return true
+	}
+
+	return false
 }
 
 func (a *gomodAnalyzer) Type() analyzer.Type {
@@ -132,11 +134,6 @@ func (a *gomodAnalyzer) Version() int {
 
 // fillAdditionalData collects licenses and dependency relationships, then update applications.
 func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application, fsys fs.FS) error {
-	absPath, err := filepath.Abs(fsys.(*mapfs.FS).GetUnderlyingRoot())
-	if err != nil {
-		a.logger.Warn("Failed to get an absolute path", log.Err(err))
-	}
-
 	gopath := os.Getenv("GOPATH")
 	if gopath == "" {
 		gopath = build.Default.GOPATH
@@ -153,9 +150,13 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application, fsys fs.FS)
 			return pkg.Name, pkg
 		})
 
+		// vendor directory is in the same directory as go.mod
+		gomodFilePath := filepath.Dir(app.FilePath)
+		vendorPath := filepath.Join(gomodFilePath, "vendor")
+
 		// Check if the vendor directory exists
-		vendorPath := filepath.Join(absPath, filepath.Dir(app.FilePath), "vendor")
-		vendorDirFound := fsutils.DirExists(vendorPath)
+		_, err := fs.Stat(fsys, vendorPath)
+		vendorDirFound := err == nil
 		if vendorDirFound {
 			a.logger.Debug("Vendor directory found", log.String("path", vendorPath))
 			modPath = vendorPath
@@ -184,7 +185,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application, fsys fs.FS)
 			modDir := filepath.Join(modPath, modDirName)
 
 			// Collect licenses
-			if licenseNames, err := findLicense(modDir, a.licenseClassifierConfidenceLevel); err != nil {
+			if licenseNames, err := findLicense(vendorDirFound, fsys, modDir, a.licenseClassifierConfidenceLevel); err != nil {
 				return xerrors.Errorf("license error: %w", err)
 			} else {
 				// Cache the detected licenses
@@ -332,9 +333,18 @@ func mergeGoSum(gomod, gosum *types.Application) {
 	gomod.Packages = lo.Values(uniq)
 }
 
-func findLicense(dir string, classifierConfidenceLevel float64) ([]string, error) {
+func findLicense(vendorDirFound bool, fsys fs.FS, dir string, classifierConfidenceLevel float64) ([]string, error) {
 	var license *types.LicenseFile
-	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+
+	openers := make(map[bool]func(fsys fs.FS, path string) (fs.File, error))
+	openers[true] = func(fsys fs.FS, path string) (fs.File, error) {
+		return fsys.Open(path)
+	}
+	openers[false] = func(fsys fs.FS, path string) (fs.File, error) {
+		return os.Open(path)
+	}
+
+	walkDirFunc := func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		} else if !d.Type().IsRegular() {
@@ -344,7 +354,7 @@ func findLicense(dir string, classifierConfidenceLevel float64) ([]string, error
 			return nil
 		}
 		// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237/LICENSE
-		f, err := os.Open(path)
+		f, err := openers[vendorDirFound](fsys, path)
 		if err != nil {
 			return xerrors.Errorf("file (%s) open error: %w", path, err)
 		}
@@ -360,7 +370,14 @@ func findLicense(dir string, classifierConfidenceLevel float64) ([]string, error
 			return io.EOF
 		}
 		return nil
-	})
+	}
+
+	var err error
+	if vendorDirFound {
+		err = fs.WalkDir(fsys, dir, walkDirFunc)
+	} else {
+		err = filepath.WalkDir(dir, walkDirFunc)
+	}
 
 	switch {
 	// The module path may not exist

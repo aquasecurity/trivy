@@ -233,11 +233,6 @@ func (m *FS) RemoveAll(path string) error {
 	return m.root.RemoveAll(cleanPath(path))
 }
 
-// GetUnderlyingRoot returns the underlying root path of the filesystem
-func (m *FS) GetUnderlyingRoot() string {
-	return m.underlyingRoot
-}
-
 func cleanPath(path string) string {
 	// Convert the volume name like 'C:' into dir like 'C\'
 	if vol := filepath.VolumeName(path); vol != "" {
