@@ -515,10 +515,16 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	convertFlags := &flag.Flags{
-		GlobalFlagGroup: globalFlags,
-		ScanFlagGroup:   &flag.ScanFlagGroup{},
-		ReportFlagGroup: flag.NewReportFlagGroup(),
+		GlobalFlagGroup:  globalFlags,
+		ScanFlagGroup:    &flag.ScanFlagGroup{},
+		ReportFlagGroup:  flag.NewReportFlagGroup(),
+		MisconfFlagGroup: &flag.MisconfFlagGroup{},
 	}
+
+	convertFlags.MisconfFlagGroup.IncludeNonFailures = flag.IncludeNonFailuresFlag.Clone()
+	// Enable this flag to include successfully passed results in the output report,
+	// ensuring consistency when the flag is not explicitly set by the user.
+	convertFlags.MisconfFlagGroup.IncludeNonFailures.Default = true
 
 	// To display the summary table, we need to enable scanners (to build columns).
 	// We can't get scanner information from the report (we don't include empty licenses and secrets in the report).
