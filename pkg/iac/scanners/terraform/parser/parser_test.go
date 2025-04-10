@@ -1707,11 +1707,13 @@ resource "test_resource" "this" {
 func TestPopulateContextWithBlockInstances(t *testing.T) {
 
 	tests := []struct {
-		name  string
-		files map[string]string
+		name      string
+		blockType string
+		files     map[string]string
 	}{
 		{
-			name: "data blocks with count",
+			name:      "data blocks with count",
+			blockType: "data",
 			files: map[string]string{
 				"main.tf": `data "d" "foo" {
   count = 1
@@ -1730,7 +1732,8 @@ data "c" "foo" {
 			},
 		},
 		{
-			name: "resource blocks with count",
+			name:      "resource blocks with count",
+			blockType: "resource",
 			files: map[string]string{
 				"main.tf": `resource "d" "foo" {
   count = 1
@@ -1749,7 +1752,33 @@ resource "c" "foo" {
 			},
 		},
 		{
-			name: "data blocks with for_each",
+			name:      "module block with count",
+			blockType: "data",
+			files: map[string]string{
+				"main.tf": `module "a" {
+  source = "./modules/a"
+  count  = 2
+  inp    = "Index ${count.index}"
+}
+
+data "b" "foo" {
+  count = 1
+  value = module.a[0].value
+}
+
+data "c" "foo" {
+  count = 1
+  value = data.b.foo[0].value
+}`,
+				"modules/a/main.tf": `variable "inp" {}
+output "value" {
+  value = var.inp
+}`,
+			},
+		},
+		{
+			name:      "data blocks with for_each",
+			blockType: "data",
 			files: map[string]string{
 				"main.tf": `data "d" "foo" {
   for_each = toset([0])
@@ -1768,7 +1797,8 @@ data "c" "foo" {
 			},
 		},
 		{
-			name: "resource blocks with for_each",
+			name:      "resource blocks with for_each",
+			blockType: "resource",
 			files: map[string]string{
 				"main.tf": `resource "d" "foo" {
   for_each = toset([0])
@@ -1786,13 +1816,32 @@ resource "c" "foo" {
 }`,
 			},
 		},
+		{
+			name:      "module block with for_each",
+			blockType: "data",
+			files: map[string]string{
+				"main.tf": `module "a" {
+  for_each = toset([0])
+  source = "./modules/a"
+  inp    = "Index ${each.key}"
+}
+
+data "b" "foo" {
+  value = module.a["0"].value
+}`,
+				"modules/a/main.tf": `variable "inp" {}
+output "value" {
+  value = var.inp
+}`,
+			},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			modules := parse(t, tt.files)
-			require.Len(t, modules, 1)
-			for _, b := range modules.GetBlocks() {
+			require.GreaterOrEqual(t, len(modules), 1)
+			for _, b := range modules.GetBlocks().OfType(tt.blockType) {
 				attr := b.GetAttribute("value")
 				assert.Equal(t, "Index 0", attr.Value().AsString())
 			}
