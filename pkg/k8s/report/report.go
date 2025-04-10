@@ -144,66 +144,102 @@ type reports struct {
 // - infra checks report
 func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners) []reports {
 
-	var workloadMisconfig, infraMisconfig, rbacAssessment, workloadVulnerabilities, infraVulnerabilities, workloadResource []Resource
-	for _, resource := range k8sReport.Resources {
-		switch {
-		case vulnerabilitiesOrSecretResource(resource) && !infraResource(resource):
-			if resource.Namespace == infraNamespace || nodeInfoResource(resource) {
-				infraVulnerabilities = append(infraVulnerabilities, nodeKind(resource))
-			} else {
-				workloadVulnerabilities = append(workloadVulnerabilities, resource)
-			}
-		case scanners.Enabled(types.RBACScanner) && rbacResource(resource):
-			rbacAssessment = append(rbacAssessment, resource)
-		case infraResource(resource):
-			infraMisconfig = append(infraMisconfig, nodeKind(resource))
-		case scanners.Enabled(types.MisconfigScanner) &&
-			!rbacResource(resource):
-			workloadMisconfig = append(workloadMisconfig, resource)
-		}
-	}
+// Use maps to track resources by their unique identifier to prevent duplicates
+workloadMap := make(map[string]Resource)
+infraMap := make(map[string]Resource)
+var rbacAssessment []Resource
+
+// Helper function to merge resource findings
+mergeFindingResults := func(existing, new Resource) Resource {
+    if len(existing.Results) == 0 {
+        return new
+    }
+    existing.Results[0].Vulnerabilities = append(existing.Results[0].Vulnerabilities, new.Results[0].Vulnerabilities...)
+    existing.Results[0].Misconfigurations = append(existing.Results[0].Misconfigurations, new.Results[0].Misconfigurations...)
+    existing.Results[0].Secrets = append(existing.Results[0].Secrets, new.Results[0].Secrets...)
+    return existing
+}
+
+for _, resource := range k8sReport.Resources {
+    key := fmt.Sprintf("%s/%s/%s", resource.Namespace, resource.Kind, resource.Name)
+    
+    switch {
+    case scanners.Enabled(types.RBACScanner) && rbacResource(resource):
+        rbacAssessment = append(rbacAssessment, resource)
+    case infraResource(resource):
+        r := nodeKind(resource)
+        infraKey := fmt.Sprintf("node/%s", r.Name)
+        if existing, exists := infraMap[infraKey]; exists {
+            infraMap[infraKey] = mergeFindingResults(existing, r)
+        } else {
+            infraMap[infraKey] = r
+        }
+    default:
+        if existing, exists := workloadMap[key]; exists {
+            workloadMap[key] = mergeFindingResults(existing, resource)
+        } else {
+            workloadMap[key] = resource
+        }
+    }
+}
 
 	var r []reports
-	workloadResource = append(workloadResource, workloadVulnerabilities...)
-	workloadResource = append(workloadResource, workloadMisconfig...)
+	
 	if shouldAddToReport(scanners) {
-		workloadReport := Report{
-			SchemaVersion: 0,
-			ClusterName:   k8sReport.ClusterName,
-			Resources:     workloadResource,
-			name:          "Workload Assessment",
-		}
-		r = append(r, reports{
-			Report:  workloadReport,
-			Columns: WorkloadColumns(),
-		})
+	    // Convert workload map to slice
+	    var workloadResources []Resource
+	    for _, resource := range workloadMap {
+	        if resource.Results.Failed() {
+	            workloadResources = append(workloadResources, resource)
+	        }
+	    }
+	    
+	    if len(workloadResources) > 0 {
+	        workloadReport := Report{
+	            SchemaVersion: 0,
+	            ClusterName:   k8sReport.ClusterName,
+	            Resources:     workloadResources,
+	            name:          "Workload Assessment",
+	        }
+	        r = append(r, reports{
+	            Report:  workloadReport,
+	            Columns: WorkloadColumns(),
+	        })
+	    }
+	
+	    // Convert infra map to slice
+	    var infraResources []Resource
+	    for _, resource := range infraMap {
+	        if resource.Results.Failed() {
+	            infraResources = append(infraResources, resource)
+	        }
+	    }
+	    
+	    if len(infraResources) > 0 {
+	        r = append(r, reports{
+	            Report: Report{
+	                SchemaVersion: 0,
+	                ClusterName:   k8sReport.ClusterName,
+	                Resources:     infraResources,
+	                name:          "Infra Assessment",
+	            },
+	            Columns: InfraColumns(),
+	        })
+	    }
 
+	    if scanners.Enabled(types.RBACScanner) && len(rbacAssessment) > 0 {
+	        r = append(r, reports{
+	            Report: Report{
+	                SchemaVersion: 0,
+	                ClusterName:   k8sReport.ClusterName,
+	                Resources:     rbacAssessment,
+	                name:          "RBAC Assessment",
+	            },
+	            Columns: RoleColumns(),
+	        })
+	    }
 	}
-	infraMisconfig = append(infraMisconfig, infraVulnerabilities...)
-	if shouldAddToReport(scanners) {
-		r = append(r, reports{
-			Report: Report{
-				SchemaVersion: 0,
-				ClusterName:   k8sReport.ClusterName,
-				Resources:     infraMisconfig,
-				name:          "Infra Assessment",
-			},
-			Columns: InfraColumns(),
-		})
-	}
-
-	if scanners.Enabled(types.RBACScanner) {
-		r = append(r, reports{
-			Report: Report{
-				SchemaVersion: 0,
-				ClusterName:   k8sReport.ClusterName,
-				Resources:     rbacAssessment,
-				name:          "RBAC Assessment",
-			},
-			Columns: RoleColumns(),
-		})
-	}
-
+	
 	return r
 }
 
@@ -293,8 +329,10 @@ func misconfigsResource(resource Resource) bool {
 }
 
 func nodeKind(resource Resource) Resource {
-	if nodeInfoResource(resource) {
-		resource.Kind = "Node"
-	}
-	return resource
+    if nodeInfoResource(resource) {
+        resource.Kind = "Node"
+        // Clear namespace for node resources as they are cluster-wide
+        resource.Namespace = ""
+    }
+    return resource
 }
