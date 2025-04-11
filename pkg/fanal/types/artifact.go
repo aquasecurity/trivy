@@ -323,27 +323,6 @@ type ImageConfigDetail struct {
 	Secret *Secret `json:",omitempty"`
 }
 
-// ToBlobInfo is used to store a merged layer in cache.
-func (a *ArtifactDetail) ToBlobInfo() BlobInfo {
-	return BlobInfo{
-		SchemaVersion: BlobJSONSchemaVersion,
-		OS:            a.OS,
-		Repository:    a.Repository,
-		PackageInfos: []PackageInfo{
-			{
-				FilePath: "merged", // Set a dummy file path
-				Packages: a.Packages,
-			},
-		},
-		Applications:      a.Applications,
-		Misconfigurations: a.Misconfigurations,
-		Secrets:           a.Secrets,
-		Licenses:          a.Licenses,
-		CustomResources:   a.CustomResources,
-		LayersMetadata:    a.LayersMetadata,
-	}
-}
-
 // CustomResource holds the analysis result from a custom analyzer.
 // It is for extensibility and not used in OSS.
 type CustomResource struct {
