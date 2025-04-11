@@ -126,3 +126,10 @@ type ScanOptions struct {
 	Distro              types.OS // Forced OS
 	VulnSeveritySources []dbTypes.SourceID
 }
+
+// ScanResponse contains result of `Scan` function of `Driver` interface
+type ScanResponse struct {
+	Results        Results
+	OS             types.OS
+	LayersMetadata types.LayersMetadata
+}

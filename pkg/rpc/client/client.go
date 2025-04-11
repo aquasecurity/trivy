@@ -68,7 +68,7 @@ func NewService(scannerOptions ServiceOption, opts ...Option) Service {
 }
 
 // Scan scans the image
-func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, opts types.ScanOptions) (types.Results, ftypes.OS, error) {
+func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, opts types.ScanOptions) (types.ScanResponse, error) {
 	ctx = WithCustomHeaders(ctx, s.customHeaders)
 
 	// Convert to the rpc struct
@@ -106,8 +106,21 @@ func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		return err
 	})
 	if err != nil {
-		return nil, ftypes.OS{}, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
+		return types.ScanResponse{}, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
 	}
 
-	return r.ConvertFromRPCResults(res.Results), r.ConvertFromRPCOS(res.Os), nil
+	var layersMetadata ftypes.LayersMetadata
+	for _, layerMetadata := range res.LayersMetadata {
+		if layerMetadata == nil {
+			continue
+		}
+
+		layersMetadata = append(layersMetadata, r.ConvertFromRPCLayerMetadata(layerMetadata))
+	}
+
+	return types.ScanResponse{
+		Results:        r.ConvertFromRPCResults(res.Results),
+		OS:             r.ConvertFromRPCOS(res.Os),
+		LayersMetadata: layersMetadata,
+	}, nil
 }

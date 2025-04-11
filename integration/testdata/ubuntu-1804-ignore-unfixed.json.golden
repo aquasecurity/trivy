@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/ubuntu-1804.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 66571264,
     "OS": {
       "Family": "ubuntu",
       "Name": "18.04"
@@ -63,7 +64,29 @@
         "Image": "sha256:bcbe079849fdbb50b3eb04798547e046bdbc82020b8b780d767cf29f7e60b396",
         "ArgsEscaped": true
       }
-    }
+    },
+    "Layers": [
+      {
+        "Size": 65561088,
+        "Digest": "sha256:35c102085707f703de2d9eaad8752d6fe1b8f02b5d2149f1d8357c9cc7fb7d0a",
+        "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
+      },
+      {
+        "Size": 991232,
+        "Digest": "sha256:251f5509d51d9e4119d4ffb70d4820f8e2d7dc72ad15df3ebd7cd755539e40fd",
+        "DiffID": "sha256:f7eae43028b334123c3a1d778f7bdf9783bbe651c8b15371df0120fd13ec35c5"
+      },
+      {
+        "Size": 15872,
+        "Digest": "sha256:8e829fe70a46e3ac4334823560e98b257234c23629f19f05460e21a453091e6d",
+        "DiffID": "sha256:7beb13bce073c21c9ee608acb13c7e851845245dc76ce81b418fdf580c45076b"
+      },
+      {
+        "Size": 3072,
+        "Digest": "sha256:6001e1789921cf851f6fb2e5fe05be70f482fe9c2286f66892fe5a3bc404569c",
+        "DiffID": "sha256:122be11ab4a29e554786b4a1ec4764dd55656b59d6228a0a3de78eaf5c1f226c"
+      }
+    ]
   },
   "Results": [
     {

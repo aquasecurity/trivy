@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/distroless-python27.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 48271360,
     "OS": {
       "Family": "debian",
       "Name": "9.9"
@@ -60,7 +61,29 @@
           "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt"
         ]
       }
-    }
+    },
+    "Layers": [
+      {
+        "Size": 3061760,
+        "Digest": "sha256:e8d8785a314f385d3675a017f4e2df1707c528c06e7a7989663fdab4900bd8ff",
+        "DiffID": "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"
+      },
+      {
+        "Size": 15441920,
+        "Digest": "sha256:e005d777a298a3529b1c8cf890883359e050cc966089ce84fea4d17b111907db",
+        "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+      },
+      {
+        "Size": 1966080,
+        "Digest": "sha256:3e010093287c245d72a774033b4cddd6451a820bfbb1948c97798e1838858dd2",
+        "DiffID": "sha256:6189abe095d53c1c9f2bfc8f50128ee876b9a5d10f9eda1564e5f5357d6ffe61"
+      },
+      {
+        "Size": 27801600,
+        "Digest": "sha256:0fedbb4c6207e6eebb78477eb49d550cafa9eccbf1079c57c026a36d727d684a",
+        "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+      }
+    ]
   },
   "Results": [
     {

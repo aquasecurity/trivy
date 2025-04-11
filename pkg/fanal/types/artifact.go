@@ -158,11 +158,14 @@ type BlobInfo struct {
 	SchemaVersion int
 
 	// Layer information
-	Digest        string   `json:",omitempty"`
-	DiffID        string   `json:",omitempty"`
-	CreatedBy     string   `json:",omitempty"`
-	OpaqueDirs    []string `json:",omitempty"`
-	WhiteoutFiles []string `json:",omitempty"`
+	LayerMetadata LayerMetadata
+
+	// Fields for backward compatibility
+	Digest        string   `json:",omitempty"` // Deprecated: Use LayersMetadata. Kept for backward compatibility.
+	DiffID        string   `json:",omitempty"` // Deprecated: Use LayersMetadata. Kept for backward compatibility.
+	CreatedBy     string   `json:",omitempty"` // Deprecated: Use LayersMetadata. Kept for backward compatibility.
+	OpaqueDirs    []string `json:",omitempty"` // Deprecated: Use LayersMetadata. Kept for backward compatibility.
+	WhiteoutFiles []string `json:",omitempty"` // Deprecated: Use LayersMetadata. Kept for backward compatibility.
 
 	// Analysis result
 	OS                OS                 `json:",omitempty"`
@@ -183,6 +186,55 @@ type BlobInfo struct {
 	CustomResources []CustomResource `json:",omitempty"`
 }
 
+func (b BlobInfo) Layer() LayerMetadata {
+	if !b.LayerMetadata.Empty() {
+		return b.LayerMetadata
+	}
+
+	// For backward compatibility
+	return LayerMetadata{
+		Digest:        b.Digest,
+		DiffID:        b.DiffID,
+		CreatedBy:     b.CreatedBy,
+		OpaqueDirs:    b.OpaqueDirs,
+		WhiteoutFiles: b.WhiteoutFiles,
+	}
+}
+
+type LayerMetadata struct {
+	Size          int64    `json:",omitempty"`
+	Digest        string   `json:",omitempty"`
+	DiffID        string   `json:",omitempty"`
+	CreatedBy     string   `json:",omitempty"`
+	OpaqueDirs    []string `json:",omitempty"`
+	WhiteoutFiles []string `json:",omitempty"`
+}
+
+func (lm LayerMetadata) Empty() bool {
+	return lm.Size == 0 && lm.Digest == "" && lm.DiffID == "" && lm.CreatedBy == "" &&
+		len(lm.OpaqueDirs) == 0 && len(lm.WhiteoutFiles) == 0
+}
+
+type LayersMetadata []LayerMetadata
+
+func (lm LayersMetadata) TotalSize() int64 {
+	var totalSize int64
+	for _, layer := range lm {
+		totalSize += layer.Size
+	}
+	return totalSize
+}
+
+func (lm LayersMetadata) Empty() bool {
+	if len(lm) == 0 {
+		return true
+	} else if len(lm) > 1 {
+		return false
+	}
+
+	return lm[0].Empty()
+}
+
 // ArtifactDetail represents the analysis result.
 type ArtifactDetail struct {
 	OS                OS                 `json:",omitempty"`
@@ -199,6 +251,8 @@ type ArtifactDetail struct {
 	// CustomResources hold analysis results from custom analyzers.
 	// It is for extensibility and not used in OSS.
 	CustomResources []CustomResource `json:",omitempty"`
+
+	LayersMetadata LayersMetadata `json:",omitempty"`
 }
 
 // Sort sorts packages and applications in ArtifactDetail
@@ -253,26 +307,6 @@ type ImageConfigDetail struct {
 
 	// Secret holds secrets in container image config
 	Secret *Secret `json:",omitempty"`
-}
-
-// ToBlobInfo is used to store a merged layer in cache.
-func (a *ArtifactDetail) ToBlobInfo() BlobInfo {
-	return BlobInfo{
-		SchemaVersion: BlobJSONSchemaVersion,
-		OS:            a.OS,
-		Repository:    a.Repository,
-		PackageInfos: []PackageInfo{
-			{
-				FilePath: "merged", // Set a dummy file path
-				Packages: a.Packages,
-			},
-		},
-		Applications:      a.Applications,
-		Misconfigurations: a.Misconfigurations,
-		Secrets:           a.Secrets,
-		Licenses:          a.Licenses,
-		CustomResources:   a.CustomResources,
-	}
 }
 
 // CustomResource holds the analysis result from a custom analyzer.

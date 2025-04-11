@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/ubi-7.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 215162880,
     "OS": {
       "Family": "redhat",
       "Name": "7.7"
@@ -68,7 +69,19 @@
         },
         "ArgsEscaped": true
       }
-    }
+    },
+    "Layers": [
+      {
+        "Size": 215142400,
+        "Digest": "sha256:7b1c937e0f6794db2535be6e4cb6d60a0b668ef78c2576611a3fb9c97a95ccdf",
+        "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
+      },
+      {
+        "Size": 20480,
+        "Digest": "sha256:bff3b73cbcc496de1de4ea51df88b7249169d0b6eb7d677169eaf90b8a92240e",
+        "DiffID": "sha256:ecb0311889b3478bc9b62660fa9391d5ebf8da4c6ae143cb33434873668f9e36"
+      }
+    ]
   },
   "Results": [
     {
