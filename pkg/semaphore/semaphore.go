@@ -4,7 +4,9 @@ import "golang.org/x/sync/semaphore"
 
 const defaultSize = 5
 
-func New(parallel int) *semaphore.Weighted {
+type Weighted = semaphore.Weighted
+
+func New(parallel int) *Weighted {
 	if parallel == 0 {
 		parallel = defaultSize
 	}

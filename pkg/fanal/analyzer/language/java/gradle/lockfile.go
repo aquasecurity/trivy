@@ -49,7 +49,8 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 	}
 
 	required := func(path string, d fs.DirEntry) bool {
-		return a.Required(path, nil)
+		// Parse all required files: `*gradle.lockfile` (from a.Required func) + input.FilePatterns.Match()
+		return true
 	}
 
 	var apps []types.Application

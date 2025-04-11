@@ -14,7 +14,7 @@ To host these databases in your own infrastructure:
 
 ### Make a local copy
 
-Use any container registry manipulation tool (e.g , [crane](https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane.md, [ORAS](https://oras.land), [regclient](https://github.com/regclient/regclient/tree/main)) to copy the images to your destination registry.
+Use any container registry manipulation tool (e.g , [crane](https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane.md), [ORAS](https://oras.land), [regclient](https://github.com/regclient/regclient/tree/main)) to copy the images to your destination registry.
 
 !!! note
     You will need to keep the databases updated in order to maintain relevant scanning results over time.
@@ -123,10 +123,10 @@ To make a copy of VEX Hub in a location that is accessible to Trivy.
 
 To configure Trivy to use the local VEX Repository:
 
-1. Locate your [Trivy VEX configuration file](../supply-chain/vex/repo/#configuration-file) by running `trivy vex repo init`. Make the following changes to the file.
+1. Locate your [Trivy VEX configuration file](../supply-chain/vex/repo.md#configuration-file) by running `trivy vex repo init`. Make the following changes to the file.
 1. Disable the default VEX Hub repo (`enabled: false`)
-1. Add your internal VEX Hub repository as a [custom repository](../supply-chain/vex/repo/#custom-repositories) with the URL pointing to your local server (e.g `url: https://server.local`).
+1. Add your internal VEX Hub repository as a [custom repository](../supply-chain/vex/repo.md#custom-repositories) with the URL pointing to your local server (e.g `url: https://server.local`).
 
 ### Authentication
 
-If your server requires authentication, you can configure it as described in the [VEX Repository Authentication document](../supply-chain/vex/repo/#authentication).
+If your server requires authentication, you can configure it as described in the [VEX Repository Authentication document](../supply-chain/vex/repo.md#authentication).

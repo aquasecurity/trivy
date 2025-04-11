@@ -5,19 +5,18 @@ import (
 
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
 // Report represents a scan result
 type Report struct {
-	SchemaVersion int           `json:",omitempty"`
-	CreatedAt     time.Time     `json:",omitempty"`
-	ArtifactName  string        `json:",omitempty"`
-	ArtifactType  artifact.Type `json:",omitempty"`
-	Metadata      Metadata      `json:",omitempty"`
-	Results       Results       `json:",omitempty"`
+	SchemaVersion int                 `json:",omitempty"`
+	CreatedAt     time.Time           `json:",omitempty"`
+	ArtifactName  string              `json:",omitempty"`
+	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
+	Metadata      Metadata            `json:",omitempty"`
+	Results       Results             `json:",omitempty"`
 
 	// parsed SBOM
 	BOM *core.BOM `json:"-"` // Just for internal usage, not exported in JSON
@@ -105,6 +104,18 @@ var (
 		ComplianceRke2CIS124,
 	}
 )
+
+type TableMode string
+
+const (
+	Summary  TableMode = "summary"
+	Detailed TableMode = "detailed"
+)
+
+var SupportedTableModes = []TableMode{
+	Summary,
+	Detailed,
+}
 
 // Result holds a target and detected vulnerabilities
 type Result struct {

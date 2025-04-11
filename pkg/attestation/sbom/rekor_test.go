@@ -1,7 +1,6 @@
 package sbom_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -41,7 +40,7 @@ func TestRekor_RetrieveSBOM(t *testing.T) {
 			rc, err := sbom.NewRekor(ts.URL())
 			require.NoError(t, err)
 
-			got, err := rc.RetrieveSBOM(context.Background(), tt.digest)
+			got, err := rc.RetrieveSBOM(t.Context(), tt.digest)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return

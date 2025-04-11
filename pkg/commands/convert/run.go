@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"os"
+	"slices"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
@@ -18,6 +20,7 @@ import (
 )
 
 func Run(ctx context.Context, opts flag.Options) (err error) {
+	logger := log.WithPrefix("convert")
 	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
 	defer cancel()
 
@@ -42,7 +45,14 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 		return xerrors.Errorf("unable to filter results: %w", err)
 	}
 
-	log.Debug("Writing report to output...")
+	if len(opts.Scanners) == 0 && opts.Format == types.FormatTable && slices.Contains(opts.TableModes, types.Summary) {
+		logger.Info("To display the summary table, enable the scanners used during JSON report generation.")
+		opts.TableModes = lo.Filter(opts.TableModes, func(mode types.TableMode, _ int) bool {
+			return mode != types.Summary
+		})
+	}
+
+	logger.Debug("Writing report to output...")
 	if err = report.Write(ctx, r, opts); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}

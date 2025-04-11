@@ -1,7 +1,6 @@
 package nodejs
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -260,7 +259,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			h := systemFileFilteringPostHandler{}
-			err := h.Handle(context.TODO(), tt.result, tt.blob)
+			err := h.Handle(t.Context(), tt.result, tt.blob)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, tt.blob)
 		})

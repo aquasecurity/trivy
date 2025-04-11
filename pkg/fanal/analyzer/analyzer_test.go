@@ -1,7 +1,6 @@
 package analyzer_test
 
 import (
-	"context"
 	"os"
 	"sync"
 	"testing"
@@ -529,7 +528,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 			info, err := os.Stat(tt.args.testFilePath)
 			require.NoError(t, err)
 
-			ctx := context.Background()
+			ctx := t.Context()
 			err = a.AnalyzeFile(ctx, &wg, limit, got, "", tt.args.filePath, info,
 				func() (xio.ReadSeekCloserAt, error) {
 					if tt.args.testFilePath == "testdata/error" {
@@ -562,6 +561,7 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 		name         string
 		dir          string
 		analyzerType analyzer.Type
+		filePatterns []string
 		want         *analyzer.AnalysisResult
 	}{
 		{
@@ -585,11 +585,25 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 			},
 		},
 		{
-			name:         "poetry files with invalid file",
-			dir:          "testdata/post-apps/poetry/",
+			name: "poetry files with file from pattern and invalid file",
+			dir:  "testdata/post-apps/poetry/",
+			filePatterns: []string{
+				"poetry:poetry-pattern.lock",
+			},
 			analyzerType: analyzer.TypePoetry,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
+					{
+						Type:     types.Poetry,
+						FilePath: "testdata/post-apps/poetry/happy/poetry-pattern.lock",
+						Packages: types.Packages{
+							{
+								ID:      "certifi@2022.12.7",
+								Name:    "certifi",
+								Version: "2022.12.7",
+							},
+						},
+					},
 					{
 						Type:     types.Poetry,
 						FilePath: "testdata/post-apps/poetry/happy/poetry.lock",
@@ -607,7 +621,9 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{})
+			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
+				FilePatterns: tt.filePatterns,
+			})
 			require.NoError(t, err)
 
 			// Create a virtual filesystem
@@ -625,7 +641,7 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 				javadb.Init("./language/java/jar/testdata", []name.Reference{repo}, true, false, types.RegistryOptions{Insecure: false})
 			}
 
-			ctx := context.Background()
+			ctx := t.Context()
 			got := new(analyzer.AnalysisResult)
 			err = a.PostAnalyze(ctx, composite, got, analyzer.AnalysisOptions{})
 			require.NoError(t, err)

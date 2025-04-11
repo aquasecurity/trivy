@@ -2,7 +2,6 @@ package log_test
 
 import (
 	"bytes"
-	"context"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -115,7 +114,7 @@ func TestContext(t *testing.T) {
 		baseLogger := log.New(log.NewHandler(&buf, &log.Options{Level: slog.LevelInfo}))
 
 		// Test logging with WithContextPrefix
-		ctx := context.Background()
+		ctx := t.Context()
 		ctx = log.WithContextPrefix(ctx, "prefix1")
 
 		logger := baseLogger.With("key1", "value1").WithGroup("group1")
@@ -133,7 +132,7 @@ func TestContext(t *testing.T) {
 		baseLogger := log.New(log.NewHandler(&buf, &log.Options{Level: slog.LevelInfo}))
 
 		// Test logging with WithContextAttrs
-		ctx := context.Background()
+		ctx := t.Context()
 		ctx = log.WithContextAttrs(ctx, log.String("key1", "value1"))
 
 		logger := baseLogger.WithGroup("group1")

@@ -1,7 +1,6 @@
 package tfjson
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -73,7 +72,7 @@ func Test_TerraformScanner(t *testing.T) {
 # description: Bad buckets are bad because they are not good.
 # scope: package
 # schemas:
-#   - input: schema["input"]
+#   - input: schema["cloud"]
 # custom:
 #   avd_id: AVD-TEST-0123
 #   severity: CRITICAL
@@ -115,7 +114,7 @@ deny[cause] {
 			so := append(tc.options, rego.WithPolicyFilesystem(fs))
 			scanner := New(so...)
 
-			results, err := scanner.ScanFS(context.TODO(), fs, "code")
+			results, err := scanner.ScanFS(t.Context(), fs, "code")
 			require.NoError(t, err)
 
 			require.Len(t, results.GetFailed(), 1)

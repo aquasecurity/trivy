@@ -29,9 +29,9 @@ func adaptCompute(modules terraform.Modules) compute.Compute {
 			windowsVirtualMachines = append(windowsVirtualMachines, adaptWindowsVM(resource))
 		}
 		for _, resource := range module.GetResourcesByType(AzureVirtualMachine) {
-			if resource.HasChild("os_profile_linux_config") {
+			if linuxConfigBlock := resource.GetBlock("os_profile_linux_config"); linuxConfigBlock.IsNotNil() {
 				linuxVirtualMachines = append(linuxVirtualMachines, adaptLinuxVM(resource))
-			} else if resource.HasChild("os_profile_windows_config") {
+			} else if windowsConfigBlock := resource.GetBlock("os_profile_windows_config"); windowsConfigBlock.IsNotNil() {
 				windowsVirtualMachines = append(windowsVirtualMachines, adaptWindowsVM(resource))
 			}
 		}

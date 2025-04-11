@@ -34,7 +34,14 @@ trivy kubernetes [flags] [CONTEXT]
       --cache-ttl duration                cache TTL when using redis as cache backend
       --check-namespaces strings          Rego namespaces
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "mirror.gcr.io/aquasec/trivy-checks:1")
-      --compliance string                 compliance report to generate (k8s-nsa-1.0,k8s-cis-1.23,eks-cis-1.4,rke2-cis-1.24,k8s-pss-baseline-0.1,k8s-pss-restricted-0.1)
+      --compliance string                 compliance report to generate
+                                          Allowed values:
+                                            - k8s-nsa-1.0
+                                            - k8s-cis-1.23
+                                            - eks-cis-1.4
+                                            - rke2-cis-1.24
+                                            - k8s-pss-baseline-0.1
+                                            - k8s-pss-restricted-0.1
       --config-check strings              specify the paths to the Rego check files or to the directories containing them, applying config files
       --config-data strings               specify paths from which data for the Rego checks will be recursively loaded
       --config-file-schemas strings       specify paths to JSON configuration file schemas to determine that a file matches some configuration and pass the schema to Rego checks for type checking
@@ -43,7 +50,7 @@ trivy kubernetes [flags] [CONTEXT]
       --detection-priority string         specify the detection priority:
                                             - "precise": Prioritizes precise by minimizing false positives.
                                             - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
-                                           (precise,comprehensive) (default "precise")
+                                           (allowed values: precise,comprehensive) (default "precise")
       --disable-node-collector            When the flag is activated, the node-collector job will not be executed, thus skipping misconfiguration findings on the node.
       --distro string                     [EXPERIMENTAL] specify a distribution, <family>/<version>
       --download-db-only                  download/update vulnerability database but don't run a scan
@@ -54,7 +61,7 @@ trivy kubernetes [flags] [CONTEXT]
       --exclude-owned                     exclude resources that have an owner reference
       --exit-code int                     specify exit code when any security issues are found
       --file-patterns strings             specify config file patterns
-  -f, --format string                     format (table,json,cyclonedx) (default "table")
+  -f, --format string                     format (allowed values: table,json,cyclonedx) (default "table")
       --helm-api-versions strings         Available API versions used for Capabilities.APIVersions. This flag is the same as the api-versions flag of the helm template command. (can specify multiple or separate values with commas: policy/v1/PodDisruptionBudget,apps/v1/Deployment)
       --helm-kube-version string          Kubernetes version used for Capabilities.KubeVersion. This flag is the same as the kube-version flag of the helm template command.
       --helm-set strings                  specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
@@ -63,10 +70,19 @@ trivy kubernetes [flags] [CONTEXT]
       --helm-values strings               specify paths to override the Helm values.yaml files
   -h, --help                              help for kubernetes
       --ignore-policy string              specify the Rego file path to evaluate each vulnerability
-      --ignore-status strings             comma-separated list of vulnerability status to ignore (unknown,not_affected,affected,fixed,under_investigation,will_not_fix,fix_deferred,end_of_life)
+      --ignore-status strings             comma-separated list of vulnerability status to ignore
+                                          Allowed values:
+                                            - unknown
+                                            - not_affected
+                                            - affected
+                                            - fixed
+                                            - under_investigation
+                                            - will_not_fix
+                                            - fix_deferred
+                                            - end_of_life
       --ignore-unfixed                    display only fixed vulnerabilities
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
-      --image-src strings                 image source(s) to use, in priority order (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
+      --image-src strings                 image source(s) to use, in priority order (allowed values: docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
       --include-deprecated-checks         include deprecated checks
       --include-kinds strings             indicate the kinds included in scanning (example: node)
       --include-namespaces strings        indicate the namespaces included in scanning (example: kube-system)
@@ -85,8 +101,15 @@ trivy kubernetes [flags] [CONTEXT]
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
       --password-stdin                    password from stdin. Comma-separated passwords are not supported.
-      --pkg-relationships strings         list of package relationships (unknown,root,workspace,direct,indirect) (default [unknown,root,workspace,direct,indirect])
-      --pkg-types strings                 list of package types (os,library) (default [os,library])
+      --pkg-relationships strings         list of package relationships
+                                          Allowed values:
+                                            - unknown
+                                            - root
+                                            - workspace
+                                            - direct
+                                            - indirect
+                                           (default [unknown,root,workspace,direct,indirect])
+      --pkg-types strings                 list of package types (allowed values: os,library) (default [os,library])
       --qps float                         specify the maximum QPS to the master from this client (default 5)
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
@@ -94,11 +117,19 @@ trivy kubernetes [flags] [CONTEXT]
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string             registry token
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
-      --report string                     specify a report format for the output (all,summary) (default "all")
-      --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
-      --scanners strings                  comma-separated list of what security issues to detect (vuln,misconfig,secret,rbac) (default [vuln,misconfig,secret,rbac])
+      --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform)
+      --report string                     specify a report format for the output (allowed values: all,summary) (default "all")
+      --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (allowed values: oci,rekor)
+      --scanners strings                  comma-separated list of what security issues to detect (allowed values: vuln,misconfig,secret,rbac) (default [vuln,misconfig,secret,rbac])
       --secret-config string              specify a path to config file for secret scanning (default "trivy-secret.yaml")
-  -s, --severity strings                  severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
+  -s, --severity strings                  severities of security issues to be displayed
+                                          Allowed values:
+                                            - UNKNOWN
+                                            - LOW
+                                            - MEDIUM
+                                            - HIGH
+                                            - CRITICAL
+                                           (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
       --show-suppressed                   [EXPERIMENTAL] show suppressed vulnerabilities
       --skip-check-update                 skip fetching rego check updates
       --skip-db-update                    skip updating vulnerability database
@@ -113,6 +144,37 @@ trivy kubernetes [flags] [CONTEXT]
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
       --vex strings                       [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
+      --vuln-severity-source strings      order of data sources for selecting vulnerability severity level
+                                          Allowed values:
+                                            - nvd
+                                            - redhat
+                                            - redhat-oval
+                                            - debian
+                                            - ubuntu
+                                            - alpine
+                                            - amazon
+                                            - oracle-oval
+                                            - suse-cvrf
+                                            - photon
+                                            - arch-linux
+                                            - alma
+                                            - rocky
+                                            - cbl-mariner
+                                            - azure
+                                            - ruby-advisory-db
+                                            - php-security-advisories
+                                            - nodejs-security-wg
+                                            - ghsa
+                                            - glad
+                                            - aqua
+                                            - osv
+                                            - k8s
+                                            - wolfi
+                                            - chainguard
+                                            - bitnami
+                                            - govulndb
+                                            - auto
+                                           (default [auto])
 ```
 
 ### Options inherited from parent commands

@@ -157,3 +157,7 @@ func setKVValue(kvpo instructions.KeyValuePairOptional, values map[string]string
 	}
 	return kvpo
 }
+
+func (a dockerfileAnalyzer) StaticPaths() []string {
+	return []string{"root/buildinfo"}
+}

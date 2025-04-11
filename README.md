@@ -116,7 +116,6 @@ If you'd like to contact Aqua or request a demo, please use this form: <https://
 Trivy is an [Aqua Security][aquasec] open source project.  
 Learn about our open source work and portfolio [here][oss].  
 Contact us about any matter by opening a GitHub Discussion [here][discussions]
-Join our [Slack community][slack] to stay up to date with community efforts.
 
 Please ensure to abide by our [Code of Conduct][code-of-conduct] during all interactions.
 
@@ -131,14 +130,13 @@ Please ensure to abide by our [Code of Conduct][code-of-conduct] during all inte
 [license]: https://github.com/aquasecurity/trivy/blob/main/LICENSE
 [license-img]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 [homepage]: https://trivy.dev
-[docs]: https://aquasecurity.github.io/trivy
+[docs]: https://trivy.dev/latest/docs/
 [pronunciation]: #how-to-pronounce-the-name-trivy
-[slack]: https://slack.aquasec.com
 [code-of-conduct]: https://github.com/aquasecurity/community/blob/main/CODE_OF_CONDUCT.md
 
-[Installation]:https://aquasecurity.github.io/trivy/latest/getting-started/installation/
-[Ecosystem]: https://aquasecurity.github.io/trivy/latest/ecosystem/
-[Scanning Coverage]: https://aquasecurity.github.io/trivy/latest/docs/coverage/
+[Installation]:https://trivy.dev/latest/getting-started/installation/
+[Ecosystem]: https://trivy.dev/latest/ecosystem/
+[Scanning Coverage]: https://trivy.dev/latest/docs/coverage/
 
 [alpine]: https://ariadne.space/2021/06/08/the-vulnerability-remediation-lifecycle-of-alpine-containers/
 [rego]: https://www.openpolicyagent.org/docs/latest/#rego

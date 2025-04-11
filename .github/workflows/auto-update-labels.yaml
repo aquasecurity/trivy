@@ -5,8 +5,6 @@ on:
       - 'misc/triage/labels.yaml'
     branches:
       - main
-env:
-  GO_VERSION: '1.23'
 jobs:
   deploy:
     name: Auto-update labels
@@ -18,14 +16,11 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          # cf. https://github.com/aquasecurity/trivy/pull/6711
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: go.mod
           cache: false
 
-      - name: Install aqua tools
-        uses: aquaproj/aqua-installer@v3.1.1
-        with:
-          aqua_version: v1.25.0
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
 
       - name: update labels
         env:

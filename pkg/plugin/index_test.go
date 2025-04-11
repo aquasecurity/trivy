@@ -2,7 +2,6 @@ package plugin_test
 
 import (
 	"bytes"
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -26,7 +25,7 @@ func TestManager_Update(t *testing.T) {
 	t.Cleanup(ts.Close)
 
 	manager := plugin.NewManager(plugin.WithIndexURL(ts.URL + "/index.yaml"))
-	err := manager.Update(context.Background(), plugin.Options{})
+	err := manager.Update(t.Context(), plugin.Options{})
 	require.NoError(t, err)
 
 	indexPath := filepath.Join(tempDir, ".trivy", "plugins", "index.yaml")
@@ -76,7 +75,7 @@ bar                  A bar plugin                                               
 
 			var got bytes.Buffer
 			m := plugin.NewManager(plugin.WithWriter(&got))
-			err := m.Search(context.Background(), tt.keyword)
+			err := m.Search(t.Context(), tt.keyword)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return

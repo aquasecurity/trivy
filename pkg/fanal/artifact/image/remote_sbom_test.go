@@ -1,7 +1,6 @@
 package image_test
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -117,7 +116,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			},
 			want: artifact.Reference{
 				Name: "test/image:10",
-				Type: artifact.TypeCycloneDX,
+				Type: types.TypeCycloneDX,
 				ID:   "sha256:e146a835492a1c965b38cce4cab4b250d86b0ba74d0981a315ce37a555b14623",
 				BlobIDs: []string{
 					"sha256:e146a835492a1c965b38cce4cab4b250d86b0ba74d0981a315ce37a555b14623",
@@ -161,7 +160,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			a, err := image2.NewArtifact(img, c, tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
@@ -267,7 +266,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			},
 			want: artifact.Reference{
 				Name: registry + "/test/image:10",
-				Type: artifact.TypeCycloneDX,
+				Type: types.TypeCycloneDX,
 				ID:   "sha256:666fbf65fc3b197f7589afd13acef901bd6b7ae018e8524a6e2004effc87a2ed",
 				BlobIDs: []string{
 					"sha256:666fbf65fc3b197f7589afd13acef901bd6b7ae018e8524a6e2004effc87a2ed",
@@ -304,7 +303,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			a, err := image2.NewArtifact(img, c, tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return

@@ -3,7 +3,7 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "host",
-  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/host-1022538e-83fe-4aa7-8718-a78839114c83",
+  "documentNamespace": "http://trivy.dev/filesystem/host-1022538e-83fe-4aa7-8718-a78839114c83",
   "creationInfo": {
     "creators": [
       "Organization: aquasecurity",

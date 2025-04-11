@@ -1,7 +1,6 @@
 package image_test
 
 import (
-	"context"
 	"math/rand"
 	"testing"
 	"time"
@@ -421,7 +420,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: artifact.Reference{
 				Name:    "../../test/testdata/alpine-311.tar.gz",
-				Type:    artifact.TypeContainerImage,
+				Type:    types.TypeContainerImage,
 				ID:      "sha256:3c709d2a158be3a97051e10cd0e30f047225cb9505101feb3fadcd395c2e0408",
 				BlobIDs: []string{"sha256:5d77c13a4b76f19d2a01bb971b3d6c67e550dffdfb82aed6a0086e87218f33cb"},
 				ImageMetadata: artifact.ImageMetadata{
@@ -1776,7 +1775,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: artifact.Reference{
 				Name: "../../test/testdata/vuln-image.tar.gz",
-				Type: artifact.TypeContainerImage,
+				Type: types.TypeContainerImage,
 				ID:   "sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b",
 				BlobIDs: []string{
 					"sha256:67c88202c1f92978398a3ceff0c536282eb31972d92c1b913afb055f05dd05fd",
@@ -1961,7 +1960,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: artifact.Reference{
 				Name: "../../test/testdata/vuln-image.tar.gz",
-				Type: artifact.TypeContainerImage,
+				Type: types.TypeContainerImage,
 				ID:   "sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b",
 				BlobIDs: []string{
 					"sha256:f804054cbf18c82fbb7a136450a161264bb3e531d29aedb4c13eada052b379e6",
@@ -2095,7 +2094,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			a, err := image2.NewArtifact(img, c, tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
@@ -2144,7 +2143,7 @@ func TestArtifact_InspectWithMaxImageSize(t *testing.T) {
 			artifact, err := image2.NewArtifact(img, c, tt.artifactOpt)
 			require.NoError(t, err)
 
-			_, err = artifact.Inspect(context.Background())
+			_, err = artifact.Inspect(t.Context())
 			require.ErrorContains(t, err, tt.wantErr)
 		})
 	}

@@ -1,6 +1,6 @@
 # Custom Checks with Rego
 
-Trivy can scan configuration files for common security issues (a.k.a IaC misconfiguration scanning). In addition to a comprehensive built in database of checks, you can add your own custom checks. Checks are written in [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/) language and the full documentation for checks and customizing them is available [here](https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/custom/). 
+Trivy can scan configuration files for common security issues (a.k.a IaC misconfiguration scanning). In addition to a comprehensive built in database of checks, you can add your own custom checks. Checks are written in [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/) language and the full documentation for checks and customizing them is available [here](https://trivy.dev/latest/docs/scanner/misconfiguration/custom/). 
 
 This tutorial will walk you through writing a custom check in Rego that checks for an issue in a Dockerfile.
 
@@ -38,7 +38,7 @@ Next, we need to specify metadata about the check. This is information that help
 
 Important: The `METADATA` has to be defined on top of the file.
 
-More information on the different fields in the metadata can be found in the [Trivy documentation.](https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/custom/)
+More information on the different fields in the metadata can be found in the [Trivy documentation.](https://trivy.dev/latest/docs/scanner/misconfiguration/custom/)
 
 ## Package and imports
 

@@ -277,5 +277,5 @@ $ trivy clean --all
 ```
 
 [air-gapped]: ../advanced/air-gap.md
-[network]: ../advanced/air-gap.md#network-requirements
+[network]: ../advanced/air-gap.md#connectivity-requirements
 [redis-cache]: ../configuration/cache.md#redis

@@ -1,7 +1,6 @@
 package testutil
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -17,7 +16,7 @@ func AdaptAndCompare[T any](t *testing.T, source string, expected any, fn adaptF
 		"main.yaml": source,
 	})
 
-	fctx, err := parser.New().ParseFile(context.TODO(), fsys, "main.yaml")
+	fctx, err := parser.New().ParseFile(t.Context(), fsys, "main.yaml")
 	require.NoError(t, err)
 
 	adapted := fn(*fctx)

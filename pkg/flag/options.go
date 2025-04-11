@@ -246,13 +246,37 @@ func (f *Flag[T]) Add(cmd *cobra.Command) {
 	case string:
 		usage := f.Usage
 		if len(f.Values) > 0 {
-			usage += fmt.Sprintf(" (%s)", strings.Join(f.Values, ","))
+			if len(f.Values) <= 4 {
+				// Display inline for a small number of choices
+				usage += fmt.Sprintf(" (allowed values: %s)", strings.Join(f.Values, ","))
+			} else {
+				// Display as a bullet list for many choices
+				usage += "\nAllowed values:"
+				for _, val := range f.Values {
+					usage += fmt.Sprintf("\n  - %s", val)
+				}
+				if v != "" {
+					usage += "\n"
+				}
+			}
 		}
 		flags.StringP(f.Name, f.Shorthand, v, usage)
 	case []string:
 		usage := f.Usage
 		if len(f.Values) > 0 {
-			usage += fmt.Sprintf(" (%s)", strings.Join(f.Values, ","))
+			if len(f.Values) <= 4 {
+				// Display inline for a small number of choices
+				usage += fmt.Sprintf(" (allowed values: %s)", strings.Join(f.Values, ","))
+			} else {
+				// Display as a bullet list for many choices
+				usage += "\nAllowed values:"
+				for _, val := range f.Values {
+					usage += fmt.Sprintf("\n  - %s", val)
+				}
+				if len(v) != 0 {
+					usage += "\n"
+				}
+			}
 		}
 		flags.StringSliceP(f.Name, f.Shorthand, v, usage)
 	case bool:
@@ -460,9 +484,11 @@ func (o *Options) ScanOpts() types.ScanOptions {
 		ImageConfigScanners: o.ImageConfigScanners, // this is valid only for 'image' subcommand
 		ScanRemovedPackages: o.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
 		LicenseCategories:   o.LicenseCategories,
+		LicenseFull:         o.LicenseFull,
 		FilePatterns:        o.FilePatterns,
 		IncludeDevDeps:      o.IncludeDevDeps,
 		Distro:              o.Distro,
+		VulnSeveritySources: o.VulnSeveritySources,
 	}
 }
 
@@ -515,8 +541,8 @@ func (o *Options) RemoteCacheOpts() cache.RemoteOptions {
 	}
 }
 
-func (o *Options) ClientScannerOpts() client.ScannerOption {
-	return client.ScannerOption{
+func (o *Options) ClientScannerOpts() client.ServiceOption {
+	return client.ServiceOption{
 		RemoteURL:     o.ServerAddr,
 		CustomHeaders: o.CustomHeaders,
 		Insecure:      o.Insecure,
@@ -795,7 +821,7 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 	if f.RepoFlagGroup != nil {
 		opts.RepoOptions, err = f.RepoFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("rego flag error: %w", err)
+			return Options{}, xerrors.Errorf("repo flag error: %w", err)
 		}
 	}
 

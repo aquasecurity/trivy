@@ -1,7 +1,6 @@
 package pnpm
 
 import (
-	"context"
 	"os"
 	"sort"
 	"testing"
@@ -111,7 +110,7 @@ func Test_pnpmPkgLibraryAnalyzer_Analyze(t *testing.T) {
 			a, err := newPnpmAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 
-			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
+			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{
 				FS: os.DirFS(tt.dir),
 			})
 

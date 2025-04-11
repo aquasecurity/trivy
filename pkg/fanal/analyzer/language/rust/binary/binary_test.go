@@ -1,7 +1,6 @@
 package binary
 
 import (
-	"context"
 	"os"
 	"runtime"
 	"testing"
@@ -63,7 +62,7 @@ func Test_rustBinaryLibraryAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			a := rustBinaryLibraryAnalyzer{}
-			ctx := context.Background()
+			ctx := t.Context()
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,

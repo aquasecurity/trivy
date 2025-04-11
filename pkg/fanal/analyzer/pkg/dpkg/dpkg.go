@@ -372,3 +372,13 @@ func (a dpkgAnalyzer) Type() analyzer.Type {
 func (a dpkgAnalyzer) Version() int {
 	return analyzerVersion
 }
+
+// StaticPaths returns a list of static file paths to analyze
+func (a dpkgAnalyzer) StaticPaths() []string {
+	return []string{
+		statusFile,
+		availableFile,
+		statusDir,
+		infoDir,
+	}
+}

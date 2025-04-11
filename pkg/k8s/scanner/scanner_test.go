@@ -1,7 +1,6 @@
 package scanner
 
 import (
-	"context"
 	"sort"
 	"testing"
 
@@ -274,7 +273,7 @@ func TestScanner_Scan(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := context.Background()
+			ctx := t.Context()
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 			runner, err := cmd.NewRunner(ctx, flagOpts)

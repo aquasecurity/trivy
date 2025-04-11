@@ -33,7 +33,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install Helm
-        uses: azure/setup-helm@fe7b79cd5ee1e45176fcad797de68ecaf3ca4814
+        uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112
         with:
           version: v3.14.4
       - name: Set up python
@@ -65,16 +65,19 @@ jobs:
         uses: actions/checkout@v4.1.6
         with:
           fetch-depth: 0
+
       - name: Set up Git user
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
 
-      - name: Install tools
-        uses: aquaproj/aqua-installer@v3.1.1
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
-          aqua_version: v1.25.0
-          aqua_opts: ""
+          go-version-file: go.mod
+
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action  
 
       - name: Create a PR with Trivy version
         run: mage helm:updateVersion

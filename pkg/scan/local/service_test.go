@@ -1,7 +1,6 @@
 package local
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -13,11 +12,12 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/internal/dbtest"
+	"github.com/aquasecurity/trivy/internal/hooktest"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
-	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
+	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
+	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
@@ -152,6 +152,7 @@ func TestScanner_Scan(t *testing.T) {
 		name       string
 		args       args
 		fixtures   []string
+		setUpHook  bool
 		setupCache func(t *testing.T) cache.Cache
 		want       types.ScanResponse
 		wantErr    string
@@ -166,8 +167,9 @@ func TestScanner_Scan(t *testing.T) {
 						types.PkgTypeOS,
 						types.PkgTypeLibrary,
 					},
-					PkgRelationships: ftypes.Relationships,
-					Scanners:         types.Scanners{types.VulnerabilityScanner},
+					PkgRelationships:    ftypes.Relationships,
+					Scanners:            types.Scanners{types.VulnerabilityScanner},
+					VulnSeveritySources: []dbTypes.SourceID{"auto"},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -292,6 +294,7 @@ func TestScanner_Scan(t *testing.T) {
 						Family: "alpine",
 						Name:   "3.11",
 					},
+					VulnSeveritySources: []dbTypes.SourceID{"auto"},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -369,6 +372,7 @@ func TestScanner_Scan(t *testing.T) {
 				options: types.ScanOptions{
 					PkgRelationships: ftypes.Relationships,
 					Scanners:         types.Scanners{types.LicenseScanner},
+					LicenseFull:      true,
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -495,8 +499,9 @@ func TestScanner_Scan(t *testing.T) {
 						types.PkgTypeOS,
 						types.PkgTypeLibrary,
 					},
-					PkgRelationships: ftypes.Relationships,
-					Scanners:         types.Scanners{types.VulnerabilityScanner},
+					PkgRelationships:    ftypes.Relationships,
+					Scanners:            types.Scanners{types.VulnerabilityScanner},
+					VulnSeveritySources: []dbTypes.SourceID{"auto"},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -587,9 +592,10 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "./result.cdx",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					PkgTypes:         []string{types.PkgTypeLibrary},
-					PkgRelationships: ftypes.Relationships,
-					Scanners:         types.Scanners{types.VulnerabilityScanner},
+					PkgTypes:            []string{types.PkgTypeLibrary},
+					PkgRelationships:    ftypes.Relationships,
+					Scanners:            types.Scanners{types.VulnerabilityScanner},
+					VulnSeveritySources: []dbTypes.SourceID{"auto"},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -699,8 +705,9 @@ func TestScanner_Scan(t *testing.T) {
 						types.PkgTypeOS,
 						types.PkgTypeLibrary,
 					},
-					PkgRelationships: ftypes.Relationships,
-					Scanners:         types.Scanners{types.VulnerabilityScanner},
+					PkgRelationships:    ftypes.Relationships,
+					Scanners:            types.Scanners{types.VulnerabilityScanner},
+					VulnSeveritySources: []dbTypes.SourceID{"auto"},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -793,8 +800,9 @@ func TestScanner_Scan(t *testing.T) {
 						types.PkgTypeOS,
 						types.PkgTypeLibrary,
 					},
-					PkgRelationships: ftypes.Relationships,
-					Scanners:         types.Scanners{types.VulnerabilityScanner},
+					PkgRelationships:    ftypes.Relationships,
+					Scanners:            types.Scanners{types.VulnerabilityScanner},
+					VulnSeveritySources: []dbTypes.SourceID{"auto"},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -908,7 +916,8 @@ func TestScanner_Scan(t *testing.T) {
 						ftypes.RelationshipRoot,
 						ftypes.RelationshipIndirect,
 					},
-					Scanners: types.Scanners{types.VulnerabilityScanner},
+					Scanners:            types.Scanners{types.VulnerabilityScanner},
+					VulnSeveritySources: []dbTypes.SourceID{"auto"},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -999,6 +1008,89 @@ func TestScanner_Scan(t *testing.T) {
 					{
 						Size:   1000,
 						DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+					},
+				},
+			},
+		},
+		{
+			name: "happy path with hooks",
+			args: args{
+				target:   "alpine:latest",
+				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+				options: types.ScanOptions{
+					PkgTypes:            []string{types.PkgTypeOS},
+					PkgRelationships:    ftypes.Relationships,
+					Scanners:            types.Scanners{types.VulnerabilityScanner},
+					VulnSeveritySources: []dbTypes.SourceID{"auto"},
+				},
+			},
+			fixtures:  []string{"testdata/fixtures/happy.yaml"},
+			setUpHook: true,
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					OS: ftypes.OS{
+						Family: ftypes.Alpine,
+						Name:   "3.11",
+					},
+					LayersMetadata: ftypes.LayersMetadata{
+						{
+							Size:   1000,
+							DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+						},
+					},
+					PackageInfos: []ftypes.PackageInfo{
+						{
+							FilePath: "lib/apk/db/installed",
+							Packages: []ftypes.Package{muslPkg},
+						},
+					},
+				}))
+				return c
+			},
+			want: types.ScanResponse{
+				Results: types.Results{
+					{
+						Target: "alpine:latest (pre-scan) (alpine 3.11)",
+						Class:  types.ClassOSPkg,
+						Type:   ftypes.Alpine,
+						Packages: ftypes.Packages{
+							muslPkg,
+						},
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2020-9999",
+								PkgName:          muslPkg.Name,
+								PkgIdentifier:    muslPkg.Identifier,
+								InstalledVersion: muslPkg.Version,
+								FixedVersion:     "1.2.4",
+								Status:           dbTypes.StatusFixed,
+								Layer: ftypes.Layer{
+									DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								},
+								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2020-9999",
+								Vulnerability: dbTypes.Vulnerability{
+									Title:       "dos",
+									Description: "dos vulnerability",
+									Severity:    "HIGH",
+									References: []string{
+										"https://example.com/post-scan", // modified by post-scan hook
+									},
+								},
+							},
+						},
+					},
+				},
+				OS: ftypes.OS{
+					Family: "alpine",
+					Name:   "3.11",
+					Eosl:   true,
+				},
+				LayersMetadata: ftypes.LayersMetadata{
+					{
+						Size:   1000,
+						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					},
 				},
 			},
@@ -1376,11 +1468,15 @@ func TestScanner_Scan(t *testing.T) {
 			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()
 
+			if tt.setUpHook {
+				hooktest.Init(t)
+			}
+
 			c := tt.setupCache(t)
 			a := applier.NewApplier(c)
-			s := NewScanner(a, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
+			s := NewService(a, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
 
-			gotResponse, err := s.Scan(context.Background(), tt.args.target, "", tt.args.layerIDs, tt.args.options)
+			gotResponse, err := s.Scan(t.Context(), tt.args.target, "", tt.args.layerIDs, tt.args.options)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return

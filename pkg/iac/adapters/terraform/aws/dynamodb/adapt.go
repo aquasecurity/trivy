@@ -77,7 +77,7 @@ func adaptTable(resource *terraform.Block, module *terraform.Module) dynamodb.Ta
 		table.ServerSideEncryption.Enabled = enabledAttr.AsBoolValueOrDefault(false, ssEncryptionBlock)
 
 		kmsKeyIdAttr := ssEncryptionBlock.GetAttribute("kms_key_arn")
-		table.ServerSideEncryption.KMSKeyID = kmsKeyIdAttr.AsStringValueOrDefault("alias/aws/dynamodb", ssEncryptionBlock)
+		table.ServerSideEncryption.KMSKeyID = kmsKeyIdAttr.AsStringValueOrDefault(dynamodb.DefaultKMSKeyID, ssEncryptionBlock)
 
 		kmsBlock, err := module.GetReferencedBlock(kmsKeyIdAttr, resource)
 		if err == nil && kmsBlock.IsNotNil() {

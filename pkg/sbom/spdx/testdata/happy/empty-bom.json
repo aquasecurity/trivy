@@ -11,7 +11,7 @@
 	"documentDescribes": [
 		"SPDXRef-ContainerImage-7f428bd075b13fe8"
 	],
-	"documentNamespace": "http://aquasecurity.github.io/trivy/container/maven-test-project-3e87878b-eac3-4baa-af11-bdf2c5eab8ea",
+	"documentNamespace": "http://trivy.dev/container/maven-test-project-3e87878b-eac3-4baa-af11-bdf2c5eab8ea",
 	"name": "maven-test-project",
 	"packages": [
 		{
