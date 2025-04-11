@@ -2,11 +2,11 @@ package flag
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/samber/lo"
+	"golang.org/x/xerrors"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -184,15 +184,15 @@ func (f *K8sFlagGroup) ToOptions(opts *Options) error {
 	for _, exludeNodeValue := range exludeNodes {
 		excludeNodeParts := strings.Split(exludeNodeValue, ":")
 		if len(excludeNodeParts) != 2 {
-			return fmt.Errorf("exclude node %s must be a key:value", exludeNodeValue)
+			return xerrors.Errorf("exclude node %s must be a key:value", exludeNodeValue)
 		}
 		exludeNodeLabels[excludeNodeParts[0]] = excludeNodeParts[1]
 	}
 	if len(f.ExcludeNamespaces.Value()) > 0 && len(f.IncludeNamespaces.Value()) > 0 {
-		return errors.New("include-namespaces and exclude-namespaces flags cannot be used together")
+		return xerrors.New("include-namespaces and exclude-namespaces flags cannot be used together")
 	}
 	if len(f.ExcludeKinds.Value()) > 0 && len(f.IncludeKinds.Value()) > 0 {
-		return errors.New("include-kinds and exclude-kinds flags cannot be used together")
+		return xerrors.New("include-kinds and exclude-kinds flags cannot be used together")
 	}
 
 	opts.K8sOptions = K8sOptions{
