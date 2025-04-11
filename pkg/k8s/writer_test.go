@@ -359,7 +359,6 @@ Your config file is not good.
 See https://google.com/search?q=bad%20config
 ────────────────────────────────────────`,
 		},
-
 		{
 			name: "Only vuln, all severities",
 			report: report.Report{
@@ -565,7 +564,6 @@ Infra Assessment
 └─────────────┴────────────────────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
-		{},
 	}
 
 	for _, tc := range tests {
