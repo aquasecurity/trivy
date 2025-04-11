@@ -7,15 +7,12 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_resolve_equals_value(t *testing.T) {
 
 	property := &Property{
-		ctx:  &FileContext{},
 		name: "BucketName",
-		rng:  types.NewRange("testfile", 1, 1, "", nil),
 		Type: cftypes.Map,
 		Value: map[string]*Property{
 			"Fn::Equals": {
@@ -43,9 +40,7 @@ func Test_resolve_equals_value(t *testing.T) {
 func Test_resolve_equals_value_to_false(t *testing.T) {
 
 	property := &Property{
-		ctx:  &FileContext{},
 		name: "BucketName",
-		rng:  types.NewRange("testfile", 1, 1, "", nil),
 		Type: cftypes.Map,
 		Value: map[string]*Property{
 			"Fn::Equals": {
@@ -73,9 +68,7 @@ func Test_resolve_equals_value_to_false(t *testing.T) {
 func Test_resolve_equals_value_to_true_when_boolean(t *testing.T) {
 
 	property := &Property{
-		ctx:  &FileContext{},
 		name: "BucketName",
-		rng:  types.NewRange("testfile", 1, 1, "", nil),
 		Type: cftypes.Map,
 		Value: map[string]*Property{
 			"Fn::Equals": {
@@ -103,7 +96,6 @@ func Test_resolve_equals_value_when_one_is_a_reference(t *testing.T) {
 
 	property := &Property{
 		name: "BucketName",
-		rng:  types.NewRange("testfile", 1, 1, "", nil),
 		Type: cftypes.Map,
 		Value: map[string]*Property{
 			"Fn::Equals": {
@@ -115,7 +107,6 @@ func Test_resolve_equals_value_when_one_is_a_reference(t *testing.T) {
 					},
 					{
 						ctx: &FileContext{
-							filepath: "",
 							Parameters: map[string]*Parameter{
 								"Environment": {
 									inner: parameterInner{

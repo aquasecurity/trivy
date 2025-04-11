@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 /*
@@ -18,9 +17,7 @@ import (
 func Test_resolve_split_value(t *testing.T) {
 
 	property := &Property{
-		ctx:  &FileContext{},
 		name: "BucketName",
-		rng:  types.NewRange("testfile", 1, 1, "", nil),
 		Type: cftypes.Map,
 		Value: map[string]*Property{
 			"Fn::Split": {
