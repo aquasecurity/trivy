@@ -79,7 +79,7 @@ func TestPackageFlagGroup_ToOptions(t *testing.T) {
 			flags := flag.Flags{f}
 			got, err := flags.ToOptions(nil)
 			require.NoError(t, err)
-			assert.EqualExportedValuesf(t, tt.want, got.PackageOptions, "PackageFlagGroup")
+			assert.EqualExportedValues(t, tt.want, got.PackageOptions)
 		})
 	}
 }
