@@ -20,6 +20,8 @@ const version = 1
 var requiredFiles = []string{
 	"etc/os-release",
 	"usr/lib/os-release",
+	"aarch64-bottlerocket-linux-gnu/sys-root/usr/lib/os-release",
+	"x86_64-bottlerocket-linux-gnu/sys-root/usr/lib/os-release",
 }
 
 type osReleaseAnalyzer struct{}
@@ -49,6 +51,8 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 		switch id {
 		case "alpine":
 			family = types.Alpine
+		case "bottlerocket":
+			family = types.Bottlerocket
 		case "opensuse-tumbleweed":
 			family = types.OpenSUSETumbleweed
 		case "opensuse-leap", "opensuse": // opensuse for leap:42, opensuse-leap for leap:15
