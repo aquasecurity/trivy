@@ -22,6 +22,12 @@ func main() {
 		log.Fatalf("could not determine Trivy version: %v", err)
 	}
 
+	// Checkout the main branch to get the latest chart version, that was changed after the previous release
+	// It needs for correctly updating the chart version of patch releases
+	if err := sh.Run("git", "checkout", "main"); err != nil {
+		log.Fatalf("failed to run `git checkout main`: %w", err)
+	}
+
 	newHelmVersion, err := bumpHelmChart(chartFile, trivyVersion)
 	if err != nil {
 		log.Fatalf("could not bump Trivy version to %q: %v", trivyVersion, err)
