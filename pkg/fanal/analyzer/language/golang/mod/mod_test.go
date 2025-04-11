@@ -284,6 +284,59 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			},
 			want: &analyzer.AnalysisResult{},
 		},
+		{
+			name: "vendor dir exists",
+			files: []string{
+				"testdata/vendor-dir-exists/mod",
+			},
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.GoModule,
+						FilePath: "go.mod",
+						Packages: types.Packages{
+							{
+								ID:           "github.com/org/repo",
+								Name:         "github.com/org/repo",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/org/repo",
+									},
+								},
+							},
+							{
+								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
+								Name:         "github.com/aquasecurity/go-dep-parser",
+								Version:      "v0.0.0-20220406074731-71021a481237",
+								Relationship: types.RelationshipDirect,
+								Licenses:     []string{"MIT"},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/aquasecurity/go-dep-parser",
+									},
+								},
+								DependsOn: []string{
+									"golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+								},
+							},
+							{
+								ID:           "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+								Name:         "golang.org/x/xerrors",
+								Version:      "v0.0.0-20200804184101-5ec99f83aff1",
+								Relationship: types.RelationshipIndirect,
+								Indirect:     true,
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Setenv("GOPATH", "testdata")
