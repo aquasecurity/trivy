@@ -142,11 +142,9 @@ func TestFSCache_PutBlob(t *testing.T) {
 						Family:  "alpine",
 						Release: "3.10",
 					},
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   1000,
-							DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   1000,
+						DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 					},
 				},
 			},
@@ -161,12 +159,10 @@ func TestFSCache_PutBlob(t *testing.T) {
 					"Family": "alpine",
 					"Release": "3.10"
 				  },
-				  "LayersMetadata": [
-					{
-					  "DiffID": "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-					  "Size": 1000
-					}
-				  ]
+				  "LayerMetadata": {
+					"DiffID": "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+					"Size": 1000
+				  }
 				}`,
 			wantLayerID: "",
 		},
@@ -180,14 +176,12 @@ func TestFSCache_PutBlob(t *testing.T) {
 					DiffID:        "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
 					OpaqueDirs:    []string{"php-app/"},
 					WhiteoutFiles: []string{"etc/foobar"},
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:          1000,
-							Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-							DiffID:        "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
-							OpaqueDirs:    []string{"php-app/"},
-							WhiteoutFiles: []string{"etc/foobar"},
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:          1000,
+						Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+						DiffID:        "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
+						OpaqueDirs:    []string{"php-app/"},
+						WhiteoutFiles: []string{"etc/foobar"},
 					},
 					OS: types.OS{
 						Family: "alpine",
@@ -278,19 +272,17 @@ func TestFSCache_PutBlob(t *testing.T) {
 				  "WhiteoutFiles": [
 					"etc/foobar"
 				  ],
-				  "LayersMetadata": [
-					{
-					  "Size": 1000,
-					  "Digest": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-				      "DiffID": "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
-					  "OpaqueDirs": [
-						"php-app/"
-					  ],
-					  "WhiteoutFiles": [
-				    	"etc/foobar"
-					  ]
-					}
-				  ]
+				  "LayerMetadata": {
+					"Size": 1000,
+					"Digest": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+				    "DiffID": "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
+					"OpaqueDirs": [
+					  "php-app/"
+					],
+					"WhiteoutFiles": [
+				      "etc/foobar"
+					]
+				  }
 				}`,
 			wantLayerID: "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
 		},

@@ -452,9 +452,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo types.LayerMetadat
 		OpaqueDirs:    layerInfo.OpaqueDirs,
 		WhiteoutFiles: layerInfo.WhiteoutFiles,
 
-		LayersMetadata: []types.LayerMetadata{
-			layerInfo,
-		},
+		LayerMetadata:     layerInfo,
 		OS:                result.OS,
 		Repository:        result.Repository,
 		PackageInfos:      result.PackageInfos,

@@ -43,7 +43,7 @@ message BlobInfo {
   repeated common.CustomResource custom_resources    = 10;
   repeated common.Secret secrets                     = 12;
   repeated common.LicenseFile licenses               = 13;
-  repeated common.LayerMetadata layers_metadata      = 14;
+  common.LayerMetadata layer_metadata      = 14;
 }
 
 message PutBlobRequest {

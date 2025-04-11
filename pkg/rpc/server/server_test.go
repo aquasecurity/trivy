@@ -63,11 +63,9 @@ func TestScanServer_Scan(t *testing.T) {
 				require.NoError(t, c.PutBlob("sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203", ftypes.BlobInfo{
 					SchemaVersion: 1,
 					DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
-					LayersMetadata: ftypes.LayersMetadata{
-						{
-							Size:   1000,
-							DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
-						},
+					LayerMetadata: ftypes.LayerMetadata{
+						Size:   1000,
+						DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 					},
 					OS: ftypes.OS{
 						Family: "alpine",
@@ -401,13 +399,11 @@ func TestCacheServer_PutBlob(t *testing.T) {
 								},
 							},
 						},
-						LayersMetadata: []*common.LayerMetadata{
-							{
-								Digest:        "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
-								DiffId:        "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
-								OpaqueDirs:    []string{"etc/"},
-								WhiteoutFiles: []string{"etc/hostname"},
-							},
+						LayerMetadata: &common.LayerMetadata{
+							Digest:        "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+							DiffId:        "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+							OpaqueDirs:    []string{"etc/"},
+							WhiteoutFiles: []string{"etc/hostname"},
 						},
 					},
 				},
@@ -486,13 +482,11 @@ func TestCacheServer_PutBlob(t *testing.T) {
 								},
 							},
 						},
-						LayersMetadata: ftypes.LayersMetadata{
-							{
-								Digest:        "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
-								DiffID:        "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
-								OpaqueDirs:    []string{"etc/"},
-								WhiteoutFiles: []string{"etc/hostname"},
-							},
+						LayerMetadata: ftypes.LayerMetadata{
+							Digest:        "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+							DiffID:        "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+							OpaqueDirs:    []string{"etc/"},
+							WhiteoutFiles: []string{"etc/hostname"},
 						},
 					},
 				},

@@ -9,6 +9,7 @@ import (
 	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	r "github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
@@ -108,9 +109,18 @@ func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		return types.ScanResponse{}, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
 	}
 
+	var layersMetadata ftypes.LayersMetadata
+	for _, layerMetadata := range res.LayersMetadata {
+		if layerMetadata == nil {
+			continue
+		}
+
+		layersMetadata = append(layersMetadata, r.ConvertFromRPCLayerMetadata(layerMetadata))
+	}
+
 	return types.ScanResponse{
 		Results:        r.ConvertFromRPCResults(res.Results),
 		OS:             r.ConvertFromRPCOS(res.Os),
-		LayersMetadata: r.ConvertFromRPCLayersMetadata(res.LayersMetadata),
+		LayersMetadata: layersMetadata,
 	}, nil
 }

@@ -30,7 +30,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "bom.json"),
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID: "sha256:8b6ccf6701ae4ad045b8667c38b88e4bd12bfad768de833caab879498d7a9869",
+					ID: "sha256:a80a1f79b1b27d57cacc166ceded6bb7010133e3520519022e517c928feac192",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -190,9 +190,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: artifact.Reference{
 				Name: filepath.Join("testdata", "bom.json"),
 				Type: types.TypeCycloneDX,
-				ID:   "sha256:8b6ccf6701ae4ad045b8667c38b88e4bd12bfad768de833caab879498d7a9869",
+				ID:   "sha256:a80a1f79b1b27d57cacc166ceded6bb7010133e3520519022e517c928feac192",
 				BlobIDs: []string{
-					"sha256:8b6ccf6701ae4ad045b8667c38b88e4bd12bfad768de833caab879498d7a9869",
+					"sha256:a80a1f79b1b27d57cacc166ceded6bb7010133e3520519022e517c928feac192",
 				},
 			},
 		},
@@ -201,7 +201,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID: "sha256:8b6ccf6701ae4ad045b8667c38b88e4bd12bfad768de833caab879498d7a9869",
+					ID: "sha256:a80a1f79b1b27d57cacc166ceded6bb7010133e3520519022e517c928feac192",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -361,9 +361,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: artifact.Reference{
 				Name: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 				Type: types.TypeCycloneDX,
-				ID:   "sha256:8b6ccf6701ae4ad045b8667c38b88e4bd12bfad768de833caab879498d7a9869",
+				ID:   "sha256:a80a1f79b1b27d57cacc166ceded6bb7010133e3520519022e517c928feac192",
 				BlobIDs: []string{
-					"sha256:8b6ccf6701ae4ad045b8667c38b88e4bd12bfad768de833caab879498d7a9869",
+					"sha256:a80a1f79b1b27d57cacc166ceded6bb7010133e3520519022e517c928feac192",
 				},
 			},
 		},

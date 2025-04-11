@@ -2,12 +2,9 @@ package types
 
 import (
 	"sort"
-	"sync"
 	"time"
 
 	"github.com/samber/lo"
-
-	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // ArtifactType represents a type of artifact
@@ -160,8 +157,8 @@ type ArtifactInfo struct {
 type BlobInfo struct {
 	SchemaVersion int
 
-	// Layer(s) information
-	LayersMetadata LayersMetadata
+	// Layer information
+	LayerMetadata LayerMetadata
 
 	// Fields for backward compatibility
 	Digest        string   `json:",omitempty"` // Deprecated: Use LayersMetadata. Kept for backward compatibility.
@@ -189,29 +186,18 @@ type BlobInfo struct {
 	CustomResources []CustomResource `json:",omitempty"`
 }
 
-var oldBlobInfoFormatWarn = sync.OnceFunc(func() {
-	log.WithPrefix("cache").Warn("Your scan cache uses old schema for layers info. Please run `trivy clean --scan-cache` to clean cache.")
-})
-
 func (b BlobInfo) Layer() LayerMetadata {
-	switch len(b.LayersMetadata) {
-	case 0: // old layer info format
-		layerMetadata := LayerMetadata{
-			Digest:        b.Digest,
-			DiffID:        b.DiffID,
-			CreatedBy:     b.CreatedBy,
-			OpaqueDirs:    b.OpaqueDirs,
-			WhiteoutFiles: b.WhiteoutFiles,
-		}
-		if !layerMetadata.Empty() {
-			oldBlobInfoFormatWarn()
-		}
-		return layerMetadata
-	case 1:
-		return b.LayersMetadata[0]
-	default:
-		log.Warnf("Unable to get layer metadata. This is BlobInfo for image.")
-		return LayerMetadata{}
+	if !b.LayerMetadata.Empty() {
+		return b.LayerMetadata
+	}
+
+	// For backward compatibility
+	return LayerMetadata{
+		Digest:        b.Digest,
+		DiffID:        b.DiffID,
+		CreatedBy:     b.CreatedBy,
+		OpaqueDirs:    b.OpaqueDirs,
+		WhiteoutFiles: b.WhiteoutFiles,
 	}
 }
 

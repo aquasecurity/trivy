@@ -118,16 +118,16 @@ func TestArtifact_Inspect(t *testing.T) {
 			rootDir: "testdata/alpine",
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID:       "sha256:a061631708aaa94682df3e2f7cb5bc7f63803c4e7d53006c0129f36fdf213d96",
+					ID:       "sha256:794b008f4079f989915a76cd16903f346522fdd8c07bf85dc1ac781fb04b8156",
 					BlobInfo: expectedBlobInfo,
 				},
 			},
 			want: artifact.Reference{
 				Name: "rawdata.img",
 				Type: types.TypeVM,
-				ID:   "sha256:a061631708aaa94682df3e2f7cb5bc7f63803c4e7d53006c0129f36fdf213d96",
+				ID:   "sha256:794b008f4079f989915a76cd16903f346522fdd8c07bf85dc1ac781fb04b8156",
 				BlobIDs: []string{
-					"sha256:a061631708aaa94682df3e2f7cb5bc7f63803c4e7d53006c0129f36fdf213d96",
+					"sha256:794b008f4079f989915a76cd16903f346522fdd8c07bf85dc1ac781fb04b8156",
 				},
 			},
 		},

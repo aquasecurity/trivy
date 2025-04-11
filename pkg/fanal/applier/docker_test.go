@@ -22,12 +22,10 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   1000,
-							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   1000,
+						Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					},
 					OS: types.OS{
 						Family: "alpine",
@@ -81,13 +79,11 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 1,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:          2000,
-							Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-							DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
-							WhiteoutFiles: []string{"app/composer.lock"},
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:          2000,
+						Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+						WhiteoutFiles: []string{"app/composer.lock"},
 					},
 					PackageInfos: []types.PackageInfo{
 						{
@@ -110,12 +106,10 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 1,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   3000,
-							Digest: "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4",
-							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   3000,
+						Digest: "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4",
+						DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					},
 					PackageInfos: []types.PackageInfo{
 						{
@@ -274,11 +268,9 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 2,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   1000,
-							DiffID: "sha256:96e320b34b5478d8b369ca43ffaa88ff6dd9499ec72b792ca21b1e8b0c55670f",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   1000,
+						DiffID: "sha256:96e320b34b5478d8b369ca43ffaa88ff6dd9499ec72b792ca21b1e8b0c55670f",
 					},
 					PackageInfos: []types.PackageInfo{
 						{
@@ -296,11 +288,9 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 2,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   2000,
-							DiffID: "sha256:5e087d956f3e62bd034dd0712bc4cbef8fda55fba0b11a7d0564f294887c7079",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   2000,
+						DiffID: "sha256:5e087d956f3e62bd034dd0712bc4cbef8fda55fba0b11a7d0564f294887c7079",
 					},
 					PackageInfos: []types.PackageInfo{
 						{
@@ -446,12 +436,10 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   1000,
-							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   1000,
+						Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					},
 					OS: types.OS{
 						Family:   "ubuntu",
@@ -460,12 +448,10 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 1,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   2000,
-							Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   2000,
+						Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 					},
 					OS: types.OS{
 						Family: "ubuntu",
@@ -486,12 +472,10 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   1000,
-							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   1000,
+						Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					},
 					OS: types.OS{
 						Family: "alpine",
@@ -537,15 +521,13 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 1,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   2000,
-							Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
-							WhiteoutFiles: []string{
-								"app/composer.lock",
-								"var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
-							},
+					LayerMetadata: types.LayerMetadata{
+						Size:   2000,
+						Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+						WhiteoutFiles: []string{
+							"app/composer.lock",
+							"var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
 						},
 					},
 					Applications: []types.Application{
@@ -650,13 +632,11 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 2,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:      1000,
-							Digest:    "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							DiffID:    "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-							CreatedBy: "Line_1",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:      1000,
+						Digest:    "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						DiffID:    "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+						CreatedBy: "Line_1",
 					},
 					Secrets: []types.Secret{
 						{
@@ -689,13 +669,11 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 2,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:      2000,
-							Digest:    "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-							DiffID:    "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
-							CreatedBy: "Line_2",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:      2000,
+						Digest:    "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						DiffID:    "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+						CreatedBy: "Line_2",
 					},
 					Secrets: []types.Secret{
 						{
@@ -749,15 +727,13 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 2,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:      3000,
-							Digest:    "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							DiffID:    "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-							CreatedBy: "Line_3",
-							WhiteoutFiles: []string{
-								"usr/secret.txt",
-							},
+					LayerMetadata: types.LayerMetadata{
+						Size:      3000,
+						Digest:    "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						DiffID:    "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+						CreatedBy: "Line_3",
+						WhiteoutFiles: []string{
+							"usr/secret.txt",
 						},
 					},
 				},
@@ -829,12 +805,10 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   1000,
-							Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   1000,
+						Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 					},
 					OS: types.OS{
 						Family: "debian",
@@ -877,13 +851,11 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 1,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:       2000,
-							Digest:     "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							DiffID:     "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-							OpaqueDirs: []string{"app"},
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:       2000,
+						Digest:     "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						DiffID:     "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+						OpaqueDirs: []string{"app"},
 					},
 					PackageInfos: []types.PackageInfo{
 						{
@@ -973,11 +945,9 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 2,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   1000,
-							DiffID: "sha256:cdd7c73923174e45ea648d66996665c288e1b17a0f45efdbeca860f6dafdf731",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   1000,
+						DiffID: "sha256:cdd7c73923174e45ea648d66996665c288e1b17a0f45efdbeca860f6dafdf731",
 					},
 					OS: types.OS{
 						Family: "ubuntu",
@@ -1008,11 +978,9 @@ func TestApplyLayers(t *testing.T) {
 				// Install `curl`
 				{
 					SchemaVersion: 2,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   2000,
-							DiffID: "sha256:faf30fa9c41c10f93b3b134d7b2c16e07753320393e020c481f0c97d10db067d",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   2000,
+						DiffID: "sha256:faf30fa9c41c10f93b3b134d7b2c16e07753320393e020c481f0c97d10db067d",
 					},
 					PackageInfos: []types.PackageInfo{
 						{
@@ -1051,11 +1019,9 @@ func TestApplyLayers(t *testing.T) {
 				// Upgrade `apt`
 				{
 					SchemaVersion: 2,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   3000,
-							DiffID: "sha256:440e26edc0eb9b4fee6e1d40d8af9eb59500d38e25edfc5d5302c55f59394c1e",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   3000,
+						DiffID: "sha256:440e26edc0eb9b4fee6e1d40d8af9eb59500d38e25edfc5d5302c55f59394c1e",
 					},
 					PackageInfos: []types.PackageInfo{
 						{
@@ -1093,17 +1059,15 @@ func TestApplyLayers(t *testing.T) {
 				// Remove curl
 				{
 					SchemaVersion: 2,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   4000,
-							DiffID: "sha256:cb04e1d437de723d8d04bc7df89dc42271530c5f8ea1724c6072e3f0e7d6d38a",
-							WhiteoutFiles: []string{
-								"usr/bin/curl",
-								"usr/share/doc/curl",
-								"usr/share/zsh",
-								"var/lib/dpkg/info/curl.list",
-								"var/lib/dpkg/info/curl.md5sums",
-							},
+					LayerMetadata: types.LayerMetadata{
+						Size:   4000,
+						DiffID: "sha256:cb04e1d437de723d8d04bc7df89dc42271530c5f8ea1724c6072e3f0e7d6d38a",
+						WhiteoutFiles: []string{
+							"usr/bin/curl",
+							"usr/share/doc/curl",
+							"usr/share/zsh",
+							"var/lib/dpkg/info/curl.list",
+							"var/lib/dpkg/info/curl.md5sums",
 						},
 					},
 					PackageInfos: []types.PackageInfo{
@@ -1175,12 +1139,10 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   1000,
-							Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   1000,
+						Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 					},
 					Applications: []types.Application{
 						{
@@ -1197,13 +1159,11 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 1,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:       2000,
-							Digest:     "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							DiffID:     "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-							OpaqueDirs: []string{"app/"},
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:       2000,
+						Digest:     "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						DiffID:     "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+						OpaqueDirs: []string{"app/"},
 					},
 				},
 			},
@@ -1214,12 +1174,10 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   1000,
-							Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   1000,
+						Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 					},
 					OS: types.OS{
 						Family: "redhat",
@@ -1240,12 +1198,10 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 1,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   2000,
-							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   2000,
+						Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					},
 					BuildInfo: &types.BuildInfo{
 						ContentSets: []string{
@@ -1273,12 +1229,10 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 1,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   3000,
-							Digest: "sha256:a64e5f34c33ed4c5121498e721e24d95dae2c9599bee4aa6d07850702b401406",
-							DiffID: "sha256:0abd3f2c73de6f02e033f410590111f9339b9500dc07270234f283f2d9a2694b",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   3000,
+						Digest: "sha256:a64e5f34c33ed4c5121498e721e24d95dae2c9599bee4aa6d07850702b401406",
+						DiffID: "sha256:0abd3f2c73de6f02e033f410590111f9339b9500dc07270234f283f2d9a2694b",
 					},
 					BuildInfo: &types.BuildInfo{
 						Nvr:  "3scale-amp-apicast-gateway-container-1.11-1",
@@ -1287,12 +1241,10 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 1,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   4000,
-							Digest: "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4",
-							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   4000,
+						Digest: "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4",
+						DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					},
 					PackageInfos: []types.PackageInfo{
 						{
@@ -1420,12 +1372,10 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
-					LayersMetadata: types.LayersMetadata{
-						{
-							Size:   1000,
-							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-						},
+					LayerMetadata: types.LayerMetadata{
+						Size:   1000,
+						Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					},
 					Applications: []types.Application{
 						{
