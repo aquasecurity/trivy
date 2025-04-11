@@ -241,7 +241,7 @@ func TestScanner_ScanServerInsecure(t *testing.T) {
 				},
 			})
 			s := NewService(ServiceOption{Insecure: tt.insecure}, WithRPCClient(c))
-			_,  err := s.Scan(t.Context(), "dummy", "", nil, types.ScanOptions{})
+			_, err := s.Scan(t.Context(), "dummy", "", nil, types.ScanOptions{})
 
 			if tt.wantErr != "" {
 				require.Error(t, err)
