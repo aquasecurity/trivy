@@ -20,7 +20,7 @@ require (
 	github.com/aquasecurity/go-pep440-version v0.0.1
 	github.com/aquasecurity/go-version v0.0.1
 	github.com/aquasecurity/iamgo v0.0.10
-	github.com/aquasecurity/jfather v0.0.8
+	github.com/aquasecurity/jfather v0.0.8 // indirect
 	github.com/aquasecurity/table v1.8.0
 	github.com/aquasecurity/testdocker v0.0.0-20240730042311-4642e94c7fc8
 	github.com/aquasecurity/tml v0.6.1

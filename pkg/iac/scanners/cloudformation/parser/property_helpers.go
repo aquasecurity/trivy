@@ -9,7 +9,7 @@ import (
 )
 
 func (p *Property) IsNil() bool {
-	return p == nil || p.Inner.Value == nil
+	return p == nil || p.Value == nil
 }
 
 func (p *Property) IsNotNil() bool {
@@ -25,7 +25,7 @@ func (p *Property) Is(t cftypes.CfType) bool {
 			return prop.Is(t)
 		}
 	}
-	return p.Inner.Type == t
+	return p.Type == t
 }
 
 func (p *Property) IsString() bool {
@@ -48,7 +48,7 @@ func (p *Property) IsMap() bool {
 	if p.IsNil() || p.IsUnresolved() {
 		return false
 	}
-	return p.Inner.Type == cftypes.Map
+	return p.Type == cftypes.Map
 }
 
 func (p *Property) IsNotMap() bool {
@@ -89,7 +89,7 @@ func (p *Property) AsString() string {
 		return ""
 	}
 
-	return p.Inner.Value.(string)
+	return p.Value.(string)
 }
 
 func (p *Property) AsStringValue() iacTypes.StringValue {
@@ -113,7 +113,7 @@ func (p *Property) AsInt() int {
 		return 0
 	}
 
-	return p.Inner.Value.(int)
+	return p.Value.(int)
 }
 
 func (p *Property) AsIntValue() iacTypes.IntValue {
@@ -133,7 +133,7 @@ func (p *Property) AsBool() bool {
 	if !p.IsBool() {
 		return false
 	}
-	return p.Inner.Value.(bool)
+	return p.Value.(bool)
 }
 
 func (p *Property) AsBoolValue() iacTypes.BoolValue {
@@ -144,7 +144,7 @@ func (p *Property) AsBoolValue() iacTypes.BoolValue {
 }
 
 func (p *Property) AsMap() map[string]*Property {
-	val, ok := p.Inner.Value.(map[string]*Property)
+	val, ok := p.Value.(map[string]*Property)
 	if !ok {
 		return nil
 	}
@@ -159,7 +159,7 @@ func (p *Property) AsList() []*Property {
 		return []*Property{}
 	}
 
-	if list, ok := p.Inner.Value.([]*Property); ok {
+	if list, ok := p.Value.([]*Property); ok {
 		return list
 	}
 	return nil
@@ -183,23 +183,23 @@ func (p *Property) EqualTo(checkValue any, equalityOptions ...EqualityOptions) b
 			return false
 		}
 
-		if p.Inner.Type == cftypes.String || p.IsString() {
+		if p.Type == cftypes.String || p.IsString() {
 			if ignoreCase {
 				return strings.EqualFold(p.AsString(), checkerVal)
 			}
 			return p.AsString() == checkerVal
-		} else if p.Inner.Type == cftypes.Int || p.IsInt() {
+		} else if p.Type == cftypes.Int || p.IsInt() {
 			if val, err := strconv.Atoi(checkerVal); err == nil {
 				return p.AsInt() == val
 			}
 		}
 		return false
 	case bool:
-		if p.Inner.Type == cftypes.Bool || p.IsBool() {
+		if p.Type == cftypes.Bool || p.IsBool() {
 			return p.AsBool() == checkerVal
 		}
 	case int:
-		if p.Inner.Type == cftypes.Int || p.IsInt() {
+		if p.Type == cftypes.Int || p.IsInt() {
 			return p.AsInt() == checkerVal
 		}
 	}
@@ -225,7 +225,7 @@ func (p *Property) IsEmpty() bool {
 		return false
 	}
 
-	switch p.Inner.Type {
+	switch p.Type {
 	case cftypes.String:
 		return p.AsString() == ""
 	case cftypes.List, cftypes.Map:
@@ -240,7 +240,7 @@ func (p *Property) Contains(checkVal any) bool {
 		return false
 	}
 
-	switch p.Type() {
+	switch p.Type {
 	case cftypes.List:
 		for _, p := range p.AsList() {
 			if p.EqualTo(checkVal) {

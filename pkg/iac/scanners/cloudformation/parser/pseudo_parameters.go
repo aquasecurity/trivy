@@ -16,16 +16,12 @@ var pseudoParameters = map[string]pseudoParameter{
 		t: cftypes.List,
 		val: []*Property{
 			{
-				Inner: PropertyInner{
-					Type:  cftypes.String,
-					Value: "notification::arn::1",
-				},
+				Type:  cftypes.String,
+				Value: "notification::arn::1",
 			},
 			{
-				Inner: PropertyInner{
-					Type:  cftypes.String,
-					Value: "notification::arn::2",
-				},
+				Type:  cftypes.String,
+				Value: "notification::arn::2",
 			},
 		},
 		raw: []string{"notification::arn::1", "notification::arn::2"},

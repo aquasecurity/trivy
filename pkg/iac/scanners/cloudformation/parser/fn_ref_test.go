@@ -14,7 +14,6 @@ func Test_resolve_referenced_value(t *testing.T) {
 
 	property := &Property{
 		ctx: &FileContext{
-			filepath: "",
 			Parameters: map[string]*Parameter{
 				"BucketName": {
 					inner: parameterInner{
@@ -25,16 +24,11 @@ func Test_resolve_referenced_value(t *testing.T) {
 			},
 		},
 		name: "BucketName",
-		rng:  types.NewRange("testfile", 1, 1, "", nil),
-		Inner: PropertyInner{
-			Type: cftypes.Map,
-			Value: map[string]*Property{
-				"Ref": {
-					Inner: PropertyInner{
-						Type:  cftypes.String,
-						Value: "BucketName",
-					},
-				},
+		Type: cftypes.Map,
+		Value: map[string]*Property{
+			"Ref": {
+				Type:  cftypes.String,
+				Value: "BucketName",
 			},
 		},
 	}
@@ -48,15 +42,10 @@ func Test_resolve_referenced_value(t *testing.T) {
 func Test_property_value_correct_when_not_reference(t *testing.T) {
 
 	property := &Property{
-		ctx: &FileContext{
-			filepath: "",
-		},
-		name: "BucketName",
-		rng:  types.NewRange("testfile", 1, 1, "", nil),
-		Inner: PropertyInner{
-			Type:  cftypes.String,
-			Value: "someBucketName",
-		},
+		name:  "BucketName",
+		rng:   types.NewRange("testfile", 1, 1, "", nil),
+		Type:  cftypes.String,
+		Value: "someBucketName",
 	}
 
 	// should fail when trying to resolve function that is not in fact a function

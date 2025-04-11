@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -75,9 +75,7 @@ func TestParameters_UnmarshalJSON(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var params Parameters
-
-			err := json.Unmarshal([]byte(tt.source), &params)
+			params, err := ParseParameters(strings.NewReader(tt.source))
 			if tt.wantErr {
 				require.Error(t, err)
 				return
