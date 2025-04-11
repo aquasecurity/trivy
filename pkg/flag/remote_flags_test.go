@@ -113,7 +113,7 @@ func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 			flags := flag.Flags{f}
 			got, err := flags.ToOptions(nil)
 			require.NoError(t, err)
-			assert.Equal(t, tt.want, got.RemoteOptions, "RemoteFlagGroup")
+			assert.Equal(t, tt.want, got.RemoteOptions)
 
 			// Assert log messages
 			assert.Equal(t, tt.wantLogs, out.Messages(), tt.name)

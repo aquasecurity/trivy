@@ -150,7 +150,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			flags := flag.Flags{f}
 			got, err := flags.ToOptions(tt.args)
 			tt.assertion(t, err)
-			assert.Equal(t, tt.want, got.ScanOptions, "ScanFlagGroup")
+			assert.Equal(t, tt.want, got.ScanOptions)
 		})
 	}
 }

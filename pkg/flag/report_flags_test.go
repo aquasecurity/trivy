@@ -221,7 +221,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				return
 			}
 
-			assert.EqualExportedValuesf(t, tt.want, got.ReportOptions, "ReportFlagGroup")
+			assert.EqualExportedValues(t, tt.want, got.ReportOptions)
 
 			// Assert log messages
 			assert.Equal(t, tt.wantLogs, out.Messages(), tt.name)
