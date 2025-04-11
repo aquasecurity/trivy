@@ -138,10 +138,6 @@ func (f *GlobalFlagGroup) Bind(cmd *cobra.Command) error {
 }
 
 func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
-	if err := parseFlags(f); err != nil {
-		return err
-	}
-
 	// Keep TRIVY_NON_SSL for backward compatibility
 	insecure := f.Insecure.Value() || os.Getenv("TRIVY_NON_SSL") != ""
 

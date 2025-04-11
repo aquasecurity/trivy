@@ -211,19 +211,20 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				return err
 			}
 
-			opts := &flag.Options{}
-			if err := globalFlags.ToOptions(opts); err != nil {
+			flags := flag.Flags{globalFlags}
+			opts, err := flags.ToOptions(args)
+			if err != nil {
 				return err
 			}
-
 			// Initialize logger
 			log.InitLogger(opts.Debug, opts.Quiet)
 
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts := &flag.Options{}
-			if err := globalFlags.ToOptions(opts); err != nil {
+			flags := flag.Flags{globalFlags}
+			opts, err := flags.ToOptions(args)
+			if err != nil {
 				return err
 			}
 
@@ -1430,8 +1431,9 @@ func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		GroupID: groupUtility,
 		Args:    cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts := &flag.Options{}
-			if err := globalFlags.ToOptions(opts); err != nil {
+			flags := flag.Flags{globalFlags}
+			opts, err := flags.ToOptions(args)
+			if err != nil {
 				return err
 			}
 			return showVersion(opts.CacheDir, versionFormat, cmd.OutOrStdout())
