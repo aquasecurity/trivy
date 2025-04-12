@@ -9,15 +9,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func newProp(inner PropertyInner) *Property {
-	return &Property{
-		name:  "test_prop",
-		ctx:   &FileContext{},
-		rng:   types.NewRange("testfile", 1, 1, "", nil),
-		Inner: inner,
-	}
-}
-
 func Test_EqualTo(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -34,155 +25,136 @@ func Test_EqualTo(t *testing.T) {
 		},
 		{
 			name: "compare strings",
-			property: newProp(PropertyInner{
+			property: &Property{
+				name:  "test_prop",
+				ctx:   &FileContext{},
+				rng:   types.NewRange("testfile", 1, 1, "", nil),
 				Type:  cftypes.String,
 				Value: "is str",
-			}),
+			},
 			checkValue: "is str",
 			isEqual:    true,
 		},
 		{
 			name: "compare strings ignoring case",
-			property: newProp(PropertyInner{
+			property: &Property{
 				Type:  cftypes.String,
 				Value: "is str",
-			}),
+			},
 			opts:       []EqualityOptions{IgnoreCase},
 			checkValue: "Is StR",
 			isEqual:    true,
 		},
 		{
 			name: "strings ate not equal",
-			property: newProp(PropertyInner{
+			property: &Property{
 				Type:  cftypes.String,
 				Value: "some value",
-			}),
+			},
 			checkValue: "some other value",
 			isEqual:    false,
 		},
 		{
 			name: "compare prop with a int represented by a string",
-			property: newProp(PropertyInner{
+			property: &Property{
 				Type:  cftypes.Int,
 				Value: 147,
-			}),
+			},
 			checkValue: "147",
 			isEqual:    true,
 		},
 		{
 			name: "compare ints",
-			property: newProp(PropertyInner{
+			property: &Property{
 				Type:  cftypes.Int,
 				Value: 701,
-			}),
+			},
 			checkValue: 701,
 			isEqual:    true,
 		},
 		{
 			name: "compare bools",
-			property: newProp(PropertyInner{
+			property: &Property{
 				Type:  cftypes.Bool,
 				Value: true,
-			}),
+			},
 			checkValue: true,
 			isEqual:    true,
 		},
 		{
 			name: "prop is string fn",
-			property: newProp(PropertyInner{
+			property: &Property{
 				Type: cftypes.Map,
 				Value: map[string]*Property{
 					"Fn::If": {
-						Inner: PropertyInner{
-							Type: cftypes.List,
-							Value: []*Property{
-								{
-									Inner: PropertyInner{
-										Type:  cftypes.Bool,
-										Value: false,
-									},
-								},
-								{
-									Inner: PropertyInner{
-										Type:  cftypes.String,
-										Value: "bad",
-									},
-								},
-								{
-									Inner: PropertyInner{
-										Type:  cftypes.String,
-										Value: "some value",
-									},
-								},
+						Type: cftypes.List,
+						Value: []*Property{
+							{
+								Type:  cftypes.Bool,
+								Value: false,
+							},
+							{
+								Type:  cftypes.String,
+								Value: "bad",
+							},
+							{
+								Type:  cftypes.String,
+								Value: "some value",
 							},
 						},
 					},
 				},
-			}),
+			},
 			checkValue: "some value",
 			isEqual:    true,
 		},
 		{
 			name: "prop is int fn",
-			property: newProp(PropertyInner{
+			property: &Property{
 				Type: cftypes.Map,
 				Value: map[string]*Property{
 					"Fn::If": {
-						Inner: PropertyInner{
-							Type: cftypes.List,
-							Value: []*Property{
-								{
-									Inner: PropertyInner{
-										Type:  cftypes.Bool,
-										Value: true,
-									},
-								},
-								{
-									Inner: PropertyInner{
-										Type:  cftypes.Int,
-										Value: 121,
-									},
-								},
-								{
-									Inner: PropertyInner{
-										Type:  cftypes.Int,
-										Value: -1,
-									},
-								},
+						Type: cftypes.List,
+						Value: []*Property{
+							{
+								Type:  cftypes.Bool,
+								Value: true,
+							},
+							{
+								Type:  cftypes.Int,
+								Value: 121,
+							},
+							{
+								Type:  cftypes.Int,
+								Value: -1,
 							},
 						},
 					},
 				},
-			}),
+			},
 			checkValue: 121,
 			isEqual:    true,
 		},
 		{
 			name: "prop is bool fn",
-			property: newProp(PropertyInner{
+			property: &Property{
 				Type: cftypes.Map,
 				Value: map[string]*Property{
 					"Fn::Equals": {
-						Inner: PropertyInner{
-							Type: cftypes.List,
-							Value: []*Property{
-								{
-									Inner: PropertyInner{
-										Type:  cftypes.String,
-										Value: "foo",
-									},
-								},
-								{
-									Inner: PropertyInner{
-										Type:  cftypes.String,
-										Value: "foo",
-									},
-								},
+						Type: cftypes.List,
+						Value: []*Property{
+							{
+								Type:  cftypes.String,
+								Value: "foo",
+							},
+							{
+								Type:  cftypes.String,
+								Value: "foo",
 							},
 						},
 					},
 				},
-			}),
+			},
 			checkValue: true,
 			isEqual:    true,
 		},

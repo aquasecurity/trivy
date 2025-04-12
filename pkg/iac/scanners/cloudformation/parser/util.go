@@ -5,58 +5,11 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/jfather"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes/parser"
 )
 
-func setPropertyValueFromJson(node jfather.Node, propertyData *PropertyInner) error {
-
-	switch node.Kind() {
-	case jfather.KindNumber:
-		var val any
-		if err := node.Decode(&val); err != nil {
-			return err
-		}
-		switch v := val.(type) {
-		case float64:
-			propertyData.Type = cftypes.Float64
-			propertyData.Value = v
-		case int64:
-			propertyData.Type = cftypes.Int
-			propertyData.Value = int(v)
-		}
-		return nil
-	case jfather.KindBoolean:
-		propertyData.Type = cftypes.Bool
-		return node.Decode(&propertyData.Value)
-	case jfather.KindString:
-		propertyData.Type = cftypes.String
-		return node.Decode(&propertyData.Value)
-	case jfather.KindObject:
-		var childData map[string]*Property
-		if err := node.Decode(&childData); err != nil {
-			return err
-		}
-		propertyData.Type = cftypes.Map
-		propertyData.Value = childData
-		return nil
-	case jfather.KindArray:
-		var childData []*Property
-		if err := node.Decode(&childData); err != nil {
-			return err
-		}
-		propertyData.Type = cftypes.List
-		propertyData.Value = childData
-		return nil
-	default:
-		propertyData.Type = cftypes.String
-		return node.Decode(&propertyData.Value)
-	}
-
-}
-
-func setPropertyValueFromYaml(node *yaml.Node, propertyData *PropertyInner) error {
+func setPropertyValueFromYaml(node *yaml.Node, propertyData *Property) error {
 	if IsIntrinsicFunc(node) {
 		var newContent []*yaml.Node
 
