@@ -153,15 +153,14 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application, fsys fs.FS)
 		})
 
 		// vendor directory is in the same directory as go.mod
-		gomodFilePath := filepath.Dir(app.FilePath)
-		vendorPath := filepath.Join(gomodFilePath, "vendor")
+		vendorDir := filepath.Join(filepath.Dir(app.FilePath), "vendor")
 
 		// Check if the vendor directory exists
-		_, err := fs.Stat(fsys, vendorPath)
+		_, err := fs.Stat(fsys, vendorDir)
 		vendorDirFound := err == nil
 		if vendorDirFound {
-			a.logger.Debug("Vendor directory found", log.String("path", vendorPath))
-			modPath = vendorPath
+			a.logger.Debug("Vendor directory found", log.String("path", vendorDir))
+			modPath = vendorDir
 		}
 
 		if !gopathModDirFound && !vendorDirFound {
@@ -197,7 +196,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application, fsys fs.FS)
 				apps[i].Packages[j].Licenses = licenseNames
 			}
 
-			// Collect dependencies of the direct dependency from $GOPATH/pkg/mod since vendor dir has no go.mod files
+			// Collect dependencies of the direct dependency from $GOPATH/pkg/mod because the vendor directory doesn't have go.mod files.
 			gopathModDir := filepath.Join(gopath, "pkg", "mod", fmt.Sprintf("%s@%s", normalizeModName(lib.Name), lib.Version))
 			if dep, err := a.collectDeps(gopathModDir, lib.ID); err != nil {
 				return xerrors.Errorf("dependency graph error: %w", err)
