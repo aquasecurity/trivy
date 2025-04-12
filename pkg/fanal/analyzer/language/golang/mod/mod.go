@@ -113,10 +113,12 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 func (a *gomodAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
 
+	// Save required files from non-vendor directory
 	if slices.Contains(requiredFiles, fileName) && !xpath.Contains(filePath, "vendor") {
 		return true
 	}
 
+	// Save license files from vendor directory
 	if licenseRegexp.MatchString(fileName) && xpath.Contains(filePath, "vendor") {
 		return true
 	}
@@ -336,11 +338,10 @@ func mergeGoSum(gomod, gosum *types.Application) {
 func findLicense(vendorDirFound bool, fsys fs.FS, dir string, classifierConfidenceLevel float64) ([]string, error) {
 	var license *types.LicenseFile
 
-	openers := make(map[bool]func(fsys fs.FS, path string) (fs.File, error))
-	openers[true] = func(fsys fs.FS, path string) (fs.File, error) {
-		return fsys.Open(path)
-	}
-	openers[false] = func(fsys fs.FS, path string) (fs.File, error) {
+	open := func(fsys fs.FS, path string) (fs.File, error) {
+		if vendorDirFound {
+			return fsys.Open(path)
+		}
 		return os.Open(path)
 	}
 
@@ -354,7 +355,7 @@ func findLicense(vendorDirFound bool, fsys fs.FS, dir string, classifierConfiden
 			return nil
 		}
 		// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237/LICENSE
-		f, err := openers[vendorDirFound](fsys, path)
+		f, err := open(fsys, path)
 		if err != nil {
 			return xerrors.Errorf("file (%s) open error: %w", path, err)
 		}
