@@ -90,7 +90,14 @@ func TestCustomFlagGroups(t *testing.T) {
 		testOpts := extractTestOptions(t, opts)
 		assert.Equal(t, "default-value", testOpts.Foo)
 
-		// Test
+		// Test with environment variable
+		t.Setenv("TRIVY_FOO", "env-value")
+		opts, err = flags.ToOptions(nil)
+		require.NoError(t, err)
+		testOpts = extractTestOptions(t, opts)
+		assert.Equal(t, "env-value", testOpts.Foo)
+
+		// Test with flag
 		viper.Set(foo.ConfigName, "custom-value")
 		opts, err = flags.ToOptions(nil)
 		require.NoError(t, err)
