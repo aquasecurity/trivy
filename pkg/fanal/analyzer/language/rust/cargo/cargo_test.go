@@ -449,8 +449,8 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								ID:           "d0e1231acd612a0f",
 								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
-									"member2@0.1.0",
 									"member@0.1.0",
+									"member2@0.1.0",
 								},
 							},
 							{

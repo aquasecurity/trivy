@@ -110,7 +110,7 @@ func (a cargoAnalyzer) parseCargoLock(filePath string, r io.Reader) (*types.Appl
 
 func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.Application) error {
 	cargoTOMLPath := path.Join(dir, types.CargoToml)
-	rootPkgs, directDeps, err := a.parseRootCargoTOML(fsys, cargoTOMLPath)
+	root, workspaces, directDeps, err := a.parseRootCargoTOML(fsys, cargoTOMLPath)
 	if errors.Is(err, fs.ErrNotExist) {
 		a.logger.Debug("Cargo.toml not found", log.FilePath(cargoTOMLPath))
 		return nil
@@ -151,29 +151,29 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 		a.walkIndirectDependencies(pkg, pkgIDs, pkgs)
 	}
 
-	for relationship, rootPkgIDs := range rootPkgs {
-		for _, id := range rootPkgIDs {
-			pkg, ok := pkgIDs[id]
-			// Cargo allows creating cargo.toml files without name and version.
-			// In this case, the lock file will not include this package.
-			// e.g. when root cargo.toml contains only workspaces.
-			// So we have to add it ourselves, and the ID in this case will be the hash of the toml file.
-			if !ok {
-				pkg.ID = id
-			}
-
-			// Update relationship of Root/Member package
-			pkg.Relationship = relationship
-
-			// Add members as dependencies of Root package
-			if relationship == types.RelationshipRoot {
-				pkg.DependsOn = append(pkg.DependsOn, rootPkgs[types.RelationshipWorkspace]...)
-				sort.Strings(pkg.DependsOn)
-			}
-
-			pkgs[id] = pkg
+	// Identify root and workspace packages
+	for pkgID, pkg := range pkgIDs {
+		switch {
+		case pkgID == root:
+			pkg.Relationship = types.RelationshipRoot
+		case slices.Contains(workspaces, pkgID):
+			pkg.Relationship = types.RelationshipWorkspace
+		default:
+			continue
 		}
+		pkgs[pkgID] = pkg
+	}
 
+	// Cargo allows creating cargo.toml files without name and version.
+	// In this case, the lock file will not include this package.
+	// e.g. when root cargo.toml contains only workspaces.
+	// So we have to add it ourselves, and the ID in this case will be the hash of the toml file.
+	if _, ok := pkgs[root]; !ok {
+		pkgs[root] = types.Package{
+			ID:           root,
+			Relationship: types.RelationshipRoot,
+			DependsOn:    workspaces,
+		}
 	}
 
 	pkgSlice := lo.Values(pkgs)
@@ -205,21 +205,15 @@ type Dependencies map[string]any
 
 // parseRootCargoTOML parses top-level Cargo.toml and returns dependencies.
 // It also parses workspace members and their dependencies.
-func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (map[types.Relationship][]string, map[string]string, error) {
+func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, []string, map[string]string, error) {
 	rootPkg, dependencies, members, err := a.parseCargoTOML(fsys, filePath)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("unable to parse %s: %w", filePath, err)
-	}
-
-	// rootPkgs contains Root package and members.
-	// They needed to mark dependencies from lock file or add them (for dependency graph).
-	rootPkgs := make(map[types.Relationship][]string)
-	rootPkgs[types.RelationshipRoot] = []string{
-		rootPkg,
+		return "", nil, nil, xerrors.Errorf("unable to parse %s: %w", filePath, err)
 	}
 
 	// According to Cargo workspace RFC, workspaces can't be nested:
 	// https://github.com/nox/rust-rfcs/blob/master/text/1525-cargo-workspace.md#validating-a-workspace
+	var workspaces []string
 	for _, member := range members {
 		memberPath := path.Join(path.Dir(filePath), member, types.CargoToml)
 		memberPkg, memberDeps, _, err := a.parseCargoTOML(fsys, memberPath)
@@ -227,7 +221,7 @@ func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (map[type
 			a.logger.Warn("Unable to parse Cargo.toml", log.String("member_path", memberPath), log.Err(err))
 			continue
 		}
-		rootPkgs[types.RelationshipWorkspace] = append(rootPkgs[types.RelationshipWorkspace], memberPkg)
+		workspaces = append(workspaces, memberPkg)
 
 		// Member dependencies shouldn't overwrite dependencies from root cargo.toml file
 		maps.Copy(memberDeps, dependencies)
@@ -253,7 +247,7 @@ func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (map[type
 		}
 	}
 
-	return rootPkgs, deps, nil
+	return rootPkg, workspaces, deps, nil
 }
 
 func (a cargoAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps map[string]types.Package) {
