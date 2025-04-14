@@ -30,8 +30,10 @@ This page explains the terminology system used in Trivy, helping users understan
 Types of artifacts that Trivy can scan, like container images and filesystem.
 
 ### Target type
-Trivy categorizes targets into Pre-build and Post-build targets. The files analyzed during scan vary depending on the target type.  
-Pre-build is meant for scanning code projects, where packages are likely in package manager lock files (e.g `package-lock.json`). Post-build is meant for scanning deployable artifacts (e.g vm, container) where packages are likely "installed" (e.g in `node_modules`) and source code (including lock files) is not available.
+Trivy categorizes targets into Pre-build and Post-build targets. The files analyzed during scan vary depending on the target type:
+
+- **Pre-build** is meant for scanning code projects, where packages are likely in package manager lock files (e.g `package-lock.json`). 
+- **Post-build** is meant for scanning deployable artifacts (e.g vm, container) where packages are likely "installed" (e.g in `node_modules`) and source code (including lock files) is not available.
 
 ### Scanner
 Trivy's built-in security scanning engines. Trivy has four main scanners:

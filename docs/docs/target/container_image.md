@@ -193,6 +193,7 @@ $ trivy image --input /path/to/alpine@sha256:82389ea44e50c696aba18393b168a833929
 Any SBOM file found in the container image will be scanned for vulnerabilities and contribute to the image's final scaning report. This is useful if you're building container images without package manager information (i.e distroless) but you still want to ensure they could be scannable in the future.
 
 SBOM files are detected by the following file extensions:
+
 - `.spdx`
 - `.spdx.json`
 - `.cdx`
@@ -264,7 +265,7 @@ Total: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 2)
 
 ```
 
-For more information about SBOM discovery with Rekor, please see [here]](../supply-chain/attestation/rekor.md).
+For more information about SBOM discovery with Rekor, please see [here](../supply-chain/attestation/rekor.md).
 
 ## Compliance
 
