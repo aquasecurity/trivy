@@ -287,6 +287,15 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/composer.lock.json.golden",
 		},
 		{
+			name: "cargo.lock",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/repo/cargo",
+			},
+			golden: "testdata/cargo.lock.json.golden",
+		},
+		{
 			name: "multiple lockfiles",
 			args: args{
 				scanner: types.VulnerabilityScanner,
