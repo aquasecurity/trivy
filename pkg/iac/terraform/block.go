@@ -32,6 +32,7 @@ type Block struct {
 	moduleSource string
 	moduleFS     fs.FS
 	reference    Reference
+	unresolvable bool
 }
 
 func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, parentBlock *Block, moduleSource string,
@@ -427,9 +428,9 @@ func getValueByPath(val cty.Value, path []string) (cty.Value, error) {
 	return val, nil
 }
 
-func (b *Block) GetNestedAttribute(name string) (*Attribute, *Block) {
+func (b *Block) GetNestedAttribute(path string) (*Attribute, *Block) {
 
-	parts := strings.Split(name, ".")
+	parts := strings.Split(path, ".")
 	blocks := parts[:len(parts)-1]
 	attrName := parts[len(parts)-1]
 
@@ -575,7 +576,12 @@ func (b *Block) IsNotNil() bool {
 	return !b.IsNil()
 }
 
-func (b *Block) ExpandBlock() error {
+// ExpandDynBlock recursively expands all dynamic blocks within the current block and injects them as children.
+//
+// If allowDummy is set to true, the function expands the dynamic block even if the for_each
+// expression cannot be evaluated, creating a dummy block. This allows checking whether an attribute
+// was set in the nested block without needing to handle the dynamic block explicitly.
+func (b *Block) ExpandDynBlock(allowDummy bool) error {
 	var (
 		expanded []*Block
 		errs     error
@@ -583,12 +589,16 @@ func (b *Block) ExpandBlock() error {
 
 	for _, child := range b.childBlocks {
 		if child.Type() == "dynamic" {
-			blocks, err := child.expandDynamic()
-			if err != nil {
-				errs = multierror.Append(errs, err)
-				continue
+			if allowDummy && child.IsExpanded() {
+				b.GetBlock(child.TypeLabel()).ExpandDynBlock(allowDummy)
+			} else {
+				blocks, err := child.expandDynamic(allowDummy)
+				if err != nil {
+					errs = multierror.Append(errs, err)
+					continue
+				}
+				expanded = append(expanded, blocks...)
 			}
-			expanded = append(expanded, blocks...)
 		}
 	}
 
@@ -599,7 +609,7 @@ func (b *Block) ExpandBlock() error {
 	return errs
 }
 
-func (b *Block) expandDynamic() ([]*Block, error) {
+func (b *Block) expandDynamic(allowDummy bool) ([]*Block, error) {
 	if b.IsExpanded() || b.Type() != "dynamic" {
 		return nil, nil
 	}
@@ -609,9 +619,30 @@ func (b *Block) expandDynamic() ([]*Block, error) {
 		return nil, errors.New("dynamic block must have 1 label")
 	}
 
-	forEachVal, err := b.validateForEach()
-	if err != nil {
-		return nil, fmt.Errorf("invalid for-each in %s block: %w", b.FullLocalName(), err)
+	forEachAttr := b.GetAttribute("for_each")
+	if forEachAttr == nil {
+		return nil, errors.New("for_each attribute required")
+	}
+
+	forEachVal := forEachAttr.Value()
+
+	if !forEachVal.IsKnown() {
+		if allowDummy {
+			b.unresolvable = true
+			inherited, err := b.expandContentBlock(b.childContext(), allowDummy)
+			if err != nil {
+				return nil, err
+			}
+			if inherited != nil {
+				return []*Block{inherited}, nil
+			}
+			return []*Block{}, nil
+		}
+		return nil, nil
+	}
+
+	if !forEachVal.CanIterateElements() {
+		return nil, fmt.Errorf("cannot use a %s value in for_each. An iterable collection is required", forEachVal.GoString())
 	}
 
 	var (
@@ -637,14 +668,13 @@ func (b *Block) expandDynamic() ([]*Block, error) {
 		})
 		forEachCtx.Set(obj, iteratorName)
 
-		if content := b.GetBlock("content"); content != nil {
-			inherited := content.inherit(forEachCtx)
-			inherited.hclBlock.Labels = []string{}
-			inherited.hclBlock.Type = realBlockType
-			if err := inherited.ExpandBlock(); err != nil {
-				errs = multierror.Append(errs, err)
-				return
-			}
+		inherited, err := b.expandContentBlock(forEachCtx, allowDummy)
+		if err != nil {
+			errs = multierror.Append(errs, err)
+			return
+		}
+
+		if inherited != nil {
 			expanded = append(expanded, inherited)
 		}
 		return
@@ -657,19 +687,19 @@ func (b *Block) expandDynamic() ([]*Block, error) {
 	return expanded, errs
 }
 
-func (b *Block) validateForEach() (cty.Value, error) {
-	forEachAttr := b.GetAttribute("for_each")
-	if forEachAttr == nil {
-		return cty.NilVal, errors.New("for_each attribute required")
+func (b *Block) expandContentBlock(forEachCtx *context.Context, allowDummy bool) (*Block, error) {
+	content := b.GetBlock("content")
+	if content == nil {
+		return nil, nil
 	}
 
-	forEachVal := forEachAttr.Value()
-
-	if !forEachVal.CanIterateElements() {
-		return cty.NilVal, fmt.Errorf("cannot use a %s value in for_each. An iterable collection is required", forEachVal.GoString())
+	inherited := content.inherit(forEachCtx)
+	inherited.hclBlock.Labels = []string{}
+	inherited.hclBlock.Type = b.TypeLabel()
+	if err := inherited.ExpandDynBlock(allowDummy); err != nil {
+		return nil, err
 	}
-
-	return forEachVal, nil
+	return inherited, nil
 }
 
 func (b *Block) iteratorName(blockType string) (string, error) {
