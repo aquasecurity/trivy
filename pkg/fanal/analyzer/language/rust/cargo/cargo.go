@@ -161,6 +161,12 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 		default:
 			continue
 		}
+
+		// Root/workspace package may include dev dependencies in lock file, so we need to remove them.
+		pkg.DependsOn = lo.Filter(pkg.DependsOn, func(dep string, _ int) bool {
+			_, ok := pkgs[dep]
+			return ok
+		})
 		pkgs[pkgID] = pkg
 	}
 

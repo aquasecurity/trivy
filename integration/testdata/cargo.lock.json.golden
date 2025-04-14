@@ -26,14 +26,13 @@
           "Name": "app",
           "Identifier": {
             "PURL": "pkg:cargo/app@0.1.0",
-            "UID": "7507339e7b4f917e"
+            "UID": "a4ce1e2c46af5d56"
           },
           "Version": "0.1.0",
           "Relationship": "root",
           "DependsOn": [
             "memchr@1.0.2",
-            "regex@1.7.3",
-            "winapi@0.3.9"
+            "regex@1.7.3"
           ],
           "Layer": {},
           "Locations": [
