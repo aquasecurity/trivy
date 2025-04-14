@@ -26,20 +26,20 @@
           "Name": "app",
           "Identifier": {
             "PURL": "pkg:cargo/app@0.1.0",
-            "UID": "7859d2bf583e6046"
+            "UID": "7507339e7b4f917e"
           },
           "Version": "0.1.0",
           "Relationship": "root",
           "DependsOn": [
             "memchr@1.0.2",
-            "regex-syntax@0.5.6",
-            "regex@1.7.3"
+            "regex@1.7.3",
+            "winapi@0.3.9"
           ],
           "Layer": {},
           "Locations": [
             {
-              "StartLine": 13,
-              "EndLine": 20
+              "StartLine": 14,
+              "EndLine": 21
             }
           ]
         },
@@ -48,18 +48,18 @@
           "Name": "memchr",
           "Identifier": {
             "PURL": "pkg:cargo/memchr@1.0.2",
-            "UID": "2a9888bf303bbfeb"
+            "UID": "427a73f0e28dc7df"
           },
           "Version": "1.0.2",
           "Relationship": "direct",
           "DependsOn": [
-            "libc@0.2.140"
+            "libc@0.2.171"
           ],
           "Layer": {},
           "Locations": [
             {
-              "StartLine": 28,
-              "EndLine": 35
+              "StartLine": 29,
+              "EndLine": 36
             }
           ]
         },
@@ -68,40 +68,20 @@
           "Name": "regex",
           "Identifier": {
             "PURL": "pkg:cargo/regex@1.7.3",
-            "UID": "2008928e7b16625a"
+            "UID": "4633c68363763fad"
           },
           "Version": "1.7.3",
           "Relationship": "direct",
           "DependsOn": [
             "aho-corasick@0.7.20",
-            "memchr@2.5.0",
+            "memchr@2.7.4",
             "regex-syntax@0.6.29"
           ],
           "Layer": {},
           "Locations": [
             {
-              "StartLine": 43,
-              "EndLine": 52
-            }
-          ]
-        },
-        {
-          "ID": "regex-syntax@0.5.6",
-          "Name": "regex-syntax",
-          "Identifier": {
-            "PURL": "pkg:cargo/regex-syntax@0.5.6",
-            "UID": "a0445f4a3fb1bd39"
-          },
-          "Version": "0.5.6",
-          "Relationship": "direct",
-          "DependsOn": [
-            "ucd-util@0.1.10"
-          ],
-          "Layer": {},
-          "Locations": [
-            {
-              "StartLine": 54,
-              "EndLine": 61
+              "StartLine": 44,
+              "EndLine": 53
             }
           ]
         },
@@ -110,55 +90,55 @@
           "Name": "aho-corasick",
           "Identifier": {
             "PURL": "pkg:cargo/aho-corasick@0.7.20",
-            "UID": "964865cf22efa603"
+            "UID": "994a6d343f8da957"
           },
           "Version": "0.7.20",
           "Indirect": true,
           "Relationship": "indirect",
           "DependsOn": [
-            "memchr@2.5.0"
+            "memchr@2.7.4"
           ],
           "Layer": {},
           "Locations": [
             {
-              "StartLine": 4,
-              "EndLine": 11
+              "StartLine": 5,
+              "EndLine": 12
             }
           ]
         },
         {
-          "ID": "libc@0.2.140",
+          "ID": "libc@0.2.171",
           "Name": "libc",
           "Identifier": {
-            "PURL": "pkg:cargo/libc@0.2.140",
-            "UID": "7a63c30c20c6b0c8"
+            "PURL": "pkg:cargo/libc@0.2.171",
+            "UID": "5395cf65d65d1f19"
           },
-          "Version": "0.2.140",
+          "Version": "0.2.171",
           "Indirect": true,
           "Relationship": "indirect",
           "Layer": {},
           "Locations": [
             {
-              "StartLine": 22,
-              "EndLine": 26
+              "StartLine": 23,
+              "EndLine": 27
             }
           ]
         },
         {
-          "ID": "memchr@2.5.0",
+          "ID": "memchr@2.7.4",
           "Name": "memchr",
           "Identifier": {
-            "PURL": "pkg:cargo/memchr@2.5.0",
-            "UID": "e40d7daadd73d402"
+            "PURL": "pkg:cargo/memchr@2.7.4",
+            "UID": "3f037d5da23e5826"
           },
-          "Version": "2.5.0",
+          "Version": "2.7.4",
           "Indirect": true,
           "Relationship": "indirect",
           "Layer": {},
           "Locations": [
             {
-              "StartLine": 37,
-              "EndLine": 41
+              "StartLine": 38,
+              "EndLine": 42
             }
           ]
         },
@@ -167,7 +147,7 @@
           "Name": "regex-syntax",
           "Identifier": {
             "PURL": "pkg:cargo/regex-syntax@0.6.29",
-            "UID": "2b722b111e401f44"
+            "UID": "2c8dd93ce2f15b00"
           },
           "Version": "0.6.29",
           "Indirect": true,
@@ -175,26 +155,8 @@
           "Layer": {},
           "Locations": [
             {
-              "StartLine": 63,
-              "EndLine": 67
-            }
-          ]
-        },
-        {
-          "ID": "ucd-util@0.1.10",
-          "Name": "ucd-util",
-          "Identifier": {
-            "PURL": "pkg:cargo/ucd-util@0.1.10",
-            "UID": "dba62616aa152cc9"
-          },
-          "Version": "0.1.10",
-          "Indirect": true,
-          "Relationship": "indirect",
-          "Layer": {},
-          "Locations": [
-            {
-              "StartLine": 69,
-              "EndLine": 73
+              "StartLine": 55,
+              "EndLine": 59
             }
           ]
         }
