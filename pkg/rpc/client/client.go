@@ -109,18 +109,18 @@ func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		return types.ScanResponse{}, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
 	}
 
-	var layersMetadata ftypes.LayersMetadata
-	for _, layerMetadata := range res.LayersMetadata {
-		if layerMetadata == nil {
+	var layers ftypes.Layers
+	for _, layer := range res.Layers {
+		if layer == nil {
 			continue
 		}
 
-		layersMetadata = append(layersMetadata, r.ConvertFromRPCLayerMetadata(layerMetadata))
+		layers = append(layers, r.ConvertFromRPCLayer(layer))
 	}
 
 	return types.ScanResponse{
-		Results:        r.ConvertFromRPCResults(res.Results),
-		OS:             r.ConvertFromRPCOS(res.Os),
-		LayersMetadata: layersMetadata,
+		Results: r.ConvertFromRPCResults(res.Results),
+		OS:      r.ConvertFromRPCOS(res.Os),
+		Layers:  layers,
 	}, nil
 }

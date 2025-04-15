@@ -366,9 +366,12 @@ func ConvertToRPCMisconfs(misconfs []types.DetectedMisconfiguration) []*common.D
 // ConvertToRPCLayer returns common.Layer
 func ConvertToRPCLayer(layer ftypes.Layer) *common.Layer {
 	return &common.Layer{
-		Digest:    layer.Digest,
-		DiffId:    layer.DiffID,
-		CreatedBy: layer.CreatedBy,
+		Size:          layer.Size,
+		Digest:        layer.Digest,
+		DiffId:        layer.DiffID,
+		CreatedBy:     layer.CreatedBy,
+		OpaqueDirs:    layer.OpaqueDirs,
+		WhiteoutFiles: layer.WhiteoutFiles,
 	}
 }
 
@@ -548,20 +551,6 @@ func ConvertFromRPCLicenseFiles(rpcLicenses []*common.LicenseFile) []ftypes.Lice
 	return licenses
 }
 
-func ConvertFromRPCLayerMetadata(rpcLayerMetadata *common.LayerMetadata) ftypes.LayerMetadata {
-	if rpcLayerMetadata == nil {
-		return ftypes.LayerMetadata{}
-	}
-	return ftypes.LayerMetadata{
-		Size:          rpcLayerMetadata.Size,
-		Digest:        rpcLayerMetadata.Digest,
-		DiffID:        rpcLayerMetadata.DiffId,
-		CreatedBy:     rpcLayerMetadata.CreatedBy,
-		OpaqueDirs:    rpcLayerMetadata.OpaqueDirs,
-		WhiteoutFiles: rpcLayerMetadata.WhiteoutFiles,
-	}
-}
-
 func ConvertFromRPCLicenseFindings(rpcFindings []*common.LicenseFinding) ftypes.LicenseFindings {
 	var findings ftypes.LicenseFindings
 
@@ -663,15 +652,18 @@ func ConvertFromRPCMisconfs(rpcMisconfs []*common.DetectedMisconfiguration) []ty
 	return misconfs
 }
 
-// ConvertFromRPCLayer converts *common.Layer to fanal.Layer
+// ConvertFromRPCLayer converts *common.Layer to ftypes.Layer
 func ConvertFromRPCLayer(rpcLayer *common.Layer) ftypes.Layer {
 	if rpcLayer == nil {
 		return ftypes.Layer{}
 	}
 	return ftypes.Layer{
-		Digest:    rpcLayer.Digest,
-		DiffID:    rpcLayer.DiffId,
-		CreatedBy: rpcLayer.CreatedBy,
+		Size:          rpcLayer.Size,
+		Digest:        rpcLayer.Digest,
+		DiffID:        rpcLayer.DiffId,
+		CreatedBy:     rpcLayer.CreatedBy,
+		OpaqueDirs:    rpcLayer.OpaqueDirs,
+		WhiteoutFiles: rpcLayer.WhiteoutFiles,
 	}
 }
 
@@ -1003,20 +995,9 @@ func ConvertToRPCScanResponse(response types.ScanResponse) *scanner.ScanResponse
 	return &scanner.ScanResponse{
 		Os:      ConvertToRPCOS(response.OS),
 		Results: rpcResults,
-		LayersMetadata: lo.Map(response.LayersMetadata, func(layerMetadata ftypes.LayerMetadata, _ int) *common.LayerMetadata {
-			return ConvertToRPCLayerMetadata(layerMetadata)
+		Layers: lo.Map(response.Layers, func(layer ftypes.Layer, _ int) *common.Layer {
+			return ConvertToRPCLayer(layer)
 		}),
-	}
-}
-
-func ConvertToRPCLayerMetadata(layerMetadata ftypes.LayerMetadata) *common.LayerMetadata {
-	return &common.LayerMetadata{
-		Size:          layerMetadata.Size,
-		Digest:        layerMetadata.Digest,
-		DiffId:        layerMetadata.DiffID,
-		CreatedBy:     layerMetadata.CreatedBy,
-		OpaqueDirs:    layerMetadata.OpaqueDirs,
-		WhiteoutFiles: layerMetadata.WhiteoutFiles,
 	}
 }
 

@@ -114,9 +114,9 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 		return types.ScanResponse{}, err
 	}
 	return types.ScanResponse{
-		Results:        results,
-		OS:             os,
-		LayersMetadata: detail.LayersMetadata,
+		Results: results,
+		OS:      os,
+		Layers:  detail.Layers,
 	}, nil
 }
 

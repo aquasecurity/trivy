@@ -38,7 +38,7 @@ message ScanOptions {
 message ScanResponse {
   common.OS       os                            = 1;
   repeated Result results                       = 3;
-  repeated common.LayerMetadata layers_metadata = 4;
+  repeated common.Layer layers = 4;
 }
 
 // Result is the same as github.com/aquasecurity/trivy/pkg/report.Result

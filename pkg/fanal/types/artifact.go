@@ -87,9 +87,12 @@ type Repository struct {
 }
 
 type Layer struct {
-	Digest    string `json:",omitempty"`
-	DiffID    string `json:",omitempty"`
-	CreatedBy string `json:",omitempty"`
+	Size          int64    `json:",omitempty"`
+	Digest        string   `json:",omitempty"`
+	DiffID        string   `json:",omitempty"`
+	CreatedBy     string   `json:",omitempty"`
+	OpaqueDirs    []string `json:",omitempty"`
+	WhiteoutFiles []string `json:",omitempty"`
 }
 
 type PackageInfo struct {
@@ -184,8 +187,8 @@ type BlobInfo struct {
 	CustomResources []CustomResource `json:",omitempty"`
 }
 
-func (b BlobInfo) Layer() LayerMetadata {
-	return LayerMetadata{
+func (b BlobInfo) Layer() Layer {
+	return Layer{
 		Size:          b.Size,
 		Digest:        b.Digest,
 		DiffID:        b.DiffID,
@@ -195,23 +198,14 @@ func (b BlobInfo) Layer() LayerMetadata {
 	}
 }
 
-type LayerMetadata struct {
-	Size          int64    `json:",omitempty"`
-	Digest        string   `json:",omitempty"`
-	DiffID        string   `json:",omitempty"`
-	CreatedBy     string   `json:",omitempty"`
-	OpaqueDirs    []string `json:",omitempty"`
-	WhiteoutFiles []string `json:",omitempty"`
+func (l Layer) Empty() bool {
+	return l.Size == 0 && l.Digest == "" && l.DiffID == "" && l.CreatedBy == "" &&
+		len(l.OpaqueDirs) == 0 && len(l.WhiteoutFiles) == 0
 }
 
-func (lm LayerMetadata) Empty() bool {
-	return lm.Size == 0 && lm.Digest == "" && lm.DiffID == "" && lm.CreatedBy == "" &&
-		len(lm.OpaqueDirs) == 0 && len(lm.WhiteoutFiles) == 0
-}
+type Layers []Layer
 
-type LayersMetadata []LayerMetadata
-
-func (lm LayersMetadata) TotalSize() int64 {
+func (lm Layers) TotalSize() int64 {
 	var totalSize int64
 	for _, layer := range lm {
 		totalSize += layer.Size
@@ -219,7 +213,7 @@ func (lm LayersMetadata) TotalSize() int64 {
 	return totalSize
 }
 
-func (lm LayersMetadata) Empty() bool {
+func (lm Layers) Empty() bool {
 	if len(lm) == 0 {
 		return true
 	} else if len(lm) > 1 {
@@ -246,7 +240,7 @@ type ArtifactDetail struct {
 	// It is for extensibility and not used in OSS.
 	CustomResources []CustomResource `json:",omitempty"`
 
-	LayersMetadata LayersMetadata `json:",omitempty"`
+	Layers Layers `json:",omitempty"`
 }
 
 // Sort sorts packages and applications in ArtifactDetail

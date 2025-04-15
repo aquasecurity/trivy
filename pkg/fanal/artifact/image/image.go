@@ -186,20 +186,20 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []str
 	return imageKey, layerKeys, nil
 }
 
-func (a Artifact) fillLayersMetadata(diffIDs, layerKeys []string, layerSizes map[string]int64, configFile *v1.ConfigFile) map[string]types.LayerMetadata {
+func (a Artifact) fillLayersMetadata(diffIDs, layerKeys []string, layerSizes map[string]int64, configFile *v1.ConfigFile) map[string]types.Layer {
 	// Parse histories and extract a list of "created_by"
 	layerKeyMap := a.consolidateCreatedBy(diffIDs, layerKeys, configFile)
 
 	// Fill layers uncompressed sizes
-	for layerKey, layerMetadata := range layerKeyMap {
-		layerMetadata.Size = layerSizes[layerMetadata.DiffID]
-		layerKeyMap[layerKey] = layerMetadata
+	for layerKey, Layer := range layerKeyMap {
+		Layer.Size = layerSizes[Layer.DiffID]
+		layerKeyMap[layerKey] = Layer
 	}
 
 	return layerKeyMap
 }
 
-func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *v1.ConfigFile) map[string]types.LayerMetadata {
+func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *v1.ConfigFile) map[string]types.Layer {
 	// save createdBy fields in order of layers
 	var createdBy []string
 	for _, h := range configFile.History {
@@ -216,7 +216,7 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 	// TODO: our current logic may not detect empty layers correctly in rare cases.
 	validCreatedBy := len(diffIDs) == len(createdBy)
 
-	layerKeyMap := make(map[string]types.LayerMetadata)
+	layerKeyMap := make(map[string]types.Layer)
 	for i, diffID := range diffIDs {
 
 		c := ""
@@ -225,7 +225,7 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 		}
 
 		layerKey := layerKeys[i]
-		layerKeyMap[layerKey] = types.LayerMetadata{
+		layerKeyMap[layerKey] = types.Layer{
 			DiffID:    diffID,
 			CreatedBy: c,
 		}
@@ -337,7 +337,7 @@ func (a Artifact) saveLayer(diffID string) (int64, error) {
 }
 
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
-	layerKeyMap map[string]types.LayerMetadata, configFile *v1.ConfigFile) error {
+	layerKeyMap map[string]types.Layer, configFile *v1.ConfigFile) error {
 
 	var osFound types.OS
 	p := parallel.NewPipeline(a.artifactOption.Parallel, false, layerKeys, func(ctx context.Context,
@@ -377,7 +377,7 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 	return nil
 }
 
-func (a Artifact) inspectLayer(ctx context.Context, layerInfo types.LayerMetadata, disabled []analyzer.Type) (types.BlobInfo, error) {
+func (a Artifact) inspectLayer(ctx context.Context, layerInfo types.Layer, disabled []analyzer.Type) (types.BlobInfo, error) {
 	a.logger.Debug("Missing diff ID in cache", log.String("diff_id", layerInfo.DiffID))
 
 	var rc io.ReadCloser

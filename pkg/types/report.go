@@ -28,12 +28,12 @@ type Metadata struct {
 	OS   *ftypes.OS `json:",omitempty"`
 
 	// Container image
-	ImageID     string                `json:",omitempty"`
-	DiffIDs     []string              `json:",omitempty"`
-	RepoTags    []string              `json:",omitempty"`
-	RepoDigests []string              `json:",omitempty"`
-	ImageConfig v1.ConfigFile         `json:",omitempty"`
-	Layers      ftypes.LayersMetadata `json:",omitempty"`
+	ImageID     string        `json:",omitempty"`
+	DiffIDs     []string      `json:",omitempty"`
+	RepoTags    []string      `json:",omitempty"`
+	RepoDigests []string      `json:",omitempty"`
+	ImageConfig v1.ConfigFile `json:",omitempty"`
+	Layers      ftypes.Layers `json:",omitempty"`
 }
 
 // Results to hold list of Result

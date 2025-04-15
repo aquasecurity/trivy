@@ -135,7 +135,7 @@ func TestScanServer_Scan(t *testing.T) {
 						},
 					},
 				},
-				LayersMetadata: []*common.LayerMetadata{
+				Layers: []*common.Layer{
 					{
 						Size:   1000,
 						DiffId: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",

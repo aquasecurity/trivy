@@ -23,7 +23,7 @@ func NewApplier(c cache.LocalArtifactCache) Applier {
 
 func (a *applier) ApplyLayers(imageID string, layerKeys []string) (ftypes.ArtifactDetail, error) {
 	var layers []ftypes.BlobInfo
-	var layersMetadata ftypes.LayersMetadata
+	var layersMetadata ftypes.Layers
 	for _, key := range layerKeys {
 		blob, _ := a.cache.GetBlob(key) // nolint
 		if blob.SchemaVersion == 0 {
@@ -45,7 +45,7 @@ func (a *applier) ApplyLayers(imageID string, layerKeys []string) (ftypes.Artifa
 	}
 
 	// Fill layers Metadata
-	mergedLayer.LayersMetadata = layersMetadata
+	mergedLayer.Layers = layersMetadata
 
 	if !mergedLayer.OS.Detected() {
 		return mergedLayer, analyzer.ErrUnknownOS // send back package and apps info regardless

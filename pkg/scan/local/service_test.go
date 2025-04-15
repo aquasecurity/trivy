@@ -30,7 +30,7 @@ var (
 		SrcVersion: "1.2.3",
 		Licenses:   []string{"MIT"},
 		Layer: ftypes.Layer{
-			DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+			DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 		},
 		Identifier: ftypes.PkgIdentifier{
 			UID: "d9a73c7459d27809",
@@ -217,7 +217,7 @@ func TestScanner_Scan(t *testing.T) {
 								FixedVersion:     "1.2.4",
 								Status:           dbTypes.StatusFixed,
 								Layer: ftypes.Layer{
-									DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+									DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 								},
 								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2020-9999",
 								Vulnerability: dbTypes.Vulnerability{
@@ -266,7 +266,7 @@ func TestScanner_Scan(t *testing.T) {
 					Name:   "3.11",
 					Eosl:   true,
 				},
-				LayersMetadata: ftypes.LayersMetadata{
+				Layers: ftypes.Layers{
 					{
 						Size:   1000,
 						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
@@ -331,7 +331,7 @@ func TestScanner_Scan(t *testing.T) {
 								FixedVersion:     "1.2.4",
 								Status:           dbTypes.StatusFixed,
 								Layer: ftypes.Layer{
-									DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+									DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 								},
 								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2020-9999",
 								Vulnerability: dbTypes.Vulnerability{
@@ -348,7 +348,7 @@ func TestScanner_Scan(t *testing.T) {
 					Name:   "3.11",
 					Eosl:   true,
 				},
-				LayersMetadata: ftypes.LayersMetadata{
+				Layers: ftypes.Layers{
 					{
 						Size:   1000,
 						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
@@ -469,7 +469,7 @@ func TestScanner_Scan(t *testing.T) {
 					Name:   "3.11",
 					Eosl:   false,
 				},
-				LayersMetadata: ftypes.LayersMetadata{
+				Layers: ftypes.Layers{
 					{
 						Size:   1000,
 						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
@@ -562,7 +562,7 @@ func TestScanner_Scan(t *testing.T) {
 					},
 				},
 				OS: ftypes.OS{},
-				LayersMetadata: ftypes.LayersMetadata{
+				Layers: ftypes.Layers{
 					{
 						Size:   1000,
 						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
@@ -762,7 +762,7 @@ func TestScanner_Scan(t *testing.T) {
 					Name:   "3.11",
 					Eosl:   true,
 				},
-				LayersMetadata: ftypes.LayersMetadata{
+				Layers: ftypes.Layers{
 					{
 						Size:   1000,
 						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
@@ -845,7 +845,7 @@ func TestScanner_Scan(t *testing.T) {
 					Family: "fedora",
 					Name:   "27",
 				},
-				LayersMetadata: ftypes.LayersMetadata{
+				Layers: ftypes.Layers{
 					{
 						Size:   1000,
 						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
@@ -976,7 +976,7 @@ func TestScanner_Scan(t *testing.T) {
 					Family: "alpine",
 					Name:   "3.11",
 				},
-				LayersMetadata: ftypes.LayersMetadata{
+				Layers: ftypes.Layers{
 					{
 						Size:   1000,
 						DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
@@ -1035,7 +1035,7 @@ func TestScanner_Scan(t *testing.T) {
 								FixedVersion:     "1.2.4",
 								Status:           dbTypes.StatusFixed,
 								Layer: ftypes.Layer{
-									DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+									DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 								},
 								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2020-9999",
 								Vulnerability: dbTypes.Vulnerability{
@@ -1055,7 +1055,7 @@ func TestScanner_Scan(t *testing.T) {
 					Name:   "3.11",
 					Eosl:   true,
 				},
-				LayersMetadata: ftypes.LayersMetadata{
+				Layers: ftypes.Layers{
 					{
 						Size:   1000,
 						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
@@ -1202,7 +1202,7 @@ func TestScanner_Scan(t *testing.T) {
 					Name:   "3.11",
 					Eosl:   false,
 				},
-				LayersMetadata: ftypes.LayersMetadata{
+				Layers: ftypes.Layers{
 					{
 						Size:   1000,
 						DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
@@ -1408,7 +1408,7 @@ func TestScanner_Scan(t *testing.T) {
 					Name:   "3.11",
 					Eosl:   false,
 				},
-				LayersMetadata: ftypes.LayersMetadata{
+				Layers: ftypes.Layers{
 					{
 						Size:   1000,
 						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",

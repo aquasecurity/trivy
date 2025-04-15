@@ -67,7 +67,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 					DiffIDs: []string{
 						"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 					},
-					Layers: ftypes.LayersMetadata{
+					Layers: ftypes.Layers{
 						{
 							Size:   5861888,
 							DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",

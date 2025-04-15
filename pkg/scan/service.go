@@ -187,10 +187,10 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 	}
 
 	// We don't need to include this info into Report
-	for i := range scanResponse.LayersMetadata {
-		scanResponse.LayersMetadata[i].CreatedBy = ""
-		scanResponse.LayersMetadata[i].OpaqueDirs = nil
-		scanResponse.LayersMetadata[i].WhiteoutFiles = nil
+	for i := range scanResponse.Layers {
+		scanResponse.Layers[i].CreatedBy = ""
+		scanResponse.Layers[i].OpaqueDirs = nil
+		scanResponse.Layers[i].WhiteoutFiles = nil
 	}
 
 	return types.Report{
@@ -207,8 +207,8 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 			RepoTags:    artifactInfo.ImageMetadata.RepoTags,
 			RepoDigests: artifactInfo.ImageMetadata.RepoDigests,
 			ImageConfig: artifactInfo.ImageMetadata.ConfigFile,
-			Size:        scanResponse.LayersMetadata.TotalSize(),
-			Layers:      lo.Ternary(!scanResponse.LayersMetadata.Empty(), scanResponse.LayersMetadata, nil),
+			Size:        scanResponse.Layers.TotalSize(),
+			Layers:      lo.Ternary(!scanResponse.Layers.Empty(), scanResponse.Layers, nil),
 		},
 		Results: scanResponse.Results,
 		BOM:     artifactInfo.BOM,

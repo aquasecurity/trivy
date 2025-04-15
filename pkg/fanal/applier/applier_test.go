@@ -49,9 +49,8 @@ func TestApplier_ApplyLayers(t *testing.T) {
 
 				require.NoError(t, c.PutBlob("sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", types.BlobInfo{
 					SchemaVersion: 1,
-					// Old layerMetadata format
-					Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-					DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					OS: types.OS{
 						Family: "debian",
 						Name:   "9.9",
@@ -121,7 +120,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					Family: "debian",
 					Name:   "9.9",
 				},
-				LayersMetadata: types.LayersMetadata{
+				Layers: types.Layers{
 					{
 						Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 						DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
@@ -326,7 +325,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					Family: "alpine",
 					Name:   "3.10.4",
 				},
-				LayersMetadata: types.LayersMetadata{
+				Layers: types.Layers{
 					{
 						Size:   1000,
 						Digest: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
@@ -669,7 +668,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 						},
 					},
 				},
-				LayersMetadata: types.LayersMetadata{
+				Layers: types.Layers{
 					{
 						Size:   1000,
 						Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
@@ -905,7 +904,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 						},
 					},
 				},
-				LayersMetadata: types.LayersMetadata{
+				Layers: types.Layers{
 					{
 						Size:   1000,
 						Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
@@ -992,7 +991,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 						},
 					},
 				},
-				LayersMetadata: types.LayersMetadata{
+				Layers: types.Layers{
 					{
 						Size:   1000,
 						Digest: "sha256:fb44d01953611ba18d43d88e158c25579d18eff42db671182245010620a283f3",

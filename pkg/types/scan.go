@@ -129,7 +129,7 @@ type ScanOptions struct {
 
 // ScanResponse contains result of `Scan` function of `Driver` interface
 type ScanResponse struct {
-	Results        Results
-	OS             types.OS
-	LayersMetadata types.LayersMetadata
+	Results Results
+	OS      types.OS
+	Layers  types.Layers
 }
