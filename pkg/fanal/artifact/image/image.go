@@ -130,7 +130,7 @@ func (a Artifact) Inspect(ctx context.Context) (ref artifact.Reference, err erro
 		return artifact.Reference{}, err
 	}
 
-	layerKeyMap := a.fillLayersMetadata(diffIDs, layerKeys, layerSizes, configFile)
+	layerKeyMap := a.layersInfo(diffIDs, layerKeys, layerSizes, configFile)
 
 	missingImage, missingLayers, err := a.cache.MissingBlobs(imageKey, layerKeys)
 	if err != nil {
@@ -186,7 +186,7 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []str
 	return imageKey, layerKeys, nil
 }
 
-func (a Artifact) fillLayersMetadata(diffIDs, layerKeys []string, layerSizes map[string]int64, configFile *v1.ConfigFile) map[string]types.Layer {
+func (a Artifact) layersInfo(diffIDs, layerKeys []string, layerSizes map[string]int64, configFile *v1.ConfigFile) map[string]types.Layer {
 	// Parse histories and extract a list of "created_by"
 	layerKeyMap := a.consolidateCreatedBy(diffIDs, layerKeys, configFile)
 

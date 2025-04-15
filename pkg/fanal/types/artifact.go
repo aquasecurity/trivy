@@ -95,6 +95,31 @@ type Layer struct {
 	WhiteoutFiles []string `json:",omitempty"`
 }
 
+func (l Layer) Empty() bool {
+	return l.Size == 0 && l.Digest == "" && l.DiffID == "" && l.CreatedBy == "" &&
+		len(l.OpaqueDirs) == 0 && len(l.WhiteoutFiles) == 0
+}
+
+type Layers []Layer
+
+func (lm Layers) TotalSize() int64 {
+	var totalSize int64
+	for _, layer := range lm {
+		totalSize += layer.Size
+	}
+	return totalSize
+}
+
+func (lm Layers) Empty() bool {
+	if len(lm) == 0 {
+		return true
+	} else if len(lm) > 1 {
+		return false
+	}
+
+	return lm[0].Empty()
+}
+
 type PackageInfo struct {
 	FilePath string
 	Packages Packages
@@ -160,7 +185,7 @@ type ArtifactInfo struct {
 type BlobInfo struct {
 	SchemaVersion int
 
-	// Layer metadata
+	// Layer info
 	Size          int64    `json:",omitempty"`
 	Digest        string   `json:",omitempty"`
 	DiffID        string   `json:",omitempty"`
@@ -196,31 +221,6 @@ func (b BlobInfo) Layer() Layer {
 		OpaqueDirs:    b.OpaqueDirs,
 		WhiteoutFiles: b.WhiteoutFiles,
 	}
-}
-
-func (l Layer) Empty() bool {
-	return l.Size == 0 && l.Digest == "" && l.DiffID == "" && l.CreatedBy == "" &&
-		len(l.OpaqueDirs) == 0 && len(l.WhiteoutFiles) == 0
-}
-
-type Layers []Layer
-
-func (lm Layers) TotalSize() int64 {
-	var totalSize int64
-	for _, layer := range lm {
-		totalSize += layer.Size
-	}
-	return totalSize
-}
-
-func (lm Layers) Empty() bool {
-	if len(lm) == 0 {
-		return true
-	} else if len(lm) > 1 {
-		return false
-	}
-
-	return lm[0].Empty()
 }
 
 // ArtifactDetail represents the analysis result.

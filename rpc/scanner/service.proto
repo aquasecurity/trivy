@@ -36,8 +36,8 @@ message ScanOptions {
 }
 
 message ScanResponse {
-  common.OS       os                            = 1;
-  repeated Result results                       = 3;
+  common.OS       os           = 1;
+  repeated Result results      = 3;
   repeated common.Layer layers = 4;
 }
 

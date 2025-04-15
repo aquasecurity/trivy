@@ -23,14 +23,14 @@ func NewApplier(c cache.LocalArtifactCache) Applier {
 
 func (a *applier) ApplyLayers(imageID string, layerKeys []string) (ftypes.ArtifactDetail, error) {
 	var layers []ftypes.BlobInfo
-	var layersMetadata ftypes.Layers
+	var layersInfo ftypes.Layers
 	for _, key := range layerKeys {
 		blob, _ := a.cache.GetBlob(key) // nolint
 		if blob.SchemaVersion == 0 {
 			return ftypes.ArtifactDetail{}, xerrors.Errorf("layer cache missing: %s", key)
 		}
 		if l := blob.Layer(); !l.Empty() {
-			layersMetadata = append(layersMetadata, l)
+			layersInfo = append(layersInfo, l)
 		}
 		layers = append(layers, blob)
 	}
@@ -44,8 +44,8 @@ func (a *applier) ApplyLayers(imageID string, layerKeys []string) (ftypes.Artifa
 		Secret:           imageInfo.Secret,
 	}
 
-	// Fill layers Metadata
-	mergedLayer.Layers = layersMetadata
+	// Fill layers info
+	mergedLayer.Layers = layersInfo
 
 	if !mergedLayer.OS.Detected() {
 		return mergedLayer, analyzer.ErrUnknownOS // send back package and apps info regardless
