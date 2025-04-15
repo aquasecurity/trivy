@@ -5,7 +5,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes/parser"
 )
@@ -39,7 +38,6 @@ func TestJsonManifestToRego(t *testing.T) {
 	expected := map[string]any{
 		"__defsec_metadata": map[string]any{
 			"filepath":  filePath,
-			"offset":    0,
 			"startline": 1,
 			"endline":   20,
 		},
@@ -48,7 +46,6 @@ func TestJsonManifestToRego(t *testing.T) {
 		"metadata": map[string]any{
 			"__defsec_metadata": map[string]any{
 				"filepath":  filePath,
-				"offset":    0,
 				"startline": 4,
 				"endline":   6,
 			},
@@ -57,7 +54,6 @@ func TestJsonManifestToRego(t *testing.T) {
 		"spec": map[string]any{
 			"__defsec_metadata": map[string]any{
 				"filepath":  filePath,
-				"offset":    0,
 				"startline": 7,
 				"endline":   19,
 			},
@@ -65,7 +61,6 @@ func TestJsonManifestToRego(t *testing.T) {
 				map[string]any{
 					"__defsec_metadata": map[string]any{
 						"filepath":  filePath,
-						"offset":    0,
 						"startline": 9,
 						"endline":   17,
 					},
@@ -95,7 +90,6 @@ func TestManifestToRego(t *testing.T) {
 			expected: map[string]any{
 				"__defsec_metadata": map[string]any{
 					"filepath":  "",
-					"offset":    0,
 					"startline": 1,
 					"endline":   1,
 				},
@@ -108,7 +102,6 @@ func TestManifestToRego(t *testing.T) {
 			expected: map[string]any{
 				"__defsec_metadata": map[string]any{
 					"filepath":  "",
-					"offset":    0,
 					"startline": 1,
 					"endline":   1,
 				},
@@ -121,7 +114,6 @@ func TestManifestToRego(t *testing.T) {
 			expected: map[string]any{
 				"__defsec_metadata": map[string]any{
 					"filepath":  "",
-					"offset":    0,
 					"startline": 1,
 					"endline":   1,
 				},
@@ -132,8 +124,7 @@ func TestManifestToRego(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var manifest parser.Manifest
-			err := yaml.Unmarshal([]byte(tt.src), &manifest)
+			manifest, err := parser.ManifestFromYAML("", []byte(tt.src), 0)
 			require.NoError(t, err)
 			data := manifest.ToRego()
 			assert.Equal(t, tt.expected, data)

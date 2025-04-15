@@ -5,51 +5,66 @@ import (
 
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/iac/ast"
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 type Manifest struct {
-	Path    string
-	Content *ManifestNode
+	Path   string
+	Offset int
+	Root   *ast.Node
 }
 
-func NewManifest(path string, root *ManifestNode) *Manifest {
-	root.Walk(func(n *ManifestNode) {
-		n.Path = path
-	})
-	return &Manifest{
-		Path:    path,
-		Content: root,
+func (m *Manifest) Validate() error {
+	if m.Root == nil {
+		return fmt.Errorf("content is nil")
 	}
-}
 
-func (m *Manifest) UnmarshalYAML(value *yaml.Node) error {
-
-	switch value.Tag {
-	case string(TagMap):
-		node := new(ManifestNode)
-		node.Path = m.Path
-		if err := value.Decode(node); err != nil {
-			return err
-		}
-		m.Content = node
-	default:
-		return fmt.Errorf("failed to handle tag: %s", value.Tag)
+	if m.Root.Kind != ast.MappingNode {
+		return fmt.Errorf("expected root node to be a map, got %s", m.Root.Kind)
 	}
 
 	return nil
 }
 
-func (m *Manifest) ToRego() any {
-	return m.Content.ToRego()
+func (m *Manifest) IsEmpty() bool {
+	if m.Root == nil {
+		return true
+	}
+	v, ok := m.Root.Value.(map[string]*ast.Node)
+	if !ok {
+		return true
+	}
+	return len(v) == 0
 }
 
-func ManifestFromJSON(path string, data []byte) (*Manifest, error) {
-	var root = &ManifestNode{}
+func (m *Manifest) ToRego() any {
+	return NodeToRego(m.Root, m.Path, m.Offset)
+}
 
-	if err := xjson.Unmarshal(data, root); err != nil {
+func ManifestFromYAML(path string, data []byte, offset int) (*Manifest, error) {
+	var root ast.Node
+
+	if err := yaml.Unmarshal(data, &root); err != nil {
 		return nil, err
 	}
 
-	return NewManifest(path, root), nil
+	return &Manifest{
+		Path:   path,
+		Root:   &root,
+		Offset: offset,
+	}, nil
+}
+
+func ManifestFromJSON(path string, data []byte) (*Manifest, error) {
+	var root ast.Node
+
+	if err := xjson.Unmarshal(data, &root); err != nil {
+		return nil, err
+	}
+
+	return &Manifest{
+		Path: path,
+		Root: &root,
+	}, nil
 }
