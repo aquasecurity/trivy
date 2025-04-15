@@ -157,15 +157,13 @@ type ArtifactInfo struct {
 type BlobInfo struct {
 	SchemaVersion int
 
-	// Layer information
-	LayerMetadata LayerMetadata
-
-	// Fields for backward compatibility
-	Digest        string   `json:",omitempty"` // Deprecated: Use LayersMetadata. Kept for backward compatibility.
-	DiffID        string   `json:",omitempty"` // Deprecated: Use LayersMetadata. Kept for backward compatibility.
-	CreatedBy     string   `json:",omitempty"` // Deprecated: Use LayersMetadata. Kept for backward compatibility.
-	OpaqueDirs    []string `json:",omitempty"` // Deprecated: Use LayersMetadata. Kept for backward compatibility.
-	WhiteoutFiles []string `json:",omitempty"` // Deprecated: Use LayersMetadata. Kept for backward compatibility.
+	// Layer metadata
+	Size          int64    `json:",omitempty"`
+	Digest        string   `json:",omitempty"`
+	DiffID        string   `json:",omitempty"`
+	CreatedBy     string   `json:",omitempty"`
+	OpaqueDirs    []string `json:",omitempty"`
+	WhiteoutFiles []string `json:",omitempty"`
 
 	// Analysis result
 	OS                OS                 `json:",omitempty"`
@@ -187,12 +185,8 @@ type BlobInfo struct {
 }
 
 func (b BlobInfo) Layer() LayerMetadata {
-	if !b.LayerMetadata.Empty() {
-		return b.LayerMetadata
-	}
-
-	// For backward compatibility
 	return LayerMetadata{
+		Size:          b.Size,
 		Digest:        b.Digest,
 		DiffID:        b.DiffID,
 		CreatedBy:     b.CreatedBy,

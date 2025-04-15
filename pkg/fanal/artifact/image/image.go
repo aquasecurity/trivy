@@ -445,14 +445,13 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo types.LayerMetadat
 	blobInfo := types.BlobInfo{
 		SchemaVersion: types.BlobJSONSchemaVersion,
 
-		// For backward compatibility
+		Size:          layerInfo.Size,
 		Digest:        layerInfo.Digest,
 		DiffID:        layerInfo.DiffID,
 		CreatedBy:     layerInfo.CreatedBy,
 		OpaqueDirs:    layerInfo.OpaqueDirs,
 		WhiteoutFiles: layerInfo.WhiteoutFiles,
 
-		LayerMetadata:     layerInfo,
 		OS:                result.OS,
 		Repository:        result.Repository,
 		PackageInfos:      result.PackageInfos,

@@ -833,11 +833,11 @@ func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 		CustomResources:   ConvertFromRPCCustomResources(req.BlobInfo.CustomResources),
 		Secrets:           ConvertFromRPCSecrets(req.BlobInfo.Secrets),
 		Licenses:          ConvertFromRPCLicenseFiles(req.BlobInfo.Licenses),
-		LayerMetadata:     ConvertFromRPCLayerMetadata(req.BlobInfo.LayerMetadata),
 
-		// For backward compatibility
+		Size:          req.BlobInfo.Size,
 		Digest:        req.BlobInfo.Digest,
 		DiffID:        req.BlobInfo.DiffId,
+		CreatedBy:     req.BlobInfo.CreatedBy,
 		OpaqueDirs:    req.BlobInfo.OpaqueDirs,
 		WhiteoutFiles: req.BlobInfo.WhiteoutFiles,
 	}
@@ -948,12 +948,12 @@ func ConvertToRPCPutBlobRequest(diffID string, blobInfo ftypes.BlobInfo) *cache.
 			Secrets:           ConvertToRPCSecrets(blobInfo.Secrets),
 			Licenses:          ConvertToRPCLicenseFiles(blobInfo.Licenses),
 
-			LayerMetadata: ConvertToRPCLayerMetadata(blobInfo.LayerMetadata),
-			// For backward compatibility
-			Digest:        blobInfo.Layer().Digest,
-			DiffId:        blobInfo.Layer().DiffID,
-			OpaqueDirs:    blobInfo.Layer().OpaqueDirs,
-			WhiteoutFiles: blobInfo.Layer().WhiteoutFiles,
+			Size:          blobInfo.Size,
+			Digest:        blobInfo.Digest,
+			DiffId:        blobInfo.DiffID,
+			CreatedBy:     blobInfo.CreatedBy,
+			OpaqueDirs:    blobInfo.OpaqueDirs,
+			WhiteoutFiles: blobInfo.WhiteoutFiles,
 		},
 	}
 }

@@ -356,15 +356,10 @@ func TestArtifact_Inspect(t *testing.T) {
 					ID: "sha256:5d77c13a4b76f19d2a01bb971b3d6c67e550dffdfb82aed6a0086e87218f33cb",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          5861888,
 						Digest:        "",
 						DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 						CreatedBy:     "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
-						LayerMetadata: types.LayerMetadata{
-							Size:      5861888,
-							Digest:    "",
-							DiffID:    "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
-							CreatedBy: "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
-						},
 						OS: types.OS{
 							Family: "alpine",
 							Name:   "3.11.5",
@@ -493,15 +488,10 @@ func TestArtifact_Inspect(t *testing.T) {
 					ID: "sha256:67c88202c1f92978398a3ceff0c536282eb31972d92c1b913afb055f05dd05fd",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          3061760,
 						Digest:        "",
 						DiffID:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 						CreatedBy:     "bazel build ...",
-						LayerMetadata: types.LayerMetadata{
-							Size:      3061760,
-							Digest:    "",
-							DiffID:    "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							CreatedBy: "bazel build ...",
-						},
 						OS: types.OS{
 							Family: "debian",
 							Name:   "9.9",
@@ -586,15 +576,10 @@ func TestArtifact_Inspect(t *testing.T) {
 					ID: "sha256:b81648381fb192c7034e72d517dd46aedf392f628b2a242c0ed0b06b8e9c2bec",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          15441920,
 						Digest:        "",
 						DiffID:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 						CreatedBy:     "bazel build ...",
-						LayerMetadata: types.LayerMetadata{
-							Size:      15441920,
-							Digest:    "",
-							DiffID:    "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-							CreatedBy: "bazel build ...",
-						},
 						PackageInfos: []types.PackageInfo{
 							{
 								FilePath: "var/lib/dpkg/status.d/libc6",
@@ -686,17 +671,11 @@ func TestArtifact_Inspect(t *testing.T) {
 					ID: "sha256:2d916a1f47dadcbf5c842a0dd26fe4fb2f94743d829e23dc614c0883e5473aaf",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          29696,
 						Digest:        "",
 						DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 						CreatedBy:     "COPY file:842584685f26edb24dc305d76894f51cfda2bad0c24a05e727f9d4905d184a70 in /php-app/composer.lock ",
 						OpaqueDirs:    []string{"php-app/"},
-						LayerMetadata: types.LayerMetadata{
-							Size:       29696,
-							Digest:     "",
-							DiffID:     "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-							CreatedBy:  "COPY file:842584685f26edb24dc305d76894f51cfda2bad0c24a05e727f9d4905d184a70 in /php-app/composer.lock ",
-							OpaqueDirs: []string{"php-app/"},
-						},
 						Applications: []types.Application{
 							{
 								Type:     "composer",
@@ -899,21 +878,12 @@ func TestArtifact_Inspect(t *testing.T) {
 					ID: "sha256:ed1912a62cc8057cbb5ed9e1cfa47d34270e2417dd51514185e24852d8001686",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          6656,
 						Digest:        "",
 						DiffID:        "sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
 						CreatedBy:     "COPY file:c6d0373d380252b91829a5bb3c81d5b1afa574c91cef7752d18170a231c31f6d in /ruby-app/Gemfile.lock ",
-
 						OpaqueDirs: []string{
 							"ruby-app/",
-						},
-						LayerMetadata: types.LayerMetadata{
-							Size:      6656,
-							Digest:    "",
-							DiffID:    "sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
-							CreatedBy: "COPY file:c6d0373d380252b91829a5bb3c81d5b1afa574c91cef7752d18170a231c31f6d in /ruby-app/Gemfile.lock ",
-							OpaqueDirs: []string{
-								"ruby-app/",
-							},
 						},
 						Applications: []types.Application{
 							{
@@ -1879,64 +1849,42 @@ func TestArtifact_Inspect(t *testing.T) {
 					ID: "sha256:f804054cbf18c82fbb7a136450a161264bb3e531d29aedb4c13eada052b379e6",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          3061760,
 						Digest:        "",
 						DiffID:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 						CreatedBy:     "bazel build ...",
-						LayerMetadata: types.LayerMetadata{
-							Size:      3061760,
-							Digest:    "",
-							DiffID:    "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							CreatedBy: "bazel build ...",
-						},
 					},
 				},
 				{
 					ID: "sha256:5d76e1081a0f708a98132175ac81b897c8efa5d39ab75e5df87f42ac619962d8",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          15441920,
 						Digest:        "",
 						DiffID:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 						CreatedBy:     "bazel build ...",
-						LayerMetadata: types.LayerMetadata{
-							Size:      15441920,
-							Digest:    "",
-							DiffID:    "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-							CreatedBy: "bazel build ...",
-						},
 					},
 				},
 				{
 					ID: "sha256:6937ca98d84de22331089747a24e9e8b032c61133958a42990d5a5af718fdcd8",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          29696,
 						Digest:        "",
 						DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 						CreatedBy:     "COPY file:842584685f26edb24dc305d76894f51cfda2bad0c24a05e727f9d4905d184a70 in /php-app/composer.lock ",
 						OpaqueDirs:    []string{"php-app/"},
-						LayerMetadata: types.LayerMetadata{
-							Size:       29696,
-							Digest:     "",
-							DiffID:     "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-							CreatedBy:  "COPY file:842584685f26edb24dc305d76894f51cfda2bad0c24a05e727f9d4905d184a70 in /php-app/composer.lock ",
-							OpaqueDirs: []string{"php-app/"},
-						},
 					},
 				},
 				{
 					ID: "sha256:b6d38e35ff57fda90aa2e57f02fd96e9919d29dbb22d45d95fe3534d79af08fc",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          6656,
 						Digest:        "",
 						DiffID:        "sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
 						CreatedBy:     "COPY file:c6d0373d380252b91829a5bb3c81d5b1afa574c91cef7752d18170a231c31f6d in /ruby-app/Gemfile.lock ",
 						OpaqueDirs:    []string{"ruby-app/"},
-						LayerMetadata: types.LayerMetadata{
-							Size:       6656,
-							Digest:     "",
-							DiffID:     "sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
-							CreatedBy:  "COPY file:c6d0373d380252b91829a5bb3c81d5b1afa574c91cef7752d18170a231c31f6d in /ruby-app/Gemfile.lock ",
-							OpaqueDirs: []string{"ruby-app/"},
-						},
 					},
 				},
 			},

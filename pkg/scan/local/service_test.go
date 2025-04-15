@@ -177,13 +177,11 @@ func TestScanner_Scan(t *testing.T) {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					Size:          1000,
+					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					OS: ftypes.OS{
 						Family: ftypes.Alpine,
 						Name:   "3.11",
-					},
-					LayerMetadata: ftypes.LayerMetadata{
-						Size:   1000,
-						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					},
 					PackageInfos: []ftypes.PackageInfo{
 						{
@@ -300,13 +298,11 @@ func TestScanner_Scan(t *testing.T) {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					Size:          1000,
+					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					OS: ftypes.OS{
 						Family: ftypes.Alpine,
 						Name:   "3.11",
-					},
-					LayerMetadata: ftypes.LayerMetadata{
-						Size:   1000,
-						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					},
 					PackageInfos: []ftypes.PackageInfo{
 						{
@@ -376,13 +372,11 @@ func TestScanner_Scan(t *testing.T) {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					Size:          1000,
+					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					OS: ftypes.OS{
 						Family: ftypes.Alpine,
 						Name:   "3.11",
-					},
-					LayerMetadata: ftypes.LayerMetadata{
-						Size:   1000,
-						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					},
 					PackageInfos: []ftypes.PackageInfo{
 						{
@@ -503,10 +497,8 @@ func TestScanner_Scan(t *testing.T) {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
-					LayerMetadata: ftypes.LayerMetadata{
-						Size:   1000,
-						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
-					},
+					Size:          1000,
+					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					Applications: []ftypes.Application{
 						{
 							Type:     ftypes.Bundler,
@@ -707,13 +699,11 @@ func TestScanner_Scan(t *testing.T) {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					Size:          1000,
+					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					OS: ftypes.OS{
 						Family: "alpine",
 						Name:   "3.11",
-					},
-					LayerMetadata: ftypes.LayerMetadata{
-						Size:   1000,
-						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					},
 					Applications: []ftypes.Application{
 						{
@@ -800,13 +790,11 @@ func TestScanner_Scan(t *testing.T) {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					Size:          1000,
+					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					OS: ftypes.OS{
 						Family: "fedora",
 						Name:   "27",
-					},
-					LayerMetadata: ftypes.LayerMetadata{
-						Size:   1000,
-						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					},
 					Applications: []ftypes.Application{
 						{
@@ -913,13 +901,11 @@ func TestScanner_Scan(t *testing.T) {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutBlob("sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					Size:          1000,
+					DiffID:        "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 					OS: ftypes.OS{
 						Family: "alpine",
 						Name:   "3.11",
-					},
-					LayerMetadata: ftypes.LayerMetadata{
-						Size:   1000,
-						DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 					},
 					PackageInfos: []ftypes.PackageInfo{
 						{
@@ -1016,13 +1002,11 @@ func TestScanner_Scan(t *testing.T) {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					Size:          1000,
+					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					OS: ftypes.OS{
 						Family: ftypes.Alpine,
 						Name:   "3.11",
-					},
-					LayerMetadata: ftypes.LayerMetadata{
-						Size:   1000,
-						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					},
 					PackageInfos: []ftypes.PackageInfo{
 						{
@@ -1093,11 +1077,8 @@ func TestScanner_Scan(t *testing.T) {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					Size:          1000,
 					DiffID:        "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
-					LayerMetadata: ftypes.LayerMetadata{
-						Size:   1000,
-						DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
-					},
 					OS: ftypes.OS{
 						Family: ftypes.Alpine,
 						Name:   "3.11",
@@ -1269,13 +1250,11 @@ func TestScanner_Scan(t *testing.T) {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					Size:          1000,
+					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					OS: ftypes.OS{
 						Family: "alpine",
 						Name:   "3.11",
-					},
-					LayerMetadata: ftypes.LayerMetadata{
-						Size:   1000,
-						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					},
 					Applications: []ftypes.Application{
 						{
@@ -1311,13 +1290,11 @@ func TestScanner_Scan(t *testing.T) {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					Size:          1000,
+					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					OS: ftypes.OS{
 						Family: ftypes.Alpine,
 						Name:   "3.11",
-					},
-					LayerMetadata: ftypes.LayerMetadata{
-						Size:   1000,
-						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					},
 					Misconfigurations: []ftypes.Misconfiguration{
 						{
