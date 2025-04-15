@@ -10,55 +10,17 @@ import (
 
 	"github.com/go-json-experiment/json"
 	"github.com/go-json-experiment/json/jsontext"
-	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 )
 
 type Parameter struct {
-	// TODO: remove inner
-	inner parameterInner
-}
-
-type parameterInner struct {
-	Type    string `yaml:"Type"`
-	Default any    `yaml:"Default"`
-}
-
-func (p *Parameter) UnmarshalYAML(node *yaml.Node) error {
-	return node.Decode(&p.inner)
-}
-
-func (p *Parameter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-
-	var inner parameterInner
-
-	if err := json.UnmarshalDecode(dec, &inner,
-		json.WithUnmarshalers(json.UnmarshalFromFunc(unmarshalIntFirst)),
-	); err != nil {
-		return err
-	}
-
-	p.inner = inner
-	return nil
-}
-
-func unmarshalIntFirst(dec *jsontext.Decoder, v *any) error {
-	if dec.PeekKind() == '0' {
-		if jval, err := dec.ReadValue(); err != nil {
-			return err
-		} else if v1, err := strconv.ParseInt(string(jval), 10, 64); err == nil {
-			*v = int(v1)
-		} else if v1, err := strconv.ParseFloat(string(jval), 64); err == nil {
-			*v = v1
-		}
-		return nil
-	}
-	return json.SkipFunc
+	Typ     string
+	Default any
 }
 
 func (p *Parameter) Type() cftypes.CfType {
-	switch p.inner.Type {
+	switch p.Typ {
 	case "Boolean":
 		return cftypes.Bool
 	case "String":
@@ -70,22 +32,18 @@ func (p *Parameter) Type() cftypes.CfType {
 	}
 }
 
-func (p *Parameter) Default() any {
-	return p.inner.Default
-}
-
 func (p *Parameter) UpdateDefault(inVal any) {
 	passedVal := inVal.(string)
 
-	switch p.inner.Type {
+	switch p.Typ {
 	case "Boolean":
-		p.inner.Default, _ = strconv.ParseBool(passedVal)
+		p.Default, _ = strconv.ParseBool(passedVal)
 	case "String":
-		p.inner.Default = passedVal
+		p.Default = passedVal
 	case "Integer":
-		p.inner.Default, _ = strconv.Atoi(passedVal)
+		p.Default, _ = strconv.Atoi(passedVal)
 	default:
-		p.inner.Default = passedVal
+		p.Default = passedVal
 	}
 }
 

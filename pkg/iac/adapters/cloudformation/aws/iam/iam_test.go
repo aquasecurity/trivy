@@ -171,14 +171,6 @@ Resources:
 				},
 			},
 		},
-		{
-			name: "empty",
-			source: `AWSTemplateFormatVersion: 2010-09-09
-Resources:
-
-  `,
-			expected: iam.IAM{},
-		},
 	}
 
 	for _, tt := range tests {

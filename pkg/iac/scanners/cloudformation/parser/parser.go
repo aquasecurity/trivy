@@ -12,6 +12,7 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/iac/ast"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
@@ -122,25 +123,31 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, filePath string) (fc
 
 	lines := strings.Split(string(content), "\n")
 
-	fctx = &FileContext{
-		filepath:     filePath,
-		lines:        lines,
-		SourceFormat: sourceFmt,
-	}
+	var root ast.Node
 
 	switch sourceFmt {
 	case YamlSourceFormat:
-		if err := yaml.Unmarshal(content, fctx); err != nil {
+		if err := yaml.Unmarshal(content, &root); err != nil {
 			return nil, NewErrInvalidContent(filePath, err)
 		}
-		fctx.Ignores = ignore.Parse(string(content), filePath, "")
 	case JsonSourceFormat:
-		if err := xjson.Unmarshal(content, fctx); err != nil {
+		if err := xjson.Unmarshal(content, &root); err != nil {
 			return nil, NewErrInvalidContent(filePath, err)
 		}
 	}
 
-	fctx.stripNullProperties()
+	fctx, err = TransformASTToCF(fsys, filePath, &root)
+	if err != nil {
+		return nil, fmt.Errorf("convert ast to file context: %w", err)
+	}
+
+	if err := fctx.Validate(); err != nil {
+		return nil, fmt.Errorf("template is invalid: %w", err)
+	}
+
+	if sourceFmt == YamlSourceFormat {
+		fctx.Ignores = ignore.Parse(string(content), filePath, "")
+	}
 
 	fctx.overrideParameters(p.overridedParameters)
 
@@ -153,16 +160,6 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, filePath string) (fc
 	fctx.filepath = filePath
 
 	p.logger.Debug("Context loaded from source", log.FilePath(filePath))
-
-	// the context must be set to conditions before resources
-	for _, c := range fctx.Conditions {
-		c.setContext(fctx)
-	}
-
-	for name, r := range fctx.Resources {
-		r.configureResource(name, fsys, filePath, fctx)
-	}
-
 	return fctx, nil
 }
 

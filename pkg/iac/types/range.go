@@ -163,3 +163,7 @@ func (r Range) Includes(other Range) bool {
 func (r Range) Covers(other Range) bool {
 	return r.startLine <= other.startLine && r.endLine >= other.endLine
 }
+
+func (r Range) SubRange(startLine, endLine int) Range {
+	return NewRange(r.filename, startLine, endLine, "", r.fs)
+}
