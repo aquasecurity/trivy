@@ -113,8 +113,10 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 func (a *gomodAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
 
-	// Save required files from non-vendor directory
-	if slices.Contains(requiredFiles, fileName) && !xpath.Contains(filePath, "vendor") {
+	// Save required files (go.mod/go.sum)
+	// Note: vendor directory doesn't contain these files
+	// See: https://github.com/aquasecurity/trivy/issues/8527#issuecomment-2777848027
+	if slices.Contains(requiredFiles, fileName) {
 		return true
 	}
 
@@ -156,8 +158,8 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application, fsys fs.FS)
 		vendorDir := filepath.Join(filepath.Dir(app.FilePath), "vendor")
 
 		// Check if the vendor directory exists
-		_, err := fs.Stat(fsys, vendorDir)
-		vendorDirFound := err == nil
+		d, err := fs.Stat(fsys, vendorDir)
+		vendorDirFound := !errors.Is(err, os.ErrNotExist) && d.IsDir()
 		if vendorDirFound {
 			a.logger.Debug("Vendor directory found", log.String("path", vendorDir))
 			modPath = vendorDir
