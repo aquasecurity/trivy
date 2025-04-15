@@ -3,6 +3,7 @@ package parser
 import (
 	"io/fs"
 
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/zclconf/go-cty/cty"
 )
 
@@ -17,6 +18,12 @@ func OptionWithTFVarsPaths(paths ...string) Option {
 func OptionStopOnHCLError(stop bool) Option {
 	return func(p *Parser) {
 		p.stopOnHCLError = stop
+	}
+}
+
+func OptionWithLogger(log *log.Logger) Option {
+	return func(p *Parser) {
+		p.logger = log
 	}
 }
 

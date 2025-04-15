@@ -2625,3 +2625,109 @@ resource "foo" "bar" {
 	attr := foo.GetAttribute("attr")
 	assert.False(t, attr.IsResolvable())
 }
+
+func TestInstancedLogger(t *testing.T) {
+	// reset global logger
+	prevLog := slog.Default()
+	defer slog.SetDefault(prevLog)
+
+	// capture logs to the global logger
+	var buf bytes.Buffer
+
+	slog.SetDefault(slog.New(log.NewHandler(&buf, &log.Options{
+		Level: slog.LevelDebug,
+	})))
+
+	// create a new logger for the parser
+	var instance bytes.Buffer
+	logger := slog.New(log.NewHandler(&instance, &log.Options{
+		Level: slog.LevelDebug,
+	}))
+
+	opts := []Option{
+		OptionWithLogger(logger),
+		OptionStopOnHCLError(false),
+		OptionWithDownloads(false),
+	}
+	// Run some scenarios that will trigger logs
+	t.Run("ParserLogs", func(t *testing.T) {
+		fsys := fstest.MapFS{
+			"main.tf": &fstest.MapFile{
+				Data: []byte(`
+					bare words
+				`)},
+		}
+
+		parser := New(fsys, "", opts...)
+
+		// No error is returned, but some parser logs are expected
+		err := parser.ParseFS(t.Context(), ".")
+		require.NoError(t, err)
+		require.NotEmpty(t, instance.String())
+		instance.Reset()
+	})
+
+	t.Run("Evaluator", func(t *testing.T) {
+		fsys := fstest.MapFS{
+			"main.tf": &fstest.MapFile{
+				Data: []byte(`
+					locals {
+						phrase = "hello world"
+					}
+
+					output "phrase" {
+					  value = locals.phrase
+					}
+				`)},
+		}
+
+		parser := New(fsys, "", opts...)
+
+		err := parser.ParseFS(t.Context(), ".")
+		require.NoError(t, err)
+
+		_, err = parser.EvaluateAll(t.Context())
+		require.NoError(t, err)
+
+		require.NotEmpty(t, instance.String())
+		instance.Reset()
+	})
+
+	t.Run("ModuleFetching", func(t *testing.T) {
+		fsys := testutil.CreateFS(t, map[string]string{
+			"main.tf": `
+				module "invalid" {
+					source = "totally.invalid"
+				}
+
+				module "echo" {
+					source = "./modules/echo"				
+					input = "hello"
+				}
+			`,
+			"modules/echo.tf": `
+				variable "input" {
+					type = string				
+				}
+				output "echo" {
+					value = var.input 
+				}
+			`,
+		})
+
+		parser := New(fsys, "", opts...)
+
+		err := parser.ParseFS(t.Context(), ".")
+		require.NoError(t, err)
+
+		_, err = parser.EvaluateAll(t.Context())
+		require.NoError(t, err)
+
+		require.NotEmpty(t, instance.String())
+		instance.Reset()
+	})
+
+	if !assert.True(t, len(buf.Bytes()) == 0, "logs sent to global logger") {
+		t.Log(string(buf.Bytes())) // Helpful for debugging
+	}
+}
