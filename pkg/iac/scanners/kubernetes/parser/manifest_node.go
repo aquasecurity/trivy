@@ -3,8 +3,9 @@ package parser
 import (
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/iac/ast"
 	"github.com/samber/lo"
+
+	"github.com/aquasecurity/trivy/pkg/iac/ast"
 )
 
 func NodeToRego(n *ast.Node, filePath string, offset int) any {

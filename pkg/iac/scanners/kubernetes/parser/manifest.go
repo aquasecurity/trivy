@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"errors"
 	"fmt"
 
 	"gopkg.in/yaml.v3"
@@ -17,7 +18,7 @@ type Manifest struct {
 
 func (m *Manifest) Validate() error {
 	if m.Root == nil {
-		return fmt.Errorf("content is nil")
+		return errors.New("content is nil")
 	}
 
 	if m.Root.Kind != ast.MappingNode {

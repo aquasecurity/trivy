@@ -20,17 +20,12 @@ const (
 type Property struct {
 	ctx         *FileContext
 	Type        cftypes.CfType
-	Value       any `json:"Value" yaml:"Value"`
+	Value       any
 	name        string
-	comment     string
 	rng         iacTypes.Range
 	parentRange iacTypes.Range
 	logicalId   string
 	unresolved  bool
-}
-
-func (p *Property) Comment() string {
-	return p.comment
 }
 
 func (p *Property) Metadata() iacTypes.Metadata {
@@ -189,7 +184,6 @@ func (p *Property) deriveResolved(propType cftypes.CfType, propValue any) *Prope
 		Type:        propType,
 		ctx:         p.ctx,
 		name:        p.name,
-		comment:     p.comment,
 		rng:         p.rng,
 		parentRange: p.parentRange,
 		logicalId:   p.logicalId,

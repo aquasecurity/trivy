@@ -6,10 +6,11 @@ import (
 	"path"
 	"time"
 
+	"github.com/samber/lo"
+
 	"github.com/aquasecurity/trivy/pkg/iac/ast"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/samber/lo"
 )
 
 func TransformASTToCF(fsys fs.FS, filePath string, root *ast.Node) (*FileContext, error) {
@@ -41,90 +42,82 @@ type ASTToCFTransformer struct {
 }
 
 func (t *ASTToCFTransformer) processNode(n *ast.Node) error {
-	if n.Kind != ast.MappingNode || n.Value == nil {
-		return nil
+	children, err := getNodeMap(n, "root")
+	if err != nil {
+		return err
 	}
-
-	children, ok := n.Value.(map[string]*ast.Node)
-	if !ok {
-		return fmt.Errorf("expected mapping node at root")
-	}
-
-	fileRange := iacTypes.NewRange(t.filePath, n.StartLine, n.EndLine, "", t.fsys)
 
 	for key, child := range children {
+		var err error
 		switch key {
-
 		case "Parameters":
-			if child.Value == nil {
-				continue
-			}
-			paramNodes, ok := child.Value.(map[string]*ast.Node)
-			if !ok {
-				return fmt.Errorf("parameters node is not a map")
-			}
-			for name, paramNode := range paramNodes {
-				param := &Parameter{}
-				if err := t.processParameter(paramNode, param); err != nil {
-					return fmt.Errorf("failed to process parameter %q: %w", name, err)
-				}
-				t.fctx.Parameters[name] = param
-			}
-
+			err = t.handleParameters(child)
 		case "Resources":
-			if child.Value == nil {
-				continue
-			}
-			resourceNodes, ok := child.Value.(map[string]*ast.Node)
-			if !ok {
-				return fmt.Errorf("resources node is not a map")
-			}
-			for name, resNode := range resourceNodes {
-				startLine := resNode.StartLine
-				if isYAML(t.filePath) {
-					startLine = startLine - 1
-				}
-				resource := &Resource{
-					ctx: t.fctx,
-					id:  name,
-					rng: iacTypes.NewRange(t.filePath, startLine, resNode.EndLine, "", t.fsys),
-				}
-				if err := t.processResource(resNode, resource); err != nil {
-					return fmt.Errorf("failed to process resource %q: %w", name, err)
-				}
-				t.fctx.Resources[name] = resource
-			}
-
+			err = t.handleResources(child)
 		case "Mappings":
-			if err := t.processMappings(child); err != nil {
-				return fmt.Errorf("failed to process Mappings: %w", err)
-			}
-
+			err = t.processMappings(child)
 		case "Conditions":
-			if child.Value == nil {
-				continue
-			}
-			conditionNodes, ok := child.Value.(map[string]*ast.Node)
-			if !ok {
-				return fmt.Errorf("conditions node is not a map")
-			}
-
-			for name, condNode := range conditionNodes {
-				prop := Property{
-					ctx:         t.fctx,
-					name:        key,
-					rng:         fileRange.SubRange(child.StartLine, child.EndLine),
-					parentRange: fileRange,
-				}
-				if err := t.processProperty(condNode, &prop); err != nil {
-					return fmt.Errorf("failed to process condition %q: %w", name, err)
-				}
-				t.fctx.Conditions[name] = prop
-			}
+			err = t.handleConditions(child)
+		}
+		if err != nil {
+			return fmt.Errorf("failed to process %q: %w", key, err)
 		}
 	}
 
 	return nil
+}
+
+func (t *ASTToCFTransformer) handleParameters(node *ast.Node) error {
+	return t.handleSection(node, "parameters", func(children map[string]*ast.Node) error {
+		for name, paramNode := range children {
+			param := &Parameter{}
+			if err := t.processParameter(paramNode, param); err != nil {
+				return fmt.Errorf("process parameter %q: %w", name, err)
+			}
+			t.fctx.Parameters[name] = param
+		}
+		return nil
+	})
+}
+
+func (t *ASTToCFTransformer) handleResources(node *ast.Node) error {
+	return t.handleSection(node, "resources", func(children map[string]*ast.Node) error {
+		for name, resNode := range children {
+			startLine := resNode.StartLine
+			if isYAML(t.filePath) {
+				startLine--
+			}
+			resource := &Resource{
+				ctx: t.fctx,
+				id:  name,
+				rng: iacTypes.NewRange(t.filePath, startLine, resNode.EndLine, "", t.fsys),
+			}
+			if err := t.processResource(resNode, resource); err != nil {
+				return fmt.Errorf("process resource %q: %w", name, err)
+			}
+			t.fctx.Resources[name] = resource
+		}
+		return nil
+	})
+}
+
+func (t *ASTToCFTransformer) handleConditions(node *ast.Node) error {
+	conditionsRange := iacTypes.NewRange(t.filePath, node.StartLine, node.EndLine, "", t.fsys)
+	return t.handleSection(node, "conditions", func(children map[string]*ast.Node) error {
+		for name, condNode := range children {
+			prop := Property{
+				ctx:         t.fctx,
+				name:        name,
+				rng:         conditionsRange.SubRange(condNode.StartLine, condNode.EndLine),
+				parentRange: conditionsRange,
+			}
+			if err := t.processProperty(condNode, &prop); err != nil {
+				return fmt.Errorf("process condition %q: %w", name, err)
+			}
+			t.fctx.Conditions[name] = prop
+		}
+		return nil
+	})
 }
 
 func (t *ASTToCFTransformer) processParameter(n *ast.Node, param *Parameter) error {
@@ -134,11 +127,15 @@ func (t *ASTToCFTransformer) processParameter(n *ast.Node, param *Parameter) err
 
 	children, ok := n.Value.(map[string]*ast.Node)
 	if !ok {
-		return nil
+		return fmt.Errorf("expected parameter to be a map, got %T", n.Value)
 	}
 
 	if typNode, ok := children["Type"]; ok && typNode.Value != nil {
-		param.Typ = typNode.Value.(string)
+		str, ok := typNode.Value.(string)
+		if !ok {
+			return fmt.Errorf("parameter Type must be string, got %T", typNode.Value)
+		}
+		param.Typ = str
 	}
 
 	if defaultNode, ok := children["Default"]; ok && defaultNode.Value != nil {
@@ -155,11 +152,15 @@ func (t *ASTToCFTransformer) processResource(n *ast.Node, resource *Resource) er
 
 	children, ok := n.Value.(map[string]*ast.Node)
 	if !ok {
-		return nil
+		return fmt.Errorf("resource node: expected map[string]*ast.Node, got %T", n.Value)
 	}
 
 	if typNode, ok := children["Type"]; ok && typNode.Value != nil {
-		resource.typ = typNode.Value.(string)
+		str, ok := typNode.Value.(string)
+		if !ok {
+			return fmt.Errorf("resource Type must be string, got %T", typNode.Value)
+		}
+		resource.typ = str
 	}
 
 	resource.properties = make(map[string]*Property)
@@ -194,7 +195,7 @@ func (t *ASTToCFTransformer) processMappings(n *ast.Node) error {
 
 	children, ok := n.Value.(map[string]*ast.Node)
 	if !ok {
-		return nil
+		return fmt.Errorf("expected mappings to be a map, got %T", n.Value)
 	}
 	for key, child := range children {
 		t.fctx.Mappings[key] = mappingToValue(child.Value)
@@ -230,25 +231,9 @@ func (t *ASTToCFTransformer) processProperty(n *ast.Node, property *Property) er
 		property.Type = cftypes.Unknown
 		property.Value = nil
 	default:
-		return fmt.Errorf("unsoppurted node %s", n.Kind)
+		return fmt.Errorf("unsupported node kind %s", n.Kind)
 	}
-
 	return nil
-}
-
-func typeFromASTKind(kind ast.NodeKind) cftypes.CfType {
-	switch kind {
-	case ast.StringNode:
-		return cftypes.String
-	case ast.IntNode:
-		return cftypes.Int
-	case ast.FloatNode:
-		return cftypes.Float64
-	case ast.BoolNode:
-		return cftypes.Bool
-	default:
-		return cftypes.Unknown
-	}
 }
 
 func (t *ASTToCFTransformer) processMappingNode(n *ast.Node, property *Property) error {
@@ -306,20 +291,54 @@ func (t *ASTToCFTransformer) processSequenceNode(n *ast.Node, property *Property
 	return nil
 }
 
+func (t *ASTToCFTransformer) handleSection(node *ast.Node, sectionName string, handler func(map[string]*ast.Node) error) error {
+	children, err := getNodeMap(node, sectionName)
+	if err != nil {
+		return err
+	}
+	return handler(children)
+}
+
+func getNodeMap(node *ast.Node, section string) (map[string]*ast.Node, error) {
+	if node == nil || node.Value == nil {
+		return nil, nil
+	}
+	children, ok := node.Value.(map[string]*ast.Node)
+	if !ok {
+		return nil, fmt.Errorf("%s node: expected map[string]*ast.Node, got %T", section, node.Value)
+	}
+	return children, nil
+}
+
 func mappingToValue(v any) any {
 	switch vv := v.(type) {
 	case map[string]*ast.Node:
-		return lo.MapValues(vv, func(v *ast.Node, _ string) any {
-			return mappingToValue(v)
+		return lo.MapValues(vv, func(n *ast.Node, _ string) any {
+			return mappingToValue(n)
 		})
 	case []*ast.Node:
 		return lo.Map(vv, func(n *ast.Node, _ int) any {
-			return mappingToValue(v)
+			return mappingToValue(n)
 		})
 	case *ast.Node:
 		return mappingToValue(vv.Value)
 	default:
 		return v
+	}
+}
+
+func typeFromASTKind(kind ast.NodeKind) cftypes.CfType {
+	switch kind {
+	case ast.StringNode:
+		return cftypes.String
+	case ast.IntNode:
+		return cftypes.Int
+	case ast.FloatNode:
+		return cftypes.Float64
+	case ast.BoolNode:
+		return cftypes.Bool
+	default:
+		return cftypes.Unknown
 	}
 }
 
@@ -332,9 +351,5 @@ func isFunctionNode(n *ast.Node) bool {
 	if !ok {
 		return false
 	}
-
-	for key := range mapNode {
-		return IsIntrinsic(key)
-	}
-	return false
+	return lo.SomeBy(lo.Keys(mapNode), IsIntrinsic)
 }

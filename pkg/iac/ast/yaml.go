@@ -13,6 +13,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/x/json"
 )
 
+const mapTag = "!!map"
+
 func isCustomTag(tag string) bool {
 	return strings.HasPrefix(tag, "!") && !strings.HasPrefix(tag, "!!")
 }
@@ -32,7 +34,7 @@ func (n *Node) UnmarshalYAML(node *yaml.Node) error {
 
 		newContent = createNode(node, newContent)
 
-		node.Tag = "!!map"
+		node.Tag = mapTag
 		node.Kind = yaml.MappingNode
 		node.Content = newContent
 	}
@@ -76,7 +78,7 @@ func (n *Node) UnmarshalYAML(node *yaml.Node) error {
 		}
 		n.Value = val
 		n.Kind = BinaryNode
-	case "!!map":
+	case mapTag:
 		entries, err := handleMapTag(node)
 		if err != nil {
 			return err
@@ -120,7 +122,7 @@ func createNode(node *yaml.Node, newContent []*yaml.Node) []*yaml.Node {
 		case yaml.SequenceNode:
 			newNode.Tag = "!!seq"
 		case yaml.MappingNode:
-			newNode.Tag = "!!map"
+			newNode.Tag = mapTag
 		case yaml.ScalarNode:
 		default:
 			newNode.Tag = node.Tag
