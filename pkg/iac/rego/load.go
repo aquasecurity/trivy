@@ -165,15 +165,15 @@ func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
 			continue
 		}
 
-		s.logger.Error(
-			"Error occurred while parsing. Trying to fallback to embedded check",
+		s.logger.Debug(
+			"Unable to parse check. This can be due to lack of support in this version. Trying to fallback to embedded check",
 			log.FilePath(loc),
 			log.Err(e),
 		)
 
 		embedded := s.findMatchedEmbeddedCheck(badPolicy)
 		if embedded == nil {
-			s.logger.Error("Failed to find embedded check, skipping", log.FilePath(loc))
+			s.logger.Debug("Failed to find embedded check, skipping", log.FilePath(loc))
 			continue
 		}
 
@@ -197,13 +197,13 @@ func (s *Scanner) findMatchedEmbeddedCheck(badPolicy *ast.Module) *ast.Module {
 	}
 
 	badPolicyMeta, err := MetadataFromAnnotations(badPolicy)
-	if err != nil {
+	if err != nil || badPolicyMeta == nil {
 		return nil
 	}
 
 	for _, embeddedCheck := range s.embeddedChecks {
 		meta, err := MetadataFromAnnotations(embeddedCheck)
-		if err != nil {
+		if err != nil || meta == nil {
 			continue
 		}
 		if badPolicyMeta.AVDID != "" && badPolicyMeta.AVDID == meta.AVDID {

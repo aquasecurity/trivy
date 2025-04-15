@@ -269,14 +269,7 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 			return nil, err
 		}
 		p.logger.Debug("Added input variables from tfvars", log.Int("count", len(inputVars)))
-
-		if missingVars := missingVariableValues(blocks, inputVars); len(missingVars) > 0 {
-			p.logger.Warn(
-				"Variable values was not found in the environment or variable files. Evaluating may not work correctly.",
-				log.String("variables", strings.Join(missingVars, ", ")),
-			)
-			setNullMissingVariableValues(inputVars, missingVars)
-		}
+		p.setFallbackValuesForMissingVars(inputVars, blocks)
 	}
 
 	modulesMetadata, metadataPath, err := loadModuleMetadata(p.moduleFS, p.projectRoot)
@@ -314,12 +307,12 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 	), nil
 }
 
-func missingVariableValues(blocks terraform.Blocks, inputVars map[string]cty.Value) []string {
-	var missing []string
+func missingVariableValues(blocks terraform.Blocks, inputVars map[string]cty.Value) []*terraform.Block {
+	var missing []*terraform.Block
 	for _, varBlock := range blocks.OfType("variable") {
 		if varBlock.GetAttribute("default") == nil {
 			if _, ok := inputVars[varBlock.TypeLabel()]; !ok {
-				missing = append(missing, varBlock.TypeLabel())
+				missing = append(missing, varBlock)
 			}
 		}
 	}
@@ -327,27 +320,55 @@ func missingVariableValues(blocks terraform.Blocks, inputVars map[string]cty.Val
 	return missing
 }
 
-// Set null values for missing variables, to allow expressions using them to be
+// Set fallback values for missing variables, to allow expressions using them to be
 // still be possibly evaluated to a value different than null.
-func setNullMissingVariableValues(inputVars map[string]cty.Value, missingVars []string) {
-	for _, missingVar := range missingVars {
-		inputVars[missingVar] = cty.NullVal(cty.DynamicPseudoType)
+func (p *Parser) setFallbackValuesForMissingVars(inputVars map[string]cty.Value, blocks []*terraform.Block) {
+	varBlocks := missingVariableValues(blocks, inputVars)
+	if len(varBlocks) == 0 {
+		return
 	}
+
+	missingVars := make([]string, 0, len(varBlocks))
+	for _, block := range varBlocks {
+		varType := inputVariableType(block)
+		if varType != cty.NilType {
+			inputVars[block.TypeLabel()] = cty.UnknownVal(varType)
+		} else {
+			inputVars[block.TypeLabel()] = cty.DynamicVal
+		}
+		missingVars = append(missingVars, block.TypeLabel())
+	}
+
+	p.logger.Warn(
+		"Variable values were not found in the environment or variable files. Evaluating may not work correctly.",
+		log.String("variables", strings.Join(missingVars, ", ")),
+	)
 }
 
-func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value, error) {
+func inputVariableType(b *terraform.Block) cty.Type {
+	typeAttr, exists := b.Attributes()["type"]
+	if !exists {
+		return cty.NilType
+	}
+	ty, _, err := typeAttr.DecodeVarType()
+	if err != nil {
+		return cty.NilType
+	}
+	return ty
+}
 
+func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, error) {
 	e, err := p.Load(ctx)
 	if errors.Is(err, ErrNoFiles) {
-		return nil, cty.NilVal, nil
+		return nil, nil
 	} else if err != nil {
-		return nil, cty.NilVal, err
+		return nil, err
 	}
 
 	modules, fsMap := e.EvaluateAll(ctx)
 	p.logger.Debug("Finished parsing module")
 	p.fsMap = fsMap
-	return modules, e.exportOutputs(), nil
+	return modules, nil
 }
 
 func (p *Parser) GetFilesystemMap() map[string]fs.FS {

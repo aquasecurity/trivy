@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -20,7 +21,7 @@ func Parse(_ context.Context, r io.Reader, path string) ([]any, error) {
 		return nil, nil
 	}
 
-	if strings.TrimSpace(string(contents))[0] == '{' {
+	if bytes.TrimSpace(contents)[0] == '{' {
 		manifest, err := ManifestFromJSON(path, contents)
 		if err != nil {
 			return nil, err

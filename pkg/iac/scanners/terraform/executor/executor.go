@@ -135,9 +135,10 @@ func writeBlock(tfBlock *terraform.Block, block *hclwrite.Block, causeRng types.
 		}
 
 		value := attr.Value()
-		if !value.IsKnown() || value.IsNull() {
+		if !value.IsWhollyKnown() {
 			continue
 		}
+
 		block.Body().SetAttributeValue(attr.Name(), value)
 		found = true
 	}

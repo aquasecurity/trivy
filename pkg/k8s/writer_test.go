@@ -53,6 +53,11 @@ var (
 						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
+					{
+						ID:       "KSV-ID103",
+						Status:   types.MisconfStatusPassed,
+						Severity: "HIGH",
+					},
 
 					{
 						ID:       "KCV-ID100",
@@ -265,7 +270,7 @@ func TestReportWrite_Table(t *testing.T) {
 		expectedOutput string
 	}{
 		{
-			name: "Only config, all serverities",
+			name: "Only config, all severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{deployOrionWithMisconfigs},
@@ -319,7 +324,43 @@ See https://google.com/search?q=bad%20config
 ────────────────────────────────────────`,
 		},
 		{
-			name: "Only vuln, all serverities",
+			name: "vulns and misconfig with `--report all`",
+			report: report.Report{
+				ClusterName: "test",
+				Resources: []report.Resource{
+					deployOrionWithSingleVuln,
+					deployOrionWithSingleMisconfig,
+				},
+			},
+			scanners: types.Scanners{types.VulnerabilityScanner, types.MisconfigScanner},
+			severities: []dbTypes.Severity{
+				dbTypes.SeverityCritical, dbTypes.SeverityLow,
+			},
+			reportType: report.AllReport,
+			expectedOutput: `namespace: default, deploy: orion ()
+====================================
+Total: 1 (LOW: 1, CRITICAL: 0)
+
+┌─────────┬───────────────┬──────────┬─────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
+│ Library │ Vulnerability │ Severity │ Status  │ Installed Version │ Fixed Version │                   Title                   │
+├─────────┼───────────────┼──────────┼─────────┼───────────────────┼───────────────┼───────────────────────────────────────────┤
+│ foo/bar │ CVE-2022-1111 │ LOW      │ unknown │ v0.0.1            │ v0.0.2        │ https://avd.aquasec.com/nvd/cve-2022-1111 │
+└─────────┴───────────────┴──────────┴─────────┴───────────────────┴───────────────┴───────────────────────────────────────────┘
+
+namespace: default, deploy: orion ()
+====================================
+Tests: 1 (SUCCESSES: 0, FAILURES: 1)
+Failures: 1 (LOW: 1, CRITICAL: 0)
+
+ (LOW): Oh no, a bad config.
+════════════════════════════════════════
+Your config file is not good.
+
+See https://google.com/search?q=bad%20config
+────────────────────────────────────────`,
+		},
+		{
+			name: "Only vuln, all severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{deployOrionWithVulns},
@@ -371,7 +412,7 @@ Total: 1 (LOW: 1)
 └─────────┴───────────────┴──────────┴─────────┴───────────────────┴───────────────┴───────────────────────────────────────────┘`,
 		},
 		{
-			name: "Only rbac, all serverities",
+			name: "Only rbac, all severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{roleWithMisconfig},
@@ -393,7 +434,7 @@ RBAC Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "Only secret, all serverities",
+			name: "Only secret, all severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{deployLuaWithSecrets},
@@ -424,7 +465,7 @@ Infra Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "apiserver, only infra and serverities",
+			name: "apiserver, only infra and severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},
@@ -455,7 +496,7 @@ Infra Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "apiserver, vuln,config,secret and serverities",
+			name: "apiserver, vuln,config,secret and severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},
@@ -490,7 +531,7 @@ Infra Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "apiserver, all misconfig and vuln scanners and serverities",
+			name: "apiserver, all misconfig and vuln scanners and severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},

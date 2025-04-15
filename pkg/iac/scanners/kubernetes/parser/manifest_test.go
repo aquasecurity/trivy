@@ -66,7 +66,7 @@ func TestJsonManifestToRego(t *testing.T) {
 					"__defsec_metadata": map[string]any{
 						"filepath":  filePath,
 						"offset":    0,
-						"startline": 8,
+						"startline": 9,
 						"endline":   17,
 					},
 					"command": []any{
