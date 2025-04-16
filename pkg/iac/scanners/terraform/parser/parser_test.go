@@ -2577,9 +2577,9 @@ resource "baz" "qux" {
 	})
 
 	parser := New(fsys, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
 
-	modules, _, err := parser.EvaluateAll(context.TODO())
+	modules, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	require.Len(t, modules, 1)
