@@ -24,7 +24,7 @@ module "registry" {
 	parser := New(fsys, "", OptionStopOnHCLError(true), OptionWithSkipCachedModules(true))
 	require.NoError(t, parser.ParseFS(t.Context(), "code"))
 
-	modules, _, err := parser.EvaluateAll(t.Context())
+	modules, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 2)
 }
@@ -45,7 +45,7 @@ module "registry" {
 	parser := New(fsys, "", OptionStopOnHCLError(true), OptionWithSkipCachedModules(true))
 	require.NoError(t, parser.ParseFS(t.Context(), "code"))
 
-	modules, _, err := parser.EvaluateAll(t.Context())
+	modules, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 2)
 }
@@ -68,7 +68,7 @@ module "registry" {
 	parser := New(fsys, "", OptionStopOnHCLError(true), OptionWithSkipCachedModules(true))
 	require.NoError(t, parser.ParseFS(t.Context(), "code"))
 
-	modules, _, err := parser.EvaluateAll(t.Context())
+	modules, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 2)
 }
@@ -89,7 +89,7 @@ module "object" {
 	parser := New(fsys, "", OptionStopOnHCLError(true), OptionWithSkipCachedModules(true))
 	require.NoError(t, parser.ParseFS(t.Context(), "code"))
 
-	modules, _, err := parser.EvaluateAll(t.Context())
+	modules, err := parser.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 2)
 }

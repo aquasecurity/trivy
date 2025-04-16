@@ -143,7 +143,9 @@ func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 
 // ParseFS parses a root module, where it exists at the root of the provided filesystem
 func (p *Parser) ParseFS(ctx context.Context, dir string) error {
-
+	if p.moduleFS == nil {
+		return errors.New("module filesystem is nil, nothing to parse")
+	}
 	dir = path.Clean(dir)
 
 	if p.projectRoot == "" {
@@ -357,19 +359,18 @@ func inputVariableType(b *terraform.Block) cty.Type {
 	return ty
 }
 
-func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value, error) {
-
+func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, error) {
 	e, err := p.Load(ctx)
 	if errors.Is(err, ErrNoFiles) {
-		return nil, cty.NilVal, nil
+		return nil, nil
 	} else if err != nil {
-		return nil, cty.NilVal, err
+		return nil, err
 	}
 
 	modules, fsMap := e.EvaluateAll(ctx)
 	p.logger.Debug("Finished parsing module")
 	p.fsMap = fsMap
-	return modules, e.exportOutputs(), nil
+	return modules, nil
 }
 
 func (p *Parser) GetFilesystemMap() map[string]fs.FS {

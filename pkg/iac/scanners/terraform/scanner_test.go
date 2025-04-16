@@ -28,11 +28,9 @@ func Test_OptionWithPolicyDirs(t *testing.T) {
 		rego.WithPolicyNamespaces("user"),
 	)
 	require.NoError(t, err)
-
 	require.Len(t, results.GetFailed(), 1)
 
 	failure := results.GetFailed()[0]
-
 	assert.Equal(t, "USER-TEST-0123", failure.Rule().AVDID)
 
 	actualCode, err := failure.GetCode()

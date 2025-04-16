@@ -1,0 +1,165 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/cargo",
+  "ArtifactType": "repository",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "Cargo.lock",
+      "Class": "lang-pkgs",
+      "Type": "cargo",
+      "Packages": [
+        {
+          "ID": "app@0.1.0",
+          "Name": "app",
+          "Identifier": {
+            "PURL": "pkg:cargo/app@0.1.0",
+            "UID": "a4ce1e2c46af5d56"
+          },
+          "Version": "0.1.0",
+          "Relationship": "root",
+          "DependsOn": [
+            "memchr@1.0.2",
+            "regex@1.7.3"
+          ],
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 14,
+              "EndLine": 21
+            }
+          ]
+        },
+        {
+          "ID": "memchr@1.0.2",
+          "Name": "memchr",
+          "Identifier": {
+            "PURL": "pkg:cargo/memchr@1.0.2",
+            "UID": "427a73f0e28dc7df"
+          },
+          "Version": "1.0.2",
+          "Relationship": "direct",
+          "DependsOn": [
+            "libc@0.2.171"
+          ],
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 29,
+              "EndLine": 36
+            }
+          ]
+        },
+        {
+          "ID": "regex@1.7.3",
+          "Name": "regex",
+          "Identifier": {
+            "PURL": "pkg:cargo/regex@1.7.3",
+            "UID": "4633c68363763fad"
+          },
+          "Version": "1.7.3",
+          "Relationship": "direct",
+          "DependsOn": [
+            "aho-corasick@0.7.20",
+            "memchr@2.7.4",
+            "regex-syntax@0.6.29"
+          ],
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 44,
+              "EndLine": 53
+            }
+          ]
+        },
+        {
+          "ID": "aho-corasick@0.7.20",
+          "Name": "aho-corasick",
+          "Identifier": {
+            "PURL": "pkg:cargo/aho-corasick@0.7.20",
+            "UID": "994a6d343f8da957"
+          },
+          "Version": "0.7.20",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "memchr@2.7.4"
+          ],
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 12
+            }
+          ]
+        },
+        {
+          "ID": "libc@0.2.171",
+          "Name": "libc",
+          "Identifier": {
+            "PURL": "pkg:cargo/libc@0.2.171",
+            "UID": "5395cf65d65d1f19"
+          },
+          "Version": "0.2.171",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 23,
+              "EndLine": 27
+            }
+          ]
+        },
+        {
+          "ID": "memchr@2.7.4",
+          "Name": "memchr",
+          "Identifier": {
+            "PURL": "pkg:cargo/memchr@2.7.4",
+            "UID": "3f037d5da23e5826"
+          },
+          "Version": "2.7.4",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 38,
+              "EndLine": 42
+            }
+          ]
+        },
+        {
+          "ID": "regex-syntax@0.6.29",
+          "Name": "regex-syntax",
+          "Identifier": {
+            "PURL": "pkg:cargo/regex-syntax@0.6.29",
+            "UID": "2c8dd93ce2f15b00"
+          },
+          "Version": "0.6.29",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 55,
+              "EndLine": 59
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
