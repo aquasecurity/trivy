@@ -24,7 +24,6 @@ import (
 	k8scommands "github.com/aquasecurity/trivy/pkg/k8s/commands"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
-	"github.com/aquasecurity/trivy/pkg/notification"
 	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version"
@@ -234,11 +233,6 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				return showVersion(opts.CacheDir, versionFormat, cmd.OutOrStdout())
 			}
 			return cmd.Help()
-		},
-		PersistentPostRun: func(_ *cobra.Command, _ []string) {
-			// if the check hasn't run then it will
-			// return immediately and won't print anything
-			notification.PrintNotices(os.Stderr)
 		},
 	}
 
