@@ -26,17 +26,13 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/module"
-<<<<<<< HEAD
-	"github.com/aquasecurity/trivy/pkg/policy"
-=======
 	"github.com/aquasecurity/trivy/pkg/notification"
->>>>>>> be383c37f (rearrange structure and make scan only)
+	"github.com/aquasecurity/trivy/pkg/policy"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scan"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/version/app"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
@@ -97,6 +93,7 @@ type Runner interface {
 
 type runner struct {
 	initializeScanService InitializeScanService
+	versionChecker        *notification.VersionChecker
 	dbOpen                bool
 
 	// WASM modules
@@ -119,6 +116,16 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 	r := &runner{}
 	for _, opt := range opts {
 		opt(r)
+	}
+
+	// Initialize the notification system
+	if !cliOptions.OfflineScan {
+		// If the user has not disabled notices or is running in quiet mode
+		r.versionChecker = notification.NewVersionChecker(
+			notification.WithSkipUpdateCheck(cliOptions.SkipVersionCheck),
+			notification.WithQuietMode(cliOptions.Quiet),
+			notification.WithMetricsDisabled(cliOptions.DisableMetrics),
+		)
 	}
 
 	// Update the vulnerability database if needed.
@@ -145,8 +152,8 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 	// Make a silent attempt to check for updates in the background
 	// only do this if the user has not disabled notices or is running
 	// in quiet mode
-	if !cliOptions.Quiet && !cliOptions.NoNotices {
-		notification.CheckForNotices(ctx, app.Version(), os.Args[1:])
+	if r.versionChecker != nil {
+		r.versionChecker.RunUpdateCheck(ctx, os.Args[1:])
 	}
 
 	return r, nil
@@ -164,6 +171,12 @@ func (r *runner) Close(ctx context.Context) error {
 	if err := r.module.Close(ctx); err != nil {
 		errs = multierror.Append(errs, err)
 	}
+
+	// silently check if there is notifications
+	if r.versionChecker != nil {
+		r.versionChecker.PrintNotices(os.Stderr)
+	}
+
 	return errs
 }
 
