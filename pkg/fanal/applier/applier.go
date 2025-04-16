@@ -1,6 +1,7 @@
 package applier
 
 import (
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
@@ -29,7 +30,7 @@ func (a *applier) ApplyLayers(imageID string, layerKeys []string) (ftypes.Artifa
 		if blob.SchemaVersion == 0 {
 			return ftypes.ArtifactDetail{}, xerrors.Errorf("layer cache missing: %s", key)
 		}
-		if l := blob.Layer(); !l.Empty() {
+		if l := blob.Layer(); !lo.IsEmpty(l) {
 			layerInfoList = append(layerInfoList, l)
 		}
 		layers = append(layers, blob)

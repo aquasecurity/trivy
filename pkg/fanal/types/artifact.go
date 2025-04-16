@@ -93,10 +93,6 @@ type Layer struct {
 	CreatedBy string `json:",omitempty"`
 }
 
-func (l Layer) Empty() bool {
-	return l.Size == 0 && l.Digest == "" && l.DiffID == "" && l.CreatedBy == ""
-}
-
 type Layers []Layer
 
 func (lm Layers) TotalSize() int64 {
@@ -114,7 +110,7 @@ func (lm Layers) Empty() bool {
 		return false
 	}
 
-	return lm[0].Empty()
+	return lo.IsEmpty(lm[0])
 }
 
 type PackageInfo struct {
