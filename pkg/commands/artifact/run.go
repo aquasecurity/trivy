@@ -118,7 +118,7 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 		opt(r)
 	}
 
-	// Initialize the notification system
+	// Initialize the version checker
 	if !cliOptions.OfflineScan {
 		// If the user has not disabled notices or is running in quiet mode
 		r.versionChecker = notification.NewVersionChecker(
