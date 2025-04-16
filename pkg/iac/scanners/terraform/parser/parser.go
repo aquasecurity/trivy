@@ -32,23 +32,20 @@ type sourceFile struct {
 
 // Parser is a tool for parsing terraform templates at a given file system location
 type Parser struct {
-	projectRoot    string
-	moduleName     string
-	modulePath     string
-	moduleSource   string
-	moduleFS       fs.FS
-	moduleBlock    *terraform.Block
-	files          []sourceFile
-	tfvarsPaths    []string
-	tfvars         map[string]cty.Value
-	stopOnHCLError bool
-	workspaceName  string
-	underlying     *hclparse.Parser
-	children       []*Parser
-	options        []Option
-	// baseLogger is the 'logger' without any keys set.
-	// Parser will pass the undecorated logger to other components
-	baseLogger        *log.Logger
+	projectRoot       string
+	moduleName        string
+	modulePath        string
+	moduleSource      string
+	moduleFS          fs.FS
+	moduleBlock       *terraform.Block
+	files             []sourceFile
+	tfvarsPaths       []string
+	tfvars            map[string]cty.Value
+	stopOnHCLError    bool
+	workspaceName     string
+	underlying        *hclparse.Parser
+	children          []*Parser
+	options           []Option
 	logger            *log.Logger
 	allowDownloads    bool
 	skipCachedModules bool
@@ -77,7 +74,6 @@ func New(moduleFS fs.FS, moduleSource string, opts ...Option) *Parser {
 	}
 
 	// Scope the logger to the parser
-	p.baseLogger = p.logger
 	p.logger = p.logger.With(log.Prefix("terraform parser")).With("module", "root")
 
 	return p
@@ -88,7 +84,7 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	mp.modulePath = modulePath
 	mp.moduleBlock = moduleBlock
 	mp.moduleName = moduleName
-	mp.logger = p.baseLogger.With(log.Prefix("terraform parser")).With("module", moduleName)
+	mp.logger = p.logger.With(log.Prefix("terraform parser")).With("module", moduleName)
 	mp.projectRoot = p.projectRoot
 	mp.skipPaths = p.skipPaths
 	mp.options = p.options
@@ -309,8 +305,7 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 		modulesMetadata,
 		p.workspaceName,
 		ignores,
-		// this will overwrite any previous prefix set
-		p.baseLogger.With(log.Prefix("terraform evaluator")),
+		p.logger.With(log.Prefix("terraform evaluator")),
 		p.allowDownloads,
 		p.skipCachedModules,
 	), nil
