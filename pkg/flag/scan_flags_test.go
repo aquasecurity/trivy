@@ -14,12 +14,12 @@ import (
 
 func TestScanFlagGroup_ToOptions(t *testing.T) {
 	type fields struct {
-		skipDirs    []string
-		skipFiles   []string
-		offlineScan bool
-		scanners    string
-		distro      string
-		noNotices   bool
+		skipDirs         []string
+		skipFiles        []string
+		offlineScan      bool
+		scanners         string
+		distro           string
+		skipVersionCheck bool
 	}
 	tests := []struct {
 		name      string
@@ -129,12 +129,12 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			assertion: require.Error,
 		},
 		{
-			name: "no notices flag",
+			name: "skip version check flag",
 			fields: fields{
-				noNotices: true,
+				skipVersionCheck: true,
 			},
 			want: flag.ScanOptions{
-				NoNotices: true,
+				SkipVersionCheck: true,
 			},
 			assertion: require.NoError,
 		},
@@ -148,16 +148,16 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			setValue(flag.OfflineScanFlag.ConfigName, tt.fields.offlineScan)
 			setValue(flag.ScannersFlag.ConfigName, tt.fields.scanners)
 			setValue(flag.DistroFlag.ConfigName, tt.fields.distro)
-			setValue(flag.NoNoticesFlag.ConfigName, tt.fields.noNotices)
+			setValue(flag.SkipVersionCheckFlag.ConfigName, tt.fields.skipVersionCheck)
 
 			// Assert options
 			f := &flag.ScanFlagGroup{
-				SkipDirs:    flag.SkipDirsFlag.Clone(),
-				SkipFiles:   flag.SkipFilesFlag.Clone(),
-				OfflineScan: flag.OfflineScanFlag.Clone(),
-				Scanners:    flag.ScannersFlag.Clone(),
-				DistroFlag:  flag.DistroFlag.Clone(),
-				NoNotices:   flag.NoNoticesFlag.Clone(),
+				SkipDirs:         flag.SkipDirsFlag.Clone(),
+				SkipFiles:        flag.SkipFilesFlag.Clone(),
+				OfflineScan:      flag.OfflineScanFlag.Clone(),
+				Scanners:         flag.ScannersFlag.Clone(),
+				DistroFlag:       flag.DistroFlag.Clone(),
+				SkipVersionCheck: flag.SkipVersionCheckFlag.Clone(),
 			}
 
 			flags := flag.Flags{f}
