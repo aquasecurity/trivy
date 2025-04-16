@@ -2559,6 +2559,38 @@ resource "aws_s3_bucket" "example" {
 	assert.Nil(t, val)
 }
 
+func Test_AttrIsRefToOtherBlock(t *testing.T) {
+	fsys := testutil.CreateFS(t, map[string]string{
+		"main.tf": `locals {
+  baz_idx = 0
+}
+
+resource "foo" "bar" {
+  attr = baz.qux[local.baz_idx].attr
+}
+
+resource "baz" "qux" {
+  count = 1
+  attr  = "test"
+}
+`,
+	})
+
+	parser := New(fsys, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	modules, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+
+	require.Len(t, modules, 1)
+	root := modules[0]
+	foo := root.GetResourcesByType("foo")[0]
+	fooAttr := foo.GetAttribute("attr")
+	b, err := root.GetReferencedBlock(fooAttr, foo)
+	require.NoError(t, err)
+	require.NotNil(t, b)
+}
+
 func TestConfigWithEphemeralBlock(t *testing.T) {
 	fsys := fstest.MapFS{
 		"main.tf": &fstest.MapFile{Data: []byte(`ephemeral "random_password" "password" {
