@@ -579,12 +579,12 @@ repository:
 ## Scan options
 
 ```yaml
-# Same as '--no-notices'
-no-notices: false
-
 scan:
   # Same as '--detection-priority'
   detection-priority: "precise"
+
+  # Same as '--disable-metrics'
+  disable-metrics: false
 
   # Same as '--distro'
   distro: ""
@@ -614,6 +614,9 @@ scan:
 
   # Same as '--skip-files'
   skip-files: []
+
+  # Same as '--skip-version-check'
+  skip-version-check: false
 
 ```
 ## Secret options
