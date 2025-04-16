@@ -206,7 +206,7 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 			RepoDigests: artifactInfo.ImageMetadata.RepoDigests,
 			ImageConfig: artifactInfo.ImageMetadata.ConfigFile,
 			Size:        scanResponse.Layers.TotalSize(),
-			Layers:      lo.Ternary(!scanResponse.Layers.Empty(), scanResponse.Layers, nil),
+			Layers:      lo.Ternary(len(scanResponse.Layers) > 0, scanResponse.Layers, nil),
 		},
 		Results: scanResponse.Results,
 		BOM:     artifactInfo.BOM,

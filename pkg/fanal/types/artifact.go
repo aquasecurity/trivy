@@ -103,16 +103,6 @@ func (lm Layers) TotalSize() int64 {
 	return totalSize
 }
 
-func (lm Layers) Empty() bool {
-	if len(lm) == 0 {
-		return true
-	} else if len(lm) > 1 {
-		return false
-	}
-
-	return lo.IsEmpty(lm[0])
-}
-
 type PackageInfo struct {
 	FilePath string
 	Packages Packages
