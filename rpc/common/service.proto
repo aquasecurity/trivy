@@ -150,12 +150,10 @@ message DataSource {
 }
 
 message Layer {
-  string          digest         = 1;
-  string          diff_id        = 2;
-  string          created_by     = 3;
-  int64           size           = 4;
-  repeated string opaque_dirs    = 5;
-  repeated string whiteout_files = 6;
+  string digest     = 1;
+  string diff_id    = 2;
+  string created_by = 3;
+  int64  size       = 4;
 }
 
 message CauseMetadata {

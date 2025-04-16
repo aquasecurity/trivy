@@ -366,12 +366,10 @@ func ConvertToRPCMisconfs(misconfs []types.DetectedMisconfiguration) []*common.D
 // ConvertToRPCLayer returns common.Layer
 func ConvertToRPCLayer(layer ftypes.Layer) *common.Layer {
 	return &common.Layer{
-		Size:          layer.Size,
-		Digest:        layer.Digest,
-		DiffId:        layer.DiffID,
-		CreatedBy:     layer.CreatedBy,
-		OpaqueDirs:    layer.OpaqueDirs,
-		WhiteoutFiles: layer.WhiteoutFiles,
+		Size:      layer.Size,
+		Digest:    layer.Digest,
+		DiffId:    layer.DiffID,
+		CreatedBy: layer.CreatedBy,
 	}
 }
 
@@ -658,12 +656,10 @@ func ConvertFromRPCLayer(rpcLayer *common.Layer) ftypes.Layer {
 		return ftypes.Layer{}
 	}
 	return ftypes.Layer{
-		Size:          rpcLayer.Size,
-		Digest:        rpcLayer.Digest,
-		DiffID:        rpcLayer.DiffId,
-		CreatedBy:     rpcLayer.CreatedBy,
-		OpaqueDirs:    rpcLayer.OpaqueDirs,
-		WhiteoutFiles: rpcLayer.WhiteoutFiles,
+		Size:      rpcLayer.Size,
+		Digest:    rpcLayer.Digest,
+		DiffID:    rpcLayer.DiffId,
+		CreatedBy: rpcLayer.CreatedBy,
 	}
 }
 

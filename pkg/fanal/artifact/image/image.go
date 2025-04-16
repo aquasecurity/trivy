@@ -405,7 +405,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo types.Layer, disab
 	defer composite.Cleanup()
 
 	// Walk a tar layer
-	layerInfo.OpaqueDirs, layerInfo.WhiteoutFiles, err = a.walker.Walk(rc, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	opqDirs, whFiles, err := a.walker.Walk(rc, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
@@ -449,8 +449,8 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo types.Layer, disab
 		Digest:        layerInfo.Digest,
 		DiffID:        layerInfo.DiffID,
 		CreatedBy:     layerInfo.CreatedBy,
-		OpaqueDirs:    layerInfo.OpaqueDirs,
-		WhiteoutFiles: layerInfo.WhiteoutFiles,
+		OpaqueDirs:    opqDirs,
+		WhiteoutFiles: whFiles,
 
 		OS:                result.OS,
 		Repository:        result.Repository,

@@ -87,17 +87,14 @@ type Repository struct {
 }
 
 type Layer struct {
-	Size          int64    `json:",omitempty"`
-	Digest        string   `json:",omitempty"`
-	DiffID        string   `json:",omitempty"`
-	CreatedBy     string   `json:",omitempty"`
-	OpaqueDirs    []string `json:",omitempty"`
-	WhiteoutFiles []string `json:",omitempty"`
+	Size      int64  `json:",omitempty"`
+	Digest    string `json:",omitempty"`
+	DiffID    string `json:",omitempty"`
+	CreatedBy string `json:",omitempty"`
 }
 
 func (l Layer) Empty() bool {
-	return l.Size == 0 && l.Digest == "" && l.DiffID == "" && l.CreatedBy == "" &&
-		len(l.OpaqueDirs) == 0 && len(l.WhiteoutFiles) == 0
+	return l.Size == 0 && l.Digest == "" && l.DiffID == "" && l.CreatedBy == ""
 }
 
 type Layers []Layer
@@ -214,12 +211,10 @@ type BlobInfo struct {
 
 func (b BlobInfo) Layer() Layer {
 	return Layer{
-		Size:          b.Size,
-		Digest:        b.Digest,
-		DiffID:        b.DiffID,
-		CreatedBy:     b.CreatedBy,
-		OpaqueDirs:    b.OpaqueDirs,
-		WhiteoutFiles: b.WhiteoutFiles,
+		Size:      b.Size,
+		Digest:    b.Digest,
+		DiffID:    b.DiffID,
+		CreatedBy: b.CreatedBy,
 	}
 }
 

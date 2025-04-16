@@ -186,11 +186,9 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		ptros = nil
 	}
 
-	// We don't need to include this info into Report
+	// We don't need to include CreatedBy into Report
 	for i := range scanResponse.Layers {
 		scanResponse.Layers[i].CreatedBy = ""
-		scanResponse.Layers[i].OpaqueDirs = nil
-		scanResponse.Layers[i].WhiteoutFiles = nil
 	}
 
 	return types.Report{
