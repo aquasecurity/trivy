@@ -2374,9 +2374,6 @@ variable "baz" {}
 }
 
 func TestLoadChildModulesFromLocalCache(t *testing.T) {
-	var buf bytes.Buffer
-	slog.SetDefault(slog.New(log.NewHandler(&buf, &log.Options{Level: log.LevelDebug})))
-
 	fsys := fstest.MapFS{
 		"main.tf": &fstest.MapFile{Data: []byte(`module "level_1" {
   source = "./modules/level_1"
@@ -2411,9 +2408,13 @@ func TestLoadChildModulesFromLocalCache(t *testing.T) {
 }`)},
 	}
 
+	var buf bytes.Buffer
+	logger := slog.New(log.NewHandler(&buf, &log.Options{Level: log.LevelDebug}))
+
 	parser := New(
 		fsys, "",
 		OptionStopOnHCLError(true),
+		OptionWithLogger(logger),
 	)
 	require.NoError(t, parser.ParseFS(t.Context(), "."))
 
@@ -2422,10 +2423,10 @@ func TestLoadChildModulesFromLocalCache(t *testing.T) {
 
 	assert.Len(t, modules, 5)
 
-	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tsource=\"./modules/level_1\"")
-	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tsource=\"../level_2\"")
-	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tsource=\"../level_3\"")
-	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tsource=\"../level_3\"")
+	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tmodule=\"root\" source=\"./modules/level_1\"")
+	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tmodule=\"level_1\" source=\"../level_2\"")
+	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tmodule=\"level_2\" source=\"../level_3\"")
+	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tmodule=\"level_2\" source=\"../level_3\"")
 }
 
 func TestLogParseErrors(t *testing.T) {
