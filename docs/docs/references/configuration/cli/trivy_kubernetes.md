@@ -51,6 +51,7 @@ trivy kubernetes [flags] [CONTEXT]
                                             - "precise": Prioritizes precise by minimizing false positives.
                                             - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
                                            (allowed values: precise,comprehensive) (default "precise")
+      --disable-metrics                   disable sending anonymous usage data to Aqua
       --disable-node-collector            When the flag is activated, the node-collector job will not be executed, thus skipping misconfiguration findings on the node.
       --distro string                     [EXPERIMENTAL] specify a distribution, <family>/<version>
       --download-db-only                  download/update vulnerability database but don't run a scan
@@ -92,7 +93,6 @@ trivy kubernetes [flags] [CONTEXT]
       --kubeconfig string                 specify the kubeconfig file path to use
       --list-all-pkgs                     output all packages in the JSON report regardless of vulnerability
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
-      --no-notices                        suppress notices about version updates and Trivy announcements
       --no-progress                       suppress progress bar
       --node-collector-imageref string    indicate the image reference for the node-collector scan job (default "ghcr.io/aquasecurity/node-collector:0.3.1")
       --node-collector-namespace string   specify the namespace in which the node-collector job should be deployed (default "trivy-temp")
@@ -138,6 +138,7 @@ trivy kubernetes [flags] [CONTEXT]
       --skip-files strings                specify the files or glob patterns to skip
       --skip-images                       skip the downloading and scanning of images (vulnerabilities and secrets) in the cluster resources
       --skip-java-db-update               skip updating Java index database
+      --skip-version-check                suppress notices about version updates and Trivy announcements
       --skip-vex-repo-update              [EXPERIMENTAL] Skip VEX Repository update
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
