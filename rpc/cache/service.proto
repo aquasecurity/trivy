@@ -43,6 +43,8 @@ message BlobInfo {
   repeated common.CustomResource custom_resources    = 10;
   repeated common.Secret secrets                     = 12;
   repeated common.LicenseFile licenses               = 13;
+  int64                       size                   = 14;
+  string                      created_by             = 15;
 }
 
 message PutBlobRequest {

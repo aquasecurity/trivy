@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/centos-6.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 201540608,
     "OS": {
       "Family": "centos",
       "Name": "6.10",
@@ -67,7 +68,14 @@
           "org.label-schema.vendor": "CentOS"
         }
       }
-    }
+    },
+    "Layers": [
+      {
+        "Size": 201540608,
+        "Digest": "sha256:ff50d722b38227ec8f2bbf0cdbce428b66745077c173d8117d91376128fa532e",
+        "DiffID": "sha256:af6bf1987c2eb07d73f33836b0d8fd825d7c785273526b077e46780e8b4b2ae9"
+      }
+    ]
   },
   "Results": [
     {

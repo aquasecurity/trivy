@@ -28,9 +28,14 @@ import (
 	"github.com/aquasecurity/trivy/pkg/parallel"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
 	trivyTypes "github.com/aquasecurity/trivy/pkg/types"
+	xsync "github.com/aquasecurity/trivy/pkg/x/sync"
 )
 
+const schemaVersion = 1
+
 type Artifact struct {
+	schemaVersion int
+
 	logger         *log.Logger
 	image          types.Image
 	cache          cache.ArtifactCache
@@ -42,11 +47,6 @@ type Artifact struct {
 	artifactOption artifact.Option
 
 	layerCacheDir string
-}
-
-type LayerInfo struct {
-	DiffID    string
-	CreatedBy string // can be empty
 }
 
 func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
@@ -72,6 +72,7 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 	}
 
 	return Artifact{
+		schemaVersion:  schemaVersion,
 		logger:         log.WithPrefix("image"),
 		image:          img,
 		cache:          c,
@@ -105,7 +106,8 @@ func (a Artifact) Inspect(ctx context.Context) (ref artifact.Reference, err erro
 			log.Error("Failed to remove layer cache", log.Err(rerr))
 		}
 	}()
-	if err := a.checkImageSize(ctx, diffIDs); err != nil {
+	layerSizes, err := a.layerSizes(ctx, diffIDs)
+	if err != nil {
 		return artifact.Reference{}, err
 	}
 
@@ -128,8 +130,7 @@ func (a Artifact) Inspect(ctx context.Context) (ref artifact.Reference, err erro
 		return artifact.Reference{}, err
 	}
 
-	// Parse histories and extract a list of "created_by"
-	layerKeyMap := a.consolidateCreatedBy(diffIDs, layerKeys, configFile)
+	layerKeyMap := a.layersInfo(diffIDs, layerKeys, layerSizes, configFile)
 
 	missingImage, missingLayers, err := a.cache.MissingBlobs(imageKey, layerKeys)
 	if err != nil {
@@ -168,7 +169,7 @@ func (a Artifact) Clean(_ artifact.Reference) error {
 
 func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []string, error) {
 	// Pass an empty config scanner option so that the cache key can be the same, even when policies are updated.
-	imageKey, err := cache.CalcKey(imageID, a.configAnalyzer.AnalyzerVersions(), nil, artifact.Option{})
+	imageKey, err := cache.CalcKey(imageID, a.schemaVersion, a.configAnalyzer.AnalyzerVersions(), nil, artifact.Option{})
 	if err != nil {
 		return "", nil, err
 	}
@@ -176,7 +177,7 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []str
 	hookVersions := a.handlerManager.Versions()
 	var layerKeys []string
 	for _, diffID := range diffIDs {
-		blobKey, err := cache.CalcKey(diffID, a.analyzer.AnalyzerVersions(), hookVersions, a.artifactOption)
+		blobKey, err := cache.CalcKey(diffID, a.schemaVersion, a.analyzer.AnalyzerVersions(), hookVersions, a.artifactOption)
 		if err != nil {
 			return "", nil, err
 		}
@@ -185,7 +186,20 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []str
 	return imageKey, layerKeys, nil
 }
 
-func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *v1.ConfigFile) map[string]LayerInfo {
+func (a Artifact) layersInfo(diffIDs, layerKeys []string, layerSizes map[string]int64, configFile *v1.ConfigFile) map[string]types.Layer {
+	// Parse histories and extract a list of "created_by"
+	layerKeyMap := a.consolidateCreatedBy(diffIDs, layerKeys, configFile)
+
+	// Fill layers uncompressed sizes
+	for layerKey, Layer := range layerKeyMap {
+		Layer.Size = layerSizes[Layer.DiffID]
+		layerKeyMap[layerKey] = Layer
+	}
+
+	return layerKeyMap
+}
+
+func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *v1.ConfigFile) map[string]types.Layer {
 	// save createdBy fields in order of layers
 	var createdBy []string
 	for _, h := range configFile.History {
@@ -202,7 +216,7 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 	// TODO: our current logic may not detect empty layers correctly in rare cases.
 	validCreatedBy := len(diffIDs) == len(createdBy)
 
-	layerKeyMap := make(map[string]LayerInfo)
+	layerKeyMap := make(map[string]types.Layer)
 	for i, diffID := range diffIDs {
 
 		c := ""
@@ -211,7 +225,7 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 		}
 
 		layerKey := layerKeys[i]
-		layerKeyMap[layerKey] = LayerInfo{
+		layerKeyMap[layerKey] = types.Layer{
 			DiffID:    diffID,
 			CreatedBy: c,
 		}
@@ -229,22 +243,23 @@ func (a Artifact) imageSizeError(typ string, size int64) error {
 	}
 }
 
-func (a Artifact) checkImageSize(ctx context.Context, diffIDs []string) error {
+func (a Artifact) layerSizes(ctx context.Context, diffIDs []string) (map[string]int64, error) {
+	if err := a.checkCompressedLayerSizes(diffIDs); err != nil {
+		return nil, xerrors.Errorf("failed to get compressed image size: %w", err)
+	}
+
+	layerSizes, err := a.uncompressedLayerSizes(ctx, diffIDs)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to calculate image size: %w", err)
+	}
+	return layerSizes, nil
+}
+
+func (a Artifact) checkCompressedLayerSizes(diffIDs []string) error {
+	// There is no point in checking the compressed image size if the `--max-image-size` flag is not set.
 	if a.artifactOption.ImageOption.MaxImageSize == 0 {
 		return nil
 	}
-
-	if err := a.checkCompressedImageSize(diffIDs); err != nil {
-		return xerrors.Errorf("failed to get compressed image size: %w", err)
-	}
-
-	if err := a.checkUncompressedImageSize(ctx, diffIDs); err != nil {
-		return xerrors.Errorf("failed to calculate image size: %w", err)
-	}
-	return nil
-}
-
-func (a Artifact) checkCompressedImageSize(diffIDs []string) error {
 	var totalSize int64
 
 	for _, diffID := range diffIDs {
@@ -271,8 +286,9 @@ func (a Artifact) checkCompressedImageSize(diffIDs []string) error {
 	return nil
 }
 
-func (a Artifact) checkUncompressedImageSize(ctx context.Context, diffIDs []string) error {
+func (a Artifact) uncompressedLayerSizes(ctx context.Context, diffIDs []string) (map[string]int64, error) {
 	var totalSize int64
+	layerSizes := xsync.Map[string, int64]{}
 
 	p := parallel.NewPipeline(a.artifactOption.Parallel, false, diffIDs,
 		func(_ context.Context, diffID string) (int64, error) {
@@ -280,9 +296,14 @@ func (a Artifact) checkUncompressedImageSize(ctx context.Context, diffIDs []stri
 			if err != nil {
 				return -1, xerrors.Errorf("failed to save layer: %w", err)
 			}
+			layerSizes.Store(diffID, layerSize)
 			return layerSize, nil
 		},
 		func(layerSize int64) error {
+			if a.artifactOption.ImageOption.MaxImageSize == 0 {
+				return nil
+			}
+
 			totalSize += layerSize
 			if totalSize > a.artifactOption.ImageOption.MaxImageSize {
 				return a.imageSizeError("uncompressed layers", totalSize)
@@ -292,10 +313,10 @@ func (a Artifact) checkUncompressedImageSize(ctx context.Context, diffIDs []stri
 	)
 
 	if err := p.Do(ctx); err != nil {
-		return xerrors.Errorf("pipeline error: %w", err)
+		return nil, xerrors.Errorf("pipeline error: %w", err)
 	}
 
-	return nil
+	return layerSizes.ToUnsafeMap(), nil
 }
 
 func (a Artifact) saveLayer(diffID string) (int64, error) {
@@ -316,7 +337,7 @@ func (a Artifact) saveLayer(diffID string) (int64, error) {
 }
 
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
-	layerKeyMap map[string]LayerInfo, configFile *v1.ConfigFile) error {
+	layerKeyMap map[string]types.Layer, configFile *v1.ConfigFile) error {
 
 	var osFound types.OS
 	p := parallel.NewPipeline(a.artifactOption.Parallel, false, layerKeys, func(ctx context.Context,
@@ -356,10 +377,12 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 	return nil
 }
 
-func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disabled []analyzer.Type) (types.BlobInfo, error) {
+func (a Artifact) inspectLayer(ctx context.Context, layerInfo types.Layer, disabled []analyzer.Type) (types.BlobInfo, error) {
 	a.logger.Debug("Missing diff ID in cache", log.String("diff_id", layerInfo.DiffID))
 
-	layerDigest, rc, err := a.uncompressedLayer(layerInfo.DiffID)
+	var rc io.ReadCloser
+	var err error
+	layerInfo.Digest, rc, err = a.uncompressedLayer(layerInfo.DiffID)
 	if err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("unable to get uncompressed layer %s: %w", layerInfo.DiffID, err)
 	}
@@ -420,12 +443,15 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	result.Sort()
 
 	blobInfo := types.BlobInfo{
-		SchemaVersion:     types.BlobJSONSchemaVersion,
-		Digest:            layerDigest,
-		DiffID:            layerInfo.DiffID,
-		CreatedBy:         layerInfo.CreatedBy,
-		OpaqueDirs:        opqDirs,
-		WhiteoutFiles:     whFiles,
+		SchemaVersion: types.BlobJSONSchemaVersion,
+
+		Size:          layerInfo.Size,
+		Digest:        layerInfo.Digest,
+		DiffID:        layerInfo.DiffID,
+		CreatedBy:     layerInfo.CreatedBy,
+		OpaqueDirs:    opqDirs,
+		WhiteoutFiles: whFiles,
+
 		OS:                result.OS,
 		Repository:        result.Repository,
 		PackageInfos:      result.PackageInfos,

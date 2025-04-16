@@ -153,6 +153,7 @@ message Layer {
   string digest     = 1;
   string diff_id    = 2;
   string created_by = 3;
+  int64  size       = 4;
 }
 
 message CauseMetadata {

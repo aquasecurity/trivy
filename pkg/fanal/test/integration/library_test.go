@@ -160,19 +160,19 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			require.NoError(t, err, tt.name)
 			defer cleanup()
 
-			ar, err := aimage.NewArtifact(img, c, artifact.Option{
-				// disable license checking in the test - in parallel it will fail because of resource requirement
-				DisabledAnalyzers: []analyzer.Type{
-					analyzer.TypeExecutable,
-					analyzer.TypeLicenseFile,
-				},
-			})
-			require.NoError(t, err)
-
-			applier := applier.NewApplier(c)
-
 			// run tests twice, one without cache and with cache
 			for i := 1; i <= 2; i++ {
+				ar, err := aimage.NewArtifact(img, c, artifact.Option{
+					// disable license checking in the test - in parallel it will fail because of resource requirement
+					DisabledAnalyzers: []analyzer.Type{
+						analyzer.TypeExecutable,
+						analyzer.TypeLicenseFile,
+					},
+				})
+				require.NoError(t, err)
+
+				applier := applier.NewApplier(c)
+
 				runChecks(t, ctx, ar, applier, tt)
 			}
 

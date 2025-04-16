@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/oraclelinux-8.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 416893952,
     "OS": {
       "Family": "oracle",
       "Name": "8.0"
@@ -54,7 +55,14 @@
         "Image": "sha256:d2f0ba2a964f3d0b1935be99979b6930f8b989217ff6a5e6d4093e9df9baee11",
         "ArgsEscaped": true
       }
-    }
+    },
+    "Layers": [
+      {
+        "Size": 416893952,
+        "Digest": "sha256:e1b9aa33b064e76023cc29e9fac51bcebe62740c92ed38f09ba6205ddd9aa6f4",
+        "DiffID": "sha256:91bac58a9ffae0dc2031e3f90d7bf04f66ccf019f180372152b0916d6e8a796f"
+      }
+    ]
   },
   "Results": [
     {

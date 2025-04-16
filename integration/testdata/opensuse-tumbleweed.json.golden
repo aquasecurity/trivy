@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/opensuse-tumbleweed.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 115281408,
     "OS": {
       "Family": "opensuse-tumbleweed",
       "Name": "20240607"
@@ -56,7 +57,14 @@
           "org.opensuse.reference": "registry.opensuse.org/opensuse/tumbleweed:20240607.30.45"
         }
       }
-    }
+    },
+    "Layers": [
+      {
+        "Size": 115281408,
+        "Digest": "sha256:427d16a14c45614f51357aeebee0dfe209a1cebfc044b3b724b6ea35663b3111",
+        "DiffID": "sha256:7a335bdf2d91d6d158da360054aa7e477d708187d43fe9d0ac20144cdf90f763"
+      }
+    ]
   },
   "Results": [
     {

@@ -20,7 +20,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/sbom"
 )
 
+const schemaVersion = 0
+
 type Artifact struct {
+	schemaVersion int
+
 	filePath       string
 	cache          cache.ArtifactCache
 	analyzer       analyzer.AnalyzerGroup
@@ -31,6 +35,7 @@ type Artifact struct {
 
 func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
 	return Artifact{
+		schemaVersion:  schemaVersion,
 		filePath:       filepath.Clean(filePath),
 		cache:          c,
 		artifactOption: opt,
@@ -105,7 +110,7 @@ func (a Artifact) calcCacheKey(blobInfo types.BlobInfo) (string, error) {
 	}
 
 	d := digest.NewDigest(digest.SHA256, h)
-	cacheKey, err := cache.CalcKey(d.String(), a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
+	cacheKey, err := cache.CalcKey(d.String(), a.schemaVersion, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
 	if err != nil {
 		return "", xerrors.Errorf("cache key: %w", err)
 	}
