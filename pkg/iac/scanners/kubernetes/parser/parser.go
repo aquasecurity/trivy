@@ -1,15 +1,14 @@
 package parser
 
 import (
+	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"regexp"
 	"strings"
 
 	"gopkg.in/yaml.v3"
-	kyaml "sigs.k8s.io/yaml"
 )
 
 func Parse(_ context.Context, r io.Reader, path string) ([]any, error) {
@@ -22,16 +21,12 @@ func Parse(_ context.Context, r io.Reader, path string) ([]any, error) {
 		return nil, nil
 	}
 
-	if strings.TrimSpace(string(contents))[0] == '{' {
-		var target any
-		if err := json.Unmarshal(contents, &target); err != nil {
-			return nil, err
-		}
-
-		contents, err = kyaml.JSONToYAML(contents) // convert into yaml to reuse file parsing logic
+	if bytes.TrimSpace(contents)[0] == '{' {
+		manifest, err := ManifestFromJSON(path, contents)
 		if err != nil {
 			return nil, err
 		}
+		return []any{manifest.ToRego()}, nil
 	}
 
 	var results []any

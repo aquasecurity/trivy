@@ -37,7 +37,7 @@ func resolveMapSub(refValue, original *Property) (*Property, bool) {
 
 	for k, v := range components {
 		replacement := "[failed to resolve]"
-		switch v.Type() {
+		switch v.Type {
 		case cftypes.Map:
 			resolved, _ := ResolveIntrinsicFunc(v)
 			replacement = resolved.AsString()
@@ -46,7 +46,7 @@ func resolveMapSub(refValue, original *Property) (*Property, bool) {
 		case cftypes.Int:
 			replacement = strconv.Itoa(v.AsInt())
 		case cftypes.Bool:
-			replacement = fmt.Sprintf("%v", v.AsBool())
+			replacement = strconv.FormatBool(v.AsBool())
 		case cftypes.List:
 			var parts []string
 			for _, p := range v.AsList() {

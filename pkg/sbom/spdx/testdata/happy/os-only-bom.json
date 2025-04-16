@@ -8,7 +8,7 @@
 		]
 	},
 	"dataLicense": "CC0-1.0",
-	"documentNamespace": "http://aquasecurity.github.io/trivy/container/maven-test-project-1a255568-e896-498f-93de-7975a5cb0212",
+	"documentNamespace": "http://trivy.dev/container/maven-test-project-1a255568-e896-498f-93de-7975a5cb0212",
 	"name": "maven-test-project",
 	"packages": [
 		{

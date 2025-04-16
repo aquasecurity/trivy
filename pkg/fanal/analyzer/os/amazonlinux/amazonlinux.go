@@ -73,3 +73,8 @@ func (a amazonlinuxOSAnalyzer) Type() analyzer.Type {
 func (a amazonlinuxOSAnalyzer) Version() int {
 	return version
 }
+
+// StaticPaths returns the static paths of the amazonlinux analyzer
+func (a amazonlinuxOSAnalyzer) StaticPaths() []string {
+	return requiredFiles
+}

@@ -59,26 +59,33 @@ func normalize(expr Expression, fn NormalizeFunc) Expression {
 // There MUST be white space on either side of the operator "WITH".
 // ref: https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions
 func NormalizeForSPDX(expr Expression) Expression {
-	e, ok := expr.(SimpleExpr)
-	if !ok {
-		return expr // do not normalize compound expressions
-	}
-
-	var b strings.Builder
-	for _, c := range e.License {
-		switch {
-		// spec: idstring = 1*(ALPHA / DIGIT / "-" / "." )
-		case isAlphabet(c) || unicode.IsNumber(c) || c == '-' || c == '.':
-			_, _ = b.WriteRune(c)
-		case c == ':':
-			// TODO: Support DocumentRef
-			_, _ = b.WriteRune(c)
-		default:
-			// Replace invalid characters with '-'
-			_, _ = b.WriteRune('-')
+	switch e := expr.(type) {
+	case SimpleExpr:
+		var b strings.Builder
+		for _, c := range e.License {
+			switch {
+			// spec: idstring = 1*(ALPHA / DIGIT / "-" / "." )
+			case isAlphabet(c) || unicode.IsNumber(c) || c == '-' || c == '.':
+				_, _ = b.WriteRune(c)
+			case c == ':':
+				// TODO: Support DocumentRef
+				_, _ = b.WriteRune(c)
+			default:
+				// Replace invalid characters with '-'
+				_, _ = b.WriteRune('-')
+			}
+		}
+		return SimpleExpr{License: b.String(), HasPlus: e.HasPlus}
+	case CompoundExpr:
+		if e.Conjunction() == TokenWith {
+			initSpdxExceptions()
+			// Use correct SPDX exceptionID
+			if exc, ok := spdxExceptions[strings.ToUpper(e.Right().String())]; ok {
+				return NewCompoundExpr(e.Left(), e.Conjunction(), exc)
+			}
 		}
 	}
-	return SimpleExpr{License: b.String(), HasPlus: e.HasPlus}
+	return expr
 }
 
 func isAlphabet(r rune) bool {

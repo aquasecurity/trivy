@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	types2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -40,22 +40,22 @@ func Test_JSONUnmarshal(t *testing.T) {
 	   "minLength": 3
 	*/
 	assert.Equal(t, "string", prefix.Type.Raw())
-	assert.Equal(t, types2.KindString, prefix.Type.Kind)
+	assert.Equal(t, azure.KindString, prefix.Type.Kind)
 	assert.Equal(t, 8, prefix.Type.Metadata.Range().GetStartLine())
 	assert.Equal(t, 8, prefix.Type.Metadata.Range().GetEndLine())
 
 	assert.Equal(t, "x", prefix.DefaultValue.Raw())
-	assert.Equal(t, types2.KindString, prefix.DefaultValue.Kind)
+	assert.Equal(t, azure.KindString, prefix.DefaultValue.Kind)
 	assert.Equal(t, 9, prefix.DefaultValue.Metadata.Range().GetStartLine())
 	assert.Equal(t, 9, prefix.DefaultValue.Metadata.Range().GetEndLine())
 
 	assert.Equal(t, int64(11), prefix.MaxLength.Raw())
-	assert.Equal(t, types2.KindNumber, prefix.MaxLength.Kind)
+	assert.Equal(t, azure.KindNumber, prefix.MaxLength.Kind)
 	assert.Equal(t, 10, prefix.MaxLength.Metadata.Range().GetStartLine())
 	assert.Equal(t, 10, prefix.MaxLength.Metadata.Range().GetEndLine())
 
 	assert.Equal(t, int64(3), prefix.MinLength.Raw())
-	assert.Equal(t, types2.KindNumber, prefix.MinLength.Kind)
+	assert.Equal(t, azure.KindNumber, prefix.MinLength.Kind)
 	assert.Equal(t, 11, prefix.MinLength.Metadata.Range().GetStartLine())
 	assert.Equal(t, 11, prefix.MinLength.Metadata.Range().GetEndLine())
 }

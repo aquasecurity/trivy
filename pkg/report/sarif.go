@@ -3,7 +3,6 @@ package report
 import (
 	"context"
 	"fmt"
-	"html"
 	"io"
 	"net/url"
 	"path/filepath"
@@ -14,7 +13,6 @@ import (
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -134,7 +132,7 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 	sw.run.Tool.Driver.WithVersion(sw.Version)
 	sw.run.Tool.Driver.WithFullName("Trivy Vulnerability Scanner")
 	sw.locationCache = make(map[string][]location)
-	if report.ArtifactType == artifact.TypeContainerImage {
+	if report.ArtifactType == ftypes.TypeContainerImage {
 		sw.run.Properties = sarif.Properties{
 			"imageName":   report.ArtifactName,
 			"repoTags":    report.Metadata.RepoTags,
@@ -171,8 +169,8 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 				locationMessage:  fmt.Sprintf("%v: %v@%v", path, vuln.PkgName, vuln.InstalledVersion),
 				locations:        sw.getLocations(vuln.PkgName, vuln.InstalledVersion, path, res.Packages),
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
-				shortDescription: html.EscapeString(vuln.Title),
-				fullDescription:  html.EscapeString(fullDescription),
+				shortDescription: vuln.Title,
+				fullDescription:  fullDescription,
 				helpText: fmt.Sprintf("Vulnerability %v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)\n%v",
 					vuln.VulnerabilityID, vuln.Severity, vuln.PkgName, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL, vuln.Description),
 				helpMarkdown: fmt.Sprintf("**Vulnerability %v**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|%v|%v|%v|[%v](%v)|\n\n%v",
@@ -199,8 +197,8 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 					},
 				},
 				resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
-				shortDescription: html.EscapeString(misconf.Title),
-				fullDescription:  html.EscapeString(misconf.Description),
+				shortDescription: misconf.Title,
+				fullDescription:  misconf.Description,
 				helpText: fmt.Sprintf("Misconfiguration %v\nType: %s\nSeverity: %v\nCheck: %v\nMessage: %v\nLink: [%v](%v)\n%s",
 					misconf.ID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.ID, misconf.PrimaryURL, misconf.Description),
 				helpMarkdown: fmt.Sprintf("**Misconfiguration %v**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|%v|%v|%v|%s|[%v](%v)|\n\n%v",
@@ -226,8 +224,8 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 					},
 				},
 				resultIndex:      getRuleIndex(secret.RuleID, ruleIndexes),
-				shortDescription: html.EscapeString(secret.Title),
-				fullDescription:  html.EscapeString(secret.Match),
+				shortDescription: secret.Title,
+				fullDescription:  secret.Match,
 				helpText: fmt.Sprintf("Secret %v\nSeverity: %v\nMatch: %s",
 					secret.Title, secret.Severity, secret.Match),
 				helpMarkdown: fmt.Sprintf("**Secret %v**\n| Severity | Match |\n| --- | --- |\n|%v|%v|",

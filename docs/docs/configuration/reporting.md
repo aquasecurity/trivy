@@ -19,9 +19,152 @@ Trivy supports the following formats:
 |      Secret      |     ✓     |
 |     License      |     ✓     |
 
+```bash
+$ trivy image -f table golang:1.22.11-alpine3.20
 ```
-$ trivy image -f table golang:1.12-alpine
+
+<details>
+<summary>Result</summary>
+
 ```
+...
+
+Report Summary
+
+┌─────────────────────────────────────────────┬──────────┬─────────────────┬─────────┐
+│                   Target                    │   Type   │ Vulnerabilities │ Secrets │
+├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ golang:1.22.11-alpine3.20 (alpine 3.20.5)   │  alpine  │        6        │    -    │
+├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ usr/local/go/bin/go                         │ gobinary │        1        │    -    │
+├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+...
+├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ usr/local/go/pkg/tool/linux_amd64/vet       │ gobinary │        1        │    -    │
+└─────────────────────────────────────────────┴──────────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+golang:1.22.11-alpine3.20 (alpine 3.20.5)
+
+Total: 6 (UNKNOWN: 2, LOW: 0, MEDIUM: 2, HIGH: 2, CRITICAL: 0)
+
+┌────────────┬────────────────┬──────────┬────────┬───────────────────┬───────────────┬─────────────────────────────────────────────────────────────┐
+│  Library   │ Vulnerability  │ Severity │ Status │ Installed Version │ Fixed Version │                            Title                            │
+├────────────┼────────────────┼──────────┼────────┼───────────────────┼───────────────┼─────────────────────────────────────────────────────────────┤
+│ libcrypto3 │ CVE-2024-12797 │ HIGH     │ fixed  │ 3.3.2-r1          │ 3.3.3-r0      │ openssl: RFC7250 handshakes with unauthenticated servers    │
+│            │                │          │        │                   │               │ don't abort as expected                                     │
+│            │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2024-12797                  │
+│            ├────────────────┼──────────┤        │                   ├───────────────┼─────────────────────────────────────────────────────────────┤
+│            │ CVE-2024-13176 │ MEDIUM   │        │                   │ 3.3.2-r2      │ openssl: Timing side-channel in ECDSA signature computation │
+│            │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2024-13176                  │
+├────────────┼────────────────┼──────────┤        │                   ├───────────────┼─────────────────────────────────────────────────────────────┤
+│ libssl3    │ CVE-2024-12797 │ HIGH     │        │                   │ 3.3.3-r0      │ openssl: RFC7250 handshakes with unauthenticated servers    │
+│            │                │          │        │                   │               │ don't abort as expected                                     │
+│            │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2024-12797                  │
+│            ├────────────────┼──────────┤        │                   ├───────────────┼─────────────────────────────────────────────────────────────┤
+│            │ CVE-2024-13176 │ MEDIUM   │        │                   │ 3.3.2-r2      │ openssl: Timing side-channel in ECDSA signature computation │
+│            │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2024-13176                  │
+├────────────┼────────────────┼──────────┤        ├───────────────────┼───────────────┼─────────────────────────────────────────────────────────────┤
+│ musl       │ CVE-2025-26519 │ UNKNOWN  │        │ 1.2.5-r0          │ 1.2.5-r1      │ musl libc 0.9.13 through 1.2.5 before 1.2.6 has an          │
+│            │                │          │        │                   │               │ out-of-bounds write ......                                  │
+│            │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2025-26519                  │
+├────────────┤                │          │        │                   │               │                                                             │
+│ musl-utils │                │          │        │                   │               │                                                             │
+│            │                │          │        │                   │               │                                                             │
+│            │                │          │        │                   │               │                                                             │
+└────────────┴────────────────┴──────────┴────────┴───────────────────┴───────────────┴─────────────────────────────────────────────────────────────┘
+
+usr/local/go/bin/go (gobinary)
+
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+┌─────────┬────────────────┬──────────┬────────┬───────────────────┬──────────────────────────────┬──────────────────────────────────────────────────────────────┐
+│ Library │ Vulnerability  │ Severity │ Status │ Installed Version │        Fixed Version         │                            Title                             │
+├─────────┼────────────────┼──────────┼────────┼───────────────────┼──────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ stdlib  │ CVE-2025-22866 │ MEDIUM   │ fixed  │ v1.22.11          │ 1.22.12, 1.23.6, 1.24.0-rc.3 │ crypto/internal/nistec: golang: Timing sidechannel for P-256 │
+│         │                │          │        │                   │                              │ on ppc64le in crypto/internal/nistec                         │
+│         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2025-22866                   │
+└─────────┴────────────────┴──────────┴────────┴───────────────────┴──────────────────────────────┴──────────────────────────────────────────────────────────────┘
+
+...
+```
+
+</details>
+
+#### Table mode
+!!! warning "EXPERIMENTAL"
+    This feature might change without preserving backwards compatibility.
+
+Trivy supports the following modes for `table` format:
+
+|             Mode             | Enabled by default |
+|:----------------------------:|:-----------------:|
+|  [summary](#summary-table)   |       ✓[^1]       |
+| [detailed](#detailed-tables) |         ✓         |
+
+You can use `--table-mode` flag to enable/disable table mode(s). 
+
+
+##### Summary table
+Summary table contains general information about the scan performed.
+
+Nuances of table contents:
+
+- Table includes columns for enabled [scanners](../references/terminology.md#scanner) only. Use `--scanners` flag to enable/disable scanners.
+- Table includes separate lines for the same targets but different scanners.
+    - `-` means that the scanner didn't scan this target.
+    - `0` means that the scanner scanned this target, but found no security issues.
+
+<details>
+<summary>Report Summary</summary>
+
+```
+┌───────────────────────┬────────────┬─────────────────┬───────────────────┬─────────┬──────────┐
+│        Target         │    Type    │ Vulnerabilities │ Misconfigurations │ Secrets │ Licenses │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ test (alpine 3.20.3)  │   alpine   │        2        │         -         │    -    │    -     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ Java                  │    jar     │        2        │         -         │    -    │    -     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ app/Dockerfile        │ dockerfile │        -        │         2         │    -    │    -     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ requirements.txt      │    text    │        0        │         -         │    -    │    -     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ requirements.txt      │    text    │        -        │         -         │    1    │    -     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ OS Packages           │     -      │        -        │         -         │    -    │    1     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ Java                  │     -      │        -        │         -         │    -    │    0     │
+└───────────────────────┴────────────┴─────────────────┴───────────────────┴─────────┴──────────┘
+```
+
+</details>
+
+##### Detailed tables
+Detailed tables contain information about found security issues for each target with more detailed information (CVE-ID, severity, version, etc.).
+
+<details>
+<summary>Detailed tables</summary>
+
+```
+
+usr/local/go/bin/go (gobinary)
+
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+┌─────────┬────────────────┬──────────┬────────┬───────────────────┬──────────────────────────────┬──────────────────────────────────────────────────────────────┐
+│ Library │ Vulnerability  │ Severity │ Status │ Installed Version │        Fixed Version         │                            Title                             │
+├─────────┼────────────────┼──────────┼────────┼───────────────────┼──────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ stdlib  │ CVE-2025-22866 │ MEDIUM   │ fixed  │ v1.22.11          │ 1.22.12, 1.23.6, 1.24.0-rc.3 │ crypto/internal/nistec: golang: Timing sidechannel for P-256 │
+│         │                │          │        │                   │                              │ on ppc64le in crypto/internal/nistec                         │
+│         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2025-22866                   │
+└─────────┴────────────────┴──────────┴────────┴───────────────────┴──────────────────────────────┴──────────────────────────────────────────────────────────────┘
+
+```
+</details>
 
 #### Show origins of vulnerable dependencies
 
@@ -123,22 +266,6 @@ Then, you can try to update **axios@0.21.4** and **cra-append-sw@2.7.0** to reso
 ```
 $ trivy image -f json -o results.json alpine:latest
 ```
-
-<details>
-<summary>Result</summary>
-
-```
-2024-12-26T22:01:18+05:30	INFO	[vuln] Vulnerability scanning is enabled
-2024-12-26T22:01:18+05:30	INFO	[secret] Secret scanning is enabled
-2024-12-26T22:01:18+05:30	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
-2024-12-26T22:01:18+05:30	INFO	[secret] Please see also https://aquasecurity.github.io/trivy/v0.58/docs/scanner/secret#recommendation for faster secret detection
-2024-12-26T22:01:18+05:30	INFO	Detected OS	family="alpine" version="3.20.3"
-2024-12-26T22:01:18+05:30	INFO	[alpine] Detecting vulnerabilities...	os_version="3.20" repository="3.20" pkg_num=14
-2024-12-26T22:01:18+05:30	INFO	Number of language-specific files	num=0
-2024-12-26T22:01:18+05:30	WARN	Using severities from other vendors for some vulnerabilities. Read https://aquasecurity.github.io/trivy/v0.58/docs/scanner/vulnerability#severity-selection for details.
-```
-
-</details>
 
 <details>
 <summary>JSON</summary>
@@ -490,7 +617,7 @@ $ trivy convert --format cyclonedx --output result.cdx result.json
 ```
 
 !!! note
-    Please note that if you want to convert to a format that requires a list of packages, 
+    Please note that if you want to convert to a format that requires a list of packages,
     such as SBOM, you need to add the `--list-all-pkgs` flag when outputting in JSON.
 
 [Filtering options](./filtering.md) such as `--severity` are also available with `convert`.
@@ -534,3 +661,5 @@ $ trivy convert --format table --severity CRITICAL result.json
 [sbt-lockfile]: ../coverage/language/java.md#sbt
 [pubspec-lock]: ../coverage/language/dart.md#dart
 [cargo-binaries]: ../coverage/language/rust.md#binaries
+
+[^1]: To show summary table in `convert` mode - you need to enable the scanners used during JSON report generation.

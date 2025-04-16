@@ -73,7 +73,8 @@ linters-settings:
       - G304
       - G402
   govet:
-    check-shadowing: false
+    disable:
+      - shadow
   misspell:
     locale: US
     ignore-words:
@@ -83,7 +84,7 @@ linters-settings:
       - simmilar
   perfsprint:
     # Optimizes even if it requires an int or uint type cast.
-    int-conversion: false
+    int-conversion: true
     # Optimizes into `err.Error()` even if it is only equivalent for non-nil errors.
     err-error: true
     # Optimizes `fmt.Errorf`.
@@ -113,7 +114,7 @@ linters:
     - misspell
     - perfsprint
     - revive
-    - tenv
+    - usetesting
     - testifylint
     - typecheck
     - unconvert
@@ -121,12 +122,11 @@ linters:
     - usestdlibvars
 
 run:
-  go: '1.23'
+  go: '1.24'
   timeout: 30m
 
 issues:
   exclude-files:
-    - "mock_*.go$"
     - "examples/*"
   exclude-dirs:
     - "pkg/iac/scanners/terraform/parser/funcs" # copies of Terraform functions

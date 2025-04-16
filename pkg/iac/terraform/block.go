@@ -123,6 +123,10 @@ func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, par
 	return &b
 }
 
+func (b *Block) HCLBlock() *hcl.Block {
+	return b.hclBlock
+}
+
 func (b *Block) ID() string {
 	return b.id
 }
@@ -480,6 +484,10 @@ func (b *Block) FullName() string {
 	return b.LocalName()
 }
 
+func (b *Block) ModuleBlock() *Block {
+	return b.moduleBlock
+}
+
 func (b *Block) ModuleKey() string {
 	name := b.Reference().NameLabel()
 	if b.moduleBlock == nil {
@@ -507,39 +515,6 @@ func (b *Block) NameLabel() string {
 		return b.Labels()[1]
 	}
 	return ""
-}
-
-func (b *Block) HasChild(childElement string) bool {
-	return b.GetAttribute(childElement).IsNotNil() || b.GetBlock(childElement).IsNotNil()
-}
-
-func (b *Block) MissingChild(childElement string) bool {
-	if b == nil {
-		return true
-	}
-
-	return !b.HasChild(childElement)
-}
-
-func (b *Block) MissingNestedChild(name string) bool {
-	if b == nil {
-		return true
-	}
-
-	parts := strings.Split(name, ".")
-	blocks := parts[:len(parts)-1]
-	last := parts[len(parts)-1]
-
-	working := b
-	for _, subBlock := range blocks {
-		if checkBlock := working.GetBlock(subBlock); checkBlock == nil {
-			return true
-		} else {
-			working = checkBlock
-		}
-	}
-	return !working.HasChild(last)
-
 }
 
 func (b *Block) InModule() bool {

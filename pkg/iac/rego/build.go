@@ -6,23 +6,22 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/open-policy-agent/opa/ast"
-	"github.com/open-policy-agent/opa/util"
+	"github.com/open-policy-agent/opa/v1/ast"
+	"github.com/open-policy-agent/opa/v1/util"
 
 	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func BuildSchemaSetFromPolicies(policies map[string]*ast.Module, paths []string, fsys fs.FS, customSchemas map[string][]byte) (*ast.SchemaSet, bool, error) {
+func BuildSchemaSetFromPolicies(policies map[string]*ast.Module, paths []string, fsys fs.FS, customSchemas map[string][]byte) (*ast.SchemaSet, error) {
 	schemaSet := ast.NewSchemaSet()
 	schemaSet.Put(ast.MustParseRef("schema.input"), make(map[string]any)) // for backwards compat only
-	var customFound bool
 
 	for _, policy := range policies {
 		for _, annotation := range policy.Annotations {
 			for _, ss := range annotation.Schemas {
 				schemaName, err := ss.Schema.Ptr()
-				if err != nil || schemaName == "input" {
+				if err != nil || schemaName == "input" { // for backwards compat only
 					continue
 				}
 
@@ -38,11 +37,11 @@ func BuildSchemaSetFromPolicies(policies map[string]*ast.Module, paths []string,
 				} else {
 					b, err := findSchemaInFS(paths, fsys, schemaName)
 					if err != nil {
-						return schemaSet, true, err
+						return nil, err
 					}
 
 					if b == nil {
-						return nil, false, fmt.Errorf("could not find schema %q", schemaName)
+						return nil, fmt.Errorf("could not find schema %q", schemaName)
 					}
 
 					schema = b
@@ -50,15 +49,14 @@ func BuildSchemaSetFromPolicies(policies map[string]*ast.Module, paths []string,
 
 				var rawSchema any
 				if err := util.UnmarshalJSON(schema, &rawSchema); err != nil {
-					return schemaSet, false, fmt.Errorf("could not parse schema %q: %w", schemaName, err)
+					return schemaSet, fmt.Errorf("could not parse schema %q: %w", schemaName, err)
 				}
-				customFound = true
 				schemaSet.Put(ss.Schema, rawSchema)
 			}
 		}
 	}
 
-	return schemaSet, customFound, nil
+	return schemaSet, nil
 }
 
 // findSchemaInFS tries to find the schema anywhere in the specified FS

@@ -30,22 +30,22 @@ func WithRPCClient(c rpc.Scanner) Option {
 	}
 }
 
-// ScannerOption holds options for RPC client
-type ScannerOption struct {
+// ServiceOption holds options for RPC client
+type ServiceOption struct {
 	RemoteURL     string
 	Insecure      bool
 	CustomHeaders http.Header
 	PathPrefix    string
 }
 
-// Scanner implements the RPC scanner
-type Scanner struct {
+// Service implements the RPC client for remote scanning
+type Service struct {
 	customHeaders http.Header
 	client        rpc.Scanner
 }
 
-// NewScanner is the factory method to return RPC Scanner
-func NewScanner(scannerOptions ScannerOption, opts ...Option) Scanner {
+// NewService is the factory method to return RPC Service
+func NewService(scannerOptions ServiceOption, opts ...Option) Service {
 	tr := http.DefaultTransport.(*http.Transport).Clone()
 	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: scannerOptions.Insecure}
 	httpClient := &http.Client{Transport: tr}
@@ -61,14 +61,14 @@ func NewScanner(scannerOptions ScannerOption, opts ...Option) Scanner {
 		opt(o)
 	}
 
-	return Scanner{
+	return Service{
 		customHeaders: scannerOptions.CustomHeaders,
 		client:        o.rpcClient,
 	}
 }
 
 // Scan scans the image
-func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, opts types.ScanOptions) (types.Results, ftypes.OS, error) {
+func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, opts types.ScanOptions) (types.Results, ftypes.OS, error) {
 	ctx = WithCustomHeaders(ctx, s.customHeaders)
 
 	// Convert to the rpc struct
@@ -93,12 +93,14 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			ArtifactId: artifactKey,
 			BlobIds:    blobKeys,
 			Options: &rpc.ScanOptions{
-				PkgTypes:          opts.PkgTypes,
-				PkgRelationships:  xstrings.ToStringSlice(opts.PkgRelationships),
-				Scanners:          xstrings.ToStringSlice(opts.Scanners),
-				LicenseCategories: licenseCategories,
-				IncludeDevDeps:    opts.IncludeDevDeps,
-				Distro:            distro,
+				PkgTypes:            opts.PkgTypes,
+				PkgRelationships:    xstrings.ToStringSlice(opts.PkgRelationships),
+				Scanners:            xstrings.ToStringSlice(opts.Scanners),
+				LicenseCategories:   licenseCategories,
+				LicenseFull:         opts.LicenseFull,
+				IncludeDevDeps:      opts.IncludeDevDeps,
+				Distro:              distro,
+				VulnSeveritySources: xstrings.ToStringSlice(opts.VulnSeveritySources),
 			},
 		})
 		return err

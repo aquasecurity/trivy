@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -14,12 +15,17 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/misconf"
+	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
 var disabledChecks = []misconf.DisabledCheck{
 	{
+		ID: "DS007", Scanner: string(analyzer.TypeHistoryDockerfile),
+		Reason: "See " + doc.URL("docs/target/container_image", "disabled-checks"),
+	},
+	{
 		ID: "DS016", Scanner: string(analyzer.TypeHistoryDockerfile),
-		Reason: "See https://github.com/aquasecurity/trivy/issues/7368",
+		Reason: "See " + doc.URL("docs/target/container_image", "disabled-checks"),
 	},
 }
 
@@ -49,61 +55,10 @@ func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnal
 	if input.Config == nil {
 		return nil, nil
 	}
-	dockerfile := new(bytes.Buffer)
-	var userFound bool
-	baseLayerIndex := image.GuessBaseImageIndex(input.Config.History)
-	for i := baseLayerIndex + 1; i < len(input.Config.History); i++ {
-		h := input.Config.History[i]
-		var createdBy string
-		switch {
-		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop)"):
-			// Instruction other than RUN
-			createdBy = strings.TrimPrefix(h.CreatedBy, "/bin/sh -c #(nop)")
-		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c"):
-			// RUN instruction
-			createdBy = strings.ReplaceAll(h.CreatedBy, "/bin/sh -c", "RUN")
-		case strings.HasSuffix(h.CreatedBy, "# buildkit"):
-			// buildkit instructions
-			// COPY ./foo /foo # buildkit
-			// ADD ./foo.txt /foo.txt # buildkit
-			// RUN /bin/sh -c ls -hl /foo # buildkit
-			createdBy = strings.TrimSuffix(h.CreatedBy, "# buildkit")
-			if strings.HasPrefix(h.CreatedBy, "RUN /bin/sh -c") {
-				createdBy = strings.ReplaceAll(createdBy, "RUN /bin/sh -c", "RUN")
-			}
-		case strings.HasPrefix(h.CreatedBy, "USER"):
-			// USER instruction
-			createdBy = h.CreatedBy
-			userFound = true
-		case strings.HasPrefix(h.CreatedBy, "HEALTHCHECK"):
-			// HEALTHCHECK instruction
-			var interval, timeout, startPeriod, retries, command string
-			if input.Config.Config.Healthcheck.Interval != 0 {
-				interval = fmt.Sprintf("--interval=%s ", input.Config.Config.Healthcheck.Interval)
-			}
-			if input.Config.Config.Healthcheck.Timeout != 0 {
-				timeout = fmt.Sprintf("--timeout=%s ", input.Config.Config.Healthcheck.Timeout)
-			}
-			if input.Config.Config.Healthcheck.StartPeriod != 0 {
-				startPeriod = fmt.Sprintf("--startPeriod=%s ", input.Config.Config.Healthcheck.StartPeriod)
-			}
-			if input.Config.Config.Healthcheck.Retries != 0 {
-				retries = fmt.Sprintf("--retries=%d ", input.Config.Config.Healthcheck.Retries)
-			}
-			command = strings.Join(input.Config.Config.Healthcheck.Test, " ")
-			command = strings.ReplaceAll(command, "CMD-SHELL", "CMD")
-			createdBy = fmt.Sprintf("HEALTHCHECK %s%s%s%s%s", interval, timeout, startPeriod, retries, command)
-		}
-		dockerfile.WriteString(strings.TrimSpace(createdBy) + "\n")
-	}
-
-	if !userFound && input.Config.Config.User != "" {
-		user := fmt.Sprintf("USER %s", input.Config.Config.User)
-		dockerfile.WriteString(user)
-	}
 
 	fsys := mapfs.New()
-	if err := fsys.WriteVirtualFile("Dockerfile", dockerfile.Bytes(), 0600); err != nil {
+	if err := fsys.WriteVirtualFile(
+		"Dockerfile", imageConfigToDockerfile(input.Config), 0600); err != nil {
 		return nil, xerrors.Errorf("mapfs write error: %w", err)
 	}
 
@@ -119,6 +74,80 @@ func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnal
 	return &analyzer.ConfigAnalysisResult{
 		Misconfiguration: &misconfs[0],
 	}, nil
+}
+
+func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
+	dockerfile := new(bytes.Buffer)
+	var userFound bool
+	baseLayerIndex := image.GuessBaseImageIndex(cfg.History)
+	for i := baseLayerIndex + 1; i < len(cfg.History); i++ {
+		h := cfg.History[i]
+		var createdBy string
+		switch {
+		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop)"):
+			// Instruction other than RUN
+			createdBy = strings.TrimPrefix(h.CreatedBy, "/bin/sh -c #(nop)")
+		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c"):
+			// RUN instruction
+			createdBy = buildRunInstruction(createdBy)
+		case strings.HasSuffix(h.CreatedBy, "# buildkit"):
+			// buildkit instructions
+			// COPY ./foo /foo # buildkit
+			// ADD ./foo.txt /foo.txt # buildkit
+			// RUN /bin/sh -c ls -hl /foo # buildkit
+			createdBy = strings.TrimSuffix(h.CreatedBy, "# buildkit")
+			createdBy = buildRunInstruction(createdBy)
+		case strings.HasPrefix(h.CreatedBy, "USER"):
+			// USER instruction
+			createdBy = h.CreatedBy
+			userFound = true
+		case strings.HasPrefix(h.CreatedBy, "HEALTHCHECK"):
+			// HEALTHCHECK instruction
+			createdBy = buildHealthcheckInstruction(cfg.Config.Healthcheck)
+		default:
+			for _, prefix := range []string{"ARG", "ENV", "ENTRYPOINT"} {
+				if strings.HasPrefix(h.CreatedBy, prefix) {
+					createdBy = h.CreatedBy
+					break
+				}
+			}
+		}
+		dockerfile.WriteString(strings.TrimSpace(createdBy) + "\n")
+	}
+
+	if !userFound && cfg.Config.User != "" {
+		user := fmt.Sprintf("USER %s", cfg.Config.User)
+		dockerfile.WriteString(user)
+	}
+
+	return dockerfile.Bytes()
+}
+
+func buildRunInstruction(s string) string {
+	pos := strings.Index(s, "/bin/sh -c")
+	if pos == -1 {
+		return s
+	}
+	return "RUN" + s[pos+len("/bin/sh -c"):]
+}
+
+func buildHealthcheckInstruction(health *v1.HealthConfig) string {
+	var interval, timeout, startPeriod, retries, command string
+	if health.Interval != 0 {
+		interval = fmt.Sprintf("--interval=%s ", health.Interval)
+	}
+	if health.Timeout != 0 {
+		timeout = fmt.Sprintf("--timeout=%s ", health.Timeout)
+	}
+	if health.StartPeriod != 0 {
+		startPeriod = fmt.Sprintf("--startPeriod=%s ", health.StartPeriod)
+	}
+	if health.Retries != 0 {
+		retries = fmt.Sprintf("--retries=%d ", health.Retries)
+	}
+	command = strings.Join(health.Test, " ")
+	command = strings.ReplaceAll(command, "CMD-SHELL", "CMD")
+	return fmt.Sprintf("HEALTHCHECK %s%s%s%s%s", interval, timeout, startPeriod, retries, command)
 }
 
 func (a *historyAnalyzer) Required(_ types.OS) bool {

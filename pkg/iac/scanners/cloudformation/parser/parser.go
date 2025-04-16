@@ -2,7 +2,6 @@ package parser
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/fs"
@@ -11,11 +10,11 @@ import (
 	"strings"
 
 	"github.com/hashicorp/go-multierror"
-	"github.com/liamg/jfather"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 type Parser struct {
@@ -136,7 +135,7 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, filePath string) (fc
 		}
 		fctx.Ignores = ignore.Parse(string(content), filePath, "")
 	case JsonSourceFormat:
-		if err := jfather.Unmarshal(content, fctx); err != nil {
+		if err := xjson.Unmarshal(content, fctx); err != nil {
 			return nil, NewErrInvalidContent(filePath, err)
 		}
 	}
@@ -176,11 +175,18 @@ func (p *Parser) parseParams() error {
 
 	var errs error
 	for _, path := range p.parameterFiles {
-		if parameters, err := p.parseParametersFile(path); err != nil {
+		f, err := p.configsFS.Open(path)
+		if err != nil {
+			errs = multierror.Append(errs, fmt.Errorf("open file: %w", err))
+			continue
+		}
+
+		if parameters, err := ParseParameters(f); err != nil {
 			errs = multierror.Append(errs, err)
 		} else {
 			params.Merge(parameters)
 		}
+		_ = f.Close()
 	}
 
 	if errs != nil {
@@ -191,17 +197,4 @@ func (p *Parser) parseParams() error {
 
 	p.overridedParameters = params
 	return nil
-}
-
-func (p *Parser) parseParametersFile(filePath string) (Parameters, error) {
-	f, err := p.configsFS.Open(filePath)
-	if err != nil {
-		return nil, fmt.Errorf("parameters file %q open error: %w", filePath, err)
-	}
-
-	var parameters Parameters
-	if err := json.NewDecoder(f).Decode(&parameters); err != nil {
-		return nil, err
-	}
-	return parameters, nil
 }

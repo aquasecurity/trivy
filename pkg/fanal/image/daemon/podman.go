@@ -12,6 +12,7 @@ import (
 
 	api "github.com/docker/docker/api/types"
 	dimage "github.com/docker/docker/api/types/image"
+	"github.com/docker/docker/client"
 	"golang.org/x/xerrors"
 )
 
@@ -98,7 +99,7 @@ func (p podmanClient) imageHistoryInspect(imageName string) ([]dimage.HistoryRes
 	return history, nil
 }
 
-func (p podmanClient) imageSave(_ context.Context, imageNames []string) (io.ReadCloser, error) {
+func (p podmanClient) imageSave(_ context.Context, imageNames []string, _ ...client.ImageSaveOption) (io.ReadCloser, error) {
 	if len(imageNames) < 1 {
 		return nil, xerrors.Errorf("no specified image")
 	}

@@ -1,18 +1,18 @@
 package module_test
 
 import (
-	"context"
 	"io/fs"
 	"path/filepath"
 	"runtime"
 	"testing"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/module"
-	"github.com/aquasecurity/trivy/pkg/scanner/post"
 )
 
 func TestManager_Register(t *testing.T) {
@@ -21,12 +21,12 @@ func TestManager_Register(t *testing.T) {
 		t.Skip("Test satisfied adequately by Linux tests")
 	}
 	tests := []struct {
-		name                    string
-		moduleDir               string
-		enabledModules          []string
-		wantAnalyzerVersions    analyzer.Versions
-		wantPostScannerVersions map[string]int
-		wantErr                 bool
+		name                 string
+		moduleDir            string
+		enabledModules       []string
+		wantAnalyzerVersions analyzer.Versions
+		wantExtentions       []string
+		wantErr              bool
 	}{
 		{
 			name:      "happy path",
@@ -37,8 +37,8 @@ func TestManager_Register(t *testing.T) {
 				},
 				PostAnalyzers: make(map[string]int),
 			},
-			wantPostScannerVersions: map[string]int{
-				"happy": 1,
+			wantExtentions: []string{
+				"happy",
 			},
 		},
 		{
@@ -50,7 +50,7 @@ func TestManager_Register(t *testing.T) {
 				},
 				PostAnalyzers: make(map[string]int),
 			},
-			wantPostScannerVersions: make(map[string]int),
+			wantExtentions: []string{},
 		},
 		{
 			name:      "only post scanner",
@@ -59,8 +59,8 @@ func TestManager_Register(t *testing.T) {
 				Analyzers:     make(map[string]int),
 				PostAnalyzers: make(map[string]int),
 			},
-			wantPostScannerVersions: map[string]int{
-				"scanner": 2,
+			wantExtentions: []string{
+				"scanner",
 			},
 		},
 		{
@@ -70,7 +70,7 @@ func TestManager_Register(t *testing.T) {
 				Analyzers:     make(map[string]int),
 				PostAnalyzers: make(map[string]int),
 			},
-			wantPostScannerVersions: make(map[string]int),
+			wantExtentions: []string{},
 		},
 		{
 			name:      "pass enabled modules",
@@ -86,8 +86,8 @@ func TestManager_Register(t *testing.T) {
 				},
 				PostAnalyzers: make(map[string]int),
 			},
-			wantPostScannerVersions: map[string]int{
-				"happy": 1,
+			wantExtentions: []string{
+				"happy",
 			},
 		},
 	}
@@ -106,7 +106,7 @@ func TestManager_Register(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m, err := module.NewManager(context.Background(), module.Options{
+			m, err := module.NewManager(t.Context(), module.Options{
 				Dir:            tt.moduleDir,
 				EnabledModules: tt.enabledModules,
 			})
@@ -125,9 +125,10 @@ func TestManager_Register(t *testing.T) {
 			got := a.AnalyzerVersions()
 			assert.Equal(t, tt.wantAnalyzerVersions, got)
 
-			// Confirm the post scanner is registered
-			gotScannerVersions := post.ScannerVersions()
-			assert.Equal(t, tt.wantPostScannerVersions, gotScannerVersions)
+			hookNames := lo.Map(extension.Hooks(), func(hook extension.Hook, _ int) string {
+				return hook.Name()
+			})
+			assert.Equal(t, tt.wantExtentions, hookNames)
 		})
 	}
 }

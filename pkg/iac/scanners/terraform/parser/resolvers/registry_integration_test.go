@@ -1,7 +1,6 @@
 package resolvers_test
 
 import (
-	"context"
 	"io/fs"
 	"path/filepath"
 	"testing"
@@ -17,7 +16,7 @@ func TestResolveModuleFromOpenTofuRegistry(t *testing.T) {
 		t.Skip("skipping integration test in short mode")
 	}
 
-	fsys, _, path, _, err := resolvers.Registry.Resolve(context.Background(), nil, resolvers.Options{
+	fsys, _, path, _, err := resolvers.Registry.Resolve(t.Context(), nil, resolvers.Options{
 		Source:          "registry.opentofu.org/terraform-aws-modules/s3-bucket/aws",
 		OriginalSource:  "registry.opentofu.org/terraform-aws-modules/s3-bucket/aws",
 		RelativePath:    "test",

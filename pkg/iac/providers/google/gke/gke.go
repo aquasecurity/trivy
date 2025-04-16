@@ -19,6 +19,7 @@ type Cluster struct {
 	MonitoringService        iacTypes.StringValue
 	MasterAuth               MasterAuth
 	NodeConfig               NodeConfig
+	AutoScaling              AutoScaling
 	EnableShieldedNodes      iacTypes.BoolValue
 	EnableLegacyABAC         iacTypes.BoolValue
 	ResourceLabels           iacTypes.MapValue
@@ -33,6 +34,19 @@ type NodeConfig struct {
 	WorkloadMetadataConfig WorkloadMetadataConfig
 	ServiceAccount         iacTypes.StringValue
 	EnableLegacyEndpoints  iacTypes.BoolValue
+}
+
+type AutoScaling struct {
+	Metadata                 iacTypes.Metadata
+	Enabled                  iacTypes.BoolValue
+	AutoProvisioningDefaults AutoProvisioningDefaults
+}
+
+type AutoProvisioningDefaults struct {
+	Metadata       iacTypes.Metadata
+	ImageType      iacTypes.StringValue
+	ServiceAccount iacTypes.StringValue
+	Management     Management
 }
 
 type WorkloadMetadataConfig struct {

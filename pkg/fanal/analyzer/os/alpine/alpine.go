@@ -48,3 +48,8 @@ func (a alpineOSAnalyzer) Type() analyzer.Type {
 func (a alpineOSAnalyzer) Version() int {
 	return version
 }
+
+// StaticPaths returns the static paths of the alpine analyzer
+func (a alpineOSAnalyzer) StaticPaths() []string {
+	return requiredFiles
+}

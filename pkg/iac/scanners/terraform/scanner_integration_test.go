@@ -1,7 +1,6 @@
 package terraform
 
 import (
-	"context"
 	"strings"
 	"testing"
 
@@ -35,7 +34,7 @@ module "s3_bucket" {
 		ScannerWithSkipCachedModules(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, ".")
+	results, err := scanner.ScanFS(t.Context(), fs, ".")
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetPassed(), 1)
@@ -73,7 +72,7 @@ module "s3_bucket" {
 		ScannerWithSkipCachedModules(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, ".")
+	results, err := scanner.ScanFS(t.Context(), fs, ".")
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetPassed(), 1)
@@ -114,7 +113,7 @@ deny[cause] {
 			rego.WithEmbeddedPolicies(false),
 			rego.WithEmbeddedLibraries(true),
 		)
-		results, err := scanner.ScanFS(context.TODO(), fs, "test")
+		results, err := scanner.ScanFS(t.Context(), fs, "test")
 		require.NoError(t, err)
 
 		assert.Len(t, results, 1)
@@ -129,7 +128,7 @@ deny[cause] {
 			rego.WithEmbeddedPolicies(false),
 			rego.WithEmbeddedLibraries(true),
 		)
-		results, err := scanner.ScanFS(context.TODO(), fs, "test")
+		results, err := scanner.ScanFS(t.Context(), fs, "test")
 		require.NoError(t, err)
 
 		assert.Len(t, results, 1)
@@ -182,7 +181,7 @@ deny[res] {
 		rego.WithEmbeddedLibraries(true),
 		rego.WithEmbeddedPolicies(false),
 	)
-	results, err := scanner.ScanFS(context.TODO(), fs, "test")
+	results, err := scanner.ScanFS(t.Context(), fs, "test")
 	require.NoError(t, err)
 	assert.Len(t, results, 1)
 

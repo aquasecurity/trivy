@@ -1,0 +1,38 @@
+name: SPDX licenses cron
+on:
+  schedule:
+    - cron: '0 0 * * 0' # every Sunday at 00:00
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Check if SPDX exceptions
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4.1.6
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
+
+      - name: Check if SPDX exceptions are up-to-date
+        run: |
+          mage spdx:updateLicenseExceptions
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Run 'mage spdx:updateLicenseExceptions' and push it"
+            exit 1
+          fi        
+
+      - name: Microsoft Teams Notification
+        uses: Skitionek/notify-microsoft-teams@e7a2493ac87dad8aa7a62f079f295e54ff511d88
+        if: failure()
+        with:
+          webhook_url: ${{ secrets.TRIVY_MSTEAMS_WEBHOOK }}
+          needs: ${{ toJson(needs) }}
+          job: ${{ toJson(job) }}
+          steps: ${{ toJson(steps) }}

@@ -1,7 +1,6 @@
 package rekor_test
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -68,7 +67,7 @@ func TestClient_Search(t *testing.T) {
 			c, err := rekor.NewClient(ts.URL)
 			require.NoError(t, err)
 
-			got, err := c.Search(context.Background(), tt.args.hash)
+			got, err := c.Search(t.Context(), tt.args.hash)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
@@ -163,7 +162,7 @@ func TestClient_GetEntries(t *testing.T) {
 			client, err := rekor.NewClient(ts.URL)
 			require.NoError(t, err)
 
-			got, err := client.GetEntries(context.Background(), tt.args.uuids)
+			got, err := client.GetEntries(t.Context(), tt.args.uuids)
 			require.Equal(t, tt.wantErr, err)
 			require.Equal(t, tt.want, got)
 		})

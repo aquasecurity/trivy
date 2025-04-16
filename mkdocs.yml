@@ -1,5 +1,5 @@
 site_name: Trivy
-site_url: https://aquasecurity.github.io/trivy/
+site_url: https://trivy.dev/
 site_description: Trivy - All-in-one open source security scanner
 docs_dir: docs/
 repo_name: GitHub
@@ -133,6 +133,7 @@ nav:
               - Overview: docs/supply-chain/vex/index.md
               - VEX Repository: docs/supply-chain/vex/repo.md
               - Local VEX Files: docs/supply-chain/vex/file.md
+              - VEX SBOM Reference: docs/supply-chain/vex/sbom-ref.md
               - VEX Attestation: docs/supply-chain/vex/oci.md
       - Compliance:
           - Built-in Compliance:  docs/compliance/compliance.md
@@ -201,6 +202,7 @@ nav:
               - Client/Server: docs/references/modes/client-server.md
           - Troubleshooting: docs/references/troubleshooting.md
           - Terminology: docs/references/terminology.md
+          - Abbreviations: docs/references/abbreviations.md
   - Ecosystem: 
     - Overview: ecosystem/index.md
     - CI/CD: ecosystem/cicd.md
@@ -271,8 +273,6 @@ extra:
     - icon: fontawesome/brands/x-twitter
       link: https://twitter.com/AquaTrivy
     - icon: fontawesome/brands/github
-      link: https://github.com/aquasecurity/trivy
-    - icon: fontawesome/brands/slack
       link: https://github.com/aquasecurity/trivy
   analytics:
     provider: google

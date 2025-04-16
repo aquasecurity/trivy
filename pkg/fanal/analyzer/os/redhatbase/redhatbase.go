@@ -97,3 +97,8 @@ func (a redhatOSAnalyzer) Type() analyzer.Type {
 func (a redhatOSAnalyzer) Version() int {
 	return redhatAnalyzerVersion
 }
+
+// StaticPaths returns the static paths of the redhatbase analyzer
+func (a redhatOSAnalyzer) StaticPaths() []string {
+	return a.requiredFiles()
+}

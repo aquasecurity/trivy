@@ -99,7 +99,7 @@ func TestManager_CallHooks(t *testing.T) {
 			})
 			require.NoError(t, err)
 
-			err = m.PostHandle(context.TODO(), nil, &blob)
+			err = m.PostHandle(t.Context(), nil, &blob)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, blob)
 		})

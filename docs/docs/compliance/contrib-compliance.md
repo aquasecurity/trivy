@@ -56,7 +56,7 @@ Thus, we can use the information already present:
 ```
 
 - The `ID`, `name`, and `description` is taken directly from the AWS EKS CIS Benchmarks
-- The `check` and `severity` are taken from the existing complaince check in the `k8s-cis-1.23.yaml`
+- The `check` and `severity` are taken from the existing compliance check in the `k8s-cis-1.23.yaml`
 
 
 #### 2. Referencing a check manually that is not part of the Trivy default checks

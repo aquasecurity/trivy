@@ -1,7 +1,6 @@
 package result
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -11,7 +10,7 @@ import (
 
 func TestParseIgnoreFile(t *testing.T) {
 	t.Run("happy path valid config file", func(t *testing.T) {
-		got, err := ParseIgnoreFile(context.TODO(), "testdata/.trivyignore")
+		got, err := ParseIgnoreFile(t.Context(), "testdata/.trivyignore")
 		require.NoError(t, err)
 		assert.Equal(t, "testdata/.trivyignore", got.FilePath)
 
@@ -24,7 +23,7 @@ func TestParseIgnoreFile(t *testing.T) {
 	})
 
 	t.Run("happy path valid YAML config file", func(t *testing.T) {
-		got, err := ParseIgnoreFile(context.TODO(), "testdata/.trivyignore.yaml")
+		got, err := ParseIgnoreFile(t.Context(), "testdata/.trivyignore.yaml")
 		require.NoError(t, err)
 		assert.Equal(t, "testdata/.trivyignore.yaml", got.FilePath)
 		assert.Len(t, got.Vulnerabilities, 5)
@@ -34,37 +33,41 @@ func TestParseIgnoreFile(t *testing.T) {
 	})
 
 	t.Run("empty YAML file passed", func(t *testing.T) {
-		f, err := os.CreateTemp("", "TestParseIgnoreFile-*.yaml")
+		f, err := os.CreateTemp(t.TempDir(), "TestParseIgnoreFile-*.yaml")
 		require.NoError(t, err)
-		defer os.Remove(f.Name())
+		defer f.Close()
 
-		_, err = ParseIgnoreFile(context.TODO(), f.Name())
+		_, err = ParseIgnoreFile(t.Context(), f.Name())
 		require.NoError(t, err)
 	})
 
 	t.Run("invalid YAML file passed", func(t *testing.T) {
-		f, err := os.CreateTemp("", "TestParseIgnoreFile-*.yaml")
+		f, err := os.CreateTemp(t.TempDir(), "TestParseIgnoreFile-*.yaml")
 		require.NoError(t, err)
-		defer os.Remove(f.Name())
-		_, _ = f.WriteString("this file is not a yaml file")
+		defer f.Close()
 
-		got, err := ParseIgnoreFile(context.TODO(), f.Name())
-		assert.Contains(t, err.Error(), "yaml decode error")
+		_, err = f.WriteString("this file is not a yaml file")
+		require.NoError(t, err)
+
+		got, err := ParseIgnoreFile(t.Context(), f.Name())
+		require.ErrorContains(t, err, "yaml decode error")
 		assert.Empty(t, got)
 	})
 
 	t.Run("invalid file passed", func(t *testing.T) {
-		f, err := os.CreateTemp("", "TestParseIgnoreFile-*")
+		f, err := os.CreateTemp(t.TempDir(), "TestParseIgnoreFile-*")
 		require.NoError(t, err)
-		defer os.Remove(f.Name())
-		_, _ = f.WriteString("this file is not a valid trivyignore file")
+		defer f.Close()
 
-		_, err = ParseIgnoreFile(context.TODO(), f.Name())
+		_, err = f.WriteString("this file is not a valid trivyignore file")
+		require.NoError(t, err)
+
+		_, err = ParseIgnoreFile(t.Context(), f.Name())
 		require.NoError(t, err) // TODO(simar7): We don't verify correctness, should we?
 	})
 
 	t.Run("non existing file passed", func(t *testing.T) {
-		got, err := ParseIgnoreFile(context.TODO(), "does-not-exist.yaml")
+		got, err := ParseIgnoreFile(t.Context(), "does-not-exist.yaml")
 		require.NoError(t, err)
 		assert.Empty(t, got)
 	})

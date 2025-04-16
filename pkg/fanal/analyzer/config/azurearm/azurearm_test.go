@@ -25,6 +25,16 @@ func Test_azureARMConfigAnalyzer_Required(t *testing.T) {
 			filePath: "test.yaml",
 			want:     false,
 		},
+		{
+			name:     "CreateUiDefinition",
+			filePath: "CreateUiDefinition.json",
+			want:     false,
+		},
+		{
+			name:     "CreateUiDefinition lowercase",
+			filePath: "createuidefinition.json",
+			want:     false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

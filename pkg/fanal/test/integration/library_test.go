@@ -290,7 +290,7 @@ func checkLangPkgs(detail types.ArtifactDetail, t *testing.T, tc testCase) {
 			return
 		}
 
-		var wantApps []types.Application
+		var wantApps types.Applications
 		data, err := os.ReadFile(tc.wantApplicationFile)
 		require.NoError(t, err)
 		err = json.Unmarshal(data, &wantApps)

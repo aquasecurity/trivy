@@ -1,7 +1,6 @@
 package alpine
 
 import (
-	"context"
 	"strings"
 	"testing"
 
@@ -37,7 +36,7 @@ func TestAlpineReleaseOSAnalyzer_Required(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			a := alpineOSAnalyzer{}
-			res, err := a.Analyze(context.Background(), test.input)
+			res, err := a.Analyze(t.Context(), test.input)
 
 			if test.wantError != "" {
 				require.Error(t, err)

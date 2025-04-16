@@ -2,7 +2,7 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000004",
+  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000005",
   "version": 1,
   "metadata": {
     "timestamp": "2021-08-25T12:20:30+00:00",
@@ -17,7 +17,7 @@
       ]
     },
     "component": {
-      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000001",
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000002",
       "type": "application",
       "name": "testdata/fixtures/repo/conda",
       "properties": [
@@ -92,7 +92,7 @@
   ],
   "dependencies": [
     {
-      "ref": "3ff14136-e09f-4df9-80ea-000000000001",
+      "ref": "3ff14136-e09f-4df9-80ea-000000000002",
       "dependsOn": [
         "pkg:conda/openssl@1.1.1q",
         "pkg:conda/pip@22.2.2"

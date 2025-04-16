@@ -1,9 +1,23 @@
 package types
 
 import (
+	"sort"
 	"time"
 
 	"github.com/samber/lo"
+)
+
+// ArtifactType represents a type of artifact
+type ArtifactType string
+
+const (
+	TypeContainerImage ArtifactType = "container_image"
+	TypeFilesystem     ArtifactType = "filesystem"
+	TypeRepository     ArtifactType = "repository"
+	TypeCycloneDX      ArtifactType = "cyclonedx"
+	TypeSPDX           ArtifactType = "spdx"
+	TypeAWSAccount     ArtifactType = "aws_account"
+	TypeVM             ArtifactType = "vm"
 )
 
 type OS struct {
@@ -94,6 +108,27 @@ type Application struct {
 	Packages Packages
 }
 
+type Applications []Application
+
+func (apps Applications) Len() int {
+	return len(apps)
+}
+
+func (apps Applications) Swap(i, j int) {
+	apps[i], apps[j] = apps[j], apps[i]
+}
+
+func (apps Applications) Less(i, j int) bool {
+	switch {
+	case apps[i].Type != apps[j].Type:
+		return apps[i].Type < apps[j].Type
+	case apps[i].FilePath != apps[j].FilePath:
+		return apps[i].FilePath < apps[j].FilePath
+	default:
+		return len(apps[i].Packages) < len(apps[j].Packages)
+	}
+}
+
 type File struct {
 	Type    string
 	Path    string
@@ -153,10 +188,10 @@ type ArtifactDetail struct {
 	OS                OS                 `json:",omitempty"`
 	Repository        *Repository        `json:",omitempty"`
 	Packages          Packages           `json:",omitempty"`
-	Applications      []Application      `json:",omitempty"`
+	Applications      Applications       `json:",omitempty"`
 	Misconfigurations []Misconfiguration `json:",omitempty"`
-	Secrets           []Secret           `json:",omitempty"`
-	Licenses          []LicenseFile      `json:",omitempty"`
+	Secrets           Secrets            `json:",omitempty"`
+	Licenses          LicenseFiles       `json:",omitempty"`
 
 	// ImageConfig has information from container image config
 	ImageConfig ImageConfigDetail
@@ -164,6 +199,48 @@ type ArtifactDetail struct {
 	// CustomResources hold analysis results from custom analyzers.
 	// It is for extensibility and not used in OSS.
 	CustomResources []CustomResource `json:",omitempty"`
+}
+
+// Sort sorts packages and applications in ArtifactDetail
+func (a *ArtifactDetail) Sort() {
+	sort.Sort(a.Packages)
+	sort.Sort(a.Applications)
+	sort.Sort(a.Secrets)
+	sort.Sort(a.Licenses)
+	// Misconfigurations will be sorted later
+}
+
+type Secrets []Secret
+
+func (s Secrets) Len() int {
+	return len(s)
+}
+
+func (s Secrets) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s Secrets) Less(i, j int) bool {
+	return s[i].FilePath < s[j].FilePath
+}
+
+type LicenseFiles []LicenseFile
+
+func (l LicenseFiles) Len() int {
+	return len(l)
+}
+
+func (l LicenseFiles) Swap(i, j int) {
+	l[i], l[j] = l[j], l[i]
+}
+
+func (l LicenseFiles) Less(i, j int) bool {
+	switch {
+	case l[i].Type != l[j].Type:
+		return l[i].Type < l[j].Type
+	default:
+		return l[i].FilePath < l[j].FilePath
+	}
 }
 
 // ImageConfigDetail has information from container image config

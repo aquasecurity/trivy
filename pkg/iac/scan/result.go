@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
@@ -31,6 +32,7 @@ type Result struct {
 	regoRule         string
 	traces           []string
 	fsPath           string
+	renderedCause    RenderedCause
 }
 
 func (r Result) RegoNamespace() string {
@@ -98,6 +100,14 @@ func (r Result) Range() iacTypes.Range {
 
 func (r Result) Traces() []string {
 	return r.traces
+}
+
+type RenderedCause struct {
+	Raw string
+}
+
+func (r *Result) WithRenderedCause(cause RenderedCause) {
+	r.renderedCause = cause
 }
 
 func (r *Result) AbsolutePath(fsRoot string, metadata iacTypes.Metadata) string {
@@ -311,9 +321,9 @@ func rawToString(raw any) string {
 	}
 	switch t := raw.(type) {
 	case int:
-		return fmt.Sprintf("%d", t)
+		return strconv.Itoa(t)
 	case bool:
-		return fmt.Sprintf("%t", t)
+		return strconv.FormatBool(t)
 	case float64:
 		return fmt.Sprintf("%f", t)
 	case string:

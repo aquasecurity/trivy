@@ -109,6 +109,13 @@ var (
 		ConfigName: "scan.show-suppressed",
 		Usage:      "[EXPERIMENTAL] show suppressed vulnerabilities",
 	}
+	TableModeFlag = Flag[[]string]{
+		Name:       "table-mode",
+		ConfigName: "table-mode",
+		Default:    xstrings.ToStringSlice(types.SupportedTableModes),
+		Values:     xstrings.ToStringSlice(types.SupportedTableModes),
+		Usage:      "[EXPERIMENTAL] tables that will be displayed in 'table' format",
+	}
 )
 
 // ReportFlagGroup composes common printer flag structs
@@ -128,6 +135,7 @@ type ReportFlagGroup struct {
 	Severity        *Flag[[]string]
 	Compliance      *Flag[string]
 	ShowSuppressed  *Flag[bool]
+	TableMode       *Flag[[]string]
 }
 
 type ReportOptions struct {
@@ -145,6 +153,7 @@ type ReportOptions struct {
 	Severities       []dbTypes.Severity
 	Compliance       spec.ComplianceSpec
 	ShowSuppressed   bool
+	TableModes       []types.TableMode
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
@@ -163,6 +172,7 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		Severity:        SeverityFlag.Clone(),
 		Compliance:      ComplianceFlag.Clone(),
 		ShowSuppressed:  ShowSuppressedFlag.Clone(),
+		TableMode:       TableModeFlag.Clone(),
 	}
 }
 
@@ -186,18 +196,16 @@ func (f *ReportFlagGroup) Flags() []Flagger {
 		f.Severity,
 		f.Compliance,
 		f.ShowSuppressed,
+		f.TableMode,
 	}
 }
 
-func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
-	if err := parseFlags(f); err != nil {
-		return ReportOptions{}, err
-	}
-
+func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 	format := types.Format(f.Format.Value())
 	template := f.Template.Value()
 	dependencyTree := f.DependencyTree.Value()
 	listAllPkgs := f.ListAllPkgs.Value()
+	tableModes := f.TableMode.Value()
 
 	if template != "" {
 		if format == "" {
@@ -227,24 +235,29 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		}
 	}
 
+	// "--table-mode" option is available only with "--format table".
+	if viper.IsSet(TableModeFlag.ConfigName) && format != types.FormatTable {
+		return xerrors.New(`"--table-mode" can be used only with "--format table".`)
+	}
+
 	cs, err := loadComplianceTypes(f.Compliance.Value())
 	if err != nil {
-		return ReportOptions{}, xerrors.Errorf("unable to load compliance spec: %w", err)
+		return xerrors.Errorf("unable to load compliance spec: %w", err)
 	}
 
 	var outputPluginArgs []string
 	if arg := f.OutputPluginArg.Value(); arg != "" {
 		outputPluginArgs, err = shellwords.Parse(arg)
 		if err != nil {
-			return ReportOptions{}, xerrors.Errorf("unable to parse output plugin argument: %w", err)
+			return xerrors.Errorf("unable to parse output plugin argument: %w", err)
 		}
 	}
 
 	if viper.IsSet(f.IgnoreFile.ConfigName) && !fsutils.FileExists(f.IgnoreFile.Value()) {
-		return ReportOptions{}, xerrors.Errorf("ignore file not found: %s", f.IgnoreFile.Value())
+		return xerrors.Errorf("ignore file not found: %s", f.IgnoreFile.Value())
 	}
 
-	return ReportOptions{
+	opts.ReportOptions = ReportOptions{
 		Format:           format,
 		ReportFormat:     f.ReportFormat.Value(),
 		Template:         template,
@@ -259,7 +272,9 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		Severities:       toSeverity(f.Severity.Value()),
 		Compliance:       cs,
 		ShowSuppressed:   f.ShowSuppressed.Value(),
-	}, nil
+		TableModes:       xstrings.ToTSlice[types.TableMode](tableModes),
+	}
+	return nil
 }
 
 func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {

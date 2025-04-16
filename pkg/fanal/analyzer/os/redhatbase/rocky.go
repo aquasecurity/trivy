@@ -60,3 +60,8 @@ func (a rockyOSAnalyzer) Type() analyzer.Type {
 func (a rockyOSAnalyzer) Version() int {
 	return rockyAnalyzerVersion
 }
+
+// StaticPaths returns the static paths of the rocky analyzer
+func (a rockyOSAnalyzer) StaticPaths() []string {
+	return a.requiredFiles()
+}

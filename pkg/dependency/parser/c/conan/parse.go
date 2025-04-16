@@ -1,11 +1,11 @@
 package conan
 
 import (
-	"io"
 	"slices"
 	"strings"
 
-	"github.com/liamg/jfather"
+	"github.com/go-json-experiment/json"
+	"github.com/go-json-experiment/json/jsontext"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -13,6 +13,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 type LockFile struct {
@@ -25,19 +26,20 @@ type GraphLock struct {
 }
 
 type Node struct {
-	Ref       string   `json:"ref"`
-	Requires  []string `json:"requires"`
-	StartLine int
-	EndLine   int
+	Ref      string   `json:"ref"`
+	Requires []string `json:"requires"`
+	xjson.Location
 }
+type Requires []Require
 
 type Require struct {
 	Dependency string
-	StartLine  int
-	EndLine    int
+	xjson.Location
 }
 
-type Requires []Require
+func (r *Require) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	return json.UnmarshalDecode(dec, &r.Dependency)
+}
 
 type Parser struct {
 	logger *log.Logger
@@ -63,7 +65,7 @@ func (p *Parser) parseV1(lock LockFile) ([]ftypes.Package, []ftypes.Dependency, 
 		if node.Ref == "" {
 			continue
 		}
-		pkg, err := toPackage(node.Ref, node.StartLine, node.EndLine)
+		pkg, err := toPackage(node.Ref, node.Location)
 		if err != nil {
 			p.logger.Debug("Parse ref error", log.Err(err))
 			continue
@@ -105,7 +107,7 @@ func (p *Parser) parseV2(lock LockFile) ([]ftypes.Package, []ftypes.Dependency, 
 	var pkgs []ftypes.Package
 
 	for _, req := range lock.Requires {
-		pkg, err := toPackage(req.Dependency, req.StartLine, req.EndLine)
+		pkg, err := toPackage(req.Dependency, req.Location)
 		if err != nil {
 			p.logger.Debug("Creating package entry from requirement failed", log.Err(err))
 			continue
@@ -118,12 +120,7 @@ func (p *Parser) parseV2(lock LockFile) ([]ftypes.Package, []ftypes.Dependency, 
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lock LockFile
-
-	input, err := io.ReadAll(r)
-	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to read conan lock file: %w", err)
-	}
-	if err := jfather.Unmarshal(input, &lock); err != nil {
+	if err := xjson.UnmarshalRead(r, &lock); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode conan lock file: %w", err)
 	}
 
@@ -152,42 +149,15 @@ func parsePackage(text string) (string, string, error) {
 	return ss[0], ss[1], nil
 }
 
-func toPackage(pkg string, startLine, endLine int) (ftypes.Package, error) {
+func toPackage(pkg string, location xjson.Location) (ftypes.Package, error) {
 	name, version, err := parsePackage(pkg)
 	if err != nil {
 		return ftypes.Package{}, err
 	}
 	return ftypes.Package{
-		ID:      dependency.ID(ftypes.Conan, name, version),
-		Name:    name,
-		Version: version,
-		Locations: []ftypes.Location{
-			{
-				StartLine: startLine,
-				EndLine:   endLine,
-			},
-		},
+		ID:        dependency.ID(ftypes.Conan, name, version),
+		Name:      name,
+		Version:   version,
+		Locations: []ftypes.Location{ftypes.Location(location)},
 	}, nil
-}
-
-// UnmarshalJSONWithMetadata needed to detect start and end lines of deps
-func (n *Node) UnmarshalJSONWithMetadata(node jfather.Node) error {
-	if err := node.Decode(&n); err != nil {
-		return err
-	}
-	// Decode func will overwrite line numbers if we save them first
-	n.StartLine = node.Range().Start.Line
-	n.EndLine = node.Range().End.Line
-	return nil
-}
-
-func (r *Require) UnmarshalJSONWithMetadata(node jfather.Node) error {
-	var dep string
-	if err := node.Decode(&dep); err != nil {
-		return err
-	}
-	r.Dependency = dep
-	r.StartLine = node.Range().Start.Line
-	r.EndLine = node.Range().End.Line
-	return nil
 }

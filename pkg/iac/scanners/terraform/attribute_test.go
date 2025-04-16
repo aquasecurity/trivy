@@ -4,133 +4,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
-
-func Test_AttributeStartsWith(t *testing.T) {
-	var tests = []struct {
-		name           string
-		source         string
-		checkAttribute string
-		checkValue     string
-		expectedResult bool
-	}{
-		{
-			name: "bucket name starts with bucket",
-			source: `
-resource "aws_s3_bucket" "my-bucket" {
- 	bucket_name = "bucketName"
-}`,
-			checkAttribute: "bucket_name",
-			checkValue:     "bucket",
-			expectedResult: true,
-		},
-		{
-			name: "bucket acl starts with public",
-			source: `
-resource "aws_s3_bucket" "my-bucket" {
- 	bucket_name = "bucketName"
-	acl = "public-read"
-}`,
-			checkAttribute: "acl",
-			checkValue:     "public",
-			expectedResult: true,
-		},
-		{
-			name: "bucket name doesn't start with secret",
-			source: `
-resource "aws_s3_bucket" "my-bucket" {
- 	bucket_name = "bucketName"
-	acl = "public-read"
-	logging {
-		target_bucket = aws_s3_bucket.log_bucket.id
-		target_prefix = "log/"
-	}
-}`,
-			checkAttribute: "bucket_name",
-			checkValue:     "secret_",
-			expectedResult: false,
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			modules := createModulesFromSource(t, test.source, ".tf")
-			for _, module := range modules {
-				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
-					attr := block.GetAttribute(test.checkAttribute)
-					assert.Equal(t, test.expectedResult, attr.StartsWith(test.checkValue))
-				}
-			}
-		})
-	}
-}
-
-func Test_AttributeEndsWith(t *testing.T) {
-	var tests = []struct {
-		name           string
-		source         string
-		checkAttribute string
-		checkValue     string
-		expectedResult bool
-	}{
-		{
-			name: "bucket name ends with Name",
-			source: `
-resource "aws_s3_bucket" "my-bucket" {
- 	bucket_name = "bucketName"
-}`,
-			checkAttribute: "bucket_name",
-			checkValue:     "Name",
-			expectedResult: true,
-		},
-		{
-			name: "bucket acl ends with read not Read",
-			source: `
-resource "aws_s3_bucket" "my-bucket" {
- 	bucket_name = "bucketName"
-	acl = "public-read"
-}`,
-			checkAttribute: "acl",
-			checkValue:     "Read",
-			expectedResult: false,
-		},
-		{
-			name: "bucket name doesn't end with bucket",
-			source: `
-resource "aws_s3_bucket" "my-bucket" {
- 	bucket_name = "bucketName"
-	acl = "public-read"
-	logging {
-		target_bucket = aws_s3_bucket.log_bucket.id
-		target_prefix = "log/"
-	}
-}`,
-			checkAttribute: "bucket_name",
-			checkValue:     "_bucket",
-			expectedResult: false,
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			modules := createModulesFromSource(t, test.source, ".tf")
-			for _, module := range modules {
-				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
-					attr := block.GetAttribute(test.checkAttribute)
-					assert.Equal(t, test.expectedResult, attr.EndsWith(test.checkValue))
-				}
-			}
-		})
-	}
-}
 
 func Test_AttributeContains(t *testing.T) {
 	var tests = []struct {
@@ -277,131 +154,13 @@ resource "aws_security_group" "my-security_group" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, b := range module.GetBlocks() {
-					if !b.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
 					attr := b.GetAttribute(test.checkAttribute)
+					require.NotNil(t, attr)
 					if test.ignoreCase {
 						assert.Equal(t, test.expectedResult, attr.Contains(test.checkValue, terraform.IgnoreCase))
 					} else {
 						assert.Equal(t, test.expectedResult, attr.Contains(test.checkValue))
 					}
-				}
-			}
-		})
-	}
-}
-
-func Test_AttributeIsAny(t *testing.T) {
-	var tests = []struct {
-		name           string
-		source         string
-		checkAttribute string
-		checkValue     []any
-		expectedResult bool
-	}{
-		{
-			name: "bucket acl is not one of the specified acls",
-			source: `
-resource "aws_s3_bucket" "my-bucket" {
- 	bucket_name = "bucketName"
-	acl = "public-read"
-}`,
-			checkAttribute: "acl",
-			checkValue:     []any{"private", "authenticated-read"},
-			expectedResult: false,
-		},
-		{
-			name: "bucket acl is one of the specified acls",
-			source: `
-resource "aws_s3_bucket" "my-bucket" {
- 	bucket_name = "bucketName"
-	acl = "private"
-}`,
-			checkAttribute: "acl",
-			checkValue:     []any{"private", "authenticated-read"},
-			expectedResult: true,
-		},
-		{
-			name: "is is one of the provided valued",
-			source: `
-resource "aws_security_group" "my-security_group" {
-	count = 1
-}`,
-			checkAttribute: "count",
-			checkValue:     []any{1, 2},
-			expectedResult: true,
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			modules := createModulesFromSource(t, test.source, ".tf")
-			for _, module := range modules {
-				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
-					attr := block.GetAttribute(test.checkAttribute)
-					assert.Equal(t, test.expectedResult, attr.IsAny(test.checkValue...))
-				}
-			}
-		})
-	}
-}
-
-func Test_AttributeIsNone(t *testing.T) {
-	var tests = []struct {
-		name           string
-		source         string
-		checkAttribute string
-		checkValue     []any
-		expectedResult bool
-	}{
-		{
-			name: "bucket acl is not one of the specified acls",
-			source: `
-resource "aws_s3_bucket" "my-bucket" {
- 	bucket_name = "bucketName"
-	acl = "public-read"
-}`,
-			checkAttribute: "acl",
-			checkValue:     []any{"private", "authenticated-read"},
-			expectedResult: true,
-		},
-		{
-			name: "bucket acl is one of the specified acls",
-			source: `
-resource "aws_s3_bucket" "my-bucket" {
- 	bucket_name = "bucketName"
-	acl = "private"
-}`,
-			checkAttribute: "acl",
-			checkValue:     []any{"private", "authenticated-read"},
-			expectedResult: false,
-		},
-		{
-			name: "count is non-of the provided values",
-			source: `
-resource "aws_security_group" "my-security_group" {
-	count = 0
-}`,
-			checkAttribute: "count",
-			checkValue:     []any{1, 2},
-			expectedResult: true,
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			modules := createModulesFromSource(t, test.source, ".tf")
-			for _, module := range modules {
-				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
-					attr := block.GetAttribute(test.checkAttribute)
-					assert.Equal(t, test.expectedResult, attr.IsNone(test.checkValue...))
 				}
 			}
 		})
@@ -509,101 +268,9 @@ resource "aws_security_group_rule" "example" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
 					attr := block.GetAttribute(test.checkAttribute)
+					require.NotNil(t, attr)
 					assert.Equal(t, test.expectedResult, attr.IsEmpty())
-				}
-			}
-		})
-	}
-}
-
-func Test_AttributeIsLessThan(t *testing.T) {
-	var tests = []struct {
-		name           string
-		source         string
-		checkAttribute string
-		checkValue     int
-		expectedResult bool
-	}{
-		{
-			name: "check attribute is less than check value",
-			source: `
-resource "numerical_something" "my-bucket" {
-	value = 100
-}`,
-			checkAttribute: "value",
-			checkValue:     200,
-			expectedResult: true,
-		},
-		{
-			name: "check attribute is not less than check value",
-			source: `
-resource "numerical_something" "my-bucket" {
-	value = 100
-}`,
-			checkAttribute: "value",
-			checkValue:     50,
-			expectedResult: false,
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			modules := createModulesFromSource(t, test.source, ".tf")
-			for _, module := range modules {
-				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
-					attr := block.GetAttribute(test.checkAttribute)
-					assert.Equal(t, test.expectedResult, attr.LessThan(test.checkValue))
-				}
-			}
-		})
-	}
-}
-
-func Test_AttributeIsLessThanOrEqual(t *testing.T) {
-	var tests = []struct {
-		name           string
-		source         string
-		checkAttribute string
-		checkValue     int
-		expectedResult bool
-	}{
-		{
-			name: "check attribute is less than or equal check value",
-			source: `
-resource "numerical_something" "my-bucket" {
-	value = 100
-}`,
-			checkAttribute: "value",
-			checkValue:     100,
-			expectedResult: true,
-		},
-		{
-			name: "check attribute is not less than check value",
-			source: `
-resource "numerical_something" "my-bucket" {
-	value = 100
-}`,
-			checkAttribute: "value",
-			checkValue:     50,
-			expectedResult: false,
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			modules := createModulesFromSource(t, test.source, ".tf")
-			for _, module := range modules {
-				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
-					attr := block.GetAttribute(test.checkAttribute)
-					assert.Equal(t, test.expectedResult, attr.LessThanOrEqualTo(test.checkValue))
 				}
 			}
 		})
@@ -650,10 +317,8 @@ resource "boolean_something" "my-something" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
 					attr := block.GetAttribute(test.checkAttribute)
+					require.NotNil(t, attr)
 					assert.Equal(t, test.expectedResult, attr.IsTrue())
 				}
 			}
@@ -701,10 +366,8 @@ resource "boolean_something" "my-something" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, block := range module.GetBlocks() {
-					if !block.HasChild(test.checkAttribute) {
-						t.FailNow()
-					}
 					attr := block.GetAttribute(test.checkAttribute)
+					require.NotNil(t, attr)
 					assert.Equal(t, test.expectedResult, attr.IsFalse())
 				}
 			}

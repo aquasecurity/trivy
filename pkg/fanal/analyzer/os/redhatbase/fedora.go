@@ -62,3 +62,8 @@ func (a fedoraOSAnalyzer) Type() analyzer.Type {
 func (a fedoraOSAnalyzer) Version() int {
 	return fedoraAnalyzerVersion
 }
+
+// StaticPaths returns the static paths of the fedora analyzer
+func (a fedoraOSAnalyzer) StaticPaths() []string {
+	return a.requiredFiles()
+}

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -87,7 +86,7 @@ func Test_dbWorker_update(t *testing.T) {
 			defer func() { _ = db.Close() }()
 
 			// Set a fake time
-			ctx := clock.With(context.Background(), tt.now)
+			ctx := clock.With(t.Context(), tt.now)
 
 			// Set a fake DB
 			dbPath := dbtest.ArchiveDir(t, "testdata/newdb")
@@ -101,8 +100,7 @@ func Test_dbWorker_update(t *testing.T) {
 			err = w.update(ctx, "1.2.3", dbDir,
 				tt.skipUpdate, &dbUpdateWg, &requestWg, ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
-				require.Error(t, err, tt.name)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
 			}
 			require.NoError(t, err, tt.name)
@@ -183,7 +181,7 @@ func TestServer_newServeMux(t *testing.T) {
 			defer func() { _ = c.Close() }()
 
 			s := NewServer("", "", "", tt.args.token, tt.args.tokenHeader, "", nil, ftypes.RegistryOptions{})
-			ts := httptest.NewServer(s.NewServeMux(context.Background(), c, dbUpdateWg, requestWg))
+			ts := httptest.NewServer(s.NewServeMux(t.Context(), c, dbUpdateWg, requestWg))
 			defer ts.Close()
 
 			var resp *http.Response
@@ -214,7 +212,7 @@ func Test_VersionEndpoint(t *testing.T) {
 	defer func() { _ = c.Close() }()
 
 	s := NewServer("", "", "testdata/testcache", "", "", "", nil, ftypes.RegistryOptions{})
-	ts := httptest.NewServer(s.NewServeMux(context.Background(), c, dbUpdateWg, requestWg))
+	ts := httptest.NewServer(s.NewServeMux(t.Context(), c, dbUpdateWg, requestWg))
 	defer ts.Close()
 
 	resp, err := http.Get(ts.URL + "/version")
