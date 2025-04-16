@@ -84,7 +84,7 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	mp.modulePath = modulePath
 	mp.moduleBlock = moduleBlock
 	mp.moduleName = moduleName
-	mp.logger = p.logger.With(log.Prefix("terraform parser")).With("module", moduleName)
+	mp.logger = p.logger
 	mp.projectRoot = p.projectRoot
 	mp.skipPaths = p.skipPaths
 	mp.options = p.options
@@ -92,6 +92,9 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	for _, option := range p.options {
 		option(mp)
 	}
+
+	// The options above can reset the logger
+	mp.logger = mp.logger.With(log.Prefix("terraform parser")).With("module", moduleName)
 	return mp
 }
 

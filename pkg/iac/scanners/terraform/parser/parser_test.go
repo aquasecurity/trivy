@@ -2704,15 +2704,19 @@ func TestInstancedLogger(t *testing.T) {
 				}
 
 				module "echo" {
-					source = "./modules/echo"				
+					source = "./echo"				
 					input = "hello"
 				}
+
+				locals {
+					foo = module.echo.value
+				}
 			`,
-			"modules/echo.tf": `
+			"echo/main.tf": `
 				variable "input" {
 					type = string				
 				}
-				output "echo" {
+				output "value" {
 					value = var.input 
 				}
 			`,
@@ -2723,10 +2727,11 @@ func TestInstancedLogger(t *testing.T) {
 		err := parser.ParseFS(t.Context(), ".")
 		require.NoError(t, err)
 
-		_, err = parser.EvaluateAll(t.Context())
+		modules, err := parser.EvaluateAll(t.Context())
 		require.NoError(t, err)
 
 		require.NotEmpty(t, instance.String())
+		require.Len(t, modules, 2)
 		instance.Reset()
 	})
 
