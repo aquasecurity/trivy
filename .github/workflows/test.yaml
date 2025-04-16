@@ -38,7 +38,7 @@ jobs:
 
       - name: Lint
         id: lint
-        uses: golangci/golangci-lint-action@v6.5.0
+        uses: golangci/golangci-lint-action@v7.0.0
         with:
           version: v1.64
           args: --verbose --out-format=line-number
