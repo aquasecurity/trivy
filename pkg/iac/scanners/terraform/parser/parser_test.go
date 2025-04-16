@@ -2428,6 +2428,14 @@ func TestLoadChildModulesFromLocalCache(t *testing.T) {
 	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tsource=\"../level_3\"")
 }
 
+func TestNilParser(t *testing.T) {
+	parser := New(
+		nil, "",
+	)
+	err := parser.ParseFS(t.Context(), ".")
+	require.Error(t, err)
+}
+
 func TestLogParseErrors(t *testing.T) {
 	var buf bytes.Buffer
 	slog.SetDefault(slog.New(log.NewHandler(&buf, nil)))
