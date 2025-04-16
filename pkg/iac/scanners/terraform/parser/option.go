@@ -3,8 +3,9 @@ package parser
 import (
 	"io/fs"
 
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/zclconf/go-cty/cty"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type Option func(p *Parser)
