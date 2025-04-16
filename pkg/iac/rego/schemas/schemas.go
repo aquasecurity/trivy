@@ -13,4 +13,5 @@ var SchemaMap = map[types.Source]Schema{
 	types.SourceTOML:       Anything,
 	types.SourceYAML:       Anything,
 	types.SourceJSON:       Anything,
+	types.SourceTerraform:  Terraform,
 }
