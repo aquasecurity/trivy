@@ -93,7 +93,8 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 		option(mp)
 	}
 
-	// The options above can reset the logger
+	// The options above can reset the logger, so set the logging prefix after the
+	// options.
 	mp.logger = mp.logger.With(log.Prefix("terraform parser")).With("module", moduleName)
 	return mp
 }
