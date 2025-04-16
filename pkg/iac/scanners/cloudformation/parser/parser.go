@@ -2,6 +2,7 @@ package parser
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -127,8 +128,16 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, filePath string) (fc
 
 	switch sourceFmt {
 	case YamlSourceFormat:
-		if err := yaml.Unmarshal(content, &root); err != nil {
+		var doc yaml.Node
+		if err := yaml.Unmarshal(content, &doc); err != nil {
 			return nil, NewErrInvalidContent(filePath, err)
+		}
+		if len(doc.Content) == 0 {
+			return nil, errors.New("invalid YAML content: no root node found")
+		}
+		transformFuncNodes(doc.Content[0])
+		if err := root.UnmarshalYAML(doc.Content[0]); err != nil {
+			return nil, err
 		}
 	case JsonSourceFormat:
 		if err := xjson.Unmarshal(content, &root); err != nil {
