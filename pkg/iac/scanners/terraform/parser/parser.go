@@ -144,7 +144,7 @@ func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 // ParseFS parses a root module, where it exists at the root of the provided filesystem
 func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	if p.moduleFS == nil {
-		return fmt.Errorf("module filesystem is nil, nothing to parse")
+		return errors.New("module filesystem is nil, nothing to parse")
 	}
 	dir = path.Clean(dir)
 
