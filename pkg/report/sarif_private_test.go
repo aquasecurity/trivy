@@ -23,6 +23,11 @@ func Test_clearURI(t *testing.T) {
 			want: "github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf",
 		},
 		{
+			name: "bitbucket",
+			uri:  "git@bitbucket.org:terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.2.0/main.tf",
+			want: "bitbucket.org/terraform-aws-modules/terraform-aws-s3-bucket/src/v4.2.0/main.tf",
+		},
+		{
 			name: "git",
 			uri:  "git::https://example.com/storage.git?ref=51d462976d84fdea54b47d80dcabbf680badcdb8",
 			want: "https://example.com/storage?ref=51d462976d84fdea54b47d80dcabbf680badcdb8",
