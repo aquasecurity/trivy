@@ -80,7 +80,7 @@ func (v *VersionChecker) RunUpdateCheck(ctx context.Context, args []string) {
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, v.updatesApi, http.NoBody)
 		if err != nil {
-			logger.Warn(fmt.Sprintf("Failed to create a request for Trivy api: %v", err))
+			logger.Warn("Failed to create a request for Trivy api" log.Err(err))
 			return
 		}
 
