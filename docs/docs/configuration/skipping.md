@@ -1,8 +1,22 @@
-# Skipping Artifacts
+# Selecting files for scanning
 
-This section details ways to specify the files, directories and resources that Trivy should not scan.
+When scanning a target (image, code repository, etc), Trivy traverses all directories and files in that target and looks for known files to scan. For example, vulnerability scanner might look for `/lib/apk/db/installed` for Alpine APK scanning or `requirements.txt` file for Python pip scanning, and misconfiguration scanner might look for `Dockerfile` for Dockerfile scanning. This document explains how to control which files Trivy looks (including skipping files) for and how it should process them.
 
-## Skip Files
+!!! note
+    Selecting/skipping files is different from filtering/ignoring results, which is covered in the [Filtering document](./filtering.md)
+
+## Skip Files and Directories
+
+You can skip specific files and directories using the `--skip-files` and `--skip-dirs` flags.
+
+For example:
+
+```bash
+trivy image --skip-files "/Gemfile.lock" --skip-dirs "/var/lib/gems/2.5.0/gems/http_parser.rb-0.6.0" quay.io/fluentd_elasticsearch/fluentd:v2.9.0
+```
+
+This feature is relevant for the following scanners:
+
 |     Scanner      | Supported |
 |:----------------:|:---------:|
 |  Vulnerability   |     ✓     |
@@ -10,89 +24,58 @@ This section details ways to specify the files, directories and resources that T
 |      Secret      |     ✓     |
 |     License      |     ✓     |
 
-By default, Trivy traverses directories and searches for all necessary files for scanning.
-You can skip files that you don't maintain using the `--skip-files` flag, or the equivalent Trivy YAML config option.
+It's possible to specify glob patterns when referring to a file or directory. The glob expression follows the ["doublestar" library syntax](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4@v4.8.1#readme-patterns).
 
-Using the `--skip-files` flag:
+Examples:
+
 ```bash
-$ trivy image --skip-files "/Gemfile.lock" --skip-files "/var/lib/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock" quay.io/fluentd_elasticsearch/fluentd:v2.9.0
+# skip any file named `bar` in the subdirectories of testdata
+trivy image --skip-files "./testdata/*/bar" .
 ```
 
-Using the Trivy YAML configuration:
+```bash
+# skip any files with the extension `.tf` in subdirectories of foo at any depth
+trivy config --skip-files "./foo/**/*.tf" .
+```
+
+```bash
+# skip all subdirectories of the testdata directory.
+trivy image --skip-dirs "./testdata/*" .
+```
+
+```bash
+# skip subdirectories at any depth named `.terraform/`. 
+# this will match `./foo/.terraform` or `./foo/bar/.terraform`, but not `./.terraform`
+trivy config --skip-dirs "**/.terraform" .
+```
+
+Like any other flag, this is available as Trivy YAML configuration.
+
+For example:
+
 ```yaml
 image:
   skip-files:
     - foo
     - "testdata/*/bar"
-```
-
-It's possible to specify globs as part of the value.
-
-```bash
-$ trivy image --skip-files "./testdata/*/bar" .
-```
-
-This will skip any file named `bar` in the subdirectories of testdata.
-
-```bash
-$ trivy config --skip-files "./foo/**/*.tf" .
-```
-
-This will skip any files with the extension `.tf` in subdirectories of foo at any depth.
-
-## Skip Directories
-|     Scanner      | Supported |
-|:----------------:|:---------:|
-|  Vulnerability   |     ✓     |
-| Misconfiguration |     ✓     |
-|      Secret      |     ✓     |
-|     License      |     ✓     |
-
-By default, Trivy traverses directories and searches for all necessary files for scanning.
-You can skip directories that you don't maintain using the `--skip-dirs` flag, or the equivalent Trivy YAML config option.
-
-Using the `--skip-dirs` flag:
-```bash
-$ trivy image --skip-dirs /var/lib/gems/2.5.0/gems/fluent-plugin-detect-exceptions-0.0.13 --skip-dirs "/var/lib/gems/2.5.0/gems/http_parser.rb-0.6.0" quay.io/fluentd_elasticsearch/fluentd:v2.9.0
-```
-
-Using the Trivy YAML configuration:
-```yaml
-image:
   skip-dirs:
     - foo/bar/
     - "**/.terraform"
 ```
 
-It's possible to specify globs as part of the value.
+## Customizing file handling
+
+You can customize which files Trivy scans and how it interprets them with the `--file-patterns` flag.
+A file pattern configuration takes the following form: `<analyzer>:<path>`, such that files matching the `<path>` will be processed with the respective `<analyzer>`.
+
+For example:
 
 ```bash
-$ trivy image --skip-dirs "./testdata/*" .
+trivy fs --file-patterns "pip:.requirements-test.txt ."
 ```
 
-This will skip all subdirectories of the testdata directory.
+This feature is relevant for the following scanners:
 
-```bash
-$ trivy config --skip-dirs "**/.terraform" .
-```
-
-This will skip subdirectories at any depth named `.terraform/`. (Note: this will match `./foo/.terraform` or
-`./foo/bar/.terraform`, but not `./.terraform`.)
-
-!!! tip
-    Glob patterns work with any trivy subcommand (image, config, etc.) and can be specified to skip both directories (with `--skip-dirs`) and files (with `--skip-files`).
-
-
-### Advanced globbing
-Trivy also supports bash style [extended](https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Pattern-Matching) glob pattern matching.
-
-```bash
-$ trivy image --skip-files "**/foo" image:tag
-```
-
-This will skip the file `foo` that happens to be nested under any parent(s). 
-
-## File patterns
 |     Scanner      | Supported |
 |:----------------:|:---------:|
 |  Vulnerability   |     ✓     |
@@ -100,24 +83,28 @@ This will skip the file `foo` that happens to be nested under any parent(s).
 |      Secret      |           |
 |     License      |   ✓[^1]   |
 
-When a directory is given as an input, Trivy will recursively look for and test all files based on file patterns.
-The default file patterns are [here](../scanner/misconfiguration/custom/index.md).
+!!!note
+    This flag is not applicable for parsers that accepts multiple files, for example the Terraform file parser which loads all `.tf` files into state.
 
-In addition to the default file patterns, the `--file-patterns` option takes regexp patterns to look for your files.
-For example, it may be useful when your file name of Dockerfile doesn't match the default patterns.
+The list of analyzers can be found [here](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/pkg/fanal/analyzer/const.go)
 
-This can be repeated for specifying multiple file patterns.
+The file path can use a [regular expression](https://pkg.go.dev/regexp/syntax). For example:
 
-A file pattern contains the analyzer it is used for, and the pattern itself, joined by a semicolon. For example:
+```bash
+# interpret any file with .txt extension as a python pip requirements file
+trivy fs --file-patterns "pip:requirements-.*\.txt .
 ```
---file-patterns "dockerfile:.*.docker" --file-patterns "kubernetes:*.tpl" --file-patterns "pip:requirements-.*\.txt"
+
+The flag can be repeated for specifying multiple file patterns. For example:
+
+```bash
+# look for Dockerfile called production.docker and a python pip requirements file called requirements-test.txt
+trivy fs --scanners misconfig,vuln --file-patterns "dockerfile:.production.docker" --file-patterns "pip:.requirements-test.txt ."
 ```
 
-The prefixes are listed [here](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/pkg/fanal/analyzer/const.go)
+[^1]: Only work with the [license-full](../scanner/license.md) flag
 
+## Avoid full filesystem traversal
 
-[^1]: Only work with the [license-full](../scanner/license.md) flag)
-
-## Skip Resources
-
-You can skip IaC resources by providing inline comments. More details are provided [here](../scanner/misconfiguration/config/config.md#skipping-resources-by-inline-comments)
+In specific scenarios Trivy can avoid traversing the entire filesystem, which makes scanning faster and more efficient.
+For more information see [here](../target/rootfs.md#performance-optimization)

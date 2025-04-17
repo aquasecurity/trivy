@@ -65,7 +65,7 @@ From the Terraform [docs](https://developer.hashicorp.com/terraform/cli/config/c
 If multiple variables evaluate to the same hostname, Trivy will choose the environment variable name where the dashes have not been encoded as double underscores.
 
 
-### Skipping resources by inline comments
+### Filtering resources by inline comments
 
 Trivy supports ignoring misconfigured resources by inline comments for Terraform, CloudFormation and Helm configuration files only.
 
