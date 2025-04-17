@@ -97,7 +97,7 @@ func TestPrintNotices(t *testing.T) {
 
 			// check metrics are sent
 			require.NotNil(t, updates.lastRequest)
-			require.NotEmpty(t, updates.lastRequest.Header.Get("-x-trivy-identifier"))
+			require.NotEmpty(t, updates.lastRequest.Header.Get("Trivy-Identifier"))
 		})
 	}
 }
@@ -160,11 +160,11 @@ func TestCheckForNotices(t *testing.T) {
 			if tt.expectNoMetrics {
 				assert.True(t, v.disableMetrics)
 				require.NotNil(t, updates.lastRequest)
-				assert.Empty(t, updates.lastRequest.Header.Get("-x-trivy-identifier"))
+				assert.Empty(t, updates.lastRequest.Header.Get("Trivy-Identifier"))
 			} else {
 				assert.False(t, v.disableMetrics)
 				require.NotNil(t, updates.lastRequest)
-				assert.NotEmpty(t, updates.lastRequest.Header.Get("-x-trivy-identifier"))
+				assert.NotEmpty(t, updates.lastRequest.Header.Get("Trivy-Identifier"))
 			}
 
 		})
