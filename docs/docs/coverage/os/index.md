@@ -1,7 +1,6 @@
 # OS
 
-## Scanner
-Trivy supports operating systems for 
+Trivy scans operating system packages in the following scanners: 
 
 - [SBOM][sbom]
 - [Vulnerabilities][vuln]
