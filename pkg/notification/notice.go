@@ -46,7 +46,6 @@ type VersionChecker struct {
 // NewVersionChecker creates a new VersionChecker with the default
 // updates API URL. The URL can be overridden by passing an Option
 // to the NewVersionChecker function.
-// The default URL is "https://api.trivy.cloud/check".
 func NewVersionChecker(opts ...Option) *VersionChecker {
 	v := &VersionChecker{
 		updatesApi:     "https://api.trivy.cloud/updates",
