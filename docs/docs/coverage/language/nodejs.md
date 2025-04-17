@@ -43,14 +43,23 @@ Trivy analyzes `node_modules` for licenses.
 By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
 
 ### Yarn
-Trivy parses `yarn.lock`, which doesn't contain information about development dependencies.
-Trivy also uses `package.json` file to handle [aliases](https://classic.yarnpkg.com/lang/en/docs/cli/add/#toc-yarn-add-alias).
+Trivy parses `yarn.lock`.
 
-To exclude devDependencies and allow aliases, `package.json` also needs to be present next to `yarn.lock`.
+#### Additional files
+Trivy also analyzes additional files to supplement the information about the dependencies found.
 
+###### Root and Workspace package.json files
+`yarn.lock` files don't contain information about root/workspace packages or development dependencies.
+
+To add root/workspace packages, mark dev dependencies and allow [aliases][yarn-aliases], Trivy parses Root (next to the `yarn.lock` file) and workspace `package.json` files.
+
+!!! note
+    By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
+
+###### Project cache dir
 Trivy analyzes `.yarn` (Yarn 2+) or `node_modules` (Yarn Classic) folder next to the yarn.lock file to detect licenses.
 
-By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
+
 
 ### pnpm
 Trivy parses `pnpm-lock.yaml`, then finds production dependencies and builds a [tree][dependency-graph] of dependencies with vulnerabilities.
@@ -74,5 +83,6 @@ It only extracts package names, versions and licenses for those packages.
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [pnpm-lockfile-v6]: https://github.com/pnpm/spec/blob/fd3238639af86c09b7032cc942bab3438b497036/lockfile/6.0.md
+[yarn-aliases]: https://classic.yarnpkg.com/lang/en/docs/cli/add/#toc-yarn-add-alias
 
 [^1]: [yarn.lock](#bun) must be generated
