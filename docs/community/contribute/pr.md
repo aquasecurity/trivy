@@ -128,6 +128,7 @@ os:
 - amazon
 - suse
 - photon
+- mageia
 - distroless
 
 language:
