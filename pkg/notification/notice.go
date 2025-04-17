@@ -80,16 +80,16 @@ func (v *VersionChecker) RunUpdateCheck(ctx context.Context, args []string) {
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, v.updatesApi, http.NoBody)
 		if err != nil {
-			logger.Warn("Failed to create a request for Trivy api" log.Err(err))
+			logger.Warn("Failed to create a request for Trivy api", log.Err(err))
 			return
 		}
 
 		// if the user hasn't disabled metrics, send the anonymous information as headers
 		if !v.disableMetrics {
-			req.Header.Set("-x-trivy-identifier", uniqueIdentifier())
-			req.Header.Set("-x-trivy-command", strings.Join(args, " "))
-			req.Header.Set("-x-trivy-os", runtime.GOOS)
-			req.Header.Set("-x-trivy-arch", runtime.GOARCH)
+			req.Header.Set("Trivy-Identifier", uniqueIdentifier())
+			req.Header.Set("Trivy-Command", strings.Join(args, " "))
+			req.Header.Set("Trivy-OS", runtime.GOOS)
+			req.Header.Set("Trivy-Arch", runtime.GOARCH)
 		}
 
 		req.Header.Set("User-Agent", fmt.Sprintf("trivy/%s", v.currentVersion))
@@ -101,7 +101,7 @@ func (v *VersionChecker) RunUpdateCheck(ctx context.Context, args []string) {
 
 		defer resp.Body.Close()
 		if err := json.NewDecoder(resp.Body).Decode(&v.latestVersion); err != nil {
-			logger.Debug(fmt.Sprintf("Failed to decode the Trivy response: %v", err))
+			logger.Debug("Failed to decode the Trivy response", log.Err(err))
 			return
 		}
 
