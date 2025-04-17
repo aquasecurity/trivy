@@ -28,10 +28,10 @@ type uvAnalyzer struct {
 	lockParser language.Parser
 }
 
-func NewUvAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+func NewUvAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &uvAnalyzer{
 		logger:     log.WithPrefix("uv"),
-		lockParser: uvparser.NewParser(),
+		lockParser: uvparser.NewParser(opts.IncludeDevDeps),
 	}, nil
 }
 
