@@ -16,10 +16,8 @@ func Test_resolve_referenced_value(t *testing.T) {
 		ctx: &FileContext{
 			Parameters: map[string]*Parameter{
 				"BucketName": {
-					inner: parameterInner{
-						Type:    "string",
-						Default: "someBucketName",
-					},
+					Typ:     "string",
+					Default: "someBucketName",
 				},
 			},
 		},

@@ -109,10 +109,8 @@ func Test_resolve_equals_value_when_one_is_a_reference(t *testing.T) {
 						ctx: &FileContext{
 							Parameters: map[string]*Parameter{
 								"Environment": {
-									inner: parameterInner{
-										Type:    "string",
-										Default: "staging",
-									},
+									Typ:     "string",
+									Default: "staging",
 								},
 							},
 						},

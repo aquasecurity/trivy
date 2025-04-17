@@ -55,10 +55,8 @@ func Test_resolve_join_value_with_reference(t *testing.T) {
 		ctx: &FileContext{
 			Parameters: map[string]*Parameter{
 				"Environment": {
-					inner: parameterInner{
-						Type:    "string",
-						Default: "staging",
-					},
+					Typ:     "string",
+					Default: "staging",
 				},
 			},
 		},
@@ -87,10 +85,8 @@ func Test_resolve_join_value_with_reference(t *testing.T) {
 								ctx: &FileContext{
 									Parameters: map[string]*Parameter{
 										"Environment": {
-											inner: parameterInner{
-												Type:    "string",
-												Default: "staging",
-											},
+											Typ:     "string",
+											Default: "staging",
 										},
 									},
 								},

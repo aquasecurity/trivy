@@ -37,10 +37,8 @@ func Test_ResolveLength_WhenPropIsIntrinsicFunction(t *testing.T) {
 	fctx := &FileContext{
 		Parameters: map[string]*Parameter{
 			"SomeParameter": {
-				inner: parameterInner{
-					Type:    "string",
-					Default: "a|b|c|d",
-				},
+				Typ:     "string",
+				Default: "a|b|c|d",
 			},
 		},
 	}

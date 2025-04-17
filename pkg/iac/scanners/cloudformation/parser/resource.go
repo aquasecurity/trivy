@@ -1,85 +1,17 @@
 package parser
 
 import (
-	"io/fs"
 	"strings"
 
-	"github.com/go-json-experiment/json"
-	"github.com/go-json-experiment/json/jsontext"
-	"gopkg.in/yaml.v3"
-
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 type Resource struct {
-	xjson.Location
 	typ        string
 	properties map[string]*Property
 	ctx        *FileContext
 	rng        iacTypes.Range
 	id         string
-	comment    string
-}
-
-func (r *Resource) configureResource(id string, target fs.FS, filepath string, ctx *FileContext) {
-	r.setId(id)
-	r.setFile(target, filepath)
-	r.setContext(ctx)
-}
-
-func (r *Resource) setId(id string) {
-	r.id = id
-
-	for n, p := range r.properties {
-		p.setName(n)
-	}
-}
-
-func (r *Resource) setFile(target fs.FS, filepath string) {
-	r.rng = iacTypes.NewRange(filepath, r.StartLine, r.EndLine, r.rng.GetSourcePrefix(), target)
-
-	for _, p := range r.properties {
-		p.setFileAndParentRange(target, filepath, r.rng)
-	}
-}
-
-func (r *Resource) setContext(ctx *FileContext) {
-	r.ctx = ctx
-
-	for _, p := range r.properties {
-		p.setLogicalResource(r.id)
-		p.setContext(ctx)
-	}
-}
-
-type resourceInner struct {
-	Type       string               `json:"Type" yaml:"Type"`
-	Properties map[string]*Property `json:"Properties" yaml:"Properties"`
-}
-
-func (r *Resource) UnmarshalYAML(node *yaml.Node) error {
-	r.StartLine = node.Line - 1
-	r.EndLine = calculateEndLine(node)
-	r.comment = node.LineComment
-
-	var i resourceInner
-	if err := node.Decode(&i); err != nil {
-		return err
-	}
-	r.typ = i.Type
-	r.properties = i.Properties
-	return nil
-}
-
-func (r *Resource) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	var i resourceInner
-	if err := json.UnmarshalDecode(dec, &i); err != nil {
-		return err
-	}
-	r.typ = i.Type
-	r.properties = i.Properties
-	return nil
 }
 
 func (r *Resource) ID() string {

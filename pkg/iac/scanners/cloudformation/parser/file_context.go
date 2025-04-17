@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"github.com/samber/lo"
+	"errors"
 
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -21,11 +21,18 @@ type FileContext struct {
 	lines        []string
 	SourceFormat SourceFormat
 	Ignores      ignore.Rules
-	Parameters   map[string]*Parameter `json:"Parameters" yaml:"Parameters"`
-	Resources    map[string]*Resource  `json:"Resources" yaml:"Resources"`
-	Globals      map[string]*Resource  `json:"Globals" yaml:"Globals"`
-	Mappings     map[string]any        `json:"Mappings,omitempty" yaml:"Mappings"`
-	Conditions   map[string]Property   `json:"Conditions,omitempty" yaml:"Conditions"`
+	Parameters   map[string]*Parameter
+	Resources    map[string]*Resource
+	Mappings     map[string]any
+	Conditions   map[string]Property
+}
+
+func (t *FileContext) Validate() error {
+	if len(t.Resources) == 0 {
+		return errors.New("no resources found")
+	}
+
+	return nil
 }
 
 func (t *FileContext) GetResourceByLogicalID(name string) *Resource {
@@ -67,17 +74,9 @@ func (t *FileContext) overrideParameters(params map[string]any) {
 func (t *FileContext) missingParameterValues() []string {
 	var missing []string
 	for key := range t.Parameters {
-		if t.Parameters[key].inner.Default == nil {
+		if t.Parameters[key].Default == nil {
 			missing = append(missing, key)
 		}
 	}
 	return missing
-}
-
-func (t *FileContext) stripNullProperties() {
-	for _, resource := range t.Resources {
-		resource.properties = lo.OmitBy(resource.properties, func(k string, v *Property) bool {
-			return v.IsNil()
-		})
-	}
 }
