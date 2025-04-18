@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.61.1](https://github.com/aquasecurity/trivy/compare/v0.61.0...v0.61.1) (2025-04-17)
+
+
+### Bug Fixes
+
+* **k8s:** correct compare artifact versions [backport: release/v0.61] ([#8699](https://github.com/aquasecurity/trivy/issues/8699)) ([9d6290b](https://github.com/aquasecurity/trivy/commit/9d6290b31977b1bd4ab47349cd26498bc3b079c3))
+* **k8s:** skip passed misconfigs for the summary report [backport: release/v0.61] ([#8748](https://github.com/aquasecurity/trivy/issues/8748)) ([80d120f](https://github.com/aquasecurity/trivy/commit/80d120fa0f96695e09eb97f43fb7413e5c773e50))
+
 ## [0.61.0](https://github.com/aquasecurity/trivy/compare/v0.60.0...v0.61.0) (2025-03-28)
 
 
