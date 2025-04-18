@@ -124,7 +124,7 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 		r.versionChecker = notification.NewVersionChecker(
 			notification.WithSkipUpdateCheck(cliOptions.SkipVersionCheck),
 			notification.WithQuietMode(cliOptions.Quiet),
-			notification.WithMetricsDisabled(cliOptions.DisableMetrics),
+			notification.WithTelemetryDisabled(cliOptions.DisableTelemetry),
 		)
 	}
 

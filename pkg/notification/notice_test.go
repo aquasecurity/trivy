@@ -121,7 +121,7 @@ func TestCheckForNotices(t *testing.T) {
 			name: "new version with disabled metrics",
 			options: []Option{
 				WithCurrentVersion("0.58.0"),
-				WithMetricsDisabled(true),
+				WithTelemetryDisabled(true),
 			},
 			expectedVersion: "0.60.0",
 			expectNoMetrics: true,
@@ -158,11 +158,11 @@ func TestCheckForNotices(t *testing.T) {
 			assert.ElementsMatch(t, tt.expectedAnnouncements, v.Announcements())
 
 			if tt.expectNoMetrics {
-				assert.True(t, v.disableMetrics)
+				assert.True(t, v.telemetryDisabled)
 				require.NotNil(t, updates.lastRequest)
 				assert.Empty(t, updates.lastRequest.Header.Get("Trivy-Identifier"))
 			} else {
-				assert.False(t, v.disableMetrics)
+				assert.False(t, v.telemetryDisabled)
 				require.NotNil(t, updates.lastRequest)
 				assert.NotEmpty(t, updates.lastRequest.Header.Get("Trivy-Identifier"))
 			}

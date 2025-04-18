@@ -32,10 +32,10 @@ type updateResponse struct {
 }
 
 type VersionChecker struct {
-	updatesApi      string
-	skipUpdateCheck bool
-	quiet           bool
-	disableMetrics  bool
+	updatesApi        string
+	skipUpdateCheck   bool
+	quiet             bool
+	telemetryDisabled bool
 
 	done             bool
 	responseReceived bool
@@ -48,7 +48,7 @@ type VersionChecker struct {
 // to the NewVersionChecker function.
 func NewVersionChecker(opts ...Option) *VersionChecker {
 	v := &VersionChecker{
-		updatesApi:     "https://api.trivy.cloud/updates",
+		updatesApi:     "https://check.trivy.cloud/updates",
 		currentVersion: app.Version(),
 	}
 
@@ -61,13 +61,13 @@ func NewVersionChecker(opts ...Option) *VersionChecker {
 // RunUpdateCheck makes a best efforts request to determine the
 // latest version and any announcements
 // Logic:
-// 1. if skipUpdateCheck is true AND metricsDisabled are both true, skip the request
-// 2. if skipUpdateCheck is true AND metricsDisabled is false, run check with metric details but suppress output
-// 3. if skipUpdateCheck is false AND metricsDisabled is true, run update check but don't send any metric identifiers
+// 1. if skipUpdateCheck is true AND telemetryDisabled are both true, skip the request
+// 2. if skipUpdateCheck is true AND telemetryDisabled is false, run check with metric details but suppress output
+// 3. if skipUpdateCheck is false AND telemetryDisabled is true, run update check but don't send any metric identifiers
 func (v *VersionChecker) RunUpdateCheck(ctx context.Context, args []string) {
 	logger := log.WithPrefix("notification")
 
-	if v.skipUpdateCheck && v.disableMetrics {
+	if v.skipUpdateCheck && v.telemetryDisabled {
 		logger.Debug("Skipping update check and metric ping")
 		return
 	}
@@ -85,7 +85,7 @@ func (v *VersionChecker) RunUpdateCheck(ctx context.Context, args []string) {
 		}
 
 		// if the user hasn't disabled metrics, send the anonymous information as headers
-		if !v.disableMetrics {
+		if !v.telemetryDisabled {
 			req.Header.Set("Trivy-Identifier", uniqueIdentifier())
 			req.Header.Set("Trivy-Command", strings.Join(args, " "))
 			req.Header.Set("Trivy-OS", runtime.GOOS)
