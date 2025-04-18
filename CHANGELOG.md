@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.62.0](https://github.com/aquasecurity/trivy/compare/v0.61.0...v0.62.0) (2025-04-18)
+
+
+### Features
+
+* **misconf:** add option to pass Rego scanner to IaC scanner ([#8369](https://github.com/aquasecurity/trivy/issues/8369)) ([890a360](https://github.com/aquasecurity/trivy/commit/890a3602444ad2e5320044c9b8cc79ca883d17ec))
+* **misconf:** support auto_provisioning_defaults in google_container_cluster ([#8705](https://github.com/aquasecurity/trivy/issues/8705)) ([9792611](https://github.com/aquasecurity/trivy/commit/9792611b36271efbf79f635deebae7e51f497b70))
+* **rust:** add root and workspace relationships/package for `cargo` lock files ([#8676](https://github.com/aquasecurity/trivy/issues/8676)) ([93efe07](https://github.com/aquasecurity/trivy/commit/93efe0789ed9d9a71e04e93d87be63032ad9cae7))
+
+
+### Bug Fixes
+
+* **k8s:** correct compare artifact versions ([#8682](https://github.com/aquasecurity/trivy/issues/8682)) ([cc47711](https://github.com/aquasecurity/trivy/commit/cc4771158b72b88258057fa379deba9f39190994))
+* **k8s:** skip passed misconfigs for the summary report ([#8684](https://github.com/aquasecurity/trivy/issues/8684)) ([bff0e9b](https://github.com/aquasecurity/trivy/commit/bff0e9b034f39d0d1ca02457558b1f89847009ac))
+* **misconf:** add missing variable as unknown ([#8683](https://github.com/aquasecurity/trivy/issues/8683)) ([9dcd06f](https://github.com/aquasecurity/trivy/commit/9dcd06fda717347eab1ac8ef0710687a3bfd8588))
+* **misconf:** check if metadata is not nil ([#8647](https://github.com/aquasecurity/trivy/issues/8647)) ([b7dfd64](https://github.com/aquasecurity/trivy/commit/b7dfd64987b94b4bdd8b7c5a68ba2b8f1a0a9198))
+* **misconf:** populate context correctly for module instances ([#8656](https://github.com/aquasecurity/trivy/issues/8656)) ([efd177b](https://github.com/aquasecurity/trivy/commit/efd177b300950d82e381992e1dea39308cc39bc3))
+* **report:** clean buffer after flushing ([#8725](https://github.com/aquasecurity/trivy/issues/8725)) ([9a5383e](https://github.com/aquasecurity/trivy/commit/9a5383e993222d919d63f8d9934729cf4e291c06))
+* **secret:** ignore .dist-info directories during secret scanning ([#8646](https://github.com/aquasecurity/trivy/issues/8646)) ([a032ad6](https://github.com/aquasecurity/trivy/commit/a032ad696aa58850b9576d889128559149282ad3))
+* **server:** fix redis key when trying to delete blob ([#8649](https://github.com/aquasecurity/trivy/issues/8649)) ([36f8d0f](https://github.com/aquasecurity/trivy/commit/36f8d0fd6705bb0da5b43507128c772b153dafec))
+* **terraform:** `evaluateStep` to correctly set `EvalContext` for multiple instances of blocks ([#8555](https://github.com/aquasecurity/trivy/issues/8555)) ([e25de25](https://github.com/aquasecurity/trivy/commit/e25de25262fd1cd559879dee07bb2db2747eedd4))
+* **terraform:** hcl object expressions to return references ([#8271](https://github.com/aquasecurity/trivy/issues/8271)) ([0d3efa5](https://github.com/aquasecurity/trivy/commit/0d3efa5dc150dba437d975a2f8335de8786f94d6))
+
 ## [0.61.0](https://github.com/aquasecurity/trivy/compare/v0.60.0...v0.61.0) (2025-03-28)
 
 
