@@ -51,8 +51,8 @@ trivy kubernetes [flags] [CONTEXT]
                                             - "precise": Prioritizes precise by minimizing false positives.
                                             - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
                                            (allowed values: precise,comprehensive) (default "precise")
-      --disable-metrics                   disable sending anonymous usage data to Aqua
       --disable-node-collector            When the flag is activated, the node-collector job will not be executed, thus skipping misconfiguration findings on the node.
+      --disable-telemetry                 disable sending anonymous usage data to Aqua
       --distro string                     [EXPERIMENTAL] specify a distribution, <family>/<version>
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan

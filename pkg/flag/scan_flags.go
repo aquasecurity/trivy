@@ -123,9 +123,9 @@ var (
 		ConfigName: "scan.skip-version-check",
 		Usage:      "suppress notices about version updates and Trivy announcements",
 	}
-	DisableMetricsFlag = Flag[bool]{
-		Name:       "disable-metrics",
-		ConfigName: "scan.disable-metrics",
+	DisableTelemetryFlag = Flag[bool]{
+		Name:       "disable-telemetry",
+		ConfigName: "scan.disable-telemetry",
 		Usage:      "disable sending anonymous usage data to Aqua",
 	}
 )
@@ -143,7 +143,7 @@ type ScanFlagGroup struct {
 	DetectionPriority *Flag[string]
 	DistroFlag        *Flag[string]
 	SkipVersionCheck  *Flag[bool]
-	DisableMetrics    *Flag[bool]
+	DisableTelemetry  *Flag[bool]
 }
 
 type ScanOptions struct {
@@ -159,7 +159,7 @@ type ScanOptions struct {
 	DetectionPriority ftypes.DetectionPriority
 	Distro            ftypes.OS
 	SkipVersionCheck  bool
-	DisableMetrics    bool
+	DisableTelemetry  bool
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
@@ -176,7 +176,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		DetectionPriority: DetectionPriority.Clone(),
 		DistroFlag:        DistroFlag.Clone(),
 		SkipVersionCheck:  SkipVersionCheckFlag.Clone(),
-		DisableMetrics:    DisableMetricsFlag.Clone(),
+		DisableTelemetry:  DisableTelemetryFlag.Clone(),
 	}
 }
 
@@ -198,7 +198,7 @@ func (f *ScanFlagGroup) Flags() []Flagger {
 		f.DetectionPriority,
 		f.DistroFlag,
 		f.SkipVersionCheck,
-		f.DisableMetrics,
+		f.DisableTelemetry,
 	}
 }
 
@@ -239,7 +239,7 @@ func (f *ScanFlagGroup) ToOptions(opts *Options) error {
 		DetectionPriority: ftypes.DetectionPriority(f.DetectionPriority.Value()),
 		Distro:            distro,
 		SkipVersionCheck:  f.SkipVersionCheck.Value(),
-		DisableMetrics:    f.DisableMetrics.Value(),
+		DisableTelemetry:  f.DisableTelemetry.Value(),
 	}
 	return nil
 }
