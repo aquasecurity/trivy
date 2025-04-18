@@ -35,7 +35,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
                                             - "precise": Prioritizes precise by minimizing false positives.
                                             - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
                                            (allowed values: precise,comprehensive) (default "precise")
-      --disable-metrics                   disable sending anonymous usage data to Aqua
+      --disable-telemetry                 disable sending anonymous usage data to Aqua
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
       --enable-modules strings            [EXPERIMENTAL] module names to enable

@@ -583,8 +583,8 @@ scan:
   # Same as '--detection-priority'
   detection-priority: "precise"
 
-  # Same as '--disable-metrics'
-  disable-metrics: false
+  # Same as '--disable-telemetry'
+  disable-telemetry: false
 
   # Same as '--distro'
   distro: ""
