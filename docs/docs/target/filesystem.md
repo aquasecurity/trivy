@@ -31,3 +31,14 @@ $ trivy fs --cache-backend fs /path/to/git/repo
 ```
 
 More details are available in the [cache documentation](../configuration/cache.md#scan-cache-backend).
+
+## SBOM Generation
+
+You can generate SBOM for the directory using the `--format` flag. For supported SBOM formats and additional information, see [here](../supply-chain/sbom.md).
+
+For example:
+
+```bash
+# Generate a CycloneDX SBOM
+trivy fs --format cyclonedx ~/dev/myapp
+```

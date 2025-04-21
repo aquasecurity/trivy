@@ -189,6 +189,21 @@ $ trivy image --input /path/to/alpine:3.15
 $ trivy image --input /path/to/alpine@sha256:82389ea44e50c696aba18393b168a833929506f5b29b9d75eb817acceb6d54ba
 ```
 
+## SBOM Generation
+
+You can generate SBOM for the container image using the `--format` flag. For supported SBOM formats and additional information, see [here](../supply-chain/sbom.md).
+
+For example:
+
+```bash
+# Generate a CycloneDX SBOM
+trivy image --format cyclonedx ubuntu:latest
+```
+
+## SBOM Scanning
+
+There are several scenarios where SBOM is being scanned as part of image scanning
+
 ### Complementing SBOM
 Any SBOM file found in the container image will be scanned for vulnerabilities and contribute to the image's final scaning report. This is useful if you're building container images without package manager information (i.e distroless) but you still want to ensure they could be scannable in the future.
 
@@ -209,7 +224,7 @@ This functionality is disabled by default. To enable it, specify the `--sbom-sou
 - `oci` - look for SBOM in the container registry where the target image is from.
 - `rekor` - look for SBOM in [Sigstore Rekor](https://docs.sigstore.dev/logging/overview/).
 
-### OCI
+#### OCI
 
 It is possible to store SBOM in the container registry alongside the image it describes. This relies on OCI Registry [Referrers API](https://github.com/opencontainers/distribution-spec/blob/main/spec.md#listing-referrers).
 
@@ -227,7 +242,7 @@ ghcr.io/knqyf263/oci-referrers (alpine 3.16.2)
 Total: 17 (UNKNOWN: 0, LOW: 0, MEDIUM: 5, HIGH: 9, CRITICAL: 3)
 ```
 
-### Rekor
+#### Rekor
 
 Sigstore Rekor is a transparency log for software artifacts. It can also store SBOMs for artifacts and container images, which can be retrieved by Trivy for vulnerability scanning.
 
