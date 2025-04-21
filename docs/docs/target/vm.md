@@ -185,6 +185,16 @@ Filesystems:
 | EXT2/3            |    ✔    |
 | ZFS               |         |
 
+## SBOM Generation
+
+You can generate SBOM for the virtual machine using the `--format` flag. For supported SBOM formats and additional information, see [here](../supply-chain/sbom.md).
+
+For example:
+
+```bash
+# Generate a CycloneDX SBOM
+trivy vm --format cyclonedx disk.vmdk
+```
 
 [vmdk]: https://github.com/libyal/libvmdk/blob/main/documentation/VMWare%20Virtual%20Disk%20Format%20(VMDK).asciidoc
 [ebsapi-elements]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-accessing-snapshot.html#ebsapi-elements
