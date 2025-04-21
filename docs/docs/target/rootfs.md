@@ -37,3 +37,14 @@ trivy rootfs --pkg-types os --scanners vuln /
 
 When scanning language-specific packages or secrets, traversal is necessary because the location of these files is unknown.
 If you want to exclude specific directories from scanning for better performance, you can use the [--skip-dirs](../configuration/skipping.md) option.
+
+## SBOM Generation
+
+You can generate SBOM for the file system using the `--format` flag. For supported SBOM formats and additional information, see [here](../supply-chain/sbom.md).
+
+For example:
+
+```bash
+# Generate a CycloneDX SBOM
+trivy rootfs --format cyclonedx /
+```

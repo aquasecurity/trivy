@@ -68,3 +68,14 @@ $ trivy repo <your private GitHub repo URL>
 $ export GITLAB_TOKEN="your_private_gitlab_token"
 $ trivy repo <your private GitLab repo URL>
 ```
+
+## SBOM Generation
+
+You can generate SBOM for the code repository using the `--format` flag. For supported SBOM formats and additional information, see [here](../supply-chain/sbom.md).
+
+For example:
+
+```bash
+# Generate a CycloneDX SBOM
+trivy repo --format cyclonedx ~/dev/myapp
+```
