@@ -31,6 +31,8 @@ import (
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
+const artifactVersion = 1
+
 type Artifact struct {
 	logger         *log.Logger
 	image          types.Image
@@ -164,7 +166,7 @@ func (a Artifact) Clean(_ artifact.Reference) error {
 
 func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []string, error) {
 	// Pass an empty config scanner option so that the cache key can be the same, even when policies are updated.
-	imageKey, err := cache.CalcKey(imageID, 0, a.configAnalyzer.AnalyzerVersions(), nil, artifact.Option{})
+	imageKey, err := cache.CalcKey(imageID, artifactVersion, a.configAnalyzer.AnalyzerVersions(), nil, artifact.Option{})
 	if err != nil {
 		return "", nil, err
 	}
@@ -172,7 +174,7 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []str
 	hookVersions := a.handlerManager.Versions()
 	var layerKeys []string
 	for _, diffID := range diffIDs {
-		blobKey, err := cache.CalcKey(diffID, 0, a.analyzer.AnalyzerVersions(), hookVersions, a.artifactOption)
+		blobKey, err := cache.CalcKey(diffID, artifactVersion, a.analyzer.AnalyzerVersions(), hookVersions, a.artifactOption)
 		if err != nil {
 			return "", nil, err
 		}

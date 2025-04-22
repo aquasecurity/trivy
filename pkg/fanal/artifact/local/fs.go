@@ -30,6 +30,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
+const artifactVersion = 0
+
 var (
 	ArtifactSet = wire.NewSet(
 		walker.NewFS,
@@ -44,11 +46,7 @@ type Walker interface {
 	Walk(root string, opt walker.Option, fn walker.WalkFunc) error
 }
 
-const schemaVersion = 0
-
 type Artifact struct {
-	schemaVersion int
-
 	rootPath       string
 	logger         *log.Logger
 	cache          cache.ArtifactCache
@@ -76,7 +74,6 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 	prefix := lo.Ternary(opt.Type == types.TypeRepository, "repo", "fs")
 
 	art := Artifact{
-		schemaVersion:  schemaVersion,
 		rootPath:       filepath.ToSlash(filepath.Clean(rootPath)),
 		logger:         log.WithPrefix(prefix),
 		cache:          c,
@@ -304,7 +301,7 @@ func (a Artifact) Clean(reference artifact.Reference) error {
 func (a Artifact) calcCacheKey() (string, error) {
 	// If this is a clean git repository, use the commit hash as cache key
 	if a.commitHash != "" {
-		return cache.CalcKey(a.commitHash, a.schemaVersion, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
+		return cache.CalcKey(a.commitHash, artifactVersion, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
 	}
 
 	// For non-git repositories or dirty git repositories, use UUID as cache key
