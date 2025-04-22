@@ -44,13 +44,3 @@ func (m *Map[K, V]) Len() int {
 	})
 	return i
 }
-
-// ToUnsafeMap converts syncMap into unsafe Map
-func (m *Map[K, V]) ToUnsafeMap() map[K]V {
-	var unsafeMap = make(map[K]V)
-	m.m.Range(func(k, v any) bool {
-		unsafeMap[k.(K)] = v.(V)
-		return true
-	})
-	return unsafeMap
-}
