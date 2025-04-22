@@ -221,7 +221,7 @@ type ArtifactDetail struct {
 	// It is for extensibility and not used in OSS.
 	CustomResources []CustomResource `json:",omitempty"`
 
-	Layers Layers `json:",omitempty"`
+	Layers Layers `json:",omitzero"`
 }
 
 // Sort sorts packages and applications in ArtifactDetail

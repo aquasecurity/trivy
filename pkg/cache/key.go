@@ -26,7 +26,7 @@ func CalcKey(id string, artifactVersion int, analyzerVersions analyzer.Versions,
 	// Write ID, analyzer/handler versions, skipped files/dirs and file patterns
 	keyBase := struct {
 		ID                string
-		ArtifactVersion   int `json:",omitempty"`
+		ArtifactVersion   int `json:",omitzero"`
 		AnalyzerVersions  analyzer.Versions
 		HookVersions      map[string]int
 		SkipFiles         []string
