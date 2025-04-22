@@ -127,7 +127,7 @@ type ScanOptions struct {
 	VulnSeveritySources []dbTypes.SourceID
 }
 
-// ScanResponse contains result of `Scan` function of `Driver` interface
+// ScanResponse represents the response from the scan service
 type ScanResponse struct {
 	Results Results
 	OS      types.OS
