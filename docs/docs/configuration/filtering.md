@@ -471,7 +471,7 @@ package trivy
 
 default ignore = false
 
-ignore {
+ignore if {
 	input.CweIDs[_] == "CWE-20"
 }
 ```
