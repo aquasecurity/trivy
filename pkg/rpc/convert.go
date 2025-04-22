@@ -813,6 +813,9 @@ func ConvertFromRPCPutArtifactRequest(req *cache.PutArtifactRequest) ftypes.Arti
 func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 	return ftypes.BlobInfo{
 		SchemaVersion:     int(req.BlobInfo.SchemaVersion),
+		Size:              req.BlobInfo.Size,
+		Digest:            req.BlobInfo.Digest,
+		DiffID:            req.BlobInfo.DiffId,
 		OS:                ConvertFromRPCOS(req.BlobInfo.Os),
 		Repository:        ConvertFromRPCRepository(req.BlobInfo.Repository),
 		PackageInfos:      ConvertFromRPCPackageInfos(req.BlobInfo.PackageInfos),
@@ -821,13 +824,9 @@ func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 		CustomResources:   ConvertFromRPCCustomResources(req.BlobInfo.CustomResources),
 		Secrets:           ConvertFromRPCSecrets(req.BlobInfo.Secrets),
 		Licenses:          ConvertFromRPCLicenseFiles(req.BlobInfo.Licenses),
-
-		Size:          req.BlobInfo.Size,
-		Digest:        req.BlobInfo.Digest,
-		DiffID:        req.BlobInfo.DiffId,
-		CreatedBy:     req.BlobInfo.CreatedBy,
-		OpaqueDirs:    req.BlobInfo.OpaqueDirs,
-		WhiteoutFiles: req.BlobInfo.WhiteoutFiles,
+		CreatedBy:         req.BlobInfo.CreatedBy,
+		OpaqueDirs:        req.BlobInfo.OpaqueDirs,
+		WhiteoutFiles:     req.BlobInfo.WhiteoutFiles,
 	}
 }
 
@@ -927,6 +926,9 @@ func ConvertToRPCPutBlobRequest(diffID string, blobInfo ftypes.BlobInfo) *cache.
 		DiffId: diffID,
 		BlobInfo: &cache.BlobInfo{
 			SchemaVersion:     ftypes.BlobJSONSchemaVersion,
+			Size:              blobInfo.Size,
+			Digest:            blobInfo.Digest,
+			DiffId:            blobInfo.DiffID,
 			Os:                ConvertToRPCOS(blobInfo.OS),
 			Repository:        ConvertToRPCRepository(blobInfo.Repository),
 			PackageInfos:      packageInfos,
@@ -935,13 +937,9 @@ func ConvertToRPCPutBlobRequest(diffID string, blobInfo ftypes.BlobInfo) *cache.
 			CustomResources:   customResources,
 			Secrets:           ConvertToRPCSecrets(blobInfo.Secrets),
 			Licenses:          ConvertToRPCLicenseFiles(blobInfo.Licenses),
-
-			Size:          blobInfo.Size,
-			Digest:        blobInfo.Digest,
-			DiffId:        blobInfo.DiffID,
-			CreatedBy:     blobInfo.CreatedBy,
-			OpaqueDirs:    blobInfo.OpaqueDirs,
-			WhiteoutFiles: blobInfo.WhiteoutFiles,
+			CreatedBy:         blobInfo.CreatedBy,
+			OpaqueDirs:        blobInfo.OpaqueDirs,
+			WhiteoutFiles:     blobInfo.WhiteoutFiles,
 		},
 	}
 }
