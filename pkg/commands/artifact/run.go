@@ -118,15 +118,12 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 		opt(r)
 	}
 
-	// Initialize the version checker
-	if !cliOptions.OfflineScan {
-		// If the user has not disabled notices or is running in quiet mode
-		r.versionChecker = notification.NewVersionChecker(
-			notification.WithSkipUpdateCheck(cliOptions.SkipVersionCheck),
-			notification.WithQuietMode(cliOptions.Quiet),
-			notification.WithTelemetryDisabled(cliOptions.DisableTelemetry),
-		)
-	}
+	// If the user has not disabled notices or is running in quiet mode
+	r.versionChecker = notification.NewVersionChecker(
+		notification.WithSkipVersionCheck(cliOptions.SkipVersionCheck),
+		notification.WithQuietMode(cliOptions.Quiet),
+		notification.WithTelemetryDisabled(cliOptions.DisableTelemetry),
+	)
 
 	// Update the vulnerability database if needed.
 	if err := r.initDB(ctx, cliOptions); err != nil {

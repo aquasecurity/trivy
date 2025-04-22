@@ -43,7 +43,7 @@ func TestPrintNotices(t *testing.T) {
 			name: "new version available but --skip-update-check mode enabled",
 			options: []Option{
 				WithCurrentVersion("0.58.0"),
-				WithSkipUpdateCheck(true),
+				WithSkipVersionCheck(true),
 			},
 			latestVersion:    "0.60.0",
 			responseExpected: false,
