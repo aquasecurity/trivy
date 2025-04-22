@@ -16,9 +16,9 @@ func WithCurrentVersion(version string) Option {
 	}
 }
 
-func WithSkipUpdateCheck(skipUpdateCheck bool) Option {
+func WithSkipVersionCheck(skipVersionCheck bool) Option {
 	return func(v *VersionChecker) {
-		v.skipUpdateCheck = skipUpdateCheck
+		v.skipUpdateCheck = skipVersionCheck
 	}
 }
 
