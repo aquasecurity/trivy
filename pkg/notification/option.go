@@ -29,7 +29,7 @@ func WithQuietMode(quiet bool) Option {
 	}
 }
 
-// WithTelemetryDisabled sets the metrics disabled flag
+// WithTelemetryDisabled sets the telemetry disabled flag
 func WithTelemetryDisabled(telemetryDisabled bool) Option {
 	return func(v *VersionChecker) {
 		v.telemetryDisabled = telemetryDisabled
