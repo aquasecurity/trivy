@@ -4,8 +4,6 @@ Scan a container image, local or remote. Scans the [configuration](https://githu
 
 In addition to scanning the configuration of the container image, Trivy can also scan the contents of the image. For more info, see the [Image](./container_image.md) page.
 
-`image` is a post-build target type, which means it scans installed packages. For more information, see [Target types](../coverage/language/index.md#target-types).
-
 Usage:
 
 ```shell
