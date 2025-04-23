@@ -31,7 +31,7 @@ func ResolveReference(property *Property) (resolved *Property, success bool) {
 		param = property.ctx.Parameters[k]
 		resolvedType := param.Type()
 
-		switch param.Default().(type) {
+		switch param.Default.(type) {
 		case bool:
 			resolvedType = cftypes.Bool
 		case string:
@@ -40,7 +40,7 @@ func ResolveReference(property *Property) (resolved *Property, success bool) {
 			resolvedType = cftypes.Int
 		}
 
-		resolved = property.deriveResolved(resolvedType, param.Default())
+		resolved = property.deriveResolved(resolvedType, param.Default)
 		return resolved, true
 	}
 

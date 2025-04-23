@@ -18,14 +18,6 @@ func TestAdapt(t *testing.T) {
 	}{
 		{
 			name: "complete",
-			source: `AWSTemplateFormatVersion: '2010-09-09'
-Resources:
-
-`,
-			expected: ecr.ECR{},
-		},
-		{
-			name: "empty",
 			source: `AWSTemplateFormatVersion: 2010-09-09
 Resources:
   MyRepository: 

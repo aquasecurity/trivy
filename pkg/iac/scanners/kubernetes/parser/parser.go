@@ -7,8 +7,6 @@ import (
 	"io"
 	"regexp"
 	"strings"
-
-	"gopkg.in/yaml.v3"
 )
 
 func Parse(_ context.Context, r io.Reader, path string) ([]any, error) {
@@ -32,18 +30,19 @@ func Parse(_ context.Context, r io.Reader, path string) ([]any, error) {
 	var results []any
 
 	re := regexp.MustCompile(`(?m:^---\r?\n)`)
-	pos := 0
+	offset := 0
 	for _, partial := range re.Split(string(contents), -1) {
-		var result Manifest
-		result.Path = path
-		if err := yaml.Unmarshal([]byte(partial), &result); err != nil {
+		manifest, err := ManifestFromYAML(path, []byte(partial), offset)
+		if err != nil {
 			return nil, fmt.Errorf("unmarshal yaml: %w", err)
 		}
-		if result.Content != nil {
-			result.Content.Offset = pos
-			results = append(results, result.ToRego())
+		if err := manifest.Validate(); err != nil {
+			return nil, fmt.Errorf("manifest is invalid: %w", err)
 		}
-		pos += len(strings.Split(partial, "\n"))
+		if !manifest.IsEmpty() {
+			results = append(results, manifest.ToRego())
+		}
+		offset += len(strings.Split(partial, "\n"))
 	}
 
 	return results, nil

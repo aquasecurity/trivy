@@ -90,16 +90,6 @@ func ResolveIntrinsicFunc(property *Property) (*Property, bool) {
 	return property, false
 }
 
-func getIntrinsicTag(tag string) string {
-	tag = strings.TrimPrefix(tag, "!")
-	switch tag {
-	case "Ref", "Contains":
-		return tag
-	default:
-		return fmt.Sprintf("Fn::%s", tag)
-	}
-}
-
 func abortIntrinsic(property *Property, _ string, _ ...string) (*Property, bool) {
 	//
 	return property, false

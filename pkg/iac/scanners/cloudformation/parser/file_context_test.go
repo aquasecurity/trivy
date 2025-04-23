@@ -19,15 +19,11 @@ func TestFileContext_OverrideParameters(t *testing.T) {
 			ctx: FileContext{
 				Parameters: map[string]*Parameter{
 					"BucketName": {
-						inner: parameterInner{
-							Type:    "String",
-							Default: "test",
-						},
+						Typ:     "String",
+						Default: "test",
 					},
 					"QueueName": {
-						inner: parameterInner{
-							Type: "String",
-						},
+						Typ: "String",
 					},
 				},
 			},
@@ -38,16 +34,12 @@ func TestFileContext_OverrideParameters(t *testing.T) {
 			},
 			expected: map[string]*Parameter{
 				"BucketName": {
-					inner: parameterInner{
-						Type:    "String",
-						Default: "test2",
-					},
+					Typ:     "String",
+					Default: "test2",
 				},
 				"QueueName": {
-					inner: parameterInner{
-						Type:    "String",
-						Default: "test",
-					},
+					Typ:     "String",
+					Default: "test",
 				},
 			},
 		},
@@ -73,21 +65,15 @@ func TestFileContext_MissingParameterValues(t *testing.T) {
 			ctx: FileContext{
 				Parameters: map[string]*Parameter{
 					"BucketName": {
-						inner: parameterInner{
-							Type:    "String",
-							Default: "test",
-						},
+						Typ:     "String",
+						Default: "test",
 					},
 					"QueueName": {
-						inner: parameterInner{
-							Type: "String",
-						},
+						Typ: "String",
 					},
 					"KMSKey": {
-						inner: parameterInner{
-							Type:    "String",
-							Default: nil,
-						},
+						Typ:     "String",
+						Default: nil,
 					},
 				},
 			},
