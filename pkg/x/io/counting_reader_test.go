@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCountingReader(t *testing.T) {
@@ -50,7 +51,7 @@ func TestCountingReader(t *testing.T) {
 				if err == io.EOF {
 					break
 				}
-				assert.NoError(t, err, "unexpected error during read")
+				require.NoError(t, err, "unexpected error during read")
 				if n == 0 {
 					break
 				}
