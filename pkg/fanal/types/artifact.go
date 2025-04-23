@@ -87,9 +87,20 @@ type Repository struct {
 }
 
 type Layer struct {
+	Size      int64  `json:",omitempty"`
 	Digest    string `json:",omitempty"`
 	DiffID    string `json:",omitempty"`
 	CreatedBy string `json:",omitempty"`
+}
+
+type Layers []Layer
+
+func (lm Layers) TotalSize() int64 {
+	var totalSize int64
+	for _, layer := range lm {
+		totalSize += layer.Size
+	}
+	return totalSize
 }
 
 type PackageInfo struct {
@@ -157,7 +168,8 @@ type ArtifactInfo struct {
 type BlobInfo struct {
 	SchemaVersion int
 
-	// Layer information
+	// Layer info
+	Size          int64    `json:",omitempty"`
 	Digest        string   `json:",omitempty"`
 	DiffID        string   `json:",omitempty"`
 	CreatedBy     string   `json:",omitempty"`
@@ -183,6 +195,15 @@ type BlobInfo struct {
 	CustomResources []CustomResource `json:",omitempty"`
 }
 
+func (b BlobInfo) Layer() Layer {
+	return Layer{
+		Size:      b.Size,
+		Digest:    b.Digest,
+		DiffID:    b.DiffID,
+		CreatedBy: b.CreatedBy,
+	}
+}
+
 // ArtifactDetail represents the analysis result.
 type ArtifactDetail struct {
 	OS                OS                 `json:",omitempty"`
@@ -199,6 +220,8 @@ type ArtifactDetail struct {
 	// CustomResources hold analysis results from custom analyzers.
 	// It is for extensibility and not used in OSS.
 	CustomResources []CustomResource `json:",omitempty"`
+
+	Layers Layers `json:",omitzero"`
 }
 
 // Sort sorts packages and applications in ArtifactDetail
@@ -253,26 +276,6 @@ type ImageConfigDetail struct {
 
 	// Secret holds secrets in container image config
 	Secret *Secret `json:",omitempty"`
-}
-
-// ToBlobInfo is used to store a merged layer in cache.
-func (a *ArtifactDetail) ToBlobInfo() BlobInfo {
-	return BlobInfo{
-		SchemaVersion: BlobJSONSchemaVersion,
-		OS:            a.OS,
-		Repository:    a.Repository,
-		PackageInfos: []PackageInfo{
-			{
-				FilePath: "merged", // Set a dummy file path
-				Packages: a.Packages,
-			},
-		},
-		Applications:      a.Applications,
-		Misconfigurations: a.Misconfigurations,
-		Secrets:           a.Secrets,
-		Licenses:          a.Licenses,
-		CustomResources:   a.CustomResources,
-	}
 }
 
 // CustomResource holds the analysis result from a custom analyzer.

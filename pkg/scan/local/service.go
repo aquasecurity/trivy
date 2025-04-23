@@ -62,7 +62,7 @@ func NewService(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner la
 
 // Scan scans the artifact and return results.
 func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobKeys []string, options types.ScanOptions) (
-	types.Results, ftypes.OS, error) {
+	types.ScanResponse, error) {
 	detail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
@@ -88,7 +88,7 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 		log.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 		log.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
 	case err != nil:
-		return nil, ftypes.OS{}, xerrors.Errorf("failed to apply layers: %w", err)
+		return types.ScanResponse{}, xerrors.Errorf("failed to apply layers: %w", err)
 	}
 
 	if !lo.IsEmpty(options.Distro) && !lo.IsEmpty(detail.OS) {
@@ -109,7 +109,15 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 		CustomResources:   detail.CustomResources,
 	}
 
-	return s.ScanTarget(ctx, target, options)
+	results, os, err := s.ScanTarget(ctx, target, options)
+	if err != nil {
+		return types.ScanResponse{}, err
+	}
+	return types.ScanResponse{
+		Results: results,
+		OS:      os,
+		Layers:  detail.Layers,
+	}, nil
 }
 
 func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, ftypes.OS, error) {
