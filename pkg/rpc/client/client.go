@@ -12,6 +12,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	r "github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/x/slices"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 	"github.com/aquasecurity/trivy/rpc/common"
 	rpc "github.com/aquasecurity/trivy/rpc/scanner"
@@ -112,11 +113,11 @@ func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	return types.ScanResponse{
 		Results: r.ConvertFromRPCResults(res.Results),
 		OS:      r.ConvertFromRPCOS(res.Os),
-		Layers: lo.FilterMap(res.Layers, func(layer *common.Layer, _ int) (ftypes.Layer, bool) {
+		Layers: slices.ZeroToNil(lo.FilterMap(res.Layers, func(layer *common.Layer, _ int) (ftypes.Layer, bool) {
 			if layer == nil {
 				return ftypes.Layer{}, false
 			}
 			return r.ConvertFromRPCLayer(layer), true
-		}),
+		})),
 	}, nil
 }
