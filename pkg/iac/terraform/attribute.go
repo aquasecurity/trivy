@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"reflect"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -69,46 +70,48 @@ func (a *Attribute) GetMetadata() iacTypes.Metadata {
 }
 
 func (a *Attribute) GetRawValue() any {
-	switch typ := a.Type(); typ {
-	case cty.String:
-		return a.Value().AsString()
-	case cty.Bool:
-		return a.Value().True()
-	case cty.Number:
-		float, _ := a.Value().AsBigFloat().Float64()
-		return float
-	default:
-		switch {
-		case typ.IsTupleType(), typ.IsListType(), typ.IsSetType():
-			values := a.Value().AsValueSlice()
-			if len(values) == 0 {
-				return []string{}
-			}
-			switch values[0].Type() {
-			case cty.String:
-				var output []string
-				for _, value := range values {
-					output = append(output, value.AsString())
+	return safeOp(a, func(v cty.Value) any {
+		switch typ := v.Type(); typ {
+		case cty.String:
+			return v.AsString()
+		case cty.Bool:
+			return v.True()
+		case cty.Number:
+			float, _ := v.AsBigFloat().Float64()
+			return float
+		default:
+			switch {
+			case typ.IsTupleType(), typ.IsListType(), typ.IsSetType():
+				values := a.Value().AsValueSlice()
+				if len(values) == 0 {
+					return []string{}
 				}
-				return output
-			case cty.Number:
-				var output []float64
-				for _, value := range values {
-					bf := value.AsBigFloat()
-					f, _ := bf.Float64()
-					output = append(output, f)
+				switch values[0].Type() {
+				case cty.String:
+					var output []string
+					for _, value := range values {
+						output = append(output, value.AsString())
+					}
+					return output
+				case cty.Number:
+					var output []float64
+					for _, value := range values {
+						bf := value.AsBigFloat()
+						f, _ := bf.Float64()
+						output = append(output, f)
+					}
+					return output
+				case cty.Bool:
+					var output []bool
+					for _, value := range values {
+						output = append(output, value.True())
+					}
+					return output
 				}
-				return output
-			case cty.Bool:
-				var output []bool
-				for _, value := range values {
-					output = append(output, value.True())
-				}
-				return output
 			}
 		}
-	}
-	return nil
+		return nil
+	})
 }
 
 func (a *Attribute) AsBytesValueOrDefault(defaultValue []byte, parent *Block) iacTypes.BytesValue {
@@ -233,47 +236,44 @@ func (a *Attribute) Each(f func(key cty.Value, val cty.Value)) error {
 }
 
 func (a *Attribute) IsString() bool {
-	if a == nil {
-		return false
-	}
-	return !a.Value().IsNull() && a.Value().IsKnown() && a.Value().Type() == cty.String
+	return safeOp(a, func(v cty.Value) bool {
+		return v.Type() == cty.String
+	})
 }
 
 func (a *Attribute) IsMapOrObject() bool {
-	if a == nil || a.Value().IsNull() || !a.Value().IsKnown() {
-		return false
-	}
-
-	return a.Value().Type().IsObjectType() || a.Value().Type().IsMapType()
+	return safeOp(a, func(v cty.Value) bool {
+		return v.Type().IsObjectType() || v.Type().IsMapType()
+	})
 }
 
 func (a *Attribute) IsNumber() bool {
-	if a != nil && !a.Value().IsNull() && a.Value().IsKnown() {
-		if a.Value().Type() == cty.Number {
+	return safeOp(a, func(v cty.Value) bool {
+		switch v.Type() {
+		case cty.Number:
 			return true
-		}
-		if a.Value().Type() == cty.String {
-			_, err := strconv.ParseFloat(a.Value().AsString(), 64)
+		case cty.String:
+			_, err := strconv.ParseFloat(v.AsString(), 64)
 			return err == nil
+		default:
+			return false
 		}
-	}
-
-	return false
+	})
 }
 
 func (a *Attribute) IsBool() bool {
-	if a == nil {
-		return false
-	}
-	switch a.Value().Type() {
-	case cty.Bool, cty.Number:
-		return true
-	case cty.String:
-		val := a.Value().AsString()
-		val = strings.Trim(val, "\"")
-		return strings.EqualFold(val, "false") || strings.EqualFold(val, "true")
-	}
-	return false
+	return safeOp(a, func(v cty.Value) bool {
+		switch v.Type() {
+		case cty.Bool, cty.Number:
+			return true
+		case cty.String:
+			val := v.AsString()
+			val = strings.Trim(val, "\"")
+			return strings.EqualFold(val, "false") || strings.EqualFold(val, "true")
+		default:
+			return false
+		}
+	})
 }
 
 func (a *Attribute) Value() (ctyVal cty.Value) {
@@ -425,41 +425,36 @@ func (a *Attribute) valueToString(value cty.Value) (result iacTypes.StringValue)
 	}
 }
 
-func (a *Attribute) listContains(val cty.Value, stringToLookFor string, ignoreCase bool) bool {
-	if a == nil {
-		return false
-	}
-
-	valueSlice := val.AsValueSlice()
-	for _, value := range valueSlice {
-		if value.IsNull() || !value.IsKnown() {
-			// there is nothing we can do with this value
-			continue
-		}
-		stringToTest := value
-		if value.Type().IsObjectType() || value.Type().IsMapType() {
-			valueMap := value.AsValueMap()
-			stringToTest = valueMap["key"]
-		}
-		if value.Type().HasDynamicTypes() {
-			for _, extracted := range a.extractListValues() {
-				if extracted == stringToLookFor {
-					return true
-				}
-			}
+func (a *Attribute) listContains(stringToLookFor string, ignoreCase bool) bool {
+	return safeOp(a, func(v cty.Value) bool {
+		if !(v.Type().IsListType() || v.Type().IsTupleType()) {
 			return false
 		}
-		if !value.IsKnown() {
-			continue
+
+		elems := v.AsValueSlice()
+		for _, el := range elems {
+			if el.IsNull() || !el.IsKnown() {
+				// there is nothing we can do with this value
+				continue
+			}
+			stringToTest := el
+			if el.Type().IsObjectType() || el.Type().IsMapType() {
+				valueMap := el.AsValueMap()
+				stringToTest = valueMap["key"]
+			}
+			if el.Type().HasDynamicTypes() {
+				return slices.Contains(a.extractListValues(), stringToLookFor)
+			}
+			if ignoreCase {
+				return strings.EqualFold(stringToTest.AsString(), stringToLookFor)
+			}
+			if stringToTest.AsString() == stringToLookFor {
+				return true
+			}
 		}
-		if ignoreCase && strings.EqualFold(stringToTest.AsString(), stringToLookFor) {
-			return true
-		}
-		if stringToTest.AsString() == stringToLookFor {
-			return true
-		}
-	}
-	return false
+
+		return false
+	})
 }
 
 func (a *Attribute) extractListValues() []string {
@@ -473,90 +468,79 @@ func (a *Attribute) extractListValues() []string {
 	return values
 }
 
-func (a *Attribute) mapContains(checkValue any, val cty.Value) bool {
-	if a == nil {
-		return false
-	}
-	valueMap := val.AsValueMap()
-	switch t := checkValue.(type) {
-	case map[any]any:
-		for k, v := range t {
-			for key, value := range valueMap {
-				rawValue := getRawValue(value)
-				if key == k && evaluate(v, rawValue) {
+func (a *Attribute) mapContains(checkValue any) bool {
+	return safeOp(a, func(v cty.Value) bool {
+		if !(v.Type().IsObjectType() || v.Type().IsMapType()) {
+			return false
+		}
+		valueMap := v.AsValueMap()
+		switch t := checkValue.(type) {
+		case map[any]any:
+			for k, v := range t {
+				for key, value := range valueMap {
+					rawValue := getRawValue(value)
+					if key == k && evaluate(v, rawValue) {
+						return true
+					}
+				}
+			}
+			return false
+		case map[string]any:
+			for k, v := range t {
+				for key, value := range valueMap {
+					rawValue := getRawValue(value)
+					if key == k && evaluate(v, rawValue) {
+						return true
+					}
+				}
+			}
+			return false
+		default:
+			for key := range valueMap {
+				if key == checkValue {
 					return true
 				}
 			}
+			return false
 		}
-		return false
-	case map[string]any:
-		for k, v := range t {
-			for key, value := range valueMap {
-				rawValue := getRawValue(value)
-				if key == k && evaluate(v, rawValue) {
-					return true
-				}
-			}
-		}
-		return false
-	default:
-		for key := range valueMap {
-			if key == checkValue {
-				return true
-			}
-		}
-		return false
-	}
+	})
 }
 
 func (a *Attribute) Contains(checkValue any, equalityOptions ...EqualityOption) bool {
-	if a == nil {
-		return false
-	}
-	ignoreCase := false
-	for _, option := range equalityOptions {
-		if option == IgnoreCase {
-			ignoreCase = true
+	return safeOp(a, func(v cty.Value) bool {
+		ignoreCase := slices.Contains(equalityOptions, IgnoreCase)
+
+		if a.IsMapOrObject() {
+			return a.mapContains(checkValue)
 		}
-	}
-	val := a.Value()
-	if val.IsNull() {
-		return false
-	}
 
-	if val.Type().IsObjectType() || val.Type().IsMapType() {
-		return a.mapContains(checkValue, val)
-	}
+		stringToLookFor := fmt.Sprintf("%v", checkValue)
 
-	stringToLookFor := fmt.Sprintf("%v", checkValue)
+		if v.Type().IsListType() || v.Type().IsTupleType() {
+			return a.listContains(stringToLookFor, ignoreCase)
+		}
 
-	if val.Type().IsListType() || val.Type().IsTupleType() {
-		return a.listContains(val, stringToLookFor, ignoreCase)
-	}
+		if ignoreCase {
+			return containsIgnoreCase(v.AsString(), stringToLookFor)
+		}
 
-	if ignoreCase && containsIgnoreCase(val.AsString(), stringToLookFor) {
-		return true
-	}
-
-	return strings.Contains(val.AsString(), stringToLookFor)
+		return strings.Contains(v.AsString(), stringToLookFor)
+	})
 }
 
 func (a *Attribute) OnlyContains(checkValue any) bool {
-	if a == nil {
-		return false
-	}
-	val := a.Value()
-	if val.IsNull() {
-		return false
-	}
-
 	checkSlice, ok := checkValue.([]any)
 	if !ok {
 		return false
 	}
 
-	if val.Type().IsListType() || val.Type().IsTupleType() {
-		for _, value := range val.AsValueSlice() {
+	return safeOp(a, func(v cty.Value) bool {
+		ty := v.Type()
+		if !(ty.IsListType() || ty.IsTupleType()) {
+			return false
+		}
+
+		for _, value := range v.AsValueSlice() {
 			found := false
 			for _, cVal := range checkSlice {
 				switch t := cVal.(type) {
@@ -590,9 +574,7 @@ func (a *Attribute) OnlyContains(checkValue any) bool {
 			}
 		}
 		return true
-	}
-
-	return false
+	})
 }
 
 func containsIgnoreCase(left, substring string) bool {
@@ -606,30 +588,25 @@ const (
 )
 
 func (a *Attribute) Equals(checkValue any, equalityOptions ...EqualityOption) bool {
-	if a == nil {
-		return false
-	}
-	if a.Value().Type() == cty.String {
-		for _, option := range equalityOptions {
-			if option == IgnoreCase {
-				return strings.EqualFold(strings.ToLower(a.Value().AsString()), strings.ToLower(fmt.Sprintf("%v", checkValue)))
+	return safeOp(a, func(v cty.Value) bool {
+		switch v.Type() {
+		case cty.String:
+			if slices.Contains(equalityOptions, IgnoreCase) {
+				return strings.EqualFold(strings.ToLower(v.AsString()), strings.ToLower(fmt.Sprintf("%v", checkValue)))
 			}
-		}
-		result := strings.EqualFold(a.Value().AsString(), fmt.Sprintf("%v", checkValue))
-		return result
-	}
-	if a.Value().Type() == cty.Bool {
-		return a.Value().True() == checkValue
-	}
-	if a.Value().Type() == cty.Number {
-		checkNumber, err := gocty.ToCtyValue(checkValue, cty.Number)
-		if err != nil {
+			return strings.EqualFold(v.AsString(), fmt.Sprintf("%v", checkValue))
+		case cty.Number:
+			checkNumber, err := gocty.ToCtyValue(checkValue, cty.Number)
+			if err != nil {
+				return false
+			}
+			return a.Value().RawEquals(checkNumber)
+		case cty.Bool:
+			return v.True() == checkValue
+		default:
 			return false
 		}
-		return a.Value().RawEquals(checkNumber)
-	}
-
-	return false
+	})
 }
 
 func (a *Attribute) NotEqual(checkValue any, equalityOptions ...EqualityOption) bool {
@@ -637,64 +614,71 @@ func (a *Attribute) NotEqual(checkValue any, equalityOptions ...EqualityOption) 
 }
 
 func (a *Attribute) IsTrue() bool {
-	if a == nil {
-		return false
-	}
-	val := a.Value()
-	switch val.Type() {
-	case cty.Bool:
-		return val.True()
-	case cty.String:
-		val := val.AsString()
-		val = strings.Trim(val, "\"")
-		return strings.EqualFold(val, "true")
-	case cty.Number:
-		val := val.AsBigFloat()
-		f, _ := val.Float64()
-		return f > 0
-	}
-	return false
+	return safeOp(a, func(v cty.Value) bool {
+		switch v.Type() {
+		case cty.Bool:
+			return v.True()
+		case cty.String:
+			val := v.AsString()
+			val = strings.Trim(val, "\"")
+			return strings.EqualFold(val, "true")
+		case cty.Number:
+			bf := v.AsBigFloat()
+			f, _ := bf.Float64()
+			return f > 0
+		default:
+			return false
+		}
+	})
 }
 
 func (a *Attribute) IsFalse() bool {
-	if a == nil {
-		return false
-	}
-	switch a.Value().Type() {
-	case cty.Bool:
-		return a.Value().False()
-	case cty.String:
-		val := a.Value().AsString()
-		val = strings.Trim(val, "\"")
-		return strings.EqualFold(val, "false")
-	case cty.Number:
-		val := a.Value().AsBigFloat()
-		f, _ := val.Float64()
-		return f == 0
-	}
-	return false
+	return safeOp(a, func(v cty.Value) bool {
+		switch v.Type() {
+		case cty.Bool:
+			return v.False()
+		case cty.String:
+			val := v.AsString()
+			val = strings.Trim(val, "\"")
+			return strings.EqualFold(val, "false")
+		case cty.Number:
+			bf := v.AsBigFloat()
+			f, _ := bf.Float64()
+			return f == 0
+		default:
+			return false
+		}
+	})
 }
 
 func (a *Attribute) IsEmpty() bool {
 	if a == nil {
 		return false
 	}
-	if a.Value().Type() == cty.String {
-		return a.Value().AsString() == ""
+	val := a.Value()
+	ty := val.Type()
+	if ty.IsTupleType() || ty.IsObjectType() {
+		return val.LengthInt() == 0
 	}
-	if a.Type().IsListType() || a.Type().IsTupleType() {
-		return len(a.Value().AsValueSlice()) == 0
-	}
-	if a.Type().IsMapType() || a.Type().IsObjectType() {
-		return len(a.Value().AsValueMap()) == 0
-	}
-	if a.Value().Type() == cty.Number {
-		// a number can't ever be empty
-		return false
-	}
-	if a.Value().IsNull() {
+
+	if val.IsNull() {
 		return a.isNullAttributeEmpty()
 	}
+
+	if !val.IsKnown() {
+		return false
+	}
+
+	switch {
+	case ty == cty.String:
+		return val.AsString() == ""
+	case ty == cty.Number:
+		// a number can't ever be empty
+		return false
+	case ty.IsListType(), ty.IsSetType(), ty.IsMapType():
+		return val.LengthInt() == 0
+	}
+
 	return true
 }
 
@@ -727,18 +711,16 @@ func (a *Attribute) isNullAttributeEmpty() bool {
 }
 
 func (a *Attribute) MapValue(mapKey string) cty.Value {
-	if a == nil {
-		return cty.NilVal
-	}
-	if a.Type().IsObjectType() || a.Type().IsMapType() {
-		attrMap := a.Value().AsValueMap()
-		for key, value := range attrMap {
-			if key == mapKey {
-				return value
-			}
+	return safeOp(a, func(v cty.Value) cty.Value {
+		if !(v.Type().IsObjectType() || v.Type().IsMapType()) {
+			return cty.NilVal
 		}
-	}
-	return cty.NilVal
+		m := v.AsValueMap()
+		if m == nil {
+			return cty.NilVal
+		}
+		return m[mapKey]
+	})
 }
 
 func (a *Attribute) AsMapValue() iacTypes.MapValue {
@@ -901,13 +883,30 @@ func (a *Attribute) HasIntersect(checkValues ...any) bool {
 }
 
 func (a *Attribute) AsNumber() float64 {
-	if a.Value().Type() == cty.Number {
-		v, _ := a.Value().AsBigFloat().Float64()
-		return v
+	return safeOp(a, func(v cty.Value) float64 {
+		switch v.Type() {
+		case cty.Number:
+			v, _ := v.AsBigFloat().Float64()
+			return v
+		case cty.String:
+			v, _ := strconv.ParseFloat(v.AsString(), 64)
+			return v
+		default:
+			return 0
+		}
+	})
+}
+
+func safeOp[T any](a *Attribute, fn func(cty.Value) T) T {
+	var res T
+	if a == nil {
+		return res
 	}
-	if a.Value().Type() == cty.String {
-		v, _ := strconv.ParseFloat(a.Value().AsString(), 64)
-		return v
+
+	val := a.Value()
+	if val.IsNull() || !val.IsKnown() {
+		return res
 	}
-	panic("Attribute is not a number")
+
+	return fn(val)
 }
