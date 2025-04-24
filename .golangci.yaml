@@ -140,9 +140,6 @@ linters:
       - linters:
           - goconst
         text: "string `each` has 3 occurrences, make it a constant"  # FIXME
-      - linters:
-          - testifylint
-        text: "(len|empty|equal-values)"  # FIXME
     presets:
       - comments
       - common-false-positives
