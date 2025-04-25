@@ -39,7 +39,7 @@ func adaptProject(resource *terraform.Block) codebuild.Project {
 		project.ArtifactSettings.Metadata = artifactsBlock.GetMetadata()
 		typeAttr := artifactsBlock.GetAttribute("type")
 		encryptionDisabledAttr := artifactsBlock.GetAttribute("encryption_disabled")
-		hasArtifacts = typeAttr.NotEqual("NO_ARTIFACTS")
+		hasArtifacts = !typeAttr.Equals("NO_ARTIFACTS")
 		if encryptionDisabledAttr.IsTrue() && hasArtifacts {
 			project.ArtifactSettings.EncryptionEnabled = types.Bool(false, artifactsBlock.GetMetadata())
 		} else {
