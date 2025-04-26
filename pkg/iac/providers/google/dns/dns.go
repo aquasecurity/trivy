@@ -15,7 +15,7 @@ type ManagedZone struct {
 }
 
 func (m ManagedZone) IsPrivate() bool {
-	return m.Visibility.EqualTo("private", iacTypes.IgnoreCase)
+	return m.Visibility.EqualTo("private")
 }
 
 type DNSSec struct {
