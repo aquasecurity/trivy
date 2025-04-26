@@ -70,10 +70,6 @@ type User struct {
 	LastAccess iacTypes.TimeValue
 }
 
-func (u *User) HasLoggedIn() bool {
-	return u.LastAccess.GetMetadata().IsResolvable() && !u.LastAccess.IsNever()
-}
-
 type MFADevice struct {
 	Metadata  iacTypes.Metadata
 	IsVirtual iacTypes.BoolValue
