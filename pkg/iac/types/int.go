@@ -83,13 +83,6 @@ func (b IntValue) GetRawValue() any {
 	return b.value
 }
 
-func (b IntValue) NotEqualTo(i int) bool {
-	if b.metadata.isUnresolvable {
-		return false
-	}
-	return b.value != i
-}
-
 func (b IntValue) EqualTo(i int) bool {
 	if b.metadata.isUnresolvable {
 		return false
