@@ -130,11 +130,31 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 	}
 
 	// $GOPATH/pkg/mod
-	modPath := filepath.Join(gopath, "pkg", "mod")
-	if !fsutils.DirExists(modPath) {
-		a.logger.Debug("GOPATH not found. Need 'go mod download' to fill licenses and dependency relationships",
-			log.String("GOPATH", modPath))
-		return nil
+	// modPath := filepath.Join(gopath, "pkg", "mod")
+	// if !fsutils.DirExists(modPath) {
+	// 	a.logger.Debug("GOPATH not found. Need 'go mod download' to fill licenses and dependency relationships",
+	// 		log.String("GOPATH", modPath))
+	// 	return nil
+	// Determine where to scan for modules: prefer vendor/ if it exists
+	modPath := ""
+
+	vendorDir := filepath.Join(".", "vendor")
+	if fsutils.DirExists(vendorDir) {
+	    a.logger.Debug("Scanning licenses from vendor directory")
+	    modPath = vendorDir
+	} else {
+	    gopath := os.Getenv("GOPATH")
+	    if gopath == "" {
+	        gopath = build.Default.GOPATH
+	    }
+	    modPath = filepath.Join(gopath, "pkg", "mod")
+
+	    if !fsutils.DirExists(modPath) {
+	        a.logger.Debug("Falling back to GOPATH/pkg/mod",
+	            log.String("GOPATH", modPath))
+	        return nil
+	    }
+	}
 	}
 
 	licenses := make(map[string][]string)
