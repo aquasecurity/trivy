@@ -185,12 +185,15 @@ func (n *ManifestNode) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	case '0':
 		nodeType = TagInt
 		valPtr = new(uint64)
-	case '[', 'n':
+	case '[':
 		valPtr = new([]*ManifestNode)
 		nodeType = TagSlice
 	case '{':
 		valPtr = new(map[string]*ManifestNode)
 		nodeType = TagMap
+	case 'n':
+		// TODO: UnmarshalJSONFrom is called only for the root null
+		return dec.SkipValue()
 	case 0:
 		return dec.SkipValue()
 	default:
