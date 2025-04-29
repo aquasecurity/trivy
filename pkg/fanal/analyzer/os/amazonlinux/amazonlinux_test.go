@@ -96,10 +96,8 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
-			} else {
-				require.NoError(t, err)
 			}
-
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

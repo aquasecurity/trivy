@@ -174,11 +174,11 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 			}
 			// Filter out unused dependencies and convert module names to module IDs
 			apps[i].Packages[j].DependsOn = lo.FilterMap(dep.DependsOn, func(modName string, _ int) (string, bool) {
-				if m, ok := usedPkgs[modName]; !ok {
+				m, ok := usedPkgs[modName]
+				if !ok {
 					return "", false
-				} else {
-					return m.ID, true
 				}
+				return m.ID, true
 			})
 		}
 	}

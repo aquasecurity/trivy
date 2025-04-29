@@ -231,9 +231,8 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if opts.ShowVersion {
 				// Customize version output
 				return showVersion(opts.CacheDir, versionFormat, cmd.OutOrStdout())
-			} else {
-				return cmd.Help()
 			}
+			return cmd.Help()
 		},
 	}
 

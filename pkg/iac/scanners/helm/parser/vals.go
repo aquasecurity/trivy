@@ -108,7 +108,6 @@ func readFile(filePath string) ([]byte, error) {
 			return nil, err
 		}
 		return data.Bytes(), err
-	} else {
-		return os.ReadFile(filePath)
 	}
+	return os.ReadFile(filePath)
 }
