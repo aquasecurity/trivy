@@ -123,7 +123,7 @@ func getRuleIndex(id string, indexes map[string]int) int {
 	return l
 }
 
-func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
+func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
 		return xerrors.Errorf("error creating a new sarif template: %w", err)

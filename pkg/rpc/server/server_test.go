@@ -275,7 +275,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 					},
 				},
 			},
-			setUpCache: func(t *testing.T) cache.Cache {
+			setUpCache: func(_ *testing.T) cache.Cache {
 				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					PutArtifact: true,
 				})
@@ -495,7 +495,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 					},
 				},
 			},
-			setUpCache: func(t *testing.T) cache.Cache {
+			setUpCache: func(_ *testing.T) cache.Cache {
 				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					PutBlob: true,
 				})

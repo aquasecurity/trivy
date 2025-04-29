@@ -306,7 +306,7 @@ func TestRemoteCache_MissingBlobs(t *testing.T) {
 }
 
 func TestRemoteCache_PutArtifactInsecure(t *testing.T) {
-	ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	ts := httptest.NewTLSServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {}))
 	defer ts.Close()
 
 	type args struct {

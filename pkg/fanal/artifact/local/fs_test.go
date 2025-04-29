@@ -123,7 +123,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			fields: fields{
 				dir: "./testdata/alpine",
 			},
-			setupCache: func(t *testing.T) cache.Cache {
+			setupCache: func(_ *testing.T) cache.Cache {
 				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					PutBlob: true,
 				})
@@ -704,7 +704,6 @@ func TestTerraformPlanSnapshotMisconfScan(t *testing.T) {
 		{
 			name: "single failure",
 			fields: fields{
-
 				dir: "./testdata/misconfig/terraformplan/snapshots/single-failure",
 			},
 			wantBlobs: []cachetest.WantBlob{

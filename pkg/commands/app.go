@@ -768,7 +768,7 @@ func NewPluginCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Short:         "Manage plugins",
 		SilenceErrors: true,
 		SilenceUsage:  true,
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		PersistentPreRunE: func(_ *cobra.Command, args []string) error {
 			var err error
 			pluginOptions, err = pluginFlags.ToOptions(args)
 			if err != nil {
@@ -824,7 +824,7 @@ func NewPluginCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			SilenceUsage:          true,
 			Short:                 "List installed plugin",
 			Args:                  cobra.NoArgs,
-			RunE: func(cmd *cobra.Command, args []string) error {
+			RunE: func(cmd *cobra.Command, _ []string) error {
 				if err := plugin.List(cmd.Context()); err != nil {
 					return xerrors.Errorf("plugin list display error: %w", err)
 				}
@@ -929,7 +929,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			Aliases: []string{"i"},
 			Short:   "Install a module",
 			Args:    cobra.ExactArgs(1),
-			PreRunE: func(cmd *cobra.Command, args []string) error {
+			PreRunE: func(cmd *cobra.Command, _ []string) error {
 				if err := moduleFlags.Bind(cmd); err != nil {
 					return xerrors.Errorf("flag bind error: %w", err)
 				}
@@ -953,7 +953,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			Aliases: []string{"u"},
 			Short:   "Uninstall a module",
 			Args:    cobra.ExactArgs(1),
-			PreRunE: func(cmd *cobra.Command, args []string) error {
+			PreRunE: func(cmd *cobra.Command, _ []string) error {
 				if err := moduleFlags.Bind(cmd); err != nil {
 					return xerrors.Errorf("flag bind error: %w", err)
 				}
@@ -1252,7 +1252,7 @@ func NewCleanCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
   # Remove vulnerability database
   $ trivy clean --vuln-db
 `,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			if err := cleanFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
@@ -1300,7 +1300,7 @@ func NewRegistryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Example: `  # Log in to reg.example.com
   cat ~/my_password.txt | trivy registry login --username foo --password-stdin reg.example.com`,
 		Args: cobra.ExactArgs(1),
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			if err := loginFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
@@ -1381,7 +1381,7 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			SilenceErrors: true,
 			SilenceUsage:  true,
 			Args:          cobra.ExactArgs(0),
-			RunE: func(cmd *cobra.Command, args []string) error {
+			RunE: func(cmd *cobra.Command, _ []string) error {
 				if err := vexrepo.NewManager(vexOptions.CacheDir).Init(cmd.Context()); err != nil {
 					return xerrors.Errorf("config init error: %w", err)
 				}
@@ -1394,7 +1394,7 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			SilenceErrors: true,
 			SilenceUsage:  true,
 			Args:          cobra.ExactArgs(0),
-			RunE: func(cmd *cobra.Command, args []string) error {
+			RunE: func(cmd *cobra.Command, _ []string) error {
 				if err := vexrepo.NewManager(vexOptions.CacheDir).List(cmd.Context()); err != nil {
 					return xerrors.Errorf("list error: %w", err)
 				}

@@ -39,6 +39,6 @@ func generateSeededGUID(seedParts ...string) (uuid.UUID, error) {
 	return id, nil
 }
 
-func NewGuid(args ...any) any {
+func NewGuid(_ ...any) any {
 	return uuid.NewString()
 }

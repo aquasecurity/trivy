@@ -48,7 +48,7 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		a.logger.Warn("Unable to get licenses and dependencies", log.Err(err))
 	}
 
-	required := func(path string, d fs.DirEntry) bool {
+	required := func(_ string, _ fs.DirEntry) bool {
 		// Parse all required files: `*gradle.lockfile` (from a.Required func) + input.FilePatterns.Match()
 		return true
 	}

@@ -174,7 +174,7 @@ func TestScanner_Scan(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 				if tt.expectation == nil {
 					e := map[string]any{
 						"code": "not_found",
@@ -213,7 +213,7 @@ func TestScanner_Scan(t *testing.T) {
 }
 
 func TestScanner_ScanServerInsecure(t *testing.T) {
-	ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	ts := httptest.NewTLSServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {}))
 	defer ts.Close()
 
 	tests := []struct {

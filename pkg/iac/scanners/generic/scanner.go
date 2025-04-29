@@ -190,7 +190,7 @@ func (s *GenericScanner) applyIgnoreRules(fsys fs.FS, results scan.Results) erro
 	return nil
 }
 
-func parseJson(ctx context.Context, r io.Reader, _ string) (any, error) {
+func parseJson(_ context.Context, r io.Reader, _ string) (any, error) {
 	var target any
 	if err := json.NewDecoder(r).Decode(&target); err != nil {
 		return nil, err
@@ -198,7 +198,7 @@ func parseJson(ctx context.Context, r io.Reader, _ string) (any, error) {
 	return target, nil
 }
 
-func parseYaml(ctx context.Context, r io.Reader, _ string) (any, error) {
+func parseYaml(_ context.Context, r io.Reader, _ string) (any, error) {
 	contents, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
@@ -223,7 +223,7 @@ func parseYaml(ctx context.Context, r io.Reader, _ string) (any, error) {
 	return results, nil
 }
 
-func parseTOML(ctx context.Context, r io.Reader, _ string) (any, error) {
+func parseTOML(_ context.Context, r io.Reader, _ string) (any, error) {
 	var target any
 	if _, err := toml.NewDecoder(r).Decode(&target); err != nil {
 		return nil, err

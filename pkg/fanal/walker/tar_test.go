@@ -27,7 +27,7 @@ func TestLayerTar_Walk(t *testing.T) {
 		{
 			name:      "happy path",
 			inputFile: filepath.Join("testdata", "test.tar"),
-			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+			analyzeFn: func(_ string, _ os.FileInfo, _ analyzer.Opener) error {
 				return nil
 			},
 			wantOpqDirs: []string{"etc/"},
@@ -39,7 +39,7 @@ func TestLayerTar_Walk(t *testing.T) {
 			option: walker.Option{
 				SkipFiles: []string{"/app/myweb/index.html"},
 			},
-			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+			analyzeFn: func(filePath string, _ os.FileInfo, _ analyzer.Opener) error {
 				if filePath == "app/myweb/index.html" {
 					assert.Fail(t, "skip files error", "%s should be skipped", filePath)
 				}
@@ -54,7 +54,7 @@ func TestLayerTar_Walk(t *testing.T) {
 			option: walker.Option{
 				SkipDirs: []string{"/app"},
 			},
-			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+			analyzeFn: func(filePath string, _ os.FileInfo, _ analyzer.Opener) error {
 				if strings.HasPrefix(filePath, "app") {
 					assert.Fail(t, "skip dirs error", "%s should be skipped", filePath)
 				}
@@ -66,7 +66,7 @@ func TestLayerTar_Walk(t *testing.T) {
 		{
 			name:      "sad path",
 			inputFile: "testdata/test.tar",
-			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+			analyzeFn: func(_ string, _ os.FileInfo, _ analyzer.Opener) error {
 				return errors.New("error")
 			},
 			wantErr: "failed to analyze file",

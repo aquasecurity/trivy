@@ -57,7 +57,7 @@ func (s *ScanServer) Scan(ctx context.Context, in *rpcScanner.ScanRequest) (*rpc
 }
 
 func (s *ScanServer) ToOptions(in *rpcScanner.ScanOptions) types.ScanOptions {
-	pkgRelationships := lo.FilterMap(in.PkgRelationships, func(r string, index int) (ftypes.Relationship, bool) {
+	pkgRelationships := lo.FilterMap(in.PkgRelationships, func(r string, _ int) (ftypes.Relationship, bool) {
 		rel, err := ftypes.NewRelationship(r)
 		if err != nil {
 			log.Warnf("Invalid relationship: %s", r)
@@ -69,7 +69,7 @@ func (s *ScanServer) ToOptions(in *rpcScanner.ScanOptions) types.ScanOptions {
 		pkgRelationships = ftypes.Relationships // For backward compatibility
 	}
 
-	scanners := lo.Map(in.Scanners, func(s string, index int) types.Scanner {
+	scanners := lo.Map(in.Scanners, func(s string, _ int) types.Scanner {
 		return types.Scanner(s)
 	})
 

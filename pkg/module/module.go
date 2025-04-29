@@ -483,7 +483,7 @@ func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 	return &result, nil
 }
 
-func (m *wasmModule) PreScan(ctx context.Context, target *types.ScanTarget, options types.ScanOptions) error {
+func (m *wasmModule) PreScan(_ context.Context, _ *types.ScanTarget, _ types.ScanOptions) error {
 	// TODO: Implement
 	return nil
 }

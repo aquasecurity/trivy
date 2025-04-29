@@ -23,7 +23,7 @@ func NewManifest(path string, root *ManifestNode) *Manifest {
 				return vv != nil
 			})
 		case map[string]*ManifestNode:
-			n.Value = lo.OmitBy(v, func(k string, vv *ManifestNode) bool {
+			n.Value = lo.OmitBy(v, func(_ string, vv *ManifestNode) bool {
 				return vv == nil
 			})
 		}

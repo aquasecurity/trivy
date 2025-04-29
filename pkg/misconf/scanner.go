@@ -185,7 +185,7 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 	})
 
 	var foundRelevantFile bool
-	filter := func(path string, d fs.DirEntry) (bool, error) {
+	filter := func(path string, _ fs.DirEntry) (bool, error) {
 		file, err := fsys.Open(path)
 		if err != nil {
 			return false, err
@@ -564,7 +564,7 @@ func NewCauseWithCode(underlying scan.Result, flat scan.FlatResult) types.CauseM
 
 		if code, err := underlying.GetCode(); err == nil {
 			cause.Code = types.Code{
-				Lines: lo.Map(code.Lines, func(l scan.Line, i int) types.Line {
+				Lines: lo.Map(code.Lines, func(l scan.Line, _ int) types.Line {
 					return types.Line{
 						Number:      l.Number,
 						Content:     l.Content,

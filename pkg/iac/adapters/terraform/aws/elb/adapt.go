@@ -79,7 +79,7 @@ func (a *adapter) adaptLoadBalancer(resource *terraform.Block, module terraform.
 	}
 }
 
-func (a *adapter) adaptClassicLoadBalancer(resource *terraform.Block, module terraform.Modules) elb.LoadBalancer {
+func (a *adapter) adaptClassicLoadBalancer(resource *terraform.Block, _ terraform.Modules) elb.LoadBalancer {
 	internalAttr := resource.GetAttribute("internal")
 	internalVal := internalAttr.AsBoolValueOrDefault(false, resource)
 

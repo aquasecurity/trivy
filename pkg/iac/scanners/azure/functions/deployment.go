@@ -6,7 +6,7 @@ type DeploymentData interface {
 	GetEnvVariable(envVariableName string) any
 }
 
-func Deployment(deploymentProvider DeploymentData, args ...any) any {
+func Deployment(_ DeploymentData, _ ...any) any {
 
 	/*
 

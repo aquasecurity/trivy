@@ -11,7 +11,7 @@ func Adapt(deployment azure.Deployment) container.Container {
 	}
 }
 
-func adaptKubernetesClusters(deployment azure.Deployment) []container.KubernetesCluster {
+func adaptKubernetesClusters(_ azure.Deployment) []container.KubernetesCluster {
 
 	return nil
 }
