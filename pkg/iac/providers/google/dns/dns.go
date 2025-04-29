@@ -14,10 +14,6 @@ type ManagedZone struct {
 	Visibility iacTypes.StringValue
 }
 
-func (m ManagedZone) IsPrivate() bool {
-	return m.Visibility.EqualTo("private")
-}
-
 type DNSSec struct {
 	Metadata        iacTypes.Metadata
 	Enabled         iacTypes.BoolValue

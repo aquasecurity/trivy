@@ -9,24 +9,6 @@ type CloudWatch struct {
 	Alarms    []Alarm
 }
 
-func (w CloudWatch) GetLogGroupByArn(arn string) (logGroup *LogGroup) {
-	for _, logGroup := range w.LogGroups {
-		if logGroup.Arn.EqualTo(arn) {
-			return &logGroup
-		}
-	}
-	return nil
-}
-
-func (w CloudWatch) GetAlarmByMetricName(metricName string) (alarm *Alarm) {
-	for _, alarm := range w.Alarms {
-		if alarm.MetricName.EqualTo(metricName) {
-			return &alarm
-		}
-	}
-	return nil
-}
-
 type Alarm struct {
 	Metadata   iacTypes.Metadata
 	AlarmName  iacTypes.StringValue

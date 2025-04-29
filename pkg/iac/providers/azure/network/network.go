@@ -31,10 +31,6 @@ type PortRange struct {
 	End      iacTypes.IntValue
 }
 
-func (r PortRange) Includes(port int) bool {
-	return port >= r.Start.Value() && port <= r.End.Value()
-}
-
 type NetworkWatcherFlowLog struct {
 	Metadata        iacTypes.Metadata
 	RetentionPolicy RetentionPolicy

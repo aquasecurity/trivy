@@ -22,17 +22,22 @@ type Bucket struct {
 	Website                       *Website
 }
 
-func (b *Bucket) HasPublicExposureACL() bool {
-	for _, publicACL := range []string{"public-read", "public-read-write", "website", "authenticated-read"} {
-		if b.ACL.EqualTo(publicACL) {
-			// if there is a public access block, check the public ACL blocks
-			if b.PublicAccessBlock != nil && b.PublicAccessBlock.Metadata.IsManaged() {
-				return b.PublicAccessBlock.IgnorePublicACLs.IsFalse() && b.PublicAccessBlock.BlockPublicACLs.IsFalse()
-			}
-			return true
-		}
+type PublicAccessBlock struct {
+	Metadata              iacTypes.Metadata
+	BlockPublicACLs       iacTypes.BoolValue
+	BlockPublicPolicy     iacTypes.BoolValue
+	IgnorePublicACLs      iacTypes.BoolValue
+	RestrictPublicBuckets iacTypes.BoolValue
+}
+
+func NewPublicAccessBlock(metadata iacTypes.Metadata) PublicAccessBlock {
+	return PublicAccessBlock{
+		Metadata:              metadata,
+		BlockPublicPolicy:     iacTypes.BoolDefault(false, metadata),
+		BlockPublicACLs:       iacTypes.BoolDefault(false, metadata),
+		IgnorePublicACLs:      iacTypes.BoolDefault(false, metadata),
+		RestrictPublicBuckets: iacTypes.BoolDefault(false, metadata),
 	}
-	return false
 }
 
 type Logging struct {
