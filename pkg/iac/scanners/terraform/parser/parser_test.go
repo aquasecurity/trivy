@@ -2022,7 +2022,7 @@ func TestModuleParents(t *testing.T) {
 		children := modChildren[mod]
 
 		t.Run(n.modulePath, func(t *testing.T) {
-			if !assert.Equal(t, len(n.children), len(children), "modChildren count for %s", n.modulePath) {
+			if !assert.Len(t, children, len(n.children), "modChildren count for %s", n.modulePath) {
 				return
 			}
 			for _, child := range children {
@@ -2777,7 +2777,7 @@ func TestInstancedLogger(t *testing.T) {
 	})
 
 	//nolint:testifylint // linter wants `emptyf`, but the output is not legible
-	if !assert.Lenf(t, buf.Bytes(), 0, "logs detected in global logger, all logs should be using the instanced logger") {
+	if !assert.Emptyf(t, buf.Bytes(), "logs detected in global logger, all logs should be using the instanced logger") {
 		t.Log(string(buf.Bytes())) // Helpful for debugging
 	}
 }
