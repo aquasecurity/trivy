@@ -94,6 +94,9 @@ linters:
         - name: early-return
           arguments:
             - preserve-scope
+        - name: superfluous-else
+          arguments:
+            - preserve-scope
     testifylint:
       enable-all: true
 

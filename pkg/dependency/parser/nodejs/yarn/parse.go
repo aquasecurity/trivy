@@ -221,11 +221,10 @@ func (p *Parser) parseBlock(block []byte, lineNum int) (lib Library, deps []stri
 					continue
 				}
 				continue
-			} else {
-				lib.Patterns = patterns
-				lib.Name = name
-				continue
 			}
+			lib.Patterns = patterns
+			lib.Name = name
+			continue
 		}
 	}
 
