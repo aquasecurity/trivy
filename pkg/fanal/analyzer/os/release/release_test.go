@@ -150,6 +150,16 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "MinimOS",
+			inputFile: "testdata/minimos",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.MinimOS,
+					Name:   "20241031",
+				},
+			},
+		},
+		{
 			name:      "Unknown OS",
 			inputFile: "testdata/unknown",
 			want:      nil,

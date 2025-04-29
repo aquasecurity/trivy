@@ -14,6 +14,7 @@ Trivy supports operating systems for
 | [Alpine Linux](alpine.md)             | 2.2 - 2.7, 3.0 - 3.21, edge         | apk              |
 | [Wolfi Linux](wolfi.md)               | (n/a)                               | apk              |
 | [Chainguard](chainguard.md)           | (n/a)                               | apk              |
+| [MinimOS](minimos.md)                 | (n/a)                               | apk              |
 | [Red Hat Enterprise Linux](rhel.md)   | 6, 7, 8                             | dnf/yum/rpm      |
 | [CentOS](centos.md)[^1]               | 6, 7, 8                             | dnf/yum/rpm      |
 | [AlmaLinux](alma.md)                  | 8, 9                                | dnf/yum/rpm      |
