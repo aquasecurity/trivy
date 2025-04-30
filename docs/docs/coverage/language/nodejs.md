@@ -45,21 +45,24 @@ By default, Trivy doesn't report development dependencies. Use the `--include-de
 ### Yarn
 Trivy parses `yarn.lock`.
 
-#### Additional files
-Trivy also analyzes additional files to supplement the information about the dependencies found.
+Trivy also analyzes additional files to gather more information about the detected dependencies.
 
-###### Root and Workspace package.json files
-`yarn.lock` files don't contain information about root/workspace packages or development dependencies.
+- package.json
+- node_modules/**
 
-To add root/workspace packages, mark dev dependencies and allow [aliases][yarn-aliases], Trivy parses Root (next to the `yarn.lock` file) and workspace `package.json` files.
+#### Package relationships
+`yarn.lock` files don't contain information about package relationships, such as direct or indirect dependencies.
+To enrich this information, Trivy parses the `package.json` file located next to the `yarn.lock` file as well as workspace `package.json` files.
 
-!!! note
-    By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
+By default, Trivy doesn't report development dependencies.
+Use the `--include-dev-deps` flag to include them in the results.
 
-###### Project cache dir
-Trivy analyzes `.yarn` (Yarn 2+) or `node_modules` (Yarn Classic) folder next to the yarn.lock file to detect licenses.
+#### Development dependencies
+`yarn.lock` files don't contain information about package groups, such as production and development dependencies.
+To identify dev dependencies and support [aliases][yarn-aliases], Trivy parses the `package.json` file located next to the `yarn.lock` file as well as workspace `package.json` files.
 
-
+#### Licenses
+Trivy analyzes the `.yarn` directory (for Yarn 2+) or the `node_modules` directory (for Yarn Classic) located next to the `yarn.lock` file to detect licenses.
 
 ### pnpm
 Trivy parses `pnpm-lock.yaml`, then finds production dependencies and builds a [tree][dependency-graph] of dependencies with vulnerabilities.
