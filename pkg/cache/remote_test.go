@@ -154,9 +154,8 @@ func TestRemoteCache_PutArtifact(t *testing.T) {
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
-			} else {
-				require.NoError(t, err, tt.name)
 			}
+			require.NoError(t, err, tt.name)
 		})
 	}
 }
@@ -218,9 +217,8 @@ func TestRemoteCache_PutBlob(t *testing.T) {
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
-			} else {
-				require.NoError(t, err, tt.name)
 			}
+			require.NoError(t, err, tt.name)
 		})
 	}
 }
@@ -299,10 +297,8 @@ func TestRemoteCache_MissingBlobs(t *testing.T) {
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
-			} else {
-				require.NoError(t, err, tt.name)
 			}
-
+			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.wantMissingImage, gotMissingImage)
 			assert.Equal(t, tt.wantMissingLayerIDs, gotMissingLayerIDs)
 		})

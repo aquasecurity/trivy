@@ -1,3 +1,7 @@
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
 linters:
   settings:
     depguard:
@@ -83,6 +87,19 @@ linters:
       sprintf1: false
       # Optimizes into strings concatenation.
       strconcat: false
+    revive:
+      max-open-files: 2048
+      # https://github.com/mgechev/revive/blob/HEAD/RULES_DESCRIPTIONS.md
+      rules:
+        - name: early-return
+          arguments:
+            - preserve-scope
+        - name: indent-error-flow
+          arguments:
+            - preserve-scope
+        - name: superfluous-else
+          arguments:
+            - preserve-scope
     testifylint:
       enable-all: true
 
@@ -100,7 +117,7 @@ linters:
     - ineffassign
     - misspell
     - perfsprint
-#    - revive  # FIXME more than 50 new issues
+    - revive
     - testifylint
     - unconvert
     - unused
@@ -150,9 +167,6 @@ linters:
 run:
   go: '1.24'
   timeout: 30m
-
-issues:
-  max-same-issues: 0
 
 formatters:
   enable:

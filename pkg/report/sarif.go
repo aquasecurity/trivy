@@ -114,13 +114,13 @@ func (sw *SarifWriter) addSarifResult(data *sarifData) {
 }
 
 func getRuleIndex(id string, indexes map[string]int) int {
-	if i, ok := indexes[id]; ok {
+	i, ok := indexes[id]
+	if ok {
 		return i
-	} else {
-		l := len(indexes)
-		indexes[id] = l
-		return l
 	}
+	l := len(indexes)
+	indexes[id] = l
+	return l
 }
 
 func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
@@ -332,7 +332,7 @@ func ToPathUri(input string, resultClass types.ResultClass) string {
 	if resultClass != types.ClassOSPkg {
 		return input
 	}
-	var matches = pathRegex.FindStringSubmatch(input)
+	matches := pathRegex.FindStringSubmatch(input)
 	if matches != nil {
 		input = matches[pathRegex.SubexpIndex("path")]
 	}

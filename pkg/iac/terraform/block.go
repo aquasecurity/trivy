@@ -35,7 +35,8 @@ type Block struct {
 }
 
 func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, parentBlock *Block, moduleSource string,
-	moduleFS fs.FS, index ...cty.Value) *Block {
+	moduleFS fs.FS, index ...cty.Value,
+) *Block {
 	if ctx == nil {
 		ctx = context.NewContext(&hcl.EvalContext{}, nil)
 	}
@@ -317,7 +318,6 @@ func (b *Block) GetAttribute(name string) *Attribute {
 // Supports special paths like "count.index," "each.key," and "each.value."
 // The path may contain indices, keys and dots (used as separators).
 func (b *Block) GetValueByPath(path string) cty.Value {
-
 	if path == "count.index" || path == "each.key" || path == "each.value" {
 		return b.Context().GetByDot(path)
 	}
@@ -428,18 +428,17 @@ func getValueByPath(val cty.Value, path []string) (cty.Value, error) {
 }
 
 func (b *Block) GetNestedAttribute(name string) (*Attribute, *Block) {
-
 	parts := strings.Split(name, ".")
 	blocks := parts[:len(parts)-1]
 	attrName := parts[len(parts)-1]
 
 	working := b
 	for _, subBlock := range blocks {
-		if checkBlock := working.GetBlock(subBlock); checkBlock == nil {
+		checkBlock := working.GetBlock(subBlock)
+		if checkBlock == nil {
 			return nil, working
-		} else {
-			working = checkBlock
 		}
+		working = checkBlock
 	}
 
 	if working != nil {
@@ -472,7 +471,6 @@ func (b *Block) FullLocalName() string {
 }
 
 func (b *Block) FullName() string {
-
 	if b.moduleBlock != nil {
 		return fmt.Sprintf(
 			"%s.%s",

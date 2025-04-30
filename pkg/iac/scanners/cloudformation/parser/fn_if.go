@@ -34,7 +34,6 @@ func ResolveIf(property *Property) (resolved *Property, success bool) {
 
 	if conditionMet {
 		return trueState, true
-	} else {
-		return falseState, true
 	}
+	return falseState, true
 }
