@@ -2,6 +2,7 @@ package yarn
 
 import (
 	"archive/zip"
+	"cmp"
 	"context"
 	"errors"
 	"io"
@@ -12,11 +13,9 @@ import (
 	"regexp"
 	"slices"
 	"sort"
-	"strconv"
 	"strings"
 
 	"github.com/hashicorp/go-multierror"
-	"github.com/mitchellh/hashstructure/v2"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -208,19 +207,15 @@ func (a yarnAnalyzer) parsePackageJSON(fsys fs.FS, filePath string) (packagejson
 		return packagejson.Package{}, nil, xerrors.Errorf("parse error: %w", err)
 	}
 
-	// Add hash of pkg as ID, if package.json doesn't have app name.
-	if root.Package.ID == "" {
-	 root.PackageID = a.packagejsonID(root)
-	root.Package..Relationship = types.RelationshipRoot
+	root.Package.ID = cmp.Or(root.Package.ID, filePath) // In case the package.json doesn't have a name or version
+	root.Package.Relationship = types.RelationshipRoot
 
 	workspaces, err := a.traverseWorkspaces(fsys, path.Dir(filePath), root.Workspaces)
 	if err != nil {
 		return packagejson.Package{}, nil, xerrors.Errorf("traverse workspaces error: %w", err)
 	}
 	for i := range workspaces {
-		// Add hash of pkg as ID, if package.json doesn't have app name.
-		workspaces[i].ID = a.packagejsonID(workspaces[i].Name))
-		workspaces[i].onship = types.RelationshipWorkspace
+		workspaces[i].Package.Relationship = types.RelationshipWorkspace
 
 		// Add workspace as a child of root
 		root.DependsOn = append(root.DependsOn, workspaces[i].ID)
@@ -373,6 +368,7 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, dir string, workspaces []st
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", path, err)
 		}
+		pkg.Package.ID = cmp.Or(pkg.Package.ID, path) // In case the package.json doesn't have a name or version
 		pkgs = append(pkgs, pkg)
 		return nil
 	}
@@ -490,24 +486,4 @@ func (a yarnAnalyzer) traverseCacheDir(fsys fs.FS) (map[string][]string, error) 
 	}
 
 	return licenses, nil
-}
-
-// packageID returns the ID for the packagejson.Package.
-// By default, format is `<pkg_name>@<pkg_version>.
-// If pkg name is empty - use hash of `pkg` as ID.
-// TODO Dmitriy - move this logic into `packagejson` package
-func (a yarnAnalyzer) packagejsonID(pkg packagejson.Package) string {
-	if pkg.Name != "" {
-		return dependency.ID(types.Yarn, pkg.Name, pkg.Version)
-	}
-
-	hash, err := hashstructure.Hash(pkg, hashstructure.FormatV2, &hashstructure.HashOptions{
-		ZeroNil:         true,
-		IgnoreZeroValue: true,
-	})
-
-	if err != nil {
-		a.logger.Warn("Unable to determine package hash", log.Err(err))
-	}
-	return strconv.FormatUint(hash, 16)
 }

@@ -408,7 +408,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "yarn.lock",
 						Packages: types.Packages{
 							{
-								ID:           "4b1aec5d292e8d22",
+								ID:           "package.json",
 								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
 									"debug@4.3.5",
@@ -609,15 +609,15 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Version:      "1.0.0",
 								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
-									"3d4c9654fa2b0f7f",
 									"c@0.0.0",
 									"package1@0.0.0",
+									"packages/package2/package.json",
 									"prettier@2.8.8",
 									"util1@0.0.0",
 								},
 							},
 							{
-								ID:           "3d4c9654fa2b0f7f",
+								ID:           "packages/package2/package.json",
 								Relationship: types.RelationshipWorkspace,
 								DependsOn: []string{
 									"is-odd@3.0.1",
@@ -819,7 +819,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "yarn.lock",
 						Packages: []types.Package{
 							{
-								ID:           "fdf4c2a730d0939d",
+								ID:           "package.json",
 								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
 									"@vue/compiler-sfc@2.7.14",
