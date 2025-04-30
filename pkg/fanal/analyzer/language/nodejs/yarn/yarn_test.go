@@ -148,7 +148,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "Project with workspace placed in sub dir",
+			name: "project with workspace placed in sub dir",
 			dir:  "testdata/project-with-workspace-in-subdir",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{

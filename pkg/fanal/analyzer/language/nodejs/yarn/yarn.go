@@ -29,6 +29,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/license"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -164,40 +165,27 @@ func (a yarnAnalyzer) Version() int {
 // distinguishing between direct and transitive dependencies as well as production and development dependencies.
 func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.Application, patterns map[string][]string) error {
 	packageJsonPath := path.Join(dir, types.NpmPkg)
-	rootPkgs, directDeps, directDevDeps, err := a.parsePackageJsonDependencies(fsys, packageJsonPath)
+	root, workspaces, err := a.parsePackageJSON(fsys, packageJsonPath)
 	if errors.Is(err, fs.ErrNotExist) {
 		a.logger.Debug("package.json not found", log.FilePath(packageJsonPath))
 		return nil
 	} else if err != nil {
-		return xerrors.Errorf("unable to parse %s: %w", dir, err)
+		return xerrors.Errorf("unable to parse root package.json: %w", err)
 	}
 
-	// yarn.lock file can contain same packages with different versions
-	// save versions separately for version comparison by comparator
-	pkgIDs := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
+	// Since yarn.lock file can contain same packages with different versions
+	// we need to save versions separately for version comparison.
+	pkgs := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 		return pkg.ID, pkg
 	})
 
-	// Walk prod dependencies
-	pkgs, err := a.walkDependencies(app.Packages, rootPkgs, pkgIDs, directDeps, patterns, false)
-	if err != nil {
-		return xerrors.Errorf("unable to walk dependencies: %w", err)
+	if err := a.resolveRootDependencies(&root, pkgs, patterns); err != nil {
+		return xerrors.Errorf("unable to resolve root dependencies: %w", err)
 	}
 
-	// Walk dev dependencies
-	devPkgs, err := a.walkDependencies(app.Packages, rootPkgs, pkgIDs, directDevDeps, patterns, true)
-	if err != nil {
-		return xerrors.Errorf("unable to walk dependencies: %w", err)
+	if err := a.resolveWorkspaceDependencies(workspaces, pkgs, patterns); err != nil {
+		return xerrors.Errorf("unable to resolve workspace dependencies: %w", err)
 	}
-
-	for rootPkgID, rootPkg := range rootPkgs {
-		slices.Sort(rootPkg.DependsOn)
-		rootPkgs[rootPkgID] = rootPkg
-	}
-
-	// Merge prod and dev dependencies.
-	// If the same package is found in both prod and dev dependencies, use the one in prod.
-	pkgs = lo.Assign(devPkgs, pkgs, rootPkgs)
 
 	pkgSlice := lo.Values(pkgs)
 	sort.Sort(types.Packages(pkgSlice))
@@ -207,126 +195,170 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.App
 	return nil
 }
 
-func (a yarnAnalyzer) walkDependencies(pkgs []types.Package, rootPkgs, pkgIDs map[string]types.Package,
-	directDeps map[string]Dependency, patterns map[string][]string, dev bool) (map[string]types.Package, error) {
+func (a yarnAnalyzer) parsePackageJSON(fsys fs.FS, filePath string) (packagejson.Package, []packagejson.Package, error) {
+	// Parse package.json
+	f, err := fsys.Open(filePath)
+	if err != nil {
+		return packagejson.Package{}, nil, xerrors.Errorf("file open error: %w", err)
+	}
+	defer func() { _ = f.Close() }()
+
+	root, err := a.packageJsonParser.Parse(f)
+	if err != nil {
+		return packagejson.Package{}, nil, xerrors.Errorf("parse error: %w", err)
+	}
+
+	// Add hash of pkg as ID, if package.json doesn't have app name.
+	if root.Package.ID == "" {
+	 root.PackageID = a.packagejsonID(root)
+	root.Package..Relationship = types.RelationshipRoot
+
+	workspaces, err := a.traverseWorkspaces(fsys, path.Dir(filePath), root.Workspaces)
+	if err != nil {
+		return packagejson.Package{}, nil, xerrors.Errorf("traverse workspaces error: %w", err)
+	}
+	for i := range workspaces {
+		// Add hash of pkg as ID, if package.json doesn't have app name.
+		workspaces[i].ID = a.packagejsonID(workspaces[i].Name))
+		workspaces[i].onship = types.RelationshipWorkspace
+
+		// Add workspace as a child of root
+		root.DependsOn = append(root.DependsOn, workspaces[i].ID)
+	}
+
+	return root, workspaces, nil
+}
+
+func (a yarnAnalyzer) resolveRootDependencies(root *packagejson.Package, pkgs map[string]types.Package,
+	patterns map[string][]string) error {
+	if err := a.resolveDependencies(root, pkgs, patterns); err != nil {
+		return xerrors.Errorf("unable to resolve dependencies: %w", err)
+	}
+
+	// Add root package to the package map
+	slices.Sort(root.Package.DependsOn)
+	pkgs[root.Package.ID] = root.Package
+
+	return nil
+}
+
+func (a yarnAnalyzer) resolveWorkspaceDependencies(workspaces []packagejson.Package, pkgs map[string]types.Package,
+	patterns map[string][]string) error {
+	if len(workspaces) == 0 {
+		return nil
+	}
+
+	for _, workspace := range workspaces {
+		if err := a.resolveDependencies(&workspace, pkgs, patterns); err != nil {
+			return xerrors.Errorf("unable to resolve dependencies: %w", err)
+		}
+
+		// Add workspace to the package map
+		slices.Sort(workspace.Package.DependsOn)
+		pkgs[workspace.ID] = workspace.Package
+	}
+
+	return nil
+}
+
+// resolveDependencies resolves production and development dependencies from direct dependencies and patterns.
+// It also flags dependencies as direct or indirect and updates the dependencies of the parent package.
+func (a yarnAnalyzer) resolveDependencies(pkg *packagejson.Package, pkgs map[string]types.Package, patterns map[string][]string) error {
+	// Recursively walk dependencies and flags development dependencies.
+	// Walk development dependencies first to avoid overwriting production dependencies.
+	directDevDeps := pkg.DevDependencies
+	if err := a.walkDependencies(&pkg.Package, pkgs, directDevDeps, patterns, true); err != nil {
+		return xerrors.Errorf("unable to walk dependencies: %w", err)
+	}
+
+	// Recursively walk dependencies and flags production dependencies.
+	directProdDeps := lo.Assign(pkg.Dependencies, pkg.OptionalDependencies)
+	if err := a.walkDependencies(&pkg.Package, pkgs, directProdDeps, patterns, false); err != nil {
+		return xerrors.Errorf("unable to walk dependencies: %w", err)
+	}
+
+	return nil
+}
+
+// walkDependencies recursively walk dependencies and flags them as direct or indirect.
+// Note that it overwrites the existing package map.
+func (a yarnAnalyzer) walkDependencies(parent *types.Package, pkgs map[string]types.Package, directDeps map[string]string,
+	patterns map[string][]string, dev bool) error {
 
 	// Identify direct dependencies
-	directPkgs := make(map[string]types.Package)
+	seenIDs := set.New[string]()
 	for _, pkg := range pkgs {
-		dep, ok := directDeps[pkg.Name]
+		constraint, ok := directDeps[pkg.Name]
 		if !ok {
 			continue
 		}
 
 		// Handle aliases
 		// cf. https://classic.yarnpkg.com/lang/en/docs/cli/add/#toc-yarn-add-alias
-		if m := fragmentRegexp.FindStringSubmatch(dep.constraint); len(m) == 5 {
+		if m := fragmentRegexp.FindStringSubmatch(constraint); len(m) == 5 {
 			pkg.Name = m[2] // original name
-			dep.constraint = m[4]
+			constraint = m[4]
 		}
 
 		// Try to find an exact match to the pattern.
 		// In some cases, patterns from yarn.lock and package.json may not match (e.g., yarn v2 uses the allowed version for ID).
 		// Therefore, if the patterns don't match - compare versions.
-		if pkgPatterns, found := patterns[pkg.ID]; !found || !slices.Contains(pkgPatterns, dependency.ID(types.Yarn, pkg.Name, dep.constraint)) {
+		if pkgPatterns, found := patterns[pkg.ID]; !found || !slices.Contains(pkgPatterns, dependency.ID(types.Yarn, pkg.Name, constraint)) {
 			// npm has own comparer to compare versions
-			if match, err := a.comparer.MatchVersion(pkg.Version, dep.constraint); err != nil {
-				return nil, xerrors.Errorf("unable to match version for %s", pkg.Name)
+			if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
+				return xerrors.Errorf("unable to match version for %s", pkg.Name)
 			} else if !match {
 				continue
 			}
 		}
 
+		// If the package is already marked as a production dependency, skip overwriting it.
+		// Since the dev field is boolean, it cannot determine if the package is already processed,
+		// so we need to check the relationship field.
+		if pkg.Relationship == types.RelationshipUnknown || pkg.Dev {
+			pkg.Dev = dev
+		}
+
 		// Mark as a direct dependency
 		pkg.Indirect = false
 		pkg.Relationship = types.RelationshipDirect
-		pkg.Dev = dev
-		directPkgs[pkg.ID] = pkg
 
-		// Fill pkg as child of Root/Workspace pkg
-		// Pkgs have sorted, so `rootPkgs` already contains root/workspace pkgs.
-		parent := rootPkgs[dep.parent]
+		pkgs[pkg.ID] = pkg
+		seenIDs.Append(pkg.ID)
+
+		// Add a direct dependency to the parent package
 		parent.DependsOn = append(parent.DependsOn, pkg.ID)
-		rootPkgs[dep.parent] = parent
 
+		// Walk indirect dependencies
+		a.walkIndirectDependencies(pkg, pkgs, seenIDs)
 	}
 
-	// Walk indirect dependencies
-	for _, pkg := range directPkgs {
-		a.walkIndirectDependencies(pkg, pkgIDs, directPkgs)
-	}
-
-	return directPkgs, nil
+	return nil
 }
 
-func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps map[string]types.Package) {
+func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgs map[string]types.Package, seenIDs set.Set[string]) {
 	for _, pkgID := range pkg.DependsOn {
-		if _, ok := deps[pkgID]; ok {
-			continue
+		if seenIDs.Contains(pkgID) {
+			continue // Skip if we've already seen this package
 		}
 
-		dep, ok := pkgIDs[pkgID]
+		dep, ok := pkgs[pkgID]
 		if !ok {
 			continue
 		}
 
+		if dep.Relationship == types.RelationshipUnknown || dep.Dev {
+			dep.Dev = pkg.Dev
+		}
 		dep.Indirect = true
 		dep.Relationship = types.RelationshipIndirect
-		dep.Dev = pkg.Dev
-		deps[dep.ID] = dep
-		a.walkIndirectDependencies(dep, pkgIDs, deps)
+		pkgs[dep.ID] = dep
+
+		seenIDs.Append(dep.ID)
+
+		// Recursively walk dependencies
+		a.walkIndirectDependencies(dep, pkgs, seenIDs)
 	}
-}
-
-type Dependency struct {
-	name       string
-	constraint string
-	parent     string
-}
-
-func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, filePath string) (map[string]types.Package, map[string]Dependency, map[string]Dependency, error) {
-	// Parse package.json
-	f, err := fsys.Open(filePath)
-	if err != nil {
-		return nil, nil, nil, xerrors.Errorf("file open error: %w", err)
-	}
-	defer func() { _ = f.Close() }()
-
-	var rootPkgs = make(map[string]types.Package)
-	rootPkg, err := a.packageJsonParser.Parse(f)
-	if err != nil {
-		return nil, nil, nil, xerrors.Errorf("parse error: %w", err)
-	}
-	// Add hash of pkg as ID, if package.json doesn't have app name.
-	rootPkg.ID = a.packagejsonID(rootPkg)
-	rootPkg.Relationship = types.RelationshipRoot
-
-	// Save dependencies. We will resolve constraints later.
-	dependencies, devDependencies := depsWithParents(rootPkg)
-
-	if len(rootPkg.Workspaces) > 0 {
-		pkgs, err := a.traverseWorkspaces(fsys, path.Dir(filePath), rootPkg.Workspaces)
-		if err != nil {
-			return nil, nil, nil, xerrors.Errorf("traverse workspaces error: %w", err)
-		}
-		for _, pkg := range pkgs {
-			// Add hash of pkg as ID, if package.json doesn't have app name.
-			pkg.ID = a.packagejsonID(pkg)
-			pkg.Relationship = types.RelationshipWorkspace
-			// Add workspace as child of rootPkg
-			rootPkg.DependsOn = append(rootPkg.DependsOn, pkg.ID)
-			// Add workspace into rootPkgs to add them into list of packages.
-			rootPkgs[pkg.ID] = pkg.Package
-
-			pkgDep, pkgDevDeps := depsWithParents(pkg)
-			dependencies = lo.Assign(dependencies, pkgDep)
-			devDependencies = lo.Assign(devDependencies, pkgDevDeps)
-		}
-	}
-
-	rootPkgs[rootPkg.ID] = rootPkg.Package
-
-	return rootPkgs, dependencies, devDependencies, nil
 }
 
 func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, dir string, workspaces []string) ([]packagejson.Package, error) {
@@ -458,24 +490,6 @@ func (a yarnAnalyzer) traverseCacheDir(fsys fs.FS) (map[string][]string, error) 
 	}
 
 	return licenses, nil
-}
-
-func depsWithParents(parent packagejson.Package) (map[string]Dependency, map[string]Dependency) {
-	deps := lo.MapEntries(lo.Assign(parent.Dependencies, parent.OptionalDependencies), func(name string, constraint string) (string, Dependency) {
-		return name, Dependency{
-			name:       name,
-			constraint: constraint,
-			parent:     parent.ID,
-		}
-	})
-	devDeps := lo.MapEntries(parent.DevDependencies, func(name string, constraint string) (string, Dependency) {
-		return name, Dependency{
-			name:       name,
-			constraint: constraint,
-			parent:     parent.ID,
-		}
-	})
-	return deps, devDeps
 }
 
 // packageID returns the ID for the packagejson.Package.
