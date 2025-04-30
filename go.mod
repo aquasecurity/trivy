@@ -21,7 +21,7 @@ require (
 	github.com/aquasecurity/go-version v0.0.1
 	github.com/aquasecurity/iamgo v0.0.10
 	github.com/aquasecurity/jfather v0.0.8 // indirect
-	github.com/aquasecurity/table v1.8.0
+	github.com/aquasecurity/table v1.9.0
 	github.com/aquasecurity/testdocker v0.0.0-20240730042311-4642e94c7fc8
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-checks v1.10.0
@@ -31,15 +31,15 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.14
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.67
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.211.3
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.212.0
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.43.3
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.79.2
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.79.3
 	github.com/aws/smithy-go v1.22.3
 	github.com/bitnami/go-version v0.0.0-20231130084017-bb00604d650c
 	github.com/bmatcuk/doublestar/v4 v4.8.1
 	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/cheggaaa/pb/v3 v3.1.7
-	github.com/containerd/containerd/v2 v2.0.4
+	github.com/containerd/containerd/v2 v2.0.5
 	github.com/containerd/platforms v1.0.0-rc.1
 	github.com/distribution/reference v0.6.0
 	github.com/docker/cli v28.1.1+incompatible
@@ -47,7 +47,7 @@ require (
 	github.com/docker/go-connections v0.5.0
 	github.com/docker/go-units v0.5.0
 	github.com/fatih/color v1.18.0
-	github.com/go-git/go-git/v5 v5.15.0
+	github.com/go-git/go-git/v5 v5.16.0
 	github.com/go-json-experiment/json v0.0.0-20250223041408-d3c622f1b874 // Replace with encoding/json/v2 when proposal is accepted. Track https://github.com/golang/go/issues/71497
 	github.com/go-openapi/runtime v0.28.0 // indirect
 	github.com/go-openapi/strfmt v0.23.0 // indirect
@@ -87,7 +87,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/mitchellh/mapstructure v1.5.0
-	github.com/moby/buildkit v0.21.0
+	github.com/moby/buildkit v0.21.1
 	github.com/open-policy-agent/opa v1.3.0
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.1.1
@@ -111,7 +111,7 @@ require (
 	github.com/spf13/viper v1.20.1
 	github.com/stretchr/testify v1.10.0
 	github.com/testcontainers/testcontainers-go v0.37.0
-	github.com/testcontainers/testcontainers-go/modules/localstack v0.36.0
+	github.com/testcontainers/testcontainers-go/modules/localstack v0.37.0
 	github.com/tetratelabs/wazero v1.9.0
 	github.com/twitchtv/twirp v8.1.3+incompatible
 	github.com/xeipuuv/gojsonschema v1.2.0

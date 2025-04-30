@@ -796,8 +796,8 @@ github.com/aquasecurity/iamgo v0.0.10 h1:t/HG/MI1eSephztDc+Rzh/YfgEa+NqgYRSfr6pH
 github.com/aquasecurity/iamgo v0.0.10/go.mod h1:GI9IQJL2a+C+V2+i3vcwnNKuIJXZ+HAfqxZytwy+cPk=
 github.com/aquasecurity/jfather v0.0.8 h1:tUjPoLGdlkJU0qE7dSzd1MHk2nQFNPR0ZfF+6shaExE=
 github.com/aquasecurity/jfather v0.0.8/go.mod h1:Ag+L/KuR/f8vn8okUi8Wc1d7u8yOpi2QTaGX10h71oY=
-github.com/aquasecurity/table v1.8.0 h1:9ntpSwrUfjrM6/YviArlx/ZBGd6ix8W+MtojQcM7tv0=
-github.com/aquasecurity/table v1.8.0/go.mod h1:eqOmvjjB7AhXFgFqpJUEE/ietg7RrMSJZXyTN8E/wZw=
+github.com/aquasecurity/table v1.9.0 h1:hCFbKX3+Aio9PYXckQV7yETchvxPTm9tY6JVtDk1wKE=
+github.com/aquasecurity/table v1.9.0/go.mod h1:eqOmvjjB7AhXFgFqpJUEE/ietg7RrMSJZXyTN8E/wZw=
 github.com/aquasecurity/testdocker v0.0.0-20240730042311-4642e94c7fc8 h1:b43UVqYjz7qDqK+cVOtF2Lk6CxjytYItP6Pgf3wGsNE=
 github.com/aquasecurity/testdocker v0.0.0-20240730042311-4642e94c7fc8/go.mod h1:wXA9k3uuaxY3yu7gxrxZDPo/04FEMJtwyecdAlYrEIo=
 github.com/aquasecurity/tml v0.6.1 h1:y2ZlGSfrhnn7t4ZJ/0rotuH+v5Jgv6BDDO5jB6A9gwo=
@@ -835,8 +835,8 @@ github.com/aws/aws-sdk-go-v2/internal/ini v1.8.3 h1:bIqFDwgGXXN1Kpp99pDOdKMTTb5d
 github.com/aws/aws-sdk-go-v2/internal/ini v1.8.3/go.mod h1:H5O/EsxDWyU+LP/V8i5sm8cxoZgc2fdNR9bxlOFrQTo=
 github.com/aws/aws-sdk-go-v2/service/ebs v1.22.1 h1:SeDJWG4pmye+/aO6k+zt9clPTUy1MXqUmkW8rbAddQg=
 github.com/aws/aws-sdk-go-v2/service/ebs v1.22.1/go.mod h1:wRzaW0v9GGQS0h//wpsVDw3Hah5gs5UP+NxoyGeZIGM=
-github.com/aws/aws-sdk-go-v2/service/ec2 v1.211.3 h1:4dPHqFVVvFG+ntkVUXrMrY55+E5dzFfEpjFWdkdSxnc=
-github.com/aws/aws-sdk-go-v2/service/ec2 v1.211.3/go.mod h1:ouvGEfHbLaIlWwpDpOVWPWR+YwO0HDv3vm5tYLq8ImY=
+github.com/aws/aws-sdk-go-v2/service/ec2 v1.212.0 h1:z5thR/zKUlw7gd1OT59xBHm4AKBf2kPXKHFvVzLMfBk=
+github.com/aws/aws-sdk-go-v2/service/ec2 v1.212.0/go.mod h1:ouvGEfHbLaIlWwpDpOVWPWR+YwO0HDv3vm5tYLq8ImY=
 github.com/aws/aws-sdk-go-v2/service/ecr v1.43.3 h1:YyH8Hk73bYzdbvf6S8NF5z/fb/1stpiMnFSfL6jSfRA=
 github.com/aws/aws-sdk-go-v2/service/ecr v1.43.3/go.mod h1:iQ1skgw1XRK+6Lgkb0I9ODatAP72WoTILh0zXQ5DtbU=
 github.com/aws/aws-sdk-go-v2/service/ecrpublic v1.18.2 h1:PpbXaecV3sLAS6rjQiaKw4/jyq3Z8gNzmoJupHAoBp0=
@@ -847,8 +847,8 @@ github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.15 h1:dM9/92u2
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.15/go.mod h1:SwFBy2vjtA0vZbjjaFtfN045boopadnoVPhu4Fv66vY=
 github.com/aws/aws-sdk-go-v2/service/kms v1.38.1 h1:tecq7+mAav5byF+Mr+iONJnCBf4B4gon8RSp4BrweSc=
 github.com/aws/aws-sdk-go-v2/service/kms v1.38.1/go.mod h1:cQn6tAF77Di6m4huxovNM7NVAozWTZLsDRp9t8Z/WYk=
-github.com/aws/aws-sdk-go-v2/service/s3 v1.79.2 h1:tWUG+4wZqdMl/znThEk9tcCy8tTMxq8dW0JTgamohrY=
-github.com/aws/aws-sdk-go-v2/service/s3 v1.79.2/go.mod h1:U5SNqwhXB3Xe6F47kXvWihPl/ilGaEDe8HD/50Z9wxc=
+github.com/aws/aws-sdk-go-v2/service/s3 v1.79.3 h1:BRXS0U76Z8wfF+bnkilA2QwpIch6URlm++yPUt9QPmQ=
+github.com/aws/aws-sdk-go-v2/service/s3 v1.79.3/go.mod h1:bNXKFFyaiVvWuR6O16h/I1724+aXe/tAkA9/QS01t5k=
 github.com/aws/aws-sdk-go-v2/service/sso v1.25.3 h1:1Gw+9ajCV1jogloEv1RRnvfRFia2cL6c9cuKV2Ps+G8=
 github.com/aws/aws-sdk-go-v2/service/sso v1.25.3/go.mod h1:qs4a9T5EMLl/Cajiw2TcbNt2UNo/Hqlyp+GiuG4CFDI=
 github.com/aws/aws-sdk-go-v2/service/ssooidc v1.30.1 h1:hXmVKytPfTy5axZ+fYbR5d0cFmC3JvwLm5kM83luako=
@@ -947,8 +947,8 @@ github.com/containerd/containerd v1.7.27 h1:yFyEyojddO3MIGVER2xJLWoCIn+Up4GaHFqu
 github.com/containerd/containerd v1.7.27/go.mod h1:xZmPnl75Vc+BLGt4MIfu6bp+fy03gdHAn9bz+FreFR0=
 github.com/containerd/containerd/api v1.8.0 h1:hVTNJKR8fMc/2Tiw60ZRijntNMd1U+JVMyTRdsD2bS0=
 github.com/containerd/containerd/api v1.8.0/go.mod h1:dFv4lt6S20wTu/hMcP4350RL87qPWLVa/OHOwmmdnYc=
-github.com/containerd/containerd/v2 v2.0.4 h1:+r7yJMwhTfMm3CDyiBjMBQO8a9CTBxL2Bg/JtqtIwB8=
-github.com/containerd/containerd/v2 v2.0.4/go.mod h1:5j9QUUaV/cy9ZeAx4S+8n9ffpf+iYnEj4jiExgcbuLY=
+github.com/containerd/containerd/v2 v2.0.5 h1:2vg/TjUXnaohAxiHnthQg8K06L9I4gdYEMcOLiMc8BQ=
+github.com/containerd/containerd/v2 v2.0.5/go.mod h1:Qqo0UN43i2fX1FLkrSTCg6zcHNfjN7gEnx3NPRZI+N0=
 github.com/containerd/continuity v0.4.5 h1:ZRoN1sXq9u7V6QoHMcVWGhOwDFqZ4B9i5H6un1Wh0x4=
 github.com/containerd/continuity v0.4.5/go.mod h1:/lNJvtJKUQStBzpVQ1+rasXO1LAWtUQssk28EZvJ3nE=
 github.com/containerd/errdefs v1.0.0 h1:tg5yIfIlQIrxYtu9ajqY42W3lpS19XqdxRQeEwYG8PI=
@@ -1117,8 +1117,8 @@ github.com/go-git/go-billy/v5 v5.6.2 h1:6Q86EsPXMa7c3YZ3aLAQsMA0VlWmy43r6FHqa/UN
 github.com/go-git/go-billy/v5 v5.6.2/go.mod h1:rcFC2rAsp/erv7CMz9GczHcuD0D32fWzH+MJAU+jaUU=
 github.com/go-git/go-git-fixtures/v4 v4.3.2-0.20231010084843-55a94097c399 h1:eMje31YglSBqCdIqdhKBW8lokaMrL3uTkpGYlE2OOT4=
 github.com/go-git/go-git-fixtures/v4 v4.3.2-0.20231010084843-55a94097c399/go.mod h1:1OCfN199q1Jm3HZlxleg+Dw/mwps2Wbk9frAWm+4FII=
-github.com/go-git/go-git/v5 v5.15.0 h1:f5Qn0W0F7ry1iN0ZwIU5m/n7/BKB4hiZfc+zlZx7ly0=
-github.com/go-git/go-git/v5 v5.15.0/go.mod h1:4Ge4alE/5gPs30F2H1esi2gPd69R0C39lolkucHBOp8=
+github.com/go-git/go-git/v5 v5.16.0 h1:k3kuOEpkc0DeY7xlL6NaaNg39xdgQbtH5mwCafHO9AQ=
+github.com/go-git/go-git/v5 v5.16.0/go.mod h1:4Ge4alE/5gPs30F2H1esi2gPd69R0C39lolkucHBOp8=
 github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20191125211704-12ad95a8df72/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20200222043503-6f7a984d4dc4/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
@@ -1590,8 +1590,8 @@ github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyua
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/mitchellh/reflectwalk v1.0.2 h1:G2LzWKi524PWgd3mLHV8Y5k7s6XUvT0Gef6zxSIeXaQ=
 github.com/mitchellh/reflectwalk v1.0.2/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx0jmZXqmk4esnw=
-github.com/moby/buildkit v0.21.0 h1:+z4vVqgt0spLrOSxi4DLedRbIh2gbNVlZ5q4rsnNp60=
-github.com/moby/buildkit v0.21.0/go.mod h1:mBq0D44uCyz2PdX8T/qym5LBbkBO3GGv0wqgX9ABYYw=
+github.com/moby/buildkit v0.21.1 h1:wTjVLfirh7skZt9piaIlNo8WdiPjza1CDl2EArDV9bA=
+github.com/moby/buildkit v0.21.1/go.mod h1:mBq0D44uCyz2PdX8T/qym5LBbkBO3GGv0wqgX9ABYYw=
 github.com/moby/docker-image-spec v1.3.1 h1:jMKff3w6PgbfSa69GfNg+zN/XLhfXJGnEx3Nl2EsFP0=
 github.com/moby/docker-image-spec v1.3.1/go.mod h1:eKmb5VW8vQEh/BAr2yvVNvuiJuY6UIocYsFu/DxxRpo=
 github.com/moby/go-archive v0.1.0 h1:Kk/5rdW/g+H8NHdJW2gsXyZ7UnzvJNOy6VKJqueWdcQ=
@@ -1892,8 +1892,8 @@ github.com/testcontainers/testcontainers-go v0.37.0 h1:L2Qc0vkTw2EHWQ08djon0D2uw
 github.com/testcontainers/testcontainers-go v0.37.0/go.mod h1:QPzbxZhQ6Bclip9igjLFj6z0hs01bU8lrl2dHQmgFGM=
 github.com/testcontainers/testcontainers-go/modules/k3s v0.37.0 h1:lqwknybf56hBLi2YsKs01VLSUK8qXnIcG1FM/6/L5qI=
 github.com/testcontainers/testcontainers-go/modules/k3s v0.37.0/go.mod h1:RIsXAxAUiaDNfsGsYcZB1TyDn2mqy52lO0HrGFts8cs=
-github.com/testcontainers/testcontainers-go/modules/localstack v0.36.0 h1:zVwbe46NYg2vtC26aF0ndClK5S9J7TgAliQbTLyHm+0=
-github.com/testcontainers/testcontainers-go/modules/localstack v0.36.0/go.mod h1:rxyzj5nX/OUn7QK5PVxKYHJg1eeNtNzWMX2hSbNNJk0=
+github.com/testcontainers/testcontainers-go/modules/localstack v0.37.0 h1:nPuxUYseqS0eYJg7KDJd95PhoMhdpTnSNtkDLwWFngo=
+github.com/testcontainers/testcontainers-go/modules/localstack v0.37.0/go.mod h1:Mw+N4qqJ5iWbg45yWsdLzICfeCEwvYNudfAHHFqCU8Q=
 github.com/tetratelabs/wazero v1.9.0 h1:IcZ56OuxrtaEz8UYNRHBrUa9bYeX9oVY93KspZZBf/I=
 github.com/tetratelabs/wazero v1.9.0/go.mod h1:TSbcXCfFP0L2FGkRPxHphadXPjo1T6W+CseNNY7EkjM=
 github.com/thales-e-security/pool v0.0.2 h1:RAPs4q2EbWsTit6tpzuvTFlgFRJ3S8Evf5gtvVDbmPg=
