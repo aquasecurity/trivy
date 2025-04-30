@@ -487,13 +487,27 @@ func excludeDevDeps(apps []ftypes.Application, include bool) {
 	onceInfo := sync.OnceFunc(func() {
 		log.Info("Suppressing dependencies for development and testing. To display them, try the '--include-dev-deps' flag.")
 	})
+
 	for i := range apps {
-		apps[i].Packages = lo.Filter(apps[i].Packages, func(lib ftypes.Package, _ int) bool {
-			if lib.Dev {
+		devDeps := set.New[string]()
+		apps[i].Packages = lo.Filter(apps[i].Packages, func(pkg ftypes.Package, _ int) bool {
+			if pkg.Dev {
 				onceInfo()
+				devDeps.Append(pkg.ID)
 			}
-			return !lib.Dev
+			return !pkg.Dev
 		})
+
+		// Remove development dependencies from dependencies of root and workspace packages
+		for j, pkg := range apps[i].Packages {
+			if pkg.Relationship != ftypes.RelationshipRoot && pkg.Relationship != ftypes.RelationshipWorkspace {
+				continue
+			}
+			apps[i].Packages[j].DependsOn = lo.Filter(apps[i].Packages[j].DependsOn, func(dep string, _ int) bool {
+				return !devDeps.Contains(dep)
+			})
+
+		}
 	}
 }
 
