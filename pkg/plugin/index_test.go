@@ -18,7 +18,7 @@ func TestManager_Update(t *testing.T) {
 	tempDir := t.TempDir()
 	t.Setenv("XDG_DATA_HOME", tempDir)
 
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		_, err := w.Write([]byte(`this is index`))
 		assert.NoError(t, err)
 	}))

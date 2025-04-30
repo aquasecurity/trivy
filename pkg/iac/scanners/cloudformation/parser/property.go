@@ -178,7 +178,6 @@ func (p *Property) RawValue() any {
 }
 
 func (p *Property) AsRawStrings() ([]string, error) {
-
 	if len(p.ctx.lines) < p.rng.GetEndLine() {
 		return p.ctx.lines, nil
 	}
@@ -269,7 +268,6 @@ func (p *Property) IntDefault(defaultValue int) iacTypes.IntValue {
 }
 
 func (p *Property) GetProperty(path string) *Property {
-
 	pathParts := strings.Split(path, ".")
 
 	first := pathParts[0]
@@ -298,9 +296,8 @@ func (p *Property) GetProperty(path string) *Property {
 		if nestedProperty.isFunction() {
 			resolved, _ := nestedProperty.resolveValue()
 			return resolved
-		} else {
-			return nestedProperty
 		}
+		return nestedProperty
 	}
 
 	return &Property{}
@@ -390,7 +387,6 @@ func (p *Property) setLogicalResource(id string) {
 			subProp.setLogicalResource(id)
 		}
 	}
-
 }
 
 func (p *Property) GetJsonBytes(squashList ...bool) []byte {

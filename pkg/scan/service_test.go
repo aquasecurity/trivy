@@ -56,6 +56,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 				ArtifactName:  "../fanal/test/testdata/alpine-311.tar.gz",
 				ArtifactType:  ftypes.TypeContainerImage,
 				Metadata: tTypes.Metadata{
+					Size: 5861888,
 					OS: &ftypes.OS{
 						Family:   "alpine",
 						Name:     "3.11.5",
@@ -65,6 +66,12 @@ func TestScanner_ScanArtifact(t *testing.T) {
 					ImageID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					DiffIDs: []string{
 						"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+					},
+					Layers: ftypes.Layers{
+						{
+							Size:   5861888,
+							DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+						},
 					},
 					ImageConfig: v1.ConfigFile{
 						Architecture:  "amd64",

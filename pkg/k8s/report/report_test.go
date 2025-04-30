@@ -828,10 +828,10 @@ func Test_separateMisconfigReports(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			reports := SeparateMisconfigReports(tt.k8sReport, tt.scanners)
-			assert.Equal(t, len(tt.expectedReports), len(reports))
+			assert.Len(t, reports, len(tt.expectedReports))
 
 			for i := range reports {
-				assert.Equal(t, len(tt.expectedReports[i].Resources), len(reports[i].Report.Resources))
+				assert.Len(t, reports[i].Report.Resources, len(tt.expectedReports[i].Resources))
 				for j, m := range tt.expectedReports[i].Resources {
 					assert.Equal(t, m.Kind, reports[i].Report.Resources[j].Kind)
 				}

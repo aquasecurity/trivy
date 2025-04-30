@@ -378,7 +378,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name:     "sad path PutBlob returns an error",
 			filePath: filepath.Join("testdata", "os-only-bom.json"),
-			setUpCache: func(t *testing.T) cache.Cache {
+			setUpCache: func(_ *testing.T) cache.Cache {
 				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					PutBlob: true,
 				})

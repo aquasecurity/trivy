@@ -21,14 +21,14 @@ func (*testHook) Version() int {
 }
 
 // RunHook implementation
-func (*testHook) PreRun(ctx context.Context, opts flag.Options) error {
+func (*testHook) PreRun(_ context.Context, opts flag.Options) error {
 	if opts.GlobalOptions.ConfigFile == "bad-config" {
 		return errors.New("bad pre-run")
 	}
 	return nil
 }
 
-func (*testHook) PostRun(ctx context.Context, opts flag.Options) error {
+func (*testHook) PostRun(_ context.Context, opts flag.Options) error {
 	if opts.GlobalOptions.ConfigFile == "bad-config" {
 		return errors.New("bad post-run")
 	}
@@ -36,7 +36,7 @@ func (*testHook) PostRun(ctx context.Context, opts flag.Options) error {
 }
 
 // ScanHook implementation
-func (*testHook) PreScan(ctx context.Context, target *types.ScanTarget, options types.ScanOptions) error {
+func (*testHook) PreScan(_ context.Context, target *types.ScanTarget, _ types.ScanOptions) error {
 	if target.Name == "bad-pre" {
 		return errors.New("bad pre-scan")
 	}
@@ -44,7 +44,7 @@ func (*testHook) PreScan(ctx context.Context, target *types.ScanTarget, options 
 	return nil
 }
 
-func (*testHook) PostScan(ctx context.Context, results types.Results) (types.Results, error) {
+func (*testHook) PostScan(_ context.Context, results types.Results) (types.Results, error) {
 	for i, r := range results {
 		if r.Target == "bad" {
 			return nil, errors.New("bad")
@@ -59,7 +59,7 @@ func (*testHook) PostScan(ctx context.Context, results types.Results) (types.Res
 }
 
 // ReportHook implementation
-func (*testHook) PreReport(ctx context.Context, report *types.Report, opts flag.Options) error {
+func (*testHook) PreReport(_ context.Context, report *types.Report, _ flag.Options) error {
 	if report.ArtifactName == "bad-report" {
 		return errors.New("bad pre-report")
 	}
@@ -73,7 +73,7 @@ func (*testHook) PreReport(ctx context.Context, report *types.Report, opts flag.
 	return nil
 }
 
-func (*testHook) PostReport(ctx context.Context, report *types.Report, opts flag.Options) error {
+func (*testHook) PostReport(_ context.Context, report *types.Report, _ flag.Options) error {
 	if report.ArtifactName == "bad-report" {
 		return errors.New("bad post-report")
 	}

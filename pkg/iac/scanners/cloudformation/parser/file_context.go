@@ -76,7 +76,7 @@ func (t *FileContext) missingParameterValues() []string {
 
 func (t *FileContext) stripNullProperties() {
 	for _, resource := range t.Resources {
-		resource.properties = lo.OmitBy(resource.properties, func(k string, v *Property) bool {
+		resource.properties = lo.OmitBy(resource.properties, func(_ string, v *Property) bool {
 			return v.IsNil()
 		})
 	}

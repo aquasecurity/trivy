@@ -15,7 +15,7 @@ import (
 
 type fakeHook struct{}
 
-func (h fakeHook) Handle(ctx context.Context, result *analyzer.AnalysisResult, info *types.BlobInfo) error {
+func (h fakeHook) Handle(_ context.Context, _ *analyzer.AnalysisResult, info *types.BlobInfo) error {
 	info.DiffID = "fake"
 	return nil
 }

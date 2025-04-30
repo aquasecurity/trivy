@@ -1,5 +1,5 @@
 package functions
 
-func Null(args ...any) any {
+func Null(_ ...any) any {
 	return nil
 }

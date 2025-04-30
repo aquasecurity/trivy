@@ -30,6 +30,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
+const artifactVersion = 0
+
 var (
 	ArtifactSet = wire.NewSet(
 		walker.NewFS,
@@ -299,7 +301,7 @@ func (a Artifact) Clean(reference artifact.Reference) error {
 func (a Artifact) calcCacheKey() (string, error) {
 	// If this is a clean git repository, use the commit hash as cache key
 	if a.commitHash != "" {
-		return cache.CalcKey(a.commitHash, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
+		return cache.CalcKey(a.commitHash, artifactVersion, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
 	}
 
 	// For non-git repositories or dirty git repositories, use UUID as cache key

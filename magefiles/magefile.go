@@ -43,12 +43,12 @@ func init() {
 }
 
 func version() (string, error) {
-	if ver, err := sh.Output("git", "describe", "--tags", "--always"); err != nil {
+	ver, err := sh.Output("git", "describe", "--tags", "--always")
+	if err != nil {
 		return "", err
-	} else {
-		// Strips the v prefix from the tag
-		return strings.TrimPrefix(ver, "v"), nil
 	}
+	// Strips the v prefix from the tag
+	return strings.TrimPrefix(ver, "v"), nil
 }
 
 func buildLdflags() (string, error) {
@@ -79,7 +79,7 @@ func (Tool) PipTools() error {
 
 // GolangciLint installs golangci-lint
 func (t Tool) GolangciLint() error {
-	const version = "v1.64.2"
+	const version = "v2.1.2"
 	bin := filepath.Join(GOBIN, "golangci-lint")
 	if exists(bin) && t.matchGolangciLintVersion(bin, version) {
 		return nil
@@ -91,7 +91,7 @@ func (t Tool) GolangciLint() error {
 }
 
 func (Tool) matchGolangciLintVersion(bin, version string) bool {
-	out, err := sh.Output(bin, "version", "--format", "json")
+	out, err := sh.Output(bin, "version", "--json")
 	if err != nil {
 		slog.Error("Unable to get golangci-lint version", slog.Any("err", err))
 		return false

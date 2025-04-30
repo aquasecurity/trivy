@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 
+	"github.com/samber/lo"
 	"gopkg.in/yaml.v3"
 
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
@@ -16,6 +17,16 @@ type Manifest struct {
 func NewManifest(path string, root *ManifestNode) *Manifest {
 	root.Walk(func(n *ManifestNode) {
 		n.Path = path
+		switch v := n.Value.(type) {
+		case []*ManifestNode:
+			n.Value = lo.Filter(v, func(vv *ManifestNode, _ int) bool {
+				return vv != nil
+			})
+		case map[string]*ManifestNode:
+			n.Value = lo.OmitBy(v, func(_ string, vv *ManifestNode) bool {
+				return vv == nil
+			})
+		}
 	})
 	return &Manifest{
 		Path:    path,

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"reflect"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -69,53 +70,55 @@ func (a *Attribute) GetMetadata() iacTypes.Metadata {
 }
 
 func (a *Attribute) GetRawValue() any {
-	switch typ := a.Type(); typ {
-	case cty.String:
-		return a.Value().AsString()
-	case cty.Bool:
-		return a.Value().True()
-	case cty.Number:
-		float, _ := a.Value().AsBigFloat().Float64()
-		return float
-	default:
-		switch {
-		case typ.IsTupleType(), typ.IsListType(), typ.IsSetType():
-			values := a.Value().AsValueSlice()
-			if len(values) == 0 {
-				return []string{}
-			}
-			switch values[0].Type() {
-			case cty.String:
-				var output []string
-				for _, value := range values {
-					output = append(output, value.AsString())
+	return safeOp(a, func(v cty.Value) any {
+		switch typ := v.Type(); typ {
+		case cty.String:
+			return v.AsString()
+		case cty.Bool:
+			return v.True()
+		case cty.Number:
+			float, _ := v.AsBigFloat().Float64()
+			return float
+		default:
+			switch {
+			case typ.IsTupleType(), typ.IsListType(), typ.IsSetType():
+				values := a.Value().AsValueSlice()
+				if len(values) == 0 {
+					return []string{}
 				}
-				return output
-			case cty.Number:
-				var output []float64
-				for _, value := range values {
-					bf := value.AsBigFloat()
-					f, _ := bf.Float64()
-					output = append(output, f)
+				switch values[0].Type() {
+				case cty.String:
+					var output []string
+					for _, value := range values {
+						output = append(output, value.AsString())
+					}
+					return output
+				case cty.Number:
+					var output []float64
+					for _, value := range values {
+						bf := value.AsBigFloat()
+						f, _ := bf.Float64()
+						output = append(output, f)
+					}
+					return output
+				case cty.Bool:
+					var output []bool
+					for _, value := range values {
+						output = append(output, value.True())
+					}
+					return output
 				}
-				return output
-			case cty.Bool:
-				var output []bool
-				for _, value := range values {
-					output = append(output, value.True())
-				}
-				return output
 			}
 		}
-	}
-	return nil
+		return nil
+	})
 }
 
 func (a *Attribute) AsBytesValueOrDefault(defaultValue []byte, parent *Block) iacTypes.BytesValue {
 	if a.IsNil() {
 		return iacTypes.BytesDefault(defaultValue, parent.GetMetadata())
 	}
-	if a.IsNotResolvable() || !a.IsString() {
+	if !a.IsResolvable() || !a.IsString() {
 		return iacTypes.BytesUnresolvable(a.GetMetadata())
 	}
 	return iacTypes.BytesExplicit(
@@ -128,7 +131,7 @@ func (a *Attribute) AsStringValueOrDefault(defaultValue string, parent *Block) i
 	if a.IsNil() {
 		return iacTypes.StringDefault(defaultValue, parent.GetMetadata())
 	}
-	if a.IsNotResolvable() || !a.IsString() {
+	if !a.IsResolvable() || !a.IsString() {
 		return iacTypes.StringUnresolvable(a.GetMetadata())
 	}
 	return iacTypes.StringExplicit(
@@ -159,7 +162,7 @@ func (a *Attribute) AsBoolValueOrDefault(defaultValue bool, parent *Block) iacTy
 	if a.IsNil() {
 		return iacTypes.BoolDefault(defaultValue, parent.GetMetadata())
 	}
-	if a.IsNotResolvable() || !a.IsBool() {
+	if !a.IsResolvable() || !a.IsBool() {
 		return iacTypes.BoolUnresolvable(a.GetMetadata())
 	}
 	return iacTypes.BoolExplicit(
@@ -172,7 +175,7 @@ func (a *Attribute) AsIntValueOrDefault(defaultValue int, parent *Block) iacType
 	if a.IsNil() {
 		return iacTypes.IntDefault(defaultValue, parent.GetMetadata())
 	}
-	if a.IsNotResolvable() || !a.IsNumber() {
+	if !a.IsResolvable() || !a.IsNumber() {
 		return iacTypes.IntUnresolvable(a.GetMetadata())
 	}
 	flt := a.AsNumber()
@@ -196,10 +199,6 @@ func (a *Attribute) IsResolvable() bool {
 	return a.Value() != cty.NilVal && a.Value().IsKnown()
 }
 
-func (a *Attribute) IsNotResolvable() bool {
-	return !a.IsResolvable()
-}
-
 func (a *Attribute) Type() cty.Type {
 	if a == nil {
 		return cty.NilType
@@ -211,7 +210,10 @@ func (a *Attribute) IsIterable() bool {
 	if a == nil {
 		return false
 	}
-	return a.Value().Type().IsListType() || a.Value().Type().IsCollectionType() || a.Value().Type().IsObjectType() || a.Value().Type().IsMapType() || a.Value().Type().IsListType() || a.Value().Type().IsSetType() || a.Value().Type().IsTupleType()
+
+	ty := a.Value().Type()
+	return ty.IsListType() || ty.IsObjectType() || ty.IsMapType() ||
+		ty.IsSetType() || ty.IsTupleType()
 }
 
 func (a *Attribute) Each(f func(key cty.Value, val cty.Value)) error {
@@ -233,47 +235,44 @@ func (a *Attribute) Each(f func(key cty.Value, val cty.Value)) error {
 }
 
 func (a *Attribute) IsString() bool {
-	if a == nil {
-		return false
-	}
-	return !a.Value().IsNull() && a.Value().IsKnown() && a.Value().Type() == cty.String
+	return safeOp(a, func(v cty.Value) bool {
+		return v.Type() == cty.String
+	})
 }
 
 func (a *Attribute) IsMapOrObject() bool {
-	if a == nil || a.Value().IsNull() || !a.Value().IsKnown() {
-		return false
-	}
-
-	return a.Value().Type().IsObjectType() || a.Value().Type().IsMapType()
+	return safeOp(a, func(v cty.Value) bool {
+		return v.Type().IsObjectType() || v.Type().IsMapType()
+	})
 }
 
 func (a *Attribute) IsNumber() bool {
-	if a != nil && !a.Value().IsNull() && a.Value().IsKnown() {
-		if a.Value().Type() == cty.Number {
+	return safeOp(a, func(v cty.Value) bool {
+		switch v.Type() {
+		case cty.Number:
 			return true
-		}
-		if a.Value().Type() == cty.String {
-			_, err := strconv.ParseFloat(a.Value().AsString(), 64)
+		case cty.String:
+			_, err := strconv.ParseFloat(v.AsString(), 64)
 			return err == nil
+		default:
+			return false
 		}
-	}
-
-	return false
+	})
 }
 
 func (a *Attribute) IsBool() bool {
-	if a == nil {
-		return false
-	}
-	switch a.Value().Type() {
-	case cty.Bool, cty.Number:
-		return true
-	case cty.String:
-		val := a.Value().AsString()
-		val = strings.Trim(val, "\"")
-		return strings.EqualFold(val, "false") || strings.EqualFold(val, "true")
-	}
-	return false
+	return safeOp(a, func(v cty.Value) bool {
+		switch v.Type() {
+		case cty.Bool, cty.Number:
+			return true
+		case cty.String:
+			val := v.AsString()
+			val = strings.Trim(val, "\"")
+			return strings.EqualFold(val, "false") || strings.EqualFold(val, "true")
+		default:
+			return false
+		}
+	})
 }
 
 func (a *Attribute) Value() (ctyVal cty.Value) {
@@ -425,41 +424,36 @@ func (a *Attribute) valueToString(value cty.Value) (result iacTypes.StringValue)
 	}
 }
 
-func (a *Attribute) listContains(val cty.Value, stringToLookFor string, ignoreCase bool) bool {
-	if a == nil {
-		return false
-	}
-
-	valueSlice := val.AsValueSlice()
-	for _, value := range valueSlice {
-		if value.IsNull() || !value.IsKnown() {
-			// there is nothing we can do with this value
-			continue
-		}
-		stringToTest := value
-		if value.Type().IsObjectType() || value.Type().IsMapType() {
-			valueMap := value.AsValueMap()
-			stringToTest = valueMap["key"]
-		}
-		if value.Type().HasDynamicTypes() {
-			for _, extracted := range a.extractListValues() {
-				if extracted == stringToLookFor {
-					return true
-				}
-			}
+func (a *Attribute) listContains(stringToLookFor string, ignoreCase bool) bool {
+	return safeOp(a, func(v cty.Value) bool {
+		if !(v.Type().IsListType() || v.Type().IsTupleType()) {
 			return false
 		}
-		if !value.IsKnown() {
-			continue
+
+		elems := v.AsValueSlice()
+		for _, el := range elems {
+			if el.IsNull() || !el.IsKnown() {
+				// there is nothing we can do with this value
+				continue
+			}
+			stringToTest := el
+			if el.Type().IsObjectType() || el.Type().IsMapType() {
+				valueMap := el.AsValueMap()
+				stringToTest = valueMap["key"]
+			}
+			if el.Type().HasDynamicTypes() {
+				return slices.Contains(a.extractListValues(), stringToLookFor)
+			}
+			if ignoreCase {
+				return strings.EqualFold(stringToTest.AsString(), stringToLookFor)
+			}
+			if stringToTest.AsString() == stringToLookFor {
+				return true
+			}
 		}
-		if ignoreCase && strings.EqualFold(stringToTest.AsString(), stringToLookFor) {
-			return true
-		}
-		if stringToTest.AsString() == stringToLookFor {
-			return true
-		}
-	}
-	return false
+
+		return false
+	})
 }
 
 func (a *Attribute) extractListValues() []string {
@@ -473,126 +467,64 @@ func (a *Attribute) extractListValues() []string {
 	return values
 }
 
-func (a *Attribute) mapContains(checkValue any, val cty.Value) bool {
-	if a == nil {
-		return false
-	}
-	valueMap := val.AsValueMap()
-	switch t := checkValue.(type) {
-	case map[any]any:
-		for k, v := range t {
-			for key, value := range valueMap {
-				rawValue := getRawValue(value)
-				if key == k && evaluate(v, rawValue) {
+func (a *Attribute) mapContains(checkValue any) bool {
+	return safeOp(a, func(v cty.Value) bool {
+		if !(v.Type().IsObjectType() || v.Type().IsMapType()) {
+			return false
+		}
+		valueMap := v.AsValueMap()
+		switch t := checkValue.(type) {
+		case map[any]any:
+			for k, v := range t {
+				for key, value := range valueMap {
+					rawValue := getRawValue(value)
+					if key == k && evaluate(v, rawValue) {
+						return true
+					}
+				}
+			}
+			return false
+		case map[string]any:
+			for k, v := range t {
+				for key, value := range valueMap {
+					rawValue := getRawValue(value)
+					if key == k && evaluate(v, rawValue) {
+						return true
+					}
+				}
+			}
+			return false
+		default:
+			for key := range valueMap {
+				if key == checkValue {
 					return true
 				}
 			}
+			return false
 		}
-		return false
-	case map[string]any:
-		for k, v := range t {
-			for key, value := range valueMap {
-				rawValue := getRawValue(value)
-				if key == k && evaluate(v, rawValue) {
-					return true
-				}
-			}
-		}
-		return false
-	default:
-		for key := range valueMap {
-			if key == checkValue {
-				return true
-			}
-		}
-		return false
-	}
+	})
 }
 
 func (a *Attribute) Contains(checkValue any, equalityOptions ...EqualityOption) bool {
-	if a == nil {
-		return false
-	}
-	ignoreCase := false
-	for _, option := range equalityOptions {
-		if option == IgnoreCase {
-			ignoreCase = true
+	return safeOp(a, func(v cty.Value) bool {
+		ignoreCase := slices.Contains(equalityOptions, IgnoreCase)
+
+		if a.IsMapOrObject() {
+			return a.mapContains(checkValue)
 		}
-	}
-	val := a.Value()
-	if val.IsNull() {
-		return false
-	}
 
-	if val.Type().IsObjectType() || val.Type().IsMapType() {
-		return a.mapContains(checkValue, val)
-	}
+		stringToLookFor := fmt.Sprintf("%v", checkValue)
 
-	stringToLookFor := fmt.Sprintf("%v", checkValue)
-
-	if val.Type().IsListType() || val.Type().IsTupleType() {
-		return a.listContains(val, stringToLookFor, ignoreCase)
-	}
-
-	if ignoreCase && containsIgnoreCase(val.AsString(), stringToLookFor) {
-		return true
-	}
-
-	return strings.Contains(val.AsString(), stringToLookFor)
-}
-
-func (a *Attribute) OnlyContains(checkValue any) bool {
-	if a == nil {
-		return false
-	}
-	val := a.Value()
-	if val.IsNull() {
-		return false
-	}
-
-	checkSlice, ok := checkValue.([]any)
-	if !ok {
-		return false
-	}
-
-	if val.Type().IsListType() || val.Type().IsTupleType() {
-		for _, value := range val.AsValueSlice() {
-			found := false
-			for _, cVal := range checkSlice {
-				switch t := cVal.(type) {
-				case string:
-					if t == value.AsString() {
-						found = true
-						break
-					}
-				case bool:
-					if t == value.True() {
-						found = true
-						break
-					}
-				case int, int8, int16, int32, int64:
-					i, _ := value.AsBigFloat().Int64()
-					if t == i {
-						found = true
-						break
-					}
-				case float32, float64:
-					f, _ := value.AsBigFloat().Float64()
-					if t == f {
-						found = true
-						break
-					}
-				}
-
-			}
-			if !found {
-				return false
-			}
+		if v.Type().IsListType() || v.Type().IsTupleType() {
+			return a.listContains(stringToLookFor, ignoreCase)
 		}
-		return true
-	}
 
-	return false
+		if ignoreCase {
+			return containsIgnoreCase(v.AsString(), stringToLookFor)
+		}
+
+		return strings.Contains(v.AsString(), stringToLookFor)
+	})
 }
 
 func containsIgnoreCase(left, substring string) bool {
@@ -606,100 +538,94 @@ const (
 )
 
 func (a *Attribute) Equals(checkValue any, equalityOptions ...EqualityOption) bool {
-	if a == nil {
-		return false
-	}
-	if a.Value().Type() == cty.String {
-		for _, option := range equalityOptions {
-			if option == IgnoreCase {
-				return strings.EqualFold(strings.ToLower(a.Value().AsString()), strings.ToLower(fmt.Sprintf("%v", checkValue)))
+	return safeOp(a, func(v cty.Value) bool {
+		switch v.Type() {
+		case cty.String:
+			if slices.Contains(equalityOptions, IgnoreCase) {
+				return strings.EqualFold(strings.ToLower(v.AsString()), strings.ToLower(fmt.Sprintf("%v", checkValue)))
 			}
-		}
-		result := strings.EqualFold(a.Value().AsString(), fmt.Sprintf("%v", checkValue))
-		return result
-	}
-	if a.Value().Type() == cty.Bool {
-		return a.Value().True() == checkValue
-	}
-	if a.Value().Type() == cty.Number {
-		checkNumber, err := gocty.ToCtyValue(checkValue, cty.Number)
-		if err != nil {
+			return strings.EqualFold(v.AsString(), fmt.Sprintf("%v", checkValue))
+		case cty.Number:
+			checkNumber, err := gocty.ToCtyValue(checkValue, cty.Number)
+			if err != nil {
+				return false
+			}
+			return a.Value().RawEquals(checkNumber)
+		case cty.Bool:
+			return v.True() == checkValue
+		default:
 			return false
 		}
-		return a.Value().RawEquals(checkNumber)
-	}
-
-	return false
-}
-
-func (a *Attribute) NotEqual(checkValue any, equalityOptions ...EqualityOption) bool {
-	return !a.Equals(checkValue, equalityOptions...)
+	})
 }
 
 func (a *Attribute) IsTrue() bool {
-	if a == nil {
-		return false
-	}
-	val := a.Value()
-	switch val.Type() {
-	case cty.Bool:
-		return val.True()
-	case cty.String:
-		val := val.AsString()
-		val = strings.Trim(val, "\"")
-		return strings.EqualFold(val, "true")
-	case cty.Number:
-		val := val.AsBigFloat()
-		f, _ := val.Float64()
-		return f > 0
-	}
-	return false
+	return safeOp(a, func(v cty.Value) bool {
+		switch v.Type() {
+		case cty.Bool:
+			return v.True()
+		case cty.String:
+			val := v.AsString()
+			val = strings.Trim(val, "\"")
+			return strings.EqualFold(val, "true")
+		case cty.Number:
+			bf := v.AsBigFloat()
+			f, _ := bf.Float64()
+			return f > 0
+		default:
+			return false
+		}
+	})
 }
 
 func (a *Attribute) IsFalse() bool {
-	if a == nil {
-		return false
-	}
-	switch a.Value().Type() {
-	case cty.Bool:
-		return a.Value().False()
-	case cty.String:
-		val := a.Value().AsString()
-		val = strings.Trim(val, "\"")
-		return strings.EqualFold(val, "false")
-	case cty.Number:
-		val := a.Value().AsBigFloat()
-		f, _ := val.Float64()
-		return f == 0
-	}
-	return false
+	return safeOp(a, func(v cty.Value) bool {
+		switch v.Type() {
+		case cty.Bool:
+			return v.False()
+		case cty.String:
+			val := v.AsString()
+			val = strings.Trim(val, "\"")
+			return strings.EqualFold(val, "false")
+		case cty.Number:
+			bf := v.AsBigFloat()
+			f, _ := bf.Float64()
+			return f == 0
+		default:
+			return false
+		}
+	})
 }
 
 func (a *Attribute) IsEmpty() bool {
 	if a == nil {
 		return false
 	}
-	if a.Value().Type() == cty.String {
-		return a.Value().AsString() == ""
+	val := a.Value()
+	ty := val.Type()
+	if ty.IsTupleType() || ty.IsObjectType() {
+		return val.LengthInt() == 0
 	}
-	if a.Type().IsListType() || a.Type().IsTupleType() {
-		return len(a.Value().AsValueSlice()) == 0
-	}
-	if a.Type().IsMapType() || a.Type().IsObjectType() {
-		return len(a.Value().AsValueMap()) == 0
-	}
-	if a.Value().Type() == cty.Number {
-		// a number can't ever be empty
-		return false
-	}
-	if a.Value().IsNull() {
+
+	if val.IsNull() {
 		return a.isNullAttributeEmpty()
 	}
-	return true
-}
 
-func (a *Attribute) IsNotEmpty() bool {
-	return !a.IsEmpty()
+	if !val.IsKnown() {
+		return false
+	}
+
+	switch {
+	case ty == cty.String:
+		return val.AsString() == ""
+	case ty == cty.Number:
+		// a number can't ever be empty
+		return false
+	case ty.IsListType(), ty.IsSetType(), ty.IsMapType():
+		return val.LengthInt() == 0
+	}
+
+	return true
 }
 
 func (a *Attribute) isNullAttributeEmpty() bool {
@@ -727,33 +653,34 @@ func (a *Attribute) isNullAttributeEmpty() bool {
 }
 
 func (a *Attribute) MapValue(mapKey string) cty.Value {
-	if a == nil {
-		return cty.NilVal
-	}
-	if a.Type().IsObjectType() || a.Type().IsMapType() {
-		attrMap := a.Value().AsValueMap()
-		for key, value := range attrMap {
-			if key == mapKey {
-				return value
-			}
+	return safeOp(a, func(v cty.Value) cty.Value {
+		if !(v.Type().IsObjectType() || v.Type().IsMapType()) {
+			return cty.NilVal
 		}
-	}
-	return cty.NilVal
+		m := v.AsValueMap()
+		if m == nil {
+			return cty.NilVal
+		}
+		return m[mapKey]
+	})
 }
 
 func (a *Attribute) AsMapValue() iacTypes.MapValue {
-	if a.IsNil() || a.IsNotResolvable() || !a.IsMapOrObject() {
-		return iacTypes.MapValue{}
-	}
-
-	values := make(map[string]string)
-	_ = a.Each(func(key, val cty.Value) {
-		if key.Type() == cty.String && val.Type() == cty.String {
-			values[key.AsString()] = val.AsString()
+	return safeOp(a, func(v cty.Value) iacTypes.MapValue {
+		if !a.IsMapOrObject() {
+			return iacTypes.MapValue{}
 		}
-	})
 
-	return iacTypes.Map(values, a.GetMetadata())
+		values := make(map[string]string)
+		v.ForEachElement(func(key cty.Value, val cty.Value) (stop bool) {
+			if key.Type() == cty.String && key.IsKnown() &&
+				val.Type() == cty.String && val.IsKnown() {
+				values[key.AsString()] = val.AsString()
+			}
+			return false
+		})
+		return iacTypes.Map(values, a.GetMetadata())
+	})
 }
 
 func createDotReferenceFromTraversal(parentRef string, traversals ...hcl.Traversal) (*Reference, error) {
@@ -796,7 +723,7 @@ func (a *Attribute) AllReferences(blocks ...*Block) []*Reference {
 	if a == nil {
 		return nil
 	}
-	refs := a.extractReferences()
+	refs := a.referencesFromExpression(a.hclAttribute.Expr)
 	for _, block := range blocks {
 		for _, ref := range refs {
 			if ref.TypeLabel() == "each" {
@@ -809,68 +736,31 @@ func (a *Attribute) AllReferences(blocks ...*Block) []*Reference {
 	return refs
 }
 
-// nolint
-func (a *Attribute) referencesFromExpression(expression hcl.Expression) []*Reference {
-	var refs []*Reference
-	switch t := expression.(type) {
-	case *hclsyntax.ConditionalExpr:
-		if ref, err := createDotReferenceFromTraversal(a.module, t.TrueResult.Variables()...); err == nil {
-			refs = append(refs, ref)
+func (a *Attribute) referencesFromExpression(expr hcl.Expression) []*Reference {
+	if reflect.TypeOf(expr).String() == "*json.expression" {
+		if ref, err := createDotReferenceFromTraversal(a.module, expr.Variables()...); err == nil {
+			return []*Reference{ref}
 		}
-		if ref, err := createDotReferenceFromTraversal(a.module, t.FalseResult.Variables()...); err == nil {
-			refs = append(refs, ref)
-		}
-		if ref, err := createDotReferenceFromTraversal(a.module, t.Condition.Variables()...); err == nil {
-			refs = append(refs, ref)
-		}
-	case *hclsyntax.ScopeTraversalExpr:
-		if ref, err := createDotReferenceFromTraversal(a.module, t.Variables()...); err == nil {
-			refs = append(refs, ref)
-		}
-	case *hclsyntax.TemplateWrapExpr:
-		refs = a.referencesFromExpression(t.Wrapped)
-	case *hclsyntax.TemplateExpr:
-		for _, part := range t.Parts {
-			ref, err := createDotReferenceFromTraversal(a.module, part.Variables()...)
-			if err != nil {
-				continue
-			}
-			refs = append(refs, ref)
-		}
-	case *hclsyntax.TupleConsExpr:
-		for _, v := range t.Variables() {
-			if ref, err := createDotReferenceFromTraversal(a.module, v); err == nil {
-				refs = append(refs, ref)
-			}
-		}
-	case *hclsyntax.RelativeTraversalExpr:
-		switch s := t.Source.(type) {
-		case *hclsyntax.IndexExpr:
-			if collectionRef, err := createDotReferenceFromTraversal(a.module, s.Collection.Variables()...); err == nil {
-				key, _ := s.Key.Value(a.ctx.Inner())
-				collectionRef.SetKey(key)
-				refs = append(refs, collectionRef)
-			}
-		default:
-			if ref, err := createDotReferenceFromTraversal(a.module, t.Source.Variables()...); err == nil {
-				refs = append(refs, ref)
-			}
-		}
-	default:
-		if reflect.TypeOf(expression).String() == "*json.expression" {
-			if ref, err := createDotReferenceFromTraversal(a.module, expression.Variables()...); err == nil {
-				refs = append(refs, ref)
-			}
-		}
-	}
-	return refs
-}
-
-func (a *Attribute) extractReferences() []*Reference {
-	if a == nil {
 		return nil
 	}
-	return a.referencesFromExpression(a.hclAttribute.Expr)
+
+	vars := expr.Variables()
+	refs := make([]*Reference, 0, len(vars))
+	for _, v := range vars {
+		ref, err := createDotReferenceFromTraversal(a.module, v)
+		if err != nil {
+			continue
+		}
+
+		if relExpr, ok := expr.(*hclsyntax.RelativeTraversalExpr); ok {
+			if idxExpr, ok := relExpr.Source.(*hclsyntax.IndexExpr); ok {
+				key, _ := idxExpr.Key.Value(a.ctx.Inner())
+				ref.SetKey(key)
+			}
+		}
+		refs = append(refs, ref)
+	}
+	return refs
 }
 
 func (a *Attribute) IsResourceBlockReference(resourceType string) bool {
@@ -901,18 +791,16 @@ func getRawValue(value cty.Value) any {
 		return value
 	}
 
-	typeName := value.Type().FriendlyName()
-
-	switch typeName {
-	case "string":
+	switch value.Type() {
+	case cty.String:
 		return value.AsString()
-	case "number":
+	case cty.Number:
 		return value.AsBigFloat()
-	case "bool":
+	case cty.Bool:
 		return value.True()
+	default:
+		return value
 	}
-
-	return value
 }
 
 func (a *Attribute) IsNil() bool {
@@ -923,28 +811,31 @@ func (a *Attribute) IsNotNil() bool {
 	return !a.IsNil()
 }
 
-func (a *Attribute) HasIntersect(checkValues ...any) bool {
-	if !a.Type().IsListType() && !a.Type().IsTupleType() {
-		return false
-	}
-
-	for _, item := range checkValues {
-		if a.Contains(item) {
-			return true
+func (a *Attribute) AsNumber() float64 {
+	return safeOp(a, func(v cty.Value) float64 {
+		switch v.Type() {
+		case cty.Number:
+			v, _ := v.AsBigFloat().Float64()
+			return v
+		case cty.String:
+			v, _ := strconv.ParseFloat(v.AsString(), 64)
+			return v
+		default:
+			return 0
 		}
-	}
-	return false
-
+	})
 }
 
-func (a *Attribute) AsNumber() float64 {
-	if a.Value().Type() == cty.Number {
-		v, _ := a.Value().AsBigFloat().Float64()
-		return v
+func safeOp[T any](a *Attribute, fn func(cty.Value) T) T {
+	var res T
+	if a == nil {
+		return res
 	}
-	if a.Value().Type() == cty.String {
-		v, _ := strconv.ParseFloat(a.Value().AsString(), 64)
-		return v
+
+	val := a.Value()
+	if val.IsNull() || !val.IsKnown() {
+		return res
 	}
-	panic("Attribute is not a number")
+
+	return fn(val)
 }

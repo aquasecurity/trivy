@@ -255,12 +255,12 @@ func (p *Parser) parseLockfileVersion(lockFile LockFile) float64 {
 		return v
 	// v6+
 	case string:
-		if lockVer, err := strconv.ParseFloat(v, 64); err != nil {
+		lockVer, err := strconv.ParseFloat(v, 64)
+		if err != nil {
 			p.logger.Debug("Unable to convert the lock file version to float", log.Err(err))
 			return -1
-		} else {
-			return lockVer
 		}
+		return lockVer
 	default:
 		p.logger.Debug("Unknown type for the lock file version",
 			log.Any("version", lockFile.LockfileVersion))

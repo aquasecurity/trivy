@@ -8,15 +8,6 @@ type CloudTrail struct {
 	Trails []Trail
 }
 
-func (c CloudTrail) MultiRegionTrails() (multiRegionTrails []Trail) {
-	for _, trail := range c.Trails {
-		if trail.IsMultiRegion.IsTrue() {
-			multiRegionTrails = append(multiRegionTrails, trail)
-		}
-	}
-	return multiRegionTrails
-}
-
 type Trail struct {
 	Metadata                  iacTypes.Metadata
 	Name                      iacTypes.StringValue

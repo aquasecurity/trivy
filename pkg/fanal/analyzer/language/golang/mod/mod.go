@@ -67,11 +67,11 @@ func newGoModAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, erro
 func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
-	required := func(path string, d fs.DirEntry) bool {
+	required := func(path string, _ fs.DirEntry) bool {
 		return filepath.Base(path) == types.GoMod || input.FilePatterns.Match(path)
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, _ io.Reader) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, _ io.Reader) error {
 		// Parse go.mod
 		gomod, err := parse(input.FS, path, a.modParser)
 		if err != nil {
@@ -165,21 +165,21 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 			}
 
 			// Collect dependencies of the direct dependency
-			if dep, err := a.collectDeps(modDir, lib.ID); err != nil {
+			dep, err := a.collectDeps(modDir, lib.ID)
+			if err != nil {
 				return xerrors.Errorf("dependency graph error: %w", err)
 			} else if dep.ID == "" {
 				// go.mod not found
 				continue
-			} else {
-				// Filter out unused dependencies and convert module names to module IDs
-				apps[i].Packages[j].DependsOn = lo.FilterMap(dep.DependsOn, func(modName string, _ int) (string, bool) {
-					if m, ok := usedPkgs[modName]; !ok {
-						return "", false
-					} else {
-						return m.ID, true
-					}
-				})
 			}
+			// Filter out unused dependencies and convert module names to module IDs
+			apps[i].Packages[j].DependsOn = lo.FilterMap(dep.DependsOn, func(modName string, _ int) (string, bool) {
+				m, ok := usedPkgs[modName]
+				if !ok {
+					return "", false
+				}
+				return m.ID, true
+			})
 		}
 	}
 	return nil
@@ -205,7 +205,7 @@ func (a *gomodAnalyzer) collectDeps(modDir, pkgID string) (types.Dependency, err
 	}
 
 	// Filter out indirect dependencies
-	dependsOn := lo.FilterMap(pkgs, func(lib types.Package, index int) (string, bool) {
+	dependsOn := lo.FilterMap(pkgs, func(lib types.Package, _ int) (string, bool) {
 		return lib.Name, lib.Relationship == types.RelationshipDirect
 	})
 

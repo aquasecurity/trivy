@@ -142,11 +142,15 @@ func TestFSCache_PutBlob(t *testing.T) {
 						Family:  "alpine",
 						Release: "3.10",
 					},
+					Size:   1000,
+					DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 				},
 			},
 			want: `
 				{
 				  "SchemaVersion": 1,
+				  "Size": 1000,
+				  "DiffID": "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 				  "OS": {
 				    "Family": "alpine",
 				    "Name": "3.10"
@@ -164,8 +168,11 @@ func TestFSCache_PutBlob(t *testing.T) {
 				diffID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 				layerInfo: types.BlobInfo{
 					SchemaVersion: 1,
+					Size:          1000,
 					Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 					DiffID:        "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
+					OpaqueDirs:    []string{"php-app/"},
+					WhiteoutFiles: []string{"etc/foobar"},
 					OS: types.OS{
 						Family: "alpine",
 						Name:   "3.10",
@@ -201,15 +208,11 @@ func TestFSCache_PutBlob(t *testing.T) {
 							},
 						},
 					},
-					OpaqueDirs:    []string{"php-app/"},
-					WhiteoutFiles: []string{"etc/foobar"},
 				},
 			},
 			want: `
 				{
 				  "SchemaVersion": 1,
-				  "Digest": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-				  "DiffID": "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
 				  "OS": {
 				    "Family": "alpine",
 				    "Name": "3.10"
@@ -251,11 +254,14 @@ func TestFSCache_PutBlob(t *testing.T) {
 				      ]
 				    }
 				  ],
+				  "Size": 1000,
+				  "Digest": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+                  "DiffID": "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
 				  "OpaqueDirs": [
-				    "php-app/"
+					"php-app/"
 				  ],
 				  "WhiteoutFiles": [
-				    "etc/foobar"
+					"etc/foobar"
 				  ]
 				}`,
 			wantLayerID: "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
@@ -288,9 +294,8 @@ func TestFSCache_PutBlob(t *testing.T) {
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
-			} else {
-				require.NoError(t, err, tt.name)
 			}
+			require.NoError(t, err, tt.name)
 
 			fs.db.View(func(tx *bolt.Tx) error {
 				layerBucket := tx.Bucket([]byte(blobBucket))
@@ -367,9 +372,8 @@ func TestFSCache_PutArtifact(t *testing.T) {
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
-			} else {
-				require.NoError(t, err, tt.name)
 			}
+			require.NoError(t, err, tt.name)
 
 			err = fs.db.View(func(tx *bolt.Tx) error {
 				// check decompressedDigestBucket

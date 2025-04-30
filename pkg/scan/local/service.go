@@ -62,7 +62,7 @@ func NewService(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner la
 
 // Scan scans the artifact and return results.
 func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobKeys []string, options types.ScanOptions) (
-	types.Results, ftypes.OS, error) {
+	types.ScanResponse, error) {
 	detail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
@@ -88,7 +88,7 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 		log.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 		log.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
 	case err != nil:
-		return nil, ftypes.OS{}, xerrors.Errorf("failed to apply layers: %w", err)
+		return types.ScanResponse{}, xerrors.Errorf("failed to apply layers: %w", err)
 	}
 
 	if !lo.IsEmpty(options.Distro) && !lo.IsEmpty(detail.OS) {
@@ -109,7 +109,15 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 		CustomResources:   detail.CustomResources,
 	}
 
-	return s.ScanTarget(ctx, target, options)
+	results, os, err := s.ScanTarget(ctx, target, options)
+	if err != nil {
+		return types.ScanResponse{}, err
+	}
+	return types.ScanResponse{
+		Results: results,
+		OS:      os,
+		Layers:  detail.Layers,
+	}, nil
 }
 
 func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, ftypes.OS, error) {
@@ -249,7 +257,7 @@ func (s Service) secretsToResults(secrets []ftypes.Secret, options types.ScanOpt
 		results = append(results, types.Result{
 			Target: secret.FilePath,
 			Class:  types.ClassSecret,
-			Secrets: lo.Map(secret.Findings, func(secret ftypes.SecretFinding, index int) types.DetectedSecret {
+			Secrets: lo.Map(secret.Findings, func(secret ftypes.SecretFinding, _ int) types.DetectedSecret {
 				return types.DetectedSecret(secret)
 			}),
 		})
@@ -459,7 +467,7 @@ func filterPkgByRelationship(target *types.ScanTarget, options types.ScanOptions
 	}
 
 	filter := func(pkgs []ftypes.Package) []ftypes.Package {
-		return lo.Filter(pkgs, func(pkg ftypes.Package, index int) bool {
+		return lo.Filter(pkgs, func(pkg ftypes.Package, _ int) bool {
 			return slices.Contains(options.PkgRelationships, pkg.Relationship)
 		})
 	}
@@ -481,22 +489,22 @@ func excludeDevDeps(apps []ftypes.Application, include bool) {
 	})
 
 	for i := range apps {
-		var devDeps []string
-		apps[i].Packages = lo.Filter(apps[i].Packages, func(pkg ftypes.Package, index int) bool {
+		devDeps := set.New[string]()
+		apps[i].Packages = lo.Filter(apps[i].Packages, func(pkg ftypes.Package, _ int) bool {
 			if pkg.Dev {
 				onceInfo()
-				devDeps = append(devDeps, pkg.ID)
+				devDeps.Append(pkg.ID)
 			}
 			return !pkg.Dev
 		})
 
-		// Remove Dev deps from DependsOn of Root and Workspace packages
+		// Remove development dependencies from dependencies of root and workspace packages
 		for j, pkg := range apps[i].Packages {
 			if pkg.Relationship != ftypes.RelationshipRoot && pkg.Relationship != ftypes.RelationshipWorkspace {
 				continue
 			}
 			apps[i].Packages[j].DependsOn = lo.Filter(apps[i].Packages[j].DependsOn, func(dep string, _ int) bool {
-				return !slices.Contains(devDeps, dep)
+				return !devDeps.Contains(dep)
 			})
 
 		}

@@ -28,7 +28,7 @@ func TestFS_Walk(t *testing.T) {
 		{
 			name:    "happy path",
 			rootDir: "testdata/fs",
-			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+			analyzeFn: func(filePath string, _ os.FileInfo, opener analyzer.Opener) error {
 				if filePath == "testdata/fs/bar" {
 					got, err := opener()
 					require.NoError(t, err)
@@ -47,7 +47,7 @@ func TestFS_Walk(t *testing.T) {
 			option: walker.Option{
 				SkipFiles: []string{"testdata/fs/bar"},
 			},
-			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+			analyzeFn: func(filePath string, _ os.FileInfo, _ analyzer.Opener) error {
 				if filePath == "testdata/fs/bar" {
 					assert.Fail(t, "skip files error", "%s should be skipped", filePath)
 				}
@@ -60,7 +60,7 @@ func TestFS_Walk(t *testing.T) {
 			option: walker.Option{
 				SkipDirs: []string{"/testdata/fs/app"},
 			},
-			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+			analyzeFn: func(filePath string, _ os.FileInfo, _ analyzer.Opener) error {
 				if strings.HasPrefix(filePath, "testdata/fs/app") {
 					assert.Fail(t, "skip dirs error", "%s should be skipped", filePath)
 				}

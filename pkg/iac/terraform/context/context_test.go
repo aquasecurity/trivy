@@ -267,7 +267,7 @@ func TestReplace(t *testing.T) {
 		assert.Equal(t, cty.NumberIntVal(-1), ctx.GetByDot("my.value"))
 	})
 
-	t.Run("empty path", func(t *testing.T) {
+	t.Run("empty path", func(_ *testing.T) {
 		underlying := &hcl.EvalContext{}
 		ctx := NewContext(underlying, nil)
 		ctx.Replace(cty.NumberIntVal(-1), "")

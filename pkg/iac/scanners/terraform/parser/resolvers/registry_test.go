@@ -9,7 +9,7 @@ import (
 
 func Test_getPrivateRegistryTokenFromEnvVars_ErrorsWithNoEnvVarSet(t *testing.T) {
 	token, err := getPrivateRegistryTokenFromEnvVars("registry.example.com")
-	assert.Equal(t, "", token)
+	assert.Empty(t, token)
 	assert.Equal(t, "no token was found for the registry at registry.example.com", err.Error())
 }
 

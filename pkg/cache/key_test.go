@@ -16,6 +16,7 @@ import (
 func TestCalcKey(t *testing.T) {
 	type args struct {
 		key               string
+		artifactVersion   int
 		analyzerVersions  analyzer.Versions
 		hookVersions      map[string]int
 		skipFiles         []string
@@ -35,7 +36,8 @@ func TestCalcKey(t *testing.T) {
 		{
 			name: "happy path",
 			args: args{
-				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
+				key:             "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
+				artifactVersion: 1,
 				analyzerVersions: analyzer.Versions{
 					Analyzers: map[string]int{
 						"alpine": 1,
@@ -46,7 +48,7 @@ func TestCalcKey(t *testing.T) {
 					"python-pkg": 1,
 				},
 			},
-			want: "sha256:c720b502991465ea11929cfefc71cf4b5aeaa9a8c0ae59fdaf597f957f5cdb18",
+			want: "sha256:9ac2cf39c18b5c936694820bc9c380dd8c74d33484ebd08183c5620215a1d33c",
 		},
 		{
 			name: "with disabled analyzer",
@@ -273,7 +275,7 @@ func TestCalcKey(t *testing.T) {
 					SkipDirs:  tt.args.skipDirs,
 				},
 			}
-			got, err := CalcKey(tt.args.key, tt.args.analyzerVersions, tt.args.hookVersions, artifactOpt)
+			got, err := CalcKey(tt.args.key, tt.args.artifactVersion, tt.args.analyzerVersions, tt.args.hookVersions, artifactOpt)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
