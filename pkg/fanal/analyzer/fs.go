@@ -32,7 +32,7 @@ func NewCompositeFS() (*CompositeFS, error) {
 }
 
 // CopyFileToTemp takes a file path and information, opens the file, copies its contents to a temporary file
-func (c *CompositeFS) CopyFileToTemp(opener Opener, info os.FileInfo) (string, error) {
+func (c *CompositeFS) CopyFileToTemp(opener Opener, _ os.FileInfo) (string, error) {
 	// Create a temporary file to which the file in the layer will be copied
 	// so that all the files will not be loaded into memory
 	f, err := os.CreateTemp(c.dir, "file-*")

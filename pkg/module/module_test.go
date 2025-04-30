@@ -94,7 +94,7 @@ func TestManager_Register(t *testing.T) {
 
 	// Confirm that wasm modules are generated beforehand
 	var count int
-	err := filepath.WalkDir("testdata", func(path string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir("testdata", func(path string, _ fs.DirEntry, _ error) error {
 		if filepath.Ext(path) == ".wasm" {
 			count++
 		}

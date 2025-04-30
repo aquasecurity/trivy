@@ -131,7 +131,7 @@ func ignoreProtocol(protocol string) bool {
 func parseResults(patternIDs map[string]string, dependsOn map[string][]string) (deps ftypes.Dependencies) {
 	// find dependencies by patterns
 	for pkgID, depPatterns := range dependsOn {
-		depIDs := lo.Map(depPatterns, func(pattern string, index int) string {
+		depIDs := lo.Map(depPatterns, func(pattern string, _ int) string {
 			return patternIDs[pattern]
 		})
 		deps = append(deps, ftypes.Dependency{

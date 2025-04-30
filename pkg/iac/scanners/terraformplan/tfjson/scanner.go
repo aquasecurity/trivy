@@ -24,7 +24,7 @@ func (s *Scanner) Name() string {
 	return "Terraform Plan JSON"
 }
 
-func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Results, error) {
+func (s *Scanner) ScanFS(_ context.Context, fsys fs.FS, dir string) (scan.Results, error) {
 
 	var results scan.Results
 

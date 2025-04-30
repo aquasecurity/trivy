@@ -497,7 +497,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 				},
 			},
-			setUpCache: func(t *testing.T) cache.Cache {
+			setUpCache: func(_ *testing.T) cache.Cache {
 				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					GetBlob: true,
 				})

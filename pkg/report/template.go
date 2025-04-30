@@ -75,7 +75,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate, appVersion string) (*Te
 }
 
 // Write writes result
-func (tw TemplateWriter) Write(ctx context.Context, report types.Report) error {
+func (tw TemplateWriter) Write(_ context.Context, report types.Report) error {
 	err := tw.Template.Execute(tw.Output, report.Results)
 	if err != nil {
 		return xerrors.Errorf("failed to write with template: %w", err)

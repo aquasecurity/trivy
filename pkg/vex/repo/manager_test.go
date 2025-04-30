@@ -48,7 +48,7 @@ func TestManager_Config(t *testing.T) {
 		},
 		{
 			name:  "config file does not exist",
-			setup: func(t *testing.T, dir string) {},
+			setup: func(_ *testing.T, _ string) {},
 			want: repo.Config{
 				Repositories: []repo.Repository{
 					{
@@ -89,7 +89,7 @@ func TestManager_Init(t *testing.T) {
 	}{
 		{
 			name:  "successful init",
-			setup: func(t *testing.T, dir string) {},
+			setup: func(_ *testing.T, _ string) {},
 			want: repo.Config{
 				Repositories: []repo.Repository{
 					{

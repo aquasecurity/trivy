@@ -70,11 +70,11 @@ func (p *parserWithPatterns) Parse(r xio.ReadSeekerAt) ([]types.Package, []types
 func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
-	required := func(path string, d fs.DirEntry) bool {
+	required := func(path string, _ fs.DirEntry) bool {
 		return filepath.Base(path) == types.YarnLock || input.FilePatterns.Match(path)
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, d fs.DirEntry, r io.Reader) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, _ fs.DirEntry, r io.Reader) error {
 		parser := &parserWithPatterns{}
 		// Parse yarn.lock
 		app, err := language.Parse(types.Yarn, filePath, r, parser)
@@ -303,7 +303,7 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, dir string, workspaces []st
 		return filepath.Base(path) == types.NpmPkg
 	}
 
-	walkDirFunc := func(path string, d fs.DirEntry, r io.Reader) error {
+	walkDirFunc := func(path string, _ fs.DirEntry, r io.Reader) error {
 		pkg, err := a.packageJsonParser.Parse(r)
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", path, err)
@@ -396,7 +396,7 @@ func (a yarnAnalyzer) traverseCacheDir(fsys fs.FS) (map[string][]string, error) 
 	// Traverse .yarn/cache dir
 	licenses := make(map[string][]string)
 	err := fsutils.WalkDir(fsys, "cache", fsutils.RequiredExt(".zip"),
-		func(filePath string, d fs.DirEntry, r io.Reader) error {
+		func(_ string, d fs.DirEntry, r io.Reader) error {
 			fi, err := d.Info()
 			if err != nil {
 				return xerrors.Errorf("file stat error: %w", err)

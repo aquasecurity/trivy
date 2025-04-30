@@ -1759,13 +1759,13 @@ func TestArtifact_Inspect(t *testing.T) {
 						History: []v1.History{
 							{
 								Author:     "Bazel",
-								Created:    v1.Time{Time: time.Date(1970, 01, 01, 0, 0, 0, 0, time.UTC)},
+								Created:    v1.Time{Time: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)},
 								CreatedBy:  "bazel build ...",
 								EmptyLayer: false,
 							},
 							{
 								Author:     "Bazel",
-								Created:    v1.Time{Time: time.Date(1970, 01, 01, 0, 0, 0, 0, time.UTC)},
+								Created:    v1.Time{Time: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)},
 								CreatedBy:  "bazel build ...",
 								EmptyLayer: false,
 							},
@@ -1914,14 +1914,14 @@ func TestArtifact_Inspect(t *testing.T) {
 						History: []v1.History{
 							{
 								Author:     "Bazel",
-								Created:    v1.Time{Time: time.Date(1970, 01, 01, 0, 0, 0, 0, time.UTC)},
+								Created:    v1.Time{Time: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)},
 								CreatedBy:  "bazel build ...",
 								Comment:    "",
 								EmptyLayer: false,
 							},
 							{
 								Author:     "Bazel",
-								Created:    v1.Time{Time: time.Date(1970, 01, 01, 0, 0, 0, 0, time.UTC)},
+								Created:    v1.Time{Time: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)},
 								CreatedBy:  "bazel build ...",
 								Comment:    "",
 								EmptyLayer: false,
@@ -1976,7 +1976,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name:      "sad path, MissingBlobs returns an error",
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
-			setupCache: func(t *testing.T) cache.Cache {
+			setupCache: func(_ *testing.T) cache.Cache {
 				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					MissingBlobs: true,
 				})
@@ -1986,7 +1986,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name:      "sad path, PutBlob returns an error",
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
-			setupCache: func(t *testing.T) cache.Cache {
+			setupCache: func(_ *testing.T) cache.Cache {
 				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					PutBlob: true,
 				})
@@ -1996,7 +1996,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name:      "sad path, PutBlob returns an error with multiple layers",
 			imagePath: "../../test/testdata/vuln-image.tar.gz",
-			setupCache: func(t *testing.T) cache.Cache {
+			setupCache: func(_ *testing.T) cache.Cache {
 				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					PutBlob: true,
 				})
@@ -2006,7 +2006,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name:      "sad path, PutArtifact returns an error",
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
-			setupCache: func(t *testing.T) cache.Cache {
+			setupCache: func(_ *testing.T) cache.Cache {
 				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					PutArtifact: true,
 				})

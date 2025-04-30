@@ -67,11 +67,11 @@ func newGoModAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, erro
 func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
-	required := func(path string, d fs.DirEntry) bool {
+	required := func(path string, _ fs.DirEntry) bool {
 		return filepath.Base(path) == types.GoMod || input.FilePatterns.Match(path)
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, _ io.Reader) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, _ io.Reader) error {
 		// Parse go.mod
 		gomod, err := parse(input.FS, path, a.modParser)
 		if err != nil {
@@ -205,7 +205,7 @@ func (a *gomodAnalyzer) collectDeps(modDir, pkgID string) (types.Dependency, err
 	}
 
 	// Filter out indirect dependencies
-	dependsOn := lo.FilterMap(pkgs, func(lib types.Package, index int) (string, bool) {
+	dependsOn := lo.FilterMap(pkgs, func(lib types.Package, _ int) (string, bool) {
 		return lib.Name, lib.Relationship == types.RelationshipDirect
 	})
 

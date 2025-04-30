@@ -75,7 +75,7 @@ func Detect(ctx context.Context, _, osFamily ftypes.OSType, osName string, repo 
 
 	// Package `gpg-pubkey` doesn't use the correct version.
 	// We don't need to find vulnerabilities for this package.
-	filteredPkgs := lo.Filter(pkgs, func(pkg ftypes.Package, index int) bool {
+	filteredPkgs := lo.Filter(pkgs, func(pkg ftypes.Package, _ int) bool {
 		return pkg.Name != "gpg-pubkey"
 	})
 	vulns, err := driver.Detect(ctx, osName, repo, filteredPkgs)

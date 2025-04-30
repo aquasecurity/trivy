@@ -86,7 +86,7 @@ func IsBinary(content xio.ReadSeekerAt, fileSize int64) (bool, error) {
 }
 
 func CleanSkipPaths(skipPaths []string) []string {
-	return lo.Map(skipPaths, func(skipPath string, index int) string {
+	return lo.Map(skipPaths, func(skipPath string, _ int) string {
 		skipPath = filepath.ToSlash(filepath.Clean(skipPath))
 		return strings.TrimLeft(skipPath, "/")
 	})

@@ -115,7 +115,7 @@ func WithDisabledCheckIDs(ids ...string) options.ScannerOption {
 	}
 }
 
-func WithIncludeDeprecatedChecks(enabled bool) options.ScannerOption {
+func WithIncludeDeprecatedChecks(_ bool) options.ScannerOption {
 	return func(s options.ConfigurableScanner) {
 		if ss, ok := s.(*Scanner); ok {
 			ss.includeDeprecatedChecks = true

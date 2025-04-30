@@ -248,7 +248,7 @@ func readLinesFromFile(f io.Reader, from, to int) ([]string, error) {
 
 var ErrNoFiles = errors.New("no files found")
 
-func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
+func (p *Parser) Load(_ context.Context) (*evaluator, error) {
 	p.logger.Debug("Loading module", log.String("module", p.moduleName))
 
 	if len(p.files) == 0 {
