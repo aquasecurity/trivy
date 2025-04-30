@@ -3365,6 +3365,45 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Yarn">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#package-relationships" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Package relationships
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#development-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Development dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#licenses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Licenses
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -7856,6 +7895,45 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Yarn">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#package-relationships" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Package relationships
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#development-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Development dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#licenses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Licenses
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -8074,11 +8152,22 @@ To identify licenses, you need to download dependencies to <code>node_modules</c
 Trivy analyzes <code>node_modules</code> for licenses.</p>
 <p>By default, Trivy doesn't report development dependencies. Use the <code>--include-dev-deps</code> flag to include them.</p>
 <h3 id="yarn">Yarn<a class="headerlink" href="#yarn" title="Permanent link">&para;</a></h3>
-<p>Trivy parses <code>yarn.lock</code>, which doesn't contain information about development dependencies.
-Trivy also uses <code>package.json</code> file to handle <a href="https://classic.yarnpkg.com/lang/en/docs/cli/add/#toc-yarn-add-alias">aliases</a>.</p>
-<p>To exclude devDependencies and allow aliases, <code>package.json</code> also needs to be present next to <code>yarn.lock</code>.</p>
-<p>Trivy analyzes <code>.yarn</code> (Yarn 2+) or <code>node_modules</code> (Yarn Classic) folder next to the yarn.lock file to detect licenses.</p>
-<p>By default, Trivy doesn't report development dependencies. Use the <code>--include-dev-deps</code> flag to include them.</p>
+<p>Trivy parses <code>yarn.lock</code>.</p>
+<p>Trivy also analyzes additional files to gather more information about the detected dependencies.</p>
+<ul>
+<li>package.json</li>
+<li>node_modules/**</li>
+</ul>
+<h4 id="package-relationships">Package relationships<a class="headerlink" href="#package-relationships" title="Permanent link">&para;</a></h4>
+<p><code>yarn.lock</code> files don't contain information about package relationships, such as direct or indirect dependencies.
+To enrich this information, Trivy parses the <code>package.json</code> file located next to the <code>yarn.lock</code> file as well as workspace <code>package.json</code> files.</p>
+<p>By default, Trivy doesn't report development dependencies.
+Use the <code>--include-dev-deps</code> flag to include them in the results.</p>
+<h4 id="development-dependencies">Development dependencies<a class="headerlink" href="#development-dependencies" title="Permanent link">&para;</a></h4>
+<p><code>yarn.lock</code> files don't contain information about package groups, such as production and development dependencies.
+To identify dev dependencies and support <a href="https://classic.yarnpkg.com/lang/en/docs/cli/add/#toc-yarn-add-alias">aliases</a>, Trivy parses the <code>package.json</code> file located next to the <code>yarn.lock</code> file as well as workspace <code>package.json</code> files.</p>
+<h4 id="licenses">Licenses<a class="headerlink" href="#licenses" title="Permanent link">&para;</a></h4>
+<p>Trivy analyzes the <code>.yarn</code> directory (for Yarn 2+) or the <code>node_modules</code> directory (for Yarn Classic) located next to the <code>yarn.lock</code> file to detect licenses.</p>
 <h3 id="pnpm">pnpm<a class="headerlink" href="#pnpm" title="Permanent link">&para;</a></h3>
 <p>Trivy parses <code>pnpm-lock.yaml</code>, then finds production dependencies and builds a <a href="../../../configuration/reporting/#show-origins-of-vulnerable-dependencies">tree</a> of dependencies with vulnerabilities.
 To identify licenses, you need to download dependencies to <code>node_modules</code> beforehand. Trivy analyzes <code>node_modules</code> for licenses.</p>
