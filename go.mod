@@ -24,7 +24,7 @@ require (
 	github.com/aquasecurity/table v1.8.0
 	github.com/aquasecurity/testdocker v0.0.0-20240730042311-4642e94c7fc8
 	github.com/aquasecurity/tml v0.6.1
-	github.com/aquasecurity/trivy-checks v1.8.2-0.20250403212859-379320b8673d
+	github.com/aquasecurity/trivy-checks v1.9.0
 	github.com/aquasecurity/trivy-db v0.0.0-20250227071930-8bd8a9b89e2d
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
 	github.com/aquasecurity/trivy-kubernetes v0.8.1
@@ -98,7 +98,7 @@ require (
 	github.com/package-url/packageurl-go v0.1.3
 	github.com/quasilyte/go-ruleguard/dsl v0.3.22
 	github.com/rust-secure-code/go-rustaudit v0.0.0-20250226111315-e20ec32e963c
-	github.com/samber/lo v1.49.1
+	github.com/samber/lo v1.50.0
 	github.com/sassoftware/go-rpmutils v0.4.0
 	github.com/secure-systems-lab/go-securesystemslib v0.9.0
 	github.com/sigstore/rekor v1.3.10
@@ -110,7 +110,7 @@ require (
 	github.com/spf13/pflag v1.0.6
 	github.com/spf13/viper v1.20.1
 	github.com/stretchr/testify v1.10.0
-	github.com/testcontainers/testcontainers-go v0.36.0
+	github.com/testcontainers/testcontainers-go v0.37.0
 	github.com/testcontainers/testcontainers-go/modules/localstack v0.36.0
 	github.com/tetratelabs/wazero v1.9.0
 	github.com/twitchtv/twirp v8.1.3+incompatible
@@ -284,7 +284,7 @@ require (
 	github.com/liggitt/tabwriter v0.0.0-20181228230101-89fcab3d43de // indirect
 	github.com/lufia/plan9stats v0.0.0-20240226150601-1dcf7310316a // indirect
 	github.com/lunixbochs/struc v0.0.0-20200707160740-784aaebc1d40 // indirect
-	github.com/magiconair/properties v1.8.9 // indirect
+	github.com/magiconair/properties v1.8.10 // indirect
 	github.com/mailru/easyjson v0.9.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
