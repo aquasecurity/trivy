@@ -1,0 +1,244 @@
+{% extends "main.html" %}
+
+{% block content %}
+<!-- don't render markdown content in the homepage -->
+{% endblock %}
+
+{% block hero %}
+<link rel='stylesheet' id='main-style-css' href='assets/css/trivy_v1_homepage.min.css' type='text/css' media='all' />
+<script type='text/javascript' src='assets/javascripts/trivy_v1_homepage.js' id='trivy_v1_homepage-js'></script>
+
+<div class="trivy_v1_homepage_wrap">
+
+    <!-- hero starts -->
+    <div class="hero_wrap">
+        <div class="hero header_wrap">
+            <div class="hero-body">
+                <div class="clearboth container">
+                    <div class="header_title_wrap">
+                        <div class="header_title_content_wrap">
+                            <div class="page_logo">
+                                <img src="assets/images/trivy_logo_horizontal_white.svg" height="100" alt="Trivy Logo">
+                            </div>
+                            <h1 class="title page_title is-spaced fadeInUp">
+                                The all-in-one open source security scanner
+                            </h1>
+                            <h2 class="subtitle page_subtitle fadeInUp animationDelay_1">
+                                Use Trivy to find vulnerabilities (CVE) & misconfigurations (IaC) across code repositories, binary artifacts, container images, Kubernetes clusters, and more. All in one tool! 
+                            </h2>
+                            <a href="./getting-started" class="button is-seafoam large_btn">Get started</a>
+                            <a href="./docs" class="button is-seafoam is-outlined large_btn">Read the Docs</a>
+                        </div><!-- header_title_content_wrap -->
+                    </div><!-- header_title_wrap -->
+                </div><!-- container -->
+            </div><!-- hero-body -->
+        </div><!-- hero -->
+
+        <div class="homepage_background_image_wrap">
+            <div class="stars_wrap">
+                <div class="stars_bg"></div>
+            </div>
+            <div class="terrain_wrap"></div>
+            <div class="beams_wrap">
+                <div class="beam"></div>
+                <div class="beam num2"></div>
+                <div class="beam num3"></div>
+                <div class="beam num4"></div>
+                <div class="sphere"></div>
+            </div>
+            <div class="person_wrap"></div>
+        </div><!-- homepage_background_image_wrap -->
+    </div><!-- hero_wrap -->
+    <!-- hero ends -->
+
+    <!-- homepage_community starts -->
+    <div class="homepage_community_wrap">
+        <div class="container wide_container">
+            <div class="community_titles_column">
+                <div class="title is-spaced community_title fadeInUp animationDelay_1">It's all about the community!</div>
+                <div class="subtitle is-spaced community_subtitle fadeInUp animationDelay_2">Trivy is praised by professionals worldwide. Are you a Trivy fan as well? We'd love to hear from you!
+                </div>
+                <div class="community_cta_wrap fadeInUp animationDelay_3">
+                    <a href="https://github.com/aquasecurity/trivy/discussions/categories/adopters" target="_blank" class="button is-seafoam">Share your story</a>
+                    <a href="https://github.com/aquasecurity/trivy/discussions/" target="_blank" class="button is-seafoam is-outlined">Discuss on GitHub</a>
+                </div>
+            </div><!-- community_titles_column -->
+
+            <div class="community_slider_column">
+                <div class="community_quotes_wrap">
+                    <!-- quotes page 1 -->
+                    <div class="community_quotes">
+
+                        <div class="quote_item_wrap">
+                            <div class="quote_item is_tweet has_avatar">
+                                <div class="quote_name">Sam White, GitLab</div>
+                                <div class="quote_twitter_handle"><a href="https://www.aquasec.com/blog/trivy-scanner-gitlab-case-study/" target="_blank">Case Study</a></div>
+                                <div class="quote_text">"Trivy was a clear leader in the market as far as features, functionality, and capabilities"</div>
+                                <div class="quote_avatar" style="background-image:url('https://media.licdn.com/dms/image/v2/C5603AQEeHph5FWOpTw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1601489956361?e=1736380800&v=beta&t=lqBO9XE4rmgn_jOBD4E3YCyxZyWtBZ33eLh7kHJJBfo');"></div>
+                            </div><!-- quote_item is_quote -->
+                        </div><!-- quote_item_wrap -->
+
+                        <div class="quote_item_wrap">
+                            <div class="quote_item is_tweet has_avatar">
+                                <div class="quote_name">Ariadne Conill, Alpine Security</div>
+                                <div class="quote_twitter_handle">@ariadneconill</div>
+                                <div class="quote_text">...the tl;dr is basically Aqua's Trivy is the best one, all of the other ones are a waste of time </div>
+                                <div class="quote_avatar" style="background-image:url('https://pbs.twimg.com/profile_images/1584412202945093632/UaXJmOMy_400x400.jpg');"></div>
+                            </div><!-- quote_item is_tweet -->
+                        </div><!-- quote_item_wrap -->
+
+                        <div class="quote_item_wrap">
+                            <div class="quote_item is_tweet has_avatar">
+                                <div class="quote_name">Harbor Team</div>
+                                <div class="quote_twitter_handle"><a href="https://goharbor.io/blog/harbor-2.0/" target="_blank">Harbor blog</a></div>
+                                <div class="quote_text">"Trivy takes container image scanning to higher levels of usability and performance."</div>
+                                <div class="quote_avatar" style="background-image:url('https://www.jpaul.me/wp-content/uploads/2020/09/harbor-icon-color.png');"></div>
+                            </div><!-- quote_item is_quote -->
+                        </div><!-- quote_item_wrap -->
+
+                        <div class="quote_item_wrap">
+                            <div class="quote_item is_tweet has_avatar">
+                                <div class="quote_name">Milind Gadre, Mirantis</div>
+                                <div class="quote_twitter_handle"><a href="https://www.aquasec.com/news/trivy-vulnerability-scanner-aqua-security-adopted-by-leading-cloud-native-platforms/" target="_blank">Mirantis</a></div>
+                                <div class="quote_text">"After evaluating several leading options for open source vulnerability scanning, Trivy really stood out"</div>
+                                <div class="quote_avatar" style="background-image:url('https://media.licdn.com/dms/image/v2/C5103AQHKRwg19TMyjQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1567694195920?e=1736380800&v=beta&t=tn7utvMY__6lyJSWWFDQApvikQAOep-5Sxwx_op7t5c');"></div>
+                            </div><!-- quote_item is_quote -->
+                        </div><!-- quote_item_wrap -->
+
+                        <div class="quote_item_wrap">
+                            <div class="quote_item is_tweet has_avatar">
+                                <div class="quote_name">Jerry Gambli</div>
+                                <div class="quote_twitter_handle">@JGamblin</div>
+                                <div class="quote_text">The way the @AquaSecTeam team has turned Trivy into the best open-source vulnerability scanner in such a short time is really amazing.</div>
+                                <div class="quote_avatar" style="background-image:url('https://pbs.twimg.com/profile_images/1490086716568395777/mDaSylm1_400x400.jpg');"></div>
+                            </div><!-- quote_item is_tweet -->
+                        </div><!-- quote_item_wrap -->
+
+                    </div><!-- community_quotes (break) -->
+                    <!-- quotes page 2 -->
+                    <div class="community_quotes">
+
+                        <div class="quote_item_wrap">
+                            <div class="quote_item is_tweet has_avatar">
+                                <div class="quote_name">Yaney</div>
+                                <div class="quote_twitter_handle"><a href="https://github.com/aquasecurity/trivy/discussions/4738#discussioncomment-6335342" target="_blank">y4ney</a></div>
+                                <div class="quote_text">"Trivy is, by far, the best open-source tool for cloud-native security that I have ever used"</div>
+                                <div class="quote_avatar" style="background-image:url('https://avatars.githubusercontent.com/u/44939500?v=4');"></div>
+                            </div><!-- quote_item is_quote -->
+                        </div><!-- quote_item_wrap -->
+
+                        <div class="quote_item_wrap">
+                            <div class="quote_item is_tweet has_avatar">
+                                <div class="quote_name">Ulises Galeano, MasterCard</div>
+                                <div class="quote_twitter_handle"><a href="https://www.linkedin.com/posts/ulises-galeano_aqua-securitys-trivy-adds-cspm-capabilities-activity-6965797718019502080-8ah_?utm_source=share&utm_medium=member_desktop" target="_blank">ulises-galeano</a></div>
+                                <div class="quote_text">"This tool just keeps getting better and better..."</div>
+                                <div class="quote_avatar" style="background-image:url('https://media.licdn.com/dms/image/v2/D5603AQFkCipQMhfD6g/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1698769096426?e=1736380800&v=beta&t=BF7ZacfGdzO7E70vZOIxKrEsPvUQUkzH9dvlXCHp364');"></div>
+                            </div><!-- quote_item is_tweet -->
+                        </div><!-- quote_item_wrap -->
+
+                        <div class="quote_item_wrap">
+                            <div class="quote_item is_tweet has_avatar">
+                                <div class="quote_name">Damian Naprawa</div>
+                                <div class="quote_twitter_handle"><a href="https://x.com/DamianNaprawa/status/1469229068419842049" target="_blank">@DamianNaprawa</a></div>
+                                <div class="quote_text">"So happy to see collaboration between @Azure and @AquaSecTeam on scanning container images in Azure Container Registry CI/CD workflows using such a great tool - Trivy."</div>
+                                <div class="quote_avatar" style="background-image:url('https://pbs.twimg.com/profile_images/1348967860945747971/LFtYvPTm_400x400.jpg');"></div>
+                            </div><!-- quote_item is_tweet -->
+                        </div><!-- quote_item_wrap -->
+
+                        <div class="quote_item_wrap">
+                            <div class="quote_item is_tweet has_avatar">
+                                <div class="quote_name">Mustafa Akin, Resmo</div>
+                                <div class="quote_twitter_handle"><a href="https://github.com/aquasecurity/trivy/discussions/5898#discussioncomment-8257890" target="_blank">mustafaakin</a></div>
+                                <div class="quote_text">"I love how Trivy democratized dependency scanning to the masses as a free and extremely easy to use tool, with also a permissive license. This used to be a gated community with predatory security vendors charging premium, and they were not half as good as Trivy."</div>
+                                <div class="quote_avatar" style="background-image:url('https://avatars.githubusercontent.com/u/803763?v=4');"></div>
+                            </div><!-- quote_item is_quote -->
+                        </div><!-- quote_item_wrap -->
+
+                        <div class="quote_item_wrap">
+                            <div class="quote_item is_tweet has_avatar">
+                                <div class="quote_name">dynaptik, Deutsche Bahn</div>
+                                <div class="quote_twitter_handle"><a href="https://x.com/dynaptik/status/1760063329941291098?s=20" target="_blank">@dynaptik</a></div>
+                                <div class="quote_text">"Trivy easily for what it brings to the table (secret scanning, vuln scan, license check) and little effort required. Bang for the buck it's pretty amazing"</div>
+                                <div class="quote_avatar" style="background-image:url('https://pbs.twimg.com/profile_images/1520351613839417347/cX0be6tB_400x400.jpg');"></div>
+                            </div><!-- quote_item is_tweet -->
+                        </div><!-- quote_item_wrap -->
+
+                    </div><!-- community_quotes (break) -->
+                    <!-- quotes page 3 -->
+                    <div class="community_quotes">
+
+                        <div class="quote_item_wrap">
+                            <div class="quote_item is_tweet has_avatar">
+                                <div class="quote_name">Cristiano Corrado, Wise</div>
+                                <div class="quote_twitter_handle"><a href="https://medium.com/wise-engineering/our-application-security-journey-part-1-fb7d449a7126" target="_blank">wise-engineering</a></div>
+                                <div class="quote_text">"The discovery process led us to evaluate multiple open-source tools ... The final decision was to use Trivy"</div>
+                                <div class="quote_avatar" style="background-image:url('https://miro.medium.com/v2/da:true/resize:fill:176:176/0*RFJEFPwmqPoJk0_Q');"></div>
+                            </div><!-- quote_item is_tweet -->
+                        </div><!-- quote_item_wrap -->
+
+                        <div class="quote_item_wrap">
+                            <div class="quote_item is_tweet has_avatar">
+                                <div class="quote_name">Saim Safdar</div>
+                                <div class="quote_twitter_handle"><a href="https://x.com/cloudnativeboy/status/1538840080873291777" target="_blank">@cloudnativeboy</a></div>
+                                <div class="quote_text">"my favorite @Docker extension. (Trivy)"</div>
+                                <div class="quote_avatar" style="background-image:url('https://pbs.twimg.com/profile_images/1852731741263298560/j82MEKDC_400x400.jpg');"></div>
+                            </div><!-- quote_item is_tweet -->
+                        </div><!-- quote_item_wrap -->
+
+                        <div class="quote_item_wrap">
+                            <div class="quote_item is_tweet has_avatar">
+                                <div class="quote_name">Jonathan Gonzalez V., CloudNativePG</div>
+                                <div class="quote_twitter_handle"><a href="https://x.com/sxd/status/1555688296092672000" target="_blank">@sxd</a></div>
+                                <div class="quote_text">"Thanks @AquaSecTeam for creating Trivy and help us to improve @CloudNativePg security"</div>
+                                <div class="quote_avatar" style="background-image:url('https://pbs.twimg.com/profile_images/724741714867445760/4neP98k7_400x400.jpg');"></div>
+                            </div><!-- quote_item is_tweet -->
+                        </div><!-- quote_item_wrap -->
+
+                        <div class="quote_item_wrap">
+                            <div class="quote_item is_tweet has_avatar">
+                                <div class="quote_name">Andy Roberts, Vista</div>
+                                <div class="quote_twitter_handle"><a href="https://x.com/andyr8939/status/1523402643397562368" target="_blank">@andyr8939</a></div>
+                                <div class="quote_text">"I've tried a few and all have pros/cons but I found that Trivy is the best of them"</div>
+                                <div class="quote_avatar" style="background-image:url('https://pbs.twimg.com/profile_images/1384815728201588736/5uQfnSPb_400x400.jpg');"></div>
+                            </div><!-- quote_item is_tweet -->
+                        </div><!-- quote_item_wrap -->
+
+                        <div class="quote_item_wrap">
+                            <div class="quote_item is_tweet has_avatar">
+                                <div class="quote_name">Ali Faraj, Antigen Security</div>
+                                <div class="quote_twitter_handle"><a href="https://www.linkedin.com/posts/activity-6932020213307625472-zWs8/" target="_blank">@andyr8939</a></div>
+                                <div class="quote_text">"Trivy from Aqua Security is my new favorite tool... It's such a powerful tool with the ability to generate SBOMs, find vulnerabilities, misconfigurations, and secrets!"</div>
+                                <div class="quote_avatar" style="background-image:url('https://media.licdn.com/dms/image/v2/C4D03AQEwMCBM6uAGdQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1599152832090?e=1736380800&v=beta&t=2negMF6o75BjLkIM3iz6gkl-5Aqk4jv7rGnO_sbMKf4');"></div>
+                            </div><!-- quote_item is_tweet -->
+                        </div><!-- quote_item_wrap -->
+
+                    </div><!-- community_quotes -->
+                </div><!-- community_quotes_wrap -->
+
+            </div><!-- community_slider_column -->
+
+        </div><!-- container -->
+    </div><!-- homepage_community_wrap -->
+
+    <script type="text/javascript">
+        var $j_hpcom = jQuery.noConflict();
+        $j_hpcom(document).ready(function () {
+
+            $j_hpcom('.community_quotes_wrap').slick({
+                arrows: false,
+                dots: true,
+                centerMode: false,
+                infinite: true,
+                slidesToShow: 1,
+                focusOnSelect: true,
+                autoplay: true,
+                autoplaySpeed: 11000
+            });
+
+        });
+    </script>
+
+    <!-- homepage_community ends -->
+</div><!-- trivy_v1_homepage_wrap -->
+
+{% endblock %}
