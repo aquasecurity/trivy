@@ -42,8 +42,5 @@ func run() error {
 	}
 
 	app := commands.NewApp()
-	if err := app.Execute(); err != nil {
-		return err
-	}
-	return nil
+	return app.Execute()
 }

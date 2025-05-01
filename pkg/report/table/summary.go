@@ -201,8 +201,6 @@ func (r *summaryRenderer) Render(report types.Report) {
 	r.printf("Legend:\n" +
 		"- '-': Not scanned\n" +
 		"- '0': Clean (no security findings detected)\n\n")
-
-	return
 }
 
 func (r *summaryRenderer) printf(format string, args ...any) {

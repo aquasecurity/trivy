@@ -312,11 +312,7 @@ func (f *Flag[T]) Bind(cmd *cobra.Command) error {
 	}
 
 	// Bind environmental variable
-	if err := f.BindEnv(); err != nil {
-		return err
-	}
-
-	return nil
+	return f.BindEnv()
 }
 
 func (f *Flag[T]) BindEnv() error {
