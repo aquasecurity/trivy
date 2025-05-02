@@ -1863,6 +1863,22 @@ data "this_resource" "this" {
 data "that_resource" "this" {
 	count = module.foo.staticFive
 }
+
+data "for_each_resource_empty" "this" {
+	for_each = module.foo.empty_list
+}
+data "for_each_resource_abc" "this" {
+	for_each = module.foo.list_abc
+}
+
+data "dynamic_block" "that" {
+	dynamic "element" {
+		for_each = module.foo.list_abc
+		content {
+			foo = element.value
+		}
+	}
+}
 `,
 		"modules/foo/main.tf": `
 output "staticZero" {	
@@ -1870,6 +1886,13 @@ output "staticZero" {
 }
 output "staticFive" {	
 	value = 5
+}
+
+output "empty_list" {
+	value = []
+}
+output "list_abc" {
+	value = ["a", "b", "c"]
 }
 `,
 	}
@@ -1882,6 +1905,16 @@ output "staticFive" {
 
 	datas = modules.GetDatasByType("that_resource")
 	require.Len(t, datas, 5)
+
+	datas = modules.GetDatasByType("for_each_resource_empty")
+	require.Len(t, datas, 0)
+
+	datas = modules.GetDatasByType("for_each_resource_abc")
+	require.Len(t, datas, 3)
+
+	dyn := modules.GetDatasByType("dynamic_block")
+	require.Len(t, dyn, 1)
+	require.Len(t, dyn[0].GetBlocks("element"), 3, "dynamic expand")
 }
 
 func TestBlockCountNested(t *testing.T) {

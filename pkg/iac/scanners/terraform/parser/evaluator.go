@@ -324,8 +324,13 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks) terraform.Bloc
 		}
 
 		forEachVal := forEachAttr.Value()
+		if !forEachVal.IsKnown() {
+			// If the value is unknown, it might be known at a later execution step.
+			forEachFiltered = append(forEachFiltered, block)
+			continue
+		}
 
-		if forEachVal.IsNull() || !forEachVal.IsKnown() || !forEachAttr.IsIterable() {
+		if forEachVal.IsNull() || !forEachAttr.IsIterable() {
 			e.logger.Debug(`Failed to expand block. Invalid "for-each" argument. Must be known and iterable.`,
 				log.String("block", block.FullName()),
 				log.String("value", forEachVal.GoString()),
