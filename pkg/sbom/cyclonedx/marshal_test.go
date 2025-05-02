@@ -1510,7 +1510,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 									References: []string{
 										"https://access.redhat.com/security/cve/CVE-2022-42003",
 									},
-									PublishedDate:    lo.ToPtr(time.Date(2022, 10, 02, 05, 15, 0, 0, time.UTC)),
+									PublishedDate:    lo.ToPtr(time.Date(2022, 10, 2, 5, 15, 0, 0, time.UTC)),
 									LastModifiedDate: lo.ToPtr(time.Date(2022, 12, 20, 10, 15, 0, 0, time.UTC)),
 								},
 							},
@@ -1717,7 +1717,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 										"https://github.com/advisories/GHSA-xm2m-2q6h-22jw",
 									},
 									PublishedDate:    lo.ToPtr(time.Date(2023, 6, 12, 16, 15, 0, 0, time.UTC)),
-									LastModifiedDate: lo.ToPtr(time.Date(2023, 6, 21, 02, 20, 0, 0, time.UTC)),
+									LastModifiedDate: lo.ToPtr(time.Date(2023, 6, 21, 2, 20, 0, 0, time.UTC)),
 								},
 							},
 							{
@@ -1768,7 +1768,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 										"https://github.com/advisories/GHSA-xm2m-2q6h-22jw",
 									},
 									PublishedDate:    lo.ToPtr(time.Date(2023, 6, 12, 16, 15, 0, 0, time.UTC)),
-									LastModifiedDate: lo.ToPtr(time.Date(2023, 6, 21, 02, 20, 0, 0, time.UTC)),
+									LastModifiedDate: lo.ToPtr(time.Date(2023, 6, 21, 2, 20, 0, 0, time.UTC)),
 								},
 							},
 						},

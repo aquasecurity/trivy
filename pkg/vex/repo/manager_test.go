@@ -321,9 +321,9 @@ func TestManager_Clear(t *testing.T) {
 
 	// Create some dummy files
 	cacheDir := filepath.Join(tempDir, "vex")
-	require.NoError(t, os.MkdirAll(cacheDir, 0755))
+	require.NoError(t, os.MkdirAll(cacheDir, 0o755))
 	dummyFile := filepath.Join(cacheDir, "dummy.txt")
-	require.NoError(t, os.WriteFile(dummyFile, []byte("dummy"), 0644))
+	require.NoError(t, os.WriteFile(dummyFile, []byte("dummy"), 0o644))
 
 	err := m.Clear()
 	require.NoError(t, err)

@@ -25,16 +25,15 @@ linters:
     gocritic:
       disabled-checks:
         - appendAssign
-        - unnamedResult
-        - whyNoLint
+        - commentedOutCode
+        - hugeParam
         - importShadow # FIXME
         - indexAlloc
-        - octalLiteral
-        - hugeParam
         - rangeValCopy
         - regexpSimplify
         - sloppyReassign
-        - commentedOutCode
+        - unnamedResult
+        - whyNoLint
       enabled-tags:
         - diagnostic
         - style

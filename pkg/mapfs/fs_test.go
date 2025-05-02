@@ -21,7 +21,7 @@ type fileInfo struct {
 }
 
 var (
-	filePerm      = lo.Ternary(runtime.GOOS == "windows", fs.FileMode(0666), fs.FileMode(0644))
+	filePerm      = lo.Ternary(runtime.GOOS == "windows", fs.FileMode(0o666), fs.FileMode(0o644))
 	helloFileInfo = fileInfo{
 		name:     "hello.txt",
 		fileMode: filePerm,
@@ -36,13 +36,13 @@ var (
 	}
 	virtualFileInfo = fileInfo{
 		name:     "virtual.txt",
-		fileMode: 0600,
+		fileMode: 0o600,
 		isDir:    false,
 		size:     7,
 	}
 	cdirFileInfo = fileInfo{
 		name:     "c",
-		fileMode: fs.FileMode(0700) | fs.ModeDir,
+		fileMode: fs.FileMode(0o700) | fs.ModeDir,
 		isDir:    true,
 		size:     256,
 	}
@@ -50,13 +50,13 @@ var (
 
 func initFS(t *testing.T) *mapfs.FS {
 	fsys := mapfs.New()
-	require.NoError(t, fsys.MkdirAll("a/b/c", 0700))
-	require.NoError(t, fsys.MkdirAll("a/b/empty", 0700))
+	require.NoError(t, fsys.MkdirAll("a/b/c", 0o700))
+	require.NoError(t, fsys.MkdirAll("a/b/empty", 0o700))
 	require.NoError(t, fsys.WriteFile("hello.txt", "testdata/hello.txt"))
 	require.NoError(t, fsys.WriteFile("a/b/b.txt", "testdata/b.txt"))
 	require.NoError(t, fsys.WriteFile("a/b/c/c.txt", "testdata/c.txt"))
 	require.NoError(t, fsys.WriteFile("a/b/c/.dotfile", "testdata/dotfile"))
-	require.NoError(t, fsys.WriteVirtualFile("a/b/c/virtual.txt", []byte("virtual"), 0600))
+	require.NoError(t, fsys.WriteVirtualFile("a/b/c/virtual.txt", []byte("virtual"), 0o600))
 	return fsys
 }
 
@@ -163,12 +163,12 @@ func TestFS_ReadDir(t *testing.T) {
 			want: []dirEntry{
 				{
 					name:     "a",
-					fileMode: fs.FileMode(0700) | fs.ModeDir,
+					fileMode: fs.FileMode(0o700) | fs.ModeDir,
 					isDir:    true,
 					size:     0x100,
 					fileInfo: fileInfo{
 						name:     "a",
-						fileMode: fs.FileMode(0700) | fs.ModeDir,
+						fileMode: fs.FileMode(0o700) | fs.ModeDir,
 						isDir:    true,
 						size:     0x100,
 					},
@@ -213,7 +213,7 @@ func TestFS_ReadDir(t *testing.T) {
 				},
 				{
 					name:     "virtual.txt",
-					fileMode: 0600,
+					fileMode: 0o600,
 					isDir:    false,
 					size:     0,
 					fileInfo: virtualFileInfo,

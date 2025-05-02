@@ -20,7 +20,7 @@ func newTempDB(t *testing.T, dbPath string) (string, error) {
 	dir := t.TempDir()
 	if dbPath != "" {
 		d := filepath.Join(dir, "fanal")
-		if err := os.MkdirAll(d, 0700); err != nil {
+		if err := os.MkdirAll(d, 0o700); err != nil {
 			return "", err
 		}
 

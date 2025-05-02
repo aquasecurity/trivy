@@ -23,7 +23,7 @@ var auth = crane.WithAuthFromKeychain(authn.NewMultiKeychain(authn.DefaultKeycha
 func fixtureContainerImages() error {
 	var testImages = testutil.ImageName("", "", "")
 
-	if err := os.MkdirAll(dir, 0750); err != nil {
+	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return err
 	}
 	tags, err := crane.ListTags(testImages, auth)
@@ -71,7 +71,7 @@ func fixtureVMImages() error {
 		titleAnnotation = "org.opencontainers.image.title"
 		dir             = "integration/testdata/fixtures/vm-images/"
 	)
-	if err := os.MkdirAll(dir, 0750); err != nil {
+	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return err
 	}
 	tags, err := crane.ListTags(testVMImages, auth)
