@@ -42,7 +42,6 @@ func (t *FileContext) GetResourcesByType(names ...string) []*Resource {
 	for _, r := range t.Resources {
 		for _, name := range names {
 			if name == r.Type() {
-				//
 				resources = append(resources, r)
 			}
 		}
@@ -56,6 +55,7 @@ func (t *FileContext) Metadata() iacTypes.Metadata {
 	return iacTypes.NewMetadata(rng, NewCFReference("Template", rng).String())
 }
 
+// TODO: use map[string]string
 func (t *FileContext) overrideParameters(params map[string]any) {
 	for key := range t.Parameters {
 		if val, ok := params[key]; ok {
@@ -76,7 +76,7 @@ func (t *FileContext) missingParameterValues() []string {
 
 func (t *FileContext) stripNullProperties() {
 	for _, resource := range t.Resources {
-		resource.Inner.Properties = lo.OmitBy(resource.Inner.Properties, func(k string, v *Property) bool {
+		resource.properties = lo.OmitBy(resource.properties, func(k string, v *Property) bool {
 			return v.IsNil()
 		})
 	}

@@ -205,7 +205,11 @@ deny {
 					}`),
 			}
 
+			originalFS := checks.EmbeddedPolicyFileSystem
 			checks.EmbeddedPolicyFileSystem = embeddedChecksFS
+			t.Cleanup(func() {
+				checks.EmbeddedPolicyFileSystem = originalFS
+			})
 			err := scanner.LoadPolicies(fstest.MapFS(tt.files))
 
 			if tt.expectedErr != "" {
@@ -252,4 +256,20 @@ deny {
 	)
 	err := scanner.LoadPolicies(fsys)
 	require.Error(t, err)
+}
+
+func TestFallback_CheckWithoutAnnotation(t *testing.T) {
+	fsys := fstest.MapFS{
+		"check.rego": &fstest.MapFile{Data: []byte(`package builtin.test
+import data.some_func
+deny := some_func(input)
+`)},
+	}
+	scanner := rego.NewScanner(
+		rego.WithPolicyDirs("."),
+		rego.WithEmbeddedLibraries(false),
+		rego.WithPolicyFilesystem(fsys),
+	)
+	err := scanner.LoadPolicies(nil)
+	require.NoError(t, err)
 }

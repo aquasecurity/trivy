@@ -357,19 +357,18 @@ func inputVariableType(b *terraform.Block) cty.Type {
 	return ty
 }
 
-func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value, error) {
-
+func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, error) {
 	e, err := p.Load(ctx)
 	if errors.Is(err, ErrNoFiles) {
-		return nil, cty.NilVal, nil
+		return nil, nil
 	} else if err != nil {
-		return nil, cty.NilVal, err
+		return nil, err
 	}
 
 	modules, fsMap := e.EvaluateAll(ctx)
 	p.logger.Debug("Finished parsing module")
 	p.fsMap = fsMap
-	return modules, e.exportOutputs(), nil
+	return modules, nil
 }
 
 func (p *Parser) GetFilesystemMap() map[string]fs.FS {
