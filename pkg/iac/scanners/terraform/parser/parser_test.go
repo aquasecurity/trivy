@@ -1849,7 +1849,7 @@ output "value" {
 	}
 }
 
-func TestBlockCount(t *testing.T) {
+func TestBlockExpandWithSubmoduleOutput(t *testing.T) {
 	// `count` meta attributes are incorrectly handled when referencing
 	// a module output.
 	files := map[string]string{
@@ -1917,9 +1917,7 @@ output "list_abc" {
 	require.Len(t, dyn[0].GetBlocks("element"), 3, "dynamic expand")
 }
 
-func TestBlockCountNested(t *testing.T) {
-	// `count` meta attributes are incorrectly handled when referencing
-	// a module output.
+func TestBlockExpandWithSubmoduleOutputNested(t *testing.T) {
 	files := map[string]string{
 		"main.tf": `
 module "alpha" {
