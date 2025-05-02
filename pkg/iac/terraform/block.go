@@ -583,7 +583,7 @@ func (b *Block) ExpandBlock() error {
 		if child.Type() == "dynamic" {
 			blocks, err := child.expandDynamic()
 			if err != nil {
-				errs = multierror.Append(errs, err)
+				errs = multierror.Append(errs, fmt.Errorf("block %q: %w", child.TypeLabel(), err))
 				continue
 			}
 			expanded = append(expanded, blocks...)
@@ -610,6 +610,10 @@ func (b *Block) expandDynamic() ([]*Block, error) {
 	forEachVal, err := b.validateForEach()
 	if err != nil {
 		return nil, fmt.Errorf("invalid for-each in %s block: %w", b.FullLocalName(), err)
+	}
+
+	if !forEachVal.IsKnown() {
+		return nil, errors.New("for-each must be known")
 	}
 
 	var (
