@@ -1968,7 +1968,12 @@ output "set_count" {
 }
 
 func TestBlockCountModules(t *testing.T) {
-	t.Skip("This test is currently failing, the 'count = 0' module 'bar' is still loaded")
+	t.Skip(
+		"This test is currently failing. " +
+			"The count passed to `module bar` is not being set correctly. " +
+			"The count value is sourced from the output of `module foo`. " +
+			"Submodules cannot be dependent on the output of other submodules right now. ",
+	)
 	// `count` meta attributes are incorrectly handled when referencing
 	// a module output.
 	files := map[string]string{
