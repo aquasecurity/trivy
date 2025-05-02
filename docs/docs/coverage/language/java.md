@@ -105,7 +105,7 @@ But there is no reliable way to determine direct dependencies (even using other 
 Therefore, we mark all dependencies as indirect to use logic to guess direct dependencies and build a dependency tree.
 
 ### Licenses
-Trity also can detect licenses for dependencies.
+Trivy also can detect licenses for dependencies.
 
 Make sure that you have cache[^8] directory to find licenses from `*.pom` dependency files.
 
