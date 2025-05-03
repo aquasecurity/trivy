@@ -426,7 +426,7 @@ func (a *Attribute) valueToString(value cty.Value) (result iacTypes.StringValue)
 
 func (a *Attribute) listContains(stringToLookFor string, ignoreCase bool) bool {
 	return safeOp(a, func(v cty.Value) bool {
-		if !(v.Type().IsListType() || v.Type().IsTupleType()) {
+		if !v.Type().IsListType() && !v.Type().IsTupleType() {
 			return false
 		}
 
@@ -469,7 +469,7 @@ func (a *Attribute) extractListValues() []string {
 
 func (a *Attribute) mapContains(checkValue any) bool {
 	return safeOp(a, func(v cty.Value) bool {
-		if !(v.Type().IsObjectType() || v.Type().IsMapType()) {
+		if !v.Type().IsObjectType() && !v.Type().IsMapType() {
 			return false
 		}
 		valueMap := v.AsValueMap()
@@ -654,7 +654,7 @@ func (a *Attribute) isNullAttributeEmpty() bool {
 
 func (a *Attribute) MapValue(mapKey string) cty.Value {
 	return safeOp(a, func(v cty.Value) cty.Value {
-		if !(v.Type().IsObjectType() || v.Type().IsMapType()) {
+		if !v.Type().IsObjectType() && !v.Type().IsMapType() {
 			return cty.NilVal
 		}
 		m := v.AsValueMap()

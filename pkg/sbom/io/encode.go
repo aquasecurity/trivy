@@ -435,6 +435,6 @@ func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Pac
 
 func filterProperties(props []core.Property) []core.Property {
 	return lo.Filter(props, func(property core.Property, _ int) bool {
-		return !(property.Value == "" || (property.Name == core.PropertySrcEpoch && property.Value == "0"))
+		return property.Value != "" && (property.Name != core.PropertySrcEpoch || property.Value != "0")
 	})
 }
