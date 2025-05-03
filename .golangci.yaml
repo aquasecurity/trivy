@@ -132,7 +132,6 @@ linters:
         - -ST1003 # Poorly chosen identifier
         - -ST1012 # Poorly chosen name for error variable
         - -ST1016 # Use consistent method receiver names
-        - -ST1023 # Redundant type in variable declaration
 
     testifylint:
       enable-all: true
@@ -197,6 +196,7 @@ linters:
 
 run:
   go: '1.24'
+  timeout: 30m
 
 formatters:
   enable:
