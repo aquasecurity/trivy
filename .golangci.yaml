@@ -116,7 +116,6 @@ linters:
     staticcheck:
       checks:
         - all
-        - -QF1007 # Merge conditional assignment into variable declaration
         - -QF1008 # Omit embedded fields from selector expression
         - -QF1011 # Omit redundant type from variable declaration
         - -S1007  # Simplify regular expression by using raw string literal

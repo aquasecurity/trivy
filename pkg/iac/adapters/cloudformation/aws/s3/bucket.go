@@ -96,10 +96,8 @@ func hasVersioning(r *parser.Resource) iacTypes.BoolValue {
 		return iacTypes.BoolDefault(false, r.Metadata())
 	}
 
-	versioningEnabled := false
-	if versioningProp.EqualTo("Enabled") {
-		versioningEnabled = true
-	}
+	versioningEnabled := versioningProp.EqualTo("Enabled")
+
 	return iacTypes.Bool(versioningEnabled, versioningProp.Metadata())
 }
 
