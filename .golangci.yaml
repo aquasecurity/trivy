@@ -122,7 +122,6 @@ linters:
         - -S1011  # Use a single append to concatenate two slices
         - -S1023  # Omit redundant control flow
         - -S1030  # Use bytes.Buffer.String or bytes.Buffer.Bytes
-        - -SA1012 # A nil context.Context is being passed to a function, consider using context.TODO instead
         - -SA1019 # Using a deprecated function, variable, constant or field
         - -SA1024 # A string cutset contains duplicate characters
         - -SA4004 # The loop exits unconditionally after one iteration

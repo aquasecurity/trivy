@@ -477,7 +477,7 @@ func TestScanner_Detect(t *testing.T) {
 			defer func() { _ = dbtest.Close() }()
 
 			s := redhat.NewScanner()
-			got, err := s.Detect(nil, tt.args.osVer, nil, tt.args.pkgs)
+			got, err := s.Detect(t.Context(), tt.args.osVer, nil, tt.args.pkgs)
 			require.Equal(t, tt.wantErr, err != nil, err)
 			assert.Equal(t, tt.want, got)
 		})

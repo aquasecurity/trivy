@@ -246,7 +246,7 @@ Legend:
 				Scanners:   tc.scanners,
 				TableModes: tc.tableModes,
 			})
-			_ = writer.Write(nil, types.Report{Results: tc.results})
+			_ = writer.Write(t.Context(), types.Report{Results: tc.results})
 			assert.Equal(t, tc.wantOutput, tableWritten.String(), tc.name)
 		})
 	}
