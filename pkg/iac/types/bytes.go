@@ -87,8 +87,8 @@ func BytesUnresolvable(m Metadata) BytesValue {
 	return b
 }
 
-func (s BytesValue) ToRego() any {
-	m := s.metadata.ToRego().(map[string]any)
-	m["value"] = string(s.Value())
+func (b BytesValue) ToRego() any {
+	m := b.metadata.ToRego().(map[string]any)
+	m["value"] = string(b.Value())
 	return m
 }

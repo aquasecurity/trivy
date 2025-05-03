@@ -128,7 +128,6 @@ linters:
         - -SA5011 # Possible nil pointer dereference
         - -ST1003 # Poorly chosen identifier
         - -ST1012 # Poorly chosen name for error variable
-        - -ST1016 # Use consistent method receiver names
 
     testifylint:
       enable-all: true

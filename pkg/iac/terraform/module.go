@@ -58,8 +58,8 @@ func (c *Module) GetBlocks() Blocks {
 	return c.blocks
 }
 
-func (h *Module) GetBlocksByTypeLabel(typeLabel string) Blocks {
-	return h.blockMap[typeLabel]
+func (c *Module) GetBlocksByTypeLabel(typeLabel string) Blocks {
+	return c.blockMap[typeLabel]
 }
 
 func (c *Module) getBlocksByType(blockType string, labels ...string) Blocks {
