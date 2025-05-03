@@ -117,7 +117,6 @@ linters:
       checks:
         - all
         - -QF1008 # Omit embedded fields from selector expression
-        - -QF1011 # Omit redundant type from variable declaration
         - -S1007  # Simplify regular expression by using raw string literal
         - -S1008  # Simplify returning boolean expression
         - -S1009  # Omit redundant nil check on slices, maps, and channels
