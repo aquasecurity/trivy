@@ -217,10 +217,7 @@ func (r *Repository) needUpdate(ctx context.Context, ver Version, versionDir str
 	now := clock.Clock(ctx).Now()
 	log.DebugContext(ctx, "Checking if the repository needs to be updated...", log.String("repo", r.Name),
 		log.Time("last_update", m.UpdatedAt), log.Duration("update_interval", ver.UpdateInterval.Duration))
-	if now.After(m.UpdatedAt.Add(ver.UpdateInterval.Duration)) {
-		return true
-	}
-	return false
+	return now.After(m.UpdatedAt.Add(ver.UpdateInterval.Duration))
 }
 
 func (r *Repository) download(ctx context.Context, ver Version, dst string, opts Options) error {
