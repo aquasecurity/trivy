@@ -22,7 +22,7 @@ func NewScanner(categories map[types.LicenseCategory][]string) Scanner {
 }
 
 func (s *Scanner) Scan(licenseName string) (types.LicenseCategory, string) {
-	normalized := NormalizeLicenseNew(licenseName)
+	normalized := Normalize(licenseName)
 
 	switch normalized := normalized.(type) {
 	case expression.SimpleExpr:
