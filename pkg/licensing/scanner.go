@@ -22,17 +22,21 @@ func NewScanner(categories map[types.LicenseCategory][]string) Scanner {
 }
 
 func (s *Scanner) Scan(licenseName string) (types.LicenseCategory, string) {
-	normalized := NormalizeLicense(expression.SimpleExpr{License: licenseName})
-	var normalizedName string
+	normalized := NormalizeLicenseNew(licenseName)
+
 	switch normalized := normalized.(type) {
 	case expression.SimpleExpr:
-		normalizedName = normalized.License
+		return s.licenseToCategoryAndSeverity(normalized)
 	case expression.CompoundExpr:
-		normalizedName = normalized.String()
+		return s.compoundLicenseToCategoryAndSeverity(normalized)
 	}
 
+	return types.CategoryUnknown, dbTypes.SeverityUnknown.String()
+}
+
+func (s *Scanner) licenseToCategoryAndSeverity(license expression.SimpleExpr) (types.LicenseCategory, string) {
 	for category, names := range s.categories {
-		if slices.Contains(names, normalizedName) {
+		if slices.Contains(names, license.License) {
 			return category, categoryToSeverity(category).String()
 		}
 	}
@@ -51,4 +55,40 @@ func categoryToSeverity(category types.LicenseCategory) dbTypes.Severity {
 		return dbTypes.SeverityLow
 	}
 	return dbTypes.SeverityUnknown
+}
+
+func (s *Scanner) compoundLicenseToCategoryAndSeverity(license expression.CompoundExpr) (types.LicenseCategory, string) {
+	switch license.Conjunction() {
+	case expression.TokenAnd:
+		return s.compoundLogicOperator(license, true)
+	case expression.TokenOR:
+		return s.compoundLogicOperator(license, false)
+	default:
+		return types.CategoryUnknown, dbTypes.SeverityUnknown.String()
+	}
+}
+
+func (s *Scanner) compoundLogicOperator(license expression.CompoundExpr, findMax bool) (types.LicenseCategory, string) {
+	lCategory, lSeverity := s.Scan(license.Left().String())
+	rCategory, rSeverity := s.Scan(license.Right().String())
+
+	if lSeverity == dbTypes.SeverityUnknown.String() || rSeverity == dbTypes.SeverityUnknown.String() {
+		return types.CategoryUnknown, dbTypes.SeverityUnknown.String()
+	}
+
+	var logicOperator int
+	if findMax {
+		logicOperator = 1
+	} else {
+		logicOperator = -1
+	}
+
+	var compoundCategory types.LicenseCategory
+	if 0 < logicOperator*dbTypes.CompareSeverityString(lSeverity, rSeverity) {
+		compoundCategory = rCategory
+	} else {
+		compoundCategory = lCategory
+	}
+
+	return compoundCategory, categoryToSeverity(compoundCategory).String()
 }

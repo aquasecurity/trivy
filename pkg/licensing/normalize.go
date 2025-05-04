@@ -687,6 +687,22 @@ func NormalizeLicense(exp expr.Expression) expr.Expression {
 	return exp
 }
 
+func NormalizeLicenseNew(name string) expr.Expression {
+	exp, err := expr.Normalize(name)
+
+	if err != nil {
+		return nil
+	}
+
+	switch e := exp.(type) {
+	case expr.SimpleExpr:
+		return normalizeSimpleExpr(e)
+	case expr.CompoundExpr:
+		return normalizeCompoundExpr(e)
+	}
+	return exp
+}
+
 func normalizeSimpleExpr(e expr.SimpleExpr) expr.Expression {
 	// Always trim leading and trailing spaces, even if we don't find this license in `mapping`.
 	name := strings.TrimSpace(e.License)

@@ -58,6 +58,62 @@ func TestScanner_Scan(t *testing.T) {
 			wantSeverity: "HIGH",
 		},
 		{
+			name: "compound OR license",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryForbidden: {
+					expression.GPL30,
+				},
+				types.CategoryRestricted: {
+					expression.Apache20,
+				},
+			},
+			licenseName:  expression.GPL30 + " OR " + expression.Apache20,
+			wantCategory: types.CategoryRestricted,
+			wantSeverity: "HIGH",
+		},
+		{
+			name: "compound AND license",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryForbidden: {
+					expression.GPL30,
+				},
+				types.CategoryRestricted: {
+					expression.Apache20,
+				},
+			},
+			licenseName:  expression.GPL30 + " AND " + expression.Apache20,
+			wantCategory: types.CategoryForbidden,
+			wantSeverity: "CRITICAL",
+		},
+		{
+			name: "compound unknown license",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryForbidden: {
+					expression.GPL30,
+				},
+			},
+			licenseName:  expression.GPL30 + " AND " + expression.Apache20,
+			wantCategory: types.CategoryUnknown,
+			wantSeverity: "UNKNOWN",
+		},
+		{
+			name: "compound long license, recursive",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryForbidden: {
+					expression.GPL30,
+				},
+				types.CategoryRestricted: {
+					expression.BSD3Clause,
+				},
+				types.CategoryNotice: {
+					expression.Apache20,
+				},
+			},
+			licenseName:  expression.Apache20 + " AND (" + expression.GPL30 + " OR " + expression.BSD3Clause + ")",
+			wantCategory: types.CategoryRestricted,
+			wantSeverity: "HIGH",
+		},
+		{
 			name:         "unknown",
 			categories:   make(map[types.LicenseCategory][]string),
 			licenseName:  expression.BSD3Clause,
