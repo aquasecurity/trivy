@@ -161,7 +161,7 @@ func (a *gomodAnalyzer) fillAdditionalData(fsys fs.FS, apps []types.Application)
 		entries, err := fs.ReadDir(fsys, vendorDir)
 		vendorDirFound := err == nil && len(entries) > 0
 		if vendorDirFound {
-			a.logger.Debug("Vendor directory found")
+			a.logger.Debug("Vendor directory found", log.String("path", vendorDir))
 			modPath = vendorDir
 		}
 
