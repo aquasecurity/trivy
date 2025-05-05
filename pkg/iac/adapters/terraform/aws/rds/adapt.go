@@ -41,7 +41,6 @@ func getSnapshots(modules terraform.Modules) (snapshots []rds.Snapshots) {
 }
 
 func getClusters(modules terraform.Modules) (clusters []rds.Cluster) {
-
 	rdsInstanceMaps := modules.GetChildResourceIDMapByType("aws_rds_cluster_instance")
 	for _, resource := range modules.GetResourcesByType("aws_rds_cluster") {
 		cluster, instanceIDs := adaptCluster(resource, modules)
@@ -116,7 +115,6 @@ func adaptClassicDBSecurityGroup(resource *terraform.Block) rds.DBSecurityGroup 
 }
 
 func adaptInstance(resource *terraform.Block, modules terraform.Modules) rds.Instance {
-
 	var ReadReplicaDBInstanceIdentifiers []iacTypes.StringValue
 	rrdiAttr := resource.GetAttribute("replicate_source_db")
 	for _, rrdi := range rrdiAttr.AsStringValues() {
@@ -126,7 +124,6 @@ func adaptInstance(resource *terraform.Block, modules terraform.Modules) rds.Ins
 	var TagList []rds.TagList
 	tagres := resource.GetBlocks("tags")
 	for _, tagres := range tagres {
-
 		TagList = append(TagList, rds.TagList{
 			Metadata: tagres.GetMetadata(),
 		})
@@ -170,11 +167,9 @@ func adaptInstance(resource *terraform.Block, modules terraform.Modules) rds.Ins
 }
 
 func adaptDBParameterGroups(resource *terraform.Block, _ terraform.Modules) rds.ParameterGroups {
-
 	var Parameters []rds.Parameters
 	paramres := resource.GetBlocks("parameter")
 	for _, paramres := range paramres {
-
 		Parameters = append(Parameters, rds.Parameters{
 			Metadata:       paramres.GetMetadata(),
 			ParameterName:  iacTypes.StringDefault("", paramres.GetMetadata()),
@@ -191,7 +186,6 @@ func adaptDBParameterGroups(resource *terraform.Block, _ terraform.Modules) rds.
 }
 
 func adaptDBSnapshots(resource *terraform.Block, _ terraform.Modules) rds.Snapshots {
-
 	return rds.Snapshots{
 		Metadata:             resource.GetMetadata(),
 		DBSnapshotIdentifier: resource.GetAttribute("db_snapshot_identifier").AsStringValueOrDefault("", resource),
@@ -203,7 +197,6 @@ func adaptDBSnapshots(resource *terraform.Block, _ terraform.Modules) rds.Snapsh
 }
 
 func adaptCluster(resource *terraform.Block, modules terraform.Modules) (rds.Cluster, []string) {
-
 	clusterInstances, ids := getClusterInstances(resource, modules)
 
 	var public bool

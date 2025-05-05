@@ -17,11 +17,12 @@ func (n *node) Metadata() types.Metadata {
 	return *n.metadata
 }
 
-var unmarshaller = reflect.TypeOf((*Unmarshaller)(nil)).Elem()
-var receiver = reflect.TypeOf((*MetadataReceiver)(nil)).Elem()
+var (
+	unmarshaller = reflect.TypeOf((*Unmarshaller)(nil)).Elem()
+	receiver     = reflect.TypeOf((*MetadataReceiver)(nil)).Elem()
+)
 
 func (n *node) decodeToValue(v reflect.Value) error {
-
 	if v.Type().Implements(receiver) {
 		rec := v
 		defer func() {

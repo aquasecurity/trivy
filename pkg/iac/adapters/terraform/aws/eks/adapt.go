@@ -23,7 +23,6 @@ func adaptClusters(modules terraform.Modules) []eks.Cluster {
 }
 
 func adaptCluster(resource *terraform.Block) eks.Cluster {
-
 	cluster := eks.Cluster{
 		Metadata: resource.GetMetadata(),
 		Logging: eks.Logging{

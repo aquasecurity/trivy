@@ -18,8 +18,10 @@ func init() {
 	analyzer.RegisterAnalyzer(&apkRepoAnalyzer{})
 }
 
-const version = 1
-const edgeVersion = "edge"
+const (
+	version     = 1
+	edgeVersion = "edge"
+)
 
 var (
 	requiredFiles  = []string{"etc/apk/repositories"}

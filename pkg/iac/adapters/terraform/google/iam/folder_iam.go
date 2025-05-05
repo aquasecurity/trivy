@@ -43,7 +43,6 @@ func (a *adapter) adaptFolderMembers() {
 }
 
 func (a *adapter) adaptFolderBindings() {
-
 	for _, iamBlock := range a.modules.GetResourcesByType("google_folder_iam_policy") {
 
 		policyAttr := iamBlock.GetAttribute("policy_data")

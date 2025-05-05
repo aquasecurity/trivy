@@ -28,7 +28,6 @@ type builder struct {
 }
 
 func Build() (*RawSchema, error) {
-
 	b := newBuilder()
 
 	inputValue := reflect.ValueOf(state.State{})
@@ -51,7 +50,6 @@ func newBuilder() *builder {
 }
 
 func (b *builder) fromInput(inputValue reflect.Value) error {
-
 	prop, err := b.readProperty("", nil, inputValue.Type(), 0)
 	if err != nil {
 		return err
@@ -167,7 +165,6 @@ func (b *builder) readProperty(name string, parent, inputType reflect.Type, inde
 var converterInterface = reflect.TypeOf((*convert.Converter)(nil)).Elem()
 
 func (b *builder) readStruct(name string, parent, inputType reflect.Type, indent int) (*Property, error) {
-
 	if b.schema.Defs == nil {
 		b.schema.Defs = make(map[string]*Property)
 	}
@@ -224,7 +221,6 @@ func (b *builder) readStruct(name string, parent, inputType reflect.Type, indent
 }
 
 func (b *builder) readSlice(name string, parent, inputType reflect.Type, indent int) (*Property, error) {
-
 	items, err := b.readProperty(name, parent, inputType.Elem(), indent+1)
 	if err != nil {
 		return nil, err
@@ -238,7 +234,6 @@ func (b *builder) readSlice(name string, parent, inputType reflect.Type, indent 
 }
 
 func (b *builder) readRego(def *Property, name string, parent, typ reflect.Type, raw any, indent int) error {
-
 	switch cast := raw.(type) {
 	case map[string]any:
 		def.Type = "object"
@@ -271,5 +266,4 @@ func (b *builder) readRego(def *Property, name string, parent, typ reflect.Type,
 	}
 
 	return nil
-
 }

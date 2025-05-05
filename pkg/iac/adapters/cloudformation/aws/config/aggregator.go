@@ -7,7 +7,6 @@ import (
 )
 
 func getConfigurationAggregator(ctx parser.FileContext) config.ConfigurationAggregrator {
-
 	aggregator := config.ConfigurationAggregrator{
 		Metadata:         iacTypes.NewUnmanagedMetadata(),
 		SourceAllRegions: iacTypes.BoolDefault(false, ctx.Metadata()),

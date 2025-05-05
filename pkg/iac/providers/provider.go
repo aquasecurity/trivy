@@ -53,6 +53,7 @@ func (p Provider) DisplayName() string {
 		return cases.Title(language.English).String(strings.ToLower(string(p)))
 	}
 }
+
 func (p Provider) ConstName() string {
 	return strings.ReplaceAll(p.DisplayName(), " ", "")
 }

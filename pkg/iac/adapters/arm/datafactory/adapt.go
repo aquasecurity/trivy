@@ -6,7 +6,6 @@ import (
 )
 
 func Adapt(deployment azure.Deployment) datafactory.DataFactory {
-
 	return datafactory.DataFactory{
 		DataFactories: adaptDataFactories(deployment),
 	}

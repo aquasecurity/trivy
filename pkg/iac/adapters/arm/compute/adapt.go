@@ -15,7 +15,6 @@ func Adapt(deployment azure.Deployment) compute.Compute {
 }
 
 func adaptManagedDisks(deployment azure.Deployment) (managedDisks []compute.ManagedDisk) {
-
 	for _, resource := range deployment.GetResourcesByType("Microsoft.Compute/disks") {
 		managedDisks = append(managedDisks, adaptManagedDisk(resource))
 	}
@@ -81,5 +80,4 @@ func adaptLinuxVirtualMachine(resource azure.Resource) compute.LinuxVirtualMachi
 				GetMapValue("disablePasswordAuthentication").AsBoolValue(false, resource.Metadata),
 		},
 	}
-
 }

@@ -22,7 +22,6 @@ var Remote = &remoteResolver{
 }
 
 func (r *remoteResolver) incrementCount(o Options) {
-
 	atomic.CompareAndSwapInt32(&r.count, r.count, r.count+1)
 	o.Logger.Debug("Incrementing the download counter", log.Int("count", int(r.count)))
 }

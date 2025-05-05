@@ -7,7 +7,7 @@ import (
 )
 
 func Test_parseResult(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name  string
 		input any
 		want  regoResult

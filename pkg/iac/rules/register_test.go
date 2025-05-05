@@ -21,7 +21,7 @@ func Test_Reset(t *testing.T) {
 }
 
 func Test_Registration(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		name                 string
 		registeredFrameworks map[framework.Framework][]string
 		inputFrameworks      []framework.Framework

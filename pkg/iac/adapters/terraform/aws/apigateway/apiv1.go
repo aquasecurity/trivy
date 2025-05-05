@@ -33,7 +33,6 @@ func adaptAPIMethodsV1(modules terraform.Modules, resourceBlock *terraform.Block
 }
 
 func adaptAPIsV1(modules terraform.Modules) []v1.API {
-
 	var apis []v1.API
 	apiStageIDs := modules.GetChildResourceIDMapByType("aws_api_gateway_stage")
 

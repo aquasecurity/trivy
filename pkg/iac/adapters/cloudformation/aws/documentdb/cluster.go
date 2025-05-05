@@ -7,7 +7,6 @@ import (
 )
 
 func getClusters(ctx parser.FileContext) (clusters []documentdb.Cluster) {
-
 	clusterResources := ctx.GetResourcesByType("AWS::DocDB::DBCluster")
 
 	for _, r := range clusterResources {
@@ -29,7 +28,6 @@ func getClusters(ctx parser.FileContext) (clusters []documentdb.Cluster) {
 }
 
 func updateInstancesOnCluster(cluster *documentdb.Cluster, ctx parser.FileContext) {
-
 	instanceResources := ctx.GetResourcesByType("AWS::DocDB::DBInstance")
 
 	for _, r := range instanceResources {
@@ -44,7 +42,6 @@ func updateInstancesOnCluster(cluster *documentdb.Cluster, ctx parser.FileContex
 }
 
 func getLogExports(r *parser.Resource) (logExports []types.StringValue) {
-
 	exportsList := r.GetProperty("EnableCloudwatchLogsExports")
 
 	if exportsList.IsNil() || exportsList.IsNotList() {

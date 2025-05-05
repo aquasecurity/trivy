@@ -15,7 +15,6 @@ import (
 */
 
 func Test_resolve_split_value(t *testing.T) {
-
 	property := &Property{
 		name: "BucketName",
 		Type: cftypes.Map,
@@ -42,5 +41,4 @@ func Test_resolve_split_value(t *testing.T) {
 	assert.True(t, resolvedProperty.IsList())
 	listContents := resolvedProperty.AsList()
 	assert.Len(t, listContents, 4)
-
 }

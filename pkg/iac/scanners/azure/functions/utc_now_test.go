@@ -10,7 +10,6 @@ import (
 )
 
 func Test_UTCNow(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		args     []any

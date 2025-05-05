@@ -15,16 +15,14 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-var (
-	eolDates = map[string]time.Time{
-		"1.0": time.Date(2022, 2, 28, 23, 59, 59, 0, time.UTC),
-		"2.0": time.Date(2022, 12, 31, 23, 59, 59, 0, time.UTC),
-		// The following versions don't have the EOL dates yet.
-		// See https://blogs.vmware.com/vsphere/2022/01/photon-1-x-end-of-support-announcement.html
-		"3.0": time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
-		"4.0": time.Date(2025, 12, 31, 23, 59, 59, 0, time.UTC),
-	}
-)
+var eolDates = map[string]time.Time{
+	"1.0": time.Date(2022, 2, 28, 23, 59, 59, 0, time.UTC),
+	"2.0": time.Date(2022, 12, 31, 23, 59, 59, 0, time.UTC),
+	// The following versions don't have the EOL dates yet.
+	// See https://blogs.vmware.com/vsphere/2022/01/photon-1-x-end-of-support-announcement.html
+	"3.0": time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
+	"4.0": time.Date(2025, 12, 31, 23, 59, 59, 0, time.UTC),
+}
 
 // Scanner implements the Photon scanner
 type Scanner struct {

@@ -161,7 +161,6 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 						Type:     types.Conan,
 						FilePath: "release.lock",
 						Packages: types.Packages{
-
 							{
 								ID:           "openssl/3.2.2",
 								Name:         "openssl",

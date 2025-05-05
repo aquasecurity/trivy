@@ -7,7 +7,6 @@ import (
 )
 
 func Test_Skip(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		args     []any
@@ -61,5 +60,4 @@ func Test_Skip(t *testing.T) {
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
-
 }

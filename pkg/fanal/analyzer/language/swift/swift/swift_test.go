@@ -26,7 +26,6 @@ func Test_swiftLockAnalyzer_Analyze(t *testing.T) {
 						Type:     types.Swift,
 						FilePath: "testdata/happy/Package.resolved",
 						Packages: types.Packages{
-
 							{
 								ID:      "github.com/Quick/Nimble@9.2.1",
 								Name:    "github.com/Quick/Nimble",

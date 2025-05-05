@@ -139,6 +139,7 @@ func (c RedisCache) PutBlob(blobID string, blobInfo types.BlobInfo) error {
 	}
 	return nil
 }
+
 func (c RedisCache) DeleteBlobs(blobIDs []string) error {
 	var errs error
 	for _, blobID := range blobIDs {

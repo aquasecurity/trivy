@@ -35,7 +35,6 @@ var globalCache = &cache{
 }
 
 func highlight(fsKey, filename string, startLine, endLine int, input, theme string) []string {
-
 	key := fmt.Sprintf("%s|%s|%d-%d", fsKey, filename, startLine, endLine)
 	if lines, ok := globalCache.Get(key); ok {
 		return lines

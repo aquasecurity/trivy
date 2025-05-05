@@ -11,7 +11,6 @@ import (
 )
 
 func SetupLocalStack(ctx context.Context, version string) (*localstack.LocalStackContainer, string, error) {
-
 	if err := os.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true"); err != nil {
 		return nil, "", err
 	}
@@ -47,5 +46,4 @@ func SetupLocalStack(ctx context.Context, version string) (*localstack.LocalStac
 	}
 
 	return container, fmt.Sprintf("http://%s:%d", host, p.Int()), nil
-
 }

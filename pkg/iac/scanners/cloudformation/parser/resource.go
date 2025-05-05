@@ -107,7 +107,6 @@ func (r *Resource) IsNil() bool {
 }
 
 func (r *Resource) GetProperty(path string) *Property {
-
 	pathParts := strings.Split(path, ".")
 
 	first := pathParts[0]

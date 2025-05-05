@@ -21,9 +21,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 )
 
-var _ scanners.FSScanner = (*Scanner)(nil)
-var _ options.ConfigurableScanner = (*Scanner)(nil)
-var _ ConfigurableTerraformScanner = (*Scanner)(nil)
+var (
+	_ scanners.FSScanner           = (*Scanner)(nil)
+	_ options.ConfigurableScanner  = (*Scanner)(nil)
+	_ ConfigurableTerraformScanner = (*Scanner)(nil)
+)
 
 type Scanner struct {
 	*rego.RegoScannerProvider
@@ -73,7 +75,6 @@ type terraformRootModule struct {
 }
 
 func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Results, error) {
-
 	s.logger.Debug("Scanning directory", log.FilePath(dir))
 
 	// find directories which directly contain tf files
@@ -183,7 +184,6 @@ func (s *Scanner) removeNestedDirs(dirs []string) []string {
 }
 
 func (s *Scanner) findModules(target fs.FS, scanDir string, dirs ...string) []string {
-
 	var roots []string
 	var others []string
 

@@ -3,7 +3,6 @@ package functions
 import "strings"
 
 func Join(args ...any) any {
-
 	if len(args) != 2 {
 		return ""
 	}

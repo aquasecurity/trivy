@@ -12,7 +12,6 @@ func Test_Greater(t *testing.T) {
 		args     []any
 		expected any
 	}{
-
 		{
 			name: "greater with nil and string",
 			args: []any{
@@ -68,7 +67,6 @@ func Test_GreaterThanOrEqual(t *testing.T) {
 		args     []any
 		expected any
 	}{
-
 		{
 			name: "greater with nil and string",
 			args: []any{

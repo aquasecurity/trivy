@@ -24,8 +24,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-var _ scanners.FSScanner = (*Scanner)(nil)
-var _ options.ConfigurableScanner = (*Scanner)(nil)
+var (
+	_ scanners.FSScanner          = (*Scanner)(nil)
+	_ options.ConfigurableScanner = (*Scanner)(nil)
+)
 
 type Scanner struct {
 	*rego.RegoScannerProvider
@@ -94,7 +96,6 @@ func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Resu
 	}
 
 	return results, nil
-
 }
 
 func (s *Scanner) getScanResults(ctx context.Context, path string, target fs.FS) (results []scan.Result, err error) {

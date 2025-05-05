@@ -7,7 +7,6 @@ import (
 )
 
 func Adapt(modules terraform.Modules) ec2.EC2 {
-
 	naclAdapter := naclAdapter{naclRuleIDs: modules.GetChildResourceIDMapByType("aws_network_acl_rule")}
 	sgAdapter := sgAdapter{sgRuleIDs: modules.GetChildResourceIDMapByType("aws_security_group_rule")}
 

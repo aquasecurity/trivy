@@ -120,5 +120,4 @@ func TestLines(t *testing.T) {
 
 	assert.Equal(t, 9, key.RotationPeriodSeconds.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 9, key.RotationPeriodSeconds.GetMetadata().Range().GetEndLine())
-
 }

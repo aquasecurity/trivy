@@ -114,7 +114,6 @@ func GetComplianceSpec(specNameOrPath, cacheDir string) (ComplianceSpec, error) 
 		return ComplianceSpec{}, xerrors.Errorf("spec yaml decode error: %w", err)
 	}
 	return complianceSpec, nil
-
 }
 
 func LoadFromBundle(cacheDir, specNameOrPath string) ([]byte, error) {

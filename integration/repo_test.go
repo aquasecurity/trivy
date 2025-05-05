@@ -525,7 +525,7 @@ func TestRepository(t *testing.T) {
 
 			if len(tt.args.ignoreIDs) != 0 {
 				trivyIgnore := ".trivyignore"
-				err := os.WriteFile(trivyIgnore, []byte(strings.Join(tt.args.ignoreIDs, "\n")), 0444)
+				err := os.WriteFile(trivyIgnore, []byte(strings.Join(tt.args.ignoreIDs, "\n")), 0o444)
 				require.NoError(t, err, "failed to write .trivyignore")
 				defer os.Remove(trivyIgnore)
 			}

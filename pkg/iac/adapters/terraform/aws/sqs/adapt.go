@@ -95,7 +95,6 @@ func (a *adapter) adaptQueues() []sqs.Queue {
 }
 
 func (a *adapter) adaptQueue(resource *terraform.Block) {
-
 	kmsKeyIdAttr := resource.GetAttribute("kms_master_key_id")
 	kmsKeyIdVal := kmsKeyIdAttr.AsStringValueOrDefault("", resource)
 	managedEncryption := resource.GetAttribute("sqs_managed_sse_enabled")

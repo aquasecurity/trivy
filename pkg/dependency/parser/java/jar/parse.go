@@ -22,9 +22,7 @@ import (
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-var (
-	jarFileRegEx = regexp.MustCompile(`^([a-zA-Z0-9\._-]*[^-*])-(\d\S*(?:-SNAPSHOT)?).jar$`)
-)
+var jarFileRegEx = regexp.MustCompile(`^([a-zA-Z0-9\._-]*[^-*])-(\d\S*(?:-SNAPSHOT)?).jar$`)
 
 type Client interface {
 	Exists(groupID, artifactID string) (bool, error)
@@ -149,7 +147,8 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 }
 
 func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fileProps Properties) (
-	[]ftypes.Package, manifest, bool, error) {
+	[]ftypes.Package, manifest, bool, error,
+) {
 	var pkgs []ftypes.Package
 	var m manifest
 	var foundPomProps bool
@@ -440,7 +439,7 @@ func (m manifest) determineVersion() (string, error) {
 
 func removePackageDuplicates(pkgs []ftypes.Package) []ftypes.Package {
 	// name::filePath => versions
-	var uniq = make(map[string][]mavenversion.Version)
+	uniq := make(map[string][]mavenversion.Version)
 	var uniqPkgs []ftypes.Package
 	for _, pkg := range pkgs {
 		uniqID := pkg.Name + "::" + pkg.FilePath

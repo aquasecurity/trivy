@@ -51,7 +51,6 @@ func IsIntrinsicFunc(node *yaml.Node) bool {
 		nodeTag = fmt.Sprintf("Fn::%s", nodeTag)
 	}
 	for tag := range intrinsicFuncs {
-
 		if nodeTag == tag {
 			return true
 		}

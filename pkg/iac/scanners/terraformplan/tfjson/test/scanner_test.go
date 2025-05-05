@@ -35,5 +35,4 @@ func Test_Scanning_Plan(t *testing.T) {
 	}
 
 	assert.Len(t, failedResults, 8)
-
 }

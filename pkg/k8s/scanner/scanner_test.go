@@ -310,7 +310,6 @@ func TestTestOsNameVersion(t *testing.T) {
 		compName    string
 		compVersion string
 	}{
-
 		{
 			name:        "valid version",
 			nameVersion: "ubuntu 20.04",

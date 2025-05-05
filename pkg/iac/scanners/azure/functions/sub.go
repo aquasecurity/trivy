@@ -1,7 +1,6 @@
 package functions
 
 func Sub(args ...any) any {
-
 	if len(args) != 2 {
 		return nil
 	}

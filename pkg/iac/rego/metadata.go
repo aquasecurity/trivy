@@ -256,7 +256,6 @@ type SubType struct {
 }
 
 func (m *StaticMetadata) ToRule() scan.Rule {
-
 	provider := "generic"
 	if m.Provider != "" {
 		provider = m.Provider

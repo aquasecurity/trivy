@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"golang.org/x/xerrors"
-
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/function"
+	"golang.org/x/xerrors"
 )
 
 // TimestampFunc constructs a function that returns a string representation of the current date and time.

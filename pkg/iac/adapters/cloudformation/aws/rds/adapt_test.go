@@ -171,5 +171,4 @@ Resources:
 			testutil.AdaptAndCompare(t, tt.source, tt.expected, Adapt)
 		})
 	}
-
 }

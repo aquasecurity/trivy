@@ -1,7 +1,6 @@
 package functions
 
 func If(args ...any) any {
-
 	if len(args) != 3 {
 		return nil
 	}

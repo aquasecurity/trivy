@@ -9,7 +9,6 @@ import (
 )
 
 func adaptInstances(modules terraform.Modules) (instances []compute.Instance) {
-
 	for _, instanceBlock := range modules.GetResourcesByType("google_compute_instance") {
 
 		instance := compute.Instance{
