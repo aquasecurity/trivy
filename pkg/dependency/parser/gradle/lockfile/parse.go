@@ -34,9 +34,8 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, 
 		}
 
 		name := strings.Join(dep[:2], ":")
-		version := strings.Split(dep[2], "=")[0] // remove classPaths
+		version, classPathsString, _ := strings.Cut(dep[2], "=")
 
-		classPathsString := strings.Split(dep[2], "=")[1]
 		classPaths := strings.Split(classPathsString, ",")
 		dev := true
 
