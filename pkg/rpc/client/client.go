@@ -12,6 +12,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	r "github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/x/slices"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 	"github.com/aquasecurity/trivy/rpc/common"
 	rpc "github.com/aquasecurity/trivy/rpc/scanner"
@@ -68,7 +69,7 @@ func NewService(scannerOptions ServiceOption, opts ...Option) Service {
 }
 
 // Scan scans the image
-func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, opts types.ScanOptions) (types.Results, ftypes.OS, error) {
+func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, opts types.ScanOptions) (types.ScanResponse, error) {
 	ctx = WithCustomHeaders(ctx, s.customHeaders)
 
 	// Convert to the rpc struct
@@ -106,8 +107,17 @@ func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		return err
 	})
 	if err != nil {
-		return nil, ftypes.OS{}, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
+		return types.ScanResponse{}, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
 	}
 
-	return r.ConvertFromRPCResults(res.Results), r.ConvertFromRPCOS(res.Os), nil
+	return types.ScanResponse{
+		Results: r.ConvertFromRPCResults(res.Results),
+		OS:      r.ConvertFromRPCOS(res.Os),
+		Layers: slices.ZeroToNil(lo.FilterMap(res.Layers, func(layer *common.Layer, _ int) (ftypes.Layer, bool) {
+			if layer == nil {
+				return ftypes.Layer{}, false
+			}
+			return r.ConvertFromRPCLayer(layer), true
+		})),
+	}, nil
 }

@@ -24,7 +24,7 @@ type Statement struct {
 func newCycloneDX(sbom *core.BOM, vex *cdx.BOM) *CycloneDX {
 	statements := make(map[string]Statement)
 	for _, vuln := range lo.FromPtr(vex.Vulnerabilities) {
-		affects := lo.Map(lo.FromPtr(vuln.Affects), func(item cdx.Affects, index int) string {
+		affects := lo.Map(lo.FromPtr(vuln.Affects), func(item cdx.Affects, _ int) string {
 			return item.Ref
 		})
 

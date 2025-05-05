@@ -8,35 +8,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_StringValueEqualTo(t *testing.T) {
-	testCases := []struct {
-		desc       string
-		input      string
-		check      string
-		ignoreCase bool
-		expected   bool
-	}{
-		{
-			desc:     "return truw when string is equal",
-			input:    "something",
-			check:    "",
-			expected: false,
-		},
-	}
-	for _, tC := range testCases {
-		t.Run(tC.desc, func(t *testing.T) {
-
-		})
-	}
-}
-
 func Test_StringValueStartsWith(t *testing.T) {
 	testCases := []struct {
-		desc       string
-		input      string
-		prefix     string
-		ignoreCase bool
-		expected   bool
+		desc     string
+		input    string
+		prefix   string
+		expected bool
 	}{
 		{
 			desc:     "return true when starts with",
@@ -50,32 +27,10 @@ func Test_StringValueStartsWith(t *testing.T) {
 			prefix:   "nothing",
 			expected: false,
 		},
-		{
-			desc:       "return true when starts with",
-			input:      "something",
-			prefix:     "SOME",
-			ignoreCase: true,
-			expected:   true,
-		},
-		{
-			desc:     "return false when does not start with",
-			input:    "something",
-			prefix:   "SOME",
-			expected: false,
-		},
 	}
-	for _, tC := range testCases {
-		t.Run(tC.desc, func(t *testing.T) {
-
-			val := String(tC.input, fakeMetadata)
-
-			var options []StringEqualityOption
-
-			if tC.ignoreCase {
-				options = append(options, IgnoreCase)
-			}
-
-			assert.Equal(t, tC.expected, val.StartsWith(tC.prefix, options...))
+	for _, tc := range testCases {
+		t.Run(tc.desc, func(t *testing.T) {
+			assert.Equal(t, tc.expected, String(tc.input, fakeMetadata).StartsWith(tc.prefix))
 		})
 	}
 }

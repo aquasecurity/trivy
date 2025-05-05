@@ -72,7 +72,7 @@ func (a gradleLockAnalyzer) parsePoms() (map[string]pomXML, error) {
 		return nil, nil
 	}
 
-	required := func(path string, d fs.DirEntry) bool {
+	required := func(path string, _ fs.DirEntry) bool {
 		return filepath.Ext(path) == ".pom"
 	}
 

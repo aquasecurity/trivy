@@ -185,7 +185,7 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 	})
 
 	var foundRelevantFile bool
-	filter := func(path string, d fs.DirEntry) (bool, error) {
+	filter := func(path string, _ fs.DirEntry) (bool, error) {
 		file, err := fsys.Open(path)
 		if err != nil {
 			return false, err
@@ -454,11 +454,11 @@ func CreateDataFS(dataPaths []string, opts ...string) (fs.FS, []string, error) {
 	// Check if k8sVersion is provided
 	if len(opts) > 0 {
 		k8sVersion := opts[0]
-		if err := fsys.MkdirAll("system", 0700); err != nil {
+		if err := fsys.MkdirAll("system", 0o700); err != nil {
 			return nil, nil, err
 		}
 		data := []byte(fmt.Sprintf(`{"k8s": {"version": %q}}`, k8sVersion))
-		if err := fsys.WriteVirtualFile("system/k8s-version.json", data, 0600); err != nil {
+		if err := fsys.WriteVirtualFile("system/k8s-version.json", data, 0o600); err != nil {
 			return nil, nil, err
 		}
 	}
@@ -564,7 +564,7 @@ func NewCauseWithCode(underlying scan.Result, flat scan.FlatResult) types.CauseM
 
 		if code, err := underlying.GetCode(); err == nil {
 			cause.Code = types.Code{
-				Lines: lo.Map(code.Lines, func(l scan.Line, i int) types.Line {
+				Lines: lo.Map(code.Lines, func(l scan.Line, _ int) types.Line {
 					return types.Line{
 						Number:      l.Number,
 						Content:     l.Content,

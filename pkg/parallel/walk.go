@@ -81,10 +81,7 @@ func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, parallel int,
 	// Check whether any of the goroutines failed. Since g is accumulating the
 	// errors, we don't need to send them (or check for them) in the individual
 	// results sent on the channel.
-	if err := g.Wait(); err != nil {
-		return err
-	}
-	return nil
+	return g.Wait()
 }
 
 func walk[T any](ctx context.Context, fsys fs.FS, path string, c chan T, onFile onFile[T]) error {

@@ -26,7 +26,7 @@ type adapter struct {
 func (a *adapter) adaptClusters() []gke.Cluster {
 	for _, module := range a.modules {
 		for _, resource := range module.GetResourcesByType("google_container_cluster") {
-			a.adaptCluster(resource, module)
+			a.adaptCluster(resource)
 		}
 	}
 
@@ -46,7 +46,7 @@ func (a *adapter) adaptClusters() []gke.Cluster {
 	return clusters
 }
 
-func (a *adapter) adaptCluster(resource *terraform.Block, module *terraform.Module) {
+func (a *adapter) adaptCluster(resource *terraform.Block) {
 
 	cluster := gke.Cluster{
 		Metadata:  resource.GetMetadata(),
@@ -104,7 +104,7 @@ func (a *adapter) adaptCluster(resource *terraform.Block, module *terraform.Modu
 	}
 
 	if blocks := resource.GetBlocks("master_authorized_networks_config"); len(blocks) > 0 {
-		cluster.MasterAuthorizedNetworks = adaptMasterAuthNetworksAsBlocks(resource, blocks)
+		cluster.MasterAuthorizedNetworks = adaptMasterAuthNetworksAsBlocks(blocks)
 	}
 
 	if policyBlock := resource.GetBlock("network_policy"); policyBlock.IsNotNil() {
@@ -129,12 +129,24 @@ func (a *adapter) adaptCluster(resource *terraform.Block, module *terraform.Modu
 	}
 
 	if configBlock := resource.GetBlock("node_config"); configBlock.IsNotNil() {
-		if configBlock.GetBlock("metadata").IsNotNil() {
-			cluster.NodeConfig.Metadata = configBlock.GetBlock("metadata").GetMetadata()
-		}
 		cluster.NodeConfig = adaptNodeConfig(configBlock)
 	}
 
+	if autoScalingBlock := resource.GetBlock("cluster_autoscaling"); autoScalingBlock.IsNotNil() {
+		cluster.AutoScaling = gke.AutoScaling{
+			Metadata: autoScalingBlock.GetMetadata(),
+			Enabled:  autoScalingBlock.GetAttribute("enabled").AsBoolValueOrDefault(false, autoScalingBlock),
+		}
+
+		if b := autoScalingBlock.GetBlock("auto_provisioning_defaults"); b.IsNotNil() {
+			cluster.AutoScaling.AutoProvisioningDefaults = gke.AutoProvisioningDefaults{
+				Metadata:       b.GetMetadata(),
+				ServiceAccount: b.GetAttribute("service_account").AsStringValueOrDefault("", b),
+				Management:     adaptManagement(b),
+				ImageType:      b.GetAttribute("image_type").AsStringValueOrDefault("", b),
+			}
+		}
+	}
 	cluster.EnableShieldedNodes = resource.GetAttribute("enable_shielded_nodes").AsBoolValueOrDefault(true, resource)
 
 	enableLegacyABACAttr := resource.GetAttribute("enable_legacy_abac")
@@ -150,6 +162,23 @@ func (a *adapter) adaptCluster(resource *terraform.Block, module *terraform.Modu
 	cluster.RemoveDefaultNodePool = resource.GetAttribute("remove_default_node_pool").AsBoolValueOrDefault(false, resource)
 
 	a.clusterMap[resource.ID()] = cluster
+}
+
+func adaptManagement(parent *terraform.Block) gke.Management {
+	b := parent.GetBlock("management")
+	if b.IsNil() {
+		return gke.Management{
+			Metadata:          parent.GetMetadata(),
+			EnableAutoRepair:  iacTypes.BoolDefault(false, parent.GetMetadata()),
+			EnableAutoUpgrade: iacTypes.BoolDefault(false, parent.GetMetadata()),
+		}
+	}
+
+	return gke.Management{
+		Metadata:          b.GetMetadata(),
+		EnableAutoRepair:  b.GetAttribute("auto_repair").AsBoolValueOrDefault(false, b),
+		EnableAutoUpgrade: b.GetAttribute("auto_upgrade").AsBoolValueOrDefault(false, b),
+	}
 }
 
 func (a *adapter) adaptNodePools() {
@@ -170,28 +199,13 @@ func (a *adapter) adaptNodePool(resource *terraform.Block) {
 		EnableLegacyEndpoints: iacTypes.BoolDefault(true, resource.GetMetadata()),
 	}
 
-	management := gke.Management{
-		Metadata:          resource.GetMetadata(),
-		EnableAutoRepair:  iacTypes.BoolDefault(false, resource.GetMetadata()),
-		EnableAutoUpgrade: iacTypes.BoolDefault(false, resource.GetMetadata()),
-	}
-
-	if managementBlock := resource.GetBlock("management"); managementBlock.IsNotNil() {
-		management.Metadata = managementBlock.GetMetadata()
-		autoRepairAttr := managementBlock.GetAttribute("auto_repair")
-		management.EnableAutoRepair = autoRepairAttr.AsBoolValueOrDefault(false, managementBlock)
-
-		autoUpgradeAttr := managementBlock.GetAttribute("auto_upgrade")
-		management.EnableAutoUpgrade = autoUpgradeAttr.AsBoolValueOrDefault(false, managementBlock)
-	}
-
 	if nodeConfigBlock := resource.GetBlock("node_config"); nodeConfigBlock.IsNotNil() {
 		nodeConfig = adaptNodeConfig(nodeConfigBlock)
 	}
 
 	nodePool := gke.NodePool{
 		Metadata:   resource.GetMetadata(),
-		Management: management,
+		Management: adaptManagement(resource),
 		NodeConfig: nodeConfig,
 	}
 
@@ -270,9 +284,17 @@ func adaptNodeConfig(resource *terraform.Block) gke.NodeConfig {
 	}
 
 	if metadata := resource.GetAttribute("metadata"); metadata.IsNotNil() {
-		legacyMetadata := metadata.MapValue("disable-legacy-endpoints")
-		if legacyMetadata.IsWhollyKnown() && legacyMetadata.Type() == cty.Bool {
-			config.EnableLegacyEndpoints = iacTypes.Bool(legacyMetadata.False(), metadata.GetMetadata())
+		disableLegacy := metadata.MapValue("disable-legacy-endpoints")
+		if disableLegacy.IsKnown() {
+			var enableLegacyEndpoints bool
+			switch disableLegacy.Type() {
+			case cty.Bool:
+				enableLegacyEndpoints = disableLegacy.False()
+			case cty.String:
+				enableLegacyEndpoints = disableLegacy.AsString() == "false"
+			}
+
+			config.EnableLegacyEndpoints = iacTypes.Bool(enableLegacyEndpoints, metadata.GetMetadata())
 		}
 	}
 
@@ -312,7 +334,7 @@ func adaptMasterAuth(resource *terraform.Block) gke.MasterAuth {
 	}
 }
 
-func adaptMasterAuthNetworksAsBlocks(parent *terraform.Block, blocks terraform.Blocks) gke.MasterAuthorizedNetworks {
+func adaptMasterAuthNetworksAsBlocks(blocks terraform.Blocks) gke.MasterAuthorizedNetworks {
 	var cidrs []iacTypes.StringValue
 	for _, block := range blocks {
 		for _, cidrBlock := range block.GetBlocks("cidr_blocks") {

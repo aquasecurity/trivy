@@ -110,6 +110,7 @@ func (tw *Writer) Write(_ context.Context, report types.Report) error {
 
 func (tw *Writer) flush() {
 	_, _ = fmt.Fprint(tw.options.Output, tw.buf.String())
+	tw.buf.Reset()
 }
 
 func (tw *Writer) render(result types.Result) {

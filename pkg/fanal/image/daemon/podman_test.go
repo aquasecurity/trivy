@@ -99,7 +99,7 @@ func TestPodmanImage(t *testing.T) {
 			confFile, err := img.ConfigFile()
 			require.NoError(t, err)
 
-			assert.Equal(t, len(confFile.History), len(tt.wantCreateBy))
+			assert.Len(t, tt.wantCreateBy, len(confFile.History))
 			for _, h := range confFile.History {
 				assert.Contains(t, tt.wantCreateBy, h.CreatedBy)
 			}

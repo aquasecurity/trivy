@@ -99,7 +99,6 @@ func hasVersioning(r *parser.Resource) iacTypes.BoolValue {
 	versioningEnabled := false
 	if versioningProp.EqualTo("Enabled") {
 		versioningEnabled = true
-
 	}
 	return iacTypes.Bool(versioningEnabled, versioningProp.Metadata())
 }
@@ -151,17 +150,16 @@ func getLifecycle(resource *parser.Resource) []s3.Rules {
 }
 
 func getWebsite(r *parser.Resource) *s3.Website {
-	if block := r.GetProperty("WebsiteConfiguration"); block.IsNil() {
+	block := r.GetProperty("WebsiteConfiguration")
+	if block.IsNil() {
 		return nil
-	} else {
-		return &s3.Website{
-			Metadata: block.Metadata(),
-		}
+	}
+	return &s3.Website{
+		Metadata: block.Metadata(),
 	}
 }
 
 func getBucketPolicies(fctx parser.FileContext, r *parser.Resource) []iam.Policy {
-
 	var policies []iam.Policy
 	for _, bucketPolicy := range fctx.GetResourcesByType("AWS::S3::BucketPolicy") {
 		bucket := bucketPolicy.GetStringProperty("Bucket")

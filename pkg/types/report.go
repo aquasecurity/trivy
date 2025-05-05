@@ -33,6 +33,7 @@ type Metadata struct {
 	RepoTags    []string      `json:",omitempty"`
 	RepoDigests []string      `json:",omitempty"`
 	ImageConfig v1.ConfigFile `json:",omitempty"`
+	Layers      ftypes.Layers `json:",omitzero"`
 }
 
 // Results to hold list of Result

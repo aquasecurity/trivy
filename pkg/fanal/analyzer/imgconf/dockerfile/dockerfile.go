@@ -58,7 +58,7 @@ func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnal
 
 	fsys := mapfs.New()
 	if err := fsys.WriteVirtualFile(
-		"Dockerfile", imageConfigToDockerfile(input.Config), 0600); err != nil {
+		"Dockerfile", imageConfigToDockerfile(input.Config), 0o600); err != nil {
 		return nil, xerrors.Errorf("mapfs write error: %w", err)
 	}
 

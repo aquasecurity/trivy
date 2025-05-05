@@ -65,7 +65,7 @@ func MustReadYAML(t *testing.T, path string, out any) {
 }
 
 func MustMkdirAll(t *testing.T, dir string) {
-	err := os.MkdirAll(dir, 0750)
+	err := os.MkdirAll(dir, 0o750)
 	require.NoError(t, err)
 }
 
@@ -87,6 +87,6 @@ func MustWriteFile(t *testing.T, filePath string, content []byte) {
 	dir := filepath.Dir(filePath)
 	MustMkdirAll(t, dir)
 
-	err := os.WriteFile(filePath, content, 0600)
+	err := os.WriteFile(filePath, content, 0o600)
 	require.NoError(t, err)
 }

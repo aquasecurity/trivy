@@ -1,5 +1,5 @@
 package functions
 
-func False(args ...any) any {
+func False(_ ...any) any {
 	return false
 }

@@ -1,7 +1,9 @@
 package flag
 
 import (
-	"github.com/aquasecurity/trivy/pkg/module"
+	"path/filepath"
+
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 // e.g. config yaml
@@ -14,7 +16,7 @@ var (
 	ModuleDirFlag = Flag[string]{
 		Name:       "module-dir",
 		ConfigName: "module.dir",
-		Default:    module.DefaultDir,
+		Default:    filepath.Join(fsutils.HomeDir(), ".trivy", "modules"),
 		Usage:      "specify directory to the wasm modules that will be loaded",
 		Persistent: true,
 	}
@@ -56,13 +58,10 @@ func (f *ModuleFlagGroup) Flags() []Flagger {
 	}
 }
 
-func (f *ModuleFlagGroup) ToOptions() (ModuleOptions, error) {
-	if err := parseFlags(f); err != nil {
-		return ModuleOptions{}, err
-	}
-
-	return ModuleOptions{
+func (f *ModuleFlagGroup) ToOptions(opts *Options) error {
+	opts.ModuleOptions = ModuleOptions{
 		ModuleDir:      f.Dir.Value(),
 		EnabledModules: f.EnabledModules.Value(),
-	}, nil
+	}
+	return nil
 }

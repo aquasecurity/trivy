@@ -13,7 +13,7 @@ func adaptMariaDBServers(deployment azure.Deployment) (mariaDbServers []database
 
 }
 
-func adaptMariaDBServer(resource azure.Resource, deployment azure.Deployment) database.MariaDBServer {
+func adaptMariaDBServer(resource azure.Resource, _ azure.Deployment) database.MariaDBServer {
 	return database.MariaDBServer{
 		Metadata: resource.Metadata,
 		Server: database.Server{

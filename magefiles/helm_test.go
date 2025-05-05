@@ -78,7 +78,7 @@ keywords:
   - trivy
   - vulnerability
 `
-	err = os.WriteFile(tempFile.Name(), []byte(content), 0644)
+	err = os.WriteFile(tempFile.Name(), []byte(content), 0o644)
 	assert.NoError(t, err)
 
 	newVersion, err := bumpHelmChart(tempFile.Name(), "0.55.1")

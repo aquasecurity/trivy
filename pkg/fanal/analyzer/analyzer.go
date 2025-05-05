@@ -235,9 +235,8 @@ func (r *AnalysisResult) Sort() {
 	sort.Slice(r.Misconfigurations, func(i, j int) bool {
 		if r.Misconfigurations[i].FileType != r.Misconfigurations[j].FileType {
 			return r.Misconfigurations[i].FileType < r.Misconfigurations[j].FileType
-		} else {
-			return r.Misconfigurations[i].FilePath < r.Misconfigurations[j].FilePath
 		}
+		return r.Misconfigurations[i].FilePath < r.Misconfigurations[j].FilePath
 	})
 
 	// Secrets
@@ -258,9 +257,8 @@ func (r *AnalysisResult) Sort() {
 		if r.Licenses[i].Type == r.Licenses[j].Type {
 			if r.Licenses[i].FilePath == r.Licenses[j].FilePath {
 				return r.Licenses[i].Layer.DiffID < r.Licenses[j].Layer.DiffID
-			} else {
-				return r.Licenses[i].FilePath < r.Licenses[j].FilePath
 			}
+			return r.Licenses[i].FilePath < r.Licenses[j].FilePath
 		}
 
 		return r.Licenses[i].Type < r.Licenses[j].Type

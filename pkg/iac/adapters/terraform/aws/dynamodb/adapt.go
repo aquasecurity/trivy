@@ -33,7 +33,7 @@ func adaptTables(modules terraform.Modules) []dynamodb.Table {
 	return tables
 }
 
-func adaptCluster(resource *terraform.Block, module *terraform.Module) dynamodb.DAXCluster {
+func adaptCluster(resource *terraform.Block, _ *terraform.Module) dynamodb.DAXCluster {
 
 	cluster := dynamodb.DAXCluster{
 		Metadata: resource.GetMetadata(),

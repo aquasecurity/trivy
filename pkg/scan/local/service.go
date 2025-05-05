@@ -15,6 +15,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
+	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -23,7 +24,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
 	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
-	"github.com/aquasecurity/trivy/pkg/scan/post"
 	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
@@ -49,7 +49,7 @@ type Service struct {
 	vulnClient     vulnerability.Client
 }
 
-// NewService is the factory method for Scanner
+// NewService is the factory method for scan service
 func NewService(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner langpkg.Scanner,
 	vulnClient vulnerability.Client) Service {
 	return Service{
@@ -62,7 +62,7 @@ func NewService(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner la
 
 // Scan scans the artifact and return results.
 func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobKeys []string, options types.ScanOptions) (
-	types.Results, ftypes.OS, error) {
+	types.ScanResponse, error) {
 	detail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
@@ -88,7 +88,7 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 		log.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 		log.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
 	case err != nil:
-		return nil, ftypes.OS{}, xerrors.Errorf("failed to apply layers: %w", err)
+		return types.ScanResponse{}, xerrors.Errorf("failed to apply layers: %w", err)
 	}
 
 	if !lo.IsEmpty(options.Distro) && !lo.IsEmpty(detail.OS) {
@@ -109,10 +109,23 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 		CustomResources:   detail.CustomResources,
 	}
 
-	return s.ScanTarget(ctx, target, options)
+	results, os, err := s.ScanTarget(ctx, target, options)
+	if err != nil {
+		return types.ScanResponse{}, err
+	}
+	return types.ScanResponse{
+		Results: results,
+		OS:      os,
+		Layers:  detail.Layers,
+	}, nil
 }
 
 func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, ftypes.OS, error) {
+	// Call pre-scan hooks
+	if err := extension.PreScan(ctx, &target, options); err != nil {
+		return nil, ftypes.OS{}, xerrors.Errorf("pre scan error: %w", err)
+	}
+
 	var results types.Results
 
 	// Filter packages according to the options
@@ -148,9 +161,8 @@ func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, option
 		s.vulnClient.FillInfo(results[i].Vulnerabilities, options.VulnSeveritySources)
 	}
 
-	// Post scanning
-	results, err = post.Scan(ctx, results)
-	if err != nil {
+	// Call post-scan hooks
+	if results, err = extension.PostScan(ctx, results); err != nil {
 		return nil, ftypes.OS{}, xerrors.Errorf("post scan error: %w", err)
 	}
 
@@ -245,7 +257,7 @@ func (s Service) secretsToResults(secrets []ftypes.Secret, options types.ScanOpt
 		results = append(results, types.Result{
 			Target: secret.FilePath,
 			Class:  types.ClassSecret,
-			Secrets: lo.Map(secret.Findings, func(secret ftypes.SecretFinding, index int) types.DetectedSecret {
+			Secrets: lo.Map(secret.Findings, func(secret ftypes.SecretFinding, _ int) types.DetectedSecret {
 				return types.DetectedSecret(secret)
 			}),
 		})
@@ -455,7 +467,7 @@ func filterPkgByRelationship(target *types.ScanTarget, options types.ScanOptions
 	}
 
 	filter := func(pkgs []ftypes.Package) []ftypes.Package {
-		return lo.Filter(pkgs, func(pkg ftypes.Package, index int) bool {
+		return lo.Filter(pkgs, func(pkg ftypes.Package, _ int) bool {
 			return slices.Contains(options.PkgRelationships, pkg.Relationship)
 		})
 	}
@@ -475,13 +487,27 @@ func excludeDevDeps(apps []ftypes.Application, include bool) {
 	onceInfo := sync.OnceFunc(func() {
 		log.Info("Suppressing dependencies for development and testing. To display them, try the '--include-dev-deps' flag.")
 	})
+
 	for i := range apps {
-		apps[i].Packages = lo.Filter(apps[i].Packages, func(lib ftypes.Package, index int) bool {
-			if lib.Dev {
+		devDeps := set.New[string]()
+		apps[i].Packages = lo.Filter(apps[i].Packages, func(pkg ftypes.Package, _ int) bool {
+			if pkg.Dev {
 				onceInfo()
+				devDeps.Append(pkg.ID)
 			}
-			return !lib.Dev
+			return !pkg.Dev
 		})
+
+		// Remove development dependencies from dependencies of root and workspace packages
+		for j, pkg := range apps[i].Packages {
+			if pkg.Relationship != ftypes.RelationshipRoot && pkg.Relationship != ftypes.RelationshipWorkspace {
+				continue
+			}
+			apps[i].Packages[j].DependsOn = lo.Filter(apps[i].Packages[j].DependsOn, func(dep string, _ int) bool {
+				return !devDeps.Contains(dep)
+			})
+
+		}
 	}
 }
 

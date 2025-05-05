@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"os"
 	"strings"
 	"testing"
 	"testing/slogtest"
@@ -35,13 +34,6 @@ func TestColorHandler(t *testing.T) {
 		`ERROR	error message	group2.key5="value5"`,
 	}
 	compareLines(t, got, wantLines)
-}
-
-func TestSlog(t *testing.T) {
-	logger := slog.New(log.NewHandler(os.Stdout, &log.Options{Level: slog.LevelWarn}))
-	logger.Info("foo")
-	logger.Warn("warn message", slog.Group("group2", slog.String("key5", "value5")))
-	logger.Error("error", slog.Int("key3", 3), slog.Group("group3", slog.String("key4", "value4")))
 }
 
 func TestWithAttrsAndWithGroup(t *testing.T) {

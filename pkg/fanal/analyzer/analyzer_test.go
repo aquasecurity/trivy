@@ -534,9 +534,9 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 					if tt.args.testFilePath == "testdata/error" {
 						return nil, xerrors.New("error")
 					} else if tt.args.testFilePath == "testdata/no-permission" {
-						os.Chmod(tt.args.testFilePath, 0000)
+						os.Chmod(tt.args.testFilePath, 0o000)
 						t.Cleanup(func() {
-							os.Chmod(tt.args.testFilePath, 0644)
+							os.Chmod(tt.args.testFilePath, 0o644)
 						})
 					}
 					return os.Open(tt.args.testFilePath)

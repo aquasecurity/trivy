@@ -90,7 +90,7 @@ func GetBuiltinRules() []Rule {
 
 // This function is exported for trivy-plugin-aqua purposes only
 func GetSecretRulesMetadata() []iacRules.Check {
-	return lo.Map(builtinRules, func(rule Rule, i int) iacRules.Check {
+	return lo.Map(builtinRules, func(rule Rule, _ int) iacRules.Check {
 		return iacRules.Check{
 			Name:        rule.ID,
 			Description: rule.Title,

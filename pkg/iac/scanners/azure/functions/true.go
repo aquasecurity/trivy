@@ -1,5 +1,5 @@
 package functions
 
-func True(args ...any) any {
+func True(_ ...any) any {
 	return true
 }

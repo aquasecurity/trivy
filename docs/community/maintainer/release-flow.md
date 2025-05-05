@@ -12,6 +12,11 @@ For detailed behavior, please refer to [the GitHub Actions configuration][workfl
     Commits with prefixes like `chore` or `build` are not considered releasable, and no release PR is created.
     To include such commits in a release, you need to either include commits with `feat` or `fix` prefixes or perform a manual release as described [below](#manual-release-pr-creation).
 
+!!! tip
+    It's a good idea to check if there are any outstanding vulnerability updates created by dependabot waiting for your review.
+    They can be found in the "Security" tab of the repository.
+    If there are any, please review and merge them before creating a release. This will help to ensure that the release includes the latest security patches.
+
 ## Flow
 The release flow consists of the following main steps:
 
@@ -88,6 +93,6 @@ The release is now complete 🍻
 
 
 [conventional-commits]: https://www.conventionalcommits.org/en/v1.0.0/
-[release-please]: https://github.com/googleapis/release-please 
+[release-please]: https://github.com/googleapis/release-please
 [goreleaser]: https://goreleaser.com/
 [workflows]: https://github.com/aquasecurity/trivy/tree/main/.github/workflows

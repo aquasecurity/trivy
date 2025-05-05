@@ -5,14 +5,6 @@ import (
 	"strings"
 )
 
-type StringEqualityOption int
-
-const (
-	IgnoreCase StringEqualityOption = iota
-	IsPallindrome
-	IgnoreWhitespace
-)
-
 func String(str string, m Metadata) StringValue {
 	return StringValue{
 		value:         str,
@@ -55,8 +47,6 @@ func (l StringValueList) AsStrings() (output []string) {
 	}
 	return output
 }
-
-type stringCheckFunc func(string, string) bool
 
 func (b StringValue) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]any{
@@ -131,64 +121,40 @@ func (s StringValue) IsNotEmpty() bool {
 	return s.value != ""
 }
 
-func (s StringValue) EqualTo(value string, equalityOptions ...StringEqualityOption) bool {
+func (s StringValue) EqualTo(value string) bool {
 	if s.metadata.isUnresolvable {
 		return false
 	}
 
-	return s.executePredicate(value, func(a, b string) bool { return a == b }, equalityOptions...)
+	return s.value == value
 }
 
-func (s StringValue) NotEqualTo(value string, equalityOptions ...StringEqualityOption) bool {
+func (s StringValue) NotEqualTo(value string) bool {
 	if s.metadata.isUnresolvable {
 		return false
 	}
 
-	return !s.EqualTo(value, equalityOptions...)
+	return s.value != value
 }
 
-func (s StringValue) StartsWith(prefix string, equalityOptions ...StringEqualityOption) bool {
+func (s StringValue) StartsWith(prefix string) bool {
 	if s.metadata.isUnresolvable {
 		return false
 	}
 
-	return s.executePredicate(prefix, strings.HasPrefix, equalityOptions...)
+	return strings.HasPrefix(s.value, prefix)
 }
 
-func (s StringValue) EndsWith(suffix string, equalityOptions ...StringEqualityOption) bool {
+func (s StringValue) EndsWith(suffix string) bool {
 	if s.metadata.isUnresolvable {
 		return false
 	}
-	return s.executePredicate(suffix, strings.HasSuffix, equalityOptions...)
+	return strings.HasSuffix(s.value, suffix)
 }
 
-func (s StringValue) Contains(value string, equalityOptions ...StringEqualityOption) bool {
+func (s StringValue) Contains(value string) bool {
 	if s.metadata.isUnresolvable {
 		return false
 	}
-	return s.executePredicate(value, strings.Contains, equalityOptions...)
-}
-
-func (s StringValue) executePredicate(value string, fn stringCheckFunc, equalityOptions ...StringEqualityOption) bool {
-	subjectString := s.value
-	searchString := value
-
-	for _, eqOpt := range equalityOptions {
-		switch eqOpt {
-		case IgnoreCase:
-			subjectString = strings.ToLower(subjectString)
-			searchString = strings.ToLower(searchString)
-		case IsPallindrome:
-			var result string
-			for _, v := range subjectString {
-				result = string(v) + result
-			}
-			subjectString = result
-		case IgnoreWhitespace:
-			subjectString = strings.ReplaceAll(subjectString, " ", "")
-			searchString = strings.ReplaceAll(searchString, " ", "")
-		}
-	}
-
-	return fn(subjectString, searchString)
+	return strings.Contains(s.value, value)
 }

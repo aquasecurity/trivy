@@ -9,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
+	"github.com/aquasecurity/trivy/pkg/extension"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -26,6 +27,11 @@ const (
 
 // Write writes the result to output, format as passed in argument
 func Write(ctx context.Context, report types.Report, option flag.Options) (err error) {
+	// Call pre-report hooks
+	if err := extension.PreReport(ctx, &report, option); err != nil {
+		return xerrors.Errorf("pre report error: %w", err)
+	}
+
 	output, cleanup, err := option.OutputWriter(ctx)
 	if err != nil {
 		return xerrors.Errorf("failed to create a file: %w", err)
@@ -104,6 +110,11 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 
 	if err = writer.Write(ctx, report); err != nil {
 		return xerrors.Errorf("failed to write results: %w", err)
+	}
+
+	// Call post-report hooks
+	if err := extension.PostReport(ctx, &report, option); err != nil {
+		return xerrors.Errorf("post report error: %w", err)
 	}
 
 	return nil

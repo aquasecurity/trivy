@@ -42,7 +42,7 @@ func (a *uvAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisI
 		return true
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
 		// Parse uv.lock
 		app, err := language.Parse(types.Uv, path, r, a.lockParser)
 		if err != nil {

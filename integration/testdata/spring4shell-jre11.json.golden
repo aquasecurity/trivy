@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/spring4shell-jre11.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 270418944,
     "OS": {
       "Family": "debian",
       "Name": "11.3"
@@ -181,7 +182,54 @@
           "8080/tcp": {}
         }
       }
-    }
+    },
+    "Layers": [
+      {
+        "Size": 83895296,
+        "Digest": "sha256:c229119241af7b23b121052a1cae4c03e0a477a72ea6a7f463ad7623ff8f274b",
+        "DiffID": "sha256:608f3a074261105f129d707e4d9ad3d41b5baa94887f092b7c2857f7274a2fce"
+      },
+      {
+        "Size": 5177344,
+        "Digest": "sha256:2f1dc05f270bad654ee17f1143c48586c188a72929a128d61fd8ae15905d7b00",
+        "DiffID": "sha256:1f6e409d1c59c8e06608a024b82d50490313abc3b2ff93730e43135d5be0cd72"
+      },
+      {
+        "Size": 3584,
+        "Digest": "sha256:39b2c24c052eb115ae98ac01ea7a403af9bd678866744f0eea033d71d18f893b",
+        "DiffID": "sha256:1f0e278ace87a84577de56c99e5c05c6af6f8b582d1eb8dfd7de7be4cf215775"
+      },
+      {
+        "Size": 142896128,
+        "Digest": "sha256:e94fd7d3bf7a9b78b61be8303cd35eb9da3f8d121cf572a3b8878cbf11e84818",
+        "DiffID": "sha256:64272e9218cd019d57b84ac283aa35036cbd8c1dcface8c69f756088a0a13c45"
+      },
+      {
+        "Size": 3072,
+        "Digest": "sha256:b7bcef2d90f7acb11e94822db33bc4011654954b978fa35c89acac5f7b8d9620",
+        "DiffID": "sha256:8e6776c643c1db15d540016171fe04137ee2a26c7d0b18bfebdcbd31c6b0d8b3"
+      },
+      {
+        "Size": 18070016,
+        "Digest": "sha256:ac3639dc6fd33e9eeead58a99c277cb06b8f69ba6a30fe7028e9677a67d94bd8",
+        "DiffID": "sha256:0b201a611e5455d637c719d70eb5dd76fd4154bc4a5cf597d67ed2fb6647cc42"
+      },
+      {
+        "Size": 1369088,
+        "Digest": "sha256:7b4e8e3a75a692d7c80924f540916787b858aac41b99d55e2786a6edb9520c19",
+        "DiffID": "sha256:19da2426772aaa344a242e474fd7906d272fc8ded6eef5b4e461a4aa0725d7e5"
+      },
+      {
+        "Size": 2048,
+        "Digest": "sha256:9177f8e1f9863beb4f13bfeb344734617e6c30d09ccbbaa4ff2830c2874a3c99",
+        "DiffID": "sha256:1fdc094b0e85888d2204310083e3c09fff6a4daeecf22692aa6be5e8b4001f94"
+      },
+      {
+        "Size": 19002368,
+        "Digest": "sha256:b47862f824700e0ea830e568e989fba777d8223c1f8321c6256b0c965b9f61ee",
+        "DiffID": "sha256:192960b65b1579403b36581de471fd2bd75a043b4743552f27ba16623f02c68f"
+      }
+    ]
   },
   "Results": [
     {

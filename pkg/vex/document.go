@@ -30,13 +30,11 @@ func NewDocument(filePath string, report *types.Report) (VEX, error) {
 	v, errs := decodeVEX(f, filePath, report)
 	if errs != nil {
 		return nil, xerrors.Errorf("unable to load VEX from file: %w", errs)
-	} else {
-		return v, nil
 	}
+	return v, nil
 }
 
 func decodeVEX(r io.ReadSeeker, source string, report *types.Report) (VEX, error) {
-
 	var errs error
 	// Try CycloneDX JSON
 	if ok, err := sbom.IsCycloneDXJSON(r); err != nil {
