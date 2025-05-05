@@ -245,7 +245,6 @@ func (p *Parser) markRootPkgs(id string, pkgs map[string]ftypes.Package, deps ma
 	for _, depID := range deps[id].DependsOn {
 		p.markRootPkgs(depID, pkgs, deps, visited)
 	}
-	return
 }
 
 func (p *Parser) parseLockfileVersion(lockFile LockFile) float64 {

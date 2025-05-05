@@ -38,10 +38,7 @@ func fixtureContainerImages() error {
 	}
 
 	// Save trivy-test-images/containerd image
-	if err := saveImage("containerd", "latest"); err != nil {
-		return err
-	}
-	return nil
+	return saveImage("containerd", "latest")
 }
 
 func saveImage(subpath, tag string) error {
@@ -65,10 +62,7 @@ func saveImage(subpath, tag string) error {
 	if err = crane.Save(img, imgName, tarPath); err != nil {
 		return err
 	}
-	if err = sh.Run("gzip", tarPath); err != nil {
-		return err
-	}
-	return nil
+	return sh.Run("gzip", tarPath)
 }
 
 func fixtureVMImages() error {

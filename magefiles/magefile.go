@@ -189,19 +189,13 @@ func (Test) FixtureTerraformPlanSnapshots() error {
 // GenerateModules compiles WASM modules for unit tests
 func (Test) GenerateModules() error {
 	pattern := filepath.Join("pkg", "module", "testdata", "*", "*.go")
-	if err := compileWasmModules(pattern); err != nil {
-		return err
-	}
-	return nil
+	return compileWasmModules(pattern)
 }
 
 // GenerateExampleModules compiles example Wasm modules for integration tests
 func (Test) GenerateExampleModules() error {
 	pattern := filepath.Join("examples", "module", "*", "*.go")
-	if err := compileWasmModules(pattern); err != nil {
-		return err
-	}
-	return nil
+	return compileWasmModules(pattern)
 }
 
 // UpdateGolden updates golden files for integration tests

@@ -91,16 +91,28 @@ linters:
       max-open-files: 2048
       # https://github.com/mgechev/revive/blob/HEAD/RULES_DESCRIPTIONS.md
       rules:
+        - name: bool-literal-in-expr
+        - name: context-as-argument
+          arguments:
+            - allowTypesBefore: "*testing.T"
+        - name: duplicated-imports
         - name: early-return
           arguments:
             - preserve-scope
+        - name: if-return
+        - name: increment-decrement
         - name: indent-error-flow
           arguments:
             - preserve-scope
+        - name: range
+        - name: range-val-address
         - name: superfluous-else
           arguments:
             - preserve-scope
+        - name: time-equal
+        - name: unnecessary-stmt
         - name: unused-parameter
+        - name: use-any
 
     testifylint:
       enable-all: true
