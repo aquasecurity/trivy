@@ -163,16 +163,16 @@ func TestNewDockerImage(t *testing.T) {
 			wantConfigFile: &v1.ConfigFile{
 				Architecture:  "amd64",
 				Container:     "7f4a36a667d138b079b5ff059485ff65bfbb5ebc48f24a89f983b918e73f4f28",
-				Created:       v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 686519038, time.UTC)},
+				Created:       v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 6, 686519038, time.UTC)},
 				DockerVersion: "18.06.1-ce",
 				History: []v1.History{
 					{
-						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 551172402, time.UTC)},
+						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 6, 551172402, time.UTC)},
 						CreatedBy:  "/bin/sh -c #(nop) ADD file:d48cac34fac385cbc1de6adfdd88300f76f9bbe346cd17e64fd834d042a98326 in / ",
 						EmptyLayer: false,
 					},
 					{
-						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 686519038, time.UTC)},
+						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 6, 686519038, time.UTC)},
 						CreatedBy:  "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
 						Comment:    "",
 						EmptyLayer: true,
@@ -222,16 +222,16 @@ func TestNewDockerImage(t *testing.T) {
 			wantConfigFile: &v1.ConfigFile{
 				Architecture:  "amd64",
 				Container:     "7f4a36a667d138b079b5ff059485ff65bfbb5ebc48f24a89f983b918e73f4f28",
-				Created:       v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 686519038, time.UTC)},
+				Created:       v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 6, 686519038, time.UTC)},
 				DockerVersion: "18.06.1-ce",
 				History: []v1.History{
 					{
-						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 551172402, time.UTC)},
+						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 6, 551172402, time.UTC)},
 						CreatedBy:  "/bin/sh -c #(nop) ADD file:d48cac34fac385cbc1de6adfdd88300f76f9bbe346cd17e64fd834d042a98326 in / ",
 						EmptyLayer: false,
 					},
 					{
-						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 686519038, time.UTC)},
+						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 6, 686519038, time.UTC)},
 						CreatedBy:  "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
 						Comment:    "",
 						EmptyLayer: true,

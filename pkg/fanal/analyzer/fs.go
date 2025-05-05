@@ -54,7 +54,7 @@ func (c *CompositeFS) CopyFileToTemp(opener Opener, _ os.FileInfo) (string, erro
 	}
 
 	// Use 0600 instead of file permissions to avoid errors when a file uses incorrect permissions (e.g. 0044).
-	if err = os.Chmod(f.Name(), 0600); err != nil {
+	if err = os.Chmod(f.Name(), 0o600); err != nil {
 		return "", xerrors.Errorf("chmod error: %w", err)
 	}
 

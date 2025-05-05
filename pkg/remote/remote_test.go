@@ -51,7 +51,7 @@ func setupDockerConfig(t *testing.T, content string) {
 	cd := setupConfigDir(t)
 	p := filepath.Join(cd, "config.json")
 
-	err := os.WriteFile(p, []byte(content), 0600)
+	err := os.WriteFile(p, []byte(content), 0o600)
 	require.NoError(t, err)
 }
 

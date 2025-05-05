@@ -20,9 +20,7 @@ import (
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-var (
-	PathSeparator = fmt.Sprintf("%c", os.PathSeparator)
-)
+var PathSeparator = fmt.Sprintf("%c", os.PathSeparator)
 
 func CacheDir() string {
 	cacheDir, err := os.UserCacheDir()
@@ -59,7 +57,7 @@ func IsExecutable(fileInfo os.FileInfo) bool {
 	}
 
 	// Check unpackaged file
-	if mode.Perm()&0111 != 0 {
+	if mode.Perm()&0o111 != 0 {
 		return true
 	}
 	return false
