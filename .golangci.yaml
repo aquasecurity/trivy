@@ -141,7 +141,6 @@ linters:
   exclusions:
     generated: lax
     paths:
-      - "examples/*"
       - "pkg/iac/scanners/terraform/parser/funcs" # copies of Terraform functions
     rules:
       - path: ".*_test.go$"
@@ -166,9 +165,6 @@ linters:
           - gocritic
         text: "importShadow:"
       - linters:
-          - perfsprint
-        text: "fmt.Sprint"
-      - linters:
           - goconst
         text: "string `each` has 3 occurrences, make it a constant"  # FIXME
     presets:
@@ -189,9 +185,6 @@ formatters:
 
   exclusions:
     generated: lax
-    paths:
-      - examples/*
-      - pkg/iac/scanners/terraform/parser/funcs # copies of Terraform functions
 
   settings:
     gci:
@@ -203,8 +196,5 @@ formatters:
         - dot
     gofmt:
       simplify: false
-      rewrite-rules:
-        - pattern: interface{}
-          replacement: any
 
 version: "2"
