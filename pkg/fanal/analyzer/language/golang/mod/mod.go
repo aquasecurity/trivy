@@ -157,11 +157,11 @@ func (a *gomodAnalyzer) fillAdditionalData(fsys fs.FS, apps []types.Application)
 		// vendor directory is in the same directory as go.mod
 		vendorDir := filepath.Join(filepath.Dir(app.FilePath), "vendor")
 
-		// Check if the vendor directory exists
-		d, err := fs.Stat(fsys, vendorDir)
-		vendorDirFound := !errors.Is(err, os.ErrNotExist) && d.IsDir()
+		// Check if the vendor directory exists and is not empty
+		entries, err := fs.ReadDir(fsys, vendorDir)
+		vendorDirFound := err == nil && len(entries) > 0
 		if vendorDirFound {
-			a.logger.Debug("Vendor directory found", log.String("path", vendorDir))
+			a.logger.Debug("Vendor directory found")
 			modPath = vendorDir
 		}
 
