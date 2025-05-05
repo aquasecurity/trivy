@@ -2,6 +2,7 @@ package notification
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"net"
 	"os"
@@ -33,7 +34,7 @@ func getMachineIdentifier() (string, error) {
 func generateMachineHash(identifier string) string {
 	hash := sha256.New()
 	hash.Write([]byte(identifier))
-	return fmt.Sprintf("%x", hash.Sum(nil))
+	return hex.EncodeToString(hash.Sum(nil))
 }
 
 func uniqueIdentifier() string {

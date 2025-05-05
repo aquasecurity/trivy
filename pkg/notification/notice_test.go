@@ -88,7 +88,7 @@ func TestPrintNotices(t *testing.T) {
 			v := NewVersionChecker(tt.options...)
 
 			v.RunUpdateCheck(t.Context(), nil)
-			require.Eventually(t, func() bool { return v.done == true }, time.Second*5, 500)
+			require.Eventually(t, func() bool { return v.done }, time.Second*5, 500)
 			require.Eventually(t, func() bool { return v.responseReceived == tt.responseExpected }, time.Second*5, 500)
 
 			sb := bytes.NewBufferString("")
@@ -152,8 +152,8 @@ func TestCheckForNotices(t *testing.T) {
 			v := NewVersionChecker(tt.options...)
 
 			v.RunUpdateCheck(t.Context(), nil)
-			require.Eventually(t, func() bool { return v.done == true }, time.Second*5, 500)
-			require.Eventually(t, func() bool { return v.responseReceived == true }, time.Second*5, 500)
+			require.Eventually(t, func() bool { return v.done }, time.Second*5, 500)
+			require.Eventually(t, func() bool { return v.responseReceived }, time.Second*5, 500)
 			assert.Equal(t, tt.expectedVersion, v.LatestVersion())
 			assert.ElementsMatch(t, tt.expectedAnnouncements, v.Announcements())
 
