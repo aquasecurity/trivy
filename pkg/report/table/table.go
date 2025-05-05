@@ -19,15 +19,13 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-var (
-	SeverityColor = []func(a ...any) string{
-		color.New(color.FgCyan).SprintFunc(),   // UNKNOWN
-		color.New(color.FgBlue).SprintFunc(),   // LOW
-		color.New(color.FgYellow).SprintFunc(), // MEDIUM
-		color.New(color.FgHiRed).SprintFunc(),  // HIGH
-		color.New(color.FgRed).SprintFunc(),    // CRITICAL
-	}
-)
+var SeverityColor = []func(a ...any) string{
+	color.New(color.FgCyan).SprintFunc(),   // UNKNOWN
+	color.New(color.FgBlue).SprintFunc(),   // LOW
+	color.New(color.FgYellow).SprintFunc(), // MEDIUM
+	color.New(color.FgHiRed).SprintFunc(),  // HIGH
+	color.New(color.FgRed).SprintFunc(),    // CRITICAL
+}
 
 // Writer implements Writer and output in tabular form
 type Writer struct {

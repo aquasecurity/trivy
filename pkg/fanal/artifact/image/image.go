@@ -314,11 +314,12 @@ func (a Artifact) saveLayer(diffID string) (int64, error) {
 }
 
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
-	layerKeyMap map[string]types.Layer, configFile *v1.ConfigFile) error {
-
+	layerKeyMap map[string]types.Layer, configFile *v1.ConfigFile,
+) error {
 	var osFound types.OS
 	p := parallel.NewPipeline(a.artifactOption.Parallel, false, layerKeys, func(ctx context.Context,
-		layerKey string) (any, error) {
+		layerKey string,
+	) (any, error) {
 		layer := layerKeyMap[layerKey]
 
 		// If it is a base layer, secret scanning should not be performed.
@@ -338,7 +339,6 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 			osFound = layerInfo.OS
 		}
 		return nil, nil
-
 	}, nil)
 
 	if err := p.Do(ctx); err != nil {

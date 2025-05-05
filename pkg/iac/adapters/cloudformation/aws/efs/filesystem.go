@@ -6,7 +6,6 @@ import (
 )
 
 func getFileSystems(ctx parser.FileContext) (filesystems []efs.FileSystem) {
-
 	filesystemResources := ctx.GetResourcesByType("AWS::EFS::FileSystem")
 
 	for _, r := range filesystemResources {

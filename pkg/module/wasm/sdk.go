@@ -39,7 +39,7 @@ func _malloc(size uint32) uint32 {
 // It deletes the slice from the allocations map so the memory can be reclaimed by the GC.
 //
 //go:wasmexport free
-func _free(ptr uint32, size uint32) {
+func _free(ptr, size uint32) {
 	delete(allocations, ptr)
 }
 
@@ -72,16 +72,16 @@ func Error(message string) {
 // Imported host functions ---------------------------------------------------
 
 //go:wasmimport env debug
-func _debug(ptr uint32, size uint32)
+func _debug(ptr, size uint32)
 
 //go:wasmimport env info
-func _info(ptr uint32, size uint32)
+func _info(ptr, size uint32)
 
 //go:wasmimport env warn
-func _warn(ptr uint32, size uint32)
+func _warn(ptr, size uint32)
 
 //go:wasmimport env error
-func _error(ptr uint32, size uint32)
+func _error(ptr, size uint32)
 
 var module api.Module
 
@@ -190,7 +190,7 @@ func unmarshal(ptr, size uint32, v any) error {
 
 // ptrToString constructs a Go string from a pointer and size in WASM memory.
 // This uses unsafe.Slice to wrap the memory, then builds a string without an extra copy.
-func ptrToString(ptr uint32, size uint32) string {
+func ptrToString(ptr, size uint32) string {
 	b := unsafe.Slice((*byte)(unsafe.Pointer(uintptr(ptr))), size)
 	return *(*string)(unsafe.Pointer(&b))
 }

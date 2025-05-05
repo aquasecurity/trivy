@@ -218,7 +218,7 @@ func (a *Attribute) IsIterable() bool {
 		ty.IsSetType() || ty.IsTupleType()
 }
 
-func (a *Attribute) Each(f func(key cty.Value, val cty.Value)) error {
+func (a *Attribute) Each(f func(key, val cty.Value)) error {
 	if a == nil {
 		return nil
 	}
@@ -229,7 +229,7 @@ func (a *Attribute) Each(f func(key cty.Value, val cty.Value)) error {
 		}
 	}()
 	val := a.Value()
-	val.ForEachElement(func(key cty.Value, val cty.Value) (stop bool) {
+	val.ForEachElement(func(key, val cty.Value) (stop bool) {
 		f(key, val)
 		return false
 	})
@@ -326,7 +326,6 @@ func (a *Attribute) AsStringValues() iacTypes.StringValueList {
 
 // nolint
 func (a *Attribute) getStringValues(expr hcl.Expression, ctx *hcl.EvalContext) (results []iacTypes.StringValue) {
-
 	defer func() {
 		if err := recover(); err != nil {
 			results = []iacTypes.StringValue{iacTypes.StringUnresolvable(a.metadata)}
@@ -674,7 +673,7 @@ func (a *Attribute) AsMapValue() iacTypes.MapValue {
 		}
 
 		values := make(map[string]string)
-		v.ForEachElement(func(key cty.Value, val cty.Value) (stop bool) {
+		v.ForEachElement(func(key, val cty.Value) (stop bool) {
 			if key.Type() == cty.String && key.IsKnown() &&
 				val.Type() == cty.String && val.IsKnown() {
 				values[key.AsString()] = val.AsString()

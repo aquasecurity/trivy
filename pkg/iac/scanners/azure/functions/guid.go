@@ -8,7 +8,6 @@ import (
 )
 
 func Guid(args ...any) any {
-
 	if len(args) == 0 {
 		return ""
 	}

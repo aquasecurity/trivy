@@ -47,7 +47,6 @@ func (a *adapter) adaptClusters() []gke.Cluster {
 }
 
 func (a *adapter) adaptCluster(resource *terraform.Block) {
-
 	cluster := gke.Cluster{
 		Metadata:  resource.GetMetadata(),
 		NodePools: nil,
@@ -271,7 +270,6 @@ func (a *adapter) adaptNodePool(resource *terraform.Block) {
 }
 
 func adaptNodeConfig(resource *terraform.Block) gke.NodeConfig {
-
 	config := gke.NodeConfig{
 		Metadata:  resource.GetMetadata(),
 		ImageType: resource.GetAttribute("image_type").AsStringValueOrDefault("", resource),

@@ -174,7 +174,6 @@ func Test_adaptTaskDefinitionResource(t *testing.T) {
 					{
 						Metadata: iacTypes.NewTestMetadata(),
 						EFSVolumeConfiguration: ecs.EFSVolumeConfiguration{
-
 							Metadata:                 iacTypes.NewTestMetadata(),
 							TransitEncryptionEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},

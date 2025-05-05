@@ -7,7 +7,6 @@ import (
 )
 
 func Test_StartsWith(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		args     []any
@@ -37,5 +36,4 @@ func Test_StartsWith(t *testing.T) {
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
-
 }

@@ -8,7 +8,6 @@ import (
 )
 
 func Test_resolve_get_attr_value(t *testing.T) {
-
 	source := `---
 Resources:
     ElasticacheSecurityGroup:
@@ -46,5 +45,4 @@ Resources:
 		require.True(t, success)
 		assert.True(t, resolved.IsNotNil())
 	}
-
 }

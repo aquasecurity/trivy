@@ -73,7 +73,6 @@ func (p Package) directDeps() set.Set[string] {
 	deps := p.nonDevDeps()
 	for _, groupDeps := range p.DevDependencies {
 		deps.Append(groupDeps.toSet().Items()...)
-
 	}
 	return deps
 }

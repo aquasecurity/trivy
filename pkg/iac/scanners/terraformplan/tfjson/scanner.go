@@ -25,7 +25,6 @@ func (s *Scanner) Name() string {
 }
 
 func (s *Scanner) ScanFS(_ context.Context, fsys fs.FS, dir string) (scan.Results, error) {
-
 	var results scan.Results
 
 	walkFn := func(path string, d fs.DirEntry, err error) error {
@@ -67,7 +66,6 @@ func New(opts ...options.ScannerOption) *Scanner {
 }
 
 func (s *Scanner) ScanFile(filepath string, fsys fs.FS) (scan.Results, error) {
-
 	s.logger.Debug("Scanning file", log.FilePath(filepath))
 	file, err := fsys.Open(filepath)
 	if err != nil {
@@ -78,7 +76,6 @@ func (s *Scanner) ScanFile(filepath string, fsys fs.FS) (scan.Results, error) {
 }
 
 func (s *Scanner) Scan(reader io.Reader) (scan.Results, error) {
-
 	planFile, err := s.parser.Parse(reader)
 	if err != nil {
 		return nil, err

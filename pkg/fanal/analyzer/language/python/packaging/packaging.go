@@ -37,19 +37,17 @@ func newPackagingAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, 
 	}, nil
 }
 
-var (
-	eggFiles = []string{
-		// .egg format
-		// https://setuptools.readthedocs.io/en/latest/deprecated/python_eggs.html#eggs-and-their-formats
-		// ".egg" is zip format. We check it in `eggAnalyzer`.
-		"EGG-INFO/PKG-INFO",
+var eggFiles = []string{
+	// .egg format
+	// https://setuptools.readthedocs.io/en/latest/deprecated/python_eggs.html#eggs-and-their-formats
+	// ".egg" is zip format. We check it in `eggAnalyzer`.
+	"EGG-INFO/PKG-INFO",
 
-		// .egg-info format: .egg-info can be a file or directory
-		// https://setuptools.readthedocs.io/en/latest/deprecated/python_eggs.html#eggs-and-their-formats
-		".egg-info",
-		".egg-info/PKG-INFO",
-	}
-)
+	// .egg-info format: .egg-info can be a file or directory
+	// https://setuptools.readthedocs.io/en/latest/deprecated/python_eggs.html#eggs-and-their-formats
+	".egg-info",
+	".egg-info/PKG-INFO",
+}
 
 type packagingAnalyzer struct {
 	logger                           *log.Logger
@@ -59,7 +57,6 @@ type packagingAnalyzer struct {
 
 // PostAnalyze analyzes egg and wheel files.
 func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
-
 	var apps []types.Application
 
 	required := func(path string, _ fs.DirEntry) bool {
@@ -98,7 +95,6 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 		apps = append(apps, *app)
 		return nil
 	})
-
 	if err != nil {
 		return nil, xerrors.Errorf("python package walk error: %w", err)
 	}

@@ -21,9 +21,7 @@ const (
 	SBOMSourceRekor = SBOMSource("rekor")
 )
 
-var (
-	SBOMSources = []string{
-		SBOMSourceOCI,
-		SBOMSourceRekor,
-	}
-)
+var SBOMSources = []string{
+	SBOMSourceOCI,
+	SBOMSourceRekor,
+}

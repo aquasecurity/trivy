@@ -24,7 +24,6 @@ func adaptTrails(modules terraform.Modules) []accessanalyzer.Analyzer {
 }
 
 func adaptAnalyzers(resource *terraform.Block) accessanalyzer.Analyzer {
-
 	analyzerName := resource.GetAttribute("analyzer_name")
 	analyzerNameAttr := analyzerName.AsStringValueOrDefault("", resource)
 

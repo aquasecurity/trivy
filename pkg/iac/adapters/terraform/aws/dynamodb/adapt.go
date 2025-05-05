@@ -34,7 +34,6 @@ func adaptTables(modules terraform.Modules) []dynamodb.Table {
 }
 
 func adaptCluster(resource *terraform.Block, _ *terraform.Module) dynamodb.DAXCluster {
-
 	cluster := dynamodb.DAXCluster{
 		Metadata: resource.GetMetadata(),
 		ServerSideEncryption: dynamodb.ServerSideEncryption{
@@ -60,7 +59,6 @@ func adaptCluster(resource *terraform.Block, _ *terraform.Module) dynamodb.DAXCl
 }
 
 func adaptTable(resource *terraform.Block, module *terraform.Module) dynamodb.Table {
-
 	table := dynamodb.Table{
 		Metadata: resource.GetMetadata(),
 		ServerSideEncryption: dynamodb.ServerSideEncryption{

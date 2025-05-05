@@ -245,7 +245,7 @@ var pkgs = []types.Package{
 		Digest:     "sha1:9055bc7afd76cf2672198042f72fc4a5ed4fa961",
 		DependsOn:  []string{"musl-utils@1.1.14-r10"},
 		Arch:       "x86_64",
-		//InstalledFiles: []string{},
+		// InstalledFiles: []string{},
 	},
 	{
 		ID:         "pkgconf@1.6.0-r0",
@@ -436,7 +436,7 @@ var files = []string{
 }
 
 func TestParseApkInfo(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		name      string
 		path      string
 		wantPkgs  []types.Package

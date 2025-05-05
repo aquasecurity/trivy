@@ -9,7 +9,6 @@ import (
 )
 
 func getFunctions(cfFile parser.FileContext) (functions []sam.Function) {
-
 	functionResources := cfFile.GetResourcesByType("AWS::Serverless::Function")
 	for _, r := range functionResources {
 		function := sam.Function{

@@ -7,7 +7,6 @@ import (
 )
 
 func getClusters(ctx parser.FileContext) (clusters []ecs.Cluster) {
-
 	clusterResources := ctx.GetResourcesByType("AWS::ECS::Cluster")
 
 	for _, r := range clusterResources {
@@ -25,7 +24,6 @@ func getClusters(ctx parser.FileContext) (clusters []ecs.Cluster) {
 }
 
 func getClusterSettings(r *parser.Resource) ecs.ClusterSettings {
-
 	clusterSettings := ecs.ClusterSettings{
 		Metadata:                 r.Metadata(),
 		ContainerInsightsEnabled: types.BoolDefault(false, r.Metadata()),

@@ -7,7 +7,6 @@ import (
 )
 
 func getClustersAndInstances(ctx parser.FileContext) ([]rds.Cluster, []rds.Instance) {
-
 	clusterMap := getClusters(ctx)
 
 	var orphans []rds.Instance
@@ -69,7 +68,6 @@ func getClustersAndInstances(ctx parser.FileContext) ([]rds.Cluster, []rds.Insta
 }
 
 func getDBParameterGroups(ctx parser.FileContext, r *parser.Resource) (dbParameterGroup []rds.DBParameterGroupsList) {
-
 	var parameterGroupList []rds.DBParameterGroupsList
 
 	dbParameterGroupName := r.GetStringProperty("DBParameterGroupName")

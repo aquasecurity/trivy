@@ -43,5 +43,4 @@ func Test_Range(t *testing.T) {
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
-
 }

@@ -51,7 +51,8 @@ type Service struct {
 
 // NewService is the factory method for scan service
 func NewService(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner langpkg.Scanner,
-	vulnClient vulnerability.Client) Service {
+	vulnClient vulnerability.Client,
+) Service {
 	return Service{
 		applier:        a,
 		osPkgScanner:   osPkgScanner,
@@ -62,7 +63,8 @@ func NewService(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner la
 
 // Scan scans the artifact and return results.
 func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobKeys []string, options types.ScanOptions) (
-	types.ScanResponse, error) {
+	types.ScanResponse, error,
+) {
 	detail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
@@ -170,7 +172,8 @@ func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, option
 }
 
 func (s Service) scanVulnerabilities(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (
-	types.Results, bool, error) {
+	types.Results, bool, error,
+) {
 	if !options.Scanners.AnyEnabled(types.SBOMScanner, types.VulnerabilityScanner) {
 		return nil, false, nil
 	}
@@ -371,8 +374,8 @@ func (s Service) scanFileLicenses(licenses []ftypes.LicenseFile, scanner licensi
 }
 
 func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbTypes.Severity,
-	status types.MisconfStatus, layer ftypes.Layer) types.DetectedMisconfiguration {
-
+	status types.MisconfStatus, layer ftypes.Layer,
+) types.DetectedMisconfiguration {
 	severity := defaultSeverity
 	sev, err := dbTypes.NewSeverity(res.Severity)
 	if err != nil {

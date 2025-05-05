@@ -6,7 +6,6 @@ import (
 )
 
 func getFunctions(ctx parser.FileContext) (functions []lambda.Function) {
-
 	functionResources := ctx.GetResourcesByType("AWS::Lambda::Function")
 
 	for _, r := range functionResources {
@@ -30,7 +29,6 @@ func getFunctions(ctx parser.FileContext) (functions []lambda.Function) {
 }
 
 func getPermissions(funcR *parser.Resource, ctx parser.FileContext) (perms []lambda.Permission) {
-
 	permissionResources := ctx.GetResourcesByType("AWS::Lambda::Permission")
 
 	for _, r := range permissionResources {

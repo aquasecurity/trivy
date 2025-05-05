@@ -90,7 +90,6 @@ func Test_SetKey(t *testing.T) {
 }
 
 func Test_Key(t *testing.T) {
-
 	tests := []struct {
 		name string
 		key  cty.Value

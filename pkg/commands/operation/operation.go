@@ -23,7 +23,8 @@ var mu sync.Mutex
 
 // DownloadDB downloads the DB
 func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepositories []name.Reference, quiet, skipUpdate bool,
-	opt ftypes.RegistryOptions) error {
+	opt ftypes.RegistryOptions,
+) error {
 	mu.Lock()
 	defer mu.Unlock()
 
@@ -75,7 +76,6 @@ func DownloadVEXRepositories(ctx context.Context, opts flag.Options) error {
 	}
 
 	return nil
-
 }
 
 // InitBuiltinChecks downloads the built-in policies and loads them

@@ -57,7 +57,6 @@ func newEvaluator(
 	allowDownloads bool,
 	skipCachedModules bool,
 ) *evaluator {
-
 	// create a context to store variables and make functions available
 	ctx := tfcontext.NewContext(&hcl.EvalContext{
 		Functions: Functions(target, modulePath),
@@ -92,7 +91,6 @@ func newEvaluator(
 }
 
 func (e *evaluator) evaluateStep() {
-
 	e.ctx.Set(e.getValuesByBlockType("variable"), "var")
 	e.ctx.Set(e.getValuesByBlockType("locals"), "local")
 	e.ctx.Set(e.getValuesByBlockType("provider"), "provider")
@@ -125,7 +123,6 @@ func (e *evaluator) exportOutputs() cty.Value {
 }
 
 func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[string]fs.FS) {
-
 	e.logger.Debug("Starting module evaluation...", log.String("path", e.modulePath))
 
 	fsKey := types.CreateFSKey(e.filesystem)
@@ -302,7 +299,6 @@ func isBlockSupportsForEachMetaArgument(block *terraform.Block) bool {
 }
 
 func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks) terraform.Blocks {
-
 	var forEachFiltered terraform.Blocks
 
 	for _, block := range blocks {
@@ -325,8 +321,7 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks) terraform.Bloc
 		}
 
 		clones := make(map[string]cty.Value)
-		_ = forEachAttr.Each(func(key cty.Value, val cty.Value) {
-
+		_ = forEachAttr.Each(func(key, val cty.Value) {
 			if val.IsNull() {
 				return
 			}
@@ -442,7 +437,6 @@ func (e *evaluator) expandBlockCounts(blocks terraform.Blocks) terraform.Blocks 
 }
 
 func (e *evaluator) copyVariables(from, to *terraform.Block) {
-
 	var fromBase string
 	var fromRel string
 	var toRel string
@@ -509,7 +503,6 @@ func (e *evaluator) evaluateVariable(b *terraform.Block) (cty.Value, error) {
 	}
 
 	return val, nil
-
 }
 
 func (e *evaluator) evaluateOutput(b *terraform.Block) (cty.Value, error) {
@@ -526,7 +519,6 @@ func (e *evaluator) evaluateOutput(b *terraform.Block) (cty.Value, error) {
 
 // returns true if all evaluations were successful
 func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
-
 	blocksOfType := e.blocks.OfType(blockType)
 	values := make(map[string]cty.Value)
 

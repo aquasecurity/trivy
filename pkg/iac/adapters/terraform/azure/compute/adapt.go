@@ -15,7 +15,6 @@ func Adapt(modules terraform.Modules) compute.Compute {
 }
 
 func adaptCompute(modules terraform.Modules) compute.Compute {
-
 	var managedDisks []compute.ManagedDisk
 	var linuxVirtualMachines []compute.LinuxVirtualMachine
 	var windowsVirtualMachines []compute.WindowsVirtualMachine
@@ -48,7 +47,6 @@ func adaptCompute(modules terraform.Modules) compute.Compute {
 }
 
 func adaptManagedDisk(resource *terraform.Block) compute.ManagedDisk {
-
 	disk := compute.ManagedDisk{
 		Metadata: resource.GetMetadata(),
 		Encryption: compute.Encryption{

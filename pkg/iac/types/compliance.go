@@ -1,7 +1,9 @@
 package types
 
-type Severity string
-type ControlStatus string
+type (
+	Severity      string
+	ControlStatus string
+)
 
 // SpecCheck represent the scanner who perform the control check
 type SpecCheck struct {

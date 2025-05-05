@@ -21,7 +21,6 @@ type Check struct {
 }
 
 func GetProvidersHierarchy() (providers map[string]map[string][]string) {
-
 	registeredRules := GetRegistered()
 
 	provs := make(map[string]map[string][]string)
@@ -51,7 +50,6 @@ func GetProvidersHierarchy() (providers map[string]map[string][]string) {
 }
 
 func GetProviders() (providers []Provider) {
-
 	registeredRules := GetRegistered()
 
 	provs := make(map[string]map[string][]Check)
@@ -96,24 +94,20 @@ func GetProviders() (providers []Provider) {
 }
 
 func GetProvidersAsJson() ([]byte, error) {
-
 	providers := GetProviders()
 
 	return json.MarshalIndent(providers, "", "  ")
 }
 
 func GetProviderNames() []string {
-
 	registeredRules := GetRegistered()
 
 	providers := make(map[string]bool)
 
 	for _, rule := range registeredRules {
-
 		if _, ok := providers[rule.GetRule().Provider.DisplayName()]; !ok {
 			providers[rule.GetRule().Provider.DisplayName()] = true
 		}
-
 	}
 
 	var uniqueProviders []string
@@ -122,11 +116,9 @@ func GetProviderNames() []string {
 	}
 
 	return uniqueProviders
-
 }
 
 func GetProviderServiceNames(providerName string) []string {
-
 	registeredRules := GetRegistered()
 
 	services := make(map[string]bool)
@@ -151,7 +143,6 @@ func GetProviderServiceNames(providerName string) []string {
 }
 
 func GetProviderServiceCheckNames(providerName, serviceName string) []string {
-
 	registeredRules := GetRegistered()
 
 	var checks []string

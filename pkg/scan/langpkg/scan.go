@@ -13,16 +13,14 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-var (
-	PkgTargets = map[ftypes.LangType]string{
-		ftypes.PythonPkg:   "Python",
-		ftypes.CondaPkg:    "Conda",
-		ftypes.GemSpec:     "Ruby",
-		ftypes.NodePkg:     "Node.js",
-		ftypes.Jar:         "Java",
-		ftypes.K8sUpstream: "Kubernetes",
-	}
-)
+var PkgTargets = map[ftypes.LangType]string{
+	ftypes.PythonPkg:   "Python",
+	ftypes.CondaPkg:    "Conda",
+	ftypes.GemSpec:     "Ruby",
+	ftypes.NodePkg:     "Node.js",
+	ftypes.Jar:         "Java",
+	ftypes.K8sUpstream: "Kubernetes",
+}
 
 type Scanner interface {
 	Scan(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, error)
@@ -78,8 +76,8 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.
 }
 
 func (s *scanner) scanVulnerabilities(ctx context.Context, app ftypes.Application, printedTypes set.Set[ftypes.LangType]) (
-	[]types.DetectedVulnerability, error) {
-
+	[]types.DetectedVulnerability, error,
+) {
 	// Prevent the same log messages from being displayed many times for the same type.
 	if !printedTypes.Contains(app.Type) {
 		log.InfoContext(ctx, "Detecting vulnerabilities...")

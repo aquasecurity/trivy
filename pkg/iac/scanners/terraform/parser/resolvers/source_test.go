@@ -7,7 +7,6 @@ import (
 )
 
 func TestSplitPackageSubdirRaw(t *testing.T) {
-
 	tests := []struct {
 		name           string
 		source         string

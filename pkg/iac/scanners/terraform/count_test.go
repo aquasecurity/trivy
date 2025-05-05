@@ -11,7 +11,7 @@ import (
 )
 
 func Test_ResourcesWithCount(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		name     string
 		source   string
 		expected int

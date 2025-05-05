@@ -67,7 +67,6 @@ func MakeFileFunc(target fs.FS, baseDir string, encBase64 bool) function.Functio
 // the templatefile function, since that would risk the same file being
 // included into itself indefinitely.
 func MakeTemplateFileFunc(target fs.FS, baseDir string, funcsCb func() map[string]function.Function) function.Function {
-
 	params := []function.Parameter{
 		{
 			Name: "path",
@@ -180,7 +179,6 @@ func MakeTemplateFileFunc(target fs.FS, baseDir string, funcsCb func() map[strin
 			return renderTmpl(expr, args[1])
 		},
 	})
-
 }
 
 // MakeFileExistsFunc constructs a function that takes a path
@@ -262,7 +260,6 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 			var matchVals []cty.Value
 			for _, match := range matches {
 				fi, err := fs.Stat(target, match)
-
 				if err != nil {
 					return cty.UnknownVal(cty.Set(cty.String)), fmt.Errorf("failed to stat (%s): %s", match, err)
 				}
@@ -273,7 +270,6 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 
 				// Remove the path and file separator from matches.
 				match, err = filepath.Rel(path, match)
-
 				if err != nil {
 					return cty.UnknownVal(cty.Set(cty.String)), fmt.Errorf("failed to trim path of match (%s): %s", match, err)
 				}
@@ -349,7 +345,6 @@ var PathExpandFunc = function.New(&function.Spec{
 	},
 	Type: function.StaticReturnType(cty.String),
 	Impl: func(args []cty.Value, retType cty.Type) (cty.Value, error) {
-
 		homePath, err := homedir.Expand(args[0].AsString())
 		return cty.StringVal(homePath), err
 	},

@@ -6,7 +6,6 @@ import (
 )
 
 func getStreams(ctx parser.FileContext) (streams []kinesis.Stream) {
-
 	streamResources := ctx.GetResourcesByType("AWS::Kinesis::Stream")
 
 	for _, r := range streamResources {

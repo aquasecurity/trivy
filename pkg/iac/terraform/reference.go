@@ -27,7 +27,6 @@ func extendReference(ref Reference, name string) Reference {
 }
 
 func newReference(parts []string, parentKey string) (*Reference, error) {
-
 	var ref Reference
 
 	if len(parts) == 0 {
@@ -90,7 +89,6 @@ func (r Reference) LogicalID() string {
 }
 
 func (r Reference) String() string {
-
 	base := r.typeLabel
 	if r.nameLabel != "" {
 		base = fmt.Sprintf("%s.%s", base, r.nameLabel)
@@ -116,7 +114,6 @@ func (r Reference) String() string {
 }
 
 func (r Reference) RefersTo(other Reference) bool {
-
 	if r.BlockType() != other.BlockType() {
 		return false
 	}

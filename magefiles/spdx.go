@@ -34,7 +34,6 @@ func main() {
 	if err := run(); err != nil {
 		log.Fatal("Fatal error", log.Err(err))
 	}
-
 }
 
 // run downloads exceptions.json file, takes only IDs and saves into `expression` package.

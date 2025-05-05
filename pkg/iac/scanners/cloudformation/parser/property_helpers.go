@@ -205,7 +205,6 @@ func (p *Property) EqualTo(checkValue any, equalityOptions ...EqualityOptions) b
 	}
 
 	return false
-
 }
 
 func (p *Property) IsTrue() bool {
@@ -217,7 +216,6 @@ func (p *Property) IsTrue() bool {
 }
 
 func (p *Property) IsEmpty() bool {
-
 	if p.IsNil() {
 		return true
 	}

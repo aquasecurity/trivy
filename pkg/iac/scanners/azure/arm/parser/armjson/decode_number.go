@@ -7,7 +7,6 @@ import (
 )
 
 func (n *node) decodeNumber(v reflect.Value) error {
-
 	switch v.Kind() {
 	case reflect.Int64, reflect.Int32, reflect.Int16, reflect.Int8, reflect.Int:
 		if i64, ok := n.raw.(int64); ok {

@@ -143,7 +143,6 @@ type reports struct {
 // - rbac report
 // - infra checks report
 func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners) []reports {
-
 	var workloadMisconfig, infraMisconfig, rbacAssessment, workloadVulnerabilities, infraVulnerabilities, workloadResource []Resource
 	for _, resource := range k8sReport.Resources {
 		switch {

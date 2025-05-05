@@ -27,7 +27,6 @@ func adaptNetworkPolicies(modules terraform.Modules) []kubernetes.NetworkPolicy 
 }
 
 func adaptNetworkPolicy(resourceBlock *terraform.Block) kubernetes.NetworkPolicy {
-
 	policy := kubernetes.NetworkPolicy{
 		Metadata: resourceBlock.GetMetadata(),
 		Spec: kubernetes.NetworkPolicySpec{

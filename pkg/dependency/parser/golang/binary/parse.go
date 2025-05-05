@@ -188,7 +188,7 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 	//   [0]: Versions using format `github.com/<module_owner>/<module_name>/cmd/**/*.<version>=x.x.x`
 	//   [1]: Versions that use prefixes from `defaultPrefixes`
 	//   [2]: Other versions
-	var foundVersions = make([][]string, 3)
+	foundVersions := make([][]string, 3)
 	defaultPrefixes := []string{
 		"main",
 		"common",

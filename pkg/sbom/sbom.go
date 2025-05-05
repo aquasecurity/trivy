@@ -68,6 +68,7 @@ func IsCycloneDXJSON(r io.ReadSeeker) (bool, error) {
 	}
 	return false, nil
 }
+
 func IsCycloneDXXML(r io.ReadSeeker) (bool, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
 		return false, xerrors.Errorf("seek error: %w", err)

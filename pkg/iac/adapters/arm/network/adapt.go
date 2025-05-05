@@ -21,7 +21,6 @@ func adaptSecurityGroups(deployment azure.Deployment) (sgs []network.SecurityGro
 		sgs = append(sgs, adaptSecurityGroup(resource, deployment))
 	}
 	return sgs
-
 }
 
 func adaptSecurityGroup(resource azure.Resource, deployment azure.Deployment) network.SecurityGroup {

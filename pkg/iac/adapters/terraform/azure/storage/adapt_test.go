@@ -78,7 +78,6 @@ func Test_Adapt(t *testing.T) {
 `,
 			expected: storage.Storage{
 				Accounts: []storage.Account{
-
 					{
 						Metadata:            iacTypes.NewTestMetadata(),
 						EnforceHTTPS:        iacTypes.Bool(true, iacTypes.NewTestMetadata()),
@@ -263,5 +262,4 @@ func TestLines(t *testing.T) {
 
 	assert.Equal(t, 40, account.Containers[0].PublicAccess.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 40, account.Containers[0].PublicAccess.GetMetadata().Range().GetEndLine())
-
 }

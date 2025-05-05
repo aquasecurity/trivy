@@ -207,5 +207,4 @@ func TestLines(t *testing.T) {
 
 	assert.Equal(t, 77, ssslPolicy.MinimumTLSVersion.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 77, ssslPolicy.MinimumTLSVersion.GetMetadata().Range().GetEndLine())
-
 }

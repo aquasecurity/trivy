@@ -10,7 +10,7 @@ import (
 )
 
 func Test_AttributeContains(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		name           string
 		source         string
 		checkAttribute string
@@ -168,7 +168,7 @@ resource "aws_security_group" "my-security_group" {
 }
 
 func Test_AttributeIsEmpty(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		name           string
 		source         string
 		checkAttribute string
@@ -278,7 +278,7 @@ resource "aws_security_group_rule" "example" {
 }
 
 func Test_AttributeIsTrue(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		name           string
 		source         string
 		checkAttribute string
@@ -327,7 +327,7 @@ resource "boolean_something" "my-something" {
 }
 
 func Test_AttributeIsFalse(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		name           string
 		source         string
 		checkAttribute string

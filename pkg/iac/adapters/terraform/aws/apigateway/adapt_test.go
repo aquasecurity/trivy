@@ -135,6 +135,7 @@ func Bool(b bool) iacTypes.BoolValue {
 func String(s string) iacTypes.StringValue {
 	return iacTypes.String(s, iacTypes.NewTestMetadata())
 }
+
 func TestLines(t *testing.T) {
 	src := `
 	resource "aws_api_gateway_rest_api" "MyDemoAPI" {
@@ -231,5 +232,4 @@ func TestLines(t *testing.T) {
 
 	assert.Equal(t, 34, domainName.SecurityPolicy.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 34, domainName.SecurityPolicy.GetMetadata().Range().GetEndLine())
-
 }

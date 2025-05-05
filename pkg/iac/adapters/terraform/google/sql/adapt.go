@@ -25,7 +25,6 @@ func adaptInstances(modules terraform.Modules) []sql.DatabaseInstance {
 }
 
 func adaptInstance(resource *terraform.Block) sql.DatabaseInstance {
-
 	instance := sql.DatabaseInstance{
 		Metadata:        resource.GetMetadata(),
 		DatabaseVersion: resource.GetAttribute("database_version").AsStringValueOrDefault("", resource),

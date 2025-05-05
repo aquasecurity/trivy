@@ -329,11 +329,9 @@ func TestResult_GetCode(t *testing.T) {
 			assert.Equal(t, test.expected, code.Lines)
 		})
 	}
-
 }
 
 func TestCode_IsCauseMultiline(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		code     Code

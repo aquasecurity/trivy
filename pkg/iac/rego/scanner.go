@@ -114,7 +114,6 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 }
 
 func (s *Scanner) runQuery(ctx context.Context, query string, input ast.Value, disableTracing bool) (rego.ResultSet, []string, error) {
-
 	trace := (s.traceWriter != nil || s.tracePerResult) && !disableTracing
 
 	regoOptions := []func(*rego.Rego){
@@ -169,7 +168,6 @@ func GetInputsContents(inputs []Input) []any {
 }
 
 func (s *Scanner) ScanInput(ctx context.Context, sourceType types.Source, inputs ...Input) (scan.Results, error) {
-
 	s.logger.Debug("Scanning inputs", "count", len(inputs))
 
 	if len(inputs) == 0 {

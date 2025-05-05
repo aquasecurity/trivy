@@ -28,7 +28,7 @@ func Test_EmbeddedLoading(t *testing.T) {
 }
 
 func Test_RegisterRegoRules(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name          string
 		inputPolicy   string
 		expectedError bool
@@ -108,7 +108,7 @@ deny[res]{
 }
 
 func Test_RegisterDeprecatedRule(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name        string
 		id          string
 		inputPolicy string

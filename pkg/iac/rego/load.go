@@ -78,7 +78,6 @@ func (s *Scanner) loadEmbedded() error {
 }
 
 func (s *Scanner) LoadPolicies(srcFS fs.FS) error {
-
 	if s.policies == nil {
 		s.policies = make(map[string]*ast.Module)
 	}
@@ -142,7 +141,6 @@ func (s *Scanner) LoadPolicies(srcFS fs.FS) error {
 }
 
 func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
-
 	var excludedFiles []string
 
 	for _, e := range compiler.Errors {

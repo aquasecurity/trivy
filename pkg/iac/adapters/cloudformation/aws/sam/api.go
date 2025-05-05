@@ -7,7 +7,6 @@ import (
 )
 
 func getApis(cfFile parser.FileContext) (apis []sam.API) {
-
 	apiResources := cfFile.GetResourcesByType("AWS::Serverless::Api")
 	for _, r := range apiResources {
 		api := sam.API{
@@ -26,7 +25,6 @@ func getApis(cfFile parser.FileContext) (apis []sam.API) {
 }
 
 func getRestMethodSettings(r *parser.Resource) sam.RESTMethodSettings {
-
 	settings := sam.RESTMethodSettings{
 		Metadata:           r.Metadata(),
 		CacheDataEncrypted: iacTypes.BoolDefault(false, r.Metadata()),
@@ -61,7 +59,6 @@ func getRestMethodSettings(r *parser.Resource) sam.RESTMethodSettings {
 }
 
 func getAccessLogging(r *parser.Resource) sam.AccessLogging {
-
 	logging := sam.AccessLogging{
 		Metadata:              r.Metadata(),
 		CloudwatchLogGroupARN: iacTypes.StringDefault("", r.Metadata()),
@@ -78,7 +75,6 @@ func getAccessLogging(r *parser.Resource) sam.AccessLogging {
 }
 
 func getDomainConfiguration(r *parser.Resource) sam.DomainConfiguration {
-
 	domainConfig := sam.DomainConfiguration{
 		Metadata: r.Metadata(),
 	}
@@ -92,5 +88,4 @@ func getDomainConfiguration(r *parser.Resource) sam.DomainConfiguration {
 	}
 
 	return domainConfig
-
 }

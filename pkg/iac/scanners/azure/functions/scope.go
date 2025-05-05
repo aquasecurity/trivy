@@ -15,7 +15,6 @@ var (
 )
 
 func ManagementGroup(_ ...any) any {
-
 	return fmt.Sprintf(`{
     "id": "/providers/Microsoft.Management/managementGroups/mgPlaceholder",
     "name": "mgPlaceholder",
@@ -51,7 +50,6 @@ func ManagementGroupResourceID(args ...any) any {
 	default:
 		return fmt.Sprintf("/providers/Microsoft.Management/managementGroups/%s/providers/%s/%s", groupID, args[0], args[1])
 	}
-
 }
 
 func Subscription(_ ...any) any {
@@ -102,5 +100,4 @@ func TenantResourceID(args ...any) any {
 	default:
 		return fmt.Sprintf("/providers/%s/%s", args[0], args[1])
 	}
-
 }

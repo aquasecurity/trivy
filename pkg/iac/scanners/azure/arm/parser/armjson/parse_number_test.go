@@ -71,7 +71,6 @@ func Test_Number_FloatWithExponent(t *testing.T) {
 			err := Unmarshal(example, &output, &metadata)
 			require.NoError(t, err)
 			assert.InEpsilon(t, test.out, output, 0.0001)
-
 		})
 	}
 }
@@ -98,7 +97,6 @@ func Test_Number_IntWithExponent(t *testing.T) {
 			err := Unmarshal(example, &output, &metadata)
 			require.NoError(t, err)
 			assert.Equal(t, test.out, output)
-
 		})
 	}
 }

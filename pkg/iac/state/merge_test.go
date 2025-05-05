@@ -336,5 +336,4 @@ func Test_Merging(t *testing.T) {
 			assert.Equal(t, test.expected, *actual)
 		})
 	}
-
 }

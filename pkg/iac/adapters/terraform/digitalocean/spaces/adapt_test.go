@@ -138,5 +138,4 @@ func TestLines(t *testing.T) {
 
 	assert.Equal(t, 16, bucket.Objects[0].ACL.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 16, bucket.Objects[0].ACL.GetMetadata().Range().GetEndLine())
-
 }

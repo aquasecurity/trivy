@@ -62,7 +62,6 @@ func TestFileContext_OverrideParameters(t *testing.T) {
 }
 
 func TestFileContext_MissingParameterValues(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		ctx      FileContext

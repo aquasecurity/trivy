@@ -422,5 +422,4 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 
 	assert.Equal(t, 62, nodePool.Management.EnableAutoUpgrade.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 62, nodePool.Management.EnableAutoUpgrade.GetMetadata().Range().GetEndLine())
-
 }

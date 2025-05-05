@@ -344,7 +344,6 @@ func parseApk(pkgName string, fos *ftypes.OS) (string, string, packageurl.Qualif
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#deb
 func parseDeb(fos *ftypes.OS) packageurl.Qualifiers {
-
 	if fos == nil {
 		return packageurl.Qualifiers{}
 	}
@@ -525,5 +524,4 @@ func parsePkgName(name string) (string, string) {
 		name = name[index+1:]
 	}
 	return namespace, name
-
 }

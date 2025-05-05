@@ -23,7 +23,6 @@ func adaptBrokers(modules terraform.Modules) []mq.Broker {
 }
 
 func adaptBroker(resource *terraform.Block) mq.Broker {
-
 	broker := mq.Broker{
 		Metadata:     resource.GetMetadata(),
 		PublicAccess: types.BoolDefault(false, resource.GetMetadata()),

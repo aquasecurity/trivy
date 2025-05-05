@@ -10,7 +10,6 @@ import (
 )
 
 func Test_resolve_base64_value(t *testing.T) {
-
 	property := &Property{
 		name: "BucketName",
 		Type: cftypes.Map,

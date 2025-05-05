@@ -432,7 +432,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 						Version: "1.1.1d-r2",
 						Identifier: types.PkgIdentifier{
 							UID: "3f6c865591e06595",
-							//PURL: "pkg:apk/alpine/openssl@1.1.1d-r2?distro=3.10.4",
+							// PURL: "pkg:apk/alpine/openssl@1.1.1d-r2?distro=3.10.4",
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeApk,
 								Namespace: "alpine",

@@ -414,7 +414,8 @@ func (ag AnalyzerGroup) AnalyzerVersions() Versions {
 // and passes only those files to the analyzer for analysis.
 // This function may be called concurrently and must be thread-safe.
 func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, limit *semaphore.Weighted, result *AnalysisResult,
-	dir, filePath string, info os.FileInfo, opener Opener, disabled []Type, opts AnalysisOptions) error {
+	dir, filePath string, info os.FileInfo, opener Opener, disabled []Type, opts AnalysisOptions,
+) error {
 	if info.IsDir() {
 		return nil
 	}
@@ -486,7 +487,8 @@ func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo)
 // The obtained results are merged into the "result".
 // This function may be called concurrently and must be thread-safe.
 func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeFS, result *AnalysisResult,
-	opts AnalysisOptions) error {
+	opts AnalysisOptions,
+) error {
 	for _, a := range ag.postAnalyzers {
 		fsys, ok := compositeFS.Get(a.Type())
 		if !ok {

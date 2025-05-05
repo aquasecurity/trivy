@@ -72,7 +72,6 @@ var projectMemberResources = []string{
 }
 
 func (a *adapter) adaptProjectMembers() {
-
 	for _, memberType := range projectMemberResources {
 		for _, iamBlock := range a.modules.GetResourcesByType(memberType) {
 
@@ -157,11 +156,9 @@ func (a *adapter) adaptProjectDataBindings() {
 			}
 		}
 	}
-
 }
 
 func (a *adapter) adaptProjectBindings() {
-
 	a.adaptProjectDataBindings()
 
 	for _, bindingType := range projectBindingResources {
@@ -184,7 +181,6 @@ func (a *adapter) adaptProjectBindings() {
 }
 
 func (a *adapter) resolveProjectBlockID(projectAttr *terraform.Attribute, iamBlock *terraform.Block) string {
-
 	if projectAttr.IsString() {
 		projectID := projectAttr.Value().AsString()
 		if blockID, exists := a.projectsByID[projectID]; exists {

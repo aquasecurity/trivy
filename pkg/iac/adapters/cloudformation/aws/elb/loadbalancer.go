@@ -7,7 +7,6 @@ import (
 )
 
 func getLoadBalancers(ctx parser.FileContext) (loadbalancers []elb.LoadBalancer) {
-
 	loadBalanacerResources := ctx.GetResourcesByType("AWS::ElasticLoadBalancingV2::LoadBalancer")
 
 	for _, r := range loadBalanacerResources {
@@ -25,7 +24,6 @@ func getLoadBalancers(ctx parser.FileContext) (loadbalancers []elb.LoadBalancer)
 }
 
 func getListeners(lbr *parser.Resource, ctx parser.FileContext) (listeners []elb.Listener) {
-
 	listenerResources := ctx.GetResourcesByType("AWS::ElasticLoadBalancingV2::Listener")
 
 	for _, r := range listenerResources {

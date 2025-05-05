@@ -50,7 +50,6 @@ func (n *node) decodeObjectToMap(v reflect.Value) error {
 
 	v.Set(newMap)
 	return nil
-
 }
 
 func (n *node) objectAsMap() (map[string]Node, error) {
@@ -75,7 +74,6 @@ func (n *node) objectAsMap() (map[string]Node, error) {
 }
 
 func (n *node) decodeObjectToStruct(v reflect.Value) error {
-
 	temp := reflect.New(v.Type()).Elem()
 	v.Set(temp)
 

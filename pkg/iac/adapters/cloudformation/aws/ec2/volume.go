@@ -6,7 +6,6 @@ import (
 )
 
 func getVolumes(ctx parser.FileContext) (volumes []ec2.Volume) {
-
 	volumeResources := ctx.GetResourcesByType("AWS::EC2::Volume")
 	for _, r := range volumeResources {
 

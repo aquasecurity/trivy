@@ -108,7 +108,6 @@ func TestWriter_Write(t *testing.T) {
 			require.NoError(t, err, "invalid json written")
 
 			require.Equal(t, tt.want, got, tt.name)
-
 		})
 	}
 }

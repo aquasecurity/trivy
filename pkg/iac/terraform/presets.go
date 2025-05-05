@@ -52,7 +52,6 @@ func createPresetValues(b *Block) map[string]cty.Value {
 }
 
 func postProcessValues(b *Block, input map[string]cty.Value) map[string]cty.Value {
-
 	// alias id to "bucket" (bucket name) for s3 bucket resources
 	if strings.HasPrefix(b.TypeLabel(), "aws_s3_bucket") {
 		if bucket, ok := input["bucket"]; ok {

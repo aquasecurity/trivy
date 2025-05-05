@@ -10,8 +10,7 @@ import (
 )
 
 // Scanner implements the Bottlerocket scanner
-type Scanner struct {
-}
+type Scanner struct{}
 
 // NewScanner is the factory method for Scanner
 func NewScanner() *Scanner {

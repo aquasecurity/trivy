@@ -7,7 +7,6 @@ import (
 )
 
 func Test_ToLower(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		args     []any
@@ -35,11 +34,9 @@ func Test_ToLower(t *testing.T) {
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
-
 }
 
 func Test_ToUpper(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		args     []any
@@ -67,5 +64,4 @@ func Test_ToUpper(t *testing.T) {
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
-
 }

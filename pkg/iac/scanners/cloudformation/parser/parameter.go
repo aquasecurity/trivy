@@ -30,7 +30,6 @@ func (p *Parameter) UnmarshalYAML(node *yaml.Node) error {
 }
 
 func (p *Parameter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-
 	var inner parameterInner
 
 	if err := json.UnmarshalDecode(dec, &inner,

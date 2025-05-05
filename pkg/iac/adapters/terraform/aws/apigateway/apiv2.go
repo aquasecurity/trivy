@@ -7,7 +7,6 @@ import (
 )
 
 func adaptAPIsV2(modules terraform.Modules) []v2.API {
-
 	var apis []v2.API
 	apiStageIDs := modules.GetChildResourceIDMapByType("aws_apigatewayv2_stage")
 

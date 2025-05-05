@@ -6,11 +6,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-var trueRunes = []rune("true")
-var falseRunes = []rune("false")
+var (
+	trueRunes  = []rune("true")
+	falseRunes = []rune("false")
+)
 
 func (p *parser) parseBoolean(parentMetadata *types.Metadata) (Node, error) {
-
 	n, _ := p.newNode(KindBoolean, parentMetadata)
 
 	r, err := p.peeker.Peek()

@@ -8,7 +8,6 @@ import (
 )
 
 func Test_cidr_generator(t *testing.T) {
-
 	original := &Property{
 		ctx:     nil,
 		name:    "cidr",

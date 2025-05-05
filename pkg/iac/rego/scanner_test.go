@@ -33,7 +33,6 @@ func CreateFS(t *testing.T, files map[string]string) fs.FS {
 }
 
 func Test_RegoScanning_Deny(t *testing.T) {
-
 	srcFS := CreateFS(t, map[string]string{
 		"policies/test.rego": `
 # METADATA
@@ -81,7 +80,6 @@ deny {
 }
 
 func Test_RegoScanning_AbsolutePolicyPath_Deny(t *testing.T) {
-
 	tmp := t.TempDir()
 	require.NoError(t, os.Mkdir(filepath.Join(tmp, "policies"), 0o755))
 	require.NoError(t, os.WriteFile(filepath.Join(tmp, "policies", "test.rego"), []byte(`# METADATA
@@ -173,7 +171,6 @@ deny {
 }
 
 func Test_RegoScanning_WithRuntimeValues(t *testing.T) {
-
 	t.Setenv("DEFSEC_RUNTIME_VAL", "AOK")
 
 	srcFS := CreateFS(t, map[string]string{
@@ -318,7 +315,6 @@ deny[res] {
 	assert.Equal(t, "/evil.lol", results.GetFailed()[0].Metadata().Range().GetFilename())
 	assert.Equal(t, 123, results.GetFailed()[0].Metadata().Range().GetStartLine())
 	assert.Equal(t, 456, results.GetFailed()[0].Metadata().Range().GetEndLine())
-
 }
 
 func Test_RegoScanning_WithDenyMetadata_PersistedPath(t *testing.T) {
@@ -374,7 +370,6 @@ deny[res] {
 	assert.Equal(t, "/blah.txt", results.GetFailed()[0].Metadata().Range().GetFilename())
 	assert.Equal(t, 123, results.GetFailed()[0].Metadata().Range().GetStartLine())
 	assert.Equal(t, 456, results.GetFailed()[0].Metadata().Range().GetEndLine())
-
 }
 
 func Test_RegoScanning_WithStaticMetadata(t *testing.T) {
@@ -435,7 +430,6 @@ deny[res] {
 	assert.Equal(t, severity.Low, failure.Rule().Severity)
 	assert.Equal(t, "This is a recommendation", failure.Rule().Resolution)
 	assert.Equal(t, "https://google.com", failure.Rule().Links[0])
-
 }
 
 func Test_RegoScanning_WithMatchingInputSelector(t *testing.T) {
@@ -520,7 +514,6 @@ deny {
 }
 
 func Test_RegoScanning_NoTracingByDefault(t *testing.T) {
-
 	srcFS := CreateFS(t, map[string]string{
 		"policies/test.rego": `# METADATA
 # title: Custom policy
@@ -566,7 +559,6 @@ deny {
 }
 
 func Test_RegoScanning_GlobalTracingEnabled(t *testing.T) {
-
 	srcFS := CreateFS(t, map[string]string{
 		"policies/test.rego": `# METADATA
 # title: Custom policy
@@ -616,7 +608,6 @@ deny {
 }
 
 func Test_RegoScanning_PerResultTracingEnabled(t *testing.T) {
-
 	srcFS := CreateFS(t, map[string]string{
 		"policies/test.rego": `# METADATA
 # title: Custom policy
@@ -662,7 +653,6 @@ deny {
 }
 
 func Test_dynamicMetadata(t *testing.T) {
-
 	srcFS := CreateFS(t, map[string]string{
 		"policies/test.rego": `
 package defsec.test
@@ -694,7 +684,6 @@ deny {
 }
 
 func Test_staticMetadata(t *testing.T) {
-
 	srcFS := CreateFS(t, map[string]string{
 		"policies/test.rego": `
 package defsec.test
@@ -726,7 +715,6 @@ deny {
 }
 
 func Test_annotationMetadata(t *testing.T) {
-
 	srcFS := CreateFS(t, map[string]string{
 		"policies/test.rego": `# METADATA
 # title: i am a title
@@ -781,7 +769,6 @@ deny {
 }
 
 func Test_RegoScanning_WithInvalidInputSchema(t *testing.T) {
-
 	srcFS := CreateFS(t, map[string]string{
 		"policies/test.rego": `# METADATA
 # schemas:
@@ -801,7 +788,6 @@ deny {
 }
 
 func Test_RegoScanning_WithValidInputSchema(t *testing.T) {
-
 	srcFS := CreateFS(t, map[string]string{
 		"policies/test.rego": `# METADATA
 # schemas:
@@ -952,7 +938,6 @@ deny {
 }
 
 func Test_NoErrorsWhenUsingBadRegoCheck(t *testing.T) {
-
 	// this check cause eval_conflict_error
 	// https://www.openpolicyagent.org/docs/latest/policy-language/#functions
 	fsys := fstest.MapFS{
@@ -979,7 +964,6 @@ deny {
 }
 
 func Test_RegoScanning_WithDeprecatedCheck(t *testing.T) {
-
 	check := `# METADATA
 # title: i am a deprecated check
 # description: i am a description
@@ -997,7 +981,7 @@ deny {
   input.text
 }`
 
-	var testCases = []struct {
+	testCases := []struct {
 		name            string
 		policy          string
 		opts            []options.ScannerOption
@@ -1040,7 +1024,6 @@ deny {
 }
 
 func Test_RegoScanner_WithCustomSchemas(t *testing.T) {
-
 	schema := `{
   "$id": "https://example.com/test.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",

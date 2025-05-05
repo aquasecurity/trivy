@@ -721,7 +721,7 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			if *update {
 				b, err := json.MarshalIndent(got.Packages, "", "  ")
 				require.NoError(t, err)
-				err = os.WriteFile(goldenFile, b, 0666)
+				err = os.WriteFile(goldenFile, b, 0o666)
 				require.NoError(t, err)
 			}
 

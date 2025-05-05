@@ -39,7 +39,6 @@ func New(options ...Option) *Executor {
 }
 
 func (e *Executor) Execute(ctx context.Context, modules terraform.Modules, basePath string) (scan.Results, error) {
-
 	e.logger.Debug("Adapting modules...")
 	infra := adapter.Adapt(modules)
 	e.logger.Debug("Adapted module(s) into state data.", log.Int("count", len(modules)))

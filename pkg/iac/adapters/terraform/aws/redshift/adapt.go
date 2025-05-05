@@ -108,7 +108,6 @@ func adaptSecurityGroup(resource *terraform.Block) redshift.SecurityGroup {
 }
 
 func adaptParameter(resource *terraform.Block) redshift.ClusterParameter {
-
 	return redshift.ClusterParameter{
 		Metadata:       resource.GetMetadata(),
 		ParameterName:  resource.GetAttribute("name").AsStringValueOrDefault("", resource),

@@ -101,5 +101,4 @@ func calculateEndLine(node *yaml.Node) int {
 	}
 
 	return calculateEndLine(node.Content[len(node.Content)-1])
-
 }

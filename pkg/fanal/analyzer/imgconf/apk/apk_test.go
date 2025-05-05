@@ -1378,7 +1378,7 @@ func TestAnalyze(t *testing.T) {
 		targetOS types.OS
 		config   *v1.ConfigFile
 	}
-	var tests = map[string]struct {
+	tests := map[string]struct {
 		args                args
 		apkIndexArchivePath string
 		want                types.Packages
@@ -1436,7 +1436,7 @@ func TestAnalyze(t *testing.T) {
 }
 
 func TestParseCommand(t *testing.T) {
-	var tests = map[string]struct {
+	tests := map[string]struct {
 		command  string
 		envs     map[string]string
 		expected []string
@@ -1505,7 +1505,7 @@ func TestParseCommand(t *testing.T) {
 }
 
 func TestResolveDependency(t *testing.T) {
-	var tests = map[string]struct {
+	tests := map[string]struct {
 		pkgName             string
 		apkIndexArchivePath string
 		want                set.Set[string]
@@ -1608,7 +1608,7 @@ func TestResolveDependency(t *testing.T) {
 }
 
 func TestGuessVersion(t *testing.T) {
-	var tests = map[string]struct {
+	tests := map[string]struct {
 		apkIndexArchive *apkIndex
 		pkgs            []string
 		createdAt       time.Time

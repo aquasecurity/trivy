@@ -6,7 +6,6 @@ import (
 )
 
 func getLogGroups(ctx parser.FileContext) (logGroups []cloudwatch.LogGroup) {
-
 	logGroupResources := ctx.GetResourcesByType("AWS::Logs::LogGroup")
 
 	for _, r := range logGroupResources {

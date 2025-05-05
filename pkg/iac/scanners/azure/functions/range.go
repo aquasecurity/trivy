@@ -1,7 +1,6 @@
 package functions
 
 func Range(args ...any) any {
-
 	if len(args) != 2 {
 		return []any{}
 	}

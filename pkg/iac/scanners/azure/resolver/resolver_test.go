@@ -11,7 +11,6 @@ import (
 )
 
 func Test_resolveFunc(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		expr     string
@@ -98,5 +97,4 @@ func Test_resolveParameter(t *testing.T) {
 			require.Equal(t, tt.expected, resolvedValue.AsString())
 		})
 	}
-
 }

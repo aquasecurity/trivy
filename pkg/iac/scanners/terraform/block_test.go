@@ -7,7 +7,7 @@ import (
 )
 
 func Test_IsPresentCheckOnBlock(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		name              string
 		source            string
 		expectedAttribute string
@@ -44,7 +44,7 @@ resource "aws_s3_bucket" "my-bucket" {
 }
 
 func Test_IsNotPresentCheckOnBlock(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		name              string
 		source            string
 		expectedAttribute string

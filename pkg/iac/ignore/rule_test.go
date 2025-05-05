@@ -14,7 +14,6 @@ func metadataWithLine(path string, line int) types.Metadata {
 }
 
 func TestRules_Ignore(t *testing.T) {
-
 	const filename = "test"
 
 	type args struct {

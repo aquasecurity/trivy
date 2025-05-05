@@ -115,7 +115,6 @@ func Test_eggAnalyzer_Analyze(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
-
 }
 
 func Test_eggAnalyzer_Required(t *testing.T) {

@@ -73,7 +73,6 @@ func adaptFirewalls(module terraform.Modules) []compute.Firewall {
 }
 
 func adaptLoadBalancers(module terraform.Modules) (loadBalancers []compute.LoadBalancer) {
-
 	for _, block := range module.GetResourcesByType("digitalocean_loadbalancer") {
 		forwardingRules := block.GetBlocks("forwarding_rule")
 		var fRules []compute.ForwardingRule

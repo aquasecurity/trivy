@@ -89,7 +89,6 @@ func (s Server) NewServeMux(ctx context.Context, serverCache cache.Cache, dbUpda
 			defer requestWg.Done()
 
 			base.ServeHTTP(w, r.WithContext(ctx))
-
 		})
 	}
 
@@ -145,7 +144,8 @@ func newDBWorker(dbClient *db.Client) dbWorker {
 }
 
 func (w dbWorker) update(ctx context.Context, appVersion, dbDir string,
-	skipDBUpdate bool, dbUpdateWg, requestWg *sync.WaitGroup, opt types.RegistryOptions) error {
+	skipDBUpdate bool, dbUpdateWg, requestWg *sync.WaitGroup, opt types.RegistryOptions,
+) error {
 	log.Debug("Check for DB update...")
 	needsUpdate, err := w.dbClient.NeedsUpdate(ctx, appVersion, skipDBUpdate)
 	if err != nil {

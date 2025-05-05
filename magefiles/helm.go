@@ -7,11 +7,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/aquasecurity/go-version/pkg/semver"
-
 	"github.com/magefile/mage/sh"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
+
+	"github.com/aquasecurity/go-version/pkg/semver"
 )
 
 const chartFile = "./helm/trivy/Chart.yaml"
@@ -41,11 +41,11 @@ func main() {
 		trivyVersion, newHelmVersion)
 
 	cmds := [][]string{
-		[]string{"git", "switch", "-c", newBranch},
-		[]string{"git", "add", chartFile},
-		[]string{"git", "commit", "-m", title},
-		[]string{"git", "push", "origin", newBranch},
-		[]string{"gh", "pr", "create", "--base", "main", "--head", newBranch, "--title", title, "--body", description, "--repo", "$GITHUB_REPOSITORY"},
+		{"git", "switch", "-c", newBranch},
+		{"git", "add", chartFile},
+		{"git", "commit", "-m", title},
+		{"git", "push", "origin", newBranch},
+		{"gh", "pr", "create", "--base", "main", "--head", newBranch, "--title", title, "--body", description, "--repo", "$GITHUB_REPOSITORY"},
 	}
 
 	if err := runShCommands(cmds); err != nil {
@@ -76,8 +76,8 @@ func bumpHelmChart(filename, trivyVersion string) (string, error) {
 		return "", xerrors.Errorf("could not build new helm version: %v", err)
 	}
 	cmds := [][]string{
-		[]string{"sed", "-i", "-e", fmt.Sprintf("s/appVersion: %s/appVersion: %s/g", currentHelmChart.AppVersion, trivyVersion), filename},
-		[]string{"sed", "-i", "-e", fmt.Sprintf("s/version: %s/version: %s/g", currentHelmChart.Version, newHelmVersion), filename},
+		{"sed", "-i", "-e", fmt.Sprintf("s/appVersion: %s/appVersion: %s/g", currentHelmChart.AppVersion, trivyVersion), filename},
+		{"sed", "-i", "-e", fmt.Sprintf("s/version: %s/version: %s/g", currentHelmChart.Version, newHelmVersion), filename},
 	}
 
 	if err := runShCommands(cmds); err != nil {

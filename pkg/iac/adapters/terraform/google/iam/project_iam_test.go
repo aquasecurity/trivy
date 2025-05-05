@@ -29,7 +29,8 @@ func Test_AdaptBinding(t *testing.T) {
 			expected: iam.Binding{
 				Metadata: iacTypes.NewTestMetadata(),
 				Members: []iacTypes.StringValue{
-					iacTypes.String("user:alice@gmail.com", iacTypes.NewTestMetadata())},
+					iacTypes.String("user:alice@gmail.com", iacTypes.NewTestMetadata()),
+				},
 				Role:                          iacTypes.String("roles/browser", iacTypes.NewTestMetadata()),
 				IncludesDefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},

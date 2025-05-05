@@ -7,7 +7,6 @@ import (
 )
 
 func Test_FilenameWindowsFriendly(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		fileName string

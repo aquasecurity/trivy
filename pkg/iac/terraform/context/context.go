@@ -100,7 +100,6 @@ func (c *Context) Replace(val cty.Value, path string) {
 }
 
 func mergeVars(src cty.Value, parts []string, value cty.Value) cty.Value {
-
 	if len(parts) == 0 {
 		if isNotEmptyObject(src) && isNotEmptyObject(value) {
 			return mergeObjects(src, value)

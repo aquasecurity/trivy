@@ -21,7 +21,6 @@ func adaptRepositories(modules terraform.Modules) []github.Repository {
 }
 
 func adaptRepository(resource *terraform.Block) github.Repository {
-
 	repo := github.Repository{
 		Metadata:            resource.GetMetadata(),
 		Public:              types.Bool(true, resource.GetMetadata()),

@@ -15,6 +15,7 @@ func NewErrInvalidContent(source string, err error) *InvalidContentError {
 		err:    err,
 	}
 }
+
 func (e *InvalidContentError) Error() string {
 	return fmt.Sprintf("Invalid content in file: %s. Error: %v", e.source, e.err)
 }

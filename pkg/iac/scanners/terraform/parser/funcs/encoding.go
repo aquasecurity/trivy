@@ -135,7 +135,6 @@ var TextDecodeBase64Func = function.New(&function.Spec{
 			default:
 				return cty.UnknownVal(cty.String), function.NewArgErrorf(0, "invalid source string: %w", err)
 			}
-
 		}
 
 		decoder := encoding.NewDecoder()

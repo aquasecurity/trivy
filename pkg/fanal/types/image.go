@@ -18,14 +18,12 @@ const (
 	RemoteImageSource ImageSource = "remote"
 )
 
-var (
-	AllImageSources = ImageSources{
-		DockerImageSource,
-		ContainerdImageSource,
-		PodmanImageSource,
-		RemoteImageSource,
-	}
-)
+var AllImageSources = ImageSources{
+	DockerImageSource,
+	ContainerdImageSource,
+	PodmanImageSource,
+	RemoteImageSource,
+}
 
 type Platform struct {
 	*v1.Platform

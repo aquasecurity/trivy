@@ -25,14 +25,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-var (
-	logFunctions = map[string]api.GoModuleFunc{
-		"debug": logDebug,
-		"info":  logInfo,
-		"warn":  logWarn,
-		"error": logError,
-	}
-)
+var logFunctions = map[string]api.GoModuleFunc{
+	"debug": logDebug,
+	"info":  logInfo,
+	"warn":  logWarn,
+	"error": logError,
+}
 
 // logDebug is defined as an api.GoModuleFunc for lower overhead vs reflection.
 func logDebug(_ context.Context, mod api.Module, params []uint64) {

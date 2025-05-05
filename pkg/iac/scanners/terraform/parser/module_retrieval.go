@@ -10,7 +10,7 @@ import (
 )
 
 type ModuleResolver interface {
-	Resolve(context.Context, fs.FS, resolvers.Options) (filesystem fs.FS, prefix string, downloadPath string, applies bool, err error)
+	Resolve(context.Context, fs.FS, resolvers.Options) (filesystem fs.FS, prefix, downloadPath string, applies bool, err error)
 }
 
 var defaultResolvers = []ModuleResolver{

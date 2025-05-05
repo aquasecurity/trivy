@@ -34,7 +34,7 @@ type Block struct {
 	reference    Reference
 }
 
-func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, parentBlock *Block, moduleSource string,
+func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock, parentBlock *Block, moduleSource string,
 	moduleFS fs.FS, index ...cty.Value,
 ) *Block {
 	if ctx == nil {

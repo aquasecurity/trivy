@@ -90,8 +90,8 @@ func (v *CSAF) matchProduct(productID csaf.ProductID, product *core.Component) b
 }
 
 func (v *CSAF) matchRelationship(fullProductID csaf.ProductID, product, subProduct *core.Component) (
-	csaf.RelationshipCategory, bool) {
-
+	csaf.RelationshipCategory, bool,
+) {
 	for category, relationships := range v.inspectProductRelationships(fullProductID) {
 		for _, rel := range relationships {
 			if !rel.Product.Match(product.PkgIdentifier.PURL) {

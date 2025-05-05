@@ -7,7 +7,6 @@ import (
 )
 
 func adaptAPIsV2(cfFile parser.FileContext) (apis []v2.API) {
-
 	apiResources := cfFile.GetResourcesByType("AWS::ApiGatewayV2::Api")
 	for _, apiRes := range apiResources {
 		api := v2.API{
@@ -44,7 +43,6 @@ func getStages(apiId string, cfFile parser.FileContext) []v2.Stage {
 }
 
 func getAccessLogging(r *parser.Resource) v2.AccessLogging {
-
 	loggingProp := r.GetProperty("AccessLogSettings")
 	if loggingProp.IsNil() {
 		return v2.AccessLogging{

@@ -52,9 +52,11 @@ const (
 	ExternalReferenceVEX ExternalReferenceType = "external_reference_vex"
 )
 
-type ComponentType string
-type RelationshipType string
-type ExternalReferenceType string
+type (
+	ComponentType         string
+	RelationshipType      string
+	ExternalReferenceType string
+)
 
 // BOM represents an intermediate representation of a component for SBOM.
 type BOM struct {

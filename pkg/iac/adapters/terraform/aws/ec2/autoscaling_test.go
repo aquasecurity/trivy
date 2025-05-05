@@ -193,5 +193,4 @@ export AWS_DEFAULT_REGION=us-west-2
 
 	assert.Equal(t, 21, launchConfig.EBSBlockDevices[0].Encrypted.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 21, launchConfig.EBSBlockDevices[0].Encrypted.GetMetadata().Range().GetEndLine())
-
 }

@@ -49,9 +49,7 @@ const (
 	TargetVM             TargetKind = "vm"
 )
 
-var (
-	SkipScan = errors.New("skip subsequent processes")
-)
+var SkipScan = errors.New("skip subsequent processes")
 
 // InitializeScanService defines the initialize function signature of scan service
 type InitializeScanService func(context.Context, ScannerConfig) (scan.Service, func(), error)

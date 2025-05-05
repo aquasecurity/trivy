@@ -24,7 +24,6 @@ func adaptLogProfiles(modules terraform.Modules) []monitor.LogProfile {
 }
 
 func adaptLogProfile(resource *terraform.Block) monitor.LogProfile {
-
 	logProfile := monitor.LogProfile{
 		Metadata: resource.GetMetadata(),
 		RetentionPolicy: monitor.RetentionPolicy{

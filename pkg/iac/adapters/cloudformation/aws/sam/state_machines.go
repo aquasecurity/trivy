@@ -9,7 +9,6 @@ import (
 )
 
 func getStateMachines(cfFile parser.FileContext) (stateMachines []sam.StateMachine) {
-
 	stateMachineResources := cfFile.GetResourcesByType("AWS::Serverless::StateMachine")
 	for _, r := range stateMachineResources {
 		stateMachine := sam.StateMachine{

@@ -225,7 +225,8 @@ func (a yarnAnalyzer) parsePackageJSON(fsys fs.FS, filePath string) (packagejson
 }
 
 func (a yarnAnalyzer) resolveRootDependencies(root *packagejson.Package, pkgs map[string]types.Package,
-	patterns map[string][]string) error {
+	patterns map[string][]string,
+) error {
 	if err := a.resolveDependencies(root, pkgs, patterns); err != nil {
 		return xerrors.Errorf("unable to resolve dependencies: %w", err)
 	}
@@ -238,7 +239,8 @@ func (a yarnAnalyzer) resolveRootDependencies(root *packagejson.Package, pkgs ma
 }
 
 func (a yarnAnalyzer) resolveWorkspaceDependencies(workspaces []packagejson.Package, pkgs map[string]types.Package,
-	patterns map[string][]string) error {
+	patterns map[string][]string,
+) error {
 	if len(workspaces) == 0 {
 		return nil
 	}
@@ -278,8 +280,8 @@ func (a yarnAnalyzer) resolveDependencies(pkg *packagejson.Package, pkgs map[str
 // walkDependencies recursively walk dependencies and flags them as direct or indirect.
 // Note that it overwrites the existing package map.
 func (a yarnAnalyzer) walkDependencies(parent *types.Package, pkgs map[string]types.Package, directDeps map[string]string,
-	patterns map[string][]string, dev bool) error {
-
+	patterns map[string][]string, dev bool,
+) error {
 	// Identify direct dependencies
 	seenIDs := set.New[string]()
 	for _, pkg := range pkgs {
@@ -480,7 +482,6 @@ func (a yarnAnalyzer) traverseCacheDir(fsys fs.FS) (map[string][]string, error) 
 			}
 			return nil
 		})
-
 	if err != nil {
 		return nil, xerrors.Errorf("walk error: %w", err)
 	}

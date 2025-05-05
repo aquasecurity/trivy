@@ -18,7 +18,6 @@ func Union(args ...any) any {
 	}
 
 	return []any{}
-
 }
 
 func unionMap(args ...any) any {

@@ -91,7 +91,6 @@ func Test_adaptRepository(t *testing.T) {
 						Metadata: iacTypes.NewTestMetadata(),
 						Name:     iacTypes.StringDefault("", iacTypes.NewTestMetadata()),
 						Document: func() iam.Document {
-
 							builder := iamgo.NewPolicyBuilder()
 							builder.WithVersion("2008-10-17")
 

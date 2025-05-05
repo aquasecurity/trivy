@@ -83,6 +83,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	sort.Sort(deps)
 	return pkgs, deps, nil
 }
+
 func (p *Parser) parseDependencies(pkgId string, pkg cargoPkg, pkgs map[string]cargoPkg) *ftypes.Dependency {
 	var dependOn []string
 

@@ -43,5 +43,4 @@ func convertFormat(format string) string {
 	goFormat = strings.ReplaceAll(goFormat, "tt", "PM")
 	goFormat = strings.ReplaceAll(goFormat, "t", "PM")
 	return goFormat
-
 }

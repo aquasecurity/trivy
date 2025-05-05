@@ -10,10 +10,11 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/spf13/cobra/doc"
+
 	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/spf13/cobra/doc"
 )
 
 const (
@@ -64,7 +65,7 @@ func generateTelemetryFlagDocs(filename string, allFlagGroups []flag.FlagGroup) 
 
 	sort.Strings(telemetryFlags)
 	flagContent := fmt.Sprintf("```\n%s\n```\n", strings.Join(telemetryFlags, "\n"))
-	if err := os.WriteFile(filename, []byte(flagContent), 0644); err != nil {
+	if err := os.WriteFile(filename, []byte(flagContent), 0o644); err != nil {
 		return fmt.Errorf("failed to write to %s: %w", filename, err)
 	}
 	return nil
@@ -192,5 +193,4 @@ func getAllFlags() []flag.FlagGroup {
 		flag.NewSecretFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
 	}
-
 }

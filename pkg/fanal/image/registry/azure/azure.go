@@ -24,8 +24,7 @@ type RegistryClient struct {
 	cloud  cloud.Configuration
 }
 
-type Registry struct {
-}
+type Registry struct{}
 
 const (
 	azureURL      = ".azurecr.io"

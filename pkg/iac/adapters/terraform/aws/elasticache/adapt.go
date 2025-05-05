@@ -12,6 +12,7 @@ func Adapt(modules terraform.Modules) elasticache.ElastiCache {
 		SecurityGroups:    adaptSecurityGroups(modules),
 	}
 }
+
 func adaptClusters(modules terraform.Modules) []elasticache.Cluster {
 	var clusters []elasticache.Cluster
 	for _, module := range modules {

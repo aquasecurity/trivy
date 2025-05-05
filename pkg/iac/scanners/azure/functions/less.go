@@ -1,7 +1,6 @@
 package functions
 
 func Less(args ...any) any {
-
 	if len(args) != 2 {
 		return false
 	}
@@ -23,7 +22,6 @@ func Less(args ...any) any {
 }
 
 func LessOrEquals(args ...any) any {
-
 	if len(args) != 2 {
 		return false
 	}

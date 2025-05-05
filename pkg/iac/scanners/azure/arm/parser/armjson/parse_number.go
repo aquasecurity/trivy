@@ -9,7 +9,6 @@ import (
 )
 
 func (p *parser) parseNumber(parentMetadata *types.Metadata) (Node, error) {
-
 	n, _ := p.newNode(KindNumber, parentMetadata)
 
 	var str string

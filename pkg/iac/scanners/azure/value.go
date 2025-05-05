@@ -38,7 +38,6 @@ var NullValue = Value{
 }
 
 func NewValue(value any, metadata types.Metadata) Value {
-
 	v := Value{
 		Metadata: metadata,
 	}
@@ -98,7 +97,6 @@ func (v *Value) GetMetadata() types.Metadata {
 }
 
 func (v *Value) UnmarshalJSONWithMetadata(node armjson2.Node) error {
-
 	v.updateValueKind(node)
 
 	v.Metadata = node.Metadata()

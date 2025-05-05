@@ -8,7 +8,6 @@ import (
 )
 
 func Test_is_intrinsic_returns_expected(t *testing.T) {
-
 	testCases := []struct {
 		nodeTag        string
 		expectedResult bool
@@ -41,5 +40,4 @@ func Test_is_intrinsic_returns_expected(t *testing.T) {
 		}
 		assert.Equal(t, tt.expectedResult, IsIntrinsicFunc(n))
 	}
-
 }

@@ -239,8 +239,8 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 }
 
 func (a Artifact) analyzeWithRootDir(ctx context.Context, wg *sync.WaitGroup, limit *semaphore.Weighted,
-	result *analyzer.AnalysisResult, composite *analyzer.CompositeFS, opts analyzer.AnalysisOptions) error {
-
+	result *analyzer.AnalysisResult, composite *analyzer.CompositeFS, opts analyzer.AnalysisOptions,
+) error {
 	root := a.rootPath
 	relativePath := ""
 
@@ -254,8 +254,8 @@ func (a Artifact) analyzeWithRootDir(ctx context.Context, wg *sync.WaitGroup, li
 // analyzeWithStaticPaths analyzes files using static paths from analyzers
 func (a Artifact) analyzeWithStaticPaths(ctx context.Context, wg *sync.WaitGroup, limit *semaphore.Weighted,
 	result *analyzer.AnalysisResult, composite *analyzer.CompositeFS, opts analyzer.AnalysisOptions,
-	staticPaths []string) error {
-
+	staticPaths []string,
+) error {
 	// Process each static path
 	for _, relativePath := range staticPaths {
 		if err := a.analyzeWithTraversal(ctx, a.rootPath, relativePath, wg, limit, result, composite, opts); errors.Is(err, fs.ErrNotExist) {
@@ -270,8 +270,8 @@ func (a Artifact) analyzeWithStaticPaths(ctx context.Context, wg *sync.WaitGroup
 
 // analyzeWithTraversal analyzes files by traversing the entire filesystem
 func (a Artifact) analyzeWithTraversal(ctx context.Context, root, relativePath string, wg *sync.WaitGroup, limit *semaphore.Weighted,
-	result *analyzer.AnalysisResult, composite *analyzer.CompositeFS, opts analyzer.AnalysisOptions) error {
-
+	result *analyzer.AnalysisResult, composite *analyzer.CompositeFS, opts analyzer.AnalysisOptions,
+) error {
 	return a.walker.Walk(filepath.Join(root, relativePath), a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		filePath = path.Join(relativePath, filePath)
 		if err := a.analyzer.AnalyzeFile(ctx, wg, limit, result, root, filePath, info, opener, nil, opts); err != nil {

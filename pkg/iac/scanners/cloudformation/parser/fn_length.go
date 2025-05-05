@@ -22,5 +22,4 @@ func ResolveLength(property *Property) (*Property, bool) {
 	}
 
 	return property, false
-
 }

@@ -78,8 +78,7 @@ func (d *Dependencies) UnmarshalTOML(data any) error {
 
 // Parser parses pyproject.toml defined in PEP518.
 // https://peps.python.org/pep-0518/
-type Parser struct {
-}
+type Parser struct{}
 
 func NewParser() *Parser {
 	return &Parser{}

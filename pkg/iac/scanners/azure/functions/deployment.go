@@ -7,7 +7,6 @@ type DeploymentData interface {
 }
 
 func Deployment(_ DeploymentData, _ ...any) any {
-
 	/*
 
 		{
@@ -71,5 +70,4 @@ func Parameters(paramProvider DeploymentData, args ...any) any {
 	}
 
 	return paramProvider.GetParameter(paramName)
-
 }

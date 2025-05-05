@@ -24,7 +24,6 @@ func adaptClusters(modules terraform.Modules) []container.KubernetesCluster {
 }
 
 func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
-
 	cluster := container.KubernetesCluster{
 		Metadata: resource.GetMetadata(),
 		NetworkProfile: container.NetworkProfile{

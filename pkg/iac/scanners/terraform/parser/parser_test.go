@@ -22,7 +22,6 @@ import (
 )
 
 func Test_BasicParsing(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"test.tf": `
 
@@ -153,7 +152,6 @@ check "cats_mittens_is_special" {
 }
 
 func Test_Modules(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"code/test.tf": `
 module "my-mod" {
@@ -211,11 +209,9 @@ output "mod_result" {
 	require.NotNil(t, childValAttr)
 	require.Equal(t, cty.String, childValAttr.Type())
 	assert.Equal(t, "ok", childValAttr.Value().AsString())
-
 }
 
 func Test_NestedParentModule(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"code/test.tf": `
 module "my-mod" {
@@ -274,7 +270,6 @@ output "mod_result" {
 }
 
 func Test_UndefinedModuleOutputReference(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"code/test.tf": `
 resource "something" "blah" {
@@ -301,7 +296,6 @@ resource "something" "blah" {
 }
 
 func Test_UndefinedModuleOutputReferenceInSlice(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"code/test.tf": `
 resource "something" "blah" {
@@ -339,7 +333,6 @@ resource "something" "blah" {
 }
 
 func Test_TemplatedSliceValue(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"code/test.tf": `
 
@@ -383,7 +376,6 @@ resource "something" "blah" {
 }
 
 func Test_SliceOfVars(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"code/test.tf": `
 
@@ -428,7 +420,6 @@ resource "something" "blah" {
 }
 
 func Test_VarSlice(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"code/test.tf": `
 
@@ -472,7 +463,6 @@ resource "something" "blah" {
 }
 
 func Test_LocalSliceNested(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"code/test.tf": `
 
@@ -520,7 +510,6 @@ resource "something" "blah" {
 }
 
 func Test_FunctionCall(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"code/test.tf": `
 
@@ -993,11 +982,9 @@ resource "aws_s3_bucket" "this" {
 			assert.Equal(t, tt.expectedNameLabel, bucket.NameLabel())
 		})
 	}
-
 }
 
 func TestForEachCountExpanded(t *testing.T) {
-
 	tests := []struct {
 		name          string
 		source        string
@@ -1164,7 +1151,6 @@ resource "aws_internet_gateway" "example" {
 }
 
 func TestArnAttributeOfBucketIsCorrect(t *testing.T) {
-
 	t.Run("the bucket doesn't have a name", func(t *testing.T) {
 		fs := testutil.CreateFS(t, map[string]string{
 			"main.tf": `resource "aws_s3_bucket" "this" {}`,
@@ -1714,7 +1700,6 @@ resource "test_resource" "this" {
 }
 
 func TestPopulateContextWithBlockInstances(t *testing.T) {
-
 	tests := []struct {
 		name      string
 		blockType string
@@ -2065,7 +2050,6 @@ func TestModuleParents(t *testing.T) {
 				assertChild(t, n.children[idx], child)
 			}
 		})
-
 	}
 
 	assertChild(t, expectedTree, root)
@@ -2287,7 +2271,8 @@ func Test_OptionsWithTfVars(t *testing.T) {
   foo = var.foo
 }
 variable "foo" {}
-`})
+`,
+	})
 
 	parser := New(fs, "", OptionsWithTfVars(
 		map[string]cty.Value{
@@ -2309,7 +2294,6 @@ variable "foo" {}
 }
 
 func Test_AWSRegionNameDefined(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"code/test.tf": `
 data "aws_region" "current" {}
@@ -2708,7 +2692,8 @@ func TestInstancedLogger(t *testing.T) {
 			"main.tf": &fstest.MapFile{
 				Data: []byte(`
 					bare words
-				`)},
+				`),
+			},
 		}
 
 		parser := New(fsys, "", opts...)
@@ -2731,7 +2716,8 @@ func TestInstancedLogger(t *testing.T) {
 					output "phrase" {
 					  value = locals.phrase
 					}
-				`)},
+				`),
+			},
 		}
 
 		parser := New(fsys, "", opts...)

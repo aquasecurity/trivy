@@ -10,7 +10,6 @@ import (
 )
 
 func Test_GetBuckets(t *testing.T) {
-
 	source := `
 resource "aws_s3_bucket" "bucket1" {
 
@@ -22,11 +21,9 @@ resource "aws_s3_bucket" "bucket1" {
 	s3 := Adapt(modules)
 
 	assert.Len(t, s3.Buckets, 1)
-
 }
 
 func Test_BucketGetACL(t *testing.T) {
-
 	source := `
 resource "aws_s3_bucket" "example" {
   bucket = "yournamehere"
@@ -40,11 +37,9 @@ resource "aws_s3_bucket" "example" {
 
 	assert.Len(t, s3.Buckets, 1)
 	assert.Equal(t, "authenticated-read", s3.Buckets[0].ACL.Value())
-
 }
 
 func Test_V4BucketGetACL(t *testing.T) {
-
 	source := `
 resource "aws_s3_bucket" "example" {
   bucket = "yournamehere"
@@ -60,11 +55,9 @@ resource "aws_s3_bucket_acl" "example" {
 
 	assert.Len(t, s3.Buckets, 1)
 	assert.Equal(t, "authenticated-read", s3.Buckets[0].ACL.Value())
-
 }
 
 func Test_BucketGetLogging(t *testing.T) {
-
 	source := `
 resource "aws_s3_bucket" "example" {
   bucket = "yournamehere"
@@ -82,11 +75,9 @@ resource "aws_s3_bucket" "example" {
 
 	assert.Len(t, s3.Buckets, 1)
 	assert.True(t, s3.Buckets[0].Logging.Enabled.Value())
-
 }
 
 func Test_V4BucketGetLogging(t *testing.T) {
-
 	source := `
 resource "aws_s3_bucket" "log_bucket" {
   bucket = "example-log-bucket"
@@ -176,7 +167,6 @@ resource "aws_s3_bucket" "example" {
 
 	assert.Len(t, s3.Buckets, 1)
 	assert.True(t, s3.Buckets[0].Versioning.Enabled.Value())
-
 }
 
 func Test_BucketGetVersioningWithLockForNewBucket(t *testing.T) {
@@ -196,7 +186,6 @@ resource "aws_s3_bucket_object_lock_configuration" "example" {
 
 	assert.Len(t, s3.Buckets, 1)
 	assert.True(t, s3.Buckets[0].Versioning.Enabled.Value())
-
 }
 
 func Test_BucketGetVersioningWhenLockDisabledButVersioningEnabled(t *testing.T) {
@@ -222,11 +211,9 @@ resource "aws_s3_bucket_versioning" "example" {
 
 	assert.Len(t, s3.Buckets, 1)
 	assert.True(t, s3.Buckets[0].Versioning.Enabled.Value())
-
 }
 
 func Test_BucketGetEncryption(t *testing.T) {
-
 	source := `
 	resource "aws_s3_bucket" "example" {
   bucket = "yournamehere"
@@ -250,7 +237,6 @@ func Test_BucketGetEncryption(t *testing.T) {
 }
 
 func Test_V4BucketGetEncryption(t *testing.T) {
-
 	source := `
 resource "aws_s3_bucket" "example" {
   bucket = "yournamehere"
@@ -278,7 +264,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
 }
 
 func Test_BucketWithPolicy(t *testing.T) {
-
 	source := `
 resource "aws_s3_bucket" "bucket1" {
 	bucket = "lol"	
@@ -326,5 +311,4 @@ data "aws_iam_policy_document" "allow_access_from_another_account" {
 	awsPrincipals, _ := principals.AWS()
 	require.Len(t, awsPrincipals, 1)
 	require.Len(t, actions, 2)
-
 }

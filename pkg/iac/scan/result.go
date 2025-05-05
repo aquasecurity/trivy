@@ -126,7 +126,6 @@ func (r *Result) AbsolutePath(fsRoot string, metadata iacTypes.Metadata) string 
 }
 
 func (r *Result) RelativePathTo(fsRoot, to string, metadata iacTypes.Metadata) string {
-
 	absolute := r.AbsolutePath(fsRoot, metadata)
 
 	if strings.HasSuffix(fsRoot, ":") {

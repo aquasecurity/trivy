@@ -7,7 +7,6 @@ import (
 )
 
 func Test_LastIndexOf(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		args     []any

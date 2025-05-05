@@ -6,7 +6,6 @@ import (
 )
 
 func (n *node) decodeString(v reflect.Value) error {
-
 	switch v.Kind() {
 	case reflect.String:
 		v.SetString(n.raw.(string))

@@ -22,7 +22,6 @@ func ResolveSplit(property *Property) (resolved *Property, success bool) {
 
 	if !splitProp.IsString() || !delimiterProp.IsString() {
 		abortIntrinsic(property, "Fn::Split requires two strings as input, returning original Property")
-
 	}
 
 	propertyList := createPropertyList(splitProp, delimiterProp, property)

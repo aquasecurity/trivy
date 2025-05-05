@@ -6,7 +6,6 @@ import (
 )
 
 func adaptDomainNamesV1(modules terraform.Modules) []v1.DomainName {
-
 	var domainNames []v1.DomainName
 
 	for _, module := range modules {

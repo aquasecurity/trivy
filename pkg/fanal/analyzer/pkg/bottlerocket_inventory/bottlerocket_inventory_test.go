@@ -35,7 +35,7 @@ var pkgs = []types.Package{
 }
 
 func TestParseApplicationInventory(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		name     string
 		path     string
 		wantPkgs []types.Package

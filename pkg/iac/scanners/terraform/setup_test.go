@@ -106,7 +106,6 @@ func scanFS(fsys fs.FS, target string, opts ...options.ScannerOption) (scan.Resu
 }
 
 func scanHCL(t *testing.T, source string, opts ...options.ScannerOption) scan.Results {
-
 	fsys := testutil.CreateFS(t, map[string]string{
 		"main.tf": source,
 	})
@@ -116,7 +115,6 @@ func scanHCL(t *testing.T, source string, opts ...options.ScannerOption) scan.Re
 }
 
 func scanJSON(t *testing.T, source string, opts ...options.ScannerOption) scan.Results {
-
 	fsys := testutil.CreateFS(t, map[string]string{
 		"main.tf.json": source,
 	})

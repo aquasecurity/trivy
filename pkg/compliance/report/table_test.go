@@ -14,7 +14,6 @@ import (
 )
 
 func TestTableWriter_Write(t *testing.T) {
-
 	tests := []struct {
 		name       string
 		reportType string

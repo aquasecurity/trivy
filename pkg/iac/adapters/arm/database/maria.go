@@ -10,7 +10,6 @@ func adaptMariaDBServers(deployment azure.Deployment) (mariaDbServers []database
 		mariaDbServers = append(mariaDbServers, adaptMariaDBServer(resource, deployment))
 	}
 	return mariaDbServers
-
 }
 
 func adaptMariaDBServer(resource azure.Resource, _ azure.Deployment) database.MariaDBServer {

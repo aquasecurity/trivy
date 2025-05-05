@@ -23,7 +23,6 @@ func adaptProjects(modules terraform.Modules) []codebuild.Project {
 }
 
 func adaptProject(resource *terraform.Block) codebuild.Project {
-
 	project := codebuild.Project{
 		Metadata: resource.GetMetadata(),
 		ArtifactSettings: codebuild.ArtifactSettings{

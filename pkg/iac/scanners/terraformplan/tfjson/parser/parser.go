@@ -25,7 +25,6 @@ func New() *Parser {
 }
 
 func (p *Parser) ParseFile(filepath string) (*PlanFile, error) {
-
 	if _, err := os.Stat(filepath); err != nil {
 		return nil, err
 	}
@@ -39,7 +38,6 @@ func (p *Parser) ParseFile(filepath string) (*PlanFile, error) {
 }
 
 func (p *Parser) Parse(reader io.Reader) (*PlanFile, error) {
-
 	var planFile PlanFile
 
 	if err := json.NewDecoder(reader).Decode(&planFile); err != nil {
@@ -47,11 +45,9 @@ func (p *Parser) Parse(reader io.Reader) (*PlanFile, error) {
 	}
 
 	return &planFile, nil
-
 }
 
 func (p *PlanFile) ToFS() (*memoryfs.FS, error) {
-
 	rootFS := memoryfs.New()
 
 	var fileResources []string
@@ -70,7 +66,6 @@ func (p *PlanFile) ToFS() (*memoryfs.FS, error) {
 		return nil, err
 	}
 	return rootFS, nil
-
 }
 
 func getResources(module Module, resourceChanges []ResourceChange, configuration Configuration) ([]terraform.PlanBlock, error) {
@@ -110,7 +105,6 @@ func getResources(module Module, resourceChanges []ResourceChange, configuration
 
 		resourceConfig := getConfiguration(r.Address, configuration.RootModule)
 		if resourceConfig != nil {
-
 			for attr, val := range resourceConfig.Expressions {
 				if value, shouldReplace := unpackConfigurationValue(val, r); shouldReplace || !res.HasAttribute(attr) {
 					res.Attributes[attr] = value
@@ -171,7 +165,6 @@ func unpackConfigurationValue(val any, r Resource) (any, bool) {
 }
 
 func getConfiguration(address string, configuration ConfigurationModule) *ConfigurationResource {
-
 	workingAddress := address
 	var moduleParts []string
 	for strings.HasPrefix(workingAddress, "module.") {

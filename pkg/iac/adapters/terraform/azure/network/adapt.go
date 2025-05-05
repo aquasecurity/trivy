@@ -27,7 +27,6 @@ type adapter struct {
 }
 
 func (a *adapter) adaptSecurityGroups() []network.SecurityGroup {
-
 	for _, module := range a.modules {
 		for _, resource := range module.GetResourcesByType("azurerm_network_security_group") {
 			a.adaptSecurityGroup(resource)
@@ -46,7 +45,6 @@ func (a *adapter) adaptSecurityGroups() []network.SecurityGroup {
 					continue
 				}
 			}
-
 		}
 
 		a.groups[uuid.NewString()] = network.SecurityGroup{
@@ -86,7 +84,6 @@ func (a *adapter) adaptSecurityGroup(resource *terraform.Block) {
 }
 
 func (a *adapter) adaptSGRule(ruleBlock *terraform.Block) network.SecurityGroupRule {
-
 	rule := network.SecurityGroupRule{
 		Metadata:             ruleBlock.GetMetadata(),
 		Outbound:             iacTypes.BoolDefault(false, ruleBlock.GetMetadata()),

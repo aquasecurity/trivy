@@ -12,7 +12,6 @@ func Format(args ...any) any {
 }
 
 func generateFormatterString(args ...any) string {
-
 	formatter, ok := args[0].(string)
 	if !ok {
 		return ""

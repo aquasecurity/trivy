@@ -243,7 +243,6 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 }
 
 func TestComplianceSpec_LoadFromDiskBundle(t *testing.T) {
-
 	t.Run("load user specified spec from disk", func(t *testing.T) {
 		cs, err := spec.GetComplianceSpec(filepath.Join("@testdata", "testcache", "policy", "content", "specs", "compliance", "testspec.yaml"), filepath.Join("testdata", "testcache"))
 		require.NoError(t, err)

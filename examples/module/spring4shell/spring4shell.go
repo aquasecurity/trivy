@@ -27,9 +27,7 @@ const (
 	TypeTomcatVersion = ModuleName + "/tomcat-version"
 )
 
-var (
-	tomcatVersionRegex = regexp.MustCompile(`Apache Tomcat Version ([\d.]+)`)
-)
+var tomcatVersionRegex = regexp.MustCompile(`Apache Tomcat Version ([\d.]+)`)
 
 // main is required for Go to compile the Wasm module
 func main() {}

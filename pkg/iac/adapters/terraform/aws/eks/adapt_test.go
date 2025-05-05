@@ -157,5 +157,4 @@ func TestLines(t *testing.T) {
 
 	assert.Equal(t, 16, cluster.PublicAccessCIDRs[0].GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 16, cluster.PublicAccessCIDRs[0].GetMetadata().Range().GetEndLine())
-
 }

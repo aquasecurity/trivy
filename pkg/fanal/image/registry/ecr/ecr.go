@@ -21,8 +21,7 @@ type ecrAPI interface {
 	GetAuthorizationToken(ctx context.Context, params *ecr.GetAuthorizationTokenInput, optFns ...func(*ecr.Options)) (*ecr.GetAuthorizationTokenOutput, error)
 }
 
-type ECR struct {
-}
+type ECR struct{}
 
 type ECRClient struct {
 	Client ecrAPI

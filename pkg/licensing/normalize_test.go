@@ -349,7 +349,7 @@ func TestSplitLicenses(t *testing.T) {
 }
 
 func TestLaxSplitLicense(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		license      string
 		wantLicenses []string
 	}{

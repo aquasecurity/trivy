@@ -732,7 +732,7 @@ func (a flagAliases) NormalizeFunc() func(*pflag.FlagSet, string) pflag.Normaliz
 }
 
 func HiddenFlags() []string {
-	var allFlagGroups = []FlagGroup{
+	allFlagGroups := []FlagGroup{
 		NewGlobalFlagGroup(),
 		NewCacheFlagGroup(),
 		NewCleanFlagGroup(),

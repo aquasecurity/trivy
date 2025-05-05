@@ -29,7 +29,6 @@ func Test_Base64Call(t *testing.T) {
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
-
 }
 
 func Test_Base64ToStringCall(t *testing.T) {
@@ -53,11 +52,9 @@ func Test_Base64ToStringCall(t *testing.T) {
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
-
 }
 
 func Test_Base64ToJsonCall(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		args     []any

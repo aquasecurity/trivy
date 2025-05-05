@@ -29,7 +29,6 @@ func Adapt(_ context.Context, deployment scanner.Deployment) *state.State {
 }
 
 func adaptAzure(deployment scanner.Deployment) azure.Azure {
-
 	return azure.Azure{
 		AppService:     appservice.Adapt(deployment),
 		Authorization:  authorization.Adapt(deployment),
@@ -45,5 +44,4 @@ func adaptAzure(deployment scanner.Deployment) azure.Azure {
 		Storage:        storage.Adapt(deployment),
 		Synapse:        synapse.Adapt(deployment),
 	}
-
 }

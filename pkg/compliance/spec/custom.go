@@ -17,7 +17,8 @@ var customIDs = map[string]func(types.Result) types.Result{
 }
 
 func mapCustomIDsToFilteredResults(result types.Result, checkIDs map[types.Scanner][]string,
-	mapCheckByID map[string]types.Results) {
+	mapCheckByID map[string]types.Results,
+) {
 	for _, ids := range checkIDs {
 		for _, id := range ids {
 			filterFunc, ok := customIDs[id]

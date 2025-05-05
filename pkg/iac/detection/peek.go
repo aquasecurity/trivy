@@ -9,13 +9,12 @@ import (
 )
 
 func IsHelmChartArchive(path string, file io.Reader) bool {
-
 	if !IsArchive(path) {
 		return false
 	}
 
 	var err error
-	var fr = file
+	fr := file
 
 	if IsZip(path) {
 		if fr, err = gzip.NewReader(file); err != nil {

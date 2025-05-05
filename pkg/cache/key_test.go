@@ -205,7 +205,6 @@ func TestCalcKey(t *testing.T) {
 			want: "sha256:2f1c898271e84f4382cd48ae7533069cc3dc656c2d688ac108f5db1a0d9fd393",
 		},
 		{
-
 			name: "secret config",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
@@ -223,7 +222,6 @@ func TestCalcKey(t *testing.T) {
 			want: "sha256:d3fb9503f2851ae9bdb250b7ef55c00c0bfa1250b19d4d398a9219c2c0e20958",
 		},
 		{
-
 			name: "secret config file doesn't exist",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",

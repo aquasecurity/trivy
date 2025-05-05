@@ -184,6 +184,7 @@ deny[res] {
 	res := result.new(msg, output.cmd)
 }
 `
+
 const DS006LegacyWithOldStyleMetadata = `package builtin.dockerfile.DS006
 
 __rego_metadata__ := {
@@ -276,7 +277,7 @@ USER root
 }
 
 func Test_BasicScanNewRegoMetadata(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name                    string
 		inputRegoPolicy         string
 		expectedError           string
@@ -629,7 +630,6 @@ COPY --from=dep /binary /`
 			}
 		})
 	}
-
 }
 
 func Test_IgnoreByInlineComments(t *testing.T) {

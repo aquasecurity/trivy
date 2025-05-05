@@ -42,7 +42,6 @@ func (a *adapter) adaptOrganizationMembers() {
 }
 
 func (a *adapter) adaptOrganizationBindings() {
-
 	for _, iamBlock := range a.modules.GetResourcesByType("google_organization_iam_policy") {
 
 		policyAttr := iamBlock.GetAttribute("policy_data")

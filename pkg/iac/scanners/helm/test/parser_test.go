@@ -14,7 +14,6 @@ import (
 )
 
 func Test_helm_parser(t *testing.T) {
-
 	tests := []struct {
 		testName  string
 		chartName string
@@ -54,7 +53,6 @@ func Test_helm_parser(t *testing.T) {
 }
 
 func Test_helm_parser_where_name_non_string(t *testing.T) {
-
 	tests := []struct {
 		testName  string
 		chartName string
@@ -77,7 +75,6 @@ func Test_helm_parser_where_name_non_string(t *testing.T) {
 }
 
 func Test_tar_is_chart(t *testing.T) {
-
 	tests := []struct {
 		testName    string
 		archiveFile string
@@ -123,7 +120,6 @@ func Test_tar_is_chart(t *testing.T) {
 }
 
 func Test_helm_tarball_parser(t *testing.T) {
-
 	tests := []struct {
 		testName    string
 		chartName   string

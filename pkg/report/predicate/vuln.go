@@ -85,5 +85,4 @@ func (w VulnWriter) Write(ctx context.Context, report types.Report) error {
 		return xerrors.Errorf("failed to write cosign vulnerability predicate: %w", err)
 	}
 	return nil
-
 }

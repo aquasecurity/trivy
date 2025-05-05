@@ -7,7 +7,6 @@ import (
 )
 
 func getAccessAnalyzer(ctx parser.FileContext) (analyzers []accessanalyzer.Analyzer) {
-
 	analyzersList := ctx.GetResourcesByType("AWS::AccessAnalyzer::Analyzer")
 
 	for _, r := range analyzersList {

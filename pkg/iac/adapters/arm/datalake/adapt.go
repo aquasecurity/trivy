@@ -6,7 +6,6 @@ import (
 )
 
 func Adapt(deployment azure.Deployment) datalake.DataLake {
-
 	return datalake.DataLake{
 		Stores: adaptStores(deployment),
 	}

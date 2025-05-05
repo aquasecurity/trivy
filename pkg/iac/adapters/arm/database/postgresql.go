@@ -32,7 +32,6 @@ func adaptPostgreSQLServer(resource azure.Resource, deployment azure.Deployment)
 }
 
 func adaptPostgreSQLConfiguration(resource azure.Resource, deployment azure.Deployment) database.PostgresSQLConfig {
-
 	parent := fmt.Sprintf("%s/", resource.Name.AsString())
 
 	config := database.PostgresSQLConfig{
