@@ -212,8 +212,10 @@ var genericSuffixPattern = regexp.MustCompile(`__\d+$`)
 // cleanContentSets removes generic suffixes like "__8" from content sets.
 // These are Red Hat image build artifacts and not valid repository names.
 // Examples:
-//   Input:  []string{"repo__8", "repo__9_DOT_2", "repo__10"}
-//   Output: []string{"repo", "repo__9_DOT_2", "repo"}
+//
+//	Input:  []string{"repo__8", "repo__9_DOT_2", "repo__10"}
+//	Output: []string{"repo", "repo__9_DOT_2", "repo"}
+//
 // cf. https://github.com/aquasecurity/trivy-db/issues/435
 func cleanContentSets(contentSets []string) []string {
 	return lo.Map(contentSets, func(cs string, _ int) string {
