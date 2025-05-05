@@ -3,12 +3,14 @@ package redhat
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"slices"
 	"sort"
 	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-rpm-version"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -109,6 +111,9 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 		nvr = fmt.Sprintf("%s-%s", pkg.BuildInfo.Nvr, pkg.BuildInfo.Arch)
 	}
 
+	// Clean content sets from generic suffixes (__8, __9, etc.)
+	contentSets = cleanContentSets(contentSets)
+
 	advisories, err := s.vs.Get(pkgName, contentSets, []string{nvr})
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
@@ -196,4 +201,16 @@ func addModularNamespace(name, label string) string {
 		}
 	}
 	return name
+}
+
+// Match generic version suffixes like "__8", "__9", "__10", but preserve EUS suffixes like "__9_DOT_2"
+var genericSuffixPattern = regexp.MustCompile(`__\d+$`)
+
+// cleanContentSets removes generic suffixes like "__8" from content sets
+// These are Red Hat image build artifacts and not valid repository names
+// cf. https://github.com/aquasecurity/trivy-db/issues/435
+func cleanContentSets(contentSets []string) []string {
+	return lo.Map(contentSets, func(cs string, _ int) string {
+		return genericSuffixPattern.ReplaceAllString(cs, "")
+	})
 }
