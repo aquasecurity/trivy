@@ -16,6 +16,7 @@ const (
 	TypeAzure      Type = "azurelinux"
 	TypeCBLMariner Type = "cbl-mariner"
 	TypeDebian     Type = "debian"
+	TypeEcho       Type = "echo"
 	TypePhoton     Type = "photon"
 	TypeCentOS     Type = "centos"
 	TypeRocky      Type = "rocky"
