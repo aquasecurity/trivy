@@ -140,7 +140,6 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
                                             - redhat
                                             - redhat-oval
                                             - debian
-                                            - echo
                                             - ubuntu
                                             - alpine
                                             - amazon
@@ -160,6 +159,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
                                             - aqua
                                             - osv
                                             - k8s
+                                            - echo
                                             - wolfi
                                             - chainguard
                                             - bitnami

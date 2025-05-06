@@ -142,7 +142,6 @@ trivy rootfs [flags] ROOTDIR
                                             - redhat
                                             - redhat-oval
                                             - debian
-                                            - echo
                                             - ubuntu
                                             - alpine
                                             - amazon
@@ -162,6 +161,7 @@ trivy rootfs [flags] ROOTDIR
                                             - aqua
                                             - osv
                                             - k8s
+                                            - echo
                                             - wolfi
                                             - chainguard
                                             - bitnami

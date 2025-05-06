@@ -114,7 +114,6 @@ trivy sbom [flags] SBOM_PATH
                                          - redhat
                                          - redhat-oval
                                          - debian
-                                         - echo
                                          - ubuntu
                                          - alpine
                                          - amazon
@@ -134,6 +133,7 @@ trivy sbom [flags] SBOM_PATH
                                          - aqua
                                          - osv
                                          - k8s
+                                         - echo
                                          - wolfi
                                          - chainguard
                                          - bitnami

@@ -150,7 +150,6 @@ trivy kubernetes [flags] [CONTEXT]
                                             - redhat
                                             - redhat-oval
                                             - debian
-                                            - echo
                                             - ubuntu
                                             - alpine
                                             - amazon
@@ -170,6 +169,7 @@ trivy kubernetes [flags] [CONTEXT]
                                             - aqua
                                             - osv
                                             - k8s
+                                            - echo
                                             - wolfi
                                             - chainguard
                                             - bitnami

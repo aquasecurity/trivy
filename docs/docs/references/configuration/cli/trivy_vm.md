@@ -127,7 +127,6 @@ trivy vm [flags] VM_IMAGE
                                             - redhat
                                             - redhat-oval
                                             - debian
-                                            - echo
                                             - ubuntu
                                             - alpine
                                             - amazon
@@ -147,6 +146,7 @@ trivy vm [flags] VM_IMAGE
                                             - aqua
                                             - osv
                                             - k8s
+                                            - echo
                                             - wolfi
                                             - chainguard
                                             - bitnami
