@@ -8058,7 +8058,7 @@ You're not viewing the latest version of the documentation.
 <tr>
 <td>*gradle.lockfile</td>
 <td style="text-align: center;">-</td>
-<td style="text-align: center;">Exclude</td>
+<td style="text-align: center;"><a href="#gradlelock">Exclude</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">Not needed</td>
@@ -8147,6 +8147,8 @@ If you need to show them, use the <code>--include-dev-deps</code> flag.</p>
 <p class="admonition-title">Note</p>
 <p>All necessary files are checked locally. Gradle file scanning doesn't require internet access.</p>
 </div>
+<p>By default, Trivy doesn't report development dependencies. 
+Use the <code>--include-dev-deps</code> flag to include them in the results.</p>
 <h3 id="dependency-tree">Dependency-tree<a class="headerlink" href="#dependency-tree" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">EXPERIMENTAL</p>
