@@ -37,7 +37,6 @@ var (
 		ftypes.Azure:              azure.NewAzureScanner(),
 		ftypes.CBLMariner:         azure.NewMarinerScanner(),
 		ftypes.Debian:             debian.NewScanner(),
-		ftypes.Echo:               echo.NewScanner(),
 		ftypes.Ubuntu:             ubuntu.NewScanner(),
 		ftypes.RedHat:             redhat.NewScanner(),
 		ftypes.CentOS:             redhat.NewScanner(),
@@ -50,6 +49,7 @@ var (
 		ftypes.Photon:             photon.NewScanner(),
 		ftypes.Wolfi:              wolfi.NewScanner(),
 		ftypes.Chainguard:         chainguard.NewScanner(),
+		ftypes.Echo:               echo.NewScanner(),
 	}
 )
 
