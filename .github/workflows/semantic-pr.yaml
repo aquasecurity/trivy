@@ -53,7 +53,6 @@ jobs:
             alpine
             wolfi
             chainguard
-            echo
             redhat
             alma
             rocky
@@ -64,6 +63,7 @@ jobs:
             amazon
             suse
             photon
+            echo
             distroless
             windows
 
