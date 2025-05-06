@@ -12,12 +12,12 @@ Each artifact supports the following scanners:
 
 The following table provides an outline of the features Trivy offers.
 
-| Artifact         |    Internet access    | Dev dependencies | [Dependency graph][dependency-graph] | Position | [Detection Priority][detection-priority] |
-|------------------|:---------------------:|:----------------:|:------------------------------------:|:--------:|:----------------------------------------:|
-| JAR/WAR/PAR/EAR  |     Trivy Java DB     |     Include      |                  -                   |    -     |                Not needed                |
-| pom.xml          | Maven repository [^1] |     Exclude      |                  ✓                   |  ✓[^7]   |                    -                     |
-| *gradle.lockfile |           -           |     Exclude      |                  ✓                   |    ✓     |                Not needed                |
-| *.sbt.lock       |           -           |     Exclude      |                  -                   |    ✓     |                Not needed                |
+| Artifact         |    Internet access    |    Dev dependencies    | [Dependency graph][dependency-graph] | Position | [Detection Priority][detection-priority] |
+|------------------|:---------------------:|:----------------------:|:------------------------------------:|:--------:|:----------------------------------------:|
+| JAR/WAR/PAR/EAR  |     Trivy Java DB     |        Include         |                  -                   |    -     |                Not needed                |
+| pom.xml          | Maven repository [^1] |        Exclude         |                  ✓                   |  ✓[^7]   |                    -                     |
+| *gradle.lockfile |           -           | [Exclude](#gradlelock) |                  ✓                   |    ✓     |                Not needed                |
+| *.sbt.lock       |           -           |        Exclude         |                  -                   |    ✓     |                Not needed                |
 
 These may be enabled or disabled depending on the target.
 See [here](./index.md) for the detail.
@@ -95,6 +95,9 @@ If you need to show them, use the `--include-dev-deps` flag.
 
 !!!note
     All necessary files are checked locally. Gradle file scanning doesn't require internet access.
+
+By default, Trivy doesn't report development dependencies. 
+Use the `--include-dev-deps` flag to include them in the results.
 
 ### Dependency-tree
 !!! warning "EXPERIMENTAL"
