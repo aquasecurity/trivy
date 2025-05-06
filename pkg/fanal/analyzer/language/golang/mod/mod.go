@@ -25,6 +25,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xpath "github.com/aquasecurity/trivy/pkg/x/path"
 )
 
 func init() {
@@ -97,7 +98,7 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 		return nil, xerrors.Errorf("walk error: %w", err)
 	}
 
-	if err = a.fillAdditionalData(apps); err != nil {
+	if err = a.fillAdditionalData(input.FS, apps); err != nil {
 		a.logger.Warn("Unable to collect additional info", log.Err(err))
 	}
 
@@ -111,7 +112,20 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 
 func (a *gomodAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
-	return slices.Contains(requiredFiles, fileName)
+
+	// Save required files (go.mod/go.sum)
+	// Note: vendor directory doesn't contain these files, so we can skip checking for this.
+	// See: https://github.com/aquasecurity/trivy/issues/8527#issuecomment-2777848027
+	if slices.Contains(requiredFiles, fileName) {
+		return true
+	}
+
+	// Save license files from vendor directory
+	if licenseRegexp.MatchString(fileName) && xpath.Contains(filePath, "vendor") {
+		return true
+	}
+
+	return false
 }
 
 func (a *gomodAnalyzer) Type() analyzer.Type {
@@ -123,7 +137,7 @@ func (a *gomodAnalyzer) Version() int {
 }
 
 // fillAdditionalData collects licenses and dependency relationships, then update applications.
-func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
+func (a *gomodAnalyzer) fillAdditionalData(fsys fs.FS, apps []types.Application) error {
 	gopath := os.Getenv("GOPATH")
 	if gopath == "" {
 		gopath = build.Default.GOPATH
@@ -131,11 +145,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 
 	// $GOPATH/pkg/mod
 	modPath := filepath.Join(gopath, "pkg", "mod")
-	if !fsutils.DirExists(modPath) {
-		a.logger.Debug("GOPATH not found. Need 'go mod download' to fill licenses and dependency relationships",
-			log.String("GOPATH", modPath))
-		return nil
-	}
+	gopathModDirFound := fsutils.DirExists(modPath)
 
 	licenses := make(map[string][]string)
 	for i, app := range apps {
@@ -143,6 +153,24 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 		usedPkgs := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 			return pkg.Name, pkg
 		})
+
+		// vendor directory is in the same directory as go.mod
+		vendorDir := filepath.Join(filepath.Dir(app.FilePath), "vendor")
+
+		// Check if the vendor directory exists and is not empty
+		entries, err := fs.ReadDir(fsys, vendorDir)
+		vendorDirFound := err == nil && len(entries) > 0
+		if vendorDirFound {
+			a.logger.Debug("Vendor directory found", log.String("path", vendorDir))
+			modPath = vendorDir
+		}
+
+		if !gopathModDirFound && !vendorDirFound {
+			a.logger.Debug("GOPATH and vendor directory not found. Need 'go mod download' or 'go mod vendor' for license scanning",
+				log.String("GOPATH", modPath))
+			return nil
+		}
+
 		for j, lib := range app.Packages {
 			if l, ok := licenses[lib.ID]; ok {
 				// Fill licenses
@@ -150,12 +178,18 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 				continue
 			}
 
-			// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v1.0.0
-			modDir := filepath.Join(modPath, fmt.Sprintf("%s@%s", normalizeModName(lib.Name), lib.Version))
+			// Package dir from `vendor` dir doesn't have version suffix.
+			modDirName := normalizeModName(lib.Name)
+			if !vendorDirFound {
+				// Add version suffix for packages from $GOPATH
+				// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v1.0.0
+				modDirName = fmt.Sprintf("%s@%s", modDirName, lib.Version)
+			}
+			modDir := filepath.Join(modPath, modDirName)
 
 			// Collect licenses
-			if licenseNames, err := findLicense(modDir, a.licenseClassifierConfidenceLevel); err != nil {
-				return xerrors.Errorf("license error: %w", err)
+			if licenseNames, err := findLicense(fsys, vendorDirFound, modDir, a.licenseClassifierConfidenceLevel); err != nil {
+				return xerrors.Errorf("unable to collect license: %w", err)
 			} else {
 				// Cache the detected licenses
 				licenses[lib.ID] = licenseNames
@@ -164,7 +198,13 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 				apps[i].Packages[j].Licenses = licenseNames
 			}
 
-			// Collect dependencies of the direct dependency
+			// `vendor` dir doesn't contain `go.mod` file
+			// cf. https://github.com/aquasecurity/trivy/issues/8527#issuecomment-2777848027
+			if !gopathModDirFound {
+				continue
+			}
+
+			// Collect dependencies of the direct dependency from $GOPATH/pkg/mod because the vendor directory doesn't have go.mod files.
 			dep, err := a.collectDeps(modDir, lib.ID)
 			if err != nil {
 				return xerrors.Errorf("dependency graph error: %w", err)
@@ -301,19 +341,32 @@ func mergeGoSum(gomod, gosum *types.Application) {
 	gomod.Packages = lo.Values(uniq)
 }
 
-func findLicense(dir string, classifierConfidenceLevel float64) ([]string, error) {
+func findLicense(fsys fs.FS, vendorDirFound bool, dir string, classifierConfidenceLevel float64) ([]string, error) {
 	var license *types.LicenseFile
-	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+
+	open := func(fsys fs.FS, path string) (fs.File, error) {
+		if vendorDirFound {
+			return fsys.Open(path)
+		}
+		return os.Open(path)
+	}
+
+	walkDirFunc := func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		} else if !d.Type().IsRegular() {
 			return nil
 		}
-		if !licenseRegexp.MatchString(filepath.Base(path)) {
-			return nil
+
+		// For `vendor`, the `fsys` directory contains only license files, so we don't need to check the file name again.
+		if !vendorDirFound {
+			if !licenseRegexp.MatchString(filepath.Base(path)) {
+				return nil
+			}
 		}
+
 		// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237/LICENSE
-		f, err := os.Open(path)
+		f, err := open(fsys, path)
 		if err != nil {
 			return xerrors.Errorf("file (%s) open error: %w", path, err)
 		}
@@ -326,10 +379,16 @@ func findLicense(dir string, classifierConfidenceLevel float64) ([]string, error
 		// License found
 		if l != nil && len(l.Findings) > 0 {
 			license = l
-			return io.EOF
 		}
 		return nil
-	})
+	}
+
+	var err error
+	if vendorDirFound {
+		err = fs.WalkDir(fsys, dir, walkDirFunc)
+	} else {
+		err = filepath.WalkDir(dir, walkDirFunc)
+	}
 
 	switch {
 	// The module path may not exist
