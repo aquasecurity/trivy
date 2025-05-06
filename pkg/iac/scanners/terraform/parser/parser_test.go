@@ -1591,6 +1591,15 @@ resource "test_resource" "test" {
 }`,
 			expected: []any{},
 		},
+		{
+			name: "unknown for-each",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = lookup(foo, "") ? [] : []
+  }
+}`,
+			expected: []any{},
+		},
 	}
 
 	for _, tt := range tests {
