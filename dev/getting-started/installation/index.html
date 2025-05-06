@@ -8019,17 +8019,17 @@ You're not viewing the latest version of the documentation.
 <p>For scanning container images with Trivy, mount the container engine socket from the host into the Trivy container.</p>
 </div>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span>/var/run/docker.sock:/var/run/docker.sock<span class="w"> </span>-v<span class="w"> </span><span class="nv">$HOME</span>/Library/Caches:/root/.cache/<span class="w"> </span>aquasec/trivy:0.62.0-11-g3bf4f4493<span class="w"> </span>image<span class="w"> </span>python:3.4-alpine
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span>/var/run/docker.sock:/var/run/docker.sock<span class="w"> </span>-v<span class="w"> </span><span class="nv">$HOME</span>/Library/Caches:/root/.cache/<span class="w"> </span>aquasec/trivy:0.62.0-12-gdd6a6e50a<span class="w"> </span>image<span class="w"> </span>python:3.4-alpine
 </code></pre></div>
 <h2 id="github-release-official">GitHub Release (Official)<a class="headerlink" href="#github-release-official" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Download the file for your operating system/architecture from <a href="https://github.com/aquasecurity/trivy/releases/tag/v0.62.0-11-g3bf4f4493">GitHub Release assets</a>.  </li>
+<li>Download the file for your operating system/architecture from <a href="https://github.com/aquasecurity/trivy/releases/tag/v0.62.0-12-gdd6a6e50a">GitHub Release assets</a>.  </li>
 <li>Unpack the downloaded archive (<code>tar -xzf ./trivy.tar.gz</code>).</li>
 <li>Make sure the binary has execution bit turned on (<code>chmod +x ./trivy</code>).</li>
 </ol>
 <h2 id="install-script-official">Install Script (Official)<a class="headerlink" href="#install-script-official" title="Permanent link">&para;</a></h2>
 <p>For convenience, you can use the install script to download and install Trivy from GitHub Release.</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-sfL<span class="w"> </span>https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>sh<span class="w"> </span>-s<span class="w"> </span>--<span class="w"> </span>-b<span class="w"> </span>/usr/local/bin<span class="w"> </span>v0.62.0-11-g3bf4f4493
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-sfL<span class="w"> </span>https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>sh<span class="w"> </span>-s<span class="w"> </span>--<span class="w"> </span>-b<span class="w"> </span>/usr/local/bin<span class="w"> </span>v0.62.0-12-gdd6a6e50a
 </code></pre></div>
 <h2 id="rhelcentos-official">RHEL/CentOS (Official)<a class="headerlink" href="#rhelcentos-official" title="Permanent link">&para;</a></h2>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Repository</label><label for="__tabbed_1_2">RPM</label></div>
@@ -8049,7 +8049,7 @@ sudo<span class="w"> </span>yum<span class="w"> </span>-y<span class="w"> </span
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>rpm<span class="w"> </span>-ivh<span class="w"> </span>https://github.com/aquasecurity/trivy/releases/download/v0.62.0-11-g3bf4f4493/trivy_0.62.0-11-g3bf4f4493_Linux-64bit.rpm
+<div class="highlight"><pre><span></span><code>rpm<span class="w"> </span>-ivh<span class="w"> </span>https://github.com/aquasecurity/trivy/releases/download/v0.62.0-12-gdd6a6e50a/trivy_0.62.0-12-gdd6a6e50a_Linux-64bit.rpm
 </code></pre></div>
 </div>
 </div>
@@ -8067,8 +8067,8 @@ sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>wget<span class="w"> </span>https://github.com/aquasecurity/trivy/releases/download/v0.62.0-11-g3bf4f4493/trivy_0.62.0-11-g3bf4f4493_Linux-64bit.deb
-sudo<span class="w"> </span>dpkg<span class="w"> </span>-i<span class="w"> </span>trivy_0.62.0-11-g3bf4f4493_Linux-64bit.deb
+<div class="highlight"><pre><span></span><code>wget<span class="w"> </span>https://github.com/aquasecurity/trivy/releases/download/v0.62.0-12-gdd6a6e50a/trivy_0.62.0-12-gdd6a6e50a_Linux-64bit.deb
+sudo<span class="w"> </span>dpkg<span class="w"> </span>-i<span class="w"> </span>trivy_0.62.0-12-gdd6a6e50a_Linux-64bit.deb
 </code></pre></div>
 </div>
 </div>

@@ -8195,8 +8195,9 @@ For details, see <a href="https://go.googlesource.com/proposal/+/master/design/5
 <p>It possibly produces false positives.
 See <a href="#stdlib-vulnerabilities">the caveat</a> for details.</p>
 <h3 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h3>
-<p>To identify licenses, you need to download modules to local cache beforehand, such as <code>go mod download</code>, <code>go mod tidy</code>, etc.
-Trivy traverses <code>$GOPATH/pkg/mod</code> and collects those extra information.</p>
+<p>To identify licenses, you need to download modules to local cache beforehand, such as <code>go mod download</code>, <code>go mod tidy</code>, <code>go mod vendor</code>, etc.
+If the <code>vendor</code> directory exists, Trivy uses this directory when scanning for license files.
+For other cases Trivy traverses <code>$GOPATH/pkg/mod</code>dir and collects those extra information.</p>
 <h3 id="dependency-graph">Dependency Graph<a class="headerlink" href="#dependency-graph" title="Permanent link">&para;</a></h3>
 <p>Same as licenses, you need to download modules to local cache beforehand.</p>
 <h2 id="go-binary">Go Binary<a class="headerlink" href="#go-binary" title="Permanent link">&para;</a></h2>
