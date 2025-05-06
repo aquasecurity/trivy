@@ -140,6 +140,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
                                             - redhat
                                             - redhat-oval
                                             - debian
+                                            - echo
                                             - ubuntu
                                             - alpine
                                             - amazon

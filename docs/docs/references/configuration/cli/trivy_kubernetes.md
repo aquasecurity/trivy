@@ -150,6 +150,7 @@ trivy kubernetes [flags] [CONTEXT]
                                             - redhat
                                             - redhat-oval
                                             - debian
+                                            - echo
                                             - ubuntu
                                             - alpine
                                             - amazon

@@ -142,6 +142,7 @@ trivy rootfs [flags] ROOTDIR
                                             - redhat
                                             - redhat-oval
                                             - debian
+                                            - echo
                                             - ubuntu
                                             - alpine
                                             - amazon
