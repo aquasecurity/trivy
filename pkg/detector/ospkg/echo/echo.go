@@ -7,6 +7,7 @@ import (
 	echoDb "github.com/aquasecurity/trivy-db/pkg/vulnsrc/echo"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/scan/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
@@ -38,7 +39,7 @@ func (s *Scanner) Detect(ctx context.Context, osName string, repo *ftypes.Reposi
 			vuln := types.DetectedVulnerability{
 				PkgID:            pkg.ID,
 				VulnerabilityID:  advisory.VulnerabilityID,
-				InstalledVersion: pkg.Version,
+				InstalledVersion: utils.FormatVersion(pkg),
 				FixedVersion:     advisory.FixedVersion,
 				PkgName:          pkg.Name,
 				PkgIdentifier:    pkg.Identifier,
