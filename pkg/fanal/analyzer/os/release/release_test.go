@@ -150,7 +150,7 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "Echo OS",
+			name:      "Echo",
 			inputFile: "testdata/echo",
 			want: &analyzer.AnalysisResult{
 				OS: types.OS{

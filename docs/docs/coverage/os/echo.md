@@ -1,4 +1,4 @@
-# Echo OS
+# Echo
 Trivy supports these scanners for OS packages.
 
 |    Scanner    | Supported |
@@ -11,14 +11,14 @@ The table below outlines the features offered by Trivy.
 
 |               Feature                | Supported |
 |:------------------------------------:|:---------:|
-|    Detect unfixed vulnerabilities    |     ✓     |
+|    Unfixed vulnerabilities           |     ✓     |
 | [Dependency graph][dependency-graph] |     ✓     |
 
 ## SBOM
 Same as [Debian](debian.md#sbom).
 
 ## Vulnerability
-Echo OS offers its own security advisories, and these are utilized when scanning Echo OS for vulnerabilities.
+Echo offers its own security advisories, and these are utilized when scanning Echo for vulnerabilities.
 
 ### Data Source
 See [here](../../scanner/vulnerability.md#data-sources).
