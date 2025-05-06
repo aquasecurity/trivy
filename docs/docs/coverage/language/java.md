@@ -96,6 +96,9 @@ If you need to show them, use the `--include-dev-deps` flag.
 !!!note
     All necessary files are checked locally. Gradle file scanning doesn't require internet access.
 
+Trivy identifies and marks development dependencies and skips them by default.
+If you need to show them, use the `--include-dev-deps` flag.
+
 ### Dependency-tree
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
