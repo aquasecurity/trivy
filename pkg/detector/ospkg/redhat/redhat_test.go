@@ -420,6 +420,56 @@ func TestScanner_Detect(t *testing.T) {
 			},
 			wantErr: true,
 		},
+		{
+			name: "content sets with invalid suffix",
+			fixtures: []string{
+				"testdata/fixtures/redhat.yaml",
+				"testdata/fixtures/cpe.yaml",
+			},
+			args: args{
+				osVer: "8.3",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "vim-minimal",
+						Version:    "7.4.160",
+						Release:    "5.el8",
+						Epoch:      2,
+						Arch:       "x86_64",
+						SrcName:    "vim",
+						SrcVersion: "7.4.160",
+						SrcRelease: "5.el8",
+						SrcEpoch:   2,
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{
+								"rhel-8-for-x86_64-baseos-rpms__8",
+								"rhel-8-for-x86_64-appstream-rpms__8",
+							},
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2019-12735",
+					VendorIDs: []string{
+						"RHSA-2019:1619",
+					},
+					PkgName:          "vim-minimal",
+					InstalledVersion: "2:7.4.160-5.el8",
+					FixedVersion:     "2:7.4.160-7.el8_7",
+					SeveritySource:   vulnerability.RedHat,
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
