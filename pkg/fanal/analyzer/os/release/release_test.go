@@ -150,6 +150,16 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "Echo OS",
+			inputFile: "testdata/echo",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Echo,
+					Name:   "1",
+				},
+			},
+		},
+		{
 			name:      "Unknown OS",
 			inputFile: "testdata/unknown",
 			want:      nil,
