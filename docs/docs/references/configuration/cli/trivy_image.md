@@ -162,6 +162,7 @@ trivy image [flags] IMAGE_NAME
                                             - redhat
                                             - redhat-oval
                                             - debian
+                                            - echo
                                             - ubuntu
                                             - alpine
                                             - amazon

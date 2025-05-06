@@ -127,6 +127,7 @@ trivy vm [flags] VM_IMAGE
                                             - redhat
                                             - redhat-oval
                                             - debian
+                                            - echo
                                             - ubuntu
                                             - alpine
                                             - amazon

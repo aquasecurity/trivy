@@ -141,6 +141,7 @@ trivy filesystem [flags] PATH
                                             - redhat
                                             - redhat-oval
                                             - debian
+                                            - echo
                                             - ubuntu
                                             - alpine
                                             - amazon
