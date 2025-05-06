@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.62.1](https://github.com/aquasecurity/trivy/compare/v0.62.0...v0.62.1) (2025-05-06)
+
+
+### Bug Fixes
+
+* **misconf:** check if for-each is known when expanding dyn block [backport: release/v0.62] ([#8826](https://github.com/aquasecurity/trivy/issues/8826)) ([99485cf](https://github.com/aquasecurity/trivy/commit/99485cfea2de53570342901eac860afdaacce86f))
+* **redhat:** trim invalid suffix from content_sets in manifest parsing [backport: release/v0.62] ([#8824](https://github.com/aquasecurity/trivy/issues/8824)) ([b4fc9e8](https://github.com/aquasecurity/trivy/commit/b4fc9e8ca1ff77a2795ffa47d0fc53cecd0e1bbd))
+
 ## [0.62.0](https://github.com/aquasecurity/trivy/compare/v0.61.0...v0.62.0) (2025-04-30)
 
 
