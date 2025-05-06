@@ -1907,7 +1907,7 @@ output "list_abc" {
 	require.Len(t, datas, 5)
 
 	datas = modules.GetDatasByType("for_each_resource_empty")
-	require.Len(t, datas, 0)
+	require.Empty(t, datas)
 
 	datas = modules.GetDatasByType("for_each_resource_abc")
 	require.Len(t, datas, 3)
