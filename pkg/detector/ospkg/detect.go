@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/azure"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/chainguard"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/echo"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/oracle"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/photon"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/redhat"
@@ -36,6 +37,7 @@ var (
 		ftypes.Azure:              azure.NewAzureScanner(),
 		ftypes.CBLMariner:         azure.NewMarinerScanner(),
 		ftypes.Debian:             debian.NewScanner(),
+		ftypes.Echo:               echo.NewScanner(),
 		ftypes.Ubuntu:             ubuntu.NewScanner(),
 		ftypes.RedHat:             redhat.NewScanner(),
 		ftypes.CentOS:             redhat.NewScanner(),
