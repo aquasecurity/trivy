@@ -122,14 +122,14 @@ func (v *VersionChecker) PrintNotices(output io.Writer) {
 
 	var notices []string
 
-	notices = append(notices, v.latestVersion.Warnings...)
-	for _, announcement := range v.latestVersion.Announcements {
+	notices = append(notices, v.Warnings()...)
+	for _, announcement := range v.Announcements() {
 		if time.Now().Before(announcement.ToDate) && time.Now().After(announcement.FromDate) {
 			notices = append(notices, announcement.Announcement)
 		}
 	}
 
-	if v.currentVersion != v.latestVersion.Trivy.LatestVersion {
+	if v.currentVersion != v.LatestVersion() {
 		notices = append(notices, fmt.Sprintf("Version %s of Trivy is now available, current version is %s", v.latestVersion.Trivy.LatestVersion, v.currentVersion))
 	}
 
@@ -154,6 +154,13 @@ func (v *VersionChecker) LatestVersion() string {
 func (v *VersionChecker) Announcements() []announcement {
 	if v.responseReceived {
 		return v.latestVersion.Announcements
+	}
+	return nil
+}
+
+func (v *VersionChecker) Warnings() []string {
+	if v.responseReceived {
+		return v.latestVersion.Warnings
 	}
 	return nil
 }
