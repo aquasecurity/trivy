@@ -27,4 +27,4 @@ See [here](../../scanner/vulnerability.md#data-sources).
 Same as [Debian](debian.md#license).
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
-[secdb]: https://advisory.echohq.com/data.json
+[advisory]: https://advisory.echohq.com/data.json
