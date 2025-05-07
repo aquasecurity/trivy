@@ -112,6 +112,10 @@ func DeregisterAnalyzer(t Type) {
 	delete(analyzers, t)
 }
 
+func DeregisterPostAnalyzer(t Type) {
+	delete(postAnalyzers, t)
+}
+
 // CustomGroup returns a group name for custom analyzers
 // This is mainly intended to be used in Aqua products.
 type CustomGroup interface {
