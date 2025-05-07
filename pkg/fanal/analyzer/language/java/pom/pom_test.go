@@ -182,7 +182,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			a := pomAnalyzer{}
-			got, err := a.Analyze(nil, analyzer.AnalysisInput{
+			got, err := a.Analyze(t.Context(), analyzer.AnalysisInput{
 				Dir:      tt.inputDir,
 				FilePath: tt.inputFile,
 				Content:  f,

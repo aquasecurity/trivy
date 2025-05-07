@@ -2787,6 +2787,6 @@ func TestInstancedLogger(t *testing.T) {
 
 	//nolint:testifylint // linter wants `emptyf`, but the output is not legible
 	if !assert.Emptyf(t, buf.Bytes(), "logs detected in global logger, all logs should be using the instanced logger") {
-		t.Log(string(buf.Bytes())) // Helpful for debugging
+		t.Log(buf.String()) // Helpful for debugging
 	}
 }

@@ -173,13 +173,13 @@ func (sm *StaticMetadata) updateAliases(meta map[string]any) {
 	}
 }
 
-func (m *StaticMetadata) hasAnyFramework(frameworks []framework.Framework) bool {
+func (sm *StaticMetadata) hasAnyFramework(frameworks []framework.Framework) bool {
 	if len(frameworks) == 0 {
 		frameworks = []framework.Framework{framework.Default}
 	}
 
 	return slices.ContainsFunc(frameworks, func(fw framework.Framework) bool {
-		_, exists := m.Frameworks[fw]
+		_, exists := sm.Frameworks[fw]
 		return exists
 	})
 }
@@ -255,33 +255,33 @@ type SubType struct {
 	Provider  string // only for cloud
 }
 
-func (m *StaticMetadata) ToRule() scan.Rule {
+func (sm *StaticMetadata) ToRule() scan.Rule {
 
 	provider := "generic"
-	if m.Provider != "" {
-		provider = m.Provider
-	} else if len(m.InputOptions.Selectors) > 0 {
-		provider = m.InputOptions.Selectors[0].Type
+	if sm.Provider != "" {
+		provider = sm.Provider
+	} else if len(sm.InputOptions.Selectors) > 0 {
+		provider = sm.InputOptions.Selectors[0].Type
 	}
 
 	return scan.Rule{
-		Deprecated:     m.Deprecated,
-		AVDID:          m.AVDID,
-		Aliases:        append(m.Aliases, m.ID),
-		ShortCode:      m.ShortCode,
-		Summary:        m.Title,
-		Explanation:    m.Description,
+		Deprecated:     sm.Deprecated,
+		AVDID:          sm.AVDID,
+		Aliases:        append(sm.Aliases, sm.ID),
+		ShortCode:      sm.ShortCode,
+		Summary:        sm.Title,
+		Explanation:    sm.Description,
 		Impact:         "",
-		Resolution:     m.RecommendedActions,
+		Resolution:     sm.RecommendedActions,
 		Provider:       providers.Provider(provider),
-		Service:        cmp.Or(m.Service, "general"),
-		Links:          m.References,
-		Severity:       severity.Severity(m.Severity),
-		RegoPackage:    m.Package,
-		Frameworks:     m.Frameworks,
-		CloudFormation: m.CloudFormation,
-		Terraform:      m.Terraform,
-		Examples:       m.Examples,
+		Service:        cmp.Or(sm.Service, "general"),
+		Links:          sm.References,
+		Severity:       severity.Severity(sm.Severity),
+		RegoPackage:    sm.Package,
+		Frameworks:     sm.Frameworks,
+		CloudFormation: sm.CloudFormation,
+		Terraform:      sm.Terraform,
+		Examples:       sm.Examples,
 	}
 }
 

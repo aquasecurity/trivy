@@ -28,7 +28,7 @@ type naivePkgParser struct {
 }
 
 func (parser *naivePkgParser) parse() map[string]pkgPosition {
-	var currentPkg minPkg = minPkg{}
+	var currentPkg = minPkg{}
 	var idx = make(map[string]pkgPosition, 0)
 
 	scanner := bufio.NewScanner(parser.r)

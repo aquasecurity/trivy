@@ -173,9 +173,10 @@ func (r *summaryRenderer) Render(report types.Report) {
 
 	for _, result := range splitAggregatedPackages(report.Results) {
 		resultType := string(result.Type)
-		if result.Class == types.ClassSecret {
+		switch result.Class {
+		case types.ClassSecret:
 			resultType = "text"
-		} else if result.Class == types.ClassLicense || result.Class == types.ClassLicenseFile {
+		case types.ClassLicense, types.ClassLicenseFile:
 			resultType = "-"
 		}
 		rows := []string{
