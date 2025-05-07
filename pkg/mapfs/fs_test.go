@@ -501,3 +501,60 @@ func TestFS_WithUnderlyingRoot(t *testing.T) {
 	require.NoError(t, err)
 	assert.False(t, fi.IsDir())
 }
+
+func TestFS_CopyDir(t *testing.T) {
+	tmpDst := "dst"
+	tests := []struct {
+		name      string
+		src       string
+		dst       string
+		wantFiles map[string]string // path in dst: want content
+		wantErr   string
+	}{
+		{
+			name: "copy testdata to dst/",
+			src:  "testdata",
+			dst:  tmpDst,
+			wantFiles: map[string]string{
+				tmpDst + "/testdata/hello.txt":        "hello world",
+				tmpDst + "/testdata/b.txt":            "bbb",
+				tmpDst + "/testdata/c.txt":            "",
+				tmpDst + "/testdata/dotfile":          "dotfile",
+				tmpDst + "/testdata/subdir/foo.txt":   "",
+				tmpDst + "/testdata/subdir/..foo.txt": "",
+			},
+		},
+		{
+			name: "copy subdir only",
+			src:  "testdata/subdir",
+			dst:  tmpDst + "/subdir2",
+			wantFiles: map[string]string{
+				tmpDst + "/subdir2/subdir/foo.txt":   "",
+				tmpDst + "/subdir2/subdir/..foo.txt": "",
+			},
+		},
+		{
+			name:    "non-existent src",
+			src:     "testdata/no_such_dir",
+			dst:     tmpDst + "/no_such",
+			wantErr: "no such file or directory",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := mapfs.New()
+			err := fsys.CopyDir(tt.src, tt.dst)
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+			for path, want := range tt.wantFiles {
+				got, err := fsys.ReadFile(path)
+				require.NoError(t, err, path)
+				assert.Equal(t, want, string(got), path)
+			}
+		})
+	}
+}
