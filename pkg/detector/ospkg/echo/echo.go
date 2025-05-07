@@ -2,6 +2,7 @@ package echo
 
 import (
 	"context"
+	"fmt"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	echoDb "github.com/aquasecurity/trivy-db/pkg/vulnsrc/echo"
@@ -31,7 +32,7 @@ func (s *Scanner) Detect(ctx context.Context, osName string, repo *ftypes.Reposi
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get echo advisories: %w", err)
 		}
-		installedVersion, err := version.NewVersion(pkg.Version)
+		installedVersion, err := version.NewVersion(utils.FormatVersion(pkg))
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse installed version: %w", err)
 		}
@@ -63,6 +64,8 @@ func (s *Scanner) Detect(ctx context.Context, osName string, repo *ftypes.Reposi
 				if !installedVersion.LessThan(fixedVersion) {
 					continue
 				}
+				fmt.Println("installedVersion", pkg.Version)
+				fmt.Println("fixedVersion", advisory.FixedVersion)
 			}
 			detectedVulns = append(detectedVulns, vuln)
 		}
