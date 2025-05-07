@@ -7,7 +7,6 @@ import (
 )
 
 func Test_Or(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		args     []any

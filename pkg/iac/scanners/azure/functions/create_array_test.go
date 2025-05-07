@@ -7,7 +7,6 @@ import (
 )
 
 func Test_CreateArray(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		args     []any
@@ -64,5 +63,4 @@ func Test_CreateArray(t *testing.T) {
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
-
 }

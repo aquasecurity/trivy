@@ -7,7 +7,6 @@ import (
 )
 
 func getHttpApis(cfFile parser.FileContext) (apis []sam.HttpAPI) {
-
 	apiResources := cfFile.GetResourcesByType("AWS::Serverless::HttpApi")
 	for _, r := range apiResources {
 		api := sam.HttpAPI{
@@ -25,7 +24,6 @@ func getHttpApis(cfFile parser.FileContext) (apis []sam.HttpAPI) {
 }
 
 func getAccessLoggingV2(r *parser.Resource) sam.AccessLogging {
-
 	logging := sam.AccessLogging{
 		Metadata:              r.Metadata(),
 		CloudwatchLogGroupARN: types.StringDefault("", r.Metadata()),
@@ -42,7 +40,6 @@ func getAccessLoggingV2(r *parser.Resource) sam.AccessLogging {
 }
 
 func getRouteSettings(r *parser.Resource) sam.RouteSettings {
-
 	routeSettings := sam.RouteSettings{
 		Metadata:               r.Metadata(),
 		LoggingEnabled:         types.BoolDefault(false, r.Metadata()),
@@ -61,5 +58,4 @@ func getRouteSettings(r *parser.Resource) sam.RouteSettings {
 	}
 
 	return routeSettings
-
 }

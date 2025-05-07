@@ -1,7 +1,6 @@
 package functions
 
 func Greater(args ...any) any {
-
 	if len(args) != 2 {
 		return false
 	}
@@ -23,7 +22,6 @@ func Greater(args ...any) any {
 }
 
 func GreaterOrEquals(args ...any) any {
-
 	if len(args) != 2 {
 		return false
 	}

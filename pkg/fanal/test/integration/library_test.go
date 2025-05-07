@@ -11,20 +11,20 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/cache"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
-	"github.com/aquasecurity/trivy/pkg/fanal/applier"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
-	"github.com/aquasecurity/trivy/pkg/fanal/image"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/applier"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
+	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
+
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 	_ "modernc.org/sqlite"
 )
 
@@ -237,7 +237,7 @@ func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	if *update {
 		b, err := json.MarshalIndent(detail.Packages, "", "  ")
 		require.NoError(t, err)
-		err = os.WriteFile(goldenFile, b, 0666)
+		err = os.WriteFile(goldenFile, b, 0o666)
 		require.NoError(t, err)
 		return
 	}
@@ -285,7 +285,7 @@ func checkLangPkgs(detail types.ArtifactDetail, t *testing.T, tc testCase) {
 		if *update {
 			b, err := json.MarshalIndent(detail.Applications, "", "  ")
 			require.NoError(t, err)
-			err = os.WriteFile(tc.wantApplicationFile, b, 0666)
+			err = os.WriteFile(tc.wantApplicationFile, b, 0o666)
 			require.NoError(t, err)
 			return
 		}
@@ -308,7 +308,7 @@ func checkPackageFromCommands(t *testing.T, detail types.ArtifactDetail, tc test
 			sort.Sort(types.Packages(detail.ImageConfig.Packages))
 			b, err := json.MarshalIndent(detail.ImageConfig.Packages, "", "  ")
 			require.NoError(t, err)
-			err = os.WriteFile(tc.wantPkgsFromCmds, b, 0666)
+			err = os.WriteFile(tc.wantPkgsFromCmds, b, 0o666)
 			require.NoError(t, err)
 			return
 		}

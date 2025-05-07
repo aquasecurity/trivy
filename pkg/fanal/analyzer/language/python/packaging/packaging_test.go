@@ -129,7 +129,6 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
 			a, err := newPackagingAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{
@@ -147,7 +146,6 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
-
 }
 
 func Test_packagingAnalyzer_Required(t *testing.T) {

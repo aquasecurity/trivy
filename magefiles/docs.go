@@ -58,7 +58,7 @@ func generateConfigDocs(filename string) error {
 	globalFlags.ShowVersion.ConfigName = ""
 	globalFlags.GenerateDefaultConfig.ConfigName = ""
 
-	var allFlagGroups = []flag.FlagGroup{
+	allFlagGroups := []flag.FlagGroup{
 		globalFlags,
 		flag.NewCacheFlagGroup(),
 		flag.NewCleanFlagGroup(),

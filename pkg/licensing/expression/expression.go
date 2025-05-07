@@ -7,9 +7,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
-var (
-	ErrInvalidExpression = xerrors.New("invalid expression error")
-)
+var ErrInvalidExpression = xerrors.New("invalid expression error")
 
 type NormalizeFunc func(license Expression) Expression
 

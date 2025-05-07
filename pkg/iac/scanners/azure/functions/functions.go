@@ -6,8 +6,8 @@ var deploymentFuncs = map[string]func(dp DeploymentData, args ...any) any{
 	"environment": Environment,
 	"variables":   Variables,
 }
-var generalFuncs = map[string]func(...any) any{
 
+var generalFuncs = map[string]func(...any) any{
 	"add":                 Add,
 	"and":                 And,
 	"array":               Array,
@@ -86,7 +86,6 @@ var generalFuncs = map[string]func(...any) any{
 }
 
 func Evaluate(deploymentProvider DeploymentData, name string, args ...any) any {
-
 	if f, ok := deploymentFuncs[name]; ok {
 		return f(deploymentProvider, args...)
 	}

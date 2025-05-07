@@ -13,11 +13,14 @@ import (
 
 const defaultParallel = 5
 
-type onFile[T any] func(string, fs.FileInfo, xio.ReadSeekerAt) (T, error)
-type onWalkResult[T any] func(T) error
+type (
+	onFile[T any]       func(string, fs.FileInfo, xio.ReadSeekerAt) (T, error)
+	onWalkResult[T any] func(T) error
+)
 
 func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, parallel int,
-	onFile onFile[T], onResult onWalkResult[T]) error {
+	onFile onFile[T], onResult onWalkResult[T],
+) error {
 	if parallel == 0 {
 		parallel = defaultParallel // Set the default value
 	}

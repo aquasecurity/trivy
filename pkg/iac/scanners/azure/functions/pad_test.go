@@ -7,7 +7,6 @@ import (
 )
 
 func Test_PadLeft(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		args     []any
@@ -57,5 +56,4 @@ func Test_PadLeft(t *testing.T) {
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
-
 }

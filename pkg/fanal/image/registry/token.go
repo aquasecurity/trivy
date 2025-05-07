@@ -13,9 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-var (
-	registries []intf.Registry
-)
+var registries []intf.Registry
 
 func init() {
 	RegisterRegistry(&google.Registry{})

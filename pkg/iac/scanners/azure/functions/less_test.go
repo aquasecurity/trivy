@@ -12,7 +12,6 @@ func Test_Less(t *testing.T) {
 		args     []any
 		expected any
 	}{
-
 		{
 			name: "less with nil and string",
 			args: []any{
@@ -68,7 +67,6 @@ func Test_LessThanOrEqual(t *testing.T) {
 		args     []any
 		expected any
 	}{
-
 		{
 			name: "less with nil and string",
 			args: []any{

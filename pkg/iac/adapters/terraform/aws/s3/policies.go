@@ -7,7 +7,6 @@ import (
 )
 
 func (a *adapter) adaptBucketPolicies() {
-
 	for _, b := range a.modules.GetResourcesByType("aws_s3_bucket_policy") {
 
 		policyAttr := b.GetAttribute("policy")

@@ -111,7 +111,8 @@ func Test_adaptSecret(t *testing.T) {
 				ExpiryDate: iacTypes.Time(func(timeVal string) time.Time {
 					parsed, _ := time.Parse(time.RFC3339, timeVal)
 					return parsed
-				}("1982-12-31T00:00:00Z"), iacTypes.NewTestMetadata())},
+				}("1982-12-31T00:00:00Z"), iacTypes.NewTestMetadata()),
+			},
 		},
 	}
 

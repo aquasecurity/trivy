@@ -7,7 +7,6 @@ import (
 )
 
 func getClusters(file parser.FileContext) (clusters []dynamodb.DAXCluster) {
-
 	clusterResources := file.GetResourcesByType("AWS::DAX::Cluster")
 
 	for _, r := range clusterResources {

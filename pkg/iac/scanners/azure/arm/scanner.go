@@ -16,8 +16,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-var _ scanners.FSScanner = (*Scanner)(nil)
-var _ options.ConfigurableScanner = (*Scanner)(nil)
+var (
+	_ scanners.FSScanner          = (*Scanner)(nil)
+	_ options.ConfigurableScanner = (*Scanner)(nil)
+)
 
 type Scanner struct {
 	*rego.RegoScannerProvider
@@ -52,7 +54,6 @@ func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Resu
 }
 
 func (s *Scanner) scanDeployments(ctx context.Context, deployments []azure.Deployment, f fs.FS) (scan.Results, error) {
-
 	var results scan.Results
 
 	for _, deployment := range deployments {

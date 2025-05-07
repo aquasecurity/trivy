@@ -23,7 +23,6 @@ func DockerImage(ref name.Reference, host string) (Image, func(), error) {
 		opts = append(opts, client.WithHost(host))
 	}
 	c, err := client.NewClientWithOpts(opts...)
-
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to initialize a docker client: %w", err)
 	}

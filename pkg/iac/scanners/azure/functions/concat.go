@@ -5,7 +5,6 @@ import (
 )
 
 func Concat(args ...any) any {
-
 	switch args[0].(type) {
 	case string:
 		var result string

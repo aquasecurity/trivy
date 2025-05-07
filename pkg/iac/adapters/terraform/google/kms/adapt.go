@@ -34,7 +34,6 @@ func adaptKeyRings(modules terraform.Modules) []kms.KeyRing {
 }
 
 func adaptKey(resource *terraform.Block) kms.Key {
-
 	key := kms.Key{
 		Metadata:              resource.GetMetadata(),
 		RotationPeriodSeconds: types.IntDefault(-1, resource.GetMetadata()),

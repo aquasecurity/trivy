@@ -18,12 +18,13 @@ type GoogleRegistryClient struct {
 	domain string
 }
 
-type Registry struct {
-}
+type Registry struct{}
 
 // Google container registry
-const gcrURLDomain = "gcr.io"
-const gcrURLSuffix = ".gcr.io"
+const (
+	gcrURLDomain = "gcr.io"
+	gcrURLSuffix = ".gcr.io"
+)
 
 // Google artifact registry
 const garURLSuffix = "-docker.pkg.dev"

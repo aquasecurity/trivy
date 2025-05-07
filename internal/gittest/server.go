@@ -148,7 +148,6 @@ func PushTags(t *testing.T, r *git.Repository) {
 		RemoteName: "origin",
 		RefSpecs:   []config.RefSpec{"refs/tags/*:refs/tags/*"},
 	})
-
 	if err != nil {
 		if errors.Is(err, git.NoErrAlreadyUpToDate) {
 			return

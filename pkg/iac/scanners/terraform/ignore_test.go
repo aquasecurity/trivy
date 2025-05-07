@@ -13,8 +13,7 @@ import (
 )
 
 func Test_IgnoreAll(t *testing.T) {
-
-	var testCases = []struct {
+	testCases := []struct {
 		name         string
 		source       string
 		assertLength int
@@ -423,7 +422,6 @@ func formatWithSingleValue(format string, value any) string {
 }
 
 func Test_IgnoreByDynamicBlockValue(t *testing.T) {
-
 	check := `# METADATA
 # custom:
 #   avd_id: USER-TEST-0124
@@ -501,7 +499,6 @@ resource "aws_security_group" "loadbalancer" {
 }
 
 func Test_IgnoreByWorkspace(t *testing.T) {
-
 	tests := []struct {
 		name           string
 		src            string
@@ -588,7 +585,6 @@ func Test_IgnoreInlineByAVDID(t *testing.T) {
 }
 
 func TestIgnoreRemoteTerraformResource(t *testing.T) {
-
 	fsys := testutil.CreateFS(t, map[string]string{
 		"main.tf": `module "bucket" {
   source = "git::https://github.com/test/bucket"

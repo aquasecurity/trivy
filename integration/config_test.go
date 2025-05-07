@@ -212,7 +212,7 @@ db:
 `, outputFile, cacheDir)
 
 			configPath := filepath.Join(t.TempDir(), "trivy.yaml")
-			err := os.WriteFile(configPath, []byte(configFile), 0444)
+			err := os.WriteFile(configPath, []byte(configFile), 0o444)
 			require.NoError(t, err)
 
 			osArgs := []string{

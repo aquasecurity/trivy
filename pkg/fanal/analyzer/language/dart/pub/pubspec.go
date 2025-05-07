@@ -122,7 +122,6 @@ func (a pubSpecLockAnalyzer) findDependsOn() (map[string][]string, error) {
 			deps[id] = dependsOn
 		}
 		return nil
-
 	}); err != nil {
 		return nil, xerrors.Errorf("walk error: %w", err)
 	}

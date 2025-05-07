@@ -191,7 +191,6 @@ func (r *Result) GetCode(opts ...CodeOption) (*Code, error) {
 }
 
 func (r *Result) getHighlightedLines(outerRange, innerRange iacTypes.Range, rawLines []string, settings codeSettings) []string {
-
 	highlightedLines := make([]string, len(rawLines))
 	if !settings.includeHighlighted {
 		return highlightedLines

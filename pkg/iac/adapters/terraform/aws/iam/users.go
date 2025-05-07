@@ -37,11 +37,9 @@ func adaptUsers(modules terraform.Modules) []iam.User {
 		users = append(users, user)
 	}
 	return users
-
 }
 
 func adaptAccessKey(block *terraform.Block) iam.AccessKey {
-
 	active := iacTypes.BoolDefault(true, block.GetMetadata())
 	if activeAttr := block.GetAttribute("status"); activeAttr.IsString() {
 		active = iacTypes.Bool(activeAttr.Equals("Active"), activeAttr.GetMetadata())

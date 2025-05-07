@@ -212,7 +212,6 @@ var IndexFunc = function.New(&function.Spec{
 			}
 		}
 		return cty.NilVal, errors.New("item not found")
-
 	},
 })
 
@@ -496,7 +495,6 @@ var SumFunc = function.New(&function.Spec{
 	Type:         function.StaticReturnType(cty.Number),
 	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
-
 		if !args[0].CanIterateElements() {
 			return cty.NilVal, function.NewArgErrorf(0, "cannot sum noniterable")
 		}

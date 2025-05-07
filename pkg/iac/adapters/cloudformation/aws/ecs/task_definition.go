@@ -7,7 +7,6 @@ import (
 )
 
 func getTaskDefinitions(ctx parser.FileContext) (taskDefinitions []ecs.TaskDefinition) {
-
 	taskDefResources := ctx.GetResourcesByType("AWS::ECS::TaskDefinition")
 
 	for _, r := range taskDefResources {
@@ -61,7 +60,6 @@ func getContainerDefinitions(r *parser.Resource) ([]ecs.ContainerDefinition, err
 }
 
 func getVolumes(r *parser.Resource) (volumes []ecs.Volume) {
-
 	volumesList := r.GetProperty("Volumes")
 	if volumesList.IsNil() || volumesList.IsNotList() {
 		return volumes

@@ -21,7 +21,7 @@ const dir = "integration/testdata/fixtures/images/"
 var auth = crane.WithAuthFromKeychain(authn.NewMultiKeychain(authn.DefaultKeychain, github.Keychain))
 
 func fixtureContainerImages() error {
-	var testImages = testutil.ImageName("", "", "")
+	testImages := testutil.ImageName("", "", "")
 
 	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return err
@@ -66,7 +66,7 @@ func saveImage(subpath, tag string) error {
 }
 
 func fixtureVMImages() error {
-	var testVMImages = testutil.VMImageName("", "", "")
+	testVMImages := testutil.VMImageName("", "", "")
 	const (
 		titleAnnotation = "org.opencontainers.image.title"
 		dir             = "integration/testdata/fixtures/vm-images/"

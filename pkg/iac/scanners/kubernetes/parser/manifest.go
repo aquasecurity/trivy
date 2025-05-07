@@ -35,7 +35,6 @@ func NewManifest(path string, root *ManifestNode) *Manifest {
 }
 
 func (m *Manifest) UnmarshalYAML(value *yaml.Node) error {
-
 	switch value.Tag {
 	case string(TagMap):
 		node := new(ManifestNode)
@@ -56,7 +55,7 @@ func (m *Manifest) ToRego() any {
 }
 
 func ManifestFromJSON(path string, data []byte) (*Manifest, error) {
-	var root = &ManifestNode{}
+	root := &ManifestNode{}
 
 	if err := xjson.Unmarshal(data, root); err != nil {
 		return nil, err

@@ -11,14 +11,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/types"
-
 	dockercontainer "github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type csArgs struct {
@@ -699,7 +698,7 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string) []string 
 
 	if len(c.IgnoreIDs) != 0 {
 		trivyIgnore := filepath.Join(t.TempDir(), ".trivyignore")
-		err := os.WriteFile(trivyIgnore, []byte(strings.Join(c.IgnoreIDs, "\n")), 0444)
+		err := os.WriteFile(trivyIgnore, []byte(strings.Join(c.IgnoreIDs, "\n")), 0o444)
 		require.NoError(t, err, "failed to write .trivyignore")
 		osArgs = append(osArgs, "--ignorefile", trivyIgnore)
 	}

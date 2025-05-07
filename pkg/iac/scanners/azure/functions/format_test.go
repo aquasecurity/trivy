@@ -7,7 +7,6 @@ import (
 )
 
 func Test_FormatCall(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		args     []any
@@ -38,5 +37,4 @@ func Test_FormatCall(t *testing.T) {
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
-
 }

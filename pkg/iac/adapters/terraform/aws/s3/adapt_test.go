@@ -52,7 +52,6 @@ resource "aws_s3_bucket_public_access_block" "example_access_block"{
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-
 			modules := tftestutil.CreateModulesFromSource(t, tC.source, ".tf")
 			s3Ctx := Adapt(modules)
 
@@ -68,10 +67,8 @@ resource "aws_s3_bucket_public_access_block" "example_access_block"{
 
 			bucket := s3Ctx.Buckets[0]
 			assert.NotNil(t, bucket.PublicAccessBlock)
-
 		})
 	}
-
 }
 
 func Test_PublicAccessDoesNotReference(t *testing.T) {
@@ -118,7 +115,6 @@ resource "aws_s3_bucket_public_access_block" "example_access_block"{
 			s3Ctx := Adapt(modules)
 			require.Len(t, s3Ctx.Buckets, 1)
 			assert.Nil(t, s3Ctx.Buckets[0].PublicAccessBlock)
-
 		})
 	}
 }
@@ -222,7 +218,6 @@ func Test_Adapt(t *testing.T) {
 								Metadata: iacTypes.NewTestMetadata(),
 								Name:     iacTypes.String("", iacTypes.NewTestMetadata()),
 								Document: func() iam.Document {
-
 									builder := iamgo.NewPolicyBuilder()
 
 									sb := iamgo.NewStatementBuilder()

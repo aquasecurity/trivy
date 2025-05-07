@@ -115,7 +115,6 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r xio.ReadSeekerAt) ([]types.Licens
 	return lo.Map(licenses, func(license string, _ int) types.LicenseFinding {
 		return types.LicenseFinding{Name: license}
 	}), nil
-
 }
 
 func (a *dpkgLicenseAnalyzer) Init(opt analyzer.AnalyzerOptions) error {

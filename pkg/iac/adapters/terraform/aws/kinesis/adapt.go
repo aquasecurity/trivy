@@ -23,7 +23,6 @@ func adaptStreams(modules terraform.Modules) []kinesis.Stream {
 }
 
 func adaptStream(resource *terraform.Block) kinesis.Stream {
-
 	stream := kinesis.Stream{
 		Metadata: resource.GetMetadata(),
 		Encryption: kinesis.Encryption{

@@ -66,7 +66,6 @@ deny[res] {
 }
 
 func Test_ScanJSON(t *testing.T) {
-
 	file := `
 {
   "apiVersion": "v1",
@@ -131,7 +130,6 @@ deny[res] {
 }
 
 func Test_YamlWithSeparator(t *testing.T) {
-
 	fsys := buildFS(map[string]string{
 		"check.rego": `package defsec
 

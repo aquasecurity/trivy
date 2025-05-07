@@ -6,7 +6,6 @@ import (
 )
 
 func getWorkGroups(cfFile parser.FileContext) []athena.Workgroup {
-
 	var workgroups []athena.Workgroup
 
 	workgroupResources := cfFile.GetResourcesByType("AWS::Athena::WorkGroup")

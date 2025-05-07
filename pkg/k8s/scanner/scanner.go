@@ -139,7 +139,6 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 		ClusterName:   s.cluster,
 		Resources:     resources,
 	}, nil
-
 }
 
 func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact, opts flag.Options) ([]report.Resource, error) {
@@ -150,7 +149,6 @@ func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact, o
 		opts.Target = image
 
 		imageReport, err := s.runner.ScanImage(ctx, opts)
-
 		if err != nil {
 			resources = append(resources, report.CreateResource(artifact, imageReport, err))
 			continue
@@ -205,6 +203,7 @@ func (s *Scanner) scanMisconfigs(ctx context.Context, k8sArtifacts []*artifacts.
 
 	return resources, nil
 }
+
 func (s *Scanner) filter(ctx context.Context, r types.Report, artifact *artifacts.Artifact) (report.Resource, error) {
 	var err error
 	r, err = s.runner.Filter(ctx, s.opts, r)

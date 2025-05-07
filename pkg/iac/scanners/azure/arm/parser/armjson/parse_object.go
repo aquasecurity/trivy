@@ -5,7 +5,6 @@ import (
 )
 
 func (p *parser) parseObject(parentMetadata *types.Metadata) (Node, error) {
-
 	n, metadata := p.newNode(KindObject, parentMetadata)
 
 	c, err := p.next()
@@ -29,7 +28,6 @@ func (p *parser) parseObject(parentMetadata *types.Metadata) (Node, error) {
 
 	var nextComments []Node
 	return p.iterateObject(nextComments, metadata, n)
-
 }
 
 // nolint: gocyclo

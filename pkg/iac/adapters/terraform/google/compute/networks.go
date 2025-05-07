@@ -14,7 +14,6 @@ const (
 )
 
 func adaptNetworks(modules terraform.Modules) (networks []compute.Network) {
-
 	networkMap := make(map[string]compute.Network)
 
 	for _, networkBlock := range modules.GetResourcesByType("google_compute_network") {
@@ -200,5 +199,4 @@ func adaptFirewallRule(firewall *compute.Firewall, firewallBlock, ruleBlock *ter
 			SourceRanges: sources,
 		})
 	}
-
 }

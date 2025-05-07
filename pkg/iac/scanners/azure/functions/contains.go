@@ -6,7 +6,6 @@ import (
 )
 
 func Contains(args ...any) any {
-
 	if len(args) != 2 {
 		return false
 	}

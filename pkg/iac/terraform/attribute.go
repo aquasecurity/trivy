@@ -324,7 +324,6 @@ func (a *Attribute) AsStringValues() iacTypes.StringValueList {
 
 // nolint
 func (a *Attribute) getStringValues(expr hcl.Expression, ctx *hcl.EvalContext) (results []iacTypes.StringValue) {
-
 	defer func() {
 		if err := recover(); err != nil {
 			results = []iacTypes.StringValue{iacTypes.StringUnresolvable(a.metadata)}

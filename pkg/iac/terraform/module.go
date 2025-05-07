@@ -16,7 +16,6 @@ type Module struct {
 }
 
 func NewModule(rootPath, modulePath string, blocks Blocks, ignores ignore.Rules) *Module {
-
 	blockMap := make(map[string]Blocks)
 
 	for _, b := range blocks {

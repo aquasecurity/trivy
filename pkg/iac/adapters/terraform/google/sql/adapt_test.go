@@ -96,7 +96,6 @@ func Test_Adapt(t *testing.T) {
 			expected: sql.SQL{
 				Instances: []sql.DatabaseInstance{
 					{
-
 						Settings: sql.Settings{
 							Flags: sql.Flags{
 								ContainedDatabaseAuthentication: iacTypes.BoolTest(true),
@@ -302,5 +301,4 @@ func TestLines(t *testing.T) {
 
 	assert.Equal(t, 38, instance.Settings.Flags.LogLockWaits.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 38, instance.Settings.Flags.LogLockWaits.GetMetadata().Range().GetEndLine())
-
 }

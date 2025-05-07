@@ -13,7 +13,6 @@ func Test_DateTimeAdd(t *testing.T) {
 		args     []any
 		expected any
 	}{
-
 		{
 			name: "datetime add 1 years",
 			args: []any{
@@ -45,7 +44,6 @@ func Test_ISO8601DurationParse(t *testing.T) {
 		args     string
 		expected Iso8601Duration
 	}{
-
 		{
 			name:     "parse 1 year",
 			args:     "P1Y",

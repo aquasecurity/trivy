@@ -1,7 +1,6 @@
 package functions
 
 func Array(args ...any) any {
-
 	if len(args) != 1 {
 		return ""
 	}

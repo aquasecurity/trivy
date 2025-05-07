@@ -390,6 +390,7 @@ func spdxPkgName(component *core.Component) string {
 	}
 	return component.Name
 }
+
 func (m *Marshaler) spdxAnnotations(c *core.Component, timeNow string) []spdx.Annotation {
 	var annotations []spdx.Annotation
 	for _, p := range c.Properties {
@@ -413,7 +414,7 @@ func (m *Marshaler) spdxLicense(c *core.Component) (string, []*spdx.OtherLicense
 }
 
 func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherLicense) {
-	var otherLicenses = make(map[string]*spdx.OtherLicense) // licenseID -> OtherLicense
+	otherLicenses := make(map[string]*spdx.OtherLicense) // licenseID -> OtherLicense
 
 	license := strings.Join(lo.Map(licenses, func(license string, _ int) string {
 		// We need to save text licenses before normalization,

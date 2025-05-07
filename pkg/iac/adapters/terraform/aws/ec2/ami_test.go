@@ -27,7 +27,8 @@ data "aws_ami" "example" {
 						Metadata: iacTypes.NewTestMetadata(),
 						Owners: iacTypes.StringValueList{
 							iacTypes.StringTest("amazon"),
-						}},
+						},
+					},
 				},
 			},
 		},

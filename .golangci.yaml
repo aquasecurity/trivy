@@ -180,10 +180,7 @@ run:
 formatters:
   enable:
     - gci
-    - gofmt
-
-  exclusions:
-    generated: lax
+    - gofumpt
 
   settings:
     gci:
@@ -193,7 +190,5 @@ formatters:
         - prefix(github.com/aquasecurity/)
         - blank
         - dot
-    gofmt:
-      simplify: false
 
 version: "2"

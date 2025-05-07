@@ -6,8 +6,10 @@ import (
 	"golang.org/x/xerrors"
 )
 
-type FindingType string
-type FindingStatus string
+type (
+	FindingType   string
+	FindingStatus string
+)
 
 const (
 	FindingTypeVulnerability    FindingType = "vulnerability"

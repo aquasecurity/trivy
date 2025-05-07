@@ -7,7 +7,6 @@ import (
 )
 
 func getClusters(ctx parser.FileContext) (clusters []eks.Cluster) {
-
 	clusterResources := ctx.GetResourcesByType("AWS::EKS::Cluster")
 
 	for _, r := range clusterResources {
@@ -43,7 +42,6 @@ func getPublicCIDRs(r *parser.Resource) []iacTypes.StringValue {
 }
 
 func getEncryptionConfig(r *parser.Resource) eks.Encryption {
-
 	encryptionConfigs := r.GetProperty("EncryptionConfig")
 	if encryptionConfigs.IsNotList() {
 		return eks.Encryption{
@@ -91,7 +89,6 @@ func getLogging(r *parser.Resource) eks.Logging {
 		case "scheduler":
 			logging.Scheduler = iacTypes.Bool(true, typ.Metadata())
 		}
-
 	}
 
 	return logging

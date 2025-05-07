@@ -13,7 +13,6 @@ import (
 )
 
 func Test_AdaptStorageDefaults(t *testing.T) {
-
 	input := azure.Deployment{
 		Resources: []azure.Resource{
 			{
@@ -31,11 +30,9 @@ func Test_AdaptStorageDefaults(t *testing.T) {
 	assert.Empty(t, account.MinimumTLSVersion.Value())
 	assert.False(t, account.EnforceHTTPS.Value())
 	assert.True(t, account.PublicNetworkAccess.Value())
-
 }
 
 func Test_AdaptStorage(t *testing.T) {
-
 	input := azure.Deployment{
 		Resources: []azure.Resource{
 			{

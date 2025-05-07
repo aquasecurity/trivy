@@ -6,7 +6,6 @@ import (
 )
 
 func Base64(args ...any) any {
-
 	if len(args) == 0 {
 		return nil
 	}
@@ -31,7 +30,6 @@ func Base64ToString(args ...any) any {
 }
 
 func Base64ToJson(args ...any) any {
-
 	if len(args) == 0 {
 		return nil
 	}

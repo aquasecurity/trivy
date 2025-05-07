@@ -1,13 +1,11 @@
 package flag
 
-var (
-	SecretConfigFlag = Flag[string]{
-		Name:       "secret-config",
-		ConfigName: "secret.config",
-		Default:    "trivy-secret.yaml",
-		Usage:      "specify a path to config file for secret scanning",
-	}
-)
+var SecretConfigFlag = Flag[string]{
+	Name:       "secret-config",
+	ConfigName: "secret.config",
+	Default:    "trivy-secret.yaml",
+	Usage:      "specify a path to config file for secret scanning",
+}
 
 type SecretFlagGroup struct {
 	SecretConfig *Flag[string]

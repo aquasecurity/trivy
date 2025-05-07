@@ -35,7 +35,6 @@ Resources:
 }
 
 func Test_resolve_sub_value_with_base64(t *testing.T) {
-
 	source := `---
 Resources:
   TestInstance:
@@ -63,7 +62,6 @@ Resources:
 }
 
 func Test_resolve_sub_value_with_map(t *testing.T) {
-
 	source := `---
 Parameters:
   RootDomainName:
@@ -99,5 +97,4 @@ Resources:
 	require.NotNil(t, domainNameProp)
 
 	assert.Equal(t, "www.somedomain.com", domainNameProp.AsString())
-
 }

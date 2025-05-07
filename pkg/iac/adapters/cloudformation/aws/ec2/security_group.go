@@ -72,7 +72,8 @@ func adaptRule(r interface {
 	GetProperty(string) *parser.Property
 	Metadata() types.Metadata
 	GetStringProperty(string, ...string) types.StringValue
-}) ec2.SecurityGroupRule {
+},
+) ec2.SecurityGroupRule {
 	rule := ec2.SecurityGroupRule{
 		Metadata:    r.Metadata(),
 		Description: r.GetStringProperty("Description"),

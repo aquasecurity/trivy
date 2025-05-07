@@ -58,7 +58,6 @@ type innerResource struct {
 }
 
 func (v *Resource) UnmarshalJSONWithMetadata(node armjson.Node) error {
-
 	if err := node.Decode(&v.innerResource); err != nil {
 		return err
 	}

@@ -79,5 +79,4 @@ resource "nifcloud_vpn_gateway" "example" {
 
 	assert.Equal(t, 30, vpngw.SecurityGroup.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 30, vpngw.SecurityGroup.GetMetadata().Range().GetEndLine())
-
 }

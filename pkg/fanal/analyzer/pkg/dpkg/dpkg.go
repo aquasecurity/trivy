@@ -110,7 +110,6 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		PackageInfos:         packageInfos,
 		SystemInstalledFiles: systemInstalledFiles,
 	}, nil
-
 }
 
 // parseDpkgInfoList parses /var/lib/dpkg/info/*.list

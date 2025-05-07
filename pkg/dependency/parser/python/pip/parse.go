@@ -35,6 +35,7 @@ func NewParser(useMinVersion bool) *Parser {
 		useMinVersion: useMinVersion,
 	}
 }
+
 func (p *Parser) splitLine(line string) []string {
 	separators := []string{"~=", ">=", "=="}
 	// Without useMinVersion check only `==`
@@ -53,7 +54,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	// `requirements.txt` can use byte order marks (BOM)
 	// e.g. on Windows `requirements.txt` can use UTF-16LE with BOM
 	// We need to override them to avoid the file being read incorrectly
-	var transformer = u.BOMOverride(encoding.Nop.NewDecoder())
+	transformer := u.BOMOverride(encoding.Nop.NewDecoder())
 	decodedReader := transform.NewReader(r, transformer)
 
 	scanner := bufio.NewScanner(decodedReader)

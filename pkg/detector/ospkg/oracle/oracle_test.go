@@ -89,7 +89,6 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func TestScanner_Detect(t *testing.T) {

@@ -8,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
-
-	"github.com/stretchr/testify/require"
 )
 
 func TestTar(t *testing.T) {
@@ -425,7 +425,7 @@ func TestTar(t *testing.T) {
 			}
 			if len(tt.args.IgnoreIDs) != 0 {
 				trivyIgnore := ".trivyignore"
-				err := os.WriteFile(trivyIgnore, []byte(strings.Join(tt.args.IgnoreIDs, "\n")), 0444)
+				err := os.WriteFile(trivyIgnore, []byte(strings.Join(tt.args.IgnoreIDs, "\n")), 0o444)
 				require.NoError(t, err, "failed to write .trivyignore")
 				defer os.Remove(trivyIgnore)
 			}
