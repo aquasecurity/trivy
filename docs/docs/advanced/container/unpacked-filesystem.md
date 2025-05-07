@@ -114,10 +114,3 @@ Total: 20 (UNKNOWN: 0, LOW: 2, MEDIUM: 10, HIGH: 8, CRITICAL: 0)
 ```
 
 </details>
-
-!!! warning
-    This method may show false positives for RHEL-based images that use Red Hat's own security advisories (RHEL, CentOS, etc.).
-    
-    This is due to `content_sets`, which can be different for multiple layers.
-    But when all files from layers are combined, we cannot correctly match packages with their `content_sets`.
-    
