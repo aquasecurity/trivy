@@ -199,37 +199,20 @@ func (a *gomodAnalyzer) fillAdditionalData(fsys fs.FS, apps []types.Application)
 
 func (a *gomodAnalyzer) collectDeps(searchDirs []searchDir, pkg types.Package) (types.Dependency, error) {
 	for _, searchDir := range searchDirs {
-		// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v0.1.0/go.mod
-		modPath, err := searchDir.Resolve(pkg)
+		// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v0.1.0
+		modDir, err := searchDir.Resolve(pkg)
 		if err != nil {
 			continue
 		}
 
-		f, err := modPath.Open("go.mod")
+		dependsOn, err := a.resolveDeps(modDir)
 		if errors.Is(err, fs.ErrNotExist) {
 			a.logger.Debug("Unable to identify dependencies as it doesn't support Go modules",
 				log.String("module", pkg.ID))
 			return types.Dependency{}, nil
 		} else if err != nil {
-			return types.Dependency{}, xerrors.Errorf("file open error: %w", err)
+			return types.Dependency{}, xerrors.Errorf("resolve deps error: %w", err)
 		}
-		defer f.Close()
-
-		file, ok := f.(xio.ReadSeekCloserAt)
-		if !ok {
-			return types.Dependency{}, xerrors.Errorf("type assertion error: %w", err)
-		}
-
-		// Parse go.mod under $GOPATH/pkg/mod
-		pkgs, _, err := a.leafModParser.Parse(file)
-		if err != nil {
-			return types.Dependency{}, xerrors.Errorf("%s parse error: %w", modPath, err)
-		}
-
-		// Filter out indirect dependencies
-		dependsOn := lo.FilterMap(pkgs, func(lib types.Package, _ int) (string, bool) {
-			return lib.Name, lib.Relationship == types.RelationshipDirect
-		})
 
 		return types.Dependency{
 			ID:        pkg.ID,
@@ -237,6 +220,35 @@ func (a *gomodAnalyzer) collectDeps(searchDirs []searchDir, pkg types.Package) (
 		}, nil
 	}
 	return types.Dependency{}, nil
+}
+
+// resolveDeps parses go.mod under $GOPATH/pkg/mod and returns the dependencies
+func (a *gomodAnalyzer) resolveDeps(modDir fs.FS) ([]string, error) {
+	// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v0.1.0/go.mod
+	f, err := modDir.Open("go.mod")
+	if err != nil {
+		return nil, xerrors.Errorf("file open error: %w", err)
+	}
+	defer f.Close()
+
+	file, ok := f.(xio.ReadSeekCloserAt)
+	if !ok {
+		return nil, xerrors.Errorf("type assertion error: %w", err)
+	}
+
+	// Parse go.mod under $GOPATH/pkg/mod
+	pkgs, _, err := a.leafModParser.Parse(file)
+	if err != nil {
+		return nil, xerrors.Errorf("parse error: %w", err)
+	}
+
+	// Filter out indirect dependencies
+	dependsOn := lo.FilterMap(pkgs, func(lib types.Package, _ int) (string, bool) {
+		return lib.Name, lib.Relationship == types.RelationshipDirect
+	})
+
+	return dependsOn, nil
+
 }
 
 // addOrphanIndirectDepsUnderRoot handles indirect dependencies that have no identifiable parent packages in the dependency tree.
