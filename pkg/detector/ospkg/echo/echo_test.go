@@ -72,6 +72,36 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path - package with release",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				pkgs: []ftypes.Package{
+					{ID: "nginx", SrcName: "nginx", Version: "1.14.2", Release: "1ubuntu1"},
+					{ID: "apache2", SrcName: "apache2", Version: "2.4.24", Release: "2"},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2020-11985",
+					PkgID:            "apache2",
+					InstalledVersion: "2.4.24-2",
+					FixedVersion:     "2.4.25-1",
+					Layer:            ftypes.Layer{},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: "LOW",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo",
+						Name: "Echo",
+						URL:  "https://advisory.echohq.com/data.json",
+					},
+				},
+			},
+		},
+		{
 			name: "happy path - no matching packages",
 			args: args{
 				pkgs: []ftypes.Package{
