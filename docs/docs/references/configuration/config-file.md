@@ -583,6 +583,9 @@ scan:
   # Same as '--detection-priority'
   detection-priority: "precise"
 
+  # Same as '--disable-telemetry'
+  disable-telemetry: false
+
   # Same as '--distro'
   distro: ""
 
@@ -611,6 +614,9 @@ scan:
 
   # Same as '--skip-files'
   skip-files: []
+
+  # Same as '--skip-version-check'
+  skip-version-check: false
 
 ```
 ## Secret options
