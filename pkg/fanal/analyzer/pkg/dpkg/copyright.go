@@ -94,7 +94,7 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r xio.ReadSeekerAt) ([]types.Licens
 						continue
 					}
 
-					lic = licensing.Normalize(lic)
+					lic = licensing.Normalize(lic).String()
 					if !slices.Contains(licenses, lic) {
 						licenses = append(licenses, lic)
 					}
@@ -104,7 +104,7 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r xio.ReadSeekerAt) ([]types.Licens
 			// Common license pattern
 			license := commonLicenseReferenceRegexp.FindStringSubmatch(line)
 			if len(license) == 2 {
-				l := licensing.Normalize(license[1])
+				l := licensing.Normalize(license[1]).String()
 				if l != "" && !slices.Contains(licenses, l) {
 					licenses = append(licenses, l)
 				}

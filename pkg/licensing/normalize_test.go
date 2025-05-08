@@ -233,7 +233,7 @@ func TestNormalize(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.want, func(t *testing.T) {
 			for _, ll := range tt.licenses {
-				got := licensing.Normalize(ll.String())
+				got := licensing.Normalize(ll.String()).String()
 				gotLicense := licensing.NormalizeLicense(ll)
 				assert.Equal(t, tt.want, got)
 				assert.Equal(t, tt.wantLicense, gotLicense)
