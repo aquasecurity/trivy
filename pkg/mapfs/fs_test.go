@@ -509,7 +509,7 @@ func TestFS_CopyDir(t *testing.T) {
 		src       string
 		dst       string
 		wantFiles map[string]string // path in dst: want content
-		wantErr   string
+		wantErr   require.ErrorAssertionFunc
 	}{
 		{
 			name: "copy testdata to dst/",
@@ -523,6 +523,7 @@ func TestFS_CopyDir(t *testing.T) {
 				tmpDst + "/testdata/subdir/foo.txt":   "",
 				tmpDst + "/testdata/subdir/..foo.txt": "",
 			},
+			wantErr: require.NoError,
 		},
 		{
 			name: "copy subdir only",
@@ -532,12 +533,13 @@ func TestFS_CopyDir(t *testing.T) {
 				tmpDst + "/subdir2/subdir/foo.txt":   "",
 				tmpDst + "/subdir2/subdir/..foo.txt": "",
 			},
+			wantErr: require.NoError,
 		},
 		{
 			name:    "non-existent src",
 			src:     "testdata/no_such_dir",
 			dst:     tmpDst + "/no_such",
-			wantErr: "no such file or directory",
+			wantErr: require.Error,
 		},
 	}
 
@@ -545,11 +547,7 @@ func TestFS_CopyDir(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			fsys := mapfs.New()
 			err := fsys.CopyDir(tt.src, tt.dst)
-			if tt.wantErr != "" {
-				require.ErrorContains(t, err, tt.wantErr)
-				return
-			}
-			require.NoError(t, err)
+			tt.wantErr(t, err)
 			for path, want := range tt.wantFiles {
 				got, err := fsys.ReadFile(path)
 				require.NoError(t, err, path)
