@@ -19,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/clean"
 	"github.com/aquasecurity/trivy/pkg/commands/convert"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
+	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	k8scommands "github.com/aquasecurity/trivy/pkg/k8s/commands"
@@ -279,6 +280,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewSecretFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
 	}
+	imageFlags = append(imageFlags, extension.CustomFlagGroups("image")...)
 
 	cmd := &cobra.Command{
 		Use:     "image [flags] IMAGE_NAME",
@@ -361,6 +363,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewSecretFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
 	}
+	fsFlags = append(fsFlags, extension.CustomFlagGroups("filesystem")...)
 
 	cmd := &cobra.Command{
 		Use:     "filesystem [flags] PATH",
@@ -427,6 +430,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewSecretFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
 	}
+	rootfsFlags = append(rootfsFlags, extension.CustomFlagGroups("rootfs")...)
 
 	cmd := &cobra.Command{
 		Use:     "rootfs [flags] ROOTDIR",
@@ -492,6 +496,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewVulnerabilityFlagGroup(),
 		flag.NewRepoFlagGroup(),
 	}
+	repoFlags = append(repoFlags, extension.CustomFlagGroups("repository")...)
 
 	cmd := &cobra.Command{
 		Use:     "repository [flags] (REPO_PATH | REPO_URL)",
@@ -604,6 +609,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewScanFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
 	}
+	clientFlags = append(clientFlags, extension.CustomFlagGroups("client")...)
 
 	cmd := &cobra.Command{
 		Use:     "client [flags] IMAGE_NAME",
@@ -652,6 +658,7 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewServerFlags(),
 		flag.NewRegistryFlagGroup(),
 	}
+	serverFlags = append(serverFlags, extension.CustomFlagGroups("server")...)
 
 	cmd := &cobra.Command{
 		Use:     "server [flags]",
@@ -703,7 +710,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cacheFlagGroup := flag.NewCacheFlagGroup()
 	cacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory)
 
-	configFlags := &flag.Flags{
+	configFlags := flag.Flags{
 		globalFlags,
 		cacheFlagGroup,
 		flag.NewMisconfFlagGroup(),
@@ -717,6 +724,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		reportFlagGroup,
 		scanFlags,
 	}
+	configFlags = append(configFlags, extension.CustomFlagGroups("config")...)
 
 	cmd := &cobra.Command{
 		Use:     "config [flags] DIR",
@@ -1023,7 +1031,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	packageFlagGroup := flag.NewPackageFlagGroup()
 	packageFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
 
-	k8sFlags := &flag.Flags{
+	k8sFlags := flag.Flags{
 		globalFlags,
 		flag.NewCacheFlagGroup(),
 		flag.NewDBFlagGroup(),
@@ -1038,6 +1046,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewRegistryFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
 	}
+	k8sFlags = append(k8sFlags, extension.CustomFlagGroups("kubernetes")...)
 
 	cmd := &cobra.Command{
 		Use:     "kubernetes [flags] [CONTEXT]",
@@ -1094,7 +1103,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	misconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
 	misconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
 
-	vmFlags := &flag.Flags{
+	vmFlags := flag.Flags{
 		globalFlags,
 		flag.NewCacheFlagGroup(),
 		flag.NewDBFlagGroup(),
@@ -1114,6 +1123,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			},
 		},
 	}
+	vmFlags = append(vmFlags, extension.CustomFlagGroups("vm")...)
 
 	cmd := &cobra.Command{
 		Use:     "vm [flags] VM_IMAGE",
@@ -1184,7 +1194,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	packageFlagGroup := flag.NewPackageFlagGroup()
 	packageFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
 
-	sbomFlags := &flag.Flags{
+	sbomFlags := flag.Flags{
 		globalFlags,
 		cacheFlagGroup,
 		flag.NewDBFlagGroup(),
@@ -1196,6 +1206,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewVulnerabilityFlagGroup(),
 		licenseFlagGroup,
 	}
+	sbomFlags = append(sbomFlags, extension.CustomFlagGroups("sbom")...)
 
 	cmd := &cobra.Command{
 		Use:     "sbom [flags] SBOM_PATH",
