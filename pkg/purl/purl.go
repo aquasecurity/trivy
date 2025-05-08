@@ -42,6 +42,9 @@ const (
 	NamespaceOCP = "ocp"
 
 	TypeUnknown = "unknown"
+
+	// Temporary type before being added in github.com/package-url/packageurl-go
+	packageurlTypeBottlerocket = "bottlerocket"
 )
 
 type PackageURL packageurl.PackageURL
@@ -79,6 +82,10 @@ func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*Pac
 		qualifiers = append(qualifiers, parseDeb(metadata.OS)...)
 		if metadata.OS != nil {
 			namespace = string(metadata.OS.Family)
+		}
+	case packageurlTypeBottlerocket:
+		qualifiers = packageurl.Qualifiers{
+			packageurl.Qualifier{Key: "distro", Value: fmt.Sprintf("bottlerocket-%s", metadata.OS.Name)},
 		}
 	case packageurl.TypeApk:
 		var qs packageurl.Qualifiers
