@@ -181,6 +181,7 @@ trivy image [flags] IMAGE_NAME
                                             - aqua
                                             - osv
                                             - k8s
+                                            - echo
                                             - wolfi
                                             - chainguard
                                             - bitnami
