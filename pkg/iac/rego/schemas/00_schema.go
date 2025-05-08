@@ -19,4 +19,7 @@ var (
 
 	//go:embed cloud.json
 	Cloud Schema
+
+	//go:embed terraform.json
+	Terraform Schema
 )
