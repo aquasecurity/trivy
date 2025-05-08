@@ -207,6 +207,9 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 		Secrets:           result.Secrets,
 		Licenses:          result.Licenses,
 		CustomResources:   result.CustomResources,
+
+		// For Red Hat
+		BuildInfo: result.BuildInfo,
 	}
 
 	if err = a.handlerManager.PostHandle(ctx, result, &blobInfo); err != nil {

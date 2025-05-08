@@ -22,6 +22,19 @@ Trivy detects packages that have been installed through package managers such as
 ## Vulnerability
 Red Hat offers its own security advisories, and these are utilized when scanning Red Hat Enterprise Linux (RHEL) for vulnerabilities.
 
+### Content manifests
+Red Hat advisory database uses content manifests.
+
+Therefore, to work with these advisories, Trivy searches for content manifests for packages within one layer 
+(manifests can differ from layer to layer even in one image) and searches for vulnerabilities.
+
+If the image doesn't have content manifests, Trivy uses [default value][content-set-default] based on the RHEL version.
+
+
+!!! warning
+    In case of scanning the image as a filesystem (e.g. [unpacked-filesystem](../../advanced/container/unpacked-filesystem.md)) -
+    there is no way to get the correct content manifests for packages (since the file system will store only the last manifest), which can lead to false positives.
+
 ### Data Source
 See [here](../../scanner/vulnerability.md#data-sources).
 
@@ -82,3 +95,5 @@ Trivy identifies licenses by examining the metadata of RPM packages.
 [NVD]: https://nvd.nist.gov/vuln/detail/CVE-2023-0464
 
 [vulnerability statuses]: ../../configuration/filtering.md#by-status
+
+[content-set-default]: https://github.com/aquasecurity/trivy/blob/c80310d7690d8aeb7d3d77416c18c0c8b9aebe17/pkg/detector/ospkg/redhat/redhat.go#L25-L42

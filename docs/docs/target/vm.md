@@ -150,6 +150,9 @@ See [here](../scanner/vulnerability.md) for the detail.
 $ trivy vm [YOUR_VM_IMAGE]
 ```
 
+!!! note
+    Scanning `Red Hat` has a limitation, see the [Red Hat](../coverage/os/rhel.md#content-manifests) page for details.
+
 ### Misconfigurations
 It is supported, but it is not useful in most cases.
 As mentioned [here](../scanner/misconfiguration/index.md), Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
