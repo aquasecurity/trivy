@@ -285,9 +285,10 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{},
 		},
 		{
-			name: "vendor dir exists",
+			name: "deps from GOPATH and license from vendor dir",
 			files: []string{
 				"testdata/vendor-dir-exists/mod",
+				"testdata/vendor-dir-exists/vendor",
 			},
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -300,7 +301,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								Name:         "github.com/org/repo",
 								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
-									"github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
+									"github.com/aquasecurity/go-dep-parser@v0.0.1",
 								},
 								ExternalReferences: []types.ExternalRef{
 									{
@@ -310,11 +311,11 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
+								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.1",
 								Name:         "github.com/aquasecurity/go-dep-parser",
-								Version:      "v0.0.0-20220406074731-71021a481237",
+								Version:      "v0.0.1",
 								Relationship: types.RelationshipDirect,
-								Licenses:     []string{"MIT"},
+								Licenses:     []string{"Apache-2.0"},
 								ExternalReferences: []types.ExternalRef{
 									{
 										Type: types.RefVCS,
@@ -347,10 +348,13 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			mfs := mapfs.New()
 			for _, file := range tt.files {
 				// Since broken go.mod files bothers IDE, we should use other file names than "go.mod" and "go.sum".
-				if filepath.Base(file) == "mod" {
+				switch filepath.Base(file) {
+				case "mod":
 					require.NoError(t, mfs.WriteFile("go.mod", file))
-				} else if filepath.Base(file) == "sum" {
+				case "sum":
 					require.NoError(t, mfs.WriteFile("go.sum", file))
+				case "vendor":
+					require.NoError(t, mfs.CopyDir(file, "."))
 				}
 			}
 
