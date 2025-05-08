@@ -265,7 +265,7 @@ func IsTerraformFile(path string) bool {
 		return true
 	}
 
-	for _, ext := range []string{".tf", ".tf.json", ".tfvars"} {
+	for _, ext := range []string{".tf", ".tf.json", ".tfvars", ".tofu", ".tofu.json"} {
 		if strings.HasSuffix(path, ext) {
 			return true
 		}
