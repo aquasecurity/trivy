@@ -65,6 +65,7 @@ jobs:
             photon
             distroless
             windows
+            minimos
 
             # Languages
             ruby
