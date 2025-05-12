@@ -344,7 +344,6 @@ func findLicense(searchDirs []searchDir, pkg types.Package, licenses map[string]
 
 	var license *types.LicenseFile
 	for _, searchDir := range searchDirs {
-		// e.g. $GOPATH/pkg/mod => $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v0.1.0
 		sub, err := searchDir.Resolve(pkg)
 		if err != nil {
 			continue
@@ -428,6 +427,9 @@ func newGOPATH() (searchDir, error) {
 	return &gopathDir{root: modPath}, nil
 }
 
+// Resolve resolves the module directory for a given package.
+// It adds the version suffix to the module name and returns the directory as an fs.FS.
+// e.g. $GOPATH/pkg/mod => $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v1.0.0
 func (d *gopathDir) Resolve(pkg types.Package) (fs.FS, error) {
 	name := normalizeModName(pkg.Name)
 
@@ -454,6 +456,9 @@ func newVendorDir(fsys fs.FS, modPath string) (vendorDir, error) {
 	return vendorDir{root: sub}, nil
 }
 
+// Resolve resolves the module directory for a given package.
+// It doesn't add the version suffix to the module name.
+// e.g. vendor/ => vendor/github.com/aquasecurity/go-dep-parser
 func (d vendorDir) Resolve(pkg types.Package) (fs.FS, error) {
 	return fs.Sub(d.root, normalizeModName(pkg.Name))
 }
