@@ -387,8 +387,9 @@ func findLicense(searchDirs []searchDir, pkg types.Package, licenses map[string]
 		}
 
 		// License found
-		licenses[pkg.ID] = license.Findings.Names()
-		return licenses[pkg.ID], nil
+		licenseNames := license.Findings.Names()
+		licenses[pkg.ID] = licenseNames
+		return licenseNames, nil
 	}
 	return nil, nil
 }
