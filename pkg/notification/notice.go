@@ -14,9 +14,16 @@ import (
 	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
+// flexibleTime is a custom time type that can handle
+// different date formats in JSON. It implements the
+// UnmarshalJSON method to parse the date string into a time.Time object.
+type flexibleTime struct {
+	time.Time
+}
+
 type versionInfo struct {
-	LatestVersion string    `json:"latest_version"`
-	LatestDate    time.Time `json:"latest_date"`
+	LatestVersion string       `json:"latest_version"`
+	LatestDate    flexibleTime `json:"latest_date"`
 }
 
 type announcement struct {
@@ -48,7 +55,7 @@ type VersionChecker struct {
 // to the NewVersionChecker function.
 func NewVersionChecker(opts ...Option) *VersionChecker {
 	v := &VersionChecker{
-		updatesApi:     "https://check.trivy.cloud/updates",
+		updatesApi:     "https://check.trivy.dev/updates",
 		currentVersion: app.Version(),
 	}
 
@@ -73,6 +80,7 @@ func (v *VersionChecker) RunUpdateCheck(ctx context.Context, args []string) {
 	}
 
 	go func() {
+		logger.Debug("Running version check")
 		args = getFlags(args)
 		client := &http.Client{
 			Timeout: 3 * time.Second,
@@ -109,6 +117,7 @@ func (v *VersionChecker) RunUpdateCheck(ctx context.Context, args []string) {
 		if !v.skipUpdateCheck && !v.quiet {
 			v.responseReceived = true
 		}
+		logger.Debug("Version check completed", log.String("latest_version", v.latestVersion.Trivy.LatestVersion))
 		v.done = true
 	}()
 }
@@ -120,6 +129,8 @@ func (v *VersionChecker) PrintNotices(output io.Writer) {
 		return
 	}
 
+	logger := log.WithPrefix("notification")
+	logger.Debug("Printing notices")
 	var notices []string
 
 	notices = append(notices, v.Warnings()...)
@@ -174,4 +185,30 @@ func getFlags(args []string) []string {
 		}
 	}
 	return flags
+}
+
+func (fd *flexibleTime) UnmarshalJSON(b []byte) error {
+	s := strings.Trim(string(b), `"`)
+	if s == "" {
+		return nil
+	}
+
+	// Try parsing with time component
+	layouts := []string{
+		time.RFC3339,
+		"2006-01-02",
+		time.RFC1123,
+	}
+
+	var err error
+	for _, layout := range layouts {
+		var t time.Time
+		t, err = time.Parse(layout, s)
+		if err == nil {
+			fd.Time = t
+			return nil
+		}
+	}
+
+	return fmt.Errorf("unable to parse date: %s", s)
 }

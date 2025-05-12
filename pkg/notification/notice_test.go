@@ -196,7 +196,7 @@ func (u *updatesServer) handler(w http.ResponseWriter, r *http.Request) {
 	response := updateResponse{
 		Trivy: versionInfo{
 			LatestVersion: u.expectedVersion,
-			LatestDate:    time.Now(),
+			LatestDate:    flexibleTime{Time: time.Now()},
 		},
 		Announcements: u.expectedAnnouncements,
 	}
@@ -206,4 +206,37 @@ func (u *updatesServer) handler(w http.ResponseWriter, r *http.Request) {
 		u.t.Fail()
 	}
 	w.Write(out)
+}
+
+func TestFlexibleDate(t *testing.T) {
+	tests := []struct {
+		name     string
+		dateStr  string
+		expected time.Time
+	}{
+		{
+			name:     "RFC3339 date format",
+			dateStr:  `"2023-10-01T12:00:00Z"`,
+			expected: time.Date(2023, 10, 1, 12, 0, 0, 0, time.UTC),
+		},
+		{
+			name:     "RFC1123 date format",
+			dateStr:  `"Sun, 01 Oct 2023 12:00:00 GMT"`,
+			expected: time.Date(2023, 10, 1, 12, 0, 0, 0, time.UTC),
+		},
+		{
+			name:     "RFC3339 date only format",
+			dateStr:  `"2023-10-01"`,
+			expected: time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var ft flexibleTime
+			err := json.Unmarshal([]byte(tt.dateStr), &ft)
+			require.NoError(t, err)
+			assert.Equal(t, tt.expected.Unix(), ft.Unix())
+		})
+	}
 }
