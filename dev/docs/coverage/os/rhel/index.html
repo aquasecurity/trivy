@@ -2948,6 +2948,17 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#content-manifests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Content manifests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#data-source" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -7825,6 +7836,17 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#content-manifests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Content manifests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#data-source" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -7957,6 +7979,11 @@ You're not viewing the latest version of the documentation.
 <p>Trivy detects packages that have been installed through package managers such as <code>dnf</code> and <code>yum</code>.</p>
 <h2 id="vulnerability">Vulnerability<a class="headerlink" href="#vulnerability" title="Permanent link">&para;</a></h2>
 <p>Red Hat offers its own security advisories, and these are utilized when scanning Red Hat Enterprise Linux (RHEL) for vulnerabilities.</p>
+<h3 id="content-manifests">Content manifests<a class="headerlink" href="#content-manifests" title="Permanent link">&para;</a></h3>
+<p>Red Hat’s security advisories use CPEs to identify product sets. For example, even packages installed in the same container image can have different CPEs. 
+For this reason, Red Hat’s container images include stored content manifests, which we convert to CPEs, and perform vulnerability scanning.</p>
+<p>Since this system ties each content manifest to its packages on a per-layer basis, 
+if layers get merged (for instance, by using <code>docker run</code> or <code>docker export</code>) we can no longer determine the correct CPE, which may lead to false detection.</p>
 <h3 id="data-source">Data Source<a class="headerlink" href="#data-source" title="Permanent link">&para;</a></h3>
 <p>See <a href="../../../scanner/vulnerability/#data-sources">here</a>.</p>
 <h3 id="fixed-version">Fixed Version<a class="headerlink" href="#fixed-version" title="Permanent link">&para;</a></h3>

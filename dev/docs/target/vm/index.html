@@ -8378,6 +8378,10 @@ It detects known vulnerabilities in your VM image.
 See <a href="../../scanner/vulnerability/">here</a> for the detail.</p>
 <div class="highlight"><pre><span></span><code>$ trivy vm [YOUR_VM_IMAGE]
 </code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Scanning <code>Red Hat</code> has a limitation, see the <a href="../../coverage/os/rhel/#content-manifests">Red Hat</a> page for details.</p>
+</div>
 <h3 id="misconfigurations">Misconfigurations<a class="headerlink" href="#misconfigurations" title="Permanent link">&para;</a></h3>
 <p>It is supported, but it is not useful in most cases.
 As mentioned <a href="../../scanner/misconfiguration/">here</a>, Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.

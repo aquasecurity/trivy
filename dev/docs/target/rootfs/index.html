@@ -7778,6 +7778,10 @@ You're not viewing the latest version of the documentation.
 You should use <code>trivy fs</code> to scan your local projects in CI/CD.
 See <a href="../../scanner/vulnerability/">here</a> for the differences.</p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Scanning vulnerabilities for <code>Red Hat</code> has a limitation, see the <a href="../../coverage/os/rhel/#content-manifests">Red Hat</a> page for details.</p>
+</div>
 <h2 id="performance-optimization">Performance Optimization<a class="headerlink" href="#performance-optimization" title="Permanent link">&para;</a></h2>
 <p>By default, Trivy traverses all files from the specified root directory to find target files for scanning.
 However, when you only need to scan specific files with absolute paths, you can avoid this traversal, which makes scanning faster.
