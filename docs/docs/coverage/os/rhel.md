@@ -22,6 +22,13 @@ Trivy detects packages that have been installed through package managers such as
 ## Vulnerability
 Red Hat offers its own security advisories, and these are utilized when scanning Red Hat Enterprise Linux (RHEL) for vulnerabilities.
 
+### Content manifests
+Red Hat’s security advisories use CPEs to identify product sets. For example, even packages installed in the same container image can have different CPEs. 
+For this reason, Red Hat’s container images include stored content manifests, which we convert to CPEs, and perform vulnerability scanning.
+
+Since this system ties each content manifest to its packages on a per-layer basis, 
+if layers get merged (for instance, by using `docker run` or `docker export`) we can no longer determine the correct CPE, which may lead to false detection.
+
 ### Data Source
 See [here](../../scanner/vulnerability.md#data-sources).
 
@@ -82,3 +89,5 @@ Trivy identifies licenses by examining the metadata of RPM packages.
 [NVD]: https://nvd.nist.gov/vuln/detail/CVE-2023-0464
 
 [vulnerability statuses]: ../../configuration/filtering.md#by-status
+
+[content-set-default]: https://github.com/aquasecurity/trivy/blob/c80310d7690d8aeb7d3d77416c18c0c8b9aebe17/pkg/detector/ospkg/redhat/redhat.go#L25-L42
