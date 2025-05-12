@@ -10,6 +10,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
@@ -152,7 +153,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			})
 		}
 	}
-	return lo.Values(pkgs), uniqueDeps(deps), nil
+	return utils.UniquePackages(lo.Values(pkgs)), uniqueDeps(deps), nil
 }
 
 func uniqueDeps(deps []ftypes.Dependency) []ftypes.Dependency {

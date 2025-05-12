@@ -1,7 +1,6 @@
 package bun
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -32,7 +31,6 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 
 			got, deps, err := NewParser().Parse(f)
-			fmt.Printf("got = %+v\ndeps = %+v\n", got, deps)
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.want, got)
