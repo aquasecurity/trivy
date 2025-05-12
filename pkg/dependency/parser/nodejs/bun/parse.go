@@ -74,7 +74,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 
-	pkgs := make(map[string]ftypes.Package)
+	var pkgs []ftypes.Package
 	var deps []ftypes.Dependency
 
 	directDeps := set.New[string]()
@@ -128,7 +128,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			ExternalReferences: extRefs,
 			Locations:          nil,
 		}
-		pkgs[pkgId] = newPkg
+		pkgs = append(pkgs, newPkg)
 
 		var depList []string
 		if depMap, ok := parsed.Meta["dependencies"].(map[string]any); ok {
@@ -153,7 +153,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			})
 		}
 	}
-	return utils.UniquePackages(lo.Values(pkgs)), uniqueDeps(deps), nil
+	return utils.UniquePackages(pkgs), uniqueDeps(deps), nil
 }
 
 func uniqueDeps(deps []ftypes.Dependency) []ftypes.Dependency {

@@ -12,7 +12,7 @@ var (
 			Version:      "5.8.3",
 			Relationship: ftypes.RelationshipDirect,
 		},
-        {
+		{
 			ID:           "bun-types@1.2.12",
 			Name:         "bun-types",
 			Version:      "1.2.12",
