@@ -381,7 +381,7 @@ func findLicense(searchDirs []searchDir, pkg types.Package, licenses map[string]
 		case errors.Is(err, os.ErrNotExist):
 			continue
 		case err != nil && !errors.Is(err, io.EOF):
-			return nil, xerrors.Errorf("finding a known open source license: %w", err)
+			return nil, xerrors.Errorf("unable to find a known open source license: %w", err)
 		case license == nil || len(license.Findings) == 0:
 			continue
 		}
