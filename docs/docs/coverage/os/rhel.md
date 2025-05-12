@@ -23,17 +23,11 @@ Trivy detects packages that have been installed through package managers such as
 Red Hat offers its own security advisories, and these are utilized when scanning Red Hat Enterprise Linux (RHEL) for vulnerabilities.
 
 ### Content manifests
-Red Hat advisory database uses content manifests.
+Red Hat’s security advisories use CPEs to identify product sets. For example, even packages installed in the same container image can have different CPEs. 
+For this reason, Red Hat’s container images include stored content manifests, which we convert to CPEs, and perform vulnerability scanning.
 
-Therefore, to work with these advisories, Trivy searches for content manifests for packages within one layer 
-(manifests can differ from layer to layer even in one image) and searches for vulnerabilities.
-
-If the image doesn't have content manifests, Trivy uses [default value][content-set-default] based on the RHEL version.
-
-
-!!! warning
-    In case of scanning the image as a filesystem (e.g. [unpacked-filesystem](../../advanced/container/unpacked-filesystem.md)) -
-    there is no way to get the correct content manifests for packages (since the file system will store only the last manifest), which can lead to false positives.
+Since this system ties each content manifest to its packages on a per-layer basis, 
+if layers get merged (for instance, by using `docker run` or `docker export`) we can no longer determine the correct CPE, which may lead to false detection.
 
 ### Data Source
 See [here](../../scanner/vulnerability.md#data-sources).
