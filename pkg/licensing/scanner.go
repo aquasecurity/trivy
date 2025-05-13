@@ -32,6 +32,9 @@ func (s *Scanner) Scan(licenseName string) (types.LicenseCategory, string) {
 	}
 
 	for category, names := range s.categories {
+		if slices.Contains(names, licenseName) {
+			return category, categoryToSeverity(category).String()
+		}
 		if slices.Contains(names, normalizedName) {
 			return category, categoryToSeverity(category).String()
 		}
