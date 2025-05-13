@@ -114,9 +114,6 @@ func (c *Client) NeedsUpdate(ctx context.Context, cliVersion string, skip bool) 
 	// So we need to delete this DB and re-download it.
 	if meta.DownloadedAt.IsZero() {
 		log.ErrorContext(ctx, "The DownloadAt field is empty. Trivy-db was not downloaded correctly and must be re-downloaded.")
-		if err = os.RemoveAll(db.Path(c.dbDir)); err != nil {
-			return true, xerrors.Errorf("unable to clear vulnerability database: %w", err)
-		}
 
 		noRequiredFiles = true
 		meta = metadata.Metadata{Version: db.SchemaVersion}
