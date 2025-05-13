@@ -103,13 +103,14 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			continue
 		}
 
-		parts := strings.SplitN(parsed.Identifier, "@", 2)
-		if len(parts) != 2 || parts[0] == "" {
+		idx := strings.LastIndex(parsed.Identifier, "@")
+		if idx == -1 || idx == 0 {
 			p.logger.Warn("Invalid package identifier", log.String("identifier", parsed.Identifier), log.Err(err))
 			continue
 		}
-		pkgName := parts[0]
-		pkgVersion := parts[1]
+
+		pkgName := parsed.Identifier[:idx]
+		pkgVersion := parsed.Identifier[idx+1:]
 		pkgId := packageID(pkgName, pkgVersion)
 		isDirect := directDeps.Contains(pkgName)
 
@@ -139,15 +140,25 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		var depList []string
 		if depMap, ok := parsed.Meta["dependencies"].(map[string]any); ok {
 			for depName := range depMap {
-				if depEntry, ok := lockFile.Packages[depName]; ok {
-					subParsed, err := parsePackageEntry(depEntry)
-					if err != nil {
-						depParts := strings.SplitN(subParsed.Identifier, "@", 2)
-						if len(depParts) == 2 {
-							depList = append(depList, packageID(depParts[0], depParts[1]))
-						}
-					}
+				depEntry, ok := lockFile.Packages[depName]
+				if !ok {
+					continue
 				}
+				subParsed, err := parsePackageEntry(depEntry)
+				if err != nil {
+					p.logger.Warn("Failed to parse dependecy entry", log.String("name", name), log.Err(err))
+					continue
+				}
+
+				idx := strings.LastIndex(subParsed.Identifier, "@")
+				if idx == -1 || idx == 0 {
+					p.logger.Warn("Invalid package identifier", log.String("identifier", subParsed.Identifier), log.Err(err))
+					continue
+				}
+
+				depName := subParsed.Identifier[:idx]
+				depVersion := subParsed.Identifier[idx+1:]
+				depList = append(depList, packageID(depName, depVersion))
 			}
 		}
 
