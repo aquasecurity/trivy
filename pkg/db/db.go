@@ -110,6 +110,18 @@ func (c *Client) NeedsUpdate(ctx context.Context, cliVersion string, skip bool) 
 		meta = metadata.Metadata{Version: db.SchemaVersion}
 	}
 
+	// If the metadata file has an empty DownloadedAt, it means that the DB was copied incorrectly.
+	// So we need to delete this DB and re-download it.
+	if meta.DownloadedAt.IsZero() {
+		log.ErrorContext(ctx, "The DownloadAt field is empty. Trivy-db was not downloaded correctly and must be re-downloaded.")
+		if err = os.RemoveAll(db.Path(c.dbDir)); err != nil {
+			return true, xerrors.Errorf("unable to clear vulnerability database: %w", err)
+		}
+
+		noRequiredFiles = true
+		meta = metadata.Metadata{Version: db.SchemaVersion}
+	}
+
 	if skip && noRequiredFiles {
 		log.ErrorContext(ctx, "The first run cannot skip downloading DB")
 		return false, xerrors.New("--skip-update cannot be specified on the first run")
@@ -163,11 +175,6 @@ func (c *Client) isNewDB(ctx context.Context, meta metadata.Metadata) bool {
 
 // Download downloads the DB file
 func (c *Client) Download(ctx context.Context, dst string, opt types.RegistryOptions) error {
-	// Remove the metadata file under the cache directory before downloading DB
-	if err := c.metadata.Delete(); err != nil {
-		log.DebugContext(ctx, "No metadata file")
-	}
-
 	if err := c.downloadDB(ctx, opt, dst); err != nil {
 		return xerrors.Errorf("OCI artifact error: %w", err)
 	}
