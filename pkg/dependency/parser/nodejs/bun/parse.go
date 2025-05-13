@@ -3,6 +3,7 @@ package bun
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"sort"
 	"strings"
 
@@ -22,6 +23,7 @@ type LockFile struct {
 	Packages        map[string][]json.RawMessage `json:"packages"`
 	Workspaces      map[string]Workspace         `json:"workspaces"`
 	LockfileVersion int                          `json:"lockfileVersion"`
+	xjson.Location
 }
 
 type Workspace struct {
@@ -70,7 +72,11 @@ func parsePackageEntry(raw []json.RawMessage) (ParsedPackage, error) {
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockFile LockFile
-	if err := xjson.UnmarshalRead(r, &lockFile); err != nil {
+	data, err := io.ReadAll(r)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("file read error: %w", err)
+	}
+	if err := xjson.UnmarshalJSONC(data, &lockFile); err != nil {
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 

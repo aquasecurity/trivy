@@ -13,9 +13,9 @@ var (
 			Relationship: ftypes.RelationshipDirect,
 		},
 		{
-			ID:           "bun-types@1.2.12",
+			ID:           "bun-types@1.2.13",
 			Name:         "bun-types",
-			Version:      "1.2.12",
+			Version:      "1.2.13",
 			Relationship: ftypes.RelationshipIndirect,
 		},
 		{
