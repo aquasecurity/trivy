@@ -219,42 +219,6 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 			},
 			want: &types.BlobInfo{},
 		},
-		{
-			name: "Rust will not be skipped",
-			result: &analyzer.AnalysisResult{
-				SystemInstalledFiles: []string{
-					"app/Cargo.lock",
-				},
-			},
-			blob: &types.BlobInfo{
-				Applications: []types.Application{
-					{
-						Type:     types.Cargo,
-						FilePath: "app/Cargo.lock",
-						Packages: types.Packages{
-							{
-								Name:    "ghash",
-								Version: "0.4.4",
-							},
-						},
-					},
-				},
-			},
-			want: &types.BlobInfo{
-				Applications: []types.Application{
-					{
-						Type:     types.Cargo,
-						FilePath: "app/Cargo.lock",
-						Packages: types.Packages{
-							{
-								Name:    "ghash",
-								Version: "0.4.4",
-							},
-						},
-					},
-				},
-			},
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

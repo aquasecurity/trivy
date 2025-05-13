@@ -15,6 +15,7 @@
     {{- end }}
     </testsuite>
 
+{{- $target := .Target }}
 {{- if .MisconfSummary }}
     <testsuite tests="{{ add .MisconfSummary.Successes .MisconfSummary.Failures }}" failures="{{ .MisconfSummary.Failures }}" name="{{  .Target }}" errors="0" time="">
 {{- else }}
@@ -28,7 +29,23 @@
         {{ range .Misconfigurations }}
         <testcase classname="{{ .Type }}" name="[{{ .Severity }}] {{ .ID }}" time="">
         {{- if (eq .Status "FAIL") }}
-            <failure message="{{ escapeXML .Title }}" type="description">{{ escapeXML .Description }}</failure>
+            <failure message="{{ escapeXML .Title }}" type="description">&#xA;
+                {{- $target }}:
+                {{- with .CauseMetadata }}
+                    {{- .StartLine }}
+                    {{- if lt .StartLine .EndLine }}:{{ .EndLine }}{{ end }}:&#xA;&#xA;Occurrences:&#xA;
+                    {{- range $i := .Occurrences -}}
+                    via {{ .Filename }}:
+                    {{- .Location.StartLine }}
+                    {{- if lt .Location.StartLine .Location.EndLine }}:{{ .Location.EndLine }}{{ end }} ({{ .Resource }})&#xA;
+                    {{- end -}}
+                    &#xA;Code:&#xA;
+                    {{- range .Code.Lines }}
+                    {{- if .IsCause }}{{ escapeXML .Content }}&#xA;{{- end }}
+                    {{- end }}&#xA;
+                {{- end }}
+                {{- escapeXML .Description }}
+            </failure>
         {{- end }}
         </testcase>
     {{- end }}
