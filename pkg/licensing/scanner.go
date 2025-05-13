@@ -30,18 +30,21 @@ func (s *Scanner) Scan(licenseName string) (types.LicenseCategory, string) {
 	case expression.CompoundExpr:
 		normalizedName = normalized.String()
 	}
+	return s.LicenseCategory(licenseName, normalizedName)
+}
 
+// LicenseCategory returns license category and severity for licenseName (before and after normalize)
+func (s *Scanner) LicenseCategory(licenseName, normalizedLicenseName string) (types.LicenseCategory, string) {
 	for category, names := range s.categories {
 		if slices.Contains(names, licenseName) {
 			return category, categoryToSeverity(category).String()
 		}
-		if slices.Contains(names, normalizedName) {
+		if slices.Contains(names, normalizedLicenseName) {
 			return category, categoryToSeverity(category).String()
 		}
 	}
 	return types.CategoryUnknown, dbTypes.SeverityUnknown.String()
 }
-
 func categoryToSeverity(category types.LicenseCategory) dbTypes.Severity {
 	switch category {
 	case types.CategoryForbidden:
