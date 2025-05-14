@@ -20,10 +20,9 @@ import (
 )
 
 type LockFile struct {
-	Packages        map[string][]json.RawMessage `json:"packages"`
-	Workspaces      map[string]Workspace         `json:"workspaces"`
-	LockfileVersion int                          `json:"lockfileVersion"`
-	xjson.Location
+	Packages        map[string]ParsedPackage `json:"packages"`
+	Workspaces      map[string]Workspace     `json:"workspaces"`
+	LockfileVersion int                      `json:"lockfileVersion"`
 }
 
 type Workspace struct {
@@ -38,6 +37,7 @@ type ParsedPackage struct {
 	Path       string
 	Meta       map[string]any
 	Integrity  string
+	xjson.Location
 }
 
 type Parser struct {
@@ -50,24 +50,22 @@ func NewParser() *Parser {
 	}
 }
 
-func parsePackageEntry(raw []json.RawMessage) (ParsedPackage, error) {
-	if len(raw) < 4 {
-		return ParsedPackage{}, fmt.Errorf("invalid bun package entry: %v", raw)
+func (p *ParsedPackage) UnmarshalJSON(data []byte) error {
+	var raw [4]json.RawMessage
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return fmt.Errorf("expected 4-element array, got %s: %w", string(data), err)
 	}
-	var p ParsedPackage
+
 	if err := json.Unmarshal(raw[0], &p.Identifier); err != nil {
-		return p, err
+		return err
 	}
 	if err := json.Unmarshal(raw[1], &p.Path); err != nil {
-		return p, err
+		return err
 	}
 	if err := json.Unmarshal(raw[2], &p.Meta); err != nil {
-		return p, err
+		return err
 	}
-	if err := json.Unmarshal(raw[3], &p.Integrity); err != nil {
-		return p, err
-	}
-	return p, nil
+	return json.Unmarshal(raw[3], &p.Integrity)
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
@@ -96,13 +94,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			directDeps.Append(name)
 		}
 	}
-	for name, entry := range lockFile.Packages {
-		parsed, err := parsePackageEntry(entry)
-		if err != nil {
-			p.logger.Warn("Failed to parse bun package entry", log.String("name", name), log.Err(err))
-			continue
-		}
-
+	for _, parsed := range lockFile.Packages {
 		idx := strings.LastIndex(parsed.Identifier, "@")
 		if idx == -1 || idx == 0 {
 			p.logger.Warn("Invalid package identifier", log.String("identifier", parsed.Identifier), log.Err(err))
@@ -114,42 +106,23 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		pkgId := packageID(pkgName, pkgVersion)
 		isDirect := directDeps.Contains(pkgName)
 
-		var resolved string
-		if r, ok := parsed.Meta["resolved"].(string); ok {
-			resolved = r
-		}
-
-		var extRefs []ftypes.ExternalRef
-		if resolved != "" {
-			extRefs = append(extRefs, ftypes.ExternalRef{
-				Type: ftypes.RefOther,
-				URL:  resolved,
-			})
-		}
 		newPkg := ftypes.Package{
-			ID:                 pkgId,
-			Name:               pkgName,
-			Version:            pkgVersion,
-			Relationship:       lo.Ternary(isDirect, ftypes.RelationshipDirect, ftypes.RelationshipIndirect),
-			Dev:                false,
-			ExternalReferences: extRefs,
-			Locations:          nil,
+			ID:           pkgId,
+			Name:         pkgName,
+			Version:      pkgVersion,
+			Relationship: lo.Ternary(isDirect, ftypes.RelationshipDirect, ftypes.RelationshipIndirect),
+			Dev:          false,
+			Locations:    []ftypes.Location{ftypes.Location(parsed.Location)},
 		}
 		pkgs = append(pkgs, newPkg)
 
 		var depList []string
 		if depMap, ok := parsed.Meta["dependencies"].(map[string]any); ok {
 			for depName := range depMap {
-				depEntry, ok := lockFile.Packages[depName]
+				subParsed, ok := lockFile.Packages[depName]
 				if !ok {
 					continue
 				}
-				subParsed, err := parsePackageEntry(depEntry)
-				if err != nil {
-					p.logger.Warn("Failed to parse dependecy entry", log.String("name", name), log.Err(err))
-					continue
-				}
-
 				idx := strings.LastIndex(subParsed.Identifier, "@")
 				if idx == -1 || idx == 0 {
 					p.logger.Warn("Invalid package identifier", log.String("identifier", subParsed.Identifier), log.Err(err))
