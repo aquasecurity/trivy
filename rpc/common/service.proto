@@ -42,19 +42,20 @@ message Package {
   string        arch       = 5;
   // src package containing some binary packages
   // e.g. bind
-  string            src_name    = 6;
-  string            src_version = 7;
-  string            src_release = 8;
-  int32             src_epoch   = 9;
-  repeated string   licenses    = 15;
-  repeated Location locations   = 20;
-  Layer             layer       = 11;
-  string            file_path   = 12;
-  repeated string   depends_on  = 14;
-  string            digest      = 16;
-  bool              dev         = 17;
-  bool              indirect    = 18;
-  string            maintainer  = 21;
+  string            src_name     = 6;
+  string            src_version  = 7;
+  string            src_release  = 8;
+  int32             src_epoch    = 9;
+  repeated string   licenses     = 15;
+  repeated Location locations    = 20;
+  Layer             layer        = 11;
+  string            file_path    = 12;
+  repeated string   depends_on   = 14;
+  string            digest       = 16;
+  bool              dev          = 17;
+  bool              indirect     = 18;
+  string            maintainer   = 21;
+  int32             relationship = 22;
 }
 
 message PkgIdentifier {
