@@ -109,7 +109,7 @@ func TestScanner_Scan(t *testing.T) {
 					expression.Apache20,
 				},
 			},
-			licenseName:  expression.Apache20 + " AND (" + expression.GPL30 + " OR " + expression.BSD3Clause + ")",
+			licenseName:  expression.BSD3Clause + " AND (" + expression.GPL30 + " OR " + expression.Apache20 + ")",
 			wantCategory: types.CategoryRestricted,
 			wantSeverity: "HIGH",
 		},
