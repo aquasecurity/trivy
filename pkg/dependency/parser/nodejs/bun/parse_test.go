@@ -23,6 +23,12 @@ func TestParse(t *testing.T) {
 			want:     normalPkgs,
 			wantDeps: normalDeps,
 		},
+		{
+			name:     "multiple workspaces",
+			file:     "testdata/bun_multiple_ws.lock",
+			want:     multipleWsPkgs,
+			wantDeps: multipleWsDeps,
+		},
 	}
 
 	for _, tt := range tests {

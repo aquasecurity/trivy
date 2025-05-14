@@ -27,6 +27,7 @@ type LockFile struct {
 
 type Workspace struct {
 	Name             string            `json:"name"`
+	Version          string            `json:"version"`
 	Dependencies     map[string]string `json:"dependencies"`
 	DevDependencies  map[string]string `json:"devDependencies"`
 	PeerDependencies map[string]string `json:"peerDependencies"`
@@ -51,21 +52,35 @@ func NewParser() *Parser {
 }
 
 func (p *ParsedPackage) UnmarshalJSON(data []byte) error {
-	var raw [4]json.RawMessage
+	var raw []json.RawMessage
 	if err := json.Unmarshal(data, &raw); err != nil {
-		return fmt.Errorf("expected 4-element array, got %s: %w", string(data), err)
+		return fmt.Errorf("expected package format: %w", err)
+	}
+	if len(raw) < 1 {
+		return fmt.Errorf("invalid package entry: not enough elements: %s", string(data))
 	}
 
 	if err := json.Unmarshal(raw[0], &p.Identifier); err != nil {
 		return err
 	}
-	if err := json.Unmarshal(raw[1], &p.Path); err != nil {
-		return err
+
+	if len(raw) > 1 {
+		if err := json.Unmarshal(raw[1], &p.Path); err != nil {
+			return err
+		}
 	}
-	if err := json.Unmarshal(raw[2], &p.Meta); err != nil {
-		return err
+
+	if len(raw) > 2 {
+		if err := json.Unmarshal(raw[2], &p.Meta); err != nil {
+			return err
+		}
 	}
-	return json.Unmarshal(raw[3], &p.Integrity)
+	if len(raw) > 3 {
+		if err := json.Unmarshal(raw[3], &p.Integrity); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {

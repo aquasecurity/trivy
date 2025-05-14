@@ -68,6 +68,57 @@ var (
 		},
 	}
 
+	multipleWsPkgs = []ftypes.Package{
+		{
+			ID:           "chalk@5.0.1",
+			Name:         "chalk",
+			Version:      "5.0.1",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: ftypes.Locations{
+				{
+					StartLine: 23,
+					EndLine:   23,
+				},
+			},
+		},
+		{
+			ID:           "lodash@4.17.21",
+			Name:         "lodash",
+			Version:      "4.17.21",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: ftypes.Locations{
+				{
+					StartLine: 25,
+					EndLine:   25,
+				},
+			},
+		},
+		{
+			ID:           "my-app@workspace:my-app",
+			Name:         "my-app",
+			Version:      "workspace:my-app",
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: ftypes.Locations{
+				{
+					StartLine: 27,
+					EndLine:   27,
+				},
+			},
+		},
+		{
+			ID:           "my-lib@workspace:my-lib",
+			Name:         "my-lib",
+			Version:      "workspace:my-lib",
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: ftypes.Locations{
+				{
+					StartLine: 29,
+					EndLine:   29,
+				},
+			},
+		},
+	}
+
 	normalDeps = []ftypes.Dependency{
 		{
 			ID:        "@types/bun@1.2.13",
@@ -82,4 +133,6 @@ var (
 			DependsOn: []string{"@types/node@22.15.17"},
 		},
 	}
+
+	multipleWsDeps = []ftypes.Dependency(nil)
 )
