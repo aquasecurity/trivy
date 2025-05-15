@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sort"
 	"strings"
 
 	"github.com/samber/lo"
@@ -25,11 +26,12 @@ type LockFile struct {
 }
 
 type Workspace struct {
-	Name             string            `json:"name"`
-	Version          string            `json:"version"`
-	Dependencies     map[string]string `json:"dependencies"`
-	DevDependencies  map[string]string `json:"devDependencies"`
-	PeerDependencies map[string]string `json:"peerDependencies"`
+	Name                 string            `json:"name"`
+	Version              string            `json:"version"`
+	Dependencies         map[string]string `json:"dependencies"`
+	DevDependencies      map[string]string `json:"devDependencies"`
+	OptionalDependencies map[string]string `json:"optionalDependencies"`
+	PeerDependencies     map[string]string `json:"peerDependencies"`
 }
 
 type ParsedPackage struct {
@@ -93,7 +95,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	pkgs := make(map[string]ftypes.Package, len(lockFile.Packages))
-	var deps []ftypes.Dependency
+	var deps ftypes.Dependencies
 
 	directDeps := set.New[string]()
 
@@ -105,6 +107,9 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			directDeps.Append(name)
 		}
 		for name := range ws.PeerDependencies {
+			directDeps.Append(name)
+		}
+		for name := range ws.OptionalDependencies {
 			directDeps.Append(name)
 		}
 	}
@@ -149,6 +154,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			return pkgs[dep].ID
 		})
 	}
+	sort.Sort(deps)
 	return utils.UniquePackages(lo.Values(pkgs)), deps, nil
 }
 

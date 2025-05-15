@@ -13,8 +13,8 @@ var (
 			Relationship: ftypes.RelationshipDirect,
 			Locations: ftypes.Locations{
 				{
-					StartLine: 15,
-					EndLine:   15,
+					StartLine: 18,
+					EndLine:   18,
 				},
 			},
 		},
@@ -25,20 +25,32 @@ var (
 			Relationship: ftypes.RelationshipDirect,
 			Locations: ftypes.Locations{
 				{
-					StartLine: 21,
-					EndLine:   21,
+					StartLine: 24,
+					EndLine:   24,
 				},
 			},
 		},
 		{
-			ID:           "@types/node@22.15.17",
+			ID:           "zod@3.24.4",
+			Name:         "zod",
+			Version:      "3.24.4",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: ftypes.Locations{
+				{
+					StartLine: 28,
+					EndLine:   28,
+				},
+			},
+		},
+		{
+			ID:           "@types/node@22.15.18",
 			Name:         "@types/node",
-			Version:      "22.15.17",
+			Version:      "22.15.18",
 			Relationship: ftypes.RelationshipIndirect,
 			Locations: ftypes.Locations{
 				{
-					StartLine: 17,
-					EndLine:   17,
+					StartLine: 20,
+					EndLine:   20,
 				},
 			},
 		},
@@ -49,8 +61,8 @@ var (
 			Relationship: ftypes.RelationshipIndirect,
 			Locations: ftypes.Locations{
 				{
-					StartLine: 19,
-					EndLine:   19,
+					StartLine: 22,
+					EndLine:   22,
 				},
 			},
 		},
@@ -61,8 +73,8 @@ var (
 			Relationship: ftypes.RelationshipIndirect,
 			Locations: ftypes.Locations{
 				{
-					StartLine: 23,
-					EndLine:   23,
+					StartLine: 26,
+					EndLine:   26,
 				},
 			},
 		},
@@ -125,12 +137,12 @@ var (
 			DependsOn: []string{"bun-types@1.2.13"},
 		},
 		{
-			ID:        "@types/node@22.15.17",
+			ID:        "@types/node@22.15.18",
 			DependsOn: []string{"undici-types@6.21.0"},
 		},
 		{
 			ID:        "bun-types@1.2.13",
-			DependsOn: []string{"@types/node@22.15.17"},
+			DependsOn: []string{"@types/node@22.15.18"},
 		},
 	}
 
