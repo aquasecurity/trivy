@@ -110,13 +110,15 @@ func (c *Client) NeedsUpdate(ctx context.Context, cliVersion string, skip bool) 
 		meta = metadata.Metadata{Version: db.SchemaVersion}
 	}
 
-	// If the metadata file has an empty DownloadedAt, it means that the DB was copied incorrectly.
-	// So we need to delete this DB and re-download it.
+	// There are 2 cases when DownloadAt field is zero:
+	// - trivy-db was downloaded with `oras`. In this case user can use `--skip-db-update` (like for air-gapped) or re-download trivy-db.
+	// - trivy-db was corrupted while copying from tmp directory to cache directory. We should update this trivy-db.
+	// We can't detect these cases, so we will show warning for users who use oras + air-gapped.
 	if meta.DownloadedAt.IsZero() {
-		log.ErrorContext(ctx, "The DownloadAt field is empty. Trivy-db was not downloaded correctly and must be re-downloaded.")
-
-		noRequiredFiles = true
 		meta = metadata.Metadata{Version: db.SchemaVersion}
+		if !skip {
+			log.WarnContext(ctx, "Trivy-db may be corrupted and will be re-downloaded. If you used `oras` to download DB - use the `--skip-db-update` flag to skip updating DB.")
+		}
 	}
 
 	if skip && noRequiredFiles {

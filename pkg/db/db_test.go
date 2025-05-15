@@ -136,8 +136,9 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			want: false,
 		},
 		{
-			name: "DownloadedAt is zero, skip is false",
-			skip: false,
+			name:         "DownloadedAt is zero, skip is false",
+			dbFileExists: true,
+			skip:         false,
 			metadata: metadata.Metadata{
 				Version:      db.SchemaVersion,
 				DownloadedAt: time.Time{}, // zero time
@@ -146,15 +147,15 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			want: true,
 		},
 		{
-			name: "DownloadedAt is zero, skip is true",
-			skip: true,
+			name:         "DownloadedAt is zero, skip is true",
+			dbFileExists: true,
+			skip:         true,
 			metadata: metadata.Metadata{
 				Version:      db.SchemaVersion,
 				DownloadedAt: time.Time{}, // zero time
 				NextUpdate:   timeNextUpdateDay1,
 			},
-			want:    false,
-			wantErr: "--skip-update cannot be specified on the first run",
+			want: false,
 		},
 	}
 
