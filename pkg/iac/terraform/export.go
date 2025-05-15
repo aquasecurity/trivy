@@ -45,16 +45,16 @@ type AttributeExport struct {
 	Known    bool            `json:"known"`
 }
 
-func (m *Module) ToModuleExport() ModuleExport {
+func (c *Module) ToModuleExport() ModuleExport {
 	var parentPath string
-	if parentModule := m.Parent(); parentModule != nil {
+	if parentModule := c.Parent(); parentModule != nil {
 		parentPath = parentModule.ModulePath()
 	}
 	return ModuleExport{
-		RootPath:   m.RootPath(),
-		ModulePath: m.ModulePath(),
+		RootPath:   c.RootPath(),
+		ModulePath: c.ModulePath(),
 		ParentPath: parentPath,
-		Blocks: lo.Map(m.blocks, func(b *Block, _ int) BlockExport {
+		Blocks: lo.Map(c.blocks, func(b *Block, _ int) BlockExport {
 			return b.ToBlockExport()
 		}),
 	}
