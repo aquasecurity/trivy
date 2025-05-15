@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"sort"
 	"strings"
 
 	"github.com/samber/lo"
@@ -93,7 +92,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 
-	var pkgs []ftypes.Package
+	pkgs := make(map[string]ftypes.Package, len(lockFile.Packages))
 	var deps []ftypes.Dependency
 
 	directDeps := set.New[string]()
@@ -109,15 +108,17 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			directDeps.Append(name)
 		}
 	}
-	for _, parsed := range lockFile.Packages {
+	for pkgName, parsed := range lockFile.Packages {
 		idx := strings.LastIndex(parsed.Identifier, "@")
 		if idx == -1 || idx == 0 {
 			p.logger.Warn("Invalid package identifier", log.String("identifier", parsed.Identifier), log.Err(err))
 			continue
 		}
 
-		pkgName := parsed.Identifier[:idx]
 		pkgVersion := parsed.Identifier[idx+1:]
+		if strings.HasPrefix(pkgVersion, "workspace") {
+			pkgVersion = lockFile.Workspaces[pkgName].Version
+		}
 		pkgId := packageID(pkgName, pkgVersion)
 		isDirect := directDeps.Contains(pkgName)
 
@@ -129,53 +130,26 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			Dev:          false,
 			Locations:    []ftypes.Location{ftypes.Location(parsed.Location)},
 		}
-		pkgs = append(pkgs, newPkg)
+		pkgs[pkgName] = newPkg
 
-		var depList []string
+		var depNames []string
 		if depMap, ok := parsed.Meta["dependencies"].(map[string]any); ok {
-			for depName := range depMap {
-				subParsed, ok := lockFile.Packages[depName]
-				if !ok {
-					continue
-				}
-				idx := strings.LastIndex(subParsed.Identifier, "@")
-				if idx == -1 || idx == 0 {
-					p.logger.Warn("Invalid package identifier", log.String("identifier", subParsed.Identifier), log.Err(err))
-					continue
-				}
-
-				depName := subParsed.Identifier[:idx]
-				depVersion := subParsed.Identifier[idx+1:]
-				depList = append(depList, packageID(depName, depVersion))
-			}
+			depNames = lo.Keys(depMap)
 		}
 
-		if len(depList) > 0 {
-			sort.Strings(depList)
+		if len(depNames) > 0 {
 			deps = append(deps, ftypes.Dependency{
 				ID:        pkgId,
-				DependsOn: depList,
+				DependsOn: depNames,
 			})
 		}
 	}
-	return utils.UniquePackages(pkgs), uniqueDeps(deps), nil
-}
-
-func uniqueDeps(deps []ftypes.Dependency) []ftypes.Dependency {
-	var uniqDeps ftypes.Dependencies
-	unique := set.New[string]()
-
-	for _, dep := range deps {
-		sort.Strings(dep.DependsOn)
-		depKey := fmt.Sprintf("%s:%s", dep.ID, strings.Join(dep.DependsOn, ","))
-		if !unique.Contains(depKey) {
-			unique.Append(depKey)
-			uniqDeps = append(uniqDeps, dep)
-		}
+	for i := range deps {
+		deps[i].DependsOn = lo.Map(deps[i].DependsOn, func(dep string, _ int) string {
+			return pkgs[dep].ID
+		})
 	}
-
-	sort.Sort(uniqDeps)
-	return uniqDeps
+	return utils.UniquePackages(lo.Values(pkgs)), deps, nil
 }
 
 func packageID(name, version string) string {

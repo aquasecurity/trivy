@@ -94,9 +94,9 @@ var (
 			},
 		},
 		{
-			ID:           "my-app@workspace:my-app",
+			ID:           "my-app@1.0.0",
 			Name:         "my-app",
-			Version:      "workspace:my-app",
+			Version:      "1.0.0",
 			Relationship: ftypes.RelationshipIndirect,
 			Locations: ftypes.Locations{
 				{
@@ -106,9 +106,9 @@ var (
 			},
 		},
 		{
-			ID:           "my-lib@workspace:my-lib",
+			ID:           "my-lib@1.0.0",
 			Name:         "my-lib",
-			Version:      "workspace:my-lib",
+			Version:      "1.0.0",
 			Relationship: ftypes.RelationshipIndirect,
 			Locations: ftypes.Locations{
 				{
