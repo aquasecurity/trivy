@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 func Test_OptionWithPolicyDirs(t *testing.T) {
@@ -1199,14 +1200,14 @@ func TestScanRawTerraform(t *testing.T) {
 	check := `# METADATA
 # title: Buckets should not be evil
 # schemas:
-# - input: schema.terraform
+# - input: schema["terraform-raw"]
 # custom:
 #   id: USER0001
 #   short_code: evil-bucket
 #   severity: HIGH
 #   input:
 #     selector:
-#     - type: terraform
+#     - type: terraform-raw
 package user.bucket001
 
 import rego.v1
@@ -1228,6 +1229,7 @@ deny contains res if {
 
 	scanner := New(
 		ScannerWithAllDirectories(true),
+		options.WithScanRawConfig(true),
 		rego.WithEmbeddedLibraries(true),
 		rego.WithPolicyReader(strings.NewReader(check)),
 		rego.WithPolicyNamespaces("user"),

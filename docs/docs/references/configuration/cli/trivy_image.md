@@ -120,6 +120,7 @@ trivy image [flags] IMAGE_NAME
       --pkg-types strings                 list of package types (allowed values: os,library) (default [os,library])
       --platform string                   set platform in the form os/arch if image is multi-platform capable
       --podman-host string                unix podman socket path to use for podman scanning
+      --raw-config-scanners strings       specify the types of scanners that will also scan raw configurations. For example, scanners will scan a non-adapted configuration into a shared state (allowed values: terraform)
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend

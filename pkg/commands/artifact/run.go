@@ -703,6 +703,7 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 		DisableEmbeddedLibraries: disableEmbedded,
 		IncludeDeprecatedChecks:  opts.IncludeDeprecatedChecks,
 		TfExcludeDownloaded:      opts.TfExcludeDownloaded,
+		RawConfigScanners:        opts.RawConfigScanners,
 		FilePatterns:             opts.FilePatterns,
 		ConfigFileSchemas:        configSchemas,
 		SkipFiles:                opts.SkipFiles,
