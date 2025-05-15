@@ -157,6 +157,18 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			},
 			want: false,
 		},
+		{
+			name:         "DownloadedAt is zero, skip is true, old schema version",
+			dbFileExists: true,
+			skip:         true,
+			metadata: metadata.Metadata{
+				Version:      0,
+				DownloadedAt: time.Time{}, // zero time
+				NextUpdate:   timeNextUpdateDay1,
+			},
+			wantErr: "--skip-db-update cannot be specified with the old DB schema. Local DB: 0, Expected: 2",
+			want:    false,
+		},
 	}
 
 	for _, tt := range tests {

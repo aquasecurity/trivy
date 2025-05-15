@@ -115,15 +115,15 @@ func (c *Client) NeedsUpdate(ctx context.Context, cliVersion string, skip bool) 
 	// - trivy-db was corrupted while copying from tmp directory to cache directory. We should update this trivy-db.
 	// We can't detect these cases, so we will show warning for users who use oras + air-gapped.
 	if meta.DownloadedAt.IsZero() {
-		meta = metadata.Metadata{Version: db.SchemaVersion}
+		meta = metadata.Metadata{Version: meta.Version}
 		if !skip {
-			log.WarnContext(ctx, "Trivy-db may be corrupted and will be re-downloaded. If you used `oras` to download DB - use the `--skip-db-update` flag to skip updating DB.")
+			log.WarnContext(ctx, "Trivy DB may be corrupted and will be re-downloaded. If you manually downloaded DB - use the `--skip-db-update` flag to skip updating DB.")
 		}
 	}
 
 	if skip && noRequiredFiles {
 		log.ErrorContext(ctx, "The first run cannot skip downloading DB")
-		return false, xerrors.New("--skip-update cannot be specified on the first run")
+		return false, xerrors.New("--skip-db-update cannot be specified on the first run")
 	}
 
 	if db.SchemaVersion < meta.Version {
@@ -152,7 +152,7 @@ func (c *Client) NeedsUpdate(ctx context.Context, cliVersion string, skip bool) 
 func (c *Client) validate(meta metadata.Metadata) error {
 	if db.SchemaVersion != meta.Version {
 		log.Error("The local DB has an old schema version which is not supported by the current version of Trivy CLI. DB needs to be updated.")
-		return xerrors.Errorf("--skip-update cannot be specified with the old DB schema. Local DB: %d, Expected: %d",
+		return xerrors.Errorf("--skip-db-update cannot be specified with the old DB schema. Local DB: %d, Expected: %d",
 			meta.Version, db.SchemaVersion)
 	}
 	return nil
