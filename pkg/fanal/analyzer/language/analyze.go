@@ -105,7 +105,7 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.
 		pkgs[i].Indirect = isIndirect(pkg.Relationship) // For backward compatibility
 
 		for j, license := range pkg.Licenses {
-			pkgs[i].Licenses[j] = licensing.Normalize(license).String()
+			pkgs[i].Licenses[j] = licensing.Normalize(license)
 		}
 	}
 

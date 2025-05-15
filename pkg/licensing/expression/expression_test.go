@@ -13,40 +13,32 @@ func TestNormalize(t *testing.T) {
 		name    string
 		license string
 		fn      NormalizeFunc
-		want    Expression
+		want    string
 		wantErr string
 	}{
 		{
 			name:    "SPDX, space",
 			license: "AFL 2.0",
 			fn:      NormalizeForSPDX,
-			want:    SimpleExpr{License: "AFL-2.0"},
+			want:    "AFL-2.0",
 		},
 		{
 			name:    "SPDX, exception",
 			license: "AFL 2.0 with Linux-syscall-note exception",
 			fn:      NormalizeForSPDX,
-			want: CompoundExpr{
-				left:        SimpleExpr{License: "AFL-2.0"},
-				conjunction: Token{token: 57349, literal: "WITH"},
-				right:       SimpleExpr{License: "Linux-syscall-note-exception"},
-			},
+			want:    "AFL-2.0 WITH Linux-syscall-note-exception",
 		},
 		{
 			name:    "SPDX, invalid chars",
 			license: "LGPL_2.1_only or MIT OR BSD-3>Clause",
 			fn:      NormalizeForSPDX,
-			want: CompoundExpr{
-				left:        CompoundExpr{left: SimpleExpr{License: "LGPL-2.1-only"}, conjunction: Token{token: 57347, literal: "OR"}, right: SimpleExpr{License: "MIT"}},
-				conjunction: Token{token: 57347, literal: "OR"},
-				right:       SimpleExpr{License: "BSD-3-Clause"},
-			},
+			want:    "LGPL-2.1-only OR MIT OR BSD-3-Clause",
 		},
 		{
 			name:    "upper",
 			license: "LGPL-2.1-only OR MIT",
 			fn:      func(license Expression) Expression { return SimpleExpr{strings.ToUpper(license.String()), false} },
-			want:    SimpleExpr{License: "LGPL-2.1-ONLY OR MIT"},
+			want:    "LGPL-2.1-ONLY OR MIT",
 		},
 	}
 	for _, tt := range tests {

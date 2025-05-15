@@ -24,16 +24,16 @@ func parse(license string) (Expression, error) {
 	return l.result, nil
 }
 
-func Normalize(license string, funcs ...NormalizeFunc) (Expression, error) {
+func Normalize(license string, funcs ...NormalizeFunc) (string, error) {
 	expr, err := parse(license)
 	if err != nil {
-		return nil, xerrors.Errorf("license (%s) parse error: %w", license, err)
+		return "", xerrors.Errorf("license (%s) parse error: %w", license, err)
 	}
 	for _, fn := range funcs {
 		expr = normalize(expr, fn)
 	}
 
-	return expr, nil
+	return expr.String(), nil
 }
 
 func normalize(expr Expression, fn NormalizeFunc) Expression {

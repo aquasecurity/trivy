@@ -673,18 +673,8 @@ func standardizeKeyAndSuffix(name string) expr.SimpleExpr {
 	return expr.SimpleExpr{License: name, HasPlus: hasPlus}
 }
 
-func Normalize(name string) expr.Expression {
-	// Check if license exists in mapping before parsing
-	if exp := lookupMappings(name); exp != nil {
-		return exp
-	}
-
-	// Parse and evaluate license
-	exp, err := expr.Normalize(name)
-	if err != nil {
-		return nil
-	}
-	return NormalizeLicense(exp)
+func Normalize(name string) string {
+	return NormalizeLicense(expr.SimpleExpr{License: name}).String()
 }
 
 func NormalizeLicense(exp expr.Expression) expr.Expression {
@@ -697,31 +687,25 @@ func NormalizeLicense(exp expr.Expression) expr.Expression {
 	return exp
 }
 
-func lookupMappings(license string) expr.Expression {
-	name := strings.TrimSpace(license)
+func normalizeSimpleExpr(e expr.SimpleExpr) expr.Expression {
+	// Always trim leading and trailing spaces, even if we don't find this license in `mapping`.
+	name := strings.TrimSpace(e.License)
 	normalized := standardizeKeyAndSuffix(name)
 	if found, ok := mapping[normalized.License]; ok {
-		return expr.SimpleExpr{License: found.License, HasPlus: found.HasPlus || normalized.HasPlus}
+		return expr.SimpleExpr{License: found.License, HasPlus: e.HasPlus || found.HasPlus || normalized.HasPlus}
 	}
-	return nil
-}
-
-func normalizeSimpleExpr(e expr.SimpleExpr) expr.Expression {
-	if exp := lookupMappings(e.String()); exp != nil {
-		return exp
-	}
-	// Always trim leading and trailing spaces, even if we don't find this license in `mapping`.
-	return expr.SimpleExpr{License: strings.TrimSpace(e.License), HasPlus: e.HasPlus}
+	return expr.SimpleExpr{License: name, HasPlus: e.HasPlus}
 }
 
 func normalizeCompoundExpr(e expr.CompoundExpr) expr.Expression {
 	if e.Conjunction() != expr.TokenWith {
-		return e // Do not normalize compound expressions other than "WITH", it will be normalized recursively later.
+		return e // Do not normalize compound expressions other than "WITH"
 	}
-	if exp := lookupMappings(e.String()); exp != nil {
-		return exp
+	normalized := standardizeKeyAndSuffix(e.String())
+	if found, ok := mapping[normalized.License]; ok {
+		return expr.SimpleExpr{License: found.License, HasPlus: found.HasPlus || normalized.HasPlus}
 	}
-	return e // Do not normalize compound expressions that are not found in `mapping`.
+	return e // Do not normalize compound expressions that are not found in `mapping`
 }
 
 func SplitLicenses(str string) []string {
@@ -776,7 +760,7 @@ func LaxSplitLicenses(str string) []string {
 		case s == "AND" || s == "OR":
 			continue
 		default:
-			licenses = append(licenses, Normalize(s).String())
+			licenses = append(licenses, Normalize(s))
 		}
 	}
 	return licenses

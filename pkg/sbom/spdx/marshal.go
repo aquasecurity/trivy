@@ -466,14 +466,14 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 		return expression.SimpleExpr{License: l.LicenseIdentifier}
 	}
 
-	normalizedLicenseExp, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX, replaceOtherLicenses)
+	normalizedLicense, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX, replaceOtherLicenses)
 	if err != nil {
 		// Not fail on the invalid license
 		m.logger.Warn("Unable to marshal SPDX licenses", log.String("license", license))
 		return "", nil
 	}
 
-	return normalizedLicenseExp.String(), lo.Ternary(len(otherLicenses) > 0, lo.Values(otherLicenses), nil)
+	return normalizedLicense, lo.Ternary(len(otherLicenses) > 0, lo.Values(otherLicenses), nil)
 }
 
 // newOtherLicense create new OtherLicense for license not included in the SPDX license list
