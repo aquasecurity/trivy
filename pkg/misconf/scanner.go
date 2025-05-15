@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
@@ -74,6 +75,7 @@ type ScannerOption struct {
 	TerraformTFVars         []string
 	CloudFormationParamVars []string
 	TfExcludeDownloaded     bool
+	RawConfigScanners       []types.ConfigType
 	K8sVersion              string
 
 	FilePatterns      []string
@@ -301,6 +303,10 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 		}
 		opts = append(opts, regoOpts...)
 	}
+
+	opts = append(opts, options.WithScanRawConfig(
+		slices.Contains(opt.RawConfigScanners, enablediacTypes[t])),
+	)
 
 	switch t {
 	case detection.FileTypeHelm:

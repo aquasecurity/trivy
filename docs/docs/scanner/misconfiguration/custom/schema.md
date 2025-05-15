@@ -53,6 +53,7 @@ Currently, out of the box the following schemas are supported natively:
 1. [Docker](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/dockerfile.json)
 2. [Kubernetes](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/kubernetes.json)
 3. [Cloud](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/cloud.json)
+4. [Terraform](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/terraform.json)
 
 
 ## Custom Checks with Custom Schemas
@@ -83,7 +84,7 @@ The checks can be placed in a structure as follows
         └── barschema.json
     ```
 
-To use such a policy with Trivy, use the `--config-policy` flag that points to the policy file or to the directory where the schemas and checks are contained.
+To use such a policy with Trivy, use the `--config-check` flag that points to the policy file or to the directory where the schemas and checks are contained.
 
 ```bash
 $ trivy --config-policy=/Users/user/my-custom-checks <path/to/iac>

@@ -207,6 +207,7 @@ You can specify input format via the `custom.input` annotation.
     - `yaml` (Generic YAML)
     - `json` (Generic JSON)
     - `toml` (Generic TOML)
+    - `terraform-raw` (Terraform configuration is not converted to common state as for the Cloud format, allowing for more flexible and direct checks on the original code)
 
     When configuration languages such as Kubernetes are not identified, file formats such as JSON will be used as `type`.
     When a configuration language is identified, it will overwrite `type`.

@@ -409,6 +409,9 @@ misconfiguration:
   # Same as '--include-non-failures'
   include-non-failures: false
 
+  # Same as '--raw-config-scanners'
+  raw-config-scanners: []
+
   # Same as '--render-cause'
   render-cause: []
 

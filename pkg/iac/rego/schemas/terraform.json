@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/terraform.json",
+  "type": "object",
+  "properties": {
+    "modules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Module"
+      },
+      "description": "List of Terraform modules present in the configuration."
+    }
+  },
+  "$defs": {
+    "Module": {
+      "type": "object",
+      "properties": {
+        "root_path": {
+          "type": "string",
+          "description": "The Terraform root directory of the project."
+        },
+        "module_path": {
+          "type": "string",
+          "description": "Path to the current module. For remote modules, this is the path relative to the module's code directory."
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Block"
+          },
+          "description": "List of blocks (e.g., resource, data, variable) within the module."
+        }
+      }
+    },
+    "Block": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/$defs/Metadata",
+          "description": "Metadata related to the block."
+        },
+        "kind": {
+          "type": "string",
+          "description": "Kind of the block (e.g., resource, data, module)."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of the block (e.g., aws_s3_bucket for a resource). For blocks that can only have 1 label (such as module or variable) this attribute will be empty."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the block defined by the user."
+        },
+        "attributes": {
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "$ref": "#/$defs/Attribute"
+            }
+          },
+          "description": "Key-value attributes associated with the block."
+        }
+      }
+    },
+    "Attribute": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/$defs/Metadata",
+          "description": "Metadata related to the attribute."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the attribute."
+        },
+        "known": {
+          "type": "boolean",
+          "description": "Indicates whether the value of the attribute is known during analysis."
+        },
+        "value": {
+          "description": "The actual value of the attribute. If unknown, then null. Can be a primitive, object, or array.",
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string" },
+            { "type": "number" },
+            { "type": "boolean" },
+            { "type": "object" },
+            { "type": "array" }
+          ]
+        }
+      }
+    },
+    "Metadata": {
+      "type": "object",
+      "properties": {
+        "filepath": {
+          "type": "string",
+          "description": "Path to the source file where the object is defined relative to the module's file system."
+        },
+        "startline": {
+          "type": "number",
+          "description": "Line number where the object starts in the source file."
+        },
+        "endline": {
+          "type": "number",
+          "description": "Line number where the object ends in the source file."
+        },
+        "sourceprefix": {
+          "type": "string",
+          "description": "Module source. E.g. interface terraform-aws-modules/s3-bucket/aws"
+        },
+        "managed": {
+          "type": "boolean",
+          "description": "Indicates whether the object is controlled by this source. Not relevant for Terraform."
+        },
+        "explicit": {
+          "type": "boolean",
+          "description": "True if the object is explicitly defined by the user."
+        },
+        "unresolvable": {
+          "type": "boolean",
+          "description": "True if the value cannot be determined statically."
+        },
+        "fskey": {
+          "type": "string",
+          "description": "Internal filesystem key for uniquely identifying the object."
+        },
+        "resource": {
+          "type": "string",
+          "description": "Fully qualified resource name if applicable. E.g. aws_s3_bucket.test[0]"
+        }
+      }
+    }
+  }
+}
