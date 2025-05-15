@@ -21,5 +21,5 @@ var (
 	Cloud Schema
 
 	//go:embed terraform.json
-	Terraform Schema
+	TerraformRaw Schema
 )

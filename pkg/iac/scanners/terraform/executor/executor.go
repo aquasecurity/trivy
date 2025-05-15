@@ -54,7 +54,7 @@ func (e *Executor) Execute(ctx context.Context, modules terraform.Modules, baseP
 	}
 
 	e.logger.Debug("Scan raw Terraform data")
-	results2, err := e.regoScanner.ScanInput(ctx, types.SourceTerraform, rego.Input{
+	results2, err := e.regoScanner.ScanInput(ctx, types.SourceTerraformRaw, rego.Input{
 		Contents: terraform.ExportModules(modules),
 		Path:     basePath,
 	})

@@ -289,7 +289,7 @@ func checkSubtype(ii map[string]any, provider string, subTypes []SubType) bool {
 
 var sourcesWithExplicitSelectors = []types.Source{
 	// apply terrafrom-specific checks only if selectors exist
-	types.SourceTerraform,
+	types.SourceTerraformRaw,
 }
 
 func isPolicyApplicable(sourceType types.Source, staticMetadata *StaticMetadata, inputs ...Input) bool {

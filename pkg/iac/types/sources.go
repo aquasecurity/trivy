@@ -8,10 +8,10 @@ const (
 	// Deprecated: use "kubernetes" instead
 	SourceRbac Source = "rbac"
 	// Deprecated: use "cloud" instead
-	SourceDefsec    Source = "defsec"
-	SourceCloud     Source = "cloud"
-	SourceYAML      Source = "yaml"
-	SourceJSON      Source = "json"
-	SourceTOML      Source = "toml"
-	SourceTerraform Source = "terraform"
+	SourceDefsec       Source = "defsec"
+	SourceCloud        Source = "cloud"
+	SourceYAML         Source = "yaml"
+	SourceJSON         Source = "json"
+	SourceTOML         Source = "toml"
+	SourceTerraformRaw Source = "terraform-raw"
 )
