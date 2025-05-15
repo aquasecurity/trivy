@@ -59,7 +59,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			want: true,
 		},
 		{
-			name:         "happy path with --skip-update",
+			name:         "happy path with --skip-db-update",
 			dbFileExists: true,
 			metadata: metadata.Metadata{
 				Version:      db.SchemaVersion,
@@ -91,20 +91,20 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				db.SchemaVersion+1, db.SchemaVersion),
 		},
 		{
-			name:         "--skip-update without trivy.db on the first run",
+			name:         "--skip-db-update without trivy.db on the first run",
 			dbFileExists: false,
 			skip:         true,
-			wantErr:      "--skip-update cannot be specified on the first run",
+			wantErr:      "--skip-db-update cannot be specified on the first run",
 		},
 		{
-			name:         "--skip-update without metadata.json on the first run",
+			name:         "--skip-db-update without metadata.json on the first run",
 			dbFileExists: true,
 			metadata:     metadata.Metadata{},
 			skip:         true,
-			wantErr:      "--skip-update cannot be specified on the first run",
+			wantErr:      "--skip-db-update cannot be specified on the first run",
 		},
 		{
-			name:         "--skip-update with different schema version",
+			name:         "--skip-db-update with different schema version",
 			dbFileExists: true,
 			metadata: metadata.Metadata{
 				Version:      0,
@@ -112,7 +112,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				DownloadedAt: timeDownloadAt,
 			},
 			skip: true,
-			wantErr: fmt.Sprintf("--skip-update cannot be specified with the old DB schema. Local DB: %d, Expected: %d",
+			wantErr: fmt.Sprintf("--skip-db-update cannot be specified with the old DB schema. Local DB: %d, Expected: %d",
 				0, db.SchemaVersion),
 		},
 		{
