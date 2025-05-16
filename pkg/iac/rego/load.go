@@ -364,11 +364,6 @@ func (s *Scanner) filterModules() error {
 		}
 
 		if !s.IsMinimumVersionSupported(metadata, module) {
-			s.logger.Warn(
-				"Module will be skipped as current version of Trivy is older than minimum supported version - please update Trivy to use this module",
-				log.FilePath(module.Package.Location.File),
-				log.String("minimum_supported_version", metadata.MinimumSupportedVersion),
-			)
 			continue
 		}
 
