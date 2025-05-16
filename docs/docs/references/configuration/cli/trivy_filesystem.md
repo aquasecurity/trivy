@@ -160,6 +160,7 @@ trivy filesystem [flags] PATH
                                             - aqua
                                             - osv
                                             - k8s
+                                            - echo
                                             - wolfi
                                             - chainguard
                                             - bitnami

@@ -1,0 +1,14 @@
+- bucket: echo
+  pairs:
+    - bucket: python3
+      pairs:
+        - key: CVE-2020-26116
+          value:
+            FixedVersion: "3.6.9"
+            Severity: 2
+    - bucket: apache2
+      pairs:
+        - key: CVE-2020-11985
+          value:
+            FixedVersion: "2.4.25-1"
+            Severity: 1

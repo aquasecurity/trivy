@@ -63,6 +63,7 @@ jobs:
             amazon
             suse
             photon
+            echo
             distroless
             windows
 
@@ -121,7 +122,7 @@ jobs:
           # Convert env vars to regex alternatives, excluding comments and empty lines
           TYPES_REGEX=$(echo "$VALID_TYPES" | grep -v '^$' | paste -sd '|')
           SCOPES_REGEX=$(echo "$VALID_SCOPES" | grep -v '^$' | grep -v '^#' | paste -sd '|')
-          
+
           # Basic format check (should match: type(scope): description or type: description)
           FORMAT_REGEX="^[a-z]+(\([a-z0-9+]+\))?!?: .+$"
           if ! echo "$PR_TITLE" | grep -qE "$FORMAT_REGEX"; then
@@ -158,6 +159,6 @@ jobs:
               exit 1
             fi
           fi
-          
+
           echo "PR title validation passed ✅"
           echo "Current title: $PR_TITLE"
