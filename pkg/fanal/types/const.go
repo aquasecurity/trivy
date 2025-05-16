@@ -64,6 +64,7 @@ const (
 	Composer       LangType = "composer"
 	ComposerVendor LangType = "composer-vendor"
 	Npm            LangType = "npm"
+	Bun            LangType = "bun"
 	NuGet          LangType = "nuget"
 	DotNetCore     LangType = "dotnet-core"
 	PackagesProps  LangType = "packages-props"
