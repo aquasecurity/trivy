@@ -9,6 +9,8 @@ import (
 	"testing"
 	"testing/fstest"
 
+	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/version/app"
 	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -272,4 +274,99 @@ deny := some_func(input)
 	)
 	err := scanner.LoadPolicies(nil)
 	require.NoError(t, err)
+}
+
+func TestIsMinimumSupportedVersion(t *testing.T) {
+	testCases := []struct {
+		name                    string
+		trivyVersion            string
+		minimumSupportedVersion string
+		expectedResults         int
+		expectedErr             string
+	}{
+		{
+			name:                    "trivy version is newer than the check version",
+			trivyVersion:            "1.2.3",
+			minimumSupportedVersion: "1.2.0",
+			expectedResults:         1,
+		},
+		{
+			name:                    "trivy version is older than the check version",
+			trivyVersion:            "1.2.0",
+			minimumSupportedVersion: "1.2.3",
+			expectedResults:         0,
+		},
+		{
+			name:                    "trivy version is equal to the check version",
+			trivyVersion:            "1.2.3",
+			minimumSupportedVersion: "1.2.3",
+			expectedResults:         1,
+		},
+		{
+			name:                    "check version is not a valid semver",
+			trivyVersion:            "1.2.3",
+			minimumSupportedVersion: "invalid",
+			expectedResults:         0,
+		},
+		{
+			name:                    "trivy version is not a valid semver",
+			trivyVersion:            "invalid",
+			minimumSupportedVersion: "1.2.3",
+			expectedResults:         0,
+		},
+		{
+			name:                    "check version is not set",
+			trivyVersion:            "1.2.3",
+			minimumSupportedVersion: "",
+			expectedResults:         1,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			oldVer := app.Version()
+			app.SetVersion(tc.trivyVersion)
+			defer func() {
+				app.SetVersion(oldVer)
+			}()
+
+			fsys := fstest.MapFS{
+				"check.rego": &fstest.MapFile{Data: []byte(fmt.Sprintf(`# METADATA
+# title: "dummy title"
+# description: "some description"
+# scope: package
+# schemas:
+# - input: schema["input"]
+# custom:
+#   minimum_supported_version: "%s"
+package builtin.foo.ABC123
+deny {
+    input.evil
+}`, tc.minimumSupportedVersion))},
+			}
+			scanner := rego.NewScanner(
+				rego.WithPolicyDirs("."),
+				rego.WithEmbeddedLibraries(false),
+				rego.WithEmbeddedPolicies(false),
+				rego.WithPolicyFilesystem(fsys),
+			)
+			err := scanner.LoadPolicies(nil)
+			require.NoError(t, err, tc.name)
+
+			results, err := scanner.ScanInput(t.Context(), types.SourceJSON, rego.Input{
+				Path: "/check.rego",
+				Contents: map[string]any{
+					"evil": true,
+				},
+				FS: fsys,
+			})
+
+			if tc.expectedErr != "" {
+				assert.ErrorContains(t, err, tc.expectedErr, tc.name)
+			} else {
+				require.NoError(t, err)
+				require.Len(t, results, tc.expectedResults, tc.name)
+			}
+		})
+	}
 }

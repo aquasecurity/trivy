@@ -14,20 +14,21 @@ import (
 func Test_UpdateStaticMetadata(t *testing.T) {
 	t.Run("happy", func(t *testing.T) {
 		sm := StaticMetadata{
-			ID:                 "i",
-			AVDID:              "a",
-			Title:              "t",
-			ShortCode:          "sc",
-			Aliases:            []string{"a", "b", "c"},
-			Description:        "d",
-			Severity:           "s",
-			RecommendedActions: "ra",
-			PrimaryURL:         "pu",
-			References:         []string{"r"},
-			Package:            "pkg",
-			Provider:           "pr",
-			Service:            "srvc",
-			Library:            false,
+			ID:                      "i",
+			AVDID:                   "a",
+			Title:                   "t",
+			ShortCode:               "sc",
+			Aliases:                 []string{"a", "b", "c"},
+			Description:             "d",
+			Severity:                "s",
+			RecommendedActions:      "ra",
+			PrimaryURL:              "pu",
+			References:              []string{"r"},
+			Package:                 "pkg",
+			Provider:                "pr",
+			Service:                 "srvc",
+			Library:                 false,
+			MinimumSupportedVersion: "v1.2.3",
 		}
 
 		require.NoError(t, sm.populate(
@@ -47,6 +48,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 				"frameworks": map[string]any{
 					"all": []any{"aa"},
 				},
+				"minimum_supported_version": "v1.2.3",
 			},
 		))
 
@@ -60,6 +62,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 			Severity:           "S_N",
 			RecommendedActions: "ra_n",
 			PrimaryURL:         "pu",
+			MinimumSupportedVersion: "v1.2.3",
 			References:         []string{"r", "r_n"},
 			Package:            "pkg",
 			Provider:           "pr_n",
@@ -248,6 +251,7 @@ func TestMetadataFromAnnotations(t *testing.T) {
 #   id: test-001
 #   avd_id: test-001
 #   severity: LOW
+#   minimum_supported_version: 1.2.3
 #   input:
 #     selector:
 #     - type: yaml
@@ -265,6 +269,7 @@ package user.test
 						},
 					},
 				},
+				MinimumSupportedVersion: "1.2.3",
 				Package: "data.user.test",
 				Frameworks: map[framework.Framework][]string{
 					"default": {},
