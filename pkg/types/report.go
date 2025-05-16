@@ -74,7 +74,7 @@ const (
 	FormatCosignVuln Format = "cosign-vuln"
 )
 
-var BuildInK8sCompiances = []string{
+var BuiltInK8sCompiances = []string{
 	ComplianceK8sNsa10,
 	ComplianceK8sCIS123,
 	ComplianceEksCIS14,

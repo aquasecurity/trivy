@@ -999,7 +999,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.TableMode = nil // disable '--table-mode's
 	compliance := flag.ComplianceFlag.Clone()
 	var compliances string
-	for _, val := range types.BuildInK8sCompiances {
+	for _, val := range types.BuiltInK8sCompiances {
 		compliances += fmt.Sprintf("\n  - %s", val)
 	}
 	compliance.Usage = fmt.Sprintf("%s\nBuilt-in compliance's:%s", compliance.Usage, compliances)
