@@ -29,8 +29,15 @@ func (s *Scanner) Scan(licenseName string) (types.LicenseCategory, string) {
 	return category, categoryToSeverity(category).String()
 }
 
+// traverseLicenseExpression recursive parses license expression to detect correct license category:
+// For Simple Expression - use category of license
+// For Compound Expression:
+//   - `AND` operator - use category with maximum severity
+//   - `OR` operator - use category with minimum severity
+//   - one of expression has `UNKNOWN` category - use `UNKNOWN` category
 func (s *Scanner) traverseLicenseExpression(licenseName string, visited map[string]types.LicenseCategory) types.LicenseCategory {
 	category := types.CategoryUnknown
+
 	detectCategoryAndSeverity := func(expr expression.Expression) expression.Expression {
 		// Skip if we already checked this license
 		if cat, ok := visited[licenseName]; ok {
@@ -84,15 +91,15 @@ func (s *Scanner) licenseToCategory(license expression.SimpleExpr) types.License
 func (s *Scanner) compoundLicenseToCategory(license expression.CompoundExpr, visited map[string]types.LicenseCategory) types.LicenseCategory {
 	switch license.Conjunction() {
 	case expression.TokenAnd:
-		return s.compoundLogicOperator(license, visited, true)
+		return s.compoundLogicEvaluator(license, visited, true)
 	case expression.TokenOR:
-		return s.compoundLogicOperator(license, visited, false)
+		return s.compoundLogicEvaluator(license, visited, false)
 	default:
 		return types.CategoryUnknown
 	}
 }
 
-func (s *Scanner) compoundLogicOperator(license expression.CompoundExpr, visited map[string]types.LicenseCategory, findMax bool) types.LicenseCategory {
+func (s *Scanner) compoundLogicEvaluator(license expression.CompoundExpr, visited map[string]types.LicenseCategory, findMax bool) types.LicenseCategory {
 	lCategory := s.traverseLicenseExpression(license.Left().String(), visited)
 	lSeverity := categoryToSeverity(lCategory)
 	rCategory := s.traverseLicenseExpression(license.Right().String(), visited)
@@ -102,19 +109,12 @@ func (s *Scanner) compoundLogicOperator(license expression.CompoundExpr, visited
 		return types.CategoryUnknown
 	}
 
-	var logicOperator int
-	if findMax {
-		logicOperator = 1
-	} else {
-		logicOperator = -1
-	}
+	// Compare the two severities, returns a negative value if left is more severe than right
+	comparison := dbTypes.CompareSeverityString(lSeverity.String(), rSeverity.String())
+	leftIsMoreSevere := comparison < 0
 
-	var compoundCategory types.LicenseCategory
-	if 0 < logicOperator*dbTypes.CompareSeverityString(lSeverity.String(), rSeverity.String()) {
-		compoundCategory = rCategory
-	} else {
-		compoundCategory = lCategory
+	if (findMax && leftIsMoreSevere) || (!findMax && !leftIsMoreSevere) {
+		return lCategory
 	}
-
-	return compoundCategory
+	return rCategory
 }
