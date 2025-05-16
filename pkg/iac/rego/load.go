@@ -363,12 +363,14 @@ func (s *Scanner) filterModules() error {
 			return fmt.Errorf("retrieve metadata for module %s: %w", name, err)
 		}
 
-		if !s.IsMinimumVersionSupported(metadata, module) {
-			continue
-		}
+		if metadata != nil {
+			if !s.IsMinimumVersionSupported(metadata, module) {
+				continue
+			}
 
-		if s.isModuleApplicable(module, metadata, name) {
-			filtered[name] = module
+			if s.isModuleApplicable(module, metadata, name) {
+				filtered[name] = module
+			}
 		}
 	}
 
