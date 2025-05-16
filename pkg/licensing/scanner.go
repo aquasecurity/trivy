@@ -23,7 +23,7 @@ func NewScanner(categories map[types.LicenseCategory][]string) Scanner {
 }
 
 func (s *Scanner) Scan(licenseName string) (types.LicenseCategory, string) {
-	visited := map[string]types.LicenseCategory{}
+	visited := make(map[string]types.LicenseCategory)
 	category := s.traverseLicenseExpression(licenseName, visited)
 
 	return category, categoryToSeverity(category).String()
