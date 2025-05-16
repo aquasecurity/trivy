@@ -118,13 +118,20 @@ type CustomGroup interface {
 	Group() Group
 }
 
+// StaticPathAnalyzer is an interface for analyzers that can specify static file paths
+// instead of traversing the entire filesystem.
+type StaticPathAnalyzer interface {
+	// StaticPaths returns a list of static file paths to analyze
+	StaticPaths() []string
+}
+
 type Opener func() (xio.ReadSeekCloserAt, error)
 
 type AnalyzerGroup struct {
 	logger            *log.Logger
 	analyzers         []analyzer
 	postAnalyzers     []PostAnalyzer
-	filePatterns      map[Type][]*regexp.Regexp
+	filePatterns      map[Type]FilePatterns
 	detectionPriority types.DetectionPriority
 }
 
@@ -142,8 +149,20 @@ type AnalysisInput struct {
 }
 
 type PostAnalysisInput struct {
-	FS      fs.FS
-	Options AnalysisOptions
+	FS           fs.FS
+	FilePatterns FilePatterns
+	Options      AnalysisOptions
+}
+
+type FilePatterns []*regexp.Regexp
+
+func (f FilePatterns) Match(filePath string) bool {
+	for _, pattern := range f {
+		if pattern.MatchString(filePath) {
+			return true
+		}
+	}
+	return false
 }
 
 type AnalysisOptions struct {
@@ -216,9 +235,8 @@ func (r *AnalysisResult) Sort() {
 	sort.Slice(r.Misconfigurations, func(i, j int) bool {
 		if r.Misconfigurations[i].FileType != r.Misconfigurations[j].FileType {
 			return r.Misconfigurations[i].FileType < r.Misconfigurations[j].FileType
-		} else {
-			return r.Misconfigurations[i].FilePath < r.Misconfigurations[j].FilePath
 		}
+		return r.Misconfigurations[i].FilePath < r.Misconfigurations[j].FilePath
 	})
 
 	// Secrets
@@ -239,9 +257,8 @@ func (r *AnalysisResult) Sort() {
 		if r.Licenses[i].Type == r.Licenses[j].Type {
 			if r.Licenses[i].FilePath == r.Licenses[j].FilePath {
 				return r.Licenses[i].Layer.DiffID < r.Licenses[j].Layer.DiffID
-			} else {
-				return r.Licenses[i].FilePath < r.Licenses[j].FilePath
 			}
+			return r.Licenses[i].FilePath < r.Licenses[j].FilePath
 		}
 
 		return r.Licenses[i].Type < r.Licenses[j].Type
@@ -326,7 +343,7 @@ func NewAnalyzerGroup(opts AnalyzerOptions) (AnalyzerGroup, error) {
 
 	group := AnalyzerGroup{
 		logger:            log.WithPrefix("analyzer"),
-		filePatterns:      make(map[Type][]*regexp.Regexp),
+		filePatterns:      make(map[Type]FilePatterns),
 		detectionPriority: opts.DetectionPriority,
 	}
 	for _, p := range opts.FilePatterns {
@@ -340,10 +357,6 @@ func NewAnalyzerGroup(opts AnalyzerOptions) (AnalyzerGroup, error) {
 		r, err := regexp.Compile(pattern)
 		if err != nil {
 			return group, xerrors.Errorf("invalid file regexp (%s): %w", p, err)
-		}
-
-		if _, ok := group.filePatterns[Type(fileType)]; !ok {
-			group.filePatterns[Type(fileType)] = []*regexp.Regexp{}
 		}
 
 		group.filePatterns[Type(fileType)] = append(group.filePatterns[Type(fileType)], r)
@@ -415,7 +428,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 			continue
 		}
 
-		if !ag.filePatternMatch(a.Type(), cleanPath) && !a.Required(cleanPath, info) {
+		if !ag.filePatterns[a.Type()].Match(cleanPath) && !a.Required(cleanPath, info) {
 			continue
 		}
 		rc, err := opener()
@@ -461,7 +474,7 @@ func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo)
 	}
 	var postAnalyzerTypes []Type
 	for _, a := range ag.postAnalyzers {
-		if ag.filePatternMatch(a.Type(), filePath) || a.Required(filePath, info) {
+		if ag.filePatterns[a.Type()].Match(filePath) || a.Required(filePath, info) {
 			postAnalyzerTypes = append(postAnalyzerTypes, a.Type())
 		}
 	}
@@ -472,7 +485,8 @@ func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo)
 // and passes it to the respective post-analyzer.
 // The obtained results are merged into the "result".
 // This function may be called concurrently and must be thread-safe.
-func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeFS, result *AnalysisResult, opts AnalysisOptions) error {
+func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeFS, result *AnalysisResult,
+	opts AnalysisOptions) error {
 	for _, a := range ag.postAnalyzers {
 		fsys, ok := compositeFS.Get(a.Type())
 		if !ok {
@@ -503,8 +517,9 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeF
 		}
 
 		res, err := a.PostAnalyze(ctx, PostAnalysisInput{
-			FS:      filteredFS,
-			Options: opts,
+			FS:           filteredFS,
+			FilePatterns: ag.filePatterns[a.Type()],
+			Options:      opts,
 		})
 		if err != nil {
 			return xerrors.Errorf("post analysis error: %w", err)
@@ -519,11 +534,41 @@ func (ag AnalyzerGroup) PostAnalyzerFS() (*CompositeFS, error) {
 	return NewCompositeFS()
 }
 
-func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) bool {
-	for _, pattern := range ag.filePatterns[analyzerType] {
-		if pattern.MatchString(filePath) {
-			return true
+// StaticPaths collects static paths from all enabled analyzers
+// It returns the collected paths and a boolean indicating if all enabled analyzers implement StaticPathAnalyzer
+func (ag AnalyzerGroup) StaticPaths(disabled []Type) ([]string, bool) {
+	var paths []string
+
+	for _, a := range ag.analyzers {
+		// Skip disabled analyzers
+		if slices.Contains(disabled, a.Type()) {
+			continue
 		}
+
+		// We can't be sure that the file pattern uses a static path.
+		// So we don't need to use `StaticPath` logic if any enabled analyzer has a file pattern.
+		if _, ok := ag.filePatterns[a.Type()]; ok {
+			return nil, false
+		}
+
+		// If any analyzer doesn't implement StaticPathAnalyzer, return false
+		staticPathAnalyzer, ok := a.(StaticPathAnalyzer)
+		if !ok {
+			return nil, false
+		}
+
+		// Collect paths from StaticPathAnalyzer
+		paths = append(paths, staticPathAnalyzer.StaticPaths()...)
 	}
-	return false
+
+	// PostAnalyzers don't implement StaticPathAnalyzer.
+	// So if at least one postAnalyzer is enabled - we should not use StaticPath.
+	if allPostAnalyzersDisabled := lo.EveryBy(ag.postAnalyzers, func(a PostAnalyzer) bool {
+		return slices.Contains(disabled, a.Type())
+	}); !allPostAnalyzersDisabled {
+		return nil, false
+	}
+
+	// Remove duplicates
+	return lo.Uniq(paths), true
 }

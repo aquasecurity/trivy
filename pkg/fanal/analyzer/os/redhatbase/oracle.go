@@ -56,3 +56,8 @@ func (a oracleOSAnalyzer) Type() analyzer.Type {
 func (a oracleOSAnalyzer) Version() int {
 	return oracleAnalyzerVersion
 }
+
+// StaticPaths returns the static paths of the oracle analyzer
+func (a oracleOSAnalyzer) StaticPaths() []string {
+	return a.requiredFiles()
+}

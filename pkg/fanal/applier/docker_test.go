@@ -22,6 +22,7 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
+					Size:          1000,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					OS: types.OS{
@@ -76,8 +77,10 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 1,
+					Size:          2000,
 					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+					WhiteoutFiles: []string{"app/composer.lock"},
 					PackageInfos: []types.PackageInfo{
 						{
 							FilePath: "lib/apk/db/installed",
@@ -96,10 +99,10 @@ func TestApplyLayers(t *testing.T) {
 							},
 						},
 					},
-					WhiteoutFiles: []string{"app/composer.lock"},
 				},
 				{
 					SchemaVersion: 1,
+					Size:          3000,
 					Digest:        "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4",
 					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					PackageInfos: []types.PackageInfo{
@@ -255,6 +258,63 @@ func TestApplyLayers(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with duplicate of debian packages",
+			inputLayers: []types.BlobInfo{
+				{
+					SchemaVersion: 2,
+					Size:          1000,
+					DiffID:        "sha256:96e320b34b5478d8b369ca43ffaa88ff6dd9499ec72b792ca21b1e8b0c55670f",
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/status.d/libssl1",
+							Packages: types.Packages{
+								{
+									ID:      "libssl1.1@1.1.1n-0+deb11u3",
+									Name:    "libssl1.1",
+									Version: "1.1.1n",
+									Release: "0+deb11u3",
+								},
+							},
+						},
+					},
+				},
+				{
+					SchemaVersion: 2,
+					Size:          2000,
+					DiffID:        "sha256:5e087d956f3e62bd034dd0712bc4cbef8fda55fba0b11a7d0564f294887c7079",
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/status.d/libssl1.1",
+							Packages: types.Packages{
+								{
+									ID:      "libssl1.1@1.1.1n-0+deb11u3",
+									Name:    "libssl1.1",
+									Version: "1.1.1n",
+									Release: "0+deb11u3",
+								},
+							},
+						},
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				Packages: types.Packages{
+					{
+						ID:      "libssl1.1@1.1.1n-0+deb11u3",
+						Name:    "libssl1.1",
+						Version: "1.1.1n",
+						Release: "0+deb11u3",
+						Identifier: types.PkgIdentifier{
+							UID: "522a5c3b263d1357",
+						},
+						Layer: types.Layer{
+							DiffID: "sha256:96e320b34b5478d8b369ca43ffaa88ff6dd9499ec72b792ca21b1e8b0c55670f",
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "happy path with digests in libs/packages (as for SBOM)",
 			inputLayers: []types.BlobInfo{
 				{
@@ -366,6 +426,7 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
+					Size:          1000,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					OS: types.OS{
@@ -375,6 +436,7 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 1,
+					Size:          2000,
 					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 					OS: types.OS{
@@ -396,6 +458,7 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
+					Size:          1000,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					OS: types.OS{
@@ -442,8 +505,13 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 1,
+					Size:          2000,
 					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+					WhiteoutFiles: []string{
+						"app/composer.lock",
+						"var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
+					},
 					Applications: []types.Application{
 						{
 							Type:     types.Bundler,
@@ -469,10 +537,6 @@ func TestApplyLayers(t *testing.T) {
 								},
 							},
 						},
-					},
-					WhiteoutFiles: []string{
-						"app/composer.lock",
-						"var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
 					},
 				},
 			},
@@ -550,6 +614,7 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 2,
+					Size:          1000,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					CreatedBy:     "Line_1",
@@ -584,6 +649,7 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 2,
+					Size:          2000,
 					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 					CreatedBy:     "Line_2",
@@ -639,6 +705,7 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 2,
+					Size:          3000,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					CreatedBy:     "Line_3",
@@ -714,6 +781,7 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
+					Size:          1000,
 					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 					OS: types.OS{
@@ -757,8 +825,10 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 1,
+					Size:          2000,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					OpaqueDirs:    []string{"app"},
 					PackageInfos: []types.PackageInfo{
 						{
 							FilePath: "var/lib/dpkg/status.d/libc",
@@ -781,7 +851,6 @@ func TestApplyLayers(t *testing.T) {
 							PkgName: "libc",
 						},
 					},
-					OpaqueDirs: []string{"app"},
 				},
 			},
 			want: types.ArtifactDetail{
@@ -848,6 +917,7 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 2,
+					Size:          1000,
 					DiffID:        "sha256:cdd7c73923174e45ea648d66996665c288e1b17a0f45efdbeca860f6dafdf731",
 					OS: types.OS{
 						Family: "ubuntu",
@@ -878,6 +948,7 @@ func TestApplyLayers(t *testing.T) {
 				// Install `curl`
 				{
 					SchemaVersion: 2,
+					Size:          2000,
 					DiffID:        "sha256:faf30fa9c41c10f93b3b134d7b2c16e07753320393e020c481f0c97d10db067d",
 					PackageInfos: []types.PackageInfo{
 						{
@@ -916,6 +987,7 @@ func TestApplyLayers(t *testing.T) {
 				// Upgrade `apt`
 				{
 					SchemaVersion: 2,
+					Size:          3000,
 					DiffID:        "sha256:440e26edc0eb9b4fee6e1d40d8af9eb59500d38e25edfc5d5302c55f59394c1e",
 					PackageInfos: []types.PackageInfo{
 						{
@@ -953,6 +1025,7 @@ func TestApplyLayers(t *testing.T) {
 				// Remove curl
 				{
 					SchemaVersion: 2,
+					Size:          4000,
 					DiffID:        "sha256:cb04e1d437de723d8d04bc7df89dc42271530c5f8ea1724c6072e3f0e7d6d38a",
 					WhiteoutFiles: []string{
 						"usr/bin/curl",
@@ -1030,6 +1103,7 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
+					Size:          1000,
 					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 					Applications: []types.Application{
@@ -1047,6 +1121,7 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 1,
+					Size:          2000,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					OpaqueDirs:    []string{"app/"},
@@ -1059,6 +1134,7 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
+					Size:          1000,
 					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 					OS: types.OS{
@@ -1080,6 +1156,7 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 1,
+					Size:          2000,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					BuildInfo: &types.BuildInfo{
@@ -1108,6 +1185,7 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 1,
+					Size:          3000,
 					Digest:        "sha256:a64e5f34c33ed4c5121498e721e24d95dae2c9599bee4aa6d07850702b401406",
 					DiffID:        "sha256:0abd3f2c73de6f02e033f410590111f9339b9500dc07270234f283f2d9a2694b",
 					BuildInfo: &types.BuildInfo{
@@ -1117,6 +1195,7 @@ func TestApplyLayers(t *testing.T) {
 				},
 				{
 					SchemaVersion: 1,
+					Size:          4000,
 					Digest:        "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4",
 					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					PackageInfos: []types.PackageInfo{
@@ -1245,6 +1324,7 @@ func TestApplyLayers(t *testing.T) {
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
+					Size:          1000,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					Applications: []types.Application{

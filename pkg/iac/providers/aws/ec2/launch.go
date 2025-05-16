@@ -19,11 +19,3 @@ type LaunchTemplate struct {
 	Name     iacTypes.StringValue
 	Instance
 }
-
-func (i *LaunchConfiguration) RequiresIMDSToken() bool {
-	return i.MetadataOptions.HttpTokens.EqualTo("required")
-}
-
-func (i *LaunchConfiguration) HasHTTPEndpointDisabled() bool {
-	return i.MetadataOptions.HttpEndpoint.EqualTo("disabled")
-}

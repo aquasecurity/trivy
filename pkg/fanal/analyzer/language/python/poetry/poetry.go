@@ -44,11 +44,11 @@ func newPoetryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error
 func (a poetryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
-	required := func(path string, d fs.DirEntry) bool {
-		return filepath.Base(path) == types.PoetryLock
+	required := func(path string, _ fs.DirEntry) bool {
+		return filepath.Base(path) == types.PoetryLock || input.FilePatterns.Match(path)
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
 		// Parse poetry.lock
 		app, err := a.parsePoetryLock(path, r)
 		if err != nil {
@@ -104,13 +104,13 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 		return xerrors.Errorf("unable to parse %s: %w", path, err)
 	}
 
-	directDeps := directDeps(project)
-	prodDeps := prodPackages(app, project.Tool.Poetry.Dependencies)
+	dirDeps := directDeps(project)
+	prodDeps := prodPackages(app, project.MainDeps())
 
 	// Identify the direct/transitive/dev dependencies
 	for i, pkg := range app.Packages {
-		app.Packages[i].Dev = !prodDeps.Contains(pkg.ID)
-		if directDeps.Contains(pkg.Name) {
+		app.Packages[i].Dev = !prodDeps.Contains(pkg.ID) || app.Packages[i].Dev
+		if dirDeps.Contains(pkg.Name) {
 			app.Packages[i].Relationship = types.RelationshipDirect
 		} else {
 			app.Packages[i].Indirect = true
@@ -121,7 +121,7 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 }
 
 func directDeps(project pyproject.PyProject) set.Set[string] {
-	deps := project.Tool.Poetry.Dependencies.Clone()
+	deps := project.MainDeps()
 	for _, groupDeps := range project.Tool.Poetry.Groups {
 		deps.Append(groupDeps.Dependencies.Items()...)
 	}

@@ -15,7 +15,7 @@ import (
 
 type fakeHook struct{}
 
-func (h fakeHook) Handle(ctx context.Context, result *analyzer.AnalysisResult, info *types.BlobInfo) error {
+func (h fakeHook) Handle(_ context.Context, _ *analyzer.AnalysisResult, info *types.BlobInfo) error {
 	info.DiffID = "fake"
 	return nil
 }
@@ -99,7 +99,7 @@ func TestManager_CallHooks(t *testing.T) {
 			})
 			require.NoError(t, err)
 
-			err = m.PostHandle(context.TODO(), nil, &blob)
+			err = m.PostHandle(t.Context(), nil, &blob)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, blob)
 		})

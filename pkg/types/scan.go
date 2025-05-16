@@ -3,6 +3,7 @@ package types
 import (
 	"slices"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -111,7 +112,7 @@ type ScanTarget struct {
 	CustomResources []types.CustomResource
 }
 
-// ScanOptions holds the attributes for scanning vulnerabilities
+// ScanOptions holds the attributes for scanning vulnerabilities/licenses
 type ScanOptions struct {
 	PkgTypes            []string
 	PkgRelationships    []types.Relationship
@@ -119,7 +120,16 @@ type ScanOptions struct {
 	ImageConfigScanners Scanners // Scanners for container image configuration
 	ScanRemovedPackages bool
 	LicenseCategories   map[types.LicenseCategory][]string
+	LicenseFull         bool
 	FilePatterns        []string
 	IncludeDevDeps      bool
 	Distro              types.OS // Forced OS
+	VulnSeveritySources []dbTypes.SourceID
+}
+
+// ScanResponse represents the response from the scan service
+type ScanResponse struct {
+	Results Results
+	OS      types.OS
+	Layers  types.Layers
 }

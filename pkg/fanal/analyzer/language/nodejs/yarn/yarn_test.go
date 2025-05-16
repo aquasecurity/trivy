@@ -1,7 +1,6 @@
 package yarn
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -27,6 +26,20 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
 						Packages: types.Packages{
+							{
+								ID:           "90@1.0.0",
+								Name:         "90",
+								Version:      "1.0.0",
+								Relationship: types.RelationshipRoot,
+								Licenses: []string{
+									"MIT",
+								},
+								DependsOn: []string{
+									"js-tokens@2.0.0",
+									"prop-types@15.7.2",
+									"scheduler@0.13.6",
+								},
+							},
 							{
 								ID:           "js-tokens@2.0.0",
 								Name:         "js-tokens",
@@ -135,7 +148,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "Project with workspace placed in sub dir",
+			name: "project with workspace placed in sub dir",
 			dir:  "testdata/project-with-workspace-in-subdir",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -143,6 +156,27 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						Type:     types.Yarn,
 						FilePath: "foo/yarn.lock",
 						Packages: types.Packages{
+							{
+								ID:           "@test/foo@1.0.0",
+								Name:         "@test/foo",
+								Version:      "1.0.0",
+								Relationship: types.RelationshipRoot,
+								Licenses: []string{
+									"MIT",
+								},
+								DependsOn: []string{
+									"@test/bar-generators@0.0.1",
+								},
+							},
+							{
+								ID:           "@test/bar-generators@0.0.1",
+								Name:         "@test/bar-generators",
+								Version:      "0.0.1",
+								Relationship: types.RelationshipWorkspace,
+								DependsOn: []string{
+									"hoek@6.1.3",
+								},
+							},
 							{
 								ID:           "hoek@6.1.3",
 								Name:         "hoek",
@@ -309,6 +343,16 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "yarn.lock",
 						Packages: []types.Package{
 							{
+								ID:           "yarn-3-licenses@1.0.0",
+								Name:         "yarn-3-licenses",
+								Version:      "1.0.0",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"is-callable@1.2.7",
+									"is-odd@3.0.1",
+								},
+							},
+							{
 								ID:           "is-callable@1.2.7",
 								Name:         "is-callable",
 								Version:      "1.2.7",
@@ -364,6 +408,14 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "yarn.lock",
 						Packages: types.Packages{
 							{
+								ID:           "package.json",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"debug@4.3.5",
+									"js-tokens@9.0.0",
+								},
+							},
+							{
 								ID:           "debug@4.3.5",
 								Name:         "debug",
 								Version:      "4.3.5",
@@ -418,6 +470,21 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
 						Packages: types.Packages{
+							{
+								ID:           "test@1.0.0",
+								Name:         "test",
+								Version:      "1.0.0",
+								Relationship: types.RelationshipRoot,
+								Licenses: []string{
+									"MIT",
+								},
+								DependsOn: []string{
+									"foo-debug@4.3.4",
+									"foo-json@0.8.33",
+									"foo-ms@2.1.3",
+									"foo-uuid@9.0.7",
+								},
+							},
 							{
 								ID:           "foo-json@0.8.33",
 								Name:         "@types/jsonstream",
@@ -536,6 +603,54 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
 						Packages: types.Packages{
+							{
+								ID:           "yarn-workspace-test@1.0.0",
+								Name:         "yarn-workspace-test",
+								Version:      "1.0.0",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"c@0.0.0",
+									"package1@0.0.0",
+									"packages/package2/package.json",
+									"prettier@2.8.8",
+									"util1@0.0.0",
+								},
+							},
+							{
+								ID:           "packages/package2/package.json",
+								Relationship: types.RelationshipWorkspace,
+								DependsOn: []string{
+									"is-odd@3.0.1",
+								},
+							},
+							{
+								ID:           "c@0.0.0",
+								Name:         "c",
+								Version:      "0.0.0",
+								Relationship: types.RelationshipWorkspace,
+								DependsOn: []string{
+									"is-number@7.0.0",
+								},
+							},
+							{
+								ID:           "package1@0.0.0",
+								Name:         "package1",
+								Version:      "0.0.0",
+								Relationship: types.RelationshipWorkspace,
+								DependsOn: []string{
+									"scheduler@0.23.0",
+								},
+							},
+							{
+								ID:           "util1@0.0.0",
+								Name:         "util1",
+								Version:      "0.0.0",
+								Relationship: types.RelationshipWorkspace,
+								DependsOn: []string{
+									"js-tokens@8.0.1",
+									"prop-types@15.8.1",
+								},
+							},
 							{
 								ID:           "is-number@7.0.0",
 								Name:         "is-number",
@@ -704,6 +819,13 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "yarn.lock",
 						Packages: []types.Package{
 							{
+								ID:           "package.json",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"@vue/compiler-sfc@2.7.14",
+								},
+							},
+							{
 								ID:           "@vue/compiler-sfc@2.7.14",
 								Name:         "@vue/compiler-sfc",
 								Version:      "2.7.14",
@@ -822,7 +944,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			a, err := newYarnAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 
-			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
+			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{
 				FS: os.DirFS(tt.dir),
 			})
 

@@ -3,7 +3,7 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "testdata/fixtures/repo/julia",
-  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/repo/julia-3ff14136-e09f-4df9-80ea-000000000006",
+  "documentNamespace": "http://trivy.dev/filesystem/testdata/fixtures/repo/julia-3ff14136-e09f-4df9-80ea-000000000006",
   "creationInfo": {
     "creators": [
       "Organization: aquasecurity",

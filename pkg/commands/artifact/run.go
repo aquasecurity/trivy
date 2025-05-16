@@ -15,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -25,10 +26,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/module"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
-	"github.com/aquasecurity/trivy/pkg/scanner"
+	"github.com/aquasecurity/trivy/pkg/scan"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
@@ -49,8 +51,8 @@ var (
 	SkipScan = errors.New("skip subsequent processes")
 )
 
-// InitializeScanner defines the initialize function signature of scanner
-type InitializeScanner func(context.Context, ScannerConfig) (scanner.Scanner, func(), error)
+// InitializeScanService defines the initialize function signature of scan service
+type InitializeScanService func(context.Context, ScannerConfig) (scan.Service, func(), error)
 
 type ScannerConfig struct {
 	// e.g. image name and file path
@@ -61,7 +63,7 @@ type ScannerConfig struct {
 	RemoteCacheOptions cache.RemoteOptions
 
 	// Client/Server options
-	ServerOption client.ScannerOption
+	ServerOption client.ServiceOption
 
 	// Artifact options
 	ArtifactOption artifact.Option
@@ -89,8 +91,8 @@ type Runner interface {
 }
 
 type runner struct {
-	initializeScanner InitializeScanner
-	dbOpen            bool
+	initializeScanService InitializeScanService
+	dbOpen                bool
 
 	// WASM modules
 	module *module.Manager
@@ -98,11 +100,11 @@ type runner struct {
 
 type RunnerOption func(*runner)
 
-// WithInitializeScanner takes a custom scanner initialization function.
+// WithInitializeService takes a custom service initialization function.
 // It is useful when Trivy is imported as a library.
-func WithInitializeScanner(f InitializeScanner) RunnerOption {
+func WithInitializeService(f InitializeScanService) RunnerOption {
 	return func(r *runner) {
-		r.initializeScanner = f
+		r.initializeScanService = f
 	}
 }
 
@@ -157,20 +159,20 @@ func (r *runner) ScanImage(ctx context.Context, opts flag.Options) (types.Report
 	// Disable the lock file scanning
 	opts.DisabledAnalyzers = analyzer.TypeLockfiles
 
-	var s InitializeScanner
+	var s InitializeScanService
 	switch {
 	case opts.Input != "" && opts.ServerAddr == "":
 		// Scan image tarball in standalone mode
-		s = archiveStandaloneScanner
+		s = archiveStandaloneScanService
 	case opts.Input != "" && opts.ServerAddr != "":
 		// Scan image tarball in client/server mode
-		s = archiveRemoteScanner
+		s = archiveRemoteScanService
 	case opts.Input == "" && opts.ServerAddr == "":
 		// Scan container image in standalone mode
-		s = imageStandaloneScanner
+		s = imageStandaloneScanService
 	case opts.Input == "" && opts.ServerAddr != "":
 		// Scan container image in client/server mode
-		s = imageRemoteScanner
+		s = imageRemoteScanService
 	}
 
 	return r.scanArtifact(ctx, opts, s)
@@ -192,13 +194,13 @@ func (r *runner) ScanRootfs(ctx context.Context, opts flag.Options) (types.Repor
 }
 
 func (r *runner) scanFS(ctx context.Context, opts flag.Options) (types.Report, error) {
-	var s InitializeScanner
+	var s InitializeScanService
 	if opts.ServerAddr == "" {
 		// Scan filesystem in standalone mode
-		s = filesystemStandaloneScanner
+		s = filesystemStandaloneScanService
 	} else {
 		// Scan filesystem in client/server mode
-		s = filesystemRemoteScanner
+		s = filesystemRemoteScanService
 	}
 
 	return r.scanArtifact(ctx, opts, s)
@@ -212,25 +214,25 @@ func (r *runner) ScanRepository(ctx context.Context, opts flag.Options) (types.R
 	opts.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes...)
 	opts.DisabledAnalyzers = append(opts.DisabledAnalyzers, analyzer.TypeSBOM)
 
-	var s InitializeScanner
+	var s InitializeScanService
 	if opts.ServerAddr == "" {
 		// Scan repository in standalone mode
-		s = repositoryStandaloneScanner
+		s = repositoryStandaloneScanService
 	} else {
 		// Scan repository in client/server mode
-		s = repositoryRemoteScanner
+		s = repositoryRemoteScanService
 	}
 	return r.scanArtifact(ctx, opts, s)
 }
 
 func (r *runner) ScanSBOM(ctx context.Context, opts flag.Options) (types.Report, error) {
-	var s InitializeScanner
+	var s InitializeScanService
 	if opts.ServerAddr == "" {
 		// Scan cycloneDX in standalone mode
-		s = sbomStandaloneScanner
+		s = sbomStandaloneScanService
 	} else {
 		// Scan cycloneDX in client/server mode
-		s = sbomRemoteScanner
+		s = sbomRemoteScanService
 	}
 
 	return r.scanArtifact(ctx, opts, s)
@@ -240,23 +242,23 @@ func (r *runner) ScanVM(ctx context.Context, opts flag.Options) (types.Report, e
 	// TODO: Does VM scan disable lock file..?
 	opts.DisabledAnalyzers = analyzer.TypeLockfiles
 
-	var s InitializeScanner
+	var s InitializeScanService
 	if opts.ServerAddr == "" {
 		// Scan virtual machine in standalone mode
-		s = vmStandaloneScanner
+		s = vmStandaloneScanService
 	} else {
 		// Scan virtual machine in client/server mode
-		s = vmRemoteScanner
+		s = vmRemoteScanService
 	}
 
 	return r.scanArtifact(ctx, opts, s)
 }
 
-func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
-	if r.initializeScanner != nil {
-		initializeScanner = r.initializeScanner
+func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initializeService InitializeScanService) (types.Report, error) {
+	if r.initializeScanService != nil {
+		initializeService = r.initializeScanService
 	}
-	report, err := r.scan(ctx, opts, initializeScanner)
+	report, err := r.scan(ctx, opts, initializeService)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan error: %w", err)
 	}
@@ -276,7 +278,6 @@ func (r *runner) Report(ctx context.Context, opts flag.Options, report types.Rep
 	if err := pkgReport.Write(ctx, report, opts); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
-
 	return nil
 }
 
@@ -340,7 +341,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 
 	defer func() {
 		if errors.Is(err, context.DeadlineExceeded) {
-			// e.g. https://aquasecurity.github.io/trivy/latest/docs/configuration/
+			// e.g. https://trivy.dev/latest/docs/configuration/
 			log.WarnContext(ctx, fmt.Sprintf("Provide a higher timeout value, see %s", doc.URL("/docs/configuration/", "")))
 		}
 	}()
@@ -374,12 +375,32 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		return v.SafeWriteConfigAs("trivy-default.yaml")
 	}
 
+	// Call pre-run hooks
+	if err := extension.PreRun(ctx, opts); err != nil {
+		return xerrors.Errorf("pre run error: %w", err)
+	}
+
+	// Run the application
+	report, err := run(ctx, opts, targetKind)
+	if err != nil {
+		return xerrors.Errorf("run error: %w", err)
+	}
+
+	// Call post-run hooks
+	if err := extension.PostRun(ctx, opts); err != nil {
+		return xerrors.Errorf("post run error: %w", err)
+	}
+
+	return operation.Exit(opts, report.Results.Failed(), report.Metadata)
+}
+
+func run(ctx context.Context, opts flag.Options, targetKind TargetKind) (types.Report, error) {
 	r, err := NewRunner(ctx, opts)
 	if err != nil {
 		if errors.Is(err, SkipScan) {
-			return nil
+			return types.Report{}, nil
 		}
-		return xerrors.Errorf("init error: %w", err)
+		return types.Report{}, xerrors.Errorf("init error: %w", err)
 	}
 	defer r.Close(ctx)
 
@@ -394,31 +415,33 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 
 	scanFunction, exists := scans[targetKind]
 	if !exists {
-		return xerrors.Errorf("unknown target kind: %s", targetKind)
+		return types.Report{}, xerrors.Errorf("unknown target kind: %s", targetKind)
 	}
 
+	// 1. Scan the artifact
 	report, err := scanFunction(ctx, opts)
 	if err != nil {
-		return xerrors.Errorf("%s scan error: %w", targetKind, err)
+		return types.Report{}, xerrors.Errorf("%s scan error: %w", targetKind, err)
 	}
 
+	// 2. Filter the results
 	report, err = r.Filter(ctx, opts, report)
 	if err != nil {
-		return xerrors.Errorf("filter error: %w", err)
+		return types.Report{}, xerrors.Errorf("filter error: %w", err)
 	}
 
+	// 3. Report the results
 	if err = r.Report(ctx, opts, report); err != nil {
-		return xerrors.Errorf("report error: %w", err)
+		return types.Report{}, xerrors.Errorf("report error: %w", err)
 	}
 
-	return operation.Exit(opts, report.Results.Failed(), report.Metadata)
+	return report, nil
 }
 
 func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	// Specified analyzers to be disabled depending on scanning modes
 	// e.g. The 'image' subcommand should disable the lock file scanning.
 	analyzers := opts.DisabledAnalyzers
-
 	// It doesn't analyze apk commands by default.
 	if !opts.ScanRemovedPkgs {
 		analyzers = append(analyzers, analyzer.TypeApkCommand)
@@ -434,18 +457,16 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeSecret)
 	}
 
-	// Filter only enabled misconfiguration scanners
-	ma, err := filterMisconfigAnalyzers(opts.MisconfigScanners, analyzer.TypeConfigFiles)
-	if err != nil {
-		log.Error("Invalid misconfiguration scanners specified, defaulting to use all misconfig scanners",
-			log.Any("scanners", opts.MisconfigScanners))
-	} else {
-		analyzers = append(analyzers, ma...)
-	}
-
 	// Do not perform misconfiguration scanning when it is not specified.
 	if !opts.Scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner) {
 		analyzers = append(analyzers, analyzer.TypeConfigFiles...)
+	} else {
+		// Filter only enabled misconfiguration scanners
+		ma := disabledMisconfigAnalyzers(opts.MisconfigScanners)
+		analyzers = append(analyzers, ma...)
+
+		log.Debug("Enabling misconfiguration scanners",
+			log.Any("scanners", lo.Without(analyzer.TypeConfigFiles, ma...)))
 	}
 
 	// Scanning file headers and license files is expensive.
@@ -482,14 +503,17 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	return analyzers
 }
 
-func filterMisconfigAnalyzers(included, all []analyzer.Type) ([]analyzer.Type, error) {
-	_, missing := lo.Difference(all, included)
+func disabledMisconfigAnalyzers(included []analyzer.Type) []analyzer.Type {
+	_, missing := lo.Difference(analyzer.TypeConfigFiles, included)
 	if len(missing) > 0 {
-		return nil, xerrors.Errorf("invalid misconfiguration scanner specified %s valid scanners: %s", missing, all)
+		log.Error(
+			"Invalid misconfiguration scanners provided, using default scanners",
+			log.Any("invalid_scanners", missing), log.Any("default_scanners", analyzer.TypeConfigFiles),
+		)
+		return nil
 	}
 
-	log.Debug("Enabling misconfiguration scanners", log.Any("scanners", included))
-	return lo.Without(all, included...), nil
+	return lo.Without(analyzer.TypeConfigFiles, included...)
 }
 
 func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (ScannerConfig, types.ScanOptions, error) {
@@ -529,7 +553,7 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 		logger := log.WithPrefix(log.PrefixSecret)
 		logger.Info("Secret scanning is enabled")
 		logger.Info("If your scanning is slow, please try '--scanners vuln' to disable secret scanning")
-		// e.g. https://aquasecurity.github.io/trivy/latest/docs/scanner/secret/#recommendation
+		// e.g. https://trivy.dev/latest/docs/scanner/secret/#recommendation
 		logger.Info(fmt.Sprintf("Please see also %s for faster secret detection", doc.URL("/docs/scanner/secret/", "recommendation")))
 	} else {
 		opts.SecretConfigPath = ""
@@ -587,6 +611,7 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 					Host: opts.PodmanHost,
 				},
 				ImageSources: opts.ImageSources,
+				MaxImageSize: opts.MaxImageSize,
 			},
 
 			// For misconfiguration scanning
@@ -612,14 +637,14 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 	}, scanOptions, nil
 }
 
-func (r *runner) scan(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
+func (r *runner) scan(ctx context.Context, opts flag.Options, initializeService InitializeScanService) (types.Report, error) {
 	scannerConfig, scanOptions, err := r.initScannerConfig(ctx, opts)
 	if err != nil {
 		return types.Report{}, err
 	}
-	s, cleanup, err := initializeScanner(ctx, scannerConfig)
+	s, cleanup, err := initializeService(ctx, scannerConfig)
 	if err != nil {
-		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
+		return types.Report{}, xerrors.Errorf("unable to initialize a scan service: %w", err)
 	}
 	defer cleanup()
 
@@ -634,17 +659,25 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 	ctx = log.WithContextPrefix(ctx, log.PrefixMisconfiguration)
 	log.InfoContext(ctx, "Misconfiguration scanning is enabled")
 
-	var downloadedPolicyPaths []string
+	var downloadedPolicyPath string
 	var disableEmbedded bool
 
-	downloadedPolicyPaths, err := operation.InitBuiltinChecks(ctx, opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
+	c, err := policy.NewClient(opts.CacheDir, opts.Quiet, opts.MisconfOptions.ChecksBundleRepository)
 	if err != nil {
-		if !opts.SkipCheckUpdate {
-			log.ErrorContext(ctx, "Falling back to embedded checks", log.Err(err))
-		}
+		return misconf.ScannerOption{}, xerrors.Errorf("check client error: %w", err)
+	}
+
+	downloadedPolicyPath, err = operation.InitBuiltinChecks(ctx, c, opts.SkipCheckUpdate, opts.RegistryOpts())
+	if err != nil {
+		log.ErrorContext(ctx, "Falling back to embedded checks", log.Err(err))
 	} else {
 		log.DebugContext(ctx, "Checks successfully loaded from disk")
 		disableEmbedded = true
+	}
+
+	policyPaths := slices.Clone(opts.CheckPaths)
+	if downloadedPolicyPath != "" {
+		policyPaths = append(policyPaths, downloadedPolicyPath)
 	}
 
 	configSchemas, err := misconf.LoadConfigSchemas(opts.ConfigFileSchemas)
@@ -652,10 +685,10 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 		return misconf.ScannerOption{}, xerrors.Errorf("load schemas error: %w", err)
 	}
 
-	return misconf.ScannerOption{
+	misconfOpts := misconf.ScannerOption{
 		Trace:                    opts.Trace,
 		Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
-		PolicyPaths:              append(opts.CheckPaths, downloadedPolicyPaths...),
+		PolicyPaths:              policyPaths,
 		DataPaths:                opts.DataPaths,
 		HelmValues:               opts.HelmValues,
 		HelmValueFiles:           opts.HelmValueFiles,
@@ -674,5 +707,13 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 		ConfigFileSchemas:        configSchemas,
 		SkipFiles:                opts.SkipFiles,
 		SkipDirs:                 opts.SkipDirs,
-	}, nil
+	}
+
+	regoScanner, err := misconf.InitRegoScanner(misconfOpts)
+	if err != nil {
+		return misconf.ScannerOption{}, xerrors.Errorf("init Rego scanner: %w", err)
+	}
+
+	misconfOpts.RegoScanner = regoScanner
+	return misconfOpts, nil
 }

@@ -1,6 +1,7 @@
 package flag
 
 import (
+	"github.com/docker/go-units"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/xerrors"
 
@@ -58,6 +59,12 @@ var (
 		Values:     xstrings.ToStringSlice(ftypes.AllImageSources),
 		Usage:      "image source(s) to use, in priority order",
 	}
+	MaxImageSize = Flag[string]{
+		Name:       "max-image-size",
+		ConfigName: "image.max-size",
+		Default:    "",
+		Usage:      "[EXPERIMENTAL] maximum image size to process, specified in a human-readable format (e.g., '44kB', '17MB'); an error will be returned if the image exceeds this size",
+	}
 )
 
 type ImageFlagGroup struct {
@@ -68,6 +75,7 @@ type ImageFlagGroup struct {
 	DockerHost          *Flag[string]
 	PodmanHost          *Flag[string]
 	ImageSources        *Flag[[]string]
+	MaxImageSize        *Flag[string]
 }
 
 type ImageOptions struct {
@@ -78,6 +86,7 @@ type ImageOptions struct {
 	DockerHost          string
 	PodmanHost          string
 	ImageSources        ftypes.ImageSources
+	MaxImageSize        int64
 }
 
 func NewImageFlagGroup() *ImageFlagGroup {
@@ -89,6 +98,7 @@ func NewImageFlagGroup() *ImageFlagGroup {
 		DockerHost:          DockerHostFlag.Clone(),
 		PodmanHost:          PodmanHostFlag.Clone(),
 		ImageSources:        SourceFlag.Clone(),
+		MaxImageSize:        MaxImageSize.Clone(),
 	}
 }
 
@@ -105,27 +115,32 @@ func (f *ImageFlagGroup) Flags() []Flagger {
 		f.DockerHost,
 		f.PodmanHost,
 		f.ImageSources,
+		f.MaxImageSize,
 	}
 }
 
-func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
-	if err := parseFlags(f); err != nil {
-		return ImageOptions{}, err
-	}
-
+func (f *ImageFlagGroup) ToOptions(opts *Options) error {
 	var platform ftypes.Platform
 	if p := f.Platform.Value(); p != "" {
 		pl, err := v1.ParsePlatform(p)
 		if err != nil {
-			return ImageOptions{}, xerrors.Errorf("unable to parse platform: %w", err)
+			return xerrors.Errorf("unable to parse platform: %w", err)
 		}
 		if pl.OS == "*" {
 			pl.OS = "" // Empty OS means any OS
 		}
 		platform = ftypes.Platform{Platform: pl}
 	}
+	var maxSize int64
+	if value := f.MaxImageSize.Value(); value != "" {
+		parsedSize, err := units.FromHumanSize(value)
+		if err != nil {
+			return xerrors.Errorf("invalid max image size %q: %w", value, err)
+		}
+		maxSize = parsedSize
+	}
 
-	return ImageOptions{
+	opts.ImageOptions = ImageOptions{
 		Input:               f.Input.Value(),
 		ImageConfigScanners: xstrings.ToTSlice[types.Scanner](f.ImageConfigScanners.Value()),
 		ScanRemovedPkgs:     f.ScanRemovedPkgs.Value(),
@@ -133,5 +148,7 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 		DockerHost:          f.DockerHost.Value(),
 		PodmanHost:          f.PodmanHost.Value(),
 		ImageSources:        xstrings.ToTSlice[ftypes.ImageSource](f.ImageSources.Value()),
-	}, nil
+		MaxImageSize:        maxSize,
+	}
+	return nil
 }

@@ -185,10 +185,9 @@ func TestScanner_Detect(t *testing.T) {
 			if tt.args.dist == azurevs.Mariner {
 				s = azure.NewMarinerScanner()
 			}
-			got, err := s.Detect(nil, tt.args.osVer, nil, tt.args.pkgs)
+			got, err := s.Detect(t.Context(), tt.args.osVer, nil, tt.args.pkgs)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)

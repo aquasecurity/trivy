@@ -34,7 +34,7 @@ func Login(ctx context.Context, registry string, opts flag.Options) error {
 	_, err = transport.NewWithContext(ctx, reg, &authn.Basic{
 		Username: opts.Credentials[0].Username,
 		Password: opts.Credentials[0].Password,
-	}, httpTransport(opts), []string{reg.Scope(transport.PullScope)})
+	}, httpTransport(opts), nil)
 	if err != nil {
 		return xerrors.Errorf("failed to authenticate: %w", err)
 	}

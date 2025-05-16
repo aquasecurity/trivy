@@ -394,7 +394,7 @@ $ trivy image --ignorefile ./.trivyignore.yaml python:3.9.16-alpine3.16
 2023-08-31T11:10:27.155+0600	INFO	Vulnerability scanning is enabled
 2023-08-31T11:10:27.155+0600	INFO	Secret scanning is enabled
 2023-08-31T11:10:27.155+0600	INFO	If your scanning is slow, please try '--scanners vuln' to disable secret scanning
-2023-08-31T11:10:27.155+0600	INFO	Please see also https://aquasecurity.github.io/trivy/dev/docs/scanner/secret/#recommendation for faster secret detection
+2023-08-31T11:10:27.155+0600	INFO	Please see also https://trivy.dev/dev/docs/scanner/secret/#recommendation for faster secret detection
 2023-08-31T11:10:29.164+0600	INFO	Detected OS: alpine
 2023-08-31T11:10:29.164+0600	INFO	Detecting Alpine vulnerabilities...
 2023-08-31T11:10:29.169+0600	INFO	Number of language-specific files: 1

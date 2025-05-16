@@ -21,6 +21,12 @@ func main() {
 		if errors.As(err, &exitError) {
 			os.Exit(exitError.Code)
 		}
+
+		var userErr *types.UserError
+		if errors.As(err, &userErr) {
+			log.Fatal("Error", log.Err(userErr))
+		}
+
 		log.Fatal("Fatal error", log.Err(err))
 	}
 }
@@ -36,8 +42,5 @@ func run() error {
 	}
 
 	app := commands.NewApp()
-	if err := app.Execute(); err != nil {
-		return err
-	}
-	return nil
+	return app.Execute()
 }

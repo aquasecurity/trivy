@@ -2,7 +2,6 @@ package predicate_test
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"testing"
 	"time"
@@ -12,7 +11,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report/predicate"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -49,7 +48,7 @@ func TestWriter_Write(t *testing.T) {
 					Result: types.Report{
 						SchemaVersion: 2,
 						ArtifactName:  "alpine:3.14",
-						ArtifactType:  artifact.Type(""),
+						ArtifactType:  ftypes.ArtifactType(""),
 						Metadata:      types.Metadata{},
 						Results: types.Results{
 							{
@@ -98,7 +97,7 @@ func TestWriter_Write(t *testing.T) {
 
 			output := bytes.NewBuffer(nil)
 
-			ctx := clock.With(context.Background(), time.Date(2022, 7, 22, 12, 20, 30, 5, time.UTC))
+			ctx := clock.With(t.Context(), time.Date(2022, 7, 22, 12, 20, 30, 5, time.UTC))
 			writer := predicate.NewVulnWriter(output, "dev")
 
 			err := writer.Write(ctx, inputResults)

@@ -523,8 +523,6 @@ func TestRedisCache_DeleteBlobs(t *testing.T) {
 	require.NoError(t, err)
 	defer s.Close()
 
-	s.Set(correctHash, "any string")
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			addr := s.Addr()
@@ -535,13 +533,18 @@ func TestRedisCache_DeleteBlobs(t *testing.T) {
 			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
 			require.NoError(t, err)
 
+			s.Set(tt.wantKey, "any string")
+
 			err = c.DeleteBlobs(tt.args.blobIDs)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)
+
+			// Verify that the blobs are deleted
+			got := s.Keys()
+			assert.NotContains(t, got, tt.wantKey)
 		})
 	}
 }

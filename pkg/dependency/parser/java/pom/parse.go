@@ -428,7 +428,8 @@ func (p *Parser) mergeDependencyManagements(depManagements ...[]pomDependency) [
 }
 
 func (p *Parser) parseDependencies(deps []pomDependency, props map[string]string, depManagement []pomDependency,
-	opts analysisOptions) []artifact {
+	opts analysisOptions,
+) []artifact {
 	// Imported POMs often have no dependencies, so dependencyManagement resolution can be skipped.
 	if len(deps) == 0 {
 		return nil
@@ -549,28 +550,25 @@ func (p *Parser) retrieveParent(currentPath, relativePath string, target artifac
 	// Try relativePath
 	if relativePath != "" {
 		pom, err := p.tryRelativePath(target, currentPath, relativePath)
-		if err != nil {
-			errs = multierror.Append(errs, err)
-		} else {
+		if err == nil {
 			return pom, nil
 		}
+		errs = multierror.Append(errs, err)
 	}
 
 	// If not found, search the parent director
 	pom, err := p.tryRelativePath(target, currentPath, "../pom.xml")
-	if err != nil {
-		errs = multierror.Append(errs, err)
-	} else {
+	if err == nil {
 		return pom, nil
 	}
+	errs = multierror.Append(errs, err)
 
 	// If not found, search local/remote remoteRepositories
 	pom, err = p.tryRepository(target.GroupID, target.ArtifactID, target.Version.String())
-	if err != nil {
-		errs = multierror.Append(errs, err)
-	} else {
+	if err == nil {
 		return pom, nil
 	}
+	errs = multierror.Append(errs, err)
 
 	// Reaching here means the POM wasn't found
 	return nil, errs
@@ -640,6 +638,7 @@ func (p *Parser) openPom(filePath string) (*pom, error) {
 		content:  content,
 	}, nil
 }
+
 func (p *Parser) tryRepository(groupID, artifactID, version string) (*pom, error) {
 	if version == "" {
 		return nil, xerrors.Errorf("Version missing for %s:%s", groupID, artifactID)

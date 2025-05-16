@@ -1,9 +1,23 @@
 package types
 
 import (
+	"sort"
 	"time"
 
 	"github.com/samber/lo"
+)
+
+// ArtifactType represents a type of artifact
+type ArtifactType string
+
+const (
+	TypeContainerImage ArtifactType = "container_image"
+	TypeFilesystem     ArtifactType = "filesystem"
+	TypeRepository     ArtifactType = "repository"
+	TypeCycloneDX      ArtifactType = "cyclonedx"
+	TypeSPDX           ArtifactType = "spdx"
+	TypeAWSAccount     ArtifactType = "aws_account"
+	TypeVM             ArtifactType = "vm"
 )
 
 type OS struct {
@@ -40,11 +54,11 @@ func (o *OS) Merge(newOS OS) {
 		return
 	}
 
-	switch {
+	switch o.Family {
 	// OLE also has /etc/redhat-release and it detects OLE as RHEL by mistake.
 	// In that case, OS must be overwritten with the content of /etc/oracle-release.
 	// There is the same problem between Debian and Ubuntu.
-	case o.Family == RedHat, o.Family == Debian:
+	case RedHat, Debian:
 		*o = newOS
 	default:
 		if o.Family == "" {
@@ -73,9 +87,20 @@ type Repository struct {
 }
 
 type Layer struct {
+	Size      int64  `json:",omitempty"`
 	Digest    string `json:",omitempty"`
 	DiffID    string `json:",omitempty"`
 	CreatedBy string `json:",omitempty"`
+}
+
+type Layers []Layer
+
+func (lm Layers) TotalSize() int64 {
+	var totalSize int64
+	for _, layer := range lm {
+		totalSize += layer.Size
+	}
+	return totalSize
 }
 
 type PackageInfo struct {
@@ -92,6 +117,27 @@ type Application struct {
 
 	// Packages is a list of lang-specific packages
 	Packages Packages
+}
+
+type Applications []Application
+
+func (apps Applications) Len() int {
+	return len(apps)
+}
+
+func (apps Applications) Swap(i, j int) {
+	apps[i], apps[j] = apps[j], apps[i]
+}
+
+func (apps Applications) Less(i, j int) bool {
+	switch {
+	case apps[i].Type != apps[j].Type:
+		return apps[i].Type < apps[j].Type
+	case apps[i].FilePath != apps[j].FilePath:
+		return apps[i].FilePath < apps[j].FilePath
+	default:
+		return len(apps[i].Packages) < len(apps[j].Packages)
+	}
 }
 
 type File struct {
@@ -122,7 +168,8 @@ type ArtifactInfo struct {
 type BlobInfo struct {
 	SchemaVersion int
 
-	// Layer information
+	// Layer info
+	Size          int64    `json:",omitempty"`
 	Digest        string   `json:",omitempty"`
 	DiffID        string   `json:",omitempty"`
 	CreatedBy     string   `json:",omitempty"`
@@ -148,15 +195,24 @@ type BlobInfo struct {
 	CustomResources []CustomResource `json:",omitempty"`
 }
 
+func (b BlobInfo) Layer() Layer {
+	return Layer{
+		Size:      b.Size,
+		Digest:    b.Digest,
+		DiffID:    b.DiffID,
+		CreatedBy: b.CreatedBy,
+	}
+}
+
 // ArtifactDetail represents the analysis result.
 type ArtifactDetail struct {
 	OS                OS                 `json:",omitempty"`
 	Repository        *Repository        `json:",omitempty"`
 	Packages          Packages           `json:",omitempty"`
-	Applications      []Application      `json:",omitempty"`
+	Applications      Applications       `json:",omitempty"`
 	Misconfigurations []Misconfiguration `json:",omitempty"`
-	Secrets           []Secret           `json:",omitempty"`
-	Licenses          []LicenseFile      `json:",omitempty"`
+	Secrets           Secrets            `json:",omitempty"`
+	Licenses          LicenseFiles       `json:",omitempty"`
 
 	// ImageConfig has information from container image config
 	ImageConfig ImageConfigDetail
@@ -164,6 +220,50 @@ type ArtifactDetail struct {
 	// CustomResources hold analysis results from custom analyzers.
 	// It is for extensibility and not used in OSS.
 	CustomResources []CustomResource `json:",omitempty"`
+
+	Layers Layers `json:",omitzero"`
+}
+
+// Sort sorts packages and applications in ArtifactDetail
+func (a *ArtifactDetail) Sort() {
+	sort.Sort(a.Packages)
+	sort.Sort(a.Applications)
+	sort.Sort(a.Secrets)
+	sort.Sort(a.Licenses)
+	// Misconfigurations will be sorted later
+}
+
+type Secrets []Secret
+
+func (s Secrets) Len() int {
+	return len(s)
+}
+
+func (s Secrets) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s Secrets) Less(i, j int) bool {
+	return s[i].FilePath < s[j].FilePath
+}
+
+type LicenseFiles []LicenseFile
+
+func (l LicenseFiles) Len() int {
+	return len(l)
+}
+
+func (l LicenseFiles) Swap(i, j int) {
+	l[i], l[j] = l[j], l[i]
+}
+
+func (l LicenseFiles) Less(i, j int) bool {
+	switch {
+	case l[i].Type != l[j].Type:
+		return l[i].Type < l[j].Type
+	default:
+		return l[i].FilePath < l[j].FilePath
+	}
 }
 
 // ImageConfigDetail has information from container image config
@@ -176,26 +276,6 @@ type ImageConfigDetail struct {
 
 	// Secret holds secrets in container image config
 	Secret *Secret `json:",omitempty"`
-}
-
-// ToBlobInfo is used to store a merged layer in cache.
-func (a *ArtifactDetail) ToBlobInfo() BlobInfo {
-	return BlobInfo{
-		SchemaVersion: BlobJSONSchemaVersion,
-		OS:            a.OS,
-		Repository:    a.Repository,
-		PackageInfos: []PackageInfo{
-			{
-				FilePath: "merged", // Set a dummy file path
-				Packages: a.Packages,
-			},
-		},
-		Applications:      a.Applications,
-		Misconfigurations: a.Misconfigurations,
-		Secrets:           a.Secrets,
-		Licenses:          a.Licenses,
-		CustomResources:   a.CustomResources,
-	}
 }
 
 // CustomResource holds the analysis result from a custom analyzer.

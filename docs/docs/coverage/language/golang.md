@@ -82,8 +82,9 @@ It possibly produces false positives.
 See [the caveat](#stdlib-vulnerabilities) for details.
 
 ### License
-To identify licenses, you need to download modules to local cache beforehand, such as `go mod download`, `go mod tidy`, etc.
-Trivy traverses `$GOPATH/pkg/mod` and collects those extra information.
+To identify licenses, you need to download modules to local cache beforehand, such as `go mod download`, `go mod tidy`, `go mod vendor`, etc.
+If the `vendor` directory exists, Trivy uses this directory when scanning for license files.
+For other cases Trivy traverses `$GOPATH/pkg/mod`dir and collects those extra information.
 
 ### Dependency Graph
 Same as licenses, you need to download modules to local cache beforehand.
@@ -100,7 +101,7 @@ $ trivy rootfs ./your_binary
     It doesn't work with UPX-compressed binaries.
 
 ### Main Module
-Go binaries installed using the `go install` command contains correct (semver) version for the main module and therefor are detected by Trivy.
+Go binaries installed using the `go install` command contains correct (semver) version for the main module and therefore are detected by Trivy.
 In other cases, Go uses the `(devel)` version[^2].
 In this case, Trivy will attempt to parse any `-ldflags` as it's a common practice to pass versions this way.
 If unsuccessful, the version will be empty[^3].

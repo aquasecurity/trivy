@@ -1,7 +1,6 @@
 package ubuntu
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -48,7 +47,7 @@ func Test_ubuntuESMAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			ctx := context.Background()
+			ctx := t.Context()
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.filePath,
 				Content:  f,

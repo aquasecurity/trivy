@@ -1,7 +1,6 @@
 package downloader_test
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -15,7 +14,7 @@ import (
 
 func TestDownload(t *testing.T) {
 	// Set up a test server with a self-signed certificate
-	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		_, err := w.Write([]byte("test content"))
 		assert.NoError(t, err)
 	}))
@@ -44,7 +43,7 @@ func TestDownload(t *testing.T) {
 			dst := t.TempDir()
 
 			// Execute the download
-			_, err := downloader.Download(context.Background(), server.URL, dst, "", downloader.Options{
+			_, err := downloader.Download(t.Context(), server.URL, dst, "", downloader.Options{
 				Insecure: tt.insecure,
 			})
 

@@ -1,7 +1,6 @@
 package vex_test
 
 import (
-	"context"
 	"fmt"
 	"net/http/httptest"
 	"os"
@@ -14,7 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
@@ -330,7 +328,7 @@ func TestFilter(t *testing.T) {
 			name: "CycloneDX SBOM with CycloneDX VEX",
 			args: args{
 				report: &types.Report{
-					ArtifactType: artifact.TypeCycloneDX,
+					ArtifactType: ftypes.TypeCycloneDX,
 					BOM: &core.BOM{
 						SerialNumber: "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
 						Version:      1,
@@ -351,7 +349,7 @@ func TestFilter(t *testing.T) {
 				},
 			},
 			want: &types.Report{
-				ArtifactType: artifact.TypeCycloneDX,
+				ArtifactType: ftypes.TypeCycloneDX,
 				BOM: &core.BOM{
 					SerialNumber: "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
 					Version:      1,
@@ -368,7 +366,7 @@ func TestFilter(t *testing.T) {
 			name: "CycloneDX VEX wrong URN",
 			args: args{
 				report: &types.Report{
-					ArtifactType: artifact.TypeCycloneDX,
+					ArtifactType: ftypes.TypeCycloneDX,
 					BOM: &core.BOM{
 						SerialNumber: "urn:uuid:wrong",
 						Version:      1,
@@ -389,7 +387,7 @@ func TestFilter(t *testing.T) {
 				},
 			},
 			want: &types.Report{
-				ArtifactType: artifact.TypeCycloneDX,
+				ArtifactType: ftypes.TypeCycloneDX,
 				BOM: &core.BOM{
 					SerialNumber: "urn:uuid:wrong",
 					Version:      1,
@@ -483,7 +481,7 @@ func TestFilter(t *testing.T) {
 			setup: func(t *testing.T, tmpDir string) {
 				// Create repository.yaml
 				vexDir := filepath.Join(tmpDir, ".trivy", "vex")
-				require.NoError(t, os.MkdirAll(vexDir, 0755))
+				require.NoError(t, os.MkdirAll(vexDir, 0o755))
 
 				configPath := filepath.Join(vexDir, "repository.yaml")
 				configContent := `
@@ -491,7 +489,7 @@ repositories:
   - name: default
     url: https://example.com/vex/default
     enabled: true`
-				require.NoError(t, os.WriteFile(configPath, []byte(configContent), 0644))
+				require.NoError(t, os.WriteFile(configPath, []byte(configContent), 0o644))
 			},
 			args: args{
 				report: imageReport([]types.Result{
@@ -567,7 +565,7 @@ repositories:
 			if tt.setup != nil {
 				tt.setup(t, tmpDir)
 			}
-			err := vex.Filter(context.Background(), tt.args.report, tt.args.opts)
+			err := vex.Filter(t.Context(), tt.args.report, tt.args.opts)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -581,7 +579,7 @@ repositories:
 func imageReport(results types.Results) *types.Report {
 	return &types.Report{
 		ArtifactName: "debian:12",
-		ArtifactType: artifact.TypeContainerImage,
+		ArtifactType: ftypes.TypeContainerImage,
 		Metadata: types.Metadata{
 			RepoDigests: []string{
 				"debian@sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",
@@ -622,7 +620,7 @@ func ociPURLString(ts *httptest.Server, d v1.Hash) string {
 func fsReport(results types.Results) *types.Report {
 	return &types.Report{
 		ArtifactName: ".",
-		ArtifactType: artifact.TypeFilesystem,
+		ArtifactType: ftypes.TypeFilesystem,
 		Results:      results,
 	}
 }

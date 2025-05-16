@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -18,23 +18,24 @@ import (
 func TestRepository(t *testing.T) {
 	t.Setenv("NUGET_PACKAGES", t.TempDir())
 	type args struct {
-		scanner        types.Scanner
-		ignoreIDs      []string
-		policyPaths    []string
-		namespaces     []string
-		listAllPkgs    bool
-		input          string
-		secretConfig   string
-		filePatterns   []string
-		helmSet        []string
-		helmValuesFile []string
-		skipFiles      []string
-		skipDirs       []string
-		command        string
-		format         types.Format
-		includeDevDeps bool
-		parallel       int
-		vex            string
+		scanner             types.Scanner
+		ignoreIDs           []string
+		policyPaths         []string
+		namespaces          []string
+		listAllPkgs         bool
+		input               string
+		secretConfig        string
+		filePatterns        []string
+		helmSet             []string
+		helmValuesFile      []string
+		skipFiles           []string
+		skipDirs            []string
+		command             string
+		format              types.Format
+		includeDevDeps      bool
+		parallel            int
+		vex                 string
+		vulnSeveritySources []string
 	}
 	tests := []struct {
 		name     string
@@ -103,6 +104,18 @@ func TestRepository(t *testing.T) {
 				listAllPkgs: true,
 			},
 			golden: "testdata/npm.json.golden",
+		},
+		{
+			name: "npm with severity from ubuntu",
+			args: args{
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/repo/npm",
+				vulnSeveritySources: []string{
+					"alpine",
+					"ubuntu",
+				},
+			},
+			golden: "testdata/npm-ubuntu-severity.json.golden",
 		},
 		{
 			name: "npm with dev deps",
@@ -274,6 +287,15 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/composer.lock.json.golden",
 		},
 		{
+			name: "cargo.lock",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/repo/cargo",
+			},
+			golden: "testdata/cargo.lock.json.golden",
+		},
+		{
 			name: "multiple lockfiles",
 			args: args{
 				scanner: types.VulnerabilityScanner,
@@ -418,7 +440,7 @@ func TestRepository(t *testing.T) {
 			},
 			golden: "testdata/gomod-skip.json.golden",
 			override: func(_ *testing.T, want, _ *types.Report) {
-				want.ArtifactType = artifact.TypeFilesystem
+				want.ArtifactType = ftypes.TypeFilesystem
 			},
 		},
 		{
@@ -432,7 +454,7 @@ func TestRepository(t *testing.T) {
 			},
 			golden: "testdata/dockerfile-custom-policies.json.golden",
 			override: func(_ *testing.T, want, got *types.Report) {
-				want.ArtifactType = artifact.TypeFilesystem
+				want.ArtifactType = ftypes.TypeFilesystem
 			},
 		},
 		{
@@ -536,6 +558,12 @@ func TestRepository(t *testing.T) {
 				for _, skipDir := range tt.args.skipDirs {
 					osArgs = append(osArgs, "--skip-dirs", skipDir)
 				}
+			}
+
+			if len(tt.args.vulnSeveritySources) != 0 {
+				osArgs = append(osArgs,
+					"--vuln-severity-source", strings.Join(tt.args.vulnSeveritySources, ","),
+				)
 			}
 
 			if tt.args.listAllPkgs {

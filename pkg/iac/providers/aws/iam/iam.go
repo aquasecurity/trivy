@@ -1,8 +1,7 @@
 package iam
 
 import (
-	"github.com/liamg/iamgo"
-
+	"github.com/aquasecurity/iamgo"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -69,10 +68,6 @@ type User struct {
 	AccessKeys []AccessKey
 	MFADevices []MFADevice
 	LastAccess iacTypes.TimeValue
-}
-
-func (u *User) HasLoggedIn() bool {
-	return u.LastAccess.GetMetadata().IsResolvable() && !u.LastAccess.IsNever()
 }
 
 type MFADevice struct {

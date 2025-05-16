@@ -6,6 +6,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/policy"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
@@ -108,6 +109,13 @@ var (
 		ConfigName: "misconfiguration.config-file-schemas",
 		Usage:      "specify paths to JSON configuration file schemas to determine that a file matches some configuration and pass the schema to Rego checks for type checking",
 	}
+	RenderCauseFlag = Flag[[]string]{
+		Name:       "render-cause",
+		ConfigName: "misconfiguration.render-cause",
+		Usage:      "specify configuration types for which the rendered causes will be shown in the table report",
+		Values:     xstrings.ToStringSlice([]types.ConfigType{types.Terraform}), // TODO: add Plan and JSON?
+		Default:    []string{},
+	}
 )
 
 // MisconfFlagGroup composes common printer flag structs used for commands providing misconfiguration scanning.
@@ -128,6 +136,7 @@ type MisconfFlagGroup struct {
 	TerraformExcludeDownloaded *Flag[bool]
 	MisconfigScanners          *Flag[[]string]
 	ConfigFileSchemas          *Flag[[]string]
+	RenderCause                *Flag[[]string]
 }
 
 type MisconfOptions struct {
@@ -147,6 +156,7 @@ type MisconfOptions struct {
 	TfExcludeDownloaded     bool
 	MisconfigScanners       []analyzer.Type
 	ConfigFileSchemas       []string
+	RenderCause             []types.ConfigType
 }
 
 func NewMisconfFlagGroup() *MisconfFlagGroup {
@@ -166,6 +176,7 @@ func NewMisconfFlagGroup() *MisconfFlagGroup {
 		TerraformExcludeDownloaded: TerraformExcludeDownloaded.Clone(),
 		MisconfigScanners:          MisconfigScannersFlag.Clone(),
 		ConfigFileSchemas:          ConfigFileSchemasFlag.Clone(),
+		RenderCause:                RenderCauseFlag.Clone(),
 	}
 }
 
@@ -189,15 +200,12 @@ func (f *MisconfFlagGroup) Flags() []Flagger {
 		f.CloudformationParamVars,
 		f.MisconfigScanners,
 		f.ConfigFileSchemas,
+		f.RenderCause,
 	}
 }
 
-func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
-	if err := parseFlags(f); err != nil {
-		return MisconfOptions{}, err
-	}
-
-	return MisconfOptions{
+func (f *MisconfFlagGroup) ToOptions(opts *Options) error {
+	opts.MisconfOptions = MisconfOptions{
 		IncludeNonFailures:      f.IncludeNonFailures.Value(),
 		ResetChecksBundle:       f.ResetChecksBundle.Value(),
 		ChecksBundleRepository:  f.ChecksBundleRepository.Value(),
@@ -212,5 +220,7 @@ func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 		TfExcludeDownloaded:     f.TerraformExcludeDownloaded.Value(),
 		MisconfigScanners:       xstrings.ToTSlice[analyzer.Type](f.MisconfigScanners.Value()),
 		ConfigFileSchemas:       f.ConfigFileSchemas.Value(),
-	}, nil
+		RenderCause:             xstrings.ToTSlice[types.ConfigType](f.RenderCause.Value()),
+	}
+	return nil
 }

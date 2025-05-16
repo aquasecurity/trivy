@@ -5,7 +5,6 @@ package plugin_test
 import (
 	"archive/zip"
 	"bytes"
-	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -15,7 +14,7 @@ import (
 	"time"
 
 	"github.com/go-git/go-git/v5"
-	"github.com/google/go-containerregistry/pkg/v1"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -58,7 +57,7 @@ func modifyManifest(t *testing.T, worktree, version string) {
 	require.NoError(t, err)
 
 	b = bytes.ReplaceAll(b, []byte("0.2.0"), []byte(version))
-	err = os.WriteFile(manifestPath, b, 0644)
+	err = os.WriteFile(manifestPath, b, 0o644)
 	require.NoError(t, err)
 }
 
@@ -201,7 +200,7 @@ func TestManager_Install(t *testing.T) {
 
 			// For plugin index
 			pluginDir := filepath.Join(dst, ".trivy", "plugins")
-			err := os.MkdirAll(pluginDir, 0755)
+			err := os.MkdirAll(pluginDir, 0o755)
 			require.NoError(t, err)
 			_, err = fsutils.CopyFile("testdata/.trivy/plugins/index.yaml", filepath.Join(pluginDir, "index.yaml"))
 			require.NoError(t, err)
@@ -213,7 +212,7 @@ func TestManager_Install(t *testing.T) {
 			var gotLogs bytes.Buffer
 			logger := log.New(log.NewHandler(&gotLogs, nil))
 
-			ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 
 			got, err := plugin.NewManager(plugin.WithLogger(logger)).Install(ctx, tt.pluginName, plugin.Options{
 				Platform: ftypes.Platform{

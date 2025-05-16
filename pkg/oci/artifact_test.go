@@ -1,7 +1,6 @@
 package oci_test
 
 import (
-	"context"
 	"errors"
 	"os"
 	"path/filepath"
@@ -117,7 +116,7 @@ func TestArtifact_Download(t *testing.T) {
 			}, nil)
 
 			artifact := oci.NewArtifact("repo", ftypes.RegistryOptions{}, oci.WithImage(img))
-			err = artifact.Download(context.Background(), tempDir, oci.DownloadOption{
+			err = artifact.Download(t.Context(), tempDir, oci.DownloadOption{
 				MediaType: tt.mediaType,
 				Quiet:     true,
 			})

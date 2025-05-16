@@ -78,17 +78,14 @@ func (fg *CleanFlagGroup) Flags() []Flagger {
 	}
 }
 
-func (fg *CleanFlagGroup) ToOptions() (CleanOptions, error) {
-	if err := parseFlags(fg); err != nil {
-		return CleanOptions{}, err
-	}
-
-	return CleanOptions{
+func (fg *CleanFlagGroup) ToOptions(opts *Options) error {
+	opts.CleanOptions = CleanOptions{
 		CleanAll:             fg.CleanAll.Value(),
 		CleanVulnerabilityDB: fg.CleanVulnerabilityDB.Value(),
 		CleanJavaDB:          fg.CleanJavaDB.Value(),
 		CleanChecksBundle:    fg.CleanChecksBundle.Value(),
 		CleanScanCache:       fg.CleanScanCache.Value(),
 		CleanVEXRepositories: fg.CleanVEXRepositories.Value(),
-	}, nil
+	}
+	return nil
 }

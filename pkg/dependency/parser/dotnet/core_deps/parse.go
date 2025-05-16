@@ -1,12 +1,10 @@
 package core_deps
 
 import (
-	"io"
 	"sort"
 	"strings"
 	"sync"
 
-	"github.com/liamg/jfather"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -14,6 +12,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 type dotNetDependencies struct {
@@ -23,9 +22,8 @@ type dotNetDependencies struct {
 }
 
 type dotNetLibrary struct {
-	Type      string `json:"type"`
-	StartLine int
-	EndLine   int
+	Type string `json:"type"`
+	xjson.Location
 }
 
 type RuntimeTarget struct {
@@ -52,12 +50,7 @@ func NewParser() *Parser {
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var depsFile dotNetDependencies
-
-	input, err := io.ReadAll(r)
-	if err != nil {
-		return nil, nil, xerrors.Errorf("read error: %w", err)
-	}
-	if err = jfather.Unmarshal(input, &depsFile); err != nil {
+	if err := xjson.UnmarshalRead(r, &depsFile); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode .deps.json file: %w", err)
 	}
 
@@ -87,15 +80,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		}
 
 		pkgs = append(pkgs, ftypes.Package{
-			ID:      dependency.ID(ftypes.DotNetCore, split[0], split[1]),
-			Name:    split[0],
-			Version: split[1],
-			Locations: []ftypes.Location{
-				{
-					StartLine: lib.StartLine,
-					EndLine:   lib.EndLine,
-				},
-			},
+			ID:        dependency.ID(ftypes.DotNetCore, split[0], split[1]),
+			Name:      split[0],
+			Version:   split[1],
+			Locations: []ftypes.Location{ftypes.Location(lib.Location)},
 		})
 	}
 
@@ -117,15 +105,4 @@ func (p *Parser) isRuntimeLibrary(targetLibs map[string]TargetLib, library strin
 	}
 	// Check that `runtime`, `runtimeTarget` and `native` sections are not empty
 	return !lo.IsEmpty(lib)
-}
-
-// UnmarshalJSONWithMetadata needed to detect start and end lines of deps
-func (t *dotNetLibrary) UnmarshalJSONWithMetadata(node jfather.Node) error {
-	if err := node.Decode(&t); err != nil {
-		return err
-	}
-	// Decode func will overwrite line numbers if we save them first
-	t.StartLine = node.Range().Start.Line
-	t.EndLine = node.Range().End.Line
-	return nil
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -38,7 +38,7 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/centos-7.json.golden",
 			override: func(t *testing.T, want, got *types.Report) {
 				want.ArtifactName = "testdata/fixtures/sbom/centos-7-cyclonedx.json"
-				want.ArtifactType = artifact.TypeCycloneDX
+				want.ArtifactType = ftypes.TypeCycloneDX
 
 				require.Len(t, got.Results, 1)
 				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-cyclonedx.json (centos 7.6.1810)"
@@ -47,6 +47,10 @@ func TestSBOM(t *testing.T) {
 				want.Results[0].Vulnerabilities[0].PkgIdentifier.BOMRef = "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810"
 				want.Results[0].Vulnerabilities[1].PkgIdentifier.BOMRef = "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"
 				want.Results[0].Vulnerabilities[2].PkgIdentifier.BOMRef = "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"
+
+				// SBOM file doesn't contain info about layers
+				want.Metadata.Size = 0
+				want.Metadata.Layers = nil
 			},
 		},
 		{
@@ -87,7 +91,7 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/centos-7.json.golden",
 			override: func(t *testing.T, want, got *types.Report) {
 				want.ArtifactName = "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl"
-				want.ArtifactType = artifact.TypeCycloneDX
+				want.ArtifactType = ftypes.TypeCycloneDX
 
 				require.Len(t, got.Results, 1)
 				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl (centos 7.6.1810)"
@@ -96,6 +100,10 @@ func TestSBOM(t *testing.T) {
 				want.Results[0].Vulnerabilities[0].PkgIdentifier.BOMRef = "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810"
 				want.Results[0].Vulnerabilities[1].PkgIdentifier.BOMRef = "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"
 				want.Results[0].Vulnerabilities[2].PkgIdentifier.BOMRef = "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"
+
+				// SBOM file doesn't contain info about layers
+				want.Metadata.Size = 0
+				want.Metadata.Layers = nil
 			},
 		},
 		{
@@ -108,10 +116,14 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/centos-7.json.golden",
 			override: func(t *testing.T, want, got *types.Report) {
 				want.ArtifactName = "testdata/fixtures/sbom/centos-7-spdx.txt"
-				want.ArtifactType = artifact.TypeSPDX
+				want.ArtifactType = ftypes.TypeSPDX
 
 				require.Len(t, got.Results, 1)
 				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-spdx.txt (centos 7.6.1810)"
+
+				// SBOM file doesn't contain info about layers
+				want.Metadata.Size = 0
+				want.Metadata.Layers = nil
 			},
 		},
 		{
@@ -124,10 +136,14 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/centos-7.json.golden",
 			override: func(t *testing.T, want, got *types.Report) {
 				want.ArtifactName = "testdata/fixtures/sbom/centos-7-spdx.json"
-				want.ArtifactType = artifact.TypeSPDX
+				want.ArtifactType = ftypes.TypeSPDX
 
 				require.Len(t, got.Results, 1)
 				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-spdx.json (centos 7.6.1810)"
+
+				// SBOM file doesn't contain info about layers
+				want.Metadata.Size = 0
+				want.Metadata.Layers = nil
 			},
 		},
 		{

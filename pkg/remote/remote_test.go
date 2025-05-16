@@ -1,7 +1,6 @@
 package remote
 
 import (
-	"context"
 	"encoding/base64"
 	"fmt"
 	"net/http"
@@ -52,7 +51,7 @@ func setupDockerConfig(t *testing.T, content string) {
 	cd := setupConfigDir(t)
 	p := filepath.Join(cd, "config.json")
 
-	err := os.WriteFile(p, []byte(content), 0600)
+	err := os.WriteFile(p, []byte(content), 0o600)
 	require.NoError(t, err)
 }
 
@@ -92,6 +91,81 @@ func TestGet(t *testing.T) {
 					Insecure: true,
 				},
 			},
+		},
+		{
+			name: "mirror",
+			args: args{
+				imageName: "foo.bar.io/library/alpine:3.10",
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "test",
+							Password: "testpass",
+						},
+					},
+					RegistryMirrors: map[string][]string{
+						"foo.bar.io": {
+							serverAddr,
+						},
+					},
+					Insecure: true,
+				},
+			},
+		},
+		{
+			name: "mirror for dockerhub",
+			args: args{
+				imageName: "alpine:3.10",
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "test",
+							Password: "testpass",
+						},
+					},
+					RegistryMirrors: map[string][]string{
+						"index.docker.io": {
+							serverAddr,
+						},
+					},
+					Insecure: true,
+				},
+			},
+		},
+		{
+			name: "non-existent mirror image - use image from host",
+			args: args{
+				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "test",
+							Password: "testpass",
+						},
+					},
+					RegistryMirrors: map[string][]string{
+						serverAddr: {
+							"wrong.repository",
+						},
+					},
+					Insecure: true,
+				},
+			},
+		},
+		{
+			name: "wrong mirror",
+			args: args{
+				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				option: types.RegistryOptions{
+					RegistryMirrors: map[string][]string{
+						serverAddr: {
+							"wrong.repository:tag@digest",
+						},
+					},
+					Insecure: true,
+				},
+			},
+			wantErr: "could not parse reference: wrong.repository:tag@digest/library/alpine:3.10",
 		},
 		{
 			name: "multiple credential",
@@ -183,6 +257,28 @@ func TestGet(t *testing.T) {
 			wantErr: "invalid username/password",
 		},
 		{
+			name: "bad credential for multiple mirrors",
+			args: args{
+				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "foo",
+							Password: "bar",
+						},
+					},
+					Insecure: true,
+					RegistryMirrors: map[string][]string{
+						serverAddr: {
+							serverAddr,
+							serverAddr,
+						},
+					},
+				},
+			},
+			wantErr: "6 errors occurred:", // 2 errors for each repository (for 2 mirrors and the original repository)
+		},
+		{
 			name: "bad keychain",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
@@ -203,7 +299,7 @@ func TestGet(t *testing.T) {
 				setupDockerConfig(t, tt.args.config)
 			}
 
-			_, err = Get(context.Background(), n, tt.args.option)
+			_, err = Get(t.Context(), n, tt.args.option)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr, err)
 				return
@@ -260,7 +356,7 @@ func TestUserAgents(t *testing.T) {
 	n, err := name.ParseReference(fmt.Sprintf("%s/library/alpine:3.10", serverAddr))
 	require.NoError(t, err)
 
-	_, err = Get(context.Background(), n, types.RegistryOptions{
+	_, err = Get(t.Context(), n, types.RegistryOptions{
 		Credentials: []types.Credential{
 			{
 				Username: "test",

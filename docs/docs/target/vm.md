@@ -150,6 +150,9 @@ See [here](../scanner/vulnerability.md) for the detail.
 $ trivy vm [YOUR_VM_IMAGE]
 ```
 
+!!! note
+    Scanning `Red Hat` has a limitation, see the [Red Hat](../coverage/os/rhel.md#content-manifests) page for details.
+
 ### Misconfigurations
 It is supported, but it is not useful in most cases.
 As mentioned [here](../scanner/misconfiguration/index.md), Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
@@ -181,6 +184,14 @@ $ trivy vm --scanners license [YOUR_VM_IMAGE]
 ## SBOM generation
 Trivy can generate SBOM for VM images.
 See [here](../supply-chain/sbom.md) for the detail.
+
+## Scan Cache
+When scanning AMI or EBS snapshots, it stores analysis results in the cache, using the snapshot ID.
+Scanning the same snapshot several times skips analysis if the cache is already available.
+
+When scanning local files, it doesn't use the cache by default.
+
+More details are available in the [cache documentation](../configuration/cache.md#scan-cache-backend).
 
 ## Supported Architectures
 

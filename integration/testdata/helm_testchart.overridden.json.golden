@@ -21,8 +21,8 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 87,
-        "Failures": 6
+        "Successes": 88,
+        "Failures": 10
       },
       "Misconfigurations": [
         {
@@ -150,7 +150,8 @@
                   "LastCause": false
                 }
               ]
-            }
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -278,7 +279,8 @@
                   "LastCause": false
                 }
               ]
-            }
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -406,7 +408,392 @@
                   "LastCause": false
                 }
               ]
-            }
+            },
+            "RenderedCause": {}
+          }
+        },
+        {
+          "Type": "Helm Security Check",
+          "ID": "KSV032",
+          "AVDID": "AVD-KSV-0032",
+          "Title": "All container images must start with the *.azurecr.io domain",
+          "Description": "Containers should only use images from trusted registries.",
+          "Message": "container testchart of deployment testchart in default namespace should restrict container image to your specific registry domain. For Azure any domain ending in 'azurecr.io'",
+          "Namespace": "builtin.kubernetes.KSV032",
+          "Query": "data.builtin.kubernetes.KSV032.deny",
+          "Resolution": "Use images from trusted Azure registries.",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv032",
+          "References": [
+            "https://avd.aquasec.com/misconfig/ksv032"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 28,
+            "EndLine": 57,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 28,
+                  "Content": "        - name: testchart",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mname\u001b[0m: testchart",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 29,
+                  "Content": "          securityContext:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "          \u001b[38;5;33msecurityContext\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 30,
+                  "Content": "            capabilities:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mcapabilities\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 31,
+                  "Content": "              drop:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "              \u001b[38;5;33mdrop\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 32,
+                  "Content": "              - ALL",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "              - ALL",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 33,
+                  "Content": "            readOnlyRootFilesystem: true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mreadOnlyRootFilesystem\u001b[0m: \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 34,
+                  "Content": "            runAsGroup: 10001",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsGroup\u001b[0m: \u001b[38;5;37m10001",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 35,
+                  "Content": "            runAsNonRoot: true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsNonRoot\u001b[0m: \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 36,
+                  "Content": "            runAsUser: 0",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsUser\u001b[0m: \u001b[38;5;37m0",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 37,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "RenderedCause": {}
+          }
+        },
+        {
+          "Type": "Helm Security Check",
+          "ID": "KSV033",
+          "AVDID": "AVD-KSV-0033",
+          "Title": "All container images must start with a GCR domain",
+          "Description": "Containers should only use images from trusted GCR registries.",
+          "Message": "container testchart of deployment testchart in default namespace should restrict container image to your specific registry domain. See the full GCR list here: https://cloud.google.com/container-registry/docs/overview#registries",
+          "Namespace": "builtin.kubernetes.KSV033",
+          "Query": "data.builtin.kubernetes.KSV033.deny",
+          "Resolution": "Use images from trusted GCR registries.",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv033",
+          "References": [
+            "https://avd.aquasec.com/misconfig/ksv033"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 28,
+            "EndLine": 57,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 28,
+                  "Content": "        - name: testchart",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mname\u001b[0m: testchart",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 29,
+                  "Content": "          securityContext:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "          \u001b[38;5;33msecurityContext\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 30,
+                  "Content": "            capabilities:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mcapabilities\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 31,
+                  "Content": "              drop:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "              \u001b[38;5;33mdrop\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 32,
+                  "Content": "              - ALL",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "              - ALL",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 33,
+                  "Content": "            readOnlyRootFilesystem: true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mreadOnlyRootFilesystem\u001b[0m: \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 34,
+                  "Content": "            runAsGroup: 10001",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsGroup\u001b[0m: \u001b[38;5;37m10001",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 35,
+                  "Content": "            runAsNonRoot: true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsNonRoot\u001b[0m: \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 36,
+                  "Content": "            runAsUser: 0",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsUser\u001b[0m: \u001b[38;5;37m0",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 37,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "RenderedCause": {}
+          }
+        },
+        {
+          "Type": "Helm Security Check",
+          "ID": "KSV035",
+          "AVDID": "AVD-KSV-0035",
+          "Title": "All container images must start with an ECR domain",
+          "Description": "Container images from non-ECR registries should be forbidden.",
+          "Message": "Container 'testchart' of Deployment 'testchart' should restrict images to own ECR repository. See the full ECR list here: https://docs.aws.amazon.com/general/latest/gr/ecr.html",
+          "Namespace": "builtin.kubernetes.KSV035",
+          "Query": "data.builtin.kubernetes.KSV035.deny",
+          "Resolution": "Container image should be used from Amazon container Registry",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv035",
+          "References": [
+            "https://avd.aquasec.com/misconfig/ksv035"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 28,
+            "EndLine": 57,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 28,
+                  "Content": "        - name: testchart",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mname\u001b[0m: testchart",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 29,
+                  "Content": "          securityContext:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "          \u001b[38;5;33msecurityContext\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 30,
+                  "Content": "            capabilities:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mcapabilities\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 31,
+                  "Content": "              drop:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "              \u001b[38;5;33mdrop\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 32,
+                  "Content": "              - ALL",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "              - ALL",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 33,
+                  "Content": "            readOnlyRootFilesystem: true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mreadOnlyRootFilesystem\u001b[0m: \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 34,
+                  "Content": "            runAsGroup: 10001",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsGroup\u001b[0m: \u001b[38;5;37m10001",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 35,
+                  "Content": "            runAsNonRoot: true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsNonRoot\u001b[0m: \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 36,
+                  "Content": "            runAsUser: 0",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsUser\u001b[0m: \u001b[38;5;37m0",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 37,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -430,9 +817,112 @@
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
+            "StartLine": 28,
+            "EndLine": 57,
             "Code": {
-              "Lines": null
-            }
+              "Lines": [
+                {
+                  "Number": 28,
+                  "Content": "        - name: testchart",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mname\u001b[0m: testchart",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 29,
+                  "Content": "          securityContext:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "          \u001b[38;5;33msecurityContext\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 30,
+                  "Content": "            capabilities:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mcapabilities\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 31,
+                  "Content": "              drop:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "              \u001b[38;5;33mdrop\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 32,
+                  "Content": "              - ALL",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "              - ALL",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 33,
+                  "Content": "            readOnlyRootFilesystem: true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mreadOnlyRootFilesystem\u001b[0m: \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 34,
+                  "Content": "            runAsGroup: 10001",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsGroup\u001b[0m: \u001b[38;5;37m10001",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 35,
+                  "Content": "            runAsNonRoot: true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsNonRoot\u001b[0m: \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 36,
+                  "Content": "            runAsUser: 0",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsUser\u001b[0m: \u001b[38;5;37m0",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 37,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -531,7 +1021,108 @@
                   "LastCause": true
                 }
               ]
-            }
+            },
+            "RenderedCause": {}
+          }
+        },
+        {
+          "Type": "Helm Security Check",
+          "ID": "KSV110",
+          "AVDID": "AVD-KSV-0110",
+          "Title": "Workloads in the default namespace",
+          "Description": "Checks whether a workload is running in the default namespace.",
+          "Message": "deployment testchart in default namespace should set metadata.namespace to a non-default namespace",
+          "Namespace": "builtin.kubernetes.KSV110",
+          "Query": "data.builtin.kubernetes.KSV110.deny",
+          "Resolution": "Set 'metadata.namespace' to a non-default namespace.",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv110",
+          "References": [
+            "https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+            "https://avd.aquasec.com/misconfig/ksv110"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 5,
+            "EndLine": 11,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 5,
+                  "Content": "  name: testchart",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;33mname\u001b[0m: testchart",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 6,
+                  "Content": "  labels:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;33mlabels\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 7,
+                  "Content": "    helm.sh/chart: testchart-0.1.0",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "    \u001b[38;5;33mhelm.sh/chart\u001b[0m: testchart-0.1.0",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 8,
+                  "Content": "    app.kubernetes.io/name: testchart",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "    \u001b[38;5;33mapp.kubernetes.io/name\u001b[0m: testchart",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 9,
+                  "Content": "    app.kubernetes.io/instance: testchart",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "    \u001b[38;5;33mapp.kubernetes.io/instance\u001b[0m: testchart",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 10,
+                  "Content": "    app.kubernetes.io/version: \"1.16.0\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "    \u001b[38;5;33mapp.kubernetes.io/version\u001b[0m: \u001b[38;5;37m\"1.16.0\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 11,
+                  "Content": "    app.kubernetes.io/managed-by: Helm",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m    \u001b[38;5;33mapp.kubernetes.io/managed-by\u001b[0m: Helm",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -558,7 +1149,8 @@
             "Service": "general",
             "Code": {
               "Lines": null
-            }
+            },
+            "RenderedCause": {}
           }
         }
       ]
@@ -568,7 +1160,7 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 60,
+        "Successes": 59,
         "Failures": 0
       }
     },
@@ -577,7 +1169,7 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 59,
+        "Successes": 58,
         "Failures": 0
       }
     }

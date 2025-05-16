@@ -3,8 +3,7 @@ package iam
 import (
 	"strings"
 
-	"github.com/liamg/iamgo"
-
+	"github.com/aquasecurity/iamgo"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
@@ -16,30 +15,36 @@ type wrappedDocument struct {
 }
 
 func ParsePolicyFromAttr(attr *terraform.Attribute, owner *terraform.Block, modules terraform.Modules) (*iam.Document, error) {
-	if attr.IsString() {
-		dataBlock, err := modules.GetBlockById(attr.Value().AsString())
-		if err != nil {
-			parsed, err := iamgo.Parse([]byte(unescapeVars(attr.Value().AsString())))
-			if err != nil {
-				return nil, err
-			}
-			return &iam.Document{
-				Parsed:   *parsed,
-				Metadata: attr.GetMetadata(),
-				IsOffset: false,
-				HasRefs:  len(attr.AllReferences()) > 0,
-			}, nil
-		}
+	if !attr.IsString() {
+		return &iam.Document{
+			Metadata: owner.GetMetadata(),
+		}, nil
+	}
 
-		if dataBlock.Type() == "data" && dataBlock.TypeLabel() == "aws_iam_policy_document" {
-			if doc, err := ConvertTerraformDocument(modules, dataBlock); err == nil {
-				return &iam.Document{
-					Metadata: dataBlock.GetMetadata(),
-					Parsed:   doc.Document,
-					IsOffset: true,
-					HasRefs:  false,
-				}, nil
-			}
+	attrValue := attr.Value().AsString()
+
+	dataBlock, err := modules.GetBlockById(attrValue)
+	if err != nil {
+		parsed, err := iamgo.Parse([]byte(unescapeVars(attrValue)))
+		if err != nil {
+			return nil, err
+		}
+		return &iam.Document{
+			Parsed:   *parsed,
+			Metadata: attr.GetMetadata(),
+			IsOffset: false,
+			HasRefs:  len(attr.AllReferences()) > 0,
+		}, nil
+	}
+
+	if dataBlock.Type() == "data" && dataBlock.TypeLabel() == "aws_iam_policy_document" {
+		if doc, err := ConvertTerraformDocument(modules, dataBlock); err == nil {
+			return &iam.Document{
+				Metadata: dataBlock.GetMetadata(),
+				Parsed:   doc.Document,
+				IsOffset: true,
+				HasRefs:  false,
+			}, nil
 		}
 	}
 

@@ -2,7 +2,6 @@ package report_test
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"testing"
 
@@ -13,7 +12,6 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -29,7 +27,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			name: "report with vulnerabilities",
 			input: types.Report{
 				ArtifactName: "debian:9",
-				ArtifactType: artifact.TypeContainerImage,
+				ArtifactType: ftypes.TypeContainerImage,
 				Metadata: types.Metadata{
 					ImageID: "sha256:7640c3f9e75002deb419d5e32738eeff82cf2b3edca3781b4fe1f1f626d11b20",
 					RepoTags: []string{
@@ -232,7 +230,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 									{
 										ID:               "KSV001",
 										Name:             lo.ToPtr("Misconfiguration"),
-										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("Image tag &#39;:latest&#39; used")},
+										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("Image tag ':latest' used")},
 										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("")},
 										DefaultConfiguration: &sarif.ReportingConfiguration{
 											Level: "error",
@@ -373,7 +371,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 										ID:               "aws-secret-access-key",
 										Name:             lo.ToPtr("Secret"),
 										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("AWS Secret Access Key")},
-										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("\u0026#39;AWS_secret_KEY\u0026#39;=\u0026#34;****************************************\u0026#34;")},
+										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("'AWS_secret_KEY'=\"****************************************\"")},
 										DefaultConfiguration: &sarif.ReportingConfiguration{
 											Level: "error",
 										},
@@ -738,7 +736,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			w := report.SarifWriter{
 				Output: sarifWritten,
 			}
-			err := w.Write(context.TODO(), tt.input)
+			err := w.Write(t.Context(), tt.input)
 			require.NoError(t, err)
 
 			result := &sarif.Report{}

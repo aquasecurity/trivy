@@ -2,7 +2,6 @@ package repo_test
 
 import (
 	"archive/zip"
-	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -61,14 +60,14 @@ func TestRepository_Manifest(t *testing.T) {
 		},
 		{
 			name: "fetch from remote",
-			setup: func(t *testing.T, dir string, r *repo.Repository) {
+			setup: func(_ *testing.T, _ string, r *repo.Repository) {
 				r.URL = ts.URL
 			},
 			want: manifest,
 		},
 		{
 			name: "http error",
-			setup: func(t *testing.T, dir string, r *repo.Repository) {
+			setup: func(_ *testing.T, _ string, r *repo.Repository) {
 				r.URL = ts.URL + "/error"
 			},
 			wantErr: "failed to download the repository metadata",
@@ -78,13 +77,13 @@ func TestRepository_Manifest(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tempDir, m := setupManager(t)
-			conf, err := m.Config(context.Background())
+			conf, err := m.Config(t.Context())
 			require.NoError(t, err)
 
 			r := conf.Repositories[0]
 			tt.setup(t, tempDir, &r)
 
-			got, err := r.Manifest(context.Background(), repo.Options{})
+			got, err := r.Manifest(t.Context(), repo.Options{})
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
@@ -158,13 +157,13 @@ func TestRepository_Index(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tempDir, m := setupManager(t)
-			conf, err := m.Config(context.Background())
+			conf, err := m.Config(t.Context())
 			require.NoError(t, err)
 
 			r := conf.Repositories[0]
 			tt.setup(t, tempDir, &r)
 
-			got, err := r.Index(context.Background())
+			got, err := r.Index(t.Context())
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
@@ -189,7 +188,7 @@ func TestRepository_Update(t *testing.T) {
 	}{
 		{
 			name: "successful update",
-			setup: func(t *testing.T, cacheDir string, r *repo.Repository) {
+			setup: func(t *testing.T, cacheDir string, _ *repo.Repository) {
 				setUpManifest(t, cacheDir, ts.URL+"/archive.zip")
 			},
 			clockTime: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -294,14 +293,14 @@ func TestRepository_Update(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tempDir, m := setupManager(t)
-			conf, err := m.Config(context.Background())
+			conf, err := m.Config(t.Context())
 			require.NoError(t, err)
 
 			r := conf.Repositories[0]
 			r.URL = ts.URL + "/vex-repository.json"
 			tt.setup(t, tempDir, &r)
 
-			ctx := clock.With(context.Background(), tt.clockTime)
+			ctx := clock.With(t.Context(), tt.clockTime)
 			err = r.Update(ctx, repo.Options{})
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)

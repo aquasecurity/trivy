@@ -1,8 +1,7 @@
 package ecr
 
 import (
-	"github.com/liamg/iamgo"
-
+	"github.com/aquasecurity/iamgo"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ecr"
 	iamp "github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"

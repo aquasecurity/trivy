@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"context"
 	"io/fs"
 	"testing"
 
@@ -23,7 +22,6 @@ func createMetadata(targetFS fs.FS, filename string, start, end int, ref string,
 }
 
 func TestParser_Parse(t *testing.T) {
-
 	filename := "example.json"
 
 	targetFS := memoryfs.New()
@@ -50,7 +48,6 @@ func TestParser_Parse(t *testing.T) {
   "resources": []
 }`,
 			want: func() azure2.Deployment {
-
 				root := createMetadata(targetFS, filename, 0, 0, "", nil).WithInternal(resolver.NewResolver())
 				metadata := createMetadata(targetFS, filename, 1, 13, "", &root)
 				parametersMetadata := createMetadata(targetFS, filename, 4, 11, "parameters", &metadata)
@@ -121,7 +118,6 @@ func TestParser_Parse(t *testing.T) {
 ]
 }`,
 			want: func() azure2.Deployment {
-
 				rootMetadata := createMetadata(targetFS, filename, 0, 0, "", nil).WithInternal(resolver.NewResolver())
 				fileMetadata := createMetadata(targetFS, filename, 1, 45, "", &rootMetadata)
 				resourcesMetadata := createMetadata(targetFS, filename, 5, 44, "resources", &fileMetadata)
@@ -200,11 +196,10 @@ func TestParser_Parse(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
-			require.NoError(t, targetFS.WriteFile(filename, []byte(tt.input), 0644))
+			require.NoError(t, targetFS.WriteFile(filename, []byte(tt.input), 0o644))
 
 			p := New(targetFS)
-			got, err := p.ParseFS(context.Background(), ".")
+			got, err := p.ParseFS(t.Context(), ".")
 			require.NoError(t, err)
 
 			if !tt.wantDeployment {
@@ -222,7 +217,6 @@ func TestParser_Parse(t *testing.T) {
 }
 
 func Test_NestedResourceParsing(t *testing.T) {
-
 	input := `
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
@@ -289,10 +283,10 @@ func Test_NestedResourceParsing(t *testing.T) {
 
 	targetFS := memoryfs.New()
 
-	require.NoError(t, targetFS.WriteFile("nested.json", []byte(input), 0644))
+	require.NoError(t, targetFS.WriteFile("nested.json", []byte(input), 0o644))
 
 	p := New(targetFS)
-	got, err := p.ParseFS(context.Background(), ".")
+	got, err := p.ParseFS(t.Context(), ".")
 	require.NoError(t, err)
 	require.Len(t, got, 1)
 
@@ -317,7 +311,7 @@ func Test_NestedResourceParsing(t *testing.T) {
 //
 // 	targetFS := memoryfs.New()
 //
-// 	require.NoError(t, targetFS.WriteFile("postgres.json", input, 0644))
+// 	require.NoError(t, targetFS.WriteFile("postgres.json", input, 0o644))
 //
 // 	p := New(targetFS, options.ParserWithDebug(os.Stderr))
 // 	got, err := p.ParseFS(context.Background(), ".")

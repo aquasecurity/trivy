@@ -1,7 +1,6 @@
 package test
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"strings"
@@ -41,7 +40,7 @@ func Test_helm_parser_with_options_with_values_file(t *testing.T) {
 
 			helmParser, err := parser.New(chartName, opts...)
 			require.NoError(t, err)
-			require.NoError(t, helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), "."))
+			require.NoError(t, helmParser.ParseFS(t.Context(), os.DirFS(filepath.Join("testdata", chartName)), "."))
 			manifests, err := helmParser.RenderedChartFiles()
 			require.NoError(t, err)
 
@@ -95,7 +94,7 @@ func Test_helm_parser_with_options_with_set_value(t *testing.T) {
 
 			helmParser, err := parser.New(chartName, opts...)
 			require.NoError(t, err)
-			err = helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
+			err = helmParser.ParseFS(t.Context(), os.DirFS(filepath.Join("testdata", chartName)), ".")
 			require.NoError(t, err)
 			manifests, err := helmParser.RenderedChartFiles()
 			require.NoError(t, err)
@@ -145,7 +144,7 @@ func Test_helm_parser_with_options_with_api_versions(t *testing.T) {
 
 			helmParser, err := parser.New(chartName, opts...)
 			require.NoError(t, err)
-			err = helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
+			err = helmParser.ParseFS(t.Context(), os.DirFS(filepath.Join("testdata", chartName)), ".")
 			require.NoError(t, err)
 			manifests, err := helmParser.RenderedChartFiles()
 			require.NoError(t, err)
@@ -204,7 +203,7 @@ func Test_helm_parser_with_options_with_kube_versions(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-			require.NoError(t, helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), "."))
+			require.NoError(t, helmParser.ParseFS(t.Context(), os.DirFS(filepath.Join("testdata", chartName)), "."))
 			manifests, err := helmParser.RenderedChartFiles()
 			require.NoError(t, err)
 

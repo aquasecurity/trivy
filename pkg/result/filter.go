@@ -8,7 +8,8 @@ import (
 	"slices"
 	"sort"
 
-	"github.com/open-policy-agent/opa/rego"
+	"github.com/open-policy-agent/opa/v1/ast"
+	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -222,6 +223,7 @@ func applyPolicy(ctx context.Context, result *types.Result, policyFile string) e
 		rego.Query("data.trivy.ignore"),
 		rego.Module("lib.rego", module),
 		rego.Module("trivy.rego", string(policy)),
+		rego.SetRegoVersion(ast.RegoV0),
 	).PrepareForEval(ctx)
 	if err != nil {
 		return xerrors.Errorf("unable to prepare for eval: %w", err)

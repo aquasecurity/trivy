@@ -1,7 +1,6 @@
 package amazonlinux
 
 import (
-	"context"
 	"strings"
 	"testing"
 
@@ -92,16 +91,13 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := amazonlinuxOSAnalyzer{}
-			ctx := context.Background()
+			ctx := t.Context()
 			got, err := a.Analyze(ctx, tt.input)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
-			} else {
-				require.NoError(t, err)
 			}
-
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

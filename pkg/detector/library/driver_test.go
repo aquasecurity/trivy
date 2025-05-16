@@ -155,7 +155,7 @@ func TestDriver_Detect(t *testing.T) {
 				pkgName: "symfony/symfony",
 				pkgVer:  "5.1.5",
 			},
-			wantErr: "failed to unmarshal advisory JSON",
+			wantErr: "json unmarshal error",
 		},
 		{
 			name: "duplicated version in advisory",
@@ -220,8 +220,7 @@ func TestDriver_Detect(t *testing.T) {
 
 			got, err := driver.DetectVulnerabilities("", tt.args.pkgName, tt.args.pkgVer)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 

@@ -184,14 +184,10 @@ func (f *ScanFlagGroup) Flags() []Flagger {
 	}
 }
 
-func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
-	if err := parseFlags(f); err != nil {
-		return ScanOptions{}, err
-	}
-
+func (f *ScanFlagGroup) ToOptions(opts *Options) error {
 	var target string
-	if len(args) == 1 {
-		target = args[0]
+	if len(opts.args) == 1 {
+		target = opts.args[0]
 	}
 
 	parallel := f.Parallel.Value()
@@ -204,7 +200,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	if f.DistroFlag != nil && f.DistroFlag.Value() != "" {
 		family, version, _ := strings.Cut(f.DistroFlag.Value(), "/")
 		if !slices.Contains(ftypes.OSTypes, ftypes.OSType(family)) {
-			return ScanOptions{}, xerrors.Errorf("unknown OS family: %s, must be %q", family, ftypes.OSTypes)
+			return xerrors.Errorf("unknown OS family: %s, must be %q", family, ftypes.OSTypes)
 		}
 		distro = ftypes.OS{
 			Family: ftypes.OSType(family),
@@ -212,7 +208,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		}
 	}
 
-	return ScanOptions{
+	opts.ScanOptions = ScanOptions{
 		Target:            target,
 		SkipDirs:          f.SkipDirs.Value(),
 		SkipFiles:         f.SkipFiles.Value(),
@@ -224,5 +220,6 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		RekorURL:          f.RekorURL.Value(),
 		DetectionPriority: ftypes.DetectionPriority(f.DetectionPriority.Value()),
 		Distro:            distro,
-	}, nil
+	}
+	return nil
 }

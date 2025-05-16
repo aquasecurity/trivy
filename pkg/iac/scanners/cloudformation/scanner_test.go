@@ -1,7 +1,6 @@
 package cloudformation
 
 import (
-	"context"
 	"strings"
 	"testing"
 
@@ -59,7 +58,7 @@ deny[res] {
 
 	scanner := New(rego.WithPolicyDirs("rules"))
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
@@ -216,7 +215,7 @@ Resources:
 				rego.WithPolicyNamespaces("user"),
 			)
 
-			results, err := scanner.ScanFS(context.TODO(), fsys, "code")
+			results, err := scanner.ScanFS(t.Context(), fsys, "code")
 			require.NoError(t, err)
 
 			if tt.ignored == 0 {

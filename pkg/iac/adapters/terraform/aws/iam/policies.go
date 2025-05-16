@@ -1,17 +1,17 @@
 package iam
 
 import (
-	"github.com/liamg/iamgo"
-
+	"github.com/aquasecurity/iamgo"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func parsePolicy(policyBlock *terraform.Block, modules terraform.Modules) (iam.Policy, error) {
+	nameAttr := policyBlock.GetAttribute("name")
 	policy := iam.Policy{
 		Metadata: policyBlock.GetMetadata(),
-		Name:     policyBlock.GetAttribute("name").AsStringValueOrDefault("", policyBlock),
+		Name:     nameAttr.AsStringValueOrDefault("", policyBlock),
 		Document: iam.Document{
 			Metadata: iacTypes.NewUnmanagedMetadata(),
 			Parsed:   iamgo.Document{},
@@ -20,7 +20,19 @@ func parsePolicy(policyBlock *terraform.Block, modules terraform.Modules) (iam.P
 		},
 		Builtin: iacTypes.Bool(false, policyBlock.GetMetadata()),
 	}
-	var err error
+
+	if policyBlock.Type() == "data" && policyBlock.TypeLabel() == "aws_iam_policy" &&
+		nameAttr.IsString() {
+		doc, exists := awsManagedPolicies[nameAttr.Value().AsString()]
+		if exists {
+			policy.Document = iam.Document{
+				Metadata: nameAttr.GetMetadata(),
+				Parsed:   doc,
+			}
+			return policy, nil
+		}
+	}
+
 	doc, err := ParsePolicyFromAttr(policyBlock.GetAttribute("policy"), policyBlock, modules)
 	if err != nil {
 		return policy, err
@@ -97,14 +109,58 @@ func findPolicy(modules terraform.Modules) func(resource *terraform.Block) *iam.
 
 func findAttachmentPolicy(modules terraform.Modules) func(resource *terraform.Block) *iam.Policy {
 	return func(resource *terraform.Block) *iam.Policy {
-		policyAttr := resource.GetAttribute("policy_arn")
-		if policyAttr.IsNil() {
+		attr := resource.GetAttribute("policy_arn")
+		if attr.IsNil() {
 			return nil
 		}
-		policyBlock, err := modules.GetReferencedBlock(policyAttr, resource)
-		if err != nil {
-			return nil
+
+		if attr.IsString() {
+			arn := attr.Value().AsString()
+			if doc, ok := awsManagedPolicies[arn]; ok {
+				if block, err := modules.GetReferencedBlock(attr, resource); err == nil {
+					meta := block.GetMetadata()
+					if arnAttr := block.GetAttribute("arn"); arnAttr.IsNotNil() {
+						meta = arnAttr.GetMetadata()
+					}
+					return &iam.Policy{
+						Metadata: block.GetMetadata(),
+						Document: iam.Document{
+							Metadata: meta,
+							Parsed:   doc,
+						},
+					}
+				}
+				return &iam.Policy{
+					Metadata: resource.GetMetadata(),
+					Document: iam.Document{
+						Metadata: attr.GetMetadata(),
+						Parsed:   doc,
+					},
+				}
+			}
 		}
-		return findPolicy(modules)(policyBlock)
+
+		if block, err := modules.GetReferencedBlock(attr, resource); err == nil {
+			return findPolicy(modules)(block)
+		}
+
+		return nil
 	}
 }
+
+var awsManagedPolicies = map[string]iamgo.Document{
+	// https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonS3FullAccess.html
+	"arn:aws:iam::aws:policy/AmazonS3FullAccess": s3FullAccessPolicyDocument,
+	"AmazonS3FullAccess":                         s3FullAccessPolicyDocument,
+}
+
+var s3FullAccessPolicyDocument = iamgo.NewPolicyBuilder().
+	WithVersion("2012-10-17").
+	WithStatement(
+		iamgo.NewStatementBuilder().
+			WithEffect("Allow").
+			WithActions([]string{"s3:*", "s3-object-lambda:*"}).
+			WithResources([]string{"*"}).
+			Build(),
+	).
+	Build()

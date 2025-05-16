@@ -2,7 +2,6 @@ package repo_test
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -49,7 +48,7 @@ func TestManager_Config(t *testing.T) {
 		},
 		{
 			name:  "config file does not exist",
-			setup: func(t *testing.T, dir string) {},
+			setup: func(_ *testing.T, _ string) {},
 			want: repo.Config{
 				Repositories: []repo.Repository{
 					{
@@ -70,7 +69,7 @@ func TestManager_Config(t *testing.T) {
 
 			tt.setup(t, tempDir)
 
-			got, err := m.Config(context.Background())
+			got, err := m.Config(t.Context())
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
@@ -90,7 +89,7 @@ func TestManager_Init(t *testing.T) {
 	}{
 		{
 			name:  "successful init",
-			setup: func(t *testing.T, dir string) {},
+			setup: func(_ *testing.T, _ string) {},
 			want: repo.Config{
 				Repositories: []repo.Repository{
 					{
@@ -121,7 +120,7 @@ func TestManager_Init(t *testing.T) {
 
 			tt.setup(t, tempDir)
 
-			err := m.Init(context.Background())
+			err := m.Init(t.Context())
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
@@ -228,7 +227,7 @@ func TestManager_DownloadRepositories(t *testing.T) {
 			manifest.Versions[0].Locations[0].URL = tt.location
 			testutil.MustWriteJSON(t, manifestPath, manifest)
 
-			err := m.DownloadRepositories(context.Background(), tt.names, repo.Options{})
+			err := m.DownloadRepositories(t.Context(), tt.names, repo.Options{})
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
@@ -303,7 +302,7 @@ No repositories configured.
 			var buf bytes.Buffer
 			m := repo.NewManager(tempDir, repo.WithWriter(&buf))
 
-			err := m.List(context.Background())
+			err := m.List(t.Context())
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
@@ -322,9 +321,9 @@ func TestManager_Clear(t *testing.T) {
 
 	// Create some dummy files
 	cacheDir := filepath.Join(tempDir, "vex")
-	require.NoError(t, os.MkdirAll(cacheDir, 0755))
+	require.NoError(t, os.MkdirAll(cacheDir, 0o755))
 	dummyFile := filepath.Join(cacheDir, "dummy.txt")
-	require.NoError(t, os.WriteFile(dummyFile, []byte("dummy"), 0644))
+	require.NoError(t, os.WriteFile(dummyFile, []byte("dummy"), 0o644))
 
 	err := m.Clear()
 	require.NoError(t, err)

@@ -20,6 +20,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/sbom"
 )
 
+const artifactVersion = 0
+
 type Artifact struct {
 	filePath       string
 	cache          cache.ArtifactCache
@@ -73,12 +75,12 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 		return artifact.Reference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 
-	var artifactType artifact.Type
+	var artifactType types.ArtifactType
 	switch format {
 	case sbom.FormatCycloneDXJSON, sbom.FormatCycloneDXXML, sbom.FormatAttestCycloneDXJSON, sbom.FormatLegacyCosignAttestCycloneDXJSON:
-		artifactType = artifact.TypeCycloneDX
+		artifactType = types.TypeCycloneDX
 	case sbom.FormatSPDXTV, sbom.FormatSPDXJSON:
-		artifactType = artifact.TypeSPDX
+		artifactType = types.TypeSPDX
 
 	}
 
@@ -105,7 +107,7 @@ func (a Artifact) calcCacheKey(blobInfo types.BlobInfo) (string, error) {
 	}
 
 	d := digest.NewDigest(digest.SHA256, h)
-	cacheKey, err := cache.CalcKey(d.String(), a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
+	cacheKey, err := cache.CalcKey(d.String(), artifactVersion, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
 	if err != nil {
 		return "", xerrors.Errorf("cache key: %w", err)
 	}

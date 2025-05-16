@@ -24,6 +24,8 @@ import (
 // If vm type vmdk max cache memory size 64 MB
 const storageFILECacheSize = 1024
 
+const imageFileArtifactVersion = 0
+
 // ImageFile represents an local VM image file
 type ImageFile struct {
 	Storage
@@ -86,7 +88,7 @@ func (a *ImageFile) Inspect(ctx context.Context) (artifact.Reference, error) {
 
 	return artifact.Reference{
 		Name:    a.filePath,
-		Type:    artifact.TypeVM,
+		Type:    types.TypeVM,
 		ID:      cacheKey, // use a cache key as pseudo artifact ID
 		BlobIDs: []string{cacheKey},
 	}, nil
@@ -100,7 +102,7 @@ func (a *ImageFile) calcCacheKey(blobInfo types.BlobInfo) (string, error) {
 	}
 
 	d := digest.NewDigest(digest.SHA256, h)
-	cacheKey, err := cache.CalcKey(d.String(), a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
+	cacheKey, err := cache.CalcKey(d.String(), imageFileArtifactVersion, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
 	if err != nil {
 		return "", xerrors.Errorf("cache key: %w", err)
 	}

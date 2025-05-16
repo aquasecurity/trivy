@@ -7,7 +7,7 @@ body:
         Feel free to create a docs report if something doesn't work as expected or is unclear in the documentation.
         Please ensure that you're not creating a duplicate report by searching the [issues](https://github.com/aquasecurity/trivy/issues)/[discussions](https://github.com/aquasecurity/trivy/discussions) beforehand.
         
-        Please also check [our contribution guidelines](https://aquasecurity.github.io/trivy/latest/community/contribute/discussion/).
+        Please also check [our contribution guidelines](https://trivy.dev/latest/community/contribute/discussion/).
   - type: textarea
     attributes:
       label: Description

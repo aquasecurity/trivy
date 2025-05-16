@@ -1,7 +1,6 @@
 package cargo
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -28,6 +27,23 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 						Type:     types.Cargo,
 						FilePath: "Cargo.lock",
 						Packages: types.Packages{
+							{
+								ID:           "app@0.1.0",
+								Name:         "app",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipRoot,
+								Locations: []types.Location{
+									{
+										StartLine: 13,
+										EndLine:   20,
+									},
+								},
+								DependsOn: []string{
+									"memchr@1.0.2",
+									"regex-syntax@0.5.6",
+									"regex@1.7.3",
+								},
+							},
 							{
 								ID:           "memchr@1.0.2",
 								Name:         "memchr",
@@ -154,6 +170,21 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 						Type:     types.Cargo,
 						FilePath: "Cargo.lock",
 						Packages: types.Packages{
+							{
+								ID:           "app@0.1.0",
+								Name:         "app",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipRoot,
+								Locations: []types.Location{
+									{
+										StartLine: 4,
+										EndLine:   9,
+									},
+								},
+								DependsOn: []string{
+									"memchr@2.5.0",
+								},
+							},
 							{
 								ID:           "memchr@2.5.0",
 								Name:         "memchr",
@@ -415,6 +446,44 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 						FilePath: "Cargo.lock",
 						Packages: types.Packages{
 							{
+								ID:           "d0e1231acd612a0f",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"member@0.1.0",
+									"member2@0.1.0",
+								},
+							},
+							{
+								ID:           "member@0.1.0",
+								Name:         "member",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipWorkspace,
+								Locations: []types.Location{
+									{
+										StartLine: 30,
+										EndLine:   35,
+									},
+								},
+								DependsOn: []string{
+									"gdb-command@0.7.6",
+								},
+							},
+							{
+								ID:           "member2@0.1.0",
+								Name:         "member2",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipWorkspace,
+								Locations: []types.Location{
+									{
+										StartLine: 37,
+										EndLine:   42,
+									},
+								},
+								DependsOn: []string{
+									"regex@1.10.2",
+								},
+							},
+							{
 								ID:           "gdb-command@0.7.6",
 								Name:         "gdb-command",
 								Version:      "0.7.6",
@@ -546,7 +615,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 			a, err := newCargoAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 
-			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
+			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{
 				FS: os.DirFS(tt.dir),
 			})
 

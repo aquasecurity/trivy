@@ -1,7 +1,6 @@
 package dpkg
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"sort"
@@ -1445,7 +1444,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			a, err := newDpkgAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
-			ctx := context.Background()
+			ctx := t.Context()
 
 			mfs := mapfs.New()
 			for testPath, osPath := range tt.testFiles {

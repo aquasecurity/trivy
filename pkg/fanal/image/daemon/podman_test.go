@@ -19,13 +19,12 @@ import (
 func setupPodmanSock(t *testing.T) *httptest.Server {
 	t.Helper()
 
-	runtimeDir, err := os.MkdirTemp("", "daemon")
-	require.NoError(t, err)
+	runtimeDir := t.TempDir()
 
 	t.Setenv("XDG_RUNTIME_DIR", runtimeDir)
 
 	dir := filepath.Join(runtimeDir, "podman")
-	err = os.MkdirAll(dir, os.ModePerm)
+	err := os.MkdirAll(dir, os.ModePerm)
 	require.NoError(t, err)
 
 	sockPath := filepath.Join(dir, "podman.sock")
@@ -100,7 +99,7 @@ func TestPodmanImage(t *testing.T) {
 			confFile, err := img.ConfigFile()
 			require.NoError(t, err)
 
-			assert.Equal(t, len(confFile.History), len(tt.wantCreateBy))
+			assert.Len(t, tt.wantCreateBy, len(confFile.History))
 			for _, h := range confFile.History {
 				assert.Contains(t, tt.wantCreateBy, h.CreatedBy)
 			}

@@ -264,6 +264,7 @@ var (
 	Duration = slog.Duration
 	Group    = slog.Group
 	Any      = slog.Any
+	Nil      = slog.Attr{Key: "", Value: slog.AnyValue(nil)} // Nil will not be logged
 )
 
 // Err returns an Attr that represents an error.

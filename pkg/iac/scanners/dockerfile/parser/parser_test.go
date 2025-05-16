@@ -1,7 +1,6 @@
 package parser_test
 
 import (
-	"context"
 	"strings"
 	"testing"
 
@@ -19,7 +18,7 @@ RUN make /app
 CMD python /app/app.py
 `
 
-	res, err := parser.Parse(context.TODO(), strings.NewReader(input), "Dockerfile")
+	res, err := parser.Parse(t.Context(), strings.NewReader(input), "Dockerfile")
 	require.NoError(t, err)
 
 	df, ok := res.(*dockerfile.Dockerfile)
@@ -58,4 +57,61 @@ CMD python /app/app.py
 	assert.Equal(t, "Dockerfile", commands[3].Path)
 	assert.Equal(t, 4, commands[3].StartLine)
 	assert.Equal(t, 4, commands[3].EndLine)
+}
+
+func Test_ParseHeredocs(t *testing.T) {
+	tests := []struct {
+		name     string
+		src      string
+		expected string
+	}{
+		{
+			name: "multi-line script",
+			src: `RUN <<EOF
+apk add curl
+apk add git
+EOF`,
+			expected: "apk add curl ; apk add git",
+		},
+		{
+			name: "file redirection and chained command",
+			src: `RUN cat <<EOF > /tmp/output && echo 'done'
+hello
+mr
+potato
+EOF`,
+			expected: "cat <<EOF > /tmp/output && echo 'done'\nhello\nmr\npotato\nEOF",
+		},
+		{
+			name: "redirect to file",
+			src: `RUN <<EOF > /etc/config.yaml
+key1: value1
+key2: value2
+EOF`,
+			expected: "<<EOF > /etc/config.yaml\nkey1: value1\nkey2: value2\nEOF",
+		},
+		{
+			name: "with a shebang",
+			src: `RUN <<EOF
+#!/usr/bin/env python
+print("hello world")
+EOF`,
+			expected: "<<EOF\n#!/usr/bin/env python\nprint(\"hello world\")\nEOF",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			res, err := parser.Parse(t.Context(), strings.NewReader(tt.src), "Dockerfile")
+			require.NoError(t, err)
+
+			df, ok := res.(*dockerfile.Dockerfile)
+			require.True(t, ok)
+
+			cmd := df.Stages[0].Commands[0]
+
+			assert.Equal(t, tt.src, cmd.Original)
+			assert.Equal(t, []string{tt.expected}, cmd.Value)
+		})
+	}
 }

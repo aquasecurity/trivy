@@ -23,19 +23,22 @@ message Licenses {
 }
 
 message ScanOptions {
-  repeated string       pkg_types          = 1;
-  repeated string       scanners           = 2;
-  map<string, Licenses> license_categories = 4;
-  bool                  include_dev_deps   = 5;
-  repeated string       pkg_relationships  = 6;
-  common.OS             distro             = 7;
+  repeated string       pkg_types             = 1;
+  repeated string       scanners              = 2;
+  map<string, Licenses> license_categories    = 4;
+  bool                  include_dev_deps      = 5;
+  repeated string       pkg_relationships     = 6;
+  common.OS             distro                = 7;
+  repeated string       vuln_severity_sources = 8;
+  bool                  license_full          = 9;
 
   reserved 3;  // deleted 'list_all_packages'
 }
 
 message ScanResponse {
-  common.OS       os      = 1;
-  repeated Result results = 3;
+  common.OS       os           = 1;
+  repeated Result results      = 3;
+  repeated common.Layer layers = 4;
 }
 
 // Result is the same as github.com/aquasecurity/trivy/pkg/report.Result

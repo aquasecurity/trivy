@@ -27,7 +27,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
-	"github.com/aquasecurity/trivy/pkg/scanner/local"
+	"github.com/aquasecurity/trivy/pkg/scan/local"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -232,8 +232,10 @@ func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.A
 
 	k8sScanner := k8s.NewKubernetesScanner()
 	scanOptions := types.ScanOptions{
-		Scanners: s.opts.Scanners,
-		PkgTypes: s.opts.PkgTypes,
+		Scanners:            s.opts.Scanners,
+		PkgTypes:            s.opts.PkgTypes,
+		PkgRelationships:    s.opts.PackageOptions.PkgRelationships,
+		VulnSeveritySources: s.opts.VulnSeveritySources,
 	}
 	for _, artifact := range artifactsData {
 		switch artifact.Kind {

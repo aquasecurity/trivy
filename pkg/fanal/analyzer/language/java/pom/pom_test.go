@@ -182,7 +182,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			a := pomAnalyzer{}
-			got, err := a.Analyze(nil, analyzer.AnalysisInput{
+			got, err := a.Analyze(t.Context(), analyzer.AnalysisInput{
 				Dir:      tt.inputDir,
 				FilePath: tt.inputFile,
 				Content:  f,
@@ -191,8 +191,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 				},
 			})
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)

@@ -1,7 +1,6 @@
 package clean_test
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -130,7 +129,7 @@ func TestRun(t *testing.T) {
 				CleanOptions: tt.cleanOpts,
 			}
 
-			err := clean.Run(context.Background(), opts)
+			err := clean.Run(t.Context(), opts)
 
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -153,11 +152,11 @@ func createTestFiles(t *testing.T, dir string) {
 		"vex",
 	}
 	for _, subdir := range subdirs {
-		err := os.MkdirAll(filepath.Join(dir, subdir), 0755)
+		err := os.MkdirAll(filepath.Join(dir, subdir), 0o755)
 		require.NoError(t, err)
 
 		testFile := filepath.Join(dir, subdir, "testfile.txt")
-		err = os.WriteFile(testFile, []byte("test content"), 0644)
+		err = os.WriteFile(testFile, []byte("test content"), 0o644)
 		require.NoError(t, err)
 	}
 }

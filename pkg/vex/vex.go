@@ -15,9 +15,10 @@ import (
 )
 
 const (
-	TypeFile       SourceType = "file"
-	TypeRepository SourceType = "repo"
-	TypeOCI        SourceType = "oci"
+	TypeFile          SourceType = "file"
+	TypeRepository    SourceType = "repo"
+	TypeOCI           SourceType = "oci"
+	TypeSBOMReference SourceType = "sbom-ref"
 )
 
 // VEX represents Vulnerability Exploitability eXchange. It abstracts multiple VEX formats.
@@ -49,6 +50,8 @@ func NewSource(src string) Source {
 		return Source{Type: TypeRepository}
 	case "oci":
 		return Source{Type: TypeOCI}
+	case "sbom-ref":
+		return Source{Type: TypeSBOMReference}
 	default:
 		return Source{
 			Type:     TypeFile,
@@ -108,6 +111,13 @@ func New(ctx context.Context, report *types.Report, opts Options) (*Client, erro
 			v, err = NewOCI(report)
 			if err != nil {
 				return nil, xerrors.Errorf("VEX OCI error: %w", err)
+			} else if lo.IsNil(v) {
+				continue
+			}
+		case TypeSBOMReference:
+			v, err = NewSBOMReferenceSet(report)
+			if err != nil {
+				return nil, xerrors.Errorf("failed to create set of external VEX documents: %w", err)
 			} else if v == nil {
 				continue
 			}
@@ -135,7 +145,7 @@ func (c *Client) NotAffected(vuln types.DetectedVulnerability, product, subCompo
 }
 
 func filterVulnerabilities(result *types.Result, bom *core.BOM, fn NotAffected) {
-	components := lo.MapEntries(bom.Components(), func(id uuid.UUID, component *core.Component) (string, *core.Component) {
+	components := lo.MapEntries(bom.Components(), func(_ uuid.UUID, component *core.Component) (string, *core.Component) {
 		return component.PkgIdentifier.UID, component
 	})
 
@@ -165,8 +175,8 @@ func filterVulnerabilities(result *types.Result, bom *core.BOM, fn NotAffected) 
 
 // reachRoot traverses the component tree from the leaf to the root and returns true if the leaf reaches the root.
 func reachRoot(leaf *core.Component, components map[uuid.UUID]*core.Component, parents map[uuid.UUID][]uuid.UUID,
-	notAffected func(c, leaf *core.Component) bool) bool {
-
+	notAffected func(c, leaf *core.Component) bool,
+) bool {
 	if notAffected(leaf, nil) {
 		return false
 	}

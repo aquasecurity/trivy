@@ -18,7 +18,7 @@ type testECRClient interface {
 }
 
 func TestCheckOptions(t *testing.T) {
-	var tests = map[string]struct {
+	tests := map[string]struct {
 		domain         string
 		expectedRegion string
 		wantErr        error
@@ -108,7 +108,7 @@ type mockedECR struct {
 	Resp ecr.GetAuthorizationTokenOutput
 }
 
-func (m mockedECR) GetAuthorizationToken(ctx context.Context, params *ecr.GetAuthorizationTokenInput, optFns ...func(*ecr.Options)) (*ecr.GetAuthorizationTokenOutput, error) {
+func (m mockedECR) GetAuthorizationToken(_ context.Context, _ *ecr.GetAuthorizationTokenInput, _ ...func(*ecr.Options)) (*ecr.GetAuthorizationTokenOutput, error) {
 	return &m.Resp, nil
 }
 
@@ -151,7 +151,7 @@ func TestECRGetCredential(t *testing.T) {
 		e := ECRClient{
 			Client: mockedECR{Resp: c.Resp},
 		}
-		username, password, err := e.GetCredential(context.Background())
+		username, password, err := e.GetCredential(t.Context())
 		if err != nil {
 			t.Fatalf("%d, unexpected error", err)
 		}

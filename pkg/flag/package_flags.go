@@ -10,7 +10,7 @@ var (
 	IncludeDevDepsFlag = Flag[bool]{
 		Name:       "include-dev-deps",
 		ConfigName: "pkg.include-dev-deps",
-		Usage:      "include development dependencies in the report (supported: npm, yarn)",
+		Usage:      "include development dependencies in the report (supported: npm, yarn, gradle)",
 	}
 	PkgTypesFlag = Flag[[]string]{
 		Name:       "pkg-types",
@@ -69,23 +69,20 @@ func (f *PackageFlagGroup) Flags() []Flagger {
 	}
 }
 
-func (f *PackageFlagGroup) ToOptions() (PackageOptions, error) {
-	if err := parseFlags(f); err != nil {
-		return PackageOptions{}, err
-	}
-
+func (f *PackageFlagGroup) ToOptions(opts *Options) error {
 	var relationships []ftypes.Relationship
 	for _, r := range f.PkgRelationships.Value() {
 		relationship, err := ftypes.NewRelationship(r)
 		if err != nil {
-			return PackageOptions{}, err
+			return err
 		}
 		relationships = append(relationships, relationship)
 	}
 
-	return PackageOptions{
+	opts.PackageOptions = PackageOptions{
 		IncludeDevDeps:   f.IncludeDevDeps.Value(),
 		PkgTypes:         f.PkgTypes.Value(),
 		PkgRelationships: relationships,
-	}, nil
+	}
+	return nil
 }

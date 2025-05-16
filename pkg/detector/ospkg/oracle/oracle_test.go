@@ -1,7 +1,6 @@
 package oracle
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -83,14 +82,13 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 	for testName, tt := range tests {
 		s := NewScanner()
 		t.Run(testName, func(t *testing.T) {
-			ctx := clock.With(context.Background(), tt.now)
+			ctx := clock.With(t.Context(), tt.now)
 			actual := s.IsSupportedVersion(ctx, tt.osFamily, tt.osVersion)
 			if actual != tt.expected {
 				t.Errorf("[%s] got %v, want %v", testName, actual, tt.expected)
 			}
 		})
 	}
-
 }
 
 func TestScanner_Detect(t *testing.T) {
@@ -331,7 +329,7 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 			},
-			wantErr: "failed to unmarshal advisory JSON",
+			wantErr: "failed to get Oracle Linux advisory",
 		},
 	}
 
@@ -341,15 +339,12 @@ func TestScanner_Detect(t *testing.T) {
 			defer db.Close()
 
 			s := NewScanner()
-			got, err := s.Detect(nil, tt.args.osVer, nil, tt.args.pkgs)
+			got, err := s.Detect(t.Context(), tt.args.osVer, nil, tt.args.pkgs)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
-			} else {
-				require.NoError(t, err)
 			}
-
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

@@ -35,7 +35,8 @@ type Block struct {
 }
 
 func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, parentBlock *Block, moduleSource string,
-	moduleFS fs.FS, index ...cty.Value) *Block {
+	moduleFS fs.FS, index ...cty.Value,
+) *Block {
 	if ctx == nil {
 		ctx = context.NewContext(&hcl.EvalContext{}, nil)
 	}
@@ -121,6 +122,10 @@ func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, par
 	}
 
 	return &b
+}
+
+func (b *Block) HCLBlock() *hcl.Block {
+	return b.hclBlock
 }
 
 func (b *Block) ID() string {
@@ -313,7 +318,6 @@ func (b *Block) GetAttribute(name string) *Attribute {
 // Supports special paths like "count.index," "each.key," and "each.value."
 // The path may contain indices, keys and dots (used as separators).
 func (b *Block) GetValueByPath(path string) cty.Value {
-
 	if path == "count.index" || path == "each.key" || path == "each.value" {
 		return b.Context().GetByDot(path)
 	}
@@ -424,18 +428,17 @@ func getValueByPath(val cty.Value, path []string) (cty.Value, error) {
 }
 
 func (b *Block) GetNestedAttribute(name string) (*Attribute, *Block) {
-
 	parts := strings.Split(name, ".")
 	blocks := parts[:len(parts)-1]
 	attrName := parts[len(parts)-1]
 
 	working := b
 	for _, subBlock := range blocks {
-		if checkBlock := working.GetBlock(subBlock); checkBlock == nil {
+		checkBlock := working.GetBlock(subBlock)
+		if checkBlock == nil {
 			return nil, working
-		} else {
-			working = checkBlock
 		}
+		working = checkBlock
 	}
 
 	if working != nil {
@@ -468,7 +471,6 @@ func (b *Block) FullLocalName() string {
 }
 
 func (b *Block) FullName() string {
-
 	if b.moduleBlock != nil {
 		return fmt.Sprintf(
 			"%s.%s",
@@ -478,6 +480,10 @@ func (b *Block) FullName() string {
 	}
 
 	return b.LocalName()
+}
+
+func (b *Block) ModuleBlock() *Block {
+	return b.moduleBlock
 }
 
 func (b *Block) ModuleKey() string {
@@ -507,39 +513,6 @@ func (b *Block) NameLabel() string {
 		return b.Labels()[1]
 	}
 	return ""
-}
-
-func (b *Block) HasChild(childElement string) bool {
-	return b.GetAttribute(childElement).IsNotNil() || b.GetBlock(childElement).IsNotNil()
-}
-
-func (b *Block) MissingChild(childElement string) bool {
-	if b == nil {
-		return true
-	}
-
-	return !b.HasChild(childElement)
-}
-
-func (b *Block) MissingNestedChild(name string) bool {
-	if b == nil {
-		return true
-	}
-
-	parts := strings.Split(name, ".")
-	blocks := parts[:len(parts)-1]
-	last := parts[len(parts)-1]
-
-	working := b
-	for _, subBlock := range blocks {
-		if checkBlock := working.GetBlock(subBlock); checkBlock == nil {
-			return true
-		} else {
-			working = checkBlock
-		}
-	}
-	return !working.HasChild(last)
-
 }
 
 func (b *Block) InModule() bool {
@@ -610,7 +583,7 @@ func (b *Block) ExpandBlock() error {
 		if child.Type() == "dynamic" {
 			blocks, err := child.expandDynamic()
 			if err != nil {
-				errs = multierror.Append(errs, err)
+				errs = multierror.Append(errs, fmt.Errorf("block %q: %w", child.TypeLabel(), err))
 				continue
 			}
 			expanded = append(expanded, blocks...)
@@ -637,6 +610,10 @@ func (b *Block) expandDynamic() ([]*Block, error) {
 	forEachVal, err := b.validateForEach()
 	if err != nil {
 		return nil, fmt.Errorf("invalid for-each in %s block: %w", b.FullLocalName(), err)
+	}
+
+	if !forEachVal.IsKnown() {
+		return nil, errors.New("for-each must be known")
 	}
 
 	var (

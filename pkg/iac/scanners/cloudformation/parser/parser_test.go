@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"strings"
@@ -14,16 +13,13 @@ import (
 )
 
 func parseFile(t *testing.T, source, name string) (FileContexts, error) {
-	tmp, err := os.MkdirTemp(os.TempDir(), "defsec")
-	require.NoError(t, err)
-	defer func() { _ = os.RemoveAll(tmp) }()
-	require.NoError(t, os.WriteFile(filepath.Join(tmp, name), []byte(source), 0600))
+	tmp := t.TempDir()
+	require.NoError(t, os.WriteFile(filepath.Join(tmp, name), []byte(source), 0o600))
 	fs := os.DirFS(tmp)
-	return New().ParseFS(context.TODO(), fs, ".")
+	return New().ParseFS(t.Context(), fs, ".")
 }
 
 func Test_parse_yaml(t *testing.T) {
-
 	source := `---
 Parameters:
   BucketName: 
@@ -101,7 +97,6 @@ func Test_parse_json(t *testing.T) {
 }
 
 func Test_parse_yaml_with_map_ref(t *testing.T) {
-
 	source := `---
 Parameters:
   BucketName: 
@@ -138,7 +133,6 @@ Resources:
 }
 
 func Test_parse_yaml_with_intrinsic_functions(t *testing.T) {
-
 	source := `---
 Parameters:
   BucketName: 
@@ -232,7 +226,6 @@ Resources:
 }
 
 func TestParse_WithParameters(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"main.yaml": `AWSTemplateFormatVersion: 2010-09-09
 Parameters:
@@ -252,7 +245,7 @@ Resources:
 	}
 	p := New(WithParameters(params))
 
-	files, err := p.ParseFS(context.TODO(), fs, ".")
+	files, err := p.ParseFS(t.Context(), fs, ".")
 	require.NoError(t, err)
 	require.Len(t, files, 1)
 
@@ -289,7 +282,7 @@ Resources:
 
 	p := New(WithParameterFiles("params.json"))
 
-	files, err := p.ParseFS(context.TODO(), fs, ".")
+	files, err := p.ParseFS(t.Context(), fs, ".")
 	require.NoError(t, err)
 	require.Len(t, files, 1)
 
@@ -349,7 +342,7 @@ Resources:
 		WithConfigsFS(configFS),
 	)
 
-	files, err := p.ParseFS(context.TODO(), fs, ".")
+	files, err := p.ParseFS(t.Context(), fs, ".")
 	require.NoError(t, err)
 	require.Len(t, files, 2)
 
@@ -402,7 +395,7 @@ func TestJsonWithNumbers(t *testing.T) {
 		"main.json": src,
 	})
 
-	files, err := New().ParseFS(context.TODO(), fsys, ".")
+	files, err := New().ParseFS(t.Context(), fsys, ".")
 
 	require.NoError(t, err)
 	require.Len(t, files, 1)
@@ -436,7 +429,7 @@ Conditions:
 		"main.yaml": src,
 	})
 
-	files, err := New().ParseFS(context.TODO(), fsys, ".")
+	files, err := New().ParseFS(t.Context(), fsys, ".")
 	require.NoError(t, err)
 	require.Len(t, files, 1)
 }
@@ -453,7 +446,7 @@ Resources:
 		"main.yaml": src,
 	})
 
-	files, err := New().ParseFS(context.TODO(), fsys, ".")
+	files, err := New().ParseFS(t.Context(), fsys, ".")
 	require.NoError(t, err)
 	require.Len(t, files, 1)
 
@@ -479,7 +472,7 @@ Resources:
 		"main.yaml": src,
 	})
 
-	files, err := New().ParseFS(context.TODO(), fsys, ".")
+	files, err := New().ParseFS(t.Context(), fsys, ".")
 	require.NoError(t, err)
 	require.Len(t, files, 1)
 

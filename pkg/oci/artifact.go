@@ -131,11 +131,11 @@ func (a *Artifact) Download(ctx context.Context, dir string, opt DownloadOption)
 	// Take the file name of the first layer if not specified
 	fileName := opt.Filename
 	if fileName == "" {
-		if v, ok := manifest.Layers[0].Annotations[titleAnnotation]; !ok {
+		v, ok := manifest.Layers[0].Annotations[titleAnnotation]
+		if !ok {
 			return xerrors.Errorf("annotation %s is missing", titleAnnotation)
-		} else {
-			fileName = v
 		}
+		fileName = v
 	}
 
 	layerMediaType, err := layer.MediaType()
@@ -256,7 +256,7 @@ func shouldTryOtherRepo(err error) bool {
 	for _, diagnostic := range terr.Errors {
 		// For better user experience
 		if diagnostic.Code == transport.DeniedErrorCode || diagnostic.Code == transport.UnauthorizedErrorCode {
-			// e.g. https://aquasecurity.github.io/trivy/latest/docs/references/troubleshooting/#db
+			// e.g. https://trivy.dev/latest/docs/references/troubleshooting/#db
 			log.Warnf("See %s", doc.URL("/docs/references/troubleshooting/", "db"))
 			break
 		}

@@ -1,7 +1,6 @@
 package image
 
 import (
-	"context"
 	"fmt"
 	"net/http/httptest"
 	"testing"
@@ -164,16 +163,16 @@ func TestNewDockerImage(t *testing.T) {
 			wantConfigFile: &v1.ConfigFile{
 				Architecture:  "amd64",
 				Container:     "7f4a36a667d138b079b5ff059485ff65bfbb5ebc48f24a89f983b918e73f4f28",
-				Created:       v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 686519038, time.UTC)},
+				Created:       v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 6, 686519038, time.UTC)},
 				DockerVersion: "18.06.1-ce",
 				History: []v1.History{
 					{
-						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 551172402, time.UTC)},
+						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 6, 551172402, time.UTC)},
 						CreatedBy:  "/bin/sh -c #(nop) ADD file:d48cac34fac385cbc1de6adfdd88300f76f9bbe346cd17e64fd834d042a98326 in / ",
 						EmptyLayer: false,
 					},
 					{
-						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 686519038, time.UTC)},
+						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 6, 686519038, time.UTC)},
 						CreatedBy:  "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
 						Comment:    "",
 						EmptyLayer: true,
@@ -223,16 +222,16 @@ func TestNewDockerImage(t *testing.T) {
 			wantConfigFile: &v1.ConfigFile{
 				Architecture:  "amd64",
 				Container:     "7f4a36a667d138b079b5ff059485ff65bfbb5ebc48f24a89f983b918e73f4f28",
-				Created:       v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 686519038, time.UTC)},
+				Created:       v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 6, 686519038, time.UTC)},
 				DockerVersion: "18.06.1-ce",
 				History: []v1.History{
 					{
-						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 551172402, time.UTC)},
+						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 6, 551172402, time.UTC)},
 						CreatedBy:  "/bin/sh -c #(nop) ADD file:d48cac34fac385cbc1de6adfdd88300f76f9bbe346cd17e64fd834d042a98326 in / ",
 						EmptyLayer: false,
 					},
 					{
-						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 686519038, time.UTC)},
+						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 6, 686519038, time.UTC)},
 						CreatedBy:  "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
 						Comment:    "",
 						EmptyLayer: true,
@@ -275,7 +274,7 @@ func TestNewDockerImage(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.args.option.ImageSources = types.AllImageSources
-			img, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
+			img, cleanup, err := NewContainerImage(t.Context(), tt.args.imageName, tt.args.option)
 			defer cleanup()
 
 			if tt.wantErr {
@@ -393,12 +392,11 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.args.option.ImageSources = types.AllImageSources
-			_, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
+			_, cleanup, err := NewContainerImage(t.Context(), tt.args.imageName, tt.args.option)
 			defer cleanup()
 
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr, err)
+				require.ErrorContains(t, err, tt.wantErr, err)
 			} else {
 				require.NoError(t, err)
 			}
@@ -488,8 +486,7 @@ func TestNewArchiveImage(t *testing.T) {
 			img, err := NewArchiveImage(tt.args.fileName)
 			switch {
 			case tt.wantErr != "":
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
 			default:
 				require.NoError(t, err, tt.name)
@@ -544,7 +541,7 @@ func TestDockerPlatformArguments(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			imageName := fmt.Sprintf("%s/library/alpine:3.10", serverAddr)
 			tt.args.option.ImageSources = types.AllImageSources
-			_, cleanup, err := NewContainerImage(context.Background(), imageName, tt.args.option)
+			_, cleanup, err := NewContainerImage(t.Context(), imageName, tt.args.option)
 			defer cleanup()
 
 			if tt.wantErr != "" {

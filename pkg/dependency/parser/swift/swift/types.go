@@ -1,5 +1,9 @@
 package swift
 
+import (
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
+)
+
 type LockFile struct {
 	Object  Object `json:"object"`
 	Pins    []Pin  `json:"pins"`
@@ -13,10 +17,9 @@ type Object struct {
 type Pin struct {
 	Package       string `json:"package"`
 	RepositoryURL string `json:"repositoryURL"` // Package.revision v1
-	Location      string `json:"location"`      // Package.revision v2
+	Loc           string `json:"location"`      // Package.revision v2
 	State         State  `json:"state"`
-	StartLine     int
-	EndLine       int
+	xjson.Location
 }
 
 type State struct {
