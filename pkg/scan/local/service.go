@@ -335,7 +335,6 @@ func (s Service) scanApplicationLicenses(apps []ftypes.Application, scanner lice
 				Licenses: langLicenses,
 			})
 		}
-
 	}
 
 	return results
