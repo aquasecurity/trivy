@@ -9,14 +9,14 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/aquasecurity/go-version/pkg/semver"
-	"github.com/aquasecurity/trivy/pkg/version/app"
 	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/open-policy-agent/opa/v1/bundle"
 	"github.com/samber/lo"
 
+	"github.com/aquasecurity/go-version/pkg/semver"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
+	"github.com/aquasecurity/trivy/pkg/version/app"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 

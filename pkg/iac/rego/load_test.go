@@ -9,15 +9,15 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/aquasecurity/trivy/pkg/version/app"
 	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	checks "github.com/aquasecurity/trivy-checks"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
 //go:embed all:testdata/policies
