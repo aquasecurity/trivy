@@ -1,17 +1,17 @@
 package bun
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"sort"
 	"strings"
 
+	"github.com/go-json-experiment/json"
+	"github.com/go-json-experiment/json/jsontext"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
@@ -36,9 +36,7 @@ type Workspace struct {
 
 type ParsedPackage struct {
 	Identifier string
-	Path       string
 	Meta       map[string]any
-	Integrity  string
 	xjson.Location
 }
 
@@ -53,7 +51,7 @@ func NewParser() *Parser {
 }
 
 func (p *ParsedPackage) UnmarshalJSON(data []byte) error {
-	var raw []json.RawMessage
+	var raw []jsontext.Value
 	if err := json.Unmarshal(data, &raw); err != nil {
 		return fmt.Errorf("expected package format: %w", err)
 	}
@@ -65,19 +63,8 @@ func (p *ParsedPackage) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if len(raw) > 1 {
-		if err := json.Unmarshal(raw[1], &p.Path); err != nil {
-			return err
-		}
-	}
-
 	if len(raw) > 2 {
 		if err := json.Unmarshal(raw[2], &p.Meta); err != nil {
-			return err
-		}
-	}
-	if len(raw) > 3 {
-		if err := json.Unmarshal(raw[3], &p.Integrity); err != nil {
 			return err
 		}
 	}
@@ -91,7 +78,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		return nil, nil, xerrors.Errorf("file read error: %w", err)
 	}
 	if err := xjson.UnmarshalJSONC(data, &lockFile); err != nil {
-		return nil, nil, xerrors.Errorf("decode error: %w", err)
+		return nil, nil, xerrors.Errorf("JSON decode error: %w", err)
 	}
 
 	pkgs := make(map[string]ftypes.Package, len(lockFile.Packages))
@@ -100,27 +87,13 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	directDeps := set.New[string]()
 
 	for _, ws := range lockFile.Workspaces {
-		for name := range ws.Dependencies {
-			directDeps.Append(name)
-		}
-		for name := range ws.DevDependencies {
-			directDeps.Append(name)
-		}
-		for name := range ws.PeerDependencies {
-			directDeps.Append(name)
-		}
-		for name := range ws.OptionalDependencies {
-			directDeps.Append(name)
-		}
+		directDeps.Append(lo.Keys(ws.Dependencies)...)
+		directDeps.Append(lo.Keys(ws.DevDependencies)...)
+		directDeps.Append(lo.Keys(ws.PeerDependencies)...)
+		directDeps.Append(lo.Keys(ws.OptionalDependencies)...)
 	}
 	for pkgName, parsed := range lockFile.Packages {
-		idx := strings.LastIndex(parsed.Identifier, "@")
-		if idx == -1 || idx == 0 {
-			p.logger.Warn("Invalid package identifier", log.String("identifier", parsed.Identifier), log.Err(err))
-			continue
-		}
-
-		pkgVersion := parsed.Identifier[idx+1:]
+		pkgVersion := strings.TrimPrefix(parsed.Identifier, pkgName+"@")
 		if strings.HasPrefix(pkgVersion, "workspace") {
 			pkgVersion = lockFile.Workspaces[pkgName].Version
 		}
@@ -143,6 +116,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		}
 
 		if len(depNames) > 0 {
+			sort.Strings(depNames)
 			deps = append(deps, ftypes.Dependency{
 				ID:        pkgId,
 				DependsOn: depNames,
@@ -154,10 +128,12 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			return pkgs[dep].ID
 		})
 	}
+	pkgSlice := lo.Values(pkgs)
+	sort.Sort(ftypes.Packages(pkgSlice))
 	sort.Sort(deps)
-	return utils.UniquePackages(lo.Values(pkgs)), deps, nil
+	return pkgSlice, deps, nil
 }
 
 func packageID(name, version string) string {
-	return dependency.ID(ftypes.Npm, name, version)
+	return dependency.ID(ftypes.Bun, name, version)
 }

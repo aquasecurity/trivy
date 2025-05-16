@@ -16,12 +16,18 @@ func TestParse(t *testing.T) {
 		file     string // Test input file
 		want     []ftypes.Package
 		wantDeps []ftypes.Dependency
+		wantErr  string
 	}{
 		{
 			name:     "normal",
 			file:     "testdata/bun_happy.lock",
 			want:     normalPkgs,
 			wantDeps: normalDeps,
+		},
+		{
+			name:    "invalid lockfile",
+			file:    "testdata/bun_invalid.lock",
+			wantErr: "JSON decode error",
 		},
 		{
 			name:     "multiple workspaces",
@@ -37,8 +43,11 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 
 			got, deps, err := NewParser().Parse(f)
+			if tt.wantErr != "" {
+				assert.ErrorContains(t, err, tt.wantErr)
+				return
+			}
 			require.NoError(t, err)
-
 			assert.Equal(t, tt.want, got)
 			if tt.wantDeps != nil {
 				assert.Equal(t, tt.wantDeps, deps)
