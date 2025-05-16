@@ -114,11 +114,9 @@ func (c *Client) NeedsUpdate(ctx context.Context, cliVersion string, skip bool) 
 	// - trivy-db was downloaded with `oras`. In this case user can use `--skip-db-update` (like for air-gapped) or re-download trivy-db.
 	// - trivy-db was corrupted while copying from tmp directory to cache directory. We should update this trivy-db.
 	// We can't detect these cases, so we will show warning for users who use oras + air-gapped.
-	if meta.DownloadedAt.IsZero() {
-		meta = metadata.Metadata{Version: meta.Version}
-		if !skip {
-			log.WarnContext(ctx, "Trivy DB may be corrupted and will be re-downloaded. If you manually downloaded DB - use the `--skip-db-update` flag to skip updating DB.")
-		}
+	if meta.DownloadedAt.IsZero() && !skip {
+		log.WarnContext(ctx, "Trivy DB may be corrupted and will be re-downloaded. If you manually downloaded DB - use the `--skip-db-update` flag to skip updating DB.")
+		return true, nil
 	}
 
 	if skip && noRequiredFiles {
