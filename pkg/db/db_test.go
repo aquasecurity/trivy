@@ -19,6 +19,8 @@ func TestClient_NeedsUpdate(t *testing.T) {
 	timeNextUpdateDay1 := time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC)
 	timeNextUpdateDay2 := time.Date(2019, 10, 2, 0, 0, 0, 0, time.UTC)
 
+	timeDownloadAt := time.Date(2019, 9, 30, 22, 30, 0, 0, time.UTC)
+
 	tests := []struct {
 		name         string
 		skip         bool
@@ -57,11 +59,12 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			want: true,
 		},
 		{
-			name:         "happy path with --skip-update",
+			name:         "happy path with --skip-db-update",
 			dbFileExists: true,
 			metadata: metadata.Metadata{
-				Version:    db.SchemaVersion,
-				NextUpdate: timeNextUpdateDay1,
+				Version:      db.SchemaVersion,
+				NextUpdate:   timeNextUpdateDay1,
+				DownloadedAt: timeDownloadAt,
 			},
 			skip: true,
 			want: false,
@@ -70,8 +73,9 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			name:         "skip downloading DB",
 			dbFileExists: true,
 			metadata: metadata.Metadata{
-				Version:    db.SchemaVersion,
-				NextUpdate: timeNextUpdateDay2,
+				Version:      db.SchemaVersion,
+				NextUpdate:   timeNextUpdateDay2,
+				DownloadedAt: timeDownloadAt,
 			},
 			want: false,
 		},
@@ -79,34 +83,36 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			name:         "newer schema version",
 			dbFileExists: true,
 			metadata: metadata.Metadata{
-				Version:    db.SchemaVersion + 1,
-				NextUpdate: timeNextUpdateDay2,
+				Version:      db.SchemaVersion + 1,
+				NextUpdate:   timeNextUpdateDay2,
+				DownloadedAt: timeDownloadAt,
 			},
 			wantErr: fmt.Sprintf("the version of DB schema doesn't match. Local DB: %d, Expected: %d",
 				db.SchemaVersion+1, db.SchemaVersion),
 		},
 		{
-			name:         "--skip-update without trivy.db on the first run",
+			name:         "--skip-db-update without trivy.db on the first run",
 			dbFileExists: false,
 			skip:         true,
-			wantErr:      "--skip-update cannot be specified on the first run",
+			wantErr:      "--skip-db-update cannot be specified on the first run",
 		},
 		{
-			name:         "--skip-update without metadata.json on the first run",
+			name:         "--skip-db-update without metadata.json on the first run",
 			dbFileExists: true,
 			metadata:     metadata.Metadata{},
 			skip:         true,
-			wantErr:      "--skip-update cannot be specified on the first run",
+			wantErr:      "--skip-db-update cannot be specified on the first run",
 		},
 		{
-			name:         "--skip-update with different schema version",
+			name:         "--skip-db-update with different schema version",
 			dbFileExists: true,
 			metadata: metadata.Metadata{
-				Version:    0,
-				NextUpdate: timeNextUpdateDay1,
+				Version:      0,
+				NextUpdate:   timeNextUpdateDay1,
+				DownloadedAt: timeDownloadAt,
 			},
 			skip: true,
-			wantErr: fmt.Sprintf("--skip-update cannot be specified with the old DB schema. Local DB: %d, Expected: %d",
+			wantErr: fmt.Sprintf("--skip-db-update cannot be specified with the old DB schema. Local DB: %d, Expected: %d",
 				0, db.SchemaVersion),
 		},
 		{
@@ -115,7 +121,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			metadata: metadata.Metadata{
 				Version:      db.SchemaVersion,
 				NextUpdate:   timeNextUpdateDay1,
-				DownloadedAt: time.Date(2019, 9, 30, 22, 30, 0, 0, time.UTC),
+				DownloadedAt: timeDownloadAt,
 			},
 			want: true,
 		},
@@ -128,6 +134,40 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				DownloadedAt: time.Date(2019, 9, 30, 23, 30, 0, 0, time.UTC),
 			},
 			want: false,
+		},
+		{
+			name:         "DownloadedAt is zero, skip is false",
+			dbFileExists: true,
+			skip:         false,
+			metadata: metadata.Metadata{
+				Version:      db.SchemaVersion,
+				DownloadedAt: time.Time{}, // zero time
+				NextUpdate:   timeNextUpdateDay1,
+			},
+			want: true,
+		},
+		{
+			name:         "DownloadedAt is zero, skip is true",
+			dbFileExists: true,
+			skip:         true,
+			metadata: metadata.Metadata{
+				Version:      db.SchemaVersion,
+				DownloadedAt: time.Time{}, // zero time
+				NextUpdate:   timeNextUpdateDay1,
+			},
+			want: false,
+		},
+		{
+			name:         "DownloadedAt is zero, skip is true, old schema version",
+			dbFileExists: true,
+			skip:         true,
+			metadata: metadata.Metadata{
+				Version:      0,
+				DownloadedAt: time.Time{}, // zero time
+				NextUpdate:   timeNextUpdateDay1,
+			},
+			wantErr: "--skip-db-update cannot be specified with the old DB schema. Local DB: 0, Expected: 2",
+			want:    false,
 		},
 	}
 
