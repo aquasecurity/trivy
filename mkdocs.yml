@@ -54,6 +54,7 @@ nav:
           - Vulnerability: docs/scanner/vulnerability.md
           - Misconfiguration:
               - Overview: docs/scanner/misconfiguration/index.md
+              - Configuration: docs/scanner/misconfiguration/config/config.md
               - Policy:
                   - Built-in Checks: docs/scanner/misconfiguration/check/builtin.md
               - Custom Checks:
