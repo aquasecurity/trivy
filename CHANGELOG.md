@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.63.0](https://github.com/aquasecurity/trivy/compare/v0.62.0...v0.63.0) (2025-05-16)
+
+
+### Features
+
+* add JSONC support for comments and trailing commas ([#8862](https://github.com/aquasecurity/trivy/issues/8862)) ([0b0e406](https://github.com/aquasecurity/trivy/commit/0b0e4061ef955efc0f94280d2d390f11ff6e2409))
+* **go:** support license scanning in both GOPATH and vendor ([#8843](https://github.com/aquasecurity/trivy/issues/8843)) ([26437be](https://github.com/aquasecurity/trivy/commit/26437be083960d17bee8b1b37b8a6780eff07981))
+* **license:** scan vendor directory for license for go.mod files ([#8689](https://github.com/aquasecurity/trivy/issues/8689)) ([dd6a6e5](https://github.com/aquasecurity/trivy/commit/dd6a6e50a44b7b543fd9dba634da599a76650acb))
+* **misconf:** add misconfiguration location to junit template ([#8793](https://github.com/aquasecurity/trivy/issues/8793)) ([a516775](https://github.com/aquasecurity/trivy/commit/a516775da6fda92a55a62418a081561127a1d5ca))
+
+
+### Bug Fixes
+
+* **cli:** don't use allow values for `--compliance` flag ([#8881](https://github.com/aquasecurity/trivy/issues/8881)) ([35e8889](https://github.com/aquasecurity/trivy/commit/35e88890c3c201b3eb11f95376172e57bf44df4b))
+* filter all files when processing files installed from package managers ([#8842](https://github.com/aquasecurity/trivy/issues/8842)) ([6ebde88](https://github.com/aquasecurity/trivy/commit/6ebde88dbcaf22f25932bad4844b3c9eaca90560))
+* **java:** exclude dev dependencies in gradle lockfile ([#8803](https://github.com/aquasecurity/trivy/issues/8803)) ([8995838](https://github.com/aquasecurity/trivy/commit/8995838e8d184ee9178d5b52d2d3fa9b4e403015))
+* **misconf:** check if for-each is known when expanding dyn block ([#8808](https://github.com/aquasecurity/trivy/issues/8808)) ([5706603](https://github.com/aquasecurity/trivy/commit/570660314698472ab831a7e0d55044e0b1e9c6c0))
+* more revive rules ([#8814](https://github.com/aquasecurity/trivy/issues/8814)) ([3ab459e](https://github.com/aquasecurity/trivy/commit/3ab459e3b674f319bf349d478917a531a69754c0))
+* octalLiteral from go-critic ([#8811](https://github.com/aquasecurity/trivy/issues/8811)) ([a19e0aa](https://github.com/aquasecurity/trivy/commit/a19e0aa1ba0350198c898fd57c9405fbf38fa432))
+* **redhat:** save contentSets for OS packages in fs/vm modes ([#8820](https://github.com/aquasecurity/trivy/issues/8820)) ([9256804](https://github.com/aquasecurity/trivy/commit/9256804df8577d8a746fb8b97c508c247ab82f8f))
+* **redhat:** trim invalid suffix from content_sets in manifest parsing ([#8818](https://github.com/aquasecurity/trivy/issues/8818)) ([fa1077b](https://github.com/aquasecurity/trivy/commit/fa1077bbf5863a519f6f180a600afe5e2d6180d8))
+* **server:** add missed Relationship field for `rpc` ([#8872](https://github.com/aquasecurity/trivy/issues/8872)) ([38f17c9](https://github.com/aquasecurity/trivy/commit/38f17c945e3ef7784607037c0457fb1e06a99959))
+* use-any from revive ([#8810](https://github.com/aquasecurity/trivy/issues/8810)) ([883c63b](https://github.com/aquasecurity/trivy/commit/883c63bf29568f0feab37e5d36ae1c417eef88f5))
+* **vex:** use `lo.IsNil` to check `VEX` from OCI artifact ([#8858](https://github.com/aquasecurity/trivy/issues/8858)) ([e97af98](https://github.com/aquasecurity/trivy/commit/e97af9806ab13e1ec8b792e0586b486c4982c170))
+
 ## [0.62.0](https://github.com/aquasecurity/trivy/compare/v0.61.0...v0.62.0) (2025-04-30)
 
 
