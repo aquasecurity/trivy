@@ -104,7 +104,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#skipping-files-and-directories" class="md-skip">
+        <a href="#skipping-artifacts" class="md-skip">
           Skip to content
         </a>
       
@@ -2033,6 +2033,33 @@ You're not viewing the latest version of the documentation.
   
   
   
+    <li class="md-nav__item">
+      <a href="../../scanner/misconfiguration/config/config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -2046,10 +2073,10 @@ You're not viewing the latest version of the documentation.
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_2_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_2_3" >
         
           
-          <label class="md-nav__link" for="__nav_4_3_2_2" id="__nav_4_3_2_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_3_2_3" id="__nav_4_3_2_3_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -2066,8 +2093,8 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_3_2_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_3_2_2">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_3_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_2_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2131,10 +2158,10 @@ You're not viewing the latest version of the documentation.
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_2_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_2_4" >
         
           
-          <label class="md-nav__link" for="__nav_4_3_2_3" id="__nav_4_3_2_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_3_2_4" id="__nav_4_3_2_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -2151,8 +2178,8 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_3_2_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_3_2_3">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_3_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_2_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -4127,6 +4154,17 @@ You're not viewing the latest version of the documentation.
     <span class="md-ellipsis">
       
         File patterns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skip-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skip Resources
       
     </span>
   </a>
@@ -7816,6 +7854,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#skip-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skip Resources
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -7841,8 +7890,8 @@ You're not viewing the latest version of the documentation.
   
 
 
-<h1 id="skipping-files-and-directories">Skipping Files and Directories<a class="headerlink" href="#skipping-files-and-directories" title="Permanent link">&para;</a></h1>
-<p>This section details ways to specify the files and directories that Trivy should not scan.</p>
+<h1 id="skipping-artifacts">Skipping Artifacts<a class="headerlink" href="#skipping-artifacts" title="Permanent link">&para;</a></h1>
+<p>This section details ways to specify the files, directories and resources that Trivy should not scan.</p>
 <h2 id="skip-files">Skip Files<a class="headerlink" href="#skip-files" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -7978,7 +8027,9 @@ For example, it may be useful when your file name of Dockerfile doesn't match th
 <p>A file pattern contains the analyzer it is used for, and the pattern itself, joined by a semicolon. For example:
 <div class="highlight"><pre><span></span><code>--file-patterns &quot;dockerfile:.*.docker&quot; --file-patterns &quot;kubernetes:*.tpl&quot; --file-patterns &quot;pip:requirements-.*\.txt&quot;
 </code></pre></div></p>
-<p>The prefixes are listed <a href="https://github.com/aquasecurity/trivy/tree/9256804df8577d8a746fb8b97c508c247ab82f8f/pkg/fanal/analyzer/const.go">here</a></p>
+<p>The prefixes are listed <a href="https://github.com/aquasecurity/trivy/tree/239f65a45cc4b56091f0dab152e569e272fc48d2/pkg/fanal/analyzer/const.go">here</a></p>
+<h2 id="skip-resources">Skip Resources<a class="headerlink" href="#skip-resources" title="Permanent link">&para;</a></h2>
+<p>You can skip IaC resources by providing inline comments. More details are provided <a href="../../scanner/misconfiguration/config/config/#skipping-resources-by-inline-comments">here</a></p>
 <div class="footnote">
 <hr />
 <ol>
