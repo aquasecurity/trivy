@@ -34,6 +34,21 @@ func Test_RegoScanning_Deny(t *testing.T) {
 
 	srcFS := CreateFS(t, map[string]string{
 		"policies/test.rego": `
+# METADATA
+# title: Custom policy
+# description: Custom policy for testing
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   id: AVD-BAR-0001
+#   avd_id: AVD-BAR-0001
+#   provider: custom
+#   service: custom
+#   severity: LOW
+#   short_code: custom-policy
+#   recommended_action: Custom policy for testing
+
 package defsec.test
 
 deny {
@@ -67,7 +82,21 @@ func Test_RegoScanning_AbsolutePolicyPath_Deny(t *testing.T) {
 
 	tmp := t.TempDir()
 	require.NoError(t, os.Mkdir(filepath.Join(tmp, "policies"), 0o755))
-	require.NoError(t, os.WriteFile(filepath.Join(tmp, "policies", "test.rego"), []byte(`package defsec.test
+	require.NoError(t, os.WriteFile(filepath.Join(tmp, "policies", "test.rego"), []byte(`# METADATA
+# title: Custom policy
+# description: Custom policy for testing
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   id: AVD-BAR-0001
+#   avd_id: AVD-BAR-0001
+#   provider: custom
+#   service: custom
+#   severity: LOW
+#   short_code: custom-policy
+#   recommended_action: Custom policy for testing
+package defsec.test
 
 deny {
     input.evil
@@ -98,7 +127,21 @@ deny {
 
 func Test_RegoScanning_Allow(t *testing.T) {
 	srcFS := CreateFS(t, map[string]string{
-		"policies/test.rego": `
+		"policies/test.rego": `# METADATA
+# title: Custom policy
+# description: Custom policy for testing
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   id: AVD-BAR-0001
+#   avd_id: AVD-BAR-0001
+#   provider: custom
+#   service: custom
+#   severity: LOW
+#   short_code: custom-policy
+#   recommended_action: Custom policy for testing
+
 package defsec.test
 
 deny {
@@ -132,7 +175,21 @@ func Test_RegoScanning_WithRuntimeValues(t *testing.T) {
 	t.Setenv("DEFSEC_RUNTIME_VAL", "AOK")
 
 	srcFS := CreateFS(t, map[string]string{
-		"policies/test.rego": `
+		"policies/test.rego": `# METADATA
+# title: Custom policy
+# description: Custom policy for testing
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   id: AVD-BAR-0001
+#   avd_id: AVD-BAR-0001
+#   provider: custom
+#   service: custom
+#   severity: LOW
+#   short_code: custom-policy
+#   recommended_action: Custom policy for testing
+
 package defsec.test
 
 deny_evil {
@@ -162,7 +219,21 @@ deny_evil {
 
 func Test_RegoScanning_WithDenyMessage(t *testing.T) {
 	srcFS := CreateFS(t, map[string]string{
-		"policies/test.rego": `
+		"policies/test.rego": `# METADATA
+# title: Custom policy
+# description: Custom policy for testing
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   id: AVD-BAR-0001
+#   avd_id: AVD-BAR-0001
+#   provider: custom
+#   service: custom
+#   severity: LOW
+#   short_code: custom-policy
+#   recommended_action: Custom policy for testing
+
 package defsec.test
 
 deny[msg] {
@@ -196,6 +267,21 @@ deny[msg] {
 func Test_RegoScanning_WithDenyMetadata_ImpliedPath(t *testing.T) {
 	srcFS := CreateFS(t, map[string]string{
 		"policies/test.rego": `
+# METADATA
+# title: Custom policy
+# description: Custom policy for testing
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   id: AVD-BAR-0001
+#   avd_id: AVD-BAR-0001
+#   provider: custom
+#   service: custom
+#   severity: LOW
+#   short_code: custom-policy
+#   recommended_action: Custom policy for testing
+
 package defsec.test
 
 deny[res] {
@@ -236,6 +322,21 @@ deny[res] {
 func Test_RegoScanning_WithDenyMetadata_PersistedPath(t *testing.T) {
 	srcFS := CreateFS(t, map[string]string{
 		"policies/test.rego": `
+# METADATA
+# title: Custom policy
+# description: Custom policy for testing
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   id: AVD-BAR-0001
+#   avd_id: AVD-BAR-0001
+#   provider: custom
+#   service: custom
+#   severity: LOW
+#   short_code: custom-policy
+#   recommended_action: Custom policy for testing
+
 package defsec.test
 
 deny[res] {
@@ -337,7 +438,21 @@ deny[res] {
 
 func Test_RegoScanning_WithMatchingInputSelector(t *testing.T) {
 	srcFS := CreateFS(t, map[string]string{
-		"policies/test.rego": `
+		"policies/test.rego": `# METADATA
+# title: Custom policy
+# description: Custom policy for testing
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   id: AVD-BAR-0001
+#   avd_id: AVD-BAR-0001
+#   provider: custom
+#   service: custom
+#   severity: LOW
+#   short_code: custom-policy
+#   recommended_action: Custom policy for testing
+
 package defsec.test
 
 __rego_input__ := {
@@ -405,7 +520,21 @@ deny {
 func Test_RegoScanning_NoTracingByDefault(t *testing.T) {
 
 	srcFS := CreateFS(t, map[string]string{
-		"policies/test.rego": `
+		"policies/test.rego": `# METADATA
+# title: Custom policy
+# description: Custom policy for testing
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   id: AVD-BAR-0001
+#   avd_id: AVD-BAR-0001
+#   provider: custom
+#   service: custom
+#   severity: LOW
+#   short_code: custom-policy
+#   recommended_action: Custom policy for testing
+
 package defsec.test
 
 deny {
@@ -437,7 +566,21 @@ deny {
 func Test_RegoScanning_GlobalTracingEnabled(t *testing.T) {
 
 	srcFS := CreateFS(t, map[string]string{
-		"policies/test.rego": `
+		"policies/test.rego": `# METADATA
+# title: Custom policy
+# description: Custom policy for testing
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   id: AVD-BAR-0001
+#   avd_id: AVD-BAR-0001
+#   provider: custom
+#   service: custom
+#   severity: LOW
+#   short_code: custom-policy
+#   recommended_action: Custom policy for testing
+
 package defsec.test
 
 deny {
@@ -473,7 +616,20 @@ deny {
 func Test_RegoScanning_PerResultTracingEnabled(t *testing.T) {
 
 	srcFS := CreateFS(t, map[string]string{
-		"policies/test.rego": `
+		"policies/test.rego": `# METADATA
+# title: Custom policy
+# description: Custom policy for testing
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   id: AVD-BAR-0001
+#   avd_id: AVD-BAR-0001
+#   provider: custom
+#   service: custom
+#   severity: LOW
+#   short_code: custom-policy
+#   recommended_action: Custom policy for testing
 package defsec.test
 
 deny {
@@ -689,7 +845,21 @@ deny {
 
 func Test_RegoScanning_CustomData(t *testing.T) {
 	srcFS := CreateFS(t, map[string]string{
-		"policies/test.rego": `
+		"policies/test.rego": `# METADATA
+# title: Custom policy
+# description: Custom policy for testing
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   id: AVD-BAR-0001
+#   avd_id: AVD-BAR-0001
+#   provider: custom
+#   service: custom
+#   severity: LOW
+#   short_code: custom-policy
+#   recommended_action: Custom policy for testing
+
 package defsec.test
 import data.settings.DS123.foo_bar_baz
 
@@ -728,7 +898,21 @@ deny {
 
 func Test_RegoScanning_InvalidFS(t *testing.T) {
 	srcFS := CreateFS(t, map[string]string{
-		"policies/test.rego": `
+		"policies/test.rego": `# METADATA
+# title: Custom policy
+# description: Custom policy for testing
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   id: AVD-BAR-0001
+#   avd_id: AVD-BAR-0001
+#   provider: custom
+#   service: custom
+#   severity: LOW
+#   short_code: custom-policy
+#   recommended_action: Custom policy for testing
+
 package defsec.test
 import data.settings.DS123.foo_bar_baz
 

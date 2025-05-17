@@ -971,7 +971,22 @@ resource "aws_s3_bucket_versioning" "test" {
 `)},
 	}
 
-	check := `package test
+	check := `# METADATA
+# title: Custom policy
+# description: Custom policy for testing
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   id: AVD-BAR-0001
+#   avd_id: AVD-BAR-0001
+#   provider: custom
+#   service: custom
+#   severity: LOW
+#   short_code: custom-policy
+#   recommended_action: Custom policy for testing
+
+package test
 import rego.v1
 
 deny contains res if {
