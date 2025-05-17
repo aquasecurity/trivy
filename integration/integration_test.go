@@ -304,6 +304,10 @@ func compareReports(t *testing.T, wantFile, gotFile string, override func(t *tes
 	if override != nil {
 		override(t, &want, &got)
 	}
+
+	b, _ := os.ReadFile(gotFile)
+	fmt.Println(string(b))
+
 	assert.Equal(t, want, got)
 }
 

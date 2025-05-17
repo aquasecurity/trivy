@@ -5,3 +5,7 @@ var ver = "dev"
 func Version() string {
 	return ver
 }
+
+func SetVersion(v string) {
+	ver = v
+}
