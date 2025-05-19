@@ -1,11 +1,10 @@
 package licensing
 
 import (
-	"slices"
-
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing/expression"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 type ScannerOption struct {
@@ -22,24 +21,19 @@ func NewScanner(categories map[types.LicenseCategory][]string) Scanner {
 }
 
 func (s *Scanner) Scan(licenseName string) (types.LicenseCategory, string) {
-	normalized := NormalizeLicense(expression.SimpleExpr{License: licenseName})
-	var normalizedName string
-	switch normalized := normalized.(type) {
-	case expression.SimpleExpr:
-		normalizedName = normalized.License
-	case expression.CompoundExpr:
-		normalizedName = normalized.String()
+	expr := NormalizeLicense(expression.SimpleExpr{License: licenseName})
+	normalizedNames := set.New(expr.String()) // The license name with suffix (e.g. AGPL-1.0-or-later)
+	if se, ok := expr.(expression.SimpleExpr); ok {
+		normalizedNames.Append(se.License) // Also accept the license name without suffix (e.g. AGPL-1.0)
 	}
-	return s.LicenseCategory(licenseName, normalizedName)
+
+	return s.LicenseCategory(normalizedNames)
 }
 
-// LicenseCategory returns license category and severity for licenseName (before and after normalize)
-func (s *Scanner) LicenseCategory(licenseName, normalizedLicenseName string) (types.LicenseCategory, string) {
+// LicenseCategory returns license category and severity for licenseNames
+func (s *Scanner) LicenseCategory(licenseNames set.Set[string]) (types.LicenseCategory, string) {
 	for category, names := range s.categories {
-		if slices.Contains(names, licenseName) {
-			return category, categoryToSeverity(category).String()
-		}
-		if slices.Contains(names, normalizedLicenseName) {
+		if licenseNames.Intersection(set.New(names...)).Size() > 0 {
 			return category, categoryToSeverity(category).String()
 		}
 	}

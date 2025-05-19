@@ -429,10 +429,11 @@ func toDetectedLicense(scanner licensing.Scanner, license, pkgName, filePath str
 	var category ftypes.LicenseCategory
 	var severity, licenseText string
 	if strings.HasPrefix(license, licensing.LicenseTextPrefix) { // License text
+		licenseNames := set.New[string](license) // Add license text without changes (as in json report)
 		licenseText = strings.TrimPrefix(license, licensing.LicenseTextPrefix)
-		customLicenseText := licensing.CustomLicensePrefix + ": " + licensing.TrimLicenseText(licenseText)
-		category, severity = scanner.LicenseCategory(license, customLicenseText)
-		license = customLicenseText // use `CUSTOM LICENSE: *...` format for text licenses
+		license = licensing.CustomLicensePrefix + ": " + licensing.TrimLicenseText(licenseText) // use `CUSTOM LICENSE: *...` format for text licenses
+		licenseNames.Append(license)
+		category, severity = scanner.LicenseCategory(licenseNames)
 	} else { // License name
 		category, severity = scanner.Scan(license)
 	}
