@@ -38,7 +38,7 @@ func (s *Scanner) Scan(licenseName string) (types.LicenseCategory, string) {
 func (s *Scanner) traverseLicenseExpression(licenseName string, visited map[string]types.LicenseCategory) types.LicenseCategory {
 	category := types.CategoryUnknown
 
-	detectCategoryAndSeverity := func(expr expression.Expression) expression.Expression {
+	detectCategory := func(expr expression.Expression) expression.Expression {
 		// Skip if we already checked this license
 		if cat, ok := visited[licenseName]; ok {
 			category = cat
