@@ -56,7 +56,7 @@ func (s *Scanner) traverseLicenseExpression(licenseName string, visited map[stri
 		return expr
 	}
 
-	_, err := expression.Normalize(licenseName, NormalizeLicense, detectCategoryAndSeverity)
+	_, err := expression.Normalize(licenseName, NormalizeLicense, detectCategory)
 	if err != nil {
 		log.WithPrefix("license").Debug("Unable to detect license category", log.String("license", licenseName), log.Err(err))
 		return types.CategoryUnknown
