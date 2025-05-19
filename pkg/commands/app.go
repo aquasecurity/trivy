@@ -1169,6 +1169,8 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlagGroup := flag.NewScanFlagGroup()
 	scanFlagGroup.Scanners = scanners // allow only 'vuln' and 'license' options for '--scanners'
 	scanFlagGroup.Parallel = nil      // disable '--parallel'
+	scanFlagGroup.SkipFiles = nil     // disable `--skip-files` since `sbom` command only supports scanning one file.
+	scanFlagGroup.SkipDirs = nil      // disable `--skip-dirs` since `sbom` command only supports scanning one file.
 
 	licenseFlagGroup := flag.NewLicenseFlagGroup()
 	// License full-scan and confidence-level are for file content only
