@@ -13,7 +13,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
@@ -40,14 +39,10 @@ type ParsedPackage struct {
 	xjson.Location
 }
 
-type Parser struct {
-	logger *log.Logger
-}
+type Parser struct{}
 
 func NewParser() *Parser {
-	return &Parser{
-		logger: log.WithPrefix("bun"),
-	}
+	return &Parser{}
 }
 
 func (p *ParsedPackage) UnmarshalJSON(data []byte) error {
@@ -85,10 +80,12 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	var deps ftypes.Dependencies
 
 	directDeps := set.New[string]()
+	devDeps := set.New[string]()
 
 	for _, ws := range lockFile.Workspaces {
 		directDeps.Append(lo.Keys(ws.Dependencies)...)
 		directDeps.Append(lo.Keys(ws.DevDependencies)...)
+		devDeps.Append(lo.Keys(ws.DevDependencies)...)
 		directDeps.Append(lo.Keys(ws.PeerDependencies)...)
 		directDeps.Append(lo.Keys(ws.OptionalDependencies)...)
 	}
@@ -99,13 +96,14 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		}
 		pkgId := packageID(pkgName, pkgVersion)
 		isDirect := directDeps.Contains(pkgName)
+		isDev := devDeps.Contains(pkgName)
 
 		newPkg := ftypes.Package{
 			ID:           pkgId,
 			Name:         pkgName,
 			Version:      pkgVersion,
 			Relationship: lo.Ternary(isDirect, ftypes.RelationshipDirect, ftypes.RelationshipIndirect),
-			Dev:          false,
+			Dev:          isDev,
 			Locations:    []ftypes.Location{ftypes.Location(parsed.Location)},
 		}
 		pkgs[pkgName] = newPkg
@@ -127,6 +125,20 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		deps[i].DependsOn = lo.Map(deps[i].DependsOn, func(dep string, _ int) string {
 			return pkgs[dep].ID
 		})
+		idx := strings.LastIndex(deps[i].ID, "@")
+		depName := deps[i].ID[:idx]
+		// check for direct dev dependency
+		if pkg, ok := pkgs[depName]; ok && pkg.Dev {
+			// mark all nested dependencies as dev
+			for _, dep := range deps[i].DependsOn {
+				idx := strings.LastIndex(dep, "@")
+				depName := dep[:idx]
+				if dependentPkg, ok := pkgs[depName]; ok {
+					dependentPkg.Dev = true
+					pkgs[depName] = dependentPkg
+				}
+			}
+		}
 	}
 	pkgSlice := lo.Values(pkgs)
 	sort.Sort(ftypes.Packages(pkgSlice))

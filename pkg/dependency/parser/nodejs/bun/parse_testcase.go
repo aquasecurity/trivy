@@ -11,6 +11,7 @@ var (
 			Name:         "@types/bun",
 			Version:      "1.2.13",
 			Relationship: ftypes.RelationshipDirect,
+			Dev:          true,
 			Locations: ftypes.Locations{
 				{
 					StartLine: 18,
@@ -23,6 +24,7 @@ var (
 			Name:         "typescript",
 			Version:      "5.8.3",
 			Relationship: ftypes.RelationshipDirect,
+			Dev:          false,
 			Locations: ftypes.Locations{
 				{
 					StartLine: 24,
@@ -35,6 +37,7 @@ var (
 			Name:         "zod",
 			Version:      "3.24.4",
 			Relationship: ftypes.RelationshipDirect,
+			Dev:          false,
 			Locations: ftypes.Locations{
 				{
 					StartLine: 28,
@@ -47,6 +50,7 @@ var (
 			Name:         "@types/node",
 			Version:      "22.15.18",
 			Relationship: ftypes.RelationshipIndirect,
+			Dev:          true,
 			Locations: ftypes.Locations{
 				{
 					StartLine: 20,
@@ -59,6 +63,7 @@ var (
 			Name:         "bun-types",
 			Version:      "1.2.13",
 			Relationship: ftypes.RelationshipIndirect,
+			Dev:          true,
 			Locations: ftypes.Locations{
 				{
 					StartLine: 22,
@@ -71,6 +76,7 @@ var (
 			Name:         "undici-types",
 			Version:      "6.21.0",
 			Relationship: ftypes.RelationshipIndirect,
+			Dev:          false,
 			Locations: ftypes.Locations{
 				{
 					StartLine: 26,
