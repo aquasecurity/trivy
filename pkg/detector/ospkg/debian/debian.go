@@ -39,6 +39,10 @@ var (
 		"12":  time.Date(2028, 6, 10, 23, 59, 59, 0, time.UTC),
 		"13":  time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
 	}
+
+	sidVersions = map[string]string{
+		"trixie/sid": "13",
+	}
 )
 
 // Scanner implements the Debian scanner
@@ -56,6 +60,10 @@ func NewScanner() *Scanner {
 // Detect scans and return vulnerabilities using Debian scanner
 func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	osVer = osver.Major(osVer)
+
+	if sidVer, ok := sidVersions[osVer]; ok {
+		osVer = sidVer
+	}
 
 	log.InfoContext(ctx, "Detecting vulnerabilities...", log.String("os_version", osVer),
 		log.Int("pkg_num", len(pkgs)))
