@@ -180,12 +180,14 @@ func (s *Scanner) scanMisconfigs(ctx context.Context, k8sArtifacts []*artifacts.
 	// and the cache created during file system scanning is removed after each scan.
 	s.opts.CacheBackend = string(cache.TypeMemory)
 
-	configReport, err := s.runner.ScanFilesystem(ctx, s.opts)
-	// remove config files after scanning
-	removeDir(dir)
+	defer func() {
+		// remove config files
+		removeDir(dir)
+		// restore cache backend
+		s.opts.CacheBackend = origCacheBackend
+	}()
 
-	// restore cache backend
-	s.opts.CacheBackend = origCacheBackend
+	configReport, err := s.runner.ScanFilesystem(ctx, s.opts)
 
 	if err != nil {
 		return nil, xerrors.Errorf("failed to scan filesystem: %w", err)
@@ -213,6 +215,7 @@ func (s *Scanner) scanMisconfigs(ctx context.Context, k8sArtifacts []*artifacts.
 
 	return resources, nil
 }
+
 func (s *Scanner) filter(ctx context.Context, r types.Report, artifact *artifacts.Artifact) (report.Resource, error) {
 	var err error
 	r, err = s.runner.Filter(ctx, s.opts, r)
