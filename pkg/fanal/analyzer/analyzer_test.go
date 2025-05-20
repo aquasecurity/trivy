@@ -531,12 +531,13 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 			ctx := t.Context()
 			err = a.AnalyzeFile(ctx, &wg, limit, got, "", tt.args.filePath, info,
 				func() (xio.ReadSeekCloserAt, error) {
-					if tt.args.testFilePath == "testdata/error" {
+					switch tt.args.testFilePath {
+					case "testdata/error":
 						return nil, xerrors.New("error")
-					} else if tt.args.testFilePath == "testdata/no-permission" {
-						os.Chmod(tt.args.testFilePath, 0000)
+					case "testdata/no-permission":
+						os.Chmod(tt.args.testFilePath, 0o000)
 						t.Cleanup(func() {
-							os.Chmod(tt.args.testFilePath, 0644)
+							os.Chmod(tt.args.testFilePath, 0o644)
 						})
 					}
 					return os.Open(tt.args.testFilePath)

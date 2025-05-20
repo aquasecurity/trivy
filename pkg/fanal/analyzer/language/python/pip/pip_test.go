@@ -163,7 +163,7 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 					pythonExecFileName = "python.exe"
 				}
 				// create temp python3 Executable
-				err = os.WriteFile(filepath.Join(tt.pythonExecDir, pythonExecFileName), nil, 0755)
+				err = os.WriteFile(filepath.Join(tt.pythonExecDir, pythonExecFileName), nil, 0o755)
 				require.NoError(t, err)
 
 				newPATH, err = filepath.Abs(tt.pythonExecDir)
@@ -245,7 +245,7 @@ func Test_pythonExecutablePath(t *testing.T) {
 			if runtime.GOOS == "windows" {
 				tt.execName += ".exe"
 			}
-			err = os.WriteFile(filepath.Join(binDir, tt.execName), nil, 0755)
+			err = os.WriteFile(filepath.Join(binDir, tt.execName), nil, 0o755)
 			require.NoError(t, err)
 
 			t.Setenv("PATH", binDir)

@@ -14,6 +14,9 @@ $ trivy rootfs /path/to/rootfs
     You should use `trivy fs` to scan your local projects in CI/CD.
     See [here](../scanner/vulnerability.md) for the differences.
 
+!!! note
+    Scanning vulnerabilities for `Red Hat` has a limitation, see the [Red Hat](../coverage/os/rhel.md#content-manifests) page for details.
+
 ## Performance Optimization
 
 By default, Trivy traverses all files from the specified root directory to find target files for scanning.

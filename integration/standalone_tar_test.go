@@ -588,7 +588,7 @@ cache:
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			configPath := filepath.Join(t.TempDir(), "trivy.yaml")
-			err := os.WriteFile(configPath, []byte(tt.configFile), 0600)
+			err := os.WriteFile(configPath, []byte(tt.configFile), 0o600)
 			require.NoError(t, err)
 
 			osArgs := []string{

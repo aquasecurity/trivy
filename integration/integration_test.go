@@ -60,9 +60,10 @@ func initDB(t *testing.T) string {
 	defer dbtest.Close()
 
 	err = metadata.NewClient(db.Dir(cacheDir)).Update(metadata.Metadata{
-		Version:    db.SchemaVersion,
-		NextUpdate: time.Now().Add(24 * time.Hour),
-		UpdatedAt:  time.Now(),
+		Version:      db.SchemaVersion,
+		NextUpdate:   time.Now().Add(24 * time.Hour),
+		UpdatedAt:    time.Now(),
+		DownloadedAt: time.Now(),
 	})
 	require.NoError(t, err)
 

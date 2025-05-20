@@ -96,10 +96,7 @@ func (p *Property) UnmarshalYAML(node *yaml.Node) error {
 	p.StartLine = node.Line
 	p.EndLine = calculateEndLine(node)
 	p.comment = node.LineComment
-	if err := setPropertyValueFromYaml(node, p); err != nil {
-		return err
-	}
-	return nil
+	return setPropertyValueFromYaml(node, p)
 }
 
 func (p *Property) UnmarshalJSONFrom(dec *jsontext.Decoder) error {

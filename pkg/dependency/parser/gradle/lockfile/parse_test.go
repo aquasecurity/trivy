@@ -25,6 +25,7 @@ func TestParser_Parse(t *testing.T) {
 					ID:      "cglib:cglib-nodep:2.1.2",
 					Name:    "cglib:cglib-nodep",
 					Version: "2.1.2",
+					Dev:     false,
 					Locations: []ftypes.Location{
 						{
 							StartLine: 4,
@@ -33,9 +34,10 @@ func TestParser_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:      "org.springframework:spring-asm:3.1.3.RELEASE",
-					Name:    "org.springframework:spring-asm",
-					Version: "3.1.3.RELEASE",
+					ID:      "junit:junit:4.13.2",
+					Name:    "junit:junit",
+					Version: "4.13.2",
+					Dev:     true,
 					Locations: []ftypes.Location{
 						{
 							StartLine: 5,
@@ -44,13 +46,26 @@ func TestParser_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:      "org.springframework:spring-beans:5.0.5.RELEASE",
-					Name:    "org.springframework:spring-beans",
-					Version: "5.0.5.RELEASE",
+					ID:      "org.springframework:spring-asm:3.1.3.RELEASE",
+					Name:    "org.springframework:spring-asm",
+					Version: "3.1.3.RELEASE",
+					Dev:     false,
 					Locations: []ftypes.Location{
 						{
 							StartLine: 6,
 							EndLine:   6,
+						},
+					},
+				},
+				{
+					ID:      "org.springframework:spring-beans:5.0.5.RELEASE",
+					Name:    "org.springframework:spring-beans",
+					Version: "5.0.5.RELEASE",
+					Dev:     false,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 7,
+							EndLine:   7,
 						},
 					},
 				},

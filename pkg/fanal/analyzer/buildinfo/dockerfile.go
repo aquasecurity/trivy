@@ -60,10 +60,11 @@ func (a dockerfileAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisI
 					}
 
 					key := strings.ToLower(workResult.Result)
-					if key == "com.redhat.component" || key == "bzcomponent" {
+					switch key {
+					case "com.redhat.component", "bzcomponent":
 						workResult, err = shlex.ProcessWordWithMatches(kvp.Value, envs)
 						component = workResult.Result
-					} else if key == "architecture" {
+					case "architecture":
 						workResult, err = shlex.ProcessWordWithMatches(kvp.Value, envs)
 						arch = workResult.Result
 					}

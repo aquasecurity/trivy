@@ -481,7 +481,7 @@ func TestFilter(t *testing.T) {
 			setup: func(t *testing.T, tmpDir string) {
 				// Create repository.yaml
 				vexDir := filepath.Join(tmpDir, ".trivy", "vex")
-				require.NoError(t, os.MkdirAll(vexDir, 0755))
+				require.NoError(t, os.MkdirAll(vexDir, 0o755))
 
 				configPath := filepath.Join(vexDir, "repository.yaml")
 				configContent := `
@@ -489,7 +489,7 @@ repositories:
   - name: default
     url: https://example.com/vex/default
     enabled: true`
-				require.NoError(t, os.WriteFile(configPath, []byte(configContent), 0644))
+				require.NoError(t, os.WriteFile(configPath, []byte(configContent), 0o644))
 			},
 			args: args{
 				report: imageReport([]types.Result{

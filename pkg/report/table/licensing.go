@@ -52,8 +52,6 @@ func (r *pkgLicenseRenderer) Render(result types.Result) {
 	r.printf("Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 
 	r.tableWriter.Render()
-
-	return
 }
 
 func (r *pkgLicenseRenderer) setHeaders() {
@@ -136,8 +134,6 @@ func (r *fileLicenseRenderer) Render(result types.Result) {
 	r.printf("Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 
 	r.tableWriter.Render()
-
-	return
 }
 
 func (r *fileLicenseRenderer) setHeaders() {

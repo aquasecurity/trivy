@@ -98,8 +98,6 @@ trivy sbom [flags] SBOM_PATH
                                         (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
       --show-suppressed                [EXPERIMENTAL] show suppressed vulnerabilities
       --skip-db-update                 skip updating vulnerability database
-      --skip-dirs strings              specify the directories or glob patterns to skip
-      --skip-files strings             specify the files or glob patterns to skip
       --skip-java-db-update            skip updating Java index database
       --skip-vex-repo-update           [EXPERIMENTAL] Skip VEX Repository update
       --table-mode strings             [EXPERIMENTAL] tables that will be displayed in 'table' format (allowed values: summary,detailed) (default [summary,detailed])

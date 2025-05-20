@@ -43,6 +43,17 @@ func TestScanner_Scan(t *testing.T) {
 			wantSeverity: "CRITICAL",
 		},
 		{
+			name: "`categories` contains license with suffix",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryNotice: {
+					"LGPL-2.0-only",
+				},
+			},
+			licenseName:  "LGPL-2.0-only",
+			wantCategory: types.CategoryNotice,
+			wantSeverity: "LOW",
+		},
+		{
 			name: "restricted",
 			categories: map[types.LicenseCategory][]string{
 				types.CategoryForbidden: {

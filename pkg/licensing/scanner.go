@@ -1,12 +1,11 @@
 package licensing
 
 import (
-	"slices"
-
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 type ScannerOption struct {
@@ -80,11 +79,18 @@ func categoryToSeverity(category types.LicenseCategory) dbTypes.Severity {
 }
 
 func (s *Scanner) licenseToCategory(license expression.SimpleExpr) types.LicenseCategory {
+	expr := NormalizeLicense(license)
+	normalizedNames := set.New(expr.String()) // The license name with suffix (e.g. AGPL-1.0-or-later)
+	if se, ok := expr.(expression.SimpleExpr); ok {
+		normalizedNames.Append(se.License) // Also accept the license name without suffix (e.g. AGPL-1.0)
+	}
+
 	for category, names := range s.categories {
-		if slices.Contains(names, license.License) {
+		if normalizedNames.Intersection(set.New(names...)).Size() > 0 {
 			return category
 		}
 	}
+
 	return types.CategoryUnknown
 }
 

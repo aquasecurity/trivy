@@ -111,7 +111,7 @@ func New(ctx context.Context, report *types.Report, opts Options) (*Client, erro
 			v, err = NewOCI(report)
 			if err != nil {
 				return nil, xerrors.Errorf("VEX OCI error: %w", err)
-			} else if v == nil {
+			} else if lo.IsNil(v) {
 				continue
 			}
 		case TypeSBOMReference:

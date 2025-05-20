@@ -104,8 +104,8 @@ func (b IntValue) GreaterThan(i int) bool {
 	return b.value > i
 }
 
-func (s IntValue) ToRego() any {
-	m := s.metadata.ToRego().(map[string]any)
-	m["value"] = s.Value()
+func (b IntValue) ToRego() any {
+	m := b.metadata.ToRego().(map[string]any)
+	m["value"] = b.Value()
 	return m
 }

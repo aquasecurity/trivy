@@ -66,7 +66,7 @@ func NewManager(cacheRoot string, opts ...ManagerOption) *Manager {
 }
 
 func (m *Manager) writeConfig(conf Config) error {
-	if err := os.MkdirAll(filepath.Dir(m.configFile), 0700); err != nil {
+	if err := os.MkdirAll(filepath.Dir(m.configFile), 0o700); err != nil {
 		return xerrors.Errorf("failed to mkdir: %w", err)
 	}
 	f, err := os.Create(m.configFile)

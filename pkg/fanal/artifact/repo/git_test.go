@@ -209,7 +209,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			name:   "dirty repository",
 			rawurl: "../../../../internal/gittest/testdata/test-repo",
 			setup: func(t *testing.T, dir string, _ cache.ArtifactCache) {
-				require.NoError(t, os.WriteFile(filepath.Join(dir, "new-file.txt"), []byte("test"), 0644))
+				require.NoError(t, os.WriteFile(filepath.Join(dir, "new-file.txt"), []byte("test"), 0o644))
 				t.Cleanup(func() {
 					require.NoError(t, os.Remove(filepath.Join(dir, "new-file.txt")))
 				})
