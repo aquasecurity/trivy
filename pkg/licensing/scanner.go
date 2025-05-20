@@ -27,18 +27,14 @@ func (s *Scanner) Scan(licenseName string) (types.LicenseCategory, string) {
 		normalizedNames.Append(se.License) // Also accept the license name without suffix (e.g. AGPL-1.0)
 	}
 
-	return s.LicenseCategory(normalizedNames)
-}
-
-// LicenseCategory returns license category and severity for licenseNames
-func (s *Scanner) LicenseCategory(licenseNames set.Set[string]) (types.LicenseCategory, string) {
 	for category, names := range s.categories {
-		if licenseNames.Intersection(set.New(names...)).Size() > 0 {
+		if normalizedNames.Intersection(set.New(names...)).Size() > 0 {
 			return category, categoryToSeverity(category).String()
 		}
 	}
 	return types.CategoryUnknown, dbTypes.SeverityUnknown.String()
 }
+
 func categoryToSeverity(category types.LicenseCategory) dbTypes.Severity {
 	switch category {
 	case types.CategoryForbidden:
