@@ -41,7 +41,7 @@ func TestParse(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			f, err := os.Open(tt.file)
 			require.NoError(t, err)
-
+			defer f.Close()
 			got, deps, err := NewParser().Parse(f)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
