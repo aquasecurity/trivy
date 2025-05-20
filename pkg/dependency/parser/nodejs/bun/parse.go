@@ -98,20 +98,21 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		isDirect := directDeps.Contains(pkgName)
 		isDev := devDeps.Contains(pkgName)
 
+		var depNames []string
+		if depMap, ok := parsed.Meta["dependencies"].(map[string]any); ok {
+			depNames = lo.Keys(depMap)
+		}
+
 		newPkg := ftypes.Package{
 			ID:           pkgId,
 			Name:         pkgName,
 			Version:      pkgVersion,
 			Relationship: lo.Ternary(isDirect, ftypes.RelationshipDirect, ftypes.RelationshipIndirect),
 			Dev:          isDev,
+			DependsOn:    depNames,
 			Locations:    []ftypes.Location{ftypes.Location(parsed.Location)},
 		}
 		pkgs[pkgName] = newPkg
-
-		var depNames []string
-		if depMap, ok := parsed.Meta["dependencies"].(map[string]any); ok {
-			depNames = lo.Keys(depMap)
-		}
 
 		if len(depNames) > 0 {
 			sort.Strings(depNames)
@@ -121,24 +122,21 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			})
 		}
 	}
+	// mark nested dependencies as dev
+	for _, pkg := range pkgs {
+		if pkg.Dev {
+			for _, pkgDependency := range pkg.DependsOn {
+				if devPackage, ok := pkgs[pkgDependency]; ok {
+					devPackage.Dev = true
+					pkgs[pkgDependency] = devPackage
+				}
+			}
+		}
+	}
 	for i := range deps {
 		deps[i].DependsOn = lo.Map(deps[i].DependsOn, func(dep string, _ int) string {
 			return pkgs[dep].ID
 		})
-		idx := strings.LastIndex(deps[i].ID, "@")
-		depName := deps[i].ID[:idx]
-		// check for direct dev dependency
-		if pkg, ok := pkgs[depName]; ok && pkg.Dev {
-			// mark all nested dependencies as dev
-			for _, dep := range deps[i].DependsOn {
-				idx := strings.LastIndex(dep, "@")
-				depName := dep[:idx]
-				if dependentPkg, ok := pkgs[depName]; ok {
-					dependentPkg.Dev = true
-					pkgs[depName] = dependentPkg
-				}
-			}
-		}
 	}
 	pkgSlice := lo.Values(pkgs)
 	sort.Sort(ftypes.Packages(pkgSlice))
