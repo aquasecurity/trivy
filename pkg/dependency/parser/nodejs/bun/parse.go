@@ -77,17 +77,17 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	pkgs := make(map[string]ftypes.Package, len(lockFile.Packages))
-	var deps ftypes.Dependencies
+	deps := make(map[string][]string)
 
 	directDeps := set.New[string]()
-	devDeps := set.New[string]()
+	prodDirectDeps := set.New[string]()
 
 	for _, ws := range lockFile.Workspaces {
 		directDeps.Append(lo.Keys(ws.Dependencies)...)
-		directDeps.Append(lo.Keys(ws.DevDependencies)...)
-		devDeps.Append(lo.Keys(ws.DevDependencies)...)
 		directDeps.Append(lo.Keys(ws.PeerDependencies)...)
 		directDeps.Append(lo.Keys(ws.OptionalDependencies)...)
+		prodDirectDeps = directDeps.Clone()
+		directDeps.Append(lo.Keys(ws.DevDependencies)...)
 	}
 	for pkgName, parsed := range lockFile.Packages {
 		pkgVersion := strings.TrimPrefix(parsed.Identifier, pkgName+"@")
@@ -96,11 +96,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		}
 		pkgId := packageID(pkgName, pkgVersion)
 		isDirect := directDeps.Contains(pkgName)
-		isDev := devDeps.Contains(pkgName)
 
-		var depNames []string
+		var dependsOn []string
 		if depMap, ok := parsed.Meta["dependencies"].(map[string]any); ok {
-			depNames = lo.Keys(depMap)
+			dependsOn = lo.Keys(depMap)
 		}
 
 		newPkg := ftypes.Package{
@@ -108,40 +107,53 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			Name:         pkgName,
 			Version:      pkgVersion,
 			Relationship: lo.Ternary(isDirect, ftypes.RelationshipDirect, ftypes.RelationshipIndirect),
-			Dev:          isDev,
-			DependsOn:    depNames,
+			Dev:          true, // Mark all dependencies as Dev. We will handle them later.
 			Locations:    []ftypes.Location{ftypes.Location(parsed.Location)},
 		}
 		pkgs[pkgName] = newPkg
 
-		if len(depNames) > 0 {
-			sort.Strings(depNames)
-			deps = append(deps, ftypes.Dependency{
-				ID:        pkgId,
-				DependsOn: depNames,
-			})
+		if len(dependsOn) > 0 {
+			sort.Strings(dependsOn)
+			deps[pkgName] = dependsOn
 		}
 	}
-	// mark nested dependencies as dev
-	for _, pkg := range pkgs {
-		if pkg.Dev {
-			for _, pkgDependency := range pkg.DependsOn {
-				if devPackage, ok := pkgs[pkgDependency]; ok {
-					devPackage.Dev = true
-					pkgs[pkgDependency] = devPackage
-				}
-			}
+
+	for pkgName := range prodDirectDeps.Iter() {
+		walkProdPackages(pkgName, pkgs, deps, set.New[string]())
+	}
+
+	depSlice := lo.MapToSlice(deps, func(depName string, dependsOn []string) ftypes.Dependency {
+		id, _ := pkgs[depName]
+		dependsOnIDs := make([]string, 0, len(dependsOn))
+		for _, d := range dependsOn {
+			dependsOnIDs = append(dependsOnIDs, pkgs[d].ID)
 		}
-	}
-	for i := range deps {
-		deps[i].DependsOn = lo.Map(deps[i].DependsOn, func(dep string, _ int) string {
-			return pkgs[dep].ID
-		})
-	}
+		return ftypes.Dependency{
+			ID:        id.ID,
+			DependsOn: dependsOnIDs,
+		}
+	})
 	pkgSlice := lo.Values(pkgs)
 	sort.Sort(ftypes.Packages(pkgSlice))
-	sort.Sort(deps)
-	return pkgSlice, deps, nil
+	sort.Sort(ftypes.Dependencies(depSlice))
+	return pkgSlice, depSlice, nil
+}
+
+// walkProdPackages marks all packages in the dependency tree of the given package as prod packages (Dev == false).
+func walkProdPackages(pkgName string, pkgs map[string]ftypes.Package, deps map[string][]string, visited set.Set[string]) {
+	if visited.Contains(pkgName) {
+		return
+	}
+
+	// Disable Dev field for prod pkgs.
+	pkg := pkgs[pkgName]
+	pkg.Dev = false
+	pkgs[pkgName] = pkg
+
+	visited.Append(pkgName)
+	for _, dep := range deps[pkgName] {
+		walkProdPackages(dep, pkgs, deps, visited)
+	}
 }
 
 func packageID(name, version string) string {

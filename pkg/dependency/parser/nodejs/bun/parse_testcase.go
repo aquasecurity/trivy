@@ -12,7 +12,6 @@ var (
 			Version:      "1.2.13",
 			Relationship: ftypes.RelationshipDirect,
 			Dev:          true,
-			DependsOn:    []string{"bun-types"},
 			Locations: ftypes.Locations{
 				{
 					StartLine: 18,
@@ -52,7 +51,6 @@ var (
 			Version:      "22.15.18",
 			Relationship: ftypes.RelationshipIndirect,
 			Dev:          true,
-			DependsOn:    []string{"undici-types"},
 			Locations: ftypes.Locations{
 				{
 					StartLine: 20,
@@ -66,7 +64,6 @@ var (
 			Version:      "1.2.13",
 			Relationship: ftypes.RelationshipIndirect,
 			Dev:          true,
-			DependsOn:    []string{"@types/node"},
 			Locations: ftypes.Locations{
 				{
 					StartLine: 22,
@@ -152,6 +149,10 @@ var (
 		{
 			ID:        "bun-types@1.2.13",
 			DependsOn: []string{"@types/node@22.15.18"},
+		},
+		{
+			ID:        "zod@3.24.4",
+			DependsOn: []string{"undici-types@6.21.0"},
 		},
 	}
 
