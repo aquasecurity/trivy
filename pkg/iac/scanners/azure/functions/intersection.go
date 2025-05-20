@@ -4,7 +4,7 @@ import "sort"
 
 func Intersection(args ...any) any {
 
-	if args == nil || len(args) < 2 {
+	if len(args) < 2 {
 		return []any{}
 	}
 

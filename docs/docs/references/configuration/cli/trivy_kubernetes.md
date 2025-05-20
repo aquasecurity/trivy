@@ -35,7 +35,7 @@ trivy kubernetes [flags] [CONTEXT]
       --check-namespaces strings          Rego namespaces
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "mirror.gcr.io/aquasec/trivy-checks:1")
       --compliance string                 compliance report to generate
-                                          Allowed values:
+                                          Built-in compliance's:
                                             - k8s-nsa-1.0
                                             - k8s-cis-1.23
                                             - eks-cis-1.4

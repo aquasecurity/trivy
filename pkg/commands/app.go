@@ -252,7 +252,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = report
 
 	compliance := flag.ComplianceFlag.Clone()
-	compliance.Values = []string{types.ComplianceDockerCIS160}
+	compliance.Usage = fmt.Sprintf("%s (built-in compliance's: %s)", compliance.Usage, types.ComplianceDockerCIS160)
 	reportFlagGroup.Compliance = compliance // override usage as the accepted values differ for each subcommand.
 
 	packageFlagGroup := flag.NewPackageFlagGroup()
@@ -995,18 +995,15 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	imageFlags := &flag.ImageFlagGroup{ImageSources: flag.SourceFlag.Clone()}
 
 	reportFlagGroup := flag.NewReportFlagGroup()
+	reportFlagGroup.ExitOnEOL = nil // disable '--exit-on-eol'
+	reportFlagGroup.TableMode = nil // disable '--table-mode's
 	compliance := flag.ComplianceFlag.Clone()
-	compliance.Values = []string{
-		types.ComplianceK8sNsa10,
-		types.ComplianceK8sCIS123,
-		types.ComplianceEksCIS14,
-		types.ComplianceRke2CIS124,
-		types.ComplianceK8sPSSBaseline01,
-		types.ComplianceK8sPSSRestricted01,
+	var compliances string
+	for _, val := range types.BuiltInK8sCompiances {
+		compliances += fmt.Sprintf("\n  - %s", val)
 	}
+	compliance.Usage = fmt.Sprintf("%s\nBuilt-in compliance's:%s", compliance.Usage, compliances)
 	reportFlagGroup.Compliance = compliance // override usage as the accepted values differ for each subcommand.
-	reportFlagGroup.ExitOnEOL = nil         // disable '--exit-on-eol'
-	reportFlagGroup.TableMode = nil         // disable '--table-mode'
 
 	formatFlag := flag.FormatFlag.Clone()
 	formatFlag.Values = xstrings.ToStringSlice([]types.Format{
@@ -1172,6 +1169,8 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlagGroup := flag.NewScanFlagGroup()
 	scanFlagGroup.Scanners = scanners // allow only 'vuln' and 'license' options for '--scanners'
 	scanFlagGroup.Parallel = nil      // disable '--parallel'
+	scanFlagGroup.SkipFiles = nil     // disable `--skip-files` since `sbom` command only supports scanning one file.
+	scanFlagGroup.SkipDirs = nil      // disable `--skip-dirs` since `sbom` command only supports scanning one file.
 
 	licenseFlagGroup := flag.NewLicenseFlagGroup()
 	// License full-scan and confidence-level are for file content only

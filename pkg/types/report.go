@@ -74,6 +74,15 @@ const (
 	FormatCosignVuln Format = "cosign-vuln"
 )
 
+var BuiltInK8sCompiances = []string{
+	ComplianceK8sNsa10,
+	ComplianceK8sCIS123,
+	ComplianceEksCIS14,
+	ComplianceRke2CIS124,
+	ComplianceK8sPSSBaseline01,
+	ComplianceK8sPSSRestricted01,
+}
+
 var (
 	SupportedFormats = []Format{
 		FormatTable,

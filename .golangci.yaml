@@ -113,6 +113,22 @@ linters:
         - name: unused-parameter
         - name: use-any
 
+    staticcheck:
+      checks:
+        - all
+        - -QF1008 # Omit embedded fields from selector expression
+        - -S1007  # Simplify regular expression by using raw string literal
+        - -S1011  # Use a single append to concatenate two slices
+        - -S1023  # Omit redundant control flow
+        - -SA1019 # Using a deprecated function, variable, constant or field
+        - -SA1024 # A string cutset contains duplicate characters
+        - -SA4004 # The loop exits unconditionally after one iteration
+        - -SA4023 # Impossible comparison of interface value with untyped nil
+        - -SA4032 # Comparing runtime.GOOS or runtime.GOARCH against impossible value
+        - -SA5011 # Possible nil pointer dereference
+        - -ST1003 # Poorly chosen identifier
+        - -ST1012 # Poorly chosen name for error variable
+
     testifylint:
       enable-all: true
 
@@ -131,6 +147,7 @@ linters:
     - misspell
     - perfsprint
     - revive
+    - staticcheck
     - testifylint
     - unconvert
     - unused
