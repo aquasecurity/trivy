@@ -139,7 +139,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	depSlice := lo.MapToSlice(deps, func(depName string, dependsOn []string) ftypes.Dependency {
-		id, _ := pkgs[depName]
+		id := pkgs[depName]
 		dependsOnIDs := make([]string, 0, len(dependsOn))
 		for _, d := range dependsOn {
 			dependsOnIDs = append(dependsOnIDs, pkgs[d].ID)
