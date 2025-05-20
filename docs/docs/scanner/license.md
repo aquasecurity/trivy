@@ -342,6 +342,20 @@ license:
   permissive: []
 ```
 
+#### Custom text licenses
+You can use text license to the classification. The license text can be found using the `json` format.
+
+To avoid using large license texts, Trivy supports using license text as a `glob` pattern.
+For example:
+```yaml
+license:
+  forbidden:
+  - "*Permission to use*"
+```
+
+!!! note
+    Don't use the `CUSTOM License:`, `text://` and `...` prefixes/sufixes in a glob pattern.
+
 [^1]: See the list of supported language files [here](../coverage/language/index.md).
 [^2]: Some lock files require additional files (e.g. files from the cache directory) to detect licenses. Check [coverage][coverage] for more information.
 
