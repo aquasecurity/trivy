@@ -79,15 +79,14 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	pkgs := make(map[string]ftypes.Package, len(lockFile.Packages))
 	deps := make(map[string][]string)
 
-	directDeps := set.New[string]()
 	prodDirectDeps := set.New[string]()
+	devDirectDeps := set.New[string]()
 
 	for _, ws := range lockFile.Workspaces {
-		directDeps.Append(lo.Keys(ws.Dependencies)...)
-		directDeps.Append(lo.Keys(ws.PeerDependencies)...)
-		directDeps.Append(lo.Keys(ws.OptionalDependencies)...)
-		prodDirectDeps = directDeps.Clone()
-		directDeps.Append(lo.Keys(ws.DevDependencies)...)
+		prodDirectDeps.Append(lo.Keys(ws.Dependencies)...)
+		prodDirectDeps.Append(lo.Keys(ws.PeerDependencies)...)
+		prodDirectDeps.Append(lo.Keys(ws.OptionalDependencies)...)
+		devDirectDeps.Append(lo.Keys(ws.DevDependencies)...)
 	}
 	for pkgName, parsed := range lockFile.Packages {
 		pkgVersion := strings.TrimPrefix(parsed.Identifier, pkgName+"@")
@@ -95,7 +94,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			pkgVersion = lockFile.Workspaces[pkgName].Version
 		}
 		pkgId := packageID(pkgName, pkgVersion)
-		isDirect := directDeps.Contains(pkgName)
+		isDirect := prodDirectDeps.Contains(pkgName) || devDirectDeps.Contains(pkgName)
 
 		relationship := ftypes.RelationshipIndirect
 		if _, ok := lockFile.Workspaces[pkgName]; ok {
