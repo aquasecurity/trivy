@@ -72,7 +72,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	if err != nil {
 		return nil, nil, xerrors.Errorf("file read error: %w", err)
 	}
-	if err := xjson.UnmarshalJSONC(data, &lockFile); err != nil {
+	if err = xjson.UnmarshalJSONC(data, &lockFile); err != nil {
 		return nil, nil, xerrors.Errorf("JSON decode error: %w", err)
 	}
 
@@ -97,20 +97,27 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		pkgId := packageID(pkgName, pkgVersion)
 		isDirect := directDeps.Contains(pkgName)
 
-		var dependsOn []string
-		if depMap, ok := parsed.Meta["dependencies"].(map[string]any); ok {
-			dependsOn = lo.Keys(depMap)
+		relationship := ftypes.RelationshipIndirect
+		if _, ok := lockFile.Workspaces[pkgName]; ok {
+			relationship = ftypes.RelationshipWorkspace
+		} else if isDirect {
+			relationship = ftypes.RelationshipDirect
 		}
 
 		newPkg := ftypes.Package{
 			ID:           pkgId,
 			Name:         pkgName,
 			Version:      pkgVersion,
-			Relationship: lo.Ternary(isDirect, ftypes.RelationshipDirect, ftypes.RelationshipIndirect),
+			Relationship: relationship,
 			Dev:          true, // Mark all dependencies as Dev. We will handle them later.
 			Locations:    []ftypes.Location{ftypes.Location(parsed.Location)},
 		}
 		pkgs[pkgName] = newPkg
+
+		var dependsOn []string
+		if depMap, ok := parsed.Meta["dependencies"].(map[string]any); ok {
+			dependsOn = lo.Keys(depMap)
+		}
 
 		if len(dependsOn) > 0 {
 			sort.Strings(dependsOn)
@@ -118,8 +125,17 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		}
 	}
 
-	for pkgName := range prodDirectDeps.Iter() {
-		walkProdPackages(pkgName, pkgs, deps, set.New[string]())
+	for _, pkg := range pkgs {
+		// Workspaces are always prod deps.
+		if pkg.Relationship == ftypes.RelationshipWorkspace {
+			pkg.Dev = false
+			pkgs[pkg.Name] = pkg
+			continue
+		}
+		if pkg.Relationship != ftypes.RelationshipDirect || !prodDirectDeps.Contains(pkg.Name) {
+			continue
+		}
+		walkProdPackages(pkg.Name, pkgs, deps, set.New[string]())
 	}
 
 	depSlice := lo.MapToSlice(deps, func(depName string, dependsOn []string) ftypes.Dependency {

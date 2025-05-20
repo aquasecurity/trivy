@@ -88,6 +88,30 @@ var (
 
 	multipleWsPkgs = []ftypes.Package{
 		{
+			ID:           "my-app@1.0.0",
+			Name:         "my-app",
+			Version:      "1.0.0",
+			Relationship: ftypes.RelationshipWorkspace,
+			Locations: ftypes.Locations{
+				{
+					StartLine: 27,
+					EndLine:   27,
+				},
+			},
+		},
+		{
+			ID:           "my-lib@1.0.0",
+			Name:         "my-lib",
+			Version:      "1.0.0",
+			Relationship: ftypes.RelationshipWorkspace,
+			Locations: ftypes.Locations{
+				{
+					StartLine: 29,
+					EndLine:   29,
+				},
+			},
+		},
+		{
 			ID:           "chalk@5.0.1",
 			Name:         "chalk",
 			Version:      "5.0.1",
@@ -108,30 +132,6 @@ var (
 				{
 					StartLine: 25,
 					EndLine:   25,
-				},
-			},
-		},
-		{
-			ID:           "my-app@1.0.0",
-			Name:         "my-app",
-			Version:      "1.0.0",
-			Relationship: ftypes.RelationshipIndirect,
-			Locations: ftypes.Locations{
-				{
-					StartLine: 27,
-					EndLine:   27,
-				},
-			},
-		},
-		{
-			ID:           "my-lib@1.0.0",
-			Name:         "my-lib",
-			Version:      "1.0.0",
-			Relationship: ftypes.RelationshipIndirect,
-			Locations: ftypes.Locations{
-				{
-					StartLine: 29,
-					EndLine:   29,
 				},
 			},
 		},
