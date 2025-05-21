@@ -4,6 +4,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing/expression"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 )
 
@@ -21,18 +22,46 @@ func NewScanner(categories map[types.LicenseCategory][]string) Scanner {
 }
 
 func (s *Scanner) Scan(licenseName string) (types.LicenseCategory, string) {
-	expr := NormalizeLicense(expression.SimpleExpr{License: licenseName})
-	normalizedNames := set.New(expr.String()) // The license name with suffix (e.g. AGPL-1.0-or-later)
-	if se, ok := expr.(expression.SimpleExpr); ok {
-		normalizedNames.Append(se.License) // Also accept the license name without suffix (e.g. AGPL-1.0)
+	visited := make(map[string]types.LicenseCategory)
+	category := s.traverseLicenseExpression(licenseName, visited)
+
+	return category, categoryToSeverity(category).String()
+}
+
+// traverseLicenseExpression recursive parses license expression to detect correct license category:
+// For Simple Expression - use category of license
+// For Compound Expression:
+//   - `AND` operator - use category with maximum severity
+//   - `OR` operator - use category with minimum severity
+//   - one of expression has `UNKNOWN` category - use `UNKNOWN` category
+func (s *Scanner) traverseLicenseExpression(licenseName string, visited map[string]types.LicenseCategory) types.LicenseCategory {
+	category := types.CategoryUnknown
+
+	detectCategory := func(expr expression.Expression) expression.Expression {
+		// Skip if we already checked this license
+		if cat, ok := visited[licenseName]; ok {
+			category = cat
+			return expr
+		}
+
+		switch e := expr.(type) {
+		case expression.SimpleExpr:
+			category = s.licenseToCategory(e)
+		case expression.CompoundExpr:
+			category = s.compoundLicenseToCategory(e, visited)
+		}
+
+		visited[licenseName] = category
+		return expr
 	}
 
-	for category, names := range s.categories {
-		if normalizedNames.Intersection(set.New(names...)).Size() > 0 {
-			return category, categoryToSeverity(category).String()
-		}
+	_, err := expression.Normalize(licenseName, NormalizeLicense, detectCategory)
+	if err != nil {
+		log.WithPrefix("license").Debug("Unable to detect license category", log.String("license", licenseName), log.Err(err))
+		return types.CategoryUnknown
 	}
-	return types.CategoryUnknown, dbTypes.SeverityUnknown.String()
+
+	return category
 }
 
 func categoryToSeverity(category types.LicenseCategory) dbTypes.Severity {
@@ -47,4 +76,51 @@ func categoryToSeverity(category types.LicenseCategory) dbTypes.Severity {
 		return dbTypes.SeverityLow
 	}
 	return dbTypes.SeverityUnknown
+}
+
+func (s *Scanner) licenseToCategory(license expression.SimpleExpr) types.LicenseCategory {
+	expr := NormalizeLicense(license)
+	normalizedNames := set.New(expr.String()) // The license name with suffix (e.g. AGPL-1.0-or-later)
+	if se, ok := expr.(expression.SimpleExpr); ok {
+		normalizedNames.Append(se.License) // Also accept the license name without suffix (e.g. AGPL-1.0)
+	}
+
+	for category, names := range s.categories {
+		if normalizedNames.Intersection(set.New(names...)).Size() > 0 {
+			return category
+		}
+	}
+
+	return types.CategoryUnknown
+}
+
+func (s *Scanner) compoundLicenseToCategory(license expression.CompoundExpr, visited map[string]types.LicenseCategory) types.LicenseCategory {
+	switch license.Conjunction() {
+	case expression.TokenAnd:
+		return s.compoundLogicEvaluator(license, visited, true)
+	case expression.TokenOR:
+		return s.compoundLogicEvaluator(license, visited, false)
+	default:
+		return types.CategoryUnknown
+	}
+}
+
+func (s *Scanner) compoundLogicEvaluator(license expression.CompoundExpr, visited map[string]types.LicenseCategory, findMax bool) types.LicenseCategory {
+	lCategory := s.traverseLicenseExpression(license.Left().String(), visited)
+	lSeverity := categoryToSeverity(lCategory)
+	rCategory := s.traverseLicenseExpression(license.Right().String(), visited)
+	rSeverity := categoryToSeverity(rCategory)
+
+	if lSeverity == dbTypes.SeverityUnknown || rSeverity == dbTypes.SeverityUnknown {
+		return types.CategoryUnknown
+	}
+
+	// Compare the two severities, returns a negative value if left is more severe than right
+	comparison := dbTypes.CompareSeverityString(lSeverity.String(), rSeverity.String())
+	leftIsMoreSevere := comparison < 0
+
+	if (findMax && leftIsMoreSevere) || (!findMax && !leftIsMoreSevere) {
+		return lCategory
+	}
+	return rCategory
 }
