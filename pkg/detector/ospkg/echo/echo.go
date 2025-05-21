@@ -5,6 +5,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	echoDb "github.com/aquasecurity/trivy-db/pkg/vulnsrc/echo"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scan/utils"
@@ -51,6 +52,7 @@ func (s *Scanner) Detect(ctx context.Context, osName string, repo *ftypes.Reposi
 			}
 
 			if advisory.Severity != dbTypes.SeverityUnknown {
+				vuln.SeveritySource = vulnerability.Echo
 				vuln.Vulnerability = dbTypes.Vulnerability{
 					Severity: advisory.Severity.String(),
 				}

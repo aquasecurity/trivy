@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/internal/dbtest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -16,13 +17,13 @@ import (
 
 func TestScanner_Detect(t *testing.T) {
 	type args struct {
-		pkgs   []ftypes.Package
+		pkgs []ftypes.Package
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    []types.DetectedVulnerability
-		wantErr string
+		name     string
+		args     args
+		want     []types.DetectedVulnerability
+		wantErr  string
 		fixtures []string
 	}{
 		{
@@ -33,9 +34,36 @@ func TestScanner_Detect(t *testing.T) {
 			},
 			args: args{
 				pkgs: []ftypes.Package{
-					{ID: "echo", Version: "1.0.0"},
-					{ID: "python3", SrcName: "python3", Version: "3.6.8"},
-					{ID: "apache2", SrcName: "apache2", Version: "2.4.24"},
+					{
+						ID:         "echo",
+						Name:       "echo",
+						Version:    "1.0.0",
+						SrcName:    "echo",
+						SrcVersion: "1.0.0",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+					},
+					{
+						ID:         "python3",
+						Name:       "python3",
+						Version:    "3.6.8",
+						SrcName:    "python3",
+						SrcVersion: "3.6.8",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+					},
+					{
+						ID:         "apache2",
+						Name:       "htpasswd",
+						SrcName:    "apache2",
+						Version:    "2.4.24",
+						SrcVersion: "2.4.24",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+					},
 				},
 			},
 			want: []types.DetectedVulnerability{
@@ -44,10 +72,14 @@ func TestScanner_Detect(t *testing.T) {
 					PkgID:            "apache2",
 					InstalledVersion: "2.4.24",
 					FixedVersion:     "2.4.25-1",
-					Layer:            ftypes.Layer{},
+					PkgName:          "htpasswd",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: "LOW",
 					},
+					SeveritySource: vulnerability.Echo,
 					DataSource: &dbTypes.DataSource{
 						ID:   "echo",
 						Name: "Echo",
@@ -59,10 +91,14 @@ func TestScanner_Detect(t *testing.T) {
 					PkgID:            "python3",
 					InstalledVersion: "3.6.8",
 					FixedVersion:     "3.6.9",
-					Layer:            ftypes.Layer{},
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: "MEDIUM",
 					},
+					PkgName:        "python3",
+					SeveritySource: vulnerability.Echo,
 					DataSource: &dbTypes.DataSource{
 						ID:   "echo",
 						Name: "Echo",
@@ -79,8 +115,28 @@ func TestScanner_Detect(t *testing.T) {
 			},
 			args: args{
 				pkgs: []ftypes.Package{
-					{ID: "nginx", SrcName: "nginx", Version: "1.14.2", Release: "1ubuntu1"},
-					{ID: "apache2", SrcName: "apache2", Version: "2.4.24", Release: "2"},
+					{
+						ID:         "nginx",
+						Name:       "nginx",
+						Version:    "1.14.2",
+						SrcName:    "nginx",
+						SrcVersion: "1.14.2",
+						Release:    "1ubuntu1",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+					},
+					{
+						ID:         "apache2",
+						Name:       "apache2",
+						SrcName:    "apache2",
+						Version:    "2.4.24",
+						SrcVersion: "2.4.24",
+						Release:    "2",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+					},
 				},
 			},
 			want: []types.DetectedVulnerability{
@@ -89,10 +145,14 @@ func TestScanner_Detect(t *testing.T) {
 					PkgID:            "apache2",
 					InstalledVersion: "2.4.24-2",
 					FixedVersion:     "2.4.25-1",
-					Layer:            ftypes.Layer{},
+					PkgName:          "apache2",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: "LOW",
 					},
+					SeveritySource: vulnerability.Echo,
 					DataSource: &dbTypes.DataSource{
 						ID:   "echo",
 						Name: "Echo",
