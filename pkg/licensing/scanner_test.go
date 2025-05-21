@@ -69,6 +69,18 @@ func TestScanner_Scan(t *testing.T) {
 			wantSeverity: "HIGH",
 		},
 		{
+			name: "unnormalized license",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryRestricted: {
+					expression.BSD3Clause,
+					expression.MIT,
+				},
+			},
+			licenseName:  "MIT License",
+			wantCategory: types.CategoryRestricted,
+			wantSeverity: "HIGH",
+		},
+		{
 			name: "compound OR license",
 			categories: map[types.LicenseCategory][]string{
 				types.CategoryForbidden: {
