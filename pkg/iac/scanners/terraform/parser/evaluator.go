@@ -325,7 +325,8 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks) terraform.Bloc
 
 		forEachVal := forEachAttr.Value()
 		if !forEachVal.IsKnown() {
-			// If the value is unknown, it might be known at a later execution step.
+			// Defer the expansion of the block if it is unknown. It might be known at a later
+			// execution step.
 			forEachFiltered = append(forEachFiltered, block)
 			continue
 		}
@@ -427,7 +428,7 @@ func (e *evaluator) expandBlockCounts(blocks terraform.Blocks) terraform.Blocks 
 		}
 
 		countAttrVal := countAttr.Value()
-		if countAttrVal.IsNull() || !countAttrVal.IsKnown() {
+		if !countAttrVal.IsKnown() {
 			// Defer to the next pass when the count might be known
 			countFiltered = append(countFiltered, block)
 			continue
