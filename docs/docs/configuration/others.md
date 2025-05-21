@@ -160,3 +160,14 @@ When we want to get the image `alpine` with the settings above. The logic will b
 1. Try to get the image from `mirror.with.bad.auth/library/alpine`, but we get an error because there are no credentials for this registry.
 2. Try to get the image from `mirror.without.image/library/alpine`, but we get an error because this registry doesn't have this image (but most likely it will be an error about authorization).
 3. Get the image from `index.docker.io` (the original registry).
+
+## Check for updates
+
+Trivy periodically checks for updates and notices, and displays a message to the user with recommendations.  
+Updates checking is non-blocking and has no impact on scanning time, performance, results, or any user experience aspect besides displaying the message.  
+You can disable updates checking by specifying the `--skip-version-check` flag.
+
+## Telemetry
+
+Trivy collected usage data for product improvement. More details in the [Telemetry document](../advanced/telemetry.md).
+You can disable telemetry collection using the `--disable-telemetry` flag.
