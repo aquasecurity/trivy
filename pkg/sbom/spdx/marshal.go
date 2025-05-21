@@ -473,7 +473,7 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 		return "", nil
 	}
 
-	return normalizedLicense, lo.Ternary(len(otherLicenses) > 0, lo.Values(otherLicenses), nil)
+	return normalizedLicense.String(), lo.Ternary(len(otherLicenses) > 0, lo.Values(otherLicenses), nil)
 }
 
 // newOtherLicense create new OtherLicense for license not included in the SPDX license list
