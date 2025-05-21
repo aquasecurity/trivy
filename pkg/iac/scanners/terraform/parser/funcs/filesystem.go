@@ -368,10 +368,11 @@ func openFile(target fs.FS, baseDir, path string) (fs.File, error) {
 	// Trivy uses a virtual file system
 	path = filepath.ToSlash(path)
 
-	if target != nil {
-		return target.Open(path)
+	if target == nil {
+		return nil, fmt.Errorf("open file %q, filesystem is nil", path)
 	}
-	return os.Open(path)
+
+	return target.Open(path)
 }
 
 func readFileBytes(target fs.FS, baseDir, path string) ([]byte, error) {

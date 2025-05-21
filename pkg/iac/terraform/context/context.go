@@ -63,7 +63,7 @@ func (c *Context) Get(parts ...string) cty.Value {
 			return attr
 		}
 
-		if !(attr.IsKnown() && attr.Type().IsObjectType()) {
+		if !attr.IsKnown() || !attr.Type().IsObjectType() {
 			return cty.NilVal
 		}
 		curr = attr

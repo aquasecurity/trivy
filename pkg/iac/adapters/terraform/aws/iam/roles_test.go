@@ -260,6 +260,84 @@ data "aws_iam_policy_document" "s3_policy" {
 				},
 			},
 		},
+		{
+			name: "attach AWS managed policy using ARN directly",
+			terraform: `resource "aws_iam_role" "test" {
+  name = "example-role"
+}
+
+resource "aws_iam_role_policy_attachment" "test" {
+  role       = aws_iam_role.test.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}`,
+			expected: []iam.Role{
+				{
+					Name: iacTypes.StringTest("example-role"),
+					Policies: []iam.Policy{
+						{
+							Document: iam.Document{
+								Parsed: s3FullAccessPolicyDocument,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "attach AWS managed policy using ARN from data source",
+			terraform: `data "aws_iam_policy" "s3_full_access" {
+  arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+resource "aws_iam_role" "test" {
+  name = "example-role"
+}
+
+resource "aws_iam_role_policy_attachment" "test" {
+  role       = aws_iam_role.test.name
+  policy_arn = data.aws_iam_policy.s3_full_access.arn
+}`,
+			expected: []iam.Role{
+				{
+					Name: iacTypes.StringTest("example-role"),
+					Policies: []iam.Policy{
+						{
+							Document: iam.Document{
+								Parsed: s3FullAccessPolicyDocument,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "attach AWS managed policy using data source with policy name",
+			terraform: `data "aws_iam_policy" "s3_full_access" {
+  name = "AmazonS3FullAccess"
+}
+
+resource "aws_iam_role" "test" {
+  name = "example-role"
+}
+
+resource "aws_iam_role_policy_attachment" "test" {
+  role       = aws_iam_role.test.name
+  policy_arn = data.aws_iam_policy.s3_full_access.arn
+}`,
+			expected: []iam.Role{
+				{
+					Name: iacTypes.StringTest("example-role"),
+					Policies: []iam.Policy{
+						{
+							Name: iacTypes.StringTest("AmazonS3FullAccess"),
+							Document: iam.Document{
+								Parsed: s3FullAccessPolicyDocument,
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {

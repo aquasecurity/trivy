@@ -284,6 +284,60 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			},
 			want: &analyzer.AnalysisResult{},
 		},
+		{
+			name: "deps from GOPATH and license from vendor dir",
+			files: []string{
+				"testdata/vendor-dir-exists/mod",
+				"testdata/vendor-dir-exists/vendor",
+			},
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.GoModule,
+						FilePath: "go.mod",
+						Packages: types.Packages{
+							{
+								ID:           "github.com/org/repo",
+								Name:         "github.com/org/repo",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"github.com/aquasecurity/go-dep-parser@v0.0.1",
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/org/repo",
+									},
+								},
+							},
+							{
+								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.1",
+								Name:         "github.com/aquasecurity/go-dep-parser",
+								Version:      "v0.0.1",
+								Relationship: types.RelationshipDirect,
+								Licenses:     []string{"Apache-2.0"},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/aquasecurity/go-dep-parser",
+									},
+								},
+								DependsOn: []string{
+									"golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+								},
+							},
+							{
+								ID:           "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+								Name:         "golang.org/x/xerrors",
+								Version:      "v0.0.0-20200804184101-5ec99f83aff1",
+								Relationship: types.RelationshipIndirect,
+								Indirect:     true,
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Setenv("GOPATH", "testdata")
@@ -294,10 +348,13 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			mfs := mapfs.New()
 			for _, file := range tt.files {
 				// Since broken go.mod files bothers IDE, we should use other file names than "go.mod" and "go.sum".
-				if filepath.Base(file) == "mod" {
+				switch filepath.Base(file) {
+				case "mod":
 					require.NoError(t, mfs.WriteFile("go.mod", file))
-				} else if filepath.Base(file) == "sum" {
+				case "sum":
 					require.NoError(t, mfs.WriteFile("go.sum", file))
+				case "vendor":
+					require.NoError(t, mfs.CopyDir(file, "."))
 				}
 			}
 

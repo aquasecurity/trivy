@@ -33,6 +33,7 @@ type Metadata struct {
 	RepoTags    []string      `json:",omitempty"`
 	RepoDigests []string      `json:",omitempty"`
 	ImageConfig v1.ConfigFile `json:",omitempty"`
+	Layers      ftypes.Layers `json:",omitzero"`
 }
 
 // Results to hold list of Result
@@ -72,6 +73,15 @@ const (
 	FormatGitHub     Format = "github"
 	FormatCosignVuln Format = "cosign-vuln"
 )
+
+var BuiltInK8sCompiances = []string{
+	ComplianceK8sNsa10,
+	ComplianceK8sCIS123,
+	ComplianceEksCIS14,
+	ComplianceRke2CIS124,
+	ComplianceK8sPSSBaseline01,
+	ComplianceK8sPSSRestricted01,
+}
 
 var (
 	SupportedFormats = []Format{

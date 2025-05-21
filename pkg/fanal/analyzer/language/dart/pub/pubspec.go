@@ -54,7 +54,7 @@ func (a pubSpecLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostA
 		a.logger.Warn("Unable to parse cache dir", log.Err(err))
 	}
 
-	required := func(path string, d fs.DirEntry) bool {
+	required := func(_ string, _ fs.DirEntry) bool {
 		// Parse all required files: `pubspec.lock` (from a.Required func) + input.FilePatterns.Match()
 		return true
 	}
@@ -107,12 +107,12 @@ func (a pubSpecLockAnalyzer) findDependsOn() (map[string][]string, error) {
 		return nil, nil
 	}
 
-	required := func(path string, d fs.DirEntry) bool {
+	required := func(path string, _ fs.DirEntry) bool {
 		return filepath.Base(path) == pubSpecYamlFileName
 	}
 
 	deps := make(map[string][]string)
-	if err := fsutils.WalkDir(os.DirFS(dir), ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
+	if err := fsutils.WalkDir(os.DirFS(dir), ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
 		id, dependsOn, err := parsePubSpecYaml(r)
 		if err != nil {
 			a.logger.Debug("Unable to parse pubspec.yaml", log.FilePath(path), log.Err(err))

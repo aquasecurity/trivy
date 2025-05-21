@@ -360,7 +360,7 @@ func TestClient_DownloadBuiltinChecks(t *testing.T) {
 
 func TestClient_Clear(t *testing.T) {
 	cacheDir := t.TempDir()
-	err := os.MkdirAll(filepath.Join(cacheDir, "policy"), 0755)
+	err := os.MkdirAll(filepath.Join(cacheDir, "policy"), 0o755)
 	require.NoError(t, err)
 
 	c, err := policy.NewClient(cacheDir, true, "")

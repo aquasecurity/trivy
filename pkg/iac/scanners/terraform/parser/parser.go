@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"log/slog"
 	"os"
 	"path"
 	"path/filepath"
@@ -64,13 +65,16 @@ func New(moduleFS fs.FS, moduleSource string, opts ...Option) *Parser {
 		moduleFS:       moduleFS,
 		moduleSource:   moduleSource,
 		configsFS:      moduleFS,
-		logger:         log.WithPrefix("terraform parser").With("module", "root"),
+		logger:         slog.Default(),
 		tfvars:         make(map[string]cty.Value),
 	}
 
 	for _, option := range opts {
 		option(p)
 	}
+
+	// Scope the logger to the parser
+	p.logger = p.logger.With(log.Prefix("terraform parser")).With("module", "root")
 
 	return p
 }
@@ -80,7 +84,7 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	mp.modulePath = modulePath
 	mp.moduleBlock = moduleBlock
 	mp.moduleName = moduleName
-	mp.logger = log.WithPrefix("terraform parser").With("module", moduleName)
+	mp.logger = p.logger
 	mp.projectRoot = p.projectRoot
 	mp.skipPaths = p.skipPaths
 	mp.options = p.options
@@ -88,6 +92,10 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	for _, option := range p.options {
 		option(mp)
 	}
+
+	// The options above can reset the logger, so set the logging prefix after the
+	// options.
+	mp.logger = mp.logger.With(log.Prefix("terraform parser")).With("module", moduleName)
 	return mp
 }
 
@@ -143,7 +151,9 @@ func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 
 // ParseFS parses a root module, where it exists at the root of the provided filesystem
 func (p *Parser) ParseFS(ctx context.Context, dir string) error {
-
+	if p.moduleFS == nil {
+		return errors.New("module filesystem is nil, nothing to parse")
+	}
 	dir = path.Clean(dir)
 
 	if p.projectRoot == "" {
@@ -238,7 +248,7 @@ func readLinesFromFile(f io.Reader, from, to int) ([]string, error) {
 
 var ErrNoFiles = errors.New("no files found")
 
-func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
+func (p *Parser) Load(_ context.Context) (*evaluator, error) {
 	p.logger.Debug("Loading module", log.String("module", p.moduleName))
 
 	if len(p.files) == 0 {
@@ -301,7 +311,7 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 		modulesMetadata,
 		p.workspaceName,
 		ignores,
-		log.WithPrefix("terraform evaluator"),
+		p.logger.With(log.Prefix("terraform evaluator")),
 		p.allowDownloads,
 		p.skipCachedModules,
 	), nil

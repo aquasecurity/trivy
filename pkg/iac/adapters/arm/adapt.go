@@ -22,7 +22,7 @@ import (
 )
 
 // Adapt adapts an azure arm instance
-func Adapt(ctx context.Context, deployment scanner.Deployment) *state.State {
+func Adapt(_ context.Context, deployment scanner.Deployment) *state.State {
 	return &state.State{
 		Azure: adaptAzure(deployment),
 	}

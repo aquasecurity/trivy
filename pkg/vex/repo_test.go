@@ -90,12 +90,12 @@ repositories:
 
 			// Create the vex directory in the temporary directory
 			vexDir := filepath.Join(tmpDir, ".trivy", "vex")
-			err := os.MkdirAll(vexDir, 0755)
+			err := os.MkdirAll(vexDir, 0o755)
 			require.NoError(t, err)
 
 			// Write the config file
 			configPath := filepath.Join(vexDir, "repository.yaml")
-			err = os.WriteFile(configPath, []byte(tt.configContent), 0644)
+			err = os.WriteFile(configPath, []byte(tt.configContent), 0o644)
 			require.NoError(t, err)
 
 			ctx := t.Context()

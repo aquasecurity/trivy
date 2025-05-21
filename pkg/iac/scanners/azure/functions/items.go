@@ -1,6 +1,5 @@
 package functions
 
-func Items(args ...any) any {
-
+func Items(_ ...any) any {
 	return nil
 }

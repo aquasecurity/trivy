@@ -16,7 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[string]int, artifactOpt artifact.Option) (string, error) {
+func CalcKey(id string, artifactVersion int, analyzerVersions analyzer.Versions, hookVersions map[string]int, artifactOpt artifact.Option) (string, error) {
 	// Sort options for consistent results
 	artifactOpt.Sort()
 	artifactOpt.MisconfScannerOption.Sort()
@@ -26,6 +26,7 @@ func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[str
 	// Write ID, analyzer/handler versions, skipped files/dirs and file patterns
 	keyBase := struct {
 		ID                string
+		ArtifactVersion   int `json:",omitzero"`
 		AnalyzerVersions  analyzer.Versions
 		HookVersions      map[string]int
 		SkipFiles         []string
@@ -34,6 +35,7 @@ func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[str
 		DetectionPriority types.DetectionPriority `json:",omitempty"`
 	}{
 		id,
+		artifactVersion,
 		analyzerVersions,
 		hookVersions,
 		artifactOpt.WalkerOption.SkipFiles,

@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/rockylinux-8.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 211280384,
     "OS": {
       "Family": "rocky",
       "Name": "8.5"
@@ -44,7 +45,14 @@
         ],
         "Image": "sha256:b3d7893772a2427ad53224d9db4c70be399de0a28c09804ac0c5cb203ab0244e"
       }
-    }
+    },
+    "Layers": [
+      {
+        "Size": 211280384,
+        "Digest": "sha256:72a2451028f11c6927678e5f1bb8f35b4e723d3b342ec1a6980d7b5591cf81d6",
+        "DiffID": "sha256:65dbea0a4b39709e0a2cc8624fd99478e9f302c0a5661d7676d6d3bd3cb6d181"
+      }
+    ]
   },
   "Results": [
     {

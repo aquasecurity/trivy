@@ -94,7 +94,7 @@ func TestScanner_Detect(t *testing.T) {
 			defer db.Close()
 
 			s := photon.NewScanner()
-			got, err := s.Detect(nil, tt.args.osVer, nil, tt.args.pkgs)
+			got, err := s.Detect(t.Context(), tt.args.osVer, nil, tt.args.pkgs)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return

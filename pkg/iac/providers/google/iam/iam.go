@@ -50,11 +50,3 @@ type WorkloadIdentityPoolProvider struct {
 	WorkloadIdentityPoolProviderId iacTypes.StringValue
 	AttributeCondition             iacTypes.StringValue
 }
-
-func (p *IAM) AllProjects() []Project {
-	return p.Projects
-}
-
-func (p *IAM) AllFolders() []Folder {
-	return p.Folders
-}

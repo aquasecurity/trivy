@@ -66,12 +66,12 @@ deny {
 func Test_RegoScanning_AbsolutePolicyPath_Deny(t *testing.T) {
 
 	tmp := t.TempDir()
-	require.NoError(t, os.Mkdir(filepath.Join(tmp, "policies"), 0755))
+	require.NoError(t, os.Mkdir(filepath.Join(tmp, "policies"), 0o755))
 	require.NoError(t, os.WriteFile(filepath.Join(tmp, "policies", "test.rego"), []byte(`package defsec.test
 
 deny {
     input.evil
-}`), 0600))
+}`), 0o600))
 
 	srcFS := os.DirFS(tmp)
 

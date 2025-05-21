@@ -21,7 +21,7 @@ func InitDB(t *testing.T, fixtureFiles []string) string {
 
 	dbDir := db.Dir(cacheDir)
 	dbPath := trivydb.Path(dbDir)
-	err := os.MkdirAll(dbDir, 0700)
+	err := os.MkdirAll(dbDir, 0o700)
 	require.NoError(t, err)
 
 	// Load testdata into BoltDB

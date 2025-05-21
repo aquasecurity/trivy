@@ -54,7 +54,7 @@ func (n familiarNamed) String() string {
 }
 
 func imageWriter(c *client.Client, img client.Image, platform types.Platform) imageSave {
-	return func(ctx context.Context, ref []string, saveOptions ...dockerClient.ImageSaveOption) (io.ReadCloser, error) {
+	return func(ctx context.Context, ref []string, _ ...dockerClient.ImageSaveOption) (io.ReadCloser, error) {
 		if len(ref) < 1 {
 			return nil, xerrors.New("no image reference")
 		}

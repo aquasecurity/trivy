@@ -57,13 +57,13 @@ type innerResource struct {
 	Resources  []Resource  `json:"resources"`
 }
 
-func (v *Resource) UnmarshalJSONWithMetadata(node armjson.Node) error {
+func (r *Resource) UnmarshalJSONWithMetadata(node armjson.Node) error {
 
-	if err := node.Decode(&v.innerResource); err != nil {
+	if err := node.Decode(&r.innerResource); err != nil {
 		return err
 	}
 
-	v.Metadata = node.Metadata()
+	r.Metadata = node.Metadata()
 
 	for _, comment := range node.Comments() {
 		var str string

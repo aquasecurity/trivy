@@ -60,9 +60,10 @@ func initDB(t *testing.T) string {
 	defer dbtest.Close()
 
 	err = metadata.NewClient(db.Dir(cacheDir)).Update(metadata.Metadata{
-		Version:    db.SchemaVersion,
-		NextUpdate: time.Now().Add(24 * time.Hour),
-		UpdatedAt:  time.Now(),
+		Version:      db.SchemaVersion,
+		NextUpdate:   time.Now().Add(24 * time.Hour),
+		UpdatedAt:    time.Now(),
+		DownloadedAt: time.Now(),
 	})
 	require.NoError(t, err)
 
@@ -153,6 +154,9 @@ func readReport(t *testing.T, filePath string) types.Report {
 	// We don't compare repo tags because the archive doesn't support it
 	report.Metadata.RepoTags = nil
 	report.Metadata.RepoDigests = nil
+	for i := range report.Metadata.Layers {
+		report.Metadata.Layers[i].Digest = ""
+	}
 
 	for i, result := range report.Results {
 		for j := range result.Vulnerabilities {

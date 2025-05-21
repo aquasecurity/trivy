@@ -128,11 +128,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	if lock.GraphLock.Nodes != nil {
 		p.logger.Debug("Handling conan lockfile as v1.x")
 		return p.parseV1(lock)
-	} else {
-		// try to parse requirements as conan v2.x
-		p.logger.Debug("Handling conan lockfile as v2.x")
-		return p.parseV2(lock)
 	}
+	// try to parse requirements as conan v2.x
+	p.logger.Debug("Handling conan lockfile as v2.x")
+	return p.parseV2(lock)
 }
 
 func parsePackage(text string) (string, string, error) {

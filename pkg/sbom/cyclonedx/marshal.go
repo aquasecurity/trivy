@@ -285,7 +285,7 @@ func (*Marshaler) Licenses(licenses []string) *cdx.Licenses {
 	if len(licenses) == 0 {
 		return nil
 	}
-	choices := lo.Map(licenses, func(license string, i int) cdx.LicenseChoice {
+	choices := lo.Map(licenses, func(license string, _ int) cdx.LicenseChoice {
 		return cdx.LicenseChoice{
 			License: &cdx.License{
 				Name: license,

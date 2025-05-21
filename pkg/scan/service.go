@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/wire"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
@@ -15,7 +16,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
@@ -145,7 +145,7 @@ type Service struct {
 // and license scanning.
 type Backend interface {
 	Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (
-		results types.Results, osFound ftypes.OS, err error)
+		response types.ScanResponse, err error)
 }
 
 // NewService creates a new Service instance with the specified backend implementation
@@ -172,18 +172,23 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		}
 	}()
 
-	results, osFound, err := s.backend.Scan(ctx, artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
+	scanResponse, err := s.backend.Scan(ctx, artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
 
-	ptros := &osFound
-	if osFound.Detected() && osFound.Eosl {
+	ptros := &scanResponse.OS
+	if scanResponse.OS.Detected() && scanResponse.OS.Eosl {
 		log.Warn("This OS version is no longer supported by the distribution",
-			log.String("family", string(osFound.Family)), log.String("version", osFound.Name))
+			log.String("family", string(scanResponse.OS.Family)), log.String("version", scanResponse.OS.Name))
 		log.Warn("The vulnerability detection may be insufficient because security updates are not provided")
-	} else if !osFound.Detected() {
+	} else if !scanResponse.OS.Detected() {
 		ptros = nil
+	}
+
+	// We don't need to include CreatedBy into Report
+	for i := range scanResponse.Layers {
+		scanResponse.Layers[i].CreatedBy = ""
 	}
 
 	return types.Report{
@@ -200,8 +205,10 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 			RepoTags:    artifactInfo.ImageMetadata.RepoTags,
 			RepoDigests: artifactInfo.ImageMetadata.RepoDigests,
 			ImageConfig: artifactInfo.ImageMetadata.ConfigFile,
+			Size:        scanResponse.Layers.TotalSize(),
+			Layers:      lo.Ternary(len(scanResponse.Layers) > 0, scanResponse.Layers, nil),
 		},
-		Results: results,
+		Results: scanResponse.Results,
 		BOM:     artifactInfo.BOM,
 	}, nil
 }

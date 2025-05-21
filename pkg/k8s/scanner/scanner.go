@@ -16,6 +16,7 @@ import (
 	"github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/bom"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -174,10 +175,19 @@ func (s *Scanner) scanMisconfigs(ctx context.Context, k8sArtifacts []*artifacts.
 	}
 
 	s.opts.Target = dir
+	origCacheBackend := s.opts.CacheBackend
+	// Using an in-memory cache is safe since scanning k8s is not supported in client/server mode,
+	// and the cache created during file system scanning is removed after each scan.
+	s.opts.CacheBackend = string(cache.TypeMemory)
+
+	defer func() {
+		// remove config files
+		removeDir(dir)
+		// restore cache backend
+		s.opts.CacheBackend = origCacheBackend
+	}()
 
 	configReport, err := s.runner.ScanFilesystem(ctx, s.opts)
-	// remove config files after scanning
-	removeDir(dir)
 
 	if err != nil {
 		return nil, xerrors.Errorf("failed to scan filesystem: %w", err)
@@ -205,6 +215,7 @@ func (s *Scanner) scanMisconfigs(ctx context.Context, k8sArtifacts []*artifacts.
 
 	return resources, nil
 }
+
 func (s *Scanner) filter(ctx context.Context, r types.Report, artifact *artifacts.Artifact) (report.Resource, error) {
 	var err error
 	r, err = s.runner.Filter(ctx, s.opts, r)

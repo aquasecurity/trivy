@@ -20,11 +20,8 @@ func Unmarshal(data []byte, target any, metadata *types.Metadata) error {
 	if err != nil {
 		return err
 	}
-	if err := node.Decode(target); err != nil {
-		return err
-	}
 
-	return nil
+	return node.Decode(target)
 }
 
 func UnmarshalFromReader(r io.ReadSeeker, target any, metadata *types.Metadata) error {
@@ -32,9 +29,6 @@ func UnmarshalFromReader(r io.ReadSeeker, target any, metadata *types.Metadata) 
 	if err != nil {
 		return err
 	}
-	if err := node.Decode(target); err != nil {
-		return err
-	}
 
-	return nil
+	return node.Decode(target)
 }
