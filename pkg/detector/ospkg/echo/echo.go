@@ -27,7 +27,7 @@ func (s *Scanner) Detect(ctx context.Context, osName string, repo *ftypes.Reposi
 	log.InfoContext(ctx, "Detecting vulnerabilities...", log.Int("pkg_num", len(pkgs)))
 	detectedVulns := []types.DetectedVulnerability{}
 	for _, pkg := range pkgs {
-		advisories, err := s.vs.Get(pkg.SrcName)
+		advisories, err := s.vs.Get("", pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get echo advisories: %w", err)
 		}
