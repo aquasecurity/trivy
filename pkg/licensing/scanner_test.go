@@ -153,3 +153,59 @@ func TestScanner_Scan(t *testing.T) {
 		})
 	}
 }
+
+func TestScanner_ScanTextLicense(t *testing.T) {
+	tests := []struct {
+		name         string
+		categories   map[types.LicenseCategory][]string
+		licenseText  string
+		wantCategory types.LicenseCategory
+		wantSeverity string
+	}{
+		{
+			name: "match license text pattern",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryForbidden: {"text://Apache.*License"},
+			},
+			licenseText:  "Apache Software Foundation License",
+			wantCategory: types.CategoryForbidden,
+			wantSeverity: "CRITICAL",
+		},
+		{
+			name: "no match returns unknown",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryNotice: {"text://MIT.*"},
+			},
+			licenseText:  "Some other license text",
+			wantCategory: types.CategoryUnknown,
+			wantSeverity: "UNKNOWN",
+		},
+		{
+			name: "invalid regexp is ignored",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryRestricted: {"text://("},
+			},
+			licenseText:  "MIT License",
+			wantCategory: types.CategoryUnknown,
+			wantSeverity: "UNKNOWN",
+		},
+		{
+			name: "category without text prefix is ignored",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryNotice: {"MIT"},
+			},
+			licenseText:  "MIT License",
+			wantCategory: types.CategoryUnknown,
+			wantSeverity: "UNKNOWN",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := licensing.NewScanner(tt.categories)
+			gotCategory, gotSeverity := s.ScanTextLicense(tt.licenseText)
+			assert.Equal(t, tt.wantCategory, gotCategory)
+			assert.Equal(t, tt.wantSeverity, gotSeverity)
+		})
+	}
+}

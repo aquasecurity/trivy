@@ -94,7 +94,7 @@ var (
 		Layer: ftypes.Layer{
 			DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 		},
-		Licenses: []string{"MIT"},
+		Licenses: []string{"text://(c) 2015 Continuum Analytics, Inc."},
 	}
 	menuinstPkg = ftypes.Package{
 		Name:     "menuinst",
@@ -365,6 +365,13 @@ func TestScanner_Scan(t *testing.T) {
 					PkgRelationships: ftypes.Relationships,
 					Scanners:         types.Scanners{types.LicenseScanner},
 					LicenseFull:      true,
+					LicenseCategories: map[ftypes.LicenseCategory][]string{
+						ftypes.CategoryNotice: {
+							"MIT",
+							"text://\\(c\\) 2015.*",
+							"text://.* 2016 Continuum.*",
+						},
+					},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -413,8 +420,8 @@ func TestScanner_Scan(t *testing.T) {
 						Class:  types.ClassLicense,
 						Licenses: []types.DetectedLicense{
 							{
-								Severity:   "UNKNOWN",
-								Category:   "unknown",
+								Severity:   "LOW",
+								Category:   "notice",
 								PkgName:    muslPkg.Name,
 								Name:       "MIT",
 								Confidence: 1,
@@ -441,16 +448,17 @@ func TestScanner_Scan(t *testing.T) {
 						Class:  types.ClassLicense,
 						Licenses: []types.DetectedLicense{
 							{
-								Severity:   "UNKNOWN",
-								Category:   "unknown",
+								Severity:   "LOW",
+								Category:   "notice",
 								PkgName:    urllib3Pkg.Name,
 								FilePath:   "/usr/lib/python/site-packages/urllib3-3.2.1/METADATA",
-								Name:       "MIT",
+								Name:       "CUSTOM License: (c) 2015 Continuum...",
+								Text:       "(c) 2015 Continuum Analytics, Inc.",
 								Confidence: 1,
 							},
 							{
-								Severity:   "UNKNOWN",
-								Category:   "unknown",
+								Severity:   "LOW",
+								Category:   "notice",
 								PkgName:    menuinstPkg.Name,
 								FilePath:   "opt/conda/lib/python3.11/site-packages/menuinst-2.0.2.dist-info/METADATA",
 								Name:       "CUSTOM License: (c) 2016 Continuum...",

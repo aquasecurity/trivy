@@ -1,11 +1,15 @@
 package licensing
 
 import (
+	"regexp"
+	"strings"
+
 	"github.com/samber/lo"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing/expression"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 )
 
@@ -61,6 +65,28 @@ func (s *Scanner) detectCategory(license expression.Expression) types.LicenseCat
 	}
 
 	return category
+}
+
+// ScanTextLicense checks license names from `categories` as glob patterns and matches licenseText against those patterns.
+// If a match is found, it returns `unknown` category and severity.
+func (s *Scanner) ScanTextLicense(licenseText string) (types.LicenseCategory, string) {
+	for cat, names := range s.categories {
+		for _, name := range names {
+			if !strings.HasPrefix(name, LicenseTextPrefix) {
+				continue
+			}
+
+			n := strings.TrimPrefix(name, LicenseTextPrefix)
+			match, err := regexp.MatchString(n, licenseText)
+			if err != nil {
+				log.WithPrefix("license").Debug("Failed to match license text", log.String("license_text", licenseText), log.Err(err))
+				continue
+			} else if match {
+				return cat, categoryToSeverity(cat).String()
+			}
+		}
+	}
+	return types.CategoryUnknown, dbTypes.SeverityUnknown.String()
 }
 
 func categoryToSeverity(category types.LicenseCategory) dbTypes.Severity {
