@@ -12,3 +12,11 @@
           value:
             FixedVersion: "2.4.25-1"
             Severity: 1
+        - key: CVE-2021-11111
+          value:
+            FixedVersion: "2.4.25-1"
+        - key: CVE-2021-11112
+          value:
+            FixedVersion: "0"
+        - key: CVE-2021-11113
+          value:

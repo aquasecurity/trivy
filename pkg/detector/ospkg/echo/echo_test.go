@@ -105,6 +105,36 @@ func TestScanner_Detect(t *testing.T) {
 						URL:  "https://advisory.echohq.com/data.json",
 					},
 				},
+				{
+					VulnerabilityID:  "CVE-2021-11111",
+					PkgID:            "apache2",
+					InstalledVersion: "2.4.24",
+					FixedVersion:     "2.4.25-1",
+					PkgName:          "htpasswd",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo",
+						Name: "Echo",
+						URL:  "https://advisory.echohq.com/data.json",
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2021-11113",
+					PkgID:            "apache2",
+					InstalledVersion: "2.4.24",
+					FixedVersion:     "",
+					PkgName:          "htpasswd",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo",
+						Name: "Echo",
+						URL:  "https://advisory.echohq.com/data.json",
+					},
+				},
 			},
 		},
 		{
@@ -159,6 +189,37 @@ func TestScanner_Detect(t *testing.T) {
 						URL:  "https://advisory.echohq.com/data.json",
 					},
 				},
+				{
+					VulnerabilityID:  "CVE-2021-11111",
+					PkgID:            "apache2",
+					InstalledVersion: "2.4.24-2",
+					FixedVersion:     "2.4.25-1",
+					PkgName:          "apache2",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo",
+						Name: "Echo",
+						URL:  "https://advisory.echohq.com/data.json",
+					},
+				},
+
+				{
+					VulnerabilityID:  "CVE-2021-11113",
+					PkgID:            "apache2",
+					InstalledVersion: "2.4.24-2",
+					FixedVersion:     "",
+					PkgName:          "apache2",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo",
+						Name: "Echo",
+						URL:  "https://advisory.echohq.com/data.json",
+					},
+				},
 			},
 		},
 		{
@@ -168,7 +229,7 @@ func TestScanner_Detect(t *testing.T) {
 					{ID: "echo", Version: "1.0.0"},
 				},
 			},
-			want: []types.DetectedVulnerability{},
+			want: nil,
 		},
 		{
 			name: "sad path - invalid",
