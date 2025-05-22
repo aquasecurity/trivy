@@ -3,6 +3,9 @@ package echo
 import (
 	"context"
 
+	version "github.com/knqyf263/go-deb-version"
+	"golang.org/x/xerrors"
+
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	echoDb "github.com/aquasecurity/trivy-db/pkg/vulnsrc/echo"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
@@ -10,8 +13,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scan/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
-	version "github.com/knqyf263/go-deb-version"
-	"golang.org/x/xerrors"
 )
 
 type Scanner struct {
@@ -24,9 +25,9 @@ func NewScanner() *Scanner {
 	}
 }
 
-func (s *Scanner) Detect(ctx context.Context, osName string, repo *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+func (s *Scanner) Detect(ctx context.Context, _ string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.InfoContext(ctx, "Detecting vulnerabilities...", log.Int("pkg_num", len(pkgs)))
-	detectedVulns := []types.DetectedVulnerability{}
+	var detectedVulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
 		advisories, err := s.vs.Get("", pkg.SrcName)
 		if err != nil {
@@ -74,6 +75,6 @@ func (s *Scanner) Detect(ctx context.Context, osName string, repo *ftypes.Reposi
 }
 
 // Echo is a rolling distro, meaning there are no versions, and therefor no need to check the version
-func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
+func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ string) bool {
 	return true
 }
