@@ -25,7 +25,7 @@ Currently out of the box the following schemas are supported natively:
 1. [Docker](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/dockerfile.json)
 2. [Kubernetes](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/kubernetes.json)
 3. [Cloud](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/cloud.json)
-4. [Terraform](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/terraform.json)
+4. [Terraform Raw Format](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/terraform-raw.json)
 
 You can interactively view these schemas with the [Trivy Schema Explorer](https://aquasecurity.github.io/trivy-schemas/)
 

@@ -20,6 +20,6 @@ var (
 	//go:embed cloud.json
 	Cloud Schema
 
-	//go:embed terraform.json
+	//go:embed terraform-raw.json
 	TerraformRaw Schema
 )
