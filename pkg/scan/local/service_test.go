@@ -368,8 +368,8 @@ func TestScanner_Scan(t *testing.T) {
 					LicenseCategories: map[ftypes.LicenseCategory][]string{
 						ftypes.CategoryNotice: {
 							"MIT",
-							"(c) 2015*",
-							"* 2016 Continuum*",
+							"text://\\(c\\) 2015.*",
+							"text://.* 2016 Continuum.*",
 						},
 					},
 				},

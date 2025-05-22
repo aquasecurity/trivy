@@ -1,10 +1,10 @@
 package licensing
 
 import (
-	"github.com/samber/lo"
-
-	"path/filepath"
+	"regexp"
 	"strings"
+
+	"github.com/samber/lo"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -70,29 +70,23 @@ func (s *Scanner) detectCategory(license expression.Expression) types.LicenseCat
 // ScanTextLicense checks license names from `categories` as glob patterns and matches licenseText against those patterns.
 // If a match is found, it returns `unknown` category and severity.
 func (s *Scanner) ScanTextLicense(licenseText string) (types.LicenseCategory, string) {
-	// License text can contain `/` characters (e.g. links).
-	// So we need to check each part of the license text separately.
-	for _, part := range strings.Split(licenseText, "/") {
-		if category, match := s.scanPartOfLicenseText(part); match {
-			return category, categoryToSeverity(category).String()
-		}
-	}
-	return types.CategoryUnknown, dbTypes.SeverityUnknown.String()
-}
-
-func (s *Scanner) scanPartOfLicenseText(license string) (types.LicenseCategory, bool) {
 	for cat, names := range s.categories {
 		for _, name := range names {
-			match, err := filepath.Match(name, license)
+			if !strings.HasPrefix(name, LicenseTextPrefix) {
+				continue
+			}
+
+			n := strings.TrimPrefix(name, LicenseTextPrefix)
+			match, err := regexp.MatchString(n, licenseText)
 			if err != nil {
-				log.WithPrefix("license").Debug("failed to match license text", log.String("license text", license), log.Err(err))
+				log.WithPrefix("license").Debug("failed to match license text", log.String("license text", licenseText), log.Err(err))
 				continue
 			} else if match {
-				return cat, true
+				return cat, categoryToSeverity(cat).String()
 			}
 		}
 	}
-	return types.CategoryUnknown, false
+	return types.CategoryUnknown, dbTypes.SeverityUnknown.String()
 }
 
 func categoryToSeverity(category types.LicenseCategory) dbTypes.Severity {
