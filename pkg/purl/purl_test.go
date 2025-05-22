@@ -66,6 +66,19 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "bun package",
+			typ:  ftypes.Bun,
+			pkg: ftypes.Package{
+				Name:    "bun-types@1.2.14",
+				Version: "1.2.14",
+			},
+			want: &purl.PackageURL{
+				Type:    packageurl.TypeNPM,
+				Name:    "bun-types@1.2.14",
+				Version: "1.2.14",
+			},
+		},
+		{
 			name: "yarn package",
 			typ:  ftypes.Yarn,
 			pkg: ftypes.Package{
