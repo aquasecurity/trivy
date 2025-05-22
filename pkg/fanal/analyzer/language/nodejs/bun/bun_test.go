@@ -40,6 +40,7 @@ func Test_bunLibraryAnalyzer_Analyze(t *testing.T) {
 								Dev:          true,
 								Relationship: types.RelationshipDirect,
 								DependsOn:    []string{"bun-types@1.2.13"},
+								Licenses:     []string{"MIT"},
 								Locations:    types.Locations{types.Location{StartLine: 18, EndLine: 18}},
 							},
 							{
@@ -47,6 +48,7 @@ func Test_bunLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "typescript",
 								Version:      "5.8.3",
 								Relationship: types.RelationshipDirect,
+								Licenses:     []string{"Apache-2.0"},
 								Locations:    types.Locations{types.Location{StartLine: 24, EndLine: 24}},
 							},
 							{
@@ -54,6 +56,7 @@ func Test_bunLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:         "zod",
 								Version:      "3.24.4",
 								Relationship: types.RelationshipDirect,
+								Licenses:     []string{"MIT"},
 								Locations:    types.Locations{types.Location{StartLine: 28, EndLine: 28}},
 							},
 							{
@@ -64,6 +67,7 @@ func Test_bunLibraryAnalyzer_Analyze(t *testing.T) {
 								Indirect:     true,
 								Relationship: types.RelationshipIndirect,
 								DependsOn:    []string{"undici-types@6.21.0"},
+								Licenses:     []string{"MIT"},
 								Locations:    types.Locations{types.Location{StartLine: 20, EndLine: 20}},
 							},
 							{
@@ -74,6 +78,7 @@ func Test_bunLibraryAnalyzer_Analyze(t *testing.T) {
 								Indirect:     true,
 								Relationship: types.RelationshipIndirect,
 								DependsOn:    []string{"@types/node@22.15.18"},
+								Licenses:     []string{"MIT"},
 								Locations:    types.Locations{types.Location{StartLine: 22, EndLine: 22}},
 							},
 							{
@@ -83,12 +88,18 @@ func Test_bunLibraryAnalyzer_Analyze(t *testing.T) {
 								Dev:          true,
 								Indirect:     true,
 								Relationship: types.RelationshipIndirect,
+								Licenses:     []string{"MIT"},
 								Locations:    types.Locations{types.Location{StartLine: 26, EndLine: 26}},
 							},
 						},
 					},
 				},
 			},
+		},
+		{
+			name: "sad",
+			dir:  "testdata/sad",
+			want: &analyzer.AnalysisResult{},
 		},
 	}
 	for _, tt := range tests {
@@ -119,6 +130,11 @@ func Test_bunLibraryAnalyzer_Required(t *testing.T) {
 			name:     "lock file",
 			filePath: "bun/bun.lock",
 			want:     true,
+		},
+		{
+			name:     "sad path",
+			filePath: "bun/package-lock.json",
+			want:     false,
 		},
 	}
 	for _, tt := range tests {

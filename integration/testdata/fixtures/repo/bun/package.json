@@ -1,0 +1,16 @@
+{
+  "name": "buntest",
+  "module": "index.ts",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "jqeury": "^0.0.1-security",
+    "promise": "8.0.3"
+  }
+}

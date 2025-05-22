@@ -1,0 +1,108 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/bun",
+  "ArtifactType": "repository",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "bun.lock",
+      "Class": "lang-pkgs",
+      "Type": "bun",
+      "Packages": [
+        {
+          "ID": "jqeury@0.0.1-security",
+          "Name": "jqeury",
+          "Identifier": {
+            "PURL": "pkg:bun/jqeury@0.0.1-security",
+            "UID": "c164bdadc87e552d"
+          },
+          "Version": "0.0.1-security",
+          "Relationship": "direct",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 27,
+              "EndLine": 27
+            }
+          ]
+        },
+        {
+          "ID": "promise@8.0.3",
+          "Name": "promise",
+          "Identifier": {
+            "PURL": "pkg:bun/promise@8.0.3",
+            "UID": "559c59077b52e6d3"
+          },
+          "Version": "8.0.3",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "asap@2.0.6"
+          ],
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 29,
+              "EndLine": 29
+            }
+          ]
+        },
+        {
+          "ID": "typescript@5.8.3",
+          "Name": "typescript",
+          "Identifier": {
+            "PURL": "pkg:bun/typescript@5.8.3",
+            "UID": "55f0eb372f5d3f6e"
+          },
+          "Version": "5.8.3",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "Relationship": "direct",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 31,
+              "EndLine": 31
+            }
+          ]
+        },
+        {
+          "ID": "asap@2.0.6",
+          "Name": "asap",
+          "Identifier": {
+            "PURL": "pkg:bun/asap@2.0.6",
+            "UID": "76a3803ca495e2c1"
+          },
+          "Version": "2.0.6",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 23,
+              "EndLine": 23
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
