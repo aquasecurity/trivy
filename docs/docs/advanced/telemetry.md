@@ -24,7 +24,7 @@ Trivy is an Aqua Security product and adheres to the company's privacy policy: <
 
 ## Disabling telemetry
 
-You can disable telemetry alltogether using the `--disable-metrics` flag. Like other Trivy flags, this can be set on the command line, YAML configuration file, or environment variable. For more details see [here](../configuration/index.md).
+You can disable telemetry alltogether using the `--disable-telemetry` flag. Like other Trivy flags, this can be set on the command line, YAML configuration file, or environment variable. For more details see [here](../configuration/index.md).
 
 For example:
 
