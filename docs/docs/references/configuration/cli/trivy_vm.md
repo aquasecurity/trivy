@@ -146,6 +146,7 @@ trivy vm [flags] VM_IMAGE
                                             - aqua
                                             - osv
                                             - k8s
+                                            - echo
                                             - wolfi
                                             - chainguard
                                             - bitnami

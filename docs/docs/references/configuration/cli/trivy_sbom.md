@@ -131,6 +131,7 @@ trivy sbom [flags] SBOM_PATH
                                          - aqua
                                          - osv
                                          - k8s
+                                         - echo
                                          - wolfi
                                          - chainguard
                                          - bitnami

@@ -29,6 +29,7 @@ const (
 	CentOS             OSType = "centos"
 	Chainguard         OSType = "chainguard"
 	Debian             OSType = "debian"
+	Echo               OSType = "echo"
 	Fedora             OSType = "fedora"
 	OpenSUSE           OSType = "opensuse"
 	OpenSUSELeap       OSType = "opensuse-leap"
@@ -112,6 +113,7 @@ var (
 		CentOS,
 		Chainguard,
 		Debian,
+		Echo,
 		Fedora,
 		OpenSUSE,
 		OpenSUSELeap,
