@@ -361,6 +361,9 @@ license:
     - "text://.* Apache Software .*"
 ```
 
+!!! note
+    `regex` is only used for text licenses and can't be used to configure license IDs.
+
 [^1]: See the list of supported language files [here](../coverage/language/index.md).
 [^2]: Some lock files require additional files (e.g. files from the cache directory) to detect licenses. Check [coverage][coverage] for more information.
 
