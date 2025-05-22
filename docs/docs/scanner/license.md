@@ -343,7 +343,7 @@ license:
 ```
 
 #### Text licenses
-By default, Trivy doesn't define categories for text licenses.
+By default, Trivy categorizes a license as UNKNOWN if it cannot determine the license name from the license text.
 
 To define a category for a text license, you need to add license with the `text://` prefix to license classification.
 For example:
