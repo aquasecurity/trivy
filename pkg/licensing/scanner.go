@@ -79,7 +79,7 @@ func (s *Scanner) ScanTextLicense(licenseText string) (types.LicenseCategory, st
 			n := strings.TrimPrefix(name, LicenseTextPrefix)
 			match, err := regexp.MatchString(n, licenseText)
 			if err != nil {
-				log.WithPrefix("license").Debug("failed to match license text", log.String("license text", licenseText), log.Err(err))
+				log.WithPrefix("license").Debug("Failed to match license text", log.String("license_text", licenseText), log.Err(err))
 				continue
 			} else if match {
 				return cat, categoryToSeverity(cat).String()
