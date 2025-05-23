@@ -25,7 +25,7 @@
           "ID": "jqeury@0.0.1-security",
           "Name": "jqeury",
           "Identifier": {
-            "PURL": "pkg:bun/jqeury@0.0.1-security",
+            "PURL": "pkg:npm/jqeury@0.0.1-security",
             "UID": "c164bdadc87e552d"
           },
           "Version": "0.0.1-security",
@@ -42,7 +42,7 @@
           "ID": "promise@8.0.3",
           "Name": "promise",
           "Identifier": {
-            "PURL": "pkg:bun/promise@8.0.3",
+            "PURL": "pkg:npm/promise@8.0.3",
             "UID": "559c59077b52e6d3"
           },
           "Version": "8.0.3",
@@ -65,7 +65,7 @@
           "ID": "typescript@5.8.3",
           "Name": "typescript",
           "Identifier": {
-            "PURL": "pkg:bun/typescript@5.8.3",
+            "PURL": "pkg:npm/typescript@5.8.3",
             "UID": "55f0eb372f5d3f6e"
           },
           "Version": "5.8.3",
@@ -85,7 +85,7 @@
           "ID": "asap@2.0.6",
           "Name": "asap",
           "Identifier": {
-            "PURL": "pkg:bun/asap@2.0.6",
+            "PURL": "pkg:npm/asap@2.0.6",
             "UID": "76a3803ca495e2c1"
           },
           "Version": "2.0.6",
