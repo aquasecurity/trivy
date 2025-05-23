@@ -165,6 +165,7 @@ var (
 		TypeRedHatBase,
 		TypeSUSE,
 		TypeUbuntu,
+		TypeUbuntuESM,
 		TypeApk,
 		TypeBottlerocketInventory,
 		TypeDpkg,
@@ -172,6 +173,7 @@ var (
 		TypeRpm,
 		TypeRpmqa,
 		TypeApkRepo,
+		TypeApkCommand,
 	}
 
 	// TypeLanguages has all language analyzers
