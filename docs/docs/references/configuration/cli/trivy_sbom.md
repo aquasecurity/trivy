@@ -136,6 +136,7 @@ trivy sbom [flags] SBOM_PATH
                                          - bitnami
                                          - govulndb
                                          - auto
+                                         - minimos
                                         (default [auto])
 ```
 
