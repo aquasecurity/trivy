@@ -41,15 +41,20 @@ var (
 			"rhel-9-for-x86_64-baseos-rpms",
 			"rhel-9-for-x86_64-appstream-rpms",
 		},
+		"10": {
+			"rhel-10-for-x86_64-baseos-rpms",
+			"rhel-10-for-x86_64-appstream-rpms",
+		},
 	}
 	redhatEOLDates = map[string]time.Time{
 		"4": time.Date(2017, 5, 31, 23, 59, 59, 0, time.UTC),
 		"5": time.Date(2020, 11, 30, 23, 59, 59, 0, time.UTC),
 		"6": time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
 		// N/A
-		"7": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
-		"8": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
-		"9": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+		"7":  time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+		"8":  time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+		"9":  time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+		"10": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
 	}
 	centosEOLDates = map[string]time.Time{
 		"3": time.Date(2010, 10, 31, 23, 59, 59, 0, time.UTC),
