@@ -539,7 +539,13 @@ func (ag AnalyzerGroup) PostAnalyzerFS() (*CompositeFS, error) {
 func (ag AnalyzerGroup) StaticPaths(disabled []Type) ([]string, bool) {
 	var paths []string
 
-	for _, a := range ag.analyzers {
+	type analyzerType interface{ Type() Type }
+	allAnalyzers := append(
+		lo.Map(ag.analyzers, func(a analyzer, _ int) analyzerType { return a }),
+		lo.Map(ag.postAnalyzers, func(a PostAnalyzer, _ int) analyzerType { return a })...,
+	)
+
+	for _, a := range allAnalyzers {
 		// Skip disabled analyzers
 		if slices.Contains(disabled, a.Type()) {
 			continue
@@ -559,14 +565,6 @@ func (ag AnalyzerGroup) StaticPaths(disabled []Type) ([]string, bool) {
 
 		// Collect paths from StaticPathAnalyzer
 		paths = append(paths, staticPathAnalyzer.StaticPaths()...)
-	}
-
-	// PostAnalyzers don't implement StaticPathAnalyzer.
-	// So if at least one postAnalyzer is enabled - we should not use StaticPath.
-	if allPostAnalyzersDisabled := lo.EveryBy(ag.postAnalyzers, func(a PostAnalyzer) bool {
-		return slices.Contains(disabled, a.Type())
-	}); !allPostAnalyzersDisabled {
-		return nil, false
 	}
 
 	// Remove duplicates
