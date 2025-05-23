@@ -28,6 +28,12 @@ func OptionWithLogger(log *log.Logger) Option {
 	}
 }
 
+func OptionWithWorkingDirectoryPath(cwd string) Option {
+	return func(p *Parser) {
+		p.cwd = &cwd
+	}
+}
+
 func OptionsWithTfVars(vars map[string]cty.Value) Option {
 	return func(p *Parser) {
 		p.tfvars = vars
