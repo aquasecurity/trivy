@@ -150,6 +150,16 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "Bottlerocket",
+			inputFile: "testdata/bottlerocket",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Bottlerocket,
+					Name:   "1.34.0",
+				},
+			},
+		},
+		{
 			name:      "Unknown OS",
 			inputFile: "testdata/unknown",
 			want:      nil,

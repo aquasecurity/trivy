@@ -25,6 +25,7 @@ const (
 	Alpine             OSType = "alpine"
 	Amazon             OSType = "amazon"
 	Azure              OSType = "azurelinux"
+	Bottlerocket       OSType = "bottlerocket"
 	CBLMariner         OSType = "cbl-mariner"
 	CentOS             OSType = "centos"
 	Chainguard         OSType = "chainguard"

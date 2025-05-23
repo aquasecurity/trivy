@@ -1,0 +1,40 @@
+{
+  "Content": [
+    {
+      "Name": "glibc",
+      "Publisher": "bottlerocket-core-kit",
+      "Version": "2.40",
+      "Release": "1.1740525475.e3a5862c.br1",
+      "Epoch": "1",
+      "InstalledTime": "2025-02-27T20:55:41Z",
+      "ApplicationType": "Unspecified",
+      "Architecture": "x86_64",
+      "Url": "http://www.gnu.org/software/glibc/",
+      "Summary": "The GNU libc libraries"
+    },
+    {
+      "Name": "kernel-6.1",
+      "Publisher": "bottlerocket-kernel-kit",
+      "Version": "6.1.128",
+      "Release": "1.1740603423.4d405dc9.br1",
+      "Epoch": "0",
+      "InstalledTime": "2025-02-27T20:55:41Z",
+      "ApplicationType": "Unspecified",
+      "Architecture": "x86_64",
+      "Url": "https://www.kernel.org/",
+      "Summary": "The Linux kernel"
+    },
+    {
+      "Name": "systemd",
+      "Publisher": "bottlerocket-core-kit",
+      "Version": "252.22",
+      "Release": "1.1740525475.e3a5862c.br1",
+      "Epoch": "0",
+      "InstalledTime": "2025-02-27T20:55:41Z",
+      "ApplicationType": "Unspecified",
+      "Architecture": "x86_64",
+      "Url": "https://www.freedesktop.org/wiki/Software/systemd",
+      "Summary": "System and Service Manager"
+    }
+  ]
+}
