@@ -10,7 +10,6 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "jqeury": "^0.0.1-security",
-    "promise": "8.0.3"
+    "jquery": "3.3.1",
   }
 }
