@@ -718,22 +718,11 @@ func (a *Attribute) ReferencesBlock(b *Block) bool {
 	return false
 }
 
-// nolint
-func (a *Attribute) AllReferences(blocks ...*Block) []*Reference {
+func (a *Attribute) AllReferences() []*Reference {
 	if a == nil {
 		return nil
 	}
-	refs := a.referencesFromExpression(a.hclAttribute.Expr)
-	for _, block := range blocks {
-		for _, ref := range refs {
-			if ref.TypeLabel() == "each" {
-				if forEachAttr := block.GetAttribute("for_each"); forEachAttr.IsNotNil() {
-					refs = append(refs, forEachAttr.AllReferences()...)
-				}
-			}
-		}
-	}
-	return refs
+	return a.referencesFromExpression(a.hclAttribute.Expr)
 }
 
 func (a *Attribute) referencesFromExpression(expr hcl.Expression) []*Reference {
