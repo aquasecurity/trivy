@@ -60,6 +60,7 @@ type Scanner struct {
 	includeDeprecatedChecks  bool
 	includeEmbeddedPolicies  bool
 	includeEmbeddedLibraries bool
+	trivyVersion             string
 
 	embeddedLibs   map[string]*ast.Module
 	embeddedChecks map[string]*ast.Module

@@ -305,6 +305,7 @@ func compareReports(t *testing.T, wantFile, gotFile string, override func(t *tes
 	if override != nil {
 		override(t, &want, &got)
 	}
+
 	assert.Equal(t, want, got)
 }
 
