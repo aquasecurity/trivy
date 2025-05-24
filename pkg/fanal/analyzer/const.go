@@ -66,6 +66,7 @@ const (
 	TypeNodePkg    Type = "node-pkg"
 	TypeYarn       Type = "yarn"
 	TypePnpm       Type = "pnpm"
+	TypeBun        Type = "bun"
 
 	// .NET
 	TypeNuget         Type = "nuget"

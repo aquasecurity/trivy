@@ -1,0 +1,15 @@
+{
+  "name": "buntest",
+  "module": "index.ts",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "optionalDependencies": {
+    "zod": "^3.24.4"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "private": true,
+  "type": "module"
+}
