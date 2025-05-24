@@ -16,7 +16,6 @@ import (
 	"github.com/aquasecurity/go-version/pkg/semver"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
-	"github.com/aquasecurity/trivy/pkg/version/app"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
@@ -313,7 +312,7 @@ func (s *Scanner) IsMinimumVersionSupported(metadata *StaticMetadata, module *as
 		return false
 	}
 
-	tv, err := semver.Parse(app.Version())
+	tv, err := semver.Parse(s.trivyVersion)
 	if err != nil {
 		s.logger.Warn(
 			"Failed to parse Trivy version - cannot confirm if module will work with current version",

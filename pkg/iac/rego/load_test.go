@@ -17,7 +17,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
 //go:embed all:testdata/policies
@@ -324,12 +323,6 @@ func TestIsMinimumSupportedVersion(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			oldVer := app.Version()
-			app.SetVersion(tc.trivyVersion)
-			defer func() {
-				app.SetVersion(oldVer)
-			}()
-
 			fsys := fstest.MapFS{
 				"check.rego": &fstest.MapFile{Data: []byte(fmt.Sprintf(`# METADATA
 # title: "dummy title"
@@ -349,6 +342,7 @@ deny {
 				rego.WithEmbeddedLibraries(false),
 				rego.WithEmbeddedPolicies(false),
 				rego.WithPolicyFilesystem(fsys),
+				rego.WithTrivyVersion(tc.trivyVersion),
 			)
 			err := scanner.LoadPolicies(nil)
 			require.NoError(t, err, tc.name)
