@@ -2790,3 +2790,26 @@ func TestInstancedLogger(t *testing.T) {
 		t.Log(buf.String()) // Helpful for debugging
 	}
 }
+
+func TestProvidedWorkingDirectory(t *testing.T) {
+	const fakeCwd = "/some/path"
+	fsys := testutil.CreateFS(t, map[string]string{
+		"main.tf": `
+			resource "foo" "bar" {
+			  cwd = path.cwd
+			}
+		`,
+	})
+
+	parser := New(fsys, "", OptionWithWorkingDirectoryPath(fakeCwd))
+	err := parser.ParseFS(t.Context(), ".")
+	require.NoError(t, err)
+
+	modules, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+
+	require.Len(t, modules, 1)
+	foo := modules[0].GetResourcesByType("foo")[0]
+	attr := foo.GetAttribute("cwd")
+	require.Equal(t, fakeCwd, attr.Value().AsString())
+}
