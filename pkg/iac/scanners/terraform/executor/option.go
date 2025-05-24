@@ -24,3 +24,9 @@ func OptionWithRegoScanner(s *rego.Scanner) Option {
 		e.regoScanner = s
 	}
 }
+
+func OptionWithScanRawConfig(b bool) Option {
+	return func(e *Executor) {
+		e.scanRawConfig = b
+	}
+}

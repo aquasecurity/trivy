@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"slices"
 	"strings"
 
 	"github.com/open-policy-agent/opa/v1/ast"
@@ -286,7 +287,17 @@ func checkSubtype(ii map[string]any, provider string, subTypes []SubType) bool {
 	return false
 }
 
+var sourcesWithExplicitSelectors = []types.Source{
+	// apply terrafrom-specific checks only if selectors exist
+	types.SourceTerraformRaw,
+}
+
 func isPolicyApplicable(sourceType types.Source, staticMetadata *StaticMetadata, inputs ...Input) bool {
+	if len(staticMetadata.InputOptions.Selectors) == 0 &&
+		slices.Contains(sourcesWithExplicitSelectors, sourceType) {
+		return false
+	}
+
 	if len(staticMetadata.InputOptions.Selectors) == 0 { // check always applies if no selectors
 		return true
 	}
