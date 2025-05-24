@@ -303,10 +303,8 @@ func (s *Scanner) IsMinimumVersionSupported(metadata *StaticMetadata, module *as
 		return true
 	}
 
-	var mmsv, tv semver.Version
-	var err error
-
-	if mmsv, err = semver.Parse(metadata.MinimumSupportedVersion); err != nil {
+	mmsv, err := semver.Parse(metadata.MinimumSupportedVersion)
+	if err != nil {
 		s.logger.Warn(
 			"Failed to parse minimum supported version - skipping as cannot confirm if module will work with current version",
 			log.FilePath(module.Package.Location.File),
@@ -315,7 +313,7 @@ func (s *Scanner) IsMinimumVersionSupported(metadata *StaticMetadata, module *as
 		return false
 	}
 
-	tv, err = semver.Parse(app.Version())
+	tv, err := semver.Parse(app.Version())
 	if err != nil {
 		s.logger.Warn(
 			"Failed to parse Trivy version - cannot confirm if module will work with current version",
