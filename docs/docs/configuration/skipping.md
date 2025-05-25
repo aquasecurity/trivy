@@ -83,10 +83,9 @@ This feature is relevant for the following scanners:
 |      Secret      |           |
 |     License      |   ✓[^1]   |
 
-!!!note
-    This flag is not applicable for parsers that accepts multiple files, for example the Terraform file parser which loads all `.tf` files into state.
+The list of analyzers can be found [here](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/pkg/fanal/analyzer/const.go).
+Note that this flag is not applicable for parsers that accepts files of different extensions, for example the Terraform file parser which handles .tf and .tf.json files.
 
-The list of analyzers can be found [here](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/pkg/fanal/analyzer/const.go)
 
 The file path can use a [regular expression](https://pkg.go.dev/regexp/syntax). For example:
 
