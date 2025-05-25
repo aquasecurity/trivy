@@ -10,7 +10,7 @@ var (
 	IncludeDevDepsFlag = Flag[bool]{
 		Name:       "include-dev-deps",
 		ConfigName: "pkg.include-dev-deps",
-		Usage:      "include development dependencies in the report (supported: npm, yarn)",
+		Usage:      "include development dependencies in the report (supported: npm, yarn, gradle)",
 	}
 	PkgTypesFlag = Flag[[]string]{
 		Name:       "pkg-types",

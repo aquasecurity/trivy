@@ -342,6 +342,28 @@ license:
   permissive: []
 ```
 
+#### Text licenses
+By default, Trivy categorizes a license as UNKNOWN if it cannot determine the license name from the license text.
+
+To define a category for a text license, you need to add license with the `text://` prefix to license classification.
+For example:
+```yaml
+license:
+  forbidden:
+    - "text://Text of Apache Software Foundation License"
+```
+
+But a text license can by large. So for these cases Trivy supports using `regex` in license classification.
+For example:
+```yaml
+license:
+  forbidden:
+    - "text://.* Apache Software .*"
+```
+
+!!! note
+    `regex` is only used for text licenses and can't be used to configure license IDs.
+
 [^1]: See the list of supported language files [here](../coverage/language/index.md).
 [^2]: Some lock files require additional files (e.g. files from the cache directory) to detect licenses. Check [coverage][coverage] for more information.
 

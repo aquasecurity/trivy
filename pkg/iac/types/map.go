@@ -85,8 +85,8 @@ func (b MapValue) HasKey(key string) bool {
 	return ok
 }
 
-func (s MapValue) ToRego() any {
-	m := s.metadata.ToRego().(map[string]any)
-	m["value"] = s.Value()
+func (b MapValue) ToRego() any {
+	m := b.metadata.ToRego().(map[string]any)
+	m["value"] = b.Value()
 	return m
 }

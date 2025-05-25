@@ -54,11 +54,11 @@ func (o *OS) Merge(newOS OS) {
 		return
 	}
 
-	switch {
+	switch o.Family {
 	// OLE also has /etc/redhat-release and it detects OLE as RHEL by mistake.
 	// In that case, OS must be overwritten with the content of /etc/oracle-release.
 	// There is the same problem between Debian and Ubuntu.
-	case o.Family == RedHat, o.Family == Debian:
+	case RedHat, Debian:
 		*o = newOS
 	default:
 		if o.Family == "" {

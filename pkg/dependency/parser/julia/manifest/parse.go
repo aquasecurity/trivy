@@ -140,6 +140,9 @@ func decodeDependency(man *primitiveManifest, dep primitiveDependency, metadata 
 		var possibleUuids []string
 		for _, depName := range possibleDeps {
 			primDep := man.Dependencies[depName]
+			if len(primDep) == 0 {
+				return primitiveDependency{}, xerrors.Errorf("Dependency %q has invalid format (parsed no deps): %s", depName, primDep)
+			}
 			if len(primDep) > 1 {
 				return primitiveDependency{}, xerrors.Errorf("Dependency %q has invalid format (parsed multiple deps): %s", depName, primDep)
 			}

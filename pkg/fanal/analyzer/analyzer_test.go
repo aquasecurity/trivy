@@ -2,6 +2,7 @@ package analyzer_test
 
 import (
 	"os"
+	"slices"
 	"sync"
 	"testing"
 
@@ -24,6 +25,7 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/ubuntu"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/apk"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/dpkg"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/repo/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 	_ "modernc.org/sqlite"
@@ -531,9 +533,10 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 			ctx := t.Context()
 			err = a.AnalyzeFile(ctx, &wg, limit, got, "", tt.args.filePath, info,
 				func() (xio.ReadSeekCloserAt, error) {
-					if tt.args.testFilePath == "testdata/error" {
+					switch tt.args.testFilePath {
+					case "testdata/error":
 						return nil, xerrors.New("error")
-					} else if tt.args.testFilePath == "testdata/no-permission" {
+					case "testdata/no-permission":
 						os.Chmod(tt.args.testFilePath, 0o000)
 						t.Cleanup(func() {
 							os.Chmod(tt.args.testFilePath, 0o644)
@@ -661,14 +664,16 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 			disabled: []analyzer.Type{},
 			want: analyzer.Versions{
 				Analyzers: map[string]int{
-					"alpine":     1,
-					"apk-repo":   1,
-					"apk":        2,
-					"bundler":    1,
-					"ubuntu":     1,
-					"ubuntu-esm": 1,
+					"alpine":       1,
+					"apk-repo":     1,
+					"apk":          2,
+					"bundler":      1,
+					"dpkg-license": 1,
+					"ubuntu":       1,
+					"ubuntu-esm":   1,
 				},
 				PostAnalyzers: map[string]int{
+					"dpkg":   5,
 					"jar":    1,
 					"poetry": 1,
 				},
@@ -679,6 +684,8 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 			disabled: []analyzer.Type{
 				analyzer.TypeAlpine,
 				analyzer.TypeApkRepo,
+				analyzer.TypeDpkg,
+				analyzer.TypeDpkgLicense,
 				analyzer.TypeUbuntu,
 				analyzer.TypeUbuntuESM,
 				analyzer.TypeJar,
@@ -702,6 +709,75 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 			require.NoError(t, err)
 			got := a.AnalyzerVersions()
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+// TestAnalyzerGroup_StaticPaths tests the StaticPaths method of AnalyzerGroup
+func TestAnalyzerGroup_StaticPaths(t *testing.T) {
+	tests := []struct {
+		name              string
+		disabledAnalyzers []analyzer.Type
+		filePatterns      []string
+		want              []string
+		wantAllStatic     bool
+	}{
+		{
+			name:              "all analyzers including post-analyzers implement StaticPathAnalyzer",
+			disabledAnalyzers: []analyzer.Type{analyzer.TypeApkCommand, analyzer.TypeJar, analyzer.TypePoetry, analyzer.TypeBundler},
+			want: []string{
+				"etc/apk/repositories",
+				"etc/lsb-release",
+				"lib/apk/db/installed",
+				"etc/alpine-release",
+
+				"usr/share/doc/",
+				"var/lib/dpkg/status",
+				"var/lib/dpkg/status.d/",
+				"var/lib/dpkg/available",
+				"var/lib/dpkg/info/",
+				"var/lib/ubuntu-advantage/status.json",
+			},
+			wantAllStatic: true,
+		},
+		{
+			name:              "all analyzers implement StaticPathAnalyzer, but there is file pattern",
+			disabledAnalyzers: []analyzer.Type{analyzer.TypeApkCommand, analyzer.TypeJar, analyzer.TypePoetry, analyzer.TypeBundler},
+			filePatterns: []string{
+				"alpine:etc/alpine-release-custom",
+			},
+			want:          []string{},
+			wantAllStatic: false,
+		},
+		{
+			name:          "some analyzers don't implement StaticPathAnalyzer",
+			want:          []string{},
+			wantAllStatic: false,
+		},
+		{
+			name:              "disable all analyzers",
+			disabledAnalyzers: slices.Concat(analyzer.TypeOSes, analyzer.TypeLanguages),
+			want:              []string{},
+			wantAllStatic:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Create a new analyzer group
+			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
+				FilePatterns: tt.filePatterns,
+			})
+			require.NoError(t, err)
+
+			// Get static paths
+			gotPaths, gotAllStatic := a.StaticPaths(tt.disabledAnalyzers)
+
+			// Check if all analyzers implement StaticPathAnalyzer
+			assert.Equal(t, tt.wantAllStatic, gotAllStatic)
+
+			// Check paths
+			assert.ElementsMatch(t, tt.want, gotPaths)
 		})
 	}
 }

@@ -148,7 +148,7 @@ func (n *ManifestNode) handleSliceTag(node *yaml.Node) error {
 	return nil
 }
 
-func (r *ManifestNode) handleMapTag(node *yaml.Node) error {
+func (n *ManifestNode) handleMapTag(node *yaml.Node) error {
 	output := make(map[string]*ManifestNode)
 	var key string
 	maxLine := node.Line
@@ -157,7 +157,7 @@ func (r *ManifestNode) handleMapTag(node *yaml.Node) error {
 			key = contentNode.Value
 		} else {
 			newNode := new(ManifestNode)
-			newNode.Path = r.Path
+			newNode.Path = n.Path
 			if err := contentNode.Decode(newNode); err != nil {
 				return err
 			}
@@ -167,8 +167,8 @@ func (r *ManifestNode) handleMapTag(node *yaml.Node) error {
 			}
 		}
 	}
-	r.EndLine = maxLine
-	r.Value = output
+	n.EndLine = maxLine
+	n.Value = output
 	return nil
 }
 

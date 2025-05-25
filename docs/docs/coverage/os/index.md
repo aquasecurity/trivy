@@ -29,6 +29,7 @@ Trivy supports operating systems for
 | [Echo](echo.md)                       | (n/a)                               | apt/dpkg         |
 | [Debian GNU/Linux](debian.md)         | 7, 8, 9, 10, 11, 12                 | apt/dpkg         |
 | [Ubuntu](ubuntu.md)                   | All versions supported by Canonical | apt/dpkg         |
+| [Bottlerocket](bottlerocket.md)       | 1.7.0 and upper                     | bottlerocket     |
 | [OSs with installed Conda](../others/conda.md)  | -                                   | conda            |
 
 ## Supported container images

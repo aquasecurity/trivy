@@ -50,7 +50,7 @@ func TestNormalize(t *testing.T) {
 			}
 
 			require.NoError(t, err)
-			assert.Equalf(t, tt.want, got, "NormalizeWithExpression(%v)", tt.license)
+			assert.Equalf(t, tt.want, got.String(), "NormalizeWithExpression(%v)", tt.license)
 		})
 	}
 }
