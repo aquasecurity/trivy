@@ -196,6 +196,11 @@ For example:
 trivy vm --format cyclonedx disk.vmdk
 ```
 
+## Limitations
+
+Scanning Red Hat Enterprise Linux in vm mode has a limitation, see the [Red Hat](../coverage/os/rhel.md#content-manifests) page for details.
+
+
 [vmdk]: https://github.com/libyal/libvmdk/blob/main/documentation/VMWare%20Virtual%20Disk%20Format%20(VMDK).asciidoc
 [ebsapi-elements]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-accessing-snapshot.html#ebsapi-elements
 [coldsnap]: https://github.com/awslabs/coldsnap
