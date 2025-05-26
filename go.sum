@@ -833,8 +833,8 @@ github.com/aws/aws-sdk-go-v2/internal/ini v1.8.3 h1:bIqFDwgGXXN1Kpp99pDOdKMTTb5d
 github.com/aws/aws-sdk-go-v2/internal/ini v1.8.3/go.mod h1:H5O/EsxDWyU+LP/V8i5sm8cxoZgc2fdNR9bxlOFrQTo=
 github.com/aws/aws-sdk-go-v2/service/ebs v1.22.1 h1:SeDJWG4pmye+/aO6k+zt9clPTUy1MXqUmkW8rbAddQg=
 github.com/aws/aws-sdk-go-v2/service/ebs v1.22.1/go.mod h1:wRzaW0v9GGQS0h//wpsVDw3Hah5gs5UP+NxoyGeZIGM=
-github.com/aws/aws-sdk-go-v2/service/ec2 v1.218.0 h1:QPYsTfcPpPhkF+37pxLcl3xbQz2SRxsShQNB6VCkvLo=
-github.com/aws/aws-sdk-go-v2/service/ec2 v1.218.0/go.mod h1:ouvGEfHbLaIlWwpDpOVWPWR+YwO0HDv3vm5tYLq8ImY=
+github.com/aws/aws-sdk-go-v2/service/ec2 v1.222.0 h1:qPVuEWzRvc/Z8UA0CKG4QczxORbgYTbWwlviUAmVmgs=
+github.com/aws/aws-sdk-go-v2/service/ec2 v1.222.0/go.mod h1:ouvGEfHbLaIlWwpDpOVWPWR+YwO0HDv3vm5tYLq8ImY=
 github.com/aws/aws-sdk-go-v2/service/ecr v1.44.0 h1:E+UTVTDH6XTSjqxHWRuY8nB6s+05UllneWxnycplHFk=
 github.com/aws/aws-sdk-go-v2/service/ecr v1.44.0/go.mod h1:iQ1skgw1XRK+6Lgkb0I9ODatAP72WoTILh0zXQ5DtbU=
 github.com/aws/aws-sdk-go-v2/service/ecrpublic v1.18.2 h1:PpbXaecV3sLAS6rjQiaKw4/jyq3Z8gNzmoJupHAoBp0=
@@ -845,8 +845,8 @@ github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.15 h1:dM9/92u2
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.15/go.mod h1:SwFBy2vjtA0vZbjjaFtfN045boopadnoVPhu4Fv66vY=
 github.com/aws/aws-sdk-go-v2/service/kms v1.38.1 h1:tecq7+mAav5byF+Mr+iONJnCBf4B4gon8RSp4BrweSc=
 github.com/aws/aws-sdk-go-v2/service/kms v1.38.1/go.mod h1:cQn6tAF77Di6m4huxovNM7NVAozWTZLsDRp9t8Z/WYk=
-github.com/aws/aws-sdk-go-v2/service/s3 v1.79.3 h1:BRXS0U76Z8wfF+bnkilA2QwpIch6URlm++yPUt9QPmQ=
-github.com/aws/aws-sdk-go-v2/service/s3 v1.79.3/go.mod h1:bNXKFFyaiVvWuR6O16h/I1724+aXe/tAkA9/QS01t5k=
+github.com/aws/aws-sdk-go-v2/service/s3 v1.79.4 h1:4yxno6bNHkekkfqG/a1nz/gC2gBwhJSojV1+oTE7K+4=
+github.com/aws/aws-sdk-go-v2/service/s3 v1.79.4/go.mod h1:qbn305Je/IofWBJ4bJz/Q7pDEtnnoInw/dGt71v6rHE=
 github.com/aws/aws-sdk-go-v2/service/sso v1.25.3 h1:1Gw+9ajCV1jogloEv1RRnvfRFia2cL6c9cuKV2Ps+G8=
 github.com/aws/aws-sdk-go-v2/service/sso v1.25.3/go.mod h1:qs4a9T5EMLl/Cajiw2TcbNt2UNo/Hqlyp+GiuG4CFDI=
 github.com/aws/aws-sdk-go-v2/service/ssooidc v1.30.1 h1:hXmVKytPfTy5axZ+fYbR5d0cFmC3JvwLm5kM83luako=

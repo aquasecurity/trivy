@@ -30,9 +30,9 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.14
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.67
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.218.0
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.222.0
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.44.0
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.79.3
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.79.4
 	github.com/aws/smithy-go v1.22.3
 	github.com/bitnami/go-version v0.0.0-20231130084017-bb00604d650c
 	github.com/bmatcuk/doublestar/v4 v4.8.1
