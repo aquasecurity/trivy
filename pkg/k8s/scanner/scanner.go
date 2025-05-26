@@ -3,7 +3,6 @@ package scanner
 import (
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"sort"
 	"strings"
@@ -236,10 +235,9 @@ const (
 
 func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.Artifact) ([]report.Resource, error) {
 	var resources []report.Resource
-	var nodeName string
-	if nodeName = s.findNodeName(artifactsData); nodeName == "" {
-		return resources, nil
-	}
+
+	// Find the first node name to identify cluster type
+	nodeName := s.findNodeName(artifactsData)
 
 	k8sScanner := k8s.NewKubernetesScanner()
 	scanOptions := types.ScanOptions{
@@ -386,11 +384,8 @@ func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact
 	var rootComponent *core.Component
 	var coreComponents []*core.Component
 
-	// Find the first node name to identify AKS cluster
-	var nodeName string
-	if nodeName = s.findNodeName(allArtifact); nodeName == "" {
-		return nil, errors.New("failed to find node name")
-	}
+	// Find the first node name to identify cluster type
+	nodeName := s.findNodeName(allArtifact)
 
 	kbom := core.NewBOM(core.Options{
 		GenerateBOMRef: true,
