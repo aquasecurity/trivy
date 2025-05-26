@@ -48,6 +48,7 @@ type options struct {
 type Option func(*options)
 
 // WithOCIArtifact takes an OCI artifact
+// This option is intended for use in tests only.
 func WithOCIArtifact(art *oci.Artifact) Option {
 	return func(opts *options) {
 		opts.artifact = art

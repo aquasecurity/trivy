@@ -29,6 +29,7 @@ type options struct {
 }
 
 // WithOCIArtifact takes an OCI artifact
+// This option is intended for use in tests only.
 func WithOCIArtifact(art *oci.Artifact) Option {
 	return func(opts *options) {
 		opts.artifact = art
@@ -88,19 +89,17 @@ func NewClient(cacheDir string, quiet bool, checkBundleRepo string, opts ...Opti
 	}, nil
 }
 
-func (c *Client) populateOCIArtifact(ctx context.Context, registryOpts types.RegistryOptions) {
-	if c.artifact == nil {
-		log.DebugContext(ctx, "Loading check bundle", log.String("repository", c.checkBundleRepo))
-		c.artifact = oci.NewArtifact(c.checkBundleRepo, registryOpts)
+func (c *Client) initArtifact(registryOpts types.RegistryOptions) *oci.Artifact {
+	if c.artifact != nil {
+		return c.artifact
 	}
+	return oci.NewArtifact(c.checkBundleRepo, registryOpts)
 }
 
 // DownloadBuiltinChecks download default policies from GitHub Pages
 func (c *Client) DownloadBuiltinChecks(ctx context.Context, registryOpts types.RegistryOptions) error {
-	c.populateOCIArtifact(ctx, registryOpts)
-
-	dst := c.contentDir()
-	if err := c.artifact.Download(ctx, dst, oci.DownloadOption{
+	artifact := c.initArtifact(registryOpts)
+	if err := artifact.Download(ctx, c.contentDir(), oci.DownloadOption{
 		MediaType: policyMediaType,
 		Quiet:     c.quiet,
 	},
@@ -108,7 +107,7 @@ func (c *Client) DownloadBuiltinChecks(ctx context.Context, registryOpts types.R
 		return xerrors.Errorf("download error: %w", err)
 	}
 
-	digest, err := c.artifact.Digest(ctx)
+	digest, err := artifact.Digest(ctx)
 	if err != nil {
 		return xerrors.Errorf("digest error: %w", err)
 	}
@@ -139,8 +138,8 @@ func (c *Client) NeedsUpdate(ctx context.Context, registryOpts types.RegistryOpt
 		return false, nil
 	}
 
-	c.populateOCIArtifact(ctx, registryOpts)
-	digest, err := c.artifact.Digest(ctx)
+	artifact := c.initArtifact(registryOpts)
+	digest, err := artifact.Digest(ctx)
 	if err != nil {
 		return false, xerrors.Errorf("digest error: %w", err)
 	}
