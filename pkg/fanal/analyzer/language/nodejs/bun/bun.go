@@ -116,7 +116,7 @@ func (a bunLibraryAnalyzer) parseBunLock(fsys fs.FS, filePath string) (*types.Ap
 
 	file, ok := f.(xio.ReadSeekCloserAt)
 	if !ok {
-		return nil, xerrors.Errorf("type assertion error: %w", err)
+		return nil, xerrors.New("type assertion error: file does not implement xio.ReadSeekCloserAt")
 	}
 
 	// parse bun.lock
