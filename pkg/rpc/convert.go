@@ -598,6 +598,18 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			publishedDate = lo.ToPtr(vuln.PublishedDate.AsTime())
 		}
 
+		var cVData, cAData interface{}
+		if len(vuln.CustomVulnData) > 0 {
+			if err := json.Unmarshal(vuln.CustomVulnData, &cVData); err != nil {
+				log.Warn("failed to unmarshal custom vuln data", log.Err(err))
+			}
+		}
+		if len(vuln.CustomAdvisoryData) > 0 {
+			if err := json.Unmarshal(vuln.CustomAdvisoryData, &cAData); err != nil {
+				log.Warn("failed to unmarshal custom advisory data", log.Err(err))
+			}
+		}
+
 		vulns = append(vulns, types.DetectedVulnerability{
 			VulnerabilityID:  vuln.VulnerabilityId,
 			VendorIDs:        vuln.VendorIds,
@@ -617,13 +629,13 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				CweIDs:           vuln.CweIds,
 				LastModifiedDate: lastModifiedDate,
 				PublishedDate:    publishedDate,
-				Custom:           vuln.CustomVulnData,
+				Custom:           cVData,
 				VendorSeverity:   vendorSeverityMap,
 			},
 			Layer:          ConvertFromRPCLayer(vuln.Layer),
 			SeveritySource: dbTypes.SourceID(vuln.SeveritySource),
 			PrimaryURL:     vuln.PrimaryUrl,
-			Custom:         vuln.CustomAdvisoryData,
+			Custom:         cAData,
 			DataSource:     ConvertFromRPCDataSource(vuln.DataSource),
 		})
 	}
