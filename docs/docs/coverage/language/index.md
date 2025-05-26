@@ -31,6 +31,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 | [Node.js](nodejs.md) | package-lock.json                                                                          |     -     |     -      |       ✅        |       ✅        |
 |                      | yarn.lock                                                                                  |     -     |     -      |       ✅        |       ✅        |
 |                      | pnpm-lock.yaml                                                                             |     -     |     -      |       ✅        |       ✅        |
+|                      | bun.lock                                                                                   |     -     |     -      |       ✅        |       ✅        |
 |                      | package.json                                                                               |     ✅     |     ✅      |       -        |       -        |
 | [.NET](dotnet.md)    | packages.lock.json                                                                         |     ✅     |     ✅      |       ✅        |       ✅        |
 |                      | packages.config                                                                            |     ✅     |     ✅      |       ✅        |       ✅        |
