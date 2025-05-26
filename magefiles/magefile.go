@@ -43,12 +43,12 @@ func init() {
 }
 
 func version() (string, error) {
-	if ver, err := sh.Output("git", "describe", "--tags", "--always"); err != nil {
+	ver, err := sh.Output("git", "describe", "--tags", "--always")
+	if err != nil {
 		return "", err
-	} else {
-		// Strips the v prefix from the tag
-		return strings.TrimPrefix(ver, "v"), nil
 	}
+	// Strips the v prefix from the tag
+	return strings.TrimPrefix(ver, "v"), nil
 }
 
 func buildLdflags() (string, error) {
@@ -189,19 +189,13 @@ func (Test) FixtureTerraformPlanSnapshots() error {
 // GenerateModules compiles WASM modules for unit tests
 func (Test) GenerateModules() error {
 	pattern := filepath.Join("pkg", "module", "testdata", "*", "*.go")
-	if err := compileWasmModules(pattern); err != nil {
-		return err
-	}
-	return nil
+	return compileWasmModules(pattern)
 }
 
 // GenerateExampleModules compiles example Wasm modules for integration tests
 func (Test) GenerateExampleModules() error {
 	pattern := filepath.Join("examples", "module", "*", "*.go")
-	if err := compileWasmModules(pattern); err != nil {
-		return err
-	}
-	return nil
+	return compileWasmModules(pattern)
 }
 
 // UpdateGolden updates golden files for integration tests

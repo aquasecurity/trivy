@@ -123,7 +123,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			fields: fields{
 				dir: "./testdata/alpine",
 			},
-			setupCache: func(t *testing.T) cache.Cache {
+			setupCache: func(_ *testing.T) cache.Cache {
 				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					PutBlob: true,
 				})
@@ -704,7 +704,6 @@ func TestTerraformPlanSnapshotMisconfScan(t *testing.T) {
 		{
 			name: "single failure",
 			fields: fields{
-
 				dir: "./testdata/misconfig/terraformplan/snapshots/single-failure",
 			},
 			wantBlobs: []cachetest.WantBlob{
@@ -2460,75 +2459,6 @@ func TestArtifact_AnalysisStrategy(t *testing.T) {
 
 			// Check if the walked roots match the expected roots
 			assert.ElementsMatch(t, tt.wantRoots, rw.walkedRoots)
-		})
-	}
-}
-
-// TestAnalyzerGroup_StaticPaths tests the StaticPaths method of AnalyzerGroup
-func TestAnalyzerGroup_StaticPaths(t *testing.T) {
-	tests := []struct {
-		name              string
-		disabledAnalyzers []analyzer.Type
-		filePatterns      []string
-		want              []string
-		wantAllStatic     bool
-	}{
-		{
-			name:              "all analyzers implement StaticPathAnalyzer",
-			disabledAnalyzers: append(analyzer.TypeConfigFiles, analyzer.TypePip, analyzer.TypeSecret),
-			want: []string{
-				"lib/apk/db/installed",
-				"etc/alpine-release",
-			},
-			wantAllStatic: true,
-		},
-		{
-			name:              "all analyzers implement StaticPathAnalyzer, but there is file pattern",
-			disabledAnalyzers: append(analyzer.TypeConfigFiles, analyzer.TypePip, analyzer.TypeSecret),
-			filePatterns: []string{
-				"alpine:etc/alpine-release-custom",
-			},
-			want:          []string{},
-			wantAllStatic: false,
-		},
-		{
-			name:          "some analyzers don't implement StaticPathAnalyzer",
-			want:          []string{},
-			wantAllStatic: false,
-		},
-		{
-			name: "only PostAnalyzers are enabled",
-			disabledAnalyzers: []analyzer.Type{
-				analyzer.TypePip,
-				analyzer.TypeSecret,
-			},
-			want:          []string{},
-			wantAllStatic: false,
-		},
-		{
-			name:              "disable all analyzers",
-			disabledAnalyzers: append(analyzer.TypeConfigFiles, analyzer.TypePip, analyzer.TypeApk, analyzer.TypeAlpine, analyzer.TypeSecret),
-			want:              []string{},
-			wantAllStatic:     true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// Create a new analyzer group
-			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
-				FilePatterns: tt.filePatterns,
-			})
-			require.NoError(t, err)
-
-			// Get static paths
-			gotPaths, gotAllStatic := a.StaticPaths(tt.disabledAnalyzers)
-
-			// Check if all analyzers implement StaticPathAnalyzer
-			assert.Equal(t, tt.wantAllStatic, gotAllStatic)
-
-			// Check paths
-			assert.ElementsMatch(t, tt.want, gotPaths)
 		})
 	}
 }

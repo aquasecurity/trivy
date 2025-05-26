@@ -120,7 +120,7 @@ func TestLogout(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		configFile := filepath.Join(tmpDir, "config.json")
-		err := os.WriteFile(configFile, []byte(`{"auths": {"auth.test": {"auth": "dXNlcjpwYXNz"}}}`), 0600)
+		err := os.WriteFile(configFile, []byte(`{"auths": {"auth.test": {"auth": "dXNlcjpwYXNz"}}}`), 0o600)
 		require.NoError(t, err)
 
 		err = auth.Logout(t.Context(), "auth.test")

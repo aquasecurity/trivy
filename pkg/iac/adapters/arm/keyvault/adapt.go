@@ -33,7 +33,7 @@ func adaptVault(resource azure.Resource, deployment azure.Deployment) keyvault.V
 	}
 }
 
-func adaptKeys(resource azure.Resource, deployment azure.Deployment) (keys []keyvault.Key) {
+func adaptKeys(_ azure.Resource, deployment azure.Deployment) (keys []keyvault.Key) {
 	for _, resource := range deployment.GetResourcesByType("Microsoft.KeyVault/vaults/keys") {
 		keys = append(keys, adaptKey(resource))
 	}
@@ -48,7 +48,7 @@ func adaptKey(resource azure.Resource) keyvault.Key {
 	}
 }
 
-func adaptSecrets(resource azure.Resource, deployment azure.Deployment) (secrets []keyvault.Secret) {
+func adaptSecrets(_ azure.Resource, deployment azure.Deployment) (secrets []keyvault.Secret) {
 	for _, resource := range deployment.GetResourcesByType("Microsoft.KeyVault/vaults/secrets") {
 		secrets = append(secrets, adaptSecret(resource))
 	}

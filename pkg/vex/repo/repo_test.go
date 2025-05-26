@@ -60,14 +60,14 @@ func TestRepository_Manifest(t *testing.T) {
 		},
 		{
 			name: "fetch from remote",
-			setup: func(t *testing.T, dir string, r *repo.Repository) {
+			setup: func(_ *testing.T, _ string, r *repo.Repository) {
 				r.URL = ts.URL
 			},
 			want: manifest,
 		},
 		{
 			name: "http error",
-			setup: func(t *testing.T, dir string, r *repo.Repository) {
+			setup: func(_ *testing.T, _ string, r *repo.Repository) {
 				r.URL = ts.URL + "/error"
 			},
 			wantErr: "failed to download the repository metadata",
@@ -188,7 +188,7 @@ func TestRepository_Update(t *testing.T) {
 	}{
 		{
 			name: "successful update",
-			setup: func(t *testing.T, cacheDir string, r *repo.Repository) {
+			setup: func(t *testing.T, cacheDir string, _ *repo.Repository) {
 				setUpManifest(t, cacheDir, ts.URL+"/archive.zip")
 			},
 			clockTime: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),

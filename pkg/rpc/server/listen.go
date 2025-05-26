@@ -109,13 +109,13 @@ func (s Server) NewServeMux(ctx context.Context, serverCache cache.Cache, dbUpda
 	layerHandler := withToken(withWaitGroup(cacheServer), s.token, s.tokenHeader)
 	mux.Handle(cacheServer.PathPrefix(), gziphandler.GzipHandler(layerHandler))
 
-	mux.HandleFunc("/healthz", func(rw http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/healthz", func(rw http.ResponseWriter, _ *http.Request) {
 		if _, err := rw.Write([]byte("ok")); err != nil {
 			log.Error("Health check error", log.Err(err))
 		}
 	})
 
-	mux.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/version", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 
 		if err := json.NewEncoder(w).Encode(version.NewVersionInfo(s.cacheDir)); err != nil {

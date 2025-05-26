@@ -23,7 +23,7 @@ var auth = crane.WithAuthFromKeychain(authn.NewMultiKeychain(authn.DefaultKeycha
 func fixtureContainerImages() error {
 	var testImages = testutil.ImageName("", "", "")
 
-	if err := os.MkdirAll(dir, 0750); err != nil {
+	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return err
 	}
 	tags, err := crane.ListTags(testImages, auth)
@@ -38,10 +38,7 @@ func fixtureContainerImages() error {
 	}
 
 	// Save trivy-test-images/containerd image
-	if err := saveImage("containerd", "latest"); err != nil {
-		return err
-	}
-	return nil
+	return saveImage("containerd", "latest")
 }
 
 func saveImage(subpath, tag string) error {
@@ -65,10 +62,7 @@ func saveImage(subpath, tag string) error {
 	if err = crane.Save(img, imgName, tarPath); err != nil {
 		return err
 	}
-	if err = sh.Run("gzip", tarPath); err != nil {
-		return err
-	}
-	return nil
+	return sh.Run("gzip", tarPath)
 }
 
 func fixtureVMImages() error {
@@ -77,7 +71,7 @@ func fixtureVMImages() error {
 		titleAnnotation = "org.opencontainers.image.title"
 		dir             = "integration/testdata/fixtures/vm-images/"
 	)
-	if err := os.MkdirAll(dir, 0750); err != nil {
+	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return err
 	}
 	tags, err := crane.ListTags(testVMImages, auth)

@@ -231,9 +231,8 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if opts.ShowVersion {
 				// Customize version output
 				return showVersion(opts.CacheDir, versionFormat, cmd.OutOrStdout())
-			} else {
-				return cmd.Help()
 			}
+			return cmd.Help()
 		},
 	}
 
@@ -253,7 +252,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = report
 
 	compliance := flag.ComplianceFlag.Clone()
-	compliance.Values = []string{types.ComplianceDockerCIS160}
+	compliance.Usage = fmt.Sprintf("%s (built-in compliance's: %s)", compliance.Usage, types.ComplianceDockerCIS160)
 	reportFlagGroup.Compliance = compliance // override usage as the accepted values differ for each subcommand.
 
 	packageFlagGroup := flag.NewPackageFlagGroup()
@@ -769,7 +768,7 @@ func NewPluginCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Short:         "Manage plugins",
 		SilenceErrors: true,
 		SilenceUsage:  true,
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		PersistentPreRunE: func(_ *cobra.Command, args []string) error {
 			var err error
 			pluginOptions, err = pluginFlags.ToOptions(args)
 			if err != nil {
@@ -825,7 +824,7 @@ func NewPluginCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			SilenceUsage:          true,
 			Short:                 "List installed plugin",
 			Args:                  cobra.NoArgs,
-			RunE: func(cmd *cobra.Command, args []string) error {
+			RunE: func(cmd *cobra.Command, _ []string) error {
 				if err := plugin.List(cmd.Context()); err != nil {
 					return xerrors.Errorf("plugin list display error: %w", err)
 				}
@@ -930,7 +929,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			Aliases: []string{"i"},
 			Short:   "Install a module",
 			Args:    cobra.ExactArgs(1),
-			PreRunE: func(cmd *cobra.Command, args []string) error {
+			PreRunE: func(cmd *cobra.Command, _ []string) error {
 				if err := moduleFlags.Bind(cmd); err != nil {
 					return xerrors.Errorf("flag bind error: %w", err)
 				}
@@ -954,7 +953,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			Aliases: []string{"u"},
 			Short:   "Uninstall a module",
 			Args:    cobra.ExactArgs(1),
-			PreRunE: func(cmd *cobra.Command, args []string) error {
+			PreRunE: func(cmd *cobra.Command, _ []string) error {
 				if err := moduleFlags.Bind(cmd); err != nil {
 					return xerrors.Errorf("flag bind error: %w", err)
 				}
@@ -996,18 +995,15 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	imageFlags := &flag.ImageFlagGroup{ImageSources: flag.SourceFlag.Clone()}
 
 	reportFlagGroup := flag.NewReportFlagGroup()
+	reportFlagGroup.ExitOnEOL = nil // disable '--exit-on-eol'
+	reportFlagGroup.TableMode = nil // disable '--table-mode's
 	compliance := flag.ComplianceFlag.Clone()
-	compliance.Values = []string{
-		types.ComplianceK8sNsa10,
-		types.ComplianceK8sCIS123,
-		types.ComplianceEksCIS14,
-		types.ComplianceRke2CIS124,
-		types.ComplianceK8sPSSBaseline01,
-		types.ComplianceK8sPSSRestricted01,
+	var compliances string
+	for _, val := range types.BuiltInK8sCompiances {
+		compliances += fmt.Sprintf("\n  - %s", val)
 	}
+	compliance.Usage = fmt.Sprintf("%s\nBuilt-in compliance's:%s", compliance.Usage, compliances)
 	reportFlagGroup.Compliance = compliance // override usage as the accepted values differ for each subcommand.
-	reportFlagGroup.ExitOnEOL = nil         // disable '--exit-on-eol'
-	reportFlagGroup.TableMode = nil         // disable '--table-mode'
 
 	formatFlag := flag.FormatFlag.Clone()
 	formatFlag.Values = xstrings.ToStringSlice([]types.Format{
@@ -1173,6 +1169,8 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlagGroup := flag.NewScanFlagGroup()
 	scanFlagGroup.Scanners = scanners // allow only 'vuln' and 'license' options for '--scanners'
 	scanFlagGroup.Parallel = nil      // disable '--parallel'
+	scanFlagGroup.SkipFiles = nil     // disable `--skip-files` since `sbom` command only supports scanning one file.
+	scanFlagGroup.SkipDirs = nil      // disable `--skip-dirs` since `sbom` command only supports scanning one file.
 
 	licenseFlagGroup := flag.NewLicenseFlagGroup()
 	// License full-scan and confidence-level are for file content only
@@ -1253,7 +1251,7 @@ func NewCleanCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
   # Remove vulnerability database
   $ trivy clean --vuln-db
 `,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			if err := cleanFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
@@ -1301,7 +1299,7 @@ func NewRegistryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Example: `  # Log in to reg.example.com
   cat ~/my_password.txt | trivy registry login --username foo --password-stdin reg.example.com`,
 		Args: cobra.ExactArgs(1),
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			if err := loginFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
@@ -1382,7 +1380,7 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			SilenceErrors: true,
 			SilenceUsage:  true,
 			Args:          cobra.ExactArgs(0),
-			RunE: func(cmd *cobra.Command, args []string) error {
+			RunE: func(cmd *cobra.Command, _ []string) error {
 				if err := vexrepo.NewManager(vexOptions.CacheDir).Init(cmd.Context()); err != nil {
 					return xerrors.Errorf("config init error: %w", err)
 				}
@@ -1395,7 +1393,7 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			SilenceErrors: true,
 			SilenceUsage:  true,
 			Args:          cobra.ExactArgs(0),
-			RunE: func(cmd *cobra.Command, args []string) error {
+			RunE: func(cmd *cobra.Command, _ []string) error {
 				if err := vexrepo.NewManager(vexOptions.CacheDir).List(cmd.Context()); err != nil {
 					return xerrors.Errorf("list error: %w", err)
 				}

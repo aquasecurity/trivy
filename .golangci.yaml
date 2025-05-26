@@ -1,3 +1,7 @@
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
 linters:
   settings:
     depguard:
@@ -21,16 +25,15 @@ linters:
     gocritic:
       disabled-checks:
         - appendAssign
-        - unnamedResult
-        - whyNoLint
+        - commentedOutCode
+        - hugeParam
         - importShadow # FIXME
         - indexAlloc
-        - octalLiteral
-        - hugeParam
         - rangeValCopy
         - regexpSimplify
         - sloppyReassign
-        - commentedOutCode
+        - unnamedResult
+        - whyNoLint
       enabled-tags:
         - diagnostic
         - style
@@ -83,6 +86,49 @@ linters:
       sprintf1: false
       # Optimizes into strings concatenation.
       strconcat: false
+    revive:
+      max-open-files: 2048
+      # https://github.com/mgechev/revive/blob/HEAD/RULES_DESCRIPTIONS.md
+      rules:
+        - name: bool-literal-in-expr
+        - name: context-as-argument
+          arguments:
+            - allowTypesBefore: "*testing.T"
+        - name: duplicated-imports
+        - name: early-return
+          arguments:
+            - preserve-scope
+        - name: if-return
+        - name: increment-decrement
+        - name: indent-error-flow
+          arguments:
+            - preserve-scope
+        - name: range
+        - name: range-val-address
+        - name: superfluous-else
+          arguments:
+            - preserve-scope
+        - name: time-equal
+        - name: unnecessary-stmt
+        - name: unused-parameter
+        - name: use-any
+
+    staticcheck:
+      checks:
+        - all
+        - -QF1008 # Omit embedded fields from selector expression
+        - -S1007  # Simplify regular expression by using raw string literal
+        - -S1011  # Use a single append to concatenate two slices
+        - -S1023  # Omit redundant control flow
+        - -SA1019 # Using a deprecated function, variable, constant or field
+        - -SA1024 # A string cutset contains duplicate characters
+        - -SA4004 # The loop exits unconditionally after one iteration
+        - -SA4023 # Impossible comparison of interface value with untyped nil
+        - -SA4032 # Comparing runtime.GOOS or runtime.GOARCH against impossible value
+        - -SA5011 # Possible nil pointer dereference
+        - -ST1003 # Poorly chosen identifier
+        - -ST1012 # Poorly chosen name for error variable
+
     testifylint:
       enable-all: true
 
@@ -100,7 +146,8 @@ linters:
     - ineffassign
     - misspell
     - perfsprint
-#    - revive  # FIXME more than 50 new issues
+    - revive
+    - staticcheck
     - testifylint
     - unconvert
     - unused
@@ -110,7 +157,6 @@ linters:
   exclusions:
     generated: lax
     paths:
-      - "examples/*"
       - "pkg/iac/scanners/terraform/parser/funcs" # copies of Terraform functions
     rules:
       - path: ".*_test.go$"
@@ -135,9 +181,6 @@ linters:
           - gocritic
         text: "importShadow:"
       - linters:
-          - perfsprint
-        text: "fmt.Sprint"
-      - linters:
           - goconst
         text: "string `each` has 3 occurrences, make it a constant"  # FIXME
     presets:
@@ -151,9 +194,6 @@ run:
   go: '1.24'
   timeout: 30m
 
-issues:
-  max-same-issues: 0
-
 formatters:
   enable:
     - gci
@@ -161,9 +201,6 @@ formatters:
 
   exclusions:
     generated: lax
-    paths:
-      - examples/*
-      - pkg/iac/scanners/terraform/parser/funcs # copies of Terraform functions
 
   settings:
     gci:
@@ -175,8 +212,5 @@ formatters:
         - dot
     gofmt:
       simplify: false
-      rewrite-rules:
-        - pattern: interface{}
-          replacement: any
 
 version: "2"

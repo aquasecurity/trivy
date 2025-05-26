@@ -1362,7 +1362,7 @@ var (
 )
 
 func TestAnalyze(t *testing.T) {
-	testServer := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+	testServer := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, _ *http.Request) {
 		content, err := os.ReadFile("testdata/history_v3.9.json")
 		if err != nil {
 			http.Error(res, err.Error(), http.StatusInternalServerError)

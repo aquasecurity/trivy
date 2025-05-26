@@ -257,7 +257,7 @@ func (s Service) secretsToResults(secrets []ftypes.Secret, options types.ScanOpt
 		results = append(results, types.Result{
 			Target: secret.FilePath,
 			Class:  types.ClassSecret,
-			Secrets: lo.Map(secret.Findings, func(secret ftypes.SecretFinding, index int) types.DetectedSecret {
+			Secrets: lo.Map(secret.Findings, func(secret ftypes.SecretFinding, _ int) types.DetectedSecret {
 				return types.DetectedSecret(secret)
 			}),
 		})
@@ -335,7 +335,6 @@ func (s Service) scanApplicationLicenses(apps []ftypes.Application, scanner lice
 				Licenses: langLicenses,
 			})
 		}
-
 	}
 
 	return results
@@ -430,9 +429,8 @@ func toDetectedLicense(scanner licensing.Scanner, license, pkgName, filePath str
 	var severity, licenseText string
 	if strings.HasPrefix(license, licensing.LicenseTextPrefix) { // License text
 		licenseText = strings.TrimPrefix(license, licensing.LicenseTextPrefix)
-		category = ftypes.CategoryUnknown
-		severity = dbTypes.SeverityUnknown.String()
-		license = licensing.CustomLicensePrefix + ": " + licensing.TrimLicenseText(licenseText)
+		category, severity = scanner.ScanTextLicense(licenseText)
+		license = licensing.CustomLicensePrefix + ": " + licensing.TrimLicenseText(licenseText) // Use `CUSTOM LICENSE: *...` format for text licenses
 	} else { // License name
 		category, severity = scanner.Scan(license)
 	}
@@ -467,7 +465,7 @@ func filterPkgByRelationship(target *types.ScanTarget, options types.ScanOptions
 	}
 
 	filter := func(pkgs []ftypes.Package) []ftypes.Package {
-		return lo.Filter(pkgs, func(pkg ftypes.Package, index int) bool {
+		return lo.Filter(pkgs, func(pkg ftypes.Package, _ int) bool {
 			return slices.Contains(options.PkgRelationships, pkg.Relationship)
 		})
 	}
@@ -487,13 +485,27 @@ func excludeDevDeps(apps []ftypes.Application, include bool) {
 	onceInfo := sync.OnceFunc(func() {
 		log.Info("Suppressing dependencies for development and testing. To display them, try the '--include-dev-deps' flag.")
 	})
+
 	for i := range apps {
-		apps[i].Packages = lo.Filter(apps[i].Packages, func(lib ftypes.Package, index int) bool {
-			if lib.Dev {
+		devDeps := set.New[string]()
+		apps[i].Packages = lo.Filter(apps[i].Packages, func(pkg ftypes.Package, _ int) bool {
+			if pkg.Dev {
 				onceInfo()
+				devDeps.Append(pkg.ID)
 			}
-			return !lib.Dev
+			return !pkg.Dev
 		})
+
+		// Remove development dependencies from dependencies of root and workspace packages
+		for j, pkg := range apps[i].Packages {
+			if pkg.Relationship != ftypes.RelationshipRoot && pkg.Relationship != ftypes.RelationshipWorkspace {
+				continue
+			}
+			apps[i].Packages[j].DependsOn = lo.Filter(apps[i].Packages[j].DependsOn, func(dep string, _ int) bool {
+				return !devDeps.Contains(dep)
+			})
+
+		}
 	}
 }
 

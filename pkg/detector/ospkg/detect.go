@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/amazon"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/azure"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/bottlerocket"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/chainguard"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/minimos"
@@ -35,6 +36,7 @@ var (
 		ftypes.Alma:               alma.NewScanner(),
 		ftypes.Amazon:             amazon.NewScanner(),
 		ftypes.Azure:              azure.NewAzureScanner(),
+		ftypes.Bottlerocket:       bottlerocket.NewScanner(),
 		ftypes.CBLMariner:         azure.NewMarinerScanner(),
 		ftypes.Debian:             debian.NewScanner(),
 		ftypes.Ubuntu:             ubuntu.NewScanner(),
@@ -77,7 +79,7 @@ func Detect(ctx context.Context, _, osFamily ftypes.OSType, osName string, repo 
 
 	// Package `gpg-pubkey` doesn't use the correct version.
 	// We don't need to find vulnerabilities for this package.
-	filteredPkgs := lo.Filter(pkgs, func(pkg ftypes.Package, index int) bool {
+	filteredPkgs := lo.Filter(pkgs, func(pkg ftypes.Package, _ int) bool {
 		return pkg.Name != "gpg-pubkey"
 	})
 	vulns, err := driver.Detect(ctx, osName, repo, filteredPkgs)

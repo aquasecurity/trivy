@@ -157,6 +157,9 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 		Secrets:         result.Secrets,
 		Licenses:        result.Licenses,
 		CustomResources: result.CustomResources,
+
+		// For Red Hat
+		BuildInfo: result.BuildInfo,
 	}
 
 	if err = a.handlerManager.PostHandle(ctx, result, &blobInfo); err != nil {

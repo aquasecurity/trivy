@@ -48,20 +48,20 @@ func (l StringValueList) AsStrings() (output []string) {
 	return output
 }
 
-func (b StringValue) MarshalJSON() ([]byte, error) {
+func (s StringValue) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]any{
-		"value":    b.value,
-		"metadata": b.metadata,
+		"value":    s.value,
+		"metadata": s.metadata,
 	})
 }
 
-func (b *StringValue) UnmarshalJSON(data []byte) error {
+func (s *StringValue) UnmarshalJSON(data []byte) error {
 	var keys map[string]any
 	if err := json.Unmarshal(data, &keys); err != nil {
 		return err
 	}
 	if keys["value"] != nil {
-		b.value = keys["value"].(string)
+		s.value = keys["value"].(string)
 	}
 	if keys["metadata"] != nil {
 		raw, err := json.Marshal(keys["metadata"])
@@ -72,7 +72,7 @@ func (b *StringValue) UnmarshalJSON(data []byte) error {
 		if err := json.Unmarshal(raw, &m); err != nil {
 			return err
 		}
-		b.metadata = m
+		s.metadata = m
 	}
 	return nil
 }
@@ -103,8 +103,8 @@ func (s StringValue) Value() string {
 	return s.value
 }
 
-func (b StringValue) GetRawValue() any {
-	return b.value
+func (s StringValue) GetRawValue() any {
+	return s.value
 }
 
 func (s StringValue) IsEmpty() bool {

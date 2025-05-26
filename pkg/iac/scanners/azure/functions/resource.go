@@ -32,7 +32,7 @@ func ExtensionResourceID(args ...any) any {
 	return resourceID
 }
 
-func ResourceGroup(args ...any) any {
+func ResourceGroup(_ ...any) any {
 	return fmt.Sprintf(`{
 "id": "/subscriptions/%s/resourceGroups/PlaceHolderResourceGroup",
 "name": "Placeholder Resource Group",
