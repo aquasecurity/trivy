@@ -1,6 +1,6 @@
-# Skipping Files and Directories
+# Skipping Artifacts
 
-This section details ways to specify the files and directories that Trivy should not scan.
+This section details ways to specify the files, directories and resources that Trivy should not scan.
 
 ## Skip Files
 |     Scanner      | Supported |
@@ -117,3 +117,7 @@ The prefixes are listed [here](https://github.com/aquasecurity/trivy/tree/{{ git
 
 
 [^1]: Only work with the [license-full](../scanner/license.md) flag)
+
+## Skip Resources
+
+You can skip IaC resources by providing inline comments. More details are provided [here](../scanner/misconfiguration/config/config.md#skipping-resources-by-inline-comments)

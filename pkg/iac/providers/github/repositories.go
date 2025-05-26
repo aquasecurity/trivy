@@ -10,7 +10,3 @@ type Repository struct {
 	VulnerabilityAlerts iacTypes.BoolValue
 	Archived            iacTypes.BoolValue
 }
-
-func (r Repository) IsArchived() bool {
-	return r.Archived.IsTrue()
-}

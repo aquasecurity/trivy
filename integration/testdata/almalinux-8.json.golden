@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/almalinux-8.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 204637184,
     "OS": {
       "Family": "alma",
       "Name": "8.5"
@@ -44,7 +45,14 @@
         ],
         "Image": "sha256:d38d2eac03bc19e080df596d6148863a0f8293f3a277a7524f378da79a1feb0f"
       }
-    }
+    },
+    "Layers": [
+      {
+        "Size": 204637184,
+        "Digest": "sha256:a1f18d9dc5496c63197eb9a4f1d4bf5cc88c6a34f64f0fe11ea233070392ce48",
+        "DiffID": "sha256:124d41c237c5e823577dda97e87cebaecce62d585c725d07e709ce410681de4d"
+      }
+    ]
   },
   "Results": [
     {

@@ -572,7 +572,7 @@ COPY --from=dep /binary /`
 
 			results, err := scanner.ScanFS(t.Context(), fsys, "code")
 			if tc.expectedError != "" && err != nil {
-				require.Equal(t, tc.expectedError, err.Error(), tc.name)
+				require.ErrorContainsf(t, err, tc.expectedError, tc.name)
 			} else {
 				require.NoError(t, err)
 				require.Len(t, results.GetFailed(), 1)

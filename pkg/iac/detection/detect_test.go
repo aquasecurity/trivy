@@ -449,7 +449,7 @@ rules:
 		t.Run(test.name, func(t *testing.T) {
 			t.Run("GetTypes", func(t *testing.T) {
 				actualDetections := GetTypes(test.path, test.r)
-				assert.Equal(t, len(test.expected), len(actualDetections))
+				assert.Len(t, actualDetections, len(test.expected))
 				for _, expected := range test.expected {
 					resetReader(test.r)
 					found := slices.Contains(actualDetections, expected)

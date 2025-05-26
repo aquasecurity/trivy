@@ -440,6 +440,42 @@ func TestNewPackageURL(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "bottlerocket package",
+			typ:  ftypes.Bottlerocket,
+			metadata: types.Metadata{
+				OS: &ftypes.OS{
+					Family: ftypes.Bottlerocket,
+					Name:   "1.34.0",
+				},
+			},
+			pkg: ftypes.Package{
+				ID:      "glibc@2.40",
+				Name:    "glibc",
+				Version: "2.40",
+				Epoch:   1,
+				Arch:    "x86_64",
+			},
+			want: &purl.PackageURL{
+				Type:    "bottlerocket",
+				Name:    "glibc",
+				Version: "2.40",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "arch",
+						Value: "x86_64",
+					},
+					{
+						Key:   "epoch",
+						Value: "1",
+					},
+					{
+						Key:   "distro",
+						Value: "bottlerocket-1.34.0",
+					},
+				},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -706,6 +742,47 @@ func TestPackageURL_Package(t *testing.T) {
 						Version: "4.2.0",
 						Name:    "AppCenter",
 						Subpath: "Analytics",
+					},
+				},
+			},
+		},
+		{
+			name: "bottlerocket with epoch",
+			pkgURL: &purl.PackageURL{
+				Type:    "bottlerocket",
+				Name:    "glibc",
+				Version: "2.40",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "epoch",
+						Value: "1",
+					},
+					{
+						Key:   "distro",
+						Value: "bottlerocket-1.34.0",
+					},
+				},
+			},
+			wantPkg: &ftypes.Package{
+				ID:      "glibc@2.40",
+				Name:    "glibc",
+				Version: "2.40",
+				Epoch:   1,
+				Identifier: ftypes.PkgIdentifier{
+					PURL: &packageurl.PackageURL{
+						Type:    "bottlerocket",
+						Name:    "glibc",
+						Version: "2.40",
+						Qualifiers: packageurl.Qualifiers{
+							{
+								Key:   "epoch",
+								Value: "1",
+							},
+							{
+								Key:   "distro",
+								Value: "bottlerocket-1.34.0",
+							},
+						},
 					},
 				},
 			},

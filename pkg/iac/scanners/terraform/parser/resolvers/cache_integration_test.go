@@ -38,7 +38,7 @@ func testOptions(t *testing.T, source string) resolvers.Options {
 
 func newRegistry(repoURL string) *httptest.Server {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/v1/modules/terraform-aws-modules/s3-bucket/aws/download", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/v1/modules/terraform-aws-modules/s3-bucket/aws/download", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("X-Terraform-Get", repoURL)
 		w.WriteHeader(http.StatusNoContent)
 	})

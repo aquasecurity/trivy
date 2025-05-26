@@ -43,14 +43,26 @@ Trivy analyzes `node_modules` for licenses.
 By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
 
 ### Yarn
-Trivy parses `yarn.lock`, which doesn't contain information about development dependencies.
-Trivy also uses `package.json` file to handle [aliases](https://classic.yarnpkg.com/lang/en/docs/cli/add/#toc-yarn-add-alias).
+Trivy parses `yarn.lock`.
 
-To exclude devDependencies and allow aliases, `package.json` also needs to be present next to `yarn.lock`.
+Trivy also analyzes additional files to gather more information about the detected dependencies.
 
-Trivy analyzes `.yarn` (Yarn 2+) or `node_modules` (Yarn Classic) folder next to the yarn.lock file to detect licenses.
+- package.json
+- node_modules/**
 
-By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
+#### Package relationships
+`yarn.lock` files don't contain information about package relationships, such as direct or indirect dependencies.
+To enrich this information, Trivy parses the `package.json` file located next to the `yarn.lock` file as well as workspace `package.json` files.
+
+By default, Trivy doesn't report development dependencies.
+Use the `--include-dev-deps` flag to include them in the results.
+
+#### Development dependencies
+`yarn.lock` files don't contain information about package groups, such as production and development dependencies.
+To identify dev dependencies and support [aliases][yarn-aliases], Trivy parses the `package.json` file located next to the `yarn.lock` file as well as workspace `package.json` files.
+
+#### Licenses
+Trivy analyzes the `.yarn` directory (for Yarn 2+) or the `node_modules` directory (for Yarn Classic) located next to the `yarn.lock` file to detect licenses.
 
 ### pnpm
 Trivy parses `pnpm-lock.yaml`, then finds production dependencies and builds a [tree][dependency-graph] of dependencies with vulnerabilities.
@@ -74,5 +86,6 @@ It only extracts package names, versions and licenses for those packages.
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [pnpm-lockfile-v6]: https://github.com/pnpm/spec/blob/fd3238639af86c09b7032cc942bab3438b497036/lockfile/6.0.md
+[yarn-aliases]: https://classic.yarnpkg.com/lang/en/docs/cli/add/#toc-yarn-add-alias
 
 [^1]: [yarn.lock](#bun) must be generated

@@ -169,7 +169,7 @@ func adaptInstance(resource *terraform.Block, modules terraform.Modules) rds.Ins
 	}
 }
 
-func adaptDBParameterGroups(resource *terraform.Block, modules terraform.Modules) rds.ParameterGroups {
+func adaptDBParameterGroups(resource *terraform.Block, _ terraform.Modules) rds.ParameterGroups {
 
 	var Parameters []rds.Parameters
 	paramres := resource.GetBlocks("parameter")
@@ -190,7 +190,7 @@ func adaptDBParameterGroups(resource *terraform.Block, modules terraform.Modules
 	}
 }
 
-func adaptDBSnapshots(resource *terraform.Block, modules terraform.Modules) rds.Snapshots {
+func adaptDBSnapshots(resource *terraform.Block, _ terraform.Modules) rds.Snapshots {
 
 	return rds.Snapshots{
 		Metadata:             resource.GetMetadata(),

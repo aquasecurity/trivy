@@ -1,22 +1,23 @@
-name: "Lint PR title"
+name: "Validate PR Title"
 
 on:
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - edited
       - synchronize
 
 jobs:
-  main:
+  validate:
     name: Validate PR title
     runs-on: ubuntu-latest
     steps:
-      - uses: amannn/action-semantic-pull-request@v5
+      - name: Validate PR title
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          types: |
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          # Valid types
+          VALID_TYPES: |
             feat
             fix
             docs
@@ -29,13 +30,15 @@ jobs:
             chore
             revert
             release
-
-          scopes: |
+          # Valid scopes categorized by area
+          VALID_SCOPES: |
+            # Scanners
             vuln
             misconf
             secret
             license
 
+            # Targets
             image
             fs
             repo
@@ -46,6 +49,7 @@ jobs:
             vm
             plugin
 
+            # OS
             alpine
             wolfi
             chainguard
@@ -62,6 +66,7 @@ jobs:
             distroless
             windows
 
+            # Languages
             ruby
             php
             python
@@ -71,7 +76,7 @@ jobs:
             java
             go
             c
-            c\+\+
+            c++
             elixir
             dart
             swift
@@ -79,29 +84,80 @@ jobs:
             conda
             julia
 
+            # Package types
             os
             lang
 
+            # IaC
             kubernetes
             dockerfile
             terraform
             cloudformation
 
+            # Container
             docker
             podman
             containerd
             oci
 
+            # SBOM
+            sbom
+            spdx
+            cyclonedx
+
+            # Misc
             cli
             flag
-
-            cyclonedx
-            spdx
             purl
             vex
-
             helm
             report
             db
             parser
             deps
+        run: |
+          set -euo pipefail
+
+          # Convert env vars to regex alternatives, excluding comments and empty lines
+          TYPES_REGEX=$(echo "$VALID_TYPES" | grep -v '^$' | paste -sd '|')
+          SCOPES_REGEX=$(echo "$VALID_SCOPES" | grep -v '^$' | grep -v '^#' | paste -sd '|')
+          
+          # Basic format check (should match: type(scope): description or type: description)
+          FORMAT_REGEX="^[a-z]+(\([a-z0-9+]+\))?!?: .+$"
+          if ! echo "$PR_TITLE" | grep -qE "$FORMAT_REGEX"; then
+            echo "Error: Invalid PR title format"
+            echo "Expected format: <type>(<scope>): <description> or <type>: <description>"
+            echo "Examples:"
+            echo "  feat(vuln): add new vulnerability detection"
+            echo "  fix: correct parsing logic"
+            echo "  docs(kubernetes): update installation guide"
+            echo -e "\nCurrent title: $PR_TITLE"
+            exit 1
+          fi
+
+          # Extract type and scope for validation
+          TYPE=$(echo "$PR_TITLE" | sed -E 's/^([a-z]+)(\([a-z0-9+]+\))?!?: .+$/\1/')
+          SCOPE=$(echo "$PR_TITLE" | sed -E 's/^[a-z]+\(([a-z0-9+]+)\)!?: .+$/\1/; t; s/.*//')
+
+          # Validate type
+          if ! echo "$VALID_TYPES" | grep -qx "$TYPE"; then
+            echo "Error: Invalid type '${TYPE}'"
+            echo -e "\nValid types:"
+            echo "$VALID_TYPES" | grep -v '^$' | sed 's/^/- /'
+            echo -e "\nCurrent title: $PR_TITLE"
+            exit 1
+          fi
+
+          # Validate scope if present
+          if [ -n "$SCOPE" ]; then
+            if ! echo "$VALID_SCOPES" | grep -v '^#' | grep -qx "$SCOPE"; then
+              echo "Error: Invalid scope '${SCOPE}'"
+              echo -e "\nValid scopes:"
+              echo "$VALID_SCOPES" | grep -v '^$' | grep -v '^#' | sed 's/^/- /'
+              echo -e "\nCurrent title: $PR_TITLE"
+              exit 1
+            fi
+          fi
+          
+          echo "PR title validation passed ✅"
+          echo "Current title: $PR_TITLE"

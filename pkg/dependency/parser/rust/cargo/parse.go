@@ -121,9 +121,8 @@ func (p *Parser) parseDependencies(pkgId string, pkg cargoPkg, pkgs map[string]c
 			ID:        pkgId,
 			DependsOn: dependOn,
 		}
-	} else {
-		return nil
 	}
+	return nil
 }
 
 func packageID(name, version string) string {

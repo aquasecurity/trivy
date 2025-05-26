@@ -1,31 +1,29 @@
 package composer
 
 import (
-	"io"
 	"sort"
 	"strings"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/jfather"
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 type LockFile struct {
 	Packages []packageInfo `json:"packages"`
 }
 type packageInfo struct {
-	Name      string            `json:"name"`
-	Version   string            `json:"version"`
-	Require   map[string]string `json:"require"`
-	License   any               `json:"license"`
-	StartLine int
-	EndLine   int
+	Name    string            `json:"name"`
+	Version string            `json:"version"`
+	Require map[string]string `json:"require"`
+	License any               `json:"license"`
+	xjson.Location
 }
 
 type Parser struct {
@@ -40,11 +38,7 @@ func NewParser() *Parser {
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockFile LockFile
-	input, err := io.ReadAll(r)
-	if err != nil {
-		return nil, nil, xerrors.Errorf("read error: %w", err)
-	}
-	if err = jfather.Unmarshal(input, &lockFile); err != nil {
+	if err := xjson.UnmarshalRead(r, &lockFile); err != nil {
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 
@@ -57,12 +51,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			Version:      lpkg.Version,
 			Relationship: ftypes.RelationshipUnknown, // composer.lock file doesn't have info about direct/indirect dependencies
 			Licenses:     licenses(lpkg.License),
-			Locations: []ftypes.Location{
-				{
-					StartLine: lpkg.StartLine,
-					EndLine:   lpkg.EndLine,
-				},
-			},
+			Locations:    []ftypes.Location{ftypes.Location(lpkg.Location)},
 		}
 		pkgs[pkg.Name] = pkg
 
@@ -103,17 +92,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	sort.Sort(deps)
 
 	return pkgSlice, deps, nil
-}
-
-// UnmarshalJSONWithMetadata needed to detect start and end lines of deps
-func (t *packageInfo) UnmarshalJSONWithMetadata(node jfather.Node) error {
-	if err := node.Decode(&t); err != nil {
-		return err
-	}
-	// Decode func will overwrite line numbers if we save them first
-	t.StartLine = node.Range().Start.Line
-	t.EndLine = node.Range().End.Line
-	return nil
 }
 
 // licenses returns slice of licenses from string, string with separators (`or`, `and`, etc.) or string array

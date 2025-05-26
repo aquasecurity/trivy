@@ -211,28 +211,28 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				return err
 			}
 
-			globalOptions, err := globalFlags.ToOptions()
+			flags := flag.Flags{globalFlags}
+			opts, err := flags.ToOptions(args)
 			if err != nil {
 				return err
 			}
-
 			// Initialize logger
-			log.InitLogger(globalOptions.Debug, globalOptions.Quiet)
+			log.InitLogger(opts.Debug, opts.Quiet)
 
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			globalOptions, err := globalFlags.ToOptions()
+			flags := flag.Flags{globalFlags}
+			opts, err := flags.ToOptions(args)
 			if err != nil {
 				return err
 			}
 
-			if globalOptions.ShowVersion {
+			if opts.ShowVersion {
 				// Customize version output
-				return showVersion(globalOptions.CacheDir, versionFormat, cmd.OutOrStdout())
-			} else {
-				return cmd.Help()
+				return showVersion(opts.CacheDir, versionFormat, cmd.OutOrStdout())
 			}
+			return cmd.Help()
 		},
 	}
 
@@ -252,30 +252,33 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = report
 
 	compliance := flag.ComplianceFlag.Clone()
-	compliance.Values = []string{types.ComplianceDockerCIS160}
+	compliance.Usage = fmt.Sprintf("%s (built-in compliance's: %s)", compliance.Usage, types.ComplianceDockerCIS160)
 	reportFlagGroup.Compliance = compliance // override usage as the accepted values differ for each subcommand.
 
-	imageFlags := &flag.Flags{
-		GlobalFlagGroup:        globalFlags,
-		CacheFlagGroup:         flag.NewCacheFlagGroup(),
-		DBFlagGroup:            flag.NewDBFlagGroup(),
-		ImageFlagGroup:         flag.NewImageFlagGroup(), // container image specific
-		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
-		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
-		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
-		PackageFlagGroup:       flag.NewPackageFlagGroup(),
-		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
-		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
-		RegoFlagGroup:          flag.NewRegoFlagGroup(),
-		ReportFlagGroup:        reportFlagGroup,
-		ScanFlagGroup:          flag.NewScanFlagGroup(),
-		SecretFlagGroup:        flag.NewSecretFlagGroup(),
-		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
-	}
+	packageFlagGroup := flag.NewPackageFlagGroup()
+	packageFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
 
-	imageFlags.PackageFlagGroup.IncludeDevDeps = nil          // disable '--include-dev-deps'
-	imageFlags.MisconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
-	imageFlags.MisconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
+	misconfFlagGroup := flag.NewMisconfFlagGroup()
+	misconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
+	misconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
+
+	imageFlags := flag.Flags{
+		globalFlags,
+		flag.NewCacheFlagGroup(),
+		flag.NewDBFlagGroup(),
+		flag.NewImageFlagGroup(), // container image specific flags
+		flag.NewLicenseFlagGroup(),
+		misconfFlagGroup,
+		flag.NewModuleFlagGroup(),
+		packageFlagGroup,
+		flag.NewClientFlags(),
+		flag.NewRegistryFlagGroup(),
+		flag.NewRegoFlagGroup(),
+		reportFlagGroup,
+		flag.NewScanFlagGroup(),
+		flag.NewSecretFlagGroup(),
+		flag.NewVulnerabilityFlagGroup(),
+	}
 
 	cmd := &cobra.Command{
 		Use:     "image [flags] IMAGE_NAME",
@@ -335,26 +338,29 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 }
 
 func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
-	fsFlags := &flag.Flags{
-		GlobalFlagGroup:        globalFlags,
-		CacheFlagGroup:         flag.NewCacheFlagGroup(),
-		DBFlagGroup:            flag.NewDBFlagGroup(),
-		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
-		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
-		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
-		PackageFlagGroup:       flag.NewPackageFlagGroup(),
-		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
-		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
-		RegoFlagGroup:          flag.NewRegoFlagGroup(),
-		ReportFlagGroup:        flag.NewReportFlagGroup(),
-		ScanFlagGroup:          flag.NewScanFlagGroup(),
-		SecretFlagGroup:        flag.NewSecretFlagGroup(),
-		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
-	}
+	cacheFlagGroup := flag.NewCacheFlagGroup()
+	cacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory) // Use memory cache by default
 
-	fsFlags.CacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory)                           // Use memory cache by default
-	fsFlags.ReportFlagGroup.ReportFormat.Usage = "specify a compliance report format for the output" // @TODO: support --report summary for non compliance reports
-	fsFlags.ReportFlagGroup.ExitOnEOL = nil                                                          // disable '--exit-on-eol'
+	reportFlagGroup := flag.NewReportFlagGroup()
+	reportFlagGroup.ReportFormat.Usage = "specify a compliance report format for the output" // @TODO: support --report summary for non compliance reports
+	reportFlagGroup.ExitOnEOL = nil                                                          // disable '--exit-on-eol'
+
+	fsFlags := flag.Flags{
+		globalFlags,
+		cacheFlagGroup,
+		flag.NewDBFlagGroup(),
+		flag.NewLicenseFlagGroup(),
+		flag.NewMisconfFlagGroup(),
+		flag.NewModuleFlagGroup(),
+		flag.NewPackageFlagGroup(),
+		flag.NewClientFlags(), // for client/server mode
+		flag.NewRegistryFlagGroup(),
+		flag.NewRegoFlagGroup(),
+		reportFlagGroup,
+		flag.NewScanFlagGroup(),
+		flag.NewSecretFlagGroup(),
+		flag.NewVulnerabilityFlagGroup(),
+	}
 
 	cmd := &cobra.Command{
 		Use:     "filesystem [flags] PATH",
@@ -394,27 +400,33 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 }
 
 func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
-	rootfsFlags := &flag.Flags{
-		GlobalFlagGroup:        globalFlags,
-		CacheFlagGroup:         flag.NewCacheFlagGroup(),
-		DBFlagGroup:            flag.NewDBFlagGroup(),
-		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
-		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
-		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
-		PackageFlagGroup:       flag.NewPackageFlagGroup(),
-		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
-		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
-		RegoFlagGroup:          flag.NewRegoFlagGroup(),
-		ReportFlagGroup:        flag.NewReportFlagGroup(),
-		ScanFlagGroup:          flag.NewScanFlagGroup(),
-		SecretFlagGroup:        flag.NewSecretFlagGroup(),
-		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
+	reportFlagGroup := flag.NewReportFlagGroup()
+	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
+	reportFlagGroup.Compliance = nil   // disable '--compliance'
+	reportFlagGroup.ReportFormat = nil // disable '--report'
+
+	packageFlagGroup := flag.NewPackageFlagGroup()
+	packageFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
+
+	cacheFlagGroup := flag.NewCacheFlagGroup()
+	cacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory) // Use memory cache by default
+
+	rootfsFlags := flag.Flags{
+		globalFlags,
+		cacheFlagGroup,
+		flag.NewDBFlagGroup(),
+		flag.NewLicenseFlagGroup(),
+		flag.NewMisconfFlagGroup(),
+		flag.NewModuleFlagGroup(),
+		packageFlagGroup,
+		flag.NewClientFlags(), // for client/server mode
+		flag.NewRegistryFlagGroup(),
+		flag.NewRegoFlagGroup(),
+		reportFlagGroup,
+		flag.NewScanFlagGroup(),
+		flag.NewSecretFlagGroup(),
+		flag.NewVulnerabilityFlagGroup(),
 	}
-	rootfsFlags.ReportFlagGroup.ReportFormat = nil                             // TODO: support --report summary
-	rootfsFlags.ReportFlagGroup.Compliance = nil                               // disable '--compliance'
-	rootfsFlags.ReportFlagGroup.ReportFormat = nil                             // disable '--report'
-	rootfsFlags.PackageFlagGroup.IncludeDevDeps = nil                          // disable '--include-dev-deps'
-	rootfsFlags.CacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory) // Use memory cache by default
 
 	cmd := &cobra.Command{
 		Use:     "rootfs [flags] ROOTDIR",
@@ -455,28 +467,31 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 }
 
 func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
-	repoFlags := &flag.Flags{
-		GlobalFlagGroup:        globalFlags,
-		CacheFlagGroup:         flag.NewCacheFlagGroup(),
-		DBFlagGroup:            flag.NewDBFlagGroup(),
-		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
-		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
-		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
-		PackageFlagGroup:       flag.NewPackageFlagGroup(),
-		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
-		RegoFlagGroup:          flag.NewRegoFlagGroup(),
-		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
-		ReportFlagGroup:        flag.NewReportFlagGroup(),
-		ScanFlagGroup:          flag.NewScanFlagGroup(),
-		SecretFlagGroup:        flag.NewSecretFlagGroup(),
-		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
-		RepoFlagGroup:          flag.NewRepoFlagGroup(),
-	}
-	repoFlags.ReportFlagGroup.ReportFormat = nil // TODO: support --report summary
-	repoFlags.ReportFlagGroup.Compliance = nil   // disable '--compliance'
-	repoFlags.ReportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
+	reportFlagGroup := flag.NewReportFlagGroup()
+	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
+	reportFlagGroup.Compliance = nil   // disable '--compliance'
+	reportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
 
-	repoFlags.ScanFlagGroup.DistroFlag = nil // `repo` subcommand doesn't support scanning OS packages, so we can disable `--distro`
+	scanFlagGroup := flag.NewScanFlagGroup()
+	scanFlagGroup.DistroFlag = nil // repo subcommand doesn't support scanning OS packages
+
+	repoFlags := flag.Flags{
+		globalFlags,
+		flag.NewCacheFlagGroup(),
+		flag.NewDBFlagGroup(),
+		flag.NewLicenseFlagGroup(),
+		flag.NewMisconfFlagGroup(),
+		flag.NewModuleFlagGroup(),
+		flag.NewPackageFlagGroup(),
+		flag.NewRegistryFlagGroup(),
+		flag.NewRegoFlagGroup(),
+		flag.NewClientFlags(), // for client/server mode
+		reportFlagGroup,
+		scanFlagGroup,
+		flag.NewSecretFlagGroup(),
+		flag.NewVulnerabilityFlagGroup(),
+		flag.NewRepoFlagGroup(),
+	}
 
 	cmd := &cobra.Command{
 		Use:     "repository [flags] (REPO_PATH | REPO_URL)",
@@ -514,18 +529,20 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 }
 
 func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
-	convertFlags := &flag.Flags{
-		GlobalFlagGroup: globalFlags,
-		ScanFlagGroup:   &flag.ScanFlagGroup{},
-		ReportFlagGroup: flag.NewReportFlagGroup(),
-	}
-
 	// To display the summary table, we need to enable scanners (to build columns).
 	// We can't get scanner information from the report (we don't include empty licenses and secrets in the report).
 	// So we need to ask the user to configure scanners (if needed).
-	convertFlags.ScanFlagGroup.Scanners = flag.ScannersFlag.Clone()
-	convertFlags.ScanFlagGroup.Scanners.Default = nil // disable default scanners
-	convertFlags.ScanFlagGroup.Scanners.Usage = "List of scanners included when generating the json report. Used only for rendering the summary table."
+	scanFlagGroup := &flag.ScanFlagGroup{
+		Scanners: flag.ScannersFlag.Clone(),
+	}
+	scanFlagGroup.Scanners.Default = nil // disable default scanners
+	scanFlagGroup.Scanners.Usage = "List of scanners included when generating the json report. Used only for rendering the summary table."
+
+	convertFlags := flag.Flags{
+		globalFlags,
+		scanFlagGroup,
+		flag.NewReportFlagGroup(),
+	}
 
 	cmd := &cobra.Command{
 		Use:     "convert [flags] RESULT_JSON",
@@ -575,17 +592,17 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	remoteFlags.ServerAddr = &remoteAddr // disable '--server' and enable '--remote' instead.
 
-	clientFlags := &flag.Flags{
-		GlobalFlagGroup:        globalFlags,
-		CacheFlagGroup:         flag.NewCacheFlagGroup(),
-		DBFlagGroup:            flag.NewDBFlagGroup(),
-		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
-		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
-		RegoFlagGroup:          flag.NewRegoFlagGroup(),
-		RemoteFlagGroup:        remoteFlags,
-		ReportFlagGroup:        flag.NewReportFlagGroup(),
-		ScanFlagGroup:          flag.NewScanFlagGroup(),
-		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
+	clientFlags := flag.Flags{
+		globalFlags,
+		flag.NewCacheFlagGroup(),
+		flag.NewDBFlagGroup(),
+		flag.NewMisconfFlagGroup(),
+		flag.NewRegistryFlagGroup(),
+		flag.NewRegoFlagGroup(),
+		remoteFlags,
+		flag.NewReportFlagGroup(),
+		flag.NewScanFlagGroup(),
+		flag.NewVulnerabilityFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -621,19 +638,20 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 }
 
 func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
-	serverFlags := &flag.Flags{
-		GlobalFlagGroup:   globalFlags,
-		CacheFlagGroup:    flag.NewCacheFlagGroup(),
-		DBFlagGroup:       flag.NewDBFlagGroup(),
-		ModuleFlagGroup:   flag.NewModuleFlagGroup(),
-		RemoteFlagGroup:   flag.NewServerFlags(),
-		RegistryFlagGroup: flag.NewRegistryFlagGroup(),
-	}
+	// The Java DB is not needed for the server mode
+	dbFlagGroup := flag.NewDBFlagGroup()
+	dbFlagGroup.DownloadJavaDBOnly = nil // disable '--download-java-db-only'
+	dbFlagGroup.SkipJavaDBUpdate = nil   // disable '--skip-java-db-update'
+	dbFlagGroup.JavaDBRepositories = nil // disable '--java-db-repository'
 
-	// java-db only works on client side.
-	serverFlags.DBFlagGroup.DownloadJavaDBOnly = nil // disable '--download-java-db-only'
-	serverFlags.DBFlagGroup.SkipJavaDBUpdate = nil   // disable '--skip-java-db-update'
-	serverFlags.DBFlagGroup.JavaDBRepositories = nil // disable '--java-db-repository'
+	serverFlags := flag.Flags{
+		globalFlags,
+		flag.NewCacheFlagGroup(),
+		dbFlagGroup,
+		flag.NewModuleFlagGroup(),
+		flag.NewServerFlags(),
+		flag.NewRegistryFlagGroup(),
+	}
 
 	cmd := &cobra.Command{
 		Use:     "server [flags]",
@@ -675,27 +693,30 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		FilePatterns: flag.FilePatternsFlag.Clone(),
 	}
 
+	reportFlagGroup := flag.NewReportFlagGroup()
+	reportFlagGroup.DependencyTree = nil                                                     // disable '--dependency-tree'
+	reportFlagGroup.ListAllPkgs = nil                                                        // disable '--list-all-pkgs'
+	reportFlagGroup.ExitOnEOL = nil                                                          // disable '--exit-on-eol'
+	reportFlagGroup.ShowSuppressed = nil                                                     // disable '--show-suppressed'
+	reportFlagGroup.ReportFormat.Usage = "specify a compliance report format for the output" // @TODO: support --report summary for non compliance reports
+
+	cacheFlagGroup := flag.NewCacheFlagGroup()
+	cacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory)
+
 	configFlags := &flag.Flags{
-		GlobalFlagGroup:   globalFlags,
-		CacheFlagGroup:    flag.NewCacheFlagGroup(),
-		MisconfFlagGroup:  flag.NewMisconfFlagGroup(),
-		ModuleFlagGroup:   flag.NewModuleFlagGroup(),
-		RegistryFlagGroup: flag.NewRegistryFlagGroup(),
-		RegoFlagGroup:     flag.NewRegoFlagGroup(),
-		K8sFlagGroup: &flag.K8sFlagGroup{
-			// disable unneeded flags
+		globalFlags,
+		cacheFlagGroup,
+		flag.NewMisconfFlagGroup(),
+		flag.NewModuleFlagGroup(),
+		flag.NewRegistryFlagGroup(),
+		flag.NewRegoFlagGroup(),
+		&flag.K8sFlagGroup{
+			// Keep only --k8s-version flag and disable others
 			K8sVersion: flag.K8sVersionFlag.Clone(),
 		},
-		ReportFlagGroup: flag.NewReportFlagGroup(),
-		ScanFlagGroup:   scanFlags,
+		reportFlagGroup,
+		scanFlags,
 	}
-
-	configFlags.ReportFlagGroup.DependencyTree = nil                                                     // disable '--dependency-tree'
-	configFlags.ReportFlagGroup.ListAllPkgs = nil                                                        // disable '--list-all-pkgs'
-	configFlags.ReportFlagGroup.ExitOnEOL = nil                                                          // disable '--exit-on-eol'
-	configFlags.ReportFlagGroup.ShowSuppressed = nil                                                     // disable '--show-suppressed'
-	configFlags.ReportFlagGroup.ReportFormat.Usage = "specify a compliance report format for the output" // @TODO: support --report summary for non compliance reports
-	configFlags.CacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory)
 
 	cmd := &cobra.Command{
 		Use:     "config [flags] DIR",
@@ -738,7 +759,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewPluginCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	var pluginOptions flag.Options
 	pluginFlags := &flag.Flags{
-		GlobalFlagGroup: globalFlags,
+		globalFlags,
 	}
 	cmd := &cobra.Command{
 		Use:           "plugin subcommand",
@@ -747,7 +768,8 @@ func NewPluginCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Short:         "Manage plugins",
 		SilenceErrors: true,
 		SilenceUsage:  true,
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) (err error) {
+		PersistentPreRunE: func(_ *cobra.Command, args []string) error {
+			var err error
 			pluginOptions, err = pluginFlags.ToOptions(args)
 			if err != nil {
 				return err
@@ -802,7 +824,7 @@ func NewPluginCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			SilenceUsage:          true,
 			Short:                 "List installed plugin",
 			Args:                  cobra.NoArgs,
-			RunE: func(cmd *cobra.Command, args []string) error {
+			RunE: func(cmd *cobra.Command, _ []string) error {
 				if err := plugin.List(cmd.Context()); err != nil {
 					return xerrors.Errorf("plugin list display error: %w", err)
 				}
@@ -887,8 +909,8 @@ func NewPluginCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	moduleFlags := &flag.Flags{
-		GlobalFlagGroup: globalFlags,
-		ModuleFlagGroup: flag.NewModuleFlagGroup(),
+		globalFlags,
+		flag.NewModuleFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -907,7 +929,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			Aliases: []string{"i"},
 			Short:   "Install a module",
 			Args:    cobra.ExactArgs(1),
-			PreRunE: func(cmd *cobra.Command, args []string) error {
+			PreRunE: func(cmd *cobra.Command, _ []string) error {
 				if err := moduleFlags.Bind(cmd); err != nil {
 					return xerrors.Errorf("flag bind error: %w", err)
 				}
@@ -931,7 +953,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			Aliases: []string{"u"},
 			Short:   "Uninstall a module",
 			Args:    cobra.ExactArgs(1),
-			PreRunE: func(cmd *cobra.Command, args []string) error {
+			PreRunE: func(cmd *cobra.Command, _ []string) error {
 				if err := moduleFlags.Bind(cmd); err != nil {
 					return xerrors.Errorf("flag bind error: %w", err)
 				}
@@ -973,18 +995,15 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	imageFlags := &flag.ImageFlagGroup{ImageSources: flag.SourceFlag.Clone()}
 
 	reportFlagGroup := flag.NewReportFlagGroup()
+	reportFlagGroup.ExitOnEOL = nil // disable '--exit-on-eol'
+	reportFlagGroup.TableMode = nil // disable '--table-mode's
 	compliance := flag.ComplianceFlag.Clone()
-	compliance.Values = []string{
-		types.ComplianceK8sNsa10,
-		types.ComplianceK8sCIS123,
-		types.ComplianceEksCIS14,
-		types.ComplianceRke2CIS124,
-		types.ComplianceK8sPSSBaseline01,
-		types.ComplianceK8sPSSRestricted01,
+	var compliances string
+	for _, val := range types.BuiltInK8sCompiances {
+		compliances += fmt.Sprintf("\n  - %s", val)
 	}
+	compliance.Usage = fmt.Sprintf("%s\nBuilt-in compliance's:%s", compliance.Usage, compliances)
 	reportFlagGroup.Compliance = compliance // override usage as the accepted values differ for each subcommand.
-	reportFlagGroup.ExitOnEOL = nil         // disable '--exit-on-eol'
-	reportFlagGroup.TableMode = nil         // disable '--table-mode'
 
 	formatFlag := flag.FormatFlag.Clone()
 	formatFlag.Values = xstrings.ToStringSlice([]types.Format{
@@ -998,22 +1017,24 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	misconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
 	misconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
 
+	packageFlagGroup := flag.NewPackageFlagGroup()
+	packageFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
+
 	k8sFlags := &flag.Flags{
-		GlobalFlagGroup:        globalFlags,
-		CacheFlagGroup:         flag.NewCacheFlagGroup(),
-		DBFlagGroup:            flag.NewDBFlagGroup(),
-		ImageFlagGroup:         imageFlags,
-		K8sFlagGroup:           flag.NewK8sFlagGroup(), // kubernetes-specific flags
-		MisconfFlagGroup:       misconfFlagGroup,
-		PackageFlagGroup:       flag.NewPackageFlagGroup(),
-		RegoFlagGroup:          flag.NewRegoFlagGroup(),
-		ReportFlagGroup:        reportFlagGroup,
-		ScanFlagGroup:          scanFlags,
-		SecretFlagGroup:        flag.NewSecretFlagGroup(),
-		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
-		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
+		globalFlags,
+		flag.NewCacheFlagGroup(),
+		flag.NewDBFlagGroup(),
+		imageFlags,
+		flag.NewK8sFlagGroup(), // kubernetes-specific flags
+		misconfFlagGroup,
+		packageFlagGroup,
+		flag.NewRegoFlagGroup(),
+		reportFlagGroup,
+		scanFlags,
+		flag.NewSecretFlagGroup(),
+		flag.NewRegistryFlagGroup(),
+		flag.NewVulnerabilityFlagGroup(),
 	}
-	k8sFlags.PackageFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
 
 	cmd := &cobra.Command{
 		Use:     "kubernetes [flags] [CONTEXT]",
@@ -1060,19 +1081,29 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 }
 
 func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	reportFlagGroup := flag.NewReportFlagGroup()
+	reportFlagGroup.ReportFormat = nil // disable '--report'
+
+	packageFlagGroup := flag.NewPackageFlagGroup()
+	packageFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
+
+	misconfFlagGroup := flag.NewMisconfFlagGroup()
+	misconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
+	misconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
+
 	vmFlags := &flag.Flags{
-		GlobalFlagGroup:        globalFlags,
-		CacheFlagGroup:         flag.NewCacheFlagGroup(),
-		DBFlagGroup:            flag.NewDBFlagGroup(),
-		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
-		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
-		PackageFlagGroup:       flag.NewPackageFlagGroup(),
-		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
-		ReportFlagGroup:        flag.NewReportFlagGroup(),
-		ScanFlagGroup:          flag.NewScanFlagGroup(),
-		SecretFlagGroup:        flag.NewSecretFlagGroup(),
-		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
-		AWSFlagGroup: &flag.AWSFlagGroup{
+		globalFlags,
+		flag.NewCacheFlagGroup(),
+		flag.NewDBFlagGroup(),
+		misconfFlagGroup,
+		flag.NewModuleFlagGroup(),
+		packageFlagGroup,
+		flag.NewClientFlags(), // for client/server mode
+		reportFlagGroup,
+		flag.NewScanFlagGroup(),
+		flag.NewSecretFlagGroup(),
+		flag.NewVulnerabilityFlagGroup(),
+		&flag.AWSFlagGroup{
 			Region: &flag.Flag[string]{
 				Name:       "aws-region",
 				ConfigName: "aws.region",
@@ -1080,10 +1111,6 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			},
 		},
 	}
-	vmFlags.ReportFlagGroup.ReportFormat = nil             // disable '--report'
-	vmFlags.PackageFlagGroup.IncludeDevDeps = nil          // disable '--include-dev-deps'
-	vmFlags.MisconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
-	vmFlags.MisconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
 
 	cmd := &cobra.Command{
 		Use:     "vm [flags] VM_IMAGE",
@@ -1142,27 +1169,32 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlagGroup := flag.NewScanFlagGroup()
 	scanFlagGroup.Scanners = scanners // allow only 'vuln' and 'license' options for '--scanners'
 	scanFlagGroup.Parallel = nil      // disable '--parallel'
+	scanFlagGroup.SkipFiles = nil     // disable `--skip-files` since `sbom` command only supports scanning one file.
+	scanFlagGroup.SkipDirs = nil      // disable `--skip-dirs` since `sbom` command only supports scanning one file.
 
 	licenseFlagGroup := flag.NewLicenseFlagGroup()
 	// License full-scan and confidence-level are for file content only
 	licenseFlagGroup.LicenseFull = nil
 	licenseFlagGroup.LicenseConfidenceLevel = nil
 
-	sbomFlags := &flag.Flags{
-		GlobalFlagGroup:        globalFlags,
-		CacheFlagGroup:         flag.NewCacheFlagGroup(),
-		DBFlagGroup:            flag.NewDBFlagGroup(),
-		PackageFlagGroup:       flag.NewPackageFlagGroup(),
-		RemoteFlagGroup:        flag.NewClientFlags(),       // for client/server mode
-		RegistryFlagGroup:      flag.NewRegistryFlagGroup(), // for DBs in private registries
-		ReportFlagGroup:        reportFlagGroup,
-		ScanFlagGroup:          scanFlagGroup,
-		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
-		LicenseFlagGroup:       licenseFlagGroup,
-	}
+	cacheFlagGroup := flag.NewCacheFlagGroup()
+	cacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory) // Use memory cache by default
 
-	sbomFlags.CacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory) // Use memory cache by default
-	sbomFlags.PackageFlagGroup.IncludeDevDeps = nil                          // disable '--include-dev-deps'
+	packageFlagGroup := flag.NewPackageFlagGroup()
+	packageFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
+
+	sbomFlags := &flag.Flags{
+		globalFlags,
+		cacheFlagGroup,
+		flag.NewDBFlagGroup(),
+		packageFlagGroup,
+		flag.NewClientFlags(),       // for client/server mode
+		flag.NewRegistryFlagGroup(), // for DBs in private registries
+		reportFlagGroup,
+		scanFlagGroup,
+		flag.NewVulnerabilityFlagGroup(),
+		licenseFlagGroup,
+	}
 
 	cmd := &cobra.Command{
 		Use:     "sbom [flags] SBOM_PATH",
@@ -1203,8 +1235,8 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewCleanCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cleanFlags := &flag.Flags{
-		GlobalFlagGroup: globalFlags,
-		CleanFlagGroup:  flag.NewCleanFlagGroup(),
+		globalFlags,
+		flag.NewCleanFlagGroup(),
 	}
 	cmd := &cobra.Command{
 		Use:     "clean [flags]",
@@ -1219,7 +1251,7 @@ func NewCleanCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
   # Remove vulnerability database
   $ trivy clean --vuln-db
 `,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			if err := cleanFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
@@ -1252,11 +1284,13 @@ func NewRegistryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		SilenceUsage:  true,
 	}
 
+	registryFlagGroup := flag.NewRegistryFlagGroup()
+	registryFlagGroup.RegistryToken = nil
+
 	loginFlags := &flag.Flags{
-		GlobalFlagGroup:   globalFlags,
-		RegistryFlagGroup: flag.NewRegistryFlagGroup(),
+		globalFlags,
+		registryFlagGroup,
 	}
-	loginFlags.RegistryFlagGroup.RegistryToken = nil // disable '--registry-token'
 	loginCmd := &cobra.Command{
 		Use:           "login SERVER",
 		Short:         "Log in to a registry",
@@ -1265,7 +1299,7 @@ func NewRegistryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Example: `  # Log in to reg.example.com
   cat ~/my_password.txt | trivy registry login --username foo --password-stdin reg.example.com`,
 		Args: cobra.ExactArgs(1),
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			if err := loginFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
@@ -1300,23 +1334,25 @@ func NewRegistryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 }
 
 func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
-	vexFlags := &flag.Flags{
-		GlobalFlagGroup: globalFlags,
+	vexFlags := flag.Flags{
+		globalFlags,
 	}
 	var vexOptions flag.Options
+
 	cmd := &cobra.Command{
 		Use:           "vex subcommand",
 		GroupID:       groupManagement,
 		Short:         "[EXPERIMENTAL] VEX utilities",
 		SilenceErrors: true,
 		SilenceUsage:  true,
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) (err error) {
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SetContext(log.WithContextPrefix(cmd.Context(), "vex"))
 
-			vexOptions, err = vexFlags.ToOptions(args)
+			opts, err := vexFlags.ToOptions(args)
 			if err != nil {
 				return err
 			}
+			vexOptions = opts
 			return nil
 		},
 	}
@@ -1344,7 +1380,7 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			SilenceErrors: true,
 			SilenceUsage:  true,
 			Args:          cobra.ExactArgs(0),
-			RunE: func(cmd *cobra.Command, args []string) error {
+			RunE: func(cmd *cobra.Command, _ []string) error {
 				if err := vexrepo.NewManager(vexOptions.CacheDir).Init(cmd.Context()); err != nil {
 					return xerrors.Errorf("config init error: %w", err)
 				}
@@ -1357,7 +1393,7 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			SilenceErrors: true,
 			SilenceUsage:  true,
 			Args:          cobra.ExactArgs(0),
-			RunE: func(cmd *cobra.Command, args []string) error {
+			RunE: func(cmd *cobra.Command, _ []string) error {
 				if err := vexrepo.NewManager(vexOptions.CacheDir).List(cmd.Context()); err != nil {
 					return xerrors.Errorf("list error: %w", err)
 				}
@@ -1393,11 +1429,12 @@ func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		GroupID: groupUtility,
 		Args:    cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options, err := globalFlags.ToOptions()
+			flags := flag.Flags{globalFlags}
+			opts, err := flags.ToOptions(args)
 			if err != nil {
 				return err
 			}
-			return showVersion(options.CacheDir, versionFormat, cmd.OutOrStdout())
+			return showVersion(opts.CacheDir, versionFormat, cmd.OutOrStdout())
 		},
 		SilenceErrors: true,
 		SilenceUsage:  true,

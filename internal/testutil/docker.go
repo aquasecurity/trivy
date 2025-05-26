@@ -29,7 +29,7 @@ func (c *DockerClient) ImageLoad(t *testing.T, ctx context.Context, imageFile st
 	defer testfile.Close()
 
 	// Load image into docker engine
-	res, err := c.Client.ImageLoad(ctx, testfile, true)
+	res, err := c.Client.ImageLoad(ctx, testfile, client.ImageLoadWithQuiet(true))
 	require.NoError(t, err)
 	defer res.Body.Close()
 

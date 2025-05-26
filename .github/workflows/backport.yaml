@@ -41,8 +41,10 @@ jobs:
           fetch-depth: 0
 
       - name: Extract branch name
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
-          BRANCH_NAME=$(echo ${{ github.event.comment.body }} | grep -oE '@aqua-bot backport\s+(\S+)' | awk '{print $3}')
+          BRANCH_NAME=$(echo $COMMENT_BODY | grep -oE '@aqua-bot backport\s+(\S+)' | awk '{print $3}')
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
       - name: Set up Git user

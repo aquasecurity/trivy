@@ -32,6 +32,6 @@ func newTerraformPlanSnapshotConfigAnalyzer(opts analyzer.AnalyzerOptions) (anal
 	return &terraformPlanConfigAnalyzer{Analyzer: a}, nil
 }
 
-func (*terraformPlanConfigAnalyzer) Required(filePath string, fi os.FileInfo) bool {
+func (*terraformPlanConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return filepath.Ext(filePath) == ".tfplan" || filepath.Base(filePath) == "tfplan"
 }

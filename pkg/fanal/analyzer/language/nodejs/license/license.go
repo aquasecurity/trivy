@@ -32,7 +32,7 @@ func NewLicense(classifierConfidenceLevel float64) *License {
 
 func (l *License) Traverse(fsys fs.FS, root string) (map[string][]string, error) {
 	licenses := make(map[string][]string)
-	walkDirFunc := func(pkgJSONPath string, d fs.DirEntry, r io.Reader) error {
+	walkDirFunc := func(pkgJSONPath string, _ fs.DirEntry, r io.Reader) error {
 		pkg, err := l.parser.Parse(r)
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", pkgJSONPath, err)

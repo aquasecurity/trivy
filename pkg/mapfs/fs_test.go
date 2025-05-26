@@ -21,7 +21,7 @@ type fileInfo struct {
 }
 
 var (
-	filePerm      = lo.Ternary(runtime.GOOS == "windows", fs.FileMode(0666), fs.FileMode(0644))
+	filePerm      = lo.Ternary(runtime.GOOS == "windows", fs.FileMode(0o666), fs.FileMode(0o644))
 	helloFileInfo = fileInfo{
 		name:     "hello.txt",
 		fileMode: filePerm,
@@ -36,13 +36,13 @@ var (
 	}
 	virtualFileInfo = fileInfo{
 		name:     "virtual.txt",
-		fileMode: 0600,
+		fileMode: 0o600,
 		isDir:    false,
 		size:     7,
 	}
 	cdirFileInfo = fileInfo{
 		name:     "c",
-		fileMode: fs.FileMode(0700) | fs.ModeDir,
+		fileMode: fs.FileMode(0o700) | fs.ModeDir,
 		isDir:    true,
 		size:     256,
 	}
@@ -50,13 +50,13 @@ var (
 
 func initFS(t *testing.T) *mapfs.FS {
 	fsys := mapfs.New()
-	require.NoError(t, fsys.MkdirAll("a/b/c", 0700))
-	require.NoError(t, fsys.MkdirAll("a/b/empty", 0700))
+	require.NoError(t, fsys.MkdirAll("a/b/c", 0o700))
+	require.NoError(t, fsys.MkdirAll("a/b/empty", 0o700))
 	require.NoError(t, fsys.WriteFile("hello.txt", "testdata/hello.txt"))
 	require.NoError(t, fsys.WriteFile("a/b/b.txt", "testdata/b.txt"))
 	require.NoError(t, fsys.WriteFile("a/b/c/c.txt", "testdata/c.txt"))
 	require.NoError(t, fsys.WriteFile("a/b/c/.dotfile", "testdata/dotfile"))
-	require.NoError(t, fsys.WriteVirtualFile("a/b/c/virtual.txt", []byte("virtual"), 0600))
+	require.NoError(t, fsys.WriteVirtualFile("a/b/c/virtual.txt", []byte("virtual"), 0o600))
 	return fsys
 }
 
@@ -163,12 +163,12 @@ func TestFS_ReadDir(t *testing.T) {
 			want: []dirEntry{
 				{
 					name:     "a",
-					fileMode: fs.FileMode(0700) | fs.ModeDir,
+					fileMode: fs.FileMode(0o700) | fs.ModeDir,
 					isDir:    true,
 					size:     0x100,
 					fileInfo: fileInfo{
 						name:     "a",
-						fileMode: fs.FileMode(0700) | fs.ModeDir,
+						fileMode: fs.FileMode(0o700) | fs.ModeDir,
 						isDir:    true,
 						size:     0x100,
 					},
@@ -213,7 +213,7 @@ func TestFS_ReadDir(t *testing.T) {
 				},
 				{
 					name:     "virtual.txt",
-					fileMode: 0600,
+					fileMode: 0o600,
 					isDir:    false,
 					size:     0,
 					fileInfo: virtualFileInfo,
@@ -500,4 +500,59 @@ func TestFS_WithUnderlyingRoot(t *testing.T) {
 	fi, err = fsys.Stat("..foo.txt")
 	require.NoError(t, err)
 	assert.False(t, fi.IsDir())
+}
+
+func TestFS_CopyDir(t *testing.T) {
+	tmpDst := "dst"
+	tests := []struct {
+		name      string
+		src       string
+		dst       string
+		wantFiles map[string]string // path in dst: want content
+		wantErr   require.ErrorAssertionFunc
+	}{
+		{
+			name: "copy testdata to dst/",
+			src:  "testdata",
+			dst:  tmpDst,
+			wantFiles: map[string]string{
+				tmpDst + "/testdata/hello.txt":        "hello world",
+				tmpDst + "/testdata/b.txt":            "bbb",
+				tmpDst + "/testdata/c.txt":            "",
+				tmpDst + "/testdata/dotfile":          "dotfile",
+				tmpDst + "/testdata/subdir/foo.txt":   "",
+				tmpDst + "/testdata/subdir/..foo.txt": "",
+			},
+			wantErr: require.NoError,
+		},
+		{
+			name: "copy subdir only",
+			src:  "testdata/subdir",
+			dst:  tmpDst + "/subdir2",
+			wantFiles: map[string]string{
+				tmpDst + "/subdir2/subdir/foo.txt":   "",
+				tmpDst + "/subdir2/subdir/..foo.txt": "",
+			},
+			wantErr: require.NoError,
+		},
+		{
+			name:    "non-existent src",
+			src:     "testdata/no_such_dir",
+			dst:     tmpDst + "/no_such",
+			wantErr: require.Error,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := mapfs.New()
+			err := fsys.CopyDir(tt.src, tt.dst)
+			tt.wantErr(t, err)
+			for path, want := range tt.wantFiles {
+				got, err := fsys.ReadFile(path)
+				require.NoError(t, err, path)
+				assert.Equal(t, want, string(got), path)
+			}
+		})
+	}
 }

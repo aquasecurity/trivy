@@ -126,3 +126,10 @@ type ScanOptions struct {
 	Distro              types.OS // Forced OS
 	VulnSeveritySources []dbTypes.SourceID
 }
+
+// ScanResponse represents the response from the scan service
+type ScanResponse struct {
+	Results Results
+	OS      types.OS
+	Layers  types.Layers
+}

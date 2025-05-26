@@ -77,7 +77,6 @@ func (r *misconfigRenderer) Render(result types.Result) {
 	if r.trace {
 		r.outputTrace(result.Target, result.Misconfigurations)
 	}
-	return
 }
 
 func (r *misconfigRenderer) countSeverities(misconfigs []types.DetectedMisconfiguration) map[string]int {
@@ -116,7 +115,6 @@ func (r *misconfigRenderer) renderSingle(target string, typ ftypes.TargetType, m
 }
 
 func (r *misconfigRenderer) renderSummary(misconf types.DetectedMisconfiguration) {
-
 	// show pass/fail/exception unless we are only showing failures
 	if r.includeNonFailures {
 		switch misconf.Status {

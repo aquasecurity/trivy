@@ -61,7 +61,7 @@ func (a *sgAdapter) adaptSecurityGroup(resource *terraform.Block, module terrafo
 	}
 }
 
-func adaptSGRule(resource *terraform.Block, modules terraform.Modules) computing.SecurityGroupRule {
+func adaptSGRule(resource *terraform.Block, _ terraform.Modules) computing.SecurityGroupRule {
 	ruleDescAttr := resource.GetAttribute("description")
 	ruleDescVal := ruleDescAttr.AsStringValueOrDefault("", resource)
 

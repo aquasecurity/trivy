@@ -235,9 +235,8 @@ func (r *AnalysisResult) Sort() {
 	sort.Slice(r.Misconfigurations, func(i, j int) bool {
 		if r.Misconfigurations[i].FileType != r.Misconfigurations[j].FileType {
 			return r.Misconfigurations[i].FileType < r.Misconfigurations[j].FileType
-		} else {
-			return r.Misconfigurations[i].FilePath < r.Misconfigurations[j].FilePath
 		}
+		return r.Misconfigurations[i].FilePath < r.Misconfigurations[j].FilePath
 	})
 
 	// Secrets
@@ -258,9 +257,8 @@ func (r *AnalysisResult) Sort() {
 		if r.Licenses[i].Type == r.Licenses[j].Type {
 			if r.Licenses[i].FilePath == r.Licenses[j].FilePath {
 				return r.Licenses[i].Layer.DiffID < r.Licenses[j].Layer.DiffID
-			} else {
-				return r.Licenses[i].FilePath < r.Licenses[j].FilePath
 			}
+			return r.Licenses[i].FilePath < r.Licenses[j].FilePath
 		}
 
 		return r.Licenses[i].Type < r.Licenses[j].Type
@@ -541,7 +539,13 @@ func (ag AnalyzerGroup) PostAnalyzerFS() (*CompositeFS, error) {
 func (ag AnalyzerGroup) StaticPaths(disabled []Type) ([]string, bool) {
 	var paths []string
 
-	for _, a := range ag.analyzers {
+	type analyzerType interface{ Type() Type }
+	allAnalyzers := append(
+		lo.Map(ag.analyzers, func(a analyzer, _ int) analyzerType { return a }),
+		lo.Map(ag.postAnalyzers, func(a PostAnalyzer, _ int) analyzerType { return a })...,
+	)
+
+	for _, a := range allAnalyzers {
 		// Skip disabled analyzers
 		if slices.Contains(disabled, a.Type()) {
 			continue
@@ -561,14 +565,6 @@ func (ag AnalyzerGroup) StaticPaths(disabled []Type) ([]string, bool) {
 
 		// Collect paths from StaticPathAnalyzer
 		paths = append(paths, staticPathAnalyzer.StaticPaths()...)
-	}
-
-	// PostAnalyzers don't implement StaticPathAnalyzer.
-	// So if at least one postAnalyzer is enabled - we should not use StaticPath.
-	if allPostAnalyzersDisabled := lo.EveryBy(ag.postAnalyzers, func(a PostAnalyzer) bool {
-		return slices.Contains(disabled, a.Type())
-	}); !allPostAnalyzersDisabled {
-		return nil, false
 	}
 
 	// Remove duplicates

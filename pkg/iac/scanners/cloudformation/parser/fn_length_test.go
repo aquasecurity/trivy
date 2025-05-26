@@ -10,26 +10,18 @@ import (
 
 func Test_ResolveLength_WhenPropIsArray(t *testing.T) {
 	prop := &Property{
-		Inner: PropertyInner{
-			Type: cftypes.Map,
-			Value: map[string]*Property{
-				"Fn::Length": {
-					Inner: PropertyInner{
-						Type: cftypes.List,
-						Value: []*Property{
-							{
-								Inner: PropertyInner{
-									Type:  cftypes.Int,
-									Value: 1,
-								},
-							},
-							{
-								Inner: PropertyInner{
-									Type:  cftypes.String,
-									Value: "IntParameter",
-								},
-							},
-						},
+		Type: cftypes.Map,
+		Value: map[string]*Property{
+			"Fn::Length": {
+				Type: cftypes.List,
+				Value: []*Property{
+					{
+						Type:  cftypes.Int,
+						Value: 1,
+					},
+					{
+						Type:  cftypes.String,
+						Value: "IntParameter",
 					},
 				},
 			},
@@ -53,37 +45,25 @@ func Test_ResolveLength_WhenPropIsIntrinsicFunction(t *testing.T) {
 		},
 	}
 	prop := &Property{
-		Inner: PropertyInner{
-			Type: cftypes.Map,
-			Value: map[string]*Property{
-				"Fn::Length": {
-					Inner: PropertyInner{
-						Type: cftypes.Map,
-						Value: map[string]*Property{
-							"Fn::Split": {
-								Inner: PropertyInner{
-									Type: cftypes.List,
-									Value: []*Property{
-										{
-											Inner: PropertyInner{
-												Type:  cftypes.String,
-												Value: "|",
-											},
-										},
-										{
-											ctx: fctx,
-											Inner: PropertyInner{
-												Type: cftypes.Map,
-												Value: map[string]*Property{
-													"Ref": {
-														Inner: PropertyInner{
-															Type:  cftypes.String,
-															Value: "SomeParameter",
-														},
-													},
-												},
-											},
-										},
+		Type: cftypes.Map,
+		Value: map[string]*Property{
+			"Fn::Length": {
+				Type: cftypes.Map,
+				Value: map[string]*Property{
+					"Fn::Split": {
+						Type: cftypes.List,
+						Value: []*Property{
+							{
+								Type:  cftypes.String,
+								Value: "|",
+							},
+							{
+								ctx:  fctx,
+								Type: cftypes.Map,
+								Value: map[string]*Property{
+									"Ref": {
+										Type:  cftypes.String,
+										Value: "SomeParameter",
 									},
 								},
 							},

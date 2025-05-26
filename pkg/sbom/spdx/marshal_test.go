@@ -1454,7 +1454,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			// Fake function calculating the hash value
 			h := fnv.New64()
-			hasher := func(v any, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error) {
+			hasher := func(v any, _ hashstructure.Format, _ *hashstructure.HashOptions) (uint64, error) {
 				h.Reset()
 
 				var str string

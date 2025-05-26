@@ -22,7 +22,7 @@
       "Type": "helm",
       "MisconfSummary": {
         "Successes": 78,
-        "Failures": 16
+        "Failures": 20
       },
       "Misconfigurations": [
         {
@@ -110,6 +110,76 @@
           "References": [
             "https://kubesec.io/basics/containers-securitycontext-capabilities-drop-index-all/",
             "https://avd.aquasec.com/misconfig/ksv003"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 19,
+            "EndLine": 22,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 19,
+                  "Content": "      - name: nginx",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      - \u001b[38;5;33mname\u001b[0m: nginx",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 20,
+                  "Content": "        image: nginx:1.14.2",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mimage\u001b[0m: nginx:1.14.2",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 21,
+                  "Content": "        ports:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mports\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 22,
+                  "Content": "        - containerPort: 80",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mcontainerPort\u001b[0m: \u001b[38;5;37m80\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            },
+            "RenderedCause": {}
+          }
+        },
+        {
+          "Type": "Helm Security Check",
+          "ID": "KSV004",
+          "AVDID": "AVD-KSV-0004",
+          "Title": "Default capabilities: some containers do not drop any",
+          "Description": "Security best practices require containers to run with minimal required capabilities.",
+          "Message": "Container 'nginx' of 'deployment' 'nginx-deployment' in 'default' namespace should set securityContext.capabilities.drop",
+          "Namespace": "builtin.kubernetes.KSV004",
+          "Query": "data.builtin.kubernetes.KSV004.deny",
+          "Resolution": "Specify at least one unneeded capability in 'containers[].securityContext.capabilities.drop'",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv004",
+          "References": [
+            "https://kubesec.io/basics/containers-securitycontext-capabilities-drop-index-all/",
+            "https://avd.aquasec.com/misconfig/ksv004"
           ],
           "Status": "FAIL",
           "Layer": {},
@@ -740,6 +810,213 @@
           "References": [
             "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
             "https://avd.aquasec.com/misconfig/ksv030"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 19,
+            "EndLine": 22,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 19,
+                  "Content": "      - name: nginx",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      - \u001b[38;5;33mname\u001b[0m: nginx",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 20,
+                  "Content": "        image: nginx:1.14.2",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mimage\u001b[0m: nginx:1.14.2",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 21,
+                  "Content": "        ports:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mports\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 22,
+                  "Content": "        - containerPort: 80",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mcontainerPort\u001b[0m: \u001b[38;5;37m80\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            },
+            "RenderedCause": {}
+          }
+        },
+        {
+          "Type": "Helm Security Check",
+          "ID": "KSV032",
+          "AVDID": "AVD-KSV-0032",
+          "Title": "All container images must start with the *.azurecr.io domain",
+          "Description": "Containers should only use images from trusted registries.",
+          "Message": "container nginx of deployment nginx-deployment in default namespace should restrict container image to your specific registry domain. For Azure any domain ending in 'azurecr.io'",
+          "Namespace": "builtin.kubernetes.KSV032",
+          "Query": "data.builtin.kubernetes.KSV032.deny",
+          "Resolution": "Use images from trusted Azure registries.",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv032",
+          "References": [
+            "https://avd.aquasec.com/misconfig/ksv032"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 19,
+            "EndLine": 22,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 19,
+                  "Content": "      - name: nginx",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      - \u001b[38;5;33mname\u001b[0m: nginx",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 20,
+                  "Content": "        image: nginx:1.14.2",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mimage\u001b[0m: nginx:1.14.2",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 21,
+                  "Content": "        ports:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mports\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 22,
+                  "Content": "        - containerPort: 80",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mcontainerPort\u001b[0m: \u001b[38;5;37m80\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            },
+            "RenderedCause": {}
+          }
+        },
+        {
+          "Type": "Helm Security Check",
+          "ID": "KSV033",
+          "AVDID": "AVD-KSV-0033",
+          "Title": "All container images must start with a GCR domain",
+          "Description": "Containers should only use images from trusted GCR registries.",
+          "Message": "container nginx of deployment nginx-deployment in default namespace should restrict container image to your specific registry domain. See the full GCR list here: https://cloud.google.com/container-registry/docs/overview#registries",
+          "Namespace": "builtin.kubernetes.KSV033",
+          "Query": "data.builtin.kubernetes.KSV033.deny",
+          "Resolution": "Use images from trusted GCR registries.",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv033",
+          "References": [
+            "https://avd.aquasec.com/misconfig/ksv033"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 19,
+            "EndLine": 22,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 19,
+                  "Content": "      - name: nginx",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      - \u001b[38;5;33mname\u001b[0m: nginx",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 20,
+                  "Content": "        image: nginx:1.14.2",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mimage\u001b[0m: nginx:1.14.2",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 21,
+                  "Content": "        ports:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mports\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 22,
+                  "Content": "        - containerPort: 80",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mcontainerPort\u001b[0m: \u001b[38;5;37m80\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            },
+            "RenderedCause": {}
+          }
+        },
+        {
+          "Type": "Helm Security Check",
+          "ID": "KSV035",
+          "AVDID": "AVD-KSV-0035",
+          "Title": "All container images must start with an ECR domain",
+          "Description": "Container images from non-ECR registries should be forbidden.",
+          "Message": "Container 'nginx' of Deployment 'nginx-deployment' should restrict images to own ECR repository. See the full ECR list here: https://docs.aws.amazon.com/general/latest/gr/ecr.html",
+          "Namespace": "builtin.kubernetes.KSV035",
+          "Query": "data.builtin.kubernetes.KSV035.deny",
+          "Resolution": "Container image should be used from Amazon container Registry",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv035",
+          "References": [
+            "https://avd.aquasec.com/misconfig/ksv035"
           ],
           "Status": "FAIL",
           "Layer": {},

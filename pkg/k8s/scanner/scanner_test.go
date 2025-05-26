@@ -284,7 +284,7 @@ func TestScanner_Scan(t *testing.T) {
 			require.NoError(t, err)
 
 			gotComponents := lo.Values(got.BOM.Components())
-			require.Equal(t, len(tt.wantComponents), len(gotComponents))
+			require.Len(t, gotComponents, len(tt.wantComponents))
 
 			sort.Slice(gotComponents, func(i, j int) bool {
 				switch {
