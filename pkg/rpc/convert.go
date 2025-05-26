@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/package-url/packageurl-go"
@@ -297,12 +298,14 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			publishedDate = timestamppb.New(*vuln.PublishedDate) // nolint: errcheck
 		}
 
-		var customAdvisoryData, customVulnData *structpb.Value
+		var customAdvisoryData, customVulnData []byte
 		if vuln.Custom != nil {
-			customAdvisoryData, _ = structpb.NewValue(vuln.Custom) // nolint: errcheck
+			jsonBytes, _ := json.Marshal(vuln.Custom) // nolint: errcheck
+			customAdvisoryData = jsonBytes
 		}
 		if vuln.Vulnerability.Custom != nil {
-			customVulnData, _ = structpb.NewValue(vuln.Vulnerability.Custom) // nolint: errcheck
+			jsonBytes, _ := json.Marshal(vuln.Vulnerability.Custom) // nolint: errcheck
+			customVulnData = jsonBytes
 		}
 
 		rpcVulns = append(rpcVulns, &common.Vulnerability{
@@ -614,13 +617,13 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				CweIDs:           vuln.CweIds,
 				LastModifiedDate: lastModifiedDate,
 				PublishedDate:    publishedDate,
-				Custom:           vuln.CustomVulnData.AsInterface(),
+				Custom:           vuln.CustomVulnData,
 				VendorSeverity:   vendorSeverityMap,
 			},
 			Layer:          ConvertFromRPCLayer(vuln.Layer),
 			SeveritySource: dbTypes.SourceID(vuln.SeveritySource),
 			PrimaryURL:     vuln.PrimaryUrl,
-			Custom:         vuln.CustomAdvisoryData.AsInterface(),
+			Custom:         vuln.CustomAdvisoryData,
 			DataSource:     ConvertFromRPCDataSource(vuln.DataSource),
 		})
 	}
