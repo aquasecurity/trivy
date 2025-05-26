@@ -598,7 +598,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			publishedDate = lo.ToPtr(vuln.PublishedDate.AsTime())
 		}
 
-		var cVData, cAData interface{}
+		var cVData, cAData any
 		if len(vuln.CustomVulnData) > 0 {
 			if err := json.Unmarshal(vuln.CustomVulnData, &cVData); err != nil {
 				log.Warn("failed to unmarshal custom vuln data", log.Err(err))
