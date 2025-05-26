@@ -49,6 +49,6 @@ For example:
 trivy rootfs --format cyclonedx /
 ```
 
-## Limitations
+## REHL Limitation
 
 Scanning Red Hat Enterprise Linux in rootfs mode has a limitation, see the [Red Hat](../coverage/os/rhel.md#content-manifests) page for details.

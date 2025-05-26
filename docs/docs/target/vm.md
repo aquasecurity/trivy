@@ -196,7 +196,7 @@ For example:
 trivy vm --format cyclonedx disk.vmdk
 ```
 
-## Limitations
+## REHL Limitation
 
 Scanning Red Hat Enterprise Linux in vm mode has a limitation, see the [Red Hat](../coverage/os/rhel.md#content-manifests) page for details.
 
