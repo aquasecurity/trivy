@@ -30,7 +30,7 @@ func OptionWithLogger(log *log.Logger) Option {
 
 func OptionWithWorkingDirectoryPath(cwd string) Option {
 	return func(p *Parser) {
-		p.cwd = &cwd
+		p.cwd = cwd
 	}
 }
 

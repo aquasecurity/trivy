@@ -52,9 +52,9 @@ type Parser struct {
 	fsMap             map[string]fs.FS
 	configsFS         fs.FS
 	skipPaths         []string
-	// cwd is optional, if provided it will be used instead of 'os.Getwd'
-	// for populating 'path.cwd' in terraform
-	cwd *string
+	// cwd is optional, if left to empty string, 'os.Getwd'
+	// will be used for populating 'path.cwd' in terraform.
+	cwd string
 }
 
 // New creates a new Parser
@@ -297,8 +297,8 @@ func (p *Parser) Load(_ context.Context) (*evaluator, error) {
 	}
 
 	var workingDir string
-	if p.cwd != nil {
-		workingDir = *p.cwd
+	if p.cwd != "" {
+		workingDir = p.cwd
 	} else {
 		workingDir, err = os.Getwd()
 		if err != nil {
