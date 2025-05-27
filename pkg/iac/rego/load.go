@@ -297,7 +297,7 @@ func (s *Scanner) handleModulesMetadata(path string, module *ast.Module) {
 	s.moduleMetadata[path] = metadata
 }
 
-func (s *Scanner) IsMinimumVersionSupported(metadata *StaticMetadata, module *ast.Module) bool {
+func (s *Scanner) IsMinimumVersionSupported(metadata *StaticMetadata, module *ast.Module, tv semver.Version) bool {
 	if metadata.MinimumTrivyVersion == "" { // to ensure compatibility with old modules without minimum trivy version
 		return true
 	}
@@ -310,17 +310,6 @@ func (s *Scanner) IsMinimumVersionSupported(metadata *StaticMetadata, module *as
 			log.Err(err),
 		)
 		return false
-	}
-
-	tv, err := semver.Parse(s.trivyVersion)
-	if err != nil {
-		s.logger.Warn(
-			"Failed to parse Trivy version - cannot confirm if module will work with current version",
-			log.String("trivy_version", s.trivyVersion),
-			log.FilePath(module.Package.Location.File),
-			log.Err(err),
-		)
-		return true
 	}
 
 	if tv.LessThan(mmsv) {
@@ -362,8 +351,18 @@ func (s *Scanner) filterModules() error {
 		}
 
 		if metadata != nil {
-			if !s.IsMinimumVersionSupported(metadata, module) {
-				continue
+			tv, err := semver.Parse(s.trivyVersion)
+			if err != nil {
+				s.logger.Warn(
+					"Failed to parse Trivy version - cannot confirm if module will work with current version",
+					log.String("trivy_version", s.trivyVersion),
+					log.FilePath(module.Package.Location.File),
+					log.Err(err),
+				)
+			} else {
+				if !s.IsMinimumVersionSupported(metadata, module, tv) {
+					continue
+				}
 			}
 
 			if s.isModuleApplicable(module, metadata, name) {
