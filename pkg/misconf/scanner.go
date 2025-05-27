@@ -11,6 +11,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/version/app"
 	"github.com/samber/lo"
 	"github.com/xeipuuv/gojsonschema"
 	"golang.org/x/xerrors"
@@ -244,6 +245,7 @@ func initRegoOptions(opt ScannerOption) ([]options.ScannerOption, error) {
 		rego.WithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
 		rego.WithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
 		rego.WithDisabledCheckIDs(disabledCheckIDs...),
+		rego.WithTrivyVersion(app.Version()),
 	}
 
 	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)

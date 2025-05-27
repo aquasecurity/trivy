@@ -316,6 +316,7 @@ func (s *Scanner) IsMinimumVersionSupported(metadata *StaticMetadata, module *as
 	if err != nil {
 		s.logger.Warn(
 			"Failed to parse Trivy version - cannot confirm if module will work with current version",
+			log.String("trivy_version", s.trivyVersion),
 			log.FilePath(module.Package.Location.File),
 			log.Err(err),
 		)
