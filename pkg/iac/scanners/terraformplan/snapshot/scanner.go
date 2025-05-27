@@ -23,8 +23,11 @@ func (s *Scanner) Name() string {
 
 func New(opts ...options.ScannerOption) *Scanner {
 	scanner := &Scanner{
-		inner: tfscanner.New(opts...),
+		inner: tfscanner.New(
+			append(opts, options.WithScanRawConfig(false))...,
+		),
 	}
+
 	return scanner
 }
 

@@ -23,6 +23,7 @@ import (
 
 var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
+var _ options.RawConfigScanner = (*Scanner)(nil)
 var _ ConfigurableTerraformScanner = (*Scanner)(nil)
 
 type Scanner struct {
@@ -42,6 +43,10 @@ func (s *Scanner) Name() string {
 
 func (s *Scanner) SetForceAllDirs(b bool) {
 	s.forceAllDirs = b
+}
+
+func (s *Scanner) SetScanRawConfig(b bool) {
+	s.AddExecutorOptions(executor.OptionWithScanRawConfig(b))
 }
 
 func (s *Scanner) AddParserOptions(opts ...parser.Option) {
