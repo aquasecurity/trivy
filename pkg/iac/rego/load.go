@@ -319,12 +319,12 @@ func (s *Scanner) IsMinimumVersionSupported(metadata *StaticMetadata, module *as
 			log.FilePath(module.Package.Location.File),
 			log.Err(err),
 		)
-		return false
+		return true
 	}
 
 	if tv.LessThan(mmsv) {
 		s.logger.Warn(
-			"Module will be skipped as current version of Trivy is older than minimum trivy version - please update Trivy to use this module",
+			"Module will be skipped as current version of Trivy is older than minimum trivy version required - please update Trivy to use this module",
 			log.FilePath(module.Package.Location.File),
 			log.String("minimum_trivy_version", metadata.MinimumTrivyVersion),
 		)

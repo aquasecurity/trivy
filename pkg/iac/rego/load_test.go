@@ -308,10 +308,10 @@ func TestIsMinimumTrivyVersion(t *testing.T) {
 			expectedResults:     0,
 		},
 		{
-			name:                "trivy version is not a valid semver",
+			name:                "trivy version is not a valid semver", // if we cannot parse the version, we fail open to allow the check to run
 			trivyVersion:        "invalid",
 			MinimumTrivyVersion: "1.2.3",
-			expectedResults:     0,
+			expectedResults:     1,
 		},
 		{
 			name:                "check version is not set",
