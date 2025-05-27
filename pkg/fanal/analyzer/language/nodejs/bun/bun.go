@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 
 	"golang.org/x/xerrors"
 
@@ -72,7 +73,7 @@ func (a bunLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 				app.Packages[i].Licenses = ll
 			}
 		}
-
+		sort.Sort(app.Packages)
 		apps = append(apps, *app)
 		return nil
 	})

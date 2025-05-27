@@ -101,6 +101,65 @@ func Test_bunLibraryAnalyzer_Analyze(t *testing.T) {
 			dir:  "testdata/sad",
 			want: &analyzer.AnalysisResult{},
 		},
+		{
+			name: "without node_modules",
+			dir:  "testdata/no-node-modules",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Bun,
+						FilePath: "bun.lock",
+						Packages: types.Packages{
+							{
+								ID:           "@types/bun@1.2.14",
+								Name:         "@types/bun",
+								Version:      "1.2.14",
+								Dev:          true,
+								Relationship: types.RelationshipDirect,
+								DependsOn:    []string{"bun-types@1.2.14"},
+								Locations:    types.Locations{types.Location{StartLine: 15, EndLine: 15}},
+							},
+							{
+								ID:           "typescript@5.8.3",
+								Name:         "typescript",
+								Version:      "5.8.3",
+								Relationship: types.RelationshipDirect,
+								Locations:    types.Locations{types.Location{StartLine: 21, EndLine: 21}},
+							},
+							{
+								ID:           "@types/node@22.15.21",
+								Name:         "@types/node",
+								Version:      "22.15.21",
+								Dev:          true,
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								DependsOn:    []string{"undici-types@6.21.0"},
+								Locations:    types.Locations{types.Location{StartLine: 17, EndLine: 17}},
+							},
+							{
+								ID:           "bun-types@1.2.14",
+								Name:         "bun-types",
+								Version:      "1.2.14",
+								Dev:          true,
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								DependsOn:    []string{"@types/node@22.15.21"},
+								Locations:    types.Locations{types.Location{StartLine: 19, EndLine: 19}},
+							},
+							{
+								ID:           "undici-types@6.21.0",
+								Name:         "undici-types",
+								Version:      "6.21.0",
+								Dev:          true,
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations:    types.Locations{types.Location{StartLine: 23, EndLine: 23}},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
