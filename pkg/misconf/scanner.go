@@ -11,7 +11,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/version/app"
 	"github.com/samber/lo"
 	"github.com/xeipuuv/gojsonschema"
 	"golang.org/x/xerrors"
@@ -34,6 +33,7 @@ import (
 	tfpjsonscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
+	"github.com/aquasecurity/trivy/pkg/version/app"
 
 	_ "embed"
 )
