@@ -8109,7 +8109,7 @@ In this case, the folder only contains Terraform configuration files. However, y
 <div class="highlight"><pre><span></span><code>trivy config --tf-vars terraform.tfvars ./
 </code></pre></div>
 <h3 id="custom-checks">Custom Checks<a class="headerlink" href="#custom-checks" title="Permanent link">&para;</a></h3>
-<p>We have lots of examples in the <a href="https://trivy.dev/latest/docs/scanner/misconfiguration/custom/">documentation</a> on how you can write and pass custom Rego checks into terraform misconfiguration scans. </p>
+<p>We have lots of examples in the <a href="https://trivy.dev/latest/docs/scanner/misconfiguration/custom/">documentation</a> on how you can write and pass custom Rego checks into terraform misconfiguration scans.</p>
 <h2 id="secret-and-vulnerability-scans">Secret and vulnerability scans<a class="headerlink" href="#secret-and-vulnerability-scans" title="Permanent link">&para;</a></h2>
 <p>The <code>trivy config</code> command does not perform secrete and vulnerability checks out of the box. However, you can specify as part of your <code>trivy fs</code> scan that you would like to scan you terraform files for exposed secrets and misconfiguraction through the following flags: </p>
 <div class="highlight"><pre><span></span><code>trivy fs --scanners secret,misconfig ./

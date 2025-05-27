@@ -7950,7 +7950,7 @@ This tutorial will make use of the <a href="https://github.com/aquasecurity/triv
 
 import future.keywords.in
 </code></pre></div>
-<p>Every rego check has a package name. In our case, we will call it <code>custom.dockerfile.ID001</code> to avoid confusion between custom checks and built-in checks. The group name <code>dockerfile</code> has no effect on the package name. Note that each package has to contain only one check. However, we can pass multiple checks into our Trivy scan. 
+<p>Every Rego check has a package name. In our case, we will call it <code>custom.dockerfile.ID001</code> to avoid confusion between custom checks and built-in checks. The group name <code>dockerfile</code> has no effect on the package name. Note that each package has to contain only one check. However, we can pass multiple checks into our Trivy scan. 
 The first keyword of the package, in this case <code>custom</code>, will be reused in the <code>trivy</code> command as the <code>--namespace</code>.</p>
 <h2 id="allowed-data">Allowed data<a class="headerlink" href="#allowed-data" title="Permanent link">&para;</a></h2>
 <p>The check that we are setting up compares the container images used in the Dockerfile with a list of white-listed container images. Thus, we need to add the images that are allowed to be used in the Dockerfile to our check. In our case, we will store them in an array of arrays:</p>

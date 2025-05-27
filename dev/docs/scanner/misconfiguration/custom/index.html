@@ -8444,6 +8444,7 @@ Even if a Dockerfile exists in the specified directory, it will not be passed to
 <li><code>yaml</code> (Generic YAML)</li>
 <li><code>json</code> (Generic JSON)</li>
 <li><code>toml</code> (Generic TOML)</li>
+<li><code>terraform-raw</code> (Terraform configuration is not converted to common state as for the Cloud format, allowing for more flexible and direct checks on the original code)</li>
 </ul>
 <p>When configuration languages such as Kubernetes are not identified, file formats such as JSON will be used as <code>type</code>.
 When a configuration language is identified, it will overwrite <code>type</code>.</p>
