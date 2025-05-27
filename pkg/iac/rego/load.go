@@ -298,14 +298,14 @@ func (s *Scanner) handleModulesMetadata(path string, module *ast.Module) {
 }
 
 func (s *Scanner) IsMinimumVersionSupported(metadata *StaticMetadata, module *ast.Module) bool {
-	if metadata.MinimumSupportedVersion == "" { // to ensure compatibility with old modules without minimum supported version
+	if metadata.MinimumTrivyVersion == "" { // to ensure compatibility with old modules without minimum trivy version
 		return true
 	}
 
-	mmsv, err := semver.Parse(metadata.MinimumSupportedVersion)
+	mmsv, err := semver.Parse(metadata.MinimumTrivyVersion)
 	if err != nil {
 		s.logger.Warn(
-			"Failed to parse minimum supported version - skipping as cannot confirm if module will work with current version",
+			"Failed to parse minimum trivy version - skipping as cannot confirm if module will work with current version",
 			log.FilePath(module.Package.Location.File),
 			log.Err(err),
 		)
@@ -324,9 +324,9 @@ func (s *Scanner) IsMinimumVersionSupported(metadata *StaticMetadata, module *as
 
 	if tv.LessThan(mmsv) {
 		s.logger.Warn(
-			"Module will be skipped as current version of Trivy is older than minimum supported version - please update Trivy to use this module",
+			"Module will be skipped as current version of Trivy is older than minimum trivy version - please update Trivy to use this module",
 			log.FilePath(module.Package.Location.File),
-			log.String("minimum_supported_version", metadata.MinimumSupportedVersion),
+			log.String("minimum_trivy_version", metadata.MinimumTrivyVersion),
 		)
 		return false
 	}

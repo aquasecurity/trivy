@@ -14,21 +14,21 @@ import (
 func Test_UpdateStaticMetadata(t *testing.T) {
 	t.Run("happy", func(t *testing.T) {
 		sm := StaticMetadata{
-			ID:                      "i",
-			AVDID:                   "a",
-			Title:                   "t",
-			ShortCode:               "sc",
-			Aliases:                 []string{"a", "b", "c"},
-			Description:             "d",
-			Severity:                "s",
-			RecommendedActions:      "ra",
-			PrimaryURL:              "pu",
-			References:              []string{"r"},
-			Package:                 "pkg",
-			Provider:                "pr",
-			Service:                 "srvc",
-			Library:                 false,
-			MinimumSupportedVersion: "v1.2.3",
+			ID:                  "i",
+			AVDID:               "a",
+			Title:               "t",
+			ShortCode:           "sc",
+			Aliases:             []string{"a", "b", "c"},
+			Description:         "d",
+			Severity:            "s",
+			RecommendedActions:  "ra",
+			PrimaryURL:          "pu",
+			References:          []string{"r"},
+			Package:             "pkg",
+			Provider:            "pr",
+			Service:             "srvc",
+			Library:             false,
+			MinimumTrivyVersion: "v1.2.3",
 		}
 
 		require.NoError(t, sm.populate(
@@ -48,26 +48,26 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 				"frameworks": map[string]any{
 					"all": []any{"aa"},
 				},
-				"minimum_supported_version": "v1.2.3",
+				"minimum_trivy_version": "v1.2.3",
 			},
 		))
 
 		expected := StaticMetadata{
-			ID:                      "i_n",
-			AVDID:                   "a_n",
-			Title:                   "t_n",
-			ShortCode:               "sc_n",
-			Aliases:                 []string{"a", "b", "c", "a_n", "b_n", "c_n"},
-			Description:             "d_n",
-			Severity:                "S_N",
-			RecommendedActions:      "ra_n",
-			PrimaryURL:              "pu",
-			MinimumSupportedVersion: "v1.2.3",
-			References:              []string{"r", "r_n"},
-			Package:                 "pkg",
-			Provider:                "pr_n",
-			Service:                 "srvc_n",
-			Library:                 true,
+			ID:                  "i_n",
+			AVDID:               "a_n",
+			Title:               "t_n",
+			ShortCode:           "sc_n",
+			Aliases:             []string{"a", "b", "c", "a_n", "b_n", "c_n"},
+			Description:         "d_n",
+			Severity:            "S_N",
+			RecommendedActions:  "ra_n",
+			PrimaryURL:          "pu",
+			MinimumTrivyVersion: "v1.2.3",
+			References:          []string{"r", "r_n"},
+			Package:             "pkg",
+			Provider:            "pr_n",
+			Service:             "srvc_n",
+			Library:             true,
 			Frameworks: map[framework.Framework][]string{
 				framework.ALL: {"aa"},
 			},
@@ -251,7 +251,7 @@ func TestMetadataFromAnnotations(t *testing.T) {
 #   id: test-001
 #   avd_id: test-001
 #   severity: LOW
-#   minimum_supported_version: 1.2.3
+#   minimum_trivy_version: 1.2.3
 #   input:
 #     selector:
 #     - type: yaml
@@ -269,8 +269,8 @@ package user.test
 						},
 					},
 				},
-				MinimumSupportedVersion: "1.2.3",
-				Package:                 "data.user.test",
+				MinimumTrivyVersion: "1.2.3",
+				Package:             "data.user.test",
 				Frameworks: map[framework.Framework][]string{
 					"default": {},
 				},

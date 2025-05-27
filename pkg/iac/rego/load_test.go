@@ -275,49 +275,49 @@ deny := some_func(input)
 	require.NoError(t, err)
 }
 
-func TestIsMinimumSupportedVersion(t *testing.T) {
+func TestIsMinimumTrivyVersion(t *testing.T) {
 	testCases := []struct {
-		name                    string
-		trivyVersion            string
-		minimumSupportedVersion string
-		expectedResults         int
-		expectedErr             string
+		name                string
+		trivyVersion        string
+		MinimumTrivyVersion string
+		expectedResults     int
+		expectedErr         string
 	}{
 		{
-			name:                    "trivy version is newer than the check version",
-			trivyVersion:            "1.2.3",
-			minimumSupportedVersion: "1.2.0",
-			expectedResults:         1,
+			name:                "trivy version is newer than the check version",
+			trivyVersion:        "1.2.3",
+			MinimumTrivyVersion: "1.2.0",
+			expectedResults:     1,
 		},
 		{
-			name:                    "trivy version is older than the check version",
-			trivyVersion:            "1.2.0",
-			minimumSupportedVersion: "1.2.3",
-			expectedResults:         0,
+			name:                "trivy version is older than the check version",
+			trivyVersion:        "1.2.0",
+			MinimumTrivyVersion: "1.2.3",
+			expectedResults:     0,
 		},
 		{
-			name:                    "trivy version is equal to the check version",
-			trivyVersion:            "1.2.3",
-			minimumSupportedVersion: "1.2.3",
-			expectedResults:         1,
+			name:                "trivy version is equal to the check version",
+			trivyVersion:        "1.2.3",
+			MinimumTrivyVersion: "1.2.3",
+			expectedResults:     1,
 		},
 		{
-			name:                    "check version is not a valid semver",
-			trivyVersion:            "1.2.3",
-			minimumSupportedVersion: "invalid",
-			expectedResults:         0,
+			name:                "check version is not a valid semver",
+			trivyVersion:        "1.2.3",
+			MinimumTrivyVersion: "invalid",
+			expectedResults:     0,
 		},
 		{
-			name:                    "trivy version is not a valid semver",
-			trivyVersion:            "invalid",
-			minimumSupportedVersion: "1.2.3",
-			expectedResults:         0,
+			name:                "trivy version is not a valid semver",
+			trivyVersion:        "invalid",
+			MinimumTrivyVersion: "1.2.3",
+			expectedResults:     0,
 		},
 		{
-			name:                    "check version is not set",
-			trivyVersion:            "1.2.3",
-			minimumSupportedVersion: "",
-			expectedResults:         1,
+			name:                "check version is not set",
+			trivyVersion:        "1.2.3",
+			MinimumTrivyVersion: "",
+			expectedResults:     1,
 		},
 	}
 
@@ -331,11 +331,11 @@ func TestIsMinimumSupportedVersion(t *testing.T) {
 # schemas:
 # - input: schema["input"]
 # custom:
-#   minimum_supported_version: "%s"
+#   minimum_trivy_version: "%s"
 package builtin.foo.ABC123
 deny {
     input.evil
-}`, tc.minimumSupportedVersion))},
+}`, tc.MinimumTrivyVersion))},
 			}
 			scanner := rego.NewScanner(
 				rego.WithPolicyDirs("."),

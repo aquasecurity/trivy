@@ -36,26 +36,26 @@ type TerraformCustomCheck struct {
 }
 
 type Rule struct {
-	Deprecated              bool                             `json:"deprecated"`
-	AVDID                   string                           `json:"avd_id"`
-	Aliases                 []string                         `json:"aliases"`
-	ShortCode               string                           `json:"short_code"`
-	Summary                 string                           `json:"summary"`
-	Explanation             string                           `json:"explanation"`
-	Impact                  string                           `json:"impact"`
-	Resolution              string                           `json:"resolution"`
-	Provider                providers.Provider               `json:"provider"`
-	Service                 string                           `json:"service"`
-	Links                   []string                         `json:"links"`
-	Severity                severity.Severity                `json:"severity"`
-	Terraform               *EngineMetadata                  `json:"terraform,omitempty"`
-	CloudFormation          *EngineMetadata                  `json:"cloud_formation,omitempty"`
-	Examples                string                           `json:"-"`
-	CustomChecks            CustomChecks                     `json:"-"`
-	RegoPackage             string                           `json:"-"`
-	Frameworks              map[framework.Framework][]string `json:"frameworks"`
-	Check                   CheckFunc                        `json:"-"`
-	MinimumSupportedVersion string                           `json:"minimum_supported_version"`
+	Deprecated          bool                             `json:"deprecated"`
+	AVDID               string                           `json:"avd_id"`
+	Aliases             []string                         `json:"aliases"`
+	ShortCode           string                           `json:"short_code"`
+	Summary             string                           `json:"summary"`
+	Explanation         string                           `json:"explanation"`
+	Impact              string                           `json:"impact"`
+	Resolution          string                           `json:"resolution"`
+	Provider            providers.Provider               `json:"provider"`
+	Service             string                           `json:"service"`
+	Links               []string                         `json:"links"`
+	Severity            severity.Severity                `json:"severity"`
+	Terraform           *EngineMetadata                  `json:"terraform,omitempty"`
+	CloudFormation      *EngineMetadata                  `json:"cloud_formation,omitempty"`
+	Examples            string                           `json:"-"`
+	CustomChecks        CustomChecks                     `json:"-"`
+	RegoPackage         string                           `json:"-"`
+	Frameworks          map[framework.Framework][]string `json:"frameworks"`
+	Check               CheckFunc                        `json:"-"`
+	MinimumTrivyVersion string                           `json:"minimum_trivy_version"`
 }
 
 func (r Rule) IsDeprecated() bool {
