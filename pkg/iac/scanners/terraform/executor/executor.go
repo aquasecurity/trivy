@@ -3,7 +3,6 @@ package executor
 import (
 	"context"
 	"fmt"
-	"sort"
 	"strconv"
 	"strings"
 
@@ -93,7 +92,6 @@ func (e *Executor) Execute(ctx context.Context, modules terraform.Modules, baseP
 
 	results = e.filterResults(results)
 
-	e.sortResults(results)
 	for i, res := range results {
 		if res.Status() != scan.StatusFailed {
 			continue
@@ -194,19 +192,6 @@ func (e *Executor) filterResults(results scan.Results) scan.Results {
 	}
 
 	return results
-}
-
-func (e *Executor) sortResults(results []scan.Result) {
-	sort.Slice(results, func(i, j int) bool {
-		switch {
-		case results[i].Rule().LongID() < results[j].Rule().LongID():
-			return true
-		case results[i].Rule().LongID() > results[j].Rule().LongID():
-			return false
-		default:
-			return results[i].Range().String() > results[j].Range().String()
-		}
-	})
 }
 
 func ignoreByParams(params map[string]string, modules terraform.Modules, m *types.Metadata) bool {
