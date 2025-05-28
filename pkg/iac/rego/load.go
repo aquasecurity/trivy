@@ -13,6 +13,7 @@ import (
 	"github.com/open-policy-agent/opa/v1/bundle"
 	"github.com/samber/lo"
 
+	"github.com/aquasecurity/go-version/pkg/semver"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
@@ -293,9 +294,33 @@ func (s *Scanner) handleModulesMetadata(path string, module *ast.Module) {
 		return
 	}
 
-	if metadata != nil {
-		s.moduleMetadata[path] = metadata
+	s.moduleMetadata[path] = metadata
+}
+
+func (s *Scanner) IsMinimumVersionSupported(metadata *StaticMetadata, module *ast.Module, tv semver.Version) bool {
+	if metadata.MinimumTrivyVersion == "" { // to ensure compatibility with old modules without minimum trivy version
+		return true
 	}
+
+	mmsv, err := semver.Parse(metadata.MinimumTrivyVersion)
+	if err != nil {
+		s.logger.Warn(
+			"Failed to parse minimum trivy version - skipping as cannot confirm if module will work with current version",
+			log.FilePath(module.Package.Location.File),
+			log.Err(err),
+		)
+		return false
+	}
+
+	if tv.LessThan(mmsv) {
+		s.logger.Warn(
+			"Module will be skipped as current version of Trivy is older than minimum trivy version required - please update Trivy to use this module",
+			log.FilePath(module.Package.Location.File),
+			log.String("minimum_trivy_version", metadata.MinimumTrivyVersion),
+		)
+		return false
+	}
+	return true
 }
 
 // moduleHasLegacyMetadataFormat checks if the module has a legacy metadata format.
@@ -325,8 +350,22 @@ func (s *Scanner) filterModules() error {
 			return fmt.Errorf("retrieve metadata for module %s: %w", name, err)
 		}
 
-		if s.isModuleApplicable(module, metadata, name) {
-			filtered[name] = module
+		if metadata != nil {
+			tv, err := semver.Parse(s.trivyVersion)
+			if err != nil {
+				s.logger.Warn(
+					"Failed to parse Trivy version - cannot confirm if module will work with current version",
+					log.String("trivy_version", s.trivyVersion),
+					log.FilePath(module.Package.Location.File),
+					log.Err(err),
+				)
+			} else if !s.IsMinimumVersionSupported(metadata, module, tv) {
+				continue
+			}
+
+			if s.isModuleApplicable(module, metadata, name) {
+				filtered[name] = module
+			}
 		}
 	}
 
