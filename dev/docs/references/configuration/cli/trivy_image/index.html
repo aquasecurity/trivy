@@ -5357,6 +5357,33 @@ You're not viewing the latest version of the documentation.
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../advanced/telemetry/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage Telemetry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -7959,6 +7986,7 @@ You're not viewing the latest version of the documentation.
                                             - &quot;precise&quot;: Prioritizes precise by minimizing false positives.
                                             - &quot;comprehensive&quot;: Aims to detect more security findings at the cost of potential false positives.
                                            (allowed values: precise,comprehensive) (default &quot;precise&quot;)
+      --disable-telemetry                 disable sending anonymous usage data to Aqua
       --distro string                     [EXPERIMENTAL] specify a distribution, &lt;family&gt;/&lt;version&gt;
       --docker-host string                unix domain socket path to use for docker scanning
       --download-db-only                  download/update vulnerability database but don&#39;t run a scan
@@ -8058,6 +8086,7 @@ You're not viewing the latest version of the documentation.
       --skip-dirs strings                 specify the directories or glob patterns to skip
       --skip-files strings                specify the files or glob patterns to skip
       --skip-java-db-update               skip updating Java index database
+      --skip-version-check                suppress notices about version updates and Trivy announcements
       --skip-vex-repo-update              [EXPERIMENTAL] Skip VEX Repository update
       --table-mode strings                [EXPERIMENTAL] tables that will be displayed in &#39;table&#39; format (allowed values: summary,detailed) (default [summary,detailed])
   -t, --template string                   output template

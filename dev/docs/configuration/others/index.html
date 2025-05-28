@@ -4306,6 +4306,28 @@ You're not viewing the latest version of the documentation.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#check-for-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check for updates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#telemetry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Telemetry
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -5461,6 +5483,33 @@ You're not viewing the latest version of the documentation.
           </ul>
         </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/telemetry/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage Telemetry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -7892,6 +7941,28 @@ You're not viewing the latest version of the documentation.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#check-for-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check for updates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#telemetry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Telemetry
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -8094,6 +8165,13 @@ The following example will fail when a critical vulnerability is found or the OS
 <li>Try to get the image from <code>mirror.without.image/library/alpine</code>, but we get an error because this registry doesn't have this image (but most likely it will be an error about authorization).</li>
 <li>Get the image from <code>index.docker.io</code> (the original registry).</li>
 </ol>
+<h2 id="check-for-updates">Check for updates<a class="headerlink" href="#check-for-updates" title="Permanent link">&para;</a></h2>
+<p>Trivy periodically checks for updates and notices, and displays a message to the user with recommendations.<br />
+Updates checking is non-blocking and has no impact on scanning time, performance, results, or any user experience aspect besides displaying the message.<br />
+You can disable updates checking by specifying the <code>--skip-version-check</code> flag.</p>
+<h2 id="telemetry">Telemetry<a class="headerlink" href="#telemetry" title="Permanent link">&para;</a></h2>
+<p>Trivy collected usage data for product improvement. More details in the <a href="../../advanced/telemetry/">Telemetry document</a>.
+You can disable telemetry collection using the <code>--disable-telemetry</code> flag.</p>
 
 
 

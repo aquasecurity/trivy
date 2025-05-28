@@ -5165,6 +5165,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#check-updates-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check updates service
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -5528,6 +5539,33 @@ You're not viewing the latest version of the documentation.
           </ul>
         </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../telemetry/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage Telemetry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -8026,6 +8064,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#check-updates-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check updates service
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -8148,6 +8197,9 @@ This document explains Trivy's network connectivity requirements, and how to con
 </ul>
 <h3 id="offline-mode">Offline mode<a class="headerlink" href="#offline-mode" title="Permanent link">&para;</a></h3>
 <p>There's no way to leverage Maven Central in a network-restricted environment, but you can prevent Trivy from trying to connect to it by using the <code>--offline-scan</code> flag.</p>
+<h2 id="check-updates-service">Check updates service<a class="headerlink" href="#check-updates-service" title="Permanent link">&para;</a></h2>
+<p>Trivy <a href="../../configuration/others/#check-for-updates">checks for updates</a> and <a href="../telemetry/">collects usage telemetry</a> by connecting to the following domain: <code>https://check.trivy.dev</code>.
+Connectivity with this domain is entirely optional and is not necessary for the normal operation of Trivy.</p>
 
 
 

@@ -5357,6 +5357,33 @@ You're not viewing the latest version of the documentation.
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../advanced/telemetry/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage Telemetry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -7979,6 +8006,7 @@ You're not viewing the latest version of the documentation.
                                             - &quot;comprehensive&quot;: Aims to detect more security findings at the cost of potential false positives.
                                            (allowed values: precise,comprehensive) (default &quot;precise&quot;)
       --disable-node-collector            When the flag is activated, the node-collector job will not be executed, thus skipping misconfiguration findings on the node.
+      --disable-telemetry                 disable sending anonymous usage data to Aqua
       --distro string                     [EXPERIMENTAL] specify a distribution, &lt;family&gt;/&lt;version&gt;
       --download-db-only                  download/update vulnerability database but don&#39;t run a scan
       --download-java-db-only             download/update Java index database but don&#39;t run a scan
@@ -8065,6 +8093,7 @@ You're not viewing the latest version of the documentation.
       --skip-files strings                specify the files or glob patterns to skip
       --skip-images                       skip the downloading and scanning of images (vulnerabilities and secrets) in the cluster resources
       --skip-java-db-update               skip updating Java index database
+      --skip-version-check                suppress notices about version updates and Trivy announcements
       --skip-vex-repo-update              [EXPERIMENTAL] Skip VEX Repository update
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules

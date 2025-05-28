@@ -5357,6 +5357,33 @@ You're not viewing the latest version of the documentation.
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../advanced/telemetry/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage Telemetry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -8196,7 +8223,7 @@ You're not viewing the latest version of the documentation.
 <h1 id="config-file">Config file<a class="headerlink" href="#config-file" title="Permanent link">&para;</a></h1>
 <p>Trivy can be customized by tweaking a <code>trivy.yaml</code> file.
 The config path can be overridden by the <code>--config</code> flag.</p>
-<p>An example is <a href="https://github.com/aquasecurity/trivy/tree/v0.62.0-43-g7ca656d54/examples/trivy-conf/trivy.yaml">here</a>.</p>
+<p>An example is <a href="https://github.com/aquasecurity/trivy/tree/v0.62.0-44-g5a0bf9ed3/examples/trivy-conf/trivy.yaml">here</a>.</p>
 <p>These samples contain default values for flags.</p>
 <h2 id="global-options">Global options<a class="headerlink" href="#global-options" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="nt">cache</span><span class="p">:</span>
@@ -8731,6 +8758,9 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 <span class="w">  </span><span class="c1"># Same as &#39;--detection-priority&#39;</span>
 <span class="w">  </span><span class="nt">detection-priority</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;precise&quot;</span>
 
+<span class="w">  </span><span class="c1"># Same as &#39;--disable-telemetry&#39;</span>
+<span class="w">  </span><span class="nt">disable-telemetry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+
 <span class="w">  </span><span class="c1"># Same as &#39;--distro&#39;</span>
 <span class="w">  </span><span class="nt">distro</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span>
 
@@ -8759,6 +8789,9 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--skip-files&#39;</span>
 <span class="w">  </span><span class="nt">skip-files</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--skip-version-check&#39;</span>
+<span class="w">  </span><span class="nt">skip-version-check</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </code></pre></div>
 <h2 id="secret-options">Secret options<a class="headerlink" href="#secret-options" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="nt">secret</span><span class="p">:</span>

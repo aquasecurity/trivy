@@ -69,6 +69,10 @@
          <lastmod>2025-05-28</lastmod>
     </url>
     <url>
+         <loc>https://trivy.dev/dev/docs/advanced/telemetry/</loc>
+         <lastmod>2025-05-28</lastmod>
+    </url>
+    <url>
          <loc>https://trivy.dev/dev/docs/advanced/container/embed-in-dockerfile/</loc>
          <lastmod>2025-05-28</lastmod>
     </url>
