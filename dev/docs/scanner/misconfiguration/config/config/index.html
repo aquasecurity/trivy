@@ -2147,15 +2147,15 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
-  <a href="#skipping-resources-by-inline-comments" class="md-nav__link">
+  <a href="#filtering-resources-by-inline-comments" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Skipping resources by inline comments
+        Filtering resources by inline comments
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Skipping resources by inline comments">
+    <nav class="md-nav" aria-label="Filtering resources by inline comments">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4235,7 +4235,7 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    Skipping Files
+    Selecting Files
   
 
     
@@ -7954,15 +7954,15 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
-  <a href="#skipping-resources-by-inline-comments" class="md-nav__link">
+  <a href="#filtering-resources-by-inline-comments" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Skipping resources by inline comments
+        Filtering resources by inline comments
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Skipping resources by inline comments">
+    <nav class="md-nav" aria-label="Filtering resources by inline comments">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -8073,7 +8073,7 @@ For example, token credentials for <code>例えば.com</code> must be set in a v
 For example, you can set a token for the domain name café.fr as TF_TOKEN_xn--caf-dma_fr or TF_TOKEN_xn<em><strong>_caf</strong>dma</em>fr.</p>
 </blockquote>
 <p>If multiple variables evaluate to the same hostname, Trivy will choose the environment variable name where the dashes have not been encoded as double underscores.</p>
-<h3 id="skipping-resources-by-inline-comments">Skipping resources by inline comments<a class="headerlink" href="#skipping-resources-by-inline-comments" title="Permanent link">&para;</a></h3>
+<h3 id="filtering-resources-by-inline-comments">Filtering resources by inline comments<a class="headerlink" href="#filtering-resources-by-inline-comments" title="Permanent link">&para;</a></h3>
 <p>Trivy supports ignoring misconfigured resources by inline comments for Terraform, CloudFormation and Helm configuration files only.</p>
 <p>In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to <code>.trivyignore</code>, which has a directory-wide scope on all of the files scanned). The format for these comments is <code>trivy:ignore:&lt;rule&gt;</code> immediately following the format-specific line-comment <a href="https://developer.hashicorp.com/terraform/language/syntax/configuration#comments">token</a>.</p>
 <p>The ignore rule must contain one of the possible check IDs that can be found in its metadata: ID, short code or alias. The <code>id</code> from the metadata is not case-sensitive, so you can specify, for example, <code>AVD-AWS-0089</code> or <code>avd-aws-0089</code>.</p>

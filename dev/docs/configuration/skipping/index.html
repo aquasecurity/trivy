@@ -27,7 +27,7 @@
     
     
       
-        <title>Skipping Files - Trivy</title>
+        <title>Selecting Files - Trivy</title>
       
     
     
@@ -75,7 +75,7 @@
 
 
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Trivy - Skipping Files" />
+<meta property="og:title" content="Trivy - Selecting Files" />
 <meta property="og:description" content="Trivy - All-in-one open source security scanner" />
 <meta property="og:url" content="https://trivy.dev/dev/docs/configuration/skipping/" />
 <meta property="og:image" content="https://trivy.dev/devassets/images/illustrations/banner.png" />
@@ -104,7 +104,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#skipping-artifacts" class="md-skip">
+        <a href="#selecting-files-for-scanning" class="md-skip">
           Skip to content
         </a>
       
@@ -155,7 +155,7 @@ You're not viewing the latest version of the documentation.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Skipping Files
+              Selecting Files
             
           </span>
         </div>
@@ -4095,7 +4095,7 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    Skipping Files
+    Selecting Files
   
 
     
@@ -4112,7 +4112,7 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    Skipping Files
+    Selecting Files
   
 
     
@@ -4138,10 +4138,10 @@ You're not viewing the latest version of the documentation.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#skip-files" class="md-nav__link">
+  <a href="#skip-files-and-directories" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Skip Files
+        Skip Files and Directories
       
     </span>
   </a>
@@ -4149,38 +4149,10 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
-  <a href="#skip-directories" class="md-nav__link">
+  <a href="#customizing-file-handling" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Skip Directories
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Skip Directories">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#advanced-globbing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Advanced globbing
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#file-patterns" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        File patterns
+        Customizing file handling
       
     </span>
   </a>
@@ -4188,10 +4160,10 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
-  <a href="#skip-resources" class="md-nav__link">
+  <a href="#avoid-full-filesystem-traversal" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Skip Resources
+        Avoid full filesystem traversal
       
     </span>
   </a>
@@ -7859,10 +7831,10 @@ You're not viewing the latest version of the documentation.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#skip-files" class="md-nav__link">
+  <a href="#skip-files-and-directories" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Skip Files
+        Skip Files and Directories
       
     </span>
   </a>
@@ -7870,38 +7842,10 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
-  <a href="#skip-directories" class="md-nav__link">
+  <a href="#customizing-file-handling" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Skip Directories
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Skip Directories">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#advanced-globbing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Advanced globbing
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#file-patterns" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        File patterns
+        Customizing file handling
       
     </span>
   </a>
@@ -7909,10 +7853,10 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
-  <a href="#skip-resources" class="md-nav__link">
+  <a href="#avoid-full-filesystem-traversal" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Skip Resources
+        Avoid full filesystem traversal
       
     </span>
   </a>
@@ -7944,9 +7888,18 @@ You're not viewing the latest version of the documentation.
   
 
 
-<h1 id="skipping-artifacts">Skipping Artifacts<a class="headerlink" href="#skipping-artifacts" title="Permanent link">&para;</a></h1>
-<p>This section details ways to specify the files, directories and resources that Trivy should not scan.</p>
-<h2 id="skip-files">Skip Files<a class="headerlink" href="#skip-files" title="Permanent link">&para;</a></h2>
+<h1 id="selecting-files-for-scanning">Selecting files for scanning<a class="headerlink" href="#selecting-files-for-scanning" title="Permanent link">&para;</a></h1>
+<p>When scanning a target (image, code repository, etc), Trivy traverses all directories and files in that target and looks for known files to scan. For example, vulnerability scanner might look for <code>/lib/apk/db/installed</code> for Alpine APK scanning or <code>requirements.txt</code> file for Python pip scanning, and misconfiguration scanner might look for <code>Dockerfile</code> for Dockerfile scanning. This document explains how to control which files Trivy looks (including skipping files) for and how it should process them.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Selecting/skipping files is different from filtering/ignoring results, which is covered in the <a href="../filtering/">Filtering document</a></p>
+</div>
+<h2 id="skip-files-and-directories">Skip Files and Directories<a class="headerlink" href="#skip-files-and-directories" title="Permanent link">&para;</a></h2>
+<p>You can skip specific files and directories using the <code>--skip-files</code> and <code>--skip-dirs</code> flags.</p>
+<p>For example:</p>
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>image<span class="w"> </span>--skip-files<span class="w"> </span><span class="s2">&quot;/Gemfile.lock&quot;</span><span class="w"> </span>--skip-dirs<span class="w"> </span><span class="s2">&quot;/var/lib/gems/2.5.0/gems/http_parser.rb-0.6.0&quot;</span><span class="w"> </span>quay.io/fluentd_elasticsearch/fluentd:v2.9.0
+</code></pre></div>
+<p>This feature is relevant for the following scanners:</p>
 <table>
 <thead>
 <tr>
@@ -7973,80 +7926,38 @@ You're not viewing the latest version of the documentation.
 </tr>
 </tbody>
 </table>
-<p>By default, Trivy traverses directories and searches for all necessary files for scanning.
-You can skip files that you don't maintain using the <code>--skip-files</code> flag, or the equivalent Trivy YAML config option.</p>
-<p>Using the <code>--skip-files</code> flag:
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--skip-files<span class="w"> </span><span class="s2">&quot;/Gemfile.lock&quot;</span><span class="w"> </span>--skip-files<span class="w"> </span><span class="s2">&quot;/var/lib/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock&quot;</span><span class="w"> </span>quay.io/fluentd_elasticsearch/fluentd:v2.9.0
-</code></pre></div></p>
-<p>Using the Trivy YAML configuration:
+<p>It's possible to specify glob patterns when referring to a file or directory. The glob expression follows the <a href="https://pkg.go.dev/github.com/bmatcuk/doublestar/v4@v4.8.1#readme-patterns">"doublestar" library syntax</a>.</p>
+<p>Examples:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># skip any file named `bar` in the subdirectories of testdata</span>
+trivy<span class="w"> </span>image<span class="w"> </span>--skip-files<span class="w"> </span><span class="s2">&quot;./testdata/*/bar&quot;</span><span class="w"> </span>.
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># skip any files with the extension `.tf` in subdirectories of foo at any depth</span>
+trivy<span class="w"> </span>config<span class="w"> </span>--skip-files<span class="w"> </span><span class="s2">&quot;./foo/**/*.tf&quot;</span><span class="w"> </span>.
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># skip all subdirectories of the testdata directory.</span>
+trivy<span class="w"> </span>image<span class="w"> </span>--skip-dirs<span class="w"> </span><span class="s2">&quot;./testdata/*&quot;</span><span class="w"> </span>.
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># skip subdirectories at any depth named `.terraform/`. </span>
+<span class="c1"># this will match `./foo/.terraform` or `./foo/bar/.terraform`, but not `./.terraform`</span>
+trivy<span class="w"> </span>config<span class="w"> </span>--skip-dirs<span class="w"> </span><span class="s2">&quot;**/.terraform&quot;</span><span class="w"> </span>.
+</code></pre></div>
+<p>Like any other flag, this is available as Trivy YAML configuration.</p>
+<p>For example:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">image</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">skip-files</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">foo</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;testdata/*/bar&quot;</span>
-</code></pre></div></p>
-<p>It's possible to specify globs as part of the value.</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--skip-files<span class="w"> </span><span class="s2">&quot;./testdata/*/bar&quot;</span><span class="w"> </span>.
-</code></pre></div>
-<p>This will skip any file named <code>bar</code> in the subdirectories of testdata.</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>config<span class="w"> </span>--skip-files<span class="w"> </span><span class="s2">&quot;./foo/**/*.tf&quot;</span><span class="w"> </span>.
-</code></pre></div>
-<p>This will skip any files with the extension <code>.tf</code> in subdirectories of foo at any depth.</p>
-<h2 id="skip-directories">Skip Directories<a class="headerlink" href="#skip-directories" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th style="text-align: center;">Scanner</th>
-<th style="text-align: center;">Supported</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: center;">Vulnerability</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td style="text-align: center;">Misconfiguration</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td style="text-align: center;">Secret</td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr>
-<td style="text-align: center;">License</td>
-<td style="text-align: center;">✓</td>
-</tr>
-</tbody>
-</table>
-<p>By default, Trivy traverses directories and searches for all necessary files for scanning.
-You can skip directories that you don't maintain using the <code>--skip-dirs</code> flag, or the equivalent Trivy YAML config option.</p>
-<p>Using the <code>--skip-dirs</code> flag:
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--skip-dirs<span class="w"> </span>/var/lib/gems/2.5.0/gems/fluent-plugin-detect-exceptions-0.0.13<span class="w"> </span>--skip-dirs<span class="w"> </span><span class="s2">&quot;/var/lib/gems/2.5.0/gems/http_parser.rb-0.6.0&quot;</span><span class="w"> </span>quay.io/fluentd_elasticsearch/fluentd:v2.9.0
-</code></pre></div></p>
-<p>Using the Trivy YAML configuration:
-<div class="highlight"><pre><span></span><code><span class="nt">image</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">skip-dirs</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">foo/bar/</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/.terraform&quot;</span>
-</code></pre></div></p>
-<p>It's possible to specify globs as part of the value.</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--skip-dirs<span class="w"> </span><span class="s2">&quot;./testdata/*&quot;</span><span class="w"> </span>.
 </code></pre></div>
-<p>This will skip all subdirectories of the testdata directory.</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>config<span class="w"> </span>--skip-dirs<span class="w"> </span><span class="s2">&quot;**/.terraform&quot;</span><span class="w"> </span>.
+<h2 id="customizing-file-handling">Customizing file handling<a class="headerlink" href="#customizing-file-handling" title="Permanent link">&para;</a></h2>
+<p>You can customize which files Trivy scans and how it interprets them with the <code>--file-patterns</code> flag.
+A file pattern configuration takes the following form: <code>&lt;analyzer&gt;:&lt;path&gt;</code>, such that files matching the <code>&lt;path&gt;</code> will be processed with the respective <code>&lt;analyzer&gt;</code>.</p>
+<p>For example:</p>
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>fs<span class="w"> </span>--file-patterns<span class="w"> </span><span class="s2">&quot;pip:.requirements-test.txt .&quot;</span>
 </code></pre></div>
-<p>This will skip subdirectories at any depth named <code>.terraform/</code>. (Note: this will match <code>./foo/.terraform</code> or
-<code>./foo/bar/.terraform</code>, but not <code>./.terraform</code>.)</p>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>Glob patterns work with any trivy subcommand (image, config, etc.) and can be specified to skip both directories (with <code>--skip-dirs</code>) and files (with <code>--skip-files</code>).</p>
-</div>
-<h3 id="advanced-globbing">Advanced globbing<a class="headerlink" href="#advanced-globbing" title="Permanent link">&para;</a></h3>
-<p>Trivy also supports bash style <a href="https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Pattern-Matching">extended</a> glob pattern matching.</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--skip-files<span class="w"> </span><span class="s2">&quot;**/foo&quot;</span><span class="w"> </span>image:tag
-</code></pre></div>
-<p>This will skip the file <code>foo</code> that happens to be nested under any parent(s). </p>
-<h2 id="file-patterns">File patterns<a class="headerlink" href="#file-patterns" title="Permanent link">&para;</a></h2>
+<p>This feature is relevant for the following scanners:</p>
 <table>
 <thead>
 <tr>
@@ -8073,22 +7984,24 @@ You can skip directories that you don't maintain using the <code>--skip-dirs</co
 </tr>
 </tbody>
 </table>
-<p>When a directory is given as an input, Trivy will recursively look for and test all files based on file patterns.
-The default file patterns are <a href="../../scanner/misconfiguration/custom/">here</a>.</p>
-<p>In addition to the default file patterns, the <code>--file-patterns</code> option takes regexp patterns to look for your files.
-For example, it may be useful when your file name of Dockerfile doesn't match the default patterns.</p>
-<p>This can be repeated for specifying multiple file patterns.</p>
-<p>A file pattern contains the analyzer it is used for, and the pattern itself, joined by a semicolon. For example:
-<div class="highlight"><pre><span></span><code>--file-patterns &quot;dockerfile:.*.docker&quot; --file-patterns &quot;kubernetes:*.tpl&quot; --file-patterns &quot;pip:requirements-.*\.txt&quot;
-</code></pre></div></p>
-<p>The prefixes are listed <a href="https://github.com/aquasecurity/trivy/tree/5a0bf9ed31ad34248895e69231da602935e66785/pkg/fanal/analyzer/const.go">here</a></p>
-<h2 id="skip-resources">Skip Resources<a class="headerlink" href="#skip-resources" title="Permanent link">&para;</a></h2>
-<p>You can skip IaC resources by providing inline comments. More details are provided <a href="../../scanner/misconfiguration/config/config/#skipping-resources-by-inline-comments">here</a></p>
+<p>The list of analyzers can be found <a href="https://github.com/aquasecurity/trivy/tree/1d420e669f024b8b4fa4b68ddb9d3060c0a444ef/pkg/fanal/analyzer/const.go">here</a>.
+Note that this flag is not applicable for parsers that accepts files of different extensions, for example the Terraform file parser which handles .tf and .tf.json files.</p>
+<p>The file path can use a <a href="https://pkg.go.dev/regexp/syntax">regular expression</a>. For example:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># interpret any file with .txt extension as a python pip requirements file</span>
+trivy<span class="w"> </span>fs<span class="w"> </span>--file-patterns<span class="w"> </span><span class="s2">&quot;pip:requirements-.*\.txt .</span>
+</code></pre></div>
+<p>The flag can be repeated for specifying multiple file patterns. For example:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># look for Dockerfile called production.docker and a python pip requirements file called requirements-test.txt</span>
+trivy<span class="w"> </span>fs<span class="w"> </span>--scanners<span class="w"> </span>misconfig,vuln<span class="w"> </span>--file-patterns<span class="w"> </span><span class="s2">&quot;dockerfile:.production.docker&quot;</span><span class="w"> </span>--file-patterns<span class="w"> </span><span class="s2">&quot;pip:.requirements-test.txt .&quot;</span>
+</code></pre></div>
+<h2 id="avoid-full-filesystem-traversal">Avoid full filesystem traversal<a class="headerlink" href="#avoid-full-filesystem-traversal" title="Permanent link">&para;</a></h2>
+<p>In specific scenarios Trivy can avoid traversing the entire filesystem, which makes scanning faster and more efficient.
+For more information see <a href="../../target/rootfs/#performance-optimization">here</a></p>
 <div class="footnote">
 <hr />
 <ol>
 <li id="fn:1">
-<p>Only work with the <a href="../../scanner/license/">license-full</a> flag)&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>Only work with the <a href="../../scanner/license/">license-full</a> flag&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
