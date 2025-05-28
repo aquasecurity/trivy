@@ -202,6 +202,7 @@ var expectedBlobInfo = types.BlobInfo{
 					SrcName:    "musl",
 					SrcVersion: "1.2.3-r5",
 					Licenses:   []string{"MIT"},
+					Maintainer: "Timo Teräs <timo.teras@iki.fi>",
 					Arch:       "aarch64",
 					Digest:     "sha1:742b0a26f327c6da60d42a02c3eb6189a58e468f",
 					InstalledFiles: []string{

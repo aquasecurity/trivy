@@ -297,7 +297,7 @@
     "Name": "musl",
     "Identifier": {
       "PURL": "pkg:apk/alpine/musl@1.1.22-r3?arch=x86_64\u0026distro=3.10.2",
-      "UID": "796d455bf42e5034"
+      "UID": "e06178a7cbfa8a6d"
     },
     "Version": "1.1.22-r3",
     "Arch": "x86_64",
@@ -306,6 +306,7 @@
     "Licenses": [
       "MIT"
     ],
+    "Maintainer": "Natanael Copa <ncopa@alpinelinux.org>",
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
@@ -321,7 +322,7 @@
     "Name": "musl-utils",
     "Identifier": {
       "PURL": "pkg:apk/alpine/musl-utils@1.1.22-r3?arch=x86_64\u0026distro=3.10.2",
-      "UID": "112ed00987ba9c7d"
+      "UID": "adbc99a6fe54b600"
     },
     "Version": "1.1.22-r3",
     "Arch": "x86_64",
@@ -332,6 +333,7 @@
       "BSD-3-Clause",
       "GPL-2.0-or-later"
     ],
+    "Maintainer": "Natanael Copa <ncopa@alpinelinux.org>",
     "DependsOn": [
       "musl@1.1.22-r3",
       "scanelf@1.2.3-r0"

@@ -126,7 +126,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 								},
 								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2020-9999",
 								PkgIdentifier: ftypes.PkgIdentifier{
-									UID: "7503855b66ad3a67",
+									UID: "dfd35f110ec8c525",
 									PURL: &packageurl.PackageURL{
 										Type:      "apk",
 										Namespace: "alpine",
@@ -162,7 +162,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 								},
 								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2020-9999",
 								PkgIdentifier: ftypes.PkgIdentifier{
-									UID: "69fdae5fbcfe9992",
+									UID: "989eac0ec741e708",
 									PURL: &packageurl.PackageURL{
 										Type:      "apk",
 										Namespace: "alpine",

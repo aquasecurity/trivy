@@ -250,6 +250,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "musl",
 			SrcVersion: "1.1.24-r2",
 			Licenses:   []string{"MIT"},
+			Maintainer: "Timo Teräs <timo.teras@iki.fi>",
 			Arch:       "x86_64",
 			Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
 			InstalledFiles: []string{
@@ -268,6 +269,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"BSD-3-Clause",
 				"GPL-2.0-or-later",
 			},
+			Maintainer: "Timo Teräs <timo.teras@iki.fi>",
 			Digest: "sha1:6d3b45e79dbab444ca7cbfa59e2833203be6fb6a",
 			DependsOn: []string{
 				"musl@1.1.24-r2",

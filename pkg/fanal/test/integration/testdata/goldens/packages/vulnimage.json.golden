@@ -2076,7 +2076,7 @@
     "Name": "musl",
     "Identifier": {
       "PURL": "pkg:apk/alpine/musl@1.1.18-r3?arch=x86_64\u0026distro=3.7.1",
-      "UID": "2888024f672bbd23"
+      "UID": "19b9b91c7e7b5d66"
     },
     "Version": "1.1.18-r3",
     "Arch": "x86_64",
@@ -2085,6 +2085,7 @@
     "Licenses": [
       "MIT"
     ],
+    "Maintainer": "Timo Teräs <timo.teras@iki.fi>",
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
@@ -2100,7 +2101,7 @@
     "Name": "musl-utils",
     "Identifier": {
       "PURL": "pkg:apk/alpine/musl-utils@1.1.18-r3?arch=x86_64\u0026distro=3.7.1",
-      "UID": "dc61f5453717063a"
+      "UID": "0edbe079d7e1bc67"
     },
     "Version": "1.1.18-r3",
     "Arch": "x86_64",
@@ -2111,6 +2112,7 @@
       "BSD-3-Clause",
       "GPL-2.0-or-later"
     ],
+    "Maintainer": "Timo Teräs <timo.teras@iki.fi>",
     "DependsOn": [
       "musl@1.1.18-r3",
       "scanelf@1.2.2-r1"
