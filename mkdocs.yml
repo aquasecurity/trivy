@@ -120,7 +120,7 @@ nav:
       - Configuration:
           - Overview: docs/configuration/index.md
           - Filtering: docs/configuration/filtering.md
-          - Skipping Files: docs/configuration/skipping.md
+          - Selecting Files: docs/configuration/skipping.md
           - Reporting: docs/configuration/reporting.md
           - Cache: docs/configuration/cache.md
           - Databases: docs/configuration/db.md
