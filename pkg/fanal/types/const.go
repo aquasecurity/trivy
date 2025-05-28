@@ -165,6 +165,7 @@ const (
 	NpmPkgLock = "package-lock.json"
 	YarnLock   = "yarn.lock"
 	PnpmLock   = "pnpm-lock.yaml"
+	BunLock    = "bun.lock"
 
 	ComposerLock          = "composer.lock"
 	ComposerJson          = "composer.json"
