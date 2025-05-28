@@ -359,10 +359,8 @@ func (s *Scanner) filterModules() error {
 					log.FilePath(module.Package.Location.File),
 					log.Err(err),
 				)
-			} else {
-				if !s.IsMinimumVersionSupported(metadata, module, tv) {
-					continue
-				}
+			} else if !s.IsMinimumVersionSupported(metadata, module, tv) {
+				continue
 			}
 
 			if s.isModuleApplicable(module, metadata, name) {
