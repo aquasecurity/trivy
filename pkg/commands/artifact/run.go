@@ -26,6 +26,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/module"
+	"github.com/aquasecurity/trivy/pkg/notification"
 	"github.com/aquasecurity/trivy/pkg/policy"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
@@ -92,6 +93,7 @@ type Runner interface {
 
 type runner struct {
 	initializeScanService InitializeScanService
+	versionChecker        *notification.VersionChecker
 	dbOpen                bool
 
 	// WASM modules
@@ -116,6 +118,13 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 		opt(r)
 	}
 
+	// If the user has not disabled notices or is running in quiet mode
+	r.versionChecker = notification.NewVersionChecker(
+		notification.WithSkipVersionCheck(cliOptions.SkipVersionCheck),
+		notification.WithQuietMode(cliOptions.Quiet),
+		notification.WithTelemetryDisabled(cliOptions.DisableTelemetry),
+	)
+
 	// Update the vulnerability database if needed.
 	if err := r.initDB(ctx, cliOptions); err != nil {
 		return nil, xerrors.Errorf("DB error: %w", err)
@@ -137,6 +146,13 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 	m.Register()
 	r.module = m
 
+	// Make a silent attempt to check for updates in the background
+	// only do this if the user has not disabled notices or is running
+	// in quiet mode
+	if r.versionChecker != nil {
+		r.versionChecker.RunUpdateCheck(ctx, os.Args[1:])
+	}
+
 	return r, nil
 }
 
@@ -152,6 +168,12 @@ func (r *runner) Close(ctx context.Context) error {
 	if err := r.module.Close(ctx); err != nil {
 		errs = multierror.Append(errs, err)
 	}
+
+	// silently check if there is notifications
+	if r.versionChecker != nil {
+		r.versionChecker.PrintNotices(os.Stderr)
+	}
+
 	return errs
 }
 

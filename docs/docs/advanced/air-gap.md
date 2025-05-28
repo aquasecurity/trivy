@@ -75,3 +75,8 @@ Trivy might attempt to connect (over HTTPS) to the following URLs:
 ### Offline mode
 
 There's no way to leverage Maven Central in a network-restricted environment, but you can prevent Trivy from trying to connect to it by using the `--offline-scan` flag.
+
+## Check updates service
+
+Trivy [checks for updates](../configuration/others.md#check-for-updates) and [collects usage telemetry](../advanced/telemetry.md) by connecting to the following domain: `https://check.trivy.dev`.
+Connectivity with this domain is entirely optional and is not necessary for the normal operation of Trivy.
