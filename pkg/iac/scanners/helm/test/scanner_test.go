@@ -48,7 +48,7 @@ func TestScanner_ScanFS(t *testing.T) {
 					"AVD-KSV-0011", "AVD-KSV-0012", "AVD-KSV-0014",
 					"AVD-KSV-0015", "AVD-KSV-0016",
 					"AVD-KSV-0020", "AVD-KSV-0021", "AVD-KSV-0030",
-					"AVD-KSV-0104", "AVD-KSV-0106", "AVD-KSV-0125",
+					"AVD-KSV-0104", "AVD-KSV-0106",
 					"AVD-KSV-0117", "AVD-KSV-0110", "AVD-KSV-0118",
 					"AVD-KSV-0004",
 				})(t, results)
