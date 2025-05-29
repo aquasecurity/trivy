@@ -30,6 +30,13 @@ func TestPrintNotices(t *testing.T) {
 			expectedOutput:   "\n📣 \x1b[34mNotices:\x1b[0m\n  - Version 0.60.0 of Trivy is now available, current version is 0.58.0\n\nTo suppress version checks, run Trivy scans with the --skip-version-check flag\n\n",
 		},
 		{
+			name:             "New version available but includes a prefixed version number",
+			options:          []Option{WithCurrentVersion("0.58.0")},
+			latestVersion:    "v0.60.0",
+			responseExpected: true,
+			expectedOutput:   "\n📣 \x1b[34mNotices:\x1b[0m\n  - Version 0.60.0 of Trivy is now available, current version is 0.58.0\n\nTo suppress version checks, run Trivy scans with the --skip-version-check flag\n\n",
+		},
+		{
 			name: "new version available but --quiet mode enabled",
 			options: []Option{
 				WithCurrentVersion("0.58.0"),

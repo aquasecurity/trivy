@@ -141,19 +141,18 @@ func (v *VersionChecker) PrintNotices(output io.Writer) {
 		}
 	}
 
-
-	cv, err := semver.Parse(v.currentVersion)
+	cv, err := semver.Parse(strings.TrimPrefix(v.currentVersion, "v"))
 	if err != nil {
 		return
 	}
 
-	lv, err := semver.Parse(v.LatestVersion())
+	lv, err := semver.Parse(strings.TrimPrefix(v.LatestVersion(), "v"))
 	if err != nil {
 		return
 	}
 
-	if cv.LessThan(lv){
-		notices = append(notices, fmt.Sprintf("Version %s of Trivy is now available, current version is %s", v.latestVersion.Trivy.LatestVersion, v.currentVersion))
+	if cv.LessThan(lv) {
+		notices = append(notices, fmt.Sprintf("Version %s of Trivy is now available, current version is %s", lv, cv))
 	}
 
 	if len(notices) > 0 {
