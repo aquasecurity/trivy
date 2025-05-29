@@ -137,6 +137,7 @@ trivy sbom [flags] SBOM_PATH
                                          - chainguard
                                          - bitnami
                                          - govulndb
+                                         - echo
                                          - auto
                                         (default [auto])
 ```

@@ -188,6 +188,7 @@ trivy image [flags] IMAGE_NAME
                                             - chainguard
                                             - bitnami
                                             - govulndb
+                                            - echo
                                             - auto
                                            (default [auto])
 ```

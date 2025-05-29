@@ -74,6 +74,8 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 			family = types.Azure
 		case "mariner":
 			family = types.CBLMariner
+		case "echo":
+			family = types.Echo
 		}
 
 		if family != "" && versionID != "" {

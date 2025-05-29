@@ -167,6 +167,7 @@ trivy filesystem [flags] PATH
                                             - chainguard
                                             - bitnami
                                             - govulndb
+                                            - echo
                                             - auto
                                            (default [auto])
 ```

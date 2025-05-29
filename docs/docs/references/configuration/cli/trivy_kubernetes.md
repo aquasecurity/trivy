@@ -176,6 +176,7 @@ trivy kubernetes [flags] [CONTEXT]
                                             - chainguard
                                             - bitnami
                                             - govulndb
+                                            - echo
                                             - auto
                                            (default [auto])
 ```
