@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aquasecurity/go-version/pkg/semver"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/version/app"
 )
@@ -140,7 +141,18 @@ func (v *VersionChecker) PrintNotices(output io.Writer) {
 		}
 	}
 
-	if v.currentVersion != v.LatestVersion() {
+
+	cv, err := semver.Parse(v.currentVersion)
+	if err != nil {
+		return
+	}
+
+	lv, err := semver.Parse(v.LatestVersion())
+	if err != nil {
+		return
+	}
+
+	if cv.LessThan(lv){
 		notices = append(notices, fmt.Sprintf("Version %s of Trivy is now available, current version is %s", v.latestVersion.Trivy.LatestVersion, v.currentVersion))
 	}
 
