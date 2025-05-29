@@ -32,6 +32,7 @@ const (
 	Debian             OSType = "debian"
 	Echo               OSType = "echo"
 	Fedora             OSType = "fedora"
+	MinimOS            OSType = "minimos"
 	OpenSUSE           OSType = "opensuse"
 	OpenSUSELeap       OSType = "opensuse-leap"
 	OpenSUSETumbleweed OSType = "opensuse-tumbleweed"
@@ -116,6 +117,7 @@ var (
 		Debian,
 		Echo,
 		Fedora,
+		MinimOS,
 		OpenSUSE,
 		OpenSUSELeap,
 		OpenSUSETumbleweed,

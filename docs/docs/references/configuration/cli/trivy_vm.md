@@ -154,6 +154,7 @@ trivy vm [flags] VM_IMAGE
                                             - bitnami
                                             - govulndb
                                             - echo
+                                            - minimos
                                             - auto
                                            (default [auto])
 ```

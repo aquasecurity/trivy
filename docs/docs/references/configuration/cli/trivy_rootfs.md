@@ -169,6 +169,7 @@ trivy rootfs [flags] ROOTDIR
                                             - bitnami
                                             - govulndb
                                             - echo
+                                            - minimos
                                             - auto
                                            (default [auto])
 ```

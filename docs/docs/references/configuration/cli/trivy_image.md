@@ -189,6 +189,7 @@ trivy image [flags] IMAGE_NAME
                                             - bitnami
                                             - govulndb
                                             - echo
+                                            - minimos
                                             - auto
                                            (default [auto])
 ```

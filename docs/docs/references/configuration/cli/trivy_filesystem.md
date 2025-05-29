@@ -168,6 +168,7 @@ trivy filesystem [flags] PATH
                                             - bitnami
                                             - govulndb
                                             - echo
+                                            - minimos
                                             - auto
                                            (default [auto])
 ```

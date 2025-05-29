@@ -66,6 +66,7 @@ jobs:
             echo
             distroless
             windows
+            minimos
 
             # Languages
             ruby

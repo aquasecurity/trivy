@@ -177,6 +177,7 @@ trivy kubernetes [flags] [CONTEXT]
                                             - bitnami
                                             - govulndb
                                             - echo
+                                            - minimos
                                             - auto
                                            (default [auto])
 ```

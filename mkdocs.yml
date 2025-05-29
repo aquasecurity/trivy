@@ -81,6 +81,7 @@ nav:
               - Chainguard: docs/coverage/os/chainguard.md
               - Debian: docs/coverage/os/debian.md
               - Echo: docs/coverage/os/echo.md
+              - MinimOS: docs/coverage/os/minimos.md
               - Oracle Linux: docs/coverage/os/oracle.md
               - Photon OS: docs/coverage/os/photon.md
               - Red Hat: docs/coverage/os/rhel.md
