@@ -598,15 +598,6 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			publishedDate = lo.ToPtr(vuln.PublishedDate.AsTime())
 		}
 
-		var vulnCustom any
-		if len(vuln.CustomVulnData) > 0 {
-			vulnCustom = any(vuln.CustomVulnData)
-		}
-		var advisoryCustom any
-		if len(vuln.CustomAdvisoryData) > 0 {
-			advisoryCustom = any(vuln.CustomAdvisoryData)
-		}
-
 		vulns = append(vulns, types.DetectedVulnerability{
 			VulnerabilityID:  vuln.VulnerabilityId,
 			VendorIDs:        vuln.VendorIds,
@@ -626,13 +617,13 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				CweIDs:           vuln.CweIds,
 				LastModifiedDate: lastModifiedDate,
 				PublishedDate:    publishedDate,
-				Custom:           vulnCustom,
+				Custom:           vuln.CustomVulnData,
 				VendorSeverity:   vendorSeverityMap,
 			},
 			Layer:          ConvertFromRPCLayer(vuln.Layer),
 			SeveritySource: dbTypes.SourceID(vuln.SeveritySource),
 			PrimaryURL:     vuln.PrimaryUrl,
-			Custom:         advisoryCustom,
+			Custom:         vuln.CustomAdvisoryData,
 			DataSource:     ConvertFromRPCDataSource(vuln.DataSource),
 		})
 	}
