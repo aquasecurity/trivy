@@ -802,6 +802,8 @@ github.com/aquasecurity/tml v0.6.1 h1:y2ZlGSfrhnn7t4ZJ/0rotuH+v5Jgv6BDDO5jB6A9gw
 github.com/aquasecurity/tml v0.6.1/go.mod h1:OnYMWY5lvI9ejU7yH9LCberWaaTBW7hBFsITiIMY2yY=
 github.com/aquasecurity/trivy-checks v1.10.0 h1:Q0FWsYy/uwvr/icRSOzNu55yDZ1ME8hZlpglNs62ZfE=
 github.com/aquasecurity/trivy-checks v1.10.0/go.mod h1:/b633SOFNp8RjkxSq+FOg4SgxjklUp+BIQEyTWCnN1k=
+github.com/aquasecurity/trivy-db v0.0.0-20250529090941-0ee57d439c7a h1:VGmQ5tx5vVo4zBk8F8b/rf9s57C9bOEfWmIzF2kLFE8=
+github.com/aquasecurity/trivy-db v0.0.0-20250529090941-0ee57d439c7a/go.mod h1:4zd4qZcjhNAHASz5I0O7qapv5h5gSJzSEaZXv/IPOGc=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48 h1:JVgBIuIYbwG+ekC5lUHUpGJboPYiCcxiz06RCtz8neI=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48/go.mod h1:Ldya37FLi0e/5Cjq2T5Bty7cFkzUDwTcPeQua+2M8i8=
 github.com/aquasecurity/trivy-kubernetes v0.8.2 h1:8QP8fbUeC5y0kETDpk04XK52hYF6PsJOkd6HrbVnJqo=
@@ -1675,8 +1677,6 @@ github.com/openvex/discovery v0.1.1-0.20240802171711-7c54efc57553 h1:c4u0GIH0w2Q
 github.com/openvex/discovery v0.1.1-0.20240802171711-7c54efc57553/go.mod h1:z4b//Qi7p7zcM/c41ogeTy+/nqfMbbeYnfZ+EMCTCD0=
 github.com/openvex/go-vex v0.2.5 h1:41utdp2rHgAGCsG+UbjmfMG5CWQxs15nGqir1eRgSrQ=
 github.com/openvex/go-vex v0.2.5/go.mod h1:j+oadBxSUELkrKh4NfNb+BPo77U3q7gdKME88IO/0Wo=
-github.com/orizerah/trivy-db v0.0.0-20250521160756-fa9bdb8155fe h1:gL9ii6hOxF3iPc3xFdQeH/BegGUQnGX8ojCRmVO8h7Q=
-github.com/orizerah/trivy-db v0.0.0-20250521160756-fa9bdb8155fe/go.mod h1:4zd4qZcjhNAHASz5I0O7qapv5h5gSJzSEaZXv/IPOGc=
 github.com/owenrumney/go-sarif v1.1.1/go.mod h1:dNDiPlF04ESR/6fHlPyq7gHKmrM0sHUvAGjsoh8ZH0U=
 github.com/owenrumney/go-sarif/v2 v2.3.3 h1:ubWDJcF5i3L/EIOER+ZyQ03IfplbSU1BLOE26uKQIIU=
 github.com/owenrumney/go-sarif/v2 v2.3.3/go.mod h1:MSqMMx9WqlBSY7pXoOZWgEsVB4FDNfhcaXDA1j6Sr+w=
