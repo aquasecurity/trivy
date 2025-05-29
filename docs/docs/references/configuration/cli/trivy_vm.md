@@ -153,6 +153,8 @@ trivy vm [flags] VM_IMAGE
                                             - chainguard
                                             - bitnami
                                             - govulndb
+                                            - echo
+                                            - minimos
                                             - auto
                                            (default [auto])
 ```

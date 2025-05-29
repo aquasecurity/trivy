@@ -27,9 +27,9 @@ func init() {
 	analyzer.RegisterAnalyzer(newAlpinePkgAnalyzer())
 }
 
-const analyzerVersion = 2
+const analyzerVersion = 3
 
-var requiredFiles = []string{"lib/apk/db/installed"}
+var requiredFiles = []string{"lib/apk/db/installed", "usr/lib/apk/db/installed"}
 
 type alpinePkgAnalyzer struct{}
 
@@ -108,6 +108,8 @@ func (a alpinePkgAnalyzer) parseApkInfo(ctx context.Context, scanner *bufio.Scan
 			if d != "" {
 				pkg.Digest = d
 			}
+		case "m:":
+			pkg.Maintainer = line[2:]
 		}
 
 		if pkg.Name != "" && pkg.Version != "" {

@@ -71,7 +71,7 @@ func lookupBuildInfo(index int, layers []ftypes.BlobInfo) *ftypes.BuildInfo {
 
 	// Customer's layers build on top of Red Hat image are also missing content sets
 	//   - it needs to be shared from the last Red Hat's layers which contains content sets
-	for i := index - 1; i >= 1; i-- {
+	for i := index - 1; i >= 0; i-- {
 		if layers[i].BuildInfo != nil {
 			return layers[i].BuildInfo
 		}

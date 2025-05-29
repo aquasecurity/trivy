@@ -480,9 +480,9 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypePub
 	case ftypes.RustBinary, ftypes.Cargo:
 		return packageurl.TypeCargo
-	case ftypes.Alpine, ftypes.Chainguard, ftypes.Wolfi:
+	case ftypes.Alpine, ftypes.Chainguard, ftypes.Wolfi, ftypes.MinimOS:
 		return packageurl.TypeApk
-	case ftypes.Debian, ftypes.Ubuntu:
+	case ftypes.Debian, ftypes.Ubuntu, ftypes.Echo:
 		return packageurl.TypeDebian
 	case ftypes.RedHat, ftypes.CentOS, ftypes.Rocky, ftypes.Alma,
 		ftypes.Amazon, ftypes.Fedora, ftypes.Oracle, ftypes.OpenSUSE,

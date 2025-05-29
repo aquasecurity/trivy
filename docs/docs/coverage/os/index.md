@@ -14,6 +14,7 @@ Trivy supports operating systems for
 | [Alpine Linux](alpine.md)             | 2.2 - 2.7, 3.0 - 3.21, edge         | apk              |
 | [Wolfi Linux](wolfi.md)               | (n/a)                               | apk              |
 | [Chainguard](chainguard.md)           | (n/a)                               | apk              |
+| [MinimOS](minimos.md)                 | (n/a)                               | apk              |
 | [Red Hat Enterprise Linux](rhel.md)   | 6, 7, 8                             | dnf/yum/rpm      |
 | [CentOS](centos.md)[^1]               | 6, 7, 8                             | dnf/yum/rpm      |
 | [AlmaLinux](alma.md)                  | 8, 9                                | dnf/yum/rpm      |
@@ -26,6 +27,7 @@ Trivy supports operating systems for
 | [SUSE Linux Enterprise](suse.md)      | 11, 12, 15                          | zypper/rpm       |
 | [SUSE Linux Enterprise Micro](suse.md)| 5, 6                                | zypper/rpm       |
 | [Photon OS](photon.md)                | 1.0, 2.0, 3.0, 4.0                  | tndf/yum/rpm     |
+| [Echo](echo.md)                       | (n/a)                               | apt/dpkg         |
 | [Debian GNU/Linux](debian.md)         | 7, 8, 9, 10, 11, 12                 | apt/dpkg         |
 | [Ubuntu](ubuntu.md)                   | All versions supported by Canonical | apt/dpkg         |
 | [Bottlerocket](bottlerocket.md)       | 1.7.0 and upper                     | bottlerocket     |

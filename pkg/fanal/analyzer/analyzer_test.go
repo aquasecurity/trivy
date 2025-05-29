@@ -342,6 +342,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 								SrcName:    "musl",
 								SrcVersion: "1.1.24-r2",
 								Licenses:   []string{"MIT"},
+								Maintainer: "Timo Teräs <timo.teras@iki.fi>",
 								Arch:       "x86_64",
 								Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
 								InstalledFiles: []string{
@@ -666,7 +667,7 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 				Analyzers: map[string]int{
 					"alpine":       1,
 					"apk-repo":     1,
-					"apk":          2,
+					"apk":          3,
 					"bundler":      1,
 					"dpkg-license": 1,
 					"ubuntu":       1,
@@ -692,7 +693,7 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 			},
 			want: analyzer.Versions{
 				Analyzers: map[string]int{
-					"apk":     2,
+					"apk":     3,
 					"bundler": 1,
 				},
 				PostAnalyzers: map[string]int{
@@ -729,6 +730,7 @@ func TestAnalyzerGroup_StaticPaths(t *testing.T) {
 				"etc/apk/repositories",
 				"etc/lsb-release",
 				"lib/apk/db/installed",
+				"usr/lib/apk/db/installed",
 				"etc/alpine-release",
 
 				"usr/share/doc/",
