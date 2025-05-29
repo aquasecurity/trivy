@@ -33,6 +33,14 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/sysfile"
 )
 
+// Common blob IDs used across multiple test cases to reduce duplication
+const (
+	alpineBaseLayerID     = "sha256:be60f1fe61fc63ab50b10fe0779614e605a973a38cd7d2a02f3f20b081e56d4a"
+	alpineBaseLayerDiffID = "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"
+	alpineArtifactID      = "sha256:3c709d2a158be3a97051e10cd0e30f047225cb9505101feb3fadcd395c2e0408"
+	composerImageID       = "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72"
+)
+
 func TestArtifact_Inspect(t *testing.T) {
 	alpinePkgs := types.Packages{
 		{
@@ -353,12 +361,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID: "sha256:be60f1fe61fc63ab50b10fe0779614e605a973a38cd7d2a02f3f20b081e56d4a",
+					ID: alpineBaseLayerID,
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          5861888,
 						Digest:        "",
-						DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+						DiffID:        alpineBaseLayerDiffID,
 						CreatedBy:     "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
 						OS: types.OS{
 							Family: "alpine",
@@ -402,7 +410,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 			},
 			wantArtifact: cachetest.WantArtifact{
-				ID: "sha256:3c709d2a158be3a97051e10cd0e30f047225cb9505101feb3fadcd395c2e0408",
+				ID: alpineArtifactID,
 				ArtifactInfo: types.ArtifactInfo{
 					SchemaVersion: types.ArtifactJSONSchemaVersion,
 					Architecture:  "amd64",
@@ -414,12 +422,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: artifact.Reference{
 				Name:    "../../test/testdata/alpine-311.tar.gz",
 				Type:    types.TypeContainerImage,
-				ID:      "sha256:3c709d2a158be3a97051e10cd0e30f047225cb9505101feb3fadcd395c2e0408",
-				BlobIDs: []string{"sha256:be60f1fe61fc63ab50b10fe0779614e605a973a38cd7d2a02f3f20b081e56d4a"},
+				ID:      alpineArtifactID,
+				BlobIDs: []string{alpineBaseLayerID},
 				ImageMetadata: artifact.ImageMetadata{
-					ID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					ID: composerImageID,
 					DiffIDs: []string{
-						"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+						alpineBaseLayerDiffID,
 					},
 					ConfigFile: v1.ConfigFile{
 						Architecture:  "amd64",
