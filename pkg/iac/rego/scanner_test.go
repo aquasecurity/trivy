@@ -2,6 +2,7 @@ package rego_test
 
 import (
 	"bytes"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -14,6 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -977,64 +979,53 @@ deny {
 }
 
 func Test_RegoScanning_WithDeprecatedCheck(t *testing.T) {
+
+	check := `# METADATA
+# title: i am a deprecated check
+# description: i am a description
+# related_resources:
+# - https://google.com
+# custom:
+#   id: EG123
+#   avd_id: AVD-EG-0123
+#   severity: LOW
+#   recommended_action: have a cup of tea
+#   deprecated: %v
+package defsec.test
+
+deny {
+  input.text
+}`
+
 	var testCases = []struct {
 		name            string
 		policy          string
+		opts            []options.ScannerOption
 		expectedResults int
 	}{
 		{
-			name: "happy path check is deprecated",
-			policy: `# METADATA
-# title: i am a deprecated check
-# description: i am a description
-# related_resources:
-# - https://google.com
-# custom:
-#   id: EG123
-#   avd_id: AVD-EG-0123
-#   severity: LOW
-#   recommended_action: have a cup of tea
-#   deprecated: true
-package defsec.test
-
-deny {
-  input.text
-}
-
-`,
+			name:            "deprecated check is skipped by default",
+			policy:          fmt.Sprintf(check, true),
 			expectedResults: 0,
 		},
 		{
-			name: "happy path check is not deprecated",
-			policy: `# METADATA
-# title: i am a deprecated check
-# description: i am a description
-# related_resources:
-# - https://google.com
-# custom:
-#   id: EG123
-#   avd_id: AVD-EG-0123
-#   severity: LOW
-#   recommended_action: have a cup of tea
-package defsec.test
-
-deny {
-  input.text
-}
-
-`,
+			name:            "non-deprecated check is executed",
+			policy:          fmt.Sprintf(check, false),
+			expectedResults: 1,
+		},
+		{
+			name:            "deprecated check is executed when includeDeprecatedChecks is true",
+			policy:          fmt.Sprintf(check, true),
+			opts:            []options.ScannerOption{rego.WithIncludeDeprecatedChecks(true)},
 			expectedResults: 1,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			srcFS := CreateFS(t, map[string]string{
-				"policies/test.rego": tc.policy,
-			})
-
-			scanner := rego.NewScanner(rego.WithPolicyDirs("policies"))
-			require.NoError(t, scanner.LoadPolicies(srcFS))
+			opts := append(tc.opts, rego.WithPolicyReader(strings.NewReader(tc.policy)))
+			scanner := rego.NewScanner(opts...)
+			require.NoError(t, scanner.LoadPolicies(nil))
 
 			results, err := scanner.ScanInput(t.Context(), types.SourceJSON, rego.Input{
 				Path: "/evil.lol",
