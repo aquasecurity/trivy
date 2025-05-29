@@ -2498,6 +2498,7 @@ func TestArtifact_AnalysisStrategy(t *testing.T) {
 			wantRoots: []string{
 				"testdata/alpine/etc/alpine-release",
 				"testdata/alpine/lib/apk/db/installed",
+				"testdata/alpine/usr/lib/apk/db/installed",
 			},
 		},
 		{
