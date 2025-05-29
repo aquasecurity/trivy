@@ -802,8 +802,8 @@ github.com/aquasecurity/tml v0.6.1 h1:y2ZlGSfrhnn7t4ZJ/0rotuH+v5Jgv6BDDO5jB6A9gw
 github.com/aquasecurity/tml v0.6.1/go.mod h1:OnYMWY5lvI9ejU7yH9LCberWaaTBW7hBFsITiIMY2yY=
 github.com/aquasecurity/trivy-checks v1.10.0 h1:Q0FWsYy/uwvr/icRSOzNu55yDZ1ME8hZlpglNs62ZfE=
 github.com/aquasecurity/trivy-checks v1.10.0/go.mod h1:/b633SOFNp8RjkxSq+FOg4SgxjklUp+BIQEyTWCnN1k=
-github.com/aquasecurity/trivy-db v0.0.0-20250227071930-8bd8a9b89e2d h1:T16WrTi21YsMLQVhtp1r1hOIYK3x4BjnftpL9cp64Eo=
-github.com/aquasecurity/trivy-db v0.0.0-20250227071930-8bd8a9b89e2d/go.mod h1:4bTsQPtMBN8v+UfUlE1aQBN1imftefnDafHBF85+aT8=
+github.com/aquasecurity/trivy-db v0.0.0-20250529093513-a12dfc204b6e h1:+B/in1DQDGwQbKhW5pWL8XxBgnZKxXhUznylJ2NCyvs=
+github.com/aquasecurity/trivy-db v0.0.0-20250529093513-a12dfc204b6e/go.mod h1:4zd4qZcjhNAHASz5I0O7qapv5h5gSJzSEaZXv/IPOGc=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48 h1:JVgBIuIYbwG+ekC5lUHUpGJboPYiCcxiz06RCtz8neI=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48/go.mod h1:Ldya37FLi0e/5Cjq2T5Bty7cFkzUDwTcPeQua+2M8i8=
 github.com/aquasecurity/trivy-kubernetes v0.8.2 h1:8QP8fbUeC5y0kETDpk04XK52hYF6PsJOkd6HrbVnJqo=
@@ -1776,8 +1776,8 @@ github.com/sagikazarmark/locafero v0.7.0 h1:5MqpDsTGNDhY8sGp0Aowyf0qKsPrhewaLSsF
 github.com/sagikazarmark/locafero v0.7.0/go.mod h1:2za3Cg5rMaTMoG/2Ulr9AwtFaIppKXTRYnozin4aB5k=
 github.com/samber/lo v1.50.0 h1:XrG0xOeHs+4FQ8gJR97zDz5uOFMW7OwFWiFVzqopKgY=
 github.com/samber/lo v1.50.0/go.mod h1:RjZyNk6WSnUFRKK6EyOhsRJMqft3G+pg7dCWHQCWvsc=
-github.com/samber/oops v1.15.0 h1:/mF33KAqA2TugU6y/tomFpK6G6mJB7g0aqRyHkaSIeg=
-github.com/samber/oops v1.15.0/go.mod h1:9LpLZkpjojEt/of7EpG5o65i/Lp23ddDvGhg2L871Ow=
+github.com/samber/oops v1.16.1 h1:XlKkXsWM5g8hE4C+sEV9n0X282fZn3XabVmAKU2RiHI=
+github.com/samber/oops v1.16.1/go.mod h1:8eXgMAJcDXRAijQsFRhfy/EHDOTiSvwkg6khFqFK078=
 github.com/santhosh-tekuri/jsonschema/v5 v5.3.1 h1:lZUw3E0/J3roVtGQ+SCrUrg3ON6NgVqpn3+iol9aGu4=
 github.com/santhosh-tekuri/jsonschema/v5 v5.3.1/go.mod h1:uToXkOrWAZ6/Oc07xWQrPOhJotwFIyu2bBVN41fcDUY=
 github.com/sassoftware/go-rpmutils v0.4.0 h1:ojND82NYBxgwrV+mX1CWsd5QJvvEZTKddtCdFLPWhpg=
