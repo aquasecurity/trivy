@@ -165,8 +165,9 @@ trivy rootfs [flags] ROOTDIR
                                             - chainguard
                                             - bitnami
                                             - govulndb
-                                            - auto
+                                            - echo
                                             - minimos
+                                            - auto
                                            (default [auto])
 ```
 

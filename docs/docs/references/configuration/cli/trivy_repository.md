@@ -163,8 +163,9 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
                                             - chainguard
                                             - bitnami
                                             - govulndb
-                                            - auto
+                                            - echo
                                             - minimos
+                                            - auto
                                            (default [auto])
 ```
 
