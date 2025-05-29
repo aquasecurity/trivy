@@ -28,4 +28,3 @@ See [here](../../scanner/vulnerability.md#data-sources).
 Same as [Alpine Linux](alpine.md#license).
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
-[secdb]: https://packages.mini.dev/advisories/secdb/security.json
