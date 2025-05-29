@@ -169,11 +169,11 @@ trivy kubernetes [flags] [CONTEXT]
                                             - aqua
                                             - osv
                                             - k8s
-                                            - echo
                                             - wolfi
                                             - chainguard
                                             - bitnami
                                             - govulndb
+                                            - echo
                                             - auto
                                            (default [auto])
 ```
