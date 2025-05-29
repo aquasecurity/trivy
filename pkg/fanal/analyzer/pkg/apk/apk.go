@@ -108,6 +108,8 @@ func (a alpinePkgAnalyzer) parseApkInfo(ctx context.Context, scanner *bufio.Scan
 			if d != "" {
 				pkg.Digest = d
 			}
+		case "m:":
+			pkg.Maintainer = line[2:]
 		}
 
 		if pkg.Name != "" && pkg.Version != "" {

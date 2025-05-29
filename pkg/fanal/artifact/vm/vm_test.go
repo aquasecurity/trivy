@@ -118,16 +118,16 @@ func TestArtifact_Inspect(t *testing.T) {
 			rootDir: "testdata/alpine",
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID:       "sha256:fecb09f4a7f0382a4feb2fb086ed5e37eaab644fef7b8f87c550a6e94a7f780f",
+					ID:       "sha256:9ca6dbba47cea74d3f9b0bf0472314735d06f42d3ccf8cfe7c021f61a3420973",
 					BlobInfo: expectedBlobInfo,
 				},
 			},
 			want: artifact.Reference{
 				Name: "rawdata.img",
 				Type: types.TypeVM,
-				ID:   "sha256:fecb09f4a7f0382a4feb2fb086ed5e37eaab644fef7b8f87c550a6e94a7f780f",
+				ID:   "sha256:9ca6dbba47cea74d3f9b0bf0472314735d06f42d3ccf8cfe7c021f61a3420973",
 				BlobIDs: []string{
-					"sha256:fecb09f4a7f0382a4feb2fb086ed5e37eaab644fef7b8f87c550a6e94a7f780f",
+					"sha256:9ca6dbba47cea74d3f9b0bf0472314735d06f42d3ccf8cfe7c021f61a3420973",
 				},
 			},
 		},
@@ -202,6 +202,7 @@ var expectedBlobInfo = types.BlobInfo{
 					SrcName:    "musl",
 					SrcVersion: "1.2.3-r5",
 					Licenses:   []string{"MIT"},
+					Maintainer: "Timo Teräs <timo.teras@iki.fi>",
 					Arch:       "aarch64",
 					Digest:     "sha1:742b0a26f327c6da60d42a02c3eb6189a58e468f",
 					InstalledFiles: []string{
