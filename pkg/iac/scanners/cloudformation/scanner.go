@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io/fs"
-	"sort"
 
 	adapter "github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
@@ -99,33 +98,6 @@ func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (results s
 		}
 		results = append(results, fileResults...)
 	}
-	sort.Slice(results, func(i, j int) bool {
-		return results[i].Rule().AVDID < results[j].Rule().AVDID
-	})
-	return results, nil
-}
-
-func (s *Scanner) ScanFile(ctx context.Context, fsys fs.FS, path string) (scan.Results, error) {
-
-	cfCtx, err := s.parser.ParseFile(ctx, fsys, path)
-	if err != nil {
-		return nil, err
-	}
-
-	rs, err := s.InitRegoScanner(fsys, s.options)
-	if err != nil {
-		return nil, fmt.Errorf("init rego scanner: %w", err)
-	}
-
-	results, err := s.scanFileContext(ctx, rs, cfCtx, fsys)
-	if err != nil {
-		return nil, err
-	}
-	results.SetSourceAndFilesystem("", fsys, false)
-
-	sort.Slice(results, func(i, j int) bool {
-		return results[i].Rule().AVDID < results[j].Rule().AVDID
-	})
 	return results, nil
 }
 

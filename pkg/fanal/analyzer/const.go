@@ -66,6 +66,7 @@ const (
 	TypeNodePkg    Type = "node-pkg"
 	TypeYarn       Type = "yarn"
 	TypePnpm       Type = "pnpm"
+	TypeBun        Type = "bun"
 
 	// .NET
 	TypeNuget         Type = "nuget"
@@ -191,6 +192,7 @@ var (
 		TypeNodePkg,
 		TypeYarn,
 		TypePnpm,
+		TypeBun,
 		TypeNuget,
 		TypeDotNetCore,
 		TypePackagesProps,
@@ -220,6 +222,7 @@ var (
 		TypeNpmPkgLock,
 		TypeYarn,
 		TypePnpm,
+		TypeBun,
 		TypePip,
 		TypePipenv,
 		TypePoetry,

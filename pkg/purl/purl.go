@@ -466,7 +466,7 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypePyPi
 	case ftypes.GoBinary, ftypes.GoModule:
 		return packageurl.TypeGolang
-	case ftypes.Npm, ftypes.NodePkg, ftypes.Yarn, ftypes.Pnpm:
+	case ftypes.Npm, ftypes.NodePkg, ftypes.Yarn, ftypes.Pnpm, ftypes.Bun:
 		return packageurl.TypeNPM
 	case ftypes.Cocoapods:
 		return packageurl.TypeCocoapods
@@ -482,7 +482,7 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypeCargo
 	case ftypes.Alpine, ftypes.Chainguard, ftypes.Wolfi, ftypes.MinimOS:
 		return packageurl.TypeApk
-	case ftypes.Debian, ftypes.Ubuntu:
+	case ftypes.Debian, ftypes.Ubuntu, ftypes.Echo:
 		return packageurl.TypeDebian
 	case ftypes.RedHat, ftypes.CentOS, ftypes.Rocky, ftypes.Alma,
 		ftypes.Amazon, ftypes.Fedora, ftypes.Oracle, ftypes.OpenSUSE,

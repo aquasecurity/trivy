@@ -121,17 +121,18 @@ Trivy supports extra fields in the `custom` section as described below.
 If you are creating checks for your Trivy misconfiguration scans, some fields are optional as referenced in the table below. The `schemas` field should be used to enable policy validation using a built-in schema. It is recommended to use this to ensure your checks are 
 correct and do not reference incorrect properties/values.
 
-| Field name                 | Allowed values                                                    |        Default value         | In table | In JSON |
-|----------------------------|-------------------------------------------------------------------|:----------------------------:|:--------:|:-------:|
-| title                      | Any characters                                                    |             N/A              |    ✅     |    ✅    |
-| description                | Any characters                                                    |                              |    -     |    ✅    |
-| schemas.input              | `schema["kubernetes"]`, `schema["dockerfile"]`, `schema["cloud"]` | (applied to all input types) |    -     |    -    |
-| custom.id                  | Any characters                                                    |             N/A              |    ✅     |    ✅    |
-| custom.severity            | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`                               |           UNKNOWN            |    ✅     |    ✅    |
-| custom.recommended_actions | Any characters                                                    |                              |    -     |    ✅    |
-| custom.deprecated          | `true`, `false`                                                   |           `false`            |    -     |    ✅    |
-| custom.input.selector.type | Any item(s) in [this list][source-types]                          |                              |    -     |    ✅    |
-| url                        | Any characters                                                    |                              |    -     |    ✅    |
+| Field name                   | Allowed values                                                      |        Default value         | In table | In JSON |
+|------------------------------|---------------------------------------------------------------------|:----------------------------:|:--------:|:-------:|
+| title                        | Any characters                                                      |             N/A              |    ✅     |    ✅    |
+| description                  | Any characters                                                      |                              |    -     |    ✅    |
+| schemas.input                | `schema["kubernetes"]`, `schema["dockerfile"]`, `schema["cloud"]`   | (applied to all input types) |    -     |    -    |
+| custom.id                    | Any characters                                                      |             N/A              |    ✅     |    ✅    |
+| custom.severity              | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`                                 |           UNKNOWN            |    ✅     |    ✅    |
+| custom.recommended_actions   | Any characters                                                      |                              |    -     |    ✅    |
+| custom.deprecated            | `true`, `false`                                                     |           `false`            |    -     |    ✅    |
+| custom.input.selector.type   | Any item(s) in [this list][source-types]                            |                              |    -     |    ✅    |
+| custom.minimum_trivy_version | The minimum version of Trivy that's required to evaluate this check |                              |    -     |    ✅    |
+| url                          | Any characters                                                      |                              |    -     |    ✅    |
 
 #### custom.avd_id and custom.id
 
@@ -207,6 +208,7 @@ You can specify input format via the `custom.input` annotation.
     - `yaml` (Generic YAML)
     - `json` (Generic JSON)
     - `toml` (Generic TOML)
+    - `terraform-raw` (Terraform configuration is not converted to common state as for the Cloud format, allowing for more flexible and direct checks on the original code)
 
     When configuration languages such as Kubernetes are not identified, file formats such as JSON will be used as `type`.
     When a configuration language is identified, it will overwrite `type`.

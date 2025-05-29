@@ -80,6 +80,7 @@ nav:
               - CentOS: docs/coverage/os/centos.md
               - Chainguard: docs/coverage/os/chainguard.md
               - Debian: docs/coverage/os/debian.md
+              - Echo: docs/coverage/os/echo.md
               - MinimOS: docs/coverage/os/minimos.md
               - Oracle Linux: docs/coverage/os/oracle.md
               - Photon OS: docs/coverage/os/photon.md
@@ -121,7 +122,7 @@ nav:
       - Configuration:
           - Overview: docs/configuration/index.md
           - Filtering: docs/configuration/filtering.md
-          - Skipping Files: docs/configuration/skipping.md
+          - Selecting Files: docs/configuration/skipping.md
           - Reporting: docs/configuration/reporting.md
           - Cache: docs/configuration/cache.md
           - Databases: docs/configuration/db.md
@@ -159,6 +160,7 @@ nav:
                   - GCR (Google Container Registry): docs/advanced/private-registries/gcr.md
                   - ACR (Azure Container Registry): docs/advanced/private-registries/acr.md
                   - Self-Hosted: docs/advanced/private-registries/self.md
+          - Usage Telemetry: docs/advanced/telemetry.md
       - References:
           - Configuration:
               - CLI:

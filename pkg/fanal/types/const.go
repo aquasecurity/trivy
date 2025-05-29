@@ -30,6 +30,7 @@ const (
 	CentOS             OSType = "centos"
 	Chainguard         OSType = "chainguard"
 	Debian             OSType = "debian"
+	Echo               OSType = "echo"
 	Fedora             OSType = "fedora"
 	MinimOS            OSType = "minimos"
 	OpenSUSE           OSType = "opensuse"
@@ -114,6 +115,7 @@ var (
 		CentOS,
 		Chainguard,
 		Debian,
+		Echo,
 		Fedora,
 		MinimOS,
 		OpenSUSE,
@@ -167,6 +169,7 @@ const (
 	NpmPkgLock = "package-lock.json"
 	YarnLock   = "yarn.lock"
 	PnpmLock   = "pnpm-lock.yaml"
+	BunLock    = "bun.lock"
 
 	ComposerLock          = "composer.lock"
 	ComposerJson          = "composer.json"

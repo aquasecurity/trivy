@@ -622,6 +622,73 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "scan raw config",
+			artifactOpt: artifact.Option{
+				MisconfScannerOption: misconf.ScannerOption{
+					RawConfigScanners: []types.ConfigType{types.Terraform},
+				},
+			},
+			fields: fields{
+				dir: "./testdata/misconfig/terraform/single-failure",
+			},
+			wantBlobs: []cachetest.WantBlob{
+				{
+					ID: "sha256:6f4672e139d4066fd00391df614cdf42bda5f7a3f005d39e1d8600be86157098",
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: 2,
+						Misconfigurations: []types.Misconfiguration{
+							{
+								FileType: "terraform",
+								FilePath: "main.tf",
+								Failures: types.MisconfResults{
+									{
+										Namespace:      "user.something",
+										Query:          "data.user.something.deny",
+										Message:        "Empty bucket name!",
+										PolicyMetadata: terraformPolicyMetadata,
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.asd",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
+										},
+									},
+									{
+										Namespace: "user.test002",
+										Query:     "data.user.test002.deny",
+										Message:   "Empty bucket name!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:       "TEST002",
+											AVDID:    "AVD-TEST-0002",
+											Type:     "Terraform Security Check",
+											Title:    "Test policy",
+											Severity: "LOW",
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.asd",
+											Provider:  "Terraform-Raw",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: artifact.Reference{
+				Name: "testdata/misconfig/terraform/single-failure",
+				Type: types.TypeFilesystem,
+				ID:   "sha256:6f4672e139d4066fd00391df614cdf42bda5f7a3f005d39e1d8600be86157098",
+				BlobIDs: []string{
+					"sha256:6f4672e139d4066fd00391df614cdf42bda5f7a3f005d39e1d8600be86157098",
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -2431,6 +2498,7 @@ func TestArtifact_AnalysisStrategy(t *testing.T) {
 			wantRoots: []string{
 				"testdata/alpine/etc/alpine-release",
 				"testdata/alpine/lib/apk/db/installed",
+				"testdata/alpine/usr/lib/apk/db/installed",
 			},
 		},
 		{

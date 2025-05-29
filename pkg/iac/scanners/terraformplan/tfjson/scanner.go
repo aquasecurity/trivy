@@ -55,7 +55,9 @@ func (s *Scanner) ScanFS(_ context.Context, fsys fs.FS, dir string) (scan.Result
 
 func New(opts ...options.ScannerOption) *Scanner {
 	scanner := &Scanner{
-		inner:   terraform.New(opts...),
+		inner: terraform.New(
+			append(opts, options.WithScanRawConfig(false))...,
+		),
 		parser:  parser.New(),
 		logger:  log.WithPrefix("tfjson scanner"),
 		options: opts,

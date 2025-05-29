@@ -48,7 +48,7 @@ package custom.dockerfile.ID001
 import future.keywords.in
 ```
 
-Every rego check has a package name. In our case, we will call it `custom.dockerfile.ID001` to avoid confusion between custom checks and built-in checks. The group name `dockerfile` has no effect on the package name. Note that each package has to contain only one check. However, we can pass multiple checks into our Trivy scan. 
+Every Rego check has a package name. In our case, we will call it `custom.dockerfile.ID001` to avoid confusion between custom checks and built-in checks. The group name `dockerfile` has no effect on the package name. Note that each package has to contain only one check. However, we can pass multiple checks into our Trivy scan. 
 The first keyword of the package, in this case `custom`, will be reused in the `trivy` command as the `--namespace`.
 
 ## Allowed data

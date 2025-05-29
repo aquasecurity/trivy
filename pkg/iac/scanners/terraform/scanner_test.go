@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 func Test_OptionWithPolicyDirs(t *testing.T) {
@@ -179,19 +180,19 @@ resource "aws_sqs_queue_policy" "bad_example" {
  }`,
 		"/rules/test.rego": `
 # METADATA
-# title: Buckets should not be evil
-# description: You should not allow buckets to be evil
+# title: SQS policies should not allow wildcard actions
+# description: SQS queue policies should avoid using "*" for actions, as this allows overly permissive access.
 # scope: package
 # schemas:
 #  - input: schema.input
 # related_resources:
-# - https://google.com/search?q=is+my+bucket+evil
+# - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-using-identity-based-policies.html
 # custom:
 #   id: TEST123
 #   avd_id: AVD-TEST-0123
-#   short_code: no-evil-buckets
+#   short_code: no-wildcard-actions
 #   severity: CRITICAL
-#   recommended_action: Use a good bucket instead
+#   recommended_action: Avoid using "*" for actions in SQS policies and specify only required actions.
 #   input:
 #     selector:
 #     - type: cloud
@@ -971,7 +972,22 @@ resource "aws_s3_bucket_versioning" "test" {
 `)},
 	}
 
-	check := `package test
+	check := `# METADATA
+# title: Custom policy
+# description: Custom policy for testing
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   id: AVD-BAR-0001
+#   avd_id: AVD-BAR-0001
+#   provider: custom
+#   service: custom
+#   severity: LOW
+#   short_code: custom-policy
+#   recommended_action: Custom policy for testing
+
+package test
 import rego.v1
 
 deny contains res if {
@@ -1193,4 +1209,51 @@ data "google_storage_transfer_project_service_account" "production" {
 			}
 		})
 	}
+}
+
+func TestScanRawTerraform(t *testing.T) {
+	check := `# METADATA
+# title: Buckets should not be evil
+# schemas:
+# - input: schema["terraform-raw"]
+# custom:
+#   id: USER0001
+#   short_code: evil-bucket
+#   severity: HIGH
+#   input:
+#     selector:
+#     - type: terraform-raw
+package user.bucket001
+
+import rego.v1
+
+deny contains res if {
+	some block in input.modules[_].blocks
+	block.kind == "resource"
+	block.type == "aws_s3_bucket"
+	name := block.attributes["bucket"]
+	name.value == "evil"
+	res := result.new("Buckets should not be evil", name)
+}`
+
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{Data: []byte(`resource "aws_s3_bucket" "test" {
+  bucket = "evil"		
+}`)},
+	}
+
+	scanner := New(
+		ScannerWithAllDirectories(true),
+		options.WithScanRawConfig(true),
+		rego.WithEmbeddedLibraries(true),
+		rego.WithPolicyReader(strings.NewReader(check)),
+		rego.WithPolicyNamespaces("user"),
+	)
+
+	results, err := scanner.ScanFS(t.Context(), fsys, ".")
+	require.NoError(t, err)
+
+	failed := results.GetFailed()
+
+	assert.Len(t, failed, 1)
 }
