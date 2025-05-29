@@ -464,3 +464,40 @@ func TestParseApkInfo(t *testing.T) {
 		})
 	}
 }
+
+func TestRequired(t *testing.T) {
+	tests := []struct {
+		name     string
+		filePath string
+		want     bool
+	}{
+		{
+			name:     "legacy APK database location",
+			filePath: "lib/apk/db/installed",
+			want:     true,
+		},
+		{
+			name:     "new APK database location",
+			filePath: "usr/lib/apk/db/installed",
+			want:     true,
+		},
+		{
+			name:     "unrelated file",
+			filePath: "etc/os-release",
+			want:     false,
+		},
+		{
+			name:     "similar but different path",
+			filePath: "lib/apk/db/other",
+			want:     false,
+		},
+	}
+
+	a := alpinePkgAnalyzer{}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := a.Required(tt.filePath, nil)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}

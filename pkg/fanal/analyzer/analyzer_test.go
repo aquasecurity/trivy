@@ -667,7 +667,7 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 				Analyzers: map[string]int{
 					"alpine":       1,
 					"apk-repo":     1,
-					"apk":          2,
+					"apk":          3,
 					"bundler":      1,
 					"dpkg-license": 1,
 					"ubuntu":       1,
@@ -693,7 +693,7 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 			},
 			want: analyzer.Versions{
 				Analyzers: map[string]int{
-					"apk":     2,
+					"apk":     3,
 					"bundler": 1,
 				},
 				PostAnalyzers: map[string]int{
@@ -730,6 +730,7 @@ func TestAnalyzerGroup_StaticPaths(t *testing.T) {
 				"etc/apk/repositories",
 				"etc/lsb-release",
 				"lib/apk/db/installed",
+				"usr/lib/apk/db/installed",
 				"etc/alpine-release",
 
 				"usr/share/doc/",

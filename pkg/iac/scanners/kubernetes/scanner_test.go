@@ -133,7 +133,14 @@ deny[res] {
 func Test_YamlWithSeparator(t *testing.T) {
 
 	fsys := buildFS(map[string]string{
-		"check.rego": `package defsec
+		"check.rego": `# METADATA
+# title: Custom policy
+# description: Custom policy for testing
+# scope: package
+# schemas:
+#   - input: schema["input"]
+
+package defsec
 
 deny[res] {
   input.kind == "Pod"
