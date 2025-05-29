@@ -270,7 +270,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"GPL-2.0-or-later",
 			},
 			Maintainer: "Timo Teräs <timo.teras@iki.fi>",
-			Digest: "sha1:6d3b45e79dbab444ca7cbfa59e2833203be6fb6a",
+			Digest:     "sha1:6d3b45e79dbab444ca7cbfa59e2833203be6fb6a",
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 				"scanelf@1.2.4-r0",

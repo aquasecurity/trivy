@@ -220,7 +220,7 @@ var pkgs = []types.Package{
 			"GPL-2.0-or-later",
 		},
 		Maintainer: "Timo Teräs <timo.teras@iki.fi>",
-		Digest: "sha1:608aa1dd39eff7bc6615d3e5e33383750f8f5ecc",
+		Digest:     "sha1:608aa1dd39eff7bc6615d3e5e33383750f8f5ecc",
 		DependsOn: []string{
 			"musl@1.1.14-r10",
 			"scanelf@1.1.6-r0",
@@ -315,7 +315,7 @@ var pkgs = []types.Package{
 			"MPL-2.0",
 		},
 		Maintainer: "Jakub Jirutka <jakub@jirutka.cz>",
-		Digest: "sha1:593154f80c440685448e0f52479725d7bc9b678d",
+		Digest:     "sha1:593154f80c440685448e0f52479725d7bc9b678d",
 		DependsOn: []string{
 			"musl@1.1.14-r10",
 		},
