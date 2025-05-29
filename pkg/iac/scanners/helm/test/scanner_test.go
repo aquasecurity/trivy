@@ -35,12 +35,8 @@ func TestScanner_ScanFS(t *testing.T) {
 				"AVD-KSV-0011", "AVD-KSV-0012", "AVD-KSV-0014",
 				"AVD-KSV-0015", "AVD-KSV-0016", "AVD-KSV-0018",
 				"AVD-KSV-0020", "AVD-KSV-0021", "AVD-KSV-0030",
-				"AVD-KSV-0104", "AVD-KSV-0106",
-				"AVD-KSV-0032",
+				"AVD-KSV-0104", "AVD-KSV-0106", "AVD-KSV-0125",
 				"AVD-KSV-0004",
-				"AVD-KSV-0035",
-				"AVD-KSV-0033",
-				"AVD-KSV-0034",
 			}),
 		},
 		{
@@ -52,12 +48,9 @@ func TestScanner_ScanFS(t *testing.T) {
 					"AVD-KSV-0011", "AVD-KSV-0012", "AVD-KSV-0014",
 					"AVD-KSV-0015", "AVD-KSV-0016",
 					"AVD-KSV-0020", "AVD-KSV-0021", "AVD-KSV-0030",
-					"AVD-KSV-0104", "AVD-KSV-0106",
-					"AVD-KSV-0117", "AVD-KSV-0110",
-					"AVD-KSV-0032",
+					"AVD-KSV-0104", "AVD-KSV-0106", "AVD-KSV-0125",
+					"AVD-KSV-0117", "AVD-KSV-0110", "AVD-KSV-0118",
 					"AVD-KSV-0004",
-					"AVD-KSV-0035",
-					"AVD-KSV-0033",
 				})(t, results)
 
 				ignored := results.GetIgnored()
@@ -77,9 +70,7 @@ func TestScanner_ScanFS(t *testing.T) {
 				"AVD-KSV-0118", "AVD-KSV-0012", "AVD-KSV-0106",
 				"AVD-KSV-0016", "AVD-KSV-0001", "AVD-KSV-0011",
 				"AVD-KSV-0015", "AVD-KSV-0021", "AVD-KSV-0110", "AVD-KSV-0020",
-				"AVD-KSV-0032",
 				"AVD-KSV-0004",
-				"AVD-KSV-0035",
 			}),
 		},
 		{
@@ -114,11 +105,7 @@ deny[res] {
 				"AVD-KSV-0015", "AVD-KSV-0016", "AVD-KSV-0018",
 				"AVD-KSV-0020", "AVD-KSV-0021", "AVD-KSV-0030",
 				"AVD-KSV-0104", "AVD-KSV-0106", "AVD-USR-ID001",
-				"AVD-KSV-0032",
-				"AVD-KSV-0004",
-				"AVD-KSV-0035",
-				"AVD-KSV-0033",
-				"AVD-KSV-0034",
+				"AVD-KSV-0004", "AVD-KSV-0125",
 			}),
 		},
 		{
