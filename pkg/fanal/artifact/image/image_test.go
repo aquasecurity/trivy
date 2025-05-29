@@ -164,8 +164,8 @@ func TestArtifact_Inspect(t *testing.T) {
 				"GPL-2.0-or-later",
 			},
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
-			Arch:   "x86_64",
-			Digest: "sha1:3aeb8a90d7179d2a187782e980a964494e08c5fb",
+			Arch:       "x86_64",
+			Digest:     "sha1:3aeb8a90d7179d2a187782e980a964494e08c5fb",
 			InstalledFiles: []string{
 				"etc/ssl/cert.pem",
 			},
