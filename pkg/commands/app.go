@@ -688,9 +688,11 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlags := &flag.ScanFlagGroup{
 		// Enable only '--skip-dirs' and '--skip-files' and disable other flags
-		SkipDirs:     flag.SkipDirsFlag.Clone(),
-		SkipFiles:    flag.SkipFilesFlag.Clone(),
-		FilePatterns: flag.FilePatternsFlag.Clone(),
+		SkipDirs:         flag.SkipDirsFlag.Clone(),
+		SkipFiles:        flag.SkipFilesFlag.Clone(),
+		FilePatterns:     flag.FilePatternsFlag.Clone(),
+		SkipVersionCheck: flag.SkipVersionCheckFlag.Clone(),
+		DisableTelemetry: flag.DisableTelemetryFlag.Clone(),
 	}
 
 	reportFlagGroup := flag.NewReportFlagGroup()
