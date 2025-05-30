@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.63.1](https://github.com/aquasecurity/trivy/compare/v0.63.0...v0.63.1) (2025-05-30)
+
+
+### Bug Fixes
+
+* Correctly check for semver versions for trivy version check ([#8948](https://github.com/aquasecurity/trivy/issues/8948)) ([b813527](https://github.com/aquasecurity/trivy/commit/b813527449c4604f5afad71ae82b13399bb48680))
+
 ## [0.63.0](https://github.com/aquasecurity/trivy/compare/v0.62.0...v0.63.0) (2025-05-29)
 
 
