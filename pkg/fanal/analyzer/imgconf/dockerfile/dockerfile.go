@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"regexp"
 	"strings"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -87,6 +88,9 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop)"):
 			// Instruction other than RUN
 			createdBy = strings.TrimPrefix(h.CreatedBy, "/bin/sh -c #(nop)")
+			if strings.HasPrefix(createdBy, " COPY") {
+				createdBy = normalizeCopyCreatedBy(createdBy)
+			}
 		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c"):
 			// RUN instruction
 			createdBy = buildRunInstruction(createdBy)
@@ -112,6 +116,8 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 				}
 			}
 		}
+		// Remove Buildah-specific suffix
+		createdBy = strings.TrimSuffix(createdBy, "|inheritLabels=false")
 		dockerfile.WriteString(strings.TrimSpace(createdBy) + "\n")
 	}
 
@@ -148,6 +154,12 @@ func buildHealthcheckInstruction(health *v1.HealthConfig) string {
 	command = strings.Join(health.Test, " ")
 	command = strings.ReplaceAll(command, "CMD-SHELL", "CMD")
 	return fmt.Sprintf("HEALTHCHECK %s%s%s%s%s", interval, timeout, startPeriod, retries, command)
+}
+
+var copyInRe = regexp.MustCompile(`\b((?:file|dir):\S+) in `)
+
+func normalizeCopyCreatedBy(input string) string {
+	return copyInRe.ReplaceAllString(input, `$1 `)
 }
 
 func (a *historyAnalyzer) Required(_ types.OS) bool {

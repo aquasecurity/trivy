@@ -430,6 +430,22 @@ ENV TAG=latest
 ENTRYPOINT ["/bin/sh" "-c" "echo test"]
 `,
 		},
+		{
+			name: "buildah backend or docker legacy builder (DOCKER_BUILDKIT=0)",
+			input: &v1.ConfigFile{
+				History: []v1.History{
+					{
+						CreatedBy: "/bin/sh -c #(nop) COPY dir:3a024d8085bc39741a0a094a8e287a00a760975c7c2e6b5dc6c7d3174b7d1ab6 in ./files |inheritLabels=false",
+					},
+					{
+						CreatedBy: `/bin/sh -c #(nop) ENTRYPOINT ["/bin/sh"]|inheritLabels=false`,
+					},
+				},
+			},
+			expected: `COPY dir:3a024d8085bc39741a0a094a8e287a00a760975c7c2e6b5dc6c7d3174b7d1ab6 ./files
+ENTRYPOINT ["/bin/sh"]
+`,
+		},
 	}
 
 	for _, tt := range tests {
