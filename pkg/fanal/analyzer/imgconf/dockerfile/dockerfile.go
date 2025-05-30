@@ -87,6 +87,9 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop)"):
 			// Instruction other than RUN
 			createdBy = strings.TrimPrefix(h.CreatedBy, "/bin/sh -c #(nop)")
+			if strings.HasPrefix(createdBy, " COPY") {
+				createdBy = normalizeCopyCreatedBy(createdBy)
+			}
 		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c"):
 			// RUN instruction
 			createdBy = buildRunInstruction(createdBy)
@@ -148,6 +151,15 @@ func buildHealthcheckInstruction(health *v1.HealthConfig) string {
 	command = strings.Join(health.Test, " ")
 	command = strings.ReplaceAll(command, "CMD-SHELL", "CMD")
 	return fmt.Sprintf("HEALTHCHECK %s%s%s%s%s", interval, timeout, startPeriod, retries, command)
+}
+
+func normalizeCopyCreatedBy(input string) string {
+	if i := strings.Index(input, "|inheritLabels="); i != -1 {
+		input = input[:i]
+	}
+
+	input = strings.Replace(input, " in ", " ", 1)
+	return strings.TrimSpace(input)
 }
 
 func (a *historyAnalyzer) Required(_ types.OS) bool {
