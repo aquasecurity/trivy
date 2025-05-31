@@ -69,7 +69,7 @@ resource "aws_s3_bucket" "test" {}`,
 			name: "ignore misconfig in module",
 			files: map[string]string{
 				"/project/main.tf": `
-#tfsec:ignore:aws-s3-non-empty-bucket
+#tfsec:ignore:USER-TEST-0123
 module "something" {
 	source = "../modules/problem"
 }
@@ -371,9 +371,9 @@ resource "aws_s3_bucket" "test" {
 			)
 			require.NoError(t, err)
 			if tt.expected {
-				testutil.AssertRuleFound(t, "aws-s3-non-empty-bucket", results, "")
+				testutil.AssertRuleFound(t, "USER-TEST-0123", results, "")
 			} else {
-				testutil.AssertRuleNotFailed(t, "aws-s3-non-empty-bucket", results, "")
+				testutil.AssertRuleNotFailed(t, "USER-TEST-0123", results, "")
 			}
 		})
 	}

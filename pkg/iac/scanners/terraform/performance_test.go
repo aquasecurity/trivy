@@ -45,7 +45,7 @@ module "something" {
 			continue
 		}
 		for i, bad := range rule.GetRule().Terraform.BadExamples {
-			filename := fmt.Sprintf("/modules/problem/%s-%d.tf", rule.GetRule().LongID(), i)
+			filename := fmt.Sprintf("/modules/problem/%s-%d.tf", rule.GetRule().AVDID, i)
 			files[filename] = bad
 		}
 	}

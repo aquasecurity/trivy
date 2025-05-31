@@ -19,7 +19,7 @@ func AssertRuleFound(t *testing.T, ruleID string, results scan.Results, message 
 	found := ruleIDInResults(ruleID, results.GetFailed())
 	assert.True(t, found, append([]any{message}, args...)...)
 	for _, result := range results.GetFailed() {
-		if result.Rule().LongID() == ruleID {
+		if result.Rule().AVDID == ruleID {
 			m := result.Metadata()
 			meta := &m
 			for meta != nil {
@@ -49,7 +49,7 @@ func AssertRuleNotFailed(t *testing.T, ruleID string, results scan.Results, mess
 
 func ruleIDInResults(ruleID string, results scan.Results) bool {
 	for _, res := range results {
-		if res.Rule().LongID() == ruleID {
+		if res.Rule().AVDID == ruleID {
 			return true
 		}
 	}

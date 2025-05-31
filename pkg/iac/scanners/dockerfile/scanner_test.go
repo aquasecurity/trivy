@@ -694,9 +694,9 @@ deny contains res if {
 			results, err := scanner.ScanFS(t.Context(), fsys, ".")
 			require.NoError(t, err)
 			if tt.expected {
-				testutil.AssertRuleFound(t, "dockerfile-general-maintainer-deprecated", results, "")
+				testutil.AssertRuleFound(t, "USER-TEST-0001", results, "")
 			} else {
-				testutil.AssertRuleNotFailed(t, "dockerfile-general-maintainer-deprecated", results, "")
+				testutil.AssertRuleNotFailed(t, "USER-TEST-0001", results, "")
 			}
 		})
 	}
