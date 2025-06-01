@@ -15,6 +15,7 @@ import (
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	k8sRep "github.com/aquasecurity/trivy/pkg/k8s"
+	"github.com/aquasecurity/trivy/pkg/k8s/filter"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/k8s/scanner"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -85,9 +86,15 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 		}
 		r.flagOpts.ScanOptions.Scanners = scanners
 	}
+	// Apply REGO filtering if configured
+	filteredArtifacts, err := r.filterArtifacts(ctx, artifacts)
+	if err != nil {
+		return xerrors.Errorf("artifact filtering error: %w", err)
+	}
+
 	var rpt report.Report
 	log.Info("Scanning K8s...", log.String("K8s", r.cluster))
-	rpt, err = s.Scan(ctx, artifacts)
+	rpt, err = s.Scan(ctx, filteredArtifacts)
 	if err != nil {
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
@@ -154,4 +161,114 @@ func validateReportArguments(opts flag.Options) error {
 	}
 
 	return nil
+}
+
+// filterArtifacts applies REGO-based filtering to Kubernetes artifacts
+func (r *runner) filterArtifacts(ctx context.Context, artifacts []*k8sArtifacts.Artifact) ([]*k8sArtifacts.Artifact, error) {
+	// Check if REGO filtering is enabled
+	if r.flagOpts.K8sFilterPolicy == "" {
+		return artifacts, nil // No filtering needed
+	}
+
+	// Create REGO filter
+	regoFilter, err := filter.NewRegoFilter(ctx, r.flagOpts.K8sOptions)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to create REGO filter: %w", err)
+	}
+
+	if regoFilter == nil {
+		return artifacts, nil // No filter created
+	}
+
+	var filteredArtifacts []*k8sArtifacts.Artifact
+	ignoredCount := 0
+
+	for _, artifact := range artifacts {
+		// Convert k8s artifact to filter input format
+		k8sArtifact := convertArtifactToFilterInput(artifact)
+
+		// Check if artifact should be ignored
+		shouldIgnore, err := regoFilter.ShouldIgnore(ctx, k8sArtifact)
+		if err != nil {
+			log.WarnContext(ctx, "Error evaluating REGO filter for artifact",
+				log.String("kind", artifact.Kind),
+				log.String("namespace", artifact.Namespace),
+				log.String("name", artifact.Name),
+				log.Err(err))
+			// On error, include the artifact (fail open)
+			filteredArtifacts = append(filteredArtifacts, artifact)
+			continue
+		}
+
+		if shouldIgnore {
+			ignoredCount++
+			log.DebugContext(ctx, "Artifact filtered out by REGO policy",
+				log.String("kind", artifact.Kind),
+				log.String("namespace", artifact.Namespace),
+				log.String("name", artifact.Name))
+		} else {
+			filteredArtifacts = append(filteredArtifacts, artifact)
+		}
+	}
+
+	if ignoredCount > 0 {
+		log.InfoContext(ctx, "Filtered K8s artifacts using REGO policy",
+			log.Int("total", len(artifacts)),
+			log.Int("ignored", ignoredCount),
+			log.Int("remaining", len(filteredArtifacts)))
+	}
+
+	return filteredArtifacts, nil
+}
+
+// convertArtifactToFilterInput converts a k8s artifact to the format expected by REGO filter
+func convertArtifactToFilterInput(artifact *k8sArtifacts.Artifact) filter.K8sArtifact {
+	// Extract metadata, spec from the raw object if available
+	var spec interface{}
+	var labels, annotations map[string]string
+
+	if artifact.RawResource != nil && len(artifact.RawResource) > 0 {
+		// Try to extract spec from the unstructured object
+		if specField, exists := artifact.RawResource["spec"]; exists {
+			spec = specField
+		}
+
+		// Extract metadata (labels and annotations)
+		if metadata, exists := artifact.RawResource["metadata"]; exists {
+			if metadataMap, ok := metadata.(map[string]interface{}); ok {
+				// Extract labels
+				if labelsField, exists := metadataMap["labels"]; exists {
+					if labelsMap, ok := labelsField.(map[string]interface{}); ok {
+						labels = make(map[string]string)
+						for k, v := range labelsMap {
+							if strVal, ok := v.(string); ok {
+								labels[k] = strVal
+							}
+						}
+					}
+				}
+
+				// Extract annotations
+				if annotationsField, exists := metadataMap["annotations"]; exists {
+					if annotationsMap, ok := annotationsField.(map[string]interface{}); ok {
+						annotations = make(map[string]string)
+						for k, v := range annotationsMap {
+							if strVal, ok := v.(string); ok {
+								annotations[k] = strVal
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return filter.ConvertToK8sArtifact(
+		artifact.Kind,
+		artifact.Namespace,
+		artifact.Name,
+		labels,
+		annotations,
+		spec,
+	)
 }
