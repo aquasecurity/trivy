@@ -179,13 +179,28 @@ func (m *Decoder) decodeApplication(c *core.Component) *ftypes.Application {
 	// If SBOM properties do not contain the type, we try to extract it from PURL.
 	if app.Type == "" && c.PkgIdentifier.PURL != nil {
 		p := (*purl.PackageURL)(c.PkgIdentifier.PURL)
-		app.Type = p.LangType()
+		if typ := p.LangType(); typ != purl.TypeUnknown {
+			app.Type = typ
+		}
 	}
 
-	// Thrid-party SBOMs may use `Files` array.
+	// Possible cases when application doesn't have root package, but contains package info in application component.
+	// For these cases we need to add the package as the root package of the application.
+	// But if application contains root package - we will de-duplicate later.
+	if app.Type != "" {
+		pkg, err := m.decodePackage(context.Background(), c)
+		if err == nil && pkg != nil {
+			// Mark the package as the root package of the application
+			pkg.Relationship = ftypes.RelationshipRoot
+			app.Packages = append(app.Packages, *pkg)
+		}
+
+	}
+
+	// Third-party SBOMs may use `Files` array.
 	// But if number of files is more than one, we cannot determine correct file path.
 	// So we use the first file path as the application file path.
-	if len(c.Files) > 0 {
+	if len(c.Files) > 0 && c.Files[0].Path != "" {
 		app.FilePath = c.Files[0].Path // Use the first file path as the application file path
 	}
 
@@ -353,7 +368,13 @@ func (m *Decoder) addOSPkgs(sbom *types.SBOM) {
 // addLangPkgs traverses relationships and adds language-specific packages
 func (m *Decoder) addLangPkgs(sbom *types.SBOM) {
 	for id, app := range m.apps {
-		app.Packages = append(app.Packages, m.traverseDependencies(id)...)
+		app.Packages = append(m.traverseDependencies(id), app.Packages...)
+		// We added application as root package of this application.
+		// But if root package was kept as separate component - we should remove duplicate.
+		app.Packages = lo.UniqBy(app.Packages, func(pkg ftypes.Package) string {
+			return pkg.ID
+		})
+		sort.Sort(app.Packages)
 		sbom.Applications = append(sbom.Applications, *app)
 	}
 }
