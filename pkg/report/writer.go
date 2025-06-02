@@ -4,11 +4,13 @@ import (
 	"context"
 	"io"
 	"strings"
+	"time"
 
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/extension"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -97,10 +99,23 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 		if report.ArtifactType == ftypes.TypeFilesystem {
 			target = option.Target
 		}
+		
+		// Set up timing information for SARIF invocation
+		// Use report.CreatedAt as scan start time if available
+		var scanStartTime, scanEndTime *time.Time
+		if !report.CreatedAt.IsZero() {
+			scanStartTime = &report.CreatedAt
+		}
+		// Use current time as scan end time
+		currentTime := clock.Now(ctx)
+		scanEndTime = &currentTime
+		
 		writer = &SarifWriter{
-			Output:  output,
-			Version: option.AppVersion,
-			Target:  target,
+			Output:        output,
+			Version:       option.AppVersion,
+			Target:        target,
+			ScanStartTime: scanStartTime,
+			ScanEndTime:   scanEndTime,
 		}
 	case types.FormatCosignVuln:
 		writer = predicate.NewVulnWriter(output, option.AppVersion)
