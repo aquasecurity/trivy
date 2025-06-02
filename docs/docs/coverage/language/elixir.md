@@ -24,4 +24,4 @@ In order to detect dependencies, Trivy searches for `mix.lock`[^1].
 [hex]: https://hex.pm/
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 
-[^1]: `mix.lock` is default name. To scan a custom filename use [file-patterns](../../configuration/skipping.md#file-patterns)
+[^1]: `mix.lock` is default name. To scan a custom filename use [file-patterns](../../configuration/skipping.md#customizing-file-handling)
