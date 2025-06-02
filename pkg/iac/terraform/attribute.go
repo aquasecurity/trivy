@@ -16,6 +16,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/terraform/context"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type Attribute struct {
@@ -827,4 +828,109 @@ func safeOp[T any](a *Attribute, fn func(cty.Value) T) T {
 	}
 
 	return fn(val)
+}
+
+// RewriteExpr applies the given function `transform` to the expression of the attribute,
+// recursively traversing and transforming it.
+func (a *Attribute) RewriteExpr(transform func(hclsyntax.Expression) hclsyntax.Expression) {
+	a.hclAttribute.Expr = RewriteExpr(a.hclAttribute.Expr.(hclsyntax.Expression), transform)
+}
+
+// nolint: gocyclo
+// RewriteExpr recursively rewrites an HCL expression tree in-place,
+// applying the provided transformation function `transform` to each node.
+func RewriteExpr(
+	expr hclsyntax.Expression,
+	transform func(hclsyntax.Expression) hclsyntax.Expression,
+) hclsyntax.Expression {
+	if expr == nil {
+		return nil
+	}
+	switch e := expr.(type) {
+	case *hclsyntax.LiteralValueExpr:
+	case *hclsyntax.TemplateExpr:
+		for i, p := range e.Parts {
+			e.Parts[i] = RewriteExpr(p, transform)
+		}
+	case *hclsyntax.TemplateWrapExpr:
+		e.Wrapped = RewriteExpr(e.Wrapped, transform)
+	case *hclsyntax.BinaryOpExpr:
+		e.LHS = RewriteExpr(e.LHS, transform)
+		e.RHS = RewriteExpr(e.RHS, transform)
+	case *hclsyntax.UnaryOpExpr:
+		e.Val = RewriteExpr(e.Val, transform)
+	case *hclsyntax.TupleConsExpr:
+		for i, elem := range e.Exprs {
+			e.Exprs[i] = RewriteExpr(elem, transform)
+		}
+	case *hclsyntax.ParenthesesExpr:
+		e.Expression = RewriteExpr(e.Expression, transform)
+	case *hclsyntax.ObjectConsExpr:
+		for i, item := range e.Items {
+			e.Items[i].KeyExpr = RewriteExpr(item.KeyExpr, transform)
+			e.Items[i].ValueExpr = RewriteExpr(item.ValueExpr, transform)
+		}
+	case *hclsyntax.ObjectConsKeyExpr:
+		e.Wrapped = RewriteExpr(e.Wrapped, transform)
+	case *hclsyntax.ScopeTraversalExpr:
+	case *hclsyntax.RelativeTraversalExpr:
+		e.Source = RewriteExpr(e.Source, transform)
+	case *hclsyntax.ConditionalExpr:
+		e.Condition = RewriteExpr(e.Condition, transform)
+		e.TrueResult = RewriteExpr(e.TrueResult, transform)
+		e.FalseResult = RewriteExpr(e.FalseResult, transform)
+	case *hclsyntax.FunctionCallExpr:
+		for i, arg := range e.Args {
+			e.Args[i] = RewriteExpr(arg, transform)
+		}
+	case *hclsyntax.IndexExpr:
+		e.Collection = RewriteExpr(e.Collection, transform)
+		e.Key = RewriteExpr(e.Key, transform)
+	case *hclsyntax.ForExpr:
+		e.CollExpr = RewriteExpr(e.CollExpr, transform)
+		e.KeyExpr = RewriteExpr(e.KeyExpr, transform)
+		e.ValExpr = RewriteExpr(e.ValExpr, transform)
+		e.CondExpr = RewriteExpr(e.CondExpr, transform)
+	case *hclsyntax.SplatExpr:
+		e.Source = RewriteExpr(e.Source, transform)
+	case *hclsyntax.AnonSymbolExpr:
+	default:
+		log.Debug(
+			"RewriteExpr encountered an unhandled expression type",
+			log.Prefix(log.PrefixMisconfiguration),
+			log.String("expr_type", fmt.Sprintf("%T", expr)),
+		)
+	}
+	return transform(expr)
+}
+
+// UnknownValuePrefix is a placeholder string used to represent parts of a
+// template expression that cannot be fully evaluated due to unknown values.
+const UnknownValuePrefix = "__UNRESOLVED__"
+
+// PartialTemplateExpr is a wrapper around hclsyntax.TemplateExpr that
+// replaces unknown or unevaluated parts with placeholder strings during evaluation.
+type PartialTemplateExpr struct {
+	*hclsyntax.TemplateExpr
+}
+
+func (e *PartialTemplateExpr) Value(ctx *hcl.EvalContext) (cty.Value, hcl.Diagnostics) {
+	parts := make([]hclsyntax.Expression, len(e.Parts))
+	for i, part := range e.Parts {
+		partVal, diags := part.Value(ctx)
+		if diags.HasErrors() || !partVal.IsKnown() {
+			parts[i] = &hclsyntax.LiteralValueExpr{
+				Val:      cty.StringVal(UnknownValuePrefix),
+				SrcRange: part.Range(),
+			}
+		} else {
+			parts[i] = part
+		}
+	}
+	newTemplate := &hclsyntax.TemplateExpr{
+		Parts:    parts,
+		SrcRange: e.SrcRange,
+	}
+
+	return newTemplate.Value(ctx)
 }
