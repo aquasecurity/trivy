@@ -176,9 +176,22 @@ func (m *Decoder) decodeApplication(c *core.Component) *ftypes.Application {
 		}
 	}
 
+	// If SBOM properties do not contain the type, we try to extract it from PURL.
+	if app.Type == "" && c.PkgIdentifier.PURL != nil {
+		p := (*purl.PackageURL)(c.PkgIdentifier.PURL)
+		app.Type = p.LangType()
+	}
+
+	// Thrid-party SBOMs may use `Files` array.
+	// But if number of files is more than one, we cannot determine correct file path.
+	// So we use the first file path as the application file path.
+	if len(c.Files) > 0 {
+		app.FilePath = c.Files[0].Path // Use the first file path as the application file path
+	}
+
 	// Aggregation Types use the name of the language (e.g. `Java`, `Python`, etc.) as the component name.
 	// Other language files use the file path as their name.
-	if !slices.Contains(ftypes.AggregatingTypes, app.Type) {
+	if app.FilePath == "" && !slices.Contains(ftypes.AggregatingTypes, app.Type) {
 		app.FilePath = c.Name
 	}
 	return &app
