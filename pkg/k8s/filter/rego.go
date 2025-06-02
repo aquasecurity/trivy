@@ -19,7 +19,7 @@ type K8sArtifact struct {
 	Name        string            `json:"name"`
 	Labels      map[string]string `json:"labels"`
 	Annotations map[string]string `json:"annotations"`
-	Spec        interface{}       `json:"spec,omitempty"`
+	Spec        any               `json:"spec,omitempty"`
 }
 
 // RegoFilter handles REGO-based filtering for Kubernetes artifacts
@@ -91,7 +91,7 @@ func (f *RegoFilter) ShouldIgnore(ctx context.Context, artifact K8sArtifact) (bo
 }
 
 // ConvertToK8sArtifact converts common Kubernetes resource fields to K8sArtifact
-func ConvertToK8sArtifact(kind, namespace, name string, labels, annotations map[string]string, spec interface{}) K8sArtifact {
+func ConvertToK8sArtifact(kind, namespace, name string, labels, annotations map[string]string, spec any) K8sArtifact {
 	// Ensure maps are not nil to avoid JSON marshaling issues
 	if labels == nil {
 		labels = make(map[string]string)

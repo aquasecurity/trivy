@@ -224,10 +224,10 @@ func (r *runner) filterArtifacts(ctx context.Context, artifacts []*k8sArtifacts.
 // convertArtifactToFilterInput converts a k8s artifact to the format expected by REGO filter
 func convertArtifactToFilterInput(artifact *k8sArtifacts.Artifact) filter.K8sArtifact {
 	// Extract metadata, spec from the raw object if available
-	var spec interface{}
+	var spec any
 	var labels, annotations map[string]string
 
-	if artifact.RawResource != nil && len(artifact.RawResource) > 0 {
+	if len(artifact.RawResource) > 0 {
 		// Try to extract spec from the unstructured object
 		if specField, exists := artifact.RawResource["spec"]; exists {
 			spec = specField
@@ -235,10 +235,10 @@ func convertArtifactToFilterInput(artifact *k8sArtifacts.Artifact) filter.K8sArt
 
 		// Extract metadata (labels and annotations)
 		if metadata, exists := artifact.RawResource["metadata"]; exists {
-			if metadataMap, ok := metadata.(map[string]interface{}); ok {
+			if metadataMap, ok := metadata.(map[string]any); ok {
 				// Extract labels
 				if labelsField, exists := metadataMap["labels"]; exists {
-					if labelsMap, ok := labelsField.(map[string]interface{}); ok {
+					if labelsMap, ok := labelsField.(map[string]any); ok {
 						labels = make(map[string]string)
 						for k, v := range labelsMap {
 							if strVal, ok := v.(string); ok {
@@ -250,7 +250,7 @@ func convertArtifactToFilterInput(artifact *k8sArtifacts.Artifact) filter.K8sArt
 
 				// Extract annotations
 				if annotationsField, exists := metadataMap["annotations"]; exists {
-					if annotationsMap, ok := annotationsField.(map[string]interface{}); ok {
+					if annotationsMap, ok := annotationsField.(map[string]any); ok {
 						annotations = make(map[string]string)
 						for k, v := range annotationsMap {
 							if strVal, ok := v.(string); ok {

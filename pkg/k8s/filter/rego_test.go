@@ -1,7 +1,6 @@
 package filter
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -50,12 +49,12 @@ func TestNewRegoFilter(t *testing.T) {
 				createTestPolicy(t, tt.opts.K8sFilterPolicy)
 			}
 
-			filter, err := NewRegoFilter(context.Background(), tt.opts)
+			filter, err := NewRegoFilter(t.Context(), tt.opts)
 
 			if tt.wantErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 
 			if tt.wantNil {
@@ -89,7 +88,7 @@ ignore {
 				Kind:      "Deployment",
 				Namespace: "default",
 				Name:      "test-app",
-				Spec: map[string]interface{}{
+				Spec: map[string]any{
 					"replicas": 0,
 				},
 			},
@@ -110,7 +109,7 @@ ignore {
 				Kind:      "Deployment",
 				Namespace: "default",
 				Name:      "test-app",
-				Spec: map[string]interface{}{
+				Spec: map[string]any{
 					"replicas": 3,
 				},
 			},
@@ -160,7 +159,7 @@ ignore {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Create temporary policy file
-			tmpFile, err := os.CreateTemp("", "test-policy-*.rego")
+			tmpFile, err := os.CreateTemp(t.TempDir(), "test-policy-*.rego")
 			require.NoError(t, err)
 			defer os.Remove(tmpFile.Name())
 
@@ -172,16 +171,16 @@ ignore {
 				K8sFilterPolicy: tmpFile.Name(),
 			}
 
-			filter, err := NewRegoFilter(context.Background(), opts)
+			filter, err := NewRegoFilter(t.Context(), opts)
 			require.NoError(t, err)
 			require.NotNil(t, filter)
 
-			ignore, err := filter.ShouldIgnore(context.Background(), tt.artifact)
+			ignore, err := filter.ShouldIgnore(t.Context(), tt.artifact)
 
 			if tt.wantErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, tt.wantIgnore, ignore)
 			}
 		})
@@ -196,8 +195,8 @@ func TestRegoFilter_ShouldIgnore_NilFilter(t *testing.T) {
 		Name:      "test-pod",
 	}
 
-	ignore, err := filter.ShouldIgnore(context.Background(), artifact)
-	assert.NoError(t, err)
+	ignore, err := filter.ShouldIgnore(t.Context(), artifact)
+	require.NoError(t, err)
 	assert.False(t, ignore)
 }
 
@@ -209,7 +208,7 @@ func TestConvertToK8sArtifact(t *testing.T) {
 		resourceName string
 		labels       map[string]string
 		annotations  map[string]string
-		spec         interface{}
+		spec         any
 		want         K8sArtifact
 	}{
 		{
@@ -224,8 +223,8 @@ func TestConvertToK8sArtifact(t *testing.T) {
 				Kind:        "Pod",
 				Namespace:   "default",
 				Name:        "test-pod",
-				Labels:      map[string]string{},
-				Annotations: map[string]string{},
+				Labels:      make(map[string]string),
+				Annotations: make(map[string]string),
 				Spec:        nil,
 			},
 		},
@@ -236,14 +235,14 @@ func TestConvertToK8sArtifact(t *testing.T) {
 			resourceName: "app-deployment",
 			labels:       map[string]string{"app": "web", "version": "v1"},
 			annotations:  map[string]string{"deployment.kubernetes.io/revision": "1"},
-			spec:         map[string]interface{}{"replicas": 3},
+			spec:         map[string]any{"replicas": 3},
 			want: K8sArtifact{
 				Kind:        "Deployment",
 				Namespace:   "production",
 				Name:        "app-deployment",
 				Labels:      map[string]string{"app": "web", "version": "v1"},
 				Annotations: map[string]string{"deployment.kubernetes.io/revision": "1"},
-				Spec:        map[string]interface{}{"replicas": 3},
+				Spec:        map[string]any{"replicas": 3},
 			},
 		},
 	}
@@ -260,7 +259,7 @@ func TestConvertToK8sArtifact(t *testing.T) {
 func createTestPolicy(t *testing.T, policyPath string) {
 	t.Helper()
 
-	err := os.MkdirAll(filepath.Dir(policyPath), 0755)
+	err := os.MkdirAll(filepath.Dir(policyPath), 0o755)
 	require.NoError(t, err)
 
 	policy := `
@@ -271,7 +270,7 @@ ignore {
 	input.spec.replicas == 0
 }
 `
-	err = os.WriteFile(policyPath, []byte(policy), 0644)
+	err = os.WriteFile(policyPath, []byte(policy), 0o644)
 	require.NoError(t, err)
 
 	t.Cleanup(func() {
