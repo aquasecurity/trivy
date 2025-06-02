@@ -315,6 +315,33 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path with application with file and type from purl",
+			inputFile: "testdata/happy/app-with-file-and-type-from-purl.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type:     ftypes.Bitnami,
+						FilePath: "opt/bitnami/harbor-exporter/bin/harbor_exporter",
+						Packages: ftypes.Packages{
+							{
+								ID:      "github.com/CloudNativeAI/model-spec@v0.0.3",
+								Name:    "github.com/CloudNativeAI/model-spec",
+								Version: "v0.0.3",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "github.com/cloudnativeai",
+										Name:      "model-spec",
+										Version:   "v0.0.3",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "happy path with file as parent of relationship",
 			inputFile: "testdata/happy/with-file-as-relationship-parent.json",
 			want:      types.SBOM{},

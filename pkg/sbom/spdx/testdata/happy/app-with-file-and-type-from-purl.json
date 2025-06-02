@@ -1,0 +1,91 @@
+{
+    "SPDXID": "SPDXRef-DOCUMENT",
+    "spdxVersion": "SPDX-2.3",
+    "creationInfo": {
+        "created": "2025-05-06T20:07:04Z",
+        "creators": [
+            "Organization: Broadcom Inc. and/or its subsidiaries."
+        ]
+    },
+    "name": "SPDX document for Harbor 2.13.0",
+    "dataLicense": "CC0-1.0",
+    "documentDescribes": [
+        "SPDXRef-Application-harbor-exporter"
+    ],
+    "documentNamespace": "pkg:bitnami/harbor-exporter@2.13.0-3?arch=arm64&distro=debian-12",
+    "packages": [
+        {
+            "SPDXID": "SPDXRef-Application-harbor-exporter",
+            "name": "harbor-exporter",
+            "versionInfo": "2.13.0-3",
+            "downloadLocation": "git+https://github.com/goharbor/harbor#refs/tags/v2.13.0",
+            "licenseConcluded": "Apache-2.0",
+            "licenseDeclared": "Apache-2.0",
+            "filesAnalyzed": false,
+            "externalRefs": [
+                {
+                    "referenceCategory": "SECURITY",
+                    "referenceType": "cpe23Type",
+                    "referenceLocator": "cpe:2.3:*:harbor-exporter:harbor-exporter:2.13.0:*:*:*:*:*:*:*"
+                },
+                {
+                    "referenceCategory": "PACKAGE-MANAGER",
+                    "referenceType": "purl",
+                    "referenceLocator": "pkg:bitnami/harbor-exporter@2.13.0-3?arch=arm64&distro=debian-12"
+                }
+            ],
+            "copyrightText": "NOASSERTION"
+        },
+        {
+            "name": "github.com/CloudNativeAI/model-spec",
+            "SPDXID": "SPDXRef-Package-768cb671cc7ce0ba",
+            "versionInfo": "v0.0.3",
+            "supplier": "NOASSERTION",
+            "downloadLocation": "NONE",
+            "filesAnalyzed": false,
+            "sourceInfo": "opt/bitnami/harbor-exporter/bin/harbor_exporter",
+            "licenseConcluded": "NOASSERTION",
+            "licenseDeclared": "NOASSERTION",
+            "externalRefs": [
+                {
+                    "referenceCategory": "PACKAGE-MANAGER",
+                    "referenceType": "purl",
+                    "referenceLocator": "pkg:golang/github.com/cloudnativeai/model-spec@v0.0.3"
+                }
+            ],
+            "primaryPackagePurpose": "LIBRARY",
+            "copyrightText": "NOASSERTION"
+        }
+    ],
+    "files": [
+        {
+            "fileName": "opt/bitnami/harbor-exporter/bin/harbor_exporter",
+            "SPDXID": "SPDXRef-File-7b0411c48a1a7bf5",
+            "checksums": [
+              {
+                "algorithm": "SHA1",
+                "checksumValue": "fd545010529c738b4fe0caff1922b99a0ab5f2e5"
+              }
+            ],
+            "copyrightText": ""
+          }
+    ],
+    "hasExtractedLicensingInfos": [],
+    "relationships": [
+        {
+            "spdxElementId": "SPDXRef-DOCUMENT",
+            "relationshipType": "CONTAINS",
+            "relatedSpdxElement": "SPDXRef-Application-harbor-exporter"
+        },
+        {
+            "spdxElementId": "SPDXRef-Application-harbor-exporter",
+            "relatedSpdxElement": "SPDXRef-File-7b0411c48a1a7bf5",
+            "relationshipType": "CONTAINS"
+        },
+        {
+            "spdxElementId": "SPDXRef-Application-harbor-exporter",
+            "relatedSpdxElement": "SPDXRef-Package-768cb671cc7ce0ba",
+            "relationshipType": "DEPENDS_ON"
+        }
+    ]
+}
