@@ -223,12 +223,14 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				},
 				Applications: []ftypes.Application{
 					{
-						Type: ftypes.GoBinary,
+						Type:     ftypes.GoBinary,
+						FilePath: "docker",
 						Packages: ftypes.Packages{
 							{
-								ID:      "docker@v24.0.4",
-								Name:    "docker",
-								Version: "24.0.4",
+								ID:           "docker@v24.0.4",
+								Name:         "docker",
+								Version:      "24.0.4",
+								Relationship: ftypes.RelationshipRoot,
 								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGolang,
@@ -244,71 +246,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						Type: ftypes.K8sUpstream,
 						Packages: ftypes.Packages{
 							{
-								ID:      "k8s.io/apiserver@1.27.4",
-								Name:    "k8s.io/apiserver",
-								Version: "1.27.4",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    purl.TypeK8s,
-										Name:    "k8s.io/apiserver",
-										Version: "1.27.4",
-									},
-									BOMRef: "pkg:k8s/k8s.io%2Fapiserver@1.27.4",
-								},
-							},
-							{
-								ID:      "k8s.io/controller-manager@1.27.4",
-								Name:    "k8s.io/controller-manager",
-								Version: "1.27.4",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    purl.TypeK8s,
-										Name:    "k8s.io/controller-manager",
-										Version: "1.27.4",
-									},
-									BOMRef: "pkg:k8s/k8s.io%2Fcontroller-manager@1.27.4",
-								},
-							},
-							{
-								ID:      "k8s.io/kube-proxy@1.27.4",
-								Name:    "k8s.io/kube-proxy",
-								Version: "1.27.4",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    purl.TypeK8s,
-										Name:    "k8s.io/kube-proxy",
-										Version: "1.27.4",
-									},
-									BOMRef: "pkg:k8s/k8s.io%2Fkube-proxy@1.27.4",
-								},
-							},
-							{
-								ID:      "k8s.io/kube-scheduler@1.27.4",
-								Name:    "k8s.io/kube-scheduler",
-								Version: "1.27.4",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    purl.TypeK8s,
-										Name:    "k8s.io/kube-scheduler",
-										Version: "1.27.4",
-									},
-									BOMRef: "pkg:k8s/k8s.io%2Fkube-scheduler@1.27.4",
-								},
-							},
-							{
-								ID:      "k8s.io/kubelet@1.27.4",
-								Name:    "k8s.io/kubelet",
-								Version: "1.27.4",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    purl.TypeK8s,
-										Name:    "k8s.io/kubelet",
-										Version: "1.27.4",
-									},
-									BOMRef: "pkg:k8s/k8s.io%2Fkubelet@1.27.4",
-								},
-							},
-							{
 								ID:      "k8s.io/kubernetes@1.27.4",
 								Name:    "k8s.io/kubernetes",
 								Version: "1.27.4",
@@ -320,11 +257,105 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 									},
 									BOMRef: "pkg:k8s/k8s.io%2Fkubernetes@1.27.4",
 								},
-								DependsOn: []string{
-									"k8s.io/apiserver@1.27.4",
-									"k8s.io/controller-manager@1.27.4",
-									"k8s.io/kube-proxy@1.27.4",
-									"k8s.io/kube-scheduler@1.27.4",
+							},
+						},
+					},
+					{
+						Type:     ftypes.K8sUpstream,
+						FilePath: "k8s.io/apiserver",
+						Packages: ftypes.Packages{
+							{
+								ID:           "k8s.io/apiserver@1.27.4",
+								Name:         "k8s.io/apiserver",
+								Version:      "1.27.4",
+								Relationship: ftypes.RelationshipRoot,
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    purl.TypeK8s,
+										Name:    "k8s.io/apiserver",
+										Version: "1.27.4",
+									},
+									BOMRef: "pkg:k8s/k8s.io%2Fapiserver@1.27.4",
+								},
+							},
+						},
+					},
+					{
+						Type:     ftypes.K8sUpstream,
+						FilePath: "k8s.io/controller-manager",
+						Packages: ftypes.Packages{
+							{
+								ID:           "k8s.io/controller-manager@1.27.4",
+								Name:         "k8s.io/controller-manager",
+								Version:      "1.27.4",
+								Relationship: ftypes.RelationshipRoot,
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    purl.TypeK8s,
+										Name:    "k8s.io/controller-manager",
+										Version: "1.27.4",
+									},
+									BOMRef: "pkg:k8s/k8s.io%2Fcontroller-manager@1.27.4",
+								},
+							},
+						},
+					},
+					{
+						Type:     ftypes.K8sUpstream,
+						FilePath: "k8s.io/kube-proxy",
+						Packages: ftypes.Packages{
+							{
+								ID:           "k8s.io/kube-proxy@1.27.4",
+								Name:         "k8s.io/kube-proxy",
+								Version:      "1.27.4",
+								Relationship: ftypes.RelationshipRoot,
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    purl.TypeK8s,
+										Name:    "k8s.io/kube-proxy",
+										Version: "1.27.4",
+									},
+									BOMRef: "pkg:k8s/k8s.io%2Fkube-proxy@1.27.4",
+								},
+							},
+						},
+					},
+					{
+						Type:     ftypes.K8sUpstream,
+						FilePath: "k8s.io/kube-scheduler",
+						Packages: ftypes.Packages{
+							{
+								ID:           "k8s.io/kube-scheduler@1.27.4",
+								Name:         "k8s.io/kube-scheduler",
+								Version:      "1.27.4",
+								Relationship: ftypes.RelationshipRoot,
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    purl.TypeK8s,
+										Name:    "k8s.io/kube-scheduler",
+										Version: "1.27.4",
+									},
+									BOMRef: "pkg:k8s/k8s.io%2Fkube-scheduler@1.27.4",
+								},
+							},
+						},
+					},
+					{
+						Type:     ftypes.K8sUpstream,
+						FilePath: "k8s.io/kubelet",
+						Packages: ftypes.Packages{
+							{
+								ID:           "k8s.io/kubelet@1.27.4",
+								Name:         "k8s.io/kubelet",
+								Version:      "1.27.4",
+								Relationship: ftypes.RelationshipRoot,
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    purl.TypeK8s,
+										Name:    "k8s.io/kubelet",
+										Version: "1.27.4",
+									},
+									BOMRef: "pkg:k8s/k8s.io%2Fkubelet@1.27.4",
 								},
 							},
 						},

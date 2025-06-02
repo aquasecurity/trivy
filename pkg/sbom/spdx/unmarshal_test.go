@@ -324,6 +324,34 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						FilePath: "opt/bitnami/harbor-exporter/bin/harbor_exporter",
 						Packages: ftypes.Packages{
 							{
+								ID:           "harbor-exporter@2.13.0-3",
+								Name:         "harbor-exporter",
+								Version:      "2.13.0-3",
+								Relationship: ftypes.RelationshipRoot,
+								FilePath:     "opt/bitnami/harbor-exporter/bin/harbor_exporter",
+								Arch:         "arm64",
+								Licenses: []string{
+									"Apache-2.0",
+								},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeBitnami,
+										Name:    "harbor-exporter",
+										Version: "2.13.0-3",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "arm64",
+											},
+											{
+												Key:   "distro",
+												Value: "debian-12",
+											},
+										},
+									},
+								},
+							},
+							{
 								ID:      "github.com/CloudNativeAI/model-spec@v0.0.3",
 								Name:    "github.com/CloudNativeAI/model-spec",
 								Version: "v0.0.3",

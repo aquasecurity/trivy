@@ -186,9 +186,6 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Version:   "v0.20.2",
 									},
 								},
-								Licenses: []string{
-									"NOASSERTION",
-								},
 							},
 						},
 					},
