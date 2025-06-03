@@ -2159,6 +2159,17 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#expiration-date" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expiration Date
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#ignoring-by-attributes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8020,6 +8031,17 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#expiration-date" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expiration Date
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#ignoring-by-attributes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8106,7 +8128,7 @@ This can be repeated for specifying multiple directories.</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>examples/misconf/custom-data
 trivy<span class="w"> </span>config<span class="w"> </span>--config-check<span class="w"> </span>./my-check<span class="w"> </span>--data<span class="w"> </span>./data<span class="w"> </span>--namespaces<span class="w"> </span>user<span class="w"> </span>./configs
 </code></pre></div>
-<p>For more details, see <a href="./custom/data.md">Custom Data</a>.</p>
+<p>For more details, see <a href="../../custom/data/">Custom Data</a>.</p>
 <h3 id="passing-namespaces">Passing namespaces<a class="headerlink" href="#passing-namespaces" title="Permanent link">&para;</a></h3>
 <p>By default, Trivy evaluates checks defined in <code>builtin.*</code>.
 If you want to evaluate custom checks in other packages, you have to specify package prefixes through <code>--namespaces</code> option.
@@ -8167,8 +8189,8 @@ For example, you can set a token for the domain name café.fr as TF_TOKEN_xn--ca
 </code></pre></div></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-</div>
 <p>Ignore rules for Helm files should be placed before the YAML object, since only it contains the location data needed for ignoring.</p>
+</div>
 <p>Example for Helm:
 <div class="highlight"><pre><span></span><code><span class="w">      </span><span class="nt">serviceAccountName</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;testchart.serviceAccountName&quot;</span>
 <span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
@@ -8179,16 +8201,13 @@ For example, you can set a token for the domain name café.fr as TF_TOKEN_xn--ca
 <span class="w">            </span><span class="nt">runAsGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3000</span>
 <span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your-repository/your-image:your-tag&quot;</span>
 <span class="w">          </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Always&quot;</span>
-
-
-<span class="c1">#### Expiration Date</span>
-
-<span class="nt">You can specify the expiration date of the ignore rule in `yyyy-mm-dd` format. This is a useful feature when you want to make sure that an ignored issue is not forgotten and worth revisiting in the future. For example</span><span class="p">:</span>
-<span class="err">```</span><span class="l l-Scalar l-Scalar-Plain">tf</span>
-<span class="c1">#trivy:ignore:aws-s3-enable-logging:exp:2024-03-10</span>
-<span class="l l-Scalar l-Scalar-Plain">resource &quot;aws_s3_bucket&quot; &quot;example&quot; {</span>
-<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">bucket = &quot;test&quot;</span>
-<span class="err">}</span>
+</code></pre></div></p>
+<h4 id="expiration-date">Expiration Date<a class="headerlink" href="#expiration-date" title="Permanent link">&para;</a></h4>
+<p>You can specify the expiration date of the ignore rule in <code>yyyy-mm-dd</code> format. This is a useful feature when you want to make sure that an ignored issue is not forgotten and worth revisiting in the future. For example:
+<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:aws-s3-enable-logging:exp:2024-03-10</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_s3_bucket&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">bucket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test&quot;</span>
+<span class="p">}</span>
 </code></pre></div></p>
 <p>The <code>aws-s3-enable-logging</code> check will be ignored until <code>2024-03-10</code> until the ignore rule expires.</p>
 <h4 id="ignoring-by-attributes">Ignoring by attributes<a class="headerlink" href="#ignoring-by-attributes" title="Permanent link">&para;</a></h4>

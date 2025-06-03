@@ -8116,7 +8116,6 @@ deny {
 <p>By default, scanning JSON and YAML configurations is disabled, since Trivy does not contain built-in checks for these configurations. To enable it, pass the <code>json</code> or <code>yaml</code> to <code>--misconfig-scanners</code>. Trivy will pass each file as is to the checks input.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-</div>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>cat<span class="w"> </span>iac/serverless.yaml
 service:<span class="w"> </span>serverless-rest-api-with-pynamodb
 
@@ -8155,26 +8154,27 @@ LOW:<span class="w"> </span>Service<span class="w"> </span>name<span class="w"> 
 ═════════════════════════════════════════════════════════════════════════════════════════════════════════
 Ensure<span class="w"> </span>that<span class="w"> </span>Serverless<span class="w"> </span>Framework<span class="w"> </span>service<span class="w"> </span>names<span class="w"> </span>start<span class="w"> </span>with<span class="w"> </span><span class="s2">&quot;aws-&quot;</span>
 </code></pre></div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-</div>
 <p>In the case above, the custom check specified has a metadata annotation for the input schema <code>input: schema["serverless-schema"]</code>. This allows Trivy to type check the input IaC files provided.</p>
+</div>
 <p>Optionally, you can also pass schemas using the <code>config-file-schemas</code> flag. Trivy will use these schemas for file filtering and type checking in Rego checks.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-</div>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>config<span class="w"> </span>--misconfig-scanners<span class="o">=</span>json,yaml<span class="w"> </span>--config-check<span class="w"> </span>./serverless.rego<span class="w"> </span>--check-namespaces<span class="w"> </span>user<span class="w"> </span>--config-file-schemas<span class="w"> </span>./serverless-schema.json<span class="w"> </span>./iac
 </code></pre></div>
+</div>
 <p>If the <code>--config-file-schemas</code> flag is specified Trivy ensures that each input IaC config file being scanned is type-checked against the schema. If the input file does not match any of the passed schemas, it will be ignored.</p>
-<p>If the schema is specified in the check metadata and is in the directory specified in the <code>--config-check</code> argument, it will be automatically loaded as specified <a href="./custom/schema.md#custom-checks-with-custom-schemas">here</a>, and will only be used for type checking in Rego.</p>
+<p>If the schema is specified in the check metadata and is in the directory specified in the <code>--config-check</code> argument, it will be automatically loaded as specified <a href="./#custom-checks-with-custom-schemas">here</a>, and will only be used for type checking in Rego.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-</div>
 <p>If a user specifies the <code>--config-file-schemas</code> flag, all input IaC config files are ensured that they pass type-checking. It is not required to pass an input schema in case type checking is not required. This is helpful for scenarios where you simply want to write a Rego check and pass in IaC input for it. Such a use case could include scanning for a new service which Trivy might not support just yet.</p>
+</div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-</div>
 <p>It is also possible to specify multiple input schemas with <code>--config-file-schema</code> flag as it can accept a comma seperated list of file paths or a directory as input. In the case of multiple schemas being specified, all of them will be evaluated against all the input files.</p>
+</div>
 
 
 
