@@ -747,7 +747,6 @@ func TestReportWriter_Sarif(t *testing.T) {
 	}
 }
 
-
 func TestToPathUri(t *testing.T) {
 	tests := []struct {
 		input       string

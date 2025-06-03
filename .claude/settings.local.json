@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "Bash(find:*)",
+      "Bash(rg:*)",
+      "Bash(grep:*)",
+      "Bash(mkdir:*)",
+      "Bash(go test:*)",
+      "Bash(go mod:*)",
+      "Bash(go clean:*)",
+      "Bash(go list:*)",
+      "Bash(go build:*)",
+      "Bash(go fmt:*)",
+      "Bash(git add:*)",
+      "Bash(git checkout:*)",
+      "Bash(git push:*)",
+      "Bash(git remote add:*)",
+      "Bash(go doc:*)"
+    ],
+    "deny": []
+  }
+}

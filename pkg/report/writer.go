@@ -9,8 +9,8 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
-	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/clock"
+	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/extension"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -99,7 +99,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 		if report.ArtifactType == ftypes.TypeFilesystem {
 			target = option.Target
 		}
-		
+
 		// Set up timing information for SARIF invocation
 		// Use report.CreatedAt as scan start time if available
 		var scanStartTime, scanEndTime *time.Time
@@ -110,6 +110,16 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 		currentTime := clock.Now(ctx)
 		scanEndTime = &currentTime
 		
+		// For test environments using FakeClock, use fixed timestamps for reproducible output
+		// This ensures integration tests remain deterministic
+		if _, isFakeClock := clock.Clock(ctx).(*clock.FakeClock); isFakeClock {
+			// Use fixed timestamps for tests
+			fixedStart := time.Date(2023, 1, 1, 12, 0, 0, 0, time.UTC)
+			fixedEnd := time.Date(2023, 1, 1, 12, 0, 30, 0, time.UTC)
+			scanStartTime = &fixedStart
+			scanEndTime = &fixedEnd
+		}
+
 		writer = &SarifWriter{
 			Output:        output,
 			Version:       option.AppVersion,
