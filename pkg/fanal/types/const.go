@@ -23,6 +23,7 @@ const (
 const (
 	Alma               OSType = "alma"
 	Alpine             OSType = "alpine"
+	ALT                OSType = "alt"
 	Amazon             OSType = "amazon"
 	Azure              OSType = "azurelinux"
 	Bottlerocket       OSType = "bottlerocket"
@@ -109,6 +110,7 @@ var (
 	OSTypes = []OSType{
 		Alma,
 		Alpine,
+		ALT,
 		Amazon,
 		Azure,
 		CBLMariner,
