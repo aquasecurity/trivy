@@ -31,5 +31,5 @@ To correctly detection licenses, ensure that the cache directory contains all de
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 
 [^1]: The local cache should contain the dependencies used. See [licenses](#licenses).
-[^2]: `conan.lock` is default name. To scan a custom filename use [file-patterns](../../configuration/skipping.md#file-patterns).
+[^2]: `conan.lock` is default name. To scan a custom filename use [file-patterns](../../configuration/skipping.md#customizing-file-handling).
 [^3]: For `conan.lock` in version 2, indirect dependencies are included in analysis but not flagged explicitly in dependency tree
