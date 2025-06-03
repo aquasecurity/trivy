@@ -9,7 +9,6 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/clock"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/extension"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -101,24 +100,10 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 		}
 
 		// Set up timing information for SARIF invocation
-		// Use report.CreatedAt as scan start time if available
 		var scanStartTime, scanEndTime *time.Time
-		if !report.CreatedAt.IsZero() {
-			scanStartTime = &report.CreatedAt
-		}
-		// Use current time as scan end time
-		currentTime := clock.Now(ctx)
-		scanEndTime = &currentTime
 		
-		// For test environments using FakeClock, use fixed timestamps for reproducible output
-		// This ensures integration tests remain deterministic
-		if _, isFakeClock := clock.Clock(ctx).(*clock.FakeClock); isFakeClock {
-			// Use fixed timestamps for tests
-			fixedStart := time.Date(2023, 1, 1, 12, 0, 0, 0, time.UTC)
-			fixedEnd := time.Date(2023, 1, 1, 12, 0, 30, 0, time.UTC)
-			scanStartTime = &fixedStart
-			scanEndTime = &fixedEnd
-		}
+		// Use real timing in production, fixed timing in integration tests
+		scanStartTime, scanEndTime = getSarifTiming(ctx, report)
 
 		writer = &SarifWriter{
 			Output:        output,
