@@ -116,7 +116,8 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 				}
 			}
 		}
-		// Remove Buildah-specific suffix
+		// Remove Buildah-specific suffix (currently only `|inherit Labels=false`)
+		// cf. https://github.com/containers/buildah/blob/5a02e74b5d0f01e4d68ea0dcdbf5f5f444baa68f/imagebuildah/stage_executor.go#L1885
 		createdBy = strings.TrimSuffix(createdBy, "|inheritLabels=false")
 		dockerfile.WriteString(strings.TrimSpace(createdBy) + "\n")
 	}
