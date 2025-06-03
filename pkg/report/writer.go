@@ -101,7 +101,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 
 		// Set up timing information for SARIF invocation
 		var scanStartTime, scanEndTime *time.Time
-		
+
 		// Use real timing in production, fixed timing in integration tests
 		scanStartTime, scanEndTime = getSarifTiming(ctx, report)
 

@@ -18,7 +18,7 @@ func getSarifTiming(ctx context.Context, report types.Report) (*time.Time, *time
 	if !report.CreatedAt.IsZero() {
 		scanStartTime = &report.CreatedAt
 	}
-	
+
 	// Use current time as scan end time
 	currentTime := clock.Now(ctx)
 	scanEndTime = &currentTime
