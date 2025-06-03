@@ -88,7 +88,7 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop)"):
 			// Instruction other than RUN
 			createdBy = strings.TrimPrefix(h.CreatedBy, "/bin/sh -c #(nop)")
-			if strings.HasPrefix(createdBy, " COPY") {
+			if strings.HasPrefix(createdBy, " COPY") || strings.HasPrefix(createdBy, " ADD") {
 				createdBy = normalizeCopyCreatedBy(createdBy)
 			}
 		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c"):
