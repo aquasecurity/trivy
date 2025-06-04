@@ -5,7 +5,7 @@
         - key: CVE-2019-9243
           value:
             FixedVersion: ""
-- bucket: ubuntu 20.04
+- bucket: ubuntu 22.04
   pairs:
     - bucket: wpa
       pairs:

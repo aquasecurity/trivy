@@ -37,7 +37,7 @@ func TestScanner_Detect(t *testing.T) {
 				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
-				osVer: "20.04",
+				osVer: "22.04",
 				pkgs: []ftypes.Package{
 					{
 						Name:       "wpa",
@@ -82,13 +82,13 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name: "ubuntu 20.04-ESM. 20.04 is not outdated",
+			name: "ubuntu 22.04-ESM. 22.04 is not outdated",
 			fixtures: []string{
 				"testdata/fixtures/ubuntu.yaml",
 				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
-				osVer: "20.04-ESM",
+				osVer: "22.04-ESM",
 				pkgs: []ftypes.Package{
 					{
 						Name:       "wpa",
