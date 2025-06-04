@@ -111,6 +111,18 @@ References:
 - <https://gitlab.archlinux.org/archlinux/packaging/packages/trivy/-/blob/main/PKGBUILD>
 
 
+## OpenSUSE (Community)
+
+OpenSUSE Package Repository.
+
+```bash
+sudo zypper install trivy
+```
+
+References: 
+- <https://software.opensuse.org/package/trivy>
+
+
 ## MacPorts (Community)
 
 [MacPorts](https://www.macports.org) for macOS.
