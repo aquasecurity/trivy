@@ -73,7 +73,7 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 					},
 					History: []v1.History{
 						{
-							CreatedBy:  "/bin/sh -c #(nop) ADD file:e4d600fc4c9c293efe360be7b30ee96579925d1b4634c94332e2ec73f7d8eca1 /",
+							CreatedBy:  "/bin/sh -c #(nop) ADD foo.txt /",
 							EmptyLayer: false,
 						},
 						{
@@ -99,7 +99,7 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 						types.MisconfResult{
 							Namespace: "builtin.dockerfile.DS005",
 							Query:     "data.builtin.dockerfile.DS005.deny",
-							Message:   "Consider using 'COPY file:e4d600fc4c9c293efe360be7b30ee96579925d1b4634c94332e2ec73f7d8eca1 /' command instead of 'ADD file:e4d600fc4c9c293efe360be7b30ee96579925d1b4634c94332e2ec73f7d8eca1 /'",
+							Message:   "Consider using 'COPY foo.txt /' command instead of 'ADD foo.txt /'",
 							PolicyMetadata: types.PolicyMetadata{
 								ID:                 "DS005",
 								AVDID:              "AVD-DS-0005",
@@ -119,10 +119,10 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 									Lines: []types.Line{
 										{
 											Number:      1,
-											Content:     "ADD file:e4d600fc4c9c293efe360be7b30ee96579925d1b4634c94332e2ec73f7d8eca1 /",
+											Content:     "ADD foo.txt /",
 											IsCause:     true,
 											Truncated:   false,
-											Highlighted: "\x1b[38;5;64mADD\x1b[0m file:e4d600fc4c9c293efe360be7b30ee96579925d1b4634c94332e2ec73f7d8eca1 /",
+											Highlighted: "\x1b[38;5;64mADD\x1b[0m foo.txt /",
 											FirstCause:  true,
 											LastCause:   true,
 										},
