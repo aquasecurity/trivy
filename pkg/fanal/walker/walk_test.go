@@ -60,6 +60,14 @@ func TestSkipFile(t *testing.T) {
 				"/etc/foo/bar": false,
 			},
 		},
+		{
+			name:      "git config",
+			skipFiles: []string{},
+			wants: map[string]bool{
+				".git/config":           false,
+				".git/submodule/config": false,
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -82,15 +90,15 @@ func TestSkipDir(t *testing.T) {
 		{
 			name: "default skip dirs",
 			skipDirs: []string{
-				"**/.git",
+				"**/.git/objects",
 				"proc",
 				"sys",
 				"dev",
 			},
 			wants: map[string]bool{
-				".git":    true,
-				"proc":    true,
-				"foo.bar": false,
+				".git/objects": true,
+				"proc":         true,
+				"foo.bar":      false,
 			},
 		},
 		{

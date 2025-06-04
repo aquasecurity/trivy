@@ -96,6 +96,8 @@ func SkipPath(path string, skipPaths []string) bool {
 	// Do NOT skip .git/config
 	if match, err := doublestar.Match("**/.git/**/config", path); err != nil && match {
 		return false
+	} else if match, err := doublestar.Match("**/.git/**", path); err != nil && match {
+		return true
 	}
 
 	// skip files
