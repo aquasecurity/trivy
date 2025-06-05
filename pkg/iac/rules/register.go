@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"slices"
 	"sync"
 
 	"gopkg.in/yaml.v3"
@@ -61,7 +62,7 @@ func (r *registry) deregister(rule ruleTypes.RegisteredRule) {
 	for fw := range r.frameworks {
 		for i, registered := range r.frameworks[fw] {
 			if registered.Number == rule.Number {
-				r.frameworks[fw] = append(r.frameworks[fw][:i], r.frameworks[fw][i+1:]...)
+				r.frameworks[fw] = slices.Delete(r.frameworks[fw], i, i+1)
 				break
 			}
 		}

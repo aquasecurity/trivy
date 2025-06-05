@@ -82,7 +82,7 @@ func (p *pom) projectProperties() map[string]string {
 
 func (p *pom) listProperties(val reflect.Value) map[string]string {
 	props := make(map[string]string)
-	for i := 0; i < val.NumField(); i++ {
+	for i := range val.NumField() {
 		f := val.Type().Field(i)
 
 		tag, ok := f.Tag.Lookup("xml")

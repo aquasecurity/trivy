@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"html"
 	"io"
+	"maps"
 	"os"
 	"strings"
 	"text/template"
@@ -60,9 +61,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate, appVersion string) (*Te
 	}
 
 	// Overwrite functions
-	for k, v := range CustomTemplateFuncMap {
-		templateFuncMap[k] = v
-	}
+	maps.Copy(templateFuncMap, CustomTemplateFuncMap)
 
 	tmpl, err := template.New("output template").Funcs(templateFuncMap).Parse(outputTemplate)
 	if err != nil {

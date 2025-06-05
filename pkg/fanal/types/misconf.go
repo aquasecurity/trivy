@@ -13,15 +13,15 @@ type Misconfiguration struct {
 	Successes MisconfResults `json:",omitempty"`
 	Warnings  MisconfResults `json:",omitempty"`
 	Failures  MisconfResults `json:",omitempty"`
-	Layer     Layer          `json:",omitempty"`
+	Layer     Layer
 }
 
 type MisconfResult struct {
-	Namespace      string `json:",omitempty"`
-	Query          string `json:",omitempty"`
-	Message        string `json:",omitempty"`
-	PolicyMetadata `json:",omitempty"`
-	CauseMetadata  `json:",omitempty"`
+	Namespace string `json:",omitempty"`
+	Query     string `json:",omitempty"`
+	Message   string `json:",omitempty"`
+	PolicyMetadata
+	CauseMetadata
 
 	// For debugging
 	Traces []string `json:",omitempty"`
@@ -30,14 +30,14 @@ type MisconfResult struct {
 type MisconfResults []MisconfResult
 
 type CauseMetadata struct {
-	Resource      string        `json:",omitempty"`
-	Provider      string        `json:",omitempty"`
-	Service       string        `json:",omitempty"`
-	StartLine     int           `json:",omitempty"`
-	EndLine       int           `json:",omitempty"`
-	Code          Code          `json:",omitempty"`
-	Occurrences   []Occurrence  `json:",omitempty"`
-	RenderedCause RenderedCause `json:",omitempty"`
+	Resource      string `json:",omitempty"`
+	Provider      string `json:",omitempty"`
+	Service       string `json:",omitempty"`
+	StartLine     int    `json:",omitempty"`
+	EndLine       int    `json:",omitempty"`
+	Code          Code
+	Occurrences   []Occurrence `json:",omitempty"`
+	RenderedCause RenderedCause
 }
 
 type Occurrence struct {

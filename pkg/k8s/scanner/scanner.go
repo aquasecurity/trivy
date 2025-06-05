@@ -581,8 +581,8 @@ func osNameVersion(name string) (string, string) {
 	var buffer bytes.Buffer
 	var v string
 	var err error
-	parts := strings.Split(name, " ")
-	for _, p := range parts {
+	parts := strings.SplitSeq(name, " ")
+	for p := range parts {
 		_, err = version.Parse(p)
 		if err != nil {
 			buffer.WriteString(p + " ")

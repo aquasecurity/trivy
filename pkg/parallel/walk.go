@@ -58,7 +58,7 @@ func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, parallel int,
 
 	// Start a fixed number of goroutines to read and digest files.
 	c := make(chan T)
-	for i := 0; i < parallel; i++ {
+	for range parallel {
 		g.Go(func() error {
 			for path := range paths {
 				if err := walk(ctx, fsys, path, c, onFile); err != nil {

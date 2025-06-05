@@ -85,7 +85,7 @@ func (n *node) decodeObjectToStruct(v reflect.Value) error {
 	}
 
 	t := v.Type()
-	for i := 0; i < t.NumField(); i++ {
+	for i := range t.NumField() {
 		fv := t.Field(i)
 		tags := strings.Split(fv.Tag.Get("json"), ",")
 		var tagName string
