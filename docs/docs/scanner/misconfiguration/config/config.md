@@ -35,7 +35,7 @@ cd examples/misconf/custom-data
 trivy config --config-check ./my-check --data ./data --namespaces user ./configs
 ```
 
-For more details, see [Custom Data](./custom/data.md).
+For more details, see [Custom Data](../custom/data.md).
 
 ### Passing namespaces
 By default, Trivy evaluates checks defined in `builtin.*`.
@@ -120,7 +120,7 @@ Resources:
 ```
 
 !!!note
-Ignore rules for Helm files should be placed before the YAML object, since only it contains the location data needed for ignoring.
+    Ignore rules for Helm files should be placed before the YAML object, since only it contains the location data needed for ignoring.
 
 Example for Helm:
 ```yaml
@@ -133,7 +133,7 @@ Example for Helm:
             runAsGroup: 3000
           image: "your-repository/your-image:your-tag"
           imagePullPolicy: "Always"
-
+```
           
 #### Expiration Date
 

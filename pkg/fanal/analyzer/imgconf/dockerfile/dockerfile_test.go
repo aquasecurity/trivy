@@ -73,7 +73,7 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 					},
 					History: []v1.History{
 						{
-							CreatedBy:  "/bin/sh -c #(nop) ADD file:e4d600fc4c9c293efe360be7b30ee96579925d1b4634c94332e2ec73f7d8eca1 /",
+							CreatedBy:  "/bin/sh -c #(nop) ADD foo.txt /",
 							EmptyLayer: false,
 						},
 						{
@@ -99,7 +99,7 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 						types.MisconfResult{
 							Namespace: "builtin.dockerfile.DS005",
 							Query:     "data.builtin.dockerfile.DS005.deny",
-							Message:   "Consider using 'COPY file:e4d600fc4c9c293efe360be7b30ee96579925d1b4634c94332e2ec73f7d8eca1 /' command instead of 'ADD file:e4d600fc4c9c293efe360be7b30ee96579925d1b4634c94332e2ec73f7d8eca1 /'",
+							Message:   "Consider using 'COPY foo.txt /' command instead of 'ADD foo.txt /'",
 							PolicyMetadata: types.PolicyMetadata{
 								ID:                 "DS005",
 								AVDID:              "AVD-DS-0005",
@@ -119,10 +119,10 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 									Lines: []types.Line{
 										{
 											Number:      1,
-											Content:     "ADD file:e4d600fc4c9c293efe360be7b30ee96579925d1b4634c94332e2ec73f7d8eca1 /",
+											Content:     "ADD foo.txt /",
 											IsCause:     true,
 											Truncated:   false,
-											Highlighted: "\x1b[38;5;64mADD\x1b[0m file:e4d600fc4c9c293efe360be7b30ee96579925d1b4634c94332e2ec73f7d8eca1 /",
+											Highlighted: "\x1b[38;5;64mADD\x1b[0m foo.txt /",
 											FirstCause:  true,
 											LastCause:   true,
 										},
@@ -428,6 +428,26 @@ func Test_ImageConfigToDockerfile(t *testing.T) {
 			expected: `ARG TAG=latest
 ENV TAG=latest
 ENTRYPOINT ["/bin/sh" "-c" "echo test"]
+`,
+		},
+		{
+			name: "buildah backend or docker legacy builder (DOCKER_BUILDKIT=0)",
+			input: &v1.ConfigFile{
+				History: []v1.History{
+					{
+						CreatedBy: "/bin/sh -c #(nop) COPY dir:3a024d8085bc39741a0a094a8e287a00a760975c7c2e6b5dc6c7d3174b7d1ab6 in ./files |inheritLabels=false",
+					},
+					{
+						CreatedBy: "/bin/sh -c #(nop) ADD file:24d346633efc860b5011cefa5c0af73006e74e5dfb3c5c0e9cb0e90a927931e1 in readme |inheritLabels=false",
+					},
+					{
+						CreatedBy: `/bin/sh -c #(nop) ENTRYPOINT ["/bin/sh"]|inheritLabels=false`,
+					},
+				},
+			},
+			expected: `COPY dir:3a024d8085bc39741a0a094a8e287a00a760975c7c2e6b5dc6c7d3174b7d1ab6 ./files
+ADD file:24d346633efc860b5011cefa5c0af73006e74e5dfb3c5c0e9cb0e90a927931e1 readme
+ENTRYPOINT ["/bin/sh"]
 `,
 		},
 	}
