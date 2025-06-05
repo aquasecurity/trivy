@@ -5,8 +5,8 @@
 {% endblock %}
 
 {% block hero %}
-<link rel='stylesheet' id='main-style-css' href='/assets/css/trivy_v1_styles.min.css' type='text/css' media='all' />
-<script type='text/javascript' src='/assets/javascripts/trivy_v1_homepage.js' id='trivy_v1_homepage-js'></script>
+<link rel='stylesheet' id='main-style-css' href='{{ base_url }}/assets/css/trivy_v1_styles.min.css' type='text/css' media='all' />
+<script type='text/javascript' src='{{ base_url }}/assets/javascripts/trivy_v1_homepage.js' id='trivy_v1_homepage-js'></script>
 
 <div class="trivy_v1_homepage_wrap partners_wrap">
 
@@ -23,11 +23,11 @@
 								Trivy Partners Program
 							</h1>
 							<h2 class="subtitle page_subtitle fadeInUp animationDelay_1">
-								Align with the world’s most trusted open-source scanner. This premium program gives you priority support, co-branding rights, and access to millions of users who rely on Trivy to secure their cloud-native environments. Don’t just integrate; Lead.
+								Align with the world's most trusted open-source scanner. This premium program gives you priority support, co-branding rights, and access to millions of users who rely on Trivy to secure their cloud-native environments. Don't just integrate; Lead.
 							</h2>
 						</div><!-- header_title_content_wrap -->	
 						
-						<div class="header_title_content_wrap partners_hero_stage_image"><img src="/assets/images/partners_hero_stage_full.svg" alt="" loading="lazy"></div>
+						<div class="header_title_content_wrap partners_hero_stage_image"><img src="{{ base_url }}/assets/images/partners_hero_stage_full.svg" alt="" loading="lazy"></div>
 						
 					</div><!-- header_title_wrap -->					
 					
@@ -52,9 +52,9 @@
 
 		<h3 class="title generic_title partners_logos_title">Join the Trivy Partners Community</h3>
 		<div class="partners_logos">
-			<div class="logo_item"><a href="https://minimus.io" target="_blank"><img src="/assets/images/partner_logo_minimus.svg" width="100" height="100" alt="Minimus Logo" loading="lazy"></a></div>
-			<div class="logo_item"><a href="https://root.io" target="_blank"><img src="/assets/images/partner_logo_root.svg" width="100" height="100" alt="Root Logo" loading="lazy"></a></div>
-			<div class="logo_item"><a href="https://echohq.com" target="_blank"><img src="/assets/images/partner_logo_echo.svg" width="100" height="100" alt="Echo Logo" loading="lazy"></a></div>
+			<div class="logo_item"><a href="https://minimus.io" target="_blank"><img src="{{ base_url }}/assets/images/partner_logo_minimus.svg" width="100" height="100" alt="Minimus Logo" loading="lazy"></a></div>
+			<div class="logo_item"><a href="https://root.io" target="_blank"><img src="{{ base_url }}/assets/images/partner_logo_root.svg" width="100" height="100" alt="Root Logo" loading="lazy"></a></div>
+			<div class="logo_item"><a href="https://echohq.com" target="_blank"><img src="{{ base_url }}/assets/images/partner_logo_echo.svg" width="100" height="100" alt="Echo Logo" loading="lazy"></a></div>
 		</div>
 	</div><!-- partners_logos_wrap -->
 	<!-- logos ends -->
