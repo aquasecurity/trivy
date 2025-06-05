@@ -231,6 +231,7 @@ nav:
   - Enterprise:
       - Comparison: commercial/compare.md
       - Contact Us: commercial/contact.md
+  - Partners: partners.md
 theme:
   name: material
   custom_dir: docs/overrides

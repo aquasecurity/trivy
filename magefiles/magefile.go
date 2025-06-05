@@ -444,7 +444,7 @@ type Docs mg.Namespace
 // Prepare CSS
 func (Docs) Css() error {
 	const (
-		homepageSass = "docs/assets/css/trivy_v1_homepage.scss"
+		homepageSass = "docs/assets/css/trivy_v1_styles.scss"
 	)
 	homepageCss := strings.TrimSuffix(homepageSass, ".scss") + ".min.css"
 	if updated, err := target.Path(homepageCss, homepageSass); err != nil {

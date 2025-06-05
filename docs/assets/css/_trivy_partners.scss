@@ -1,0 +1,177 @@
+/* trivy partners page */
+.trivy_v1_homepage_wrap.partners_wrap {
+	position: relative;
+	z-index: 3;
+
+	.partners_hero_wrap {
+		background-color: $aq-trivy-dark;
+		background-image: radial-gradient(1600px at 70% 120%, #031145 10%, $aq-trivy-dark 100%);
+		min-height: 500px;
+		position: relative;
+		z-index: 10;
+
+		.partners_background_image_wrap {
+			position: absolute;
+			left: 0px;
+			top: 0px;
+			width: 100%;
+			height: 100%;
+			z-index: 1;
+			pointer-events: none;
+
+			.stars_wrap {
+				position: absolute;
+				left: 0px;
+				top: 0px;
+				width: 100%;
+				height: 100%;
+				z-index: 1;
+				overflow: hidden;
+				
+				.stars_bg {
+					position: absolute;
+					width: 400vw;
+					height: 400vh;
+					top: 50%;
+					left: 50%;
+					margin-top: -200vh;
+					margin-left: -200vw;
+					animation: stars_ani 240s linear infinite;
+					background-size: 240px;
+					backface-visibility: visible;
+					background-image:url(../images/homepage_hero_stars_02.svg);
+					background-repeat: repeat;
+					
+				}
+
+
+				@keyframes stars_ani {
+					0% { transform: rotate(0deg); }
+					100% { transform: rotate(360deg); }
+				}
+
+			} //stars_wrap
+
+
+
+		} //hero_background_image_wrap
+	} //partners_hero_wrap
+
+
+
+	.hero {
+
+		
+		.hero-body {
+			padding: 80px 0px;
+			// border: 1px solid red;
+
+			.header_title_wrap.with_columns {
+
+				display: flex;
+				flex-direction: row;
+
+				@media screen and (max-width: $desktop) {
+
+					flex-direction: column;
+				}
+
+
+				.header_title_content_wrap {
+
+					width: 50%;
+					position: relative;
+					z-index: 3;
+
+					&.partners_hero_stage_image {
+						align-self: center;
+						align-content: center;
+						img {
+							max-width: 100%;
+						}
+					}
+
+
+					@media screen and (max-width: $widescreen), print {
+						width: 70%;
+					} //until widescreen
+
+					@media screen and (max-width: $tablet), print { //769
+
+						width: 100%;
+
+						.page_title {
+							font-size: 32px; //2rem;
+						}//page_title
+			
+						.page_subtitle {
+							font-size: 18px; //1.125rem;
+						}//page_subtitle
+			
+					} //until tablet
+
+
+				} //header_title_content_wrap
+
+			} //header_title_wrap
+
+			@media screen and (min-width: $tablet), print { //769
+				padding: 48px 24px; //3rem 1.5rem;
+			}
+		}
+
+	} //hero
+
+	
+} //trivy_v1_homepage_wrap partners_wrap
+
+
+
+.partners_logos_wrap {
+	background-color: $aq-trivy-dark;
+	padding: 50px 0px;
+
+	.partners_logos_title {
+		text-align: center;
+		color: #ffffff;
+	}
+
+	.partners_logos {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		gap: 4rem;
+		flex-wrap: wrap;
+
+		.logo_item {
+			display: inline-block;
+			padding: 20px;
+			margin: 0px;
+			
+			// background-color: red;
+			img {
+				display: block;
+				margin: 0px auto;
+				width: auto;
+				max-height: 115px;
+				max-width: 200px;
+				transition: all 0.3s ease;
+				// overflow: hidden;
+			}
+		} //logo_item
+
+		@media screen and (max-width: $tablet) {
+
+			gap: 2rem;
+
+			.logo_item {
+				img {
+					max-height: 80px;
+					max-width: 150px;
+				}
+			}
+		}
+
+	} //partners_logos
+} //partners_logos_wrap
