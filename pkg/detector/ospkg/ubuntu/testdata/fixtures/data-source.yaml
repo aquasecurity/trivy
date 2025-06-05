@@ -1,11 +1,11 @@
 - bucket: data-source
   pairs:
-    - key: ubuntu 20.04
+    - key: ubuntu 21.04
       value:
         ID: "ubuntu"
         Name: "Ubuntu CVE Tracker"
         URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 21.04
+    - key: ubuntu 22.04
       value:
         ID: "ubuntu"
         Name: "Ubuntu CVE Tracker"
