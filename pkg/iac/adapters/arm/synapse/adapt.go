@@ -4,6 +4,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/synapse"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/samber/lo"
 )
 
 func Adapt(deployment azure.Deployment) synapse.Synapse {
@@ -12,23 +13,23 @@ func Adapt(deployment azure.Deployment) synapse.Synapse {
 	}
 }
 
-func adaptWorkspaces(deployment azure.Deployment) (workspaces []synapse.Workspace) {
-	for _, resource := range deployment.GetResourcesByType("Microsoft.Synapse/workspaces") {
-		workspaces = append(workspaces, adaptWorkspace(resource))
-	}
-	return workspaces
+func adaptWorkspaces(deployment azure.Deployment) []synapse.Workspace {
+	return lo.Map(deployment.GetResourcesByType("Microsoft.Synapse/workspaces"),
+		func(r azure.Resource, _ int) synapse.Workspace { return adaptWorkspace(r) },
+	)
 }
 
 func adaptWorkspace(resource azure.Resource) synapse.Workspace {
-
-	managedVirtualNetwork := resource.Properties.GetMapValue("managedVirtualNetwork").AsString()
-	enableManagedVirtualNetwork := types.BoolDefault(false, resource.Metadata)
-	if managedVirtualNetwork == "default" {
-		enableManagedVirtualNetwork = types.Bool(true, resource.Metadata)
-	}
-
 	return synapse.Workspace{
 		Metadata:                    resource.Metadata,
-		EnableManagedVirtualNetwork: enableManagedVirtualNetwork,
+		EnableManagedVirtualNetwork: adaptManagedVirtualNetwork(resource),
 	}
+}
+
+func adaptManagedVirtualNetwork(resource azure.Resource) types.BoolValue {
+	prop := resource.Properties.GetMapValue("managedVirtualNetwork")
+	if !prop.IsNull() {
+		return types.Bool(prop.EqualTo("default"), prop.GetMetadata())
+	}
+	return types.BoolDefault(false, resource.Metadata)
 }
