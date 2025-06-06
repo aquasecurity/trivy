@@ -28,7 +28,7 @@ type Analyzer struct {
 }
 
 func NewAnalyzer(t analyzer.Type, version int, fileType detection.FileType, opts analyzer.AnalyzerOptions) (*Analyzer, error) {
-	s, err := misconf.NewScanner(fileType, opts.MisconfScannerOption)
+	s, err := misconf.NewScanner(fileType, string(t), opts.MisconfScannerOption)
 	if err != nil {
 		return nil, xerrors.Errorf("%s scanner init error: %w", t, err)
 	}

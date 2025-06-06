@@ -34,6 +34,7 @@ import (
 	tfpjsonscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/version/app"
 
 	_ "embed"
@@ -97,12 +98,14 @@ func (o *ScannerOption) Sort() {
 
 type Scanner struct {
 	fileType          detection.FileType
+	analyzerType      string
 	scanner           scanners.FSScanner
 	hasFilePattern    bool
 	configFileSchemas []*ConfigFileSchema
+	disabledChecks    set.Set[string]
 }
 
-func NewScanner(t detection.FileType, opt ScannerOption) (*Scanner, error) {
+func NewScanner(t detection.FileType, analyzerType string, opt ScannerOption) (*Scanner, error) {
 	opts, err := scannerOptions(t, opt)
 	if err != nil {
 		return nil, err
@@ -134,11 +137,25 @@ func NewScanner(t detection.FileType, opt ScannerOption) (*Scanner, error) {
 		return nil, xerrors.Errorf("unknown file type: %s", t)
 	}
 
+	for _, check := range opt.DisabledChecks {
+		log.Info("Check disabled",
+			log.Prefix(log.PrefixMisconfiguration),
+			log.String("ID", check.ID),
+			log.String("scanner", check.Scanner),
+			log.String("reason", check.Reason))
+	}
+
+	disabledChecks := lo.Map(opt.DisabledChecks, func(check DisabledCheck, _ int) string {
+		return check.ID
+	})
+
 	return &Scanner{
 		fileType:          t,
+		analyzerType:      analyzerType,
 		scanner:           scanner,
 		hasFilePattern:    hasFilePattern(t, opt.FilePatterns),
 		configFileSchemas: opt.ConfigFileSchemas,
+		disabledChecks:    set.New(disabledChecks...),
 	}, nil
 }
 
@@ -164,6 +181,11 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 	}
 
 	configType := enablediacTypes[s.fileType]
+
+	results = lo.Filter(results, func(r scan.Result, _ int) bool {
+		return s.disabledChecks.Contains(r.Rule().AVDID)
+	})
+
 	misconfs := ResultsToMisconf(configType, s.scanner.Name(), results)
 
 	// Sort misconfigurations
@@ -236,17 +258,10 @@ func InitRegoScanner(opt ScannerOption) (*rego.Scanner, error) {
 }
 
 func initRegoOptions(opt ScannerOption) ([]options.ScannerOption, error) {
-	disabledCheckIDs := lo.Map(opt.DisabledChecks, func(check DisabledCheck, _ int) string {
-		log.Info("Check disabled", log.Prefix(log.PrefixMisconfiguration), log.String("ID", check.ID),
-			log.String("scanner", check.Scanner), log.String("reason", check.Reason))
-		return check.ID
-	})
-
 	opts := []options.ScannerOption{
 		rego.WithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
 		rego.WithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
 		rego.WithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
-		rego.WithDisabledCheckIDs(disabledCheckIDs...),
 		rego.WithTrivyVersion(app.Version()),
 	}
 

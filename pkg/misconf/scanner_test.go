@@ -155,7 +155,7 @@ func TestScanner_Scan(t *testing.T) {
 			}
 
 			// s, err := tt.scannerFunc(tt.fields.filePatterns, tt.fields.opt)
-			s, err := NewScanner(tt.fileType, tt.fields.opt)
+			s, err := NewScanner(tt.fileType, "", tt.fields.opt)
 			require.NoError(t, err)
 
 			misconfs, err := s.Scan(t.Context(), fsys)
