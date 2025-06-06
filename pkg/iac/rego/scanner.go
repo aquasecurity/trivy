@@ -23,6 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
+	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
 var checkTypesWithSubtype = set.New(types.SourceCloud, types.SourceDefsec, types.SourceKubernetes)
@@ -100,6 +101,7 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 		customSchemas:    make(map[string][]byte),
 		disabledCheckIDs: set.New[string](),
 		moduleMetadata:   make(map[string]*StaticMetadata),
+		trivyVersion:     app.Version(),
 	}
 
 	for _, opt := range opts {
