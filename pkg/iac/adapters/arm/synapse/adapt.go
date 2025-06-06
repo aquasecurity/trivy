@@ -1,10 +1,11 @@
 package synapse
 
 import (
+	"github.com/samber/lo"
+
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/synapse"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/samber/lo"
 )
 
 func Adapt(deployment azure.Deployment) synapse.Synapse {

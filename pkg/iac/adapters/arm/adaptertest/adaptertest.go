@@ -19,6 +19,7 @@ func AdaptAndCompare[T any](t *testing.T, source string, expected any, fn adaptF
 
 	deployments, err := parser.New(fsys).ParseFS(t.Context(), ".")
 	require.NoError(t, err)
+	require.Len(t, deployments, 1)
 
 	adapted := fn(deployments[0])
 	testutil.AssertDefsecEqual(t, expected, adapted)
