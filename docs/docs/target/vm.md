@@ -7,6 +7,8 @@ Scan virtual machine (VM) images.
 
 `vm` is a post-build target type, which means it scans installed packages. For more information, see [Target types](../coverage/language/index.md#target-types).
 
+`vm` leverages the `rootfs` target scanning, and shares similar behavior and configurations. Please review the [roofs document](./rootfs.md) for more information.
+
 You can scan a VM image file, Amazon Machine Image (AMI), or Amazon Elastic Block Store (EBS) snapshot.
 
 Usage:
@@ -194,6 +196,14 @@ For example:
 ```bash
 # Generate a CycloneDX SBOM
 trivy vm --format cyclonedx disk.vmdk
+```
+
+## Optimizing scan time
+
+VM images tend to be bigger than other artifact, and could take longer to scan, especially when fetched from a remote service such as EBS. Moreover, the `vm` target enables secret scanning by default which cause full filesystem traversal. If you are interested only in vulnerability scanning, consider disabling all other scanners which will greatly improve scan time:
+
+```shell
+trivy vm --scanners vuln disk.vmdk
 ```
 
 ## REHL Limitation
