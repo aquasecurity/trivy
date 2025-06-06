@@ -677,6 +677,17 @@ func (r *runner) scan(ctx context.Context, opts flag.Options, initializeService 
 	return report, nil
 }
 
+var disabledChecks = []misconf.DisabledCheck{
+	{
+		ID: "DS007", Scanner: string(analyzer.TypeHistoryDockerfile),
+		Reason: "See " + doc.URL("docs/target/container_image", "disabled-checks"),
+	},
+	{
+		ID: "DS016", Scanner: string(analyzer.TypeHistoryDockerfile),
+		Reason: "See " + doc.URL("docs/target/container_image", "disabled-checks"),
+	},
+}
+
 func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.ScannerOption, error) {
 	ctx = log.WithContextPrefix(ctx, log.PrefixMisconfiguration)
 	log.InfoContext(ctx, "Misconfiguration scanning is enabled")
@@ -730,6 +741,7 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 		ConfigFileSchemas:        configSchemas,
 		SkipFiles:                opts.SkipFiles,
 		SkipDirs:                 opts.SkipDirs,
+		DisabledChecks:           disabledChecks,
 	}
 
 	regoScanner, err := misconf.InitRegoScanner(misconfOpts)

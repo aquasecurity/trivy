@@ -379,7 +379,7 @@ func (s *Scanner) isModuleApplicable(module *ast.Module, metadata *StaticMetadat
 	}
 
 	// ignore disabled built-in checks
-	if IsBuiltinNamespace(getModuleNamespace(module)) && s.disabledCheckIDs.Contains(metadata.ID) {
+	if IsBuiltinNamespace(getModuleNamespace(module)) {
 		return false
 	}
 
