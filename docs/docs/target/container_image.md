@@ -35,7 +35,7 @@ More details are available in the [cache documentation](../configuration/cache.m
 Trivy will look for the specified image in the following locations and order:
 
 1. Docker Engine
-2. Containerd
+2. containerd
 3. Podman
 4. Remote container registry
 

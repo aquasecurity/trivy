@@ -94,7 +94,7 @@ You can set AWS region via `--aws-region` flag.
 trivy vm --aws-region ap-northeast-1 ami:ami-0123456789abcdefg
 ```
 
-### Required Roles
+### Required Actions
 Some actions on EBS are also necessary since Trivy scans an EBS snapshot tied to the specified AMI under the hood.
 
 - `ec2:DescribeImages`
