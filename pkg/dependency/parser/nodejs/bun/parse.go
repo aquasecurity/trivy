@@ -58,12 +58,23 @@ func (p *ParsedPackage) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if len(raw) > 2 {
-		if err := json.Unmarshal(raw[2], &p.Meta); err != nil {
-			return err
-		}
+	// When package contains only package field [pkg: string]
+	// cf. https://github.com/oven-sh/bun/blob/61e03a275885b9b48f7a28f6dfbbbe1156eedca6/packages/bun-types/bun.d.ts#L7751
+	if len(raw) == 1 {
+		return nil
 	}
-	return nil
+
+	// Meta can be 2 or 3 array elements
+	// [pkg: string, info: BunLockFilePackageInfo]
+	// [pkg: string, info: BunLockFilePackageInfo, bunTag: string]
+	// [pkg: string, info: Pick<BunLockFileBasePackageInfo, "bin" | "binDir">]
+	// [pkg: string, registry: string, info: BunLockFilePackageInfo, integrity: string]
+	// cf.https://github.com/oven-sh/bun/blob/61e03a275885b9b48f7a28f6dfbbbe1156eedca6/packages/bun-types/bun.d.ts#L7745-L7755
+	metaRaw := raw[1]
+	if len(raw) > 3 {
+		metaRaw = raw[2]
+	}
+	return json.Unmarshal(metaRaw, &p.Meta)
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
