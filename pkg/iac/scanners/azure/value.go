@@ -288,7 +288,11 @@ func (v Value) GetMapValue(key string) Value {
 	if v.Kind != KindObject {
 		return NullValue
 	}
-	return v.rMap[key]
+	v, exists := v.rMap[key]
+	if !exists {
+		return NullValue
+	}
+	return v
 }
 
 func (v Value) AsMap() map[string]Value {
@@ -360,4 +364,8 @@ func (v Value) AsStringValuesList(defaultValue string) (stringValues []types.Str
 	}
 
 	return stringValues
+}
+
+func (v Value) IsNull() bool {
+	return v.Kind == KindNull
 }

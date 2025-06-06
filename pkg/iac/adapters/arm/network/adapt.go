@@ -4,86 +4,108 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/samber/lo"
+
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func Adapt(deployment azure.Deployment) network.Network {
 	return network.Network{
-		SecurityGroups:         adaptSecurityGroups(deployment),
-		NetworkWatcherFlowLogs: adaptNetworkWatcherFlowLogs(deployment),
+		SecurityGroups:         xslices.ZeroToNil(adaptSecurityGroups(deployment)),
+		NetworkWatcherFlowLogs: xslices.ZeroToNil(adaptNetworkWatcherFlowLogs(deployment)),
 	}
 }
 
-func adaptSecurityGroups(deployment azure.Deployment) (sgs []network.SecurityGroup) {
-	for _, resource := range deployment.GetResourcesByType("Microsoft.Network/networkSecurityGroups") {
-		sgs = append(sgs, adaptSecurityGroup(resource, deployment))
-	}
-	return sgs
-
+func adaptSecurityGroups(deployment azure.Deployment) []network.SecurityGroup {
+	return lo.Map(deployment.GetResourcesByType("Microsoft.Network/networkSecurityGroups"),
+		func(r azure.Resource, _ int) network.SecurityGroup { return adaptSecurityGroup(r) },
+	)
 }
 
-func adaptSecurityGroup(resource azure.Resource, deployment azure.Deployment) network.SecurityGroup {
+func adaptSecurityGroup(resource azure.Resource) network.SecurityGroup {
 	return network.SecurityGroup{
 		Metadata: resource.Metadata,
-		Rules:    adaptSecurityGroupRules(deployment),
+		Rules:    xslices.ZeroToNil(adaptSecurityGroupRules(resource)),
 	}
 }
 
-func adaptSecurityGroupRules(deployment azure.Deployment) (rules []network.SecurityGroupRule) {
-	for _, resource := range deployment.GetResourcesByType("Microsoft.Network/networkSecurityGroups/securityRules") {
-		rules = append(rules, adaptSecurityGroupRule(resource))
+func adaptSecurityGroupRules(resource azure.Resource) []network.SecurityGroupRule {
+	// TODO: handle Microsoft.Network/networkSecurityGroups/securityRules
+	// TODO: handle Microsoft.Network -> networkSecurityGroups -> securityRules
+
+	var secRules []network.SecurityGroupRule
+	for _, secRulesProp := range resource.Properties.GetMapValue("securityRules").AsList() {
+		if props := secRulesProp.GetMapValue("properties"); !props.IsNull() {
+			secRules = append(secRules, adaptSecurityGroupRule(props, secRulesProp.GetMetadata()))
+		}
 	}
-	return rules
+
+	for _, secRuleRes := range resource.GetResourcesByType("securityRules") {
+		secRules = append(secRules, adaptSecurityGroupRule(secRuleRes.Properties, secRuleRes.Metadata))
+	}
+	return secRules
 }
 
-func adaptSecurityGroupRule(resource azure.Resource) network.SecurityGroupRule {
-	sourceAddressPrefixes := resource.Properties.GetMapValue("sourceAddressPrefixes").AsStringValuesList("")
-	sourceAddressPrefixes = append(sourceAddressPrefixes, resource.Properties.GetMapValue("sourceAddressPrefix").AsStringValue("", resource.Metadata))
+func adaptSecurityGroupRule(props azure.Value, parentMeta iacTypes.Metadata) network.SecurityGroupRule {
+	// TODO: introduce AddressRange
+	sourcePrefixes := append(
+		props.GetMapValue("sourceAddressPrefixes").AsList(),
+		props.GetMapValue("sourceAddressPrefix"),
+	)
+	sourceAddressPrefixes := lo.FilterMap(sourcePrefixes, func(v azure.Value, _ int) (iacTypes.StringValue, bool) {
+		return v.AsStringValue("", parentMeta), !v.IsNull()
+	})
 
-	var sourcePortRanges []network.PortRange
-	for _, portRange := range resource.Properties.GetMapValue("sourcePortRanges").AsList() {
-		sourcePortRanges = append(sourcePortRanges, expandRange(portRange.AsString(), resource.Metadata))
+	sourcePorts := append(
+		props.GetMapValue("sourcePortRanges").AsList(),
+		props.GetMapValue("sourcePortRange"),
+	)
+	sourcePortRanges := lo.FilterMap(sourcePorts, func(v azure.Value, _ int) (network.PortRange, bool) {
+		return expandRange(v.AsString(), v.GetMetadata()), !v.IsNull()
+	})
+
+	destinationPrefixes := append(
+		props.GetMapValue("destinationAddressPrefixes").AsList(),
+		props.GetMapValue("destinationAddressPrefix"),
+	)
+	destinationAddressPrefixes := lo.FilterMap(destinationPrefixes, func(v azure.Value, _ int) (iacTypes.StringValue, bool) {
+		return v.AsStringValue("", parentMeta), !v.IsNull()
+	})
+
+	destinationPorts := append(
+		props.GetMapValue("destinationPortRanges").AsList(),
+		props.GetMapValue("destinationPortRange"),
+	)
+	destinationPortRanges := lo.FilterMap(destinationPorts, func(v azure.Value, _ int) (network.PortRange, bool) {
+		return expandRange(v.AsString(), v.GetMetadata()), !v.IsNull()
+	})
+
+	allow := iacTypes.BoolDefault(false, parentMeta)
+	if access := props.GetMapValue("access"); !access.IsNull() {
+		allow = iacTypes.Bool(access.EqualTo("Allow"), access.GetMetadata())
 	}
-	sourcePortRanges = append(sourcePortRanges, expandRange(resource.Properties.GetMapValue("sourcePortRange").AsString(), resource.Metadata))
 
-	destinationAddressPrefixes := resource.Properties.GetMapValue("destinationAddressPrefixes").AsStringValuesList("")
-	destinationAddressPrefixes = append(destinationAddressPrefixes, resource.Properties.GetMapValue("destinationAddressPrefix").AsStringValue("", resource.Metadata))
-
-	var destinationPortRanges []network.PortRange
-	for _, portRange := range resource.Properties.GetMapValue("destinationPortRanges").AsList() {
-		destinationPortRanges = append(destinationPortRanges, expandRange(portRange.AsString(), resource.Metadata))
-	}
-	destinationPortRanges = append(destinationPortRanges, expandRange(resource.Properties.GetMapValue("destinationPortRange").AsString(), resource.Metadata))
-
-	allow := iacTypes.BoolDefault(false, resource.Metadata)
-	if resource.Properties.GetMapValue("access").AsString() == "Allow" {
-		allow = iacTypes.Bool(true, resource.Metadata)
-	}
-
-	outbound := iacTypes.BoolDefault(false, resource.Metadata)
-	if resource.Properties.GetMapValue("direction").AsString() == "Outbound" {
-		outbound = iacTypes.Bool(true, resource.Metadata)
-	}
+	outbound := iacTypes.Bool(props.GetMapValue("direction").AsString() == "Outbound", parentMeta)
 
 	return network.SecurityGroupRule{
-		Metadata:             resource.Metadata,
+		Metadata:             props.Metadata,
 		Outbound:             outbound,
 		Allow:                allow,
 		SourceAddresses:      sourceAddressPrefixes,
 		SourcePorts:          sourcePortRanges,
 		DestinationAddresses: destinationAddressPrefixes,
 		DestinationPorts:     destinationPortRanges,
-		Protocol:             resource.Properties.GetMapValue("protocol").AsStringValue("", resource.Metadata),
+		Protocol:             props.GetMapValue("protocol").AsStringValue("", parentMeta),
 	}
 }
 
 func adaptNetworkWatcherFlowLogs(deployment azure.Deployment) (flowLogs []network.NetworkWatcherFlowLog) {
-	for _, resource := range deployment.GetResourcesByType("Microsoft.Network/networkWatchers/flowLogs") {
-		flowLogs = append(flowLogs, adaptNetworkWatcherFlowLog(resource))
-	}
-	return flowLogs
+	return lo.Map(deployment.GetResourcesByType("Microsoft.Network/networkWatchers/flowLogs"),
+		func(r azure.Resource, _ int) network.NetworkWatcherFlowLog { return adaptNetworkWatcherFlowLog(r) },
+	)
 }
 
 func adaptNetworkWatcherFlowLog(resource azure.Resource) network.NetworkWatcherFlowLog {
@@ -91,8 +113,10 @@ func adaptNetworkWatcherFlowLog(resource azure.Resource) network.NetworkWatcherF
 		Metadata: resource.Metadata,
 		RetentionPolicy: network.RetentionPolicy{
 			Metadata: resource.Metadata,
-			Enabled:  resource.Properties.GetMapValue("retentionPolicy").GetMapValue("enabled").AsBoolValue(false, resource.Metadata),
-			Days:     resource.Properties.GetMapValue("retentionPolicy").GetMapValue("days").AsIntValue(0, resource.Metadata),
+			Enabled: resource.Properties.GetMapValue("retentionPolicy").GetMapValue("enabled").
+				AsBoolValue(false, resource.Metadata),
+			Days: resource.Properties.GetMapValue("retentionPolicy").GetMapValue("days").
+				AsIntValue(0, resource.Metadata),
 		},
 	}
 }
