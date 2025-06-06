@@ -74,10 +74,7 @@ func (p *ParsedPackage) UnmarshalJSON(data []byte) error {
 	if len(raw) > 3 {
 		metaRaw = raw[2]
 	}
-	if err := json.Unmarshal(metaRaw, &p.Meta); err != nil {
-		return err
-	}
-	return nil
+	return json.Unmarshal(metaRaw, &p.Meta)
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
