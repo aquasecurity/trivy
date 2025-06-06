@@ -21,6 +21,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -677,6 +678,17 @@ func (r *runner) scan(ctx context.Context, opts flag.Options, initializeService 
 	return report, nil
 }
 
+var disabledChecks = []misconf.DisabledCheck{
+	{
+		AVDID: "AVD-DS-0007", FileType: detection.FileTypeDockerfileHistory,
+		Reason: "See " + doc.URL("docs/target/container_image", "disabled-checks"),
+	},
+	{
+		AVDID: "AVD-DS-0016", FileType: detection.FileTypeDockerfileHistory,
+		Reason: "See " + doc.URL("docs/target/container_image", "disabled-checks"),
+	},
+}
+
 func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.ScannerOption, error) {
 	ctx = log.WithContextPrefix(ctx, log.PrefixMisconfiguration)
 	log.InfoContext(ctx, "Misconfiguration scanning is enabled")
@@ -730,6 +742,7 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 		ConfigFileSchemas:        configSchemas,
 		SkipFiles:                opts.SkipFiles,
 		SkipDirs:                 opts.SkipDirs,
+		DisabledChecks:           disabledChecks,
 	}
 
 	regoScanner, err := misconf.InitRegoScanner(misconfOpts)

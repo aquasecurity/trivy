@@ -24,6 +24,7 @@ const (
 	FileTypeTerraformPlanJSON     FileType = "terraformplan-json"
 	FileTypeTerraformPlanSnapshot FileType = "terraformplan-snapshot"
 	FileTypeDockerfile            FileType = "dockerfile"
+	FileTypeDockerfileHistory     FileType = "dockerfile-history"
 	FileTypeKubernetes            FileType = "kubernetes"
 	FileTypeRbac                  FileType = "rbac"
 	FileTypeYAML                  FileType = "yaml"
@@ -165,7 +166,7 @@ func init() {
 		return len(sniff.Parameters) > 0 || len(sniff.Resources) > 0
 	}
 
-	matchers[FileTypeDockerfile] = func(name string, _ io.ReadSeeker) bool {
+	dockerfileMatcher := func(name string, _ io.ReadSeeker) bool {
 		requiredFiles := []string{"Dockerfile", "Containerfile"}
 		for _, requiredFile := range requiredFiles {
 			base := filepath.Base(name)
@@ -179,6 +180,8 @@ func init() {
 		}
 		return false
 	}
+	matchers[FileTypeDockerfile] = dockerfileMatcher
+	matchers[FileTypeDockerfileHistory] = dockerfileMatcher
 
 	matchers[FileTypeHelm] = func(name string, r io.ReadSeeker) bool {
 		helmFiles := []string{"Chart.yaml", ".helmignore", "values.schema.json", "NOTES.txt"}

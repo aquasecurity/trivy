@@ -16,19 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/misconf"
-	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
-
-var disabledChecks = []misconf.DisabledCheck{
-	{
-		ID: "DS007", Scanner: string(analyzer.TypeHistoryDockerfile),
-		Reason: "See " + doc.URL("docs/target/container_image", "disabled-checks"),
-	},
-	{
-		ID: "DS016", Scanner: string(analyzer.TypeHistoryDockerfile),
-		Reason: "See " + doc.URL("docs/target/container_image", "disabled-checks"),
-	},
-}
 
 const analyzerVersion = 1
 
@@ -41,8 +29,7 @@ type historyAnalyzer struct {
 }
 
 func newHistoryAnalyzer(opts analyzer.ConfigAnalyzerOptions) (analyzer.ConfigAnalyzer, error) {
-	opts.MisconfScannerOption.DisabledChecks = append(opts.MisconfScannerOption.DisabledChecks, disabledChecks...)
-	s, err := misconf.NewScanner(detection.FileTypeDockerfile, opts.MisconfScannerOption)
+	s, err := misconf.NewScanner(detection.FileTypeDockerfileHistory, opts.MisconfScannerOption)
 	if err != nil {
 		return nil, xerrors.Errorf("misconfiguration scanner error: %w", err)
 	}

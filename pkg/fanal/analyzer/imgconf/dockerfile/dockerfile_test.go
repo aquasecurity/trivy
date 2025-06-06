@@ -285,47 +285,6 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 				Config: nil,
 			},
 		},
-		{
-			name: "DS016 check not detected",
-			input: analyzer.ConfigAnalysisInput{
-				Config: &v1.ConfigFile{
-					Config: v1.Config{
-						Healthcheck: &v1.HealthConfig{
-							Test:     []string{"CMD-SHELL", "curl --fail http://localhost:3000 || exit 1"},
-							Interval: time.Second * 10,
-							Timeout:  time.Second * 3,
-						},
-					},
-					History: []v1.History{
-						{
-							// duplicate command from another layer
-							CreatedBy:  `/bin/sh -c #(nop) CMD [\"/bin/bash\"]`,
-							EmptyLayer: true,
-						},
-						{
-							CreatedBy: "/bin/sh -c #(nop) ADD file:e4d600fc4c9c293efe360be7b30ee96579925d1b4634c94332e2ec73f7d8eca1 in /",
-						},
-						{
-							CreatedBy: `HEALTHCHECK &{["CMD-SHELL" "curl --fail http://localhost:3000 || exit 1"] "10s" "3s" "0s" '\x00'}`,
-						},
-						{
-							CreatedBy:  `USER user`,
-							EmptyLayer: true,
-						},
-						{
-							CreatedBy:  `/bin/sh -c #(nop)  CMD [\"/bin/sh\"]`,
-							EmptyLayer: true,
-						},
-					},
-				},
-			},
-			want: &analyzer.ConfigAnalysisResult{
-				Misconfiguration: &types.Misconfiguration{
-					FileType: types.Dockerfile,
-					FilePath: "Dockerfile",
-				},
-			},
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

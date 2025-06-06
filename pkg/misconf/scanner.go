@@ -44,6 +44,7 @@ var enablediacTypes = map[detection.FileType]types.ConfigType{
 	detection.FileTypeCloudFormation:        types.CloudFormation,
 	detection.FileTypeTerraform:             types.Terraform,
 	detection.FileTypeDockerfile:            types.Dockerfile,
+	detection.FileTypeDockerfileHistory:     types.Dockerfile,
 	detection.FileTypeKubernetes:            types.Kubernetes,
 	detection.FileTypeHelm:                  types.Helm,
 	detection.FileTypeTerraformPlanJSON:     types.TerraformPlanJSON,
@@ -53,9 +54,9 @@ var enablediacTypes = map[detection.FileType]types.ConfigType{
 }
 
 type DisabledCheck struct {
-	ID      string
-	Scanner string // For logging
-	Reason  string // For logging
+	AVDID    string             // e.g. "AVD-DS-0001"
+	FileType detection.FileType // e.g. "terraform", "dockerfile", etc.
+	Reason   string             // Optional: why this check is disabled (used in logs)
 }
 
 type ScannerOption struct {
@@ -100,6 +101,7 @@ type Scanner struct {
 	scanner           scanners.FSScanner
 	hasFilePattern    bool
 	configFileSchemas []*ConfigFileSchema
+	disabledChecks    map[detection.FileType][]string
 }
 
 func NewScanner(t detection.FileType, opt ScannerOption) (*Scanner, error) {
@@ -114,7 +116,7 @@ func NewScanner(t detection.FileType, opt ScannerOption) (*Scanner, error) {
 		scanner = arm.New(opts...)
 	case detection.FileTypeCloudFormation:
 		scanner = cfscanner.New(opts...)
-	case detection.FileTypeDockerfile:
+	case detection.FileTypeDockerfile, detection.FileTypeDockerfileHistory:
 		scanner = dfscanner.NewScanner(opts...)
 	case detection.FileTypeHelm:
 		scanner = helm.New(opts...)
@@ -134,11 +136,26 @@ func NewScanner(t detection.FileType, opt ScannerOption) (*Scanner, error) {
 		return nil, xerrors.Errorf("unknown file type: %s", t)
 	}
 
+	for _, check := range opt.DisabledChecks {
+		log.Info("Check disabled",
+			log.Prefix(log.PrefixMisconfiguration),
+			log.String("ID", check.AVDID),
+			log.String("file_type", string(check.FileType)),
+			log.String("reason", check.Reason))
+	}
+
+	disabledChecks := lo.GroupByMap(opt.DisabledChecks,
+		func(check DisabledCheck) (detection.FileType, string) {
+			return check.FileType, check.AVDID
+		},
+	)
+
 	return &Scanner{
 		fileType:          t,
 		scanner:           scanner,
 		hasFilePattern:    hasFilePattern(t, opt.FilePatterns),
 		configFileSchemas: opt.ConfigFileSchemas,
+		disabledChecks:    disabledChecks,
 	}, nil
 }
 
@@ -164,6 +181,11 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 	}
 
 	configType := enablediacTypes[s.fileType]
+
+	results = lo.Filter(results, func(r scan.Result, _ int) bool {
+		return !slices.Contains(s.disabledChecks[s.fileType], r.Rule().AVDID)
+	})
+
 	misconfs := ResultsToMisconf(configType, s.scanner.Name(), results)
 
 	// Sort misconfigurations
@@ -236,17 +258,10 @@ func InitRegoScanner(opt ScannerOption) (*rego.Scanner, error) {
 }
 
 func initRegoOptions(opt ScannerOption) ([]options.ScannerOption, error) {
-	disabledCheckIDs := lo.Map(opt.DisabledChecks, func(check DisabledCheck, _ int) string {
-		log.Info("Check disabled", log.Prefix(log.PrefixMisconfiguration), log.String("ID", check.ID),
-			log.String("scanner", check.Scanner), log.String("reason", check.Reason))
-		return check.ID
-	})
-
 	opts := []options.ScannerOption{
 		rego.WithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
 		rego.WithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
 		rego.WithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
-		rego.WithDisabledCheckIDs(disabledCheckIDs...),
 		rego.WithTrivyVersion(app.Version()),
 	}
 
