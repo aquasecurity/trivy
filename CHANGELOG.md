@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.64.0](https://github.com/aquasecurity/trivy/compare/v0.63.0...v0.64.0) (2025-06-07)
+
+
+### Features
+
+* **misconf:** add OpenTofu file extension support ([#8747](https://github.com/aquasecurity/trivy/issues/8747)) ([57801d0](https://github.com/aquasecurity/trivy/commit/57801d0324384d990889ba39d856c881e5b8b070))
+* **misconf:** normalize CreatedBy for buildah and legacy docker builder ([#8953](https://github.com/aquasecurity/trivy/issues/8953)) ([65e155f](https://github.com/aquasecurity/trivy/commit/65e155fdaf0ad02ec82f00a004427f126faf65ed))
+* **redhat:** Add EOL date for RHEL 10. ([#8910](https://github.com/aquasecurity/trivy/issues/8910)) ([48258a7](https://github.com/aquasecurity/trivy/commit/48258a701a7adb210c433310de52f48568ccee19))
+
+
+### Bug Fixes
+
+* Add missing version check flags ([#8951](https://github.com/aquasecurity/trivy/issues/8951)) ([ef5f8de](https://github.com/aquasecurity/trivy/commit/ef5f8de8dadf5534a2c965aecca01c7067e5baca))
+* Correctly check for semver versions for trivy version check ([#8948](https://github.com/aquasecurity/trivy/issues/8948)) ([b813527](https://github.com/aquasecurity/trivy/commit/b813527449c4604f5afad71ae82b13399bb48680))
+* don't show corrupted trivy-db warning for first run ([#8991](https://github.com/aquasecurity/trivy/issues/8991)) ([4ed78e3](https://github.com/aquasecurity/trivy/commit/4ed78e39afe57e81c12482fef9102dc3f85d1493))
+
 ## [0.63.0](https://github.com/aquasecurity/trivy/compare/v0.62.0...v0.63.0) (2025-05-29)
 
 
