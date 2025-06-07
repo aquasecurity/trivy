@@ -86,10 +86,10 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 		}
 		r.flagOpts.ScanOptions.Scanners = scanners
 	}
-	// Apply REGO filtering if configured
+	// Apply REGO skipping if configured
 	filteredArtifacts, err := r.filterArtifacts(ctx, artifacts)
 	if err != nil {
-		return xerrors.Errorf("artifact filtering error: %w", err)
+		return xerrors.Errorf("artifact skipping error: %w", err)
 	}
 
 	var rpt report.Report
@@ -163,11 +163,11 @@ func validateReportArguments(opts flag.Options) error {
 	return nil
 }
 
-// filterArtifacts applies REGO-based filtering to Kubernetes artifacts
+// filterArtifacts applies REGO-based skipping to Kubernetes artifacts
 func (r *runner) filterArtifacts(ctx context.Context, artifacts []*k8sArtifacts.Artifact) ([]*k8sArtifacts.Artifact, error) {
-	// Check if REGO filtering is enabled
-	if r.flagOpts.K8sFilterPolicy == "" {
-		return artifacts, nil // No filtering needed
+	// Check if REGO skipping is enabled
+	if r.flagOpts.K8sSkipPolicy == "" {
+		return artifacts, nil // No skipping needed
 	}
 
 	// Create REGO filter
@@ -202,7 +202,7 @@ func (r *runner) filterArtifacts(ctx context.Context, artifacts []*k8sArtifacts.
 
 		if shouldIgnore {
 			ignoredCount++
-			log.DebugContext(ctx, "Artifact filtered out by REGO policy",
+			log.DebugContext(ctx, "Artifact skipped by REGO policy",
 				log.String("kind", artifact.Kind),
 				log.String("namespace", artifact.Namespace),
 				log.String("name", artifact.Name))
@@ -212,9 +212,9 @@ func (r *runner) filterArtifacts(ctx context.Context, artifacts []*k8sArtifacts.
 	}
 
 	if ignoredCount > 0 {
-		log.InfoContext(ctx, "Filtered K8s artifacts using REGO policy",
+		log.InfoContext(ctx, "Skipped K8s artifacts using REGO policy",
 			log.Int("total", len(artifacts)),
-			log.Int("ignored", ignoredCount),
+			log.Int("skipped", ignoredCount),
 			log.Int("remaining", len(filteredArtifacts)))
 	}
 

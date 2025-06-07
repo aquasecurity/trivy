@@ -27,7 +27,7 @@ func TestNewRegoFilter(t *testing.T) {
 		{
 			name: "valid policy file",
 			opts: flag.K8sOptions{
-				K8sFilterPolicy: "testdata/valid-policy.rego",
+				K8sSkipPolicy: "testdata/valid-policy.rego",
 			},
 			wantNil: false,
 			wantErr: false,
@@ -35,7 +35,7 @@ func TestNewRegoFilter(t *testing.T) {
 		{
 			name: "invalid policy file path",
 			opts: flag.K8sOptions{
-				K8sFilterPolicy: "nonexistent.rego",
+				K8sSkipPolicy: "nonexistent.rego",
 			},
 			wantNil: false,
 			wantErr: true,
@@ -45,8 +45,8 @@ func TestNewRegoFilter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Create test policy file if needed
-			if tt.opts.K8sFilterPolicy == "testdata/valid-policy.rego" {
-				createTestPolicy(t, tt.opts.K8sFilterPolicy)
+			if tt.opts.K8sSkipPolicy == "testdata/valid-policy.rego" {
+				createTestPolicy(t, tt.opts.K8sSkipPolicy)
 			}
 
 			filter, err := NewRegoFilter(t.Context(), tt.opts)
@@ -168,7 +168,7 @@ ignore {
 			tmpFile.Close()
 
 			opts := flag.K8sOptions{
-				K8sFilterPolicy: tmpFile.Name(),
+				K8sSkipPolicy: tmpFile.Name(),
 			}
 
 			filter, err := NewRegoFilter(t.Context(), opts)

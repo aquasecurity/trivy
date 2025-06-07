@@ -89,8 +89,8 @@ trivy kubernetes [flags] [CONTEXT]
       --include-namespaces strings        indicate the namespaces included in scanning (example: kube-system)
       --include-non-failures              include successes, available with '--scanners misconfig'
       --java-db-repository strings        OCI repository(ies) to retrieve trivy-java-db in order of priority (default [mirror.gcr.io/aquasec/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1])
-      --k8s-filter-data strings           specify paths to data files for Kubernetes REGO filtering
-      --k8s-filter-policy string          specify the path to REGO policy file for Kubernetes resource filtering
+      --k8s-skip-data strings             specify paths to additional REGO files for Kubernetes skipping (can use same package name)
+      --k8s-skip-policy string            specify the path to REGO policy file to skip Kubernetes resources before scanning
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --kubeconfig string                 specify the kubeconfig file path to use
       --list-all-pkgs                     output all packages in the JSON report regardless of vulnerability

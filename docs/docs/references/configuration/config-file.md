@@ -181,11 +181,11 @@ kubernetes:
   # Same as '--exclude-namespaces'
   excludeNamespaces: []
 
-  # Same as '--k8s-filter-data'
-  filter-data: []
+  # Same as '--k8s-skip-data'
+  skip-data: []
 
-  # Same as '--k8s-filter-policy'
-  filter-policy: ""
+  # Same as '--k8s-skip-policy'
+  skip-policy: ""
 
   # Same as '--include-kinds'
   includeKinds: []

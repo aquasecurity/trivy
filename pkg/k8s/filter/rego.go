@@ -12,7 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/flag"
 )
 
-// K8sArtifact represents Kubernetes resource metadata for REGO filtering
+// K8sArtifact represents Kubernetes resource metadata for REGO-based skipping
 type K8sArtifact struct {
 	Kind        string            `json:"kind"`
 	Namespace   string            `json:"namespace"`
@@ -22,20 +22,20 @@ type K8sArtifact struct {
 	Spec        any               `json:"spec,omitempty"`
 }
 
-// RegoFilter handles REGO-based filtering for Kubernetes artifacts
+// RegoFilter handles REGO-based skipping for Kubernetes artifacts
 type RegoFilter struct {
 	query rego.PreparedEvalQuery
 }
 
-// NewRegoFilter creates a new REGO filter instance
+// NewRegoFilter creates a new REGO filter instance for skipping artifacts
 func NewRegoFilter(ctx context.Context, opts flag.K8sOptions) (*RegoFilter, error) {
-	if opts.K8sFilterPolicy == "" {
-		return nil, nil // No policy specified, no filtering needed
+	if opts.K8sSkipPolicy == "" {
+		return nil, nil // No policy specified, no skipping needed
 	}
 
-	policy, err := os.ReadFile(opts.K8sFilterPolicy)
+	policy, err := os.ReadFile(opts.K8sSkipPolicy)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to read the K8s filter policy file: %w", err)
+		return nil, xerrors.Errorf("unable to read the K8s skip policy file: %w", err)
 	}
 
 	// Create rego query
@@ -45,21 +45,22 @@ func NewRegoFilter(ctx context.Context, opts flag.K8sOptions) (*RegoFilter, erro
 		rego.SetRegoVersion(ast.RegoLatest),
 	}
 
-	// Add data files if specified
-	for _, dataFile := range opts.K8sFilterData {
-		data, err := os.ReadFile(dataFile)
+	// Add additional REGO files if specified
+	// These can contain additional rules in the same package or supporting data
+	for _, extraFile := range opts.K8sSkipData {
+		data, err := os.ReadFile(extraFile)
 		if err != nil {
-			return nil, xerrors.Errorf("unable to read K8s filter data file %s: %w", dataFile, err)
+			return nil, xerrors.Errorf("unable to read additional K8s skip file %s: %w", extraFile, err)
 		}
 
 		// Use the file name as the module name
-		moduleName := filepath.Base(dataFile)
+		moduleName := filepath.Base(extraFile)
 		regoOptions = append(regoOptions, rego.Module(moduleName, string(data)))
 	}
 
 	query, err := rego.New(regoOptions...).PrepareForEval(ctx)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to prepare K8s filter policy for eval: %w", err)
+		return nil, xerrors.Errorf("unable to prepare K8s skip policy for eval: %w", err)
 	}
 
 	return &RegoFilter{query: query}, nil
@@ -73,7 +74,7 @@ func (f *RegoFilter) ShouldIgnore(ctx context.Context, artifact K8sArtifact) (bo
 
 	results, err := f.query.Eval(ctx, rego.EvalInput(artifact))
 	if err != nil {
-		return false, xerrors.Errorf("unable to evaluate K8s filter policy: %w", err)
+		return false, xerrors.Errorf("unable to evaluate K8s skip policy: %w", err)
 	}
 
 	if len(results) == 0 {
@@ -84,7 +85,7 @@ func (f *RegoFilter) ShouldIgnore(ctx context.Context, artifact K8sArtifact) (bo
 	ignore, ok := results[0].Expressions[0].Value.(bool)
 	if !ok {
 		// Handle unexpected result type
-		return false, xerrors.Errorf("K8s filter policy must return boolean, but got %T", results[0].Expressions[0].Value)
+		return false, xerrors.Errorf("K8s skip policy must return boolean, but got %T", results[0].Expressions[0].Value)
 	}
 
 	return ignore, nil

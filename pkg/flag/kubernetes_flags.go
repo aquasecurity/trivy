@@ -91,15 +91,15 @@ var (
 		Default:    10,
 		Usage:      "specify the maximum burst for throttle",
 	}
-	K8sFilterPolicyFlag = Flag[string]{
-		Name:       "k8s-filter-policy",
-		ConfigName: "kubernetes.filter-policy",
-		Usage:      "specify the path to REGO policy file for Kubernetes resource filtering",
+	K8sSkipPolicyFlag = Flag[string]{
+		Name:       "k8s-skip-policy",
+		ConfigName: "kubernetes.skip-policy",
+		Usage:      "specify the path to REGO policy file to skip Kubernetes resources before scanning",
 	}
-	K8sFilterDataFlag = Flag[[]string]{
-		Name:       "k8s-filter-data",
-		ConfigName: "kubernetes.filter-data",
-		Usage:      "specify paths to data files for Kubernetes REGO filtering",
+	K8sSkipDataFlag = Flag[[]string]{
+		Name:       "k8s-skip-data",
+		ConfigName: "kubernetes.skip-data",
+		Usage:      "specify paths to additional REGO files for Kubernetes skipping (can use same package name)",
 	}
 )
 
@@ -119,8 +119,8 @@ type K8sFlagGroup struct {
 	IncludeNamespaces      *Flag[[]string]
 	QPS                    *Flag[float64]
 	Burst                  *Flag[int]
-	K8sFilterPolicy        *Flag[string]
-	K8sFilterData          *Flag[[]string]
+	K8sSkipPolicy          *Flag[string]
+	K8sSkipData            *Flag[[]string]
 }
 
 type K8sOptions struct {
@@ -139,8 +139,8 @@ type K8sOptions struct {
 	QPS                    float32
 	SkipImages             bool
 	Burst                  int
-	K8sFilterPolicy        string
-	K8sFilterData          []string
+	K8sSkipPolicy          string
+	K8sSkipData            []string
 }
 
 func NewK8sFlagGroup() *K8sFlagGroup {
@@ -160,8 +160,8 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		QPS:                    QPS.Clone(),
 		SkipImages:             SkipImages.Clone(),
 		Burst:                  Burst.Clone(),
-		K8sFilterPolicy:        K8sFilterPolicyFlag.Clone(),
-		K8sFilterData:          K8sFilterDataFlag.Clone(),
+		K8sSkipPolicy:          K8sSkipPolicyFlag.Clone(),
+		K8sSkipData:            K8sSkipDataFlag.Clone(),
 	}
 }
 
@@ -186,8 +186,8 @@ func (f *K8sFlagGroup) Flags() []Flagger {
 		f.QPS,
 		f.SkipImages,
 		f.Burst,
-		f.K8sFilterPolicy,
-		f.K8sFilterData,
+		f.K8sSkipPolicy,
+		f.K8sSkipData,
 	}
 }
 
@@ -229,8 +229,8 @@ func (f *K8sFlagGroup) ToOptions(opts *Options) error {
 		ExcludeNamespaces:      f.ExcludeNamespaces.Value(),
 		IncludeNamespaces:      f.IncludeNamespaces.Value(),
 		Burst:                  f.Burst.Value(),
-		K8sFilterPolicy:        f.K8sFilterPolicy.Value(),
-		K8sFilterData:          f.K8sFilterData.Value(),
+		K8sSkipPolicy:          f.K8sSkipPolicy.Value(),
+		K8sSkipData:            f.K8sSkipData.Value(),
 	}
 	return nil
 }

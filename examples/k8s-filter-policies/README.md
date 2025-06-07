@@ -1,13 +1,13 @@
-# Kubernetes REGO Filter Policies
+# Kubernetes REGO Skip Policies
 
-This directory contains example REGO policies for filtering Kubernetes resources during Trivy scans.
+This directory contains example REGO policies for skipping Kubernetes resources during Trivy scans.
 
 ## Feature Overview
 
-The Kubernetes REGO filtering feature allows you to skip scanning specific Kubernetes resources based on custom REGO rules. This is useful for:
+The Kubernetes REGO skipping feature allows you to skip scanning specific Kubernetes resources based on custom REGO rules. This is useful for:
 
 - Excluding system resources that are not relevant to security scans
-- Filtering out test/development resources in multi-environment clusters
+- Skipping test/development resources in multi-environment clusters
 - Skipping resources with zero replicas (addressed issue #8078)
 - Applying custom business logic for resource selection
 
@@ -16,14 +16,14 @@ The Kubernetes REGO filtering feature allows you to skip scanning specific Kuber
 ### Basic Usage
 
 ```bash
-# Filter out deployments with zero replicas
-trivy k8s --k8s-filter-policy=deployment-zero-replicas.rego cluster
+# Skip deployments with zero replicas
+trivy k8s --k8s-skip-policy=deployment-zero-replicas.rego cluster
 
-# Filter out system resources
-trivy k8s --k8s-filter-policy=system-resources.rego cluster
+# Skip system resources
+trivy k8s --k8s-skip-policy=system-resources.rego cluster
 
-# Use multiple data files with a policy
-trivy k8s --k8s-filter-policy=custom.rego --k8s-filter-data=config.rego cluster
+# Use additional REGO files with a policy
+trivy k8s --k8s-skip-policy=custom.rego --k8s-skip-data=config.rego cluster
 ```
 
 ### Multiple Policies
@@ -32,11 +32,11 @@ You can combine multiple policies by creating a comprehensive policy file that i
 
 ## Policy Structure
 
-All Kubernetes filter policies must:
+All Kubernetes skip policies must:
 
 1. Use the package `trivy.kubernetes`
 2. Define rules under the `ignore` decision
-3. Return a boolean value (true to ignore the resource)
+3. Return a boolean value (true to skip the resource)
 
 ### Input Format
 
@@ -68,20 +68,20 @@ The input to your REGO policy will be a Kubernetes artifact with the following s
 ## Example Policies
 
 ### 1. deployment-zero-replicas.rego
-Filters out Deployments with zero replicas (addresses issue #8078).
+Skips Deployments with zero replicas (addresses issue #8078).
 
 ### 2. system-resources.rego  
-Excludes system-level resources like those in kube-system namespace.
+Skips system-level resources like those in kube-system namespace.
 
 ### 3. environment-based.rego
-Filters resources based on environment labels and annotations.
+Skips resources based on environment labels and annotations.
 
 ### 4. workload-specific.rego
-Advanced filtering based on workload specifications and states.
+Advanced skipping based on workload specifications and states.
 
 ## Writing Custom Policies
 
-### Basic Filter
+### Basic Skip Rule
 ```rego
 package trivy.kubernetes
 
@@ -90,7 +90,7 @@ ignore {
 }
 ```
 
-### Label-based Filter
+### Label-based Skip Rule
 ```rego
 package trivy.kubernetes
 
@@ -99,7 +99,7 @@ ignore {
 }
 ```
 
-### Spec-based Filter
+### Spec-based Skip Rule
 ```rego
 package trivy.kubernetes
 
@@ -135,10 +135,10 @@ These policies can be integrated into CI/CD pipelines:
 
 ```yaml
 # Example GitHub Actions step
-- name: Scan Kubernetes with filtering
+- name: Scan Kubernetes with skipping
   run: |
     trivy k8s \
-      --k8s-filter-policy=.trivy/k8s-filter.rego \
+      --k8s-skip-policy=.trivy/k8s-skip.rego \
       --format=sarif \
       --output=trivy-k8s.sarif \
       cluster
@@ -148,8 +148,8 @@ These policies can be integrated into CI/CD pipelines:
 
 - **Policy not working**: Ensure the package name is exactly `trivy.kubernetes`
 - **Syntax errors**: Validate your REGO syntax with `opa fmt` and `opa test`
-- **No resources filtered**: Check that your conditions match the actual resource structure
-- **Too many resources filtered**: Add debug logging to understand which rules are matching
+- **No resources skipped**: Check that your conditions match the actual resource structure
+- **Too many resources skipped**: Add debug logging to understand which rules are matching
 
 ## Contributing
 
