@@ -16,7 +16,7 @@ func ResolveOr(property *Property) (resolved *Property, success bool) {
 	}
 
 	results := make([]bool, len(refValue))
-	for i := 0; i < len(refValue); i++ {
+	for i := range refValue {
 
 		r := false
 		if refValue[i].IsBool() {

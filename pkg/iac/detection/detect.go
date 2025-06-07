@@ -239,7 +239,7 @@ func init() {
 			marker = altMarker
 		}
 
-		for _, partial := range bytes.Split(data, marker) {
+		for partial := range bytes.SplitSeq(data, marker) {
 			var result map[string]any
 			if err := yaml.Unmarshal(partial, &result); err != nil {
 				continue

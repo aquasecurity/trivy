@@ -16,7 +16,7 @@ func Test_Peeker(t *testing.T) {
 	var b rune
 	var err error
 
-	for i := 0; i < 30; i++ {
+	for range 30 {
 		b, err = peeker.Peek()
 		require.NoError(t, err)
 		assert.Equal(t, ('a'), b)
@@ -34,7 +34,7 @@ func Test_Peeker(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, ('c'), b)
 
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		b, err = peeker.Next()
 		require.NoError(t, err)
 		assert.Equal(t, []rune(input)[2+i], b)
@@ -47,7 +47,7 @@ func Test_Peeker(t *testing.T) {
 	b, err = peeker.Next()
 	require.NoError(t, err)
 	assert.Equal(t, ('h'), b)
-	for i := 0; i < 18; i++ {
+	for i := range 18 {
 		b, err = peeker.Next()
 		require.NoError(t, err)
 		assert.Equal(t, []rune(input)[8+i], b)

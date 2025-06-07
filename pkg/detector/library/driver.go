@@ -148,7 +148,7 @@ func createFixedVersions(advisory dbTypes.Advisory) string {
 
 	var fixedVersions []string
 	for _, version := range advisory.VulnerableVersions {
-		for _, s := range strings.Split(version, ",") {
+		for s := range strings.SplitSeq(version, ",") {
 			s = strings.TrimSpace(s)
 			if !strings.HasPrefix(s, "<=") && strings.HasPrefix(s, "<") {
 				s = strings.TrimPrefix(s, "<")

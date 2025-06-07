@@ -151,8 +151,8 @@ func (a alpineCmdAnalyzer) parseCommand(command string, envs map[string]string) 
 
 	command = strings.TrimPrefix(command, "/bin/sh -c")
 	var commands []string
-	for _, cmd := range strings.Split(command, "&&") {
-		for _, c := range strings.Split(cmd, ";") {
+	for cmd := range strings.SplitSeq(command, "&&") {
+		for c := range strings.SplitSeq(cmd, ";") {
 			commands = append(commands, strings.TrimSpace(c))
 		}
 	}

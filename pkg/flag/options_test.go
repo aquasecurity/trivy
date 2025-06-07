@@ -137,7 +137,7 @@ type Output struct {
 
 func (o Output) Messages() []string {
 	var messages []string
-	for _, line := range strings.Split(o.b.String(), "\n") {
+	for line := range strings.SplitSeq(o.b.String(), "\n") {
 		if line == "" {
 			continue
 		}

@@ -458,7 +458,7 @@ func (s *paramParser) Parse(str string) bool {
 	str = str[idx+1:]
 
 	paramStr := strings.TrimSuffix(str, "]")
-	for _, pair := range strings.Split(paramStr, ",") {
+	for pair := range strings.SplitSeq(paramStr, ",") {
 		parts := strings.Split(pair, "=")
 		if len(parts) != 2 {
 			continue

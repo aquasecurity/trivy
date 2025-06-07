@@ -19,7 +19,7 @@ func SliceToRego(inputValue reflect.Value) []any {
 
 	output := make([]any, inputValue.Len())
 
-	for i := 0; i < inputValue.Len(); i++ {
+	for i := range inputValue.Len() {
 		val := inputValue.Index(i)
 		if val.Type().Kind() == reflect.Ptr && val.IsZero() {
 			output[i] = nil

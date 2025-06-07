@@ -31,13 +31,11 @@ func ResolveSplit(property *Property) (resolved *Property, success bool) {
 }
 
 func createPropertyList(splitProp, delimiterProp, parent *Property) []*Property {
-
 	splitString := splitProp.AsString()
 	delimiter := delimiterProp.AsString()
 
-	splits := strings.Split(splitString, delimiter)
 	var props []*Property
-	for _, split := range splits {
+	for split := range strings.SplitSeq(splitString, delimiter) {
 		props = append(props, parent.deriveResolved(cftypes.String, split))
 	}
 	return props

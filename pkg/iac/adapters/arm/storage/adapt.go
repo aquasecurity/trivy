@@ -22,7 +22,7 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 
 		var bypasses []types.StringValue
 		bypassProp := acl.GetMapValue("bypass")
-		for _, bypass := range strings.Split(bypassProp.AsString(), ",") {
+		for bypass := range strings.SplitSeq(bypassProp.AsString(), ",") {
 			bypasses = append(bypasses, types.String(strings.TrimSpace(bypass), bypassProp.GetMetadata()))
 		}
 

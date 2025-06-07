@@ -187,7 +187,7 @@ func TestSlogtest(t *testing.T) {
 	}
 
 	results := func(*testing.T) map[string]any {
-		for _, line := range strings.Split(buf.String(), "\n") {
+		for line := range strings.SplitSeq(buf.String(), "\n") {
 			if line == "" {
 				continue
 			}
@@ -218,7 +218,7 @@ func parseLogLine(line string) (map[string]any, error) {
 	m["msg"] = parts[1]
 
 	if len(parts) == 3 {
-		for _, attr := range strings.Split(parts[2], " ") {
+		for attr := range strings.SplitSeq(parts[2], " ") {
 			kv := strings.SplitN(attr, "=", 2)
 			if len(kv) == 2 {
 				parseAttr(m, kv[0], kv[1])
