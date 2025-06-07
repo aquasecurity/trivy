@@ -84,7 +84,7 @@ func (f *RegoFilter) ShouldIgnore(ctx context.Context, artifact K8sArtifact) (bo
 	ignore, ok := results[0].Expressions[0].Value.(bool)
 	if !ok {
 		// Handle unexpected result type
-		return false, xerrors.New("K8s filter policy must return boolean")
+		return false, xerrors.Errorf("K8s filter policy must return boolean, but got %T", results[0].Expressions[0].Value)
 	}
 
 	return ignore, nil
