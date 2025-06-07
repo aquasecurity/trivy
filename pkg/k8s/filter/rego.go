@@ -42,7 +42,7 @@ func NewRegoFilter(ctx context.Context, opts flag.K8sOptions) (*RegoFilter, erro
 	regoOptions := []func(*rego.Rego){
 		rego.Query("data.trivy.kubernetes.ignore"),
 		rego.Module("trivy-k8s.rego", string(policy)),
-		rego.SetRegoVersion(ast.RegoV0),
+		rego.SetRegoVersion(ast.RegoLatest),
 	}
 
 	// Add data files if specified
