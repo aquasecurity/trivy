@@ -72,6 +72,9 @@ func (m *Decoder) Decode(ctx context.Context, sbom *types.SBOM) error {
 		return xerrors.Errorf("failed to aggregate packages: %w", err)
 	}
 
+	// If m.Packages has multiple PackageInfo, merge them if they have the same package manager (rpm, deb)
+	m.mergePackageInfos(sbom)
+
 	sort.Slice(sbom.Applications, func(i, j int) bool {
 		if sbom.Applications[i].Type != sbom.Applications[j].Type {
 			return sbom.Applications[i].Type < sbom.Applications[j].Type
@@ -411,4 +414,22 @@ func (m *Decoder) addOrphanPkgs(ctx context.Context, sbom *types.SBOM) error {
 		})
 	}
 	return nil
+}
+
+// mergePackageInfos merges PackageInfos with the same package manager (rpm, deb)
+func (m *Decoder) mergePackageInfos(sbom *types.SBOM) {
+	packageInfoMap := make(map[string]ftypes.PackageInfo)
+	for _, pkgInfo := range sbom.Packages {
+		if len(pkgInfo.Packages) == 0 {
+			continue
+		}
+		pType := pkgInfo.Packages[0].Identifier.PURL.Type
+		if packageInfo, ok := packageInfoMap[pType]; !ok {
+			packageInfoMap[pType] = pkgInfo
+		} else {
+			packageInfo.Packages = append(packageInfo.Packages, pkgInfo.Packages...)
+			packageInfoMap[pType] = packageInfo
+		}
+	}
+	sbom.Packages = lo.Values(packageInfoMap)
 }
