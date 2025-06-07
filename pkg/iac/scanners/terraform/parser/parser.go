@@ -108,8 +108,8 @@ func (p *Parser) Files() map[string]*hcl.File {
 
 func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 
-	isJSON := strings.HasSuffix(fullPath, ".tf.json")
-	isHCL := strings.HasSuffix(fullPath, ".tf")
+	isJSON := strings.HasSuffix(fullPath, ".tf.json") || strings.HasSuffix(fullPath, ".tofu.json")
+	isHCL := strings.HasSuffix(fullPath, ".tf") || strings.HasSuffix(fullPath, ".tofu")
 	if !isJSON && !isHCL {
 		return nil
 	}
