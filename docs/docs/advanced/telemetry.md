@@ -29,5 +29,5 @@ You can disable telemetry altogether using the `--disable-telemetry` flag. Like 
 For example:
 
 ```bash
-trivy image --disable-metrics alpine
+trivy image --disable-telemetry alpine
 ```
