@@ -150,7 +150,7 @@ func (a alpinePkgAnalyzer) parseLicense(line string) []string {
 }
 
 func (a alpinePkgAnalyzer) parseProvides(line, pkgID string, provides map[string]string) {
-	for _, p := range strings.Fields(line[2:]) {
+	for p := range strings.FieldsSeq(line[2:]) {
 		p = a.trimRequirement(p)
 
 		// Assume name ("P:") and version ("V:") are defined before provides ("p:")

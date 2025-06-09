@@ -162,7 +162,7 @@ func (a alpineCmdAnalyzer) parseCommand(command string, envs map[string]string) 
 		}
 
 		var add bool
-		for _, field := range strings.Fields(cmd) {
+		for field := range strings.FieldsSeq(cmd) {
 			switch {
 			case strings.HasPrefix(field, "-") || strings.HasPrefix(field, "."):
 				continue

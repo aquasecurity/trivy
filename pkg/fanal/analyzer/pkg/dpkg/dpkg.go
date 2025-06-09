@@ -306,7 +306,7 @@ func (a dpkgAnalyzer) pkgID(name, version string) string {
 }
 
 func (a dpkgAnalyzer) parseStatus(s string) bool {
-	for _, ss := range strings.Fields(s) {
+	for ss := range strings.FieldsSeq(s) {
 		if ss == "deinstall" || ss == "purge" {
 			return false
 		}
