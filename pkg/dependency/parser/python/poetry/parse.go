@@ -2,6 +2,7 @@ package poetry
 
 import (
 	"slices"
+	"sort"
 
 	"github.com/BurntSushi/toml"
 	"golang.org/x/xerrors"
@@ -100,7 +101,9 @@ func (p *Parser) parseDependencies(deps map[string]any, pkgVersions map[string][
 			dependsOn = append(dependsOn, dep)
 		}
 	}
-	slices.Sort(dependsOn)
+	sort.Slice(dependsOn, func(i, j int) bool {
+		return dependsOn[i] < dependsOn[j]
+	})
 	return dependsOn
 }
 

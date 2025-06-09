@@ -42,10 +42,7 @@ func (c RegistryConfig) GetRegistryAuth() (string, error) {
 }
 
 func (c RegistryConfig) GetBasicAuthorization() string {
-	return fmt.Sprintf(
-		"Basic %s",
-		base64.StdEncoding.EncodeToString(fmt.Appendf(nil, "%s:%s", c.Username, c.Password)),
-	)
+	return fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", c.Username, c.Password))))
 }
 
 type Docker struct {

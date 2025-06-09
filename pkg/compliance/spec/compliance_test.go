@@ -2,7 +2,7 @@ package spec_test
 
 import (
 	"path/filepath"
-	"slices"
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -129,7 +129,9 @@ func TestComplianceSpec_Scanners(t *testing.T) {
 			if !tt.wantErr(t, err, "Scanners()") {
 				return
 			}
-			slices.Sort(got) // for consistency
+			sort.Slice(got, func(i, j int) bool {
+				return got[i] < got[j]
+			}) // for consistency
 			assert.Equalf(t, tt.want, got, "Scanners()")
 		})
 	}

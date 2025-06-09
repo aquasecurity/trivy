@@ -1,9 +1,6 @@
 package functions
 
-import (
-	"maps"
-	"sort"
-)
+import "sort"
 
 func Intersection(args ...any) any {
 
@@ -57,7 +54,9 @@ func intersectionArray(args ...any) any {
 func intersectionMap(args ...any) any {
 	hash := make(map[string]any)
 
-	maps.Copy(hash, args[0].(map[string]any))
+	for k, v := range args[0].(map[string]any) {
+		hash[k] = v
+	}
 
 	for i := 1; i < len(args); i++ {
 		workingHash := make(map[string]any)

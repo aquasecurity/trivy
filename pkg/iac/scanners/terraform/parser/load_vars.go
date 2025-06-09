@@ -3,7 +3,6 @@ package parser
 import (
 	"fmt"
 	"io/fs"
-	"maps"
 	"os"
 	"path/filepath"
 	"strings"
@@ -36,7 +35,9 @@ func loadTFVars(srcFS fs.FS, filenames []string) (map[string]cty.Value, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to load tfvars from %s: %w", filename, err)
 		}
-		maps.Copy(combinedVars, vars)
+		for k, v := range vars {
+			combinedVars[k] = v
+		}
 	}
 
 	return combinedVars, nil

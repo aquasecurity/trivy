@@ -54,7 +54,10 @@ func (d Digest) String() string {
 }
 
 func (d Digest) sepIndex() int {
-	i := max(strings.Index(string(d), ":"), 0)
+	i := strings.Index(string(d), ":")
+	if i < 0 {
+		i = 0
+	}
 	return i
 }
 

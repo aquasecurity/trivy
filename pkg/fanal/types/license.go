@@ -27,7 +27,7 @@ type LicenseFile struct {
 	FilePath string
 	PkgName  string
 	Findings LicenseFindings
-	Layer    Layer
+	Layer    Layer `json:",omitempty"`
 }
 
 type LicenseFindings []LicenseFinding

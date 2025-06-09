@@ -3,7 +3,6 @@ package scan
 import (
 	"fmt"
 	"regexp"
-	"slices"
 	"strings"
 
 	"golang.org/x/text/cases"
@@ -67,7 +66,12 @@ func (r Rule) HasID(id string) bool {
 	if r.AVDID == id || r.LongID() == id {
 		return true
 	}
-	return slices.Contains(r.Aliases, id)
+	for _, alias := range r.Aliases {
+		if alias == id {
+			return true
+		}
+	}
+	return false
 }
 
 func (r Rule) LongID() string {

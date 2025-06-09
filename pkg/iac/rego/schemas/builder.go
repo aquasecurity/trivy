@@ -192,7 +192,7 @@ func (b *builder) readStruct(name string, parent, inputType reflect.Type, indent
 		}
 	} else {
 
-		for i := range inputType.NumField() {
+		for i := 0; i < inputType.NumField(); i++ {
 
 			field := inputType.Field(i)
 			prop, err := b.readProperty(field.Name, inputType, field.Type, indent+1)

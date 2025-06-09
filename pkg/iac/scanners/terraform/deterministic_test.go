@@ -32,7 +32,7 @@ locals {
 		`,
 	})
 
-	for range 100 {
+	for i := 0; i < 100; i++ {
 		results, err := scanFS(fsys, ".",
 			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 			rego.WithPolicyNamespaces("user"),

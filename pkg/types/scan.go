@@ -88,7 +88,12 @@ func (scanners *Scanners) Enabled(s Scanner) bool {
 
 // AnyEnabled returns true if any of the passed scanners is included.
 func (scanners *Scanners) AnyEnabled(ss ...Scanner) bool {
-	return slices.ContainsFunc(ss, scanners.Enabled)
+	for _, s := range ss {
+		if scanners.Enabled(s) {
+			return true
+		}
+	}
+	return false
 }
 
 // ScanTarget holds the attributes for scanning.

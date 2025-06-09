@@ -199,7 +199,7 @@ func configureHeader(s SummaryWriter, t *table.Table, columnHeading []string) {
 			table.AlignLeft,
 			table.AlignLeft,
 		}
-		for range count {
+		for i := 0; i < count; i++ {
 			headerRow = append(headerRow, s.SeverityHeadings...)
 			colSpan = append(colSpan, sevCount)
 			headerAlignment = append(headerAlignment, table.AlignCenter)

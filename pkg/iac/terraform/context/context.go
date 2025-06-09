@@ -1,7 +1,6 @@
 package context
 
 import (
-	"maps"
 	"strings"
 
 	"github.com/hashicorp/hcl/v2"
@@ -127,7 +126,9 @@ func mergeVars(src cty.Value, parts []string, value cty.Value) cty.Value {
 func mergeObjects(a, b cty.Value) cty.Value {
 	output := make(map[string]cty.Value)
 
-	maps.Copy(output, a.AsValueMap())
+	for key, val := range a.AsValueMap() {
+		output[key] = val
+	}
 	b.ForEachElement(func(key, val cty.Value) (stop bool) {
 		k := key.AsString()
 		old := output[k]

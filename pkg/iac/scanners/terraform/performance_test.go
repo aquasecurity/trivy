@@ -20,7 +20,8 @@ func BenchmarkCalculate(b *testing.B) {
 		b.Fatal(err)
 	}
 
-	for b.Loop() {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
 		p := parser.New(f, "", parser.OptionStopOnHCLError(true))
 		require.NoError(b, p.ParseFS(b.Context(), "project"))
 		modules, err := p.EvaluateAll(b.Context())

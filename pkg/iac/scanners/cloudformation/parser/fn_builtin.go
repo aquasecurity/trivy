@@ -52,7 +52,7 @@ func calculateCidrs(ipaddress string, count, bit int, original *Property) ([]*Pr
 		return nil, err
 	}
 
-	for i := range count {
+	for i := 0; i < count; i++ {
 		next, err := cidr.Subnet(network, bit, i)
 		if err != nil {
 			return nil, errors.New("failed to create cidr blocks")

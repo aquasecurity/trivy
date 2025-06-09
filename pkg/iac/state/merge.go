@@ -14,7 +14,7 @@ func (a *State) Merge(b *State) (*State, error) {
 	outputVal := reflect.ValueOf(&output).Elem()
 
 	stateType := reflect.ValueOf(a).Elem().Type()
-	for i := range stateType.NumField() {
+	for i := 0; i < stateType.NumField(); i++ {
 		field := stateType.Field(i)
 		if !field.IsExported() {
 			continue
@@ -22,7 +22,7 @@ func (a *State) Merge(b *State) (*State, error) {
 		if field.Type.Kind() != reflect.Struct {
 			continue
 		}
-		for j := range field.Type.NumField() {
+		for j := 0; j < field.Type.NumField(); j++ {
 			serviceField := field.Type.Field(j)
 			if !serviceField.IsExported() {
 				continue

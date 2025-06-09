@@ -76,7 +76,7 @@ func (p *Pipeline[T, U]) Do(ctx context.Context) error {
 	results := make(chan U)
 
 	// Start a fixed number of goroutines to process items.
-	for range p.numWorkers {
+	for i := 0; i < p.numWorkers; i++ {
 		g.Go(func() error {
 			for item := range itemCh {
 				res, err := p.onItem(ctx, item)

@@ -3,7 +3,6 @@ package parser
 import (
 	"fmt"
 	"io"
-	"maps"
 	"net/url"
 	"os"
 	"strings"
@@ -74,7 +73,9 @@ func (opts *ValueOptions) MergeValues() (map[string]any, error) {
 
 func mergeMaps(a, b map[string]any) map[string]any {
 	out := make(map[string]any, len(a))
-	maps.Copy(out, a)
+	for k, v := range a {
+		out[k] = v
+	}
 	for k, v := range b {
 		if v, ok := v.(map[string]any); ok {
 			if bv, ok := out[k]; ok {

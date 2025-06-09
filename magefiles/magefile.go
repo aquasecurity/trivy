@@ -12,7 +12,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hashicorp/go-multierror"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
@@ -111,11 +110,6 @@ func (Tool) matchGolangciLintVersion(bin, version string) bool {
 		return false
 	}
 	return true
-}
-
-func (Tool) GoplsModernize() error {
-	const version = "v0.18.1"
-	return sh.Run("go", "install", fmt.Sprintf("golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize@%s", version))
 }
 
 func (Tool) Install() error {
@@ -353,30 +347,14 @@ type Lint mg.Namespace
 
 // Run runs linters
 func (Lint) Run() error {
-	mg.Deps(Tool{}.GolangciLint, Tool{}.GoplsModernize)
-
-	var errs error
-	if err := sh.RunV("golangci-lint", "run"); err != nil {
-		errs = multierror.Append(errs, err)
-	}
-	if err := sh.RunV("modernize", "-test", "./..."); err != nil {
-		errs = multierror.Append(errs, err)
-	}
-	return errs
+	mg.Deps(Tool{}.GolangciLint)
+	return sh.RunV("golangci-lint", "run")
 }
 
 // Fix auto fixes linters
 func (Lint) Fix() error {
-	mg.Deps(Tool{}.GolangciLint, Tool{}.GoplsModernize)
-
-	var errs error
-	if err := sh.RunV("golangci-lint", "run", "--fix"); err != nil {
-		errs = multierror.Append(errs, err)
-	}
-	if err := sh.RunV("modernize", "-test", "-fix", "./..."); err != nil {
-		errs = multierror.Append(errs, err)
-	}
-	return errs
+	mg.Deps(Tool{}.GolangciLint)
+	return sh.RunV("golangci-lint", "run", "--fix")
 }
 
 // Fmt formats Go code and proto files

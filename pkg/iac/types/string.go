@@ -2,7 +2,6 @@ package types
 
 import (
 	"encoding/json"
-	"slices"
 	"strings"
 )
 
@@ -88,7 +87,12 @@ func (s StringValue) IsOneOf(values ...string) bool {
 	if s.metadata.isUnresolvable {
 		return false
 	}
-	return slices.Contains(values, s.value)
+	for _, value := range values {
+		if value == s.value {
+			return true
+		}
+	}
+	return false
 }
 
 func (s StringValue) GetMetadata() Metadata {

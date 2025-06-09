@@ -7,7 +7,10 @@ func PickZones(args ...any) any {
 	numOfZones := 1
 
 	if len(args) > 3 {
-		numOfZones = min(args[3].(int), 3)
+		numOfZones = args[3].(int)
+		if numOfZones > 3 {
+			numOfZones = 3
+		}
 	}
 
 	var zones []int

@@ -237,7 +237,7 @@ func Test_FallbackErrorWithoutLocation(t *testing.T) {
 		},
 	}
 
-	for i := range ast.CompileErrorLimitDefault + 1 {
+	for i := 0; i < ast.CompileErrorLimitDefault+1; i++ {
 		src := `# METADATA
 # schemas:
 # - input: schema["fooschema"]
@@ -247,7 +247,7 @@ deny {
 	input.evil == "foo bar"
 }`
 		fsys[fmt.Sprintf("policies/my-check%d.rego", i)] = &fstest.MapFile{
-			Data: fmt.Appendf(nil, src, i),
+			Data: []byte(fmt.Sprintf(src, i)),
 		}
 	}
 
@@ -324,7 +324,7 @@ func TestIsMinimumTrivyVersion(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			fsys := fstest.MapFS{
-				"check.rego": &fstest.MapFile{Data: fmt.Appendf(nil, `# METADATA
+				"check.rego": &fstest.MapFile{Data: []byte(fmt.Sprintf(`# METADATA
 # title: "dummy title"
 # description: "some description"
 # scope: package
@@ -335,7 +335,7 @@ func TestIsMinimumTrivyVersion(t *testing.T) {
 package builtin.foo.ABC123
 deny {
     input.evil
-}`, tc.MinimumTrivyVersion)},
+}`, tc.MinimumTrivyVersion))},
 			}
 			scanner := rego.NewScanner(
 				rego.WithPolicyDirs("."),

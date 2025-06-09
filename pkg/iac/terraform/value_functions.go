@@ -3,7 +3,6 @@ package terraform
 import (
 	"fmt"
 	"regexp"
-	"slices"
 
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/gocty"
@@ -46,12 +45,16 @@ func executeFunction(functionName string, criteriaValues, testValue any) bool {
 func isAny(criteriaValues, testValue any) bool {
 	switch t := criteriaValues.(type) {
 	case []any:
-		if slices.Contains(t, testValue) {
-			return true
+		for _, v := range t {
+			if v == testValue {
+				return true
+			}
 		}
 	case []string:
-		if slices.Contains(t, testValue.(string)) {
-			return true
+		for _, v := range t {
+			if v == testValue.(string) {
+				return true
+			}
 		}
 	}
 	return false

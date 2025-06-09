@@ -22,7 +22,7 @@ func Range(args ...any) any {
 
 	result := make([]int, count)
 
-	for i := range count {
+	for i := 0; i < count; i++ {
 		result[i] = start + i
 	}
 

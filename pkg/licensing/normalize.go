@@ -618,7 +618,10 @@ func isLicenseText(str string) bool {
 
 func TrimLicenseText(text string) string {
 	s := strings.Split(text, " ")
-	n := min(len(s), 3)
+	n := len(s)
+	if n > 3 {
+		n = 3
+	}
 	return strings.Join(s[:n], " ") + "..."
 }
 

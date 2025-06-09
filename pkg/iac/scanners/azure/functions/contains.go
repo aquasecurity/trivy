@@ -2,7 +2,6 @@ package functions
 
 import (
 	"fmt"
-	"slices"
 	"strings"
 )
 
@@ -24,8 +23,10 @@ func Contains(args ...any) any {
 			return strings.Contains(strings.ToLower(cType), fmt.Sprintf("%d", iType))
 		}
 	case []any:
-		if slices.Contains(cType, itemToFind) {
-			return true
+		for _, item := range cType {
+			if item == itemToFind {
+				return true
+			}
 		}
 	case map[string]any:
 		for key := range cType {

@@ -1,7 +1,6 @@
 package azure
 
 import (
-	"maps"
 	"slices"
 	"strings"
 	"time"
@@ -71,7 +70,9 @@ func NewValue(value any, metadata types.Metadata) Value {
 	case map[string]Value:
 		v.Kind = KindObject
 		v.rMap = make(map[string]Value)
-		maps.Copy(v.rMap, ty)
+		for key, val := range ty {
+			v.rMap[key] = val
+		}
 	case string:
 		v.Kind = KindString
 		v.rLit = ty

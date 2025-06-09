@@ -1,9 +1,6 @@
 package functions
 
-import (
-	"maps"
-	"sort"
-)
+import "sort"
 
 func Union(args ...any) any {
 	if len(args) == 0 {
@@ -29,7 +26,9 @@ func unionMap(args ...any) any {
 
 	for _, arg := range args {
 		if iType, ok := arg.(map[string]any); ok {
-			maps.Copy(result, iType)
+			for k, v := range iType {
+				result[k] = v
+			}
 		}
 	}
 

@@ -64,7 +64,7 @@ func getInstances(modules terraform.Modules) []ec2.Instance {
 		for _, resource := range modules.GetResourcesByType("aws_ebs_encryption_by_default") {
 			if !resource.GetAttribute("enabled").Equals(false) {
 				instance.RootBlockDevice.Encrypted = types.BoolDefault(true, resource.GetMetadata())
-				for i := range instance.EBSBlockDevices {
+				for i := 0; i < len(instance.EBSBlockDevices); i++ {
 					ebs := instance.EBSBlockDevices[i]
 					ebs.Encrypted = types.BoolDefault(true, resource.GetMetadata())
 				}

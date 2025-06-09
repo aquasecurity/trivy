@@ -28,7 +28,7 @@ func StructToRego(inputValue reflect.Value) map[string]any {
 
 	output := make(map[string]any, inputValue.NumField())
 
-	for i := range inputValue.NumField() {
+	for i := 0; i < inputValue.NumField(); i++ {
 		field := inputValue.Field(i)
 		typ := inputValue.Type().Field(i)
 		name := typ.Name

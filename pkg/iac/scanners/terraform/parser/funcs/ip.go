@@ -28,7 +28,7 @@ func dtoi(s string) (n int, i int, ok bool) {
 // Returns number, characters consumed, success.
 func xtoi(s string) (n int, i int, ok bool) {
 	n = 0
-	for i = range len(s) {
+	for i = 0; i < len(s); i++ {
 		if '0' <= s[i] && s[i] <= '9' {
 			n *= 16
 			n += int(s[i] - '0')
@@ -68,7 +68,7 @@ var IPv4 = stdnet.IPv4
 // Parse IPv4 address (d.d.d.d).
 func parseIPv4(s string) IP {
 	var p [IPv4len]byte
-	for i := range IPv4len {
+	for i := 0; i < IPv4len; i++ {
 		if len(s) == 0 {
 			// Missing octets.
 			return nil
@@ -209,7 +209,7 @@ func parseIPv6(s string) (ip IP) {
 // If s is not a valid textual representation of an IP address,
 // ParseIP returns nil.
 func ParseIP(s string) IP {
-	for i := range len(s) {
+	for i := 0; i < len(s); i++ {
 		switch s[i] {
 		case '.':
 			return parseIPv4(s)
@@ -252,7 +252,7 @@ func ParseCIDR(s string) (IP, *IPNet, error) {
 // optimized for various platforms.  Those optimizations are elided here so we
 // don't have to maintain them.
 func indexByteString(s string, c byte) int {
-	for i := range len(s) {
+	for i := 0; i < len(s); i++ {
 		if s[i] == c {
 			return i
 		}

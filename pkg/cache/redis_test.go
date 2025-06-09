@@ -472,7 +472,7 @@ func TestRedisCache_Clear(t *testing.T) {
 	require.NoError(t, err)
 	defer s.Close()
 
-	for i := range 200 {
+	for i := 0; i < 200; i++ {
 		s.Set(fmt.Sprintf("fanal::key%d", i), "value")
 	}
 	s.Set("foo", "bar")
@@ -482,7 +482,7 @@ func TestRedisCache_Clear(t *testing.T) {
 		require.NoError(t, err)
 
 		require.NoError(t, c.Clear())
-		for i := range 200 {
+		for i := 0; i < 200; i++ {
 			assert.False(t, s.Exists(fmt.Sprintf("fanal::key%d", i)))
 		}
 		assert.True(t, s.Exists("foo"))
