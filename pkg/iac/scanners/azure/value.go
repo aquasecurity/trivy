@@ -335,19 +335,28 @@ func (v Value) HasKey(key string) bool {
 	return ok
 }
 
-func (v Value) AsTimeValue(metadata types.Metadata) types.TimeValue {
+func (v Value) AsTimeValue(parentMeta types.Metadata) types.TimeValue {
 	v.Resolve()
-	if v.Kind != KindString {
-		return types.Time(time.Time{}, metadata)
+
+	switch v.Kind {
+	case KindString:
+		t, err := time.Parse(time.RFC3339, v.rLit.(string))
+		if err != nil {
+			return types.Time(time.Time{}, parentMeta)
+		}
+		return types.Time(t, v.Metadata)
+	case KindNumber:
+		var tv int64
+		switch vv := v.rLit.(type) {
+		case float64:
+			tv = int64(vv)
+		case int64:
+			tv = vv
+		}
+		return types.Time(time.Unix(tv, 0), v.Metadata)
+	default:
+		return types.Time(time.Time{}, parentMeta)
 	}
-	if v.Kind == KindNumber {
-		return types.Time(time.Unix(int64(v.AsFloat()), 0), metadata)
-	}
-	t, err := time.Parse(time.RFC3339, v.rLit.(string))
-	if err != nil {
-		return types.Time(time.Time{}, metadata)
-	}
-	return types.Time(t, metadata)
 }
 
 func (v Value) AsStringValuesList(defaultValue string) (stringValues []types.StringValue) {
