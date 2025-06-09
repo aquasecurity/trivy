@@ -235,6 +235,12 @@ func (a dpkgAnalyzer) parseDpkgPkg(header textproto.MIMEHeader) *types.Package {
 		Maintainer: header.Get("Maintainer"),
 		Arch:       header.Get("Architecture"),
 	}
+
+	// Parse Built-Using field dependencies
+	if builtUsing := header.Get("Built-Using"); builtUsing != "" {
+		builtUsingDeps := a.parseBuiltUsing(builtUsing)
+		pkg.DependsOn = append(pkg.DependsOn, builtUsingDeps...)
+	}
 	if pkg.Name == "" || pkg.Version == "" {
 		return nil
 	}
@@ -341,10 +347,55 @@ func (a dpkgAnalyzer) trimVersionRequirement(s string) string {
 	return s
 }
 
+func (a dpkgAnalyzer) parseBuiltUsing(s string) []string {
+	// Built-Using field format: package (= version), package2 (= version2), ...
+	// e.g. python3 (= 2.13.3-0ubuntu1), gcc-9 (= 9.3.0-17ubuntu1~20.04)
+	var dependencies []string
+	depends := strings.Split(s, ",")
+	for _, dep := range depends {
+		dep = strings.TrimSpace(dep)
+		if dep == "" {
+			continue
+		}
+
+		// Extract package name and version from format "package (= version)"
+		if strings.Contains(dep, "(") && strings.Contains(dep, "=") {
+			// Use regexp to extract name and version more reliably
+			openParen := strings.Index(dep, "(")
+			if openParen > 0 {
+				name := strings.TrimSpace(dep[:openParen])
+				versionPart := dep[openParen:]
+				// Extract version from "(= version)" or "(version)" patterns
+				versionPart = strings.Trim(versionPart, "() ")
+				if strings.HasPrefix(versionPart, "=") {
+					version := strings.TrimSpace(versionPart[1:])
+					if name != "" && version != "" {
+						dependencies = append(dependencies, a.pkgID(name, version))
+					}
+				}
+			}
+		} else {
+			// Fallback: just trim version requirement like regular dependencies
+			d := a.trimVersionRequirement(dep)
+			d = strings.TrimSpace(d)
+			if d != "" {
+				dependencies = append(dependencies, d)
+			}
+		}
+	}
+	return dependencies
+}
+
 func (a dpkgAnalyzer) consolidateDependencies(pkgs map[string]*types.Package, pkgIDs map[string]string) {
 	for _, pkg := range pkgs {
 		// e.g. libc6 => libc6@2.31-13+deb11u4
 		pkg.DependsOn = lo.FilterMap(pkg.DependsOn, func(d string, _ int) (string, bool) {
+			// If dependency already contains '@', it's a full package ID (e.g., from Built-Using)
+			// and should be preserved as-is
+			if strings.Contains(d, "@") {
+				return d, true
+			}
+			// Otherwise, try to resolve it to a full package ID from the current packages
 			if pkgID, ok := pkgIDs[d]; ok {
 				return pkgID, true
 			}
