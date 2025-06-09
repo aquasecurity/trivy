@@ -212,7 +212,7 @@ func parseYaml(_ context.Context, r io.Reader, _ string) (any, error) {
 		marker = altMarker
 	}
 
-	for _, partial := range strings.Split(string(contents), marker) {
+	for partial := range strings.SplitSeq(string(contents), marker) {
 		var target any
 		if err := yaml.Unmarshal([]byte(partial), &target); err != nil {
 			return nil, err

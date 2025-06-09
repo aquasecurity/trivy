@@ -306,7 +306,7 @@ func (a dpkgAnalyzer) pkgID(name, version string) string {
 }
 
 func (a dpkgAnalyzer) parseStatus(s string) bool {
-	for _, ss := range strings.Fields(s) {
+	for ss := range strings.FieldsSeq(s) {
 		if ss == "deinstall" || ss == "purge" {
 			return false
 		}
@@ -317,10 +317,9 @@ func (a dpkgAnalyzer) parseStatus(s string) bool {
 func (a dpkgAnalyzer) parseDepends(s string) []string {
 	// e.g. passwd, debconf (>= 0.5) | debconf-2.0
 	var dependencies []string
-	depends := strings.Split(s, ",")
-	for _, dep := range depends {
+	for dep := range strings.SplitSeq(s, ",") {
 		// e.g. gpgv | gpgv2 | gpgv1
-		for _, d := range strings.Split(dep, "|") {
+		for d := range strings.SplitSeq(dep, "|") {
 			d = a.trimVersionRequirement(d)
 
 			// Store only uniq package names here

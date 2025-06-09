@@ -123,12 +123,12 @@ func trim(s string) string {
 func parseLicenses(s string) string {
 	// e.g. `"Ruby".freeze, "BSDL".freeze`
 	//      => {"\"Ruby\".freeze", "\"BSDL\".freeze"}
-	ss := strings.Split(s, ",")
+	ss := strings.SplitSeq(s, ",")
 
 	// e.g. {"\"Ruby\".freeze", "\"BSDL\".freeze"}
 	//      => {"Ruby", "BSDL"}
 	var licenses []string
-	for _, l := range ss {
+	for l := range ss {
 		licenses = append(licenses, trim(l))
 	}
 

@@ -752,7 +752,7 @@ func LaxSplitLicenses(str string) []string {
 	}
 	var licenses []string
 	str = versionRegexp.ReplaceAllString(str, "$1-$4")
-	for _, s := range strings.Fields(str) {
+	for s := range strings.FieldsSeq(str) {
 		s = strings.Trim(s, "()")
 		switch s {
 		case "":

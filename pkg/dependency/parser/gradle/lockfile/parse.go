@@ -36,10 +36,9 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, 
 		name := strings.Join(dep[:2], ":")
 		version, classPathsString, _ := strings.Cut(dep[2], "=")
 
-		classPaths := strings.Split(classPathsString, ",")
 		dev := true
 
-		for _, classPath := range classPaths {
+		for classPath := range strings.SplitSeq(classPathsString, ",") {
 			if !strings.HasPrefix(classPath, "test") {
 				dev = false
 				break
