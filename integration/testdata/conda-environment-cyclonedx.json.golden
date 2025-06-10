@@ -10,6 +10,9 @@
       "components": [
         {
           "type": "application",
+          "manufacturer": {
+            "name": "Aqua Security Software Ltd."
+          },
           "group": "aquasecurity",
           "name": "trivy",
           "version": "dev"
