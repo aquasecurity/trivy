@@ -1449,7 +1449,7 @@ func TestEncoder_Encode(t *testing.T) {
 			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},
 		{
-			name: "has cycle packages",
+			name: "has cycle dependency",
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "debian:12",
@@ -1656,7 +1656,6 @@ func TestEncoder_Encode(t *testing.T) {
 					},
 				},
 			},
-			wantVulns: map[uuid.UUID][]core.Vulnerability{},
 		},
 		{
 			name: "json file created from SBOM file (BOM is empty)",
