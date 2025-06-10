@@ -68,38 +68,32 @@ var (
 	}
 )
 
-type options struct {
-	eolDates map[string]time.Time
-}
-
-type Option func(*options)
+type Option func(*Scanner)
 
 // WithEOLDates takes eol dates for testability
 func WithEOLDates(dates map[string]time.Time) Option {
-	return func(opts *options) {
-		opts.eolDates = dates
+	return func(s *Scanner) {
+		s.eolDates = dates
 	}
 }
 
 // Scanner implements the Ubuntu scanner
 type Scanner struct {
-	*options
-	vs ubuntu.VulnSrc
+	eolDates map[string]time.Time
+	vs       ubuntu.VulnSrc
 }
 
 // NewScanner is the factory method for Scanner
 func NewScanner(opts ...Option) *Scanner {
-	o := &options{
+	s := &Scanner{
 		eolDates: eolDates,
+		vs:       ubuntu.NewVulnSrc(),
 	}
 
 	for _, opt := range opts {
-		opt(o)
+		opt(s)
 	}
-	return &Scanner{
-		options: o,
-		vs:      ubuntu.NewVulnSrc(),
-	}
+	return s
 }
 
 // Detect scans and returns the vulnerabilities
