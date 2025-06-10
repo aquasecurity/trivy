@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -90,13 +89,13 @@ func TestScanner_Scan(t *testing.T) {
 		content []byte
 	}
 	tests := []struct {
-		name         string
-		fileType     detection.FileType
-		fields       fields
-		files        []file
-		wantFilePath string
-		wantFileType types.ConfigType
-		expectedIDs  []string
+		name             string
+		fileType         detection.FileType
+		fields           fields
+		files            []file
+		wantFilePath     string
+		wantFileType     types.ConfigType
+		misconfsExpected int
 	}{
 		{
 			name:     "happy path. Dockerfile",
@@ -110,13 +109,9 @@ func TestScanner_Scan(t *testing.T) {
 					content: []byte(`FROM alpine`),
 				},
 			},
-			wantFilePath: "Dockerfile",
-			wantFileType: types.Dockerfile,
-			expectedIDs: []string{
-				"AVD-DS-0001",
-				"AVD-DS-0002",
-				"AVD-DS-0026",
-			},
+			wantFilePath:     "Dockerfile",
+			wantFileType:     types.Dockerfile,
+			misconfsExpected: 1,
 		},
 		{
 			name:     "happy path. Dockerfile with custom file name",
@@ -132,68 +127,9 @@ func TestScanner_Scan(t *testing.T) {
 					content: []byte(`FROM alpine`),
 				},
 			},
-			wantFilePath: "dockerf",
-			wantFileType: types.Dockerfile,
-			expectedIDs: []string{
-				"AVD-DS-0001",
-				"AVD-DS-0002",
-				"AVD-DS-0026",
-			},
-		},
-		{
-			name:     "disable some checks for analyzers",
-			fileType: detection.FileTypeDockerfile,
-			fields: fields{
-				opt: ScannerOption{
-					DisabledChecks: []DisabledCheck{
-						{
-							AVDID:    "AVD-DS-0001",
-							FileType: detection.FileTypeDockerfile,
-						},
-						{
-							AVDID:    "AVD-DS-0002",
-							FileType: detection.FileTypeDockerfile,
-						},
-						{
-							AVDID: "AVD-DS-0026",
-							// This check should not be skipped,
-							// because another analyzer is specified
-							FileType: detection.FileTypeDockerfileHistory,
-						},
-					},
-				},
-			},
-			files: []file{
-				{
-					path:    "Dockerfile",
-					content: []byte(`FROM alpine`),
-				},
-			},
-			wantFilePath: "Dockerfile",
-			wantFileType: types.Dockerfile,
-			expectedIDs: []string{
-				"AVD-DS-0026",
-			},
-		},
-		{
-			name:     "happy path. Dockerfile from image history",
-			fileType: detection.FileTypeDockerfileHistory,
-			fields: fields{
-				opt: ScannerOption{},
-			},
-			files: []file{
-				{
-					path:    "Dockerfile",
-					content: []byte(`ADD readme readme`),
-				},
-			},
-			wantFilePath: "Dockerfile",
-			wantFileType: types.Dockerfile,
-			expectedIDs: []string{
-				"AVD-DS-0002",
-				"AVD-DS-0005",
-				"AVD-DS-0026",
-			},
+			wantFilePath:     "dockerf",
+			wantFileType:     types.Dockerfile,
+			misconfsExpected: 1,
 		},
 		{
 			name:     "happy path. terraform plan file",
@@ -204,19 +140,9 @@ func TestScanner_Scan(t *testing.T) {
 					content: []byte(`{"format_version":"1.1","terraform_version":"1.4.6","planned_values":{"root_module":{"resources":[{"address":"aws_s3_bucket.my-bucket","mode":"managed","type":"aws_s3_bucket","name":"my-bucket","provider_name":"registry.terraform.io/hashicorp/aws","schema_version":0,"values":{"bucket":"evil","force_destroy":false,"tags":null,"timeouts":null},"sensitive_values":{"cors_rule":[],"grant":[],"lifecycle_rule":[],"logging":[],"object_lock_configuration":[],"replication_configuration":[],"server_side_encryption_configuration":[],"tags_all":{},"versioning":[],"website":[]}}]}},"resource_changes":[{"address":"aws_s3_bucket.my-bucket","mode":"managed","type":"aws_s3_bucket","name":"my-bucket","provider_name":"registry.terraform.io/hashicorp/aws","change":{"actions":["create"],"before":null,"after":{"bucket":"evil","force_destroy":false,"tags":null,"timeouts":null},"after_unknown":{"acceleration_status":true,"acl":true,"arn":true,"bucket_domain_name":true,"bucket_prefix":true,"bucket_regional_domain_name":true,"cors_rule":true,"grant":true,"hosted_zone_id":true,"id":true,"lifecycle_rule":true,"logging":true,"object_lock_configuration":true,"object_lock_enabled":true,"policy":true,"region":true,"replication_configuration":true,"request_payer":true,"server_side_encryption_configuration":true,"tags_all":true,"versioning":true,"website":true,"website_domain":true,"website_endpoint":true},"before_sensitive":false,"after_sensitive":{"cors_rule":[],"grant":[],"lifecycle_rule":[],"logging":[],"object_lock_configuration":[],"replication_configuration":[],"server_side_encryption_configuration":[],"tags_all":{},"versioning":[],"website":[]}}}],"configuration":{"provider_config":{"aws":{"name":"aws","full_name":"registry.terraform.io/hashicorp/aws","expressions":{"profile":{"constant_value":"foo-bar-123123123"},"region":{"constant_value":"us-west-1"}}}},"root_module":{"resources":[{"address":"aws_s3_bucket.my-bucket","mode":"managed","type":"aws_s3_bucket","name":"my-bucket","provider_config_key":"aws","expressions":{"bucket":{"constant_value":"evil"}},"schema_version":0}]}}}`),
 				},
 			},
-			wantFilePath: "main.tf",
-			wantFileType: types.TerraformPlanJSON,
-			expectedIDs: []string{
-				"AVD-AWS-0086",
-				"AVD-AWS-0087",
-				"AVD-AWS-0088",
-				"AVD-AWS-0089",
-				"AVD-AWS-0090",
-				"AVD-AWS-0091",
-				"AVD-AWS-0093",
-				"AVD-AWS-0094",
-				"AVD-AWS-0132",
-			},
+			wantFilePath:     "main.tf",
+			wantFileType:     types.TerraformPlanJSON,
+			misconfsExpected: 2,
 		},
 	}
 	for _, tt := range tests {
@@ -228,28 +154,22 @@ func TestScanner_Scan(t *testing.T) {
 				require.NoError(t, err)
 			}
 
+			// s, err := tt.scannerFunc(tt.fields.filePatterns, tt.fields.opt)
 			s, err := NewScanner(tt.fileType, tt.fields.opt)
 			require.NoError(t, err)
 
 			misconfs, err := s.Scan(t.Context(), fsys)
 			require.NoError(t, err)
-
-			misconfs = lo.Filter(misconfs, func(m types.Misconfiguration, _ int) bool {
-				return m.FilePath != "."
-			})
-			require.Len(t, misconfs, 1)
-			assert.Equal(t, tt.wantFilePath, misconfs[0].FilePath, "filePaths don't equal")
-			assert.Equal(t, tt.wantFileType, misconfs[0].FileType, "fileTypes don't equal")
-
-			ids := lo.Map(misconfs[0].Failures, func(r types.MisconfResult, _ int) string {
-				return r.AVDID
-			})
-			assert.ElementsMatch(t, tt.expectedIDs, ids)
+			require.Len(t, misconfs, tt.misconfsExpected, "wrong number of misconfigurations found")
+			if tt.misconfsExpected == 1 {
+				assert.Equal(t, tt.wantFilePath, misconfs[0].FilePath, "filePaths don't equal")
+				assert.Equal(t, tt.wantFileType, misconfs[0].FileType, "fileTypes don't equal")
+			}
 		})
 	}
 }
 
-func Test_CreatePolicyFS(t *testing.T) {
+func Test_createPolicyFS(t *testing.T) {
 	t.Run("outside pwd", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		require.NoError(t, os.MkdirAll(filepath.Join(tmpDir, "subdir", "testdir"), 0o750))

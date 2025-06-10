@@ -67,6 +67,8 @@ type Scanner struct {
 	embeddedLibs   map[string]*ast.Module
 	embeddedChecks map[string]*ast.Module
 	customSchemas  map[string][]byte
+
+	disabledCheckIDs set.Set[string]
 }
 
 func (s *Scanner) trace(heading string, input any) {
@@ -92,13 +94,14 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 	LoadAndRegister()
 
 	s := &Scanner{
-		regoErrorLimit: ast.CompileErrorLimitDefault,
-		ruleNamespaces: builtinNamespaces.Clone(),
-		runtimeValues:  addRuntimeValues(),
-		logger:         log.WithPrefix("rego"),
-		customSchemas:  make(map[string][]byte),
-		moduleMetadata: make(map[string]*StaticMetadata),
-		trivyVersion:   app.Version(),
+		regoErrorLimit:   ast.CompileErrorLimitDefault,
+		ruleNamespaces:   builtinNamespaces.Clone(),
+		runtimeValues:    addRuntimeValues(),
+		logger:           log.WithPrefix("rego"),
+		customSchemas:    make(map[string][]byte),
+		disabledCheckIDs: set.New[string](),
+		moduleMetadata:   make(map[string]*StaticMetadata),
+		trivyVersion:     app.Version(),
 	}
 
 	for _, opt := range opts {

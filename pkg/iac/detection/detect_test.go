@@ -203,7 +203,6 @@ Resources:
 			r:    nil,
 			expected: []FileType{
 				FileTypeDockerfile,
-				FileTypeDockerfileHistory,
 			},
 		},
 		{
@@ -212,7 +211,6 @@ Resources:
 			r:    nil,
 			expected: []FileType{
 				FileTypeDockerfile,
-				FileTypeDockerfileHistory,
 			},
 		},
 		{
@@ -221,7 +219,6 @@ Resources:
 			r:    strings.NewReader("FROM ubuntu\n"),
 			expected: []FileType{
 				FileTypeDockerfile,
-				FileTypeDockerfileHistory,
 			},
 		},
 		{
@@ -230,7 +227,6 @@ Resources:
 			r:    nil,
 			expected: []FileType{
 				FileTypeDockerfile,
-				FileTypeDockerfileHistory,
 			},
 		},
 		{

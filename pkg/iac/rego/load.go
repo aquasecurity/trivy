@@ -378,6 +378,11 @@ func (s *Scanner) isModuleApplicable(module *ast.Module, metadata *StaticMetadat
 		return false
 	}
 
+	// ignore disabled built-in checks
+	if IsBuiltinNamespace(getModuleNamespace(module)) && s.disabledCheckIDs.Contains(metadata.ID) {
+		return false
+	}
+
 	if len(metadata.InputOptions.Selectors) == 0 && !metadata.Library {
 		s.logger.Warn(
 			"Module has no input selectors - it will be loaded for all inputs",
