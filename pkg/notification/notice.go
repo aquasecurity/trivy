@@ -3,6 +3,7 @@ package notification
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -14,30 +15,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/version/app"
 )
-
-// flexibleTime is a custom time type that can handle
-// different date formats in JSON. It implements the
-// UnmarshalJSON method to parse the date string into a time.Time object.
-type flexibleTime struct {
-	time.Time
-}
-
-type versionInfo struct {
-	LatestVersion string       `json:"latest_version"`
-	LatestDate    flexibleTime `json:"latest_date"`
-}
-
-type announcement struct {
-	FromDate     time.Time `json:"from_date"`
-	ToDate       time.Time `json:"to_date"`
-	Announcement string    `json:"announcement"`
-}
-
-type updateResponse struct {
-	Trivy         versionInfo    `json:"trivy"`
-	Announcements []announcement `json:"announcements"`
-	Warnings      []string       `json:"warnings"`
-}
 
 type VersionChecker struct {
 	updatesApi        string
@@ -134,21 +111,21 @@ func (v *VersionChecker) PrintNotices(output io.Writer) {
 	logger.Debug("Printing notices")
 	var notices []string
 
+	cv, err := v.CurrentVersion()
+	if err != nil {
+		return
+	}
+
+	lv, err := v.LatestVersion()
+	if err != nil {
+		return
+	}
+
 	notices = append(notices, v.Warnings()...)
 	for _, announcement := range v.Announcements() {
-		if time.Now().Before(announcement.ToDate) && time.Now().After(announcement.FromDate) {
+		if announcement.shouldDisplay(time.Now(), cv) {
 			notices = append(notices, announcement.Announcement)
 		}
-	}
-
-	cv, err := semver.Parse(strings.TrimPrefix(v.currentVersion, "v"))
-	if err != nil {
-		return
-	}
-
-	lv, err := semver.Parse(strings.TrimPrefix(v.LatestVersion(), "v"))
-	if err != nil {
-		return
 	}
 
 	if cv.LessThan(lv) {
@@ -166,11 +143,23 @@ func (v *VersionChecker) PrintNotices(output io.Writer) {
 	}
 }
 
-func (v *VersionChecker) LatestVersion() string {
-	if v.responseReceived {
-		return v.latestVersion.Trivy.LatestVersion
+func (v *VersionChecker) CurrentVersion() (semver.Version, error) {
+	current, err := semver.Parse(strings.TrimPrefix(v.currentVersion, "v"))
+	if err != nil {
+		return semver.Version{}, fmt.Errorf("failed to parse current version: %w", err)
 	}
-	return ""
+	return current, nil
+}
+
+func (v *VersionChecker) LatestVersion() (semver.Version, error) {
+	if v.responseReceived {
+		latest, err := semver.Parse(strings.TrimPrefix(v.latestVersion.Trivy.LatestVersion, "v"))
+		if err != nil {
+			return semver.Version{}, fmt.Errorf("failed to parse latest version: %w", err)
+		}
+		return latest, nil
+	}
+	return semver.Version{}, errors.New("no response received from version check")
 }
 
 func (v *VersionChecker) Announcements() []announcement {
