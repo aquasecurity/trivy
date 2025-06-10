@@ -156,6 +156,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 // IsSupportedVersion checks is OSFamily can be scanned using Ubuntu scanner
 func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
+	osVer = s.versionFromEolDates(ctx, osVer)
 	return osver.Supported(ctx, s.eolDates, osFamily, osVer)
 }
 

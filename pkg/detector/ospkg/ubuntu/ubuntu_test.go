@@ -1,6 +1,7 @@
 package ubuntu_test
 
 import (
+	"bytes"
 	"sort"
 	"testing"
 	"time"
@@ -15,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/ubuntu"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -211,10 +213,11 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 		osVer    string
 	}
 	tests := []struct {
-		name string
-		now  time.Time
-		args args
-		want bool
+		name    string
+		now     time.Time
+		args    args
+		want    bool
+		wantLog string
 	}{
 		{
 			name: "ubuntu 12.04 eol ends",
@@ -235,16 +238,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			want: false,
 		},
 		{
-			name: "ubuntu 18.04 ESM. 18.04 is not outdated",
-			now:  time.Date(2022, 4, 31, 23, 59, 59, 0, time.UTC),
-			args: args{
-				osFamily: "ubuntu",
-				osVer:    "18.04-ESM",
-			},
-			want: true,
-		},
-		{
-			name: "ubuntu 18.04 ESM. 18.04 is outdated",
+			name: "ubuntu 18.04 ESM and 18.04 are outdated",
 			now:  time.Date(2030, 4, 31, 23, 59, 59, 0, time.UTC),
 			args: args{
 				osFamily: "ubuntu",
@@ -253,21 +247,60 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			want: false,
 		},
 		{
+			name: "ubuntu 18.04 ESM. Only 18.04 is outdated",
+			now:  time.Date(2027, 4, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "ubuntu",
+				osVer:    "18.04-ESM",
+			},
+			want: true,
+		},
+		{
+			name: "ubuntu 20.04 ESM. 20.04 is not outdated, 20.04 ESM not added in EOL dates",
+			now:  time.Date(2022, 4, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "ubuntu",
+				osVer:    "20.04-ESM",
+			},
+			want: true,
+		},
+		{
+			name: "ubuntu 20.04 ESM. 20.04 is outdated, 20.04 ESM not added in EOL dates",
+			now:  time.Date(2030, 4, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "ubuntu",
+				osVer:    "20.04-ESM",
+			},
+			want:    true,
+			wantLog: "This OS version is not on the EOL list\tfamily=\"ubuntu\" version=\"20.04-ESM\"",
+		},
+		{
 			name: "latest",
 			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
 			args: args{
 				osFamily: "ubuntu",
 				osVer:    "99.04",
 			},
-			want: true,
+			want:    true,
+			wantLog: "This OS version is not on the EOL list\tfamily=\"ubuntu\" version=\"99.04\"",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			out := bytes.NewBuffer(nil)
+			logger := log.New(log.NewHandler(out, &log.Options{Level: log.LevelInfo}))
+			log.SetDefault(logger)
+
 			ctx := clock.With(t.Context(), tt.now)
 			s := ubuntu.NewScanner(ubuntu.WithEOLDates(testEOLDates))
 			got := s.IsSupportedVersion(ctx, tt.args.osFamily, tt.args.osVer)
 			assert.Equal(t, tt.want, got)
+
+			if out.Len() > 0 && tt.wantLog == "" {
+				t.Errorf("IsSupportedVersion() logs not expected. Found logs: %s", out.String())
+				return
+			}
+			assert.Contains(t, out.String(), tt.wantLog)
 		})
 	}
 }
