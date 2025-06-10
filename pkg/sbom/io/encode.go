@@ -252,9 +252,16 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 		}
 	}
 
-	if result.Class != types.ClassOSPkg {
-		return
+	// Add relationships between the parent and the orphaned packages
+	// For OS packages, packages with circular dependencies are not added as relationships to the parent component in belongToParent.
+	// To resolve this, we add relationships between these circularly dependent packages and the parent component.
+	if result.Class == types.ClassOSPkg {
+		e.addOrphanedPackagesRelationships(parent, components)
 	}
+}
+
+// addOrphanedPackagesRelationships adds relationships between the parent and the orphaned packages
+func (e *Encoder) addOrphanedPackagesRelationships(parent *core.Component, components map[string]*core.Component) {
 	pkgs := make(map[uuid.UUID]*core.Component)
 	for _, c := range lo.Values(components) {
 		pkgs[c.ID()] = c
