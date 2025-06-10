@@ -251,6 +251,18 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 			e.bom.AddRelationship(c, nil, "")
 		}
 	}
+
+	if result.Class != types.ClassOSPkg {
+		return
+	}
+	pkgs := make(map[uuid.UUID]*core.Component)
+	for _, c := range lo.Values(components) {
+		pkgs[c.ID()] = c
+	}
+	orphans := e.traverseRelationship(parent.ID(), pkgs)
+	for _, c := range orphans {
+		e.bom.AddRelationship(parent, c, core.RelationshipContains)
+	}
 }
 
 // existedPkgIdentifier tries to look for package identifier (BOM-ref, PURL) by component name and component type
@@ -437,4 +449,16 @@ func filterProperties(props []core.Property) []core.Property {
 	return lo.Filter(props, func(property core.Property, _ int) bool {
 		return property.Value != "" && (property.Name != core.PropertySrcEpoch || property.Value != "0")
 	})
+}
+
+func (e *Encoder) traverseRelationship(id uuid.UUID, components map[uuid.UUID]*core.Component) map[uuid.UUID]*core.Component {
+	for _, rel := range e.bom.Relationships()[id] {
+		_, ok := components[rel.Dependency]
+		if !ok {
+			continue
+		}
+		delete(components, rel.Dependency)
+		components = e.traverseRelationship(rel.Dependency, components)
+	}
+	return components
 }

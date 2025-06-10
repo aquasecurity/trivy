@@ -1449,6 +1449,216 @@ func TestEncoder_Encode(t *testing.T) {
 			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},
 		{
+			name: "has cycle packages",
+			report: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "debian:12",
+				ArtifactType:  ftypes.TypeContainerImage,
+				Metadata: types.Metadata{
+					OS: &ftypes.OS{
+						Family: ftypes.Debian,
+						Name:   "12",
+					},
+					RepoTags: []string{
+						"debian:latest",
+						"debian:12",
+					},
+					RepoDigests: []string{
+						"debian@sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",
+					},
+					ImageConfig: v1.ConfigFile{
+						Config: v1.Config{
+							Labels: map[string]string{
+								"vendor": "aquasecurity",
+							},
+						},
+					},
+				},
+				Results: []types.Result{
+					{
+						Target: "debian:12",
+						Type:   ftypes.Debian,
+						Class:  types.ClassOSPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:      "git@2.47.1-1",
+								Name:    "git",
+								Version: "2.47.1-1",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "33654D2C483FC3AD",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeDebian,
+										Name:    "git",
+										Version: "2.47.1-1",
+									},
+								},
+								DependsOn: []string{
+									"perl-Git@2.47.1-1",
+								},
+							},
+							{
+								ID:      "perl-Git@2.47.1-1",
+								Name:    "perl-Git",
+								Version: "2.47.1-1",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "51BA9E006222819D",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeDebian,
+										Name:    "perl-Git",
+										Version: "2.47.1-1",
+									},
+								},
+								DependsOn: []string{
+									"git@2.47.1-1",
+								},
+							},
+						},
+						Vulnerabilities: []types.DetectedVulnerability{},
+					},
+				},
+			},
+			wantComponents: map[uuid.UUID]*core.Component{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					Type: core.TypeContainerImage,
+					Name: "debian:12",
+					Root: true,
+					PkgIdentifier: ftypes.PkgIdentifier{
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeOCI,
+							Name:    "debian",
+							Version: "sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",
+							Qualifiers: packageurl.Qualifiers{
+								{
+									Key:   "repository_url",
+									Value: "index.docker.io/library/debian",
+								},
+							},
+						},
+						BOMRef: "pkg:oci/debian@sha256%3A4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90?repository_url=index.docker.io%2Flibrary%2Fdebian",
+					},
+					Properties: []core.Property{
+						{
+							Name:  "Labels:vendor",
+							Value: "aquasecurity",
+						},
+						{
+							Name:  core.PropertyRepoDigest,
+							Value: "debian@sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",
+						},
+						{
+							Name:  core.PropertyRepoTag,
+							Value: "debian:12",
+						},
+						{
+							Name:  core.PropertyRepoTag,
+							Value: "debian:latest",
+						},
+						{
+							Name:  core.PropertySchemaVersion,
+							Value: "2",
+						},
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					Type:    core.TypeOS,
+					Name:    "debian",
+					Version: "12",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyClass,
+							Value: "os-pkgs",
+						},
+						{
+							Name:  core.PropertyType,
+							Value: "debian",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): {
+					Type:    core.TypeLibrary,
+					Name:    "git",
+					Version: "2.47.1-1",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "git@2.47.1-1",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "debian",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "33654D2C483FC3AD",
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeDebian,
+							Name:    "git",
+							Version: "2.47.1-1",
+						},
+						BOMRef: "pkg:deb/git@2.47.1-1",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					Type:    core.TypeLibrary,
+					Name:    "perl-Git",
+					Version: "2.47.1-1",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "perl-Git@2.47.1-1",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "debian",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "51BA9E006222819D",
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeDebian,
+							Name:    "perl-Git",
+							Version: "2.47.1-1",
+						},
+						BOMRef: "pkg:deb/perl-Git@2.47.1-1",
+					},
+				},
+			},
+			wantRels: map[uuid.UUID][]core.Relationship{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Type:       core.RelationshipContains,
+					},
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+			},
+			wantVulns: map[uuid.UUID][]core.Vulnerability{},
+		},
+		{
 			name: "json file created from SBOM file (BOM is empty)",
 			report: types.Report{
 				SchemaVersion: 2,
