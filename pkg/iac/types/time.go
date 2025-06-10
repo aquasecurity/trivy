@@ -10,21 +10,21 @@ type TimeValue struct {
 	value time.Time
 }
 
-func (b TimeValue) MarshalJSON() ([]byte, error) {
+func (t TimeValue) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]any{
-		"value":    b.value.Format(time.RFC3339),
-		"metadata": b.metadata,
+		"value":    t.value.Format(time.RFC3339),
+		"metadata": t.metadata,
 	})
 }
 
-func (b *TimeValue) UnmarshalJSON(data []byte) error {
+func (t *TimeValue) UnmarshalJSON(data []byte) error {
 	var keys map[string]any
 	if err := json.Unmarshal(data, &keys); err != nil {
 		return err
 	}
 	if keys["value"] != nil {
 		if ti, err := time.Parse(time.RFC3339, keys["value"].(string)); err == nil {
-			b.value = ti
+			t.value = ti
 		}
 	}
 	if keys["metadata"] != nil {
@@ -36,7 +36,7 @@ func (b *TimeValue) UnmarshalJSON(data []byte) error {
 		if err := json.Unmarshal(raw, &m); err != nil {
 			return err
 		}
-		b.metadata = m
+		t.metadata = m
 	}
 	return nil
 }

@@ -37,7 +37,7 @@ func adaptLaunchConfigurations(modules terraform.Modules) []ec2.LaunchConfigurat
 		for _, resource := range module.GetResourcesByType("aws_launch_configuration") {
 			launchConfig := adaptLaunchConfiguration(resource)
 			for _, resource := range module.GetResourcesByType("aws_ebs_encryption_by_default") {
-				if resource.GetAttribute("enabled").NotEqual(false) {
+				if !resource.GetAttribute("enabled").Equals(false) {
 					launchConfig.RootBlockDevice.Encrypted = iacTypes.BoolDefault(true, resource.GetMetadata())
 					for i := 0; i < len(launchConfig.EBSBlockDevices); i++ {
 						ebs := launchConfig.EBSBlockDevices[i]

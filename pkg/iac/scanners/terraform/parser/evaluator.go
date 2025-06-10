@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"io/fs"
+	"maps"
 	"reflect"
 	"slices"
 
@@ -136,6 +137,8 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 
 	// expand out resources and modules via count, for-each and dynamic
 	// (not a typo, we do this twice so every order is processed)
+	// TODO: using a module in for_each or count does not work,
+	// because the child module is evaluated later
 	e.blocks = e.expandBlocks(e.blocks)
 	e.blocks = e.expandBlocks(e.blocks)
 
@@ -238,10 +241,17 @@ func (e *evaluator) evaluateSubmodule(ctx context.Context, sm *submodule) bool {
 	sm.modules, sm.fsMap = sm.eval.EvaluateAll(ctx)
 	outputs := sm.eval.exportOutputs()
 
+	valueMap := e.ctx.Get("module").AsValueMap()
+	if valueMap == nil {
+		valueMap = make(map[string]cty.Value)
+	}
+
 	// lastState needs to be captured after applying outputs – so that they
 	// don't get treated as changes – but before running post-submodule
 	// evaluation, so that changes from that can trigger re-evaluations of
 	// the submodule if/when they feed back into inputs.
+	ref := sm.definition.Definition.Reference()
+	e.ctx.Set(blockInstanceValues(sm.definition.Definition, valueMap, outputs), "module", ref.NameLabel())
 	e.ctx.Set(outputs, "module", sm.definition.Name)
 	sm.lastState = sm.definition.inputVars()
 	e.evaluateSteps()
@@ -464,9 +474,6 @@ func (e *evaluator) evaluateVariable(b *terraform.Block) (cty.Value, error) {
 	}
 
 	attributes := b.Attributes()
-	if attributes == nil {
-		return cty.NilVal, errors.New("cannot resolve variable with no attributes")
-	}
 
 	var valType cty.Type
 	var defaults *typeexpr.Defaults
@@ -524,7 +531,6 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 	values := make(map[string]cty.Value)
 
 	for _, b := range blocksOfType {
-
 		switch b.Type() {
 		case "variable": // variables are special in that their value comes from the "default" attribute
 			val, err := e.evaluateVariable(b)
@@ -539,9 +545,7 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 			}
 			values[b.Label()] = val
 		case "locals", "moved", "import":
-			for key, val := range b.Values().AsValueMap() {
-				values[key] = val
-			}
+			maps.Copy(values, b.Values().AsValueMap())
 		case "provider", "module", "check":
 			if b.Label() == "" {
 				continue
@@ -552,19 +556,27 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 				continue
 			}
 
-			blockMap, ok := values[b.Labels()[0]]
+			// Data blocks should all be loaded into the top level 'values'
+			// object. The hierarchy of the map is:
+			//  values = map[<type>]map[<name>] =
+			//              Block -> Block's attributes as a cty.Object
+			//              Tuple(Block) -> Instances of the block
+			//              Object(Block) -> Field values are instances of the block
+			ref := b.Reference()
+			typeValues, ok := values[ref.TypeLabel()]
 			if !ok {
-				values[b.Labels()[0]] = cty.ObjectVal(make(map[string]cty.Value))
-				blockMap = values[b.Labels()[0]]
+				typeValues = cty.ObjectVal(make(map[string]cty.Value))
+				values[ref.TypeLabel()] = typeValues
 			}
 
-			valueMap := blockMap.AsValueMap()
+			valueMap := typeValues.AsValueMap()
 			if valueMap == nil {
 				valueMap = make(map[string]cty.Value)
 			}
+			valueMap[ref.NameLabel()] = blockInstanceValues(b, valueMap, b.Values())
 
-			valueMap[b.Labels()[1]] = b.Values()
-			values[b.Labels()[0]] = cty.ObjectVal(valueMap)
+			// Update the map of all blocks with the same type.
+			values[ref.TypeLabel()] = cty.ObjectVal(valueMap)
 		}
 	}
 
@@ -575,23 +587,56 @@ func (e *evaluator) getResources() map[string]cty.Value {
 	values := make(map[string]map[string]cty.Value)
 
 	for _, b := range e.blocks {
-		if b.Type() != "resource" {
+		if b.Type() != "resource" || len(b.Labels()) < 2 {
 			continue
 		}
 
-		if len(b.Labels()) < 2 {
-			continue
-		}
-
-		val, exists := values[b.Labels()[0]]
+		ref := b.Reference()
+		typeValues, exists := values[ref.TypeLabel()]
 		if !exists {
-			val = make(map[string]cty.Value)
-			values[b.Labels()[0]] = val
+			typeValues = make(map[string]cty.Value)
+			values[ref.TypeLabel()] = typeValues
 		}
-		val[b.Labels()[1]] = b.Values()
+		typeValues[ref.NameLabel()] = blockInstanceValues(b, typeValues, b.Values())
 	}
 
 	return lo.MapValues(values, func(v map[string]cty.Value, _ string) cty.Value {
 		return cty.ObjectVal(v)
 	})
+}
+
+// blockInstanceValues returns a cty.Value containing the values of the block instances.
+// If the count argument is used, a tuple is returned where the index corresponds to the argument index.
+// If the for_each argument is used, an object is returned where the key corresponds to the argument key.
+// In other cases, the values of the block itself are returned.
+func blockInstanceValues(b *terraform.Block, typeValues map[string]cty.Value, values cty.Value) cty.Value {
+	ref := b.Reference()
+	key := ref.RawKey()
+
+	switch {
+	case key.Type().Equals(cty.Number) && b.GetAttribute("count") != nil:
+		idx, _ := key.AsBigFloat().Int64()
+		return insertTupleElement(typeValues[ref.NameLabel()], int(idx), values)
+	case isForEachKey(key) && b.GetAttribute("for_each") != nil:
+		keyStr := ref.Key()
+
+		instancesVal, exists := typeValues[ref.NameLabel()]
+		if !exists || !instancesVal.CanIterateElements() {
+			instancesVal = cty.EmptyObjectVal
+		}
+
+		instances := instancesVal.AsValueMap()
+		if instances == nil {
+			instances = make(map[string]cty.Value)
+		}
+
+		instances[keyStr] = values
+		return cty.ObjectVal(instances)
+	default:
+		return values
+	}
+}
+
+func isForEachKey(key cty.Value) bool {
+	return key.Type().Equals(cty.Number) || key.Type().Equals(cty.String)
 }

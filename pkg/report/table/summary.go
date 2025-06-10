@@ -13,7 +13,7 @@ import (
 	"github.com/aquasecurity/tml"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
+	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -173,9 +173,10 @@ func (r *summaryRenderer) Render(report types.Report) {
 
 	for _, result := range r.splitAggregatedPackages(report.Results) {
 		resultType := string(result.Type)
-		if result.Class == types.ClassSecret {
+		switch result.Class {
+		case types.ClassSecret:
 			resultType = "text"
-		} else if result.Class == types.ClassLicense || result.Class == types.ClassLicenseFile {
+		case types.ClassLicense, types.ClassLicenseFile:
 			resultType = "-"
 		}
 		rows := []string{
@@ -201,8 +202,6 @@ func (r *summaryRenderer) Render(report types.Report) {
 	r.printf("Legend:\n" +
 		"- '-': Not scanned\n" +
 		"- '0': Clean (no security findings detected)\n\n")
-
-	return
 }
 
 func (r *summaryRenderer) printf(format string, args ...any) {

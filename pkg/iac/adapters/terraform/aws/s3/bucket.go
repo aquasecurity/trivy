@@ -263,7 +263,7 @@ func isEncrypted(sseConfgihuration *terraform.Block) iacTypes.BoolValue {
 
 func hasLogging(b *terraform.Block) iacTypes.BoolValue {
 	if loggingBlock := b.GetBlock("logging"); loggingBlock.IsNotNil() {
-		if targetAttr := loggingBlock.GetAttribute("target_bucket"); targetAttr.IsNotNil() && targetAttr.IsNotEmpty() {
+		if targetAttr := loggingBlock.GetAttribute("target_bucket"); targetAttr.IsNotNil() && !targetAttr.IsEmpty() {
 			return iacTypes.Bool(true, targetAttr.GetMetadata())
 		}
 		return iacTypes.BoolDefault(false, loggingBlock.GetMetadata())

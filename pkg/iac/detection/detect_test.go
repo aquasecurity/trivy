@@ -88,6 +88,46 @@ func Test_Detection(t *testing.T) {
 			},
 		},
 		{
+			name: "tofu, no reader",
+			path: "main.tofu",
+			expected: []FileType{
+				FileTypeTerraform,
+			},
+		},
+		{
+			name: "tofu, with reader",
+			path: "main.tofu",
+			r:    strings.NewReader("some file content"),
+			expected: []FileType{
+				FileTypeTerraform,
+			},
+		},
+		{
+			name: "tofu json, no reader",
+			path: "main.tofu.json",
+			expected: []FileType{
+				FileTypeTerraform,
+				FileTypeJSON,
+			},
+		},
+		{
+			name: "tofu json, with reader",
+			path: "main.tofu.json",
+			r: strings.NewReader(`
+{
+  "variable": {
+    "example": {
+      "default": "hello"
+    }
+  }
+}
+`),
+			expected: []FileType{
+				FileTypeTerraform,
+				FileTypeJSON,
+			},
+		},
+		{
 			name: "cloudformation, no reader",
 			path: "main.yaml",
 			expected: []FileType{
@@ -449,7 +489,7 @@ rules:
 		t.Run(test.name, func(t *testing.T) {
 			t.Run("GetTypes", func(t *testing.T) {
 				actualDetections := GetTypes(test.path, test.r)
-				assert.Equal(t, len(test.expected), len(actualDetections))
+				assert.Len(t, actualDetections, len(test.expected))
 				for _, expected := range test.expected {
 					resetReader(test.r)
 					found := slices.Contains(actualDetections, expected)

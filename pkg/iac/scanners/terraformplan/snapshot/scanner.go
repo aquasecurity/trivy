@@ -9,12 +9,12 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-	terraformScanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
+	tfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
 	tfparser "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 )
 
 type Scanner struct {
-	inner *terraformScanner.Scanner
+	inner *tfscanner.Scanner
 }
 
 func (s *Scanner) Name() string {
@@ -23,8 +23,11 @@ func (s *Scanner) Name() string {
 
 func New(opts ...options.ScannerOption) *Scanner {
 	scanner := &Scanner{
-		inner: terraformScanner.New(opts...),
+		inner: tfscanner.New(
+			append(opts, options.WithScanRawConfig(false))...,
+		),
 	}
+
 	return scanner
 }
 

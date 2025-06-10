@@ -1,16 +1,19 @@
 package parser
 
 import (
-	"encoding/json"
+	"fmt"
 	"io/fs"
+	"reflect"
 	"strconv"
 	"strings"
 
+	"github.com/go-json-experiment/json"
+	"github.com/go-json-experiment/json/jsontext"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/jfather"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 type EqualityOptions = int
@@ -20,19 +23,16 @@ const (
 )
 
 type Property struct {
+	xjson.Location
 	ctx         *FileContext
+	Type        cftypes.CfType
+	Value       any `json:"Value" yaml:"Value"`
 	name        string
 	comment     string
 	rng         iacTypes.Range
 	parentRange iacTypes.Range
-	Inner       PropertyInner
 	logicalId   string
 	unresolved  bool
-}
-
-type PropertyInner struct {
-	Type  cftypes.CfType
-	Value any `json:"Value" yaml:"Value"`
 }
 
 func (p *Property) Comment() string {
@@ -41,7 +41,7 @@ func (p *Property) Comment() string {
 
 func (p *Property) setName(name string) {
 	p.name = name
-	if p.Type() == cftypes.Map {
+	if p.Type == cftypes.Map {
 		for n, subProp := range p.AsMap() {
 			if subProp == nil {
 				continue
@@ -71,10 +71,10 @@ func (p *Property) setContext(ctx *FileContext) {
 }
 
 func (p *Property) setFileAndParentRange(target fs.FS, filepath string, parentRange iacTypes.Range) {
-	p.rng = iacTypes.NewRange(filepath, p.rng.GetStartLine(), p.rng.GetEndLine(), p.rng.GetSourcePrefix(), target)
+	p.rng = iacTypes.NewRange(filepath, p.StartLine, p.EndLine, p.rng.GetSourcePrefix(), target)
 	p.parentRange = parentRange
 
-	switch p.Type() {
+	switch p.Type {
 	case cftypes.Map:
 		for _, subProp := range p.AsMap() {
 			if subProp == nil {
@@ -93,27 +93,68 @@ func (p *Property) setFileAndParentRange(target fs.FS, filepath string, parentRa
 }
 
 func (p *Property) UnmarshalYAML(node *yaml.Node) error {
-	p.rng = iacTypes.NewRange("", node.Line, calculateEndLine(node), "", nil)
-
+	p.StartLine = node.Line
+	p.EndLine = calculateEndLine(node)
 	p.comment = node.LineComment
-	return setPropertyValueFromYaml(node, &p.Inner)
+	return setPropertyValueFromYaml(node, p)
 }
 
-func (p *Property) UnmarshalJSONWithMetadata(node jfather.Node) error {
-	p.rng = iacTypes.NewRange("", node.Range().Start.Line, node.Range().End.Line, "", nil)
-	return setPropertyValueFromJson(node, &p.Inner)
+func (p *Property) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	var valPtr any
+	var nodeType cftypes.CfType
+
+	switch k := dec.PeekKind(); k {
+	case 't', 'f':
+		valPtr = new(bool)
+		nodeType = cftypes.Bool
+	case '"':
+		valPtr = new(string)
+		nodeType = cftypes.String
+	case '0':
+		return p.parseNumericValue(dec)
+	case '[', 'n':
+		valPtr = new([]*Property)
+		nodeType = cftypes.List
+	case '{':
+		valPtr = new(map[string]*Property)
+		nodeType = cftypes.Map
+	case 0:
+		return dec.SkipValue()
+	default:
+		return fmt.Errorf("unexpected token kind %q at %d", k.String(), dec.InputOffset())
+	}
+
+	if err := json.UnmarshalDecode(dec, valPtr); err != nil {
+		return err
+	}
+
+	p.Value = reflect.ValueOf(valPtr).Elem().Interface()
+	p.Type = nodeType
+	return nil
 }
 
-func (p *Property) Type() cftypes.CfType {
-	return p.Inner.Type
-}
+func (p *Property) parseNumericValue(dec *jsontext.Decoder) error {
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+	strVal := string(raw)
 
-func (p *Property) Range() iacTypes.Range {
-	return p.rng
+	if v, err := strconv.ParseInt(strVal, 10, 64); err == nil {
+		p.Value = int(v)
+		p.Type = cftypes.Int
+		return nil
+	}
+	if v, err := strconv.ParseFloat(strVal, 64); err == nil {
+		p.Value = v
+		p.Type = cftypes.Float64
+		return nil
+	}
+	return fmt.Errorf("invalid numeric value: %q", strVal)
 }
 
 func (p *Property) Metadata() iacTypes.Metadata {
-	return iacTypes.NewMetadata(p.Range(), p.name).
+	return iacTypes.NewMetadata(p.rng, p.name).
 		WithParent(iacTypes.NewMetadata(p.parentRange, p.logicalId))
 }
 
@@ -121,7 +162,7 @@ func (p *Property) isFunction() bool {
 	if p == nil {
 		return false
 	}
-	if p.Type() == cftypes.Map {
+	if p.Type == cftypes.Map {
 		for n := range p.AsMap() {
 			return IsIntrinsic(n)
 		}
@@ -130,11 +171,10 @@ func (p *Property) isFunction() bool {
 }
 
 func (p *Property) RawValue() any {
-	return p.Inner.Value
+	return p.Value
 }
 
 func (p *Property) AsRawStrings() ([]string, error) {
-
 	if len(p.ctx.lines) < p.rng.GetEndLine() {
 		return p.ctx.lines, nil
 	}
@@ -225,7 +265,6 @@ func (p *Property) IntDefault(defaultValue int) iacTypes.IntValue {
 }
 
 func (p *Property) GetProperty(path string) *Property {
-
 	pathParts := strings.Split(path, ".")
 
 	first := pathParts[0]
@@ -254,9 +293,8 @@ func (p *Property) GetProperty(path string) *Property {
 		if nestedProperty.isFunction() {
 			resolved, _ := nestedProperty.resolveValue()
 			return resolved
-		} else {
-			return nestedProperty
 		}
+		return nestedProperty
 	}
 
 	return &Property{}
@@ -264,16 +302,15 @@ func (p *Property) GetProperty(path string) *Property {
 
 func (p *Property) deriveResolved(propType cftypes.CfType, propValue any) *Property {
 	return &Property{
+		Location:    p.Location,
+		Value:       propValue,
+		Type:        propType,
 		ctx:         p.ctx,
 		name:        p.name,
 		comment:     p.comment,
 		rng:         p.rng,
 		parentRange: p.parentRange,
 		logicalId:   p.logicalId,
-		Inner: PropertyInner{
-			Type:  propType,
-			Value: propValue,
-		},
 	}
 }
 
@@ -317,7 +354,7 @@ func (p *Property) inferBool(prop *Property, defaultValue bool) iacTypes.BoolVal
 
 func (p *Property) String() string {
 	r := ""
-	switch p.Type() {
+	switch p.Type {
 	case cftypes.String:
 		r = p.AsString()
 	case cftypes.Int:
@@ -326,7 +363,7 @@ func (p *Property) String() string {
 	return r
 }
 
-func (p *Property) SetLogicalResource(id string) {
+func (p *Property) setLogicalResource(id string) {
 	p.logicalId = id
 
 	if p.isFunction() {
@@ -338,16 +375,15 @@ func (p *Property) SetLogicalResource(id string) {
 			if subProp == nil {
 				continue
 			}
-			subProp.SetLogicalResource(id)
+			subProp.setLogicalResource(id)
 		}
 	}
 
 	if p.IsList() {
 		for _, subProp := range p.AsList() {
-			subProp.SetLogicalResource(id)
+			subProp.setLogicalResource(id)
 		}
 	}
-
 }
 
 func (p *Property) GetJsonBytes(squashList ...bool) []byte {
@@ -416,9 +452,9 @@ func convert(input any) any {
 }
 
 func (p *Property) inferType() {
-	typ := cftypes.TypeFromGoValue(p.Inner.Value)
+	typ := cftypes.TypeFromGoValue(p.Value)
 	if typ == cftypes.Unknown {
 		return
 	}
-	p.Inner.Type = typ
+	p.Type = typ
 }

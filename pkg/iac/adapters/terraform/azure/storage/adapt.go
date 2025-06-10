@@ -162,8 +162,7 @@ func adaptNetworkRule(resource *terraform.Block) storage.NetworkRule {
 		allowByDefault = iacTypes.BoolDefault(false, resource.GetMetadata())
 	}
 
-	if resource.HasChild("bypass") {
-		bypassAttr := resource.GetAttribute("bypass")
+	if bypassAttr := resource.GetAttribute("bypass"); bypassAttr.IsNotNil() {
 		bypass = bypassAttr.AsStringValues()
 	}
 

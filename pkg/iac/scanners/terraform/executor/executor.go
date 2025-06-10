@@ -3,7 +3,6 @@ package executor
 import (
 	"context"
 	"fmt"
-	"sort"
 	"strconv"
 	"strings"
 
@@ -25,6 +24,7 @@ type Executor struct {
 	logger         *log.Logger
 	resultsFilters []func(scan.Results) scan.Results
 	regoScanner    *rego.Scanner
+	scanRawConfig  bool
 }
 
 // New creates a new Executor
@@ -44,6 +44,7 @@ func (e *Executor) Execute(ctx context.Context, modules terraform.Modules, baseP
 	infra := adapter.Adapt(modules)
 	e.logger.Debug("Adapted module(s) into state data.", log.Int("count", len(modules)))
 
+	e.logger.Debug("Scan state data")
 	results, err := e.regoScanner.ScanInput(ctx, types.SourceCloud, rego.Input{
 		Contents: infra.ToRego(),
 		Path:     basePath,
@@ -52,7 +53,21 @@ func (e *Executor) Execute(ctx context.Context, modules terraform.Modules, baseP
 		return nil, err
 	}
 
-	e.logger.Debug("Finished applying rules.")
+	if e.scanRawConfig {
+		e.logger.Debug("Scan raw Terraform data")
+		results2, err := e.regoScanner.ScanInput(ctx, types.SourceTerraformRaw, rego.Input{
+			Contents: terraform.ExportModules(modules),
+			Path:     basePath,
+		})
+		if err != nil {
+			e.logger.Error("Failed to scan raw Terraform data",
+				log.FilePath(basePath), log.Err(err))
+		} else {
+			results = append(results, results2...)
+		}
+	}
+
+	e.logger.Debug("Finished applying checks")
 
 	e.logger.Debug("Applying ignores...")
 	var ignores ignore.Rules
@@ -77,7 +92,6 @@ func (e *Executor) Execute(ctx context.Context, modules terraform.Modules, baseP
 
 	results = e.filterResults(results)
 
-	e.sortResults(results)
 	for i, res := range results {
 		if res.Status() != scan.StatusFailed {
 			continue
@@ -130,10 +144,17 @@ func writeBlock(tfBlock *terraform.Block, block *hclwrite.Block, causeRng types.
 	var found bool
 
 	for _, attr := range tfBlock.Attributes() {
-		if attr.GetMetadata().Range().Covers(causeRng) && !attr.IsLiteral() {
-			block.Body().SetAttributeValue(attr.Name(), attr.Value())
-			found = true
+		if !attr.GetMetadata().Range().Covers(causeRng) || attr.IsLiteral() {
+			continue
 		}
+
+		value := attr.Value()
+		if !value.IsWhollyKnown() {
+			continue
+		}
+
+		block.Body().SetAttributeValue(attr.Name(), value)
+		found = true
 	}
 
 	for _, child := range tfBlock.AllBlocks() {
@@ -171,19 +192,6 @@ func (e *Executor) filterResults(results scan.Results) scan.Results {
 	}
 
 	return results
-}
-
-func (e *Executor) sortResults(results []scan.Result) {
-	sort.Slice(results, func(i, j int) bool {
-		switch {
-		case results[i].Rule().LongID() < results[j].Rule().LongID():
-			return true
-		case results[i].Rule().LongID() > results[j].Rule().LongID():
-			return false
-		default:
-			return results[i].Range().String() > results[j].Range().String()
-		}
-	})
 }
 
 func ignoreByParams(params map[string]string, modules terraform.Modules, m *types.Metadata) bool {

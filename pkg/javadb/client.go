@@ -135,7 +135,7 @@ func Update() error {
 	return err
 }
 
-func Clear(ctx context.Context, cacheDir string) error {
+func Clear(_ context.Context, cacheDir string) error {
 	return os.RemoveAll(dbDir(cacheDir))
 }
 

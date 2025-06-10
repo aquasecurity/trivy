@@ -53,7 +53,6 @@ func (r *secretRenderer) Render(result types.Result) {
 	for _, m := range result.Secrets {
 		r.renderSingle(result.Target, m)
 	}
-	return
 }
 
 func (r *secretRenderer) countSeverities(secrets []types.DetectedSecret) map[string]int {
@@ -85,7 +84,6 @@ func (r *secretRenderer) renderSingle(target string, secret types.DetectedSecret
 }
 
 func (r *secretRenderer) renderSummary(secret types.DetectedSecret) {
-
 	// severity
 	switch secret.Severity {
 	case severityCritical:

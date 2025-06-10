@@ -1,8 +1,6 @@
 package sql
 
 import (
-	"strings"
-
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -72,8 +70,4 @@ type IPConfiguration struct {
 		Name iacTypes.StringValue
 		CIDR iacTypes.StringValue
 	}
-}
-
-func (i *DatabaseInstance) DatabaseFamily() string {
-	return strings.Split(i.DatabaseVersion.Value(), "_")[0]
 }

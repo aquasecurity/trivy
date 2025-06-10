@@ -90,7 +90,7 @@ func GetBuiltinRules() []Rule {
 
 // This function is exported for trivy-plugin-aqua purposes only
 func GetSecretRulesMetadata() []iacRules.Check {
-	return lo.Map(builtinRules, func(rule Rule, i int) iacRules.Check {
+	return lo.Map(builtinRules, func(rule Rule, _ int) iacRules.Check {
 		return iacRules.Check{
 			Name:        rule.ID,
 			Description: rule.Title,
@@ -185,7 +185,7 @@ var builtinRules = []Rule{
 		Category:        CategoryAsymmetricPrivateKey,
 		Title:           "Asymmetric Private Key",
 		Severity:        "HIGH",
-		Regex:           MustCompile(`(?i)-----\s*?BEGIN[ A-Z0-9_-]*?PRIVATE KEY( BLOCK)?\s*?-----[\s]*?(?P<secret>[A-Za-z0-9=+/\\\r\n][A-Za-z0-9=+/\\\s]+)[\s]*?-----\s*?END[ A-Z0-9_-]*? PRIVATE KEY( BLOCK)?\s*?-----`),
+		Regex:           MustCompile(`(?i)-----\s*?BEGIN[ A-Z0-9_-]*?PRIVATE KEY( BLOCK)?\s*?-----[\s]*?(?P<secret>[A-Za-z0-9=+/\\\r\n][A-Za-z0-9=+/\\\s]{31,})[\s]*?-----\s*?END[ A-Z0-9_-]*? PRIVATE KEY( BLOCK)?\s*?-----`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"-----"},
 	},

@@ -16,9 +16,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
-	"github.com/aquasecurity/trivy/pkg/scanner/local"
-	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
+	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
+	"github.com/aquasecurity/trivy/pkg/scan/local"
+	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
@@ -53,7 +53,7 @@ func TestScanServer_Scan(t *testing.T) {
 					},
 				},
 			},
-			fixtures: []string{"../..//scanner/local/testdata/fixtures/happy.yaml"},
+			fixtures: []string{"../../scan/local/testdata/fixtures/happy.yaml"},
 			setUpCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutArtifact("sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a", ftypes.ArtifactInfo{
@@ -62,6 +62,7 @@ func TestScanServer_Scan(t *testing.T) {
 
 				require.NoError(t, c.PutBlob("sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203", ftypes.BlobInfo{
 					SchemaVersion: 1,
+					Size:          1000,
 					DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 					OS: ftypes.OS{
 						Family: "alpine",
@@ -134,6 +135,12 @@ func TestScanServer_Scan(t *testing.T) {
 						},
 					},
 				},
+				Layers: []*common.Layer{
+					{
+						Size:   1000,
+						DiffId: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+					},
+				},
 			},
 		},
 		{
@@ -150,7 +157,7 @@ func TestScanServer_Scan(t *testing.T) {
 					},
 				},
 			},
-			fixtures: []string{"../../scanner/local/testdata/fixtures/sad.yaml"},
+			fixtures: []string{"../../scan/local/testdata/fixtures/sad.yaml"},
 			setUpCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutArtifact("sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a", ftypes.ArtifactInfo{
@@ -197,7 +204,7 @@ func TestScanServer_Scan(t *testing.T) {
 
 			// Create scanner
 			applier := applier.NewApplier(c)
-			scanner := local.NewScanner(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
+			scanner := local.NewService(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
 			s := NewScanServer(scanner)
 
 			got, err := s.Scan(t.Context(), tt.args.in)
@@ -268,7 +275,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 					},
 				},
 			},
-			setUpCache: func(t *testing.T) cache.Cache {
+			setUpCache: func(_ *testing.T) cache.Cache {
 				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					PutArtifact: true,
 				})
@@ -322,6 +329,8 @@ func TestCacheServer_PutBlob(t *testing.T) {
 						SchemaVersion: 1,
 						Digest:        "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 						DiffId:        "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+						OpaqueDirs:    []string{"etc/"},
+						WhiteoutFiles: []string{"etc/hostname"},
 						Os: &common.OS{
 							Family: "alpine",
 							Name:   "3.11",
@@ -391,8 +400,6 @@ func TestCacheServer_PutBlob(t *testing.T) {
 								},
 							},
 						},
-						OpaqueDirs:    []string{"etc/"},
-						WhiteoutFiles: []string{"etc/hostname"},
 					},
 				},
 			},
@@ -403,6 +410,8 @@ func TestCacheServer_PutBlob(t *testing.T) {
 						SchemaVersion: 1,
 						Digest:        "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 						DiffID:        "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+						OpaqueDirs:    []string{"etc/"},
+						WhiteoutFiles: []string{"etc/hostname"},
 						OS: ftypes.OS{
 							Family: "alpine",
 							Name:   "3.11",
@@ -472,8 +481,6 @@ func TestCacheServer_PutBlob(t *testing.T) {
 								},
 							},
 						},
-						OpaqueDirs:    []string{"etc/"},
-						WhiteoutFiles: []string{"etc/hostname"},
 					},
 				},
 			},
@@ -488,7 +495,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 					},
 				},
 			},
-			setUpCache: func(t *testing.T) cache.Cache {
+			setUpCache: func(_ *testing.T) cache.Cache {
 				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					PutBlob: true,
 				})

@@ -146,6 +146,15 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/pnpm.json.golden",
 		},
 		{
+			name: "bun",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				input:       "testdata/fixtures/repo/bun",
+				listAllPkgs: true,
+			},
+			golden: "testdata/bun.json.golden",
+		},
+		{
 			name: "pip",
 			args: args{
 				scanner:     types.VulnerabilityScanner,
@@ -285,6 +294,15 @@ func TestRepository(t *testing.T) {
 				input:       "testdata/fixtures/repo/composer",
 			},
 			golden: "testdata/composer.lock.json.golden",
+		},
+		{
+			name: "cargo.lock",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/repo/cargo",
+			},
+			golden: "testdata/cargo.lock.json.golden",
 		},
 		{
 			name: "multiple lockfiles",

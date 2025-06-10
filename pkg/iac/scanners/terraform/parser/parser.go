@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"log/slog"
 	"os"
 	"path"
 	"path/filepath"
@@ -51,6 +52,9 @@ type Parser struct {
 	fsMap             map[string]fs.FS
 	configsFS         fs.FS
 	skipPaths         []string
+	// cwd is optional, if left to empty string, 'os.Getwd'
+	// will be used for populating 'path.cwd' in terraform.
+	cwd string
 }
 
 // New creates a new Parser
@@ -64,13 +68,16 @@ func New(moduleFS fs.FS, moduleSource string, opts ...Option) *Parser {
 		moduleFS:       moduleFS,
 		moduleSource:   moduleSource,
 		configsFS:      moduleFS,
-		logger:         log.WithPrefix("terraform parser").With("module", "root"),
+		logger:         slog.Default(),
 		tfvars:         make(map[string]cty.Value),
 	}
 
 	for _, option := range opts {
 		option(p)
 	}
+
+	// Scope the logger to the parser
+	p.logger = p.logger.With(log.Prefix("terraform parser")).With("module", "root")
 
 	return p
 }
@@ -80,7 +87,7 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	mp.modulePath = modulePath
 	mp.moduleBlock = moduleBlock
 	mp.moduleName = moduleName
-	mp.logger = log.WithPrefix("terraform parser").With("module", moduleName)
+	mp.logger = p.logger
 	mp.projectRoot = p.projectRoot
 	mp.skipPaths = p.skipPaths
 	mp.options = p.options
@@ -88,6 +95,10 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	for _, option := range p.options {
 		option(mp)
 	}
+
+	// The options above can reset the logger, so set the logging prefix after the
+	// options.
+	mp.logger = mp.logger.With(log.Prefix("terraform parser")).With("module", moduleName)
 	return mp
 }
 
@@ -97,8 +108,8 @@ func (p *Parser) Files() map[string]*hcl.File {
 
 func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 
-	isJSON := strings.HasSuffix(fullPath, ".tf.json")
-	isHCL := strings.HasSuffix(fullPath, ".tf")
+	isJSON := strings.HasSuffix(fullPath, ".tf.json") || strings.HasSuffix(fullPath, ".tofu.json")
+	isHCL := strings.HasSuffix(fullPath, ".tf") || strings.HasSuffix(fullPath, ".tofu")
 	if !isJSON && !isHCL {
 		return nil
 	}
@@ -143,7 +154,9 @@ func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 
 // ParseFS parses a root module, where it exists at the root of the provided filesystem
 func (p *Parser) ParseFS(ctx context.Context, dir string) error {
-
+	if p.moduleFS == nil {
+		return errors.New("module filesystem is nil, nothing to parse")
+	}
 	dir = path.Clean(dir)
 
 	if p.projectRoot == "" {
@@ -238,7 +251,7 @@ func readLinesFromFile(f io.Reader, from, to int) ([]string, error) {
 
 var ErrNoFiles = errors.New("no files found")
 
-func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
+func (p *Parser) Load(_ context.Context) (*evaluator, error) {
 	p.logger.Debug("Loading module", log.String("module", p.moduleName))
 
 	if len(p.files) == 0 {
@@ -269,14 +282,7 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 			return nil, err
 		}
 		p.logger.Debug("Added input variables from tfvars", log.Int("count", len(inputVars)))
-
-		if missingVars := missingVariableValues(blocks, inputVars); len(missingVars) > 0 {
-			p.logger.Warn(
-				"Variable values was not found in the environment or variable files. Evaluating may not work correctly.",
-				log.String("variables", strings.Join(missingVars, ", ")),
-			)
-			setNullMissingVariableValues(inputVars, missingVars)
-		}
+		p.setFallbackValuesForMissingVars(inputVars, blocks)
 	}
 
 	modulesMetadata, metadataPath, err := loadModuleMetadata(p.moduleFS, p.projectRoot)
@@ -290,9 +296,14 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 		)
 	}
 
-	workingDir, err := os.Getwd()
-	if err != nil {
-		return nil, err
+	var workingDir string
+	if p.cwd != "" {
+		workingDir = p.cwd
+	} else {
+		workingDir, err = os.Getwd()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	p.logger.Debug("Working directory for module evaluation", log.FilePath(workingDir))
@@ -308,18 +319,18 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 		modulesMetadata,
 		p.workspaceName,
 		ignores,
-		log.WithPrefix("terraform evaluator"),
+		p.logger.With(log.Prefix("terraform evaluator")),
 		p.allowDownloads,
 		p.skipCachedModules,
 	), nil
 }
 
-func missingVariableValues(blocks terraform.Blocks, inputVars map[string]cty.Value) []string {
-	var missing []string
+func missingVariableValues(blocks terraform.Blocks, inputVars map[string]cty.Value) []*terraform.Block {
+	var missing []*terraform.Block
 	for _, varBlock := range blocks.OfType("variable") {
 		if varBlock.GetAttribute("default") == nil {
 			if _, ok := inputVars[varBlock.TypeLabel()]; !ok {
-				missing = append(missing, varBlock.TypeLabel())
+				missing = append(missing, varBlock)
 			}
 		}
 	}
@@ -327,27 +338,55 @@ func missingVariableValues(blocks terraform.Blocks, inputVars map[string]cty.Val
 	return missing
 }
 
-// Set null values for missing variables, to allow expressions using them to be
+// Set fallback values for missing variables, to allow expressions using them to be
 // still be possibly evaluated to a value different than null.
-func setNullMissingVariableValues(inputVars map[string]cty.Value, missingVars []string) {
-	for _, missingVar := range missingVars {
-		inputVars[missingVar] = cty.NullVal(cty.DynamicPseudoType)
+func (p *Parser) setFallbackValuesForMissingVars(inputVars map[string]cty.Value, blocks []*terraform.Block) {
+	varBlocks := missingVariableValues(blocks, inputVars)
+	if len(varBlocks) == 0 {
+		return
 	}
+
+	missingVars := make([]string, 0, len(varBlocks))
+	for _, block := range varBlocks {
+		varType := inputVariableType(block)
+		if varType != cty.NilType {
+			inputVars[block.TypeLabel()] = cty.UnknownVal(varType)
+		} else {
+			inputVars[block.TypeLabel()] = cty.DynamicVal
+		}
+		missingVars = append(missingVars, block.TypeLabel())
+	}
+
+	p.logger.Warn(
+		"Variable values were not found in the environment or variable files. Evaluating may not work correctly.",
+		log.String("variables", strings.Join(missingVars, ", ")),
+	)
 }
 
-func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value, error) {
+func inputVariableType(b *terraform.Block) cty.Type {
+	typeAttr, exists := b.Attributes()["type"]
+	if !exists {
+		return cty.NilType
+	}
+	ty, _, err := typeAttr.DecodeVarType()
+	if err != nil {
+		return cty.NilType
+	}
+	return ty
+}
 
+func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, error) {
 	e, err := p.Load(ctx)
 	if errors.Is(err, ErrNoFiles) {
-		return nil, cty.NilVal, nil
+		return nil, nil
 	} else if err != nil {
-		return nil, cty.NilVal, err
+		return nil, err
 	}
 
 	modules, fsMap := e.EvaluateAll(ctx)
 	p.logger.Debug("Finished parsing module")
 	p.fsMap = fsMap
-	return modules, e.exportOutputs(), nil
+	return modules, nil
 }
 
 func (p *Parser) GetFilesystemMap() map[string]fs.FS {
@@ -419,7 +458,7 @@ func (s *paramParser) Parse(str string) bool {
 	str = str[idx+1:]
 
 	paramStr := strings.TrimSuffix(str, "]")
-	for _, pair := range strings.Split(paramStr, ",") {
+	for pair := range strings.SplitSeq(paramStr, ",") {
 		parts := strings.Split(pair, "=")
 		if len(parts) != 2 {
 			continue

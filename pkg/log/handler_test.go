@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"os"
 	"strings"
 	"testing"
 	"testing/slogtest"
@@ -35,13 +34,6 @@ func TestColorHandler(t *testing.T) {
 		`ERROR	error message	group2.key5="value5"`,
 	}
 	compareLines(t, got, wantLines)
-}
-
-func TestSlog(t *testing.T) {
-	logger := slog.New(log.NewHandler(os.Stdout, &log.Options{Level: slog.LevelWarn}))
-	logger.Info("foo")
-	logger.Warn("warn message", slog.Group("group2", slog.String("key5", "value5")))
-	logger.Error("error", slog.Int("key3", 3), slog.Group("group3", slog.String("key4", "value4")))
 }
 
 func TestWithAttrsAndWithGroup(t *testing.T) {
@@ -195,7 +187,7 @@ func TestSlogtest(t *testing.T) {
 	}
 
 	results := func(*testing.T) map[string]any {
-		for _, line := range strings.Split(buf.String(), "\n") {
+		for line := range strings.SplitSeq(buf.String(), "\n") {
 			if line == "" {
 				continue
 			}
@@ -226,7 +218,7 @@ func parseLogLine(line string) (map[string]any, error) {
 	m["msg"] = parts[1]
 
 	if len(parts) == 3 {
-		for _, attr := range strings.Split(parts[2], " ") {
+		for attr := range strings.SplitSeq(parts[2], " ") {
 			kv := strings.SplitN(attr, "=", 2)
 			if len(kv) == 2 {
 				parseAttr(m, kv[0], kv[1])

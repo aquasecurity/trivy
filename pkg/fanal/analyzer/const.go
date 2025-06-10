@@ -28,12 +28,13 @@ const (
 	TypeUbuntuESM  Type = "ubuntu-esm"
 
 	// OS Package
-	TypeApk         Type = "apk"
-	TypeDpkg        Type = "dpkg"
-	TypeDpkgLicense Type = "dpkg-license" // For analyzing licenses
-	TypeRpm         Type = "rpm"
-	TypeRpmArchive  Type = "rpm-archive"
-	TypeRpmqa       Type = "rpmqa"
+	TypeApk                   Type = "apk"
+	TypeBottlerocketInventory Type = "bottlerocket-inventory"
+	TypeDpkg                  Type = "dpkg"
+	TypeDpkgLicense           Type = "dpkg-license" // For analyzing licenses
+	TypeRpm                   Type = "rpm"
+	TypeRpmArchive            Type = "rpm-archive"
+	TypeRpmqa                 Type = "rpmqa"
 
 	// OS Package Repository
 	TypeApkRepo Type = "apk-repo"
@@ -65,6 +66,7 @@ const (
 	TypeNodePkg    Type = "node-pkg"
 	TypeYarn       Type = "yarn"
 	TypePnpm       Type = "pnpm"
+	TypeBun        Type = "bun"
 
 	// .NET
 	TypeNuget         Type = "nuget"
@@ -164,12 +166,15 @@ var (
 		TypeRedHatBase,
 		TypeSUSE,
 		TypeUbuntu,
+		TypeUbuntuESM,
 		TypeApk,
+		TypeBottlerocketInventory,
 		TypeDpkg,
 		TypeDpkgLicense,
 		TypeRpm,
 		TypeRpmqa,
 		TypeApkRepo,
+		TypeApkCommand,
 	}
 
 	// TypeLanguages has all language analyzers
@@ -187,6 +192,7 @@ var (
 		TypeNodePkg,
 		TypeYarn,
 		TypePnpm,
+		TypeBun,
 		TypeNuget,
 		TypeDotNetCore,
 		TypePackagesProps,
@@ -216,6 +222,7 @@ var (
 		TypeNpmPkgLock,
 		TypeYarn,
 		TypePnpm,
+		TypeBun,
 		TypePip,
 		TypePipenv,
 		TypePoetry,

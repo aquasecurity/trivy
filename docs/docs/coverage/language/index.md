@@ -31,6 +31,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 | [Node.js](nodejs.md) | package-lock.json                                                                          |     -     |     -      |       ✅        |       ✅        |
 |                      | yarn.lock                                                                                  |     -     |     -      |       ✅        |       ✅        |
 |                      | pnpm-lock.yaml                                                                             |     -     |     -      |       ✅        |       ✅        |
+|                      | bun.lock                                                                                   |     -     |     -      |       ✅        |       ✅        |
 |                      | package.json                                                                               |     ✅     |     ✅      |       -        |       -        |
 | [.NET](dotnet.md)    | packages.lock.json                                                                         |     ✅     |     ✅      |       ✅        |       ✅        |
 |                      | packages.config                                                                            |     ✅     |     ✅      |       ✅        |       ✅        |
@@ -66,5 +67,5 @@ Example: [Dockerfile](https://github.com/aquasecurity/trivy-ci-test/blob/main/Do
 [^5]: ✅ means "enabled" and `-` means "disabled" in the rootfs scanning
 [^6]: ✅ means "enabled" and `-` means "disabled" in the filesystem scanning
 [^7]: ✅ means "enabled" and `-` means "disabled" in the git repository scanning
-[^8]: To scan a filename other than the default filename use [file-patterns](../../configuration/skipping.md#file-patterns)
+[^8]: To scan a filename other than the default filename use [file-patterns](../../configuration/skipping.md#customizing-file-handling)
 [^9]: `Directory.Packages.props` and  legacy `Packages.props` file names are supported

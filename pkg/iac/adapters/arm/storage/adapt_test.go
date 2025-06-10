@@ -28,7 +28,7 @@ func Test_AdaptStorageDefaults(t *testing.T) {
 	require.Len(t, output.Accounts, 1)
 
 	account := output.Accounts[0]
-	assert.Equal(t, "", account.MinimumTLSVersion.Value())
+	assert.Empty(t, account.MinimumTLSVersion.Value())
 	assert.False(t, account.EnforceHTTPS.Value())
 	assert.True(t, account.PublicNetworkAccess.Value())
 

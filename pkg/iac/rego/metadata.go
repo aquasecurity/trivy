@@ -23,26 +23,27 @@ import (
 const annotationScopePackage = "package"
 
 type StaticMetadata struct {
-	Deprecated         bool
-	ID                 string
-	AVDID              string
-	Title              string
-	ShortCode          string
-	Aliases            []string
-	Description        string
-	Severity           string
-	RecommendedActions string
-	PrimaryURL         string
-	References         []string
-	InputOptions       InputOptions
-	Package            string
-	Frameworks         map[framework.Framework][]string
-	Provider           string
-	Service            string
-	Library            bool
-	CloudFormation     *scan.EngineMetadata
-	Terraform          *scan.EngineMetadata
-	Examples           string
+	Deprecated          bool
+	ID                  string
+	AVDID               string
+	Title               string
+	ShortCode           string
+	Aliases             []string
+	Description         string
+	Severity            string
+	RecommendedActions  string
+	PrimaryURL          string
+	References          []string
+	InputOptions        InputOptions
+	Package             string
+	Frameworks          map[framework.Framework][]string
+	Provider            string
+	Service             string
+	Library             bool
+	CloudFormation      *scan.EngineMetadata
+	Terraform           *scan.EngineMetadata
+	Examples            string
+	MinimumTrivyVersion string
 }
 
 func NewStaticMetadata(pkgPath string, inputOpt InputOptions) *StaticMetadata {
@@ -80,11 +81,16 @@ func (sm *StaticMetadata) populate(meta map[string]any) error {
 	upd(&sm.RecommendedActions, "recommended_actions")
 	upd(&sm.RecommendedActions, "recommended_action")
 	upd(&sm.Examples, "examples")
+	upd(&sm.MinimumTrivyVersion, "minimum_trivy_version")
 
 	if raw, ok := meta["deprecated"]; ok {
 		if dep, ok := raw.(bool); ok {
 			sm.Deprecated = dep
 		}
+	}
+
+	if raw, ok := meta["minimum_trivy_version"]; ok {
+		sm.MinimumTrivyVersion = raw.(string)
 	}
 
 	if raw, ok := meta["severity"]; ok {
@@ -173,13 +179,13 @@ func (sm *StaticMetadata) updateAliases(meta map[string]any) {
 	}
 }
 
-func (m *StaticMetadata) hasAnyFramework(frameworks []framework.Framework) bool {
+func (sm *StaticMetadata) hasAnyFramework(frameworks []framework.Framework) bool {
 	if len(frameworks) == 0 {
 		frameworks = []framework.Framework{framework.Default}
 	}
 
 	return slices.ContainsFunc(frameworks, func(fw framework.Framework) bool {
-		_, exists := m.Frameworks[fw]
+		_, exists := sm.Frameworks[fw]
 		return exists
 	})
 }
@@ -255,33 +261,34 @@ type SubType struct {
 	Provider  string // only for cloud
 }
 
-func (m *StaticMetadata) ToRule() scan.Rule {
+func (sm *StaticMetadata) ToRule() scan.Rule {
 
 	provider := "generic"
-	if m.Provider != "" {
-		provider = m.Provider
-	} else if len(m.InputOptions.Selectors) > 0 {
-		provider = m.InputOptions.Selectors[0].Type
+	if sm.Provider != "" {
+		provider = sm.Provider
+	} else if len(sm.InputOptions.Selectors) > 0 {
+		provider = sm.InputOptions.Selectors[0].Type
 	}
 
 	return scan.Rule{
-		Deprecated:     m.Deprecated,
-		AVDID:          m.AVDID,
-		Aliases:        append(m.Aliases, m.ID),
-		ShortCode:      m.ShortCode,
-		Summary:        m.Title,
-		Explanation:    m.Description,
-		Impact:         "",
-		Resolution:     m.RecommendedActions,
-		Provider:       providers.Provider(provider),
-		Service:        cmp.Or(m.Service, "general"),
-		Links:          m.References,
-		Severity:       severity.Severity(m.Severity),
-		RegoPackage:    m.Package,
-		Frameworks:     m.Frameworks,
-		CloudFormation: m.CloudFormation,
-		Terraform:      m.Terraform,
-		Examples:       m.Examples,
+		Deprecated:          sm.Deprecated,
+		AVDID:               sm.AVDID,
+		Aliases:             append(sm.Aliases, sm.ID),
+		ShortCode:           sm.ShortCode,
+		Summary:             sm.Title,
+		Explanation:         sm.Description,
+		Impact:              "",
+		Resolution:          sm.RecommendedActions,
+		Provider:            providers.Provider(provider),
+		Service:             cmp.Or(sm.Service, "general"),
+		Links:               sm.References,
+		Severity:            severity.Severity(sm.Severity),
+		RegoPackage:         sm.Package,
+		Frameworks:          sm.Frameworks,
+		CloudFormation:      sm.CloudFormation,
+		Terraform:           sm.Terraform,
+		Examples:            sm.Examples,
+		MinimumTrivyVersion: sm.MinimumTrivyVersion,
 	}
 }
 

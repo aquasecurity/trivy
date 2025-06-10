@@ -42,7 +42,7 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 	case ftypes.Jar, ftypes.Pom, ftypes.Gradle, ftypes.Sbt:
 		ecosystem = vulnerability.Maven
 		comparer = maven.Comparer{}
-	case ftypes.Npm, ftypes.Yarn, ftypes.Pnpm, ftypes.NodePkg, ftypes.JavaScript:
+	case ftypes.Npm, ftypes.Yarn, ftypes.Pnpm, ftypes.Bun, ftypes.NodePkg, ftypes.JavaScript:
 		ecosystem = vulnerability.Npm
 		comparer = npm.Comparer{}
 	case ftypes.NuGet, ftypes.DotNetCore, ftypes.PackagesProps:
@@ -148,7 +148,7 @@ func createFixedVersions(advisory dbTypes.Advisory) string {
 
 	var fixedVersions []string
 	for _, version := range advisory.VulnerableVersions {
-		for _, s := range strings.Split(version, ",") {
+		for s := range strings.SplitSeq(version, ",") {
 			s = strings.TrimSpace(s)
 			if !strings.HasPrefix(s, "<=") && strings.HasPrefix(s, "<") {
 				s = strings.TrimPrefix(s, "<")

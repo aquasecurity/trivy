@@ -25,11 +25,14 @@ const (
 	Alpine             OSType = "alpine"
 	Amazon             OSType = "amazon"
 	Azure              OSType = "azurelinux"
+	Bottlerocket       OSType = "bottlerocket"
 	CBLMariner         OSType = "cbl-mariner"
 	CentOS             OSType = "centos"
 	Chainguard         OSType = "chainguard"
 	Debian             OSType = "debian"
+	Echo               OSType = "echo"
 	Fedora             OSType = "fedora"
+	MinimOS            OSType = "minimos"
 	OpenSUSE           OSType = "opensuse"
 	OpenSUSELeap       OSType = "opensuse-leap"
 	OpenSUSETumbleweed OSType = "opensuse-tumbleweed"
@@ -64,6 +67,7 @@ const (
 	Composer       LangType = "composer"
 	ComposerVendor LangType = "composer-vendor"
 	Npm            LangType = "npm"
+	Bun            LangType = "bun"
 	NuGet          LangType = "nuget"
 	DotNetCore     LangType = "dotnet-core"
 	PackagesProps  LangType = "packages-props"
@@ -111,7 +115,9 @@ var (
 		CentOS,
 		Chainguard,
 		Debian,
+		Echo,
 		Fedora,
+		MinimOS,
 		OpenSUSE,
 		OpenSUSELeap,
 		OpenSUSETumbleweed,
@@ -163,6 +169,7 @@ const (
 	NpmPkgLock = "package-lock.json"
 	YarnLock   = "yarn.lock"
 	PnpmLock   = "pnpm-lock.yaml"
+	BunLock    = "bun.lock"
 
 	ComposerLock          = "composer.lock"
 	ComposerJson          = "composer.json"

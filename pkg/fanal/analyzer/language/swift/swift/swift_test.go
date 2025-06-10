@@ -26,7 +26,6 @@ func Test_swiftLockAnalyzer_Analyze(t *testing.T) {
 						Type:     types.Swift,
 						FilePath: "testdata/happy/Package.resolved",
 						Packages: types.Packages{
-
 							{
 								ID:      "github.com/Quick/Nimble@9.2.1",
 								Name:    "github.com/Quick/Nimble",
@@ -78,7 +77,7 @@ func Test_swiftLockAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			a := swiftLockAnalyzer{}
-			got, err := a.Analyze(nil, analyzer.AnalysisInput{
+			got, err := a.Analyze(t.Context(), analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
 			})

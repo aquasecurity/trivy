@@ -21,46 +21,52 @@
       "Class": "config",
       "Type": "dockerfile",
       "MisconfSummary": {
-        "Successes": 28,
+        "Successes": 27,
         "Failures": 2
       },
       "Misconfigurations": [
         {
           "Type": "Dockerfile Security Check",
-          "ID": "N/A",
-          "Title": "N/A",
-          "Description": "Rego module: data.user.bar",
+          "ID": "AVD-BAR-0001",
+          "AVDID": "AVD-BAR-0001",
+          "Title": "Custom policy",
+          "Description": "Custom policy for testing",
           "Message": "something bad: bar",
           "Namespace": "user.bar",
           "Query": "data.user.bar.deny",
-          "Severity": "UNKNOWN",
+          "Resolution": "Custom policy for testing",
+          "Severity": "LOW",
           "Status": "FAIL",
           "Layer": {},
           "CauseMetadata": {
-            "Provider": "Generic",
-            "Service": "general",
+            "Provider": "Custom",
+            "Service": "custom",
             "Code": {
               "Lines": null
-            }
+            },
+            "RenderedCause": {}
           }
         },
         {
           "Type": "Dockerfile Security Check",
-          "ID": "N/A",
-          "Title": "N/A",
-          "Description": "Rego module: data.user.foo",
+          "ID": "AVD-FOO-0001",
+          "AVDID": "AVD-FOO-0001",
+          "Title": "Custom policy",
+          "Description": "Custom policy for testing",
           "Message": "something bad: foo",
           "Namespace": "user.foo",
           "Query": "data.user.foo.deny",
-          "Severity": "UNKNOWN",
+          "Resolution": "Custom policy for testing",
+          "Severity": "LOW",
           "Status": "FAIL",
           "Layer": {},
           "CauseMetadata": {
-            "Provider": "Generic",
-            "Service": "general",
+            "Provider": "Custom",
+            "Service": "custom",
             "Code": {
               "Lines": null
-            }
+            },
+            "RenderedCause": {}
           }
         }
       ]

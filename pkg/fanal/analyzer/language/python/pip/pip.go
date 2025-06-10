@@ -59,14 +59,14 @@ func (a pipLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		a.logger.Warn("Unable to find python `site-packages` directory. License detection is skipped.", log.Err(err))
 	}
 
-	// We only saved the `requirements.txt` files
 	required := func(_ string, _ fs.DirEntry) bool {
+		// Parse all required files: `conan.lock` (from a.Required func) + input.FilePatterns.Match()
 		return true
 	}
 
 	useMinVersion := a.detectionPriority == types.PriorityComprehensive
 
-	if err = fsutils.WalkDir(input.FS, ".", required, func(pathPath string, d fs.DirEntry, r io.Reader) error {
+	if err = fsutils.WalkDir(input.FS, ".", required, func(pathPath string, _ fs.DirEntry, r io.Reader) error {
 		app, err := language.Parse(types.Pip, pathPath, r, pip.NewParser(useMinVersion))
 		if err != nil {
 			return xerrors.Errorf("unable to parse requirements.txt: %w", err)

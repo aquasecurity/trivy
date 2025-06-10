@@ -116,6 +116,13 @@ var (
 		Values:     xstrings.ToStringSlice([]types.ConfigType{types.Terraform}), // TODO: add Plan and JSON?
 		Default:    []string{},
 	}
+	RawConfigScanners = Flag[[]string]{
+		Name:       "raw-config-scanners",
+		ConfigName: "misconfiguration.raw-config-scanners",
+		Usage:      "specify the types of scanners that will also scan raw configurations. For example, scanners will scan a non-adapted configuration into a shared state",
+		Values:     xstrings.ToStringSlice([]types.ConfigType{types.Terraform}),
+		Default:    []string{},
+	}
 )
 
 // MisconfFlagGroup composes common printer flag structs used for commands providing misconfiguration scanning.
@@ -137,6 +144,7 @@ type MisconfFlagGroup struct {
 	MisconfigScanners          *Flag[[]string]
 	ConfigFileSchemas          *Flag[[]string]
 	RenderCause                *Flag[[]string]
+	RawConfigScanners          *Flag[[]string]
 }
 
 type MisconfOptions struct {
@@ -157,6 +165,7 @@ type MisconfOptions struct {
 	MisconfigScanners       []analyzer.Type
 	ConfigFileSchemas       []string
 	RenderCause             []types.ConfigType
+	RawConfigScanners       []types.ConfigType
 }
 
 func NewMisconfFlagGroup() *MisconfFlagGroup {
@@ -177,6 +186,7 @@ func NewMisconfFlagGroup() *MisconfFlagGroup {
 		MisconfigScanners:          MisconfigScannersFlag.Clone(),
 		ConfigFileSchemas:          ConfigFileSchemasFlag.Clone(),
 		RenderCause:                RenderCauseFlag.Clone(),
+		RawConfigScanners:          RawConfigScanners.Clone(),
 	}
 }
 
@@ -201,15 +211,12 @@ func (f *MisconfFlagGroup) Flags() []Flagger {
 		f.MisconfigScanners,
 		f.ConfigFileSchemas,
 		f.RenderCause,
+		f.RawConfigScanners,
 	}
 }
 
-func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
-	if err := parseFlags(f); err != nil {
-		return MisconfOptions{}, err
-	}
-
-	return MisconfOptions{
+func (f *MisconfFlagGroup) ToOptions(opts *Options) error {
+	opts.MisconfOptions = MisconfOptions{
 		IncludeNonFailures:      f.IncludeNonFailures.Value(),
 		ResetChecksBundle:       f.ResetChecksBundle.Value(),
 		ChecksBundleRepository:  f.ChecksBundleRepository.Value(),
@@ -225,5 +232,7 @@ func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 		MisconfigScanners:       xstrings.ToTSlice[analyzer.Type](f.MisconfigScanners.Value()),
 		ConfigFileSchemas:       f.ConfigFileSchemas.Value(),
 		RenderCause:             xstrings.ToTSlice[types.ConfigType](f.RenderCause.Value()),
-	}, nil
+		RawConfigScanners:       xstrings.ToTSlice[types.ConfigType](f.RawConfigScanners.Value()),
+	}
+	return nil
 }

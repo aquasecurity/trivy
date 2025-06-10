@@ -152,11 +152,11 @@ func createTestFiles(t *testing.T, dir string) {
 		"vex",
 	}
 	for _, subdir := range subdirs {
-		err := os.MkdirAll(filepath.Join(dir, subdir), 0755)
+		err := os.MkdirAll(filepath.Join(dir, subdir), 0o755)
 		require.NoError(t, err)
 
 		testFile := filepath.Join(dir, subdir, "testfile.txt")
-		err = os.WriteFile(testFile, []byte("test content"), 0644)
+		err = os.WriteFile(testFile, []byte("test content"), 0o644)
 		require.NoError(t, err)
 	}
 }

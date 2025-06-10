@@ -111,11 +111,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 func countLeadingSpace(line string) int {
 	i := 0
 	for _, runeValue := range line {
-		if runeValue == ' ' {
-			i++
-		} else {
+		if runeValue != ' ' {
 			break
 		}
+		i++
 	}
 	return i
 }

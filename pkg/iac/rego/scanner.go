@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"slices"
 	"strings"
 
 	"github.com/open-policy-agent/opa/v1/ast"
@@ -22,6 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
+	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
 var checkTypesWithSubtype = set.New(types.SourceCloud, types.SourceDefsec, types.SourceKubernetes)
@@ -60,6 +62,7 @@ type Scanner struct {
 	includeDeprecatedChecks  bool
 	includeEmbeddedPolicies  bool
 	includeEmbeddedLibraries bool
+	trivyVersion             string
 
 	embeddedLibs   map[string]*ast.Module
 	embeddedChecks map[string]*ast.Module
@@ -98,6 +101,7 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 		customSchemas:    make(map[string][]byte),
 		disabledCheckIDs: set.New[string](),
 		moduleMetadata:   make(map[string]*StaticMetadata),
+		trivyVersion:     app.Version(),
 	}
 
 	for _, opt := range opts {
@@ -286,7 +290,17 @@ func checkSubtype(ii map[string]any, provider string, subTypes []SubType) bool {
 	return false
 }
 
+var sourcesWithExplicitSelectors = []types.Source{
+	// apply terrafrom-specific checks only if selectors exist
+	types.SourceTerraformRaw,
+}
+
 func isPolicyApplicable(sourceType types.Source, staticMetadata *StaticMetadata, inputs ...Input) bool {
+	if len(staticMetadata.InputOptions.Selectors) == 0 &&
+		slices.Contains(sourcesWithExplicitSelectors, sourceType) {
+		return false
+	}
+
 	if len(staticMetadata.InputOptions.Selectors) == 0 { // check always applies if no selectors
 		return true
 	}

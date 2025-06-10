@@ -15,7 +15,8 @@ func TestJsonManifestToRego(t *testing.T) {
   "apiVersion": "v1",
   "kind": "Pod",
   "metadata": {
-    "name": "hello-cpu-limit"
+    "name": "hello-cpu-limit",
+    "foo": null
   },
   "spec": {
     "containers": [
@@ -23,7 +24,8 @@ func TestJsonManifestToRego(t *testing.T) {
         "command": [
           "sh",
           "-c",
-          "echo 'Hello' && sleep 1h"
+          "echo 'Hello' && sleep 1h",
+          null
         ],
         "image": "busybox",
         "name": "hello"
@@ -41,7 +43,7 @@ func TestJsonManifestToRego(t *testing.T) {
 			"filepath":  filePath,
 			"offset":    0,
 			"startline": 1,
-			"endline":   20,
+			"endline":   22,
 		},
 		"apiVersion": "v1",
 		"kind":       "Pod",
@@ -50,7 +52,7 @@ func TestJsonManifestToRego(t *testing.T) {
 				"filepath":  filePath,
 				"offset":    0,
 				"startline": 4,
-				"endline":   6,
+				"endline":   7,
 			},
 			"name": "hello-cpu-limit",
 		},
@@ -58,16 +60,16 @@ func TestJsonManifestToRego(t *testing.T) {
 			"__defsec_metadata": map[string]any{
 				"filepath":  filePath,
 				"offset":    0,
-				"startline": 7,
-				"endline":   19,
+				"startline": 8,
+				"endline":   21,
 			},
 			"containers": []any{
 				map[string]any{
 					"__defsec_metadata": map[string]any{
 						"filepath":  filePath,
 						"offset":    0,
-						"startline": 8,
-						"endline":   17,
+						"startline": 10,
+						"endline":   19,
 					},
 					"command": []any{
 						"sh",

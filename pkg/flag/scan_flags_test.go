@@ -14,11 +14,12 @@ import (
 
 func TestScanFlagGroup_ToOptions(t *testing.T) {
 	type fields struct {
-		skipDirs    []string
-		skipFiles   []string
-		offlineScan bool
-		scanners    string
-		distro      string
+		skipDirs         []string
+		skipFiles        []string
+		offlineScan      bool
+		scanners         string
+		distro           string
+		skipVersionCheck bool
 	}
 	tests := []struct {
 		name      string
@@ -127,6 +128,16 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			},
 			assertion: require.Error,
 		},
+		{
+			name: "skip version check flag",
+			fields: fields{
+				skipVersionCheck: true,
+			},
+			want: flag.ScanOptions{
+				SkipVersionCheck: true,
+			},
+			assertion: require.NoError,
+		},
 	}
 
 	for _, tt := range tests {
@@ -137,19 +148,22 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			setValue(flag.OfflineScanFlag.ConfigName, tt.fields.offlineScan)
 			setValue(flag.ScannersFlag.ConfigName, tt.fields.scanners)
 			setValue(flag.DistroFlag.ConfigName, tt.fields.distro)
+			setValue(flag.SkipVersionCheckFlag.ConfigName, tt.fields.skipVersionCheck)
 
 			// Assert options
 			f := &flag.ScanFlagGroup{
-				SkipDirs:    flag.SkipDirsFlag.Clone(),
-				SkipFiles:   flag.SkipFilesFlag.Clone(),
-				OfflineScan: flag.OfflineScanFlag.Clone(),
-				Scanners:    flag.ScannersFlag.Clone(),
-				DistroFlag:  flag.DistroFlag.Clone(),
+				SkipDirs:         flag.SkipDirsFlag.Clone(),
+				SkipFiles:        flag.SkipFilesFlag.Clone(),
+				OfflineScan:      flag.OfflineScanFlag.Clone(),
+				Scanners:         flag.ScannersFlag.Clone(),
+				DistroFlag:       flag.DistroFlag.Clone(),
+				SkipVersionCheck: flag.SkipVersionCheckFlag.Clone(),
 			}
 
-			got, err := f.ToOptions(tt.args)
+			flags := flag.Flags{f}
+			got, err := flags.ToOptions(tt.args)
 			tt.assertion(t, err)
-			assert.Equalf(t, tt.want, got, "ToOptions()")
+			assert.Equal(t, tt.want, got.ScanOptions)
 		})
 	}
 }

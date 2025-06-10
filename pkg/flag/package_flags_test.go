@@ -76,9 +76,10 @@ func TestPackageFlagGroup_ToOptions(t *testing.T) {
 				PkgRelationships: flag.PkgRelationshipsFlag.Clone(),
 			}
 
-			got, err := f.ToOptions()
+			flags := flag.Flags{f}
+			got, err := flags.ToOptions(nil)
 			require.NoError(t, err)
-			assert.EqualExportedValuesf(t, tt.want, got, "PackageFlagGroup")
+			assert.EqualExportedValues(t, tt.want, got.PackageOptions)
 		})
 	}
 }

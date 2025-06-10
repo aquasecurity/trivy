@@ -78,14 +78,14 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name:   "sad path unsupported vm format",
 			target: "testdata/monolithicSparse.vmdk",
-			wantErr: func(t assert.TestingT, err error, args ...any) bool {
+			wantErr: func(t assert.TestingT, err error, _ ...any) bool {
 				return assert.ErrorContains(t, err, "unsupported type error")
 			},
 		},
 		{
 			name:   "sad path file not found",
 			target: "testdata/no-file",
-			wantErr: func(t assert.TestingT, err error, args ...any) bool {
+			wantErr: func(t assert.TestingT, err error, _ ...any) bool {
 				return assert.ErrorContains(t, err, "file open error")
 			},
 		},
@@ -118,16 +118,16 @@ func TestArtifact_Inspect(t *testing.T) {
 			rootDir: "testdata/alpine",
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID:       "sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
+					ID:       "sha256:9ca6dbba47cea74d3f9b0bf0472314735d06f42d3ccf8cfe7c021f61a3420973",
 					BlobInfo: expectedBlobInfo,
 				},
 			},
 			want: artifact.Reference{
 				Name: "rawdata.img",
 				Type: types.TypeVM,
-				ID:   "sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
+				ID:   "sha256:9ca6dbba47cea74d3f9b0bf0472314735d06f42d3ccf8cfe7c021f61a3420973",
 				BlobIDs: []string{
-					"sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
+					"sha256:9ca6dbba47cea74d3f9b0bf0472314735d06f42d3ccf8cfe7c021f61a3420973",
 				},
 			},
 		},
@@ -137,16 +137,16 @@ func TestArtifact_Inspect(t *testing.T) {
 			rootDir: "testdata/alpine",
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID:       "sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",
+					ID:       "sha256:d1690d3201420ddb690be85be011afd36be4c8bff47c474d7fcfe9c7efea9a3f",
 					BlobInfo: expectedBlobInfo,
 				},
 			},
 			want: artifact.Reference{
 				Name: "ebs-012345",
 				Type: types.TypeVM,
-				ID:   "sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",
+				ID:   "sha256:d1690d3201420ddb690be85be011afd36be4c8bff47c474d7fcfe9c7efea9a3f",
 				BlobIDs: []string{
-					"sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",
+					"sha256:d1690d3201420ddb690be85be011afd36be4c8bff47c474d7fcfe9c7efea9a3f",
 				},
 			},
 		},
@@ -202,6 +202,7 @@ var expectedBlobInfo = types.BlobInfo{
 					SrcName:    "musl",
 					SrcVersion: "1.2.3-r5",
 					Licenses:   []string{"MIT"},
+					Maintainer: "Timo Teräs <timo.teras@iki.fi>",
 					Arch:       "aarch64",
 					Digest:     "sha1:742b0a26f327c6da60d42a02c3eb6189a58e468f",
 					InstalledFiles: []string{

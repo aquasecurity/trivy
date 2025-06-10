@@ -110,6 +110,7 @@ func (tw *Writer) Write(_ context.Context, report types.Report) error {
 
 func (tw *Writer) flush() {
 	_, _ = fmt.Fprint(tw.options.Output, tw.buf.String())
+	tw.buf.Reset()
 }
 
 func (tw *Writer) render(result types.Result) {
@@ -117,21 +118,21 @@ func (tw *Writer) render(result types.Result) {
 		return
 	}
 
-	switch {
+	switch result.Class {
 	// vulnerability
-	case result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg:
+	case types.ClassOSPkg, types.ClassLangPkg:
 		tw.vulnerabilityRenderer.Render(result)
 	// misconfiguration
-	case result.Class == types.ClassConfig:
+	case types.ClassConfig:
 		tw.misconfigRenderer.Render(result)
 	// secret
-	case result.Class == types.ClassSecret:
+	case types.ClassSecret:
 		tw.secretRenderer.Render(result)
 	// package license
-	case result.Class == types.ClassLicense:
+	case types.ClassLicense:
 		tw.pkgLicenseRenderer.Render(result)
 	// file license
-	case result.Class == types.ClassLicenseFile:
+	case types.ClassLicenseFile:
 		tw.fileLicenseRenderer.Render(result)
 	default:
 		return

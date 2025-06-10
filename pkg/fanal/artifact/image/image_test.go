@@ -33,6 +33,14 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/sysfile"
 )
 
+// Common blob IDs used across multiple test cases to reduce duplication
+const (
+	alpineBaseLayerID     = "sha256:be60f1fe61fc63ab50b10fe0779614e605a973a38cd7d2a02f3f20b081e56d4a"
+	alpineBaseLayerDiffID = "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"
+	alpineArtifactID      = "sha256:3c709d2a158be3a97051e10cd0e30f047225cb9505101feb3fadcd395c2e0408"
+	composerImageID       = "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72"
+)
+
 func TestArtifact_Inspect(t *testing.T) {
 	alpinePkgs := types.Packages{
 		{
@@ -42,6 +50,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "alpine-baselayout",
 			SrcVersion: "3.2.0-r3",
 			Licenses:   []string{"GPL-2.0-only"},
+			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:8f373f5b329c3aaf136eb30c63a387661ee0f3d0",
 			DependsOn: []string{
 				"busybox@1.31.1-r9",
@@ -85,6 +94,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "alpine-keys",
 			SrcVersion: "2.1-r2",
 			Licenses:   []string{"MIT"},
+			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Arch:       "x86_64",
 			Digest:     "sha1:64929f85b7f8b4adbb664d905410312936b79d9b",
 			InstalledFiles: []string{
@@ -115,6 +125,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "apk-tools",
 			SrcVersion: "2.10.4-r3",
 			Licenses:   []string{"GPL-2.0-only"},
+			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:b15ad0c90e4493dfdc948d6b90a8e020da8936ef",
 			DependsOn: []string{
 				"libcrypto1.1@1.1.1d-r3",
@@ -134,6 +145,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "busybox",
 			SrcVersion: "1.31.1-r9",
 			Licenses:   []string{"GPL-2.0-only"},
+			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:a457703d71654811ea28d8d27a5cfc49ece27b34",
 			DependsOn: []string{
 				"musl@1.1.24-r2",
@@ -159,8 +171,9 @@ func TestArtifact_Inspect(t *testing.T) {
 				"MPL-2.0",
 				"GPL-2.0-or-later",
 			},
-			Arch:   "x86_64",
-			Digest: "sha1:3aeb8a90d7179d2a187782e980a964494e08c5fb",
+			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
+			Arch:       "x86_64",
+			Digest:     "sha1:3aeb8a90d7179d2a187782e980a964494e08c5fb",
 			InstalledFiles: []string{
 				"etc/ssl/cert.pem",
 			},
@@ -172,6 +185,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "libc-dev",
 			SrcVersion: "0.7.2-r0",
 			Licenses:   []string{"BSD-3-Clause"},
+			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:a7bf32bd32c6d3de2d1c4d7e753a0919b998cd01",
 			DependsOn: []string{
 				"musl-utils@1.1.24-r2",
@@ -185,6 +199,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "openssl",
 			SrcVersion: "1.1.1d-r3",
 			Licenses:   []string{"OpenSSL"},
+			Maintainer: "Timo Teras <timo.teras@iki.fi>",
 			Digest:     "sha1:dd8fb9a3cce7b2bcf954271da62fb85dac2b106a",
 			DependsOn: []string{
 				"musl@1.1.24-r2",
@@ -212,6 +227,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "openssl",
 			SrcVersion: "1.1.1d-r3",
 			Licenses:   []string{"OpenSSL"},
+			Maintainer: "Timo Teras <timo.teras@iki.fi>",
 			Digest:     "sha1:938d46e41b3e56b339a3aeb2d02fad3d75728f35",
 			DependsOn: []string{
 				"libcrypto1.1@1.1.1d-r3",
@@ -250,6 +266,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "musl",
 			SrcVersion: "1.1.24-r2",
 			Licenses:   []string{"MIT"},
+			Maintainer: "Timo Teräs <timo.teras@iki.fi>",
 			Arch:       "x86_64",
 			Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
 			InstalledFiles: []string{
@@ -268,7 +285,8 @@ func TestArtifact_Inspect(t *testing.T) {
 				"BSD-3-Clause",
 				"GPL-2.0-or-later",
 			},
-			Digest: "sha1:6d3b45e79dbab444ca7cbfa59e2833203be6fb6a",
+			Maintainer: "Timo Teräs <timo.teras@iki.fi>",
+			Digest:     "sha1:6d3b45e79dbab444ca7cbfa59e2833203be6fb6a",
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 				"scanelf@1.2.4-r0",
@@ -289,6 +307,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "pax-utils",
 			SrcVersion: "1.2.4-r0",
 			Licenses:   []string{"GPL-2.0-only"},
+			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:d6147beb32bff803b5d9f83a3bec7ab319087185",
 			DependsOn: []string{
 				"musl@1.1.24-r2",
@@ -305,6 +324,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "busybox",
 			SrcVersion: "1.31.1-r9",
 			Licenses:   []string{"GPL-2.0-only"},
+			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:3b685152af320120ae8941c740d3376b54e43c10",
 			DependsOn: []string{
 				"libtls-standalone@2.9.1-r0",
@@ -322,6 +342,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "zlib",
 			SrcVersion: "1.2.11-r3",
 			Licenses:   []string{"Zlib"},
+			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:acca078ee8baa93e005f57b2fae359c1efd443cd",
 			DependsOn: []string{
 				"musl@1.1.24-r2",
@@ -353,11 +374,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID: "sha256:24a7af33784fabfedf01999d9e0dc456e8e1c1943f7d4421f7c05164026788a4",
+					ID: alpineBaseLayerID,
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          5861888,
 						Digest:        "",
-						DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+						DiffID:        alpineBaseLayerDiffID,
 						CreatedBy:     "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
 						OS: types.OS{
 							Family: "alpine",
@@ -401,7 +423,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 			},
 			wantArtifact: cachetest.WantArtifact{
-				ID: "sha256:c232b7d8ac8aa08aa767313d0b53084c4380d1c01a213a5971bdb039e6538313",
+				ID: alpineArtifactID,
 				ArtifactInfo: types.ArtifactInfo{
 					SchemaVersion: types.ArtifactJSONSchemaVersion,
 					Architecture:  "amd64",
@@ -413,12 +435,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: artifact.Reference{
 				Name:    "../../test/testdata/alpine-311.tar.gz",
 				Type:    types.TypeContainerImage,
-				ID:      "sha256:c232b7d8ac8aa08aa767313d0b53084c4380d1c01a213a5971bdb039e6538313",
-				BlobIDs: []string{"sha256:24a7af33784fabfedf01999d9e0dc456e8e1c1943f7d4421f7c05164026788a4"},
+				ID:      alpineArtifactID,
+				BlobIDs: []string{alpineBaseLayerID},
 				ImageMetadata: artifact.ImageMetadata{
-					ID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					ID: composerImageID,
 					DiffIDs: []string{
-						"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+						alpineBaseLayerDiffID,
 					},
 					ConfigFile: v1.ConfigFile{
 						Architecture:  "amd64",
@@ -471,22 +493,23 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutArtifact("sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650", types.ArtifactInfo{
+				require.NoError(t, c.PutArtifact("sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b", types.ArtifactInfo{
 					SchemaVersion: types.ArtifactJSONSchemaVersion,
 				}))
 				return c
 			},
 			wantArtifact: cachetest.WantArtifact{
-				ID: "sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650",
+				ID: "sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b",
 				ArtifactInfo: types.ArtifactInfo{
 					SchemaVersion: types.ArtifactJSONSchemaVersion,
 				},
 			},
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID: "sha256:4a26915356c961f038d5a7b7f73f24cd1eec53dcf6fdeecd39b310ddc066faec",
+					ID: "sha256:f2a647dcf780c603f864e491dca1a042b1e98062b530c813681d1bb4a85bcb18",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          3061760,
 						Digest:        "",
 						DiffID:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 						CreatedBy:     "bazel build ...",
@@ -571,9 +594,10 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:e23e1d428a2a4ca9607cde5c556f744c7e9f3a1d3bfe835707c0fea107caf453",
+					ID: "sha256:c988cc5a0b8f3dc542c15c303d9200dee47d4fbed0e498a5bfbf3b4bef7a5af7",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          15441920,
 						Digest:        "",
 						DiffID:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 						CreatedBy:     "bazel build ...",
@@ -665,12 +689,14 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:b8ae022ed4f8b8bf827c04a825c2e6998217581d44c0b28b59a4e66ca65bbaa5",
+					ID: "sha256:05c19ffd5d898588400522070abd98c770b2965a7f4867d5c882c2a8783e40cc",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          29696,
 						Digest:        "",
 						DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 						CreatedBy:     "COPY file:842584685f26edb24dc305d76894f51cfda2bad0c24a05e727f9d4905d184a70 in /php-app/composer.lock ",
+						OpaqueDirs:    []string{"php-app/"},
 						Applications: []types.Application{
 							{
 								Type:     "composer",
@@ -867,16 +893,19 @@ func TestArtifact_Inspect(t *testing.T) {
 								},
 							},
 						},
-						OpaqueDirs: []string{"php-app/"},
 					},
 				},
 				{
-					ID: "sha256:8c51dcc708602d983f3f0507f0d26de609819c4391db92497639417e54378d11",
+					ID: "sha256:c737743c0f8b35906650a02125f05c8b35916c0febf64984f4dfaacd0f72509d",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          6656,
 						Digest:        "",
 						DiffID:        "sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
 						CreatedBy:     "COPY file:c6d0373d380252b91829a5bb3c81d5b1afa574c91cef7752d18170a231c31f6d in /ruby-app/Gemfile.lock ",
+						OpaqueDirs: []string{
+							"ruby-app/",
+						},
 						Applications: []types.Application{
 							{
 								Type:     "bundler",
@@ -1722,21 +1751,18 @@ func TestArtifact_Inspect(t *testing.T) {
 								},
 							},
 						},
-						OpaqueDirs: []string{
-							"ruby-app/",
-						},
 					},
 				},
 			},
 			want: artifact.Reference{
 				Name: "../../test/testdata/vuln-image.tar.gz",
 				Type: types.TypeContainerImage,
-				ID:   "sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650",
+				ID:   "sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b",
 				BlobIDs: []string{
-					"sha256:4a26915356c961f038d5a7b7f73f24cd1eec53dcf6fdeecd39b310ddc066faec",
-					"sha256:e23e1d428a2a4ca9607cde5c556f744c7e9f3a1d3bfe835707c0fea107caf453",
-					"sha256:b8ae022ed4f8b8bf827c04a825c2e6998217581d44c0b28b59a4e66ca65bbaa5",
-					"sha256:8c51dcc708602d983f3f0507f0d26de609819c4391db92497639417e54378d11",
+					"sha256:f2a647dcf780c603f864e491dca1a042b1e98062b530c813681d1bb4a85bcb18",
+					"sha256:c988cc5a0b8f3dc542c15c303d9200dee47d4fbed0e498a5bfbf3b4bef7a5af7",
+					"sha256:05c19ffd5d898588400522070abd98c770b2965a7f4867d5c882c2a8783e40cc",
+					"sha256:c737743c0f8b35906650a02125f05c8b35916c0febf64984f4dfaacd0f72509d",
 				},
 				ImageMetadata: artifact.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
@@ -1754,13 +1780,13 @@ func TestArtifact_Inspect(t *testing.T) {
 						History: []v1.History{
 							{
 								Author:     "Bazel",
-								Created:    v1.Time{Time: time.Date(1970, 01, 01, 0, 0, 0, 0, time.UTC)},
+								Created:    v1.Time{Time: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)},
 								CreatedBy:  "bazel build ...",
 								EmptyLayer: false,
 							},
 							{
 								Author:     "Bazel",
-								Created:    v1.Time{Time: time.Date(1970, 01, 01, 0, 0, 0, 0, time.UTC)},
+								Created:    v1.Time{Time: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)},
 								CreatedBy:  "bazel build ...",
 								EmptyLayer: false,
 							},
@@ -1828,40 +1854,43 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutArtifact("sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650", types.ArtifactInfo{
+				require.NoError(t, c.PutArtifact("sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b", types.ArtifactInfo{
 					SchemaVersion: types.ArtifactJSONSchemaVersion,
 				}))
 				return c
 			},
 			wantArtifact: cachetest.WantArtifact{
-				ID: "sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650",
+				ID: "sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b",
 				ArtifactInfo: types.ArtifactInfo{
 					SchemaVersion: types.ArtifactJSONSchemaVersion,
 				},
 			},
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID: "sha256:139bc12e936e0c46090b9380c4a29456d3ad8d8abd50c7bdc6160018cd887462",
+					ID: "sha256:48b4a983ef1ec8f0d19934ccf7fca3d2114466ad32207e16371620628f149984",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          3061760,
 						Digest:        "",
 						DiffID:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 						CreatedBy:     "bazel build ...",
 					},
 				},
 				{
-					ID: "sha256:c491838e70ff0fcfdd0605af1ba84e86d6958c0846b16c52a84e06bb344e8e8d",
+					ID: "sha256:a4d2820bd2c076f6153a9053843d4a56d31147ce486ec5e4a2c0405cec506d6c",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          15441920,
 						Digest:        "",
 						DiffID:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 						CreatedBy:     "bazel build ...",
 					},
 				},
 				{
-					ID: "sha256:25e775ef81049a93eafd865447b0b79da9e9956ab74bc02b5916eaea21c87c7c",
+					ID: "sha256:c5fa5e736cee843c563c222963eb89fc775f0620020ff9d51d5e5db8ef62eec4",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          29696,
 						Digest:        "",
 						DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 						CreatedBy:     "COPY file:842584685f26edb24dc305d76894f51cfda2bad0c24a05e727f9d4905d184a70 in /php-app/composer.lock ",
@@ -1869,9 +1898,10 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:a8a4798a22b65739cda9ca99ddb2cd86125c1dd86df6fc3971f937a0ff5b9ec3",
+					ID: "sha256:7e223b95d6d589cdb196e29ef6c6ac0acdd2c471350dd9880a420b4249f6e7bb",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Size:          6656,
 						Digest:        "",
 						DiffID:        "sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
 						CreatedBy:     "COPY file:c6d0373d380252b91829a5bb3c81d5b1afa574c91cef7752d18170a231c31f6d in /ruby-app/Gemfile.lock ",
@@ -1882,12 +1912,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: artifact.Reference{
 				Name: "../../test/testdata/vuln-image.tar.gz",
 				Type: types.TypeContainerImage,
-				ID:   "sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650",
+				ID:   "sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b",
 				BlobIDs: []string{
-					"sha256:139bc12e936e0c46090b9380c4a29456d3ad8d8abd50c7bdc6160018cd887462",
-					"sha256:c491838e70ff0fcfdd0605af1ba84e86d6958c0846b16c52a84e06bb344e8e8d",
-					"sha256:25e775ef81049a93eafd865447b0b79da9e9956ab74bc02b5916eaea21c87c7c",
-					"sha256:a8a4798a22b65739cda9ca99ddb2cd86125c1dd86df6fc3971f937a0ff5b9ec3",
+					"sha256:48b4a983ef1ec8f0d19934ccf7fca3d2114466ad32207e16371620628f149984",
+					"sha256:a4d2820bd2c076f6153a9053843d4a56d31147ce486ec5e4a2c0405cec506d6c",
+					"sha256:c5fa5e736cee843c563c222963eb89fc775f0620020ff9d51d5e5db8ef62eec4",
+					"sha256:7e223b95d6d589cdb196e29ef6c6ac0acdd2c471350dd9880a420b4249f6e7bb",
 				},
 				ImageMetadata: artifact.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
@@ -1905,14 +1935,14 @@ func TestArtifact_Inspect(t *testing.T) {
 						History: []v1.History{
 							{
 								Author:     "Bazel",
-								Created:    v1.Time{Time: time.Date(1970, 01, 01, 0, 0, 0, 0, time.UTC)},
+								Created:    v1.Time{Time: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)},
 								CreatedBy:  "bazel build ...",
 								Comment:    "",
 								EmptyLayer: false,
 							},
 							{
 								Author:     "Bazel",
-								Created:    v1.Time{Time: time.Date(1970, 01, 01, 0, 0, 0, 0, time.UTC)},
+								Created:    v1.Time{Time: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)},
 								CreatedBy:  "bazel build ...",
 								Comment:    "",
 								EmptyLayer: false,
@@ -1967,7 +1997,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name:      "sad path, MissingBlobs returns an error",
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
-			setupCache: func(t *testing.T) cache.Cache {
+			setupCache: func(_ *testing.T) cache.Cache {
 				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					MissingBlobs: true,
 				})
@@ -1977,7 +2007,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name:      "sad path, PutBlob returns an error",
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
-			setupCache: func(t *testing.T) cache.Cache {
+			setupCache: func(_ *testing.T) cache.Cache {
 				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					PutBlob: true,
 				})
@@ -1987,7 +2017,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name:      "sad path, PutBlob returns an error with multiple layers",
 			imagePath: "../../test/testdata/vuln-image.tar.gz",
-			setupCache: func(t *testing.T) cache.Cache {
+			setupCache: func(_ *testing.T) cache.Cache {
 				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					PutBlob: true,
 				})
@@ -1997,7 +2027,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name:      "sad path, PutArtifact returns an error",
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
-			setupCache: func(t *testing.T) cache.Cache {
+			setupCache: func(_ *testing.T) cache.Cache {
 				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					PutArtifact: true,
 				})

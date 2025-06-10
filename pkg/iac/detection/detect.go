@@ -239,7 +239,7 @@ func init() {
 			marker = altMarker
 		}
 
-		for _, partial := range bytes.Split(data, marker) {
+		for partial := range bytes.SplitSeq(data, marker) {
 			var result map[string]any
 			if err := yaml.Unmarshal(partial, &result); err != nil {
 				continue
@@ -265,7 +265,7 @@ func IsTerraformFile(path string) bool {
 		return true
 	}
 
-	for _, ext := range []string{".tf", ".tf.json", ".tfvars"} {
+	for _, ext := range []string{".tf", ".tf.json", ".tfvars", ".tofu", ".tofu.json"} {
 		if strings.HasSuffix(path, ext) {
 			return true
 		}

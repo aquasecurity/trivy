@@ -14,15 +14,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-const (
-	AllReport     = "all"
-	SummaryReport = "summary"
-
-	tableFormat     = "table"
-	jsonFormat      = "json"
-	cycloneDXFormat = "cyclonedx"
-)
-
 var (
 	roleWithMisconfig = report.Resource{
 		Namespace: "default",
@@ -60,6 +51,11 @@ var (
 					{
 						ID:       "KSV-ID102",
 						Status:   types.MisconfStatusFailure,
+						Severity: "HIGH",
+					},
+					{
+						ID:       "KSV-ID103",
+						Status:   types.MisconfStatusPassed,
 						Severity: "HIGH",
 					},
 
@@ -142,6 +138,44 @@ var (
 			},
 		},
 	}
+	deployOrionWithSingleMisconfig = report.Resource{
+		Namespace: "default",
+		Kind:      "Deploy",
+		Name:      "orion",
+		Results: types.Results{
+			{
+				Misconfigurations: []types.DetectedMisconfiguration{
+					{
+						ID:       "ID100",
+						Status:   types.MisconfStatusFailure,
+						Severity: "LOW",
+					},
+				},
+			},
+		},
+		Report: types.Report{
+			Results: types.Results{
+				{
+					Class: types.ClassConfig,
+					MisconfSummary: &types.MisconfSummary{
+						Successes: 0,
+						Failures:  1,
+					},
+					Misconfigurations: []types.DetectedMisconfiguration{
+						{
+							ID:          "ID100",
+							Title:       "Config file is bad",
+							Description: "Your config file is not good.",
+							Message:     "Oh no, a bad config.",
+							PrimaryURL:  "https://google.com/search?q=bad%20config",
+							Status:      types.MisconfStatusFailure,
+							Severity:    "LOW",
+						},
+					},
+				},
+			},
+		},
+	}
 	deployOrionWithVulns = report.Resource{
 		Namespace: "default",
 		Kind:      "Deploy",
@@ -181,9 +215,43 @@ var (
 			},
 		},
 	}
+
+	deployOrionWithSingleVuln = report.Resource{
+		Namespace: "default",
+		Kind:      "Deploy",
+		Name:      "orion",
+		Results: types.Results{
+			{
+				Vulnerabilities: []types.DetectedVulnerability{
+					{
+						PkgID:           "foo/bar@v0.0.1",
+						VulnerabilityID: "CVE-2022-1111",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "LOW"},
+					},
+				},
+			},
+		},
+		Report: types.Report{
+			Results: types.Results{
+				{
+					Class: types.ClassLangPkg,
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							PkgName:          "foo/bar",
+							VulnerabilityID:  "CVE-2022-1111",
+							InstalledVersion: "v0.0.1",
+							FixedVersion:     "v0.0.2",
+							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2022-1111",
+							Vulnerability:    dbTypes.Vulnerability{Severity: "LOW"},
+						},
+					},
+				},
+			},
+		},
+	}
 )
 
-func TestReportWrite_Summary(t *testing.T) {
+func TestReportWrite_Table(t *testing.T) {
 	allSeverities := []dbTypes.Severity{
 		dbTypes.SeverityUnknown,
 		dbTypes.SeverityLow,
@@ -198,16 +266,18 @@ func TestReportWrite_Summary(t *testing.T) {
 		opt            report.Option
 		scanners       types.Scanners
 		severities     []dbTypes.Severity
+		reportType     string
 		expectedOutput string
 	}{
 		{
-			name: "Only config, all serverities",
+			name: "Only config, all severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{deployOrionWithMisconfigs},
 			},
 			scanners:   types.Scanners{types.MisconfigScanner},
 			severities: allSeverities,
+			reportType: report.SummaryReport,
 			expectedOutput: `Summary Report for test
 =======================
 
@@ -231,13 +301,73 @@ Infra Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "Only vuln, all serverities",
+			name: "Single misconfig with `--report all`",
+			report: report.Report{
+				ClusterName: "test",
+				Resources:   []report.Resource{deployOrionWithSingleMisconfig},
+			},
+			scanners: types.Scanners{types.MisconfigScanner},
+			severities: []dbTypes.Severity{
+				dbTypes.SeverityCritical,
+			},
+			reportType: report.AllReport,
+			expectedOutput: `namespace: default, deploy: orion ()
+====================================
+Tests: 1 (SUCCESSES: 0, FAILURES: 1)
+Failures: 0 (CRITICAL: 0)
+
+ (LOW): Oh no, a bad config.
+════════════════════════════════════════
+Your config file is not good.
+
+See https://google.com/search?q=bad%20config
+────────────────────────────────────────`,
+		},
+		{
+			name: "vulns and misconfig with `--report all`",
+			report: report.Report{
+				ClusterName: "test",
+				Resources: []report.Resource{
+					deployOrionWithSingleVuln,
+					deployOrionWithSingleMisconfig,
+				},
+			},
+			scanners: types.Scanners{types.VulnerabilityScanner, types.MisconfigScanner},
+			severities: []dbTypes.Severity{
+				dbTypes.SeverityCritical, dbTypes.SeverityLow,
+			},
+			reportType: report.AllReport,
+			expectedOutput: `namespace: default, deploy: orion ()
+====================================
+Total: 1 (LOW: 1, CRITICAL: 0)
+
+┌─────────┬───────────────┬──────────┬─────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
+│ Library │ Vulnerability │ Severity │ Status  │ Installed Version │ Fixed Version │                   Title                   │
+├─────────┼───────────────┼──────────┼─────────┼───────────────────┼───────────────┼───────────────────────────────────────────┤
+│ foo/bar │ CVE-2022-1111 │ LOW      │ unknown │ v0.0.1            │ v0.0.2        │ https://avd.aquasec.com/nvd/cve-2022-1111 │
+└─────────┴───────────────┴──────────┴─────────┴───────────────────┴───────────────┴───────────────────────────────────────────┘
+
+namespace: default, deploy: orion ()
+====================================
+Tests: 1 (SUCCESSES: 0, FAILURES: 1)
+Failures: 1 (LOW: 1, CRITICAL: 0)
+
+ (LOW): Oh no, a bad config.
+════════════════════════════════════════
+Your config file is not good.
+
+See https://google.com/search?q=bad%20config
+────────────────────────────────────────`,
+		},
+		{
+			name: "Only vuln, all severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{deployOrionWithVulns},
 			},
 			scanners:   types.Scanners{types.VulnerabilityScanner},
 			severities: allSeverities,
+			reportType: report.SummaryReport,
 			expectedOutput: `Summary Report for test
 =======================
 
@@ -261,13 +391,35 @@ Infra Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "Only rbac, all serverities",
+			name: "Single vuln with `--report all`",
+			report: report.Report{
+				ClusterName: "test",
+				Resources:   []report.Resource{deployOrionWithSingleVuln},
+			},
+			scanners: types.Scanners{types.VulnerabilityScanner},
+			severities: []dbTypes.Severity{
+				dbTypes.SeverityLow,
+			},
+			reportType: report.AllReport,
+			expectedOutput: `namespace: default, deploy: orion ()
+====================================
+Total: 1 (LOW: 1)
+
+┌─────────┬───────────────┬──────────┬─────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
+│ Library │ Vulnerability │ Severity │ Status  │ Installed Version │ Fixed Version │                   Title                   │
+├─────────┼───────────────┼──────────┼─────────┼───────────────────┼───────────────┼───────────────────────────────────────────┤
+│ foo/bar │ CVE-2022-1111 │ LOW      │ unknown │ v0.0.1            │ v0.0.2        │ https://avd.aquasec.com/nvd/cve-2022-1111 │
+└─────────┴───────────────┴──────────┴─────────┴───────────────────┴───────────────┴───────────────────────────────────────────┘`,
+		},
+		{
+			name: "Only rbac, all severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{roleWithMisconfig},
 			},
 			scanners:   types.Scanners{types.RBACScanner},
 			severities: allSeverities,
+			reportType: report.SummaryReport,
 			expectedOutput: `Summary Report for test
 =======================
 
@@ -282,13 +434,14 @@ RBAC Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "Only secret, all serverities",
+			name: "Only secret, all severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{deployLuaWithSecrets},
 			},
 			scanners:   types.Scanners{types.SecretScanner},
 			severities: allSeverities,
+			reportType: report.SummaryReport,
 			expectedOutput: `Summary Report for test
 =======================
 
@@ -312,13 +465,14 @@ Infra Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "apiserver, only infra and serverities",
+			name: "apiserver, only infra and severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},
 			},
 			scanners:   types.Scanners{types.MisconfigScanner},
 			severities: allSeverities,
+			reportType: report.SummaryReport,
 			expectedOutput: `Summary Report for test
 =======================
 
@@ -342,7 +496,7 @@ Infra Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "apiserver, vuln,config,secret and serverities",
+			name: "apiserver, vuln,config,secret and severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},
@@ -353,6 +507,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 				types.SecretScanner,
 			},
 			severities: allSeverities,
+			reportType: report.SummaryReport,
 			expectedOutput: `Summary Report for test
 =======================
 
@@ -376,7 +531,7 @@ Infra Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "apiserver, all misconfig and vuln scanners and serverities",
+			name: "apiserver, all misconfig and vuln scanners and severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},
@@ -386,6 +541,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 				types.VulnerabilityScanner,
 			},
 			severities: allSeverities,
+			reportType: report.SummaryReport,
 			expectedOutput: `Summary Report for test
 =======================
 
@@ -412,11 +568,12 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("TRIVY_DISABLE_VEX_NOTICE", "true")
 			output := bytes.Buffer{}
 
 			opt := report.Option{
 				Format:     "table",
-				Report:     "summary",
+				Report:     tc.reportType,
 				Output:     &output,
 				Scanners:   tc.scanners,
 				Severities: tc.severities,
@@ -424,7 +581,9 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 
 			err := Write(t.Context(), tc.report, opt)
 			require.NoError(t, err)
-			assert.Equal(t, tc.expectedOutput, stripAnsi(output.String()), tc.name)
+			got := stripAnsi(output.String())
+			got = strings.ReplaceAll(got, "\r\n", "\n")
+			assert.Equal(t, tc.expectedOutput, got, tc.name)
 		})
 	}
 }

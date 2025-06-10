@@ -28,17 +28,38 @@ trivy sbom [flags] SBOM_PATH
       --detection-priority string      specify the detection priority:
                                          - "precise": Prioritizes precise by minimizing false positives.
                                          - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
-                                        (precise,comprehensive) (default "precise")
+                                        (allowed values: precise,comprehensive) (default "precise")
+      --disable-telemetry              disable sending anonymous usage data to Aqua
       --distro string                  [EXPERIMENTAL] specify a distribution, <family>/<version>
       --download-db-only               download/update vulnerability database but don't run a scan
       --download-java-db-only          download/update Java index database but don't run a scan
       --exit-code int                  specify exit code when any security issues are found
       --exit-on-eol int                exit with the specified code when the OS reaches end of service/life
       --file-patterns strings          specify config file patterns
-  -f, --format string                  format (table,json,template,sarif,cyclonedx,spdx,spdx-json,github,cosign-vuln) (default "table")
+  -f, --format string                  format
+                                       Allowed values:
+                                         - table
+                                         - json
+                                         - template
+                                         - sarif
+                                         - cyclonedx
+                                         - spdx
+                                         - spdx-json
+                                         - github
+                                         - cosign-vuln
+                                        (default "table")
   -h, --help                           help for sbom
       --ignore-policy string           specify the Rego file path to evaluate each vulnerability
-      --ignore-status strings          comma-separated list of vulnerability status to ignore (unknown,not_affected,affected,fixed,under_investigation,will_not_fix,fix_deferred,end_of_life)
+      --ignore-status strings          comma-separated list of vulnerability status to ignore
+                                       Allowed values:
+                                         - unknown
+                                         - not_affected
+                                         - affected
+                                         - fixed
+                                         - under_investigation
+                                         - will_not_fix
+                                         - fix_deferred
+                                         - end_of_life
       --ignore-unfixed                 display only fixed vulnerabilities
       --ignored-licenses strings       specify a list of license to ignore
       --ignorefile string              specify .trivyignore file (default ".trivyignore")
@@ -50,31 +71,76 @@ trivy sbom [flags] SBOM_PATH
       --output-plugin-arg string       [EXPERIMENTAL] output plugin arguments
       --password strings               password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
       --password-stdin                 password from stdin. Comma-separated passwords are not supported.
-      --pkg-relationships strings      list of package relationships (unknown,root,workspace,direct,indirect) (default [unknown,root,workspace,direct,indirect])
-      --pkg-types strings              list of package types (os,library) (default [os,library])
+      --pkg-relationships strings      list of package relationships
+                                       Allowed values:
+                                         - unknown
+                                         - root
+                                         - workspace
+                                         - direct
+                                         - indirect
+                                        (default [unknown,root,workspace,direct,indirect])
+      --pkg-types strings              list of package types (allowed values: os,library) (default [os,library])
       --redis-ca string                redis ca file location, if using redis as cache backend
       --redis-cert string              redis certificate file location, if using redis as cache backend
       --redis-key string               redis key file location, if using redis as cache backend
       --redis-tls                      enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string          registry token
       --rekor-url string               [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
-      --sbom-sources strings           [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
-      --scanners strings               comma-separated list of what security issues to detect (vuln,license) (default [vuln])
+      --sbom-sources strings           [EXPERIMENTAL] try to retrieve SBOM from the specified sources (allowed values: oci,rekor)
+      --scanners strings               comma-separated list of what security issues to detect (allowed values: vuln,license) (default [vuln])
       --server string                  server address in client mode
-  -s, --severity strings               severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
+  -s, --severity strings               severities of security issues to be displayed
+                                       Allowed values:
+                                         - UNKNOWN
+                                         - LOW
+                                         - MEDIUM
+                                         - HIGH
+                                         - CRITICAL
+                                        (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
       --show-suppressed                [EXPERIMENTAL] show suppressed vulnerabilities
       --skip-db-update                 skip updating vulnerability database
-      --skip-dirs strings              specify the directories or glob patterns to skip
-      --skip-files strings             specify the files or glob patterns to skip
       --skip-java-db-update            skip updating Java index database
+      --skip-version-check             suppress notices about version updates and Trivy announcements
       --skip-vex-repo-update           [EXPERIMENTAL] Skip VEX Repository update
-      --table-mode strings             [EXPERIMENTAL] tables that will be displayed in 'table' format (summary,detailed) (default [summary,detailed])
+      --table-mode strings             [EXPERIMENTAL] tables that will be displayed in 'table' format (allowed values: summary,detailed) (default [summary,detailed])
   -t, --template string                output template
       --token string                   for authentication in client/server mode
       --token-header string            specify a header name for token in client/server mode (default "Trivy-Token")
       --username strings               username. Comma-separated usernames allowed.
       --vex strings                    [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
-      --vuln-severity-source strings   order of data sources for selecting vulnerability severity level (nvd,redhat,redhat-oval,debian,ubuntu,alpine,amazon,oracle-oval,suse-cvrf,photon,arch-linux,alma,rocky,cbl-mariner,azure,ruby-advisory-db,php-security-advisories,nodejs-security-wg,ghsa,glad,aqua,osv,k8s,wolfi,chainguard,bitnami,govulndb,auto) (default [auto])
+      --vuln-severity-source strings   order of data sources for selecting vulnerability severity level
+                                       Allowed values:
+                                         - nvd
+                                         - redhat
+                                         - redhat-oval
+                                         - debian
+                                         - ubuntu
+                                         - alpine
+                                         - amazon
+                                         - oracle-oval
+                                         - suse-cvrf
+                                         - photon
+                                         - arch-linux
+                                         - alma
+                                         - rocky
+                                         - cbl-mariner
+                                         - azure
+                                         - ruby-advisory-db
+                                         - php-security-advisories
+                                         - nodejs-security-wg
+                                         - ghsa
+                                         - glad
+                                         - aqua
+                                         - osv
+                                         - k8s
+                                         - wolfi
+                                         - chainguard
+                                         - bitnami
+                                         - govulndb
+                                         - echo
+                                         - minimos
+                                         - auto
+                                        (default [auto])
 ```
 
 ### Options inherited from parent commands

@@ -43,12 +43,12 @@ func init() {
 }
 
 func version() (string, error) {
-	if ver, err := sh.Output("git", "describe", "--tags", "--always"); err != nil {
+	ver, err := sh.Output("git", "describe", "--tags", "--always")
+	if err != nil {
 		return "", err
-	} else {
-		// Strips the v prefix from the tag
-		return strings.TrimPrefix(ver, "v"), nil
 	}
+	// Strips the v prefix from the tag
+	return strings.TrimPrefix(ver, "v"), nil
 }
 
 func buildLdflags() (string, error) {
@@ -79,7 +79,7 @@ func (Tool) PipTools() error {
 
 // GolangciLint installs golangci-lint
 func (t Tool) GolangciLint() error {
-	const version = "v1.64.2"
+	const version = "v2.1.2"
 	bin := filepath.Join(GOBIN, "golangci-lint")
 	if exists(bin) && t.matchGolangciLintVersion(bin, version) {
 		return nil
@@ -91,7 +91,7 @@ func (t Tool) GolangciLint() error {
 }
 
 func (Tool) matchGolangciLintVersion(bin, version string) bool {
-	out, err := sh.Output(bin, "version", "--format", "json")
+	out, err := sh.Output(bin, "version", "--json")
 	if err != nil {
 		slog.Error("Unable to get golangci-lint version", slog.Any("err", err))
 		return false
@@ -189,19 +189,13 @@ func (Test) FixtureTerraformPlanSnapshots() error {
 // GenerateModules compiles WASM modules for unit tests
 func (Test) GenerateModules() error {
 	pattern := filepath.Join("pkg", "module", "testdata", "*", "*.go")
-	if err := compileWasmModules(pattern); err != nil {
-		return err
-	}
-	return nil
+	return compileWasmModules(pattern)
 }
 
 // GenerateExampleModules compiles example Wasm modules for integration tests
 func (Test) GenerateExampleModules() error {
 	pattern := filepath.Join("examples", "module", "*", "*.go")
-	if err := compileWasmModules(pattern); err != nil {
-		return err
-	}
-	return nil
+	return compileWasmModules(pattern)
 }
 
 // UpdateGolden updates golden files for integration tests
@@ -450,7 +444,7 @@ type Docs mg.Namespace
 // Prepare CSS
 func (Docs) Css() error {
 	const (
-		homepageSass = "docs/assets/css/trivy_v1_homepage.scss"
+		homepageSass = "docs/assets/css/trivy_v1_styles.scss"
 	)
 	homepageCss := strings.TrimSuffix(homepageSass, ".scss") + ".min.css"
 	if updated, err := target.Path(homepageCss, homepageSass); err != nil {

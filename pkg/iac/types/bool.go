@@ -89,8 +89,8 @@ func (b BoolValue) IsFalse() bool {
 	return !b.Value()
 }
 
-func (s BoolValue) ToRego() any {
-	m := s.metadata.ToRego().(map[string]any)
-	m["value"] = s.Value()
+func (b BoolValue) ToRego() any {
+	m := b.metadata.ToRego().(map[string]any)
+	m["value"] = b.Value()
 	return m
 }

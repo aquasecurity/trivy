@@ -115,10 +115,10 @@ func WithDisabledCheckIDs(ids ...string) options.ScannerOption {
 	}
 }
 
-func WithIncludeDeprecatedChecks(enabled bool) options.ScannerOption {
+func WithIncludeDeprecatedChecks(include bool) options.ScannerOption {
 	return func(s options.ConfigurableScanner) {
 		if ss, ok := s.(*Scanner); ok {
-			ss.includeDeprecatedChecks = true
+			ss.includeDeprecatedChecks = include
 		}
 	}
 }
@@ -127,6 +127,14 @@ func WithFrameworks(frameworks ...framework.Framework) options.ScannerOption {
 	return func(s options.ConfigurableScanner) {
 		if ss, ok := s.(*Scanner); ok {
 			ss.frameworks = frameworks
+		}
+	}
+}
+
+func WithTrivyVersion(version string) options.ScannerOption {
+	return func(s options.ConfigurableScanner) {
+		if ss, ok := s.(*Scanner); ok {
+			ss.trivyVersion = version
 		}
 	}
 }

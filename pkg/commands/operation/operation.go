@@ -12,6 +12,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vex"
@@ -78,41 +79,36 @@ func DownloadVEXRepositories(ctx context.Context, opts flag.Options) error {
 }
 
 // InitBuiltinChecks downloads the built-in policies and loads them
-func InitBuiltinChecks(ctx context.Context, cacheDir string, quiet, skipUpdate bool, checkBundleRepository string, registryOpts ftypes.RegistryOptions) ([]string, error) {
+func InitBuiltinChecks(ctx context.Context, client *policy.Client, skipUpdate bool, registryOpts ftypes.RegistryOptions) (string, error) {
 	mu.Lock()
 	defer mu.Unlock()
+	var err error
 
-	client, err := policy.NewClient(cacheDir, quiet, checkBundleRepository)
-	if err != nil {
-		return nil, xerrors.Errorf("check client error: %w", err)
+	if skipUpdate {
+		log.Info("No downloadable checks were loaded as --skip-check-update is enabled, loading from existing cache...")
+
+		path := client.LoadBuiltinChecks()
+		_, _, err := misconf.CheckPathExists(path)
+		if err != nil {
+			return "", xerrors.Errorf("Failed to load existing cache, err: %s", err.Error())
+		}
+		return path, nil
 	}
 
-	needsUpdate := false
-	if !skipUpdate {
-		needsUpdate, err = client.NeedsUpdate(ctx, registryOpts)
-		if err != nil {
-			return nil, xerrors.Errorf("unable to check if built-in policies need to be updated: %w", err)
-		}
+	needsUpdate, err := client.NeedsUpdate(ctx, registryOpts)
+	if err != nil {
+		return "", xerrors.Errorf("unable to check if built-in policies need to be updated: %w", err)
 	}
 
 	if needsUpdate {
-		log.InfoContext(ctx, "Need to update the built-in checks")
-		log.InfoContext(ctx, "Downloading the built-in checks...")
+		log.InfoContext(ctx, "Need to update the checks bundle")
+		log.InfoContext(ctx, "Downloading the checks bundle...")
 		if err = client.DownloadBuiltinChecks(ctx, registryOpts); err != nil {
-			return nil, xerrors.Errorf("failed to download built-in policies: %w", err)
+			return "", xerrors.Errorf("failed to download checks bundle: %w", err)
 		}
 	}
 
-	policyPaths, err := client.LoadBuiltinChecks()
-	if err != nil {
-		if skipUpdate {
-			msg := "No downloadable policies were loaded as --skip-check-update is enabled"
-			log.Info(msg)
-			return nil, xerrors.Errorf(msg)
-		}
-		return nil, xerrors.Errorf("check load error: %w", err)
-	}
-	return policyPaths, nil
+	return client.LoadBuiltinChecks(), nil
 }
 
 func Exit(opts flag.Options, failedResults bool, m types.Metadata) error {

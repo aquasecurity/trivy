@@ -23,7 +23,7 @@ func Test_Array_ToSlice(t *testing.T) {
 	metadata := types.NewTestMetadata()
 	require.NoError(t, Unmarshal(example, &target, &metadata))
 	assert.Len(t, target, 3)
-	assert.EqualValues(t, []int{1, 2, 3}, target)
+	assert.Equal(t, []int{1, 2, 3}, target)
 }
 
 func Test_Array_ToArray(t *testing.T) {
@@ -32,7 +32,7 @@ func Test_Array_ToArray(t *testing.T) {
 	metadata := types.NewTestMetadata()
 	require.NoError(t, Unmarshal(example, &target, &metadata))
 	assert.Len(t, target, 3)
-	assert.EqualValues(t, [3]int{3, 2, 1}, target)
+	assert.Equal(t, [3]int{3, 2, 1}, target)
 }
 
 func Test_Array_ToInterface(t *testing.T) {

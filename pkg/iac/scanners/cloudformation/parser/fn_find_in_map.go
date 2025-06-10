@@ -37,9 +37,9 @@ func ResolveFindInMap(property *Property) (resolved *Property, success bool) {
 
 	mapValues := k.(map[string]any)
 
-	if prop, ok := mapValues[secondaryLevelKey]; !ok {
+	prop, ok := mapValues[secondaryLevelKey]
+	if !ok {
 		return abortIntrinsic(property, "could not find a value for %s in %s, returning original Property", secondaryLevelKey, topLevelKey)
-	} else {
-		return property.deriveResolved(cftypes.String, prop), true
 	}
+	return property.deriveResolved(cftypes.String, prop), true
 }

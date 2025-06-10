@@ -34,11 +34,22 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, 
 		}
 
 		name := strings.Join(dep[:2], ":")
-		version := strings.Split(dep[2], "=")[0] // remove classPaths
+		version, classPathsString, _ := strings.Cut(dep[2], "=")
+
+		dev := true
+
+		for classPath := range strings.SplitSeq(classPathsString, ",") {
+			if !strings.HasPrefix(classPath, "test") {
+				dev = false
+				break
+			}
+		}
+
 		pkgs = append(pkgs, ftypes.Package{
 			ID:      dependency.ID(ftypes.Gradle, name, version),
 			Name:    name,
 			Version: version,
+			Dev:     dev,
 			Locations: []ftypes.Location{
 				{
 					StartLine: lineNum,

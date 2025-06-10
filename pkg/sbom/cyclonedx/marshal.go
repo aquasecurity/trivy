@@ -285,7 +285,7 @@ func (*Marshaler) Licenses(licenses []string) *cdx.Licenses {
 	if len(licenses) == 0 {
 		return nil
 	}
-	choices := lo.Map(licenses, func(license string, i int) cdx.LicenseChoice {
+	choices := lo.Map(licenses, func(license string, _ int) cdx.LicenseChoice {
 		return cdx.LicenseChoice{
 			License: &cdx.License{
 				Name: license,
@@ -352,8 +352,8 @@ func (*Marshaler) advisories(refs []string) *[]cdx.Advisory {
 
 // trimNonUrlInfo returns first valid URL.
 func trimNonUrlInfo(ref string) string {
-	ss := strings.Split(ref, " ")
-	for _, s := range ss {
+	ss := strings.SplitSeq(ref, " ")
+	for s := range ss {
 		if u, err := url.Parse(s); err == nil && u.Scheme != "" && u.Host != "" {
 			return s
 		}

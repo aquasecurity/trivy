@@ -66,6 +66,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										SrcName:    "musl",
 										SrcVersion: "1.1.24-r2",
 										Licenses:   []string{"MIT"},
+										Maintainer: "Timo Teräs <timo.teras@iki.fi>",
 										Arch:       "x86_64",
 										Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
 										InstalledFiles: []string{
@@ -98,6 +99,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					analyzer.TypeAlpine,
 					analyzer.TypeApk,
 					analyzer.TypePip,
+					analyzer.TypeNpmPkgLock,
 				},
 			},
 			wantBlobs: []cachetest.WantBlob{
@@ -122,7 +124,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			fields: fields{
 				dir: "./testdata/alpine",
 			},
-			setupCache: func(t *testing.T) cache.Cache {
+			setupCache: func(_ *testing.T) cache.Cache {
 				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					PutBlob: true,
 				})
@@ -621,6 +623,73 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "scan raw config",
+			artifactOpt: artifact.Option{
+				MisconfScannerOption: misconf.ScannerOption{
+					RawConfigScanners: []types.ConfigType{types.Terraform},
+				},
+			},
+			fields: fields{
+				dir: "./testdata/misconfig/terraform/single-failure",
+			},
+			wantBlobs: []cachetest.WantBlob{
+				{
+					ID: "sha256:6f4672e139d4066fd00391df614cdf42bda5f7a3f005d39e1d8600be86157098",
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: 2,
+						Misconfigurations: []types.Misconfiguration{
+							{
+								FileType: "terraform",
+								FilePath: "main.tf",
+								Failures: types.MisconfResults{
+									{
+										Namespace:      "user.something",
+										Query:          "data.user.something.deny",
+										Message:        "Empty bucket name!",
+										PolicyMetadata: terraformPolicyMetadata,
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.asd",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
+										},
+									},
+									{
+										Namespace: "user.test002",
+										Query:     "data.user.test002.deny",
+										Message:   "Empty bucket name!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:       "TEST002",
+											AVDID:    "AVD-TEST-0002",
+											Type:     "Terraform Security Check",
+											Title:    "Test policy",
+											Severity: "LOW",
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.asd",
+											Provider:  "Terraform-Raw",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: artifact.Reference{
+				Name: "testdata/misconfig/terraform/single-failure",
+				Type: types.TypeFilesystem,
+				ID:   "sha256:6f4672e139d4066fd00391df614cdf42bda5f7a3f005d39e1d8600be86157098",
+				BlobIDs: []string{
+					"sha256:6f4672e139d4066fd00391df614cdf42bda5f7a3f005d39e1d8600be86157098",
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -703,7 +772,6 @@ func TestTerraformPlanSnapshotMisconfScan(t *testing.T) {
 		{
 			name: "single failure",
 			fields: fields{
-
 				dir: "./testdata/misconfig/terraformplan/snapshots/single-failure",
 			},
 			wantBlobs: []cachetest.WantBlob{
@@ -2431,6 +2499,7 @@ func TestArtifact_AnalysisStrategy(t *testing.T) {
 			wantRoots: []string{
 				"testdata/alpine/etc/alpine-release",
 				"testdata/alpine/lib/apk/db/installed",
+				"testdata/alpine/usr/lib/apk/db/installed",
 			},
 		},
 		{
@@ -2459,63 +2528,6 @@ func TestArtifact_AnalysisStrategy(t *testing.T) {
 
 			// Check if the walked roots match the expected roots
 			assert.ElementsMatch(t, tt.wantRoots, rw.walkedRoots)
-		})
-	}
-}
-
-// TestAnalyzerGroup_StaticPaths tests the StaticPaths method of AnalyzerGroup
-func TestAnalyzerGroup_StaticPaths(t *testing.T) {
-	tests := []struct {
-		name              string
-		disabledAnalyzers []analyzer.Type
-		want              []string
-		wantAllStatic     bool
-	}{
-		{
-			name:              "all analyzers implement StaticPathAnalyzer",
-			disabledAnalyzers: append(analyzer.TypeConfigFiles, analyzer.TypePip, analyzer.TypeSecret),
-			want: []string{
-				"lib/apk/db/installed",
-				"etc/alpine-release",
-			},
-			wantAllStatic: true,
-		},
-		{
-			name:          "some analyzers don't implement StaticPathAnalyzer",
-			want:          []string{},
-			wantAllStatic: false,
-		},
-		{
-			name: "only PostAnalyzers are enabled",
-			disabledAnalyzers: []analyzer.Type{
-				analyzer.TypePip,
-				analyzer.TypeSecret,
-			},
-			want:          []string{},
-			wantAllStatic: false,
-		},
-		{
-			name:              "disable all analyzers",
-			disabledAnalyzers: append(analyzer.TypeConfigFiles, analyzer.TypePip, analyzer.TypeApk, analyzer.TypeAlpine, analyzer.TypeSecret),
-			want:              []string{},
-			wantAllStatic:     true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// Create a new analyzer group
-			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{})
-			require.NoError(t, err)
-
-			// Get static paths
-			gotPaths, gotAllStatic := a.StaticPaths(tt.disabledAnalyzers)
-
-			// Check if all analyzers implement StaticPathAnalyzer
-			assert.Equal(t, tt.wantAllStatic, gotAllStatic)
-
-			// Check paths
-			assert.ElementsMatch(t, tt.want, gotPaths)
 		})
 	}
 }

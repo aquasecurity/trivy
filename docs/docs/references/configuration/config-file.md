@@ -409,6 +409,9 @@ misconfiguration:
   # Same as '--include-non-failures'
   include-non-failures: false
 
+  # Same as '--raw-config-scanners'
+  raw-config-scanners: []
+
   # Same as '--render-cause'
   render-cause: []
 
@@ -583,6 +586,9 @@ scan:
   # Same as '--detection-priority'
   detection-priority: "precise"
 
+  # Same as '--disable-telemetry'
+  disable-telemetry: false
+
   # Same as '--distro'
   distro: ""
 
@@ -611,6 +617,9 @@ scan:
 
   # Same as '--skip-files'
   skip-files: []
+
+  # Same as '--skip-version-check'
+  skip-version-check: false
 
 ```
 ## Secret options

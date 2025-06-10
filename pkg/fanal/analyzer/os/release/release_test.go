@@ -150,6 +150,36 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "Echo",
+			inputFile: "testdata/echo",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Echo,
+					Name:   "1",
+				},
+			},
+		},
+		{
+			name:      "MinimOS",
+			inputFile: "testdata/minimos",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.MinimOS,
+					Name:   "20241031",
+				},
+			},
+		},
+		{
+			name:      "Bottlerocket",
+			inputFile: "testdata/bottlerocket",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Bottlerocket,
+					Name:   "1.34.0",
+				},
+			},
+		},
+		{
 			name:      "Unknown OS",
 			inputFile: "testdata/unknown",
 			want:      nil,

@@ -14,7 +14,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
-	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/scan/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
@@ -71,7 +71,7 @@ func lookupBuildInfo(index int, layers []ftypes.BlobInfo) *ftypes.BuildInfo {
 
 	// Customer's layers build on top of Red Hat image are also missing content sets
 	//   - it needs to be shared from the last Red Hat's layers which contains content sets
-	for i := index - 1; i >= 1; i-- {
+	for i := index - 1; i >= 0; i-- {
 		if layers[i].BuildInfo != nil {
 			return layers[i].BuildInfo
 		}
@@ -267,6 +267,13 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 }
 
 func newPURL(pkgType ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) *packageurl.PackageURL {
+	// Possible cases when package doesn't have name/version (e.g. local package.json).
+	// For these cases we don't need to create PURL, because this PURL will be incorrect.
+	// TODO Dmitriy - move to `purl` package
+	if pkg.Name == "" {
+		return nil
+	}
+
 	p, err := purl.New(pkgType, metadata, pkg)
 	if err != nil {
 		log.Error("Failed to create PackageURL", log.Err(err))

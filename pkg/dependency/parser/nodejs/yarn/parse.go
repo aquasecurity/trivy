@@ -131,7 +131,7 @@ func ignoreProtocol(protocol string) bool {
 func parseResults(patternIDs map[string]string, dependsOn map[string][]string) (deps ftypes.Dependencies) {
 	// find dependencies by patterns
 	for pkgID, depPatterns := range dependsOn {
-		depIDs := lo.Map(depPatterns, func(pattern string, index int) string {
+		depIDs := lo.Map(depPatterns, func(pattern string, _ int) string {
 			return patternIDs[pattern]
 		})
 		deps = append(deps, ftypes.Dependency{
@@ -221,11 +221,10 @@ func (p *Parser) parseBlock(block []byte, lineNum int) (lib Library, deps []stri
 					continue
 				}
 				continue
-			} else {
-				lib.Patterns = patterns
-				lib.Name = name
-				continue
 			}
+			lib.Patterns = patterns
+			lib.Name = name
+			continue
 		}
 	}
 
@@ -251,23 +250,23 @@ func (p *Parser) parseBlock(block []byte, lineNum int) (lib Library, deps []stri
 func parseDependencies(scanner *LineScanner) (deps []string) {
 	for scanner.Scan() {
 		line := scanner.Text()
-		if dep, err := parseDependency(line); err != nil {
+		dep, err := parseDependency(line)
+		if err != nil {
 			// finished dependencies block
 			return deps
-		} else {
-			deps = append(deps, dep)
 		}
+		deps = append(deps, dep)
 	}
 
 	return
 }
 
 func parseDependency(line string) (string, error) {
-	if name, version, err := getDependency(line); err != nil {
+	name, version, err := getDependency(line)
+	if err != nil {
 		return "", err
-	} else {
-		return packageID(name, version), nil
 	}
+	return packageID(name, version), nil
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, map[string][]string, error) {

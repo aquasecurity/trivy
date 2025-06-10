@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
@@ -33,6 +34,7 @@ import (
 	tfpjsonscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
+	"github.com/aquasecurity/trivy/pkg/version/app"
 
 	_ "embed"
 )
@@ -74,6 +76,7 @@ type ScannerOption struct {
 	TerraformTFVars         []string
 	CloudFormationParamVars []string
 	TfExcludeDownloaded     bool
+	RawConfigScanners       []types.ConfigType
 	K8sVersion              string
 
 	FilePatterns      []string
@@ -82,6 +85,8 @@ type ScannerOption struct {
 	DisabledChecks []DisabledCheck
 	SkipFiles      []string
 	SkipDirs       []string
+
+	RegoScanner *rego.Scanner
 }
 
 func (o *ScannerOption) Sort() {
@@ -183,7 +188,7 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 	})
 
 	var foundRelevantFile bool
-	filter := func(path string, d fs.DirEntry) (bool, error) {
+	filter := func(path string, _ fs.DirEntry) (bool, error) {
 		file, err := fsys.Open(path)
 		if err != nil {
 			return false, err
@@ -216,7 +221,21 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 	return newfs, nil
 }
 
-func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerOption, error) {
+func InitRegoScanner(opt ScannerOption) (*rego.Scanner, error) {
+	regoOpts, err := initRegoOptions(opt)
+	if err != nil {
+		return nil, xerrors.Errorf("init rego options: %w", err)
+	}
+	regoScanner := rego.NewScanner(regoOpts...)
+	// note: it is safe to pass nil as fsys, since checks and data files will be loaded
+	// from the filesystems passed through the options.
+	if err := regoScanner.LoadPolicies(nil); err != nil {
+		return nil, xerrors.Errorf("load checks: %w", err)
+	}
+	return regoScanner, nil
+}
+
+func initRegoOptions(opt ScannerOption) ([]options.ScannerOption, error) {
 	disabledCheckIDs := lo.Map(opt.DisabledChecks, func(check DisabledCheck, _ int) string {
 		log.Info("Check disabled", log.Prefix(log.PrefixMisconfiguration), log.String("ID", check.ID),
 			log.String("scanner", check.Scanner), log.String("reason", check.Reason))
@@ -228,6 +247,7 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 		rego.WithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
 		rego.WithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
 		rego.WithDisabledCheckIDs(disabledCheckIDs...),
+		rego.WithTrivyVersion(app.Version()),
 	}
 
 	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)
@@ -268,6 +288,27 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	if len(opt.Namespaces) > 0 {
 		opts = append(opts, rego.WithPolicyNamespaces(opt.Namespaces...))
 	}
+	return opts, nil
+}
+
+func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerOption, error) {
+	var opts []options.ScannerOption
+
+	if opt.RegoScanner != nil {
+		opts = append(opts, rego.WithRegoScanner(opt.RegoScanner))
+	} else {
+		// If RegoScanner is not provided, pass the Rego options to IaC scanners
+		// so that they can initialize the Rego scanner themselves
+		regoOpts, err := initRegoOptions(opt)
+		if err != nil {
+			return nil, xerrors.Errorf("init rego opts: %w", err)
+		}
+		opts = append(opts, regoOpts...)
+	}
+
+	opts = append(opts, options.WithScanRawConfig(
+		slices.Contains(opt.RawConfigScanners, enablediacTypes[t])),
+	)
 
 	switch t {
 	case detection.FileTypeHelm:
@@ -369,6 +410,20 @@ func createConfigFS(paths []string) (fs.FS, error) {
 	return mfs, nil
 }
 
+func CheckPathExists(path string) (fs.FileInfo, string, error) {
+	abs, err := filepath.Abs(path)
+	if err != nil {
+		return nil, "", xerrors.Errorf("failed to derive absolute path from '%s': %w", path, err)
+	}
+	fi, err := os.Stat(abs)
+	if errors.Is(err, os.ErrNotExist) {
+		return nil, "", xerrors.Errorf("check file %q not found", abs)
+	} else if err != nil {
+		return nil, "", xerrors.Errorf("file %q stat error: %w", abs, err)
+	}
+	return fi, abs, nil
+}
+
 func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 	if len(policyPaths) == 0 {
 		return nil, nil, nil
@@ -376,15 +431,9 @@ func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 
 	mfs := mapfs.New()
 	for _, p := range policyPaths {
-		abs, err := filepath.Abs(p)
+		fi, abs, err := CheckPathExists(p)
 		if err != nil {
-			return nil, nil, xerrors.Errorf("failed to derive absolute path from '%s': %w", p, err)
-		}
-		fi, err := os.Stat(abs)
-		if errors.Is(err, os.ErrNotExist) {
-			return nil, nil, xerrors.Errorf("policy file %q not found", abs)
-		} else if err != nil {
-			return nil, nil, xerrors.Errorf("file %q stat error: %w", abs, err)
+			return nil, nil, err
 		}
 
 		if fi.IsDir() {
@@ -413,11 +462,11 @@ func CreateDataFS(dataPaths []string, opts ...string) (fs.FS, []string, error) {
 	// Check if k8sVersion is provided
 	if len(opts) > 0 {
 		k8sVersion := opts[0]
-		if err := fsys.MkdirAll("system", 0700); err != nil {
+		if err := fsys.MkdirAll("system", 0o700); err != nil {
 			return nil, nil, err
 		}
 		data := []byte(fmt.Sprintf(`{"k8s": {"version": %q}}`, k8sVersion))
-		if err := fsys.WriteVirtualFile("system/k8s-version.json", data, 0600); err != nil {
+		if err := fsys.WriteVirtualFile("system/k8s-version.json", data, 0o600); err != nil {
 			return nil, nil, err
 		}
 	}
@@ -523,7 +572,7 @@ func NewCauseWithCode(underlying scan.Result, flat scan.FlatResult) types.CauseM
 
 		if code, err := underlying.GetCode(); err == nil {
 			cause.Code = types.Code{
-				Lines: lo.Map(code.Lines, func(l scan.Line, i int) types.Line {
+				Lines: lo.Map(code.Lines, func(l scan.Line, _ int) types.Line {
 					return types.Line{
 						Number:      l.Number,
 						Content:     l.Content,

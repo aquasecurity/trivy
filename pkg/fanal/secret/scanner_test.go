@@ -575,6 +575,43 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantFindingMinimumAsymmSecretKey := types.SecretFinding{
+		RuleID:    "private-key",
+		Category:  secret.CategoryAsymmetricPrivateKey,
+		Title:     "Asymmetric Private Key",
+		Severity:  "HIGH",
+		StartLine: 6,
+		EndLine:   6,
+		Match:     "-----BEGIN PRIVATE KEY-----********************************-----END PRIVATE KEY-----",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      4,
+					Content:     "",
+					Highlighted: "",
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+				{
+					Number:      5,
+					Content:     "## Theoretically Asymmetric Private Key of minimum length (RSA 128 bits)",
+					Highlighted: "## Theoretically Asymmetric Private Key of minimum length (RSA 128 bits)",
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+				{
+					Number:      6,
+					Content:     "-----BEGIN PRIVATE KEY-----********************************-----END PRIVATE KEY-----",
+					Highlighted: "-----BEGIN PRIVATE KEY-----********************************-----END PRIVATE KEY-----",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+	}
 	wantFindingAlibabaAccessKeyId := types.SecretFinding{
 		RuleID:    "alibaba-access-key-id",
 		Category:  secret.CategoryAlibaba,
@@ -1300,7 +1337,7 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: "testdata/asymmetric-private-key.txt",
 			want: types.Secret{
 				FilePath: "testdata/asymmetric-private-key.txt",
-				Findings: []types.SecretFinding{wantFindingAsymmSecretKey},
+				Findings: []types.SecretFinding{wantFindingMinimumAsymmSecretKey, wantFindingAsymmSecretKey},
 			},
 		},
 		{

@@ -90,7 +90,7 @@ trivy config --tf-vars terraform.tfvars ./
 ``` 
 ### Custom Checks 
 
-We have lots of examples in the [documentation](https://trivy.dev/latest/docs/scanner/misconfiguration/custom/) on how you can write and pass custom Rego checks into terraform misconfiguration scans. 
+We have lots of examples in the [documentation](https://trivy.dev/latest/docs/scanner/misconfiguration/custom/) on how you can write and pass custom Rego checks into terraform misconfiguration scans.
 
 ## Secret and vulnerability scans
 

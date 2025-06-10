@@ -108,8 +108,5 @@ func (p *Pipeline[T, U]) Do(ctx context.Context) error {
 	// Check whether any of the goroutines failed. Since g is accumulating the
 	// errors, we don't need to send them (or check for them) in the individual
 	// results sent on the channel.
-	if err := g.Wait(); err != nil {
-		return err
-	}
-	return nil
+	return g.Wait()
 }

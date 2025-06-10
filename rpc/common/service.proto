@@ -42,19 +42,20 @@ message Package {
   string        arch       = 5;
   // src package containing some binary packages
   // e.g. bind
-  string            src_name    = 6;
-  string            src_version = 7;
-  string            src_release = 8;
-  int32             src_epoch   = 9;
-  repeated string   licenses    = 15;
-  repeated Location locations   = 20;
-  Layer             layer       = 11;
-  string            file_path   = 12;
-  repeated string   depends_on  = 14;
-  string            digest      = 16;
-  bool              dev         = 17;
-  bool              indirect    = 18;
-  string            maintainer  = 21;
+  string            src_name     = 6;
+  string            src_version  = 7;
+  string            src_release  = 8;
+  int32             src_epoch    = 9;
+  repeated string   licenses     = 15;
+  repeated Location locations    = 20;
+  Layer             layer        = 11;
+  string            file_path    = 12;
+  repeated string   depends_on   = 14;
+  string            digest       = 16;
+  bool              dev          = 17;
+  bool              indirect     = 18;
+  string            maintainer   = 21;
+  int32             relationship = 22;
 }
 
 message PkgIdentifier {
@@ -133,8 +134,8 @@ message Vulnerability {
   string                    primary_url          = 14;
   google.protobuf.Timestamp published_date       = 15;
   google.protobuf.Timestamp last_modified_date   = 16;
-  google.protobuf.Value     custom_advisory_data = 17;
-  google.protobuf.Value     custom_vuln_data     = 18;
+  bytes                     custom_advisory_data = 17;
+  bytes                     custom_vuln_data     = 18;
   repeated string           vendor_ids           = 19;
   DataSource                data_source          = 20;
   map<string, Severity>     vendor_severity      = 21;
@@ -153,6 +154,7 @@ message Layer {
   string digest     = 1;
   string diff_id    = 2;
   string created_by = 3;
+  int64  size       = 4;
 }
 
 message CauseMetadata {

@@ -54,6 +54,7 @@ nav:
           - Vulnerability: docs/scanner/vulnerability.md
           - Misconfiguration:
               - Overview: docs/scanner/misconfiguration/index.md
+              - Configuration: docs/scanner/misconfiguration/config/config.md
               - Policy:
                   - Built-in Checks: docs/scanner/misconfiguration/check/builtin.md
               - Custom Checks:
@@ -75,9 +76,12 @@ nav:
               - Alpine Linux: docs/coverage/os/alpine.md
               - Amazon Linux: docs/coverage/os/amazon.md
               - Azure Linux (CBL-Mariner): docs/coverage/os/azure.md
+              - Bottlerocket: docs/coverage/os/bottlerocket.md
               - CentOS: docs/coverage/os/centos.md
               - Chainguard: docs/coverage/os/chainguard.md
               - Debian: docs/coverage/os/debian.md
+              - Echo: docs/coverage/os/echo.md
+              - MinimOS: docs/coverage/os/minimos.md
               - Oracle Linux: docs/coverage/os/oracle.md
               - Photon OS: docs/coverage/os/photon.md
               - Red Hat: docs/coverage/os/rhel.md
@@ -118,7 +122,7 @@ nav:
       - Configuration:
           - Overview: docs/configuration/index.md
           - Filtering: docs/configuration/filtering.md
-          - Skipping Files: docs/configuration/skipping.md
+          - Selecting Files: docs/configuration/skipping.md
           - Reporting: docs/configuration/reporting.md
           - Cache: docs/configuration/cache.md
           - Databases: docs/configuration/db.md
@@ -156,6 +160,7 @@ nav:
                   - GCR (Google Container Registry): docs/advanced/private-registries/gcr.md
                   - ACR (Azure Container Registry): docs/advanced/private-registries/acr.md
                   - Self-Hosted: docs/advanced/private-registries/self.md
+          - Usage Telemetry: docs/advanced/telemetry.md
       - References:
           - Configuration:
               - CLI:
@@ -226,6 +231,7 @@ nav:
   - Enterprise:
       - Comparison: commercial/compare.md
       - Contact Us: commercial/contact.md
+  - Partners: partners.md
 theme:
   name: material
   custom_dir: docs/overrides
@@ -273,8 +279,6 @@ extra:
     - icon: fontawesome/brands/x-twitter
       link: https://twitter.com/AquaTrivy
     - icon: fontawesome/brands/github
-      link: https://github.com/aquasecurity/trivy
-    - icon: fontawesome/brands/slack
       link: https://github.com/aquasecurity/trivy
   analytics:
     provider: google

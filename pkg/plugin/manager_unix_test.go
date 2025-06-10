@@ -57,7 +57,7 @@ func modifyManifest(t *testing.T, worktree, version string) {
 	require.NoError(t, err)
 
 	b = bytes.ReplaceAll(b, []byte("0.2.0"), []byte(version))
-	err = os.WriteFile(manifestPath, b, 0644)
+	err = os.WriteFile(manifestPath, b, 0o644)
 	require.NoError(t, err)
 }
 
@@ -200,7 +200,7 @@ func TestManager_Install(t *testing.T) {
 
 			// For plugin index
 			pluginDir := filepath.Join(dst, ".trivy", "plugins")
-			err := os.MkdirAll(pluginDir, 0755)
+			err := os.MkdirAll(pluginDir, 0o755)
 			require.NoError(t, err)
 			_, err = fsutils.CopyFile("testdata/.trivy/plugins/index.yaml", filepath.Join(pluginDir, "index.yaml"))
 			require.NoError(t, err)

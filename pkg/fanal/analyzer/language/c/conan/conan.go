@@ -44,8 +44,8 @@ func newConanLockAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, er
 }
 
 func (a conanLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
-	required := func(filePath string, d fs.DirEntry) bool {
-		// we need all file got from `a.Required` function (conan.lock files) and from file-patterns.
+	required := func(_ string, _ fs.DirEntry) bool {
+		// Parse all required files: `conan.lock` (from a.Required func) + input.FilePatterns.Match()
 		return true
 	}
 
@@ -92,12 +92,12 @@ func licensesFromCache() (map[string]string, error) {
 		return nil, err
 	}
 
-	required := func(filePath string, d fs.DirEntry) bool {
+	required := func(filePath string, _ fs.DirEntry) bool {
 		return filepath.Base(filePath) == "conanfile.py"
 	}
 
 	licenses := make(map[string]string)
-	if err := fsutils.WalkDir(os.DirFS(cacheDir), ".", required, func(filePath string, _ fs.DirEntry, r io.Reader) error {
+	if err := fsutils.WalkDir(os.DirFS(cacheDir), ".", required, func(_ string, _ fs.DirEntry, r io.Reader) error {
 		scanner := bufio.NewScanner(r)
 		var name, license string
 		for scanner.Scan() {

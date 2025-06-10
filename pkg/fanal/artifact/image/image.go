@@ -28,7 +28,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/parallel"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
 	trivyTypes "github.com/aquasecurity/trivy/pkg/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
+
+const artifactVersion = 1
 
 type Artifact struct {
 	logger         *log.Logger
@@ -42,11 +45,6 @@ type Artifact struct {
 	artifactOption artifact.Option
 
 	layerCacheDir string
-}
-
-type LayerInfo struct {
-	DiffID    string
-	CreatedBy string // can be empty
 }
 
 func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
@@ -168,7 +166,7 @@ func (a Artifact) Clean(_ artifact.Reference) error {
 
 func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []string, error) {
 	// Pass an empty config scanner option so that the cache key can be the same, even when policies are updated.
-	imageKey, err := cache.CalcKey(imageID, a.configAnalyzer.AnalyzerVersions(), nil, artifact.Option{})
+	imageKey, err := cache.CalcKey(imageID, artifactVersion, a.configAnalyzer.AnalyzerVersions(), nil, artifact.Option{})
 	if err != nil {
 		return "", nil, err
 	}
@@ -176,7 +174,7 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []str
 	hookVersions := a.handlerManager.Versions()
 	var layerKeys []string
 	for _, diffID := range diffIDs {
-		blobKey, err := cache.CalcKey(diffID, a.analyzer.AnalyzerVersions(), hookVersions, a.artifactOption)
+		blobKey, err := cache.CalcKey(diffID, artifactVersion, a.analyzer.AnalyzerVersions(), hookVersions, a.artifactOption)
 		if err != nil {
 			return "", nil, err
 		}
@@ -185,7 +183,7 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []str
 	return imageKey, layerKeys, nil
 }
 
-func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *v1.ConfigFile) map[string]LayerInfo {
+func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *v1.ConfigFile) map[string]types.Layer {
 	// save createdBy fields in order of layers
 	var createdBy []string
 	for _, h := range configFile.History {
@@ -202,16 +200,16 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 	// TODO: our current logic may not detect empty layers correctly in rare cases.
 	validCreatedBy := len(diffIDs) == len(createdBy)
 
-	layerKeyMap := make(map[string]LayerInfo)
+	layerKeyMap := make(map[string]types.Layer)
 	for i, diffID := range diffIDs {
 
-		c := ""
+		var c string
 		if validCreatedBy {
 			c = createdBy[i]
 		}
 
 		layerKey := layerKeys[i]
-		layerKeyMap[layerKey] = LayerInfo{
+		layerKeyMap[layerKey] = types.Layer{
 			DiffID:    diffID,
 			CreatedBy: c,
 		}
@@ -316,7 +314,7 @@ func (a Artifact) saveLayer(diffID string) (int64, error) {
 }
 
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
-	layerKeyMap map[string]LayerInfo, configFile *v1.ConfigFile) error {
+	layerKeyMap map[string]types.Layer, configFile *v1.ConfigFile) error {
 
 	var osFound types.OS
 	p := parallel.NewPipeline(a.artifactOption.Parallel, false, layerKeys, func(ctx context.Context,
@@ -356,14 +354,17 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 	return nil
 }
 
-func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disabled []analyzer.Type) (types.BlobInfo, error) {
-	a.logger.Debug("Missing diff ID in cache", log.String("diff_id", layerInfo.DiffID))
+func (a Artifact) inspectLayer(ctx context.Context, layer types.Layer, disabled []analyzer.Type) (types.BlobInfo, error) {
+	a.logger.Debug("Missing diff ID in cache", log.String("diff_id", layer.DiffID))
 
-	layerDigest, rc, err := a.uncompressedLayer(layerInfo.DiffID)
+	layerDigest, rc, err := a.uncompressedLayer(layer.DiffID)
 	if err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("unable to get uncompressed layer %s: %w", layerInfo.DiffID, err)
+		return types.BlobInfo{}, xerrors.Errorf("unable to get uncompressed layer %s: %w", layer.DiffID, err)
 	}
 	defer rc.Close()
+
+	// Count the bytes read from the layer
+	cr := xio.NewCountingReader(rc)
 
 	// Prepare variables
 	var wg sync.WaitGroup
@@ -382,7 +383,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	defer composite.Cleanup()
 
 	// Walk a tar layer
-	opqDirs, whFiles, err := a.walker.Walk(rc, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	opqDirs, whFiles, err := a.walker.Walk(cr, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
@@ -416,14 +417,19 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 		return types.BlobInfo{}, xerrors.Errorf("post analysis error: %w", err)
 	}
 
+	// Read the remaining bytes for blocking factor to calculate the correct layer size
+	// cf. https://www.reddit.com/r/devops/comments/1gwpvrm/a_deep_dive_into_the_tar_format/
+	_, _ = io.Copy(io.Discard, cr)
+
 	// Sort the analysis result for consistent results
 	result.Sort()
 
 	blobInfo := types.BlobInfo{
 		SchemaVersion:     types.BlobJSONSchemaVersion,
+		Size:              cr.BytesRead(),
 		Digest:            layerDigest,
-		DiffID:            layerInfo.DiffID,
-		CreatedBy:         layerInfo.CreatedBy,
+		DiffID:            layer.DiffID,
+		CreatedBy:         layer.CreatedBy,
 		OpaqueDirs:        opqDirs,
 		WhiteoutFiles:     whFiles,
 		OS:                result.OS,

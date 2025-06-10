@@ -7,13 +7,13 @@ import (
 
 	cn "github.com/google/go-containerregistry/pkg/name"
 	version "github.com/knqyf263/go-rpm-version"
-	packageurl "github.com/package-url/packageurl-go"
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/scan/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -42,6 +42,10 @@ const (
 	NamespaceOCP = "ocp"
 
 	TypeUnknown = "unknown"
+
+	// Temporary type before being added in github.com/package-url/packageurl-go
+	// cf. https://github.com/package-url/purl-spec/issues/454
+	packageurlTypeBottlerocket = "bottlerocket"
 )
 
 type PackageURL packageurl.PackageURL
@@ -80,6 +84,8 @@ func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*Pac
 		if metadata.OS != nil {
 			namespace = string(metadata.OS.Family)
 		}
+	case packageurlTypeBottlerocket:
+		qualifiers = append(qualifiers, packageurl.Qualifiers{packageurl.Qualifier{Key: "distro", Value: fmt.Sprintf("bottlerocket-%s", metadata.OS.Name)}}...)
 	case packageurl.TypeApk:
 		var qs packageurl.Qualifiers
 		name, namespace, qs = parseApk(name, metadata.OS)
@@ -443,6 +449,7 @@ func parseJulia(pkgName, pkgUUID string) (string, string, packageurl.Qualifiers)
 	return namespace, name, qualifiers
 }
 
+// nolint: gocyclo
 func purlType(t ftypes.TargetType) string {
 	switch t {
 	case ftypes.Jar, ftypes.Pom, ftypes.Gradle, ftypes.Sbt:
@@ -459,7 +466,7 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypePyPi
 	case ftypes.GoBinary, ftypes.GoModule:
 		return packageurl.TypeGolang
-	case ftypes.Npm, ftypes.NodePkg, ftypes.Yarn, ftypes.Pnpm:
+	case ftypes.Npm, ftypes.NodePkg, ftypes.Yarn, ftypes.Pnpm, ftypes.Bun:
 		return packageurl.TypeNPM
 	case ftypes.Cocoapods:
 		return packageurl.TypeCocoapods
@@ -473,15 +480,17 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypePub
 	case ftypes.RustBinary, ftypes.Cargo:
 		return packageurl.TypeCargo
-	case ftypes.Alpine, ftypes.Chainguard, ftypes.Wolfi:
+	case ftypes.Alpine, ftypes.Chainguard, ftypes.Wolfi, ftypes.MinimOS:
 		return packageurl.TypeApk
-	case ftypes.Debian, ftypes.Ubuntu:
+	case ftypes.Debian, ftypes.Ubuntu, ftypes.Echo:
 		return packageurl.TypeDebian
 	case ftypes.RedHat, ftypes.CentOS, ftypes.Rocky, ftypes.Alma,
 		ftypes.Amazon, ftypes.Fedora, ftypes.Oracle, ftypes.OpenSUSE,
 		ftypes.OpenSUSELeap, ftypes.OpenSUSETumbleweed, ftypes.SLES, ftypes.SLEMicro, ftypes.Photon,
 		ftypes.Azure, ftypes.CBLMariner:
 		return packageurl.TypeRPM
+	case ftypes.Bottlerocket:
+		return packageurlTypeBottlerocket
 	case TypeOCI:
 		return packageurl.TypeOCI
 	case ftypes.Julia:
