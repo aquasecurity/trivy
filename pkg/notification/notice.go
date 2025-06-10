@@ -108,7 +108,6 @@ func (v *VersionChecker) PrintNotices(output io.Writer) {
 	}
 
 	logger := log.WithPrefix("notification")
-	logger.Debug("Printing notices")
 	var notices []string
 
 	cv, err := v.CurrentVersion()
@@ -133,6 +132,7 @@ func (v *VersionChecker) PrintNotices(output io.Writer) {
 	}
 
 	if len(notices) > 0 {
+		logger.Debug("Printing notices")
 		fmt.Fprintf(output, "\n📣 \x1b[34mNotices:\x1b[0m\n")
 		for _, notice := range notices {
 			fmt.Fprintf(output, "  - %s\n", notice)
