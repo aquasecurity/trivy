@@ -54,7 +54,8 @@ var (
 		"18.10":     time.Date(2019, 7, 18, 23, 59, 59, 0, time.UTC),
 		"19.04":     time.Date(2020, 1, 18, 23, 59, 59, 0, time.UTC),
 		"19.10":     time.Date(2020, 7, 17, 23, 59, 59, 0, time.UTC),
-		"20.04":     time.Date(2025, 4, 23, 23, 59, 59, 0, time.UTC),
+		"20.04":     time.Date(2025, 5, 31, 23, 59, 59, 0, time.UTC),
+		"20.04-ESM": time.Date(2030, 4, 30, 23, 59, 59, 0, time.UTC),
 		"20.10":     time.Date(2021, 7, 22, 23, 59, 59, 0, time.UTC),
 		"21.04":     time.Date(2022, 1, 20, 23, 59, 59, 0, time.UTC),
 		"21.10":     time.Date(2022, 7, 14, 23, 59, 59, 0, time.UTC),
@@ -67,16 +68,32 @@ var (
 	}
 )
 
+type Option func(*Scanner)
+
+// WithEOLDates takes eol dates for testability
+func WithEOLDates(dates map[string]time.Time) Option {
+	return func(s *Scanner) {
+		s.eolDates = dates
+	}
+}
+
 // Scanner implements the Ubuntu scanner
 type Scanner struct {
-	vs ubuntu.VulnSrc
+	eolDates map[string]time.Time
+	vs       ubuntu.VulnSrc
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner() *Scanner {
-	return &Scanner{
-		vs: ubuntu.NewVulnSrc(),
+func NewScanner(opts ...Option) *Scanner {
+	s := &Scanner{
+		eolDates: eolDates,
+		vs:       ubuntu.NewVulnSrc(),
 	}
+
+	for _, opt := range opts {
+		opt(s)
+	}
+	return s
 }
 
 // Detect scans and returns the vulnerabilities
@@ -133,12 +150,13 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 // IsSupportedVersion checks is OSFamily can be scanned using Ubuntu scanner
 func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
-	return osver.Supported(ctx, eolDates, osFamily, osVer)
+	osVer = s.versionFromEolDates(ctx, osVer)
+	return osver.Supported(ctx, s.eolDates, osFamily, osVer)
 }
 
 // versionFromEolDates checks if actual (not ESM) version is not outdated
 func (s *Scanner) versionFromEolDates(ctx context.Context, osVer string) string {
-	if _, ok := eolDates[osVer]; ok {
+	if _, ok := s.eolDates[osVer]; ok {
 		return osVer
 	}
 
@@ -148,7 +166,7 @@ func (s *Scanner) versionFromEolDates(ctx context.Context, osVer string) string 
 	// then we need to get vulnerabilities for `18.04`
 	// if `18.04` is outdated - we need to use `18.04-ESM` (we will return error until we add `18.04-ESM` to eolDates)
 	ver := strings.TrimRight(osVer, "-ESM")
-	if eol, ok := eolDates[ver]; ok && clock.Now(ctx).Before(eol) {
+	if eol, ok := s.eolDates[ver]; ok && clock.Now(ctx).Before(eol) {
 		return ver
 	}
 	return osVer
