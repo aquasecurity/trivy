@@ -27,7 +27,6 @@
       "Misconfigurations": [
         {
           "Type": "Dockerfile Security Check",
-          "ID": "AVD-BAR-0001",
           "AVDID": "AVD-BAR-0001",
           "Title": "Custom policy",
           "Description": "Custom policy for testing",
@@ -49,7 +48,6 @@
         },
         {
           "Type": "Dockerfile Security Check",
-          "ID": "AVD-FOO-0001",
           "AVDID": "AVD-FOO-0001",
           "Title": "Custom policy",
           "Description": "Custom policy for testing",
