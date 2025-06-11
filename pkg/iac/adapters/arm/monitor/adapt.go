@@ -13,6 +13,8 @@ func Adapt(deployment azure.Deployment) monitor.Monitor {
 }
 
 func adaptLogProfiles(deployment azure.Deployment) (logProfiles []monitor.LogProfile) {
+	// TODO: resource is "Microsoft.Insights/logprofiles"
+	// https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/logprofiles?pivots=deployment-language-arm-template
 	for _, resource := range deployment.GetResourcesByType("Microsoft.Insights/logProfiles") {
 		logProfiles = append(logProfiles, adaptLogProfile(resource))
 	}

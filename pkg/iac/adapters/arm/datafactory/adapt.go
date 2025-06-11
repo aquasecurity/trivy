@@ -21,7 +21,9 @@ func adaptDataFactories(deployment azure.Deployment) (factories []datafactory.Fa
 
 func adaptDataFactory(resource azure.Resource) datafactory.Factory {
 	return datafactory.Factory{
-		Metadata:            resource.Metadata,
+		Metadata: resource.Metadata,
+		// TODO: publicNetworkAccess is string
+		// https://learn.microsoft.com/en-us/azure/templates/microsoft.datafactory/factories?pivots=deployment-language-arm-template#factoryproperties-1
 		EnablePublicNetwork: resource.Properties.GetMapValue("publicNetworkAccess").AsBoolValue(true, resource.Metadata),
 	}
 }
