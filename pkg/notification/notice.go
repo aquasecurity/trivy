@@ -102,7 +102,7 @@ func (v *VersionChecker) RunUpdateCheck(ctx context.Context, args []string) {
 
 // PrintNotices prints any announcements or warnings
 // to the output writer, most likely stderr
-func (v *VersionChecker) PrintNotices(output io.Writer) {
+func (v *VersionChecker) PrintNotices(ctx context.Context, output io.Writer) {
 	if !v.responseReceived {
 		return
 	}
@@ -122,7 +122,7 @@ func (v *VersionChecker) PrintNotices(output io.Writer) {
 
 	notices = append(notices, v.Warnings()...)
 	for _, announcement := range v.Announcements() {
-		if announcement.shouldDisplay(time.Now(), cv) {
+		if announcement.shouldDisplay(ctx, cv) {
 			notices = append(notices, announcement.Announcement)
 		}
 	}

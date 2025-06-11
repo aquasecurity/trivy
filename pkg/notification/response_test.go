@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/go-version/pkg/semver"
+	"github.com/aquasecurity/trivy/pkg/clock"
 )
 
 func TestAnnouncementShouldDisplay(t *testing.T) {
@@ -22,7 +23,7 @@ func TestAnnouncementShouldDisplay(t *testing.T) {
 		{
 			name: "Announcement with valid from_date and current date before it",
 			announcement: announcement{
-				FromDate:     ptrTime(time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC)),
+				FromDate:     time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC),
 				Announcement: "Upcoming feature",
 			},
 			now:            time.Date(2023, 9, 30, 0, 0, 0, 0, time.UTC),
@@ -32,7 +33,7 @@ func TestAnnouncementShouldDisplay(t *testing.T) {
 		{
 			name: "Announcement with valid to_date and current date after it",
 			announcement: announcement{
-				ToDate:       ptrTime(time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC)),
+				ToDate:       time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC),
 				Announcement: "Past feature",
 			},
 			now:            time.Date(2023, 10, 2, 0, 0, 0, 0, time.UTC),
@@ -42,8 +43,8 @@ func TestAnnouncementShouldDisplay(t *testing.T) {
 		{
 			name: "Announcement with valid from_date and current date after it and before to_date",
 			announcement: announcement{
-				FromDate:     ptrTime(time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC)),
-				ToDate:       ptrTime(time.Date(2023, 10, 31, 0, 0, 0, 0, time.UTC)),
+				FromDate:     time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC),
+				ToDate:       time.Date(2023, 10, 31, 0, 0, 0, 0, time.UTC),
 				Announcement: "Ongoing feature",
 			},
 			now:            time.Date(2023, 10, 15, 0, 0, 0, 0, time.UTC),
@@ -53,7 +54,7 @@ func TestAnnouncementShouldDisplay(t *testing.T) {
 		{
 			name: "Announcement with valid from_version and current version greater than it",
 			announcement: announcement{
-				FromVersion:  ptrString("1.1.0"),
+				FromVersion:  "1.1.0",
 				Announcement: "New feature",
 			},
 			now:            time.Now(),
@@ -63,7 +64,7 @@ func TestAnnouncementShouldDisplay(t *testing.T) {
 		{
 			name: "Announcement with valid from_version and current version equal to it",
 			announcement: announcement{
-				FromVersion:  ptrString("1.0.0"),
+				FromVersion:  "1.0.0",
 				Announcement: "New feature",
 			},
 			now:            time.Now(),
@@ -73,7 +74,7 @@ func TestAnnouncementShouldDisplay(t *testing.T) {
 		{
 			name: "Announcement with valid to_version and current version less than it",
 			announcement: announcement{
-				ToVersion:    ptrString("1.2.0"),
+				ToVersion:    "1.2.0",
 				Announcement: "Upcoming feature",
 			},
 			now:            time.Now(),
@@ -83,7 +84,7 @@ func TestAnnouncementShouldDisplay(t *testing.T) {
 		{
 			name: "Announcement with valid to_version and current version equal to it",
 			announcement: announcement{
-				ToVersion:    ptrString("1.0.0"),
+				ToVersion:    "1.0.0",
 				Announcement: "Upcoming feature",
 			},
 			now:            time.Now(),
@@ -93,8 +94,8 @@ func TestAnnouncementShouldDisplay(t *testing.T) {
 		{
 			name: "Announcement with valid from_version and valid to_version",
 			announcement: announcement{
-				FromVersion:  ptrString("1.0.0"),
-				ToVersion:    ptrString("1.2.0"),
+				FromVersion:  "1.0.0",
+				ToVersion:    "1.2.0",
 				Announcement: "Feature announcement",
 			},
 			now:            time.Date(2023, 10, 15, 0, 0, 0, 0, time.UTC),
@@ -113,10 +114,10 @@ func TestAnnouncementShouldDisplay(t *testing.T) {
 		{
 			name: "Announcement with all constraints but current version meets them",
 			announcement: announcement{
-				FromDate:     ptrTime(time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC)),
-				ToDate:       ptrTime(time.Date(2023, 10, 31, 0, 0, 0, 0, time.UTC)),
-				FromVersion:  ptrString("1.0.0"),
-				ToVersion:    ptrString("1.2.0"),
+				FromDate:     time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC),
+				ToDate:       time.Date(2023, 10, 31, 0, 0, 0, 0, time.UTC),
+				FromVersion:  "1.0.0",
+				ToVersion:    "1.2.0",
 				Announcement: "Feature announcement",
 			},
 			now:            time.Date(2023, 10, 15, 0, 0, 0, 0, time.UTC),
@@ -126,7 +127,7 @@ func TestAnnouncementShouldDisplay(t *testing.T) {
 		{
 			name: "Announcement with version having 'v' prefix",
 			announcement: announcement{
-				FromVersion:  ptrString("v1.0.0"),
+				FromVersion:  "v1.0.0",
 				Announcement: "Version prefix handling",
 			},
 			now:            time.Now(),
@@ -136,7 +137,7 @@ func TestAnnouncementShouldDisplay(t *testing.T) {
 		{
 			name: "Current version with 'v' prefix",
 			announcement: announcement{
-				FromVersion:  ptrString("1.0.0"),
+				FromVersion:  "1.0.0",
 				Announcement: "Version prefix handling",
 			},
 			now:            time.Now(),
@@ -146,8 +147,8 @@ func TestAnnouncementShouldDisplay(t *testing.T) {
 		{
 			name: "Pre-release version comparison",
 			announcement: announcement{
-				FromVersion:  ptrString("1.0.0"),
-				ToVersion:    ptrString("1.2.0"),
+				FromVersion:  "1.0.0",
+				ToVersion:    "1.2.0",
 				Announcement: "Pre-release handling",
 			},
 			now:            time.Now(),
@@ -157,7 +158,7 @@ func TestAnnouncementShouldDisplay(t *testing.T) {
 		{
 			name: "Build metadata in version",
 			announcement: announcement{
-				FromVersion:  ptrString("1.0.0"),
+				FromVersion:  "1.0.0",
 				Announcement: "Build metadata handling",
 			},
 			now:            time.Now(),
@@ -170,12 +171,10 @@ func TestAnnouncementShouldDisplay(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			currentVersion, err := semver.Parse(strings.TrimPrefix(tt.currentVersion, "v"))
 			require.NoError(t, err)
-			got := tt.announcement.shouldDisplay(tt.now, currentVersion)
+
+			fakeCtx := clock.With(t.Context(), tt.now)
+			got := tt.announcement.shouldDisplay(fakeCtx, currentVersion)
 			assert.Equal(t, tt.expected, got)
 		})
 	}
-}
-
-func ptrString(s string) *string {
-	return &s
 }

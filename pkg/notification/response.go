@@ -1,9 +1,11 @@
 package notification
 
 import (
+	"context"
 	"time"
 
 	"github.com/aquasecurity/go-version/pkg/semver"
+	"github.com/aquasecurity/trivy/pkg/clock"
 )
 
 // flexibleTime is a custom time type that can handle
@@ -19,11 +21,11 @@ type versionInfo struct {
 }
 
 type announcement struct {
-	FromDate     *time.Time `json:"from_date"`
-	ToDate       *time.Time `json:"to_date"`
-	FromVersion  *string    `json:"from_version"`
-	ToVersion    *string    `json:"to_version"`
-	Announcement string     `json:"announcement"`
+	FromDate     time.Time `json:"from_date"`
+	ToDate       time.Time `json:"to_date"`
+	FromVersion  string    `json:"from_version"`
+	ToVersion    string    `json:"to_version"`
+	Announcement string    `json:"announcement"`
 }
 
 type updateResponse struct {
@@ -35,20 +37,20 @@ type updateResponse struct {
 // shoudDisplay checks if the announcement should be displayed
 // based on the current time and version. If version and date constraints are provided
 // they are checked against the current time and version.
-func (a *announcement) shouldDisplay(now time.Time, currentVersion semver.Version) bool {
-	if a.FromDate != nil && now.Before(*a.FromDate) {
+func (a *announcement) shouldDisplay(ctx context.Context, currentVersion semver.Version) bool {
+	if !a.FromDate.IsZero() && clock.Now(ctx).Before(a.FromDate) {
 		return false
 	}
-	if a.ToDate != nil && now.After(*a.ToDate) {
+	if !a.ToDate.IsZero() && clock.Now(ctx).After(a.ToDate) {
 		return false
 	}
-	if a.FromVersion != nil {
-		if fromVersion, err := semver.Parse(*a.FromVersion); err == nil && currentVersion.LessThan(fromVersion) {
+	if a.FromVersion != "" {
+		if fromVersion, err := semver.Parse(a.FromVersion); err == nil && currentVersion.LessThan(fromVersion) {
 			return false
 		}
 	}
-	if a.ToVersion != nil {
-		if toVersion, err := semver.Parse(*a.ToVersion); err == nil && currentVersion.GreaterThanOrEqual(toVersion) {
+	if a.ToVersion != "" {
+		if toVersion, err := semver.Parse(a.ToVersion); err == nil && currentVersion.GreaterThanOrEqual(toVersion) {
 			return false
 		}
 	}
