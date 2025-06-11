@@ -109,10 +109,10 @@ var (
 		Type:   ftypes.Dockerfile,
 		Misconfigurations: []types.DetectedMisconfiguration{
 			{
-				ID: "DS002",
+				AVDID: "AVD-DS-0002",
 			},
 			{
-				ID: "DS026",
+				AVDID: "AVD-DS-0026",
 			},
 		},
 	}

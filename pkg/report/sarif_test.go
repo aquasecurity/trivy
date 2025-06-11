@@ -195,16 +195,16 @@ func TestReportWriter_Sarif(t *testing.T) {
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
 								Type:       "Kubernetes Security Check",
-								ID:         "KSV001",
+								AVDID:      "AVD-KSV-0001",
 								Title:      "Image tag ':latest' used",
 								Message:    "Message",
 								Severity:   "HIGH",
-								PrimaryURL: "https://avd.aquasec.com/appshield/ksv001",
+								PrimaryURL: "https://avd.aquasec.com/appshield/AVD-KSV-0001",
 								Status:     types.MisconfStatusFailure,
 							},
 							{
 								Type:       "Kubernetes Security Check",
-								ID:         "KSV002",
+								AVDID:      "AVD-KSV-0002",
 								Title:      "SYS_ADMIN capability added",
 								Message:    "Message",
 								Severity:   "CRITICAL",
@@ -228,14 +228,14 @@ func TestReportWriter_Sarif(t *testing.T) {
 								InformationURI: lo.ToPtr("https://github.com/aquasecurity/trivy"),
 								Rules: []*sarif.ReportingDescriptor{
 									{
-										ID:               "KSV001",
+										ID:               "AVD-KSV-0001",
 										Name:             lo.ToPtr("Misconfiguration"),
 										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("Image tag ':latest' used")},
 										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("")},
 										DefaultConfiguration: &sarif.ReportingConfiguration{
 											Level: "error",
 										},
-										HelpURI: lo.ToPtr("https://avd.aquasec.com/appshield/ksv001"),
+										HelpURI: lo.ToPtr("https://avd.aquasec.com/appshield/AVD-KSV-0001"),
 										Properties: map[string]any{
 											"tags": []any{
 												"misconfiguration",
@@ -246,12 +246,12 @@ func TestReportWriter_Sarif(t *testing.T) {
 											"security-severity": "8.0",
 										},
 										Help: &sarif.MultiformatMessageString{
-											Text:     lo.ToPtr("Misconfiguration KSV001\nType: Kubernetes Security Check\nSeverity: HIGH\nCheck: Image tag ':latest' used\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)\n"),
-											Markdown: lo.ToPtr("**Misconfiguration KSV001**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Kubernetes Security Check|HIGH|Image tag ':latest' used|Message|[KSV001](https://avd.aquasec.com/appshield/ksv001)|\n\n"),
+											Text:     lo.ToPtr("Misconfiguration AVD-KSV-0001\nType: Kubernetes Security Check\nSeverity: HIGH\nCheck: Image tag ':latest' used\nMessage: Message\nLink: [AVD-KSV-0001](https://avd.aquasec.com/appshield/AVD-KSV-0001)\n"),
+											Markdown: lo.ToPtr("**Misconfiguration AVD-KSV-0001**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Kubernetes Security Check|HIGH|Image tag ':latest' used|Message|[AVD-KSV-0001](https://avd.aquasec.com/appshield/AVD-KSV-0001)|\n\n"),
 										},
 									},
 									{
-										ID:               "KSV002",
+										ID:               "AVD-KSV-0002",
 										Name:             lo.ToPtr("Misconfiguration"),
 										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("SYS_ADMIN capability added")},
 										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("")},
@@ -269,8 +269,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 											"security-severity": "9.5",
 										},
 										Help: &sarif.MultiformatMessageString{
-											Text:     lo.ToPtr("Misconfiguration KSV002\nType: Kubernetes Security Check\nSeverity: CRITICAL\nCheck: SYS_ADMIN capability added\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)\n"),
-											Markdown: lo.ToPtr("**Misconfiguration KSV002**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Kubernetes Security Check|CRITICAL|SYS_ADMIN capability added|Message|[KSV002](https://avd.aquasec.com/appshield/ksv002)|\n\n"),
+											Text:     lo.ToPtr("Misconfiguration AVD-KSV-0002\nType: Kubernetes Security Check\nSeverity: CRITICAL\nCheck: SYS_ADMIN capability added\nMessage: Message\nLink: [AVD-KSV-0002](https://avd.aquasec.com/appshield/ksv002)\n"),
+											Markdown: lo.ToPtr("**Misconfiguration AVD-KSV-0002**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Kubernetes Security Check|CRITICAL|SYS_ADMIN capability added|Message|[AVD-KSV-0002](https://avd.aquasec.com/appshield/ksv002)|\n\n"),
 										},
 									},
 								},
@@ -278,10 +278,10 @@ func TestReportWriter_Sarif(t *testing.T) {
 						},
 						Results: []*sarif.Result{
 							{
-								RuleID:    lo.ToPtr("KSV001"),
+								RuleID:    lo.ToPtr("AVD-KSV-0001"),
 								RuleIndex: lo.ToPtr[uint](0),
 								Level:     lo.ToPtr("error"),
-								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test 1\nType: \nVulnerability KSV001\nSeverity: HIGH\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)")},
+								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test 1\nType: \nVulnerability AVD-KSV-0001\nSeverity: HIGH\nMessage: Message\nLink: [AVD-KSV-0001](https://avd.aquasec.com/appshield/AVD-KSV-0001)")},
 								Locations: []*sarif.Location{
 									{
 										Message: &sarif.Message{Text: lo.ToPtr("library/test 1")},
@@ -301,10 +301,10 @@ func TestReportWriter_Sarif(t *testing.T) {
 								},
 							},
 							{
-								RuleID:    lo.ToPtr("KSV002"),
+								RuleID:    lo.ToPtr("AVD-KSV-0002"),
 								RuleIndex: lo.ToPtr[uint](1),
 								Level:     lo.ToPtr("error"),
-								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test 1\nType: \nVulnerability KSV002\nSeverity: CRITICAL\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)")},
+								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test 1\nType: \nVulnerability AVD-KSV-0002\nSeverity: CRITICAL\nMessage: Message\nLink: [AVD-KSV-0002](https://avd.aquasec.com/appshield/ksv002)")},
 								Locations: []*sarif.Location{
 									{
 										Message: &sarif.Message{Text: lo.ToPtr("library/test 1")},
@@ -555,7 +555,6 @@ func TestReportWriter_Sarif(t *testing.T) {
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
 								Type:        "Terraform Security Check",
-								ID:          "AVD-GCP-0007",
 								AVDID:       "AVD-GCP-0007",
 								Title:       "Service accounts should not have roles assigned with excessive privileges",
 								Description: "Service accounts should have a minimal set of permissions assigned in order to do their job. They should never have excessive access as if compromised, an attacker can escalate privileges and take over the entire account.",
@@ -593,7 +592,6 @@ func TestReportWriter_Sarif(t *testing.T) {
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
 								Type:        "Terraform Security Check",
-								ID:          "AVD-GCP-0007",
 								AVDID:       "AVD-GCP-0007",
 								Title:       "Service accounts should not have roles assigned with excessive privileges",
 								Description: "Service accounts should have a minimal set of permissions assigned in order to do their job. They should never have excessive access as if compromised, an attacker can escalate privileges and take over the entire account.",

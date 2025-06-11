@@ -387,7 +387,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 	// empty namespace implies a go rule from defsec, "builtin" refers to a built-in rego rule
 	// this ensures we don't generate bad links for custom policies
 	if res.Namespace == "" || rego.IsBuiltinNamespace(res.Namespace) {
-		primaryURL = fmt.Sprintf("https://avd.aquasec.com/misconfig/%s", strings.ToLower(res.ID))
+		primaryURL = fmt.Sprintf("https://avd.aquasec.com/misconfig/%s", strings.ToLower(res.AVDID))
 		res.References = append(res.References, primaryURL)
 	}
 
@@ -396,7 +396,6 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 	}
 
 	return types.DetectedMisconfiguration{
-		ID:          res.ID,
 		AVDID:       res.AVDID,
 		Type:        res.Type,
 		Title:       res.Title,

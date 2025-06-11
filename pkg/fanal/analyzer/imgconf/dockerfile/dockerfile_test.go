@@ -101,7 +101,6 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 							Query:     "data.builtin.dockerfile.DS005.deny",
 							Message:   "Consider using 'COPY file:e4d600fc4c9c293efe360be7b30ee96579925d1b4634c94332e2ec73f7d8eca1 /' command instead of 'ADD file:e4d600fc4c9c293efe360be7b30ee96579925d1b4634c94332e2ec73f7d8eca1 /'",
 							PolicyMetadata: types.PolicyMetadata{
-								ID:                 "DS005",
 								AVDID:              "AVD-DS-0005",
 								Type:               "Dockerfile Security Check",
 								Title:              "ADD instead of COPY",
@@ -184,7 +183,6 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 							Query:     "data.builtin.dockerfile.DS005.deny",
 							Message:   "Consider using 'COPY ./foo.txt /foo.txt' command instead of 'ADD ./foo.txt /foo.txt'",
 							PolicyMetadata: types.PolicyMetadata{
-								ID:                 "DS005",
 								AVDID:              "AVD-DS-0005",
 								Type:               "Dockerfile Security Check",
 								Title:              "ADD instead of COPY",
@@ -258,7 +256,6 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 							Query:     "data.builtin.dockerfile.DS002.deny",
 							Message:   "Specify at least 1 USER command in Dockerfile with non-root user as argument",
 							PolicyMetadata: types.PolicyMetadata{
-								ID:                 "DS002",
 								AVDID:              "AVD-DS-0002",
 								Type:               "Dockerfile Security Check",
 								Title:              "Image user should not be 'root'",

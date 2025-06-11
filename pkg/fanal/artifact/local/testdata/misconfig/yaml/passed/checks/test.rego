@@ -1,8 +1,7 @@
 # METADATA
 # title: Test check
 # custom:
-#   id: TEST001
-#   avd_id: TEST001
+#   avd_id: AVD-TEST-0001
 #   severity: LOW
 package user.test_yaml_check
 

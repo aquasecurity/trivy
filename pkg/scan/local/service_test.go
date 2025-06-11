@@ -1099,7 +1099,7 @@ func TestScanner_Scan(t *testing.T) {
 								{
 									Namespace: "main.kubernetes.id300",
 									PolicyMetadata: ftypes.PolicyMetadata{
-										ID:       "ID300",
+										AVDID:    "AVD-ID-0300",
 										Type:     "Kubernetes Security Check",
 										Title:    "Bad Deployment",
 										Severity: "DUMMY",
@@ -1114,7 +1114,7 @@ func TestScanner_Scan(t *testing.T) {
 								{
 									Namespace: "builtin.kubernetes.id200",
 									PolicyMetadata: ftypes.PolicyMetadata{
-										ID:       "ID200",
+										AVDID:    "AVD-ID-0200",
 										Type:     "Kubernetes Security Check",
 										Title:    "Bad Deployment",
 										Severity: "MEDIUM",
@@ -1126,7 +1126,7 @@ func TestScanner_Scan(t *testing.T) {
 									Namespace: "main.kubernetes.id100",
 									Message:   "something bad",
 									PolicyMetadata: ftypes.PolicyMetadata{
-										ID:       "ID100",
+										AVDID:    "AVD-ID-0100",
 										Type:     "Kubernetes Security Check",
 										Title:    "Bad Deployment",
 										Severity: "HIGH",
@@ -1147,7 +1147,7 @@ func TestScanner_Scan(t *testing.T) {
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
 								Type:      "Kubernetes Security Check",
-								ID:        "ID100",
+								AVDID:     "AVD-ID-0100",
 								Title:     "Bad Deployment",
 								Message:   "something bad",
 								Namespace: "main.kubernetes.id100",
@@ -1164,14 +1164,14 @@ func TestScanner_Scan(t *testing.T) {
 							},
 							{
 								Type:       "Kubernetes Security Check",
-								ID:         "ID200",
+								AVDID:      "AVD-ID-0200",
 								Title:      "Bad Deployment",
 								Message:    "No issues found",
 								Namespace:  "builtin.kubernetes.id200",
 								Severity:   "MEDIUM",
-								PrimaryURL: "https://avd.aquasec.com/misconfig/id200",
+								PrimaryURL: "https://avd.aquasec.com/misconfig/avd-id-0200",
 								References: []string{
-									"https://avd.aquasec.com/misconfig/id200",
+									"https://avd.aquasec.com/misconfig/avd-id-0200",
 								},
 								Status: types.MisconfStatusPassed,
 								Layer: ftypes.Layer{
@@ -1192,7 +1192,7 @@ func TestScanner_Scan(t *testing.T) {
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
 								Type:      "Kubernetes Security Check",
-								ID:        "ID300",
+								AVDID:     "AVD-ID-0300",
 								Title:     "Bad Deployment",
 								Message:   "No issues found",
 								Namespace: "main.kubernetes.id300",
@@ -1314,7 +1314,6 @@ func TestScanner_Scan(t *testing.T) {
 									Query:     "data.builtin.dockerfile.DS001.deny",
 									Message:   "",
 									PolicyMetadata: ftypes.PolicyMetadata{
-										ID:                 "DS001",
 										AVDID:              "AVD-DS-0001",
 										Type:               "Dockerfile Security Check",
 										Title:              "':latest' tag used",
@@ -1335,7 +1334,6 @@ func TestScanner_Scan(t *testing.T) {
 									Query:     "data.builtin.dockerfile.DS002.deny",
 									Message:   "Specify at least 1 USER command in Dockerfile with non-root user as argument",
 									PolicyMetadata: ftypes.PolicyMetadata{
-										ID:                 "DS002",
 										AVDID:              "AVD-DS-0002",
 										Type:               "Dockerfile Security Check",
 										Title:              "Image user should not be 'root'",
@@ -1367,15 +1365,14 @@ func TestScanner_Scan(t *testing.T) {
 								Query:       "data.builtin.dockerfile.DS002.deny",
 								Message:     "Specify at least 1 USER command in Dockerfile with non-root user as argument",
 								Type:        "Dockerfile Security Check",
-								ID:          "DS002",
 								AVDID:       "AVD-DS-0002",
 								Title:       "Image user should not be 'root'",
 								Description: "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
 								Severity:    "HIGH",
 								Resolution:  "Add 'USER <non root user name>' line to the Dockerfile",
 								Status:      types.MisconfStatusFailure,
-								PrimaryURL:  "https://avd.aquasec.com/misconfig/ds002",
-								References:  []string{"https://avd.aquasec.com/misconfig/ds002"},
+								PrimaryURL:  "https://avd.aquasec.com/misconfig/avd-ds-0002",
+								References:  []string{"https://avd.aquasec.com/misconfig/avd-ds-0002"},
 								CauseMetadata: ftypes.CauseMetadata{
 									Provider: "Dockerfile",
 									Service:  "general",
@@ -1390,7 +1387,6 @@ func TestScanner_Scan(t *testing.T) {
 								Query:       "data.builtin.dockerfile.DS001.deny",
 								Message:     "No issues found",
 								Type:        "Dockerfile Security Check",
-								ID:          "DS001",
 								AVDID:       "AVD-DS-0001",
 								Title:       "':latest' tag used",
 								Description: "When using a 'FROM' statement you should use a specific tag to avoid uncontrolled behavior when the image is updated.",
@@ -1402,8 +1398,8 @@ func TestScanner_Scan(t *testing.T) {
 									Service:  "general",
 									Code:     ftypes.Code{},
 								},
-								PrimaryURL: "https://avd.aquasec.com/misconfig/ds001",
-								References: []string{"https://avd.aquasec.com/misconfig/ds001"},
+								PrimaryURL: "https://avd.aquasec.com/misconfig/avd-ds-0001",
+								References: []string{"https://avd.aquasec.com/misconfig/avd-ds-0001"},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 								},
