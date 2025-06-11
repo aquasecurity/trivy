@@ -255,6 +255,7 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 	// Add relationships between the parent and the orphaned packages
 	// For OS packages, packages with circular dependencies are not added as relationships to the parent component in belongToParent.
 	// To resolve this, we add relationships between these circularly dependent packages and the parent component.
+	// cf. https://github.com/aquasecurity/trivy/issues/9011
 	if result.Class == types.ClassOSPkg {
 		e.addOrphanedPackagesRelationships(parent, components)
 	}
@@ -262,14 +263,25 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 
 // addOrphanedPackagesRelationships adds relationships between the parent and the orphaned packages
 func (e *Encoder) addOrphanedPackagesRelationships(parent *core.Component, components map[string]*core.Component) {
-	pkgs := make(map[uuid.UUID]*core.Component)
-	for _, c := range lo.Values(components) {
-		pkgs[c.ID()] = c
-	}
+	pkgs := lo.MapKeys(components, func(c *core.Component, _ string) uuid.UUID {
+		return c.ID()
+	})
 	orphans := e.traverseRelationship(parent.ID(), pkgs)
 	for _, c := range orphans {
 		e.bom.AddRelationship(parent, c, core.RelationshipContains)
 	}
+}
+
+func (e *Encoder) traverseRelationship(id uuid.UUID, components map[uuid.UUID]*core.Component) map[uuid.UUID]*core.Component {
+	for _, rel := range e.bom.Relationships()[id] {
+		_, ok := components[rel.Dependency]
+		if !ok {
+			continue
+		}
+		delete(components, rel.Dependency)
+		components = e.traverseRelationship(rel.Dependency, components)
+	}
+	return components
 }
 
 // existedPkgIdentifier tries to look for package identifier (BOM-ref, PURL) by component name and component type
@@ -456,16 +468,4 @@ func filterProperties(props []core.Property) []core.Property {
 	return lo.Filter(props, func(property core.Property, _ int) bool {
 		return property.Value != "" && (property.Name != core.PropertySrcEpoch || property.Value != "0")
 	})
-}
-
-func (e *Encoder) traverseRelationship(id uuid.UUID, components map[uuid.UUID]*core.Component) map[uuid.UUID]*core.Component {
-	for _, rel := range e.bom.Relationships()[id] {
-		_, ok := components[rel.Dependency]
-		if !ok {
-			continue
-		}
-		delete(components, rel.Dependency)
-		components = e.traverseRelationship(rel.Dependency, components)
-	}
-	return components
 }

@@ -1513,7 +1513,6 @@ func TestEncoder_Encode(t *testing.T) {
 								},
 							},
 						},
-						Vulnerabilities: []types.DetectedVulnerability{},
 					},
 				},
 			},
@@ -1656,6 +1655,7 @@ func TestEncoder_Encode(t *testing.T) {
 					},
 				},
 			},
+			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},
 		{
 			name: "json file created from SBOM file (BOM is empty)",
