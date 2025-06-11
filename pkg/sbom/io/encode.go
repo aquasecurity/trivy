@@ -251,37 +251,6 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 			e.bom.AddRelationship(c, nil, "")
 		}
 	}
-
-	// Add relationships between the parent and the orphaned packages
-	// For OS packages, packages with circular dependencies are not added as relationships to the parent component in belongToParent.
-	// To resolve this, we add relationships between these circularly dependent packages and the parent component.
-	// cf. https://github.com/aquasecurity/trivy/issues/9011
-	if result.Class == types.ClassOSPkg {
-		e.addOrphanedPackagesRelationships(parent, components)
-	}
-}
-
-// addOrphanedPackagesRelationships adds relationships between the parent and the orphaned packages
-func (e *Encoder) addOrphanedPackagesRelationships(parent *core.Component, components map[string]*core.Component) {
-	pkgs := lo.MapKeys(components, func(c *core.Component, _ string) uuid.UUID {
-		return c.ID()
-	})
-	orphans := e.traverseRelationship(parent.ID(), pkgs)
-	for _, c := range orphans {
-		e.bom.AddRelationship(parent, c, core.RelationshipContains)
-	}
-}
-
-func (e *Encoder) traverseRelationship(id uuid.UUID, components map[uuid.UUID]*core.Component) map[uuid.UUID]*core.Component {
-	for _, rel := range e.bom.Relationships()[id] {
-		_, ok := components[rel.Dependency]
-		if !ok {
-			continue
-		}
-		delete(components, rel.Dependency)
-		components = e.traverseRelationship(rel.Dependency, components)
-	}
-	return components
 }
 
 // existedPkgIdentifier tries to look for package identifier (BOM-ref, PURL) by component name and component type
@@ -457,7 +426,7 @@ func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Pac
 	// Case 4: Relationship: unknown, DependsOn: known (e.g., GoBinaries, OS packages)
 	//         - Packages with parents: false. These packages are included in the packages from `parents` (e.g. GoBinaries deps and root package).
 	//         - Packages without parents: true. These packages are included in the parent (e.g. OS packages without parents).
-	if pkg.Relationship == ftypes.RelationshipDirect {
+	if pkg.Relationship == ftypes.RelationshipDirect || pkg.Relationship == ftypes.RelationshipUnknown {
 		return !hasRoot
 	}
 
