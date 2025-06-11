@@ -177,7 +177,7 @@ func filterDisabledChecks(results types.MisconfResults) types.MisconfResults {
 	for _, r := range results {
 		if disabledChecks.Contains(r.AVDID) {
 			log.WithPrefix("image history analyzer").Info("Skip disabled check",
-				log.String("ID", r.ID), log.String("reason", reason))
+				log.String("ID", r.AVDID), log.String("reason", reason))
 			continue
 		}
 		filtered = append(filtered, r)
