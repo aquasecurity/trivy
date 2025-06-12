@@ -1,7 +1,6 @@
 package io_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/package-url/packageurl-go"
@@ -242,7 +241,7 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 			decoder := sbomio.NewDecoder(bom)
 			var gotSBOM types.SBOM
 
-			err := decoder.Decode(context.Background(), &gotSBOM)
+			err := decoder.Decode(t.Context(), &gotSBOM)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
