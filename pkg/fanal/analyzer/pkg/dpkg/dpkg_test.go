@@ -1379,6 +1379,26 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "only built using",
+			testFiles: map[string]string{"./testdata/dpkg_builtusing": "var/lib/dpkg/status"},
+			want: &analyzer.AnalysisResult{
+				PackageInfos: []types.PackageInfo{
+					{
+						FilePath: "var/lib/dpkg/status",
+						Packages: []types.Package{
+							{
+								ID: "helloworld@1.0-1", Name: "helloworld", Version: "1.0", Release: "1",
+								SrcName: "helloworld", SrcVersion: "1.0", SrcRelease: "1",
+								Maintainer: "Your Name <you@email.com>", Arch: "amd64",
+								DependsOn: []string{
+									"python3@2.13.3-0ubuntu1",
+								}},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "happy path with digests",
 			testFiles: map[string]string{
 				"./testdata/digest-status":    "var/lib/dpkg/status",
