@@ -68,7 +68,7 @@ func (m *Decoder) Decode(ctx context.Context, sbom *types.SBOM) error {
 	m.addLangPkgs(sbom)
 
 	// Add remaining packages
-	if err := m.addOrphanPkgs(ctx, sbom); err != nil {
+	if err := m.addOrphanPkgs(sbom); err != nil {
 		return xerrors.Errorf("failed to aggregate packages: %w", err)
 	}
 
@@ -369,7 +369,7 @@ func (m *Decoder) traverseDependencies(id uuid.UUID) ftypes.Packages {
 
 // addOrphanPkgs adds orphan packages.
 // Orphan packages are packages that are not related to any components.
-func (m *Decoder) addOrphanPkgs(ctx context.Context, sbom *types.SBOM) error {
+func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 	osPkgMap := make(map[string]ftypes.Packages)
 	langPkgMap := make(map[ftypes.LangType]ftypes.Packages)
 	for _, pkg := range m.pkgs {
@@ -387,13 +387,8 @@ func (m *Decoder) addOrphanPkgs(ctx context.Context, sbom *types.SBOM) error {
 		return xerrors.Errorf("multiple types of OS packages in SBOM are not supported (%q)", lo.Keys(osPkgMap))
 	}
 
-	// Add OS packages only when OS is detected.
+	// Add OS packages
 	for _, pkgs := range osPkgMap {
-		if sbom.Metadata.OS == nil || !sbom.Metadata.OS.Detected() {
-			m.logger.WarnContext(ctx, "Ignore the OS package as no OS is detected.")
-			break
-		}
-
 		// TODO: mismatch between the OS and the packages should be rejected.
 		// e.g. OS: debian, Packages: rpm
 		sort.Sort(pkgs)
