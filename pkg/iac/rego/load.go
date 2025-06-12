@@ -353,12 +353,14 @@ func (s *Scanner) filterModules() error {
 		if metadata != nil {
 			tv, err := semver.Parse(s.trivyVersion)
 			if err != nil {
-				s.logger.Warn(
-					"Failed to parse Trivy version - cannot confirm if module will work with current version",
-					log.String("trivy_version", s.trivyVersion),
-					log.FilePath(module.Package.Location.File),
-					log.Err(err),
-				)
+				if s.trivyVersion != "dev" {
+					s.logger.Warn(
+						"Failed to parse Trivy version - cannot confirm if module will work with current version",
+						log.String("trivy_version", s.trivyVersion),
+						log.FilePath(module.Package.Location.File),
+						log.Err(err),
+					)
+				}
 			} else if !s.IsMinimumVersionSupported(metadata, module, tv) {
 				continue
 			}
