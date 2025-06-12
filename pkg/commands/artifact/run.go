@@ -171,7 +171,7 @@ func (r *runner) Close(ctx context.Context) error {
 
 	// silently check if there is notifications
 	if r.versionChecker != nil {
-		r.versionChecker.PrintNotices(os.Stderr)
+		r.versionChecker.PrintNotices(ctx, os.Stderr)
 	}
 
 	return errs

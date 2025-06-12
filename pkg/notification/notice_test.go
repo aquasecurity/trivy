@@ -84,6 +84,101 @@ func TestPrintNotices(t *testing.T) {
 			responseExpected: true,
 			expectedOutput:   "\n📣 \x1b[34mNotices:\x1b[0m\n  - There are some amazing things happening right now!\n\nTo suppress version checks, run Trivy scans with the --skip-version-check flag\n\n",
 		},
+		{
+			name:          "No new version with announcements and zero time",
+			options:       []Option{WithCurrentVersion("0.60.0")},
+			latestVersion: "0.60.0",
+			announcements: []announcement{
+				{
+					FromDate:     time.Time{},
+					ToDate:       time.Time{},
+					Announcement: "There are some amazing things happening right now!",
+				},
+			},
+			responseExpected: true,
+			expectedOutput:   "\n📣 \x1b[34mNotices:\x1b[0m\n  - There are some amazing things happening right now!\n\nTo suppress version checks, run Trivy scans with the --skip-version-check flag\n\n",
+		},
+		{
+			name:          "No new version with announcement that fails announcement version constraints",
+			options:       []Option{WithCurrentVersion("0.60.0")},
+			latestVersion: "0.60.0",
+			announcements: []announcement{
+				{
+					FromDate:     time.Date(2025, 2, 2, 12, 0, 0, 0, time.UTC),
+					ToDate:       time.Date(2999, 1, 1, 0, 0, 0, 0, time.UTC),
+					FromVersion:  "0.61.0",
+					Announcement: "There are some amazing things happening right now!",
+				},
+			},
+			responseExpected: true,
+			expectedOutput:   "",
+		},
+		{
+			name:          "No new version with announcement where current version is greater than to_version",
+			options:       []Option{WithCurrentVersion("0.60.0")},
+			latestVersion: "0.60.0",
+			announcements: []announcement{
+				{
+					FromDate:     time.Date(2025, 2, 2, 12, 0, 0, 0, time.UTC),
+					ToDate:       time.Date(2999, 1, 1, 0, 0, 0, 0, time.UTC),
+					ToVersion:    "0.59.0",
+					Announcement: "There are some amazing things happening right now!",
+				},
+			},
+			responseExpected: true,
+			expectedOutput:   "",
+		},
+		{
+			name:          "No new version with announcement that satisfies version constraint but outside date range",
+			options:       []Option{WithCurrentVersion("0.60.0")},
+			latestVersion: "0.60.0",
+			announcements: []announcement{
+				{
+					FromDate:     time.Date(2024, 2, 2, 12, 0, 0, 0, time.UTC),
+					ToDate:       time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
+					FromVersion:  "0.60.0",
+					Announcement: "There are some amazing things happening right now!",
+				},
+			},
+			responseExpected: true,
+			expectedOutput:   "",
+		},
+		{
+			name:          "No new version with multiple announcements, one of which is valid",
+			options:       []Option{WithCurrentVersion("0.60.0")},
+			latestVersion: "0.60.0",
+			announcements: []announcement{
+				{
+					FromDate:     time.Date(2025, 2, 2, 12, 0, 0, 0, time.UTC),
+					ToDate:       time.Date(2999, 1, 1, 0, 0, 0, 0, time.UTC),
+					Announcement: "There are some amazing things happening right now!",
+				},
+				{
+					FromDate:     time.Date(2025, 2, 2, 12, 0, 0, 0, time.UTC),
+					ToDate:       time.Date(2999, 1, 1, 0, 0, 0, 0, time.UTC),
+					FromVersion:  "0.61.0",
+					Announcement: "This announcement should not be displayed",
+				},
+			},
+			responseExpected: true,
+			expectedOutput:   "\n📣 \x1b[34mNotices:\x1b[0m\n  - There are some amazing things happening right now!\n\nTo suppress version checks, run Trivy scans with the --skip-version-check flag\n\n",
+		},
+		{
+			name:             "No new version with no announcements and quiet mode",
+			options:          []Option{WithCurrentVersion("0.60.0"), WithQuietMode(true)},
+			latestVersion:    "0.60.0",
+			announcements:    []announcement{},
+			responseExpected: false,
+			expectedOutput:   "",
+		},
+		{
+			name:             "No new version with no announcements",
+			options:          []Option{WithCurrentVersion("0.60.0")},
+			latestVersion:    "0.60.0",
+			announcements:    []announcement{},
+			responseExpected: true,
+			expectedOutput:   "",
+		},
 	}
 
 	for _, tt := range tests {
@@ -99,7 +194,7 @@ func TestPrintNotices(t *testing.T) {
 			require.Eventually(t, func() bool { return v.responseReceived == tt.responseExpected }, time.Second*5, 500)
 
 			sb := bytes.NewBufferString("")
-			v.PrintNotices(sb)
+			v.PrintNotices(t.Context(), sb)
 			assert.Equal(t, tt.expectedOutput, sb.String())
 
 			// check metrics are sent
@@ -161,7 +256,9 @@ func TestCheckForNotices(t *testing.T) {
 			v.RunUpdateCheck(t.Context(), nil)
 			require.Eventually(t, func() bool { return v.done }, time.Second*5, 500)
 			require.Eventually(t, func() bool { return v.responseReceived }, time.Second*5, 500)
-			assert.Equal(t, tt.expectedVersion, v.LatestVersion())
+			latestVersion, err := v.LatestVersion()
+			require.NoError(t, err)
+			assert.Equal(t, tt.expectedVersion, latestVersion.String())
 			assert.ElementsMatch(t, tt.expectedAnnouncements, v.Announcements())
 
 			if tt.expectNoMetrics {
