@@ -183,7 +183,7 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 			locationURI := clearURI(res.Target)
 			sw.addSarifResult(&sarifData{
 				title:            "misconfiguration",
-				vulnerabilityId:  misconf.ID,
+				vulnerabilityId:  misconf.AVDID,
 				severity:         misconf.Severity,
 				cvssScore:        severityToScore(misconf.Severity),
 				url:              toUri(misconf.PrimaryURL),
@@ -196,15 +196,15 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 						endLine:   misconf.CauseMetadata.EndLine,
 					},
 				},
-				resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
+				resultIndex:      getRuleIndex(misconf.AVDID, ruleIndexes),
 				shortDescription: misconf.Title,
 				fullDescription:  misconf.Description,
 				helpText: fmt.Sprintf("Misconfiguration %v\nType: %s\nSeverity: %v\nCheck: %v\nMessage: %v\nLink: [%v](%v)\n%s",
-					misconf.ID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.ID, misconf.PrimaryURL, misconf.Description),
+					misconf.AVDID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.AVDID, misconf.PrimaryURL, misconf.Description),
 				helpMarkdown: fmt.Sprintf("**Misconfiguration %v**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|%v|%v|%v|%s|[%v](%v)|\n\n%v",
-					misconf.ID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.ID, misconf.PrimaryURL, misconf.Description),
+					misconf.AVDID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.AVDID, misconf.PrimaryURL, misconf.Description),
 				message: fmt.Sprintf("Artifact: %v\nType: %v\nVulnerability %v\nSeverity: %v\nMessage: %v\nLink: [%v](%v)",
-					locationURI, res.Type, misconf.ID, misconf.Severity, misconf.Message, misconf.ID, misconf.PrimaryURL),
+					locationURI, res.Type, misconf.AVDID, misconf.Severity, misconf.Message, misconf.AVDID, misconf.PrimaryURL),
 			})
 		}
 		for _, secret := range res.Secrets {

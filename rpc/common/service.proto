@@ -101,7 +101,7 @@ message PolicyMetadata {
 
 message DetectedMisconfiguration {
   string type                    = 1;
-  string id                      = 2;
+  reserved 2;  // deprecated 'id'
   string title                   = 3;
   string description             = 4;
   string message                 = 5;

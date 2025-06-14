@@ -29,37 +29,37 @@ var (
 			{
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:       "ID100",
+						AVDID:    "AVD-ID-0100",
 						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
-						ID:       "ID101",
+						AVDID:    "AVD-ID-0101",
 						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
 					{
-						ID:       "ID102",
+						AVDID:    "AVD-ID-0102",
 						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
 					{
-						ID:       "ID103",
+						AVDID:    "AVD-ID-0103",
 						Status:   types.MisconfStatusFailure,
 						Severity: "CRITICAL",
 					},
 					{
-						ID:       "ID104",
+						AVDID:    "AVD-ID-0104",
 						Status:   types.MisconfStatusFailure,
 						Severity: "UNKNOWN",
 					},
 					{
-						ID:       "ID105",
+						AVDID:    "AVD-ID-0105",
 						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
-						ID:       "ID106",
+						AVDID:    "AVD-ID-0106",
 						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
@@ -179,7 +179,7 @@ var (
 			{
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:       "ID201",
+						AVDID:    "AVD-ID-0201",
 						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
@@ -305,37 +305,37 @@ var (
 			{
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:       "ID100",
+						AVDID:    "AVD-ID-0100",
 						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
-						ID:       "ID101",
+						AVDID:    "AVD-ID-0101",
 						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
 					{
-						ID:       "ID102",
+						AVDID:    "AVD-ID-0102",
 						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
 					{
-						ID:       "ID103",
+						AVDID:    "AVD-ID-0103",
 						Status:   types.MisconfStatusFailure,
 						Severity: "CRITICAL",
 					},
 					{
-						ID:       "ID104",
+						AVDID:    "AVD-ID-0104",
 						Status:   types.MisconfStatusFailure,
 						Severity: "UNKNOWN",
 					},
 					{
-						ID:       "ID105",
+						AVDID:    "AVD-ID-0105",
 						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
-						ID:       "ID106",
+						AVDID:    "AVD-ID-0106",
 						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
@@ -412,82 +412,7 @@ var (
 			},
 		},
 		Results: types.Results{
-			{Misconfigurations: []types.DetectedMisconfiguration{{ID: "ID100"}}},
-		},
-	}
-
-	roleWithMisconfig = Resource{
-		Namespace: "default",
-		Kind:      "Role",
-		Name:      "system::leader-locking-kube-controller-manager",
-		Results: types.Results{
-			{
-				Misconfigurations: []types.DetectedMisconfiguration{
-					{
-						ID:       "ID100",
-						Status:   types.MisconfStatusFailure,
-						Severity: "MEDIUM",
-					},
-				},
-			},
-		},
-	}
-
-	deployLuaWithSecrets = Resource{
-		Namespace: "default",
-		Kind:      "Deploy",
-		Name:      "lua",
-		Results: types.Results{
-			{
-				Secrets: []types.DetectedSecret{
-					{
-						RuleID:   "secret1",
-						Severity: "CRITICAL",
-					},
-					{
-						RuleID:   "secret2",
-						Severity: "MEDIUM",
-					},
-				},
-			},
-		},
-	}
-
-	apiseverPodWithMisconfigAndInfra = Resource{
-		Namespace: "kube-system",
-		Kind:      "Pod",
-		Name:      "kube-apiserver",
-		Results: types.Results{
-			{
-				Misconfigurations: []types.DetectedMisconfiguration{
-					{
-						ID:       "KSV-ID100",
-						Status:   types.MisconfStatusFailure,
-						Severity: "LOW",
-					},
-					{
-						ID:       "KSV-ID101",
-						Status:   types.MisconfStatusFailure,
-						Severity: "MEDIUM",
-					},
-					{
-						ID:       "KSV-ID102",
-						Status:   types.MisconfStatusFailure,
-						Severity: "HIGH",
-					},
-
-					{
-						ID:       "KCV-ID100",
-						Status:   types.MisconfStatusFailure,
-						Severity: "LOW",
-					},
-					{
-						ID:       "KCV-ID101",
-						Status:   types.MisconfStatusFailure,
-						Severity: "MEDIUM",
-					},
-				},
-			},
+			{Misconfigurations: []types.DetectedMisconfiguration{{AVDID: "AVD-ID-0100"}}},
 		},
 	}
 )
@@ -730,8 +655,8 @@ func Test_separateMisconfigReports(t *testing.T) {
 				Kind:      "Pod",
 				Namespace: "kube-system",
 				Results: []types.Result{
-					{Misconfigurations: []types.DetectedMisconfiguration{{ID: "KCV-0001"}}},
-					{Misconfigurations: []types.DetectedMisconfiguration{{ID: "KSV-0001"}}},
+					{Misconfigurations: []types.DetectedMisconfiguration{{AVDID: "AVD-KCV-0001"}}},
+					{Misconfigurations: []types.DetectedMisconfiguration{{AVDID: "AVD-KSV-0001"}}},
 				},
 			},
 		},

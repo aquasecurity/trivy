@@ -27,7 +27,6 @@
       "Misconfigurations": [
         {
           "Type": "Helm Security Check",
-          "ID": "KSV001",
           "AVDID": "AVD-KSV-0001",
           "Title": "Can elevate its own privileges",
           "Description": "A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.",
@@ -36,10 +35,10 @@
           "Query": "data.builtin.kubernetes.KSV001.deny",
           "Resolution": "Set 'set containers[].securityContext.allowPrivilegeEscalation' to 'false'.",
           "Severity": "MEDIUM",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv001",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-ksv-0001",
           "References": [
             "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
-            "https://avd.aquasec.com/misconfig/ksv001"
+            "https://avd.aquasec.com/misconfig/avd-ksv-0001"
           ],
           "Status": "FAIL",
           "Layer": {},
@@ -156,7 +155,6 @@
         },
         {
           "Type": "Helm Security Check",
-          "ID": "KSV030",
           "AVDID": "AVD-KSV-0030",
           "Title": "Runtime/Default Seccomp profile not set",
           "Description": "According to pod security standard 'Seccomp', the RuntimeDefault seccomp profile must be required, or allow specific additional profiles.",
@@ -165,10 +163,10 @@
           "Query": "data.builtin.kubernetes.KSV030.deny",
           "Resolution": "Set 'spec.securityContext.seccompProfile.type', 'spec.containers[*].securityContext.seccompProfile' and 'spec.initContainers[*].securityContext.seccompProfile' to 'RuntimeDefault' or undefined.",
           "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv030",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-ksv-0030",
           "References": [
             "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
-            "https://avd.aquasec.com/misconfig/ksv030"
+            "https://avd.aquasec.com/misconfig/avd-ksv-0030"
           ],
           "Status": "FAIL",
           "Layer": {},
@@ -285,7 +283,6 @@
         },
         {
           "Type": "Helm Security Check",
-          "ID": "KSV104",
           "AVDID": "AVD-KSV-0104",
           "Title": "Seccomp policies disabled",
           "Description": "A program inside the container can bypass Seccomp protection policies.",
@@ -294,10 +291,10 @@
           "Query": "data.builtin.kubernetes.KSV104.deny",
           "Resolution": "Specify seccomp either by annotation or by seccomp profile type having allowed values as per pod security standards",
           "Severity": "MEDIUM",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv104",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-ksv-0104",
           "References": [
             "https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline",
-            "https://avd.aquasec.com/misconfig/ksv104"
+            "https://avd.aquasec.com/misconfig/avd-ksv-0104"
           ],
           "Status": "FAIL",
           "Layer": {},
@@ -414,7 +411,6 @@
         },
         {
           "Type": "Helm Security Check",
-          "ID": "KSV110",
           "AVDID": "AVD-KSV-0110",
           "Title": "Workloads in the default namespace",
           "Description": "Checks whether a workload is running in the default namespace.",
@@ -423,10 +419,10 @@
           "Query": "data.builtin.kubernetes.KSV110.deny",
           "Resolution": "Set 'metadata.namespace' to a non-default namespace.",
           "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv110",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-ksv-0110",
           "References": [
             "https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
-            "https://avd.aquasec.com/misconfig/ksv110"
+            "https://avd.aquasec.com/misconfig/avd-ksv-0110"
           ],
           "Status": "FAIL",
           "Layer": {},
@@ -514,7 +510,6 @@
         },
         {
           "Type": "Helm Security Check",
-          "ID": "KSV117",
           "AVDID": "AVD-KSV-0117",
           "Title": "Prevent binding to privileged ports",
           "Description": "The ports which are lower than 1024 receive and transmit various sensitive and privileged data. Allowing containers to use them can bring serious implications.",
@@ -523,11 +518,11 @@
           "Query": "data.builtin.kubernetes.KSV117.deny",
           "Resolution": "Do not map the container ports to privileged host ports when starting a container.",
           "Severity": "MEDIUM",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv117",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-ksv-0117",
           "References": [
             "https://kubernetes.io/docs/concepts/security/pod-security-standards/",
             "https://www.stigviewer.com/stig/kubernetes/2022-12-02/finding/V-242414",
-            "https://avd.aquasec.com/misconfig/ksv117"
+            "https://avd.aquasec.com/misconfig/avd-ksv-0117"
           ],
           "Status": "FAIL",
           "Layer": {},
@@ -542,7 +537,6 @@
         },
         {
           "Type": "Helm Security Check",
-          "ID": "KSV118",
           "AVDID": "AVD-KSV-0118",
           "Title": "Default security context configured",
           "Description": "Security context controls the allocation of security parameters for the pod/container/volume, ensuring the appropriate level of protection. Relying on default security context may expose vulnerabilities to potential attacks that rely on privileged access.",
@@ -551,10 +545,10 @@
           "Query": "data.builtin.kubernetes.KSV118.deny",
           "Resolution": "To enhance security, it is strongly recommended not to rely on the default security context. Instead, it is advisable to explicitly define the required security parameters (such as runAsNonRoot, capabilities, readOnlyRootFilesystem, etc.) within the security context.",
           "Severity": "HIGH",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv118",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-ksv-0118",
           "References": [
             "https://kubernetes.io/docs/tasks/configure-pod-container/security-context/",
-            "https://avd.aquasec.com/misconfig/ksv118"
+            "https://avd.aquasec.com/misconfig/avd-ksv-0118"
           ],
           "Status": "FAIL",
           "Layer": {},

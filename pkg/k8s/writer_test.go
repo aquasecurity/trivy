@@ -23,7 +23,7 @@ var (
 			{
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:       "ID100",
+						AVDID:    "AVD-ID-0100",
 						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
@@ -39,33 +39,33 @@ var (
 			{
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:       "KSV-ID100",
+						AVDID:    "AVD-KSV-0100",
 						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
-						ID:       "KSV-ID101",
+						AVDID:    "AVD-KSV-0101",
 						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
 					{
-						ID:       "KSV-ID102",
+						AVDID:    "AVD-KSV-0102",
 						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
 					{
-						ID:       "KSV-ID103",
+						AVDID:    "AVD-KSV-0103",
 						Status:   types.MisconfStatusPassed,
 						Severity: "HIGH",
 					},
 
 					{
-						ID:       "KCV-ID100",
+						AVDID:    "AVD-KCV-0100",
 						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
-						ID:       "KCV-ID101",
+						AVDID:    "AVD-KCV-0101",
 						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
@@ -100,37 +100,37 @@ var (
 			{
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:       "ID100",
+						AVDID:    "AVD-ID-0100",
 						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
-						ID:       "ID101",
+						AVDID:    "AVD-ID-0101",
 						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
 					{
-						ID:       "ID102",
+						AVDID:    "AVD-ID-0102",
 						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
 					{
-						ID:       "ID103",
+						AVDID:    "AVD-ID-0103",
 						Status:   types.MisconfStatusFailure,
 						Severity: "CRITICAL",
 					},
 					{
-						ID:       "ID104",
+						AVDID:    "AVD-ID-0104",
 						Status:   types.MisconfStatusFailure,
 						Severity: "UNKNOWN",
 					},
 					{
-						ID:       "ID105",
+						AVDID:    "AVD-ID-0105",
 						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
-						ID:       "ID106",
+						AVDID:    "AVD-ID-0106",
 						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
@@ -146,7 +146,7 @@ var (
 			{
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:       "ID100",
+						AVDID:    "AVD-ID-0100",
 						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
@@ -163,7 +163,7 @@ var (
 					},
 					Misconfigurations: []types.DetectedMisconfiguration{
 						{
-							ID:          "ID100",
+							AVDID:       "AVD-ID-0100",
 							Title:       "Config file is bad",
 							Description: "Your config file is not good.",
 							Message:     "Oh no, a bad config.",
@@ -316,7 +316,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 Tests: 1 (SUCCESSES: 0, FAILURES: 1)
 Failures: 0 (CRITICAL: 0)
 
- (LOW): Oh no, a bad config.
+AVD-ID-0100 (LOW): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -352,7 +352,7 @@ namespace: default, deploy: orion ()
 Tests: 1 (SUCCESSES: 0, FAILURES: 1)
 Failures: 1 (LOW: 1, CRITICAL: 0)
 
- (LOW): Oh no, a bad config.
+AVD-ID-0100 (LOW): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 

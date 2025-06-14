@@ -8,7 +8,6 @@ import (
 type FlatResult struct {
 	Deprecated      bool               `json:"deprecated,omitempty"`
 	RuleID          string             `json:"rule_id"`
-	LongID          string             `json:"long_id"`
 	RuleSummary     string             `json:"rule_description"`
 	RuleProvider    providers.Provider `json:"rule_provider"`
 	RuleService     string             `json:"rule_service"`
@@ -51,7 +50,6 @@ func (r *Result) Flatten() FlatResult {
 	return FlatResult{
 		Deprecated:      r.rule.Deprecated,
 		RuleID:          r.rule.AVDID,
-		LongID:          r.Rule().LongID(),
 		RuleSummary:     r.rule.Summary,
 		RuleProvider:    r.rule.Provider,
 		RuleService:     r.rule.Service,

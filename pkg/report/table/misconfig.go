@@ -250,7 +250,7 @@ func (r *misconfigRenderer) outputTrace(target string, misconfigs []types.Detect
 			c = red
 		}
 
-		r.println(c("\nID: %s", misconf.ID))
+		r.println(c("\nID: %s", misconf.AVDID))
 		r.println(c("File: %s", target))
 		r.println(c("Namespace: %s", misconf.Namespace))
 		r.println(c("Query: %s", misconf.Query))

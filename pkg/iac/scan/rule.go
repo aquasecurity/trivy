@@ -63,7 +63,7 @@ func (r Rule) IsDeprecated() bool {
 }
 
 func (r Rule) HasID(id string) bool {
-	if r.AVDID == id || r.LongID() == id {
+	if r.AVDID == id {
 		return true
 	}
 	for _, alias := range r.Aliases {
@@ -72,10 +72,6 @@ func (r Rule) HasID(id string) bool {
 		}
 	}
 	return false
-}
-
-func (r Rule) LongID() string {
-	return strings.ToLower(fmt.Sprintf("%s-%s-%s", r.Provider, r.Service, r.ShortCode))
 }
 
 func (r Rule) ServiceDisplayName() string {

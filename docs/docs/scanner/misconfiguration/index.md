@@ -476,22 +476,6 @@ resource "google_container_cluster" "example" {
 }
 ```
 
-You can also specify a long ID, which is formed as follows: `<provider>-<service>-<short-code>`.
-
-As an example, consider the following check metadata:
-
-```yaml
-# custom:
-  # id: AVD-AWS-0089
-  # avd_id: AVD-AWS-0089
-  # provider: aws
-  # service: s3
-  # severity: LOW
-  # short_code: enable-logging
-```
-
-Long ID would look like the following: `aws-s3-enable-logging`.
-
 Example for CloudFromation:
 ```yaml
 AWSTemplateFormatVersion: "2010-09-09"
