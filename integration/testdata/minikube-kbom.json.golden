@@ -28,6 +28,36 @@
     {
       "Target": "Kubernetes",
       "Class": "lang-pkgs",
+      "Type": "kubernetes"
+    },
+    {
+      "Target": "docker",
+      "Class": "lang-pkgs",
+      "Type": "gobinary"
+    },
+    {
+      "Target": "k8s.io/apiserver",
+      "Class": "lang-pkgs",
+      "Type": "kubernetes"
+    },
+    {
+      "Target": "k8s.io/controller-manager",
+      "Class": "lang-pkgs",
+      "Type": "kubernetes"
+    },
+    {
+      "Target": "k8s.io/kube-proxy",
+      "Class": "lang-pkgs",
+      "Type": "kubernetes"
+    },
+    {
+      "Target": "k8s.io/kube-scheduler",
+      "Class": "lang-pkgs",
+      "Type": "kubernetes"
+    },
+    {
+      "Target": "k8s.io/kubelet",
+      "Class": "lang-pkgs",
       "Type": "kubernetes",
       "Vulnerabilities": [
         {
@@ -36,7 +66,7 @@
           "PkgName": "k8s.io/kubelet",
           "PkgIdentifier": {
             "PURL": "pkg:k8s/k8s.io%2Fkubelet@1.27.0",
-            "UID": "4cb15d0a98eeae67",
+            "UID": "660b459479cc020b",
             "BOMRef": "pkg:k8s/k8s.io%2Fkubelet@1.27.0"
           },
           "InstalledVersion": "1.27.0",
