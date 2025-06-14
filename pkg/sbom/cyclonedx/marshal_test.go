@@ -1531,10 +1531,11 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					Tools: &cdx.ToolsChoice{
 						Components: &[]cdx.Component{
 							{
-								Type:    cdx.ComponentTypeApplication,
-								Name:    "trivy",
-								Group:   "aquasecurity",
-								Version: "dev",
+								Type:         cdx.ComponentTypeApplication,
+								Name:         "trivy",
+								Group:        "aquasecurity",
+								Version:      "dev",
+								Manufacturer: &cdx.OrganizationalEntity{Name: "Aqua Security Software Ltd."},
 							},
 						},
 					},
