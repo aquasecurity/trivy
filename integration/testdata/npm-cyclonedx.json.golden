@@ -297,7 +297,7 @@
         "pkg:npm/jquery@3.3.9",
         "pkg:npm/promise@8.0.3",
         "pkg:npm/react@16.8.6",
-        "pkg:npm/redux@4.0.1",
+        "pkg:npm/redux@4.0.1"
       ]
     },
     {
