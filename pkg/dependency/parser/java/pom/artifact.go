@@ -5,9 +5,11 @@ import (
 	"os"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"sync"
 
+	"github.com/mitchellh/hashstructure/v2"
 	"github.com/samber/lo"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -26,6 +28,7 @@ var (
 )
 
 type artifact struct {
+	ID         string // ID (hash of resolved artifact ) is required to build correctly dep tree when multiple modules contain dependencies with same GAV
 	GroupID    string
 	ArtifactID string
 	Version    version
@@ -97,6 +100,26 @@ func (a artifact) Name() string {
 
 func (a artifact) String() string {
 	return fmt.Sprintf("%s:%s", a.Name(), a.Version)
+}
+
+func (a artifact) Hash(deps []artifact, depManagement []pomDependency, props properties, modules []string) string {
+	v := map[string]any{
+		"art":           a,
+		"deps":          deps,
+		"depManagement": depManagement,
+		"props":         props,
+		"modules":       modules,
+	}
+	h, err := hashstructure.Hash(v, hashstructure.FormatV2, &hashstructure.HashOptions{
+		ZeroNil:         true,
+		IgnoreZeroValue: true,
+	})
+	if err != nil {
+		log.Warn("Failed to calculate the pom.xml hash", log.String("groupID", a.GroupID),
+			log.String("artifactID", a.ArtifactID), log.String("version", a.Version.String()),
+			log.Err(err))
+	}
+	return strconv.FormatUint(h, 16)
 }
 
 type version struct {
