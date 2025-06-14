@@ -513,6 +513,32 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			name:      "happy path for third party sbom, no operation-system component",
 			inputFile: "testdata/happy/third-party-bom-no-os.json",
 			want: types.SBOM{
+				Packages: []ftypes.PackageInfo{
+					{
+						Packages: ftypes.Packages{
+							{
+								ID:         "musl@1.2.3-r0",
+								Name:       "musl",
+								Version:    "1.2.3-r0",
+								SrcName:    "musl",
+								SrcVersion: "1.2.3-r0",
+								Licenses:   []string{"MIT"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeApk,
+										Namespace: "alpine",
+										Name:      "musl",
+										Version:   "1.2.3-r0",
+										Qualifiers: packageurl.Qualifiers{
+											{Key: "distro", Value: "3.16.0"},
+										},
+									},
+									BOMRef: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+								},
+							},
+						},
+					},
+				},
 				Applications: []ftypes.Application{
 					{
 						Type:     "composer",
