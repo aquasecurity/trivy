@@ -425,8 +425,8 @@ func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Pac
 	//         All packages are included in the parent
 	// Case 4: Relationship: unknown, DependsOn: known (e.g., OS packages)
 	//         All packages are included in the parent even if they have parents
-	if len(parents[pkg.ID]) != 0 {
-		return false
+	if pkg.Relationship == ftypes.RelationshipUnknown && len(parents[pkg.ID]) != 0 {
+		return !hasRoot
 	}
 	if pkg.Relationship == ftypes.RelationshipDirect || pkg.Relationship == ftypes.RelationshipUnknown {
 		return !hasRoot
