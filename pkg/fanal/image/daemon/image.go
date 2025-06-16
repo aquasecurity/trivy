@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	dockerimage "github.com/docker/docker/api/types/image"
+	dimage "github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
@@ -61,7 +61,7 @@ func imageOpener(ctx context.Context, ref string, f *os.File, imageSave imageSav
 type image struct {
 	v1.Image
 	opener  opener
-	inspect dockerimage.InspectResponse
+	inspect dimage.InspectResponse
 	history []v1.History
 }
 
@@ -227,7 +227,7 @@ func (img *image) imageConfig(config dockerspec.DockerOCIImageConfig) v1.Config 
 	return c
 }
 
-func configHistory(dhistory []dockerimage.HistoryResponseItem) []v1.History {
+func configHistory(dhistory []dimage.HistoryResponseItem) []v1.History {
 	// Fill only required metadata
 	var history []v1.History
 
@@ -247,7 +247,7 @@ func configHistory(dhistory []dockerimage.HistoryResponseItem) []v1.History {
 
 // emptyLayer tries to determine if the layer is empty from the history API, but may return a wrong result.
 // The non-empty layers will be compared to diffIDs later so that results can be validated.
-func emptyLayer(history dockerimage.HistoryResponseItem) bool {
+func emptyLayer(history dimage.HistoryResponseItem) bool {
 	if history.Size != 0 {
 		return false
 	}
