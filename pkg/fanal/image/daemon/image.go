@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-	dimage "github.com/docker/docker/api/types/image"
 	dockerimage "github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -187,25 +186,36 @@ func (img *image) diffIDs() ([]v1.Hash, error) {
 }
 
 func (img *image) imageConfig(config dockerspec.DockerOCIImageConfig) v1.Config {
-	var exposedPorts map[string]struct{}
+	c := v1.Config{
+		// OCI-compliant fields
+		User:        config.User,
+		Cmd:         config.Cmd,
+		Entrypoint:  config.Entrypoint,
+		Env:         config.Env,
+		Labels:      config.Labels,
+		WorkingDir:  config.WorkingDir,
+		StopSignal:  config.StopSignal,
+		ArgsEscaped: config.ArgsEscaped,
+		OnBuild:     config.OnBuild,
+		Shell:       config.Shell,
+	}
+
 	if len(config.ExposedPorts) > 0 {
-		exposedPorts = make(map[string]struct{})
+		c.ExposedPorts = make(map[string]struct{}) //nolint: gocritic
 		for port := range config.ExposedPorts {
-			exposedPorts[port] = struct{}{}
+			c.ExposedPorts[port] = struct{}{}
 		}
 	}
 
-	var volumes map[string]struct{}
 	if len(config.Volumes) > 0 {
-		volumes = make(map[string]struct{})
+		c.Volumes = make(map[string]struct{}) //nolint: gocritic
 		for volume := range config.Volumes {
-			volumes[volume] = struct{}{}
+			c.Volumes[volume] = struct{}{}
 		}
 	}
 
-	var healthcheck *v1.HealthConfig
 	if config.Healthcheck != nil {
-		healthcheck = &v1.HealthConfig{
+		c.Healthcheck = &v1.HealthConfig{
 			Test:        config.Healthcheck.Test,
 			Interval:    config.Healthcheck.Interval,
 			Timeout:     config.Healthcheck.Timeout,
@@ -214,25 +224,10 @@ func (img *image) imageConfig(config dockerspec.DockerOCIImageConfig) v1.Config 
 		}
 	}
 
-	return v1.Config{
-		// OCI-compliant fields (prefer config)
-		User:         config.User,
-		Cmd:          config.Cmd,
-		Entrypoint:   config.Entrypoint,
-		Env:          config.Env,
-		Labels:       config.Labels,
-		WorkingDir:   config.WorkingDir,
-		StopSignal:   config.StopSignal,
-		ArgsEscaped:  config.ArgsEscaped,
-		ExposedPorts: exposedPorts,
-		Volumes:      volumes,
-		Healthcheck:  healthcheck,
-		OnBuild:      config.OnBuild,
-		Shell:        config.Shell,
-	}
+	return c
 }
 
-func configHistory(dhistory []dimage.HistoryResponseItem) []v1.History {
+func configHistory(dhistory []dockerimage.HistoryResponseItem) []v1.History {
 	// Fill only required metadata
 	var history []v1.History
 
@@ -252,7 +247,7 @@ func configHistory(dhistory []dimage.HistoryResponseItem) []v1.History {
 
 // emptyLayer tries to determine if the layer is empty from the history API, but may return a wrong result.
 // The non-empty layers will be compared to diffIDs later so that results can be validated.
-func emptyLayer(history dimage.HistoryResponseItem) bool {
+func emptyLayer(history dockerimage.HistoryResponseItem) bool {
 	if history.Size != 0 {
 		return false
 	}
