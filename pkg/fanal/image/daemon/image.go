@@ -8,12 +8,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
 	dimage "github.com/docker/docker/api/types/image"
+	dockerimage "github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
+	dockerspec "github.com/moby/docker-image-spec/specs-go/v1"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -62,7 +62,7 @@ func imageOpener(ctx context.Context, ref string, f *os.File, imageSave imageSav
 type image struct {
 	v1.Image
 	opener  opener
-	inspect types.ImageInspect
+	inspect dockerimage.InspectResponse
 	history []v1.History
 }
 
@@ -131,7 +131,7 @@ func (img *image) ConfigFile() (*v1.ConfigFile, error) {
 		Container:     img.inspect.Container,
 		Created:       created,
 		DockerVersion: img.inspect.DockerVersion,
-		Config:        img.imageConfig(img.inspect.Config),
+		Config:        img.imageConfig(lo.FromPtr(img.inspect.Config)),
 		History:       img.history,
 		OS:            img.inspect.Os,
 		RootFS: v1.RootFS{
@@ -186,38 +186,26 @@ func (img *image) diffIDs() ([]v1.Hash, error) {
 	return diffIDs, nil
 }
 
-func (img *image) imageConfig(config *container.Config) v1.Config {
-	if config == nil {
-		return v1.Config{}
+func (img *image) imageConfig(config dockerspec.DockerOCIImageConfig) v1.Config {
+	var exposedPorts map[string]struct{}
+	if len(config.ExposedPorts) > 0 {
+		exposedPorts = make(map[string]struct{})
+		for port := range config.ExposedPorts {
+			exposedPorts[port] = struct{}{}
+		}
 	}
 
-	c := v1.Config{
-		AttachStderr:    config.AttachStderr,
-		AttachStdin:     config.AttachStdin,
-		AttachStdout:    config.AttachStdout,
-		Cmd:             config.Cmd,
-		Domainname:      config.Domainname,
-		Entrypoint:      config.Entrypoint,
-		Env:             config.Env,
-		Hostname:        config.Hostname,
-		Image:           config.Image,
-		Labels:          config.Labels,
-		OnBuild:         config.OnBuild,
-		OpenStdin:       config.OpenStdin,
-		StdinOnce:       config.StdinOnce,
-		Tty:             config.Tty,
-		User:            config.User,
-		Volumes:         config.Volumes,
-		WorkingDir:      config.WorkingDir,
-		ArgsEscaped:     config.ArgsEscaped,
-		NetworkDisabled: config.NetworkDisabled,
-		MacAddress:      config.MacAddress,
-		StopSignal:      config.StopSignal,
-		Shell:           config.Shell,
+	var volumes map[string]struct{}
+	if len(config.Volumes) > 0 {
+		volumes = make(map[string]struct{})
+		for volume := range config.Volumes {
+			volumes[volume] = struct{}{}
+		}
 	}
 
+	var healthcheck *v1.HealthConfig
 	if config.Healthcheck != nil {
-		c.Healthcheck = &v1.HealthConfig{
+		healthcheck = &v1.HealthConfig{
 			Test:        config.Healthcheck.Test,
 			Interval:    config.Healthcheck.Interval,
 			Timeout:     config.Healthcheck.Timeout,
@@ -226,14 +214,22 @@ func (img *image) imageConfig(config *container.Config) v1.Config {
 		}
 	}
 
-	if len(config.ExposedPorts) > 0 {
-		c.ExposedPorts = make(map[string]struct{}) //nolint: gocritic
-		for port := range config.ExposedPorts {
-			c.ExposedPorts[port.Port()] = struct{}{}
-		}
+	return v1.Config{
+		// OCI-compliant fields (prefer config)
+		User:         config.User,
+		Cmd:          config.Cmd,
+		Entrypoint:   config.Entrypoint,
+		Env:          config.Env,
+		Labels:       config.Labels,
+		WorkingDir:   config.WorkingDir,
+		StopSignal:   config.StopSignal,
+		ArgsEscaped:  config.ArgsEscaped,
+		ExposedPorts: exposedPorts,
+		Volumes:      volumes,
+		Healthcheck:  healthcheck,
+		OnBuild:      config.OnBuild,
+		Shell:        config.Shell,
 	}
-
-	return c
 }
 
 func configHistory(dhistory []dimage.HistoryResponseItem) []v1.History {
