@@ -61,6 +61,13 @@ func (p *pom) projectProperties() map[string]string {
 	props["groupId"] = p.content.GroupId
 	props["version"] = p.content.Version
 
+	// NOTE: Add parent properties to support Maven property resolution for ${parent.version},
+	// ${project.parent.version}, ${parent.groupId}, and ${project.parent.groupId} expressions.
+	// These are commonly used in multi-module Maven projects where child modules reference
+	// parent POM properties for dependency management and version consistency.
+	props["parent.version"] = p.content.Parent.Version
+	props["parent.groupId"] = p.content.Parent.GroupId
+
 	// https://maven.apache.org/pom.html#properties
 	projectProperties := make(map[string]string)
 	for k, v := range props {
