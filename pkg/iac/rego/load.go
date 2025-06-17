@@ -297,9 +297,13 @@ func (s *Scanner) handleModulesMetadata(path string, module *ast.Module) {
 	s.moduleMetadata[path] = metadata
 }
 
-func (s *Scanner) IsMinimumVersionSupported(metadata *StaticMetadata, module *ast.Module, tv semver.Version) bool {
+func (s *Scanner) IsMinimumVersionSupported(metadata *StaticMetadata, module *ast.Module, tv semver.Version, tverr error) bool {
 	if metadata.MinimumTrivyVersion == "" { // to ensure compatibility with old modules without minimum trivy version
 		return true
+	}
+
+	if tverr != nil {
+		return true // if we cannot parse the current Trivy version, we cannot determine compatibility
 	}
 
 	mmsv, err := semver.Parse(metadata.MinimumTrivyVersion)
@@ -344,6 +348,17 @@ func moduleHasLegacyInputFormat(module *ast.Module) bool {
 // filterModules filters the Rego modules based on metadata.
 func (s *Scanner) filterModules() error {
 	filtered := make(map[string]*ast.Module)
+	tv, tverr := semver.Parse(s.trivyVersion)
+	if tverr != nil {
+		if s.trivyVersion != "dev" {
+			s.logger.Warn(
+				"Failed to parse Trivy version - cannot confirm if all modules will work with current version",
+				log.String("trivy_version", s.trivyVersion),
+				log.Err(tverr),
+			)
+		}
+	}
+
 	for name, module := range s.policies {
 		metadata, err := s.metadataForModule(context.Background(), name, module, nil)
 		if err != nil {
@@ -351,17 +366,7 @@ func (s *Scanner) filterModules() error {
 		}
 
 		if metadata != nil {
-			tv, err := semver.Parse(s.trivyVersion)
-			if err != nil {
-				if s.trivyVersion != "dev" {
-					s.logger.Warn(
-						"Failed to parse Trivy version - cannot confirm if module will work with current version",
-						log.String("trivy_version", s.trivyVersion),
-						log.FilePath(module.Package.Location.File),
-						log.Err(err),
-					)
-				}
-			} else if !s.IsMinimumVersionSupported(metadata, module, tv) {
+			if !s.IsMinimumVersionSupported(metadata, module, tv, tverr) {
 				continue
 			}
 
