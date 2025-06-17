@@ -311,11 +311,10 @@ Tests: 20 (SUCCESSES: 18, FAILURES: 2)
 Failures: 2 (MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 ```
 
-## Configuration
-This section describes misconfiguration-specific configuration.
-Other common options are documented [here](../../configuration/index.md).
-
-### External connectivity
+## External connectivity
 Trivy needs to connect to the internet to download the checks bundle. If you are running Trivy in an air-gapped environment, or an tightly controlled network, please refer to the [Advanced Network Scenarios document](../../advanced/air-gap.md).
+
+## Configuration
+More misconfiguration scanning specific configurations can be found [here](../misconfiguration/config/config.md).
 
 [custom]: custom/index.md
