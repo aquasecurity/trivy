@@ -156,9 +156,9 @@ variable "things" {
 			assert.Len(t, results.GetFailed(), test.expected)
 
 			if test.expected > 0 {
-				testutil.AssertRuleFound(t, "aws-s3-non-empty-bucket", results, "false negative found")
+				testutil.AssertRuleFound(t, "USER-TEST-0123", results, "false negative found")
 			} else {
-				testutil.AssertRuleNotFound(t, "aws-s3-non-empty-bucket", results, "false positive found")
+				testutil.AssertRuleNotFound(t, "USER-TEST-0123", results, "false positive found")
 			}
 		})
 	}

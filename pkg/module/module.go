@@ -553,7 +553,7 @@ func findIDs(ids []string, results types.Results) types.Results {
 			return slices.Contains(ids, v.VulnerabilityID)
 		})
 		misconfs := lo.Filter(result.Misconfigurations, func(m types.DetectedMisconfiguration, _ int) bool {
-			return slices.Contains(ids, m.ID)
+			return slices.Contains(ids, m.AVDID)
 		})
 		if len(vulns) > 0 || len(misconfs) > 0 {
 			filtered = append(filtered, types.Result{
@@ -589,7 +589,7 @@ func updateResults(gotResults, results types.Results) {
 				results[i].Misconfigurations = lo.Map(result.Misconfigurations, func(m types.DetectedMisconfiguration, _ int) types.DetectedMisconfiguration {
 					// Update misconfigurations in the existing result
 					for _, got := range g.Misconfigurations {
-						if got.ID == m.ID &&
+						if got.AVDID == m.AVDID &&
 							got.CauseMetadata.StartLine == m.CauseMetadata.StartLine &&
 							got.CauseMetadata.EndLine == m.CauseMetadata.EndLine {
 
@@ -622,7 +622,7 @@ func deleteResults(gotResults, results types.Results) {
 				})
 				results[i].Misconfigurations = lo.Reject(result.Misconfigurations, func(v types.DetectedMisconfiguration, _ int) bool {
 					for _, got := range gotResult.Misconfigurations {
-						if got.ID == v.ID && got.Status == v.Status &&
+						if got.AVDID == v.AVDID && got.Status == v.Status &&
 							got.CauseMetadata.StartLine == v.CauseMetadata.StartLine &&
 							got.CauseMetadata.EndLine == v.CauseMetadata.EndLine {
 							return true

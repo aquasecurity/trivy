@@ -129,7 +129,7 @@ resource "aws_s3_bucket" "test" {}
 		{
 			name: "rule above the finding",
 			source: `resource "aws_s3_bucket" "test" {
-	# %s:ignore:aws-s3-non-empty-bucket
+	# %s:ignore:USER-TEST-0123
     bucket = ""
 }`,
 			assertLength: 0,
@@ -137,27 +137,27 @@ resource "aws_s3_bucket" "test" {}
 		{
 			name: "rule with breached expiration date",
 			source: `resource "aws_s3_bucket" "test" {
-    bucket = "" # %s:ignore:aws-s3-non-empty-bucket:exp:2000-01-02
+    bucket = "" # %s:ignore:USER-TEST-0123:exp:2000-01-02
 }`,
 			assertLength: 1,
 		},
 		{
 			name: "rule with unbreached expiration date",
 			source: `resource "aws_s3_bucket" "test" {
-    bucket = "" # %s:ignore:aws-s3-non-empty-bucket:exp:2221-01-02
+    bucket = "" # %s:ignore:USER-TEST-0123:exp:2221-01-02
 }`,
 			assertLength: 0,
 		},
 		{
 			name: "rule with invalid expiration date",
 			source: `resource "aws_s3_bucket" "test" {
-   bucket = "" # %s:ignore:aws-s3-non-empty-bucket:exp:2221-13-02
+   bucket = "" # %s:ignore:USER-TEST-0123:exp:2221-13-02
 }`,
 			assertLength: 1,
 		},
 		{
 			name: "rule above block with unbreached expiration date",
-			source: `#%s:ignore:aws-s3-non-empty-bucket:exp:2221-01-02
+			source: `#%s:ignore:USER-TEST-0123:exp:2221-01-02
 resource "aws_s3_bucket" "test" {}`,
 			assertLength: 0,
 		},
@@ -509,25 +509,25 @@ func Test_IgnoreByWorkspace(t *testing.T) {
 	}{
 		{
 			name: "with expiry and workspace",
-			src: `# tfsec:ignore:aws-s3-non-empty-bucket:exp:2221-01-02:ws:testworkspace
+			src: `# tfsec:ignore:USER-TEST-0123:exp:2221-01-02:ws:testworkspace
 resource "aws_s3_bucket" "test" {}`,
 			expectedFailed: 0,
 		},
 		{
 			name: "bad workspace",
-			src: `# tfsec:ignore:aws-s3-non-empty-bucket:exp:2221-01-02:ws:otherworkspace
+			src: `# tfsec:ignore:USER-TEST-0123:exp:2221-01-02:ws:otherworkspace
 resource "aws_s3_bucket" "test" {}`,
 			expectedFailed: 1,
 		},
 		{
 			name: "with expiry and workspace, trivy prefix",
-			src: `# trivy:ignore:aws-s3-non-empty-bucket:exp:2221-01-02:ws:testworkspace
+			src: `# trivy:ignore:USER-TEST-0123:exp:2221-01-02:ws:testworkspace
 resource "aws_s3_bucket" "test" {}`,
 			expectedFailed: 0,
 		},
 		{
 			name: "bad workspace, trivy prefix",
-			src: `# trivy:ignore:aws-s3-non-empty-bucket:exp:2221-01-02:ws:otherworkspace
+			src: `# trivy:ignore:USER-TEST-0123:exp:2221-01-02:ws:otherworkspace
 resource "aws_s3_bucket" "test" {}`,
 			expectedFailed: 1,
 		},
@@ -572,7 +572,7 @@ func Test_IgnoreInlineByAVDID(t *testing.T) {
 	for _, tc := range testCases {
 		ids := []string{
 			"USER-TEST-0123", strings.ToLower("user-test-0123"),
-			"non-empty-bucket", "aws-s3-non-empty-bucket",
+			"non-empty-bucket",
 		}
 
 		for _, id := range ids {
@@ -581,7 +581,7 @@ func Test_IgnoreInlineByAVDID(t *testing.T) {
 					rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 					rego.WithPolicyNamespaces("user"),
 				)
-				testutil.AssertRuleNotFailed(t, "aws-s3-non-empty-bucket", results, "")
+				testutil.AssertRuleNotFailed(t, "USER-TEST-0123", results, "")
 			})
 		}
 	}
@@ -617,5 +617,5 @@ resource "aws_s3_bucket" "test" {
 		rego.WithPolicyNamespaces("user"),
 	)
 	require.NoError(t, err)
-	testutil.AssertRuleNotFailed(t, "aws-s3-non-empty-bucket", results, "")
+	testutil.AssertRuleNotFailed(t, "USER-TEST-0123", results, "")
 }

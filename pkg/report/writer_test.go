@@ -55,7 +55,7 @@ func TestResults_Failed(t *testing.T) {
 					Misconfigurations: []types.DetectedMisconfiguration{
 						{
 							Type:   "Docker Security Check",
-							ID:     "ID-001",
+							AVDID:  "AVD-ID-0001",
 							Status: types.MisconfStatusFailure,
 						},
 					},
@@ -72,7 +72,7 @@ func TestResults_Failed(t *testing.T) {
 					Misconfigurations: []types.DetectedMisconfiguration{
 						{
 							Type:   "Docker Security Check",
-							ID:     "ID-001",
+							AVDID:  "AVD-ID-0001",
 							Status: types.MisconfStatusPassed,
 						},
 					},
