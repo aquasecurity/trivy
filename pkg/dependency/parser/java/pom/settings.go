@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"golang.org/x/net/html/charset"
 )
@@ -97,6 +98,9 @@ func expandAllEnvPlaceholders(s *settings) {
 }
 
 func replacePlaceholdersWithEnvValues(s string) string {
+	if !strings.Contains(s, "${env.") {
+		return s
+	}
 	return mavenEnvPattern.ReplaceAllStringFunc(s, func(match string) string {
 		submatches := mavenEnvPattern.FindStringSubmatch(match)
 		return os.Getenv(submatches[1])
