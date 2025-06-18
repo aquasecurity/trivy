@@ -297,13 +297,9 @@ func (s *Scanner) handleModulesMetadata(path string, module *ast.Module) {
 	s.moduleMetadata[path] = metadata
 }
 
-func (s *Scanner) IsMinimumVersionSupported(metadata *StaticMetadata, module *ast.Module, tv semver.Version, tverr error) bool {
+func (s *Scanner) IsMinimumVersionSupported(metadata *StaticMetadata, module *ast.Module, tv semver.Version) bool {
 	if metadata.MinimumTrivyVersion == "" { // to ensure compatibility with old modules without minimum trivy version
 		return true
-	}
-
-	if tverr != nil {
-		return true // if we cannot parse the current Trivy version, we cannot determine compatibility
 	}
 
 	mmsv, err := semver.Parse(metadata.MinimumTrivyVersion)
@@ -366,7 +362,7 @@ func (s *Scanner) filterModules() error {
 		}
 
 		if metadata != nil {
-			if !s.IsMinimumVersionSupported(metadata, module, tv, tverr) {
+			if tverr == nil && !s.IsMinimumVersionSupported(metadata, module, tv) {
 				continue
 			}
 
