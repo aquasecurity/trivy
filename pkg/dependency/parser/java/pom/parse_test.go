@@ -655,6 +655,52 @@ func TestPom_Parse(t *testing.T) {
 			},
 		},
 		{
+			name:      "parent is not shadowed by empty value",
+			inputFile: filepath.Join("testdata", "parent-is-not-shadowed-by-empty-value", "child", "pom.xml"),
+			local:     false,
+			want: []ftypes.Package{
+				{
+					ID:           "io.swagger.core.v3:swagger-core-jakarta:2.2.30",
+					Name:         "io.swagger.core.v3:swagger-core-jakarta",
+					Version:      "2.2.30",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "io.swagger.core.v3:swagger-annotations-jakarta:2.2.30",
+					Name:         "io.swagger.core.v3:swagger-annotations-jakarta",
+					Version:      "2.2.30",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 16,
+							EndLine:   20,
+						},
+					},
+				},
+				{
+					ID:           "io.swagger.core.v3:swagger-models-jakarta:2.2.30",
+					Name:         "io.swagger.core.v3:swagger-models-jakarta",
+					Version:      "2.2.30",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 21,
+							EndLine:   25,
+						},
+					},
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "io.swagger.core.v3:swagger-core-jakarta:2.2.30",
+					DependsOn: []string{
+						"io.swagger.core.v3:swagger-annotations-jakarta:2.2.30",
+						"io.swagger.core.v3:swagger-models-jakarta:2.2.30",
+					},
+				},
+			},
+		},
+		{
 			name:      "parent in a remote repository",
 			inputFile: filepath.Join("testdata", "parent-remote-repository", "pom.xml"),
 			local:     true,

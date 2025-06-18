@@ -1,0 +1,12 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.swagger.core.v3</groupId>
+    <artifactId>swagger-project-jakarta</artifactId>
+    <packaging>pom</packaging>
+    <name>swagger-project-jakarta</name>
+    <description>swagger-project-jakarta</description>
+    <version>2.2.30</version>
+    <url>https://github.com/swagger-api/swagger-core</url>
+
+</project>
