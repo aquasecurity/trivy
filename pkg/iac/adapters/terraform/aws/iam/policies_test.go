@@ -404,7 +404,11 @@ data "aws_iam_policy_document" "policy" {
 		},
 		{
 			name: "policy is template with unknown part",
-			terraform: `resource "aws_iam_policy" "test" {
+			terraform: `variable "action" {
+ default = null
+}
+
+resource "aws_iam_policy" "test" {
   name = "test"
 
   policy = <<EOF
@@ -414,7 +418,7 @@ data "aws_iam_policy_document" "policy" {
         {
             "Effect": "Allow",
             "Action": [
-                "s3:put*",
+                "${var.action}",
                 "s3:get*",
                 "s3:list*"
             ],
@@ -441,7 +445,7 @@ EOF
 						builder := iamgo.NewPolicyBuilder().
 							WithStatement(
 								iamgo.NewStatementBuilder().
-									WithActions([]string{"s3:put*", "s3:get*", "s3:list*"}).
+									WithActions([]string{"__UNRESOLVED__", "s3:get*", "s3:list*"}).
 									WithResources([]string{"*"}).
 									WithEffect("Allow").
 									Build(),

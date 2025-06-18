@@ -12,6 +12,7 @@ import (
 	"github.com/hashicorp/hcl/v2/ext/typeexpr"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/zclconf/go-cty/cty"
+	"github.com/zclconf/go-cty/cty/convert"
 	"github.com/zclconf/go-cty/cty/gocty"
 
 	"github.com/aquasecurity/trivy/pkg/iac/terraform/context"
@@ -918,7 +919,12 @@ func (e *PartialTemplateExpr) Value(ctx *hcl.EvalContext) (cty.Value, hcl.Diagno
 	parts := make([]hclsyntax.Expression, len(e.Parts))
 	for i, part := range e.Parts {
 		partVal, diags := part.Value(ctx)
-		if diags.HasErrors() || !partVal.IsKnown() {
+		if diags.HasErrors() || partVal.IsNull() || !partVal.IsKnown() {
+			parts[i] = &hclsyntax.LiteralValueExpr{
+				Val:      cty.StringVal(UnknownValuePrefix),
+				SrcRange: part.Range(),
+			}
+		} else if _, err := convert.Convert(partVal, cty.String); err != nil {
 			parts[i] = &hclsyntax.LiteralValueExpr{
 				Val:      cty.StringVal(UnknownValuePrefix),
 				SrcRange: part.Range(),
