@@ -22,6 +22,7 @@ import (
 	dockerClient "github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	dockerspec "github.com/moby/docker-image-spec/specs-go/v1"
 	"github.com/opencontainers/go-digest"
 	ocispec "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/samber/lo"
@@ -266,6 +267,9 @@ func inspect(ctx context.Context, img client.Image, ref reference.Reference) (do
 		Comment:     lastHistory.Comment,
 		Created:     created,
 		Author:      lastHistory.Author,
+		Config: &dockerspec.DockerOCIImageConfig{
+			ImageConfig: imgConfig.Config,
+		},
 		ContainerConfig: &container.Config{
 			User:         imgConfig.Config.User,
 			ExposedPorts: portSet,
