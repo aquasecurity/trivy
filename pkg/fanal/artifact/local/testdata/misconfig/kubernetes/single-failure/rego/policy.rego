@@ -5,7 +5,6 @@
 # - https://trivy.dev/
 # custom:
 #   id: TEST001
-#   avd_id: AVD-TEST-0001
 #   severity: LOW
 #   short_code: no-evil
 #   recommended_actions: Have a cup of tea.

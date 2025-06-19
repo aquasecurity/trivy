@@ -478,7 +478,7 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 
 		query := fmt.Sprintf("data.%s.%s", result.RegoNamespace(), result.RegoRule())
 
-		ruleID := result.Rule().AVDID
+		ruleID := result.Rule().ID
 		if result.RegoNamespace() != "" && len(result.Rule().Aliases) > 0 {
 			ruleID = result.Rule().Aliases[0]
 		}
@@ -491,7 +491,6 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 			Message:   flattened.Description,
 			PolicyMetadata: types.PolicyMetadata{
 				ID:                 ruleID,
-				AVDID:              result.Rule().AVDID,
 				Type:               fmt.Sprintf("%s Security Check", scannerName),
 				Title:              result.Rule().Summary,
 				Description:        result.Rule().Explanation,

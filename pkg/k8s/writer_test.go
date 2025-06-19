@@ -315,8 +315,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 ====================================
 Tests: 1 (SUCCESSES: 0, FAILURES: 1)
 Failures: 0 (CRITICAL: 0)
-
- (LOW): Oh no, a bad config.
+ 
+ID100 (LOW): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 

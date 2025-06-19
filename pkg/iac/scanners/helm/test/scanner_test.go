@@ -56,7 +56,7 @@ func TestScanner_ScanFS(t *testing.T) {
 				ignored := results.GetIgnored()
 				assert.Len(t, ignored, 1)
 
-				assert.Equal(t, "AVD-KSV-0018", ignored[0].Rule().AVDID)
+				assert.Equal(t, "AVD-KSV-0018", ignored[0].Rule().ID)
 				assert.Equal(t, "templates/deployment.yaml", ignored[0].Metadata().Range().GetFilename())
 			},
 		},
@@ -80,8 +80,7 @@ func TestScanner_ScanFS(t *testing.T) {
 				rego.WithPolicyNamespaces("user"),
 				rego.WithPolicyReader(strings.NewReader(`package user.kubernetes.ID001
 __rego_metadata__ := {
-    "id": "ID001",
-	"avd_id": "AVD-USR-ID001",
+	"id": "AVD-USR-ID001",
     "title": "Services not allowed",
     "severity": "LOW",
     "description": "Services are not allowed because of some reasons.",
@@ -128,7 +127,7 @@ deny[res] {
 # schemas:
 # - input: schema["kubernetes"]
 # custom:
-#   avd_id: AVD-USR-ID001
+#   id: AVD-USR-ID001
 #   severity: LOW
 #   input:
 #     selector:
@@ -160,7 +159,7 @@ deny[res] {
 # schemas:
 # - input: schema["kubernetes"]
 # custom:
-#   avd_id: AVD-USR-ID001
+#   id: AVD-USR-ID001
 #   severity: LOW
 #   input:
 #     selector:
@@ -204,7 +203,7 @@ func assertIds(expected []string) func(t *testing.T, results scan.Results) {
 
 		errorCodes := set.New[string]()
 		for _, result := range results.GetFailed() {
-			errorCodes.Append(result.Rule().AVDID)
+			errorCodes.Append(result.Rule().ID)
 		}
 		assert.ElementsMatch(t, expected, errorCodes.Items())
 	}

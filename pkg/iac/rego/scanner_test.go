@@ -44,7 +44,6 @@ func Test_RegoScanning_Deny(t *testing.T) {
 #   - input: schema["input"]
 # custom:
 #   id: AVD-BAR-0001
-#   avd_id: AVD-BAR-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW
@@ -92,7 +91,6 @@ func Test_RegoScanning_AbsolutePolicyPath_Deny(t *testing.T) {
 #   - input: schema["input"]
 # custom:
 #   id: AVD-BAR-0001
-#   avd_id: AVD-BAR-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW
@@ -137,7 +135,6 @@ func Test_RegoScanning_Allow(t *testing.T) {
 #   - input: schema["input"]
 # custom:
 #   id: AVD-BAR-0001
-#   avd_id: AVD-BAR-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW
@@ -185,7 +182,6 @@ func Test_RegoScanning_WithRuntimeValues(t *testing.T) {
 #   - input: schema["input"]
 # custom:
 #   id: AVD-BAR-0001
-#   avd_id: AVD-BAR-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW
@@ -229,7 +225,6 @@ func Test_RegoScanning_WithDenyMessage(t *testing.T) {
 #   - input: schema["input"]
 # custom:
 #   id: AVD-BAR-0001
-#   avd_id: AVD-BAR-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW
@@ -277,7 +272,6 @@ func Test_RegoScanning_WithDenyMetadata_ImpliedPath(t *testing.T) {
 #   - input: schema["input"]
 # custom:
 #   id: AVD-BAR-0001
-#   avd_id: AVD-BAR-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW
@@ -332,7 +326,6 @@ func Test_RegoScanning_WithDenyMetadata_PersistedPath(t *testing.T) {
 #   - input: schema["input"]
 # custom:
 #   id: AVD-BAR-0001
-#   avd_id: AVD-BAR-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW
@@ -383,8 +376,7 @@ func Test_RegoScanning_WithStaticMetadata(t *testing.T) {
 package defsec.test
 
 __rego_metadata__ := {
-	"id": "AA001",
-	"avd_id": "AVD-XX-9999",
+	"id": "AVD-XX-9999",
 	"title": "This is a title",
 	"short_code": "short-code",
 	"severity": "LOW",
@@ -429,7 +421,7 @@ deny[res] {
 	assert.Equal(t, "/blah.txt", failure.Metadata().Range().GetFilename())
 	assert.Equal(t, 123, failure.Metadata().Range().GetStartLine())
 	assert.Equal(t, 456, failure.Metadata().Range().GetEndLine())
-	assert.Equal(t, "AVD-XX-9999", failure.Rule().AVDID)
+	assert.Equal(t, "AVD-XX-9999", failure.Rule().ID)
 	assert.True(t, failure.Rule().HasID("AA001"))
 	assert.Equal(t, "This is a title", failure.Rule().Summary)
 	assert.Equal(t, severity.Low, failure.Rule().Severity)
@@ -448,7 +440,6 @@ func Test_RegoScanning_WithMatchingInputSelector(t *testing.T) {
 #   - input: schema["input"]
 # custom:
 #   id: AVD-BAR-0001
-#   avd_id: AVD-BAR-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW
@@ -530,7 +521,6 @@ func Test_RegoScanning_NoTracingByDefault(t *testing.T) {
 #   - input: schema["input"]
 # custom:
 #   id: AVD-BAR-0001
-#   avd_id: AVD-BAR-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW
@@ -576,7 +566,6 @@ func Test_RegoScanning_GlobalTracingEnabled(t *testing.T) {
 #   - input: schema["input"]
 # custom:
 #   id: AVD-BAR-0001
-#   avd_id: AVD-BAR-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW
@@ -626,7 +615,6 @@ func Test_RegoScanning_PerResultTracingEnabled(t *testing.T) {
 #   - input: schema["input"]
 # custom:
 #   id: AVD-BAR-0001
-#   avd_id: AVD-BAR-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW
@@ -735,7 +723,6 @@ func Test_annotationMetadata(t *testing.T) {
 # - https://google.com
 # custom:
 #   id: EG123
-#   avd_id: AVD-EG-0123
 #   severity: LOW
 #   recommended_action: have a cup of tea
 package defsec.test
@@ -775,7 +762,7 @@ deny {
 	assert.Equal(t, "i am a description", failure.Explanation)
 	require.Len(t, failure.Links, 1)
 	assert.Equal(t, "https://google.com", failure.Links[0])
-	assert.Equal(t, "AVD-EG-0123", failure.AVDID)
+	assert.Equal(t, "AVD-EG-0123", failure.ID)
 	assert.Equal(t, severity.Low, failure.Severity)
 	assert.Equal(t, "have a cup of tea", failure.Resolution)
 }
@@ -855,7 +842,6 @@ func Test_RegoScanning_CustomData(t *testing.T) {
 #   - input: schema["input"]
 # custom:
 #   id: AVD-BAR-0001
-#   avd_id: AVD-BAR-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW
@@ -908,7 +894,6 @@ func Test_RegoScanning_InvalidFS(t *testing.T) {
 #   - input: schema["input"]
 # custom:
 #   id: AVD-BAR-0001
-#   avd_id: AVD-BAR-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW
@@ -986,8 +971,7 @@ func Test_RegoScanning_WithDeprecatedCheck(t *testing.T) {
 # related_resources:
 # - https://google.com
 # custom:
-#   id: EG123
-#   avd_id: AVD-EG-0123
+#   id: AVD-EG-0123
 #   severity: LOW
 #   recommended_action: have a cup of tea
 #   deprecated: %v
