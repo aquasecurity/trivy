@@ -5,12 +5,13 @@
     <artifactId>child</artifactId>
 
     <name>child</name>
+    <version>1.0.0</version>
     <description>Child</description>
 
     <parent>
         <groupId>com.example</groupId>
         <artifactId>parent</artifactId>
-        <version>1.0.0</version>
+        <version>4.0.3</version>
         <relativePath>../parent</relativePath>
     </parent>
 
@@ -23,6 +24,11 @@
             <groupId>org.example</groupId>
             <artifactId>example-dependency</artifactId>
             <version>1.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>example-api3</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
 </project>

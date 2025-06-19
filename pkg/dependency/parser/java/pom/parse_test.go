@@ -441,14 +441,26 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
+					ID:           "org.example:example-api3:4.0.3",
+					Name:         "org.example:example-api3",
+					Version:      "4.0.3",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 28,
+							EndLine:   32,
+						},
+					},
+				},
+				{
 					ID:           "org.example:example-dependency:1.2.3",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
 					Locations: ftypes.Locations{
 						{
-							StartLine: 22,
-							EndLine:   26,
+							StartLine: 23,
+							EndLine:   27,
 						},
 					},
 				},
@@ -463,6 +475,7 @@ func TestPom_Parse(t *testing.T) {
 				{
 					ID: "com.example:child:1.0.0",
 					DependsOn: []string{
+						"org.example:example-api3:4.0.3",
 						"org.example:example-dependency:1.2.3",
 					},
 				},
