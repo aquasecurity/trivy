@@ -23,6 +23,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -607,7 +608,7 @@ func (p *Parser) openRelativePom(currentPath, relativePath string) (*pom, error)
 	// e.g. child + ../parent => parent/
 	filePath := filepath.Join(dir, relativePath)
 
-	isDir, err := isDirectory(filePath)
+	isDir, err := fsutils.CheckDirectory(filePath)
 	if err != nil {
 		return nil, err
 	} else if isDir {

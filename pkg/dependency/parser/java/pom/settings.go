@@ -4,8 +4,6 @@ import (
 	"encoding/xml"
 	"os"
 	"path/filepath"
-	"regexp"
-	"strings"
 
 	"golang.org/x/net/html/charset"
 )
@@ -20,10 +18,6 @@ type settings struct {
 	LocalRepository string   `xml:"localRepository"`
 	Servers         []Server `xml:"servers>server"`
 }
-
-// e.g. ${env.USERNAME}. Note the capturing group after "${env." -
-// this will be used to extract the variable name for the env lookup
-var mavenEnvPattern = regexp.MustCompile(`\$\{env\.([A-Za-z_][A-Za-z0-9_]*)\}`)
 
 // serverFound checks that servers already contain server.
 // Maven compares servers by ID only.
@@ -89,20 +83,10 @@ func openSettings(filePath string) (settings, error) {
 }
 
 func expandAllEnvPlaceholders(s *settings) {
-	s.LocalRepository = replacePlaceholdersWithEnvValues(s.LocalRepository)
+	s.LocalRepository = evaluateVariable(s.LocalRepository, nil, nil)
 	for i, server := range s.Servers {
-		s.Servers[i].ID = replacePlaceholdersWithEnvValues(server.ID)
-		s.Servers[i].Username = replacePlaceholdersWithEnvValues(server.Username)
-		s.Servers[i].Password = replacePlaceholdersWithEnvValues(server.Password)
+		s.Servers[i].ID = evaluateVariable(server.ID, nil, nil)
+		s.Servers[i].Username = evaluateVariable(server.Username, nil, nil)
+		s.Servers[i].Password = evaluateVariable(server.Password, nil, nil)
 	}
-}
-
-func replacePlaceholdersWithEnvValues(s string) string {
-	if !strings.Contains(s, "${env.") {
-		return s
-	}
-	return mavenEnvPattern.ReplaceAllStringFunc(s, func(match string) string {
-		submatches := mavenEnvPattern.FindStringSubmatch(match)
-		return os.Getenv(submatches[1])
-	})
 }
