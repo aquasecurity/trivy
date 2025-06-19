@@ -6,7 +6,6 @@
 #   - input: schema["input"]
 # custom:
 #   id: AVD-FOO-0001
-#   avd_id: AVD-FOO-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW

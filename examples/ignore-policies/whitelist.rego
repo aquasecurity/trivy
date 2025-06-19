@@ -10,4 +10,4 @@ default ignore := false
 
 ignore if not is_check_allowed
 
-is_check_allowed if input.AVDID in allowed_checks
+is_check_allowed if input.ID in allowed_checks

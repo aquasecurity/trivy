@@ -124,7 +124,7 @@ func Test_RegisterDeprecatedRule(t *testing.T) {
 # schemas:
 # - input: schema["dockerfile"]
 # custom:
-#   avd_id: AVD-DEP-0001
+#   id: AVD-DEP-0001
 #   input:
 #     selector:
 #     - type: dockerfile
@@ -147,7 +147,7 @@ deny[res]{
 # schemas:
 # - input: schema["dockerfile"]
 # custom:
-#   avd_id: AVD-NOTDEP-0001
+#   id: AVD-NOTDEP-0001
 #   input:
 #     selector:
 #     - type: dockerfile
@@ -169,7 +169,7 @@ deny[res]{
 # schemas:
 # - input: schema["dockerfile"]
 # custom:
-#   avd_id: AVD-BADDEP-0001
+#   id: AVD-BADDEP-0001
 #   input:
 #     selector:
 #     - type: dockerfile
@@ -196,7 +196,7 @@ deny[res]{
 			})
 
 			for _, rule := range rules.GetRegistered() {
-				if rule.AVDID == tc.id {
+				if rule.ID == tc.id {
 					assert.Equal(t, tc.expected.Deprecated, rule.GetRule().Deprecated, tc.name)
 				}
 			}

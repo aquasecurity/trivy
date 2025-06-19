@@ -270,8 +270,8 @@ func (r *Results) Ignore(ignoreRules ignore.Rules, ignores map[string]ignore.Ign
 	for i, result := range *r {
 		allIDs := []string{
 			result.Rule().LongID(),
-			result.Rule().AVDID,
-			strings.ToLower(result.Rule().AVDID),
+			result.Rule().ID,
+			strings.ToLower(result.Rule().ID),
 			result.Rule().ShortCode,
 		}
 		allIDs = append(allIDs, result.Rule().Aliases...)

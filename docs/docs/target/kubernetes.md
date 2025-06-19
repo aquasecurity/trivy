@@ -323,7 +323,7 @@ trivy k8s --format json -o results.json cluster
           "Misconfigurations": [
             {
               "Type": "Kubernetes Security Check",
-              "ID": "KSV001",
+              "ID": "AVD-KSV-0001",
               "Title": "Process can elevate its own privileges",
               "Description": "A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.",
               "Message": "Container 'app' of Deployment 'app' should set 'securityContext.allowPrivilegeEscalation' to false",
@@ -347,7 +347,7 @@ trivy k8s --format json -o results.json cluster
             },
             {
               "Type": "Kubernetes Security Check",
-              "ID": "KSV003",
+              "ID": "AVD-KSV-0003",
               "Title": "Default capabilities not dropped",
               "Description": "The container should drop all default capabilities and add only those that are needed for its execution.",
               "Message": "Container 'app' of Deployment 'app' should add 'ALL' to 'securityContext.capabilities.drop'",

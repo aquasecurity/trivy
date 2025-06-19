@@ -104,7 +104,7 @@ func (r *registry) getSpecRules(spec string) []ruleTypes.RegisteredRule {
 		for _, csRule := range complianceSpec.Spec.Controls {
 			if len(csRule.Checks) > 0 {
 				for _, c := range csRule.Checks {
-					if rule.GetRule().AVDID == c.ID {
+					if rule.GetRule().ID == c.ID {
 						specRules = append(specRules, rule)
 					}
 				}

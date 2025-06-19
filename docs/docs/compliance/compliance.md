@@ -123,7 +123,6 @@ Example of how to define check data under [checks folder](https://github.com/aqu
 # - https://www.cisecurity.org/benchmark/kubernetes
 # custom:
 #   id: KCV0073
-#   avd_id: AVD-KCV-0073
 #   severity: HIGH
 #   short_code: ensure-kubelet.conf-file-permissions-600-or-more-restrictive.
 #   recommended_action: "Change the kubelet.conf file permissions to 600 or more restrictive if exist"

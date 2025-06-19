@@ -5,8 +5,7 @@
 # schemas:
 # - input: schema["cloud"]
 # custom:
-#   avd_id: AVD-TEST-0001
-#   id: TEST001
+#   id: AVD-TEST-0001
 #   provider: aws
 #   service: sqs
 #   severity: HIGH

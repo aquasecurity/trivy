@@ -19,11 +19,11 @@ vulnerabilities:
       - "pkg:golang/github.com/aquasecurity/bar" # Match
 
 misconfigurations:
-  - id: ID100
-  - id: ID200
+  - id: AVD-ID-0100
+  - id: AVD-ID-0200
     paths:
       - "app/Dockerfile"
-  - id: ID300
+  - id: AVD-ID-0300
     paths:
       - "docs/Dockerfile"
 secrets:

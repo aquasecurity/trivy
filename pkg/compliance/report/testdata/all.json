@@ -17,7 +17,7 @@
           "Target": "",
           "Misconfigurations": [
             {
-              "AVDID": "AVD-KSV012",
+              "ID": "AVD-KSV-0012",
               "Status": "FAIL"
             }
           ]
@@ -34,7 +34,7 @@
           "Target": "",
           "Misconfigurations": [
             {
-              "AVDID": "AVD-KSV013",
+              "ID": "AVD-KSV-0013",
               "Status": "FAIL"
             }
           ]

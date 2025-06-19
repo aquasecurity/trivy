@@ -33,7 +33,7 @@ func TestBuildSummary(t *testing.T) {
 							{
 								Misconfigurations: []types.DetectedMisconfiguration{
 									{
-										AVDID:  "AVD-KSV012",
+										ID:     "AVD-KSV-0012",
 										Status: types.MisconfStatusFailure,
 									},
 								},
@@ -48,7 +48,7 @@ func TestBuildSummary(t *testing.T) {
 							{
 								Misconfigurations: []types.DetectedMisconfiguration{
 									{
-										AVDID:  "AVD-KSV013",
+										ID:     "AVD-KSV013",
 										Status: types.MisconfStatusFailure,
 									},
 								},
@@ -93,7 +93,7 @@ func TestBuildSummary(t *testing.T) {
 							{
 								Misconfigurations: []types.DetectedMisconfiguration{
 									{
-										AVDID:  "AVD-KSV012",
+										ID:     "AVD-KSV-0012",
 										Status: types.MisconfStatusFailure,
 									},
 								},
@@ -108,7 +108,7 @@ func TestBuildSummary(t *testing.T) {
 							{
 								Misconfigurations: []types.DetectedMisconfiguration{
 									{
-										AVDID:  "AVD-KSV013",
+										ID:     "AVD-KSV013",
 										Status: types.MisconfStatusFailure,
 									},
 								},

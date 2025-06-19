@@ -5,5 +5,5 @@ import data.lib.trivy
 default ignore=false
 
 ignore {
-	input.AVDID != "AVD-ID100"
+	input.ID != "AVD-ID-0100"
 }

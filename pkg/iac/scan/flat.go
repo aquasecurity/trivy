@@ -50,7 +50,7 @@ func (r *Result) Flatten() FlatResult {
 
 	return FlatResult{
 		Deprecated:      r.rule.Deprecated,
-		RuleID:          r.rule.AVDID,
+		RuleID:          r.rule.ID,
 		LongID:          r.Rule().LongID(),
 		RuleSummary:     r.rule.Summary,
 		RuleProvider:    r.rule.Provider,

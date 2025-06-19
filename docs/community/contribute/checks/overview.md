@@ -25,7 +25,6 @@ Checks are written in Rego and follow a particular structure in Trivy. Below is 
 # - https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html
 # custom:
 #   id: AVD-AWS-0176
-#   avd_id: AVD-AWS-0176
 #   provider: aws
 #   service: rds
 #   severity: MEDIUM

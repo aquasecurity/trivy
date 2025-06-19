@@ -113,8 +113,9 @@ message DetectedMisconfiguration {
   string status = 11;
   Layer layer = 12;
   CauseMetadata cause_metadata = 13;
-  string avd_id = 14;
   string query = 15;
+
+  reserved 14;  // avd_id deprecated
 }
 
 message Vulnerability {
