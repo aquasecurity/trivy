@@ -58,16 +58,8 @@ func CopyFile(src, dst string) (int64, error) {
 }
 
 func DirExists(path string) bool {
-	isDir, _ := CheckDirectory(path)
-	return isDir
-}
-
-func CheckDirectory(path string) (bool, error) {
-	fileInfo, err := os.Stat(path)
-	if err != nil {
-		return false, err
-	}
-	return fileInfo.IsDir(), err
+	f, err := os.Stat(path)
+	return err == nil && f.IsDir()
 }
 
 func FileExists(filename string) bool {

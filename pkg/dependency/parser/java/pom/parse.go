@@ -23,7 +23,6 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -608,7 +607,7 @@ func (p *Parser) openRelativePom(currentPath, relativePath string) (*pom, error)
 	// e.g. child + ../parent => parent/
 	filePath := filepath.Join(dir, relativePath)
 
-	isDir, err := fsutils.CheckDirectory(filePath)
+	isDir, err := isDirectory(filePath)
 	if err != nil {
 		return nil, err
 	} else if isDir {
@@ -832,4 +831,12 @@ func packageID(name, version string) string {
 // cf. https://github.com/apache/maven/blob/259404701402230299fe05ee889ecdf1c9dae816/maven-artifact/src/main/java/org/apache/maven/artifact/DefaultArtifact.java#L482-L486
 func isSnapshot(ver string) bool {
 	return strings.HasSuffix(ver, "SNAPSHOT") || ver == "LATEST"
+}
+
+func isDirectory(path string) (bool, error) {
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		return false, err
+	}
+	return fileInfo.IsDir(), err
 }
