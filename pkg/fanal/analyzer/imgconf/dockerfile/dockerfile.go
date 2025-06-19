@@ -76,7 +76,6 @@ func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnal
 
 func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 	dockerfile := new(bytes.Buffer)
-	var userFound bool
 	baseLayerIndex := image.GuessBaseImageIndex(cfg.History)
 	for i := baseLayerIndex + 1; i < len(cfg.History); i++ {
 		h := cfg.History[i]
@@ -101,7 +100,6 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 		case strings.HasPrefix(h.CreatedBy, "USER"):
 			// USER instruction
 			createdBy = h.CreatedBy
-			userFound = true
 		case strings.HasPrefix(h.CreatedBy, "HEALTHCHECK"):
 			// HEALTHCHECK instruction
 			createdBy = buildHealthcheckInstruction(cfg.Config.Healthcheck)
@@ -119,7 +117,8 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 		dockerfile.WriteString(strings.TrimSpace(createdBy) + "\n")
 	}
 
-	if !userFound && cfg.Config.User != "" {
+	// The user can be changed from the config file or with the `--user` flag (for docker CLI), so we need to add this user to avoid incorrect user detection
+	if cfg.Config.User != "" {
 		user := fmt.Sprintf("USER %s", cfg.Config.User)
 		dockerfile.WriteString(user)
 	}
