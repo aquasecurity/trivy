@@ -345,14 +345,12 @@ func moduleHasLegacyInputFormat(module *ast.Module) bool {
 func (s *Scanner) filterModules() error {
 	filtered := make(map[string]*ast.Module)
 	tv, tverr := semver.Parse(s.trivyVersion)
-	if tverr != nil {
-		if s.trivyVersion != "dev" {
-			s.logger.Warn(
-				"Failed to parse Trivy version - cannot confirm if all modules will work with current version",
-				log.String("trivy_version", s.trivyVersion),
-				log.Err(tverr),
-			)
-		}
+	if tverr != nil && s.trivyVersion != "dev" {
+		s.logger.Warn(
+			"Failed to parse Trivy version - cannot confirm if all modules will work with current version",
+			log.String("trivy_version", s.trivyVersion),
+			log.Err(tverr),
+		)
 	}
 
 	for name, module := range s.policies {
