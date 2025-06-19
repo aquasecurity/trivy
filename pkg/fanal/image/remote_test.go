@@ -1,7 +1,6 @@
 package image
 
 import (
-	"context"
 	"io"
 	"log"
 	"net/http/httptest"
@@ -149,7 +148,7 @@ func Test_tryRemote(t *testing.T) {
 			name:       "image not found",
 			imageName:  "test/notfound:latest",
 			wantErr:    "NAME_UNKNOWN",
-			setupImage: func(t *testing.T, ref name.Reference) {},
+			setupImage: func(*testing.T, name.Reference) {},
 		},
 	}
 
@@ -163,7 +162,7 @@ func Test_tryRemote(t *testing.T) {
 			// Set up the image in registry if needed
 			tt.setupImage(t, ref)
 
-			ctx := context.Background()
+			ctx := t.Context()
 			got, cleanup, err := tryRemote(ctx, fullImageName, ref, types.ImageOptions{
 				RegistryOptions: types.RegistryOptions{
 					Insecure: true,
