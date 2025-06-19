@@ -32,7 +32,7 @@ func Test_OptionWithPolicyDirs(t *testing.T) {
 	require.Len(t, results.GetFailed(), 1)
 
 	failure := results.GetFailed()[0]
-	assert.Equal(t, "USER-TEST-0123", failure.Rule().AVDID)
+	assert.Equal(t, "USER-TEST-0123", failure.Rule().ID)
 
 	actualCode, err := failure.GetCode()
 	require.NoError(t, err)
@@ -188,8 +188,7 @@ resource "aws_sqs_queue_policy" "bad_example" {
 # related_resources:
 # - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-using-identity-based-policies.html
 # custom:
-#   id: TEST123
-#   avd_id: AVD-TEST-0123
+#   id: AVD-TEST-0123
 #   short_code: no-wildcard-actions
 #   severity: CRITICAL
 #   recommended_action: Avoid using "*" for actions in SQS policies and specify only required actions.
@@ -223,7 +222,7 @@ deny[res] {
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
-	assert.Equal(t, "AVD-TEST-0123", results[0].Rule().AVDID)
+	assert.Equal(t, "AVD-TEST-0123", results[0].Rule().ID)
 	assert.NotNil(t, results[0].Metadata().Range().GetFS())
 
 }
@@ -273,8 +272,7 @@ package defsec.abcdefg
 
 
 __rego_metadata__ := {
-	"id": "TEST123",
-	"avd_id": "AVD-TEST-0123",
+	"id": "AVD-TEST-0123",
 	"title": "Buckets should not be evil",
 	"short_code": "no-evil-buckets",
 	"severity": "CRITICAL",
@@ -306,7 +304,7 @@ deny[res] {
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
-	assert.Equal(t, "AVD-TEST-0123", results[0].Rule().AVDID)
+	assert.Equal(t, "AVD-TEST-0123", results[0].Rule().ID)
 	assert.NotNil(t, results[0].Metadata().Range().GetFS())
 
 }
@@ -361,13 +359,13 @@ resource "aws_s3_bucket_public_access_block" "foo" {
 	failed := results.GetFailed()
 	for _, result := range failed {
 		// public access block
-		assert.NotEqual(t, "AVD-AWS-0094", result.Rule().AVDID, "AVD-AWS-0094 should not be reported - was found at "+result.Metadata().Range().String())
+		assert.NotEqual(t, "AVD-AWS-0094", result.Rule().ID, "AVD-AWS-0094 should not be reported - was found at "+result.Metadata().Range().String())
 		// encryption
-		assert.NotEqual(t, "AVD-AWS-0088", result.Rule().AVDID)
+		assert.NotEqual(t, "AVD-AWS-0088", result.Rule().ID)
 		// logging
-		assert.NotEqual(t, "AVD-AWS-0089", result.Rule().AVDID)
+		assert.NotEqual(t, "AVD-AWS-0089", result.Rule().ID)
 		// versioning
-		assert.NotEqual(t, "AVD-AWS-0090", result.Rule().AVDID)
+		assert.NotEqual(t, "AVD-AWS-0090", result.Rule().ID)
 	}
 }
 
@@ -423,7 +421,7 @@ resource "aws_s3_bucket_public_access_block" "testB" {
 
 	for _, result := range results.GetFailed() {
 		// public access block
-		assert.NotEqual(t, "AVD-AWS-0094", result.Rule().AVDID)
+		assert.NotEqual(t, "AVD-AWS-0094", result.Rule().ID)
 	}
 
 }
@@ -442,7 +440,7 @@ resource "aws_apigatewayv2_stage" "bad_example" {
 # schemas:
 # - input: schema.input
 # custom:
-#   avd_id: AVD-AWS-0001
+#   id: AVD-AWS-0001
 #   input:
 #     selector:
 #     - type: cloud
@@ -481,7 +479,7 @@ deny[res] {
 
 	failure := results.GetFailed()[0]
 
-	assert.Equal(t, "AVD-AWS-0001", failure.Rule().AVDID)
+	assert.Equal(t, "AVD-AWS-0001", failure.Rule().ID)
 
 	actualCode, err := failure.GetCode()
 	require.NoError(t, err)
@@ -636,7 +634,7 @@ resource "aws_security_group" "main" {
 # schemas:
 # - input: schema.input
 # custom:
-#   avd_id: AVD-AWS-0002
+#   id: AVD-AWS-0002
 #   input:
 #     selector:
 #     - type: cloud
@@ -666,7 +664,7 @@ deny[res] {
 
 	assert.Len(t, results.GetPassed(), 2)
 	require.Len(t, results.GetFailed(), 1)
-	assert.Equal(t, "AVD-AWS-0002", results.GetFailed()[0].Rule().AVDID)
+	assert.Equal(t, "AVD-AWS-0002", results.GetFailed()[0].Rule().ID)
 }
 
 func Test_RoleRefToOutput(t *testing.T) {
@@ -706,7 +704,7 @@ output "role_name" {
 # schemas:
 # - input: schema.input
 # custom:
-#   avd_id: AVD-AWS-0001
+#   id: AVD-AWS-0001
 #   input:
 #     selector:
 #     - type: cloud
@@ -755,7 +753,7 @@ provider "aws" {
 # schemas:
 # - input: schema.input
 # custom:
-#   avd_id: AVD-AWS-0001
+#   id: AVD-AWS-0001
 #   input:
 #     selector:
 #     - type: cloud
@@ -774,7 +772,7 @@ deny[res] {
 # schemas:
 # - input: schema.input
 # custom:
-#   avd_id: AVD-AWS-0002
+#   id: AVD-AWS-0002
 #   input:
 #     selector:
 #     - type: cloud
@@ -804,10 +802,10 @@ deny[res] {
 	require.Len(t, results, 2)
 
 	require.Len(t, results.GetFailed(), 1)
-	assert.Equal(t, "AVD-AWS-0001", results.GetFailed()[0].Rule().AVDID)
+	assert.Equal(t, "AVD-AWS-0001", results.GetFailed()[0].Rule().ID)
 
 	require.Len(t, results.GetPassed(), 1)
-	assert.Equal(t, "AVD-AWS-0002", results.GetPassed()[0].Rule().AVDID)
+	assert.Equal(t, "AVD-AWS-0002", results.GetPassed()[0].Rule().ID)
 }
 
 func TestScanModuleWithCount(t *testing.T) {
@@ -837,7 +835,7 @@ module "this" {
 # schemas:
 # - input: schema.input
 # custom:
-#   avd_id: AVD-AWS-0001
+#   id: AVD-AWS-0001
 #   input:
 #     selector:
 #     - type: cloud
@@ -980,7 +978,6 @@ resource "aws_s3_bucket_versioning" "test" {
 #   - input: schema["input"]
 # custom:
 #   id: AVD-BAR-0001
-#   avd_id: AVD-BAR-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW
@@ -1015,7 +1012,6 @@ func TestRenderedCause(t *testing.T) {
 # title: S3 Data should be versioned
 # custom:
 #   id: AVD-AWS-0090
-#   avd_id: AVD-AWS-0090
 package user.aws.s3.aws0090
 
 import rego.v1
@@ -1033,7 +1029,6 @@ deny contains res if {
 # title: Service accounts should not have roles assigned with excessive privileges
 # custom:
 #   id: AVD-GCP-0007
-#   avd_id: AVD-GCP-0007
 package user.google.iam.google0007
 
 import rego.v1
