@@ -117,6 +117,7 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 		dockerfile.WriteString(strings.TrimSpace(createdBy) + "\n")
 	}
 
+	// The user can be changed from the config file or with the `--user` flag (for docker CLI), so we need to add this user to avoid incorrect user detection
 	if cfg.Config.User != "" {
 		user := fmt.Sprintf("USER %s", cfg.Config.User)
 		dockerfile.WriteString(user)
