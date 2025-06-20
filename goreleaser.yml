@@ -38,10 +38,6 @@ builds:
       - arm64
     goarm:
       - 7
-
-archives:
-  # don't create .tar.gz archives (we don't use them)
-  - format: binary
 # release:
 #     extra_files:
 #       - glob: ./bom.json
@@ -78,31 +74,31 @@ archives:
 #       signature:
 #          key_file: '{{ .Env.GPG_FILE }}'
 
-# archives:
-#   - id: archive
-#     format: tar.gz
-#     name_template: >-
-#       {{ .ProjectName }}_{{ .Version }}_
-#       {{- if eq .Os "darwin" }}macOS
-#       {{- else if eq .Os "linux" }}Linux
-#       {{- else if eq .Os "openbsd" }}OpenBSD
-#       {{- else if eq .Os "netbsd" }}NetBSD
-#       {{- else if eq .Os "freebsd" }}FreeBSD
-#       {{- else if eq .Os "dragonfly" }}DragonFlyBSD
-#       {{- else}}{{- .Os }}{{ end }}-
-#       {{- if eq .Arch "amd64" }}64bit
-#       {{- else if eq .Arch "386" }}32bit
-#       {{- else if eq .Arch "arm" }}ARM
-#       {{- else if eq .Arch "arm64" }}ARM64
-#       {{- else if eq .Arch "ppc64le" }}PPC64LE
-#       {{- else }}{{ .Arch }}{{ end }}
-#     files:
-#       - README.md
-#       - LICENSE
-#       - contrib/*.tpl
-#     format_overrides:
-#       - goos: windows
-#         format: zip
+archives:
+  - id: archive
+    format: tar.gz
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_
+      {{- if eq .Os "darwin" }}macOS
+      {{- else if eq .Os "linux" }}Linux
+      {{- else if eq .Os "openbsd" }}OpenBSD
+      {{- else if eq .Os "netbsd" }}NetBSD
+      {{- else if eq .Os "freebsd" }}FreeBSD
+      {{- else if eq .Os "dragonfly" }}DragonFlyBSD
+      {{- else}}{{- .Os }}{{ end }}-
+      {{- if eq .Arch "amd64" }}64bit
+      {{- else if eq .Arch "386" }}32bit
+      {{- else if eq .Arch "arm" }}ARM
+      {{- else if eq .Arch "arm64" }}ARM64
+      {{- else if eq .Arch "ppc64le" }}PPC64LE
+      {{- else }}{{ .Arch }}{{ end }}
+    files:
+      - README.md
+      - LICENSE
+      - contrib/*.tpl
+    format_overrides:
+      - goos: windows
+        format: zip
 # brews:
 #   -
 #     repository:
