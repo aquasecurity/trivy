@@ -10,7 +10,7 @@ if ! git diff --quiet pkg/version/app/version.go; then
   git commit -m "Update tag to $TAG"
   git push
 else
-  echo "version.go is already up-to-date"
+  echo "version.go is up-to-date"
 fi
 
 git tag --force $TAG
