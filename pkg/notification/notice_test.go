@@ -9,9 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/flag"
 )
 
 func TestPrintNotices(t *testing.T) {

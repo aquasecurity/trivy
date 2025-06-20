@@ -226,6 +226,9 @@ func (f *Flag[T]) IsTelemetrySafe() bool {
 }
 
 func (f *Flag[T]) IsExplicitlySet() bool {
+	if f == nil {
+		return false
+	}
 	return f.isSet()
 }
 

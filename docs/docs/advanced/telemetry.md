@@ -11,7 +11,26 @@ The following information could be collected:
   - Trivy version
   - Operating system
 - Scan
-  - Non-revealing scan options
+  - Non-revealing scan options are captured with some flag discrete flag values included when they don't contain sensitive information. (See the section below)
+
+### Captured scan options
+The following flags will be included with their value:
+<!-- telemetry start -->
+```--detection-priority
+--format
+--ignore-status
+--include-dev-deps
+--list-all-pkgs
+--misconfig-scanners
+--pkg-relationships
+--pkg-types
+--report
+--scanners
+--severity
+--show-suppressed
+--vuln-severity-source
+```
+<!-- telemetry end -->
 
 ## Privacy
 

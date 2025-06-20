@@ -183,17 +183,6 @@ func (v *VersionChecker) Warnings() []string {
 	return nil
 }
 
-// getFlags returns the just the flag portion without the values
-func getFlags(args []string) []string {
-	var flags []string
-	for _, arg := range args {
-		if strings.HasPrefix(arg, "-") {
-			flags = append(flags, strings.Split(arg, "=")[0])
-		}
-	}
-	return flags
-}
-
 func (fd *flexibleTime) UnmarshalJSON(b []byte) error {
 	s := strings.Trim(string(b), `"`)
 	if s == "" {
