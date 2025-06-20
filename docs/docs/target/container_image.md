@@ -98,8 +98,8 @@ Trivy scans the configuration of container images for
 They are disabled by default.
 You can enable them with `--image-config-scanners`.
  
-!!! tips
-    The configuration can be exported as the JSON file by `docker save`.
+> [!TIP]
+> The configuration can be exported as the JSON file by `docker save`.
 
 ### Misconfigurations
 Trivy detects misconfigurations on the configuration of container images.
@@ -151,8 +151,8 @@ See https://avd.aquasec.com/misconfig/ds026
 ```
 </details>
 
-!!! tip
-    You can see how each layer is created with `docker history`.
+> [!TIP]
+> You can see how each layer is created with `docker history`.
 
 #### Disabled checks
 
@@ -216,8 +216,8 @@ GitHub Personal Access Token
 
 </details>
 
-!!! tip
-    You can see environment variables with `docker inspect`.
+> [!TIP]
+> You can see environment variables with `docker inspect`.
 
 ## Supported
 
@@ -245,8 +245,8 @@ If your docker socket is not the default path, you can override it via `DOCKER_H
 
 ### containerd
 
-!!! warning "EXPERIMENTAL"
-    This feature might change without preserving backwards compatibility.
+> [!WARNING]
+> This feature is **experimental** and might change without preserving backwards compatibility.
     
 Trivy tries to looks for the specified image in your local [containerd](https://containerd.io/).
 It will be skipped if containerd is not running locally.
@@ -276,8 +276,8 @@ $ trivy image aquasec/nginx
 
 ### Podman
 
-!!! warning "EXPERIMENTAL"
-    This feature might change without preserving backwards compatibility.
+> [!WARNING]
+> This feature is **experimental** and might change without preserving backwards compatibility.
 
 Scan your image in Podman (>=2.0) running locally. The remote Podman is not supported.
 If you prefer to keep the socket open at all times, then before performing Trivy commands, you can enable the podman.sock systemd service on your machine.
@@ -454,8 +454,8 @@ For more information about Rekor, please refer to [its documentation](../supply-
 
 ## Compliance
 
-!!! warning "EXPERIMENTAL"
-    This feature might change without preserving backwards compatibility.
+> [!WARNING]
+> This feature is **experimental** and might change without preserving backwards compatibility.
 
 This section describes container image specific compliance reports.
 For an overview of Trivy's Compliance feature, including working with custom compliance, check out the [Compliance documentation](../compliance/compliance.md).
@@ -476,8 +476,8 @@ Scan a container image configuration and generate a compliance summary report:
 trivy image --compliance docker-cis-1.6.0 [YOUR_IMAGE_NAME]
 ```
 
-!!! note
-    The `Issues` column represent the total number of failed checks for this control.
+> [!NOTE]
+> The `Issues` column represent the total number of failed checks for this control.
 
 ## Authentication
 Please reference [this page](../advanced/private-registries/index.md).
@@ -554,8 +554,8 @@ An error is returned in the following cases:
 
 The layers are pulled into a temporary folder during their pulling and are always cleaned up, even after a successful scan.
 
-!!! warning "EXPERIMENTAL"
-    This feature might change without preserving backwards compatibility.
+> [!WARNING]
+> This feature is **experimental** and might change without preserving backwards compatibility.
 
 
 Example Usage:
