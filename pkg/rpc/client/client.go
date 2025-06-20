@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"crypto/tls"
 	"net/http"
 
 	"github.com/samber/lo"
@@ -12,6 +11,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	r "github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 	"github.com/aquasecurity/trivy/pkg/x/slices"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 	"github.com/aquasecurity/trivy/rpc/common"
@@ -47,15 +47,11 @@ type Service struct {
 
 // NewService is the factory method to return RPC Service
 func NewService(scannerOptions ServiceOption, opts ...Option) Service {
-	tr := http.DefaultTransport.(*http.Transport).Clone()
-	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: scannerOptions.Insecure}
-	httpClient := &http.Client{Transport: tr}
-
 	var twirpOpts []twirp.ClientOption
 	if scannerOptions.PathPrefix != "" {
 		twirpOpts = append(twirpOpts, twirp.WithClientPathPrefix(scannerOptions.PathPrefix))
 	}
-	c := rpc.NewScannerProtobufClient(scannerOptions.RemoteURL, httpClient, twirpOpts...)
+	c := rpc.NewScannerProtobufClient(scannerOptions.RemoteURL, xhttp.Client(), twirpOpts...)
 
 	o := &options{rpcClient: c}
 	for _, opt := range opts {

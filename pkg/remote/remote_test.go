@@ -368,8 +368,8 @@ func TestUserAgents(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Len(t, tracker.agents, 1)
-	ok := tracker.agents.Contains(fmt.Sprintf("trivy/%s go-containerregistry", app.Version()))
-	require.True(t, ok, `user-agent header equals to "trivy/dev go-containerregistry"`)
+	ok := tracker.agents.Contains(fmt.Sprintf("trivy/%s", app.Version()))
+	require.True(t, ok, `user-agent header equals to "trivy/dev"`)
 }
 
 func localImage(t *testing.T) v1.Image {

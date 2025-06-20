@@ -2,19 +2,18 @@ package auth
 
 import (
 	"context"
-	"net/http"
 	"os"
 
 	"github.com/docker/cli/cli/config"
 	"github.com/docker/cli/cli/config/types"
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
-	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
 func Login(ctx context.Context, registry string, opts flag.Options) error {
@@ -34,7 +33,7 @@ func Login(ctx context.Context, registry string, opts flag.Options) error {
 	_, err = transport.NewWithContext(ctx, reg, &authn.Basic{
 		Username: opts.Credentials[0].Username,
 		Password: opts.Credentials[0].Password,
-	}, httpTransport(opts), nil)
+	}, xhttp.Transport(ctx), nil)
 	if err != nil {
 		return xerrors.Errorf("failed to authenticate: %w", err)
 	}
@@ -98,12 +97,4 @@ func parseRegistry(registry string, opts flag.Options) (name.Registry, error) {
 		return name.Registry{}, xerrors.Errorf("failed to parse registry: %w", err)
 	}
 	return reg, nil
-}
-
-func httpTransport(opts flag.Options) *http.Transport {
-	tr := remote.DefaultTransport.(*http.Transport).Clone()
-	if opts.Insecure {
-		tr.TLSClientConfig.InsecureSkipVerify = true
-	}
-	return tr
 }
