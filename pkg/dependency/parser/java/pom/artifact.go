@@ -129,11 +129,3 @@ func (v1 version) shouldOverride(v2 version) bool {
 func (v1 version) String() string {
 	return v1.ver
 }
-
-func printLoopedPropertiesStack(env string, usedProps []string) {
-	var s string
-	for _, prop := range usedProps {
-		s += fmt.Sprintf("%s -> ", prop)
-	}
-	log.Warn("Lopped properties were detected", log.String("prop", s+env))
-}

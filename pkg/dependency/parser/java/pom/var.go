@@ -1,10 +1,13 @@
 package pom
 
 import (
+	"fmt"
 	"os"
 	"regexp"
 	"slices"
 	"strings"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var varRegexp = regexp.MustCompile(`\${(\S+?)}`)
@@ -47,4 +50,12 @@ func evaluateVariable(s string, props map[string]string, seenProps []string) str
 		s = strings.ReplaceAll(s, m[0], newValue)
 	}
 	return strings.TrimSpace(s)
+}
+
+func printLoopedPropertiesStack(env string, usedProps []string) {
+	var s string
+	for _, prop := range usedProps {
+		s += fmt.Sprintf("%s -> ", prop)
+	}
+	log.Warn("Lopped properties were detected", log.String("prop", s+env))
 }
