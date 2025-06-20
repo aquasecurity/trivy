@@ -35,6 +35,8 @@ type Options struct {
 
 // SetDefaultTransport sets the default transport configuration
 func SetDefaultTransport(tr http.RoundTripper) {
+	mu.Lock()
+	defer mu.Unlock()
 	defaultTransport = tr
 }
 
