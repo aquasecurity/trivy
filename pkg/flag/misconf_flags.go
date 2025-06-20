@@ -102,7 +102,8 @@ var (
 		Default: xstrings.ToStringSlice(
 			lo.Without(analyzer.TypeConfigFiles, analyzer.TypeYAML, analyzer.TypeJSON),
 		),
-		Usage: "comma-separated list of misconfig scanners to use for misconfiguration scanning",
+		Usage:         "comma-separated list of misconfig scanners to use for misconfiguration scanning",
+		TelemetrySafe: true,
 	}
 	ConfigFileSchemasFlag = Flag[[]string]{
 		Name:       "config-file-schemas",
