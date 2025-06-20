@@ -76,6 +76,9 @@ type Flag[T FlagType] struct {
 	// Aliases represents aliases
 	Aliases []Alias
 
+	// TelemetrySafe indicates if the flag is safe to be used in telemetry.
+	TelemetrySafe bool
+
 	// value is the value passed through CLI flag, env, or config file.
 	// It is populated after flag.Parse() is called.
 	value T
@@ -218,6 +221,14 @@ func (f *Flag[T]) GetAliases() []Alias {
 	return f.Aliases
 }
 
+func (f *Flag[T]) IsTelemetrySafe() bool {
+	return f.TelemetrySafe
+}
+
+func (f *Flag[T]) IsExplicitlySet() bool {
+	return f.isSet()
+}
+
 func (f *Flag[T]) Hidden() bool {
 	return f.Deprecated != "" || f.Removed != "" || f.Internal
 }
@@ -349,6 +360,8 @@ type Flagger interface {
 	GetDefaultValue() any
 	GetAliases() []Alias
 	Hidden() bool
+	IsTelemetrySafe() bool
+	IsExplicitlySet() bool
 
 	Parse() error
 	Add(cmd *cobra.Command)
@@ -384,6 +397,9 @@ type Options struct {
 
 	// We don't want to allow disabled analyzers to be passed by users, but it is necessary for internal use.
 	DisabledAnalyzers []analyzer.Type
+
+	// Flags allows us to get the underlying flags for the options
+	Flags *Flags
 
 	// outputWriter is not initialized via the CLI.
 	// It is mainly used for testing purposes or by tools that use Trivy as a library.
@@ -643,6 +659,7 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 func (f *Flags) ToOptions(args []string) (Options, error) {
 	opts := Options{
 		AppVersion: app.Version(),
+		Flags:      f,
 		args:       args,
 	}
 

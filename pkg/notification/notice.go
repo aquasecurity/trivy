@@ -12,16 +12,20 @@ import (
 	"time"
 
 	"github.com/aquasecurity/go-version/pkg/semver"
+	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/version/app"
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
 type VersionChecker struct {
-	updatesApi        string
-	skipUpdateCheck   bool
-	quiet             bool
-	telemetryDisabled bool
+	updatesApi       string
+	skipVersionCheck bool
+	quiet            bool
+	disableTelemetry bool
+
+	commandName string
+	cliOptions  *flag.Options
 
 	done             bool
 	responseReceived bool
@@ -32,15 +36,17 @@ type VersionChecker struct {
 // NewVersionChecker creates a new VersionChecker with the default
 // updates API URL. The URL can be overridden by passing an Option
 // to the NewVersionChecker function.
-func NewVersionChecker(opts ...Option) *VersionChecker {
+func NewVersionChecker(commandName string, cliOptions *flag.Options) *VersionChecker {
 	v := &VersionChecker{
-		updatesApi:     "https://check.trivy.dev/updates",
-		currentVersion: app.Version(),
+		updatesApi:       "https://check.trivy.dev/updates",
+		currentVersion:   app.Version(),
+		skipVersionCheck: cliOptions.SkipVersionCheck,
+		quiet:            cliOptions.Quiet,
+		disableTelemetry: cliOptions.DisableTelemetry,
+		commandName:      commandName,
+		cliOptions:       cliOptions,
 	}
 
-	for _, opt := range opts {
-		opt(v)
-	}
 	return v
 }
 
@@ -50,17 +56,17 @@ func NewVersionChecker(opts ...Option) *VersionChecker {
 // 1. if skipUpdateCheck is true AND telemetryDisabled are both true, skip the request
 // 2. if skipUpdateCheck is true AND telemetryDisabled is false, run check with metric details but suppress output
 // 3. if skipUpdateCheck is false AND telemetryDisabled is true, run update check but don't send any metric identifiers
-func (v *VersionChecker) RunUpdateCheck(ctx context.Context, args []string) {
+func (v *VersionChecker) RunUpdateCheck(ctx context.Context) {
 	logger := log.WithPrefix("notification")
 
-	if v.skipUpdateCheck && v.telemetryDisabled {
+	if v.skipVersionCheck && v.disableTelemetry {
 		logger.Debug("Skipping update check and metric ping")
 		return
 	}
 
 	go func() {
 		logger.Debug("Running version check")
-		args = getFlags(args)
+		commandParts := getUsedFlags(v.cliOptions)
 		client := xhttp.ClientWithContext(ctx, xhttp.WithTimeout(3*time.Second))
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, v.updatesApi, http.NoBody)
@@ -70,9 +76,10 @@ func (v *VersionChecker) RunUpdateCheck(ctx context.Context, args []string) {
 		}
 
 		// if the user hasn't disabled metrics, send the anonymous information as headers
-		if !v.telemetryDisabled {
+		if !v.disableTelemetry {
 			req.Header.Set("Trivy-Identifier", uniqueIdentifier())
-			req.Header.Set("Trivy-Command", strings.Join(args, " "))
+			req.Header.Set("Trivy-Command", v.commandName)
+			req.Header.Set("Trivy-Flags", commandParts)
 			req.Header.Set("Trivy-OS", runtime.GOOS)
 			req.Header.Set("Trivy-Arch", runtime.GOARCH)
 		}
@@ -91,7 +98,7 @@ func (v *VersionChecker) RunUpdateCheck(ctx context.Context, args []string) {
 		}
 
 		// enable priting if update allowed and quiet mode is not set
-		if !v.skipUpdateCheck && !v.quiet {
+		if !v.skipVersionCheck && !v.quiet {
 			v.responseReceived = true
 		}
 		logger.Debug("Version check completed", log.String("latest_version", v.latestVersion.Trivy.LatestVersion))

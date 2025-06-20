@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -16,7 +17,11 @@ import (
 func TestPrintNotices(t *testing.T) {
 	tests := []struct {
 		name             string
-		options          []Option
+		skipVersionCheck bool
+		quiet            bool
+		disableTelemetry bool
+
+		currentVersion   string
 		latestVersion    string
 		announcements    []announcement
 		responseExpected bool
@@ -24,42 +29,38 @@ func TestPrintNotices(t *testing.T) {
 	}{
 		{
 			name:             "New version with no announcements",
-			options:          []Option{WithCurrentVersion("0.58.0")},
+			currentVersion:   "0.58.0",
 			latestVersion:    "0.60.0",
 			responseExpected: true,
 			expectedOutput:   "\n📣 \x1b[34mNotices:\x1b[0m\n  - Version 0.60.0 of Trivy is now available, current version is 0.58.0\n\nTo suppress version checks, run Trivy scans with the --skip-version-check flag\n\n",
 		},
 		{
 			name:             "New version available but includes a prefixed version number",
-			options:          []Option{WithCurrentVersion("0.58.0")},
+			currentVersion:   "0.58.0",
 			latestVersion:    "v0.60.0",
 			responseExpected: true,
 			expectedOutput:   "\n📣 \x1b[34mNotices:\x1b[0m\n  - Version 0.60.0 of Trivy is now available, current version is 0.58.0\n\nTo suppress version checks, run Trivy scans with the --skip-version-check flag\n\n",
 		},
 		{
-			name: "new version available but --quiet mode enabled",
-			options: []Option{
-				WithCurrentVersion("0.58.0"),
-				WithQuietMode(true),
-			},
+			name:             "new version available but --quiet mode enabled",
+			quiet:            true,
+			currentVersion:   "0.58.0",
 			latestVersion:    "0.60.0",
 			responseExpected: false,
 			expectedOutput:   "",
 		},
 		{
-			name: "new version available but --skip-update-check mode enabled",
-			options: []Option{
-				WithCurrentVersion("0.58.0"),
-				WithSkipVersionCheck(true),
-			},
+			name:             "new version available but --skip-version-check mode enabled",
+			skipVersionCheck: true,
+			currentVersion:   "0.58.0",
 			latestVersion:    "0.60.0",
 			responseExpected: false,
 			expectedOutput:   "",
 		},
 		{
-			name:          "New version with announcements",
-			options:       []Option{WithCurrentVersion("0.58.0")},
-			latestVersion: "0.60.0",
+			name:           "New version with announcements",
+			currentVersion: "0.58.0",
+			latestVersion:  "0.60.0",
 			announcements: []announcement{
 				{
 					FromDate:     time.Date(2025, 2, 2, 12, 0, 0, 0, time.UTC),
@@ -71,9 +72,9 @@ func TestPrintNotices(t *testing.T) {
 			expectedOutput:   "\n📣 \x1b[34mNotices:\x1b[0m\n  - There are some amazing things happening right now!\n  - Version 0.60.0 of Trivy is now available, current version is 0.58.0\n\nTo suppress version checks, run Trivy scans with the --skip-version-check flag\n\n",
 		},
 		{
-			name:          "No new version with announcements",
-			options:       []Option{WithCurrentVersion("0.60.0")},
-			latestVersion: "0.60.0",
+			name:           "No new version with announcements",
+			currentVersion: "0.60.0",
+			latestVersion:  "0.60.0",
 			announcements: []announcement{
 				{
 					FromDate:     time.Date(2025, 2, 2, 12, 0, 0, 0, time.UTC),
@@ -85,9 +86,9 @@ func TestPrintNotices(t *testing.T) {
 			expectedOutput:   "\n📣 \x1b[34mNotices:\x1b[0m\n  - There are some amazing things happening right now!\n\nTo suppress version checks, run Trivy scans with the --skip-version-check flag\n\n",
 		},
 		{
-			name:          "No new version with announcements and zero time",
-			options:       []Option{WithCurrentVersion("0.60.0")},
-			latestVersion: "0.60.0",
+			name:           "No new version with announcements and zero time",
+			currentVersion: "0.60.0",
+			latestVersion:  "0.60.0",
 			announcements: []announcement{
 				{
 					FromDate:     time.Time{},
@@ -99,9 +100,9 @@ func TestPrintNotices(t *testing.T) {
 			expectedOutput:   "\n📣 \x1b[34mNotices:\x1b[0m\n  - There are some amazing things happening right now!\n\nTo suppress version checks, run Trivy scans with the --skip-version-check flag\n\n",
 		},
 		{
-			name:          "No new version with announcement that fails announcement version constraints",
-			options:       []Option{WithCurrentVersion("0.60.0")},
-			latestVersion: "0.60.0",
+			name:           "No new version with announcement that fails announcement version constraints",
+			currentVersion: "0.60.0",
+			latestVersion:  "0.60.0",
 			announcements: []announcement{
 				{
 					FromDate:     time.Date(2025, 2, 2, 12, 0, 0, 0, time.UTC),
@@ -114,9 +115,9 @@ func TestPrintNotices(t *testing.T) {
 			expectedOutput:   "",
 		},
 		{
-			name:          "No new version with announcement where current version is greater than to_version",
-			options:       []Option{WithCurrentVersion("0.60.0")},
-			latestVersion: "0.60.0",
+			name:           "No new version with announcement where current version is greater than to_version",
+			currentVersion: "0.60.0",
+			latestVersion:  "0.60.0",
 			announcements: []announcement{
 				{
 					FromDate:     time.Date(2025, 2, 2, 12, 0, 0, 0, time.UTC),
@@ -129,9 +130,9 @@ func TestPrintNotices(t *testing.T) {
 			expectedOutput:   "",
 		},
 		{
-			name:          "No new version with announcement that satisfies version constraint but outside date range",
-			options:       []Option{WithCurrentVersion("0.60.0")},
-			latestVersion: "0.60.0",
+			name:           "No new version with announcement that satisfies version constraint but outside date range",
+			currentVersion: "0.60.0",
+			latestVersion:  "0.60.0",
 			announcements: []announcement{
 				{
 					FromDate:     time.Date(2024, 2, 2, 12, 0, 0, 0, time.UTC),
@@ -144,9 +145,9 @@ func TestPrintNotices(t *testing.T) {
 			expectedOutput:   "",
 		},
 		{
-			name:          "No new version with multiple announcements, one of which is valid",
-			options:       []Option{WithCurrentVersion("0.60.0")},
-			latestVersion: "0.60.0",
+			name:           "No new version with multiple announcements, one of which is valid",
+			currentVersion: "0.60.0",
+			latestVersion:  "0.60.0",
 			announcements: []announcement{
 				{
 					FromDate:     time.Date(2025, 2, 2, 12, 0, 0, 0, time.UTC),
@@ -165,7 +166,8 @@ func TestPrintNotices(t *testing.T) {
 		},
 		{
 			name:             "No new version with no announcements and quiet mode",
-			options:          []Option{WithCurrentVersion("0.60.0"), WithQuietMode(true)},
+			quiet:            true,
+			currentVersion:   "0.60.0",
 			latestVersion:    "0.60.0",
 			announcements:    []announcement{},
 			responseExpected: false,
@@ -173,7 +175,7 @@ func TestPrintNotices(t *testing.T) {
 		},
 		{
 			name:             "No new version with no announcements",
-			options:          []Option{WithCurrentVersion("0.60.0")},
+			currentVersion:   "0.60.0",
 			latestVersion:    "0.60.0",
 			announcements:    []announcement{},
 			responseExpected: true,
@@ -185,11 +187,22 @@ func TestPrintNotices(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			updates := newUpdatesServer(t, tt.latestVersion, tt.announcements)
 			server := httptest.NewServer(http.HandlerFunc(updates.handler))
-			defer server.Close()
-			tt.options = append(tt.options, WithUpdatesApi(server.URL))
-			v := NewVersionChecker(tt.options...)
 
-			v.RunUpdateCheck(t.Context(), nil)
+			cliOpts := &flag.Options{
+				GlobalOptions: flag.GlobalOptions{
+					Quiet: tt.quiet,
+				},
+				ScanOptions: flag.ScanOptions{
+					SkipVersionCheck: tt.skipVersionCheck,
+					DisableTelemetry: tt.disableTelemetry,
+				},
+			}
+
+			v := NewVersionChecker("testCommand", cliOpts)
+			v.updatesApi = server.URL
+			v.currentVersion = tt.currentVersion
+
+			v.RunUpdateCheck(t.Context())
 			require.Eventually(t, func() bool { return v.done }, time.Second*5, 500)
 			require.Eventually(t, func() bool { return v.responseReceived == tt.responseExpected }, time.Second*5, 500)
 
@@ -207,32 +220,29 @@ func TestPrintNotices(t *testing.T) {
 func TestCheckForNotices(t *testing.T) {
 	tests := []struct {
 		name                  string
-		options               []Option
+		skipVersionCheck      bool
+		disableTelemetry      bool
+		quiet                 bool
+		currentVersion        string
 		expectedVersion       string
 		expectedAnnouncements []announcement
 		expectNoMetrics       bool
 	}{
 		{
-			name: "new version with no announcements",
-			options: []Option{
-				WithCurrentVersion("0.58.0"),
-			},
+			name:            "new version with no announcements",
+			currentVersion:  "0.58.0",
 			expectedVersion: "0.60.0",
 		},
 		{
-			name: "new version with disabled metrics",
-			options: []Option{
-				WithCurrentVersion("0.58.0"),
-				WithTelemetryDisabled(true),
-			},
-			expectedVersion: "0.60.0",
-			expectNoMetrics: true,
+			name:             "new version with disabled metrics",
+			disableTelemetry: true,
+			currentVersion:   "0.58.0",
+			expectedVersion:  "0.60.0",
+			expectNoMetrics:  true,
 		},
 		{
-			name: "new version and a new announcement",
-			options: []Option{
-				WithCurrentVersion("0.58.0"),
-			},
+			name:            "new version and a new announcement",
+			currentVersion:  "0.58.0",
 			expectedVersion: "0.60.0",
 			expectedAnnouncements: []announcement{
 				{
@@ -250,10 +260,20 @@ func TestCheckForNotices(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(updates.handler))
 			defer server.Close()
 
-			tt.options = append(tt.options, WithUpdatesApi(server.URL))
-			v := NewVersionChecker(tt.options...)
+			cliOpts := &flag.Options{
+				GlobalOptions: flag.GlobalOptions{
+					Quiet: tt.quiet,
+				},
+				ScanOptions: flag.ScanOptions{
+					SkipVersionCheck: tt.skipVersionCheck,
+					DisableTelemetry: tt.disableTelemetry,
+				},
+			}
 
-			v.RunUpdateCheck(t.Context(), nil)
+			v := NewVersionChecker("testCommand", cliOpts)
+			v.updatesApi = server.URL
+
+			v.RunUpdateCheck(t.Context())
 			require.Eventually(t, func() bool { return v.done }, time.Second*5, 500)
 			require.Eventually(t, func() bool { return v.responseReceived }, time.Second*5, 500)
 			latestVersion, err := v.LatestVersion()
@@ -262,11 +282,11 @@ func TestCheckForNotices(t *testing.T) {
 			assert.ElementsMatch(t, tt.expectedAnnouncements, v.Announcements())
 
 			if tt.expectNoMetrics {
-				assert.True(t, v.telemetryDisabled)
+				assert.True(t, v.disableTelemetry)
 				require.NotNil(t, updates.lastRequest)
 				assert.Empty(t, updates.lastRequest.Header.Get("Trivy-Identifier"))
 			} else {
-				assert.False(t, v.telemetryDisabled)
+				assert.False(t, v.disableTelemetry)
 				require.NotNil(t, updates.lastRequest)
 				assert.NotEmpty(t, updates.lastRequest.Header.Get("Trivy-Identifier"))
 			}
@@ -341,6 +361,95 @@ func TestFlexibleDate(t *testing.T) {
 			err := json.Unmarshal([]byte(tt.dateStr), &ft)
 			require.NoError(t, err)
 			assert.Equal(t, tt.expected.Unix(), ft.Unix())
+		})
+	}
+}
+
+func TestCheckCommandHeaders(t *testing.T) {
+	tests := []struct {
+		name                      string
+		command                   string
+		commandArgs               []string
+		env                       map[string]string
+		ignoreParseError          bool
+		expectedCommandHeader     string
+		expectedCommandArgsHeader string
+	}{
+		{
+			name:                  "image command with no flags",
+			command:               "image",
+			commandArgs:           []string{"nginx"},
+			expectedCommandHeader: "image",
+		},
+		{
+			name:                      "image command with flags",
+			command:                   "image",
+			commandArgs:               []string{"--severity", "CRITICAL", "--scanners", "vuln,misconfig", "--pkg-types", "library", "nginx", "--include-dev-deps"},
+			expectedCommandHeader:     "image",
+			expectedCommandArgsHeader: "--include-dev-deps=true --pkg-types=library --severity=CRITICAL --scanners=vuln,misconfig",
+		},
+		{
+			name:                      "image command with multiple flags",
+			command:                   "image",
+			commandArgs:               []string{"--severity", "MEDIUM", "-s", "CRITICAL", "--scanners", "misconfig", "nginx"},
+			expectedCommandHeader:     "image",
+			expectedCommandArgsHeader: "--severity=MEDIUM,CRITICAL --scanners=misconfig",
+		},
+		{
+			name:                      "filesystem command with flags",
+			command:                   "fs",
+			commandArgs:               []string{"--severity=HIGH", "--vex", "repo", "--vuln-severity-source", "nvd,debian", "../trivy-ci-test"},
+			expectedCommandHeader:     "fs",
+			expectedCommandArgsHeader: "--severity=HIGH --vex=****** --vuln-severity-source=nvd,debian",
+		},
+		{
+			name:                      "filesystem command with flags including an invalid flag",
+			command:                   "fs",
+			commandArgs:               []string{"--severity=HIGH", "--vex", "repo", "--vuln-severity-source", "nvd,debian", "--invalid-flag", "../trivy-ci-test"},
+			ignoreParseError:          true,
+			expectedCommandHeader:     "fs",
+			expectedCommandArgsHeader: "--severity=HIGH --vex=****** --vuln-severity-source=nvd,debian",
+		},
+		{
+			name:        "filesystem with environment variables",
+			command:     "fs",
+			commandArgs: []string{"--severity", "HIGH", "--vex", "repo", "/home/user/code"},
+			env: map[string]string{
+				"TRIVY_SCANNERS": "secret,misconfig",
+			},
+			expectedCommandHeader:     "fs",
+			expectedCommandArgsHeader: "--severity=HIGH --scanners=secret,misconfig --vex=******",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			updates := newUpdatesServer(t, "0.60.0", nil)
+			server := httptest.NewServer(http.HandlerFunc(updates.handler))
+			defer server.Close()
+
+			for key, value := range tt.env {
+				t.Setenv(key, value)
+			}
+
+			// clean up the env
+			defer func() {
+				server.Close()
+				for key := range tt.env {
+					t.Setenv(key, "")
+				}
+			}()
+
+			opts := getOptionsForArgs(t, tt.commandArgs, tt.ignoreParseError)
+
+			v := NewVersionChecker(tt.command, opts)
+			v.updatesApi = server.URL
+			v.RunUpdateCheck(t.Context())
+
+			require.Eventually(t, func() bool { return v.done }, time.Second*5, 500)
+			require.NotNil(t, updates.lastRequest)
+			assert.Equal(t, tt.expectedCommandHeader, updates.lastRequest.Header.Get("Trivy-Command"))
+			assert.Equal(t, tt.expectedCommandArgsHeader, updates.lastRequest.Header.Get("Trivy-Flags"))
 		})
 	}
 }
