@@ -832,3 +832,11 @@ func packageID(name, version string) string {
 func isSnapshot(ver string) bool {
 	return strings.HasSuffix(ver, "SNAPSHOT") || ver == "LATEST"
 }
+
+func isDirectory(path string) (bool, error) {
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		return false, err
+	}
+	return fileInfo.IsDir(), err
+}

@@ -122,6 +122,35 @@ func Test_ReadSettings(t *testing.T) {
 			},
 			wantSettings: settings{},
 		},
+		{
+			name: "environment placeholders are dereferenced",
+			envs: map[string]string{
+				"HOME":            filepath.Join("testdata", "settings", "user-settings-with-env-placeholders"),
+				"MAVEN_HOME":      "NOT_EXISTING_PATH",
+				"LOCAL_REPO_PT_1": "part1",
+				"LOCAL_REPO_PT_2": "part2",
+				"SERVER_ID":       "server-id-from-env",
+				"USERNAME":        "username-from-env",
+				"PASSWORD":        "password-from-env",
+			},
+			wantSettings: settings{
+				LocalRepository: "part1/part2/.m2/repository",
+				Servers: []Server{
+					{
+						ID: "user-server",
+					},
+					{
+						ID:       "server-id-from-env",
+						Username: "username-from-env",
+						Password: "password-from-env",
+					},
+					{
+						ID:       "server-with-name-only",
+						Username: "test-user-only",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
