@@ -10,4 +10,4 @@ else
   exit 1
 fi
 
-goreleaser release --clean --config=goreleaser.yml
+goreleaser release --clean --config=goreleaser.yml --verbose
