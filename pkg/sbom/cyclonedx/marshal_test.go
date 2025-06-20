@@ -2155,6 +2155,17 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
+			name:    "SPDX license with wrong exception",
+			license: "GPL-2.0-with-autoconf-exception+",
+			want: &cdx.Licenses{
+				cdx.LicenseChoice{
+					License: &cdx.License{
+						Name: "GPL-2.0-only WITH autoconf-exception+",
+					},
+				},
+			},
+		},
+		{
 			name:    "SPDX expression",
 			license: "GPL-3.0-only OR AFL 2.0 with Linux-syscall-note AND GPL-3.0-only",
 			want: &cdx.Licenses{

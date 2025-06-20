@@ -3425,7 +3425,7 @@
         },
         {
           "license": {
-            "id": "GPL-2.0-with-autoconf-exception+"
+            "name": "GPL-2.0-only WITH autoconf-exception+"
           }
         },
         {

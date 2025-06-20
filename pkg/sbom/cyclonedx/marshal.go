@@ -307,6 +307,10 @@ func (m *Marshaler) normalizeLicense(license string) cdx.LicenseChoice {
 		}
 	}
 
+	// e.g. GPL-3.0-with-autoconf-exception
+	license = strings.ReplaceAll(license, "-with-", " WITH ")
+	license = strings.ReplaceAll(license, "-WITH-", " WITH ")
+
 	var invalidSPDX, spdxExpression bool
 	validateSPDXLicense := func(expr expression.Expression) expression.Expression {
 		// We already found that the license is invalid
