@@ -423,13 +423,14 @@ func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Pac
 	//         All packages are included in the parent
 	// Case 3: Relationship: known , DependsOn: unknown (e.g., go.mod without $GOPATH)
 	//         All packages are included in the parent
-	// Case 4: Relationship: unknown, DependsOn: known (e.g., GoBinaries, OS packages)
-	//         - Packages with parents: false. These packages are included in the packages from `parents` (e.g. GoBinaries deps and root package).
-	//         - Packages without parents: true. These packages are included in the parent (e.g. OS packages without parents).
-	if pkg.Relationship == ftypes.RelationshipDirect {
+	// Case 4: Relationship: unknown, DependsOn: known (e.g., OS packages)
+	//         All packages are included in the parent even if they have parents
+	if pkg.Relationship == ftypes.RelationshipUnknown && len(parents[pkg.ID]) != 0 {
 		return !hasRoot
 	}
-
+	if pkg.Relationship == ftypes.RelationshipDirect || pkg.Relationship == ftypes.RelationshipUnknown {
+		return !hasRoot
+	}
 	return len(parents[pkg.ID]) == 0
 }
 
