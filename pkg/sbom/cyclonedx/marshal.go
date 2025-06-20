@@ -307,8 +307,7 @@ func (m *Marshaler) normalizeLicense(license string) cdx.LicenseChoice {
 		}
 	}
 
-	var invalidSPDX bool
-	var spdxExpression bool
+	var invalidSPDX, spdxExpression bool
 	validateSPDXLicense := func(expr expression.Expression) expression.Expression {
 		// We already found that the license is invalid
 		// So we can skip further checks
@@ -341,25 +340,23 @@ func (m *Marshaler) normalizeLicense(license string) cdx.LicenseChoice {
 		return cdx.LicenseChoice{}
 	}
 
-	var licenseChoice cdx.LicenseChoice
 	switch {
 	case invalidSPDX:
 		// Use licenseChoice.license.name for invalid SPDX ID / SPDX expression
-		licenseChoice.License = &cdx.License{
-			Name: normalizedLicense.String(),
+		return cdx.LicenseChoice{
+			License: &cdx.License{Name: normalizedLicense.String()},
 		}
 	case spdxExpression:
 		// Use licenseChoice.expression for valid SPDX expression (with any conjunction)
 		// e.g. "GPL-2.0 WITH Classpath-exception-2.0" or "GPL-2.0 AND MIT"
-		licenseChoice.Expression = normalizedLicense.String()
+		return cdx.LicenseChoice{Expression: normalizedLicense.String()}
 	default:
 		// Use licenseChoice.license.id for valid SPDX ID
-		licenseChoice.License = &cdx.License{
-			ID: normalizedLicense.String(),
+		return cdx.LicenseChoice{
+			License: &cdx.License{ID: normalizedLicense.String()},
 		}
 	}
 
-	return licenseChoice
 }
 
 func (*Marshaler) Properties(properties []core.Property) *[]cdx.Property {
