@@ -40,11 +40,14 @@ type Marshaler struct {
 	appVersion   string // Trivy version
 	bom          *core.BOM
 	componentIDs map[uuid.UUID]string
+
+	logger *log.Logger
 }
 
 func NewMarshaler(version string) Marshaler {
 	return Marshaler{
 		appVersion: version,
+		logger:     log.WithPrefix(log.PrefixCycloneDX),
 	}
 }
 
@@ -252,7 +255,7 @@ func (*Marshaler) Supplier(supplier string) *cdx.OrganizationalEntity {
 	}
 }
 
-func (*Marshaler) Hashes(files []core.File) *[]cdx.Hash {
+func (m *Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 	digests := lo.FlatMap(files, func(file core.File, _ int) []digest.Digest {
 		return file.Digests
 	})
@@ -271,7 +274,7 @@ func (*Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 		case digest.MD5:
 			alg = cdx.HashAlgoMD5
 		default:
-			log.Debug("Unable to convert algorithm to CycloneDX format", log.Any("alg", d.Algorithm()))
+			m.logger.Debug("Unable to convert algorithm to CycloneDX format", log.Any("alg", d.Algorithm()))
 			continue
 		}
 
@@ -294,7 +297,7 @@ func (m *Marshaler) Licenses(licenses []string) *cdx.Licenses {
 	return lo.ToPtr(cdx.Licenses(choices))
 }
 
-func (*Marshaler) normalizeLicense(license string) cdx.LicenseChoice {
+func (m *Marshaler) normalizeLicense(license string) cdx.LicenseChoice {
 	// Save text license as licenseChoice.license.name
 	if strings.HasPrefix(license, licensing.LicenseTextPrefix) {
 		return cdx.LicenseChoice{
@@ -334,8 +337,7 @@ func (*Marshaler) normalizeLicense(license string) cdx.LicenseChoice {
 	normalizedLicense, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX, validateSPDXLicense)
 	if err != nil {
 		// Not fail on the invalid license
-		// TODO add logger in marhaler
-		log.Warn("Unable to marshal SPDX licenses", log.String("license", license))
+		m.logger.Warn("Unable to marshal SPDX licenses", log.String("license", license))
 		return cdx.LicenseChoice{}
 	}
 
@@ -461,7 +463,7 @@ func (*Marshaler) source(source *dtypes.DataSource) *cdx.Source {
 	}
 }
 
-func (*Marshaler) cwes(cweIDs []string) *[]int {
+func (m *Marshaler) cwes(cweIDs []string) *[]int {
 	// to skip cdx.Vulnerability.CWEs when generating json
 	// we should return 'clear' nil without 'type' interface part
 	if cweIDs == nil {
@@ -471,7 +473,7 @@ func (*Marshaler) cwes(cweIDs []string) *[]int {
 	for _, cweID := range cweIDs {
 		number, err := strconv.Atoi(strings.TrimPrefix(strings.ToLower(cweID), "cwe-"))
 		if err != nil {
-			log.Debug("CWE-ID parse error", log.Err(err))
+			m.logger.Debug("CWE-ID parse error", log.Err(err))
 			continue
 		}
 		ret = append(ret, number)
