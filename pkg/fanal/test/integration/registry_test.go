@@ -17,7 +17,7 @@ import (
 	"github.com/docker/go-connections/nat"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	testcontainers "github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
@@ -30,6 +30,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	testdocker "github.com/aquasecurity/trivy/pkg/fanal/test/integration/docker"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
 const (
@@ -233,6 +234,11 @@ func analyze(ctx context.Context, imageRef string, opt types.ImageOptions) (*typ
 		return nil, err
 	}
 	cli.NegotiateAPIVersion(ctx)
+
+	// Configure custom transport with insecure option
+	ctx = xhttp.WithTransport(ctx, xhttp.NewTransport(xhttp.Options{
+		Insecure: opt.RegistryOptions.Insecure,
+	}))
 
 	img, cleanup, err := image.NewContainerImage(ctx, imageRef, opt)
 	if err != nil {
