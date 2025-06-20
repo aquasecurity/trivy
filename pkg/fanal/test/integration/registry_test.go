@@ -1,14 +1,11 @@
 //go:build integration
-// +build integration
 
 package integration
 
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"net/url"
-	"os"
 	"path/filepath"
 	"testing"
 
@@ -23,13 +20,14 @@ import (
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	testdocker "github.com/aquasecurity/trivy/pkg/fanal/test/integration/docker"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 )
 
 const (
@@ -40,7 +38,7 @@ const (
 )
 
 func TestTLSRegistry(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 
 	baseDir, err := filepath.Abs(".")
 	require.NoError(t, err)
@@ -189,7 +187,7 @@ func TestTLSRegistry(t *testing.T) {
 
 			// 2. Analyze it
 			imageRef := fmt.Sprintf("%s/%s", registryURL.Host, tc.imageName)
-			imageDetail, err := analyze(ctx, imageRef, tc.option)
+			imageDetail, err := analyze(t, ctx, imageRef, tc.option)
 			require.Equal(t, tc.wantErr, err != nil, err)
 			if err != nil {
 				return
@@ -216,12 +214,8 @@ func getRegistryURL(ctx context.Context, registryC testcontainers.Container, exp
 	return url.Parse(urlStr)
 }
 
-func analyze(ctx context.Context, imageRef string, opt types.ImageOptions) (*types.ArtifactDetail, error) {
-	d, err := ioutil.TempDir("", "TestRegistry-*")
-	if err != nil {
-		return nil, err
-	}
-	defer os.RemoveAll(d)
+func analyze(t *testing.T, ctx context.Context, imageRef string, opt types.ImageOptions) (*types.ArtifactDetail, error) {
+	d := t.TempDir()
 
 	c, err := cache.NewFSCache(d)
 	if err != nil {

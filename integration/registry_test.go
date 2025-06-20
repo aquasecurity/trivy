@@ -17,8 +17,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/types"
-
 	dockercontainer "github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
 	"github.com/google/go-containerregistry/pkg/authn"
@@ -28,6 +26,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
+
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
@@ -121,7 +121,7 @@ type registryOption struct {
 }
 
 func TestRegistry(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 
 	baseDir, err := filepath.Abs(".")
 	require.NoError(t, err)
@@ -241,7 +241,7 @@ func TestRegistry(t *testing.T) {
 			// Run Trivy
 			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
 				wantErr: tt.wantErr,
-				override: overrideFuncs(overrideUID, func(t *testing.T, want, got *types.Report) {
+				override: overrideFuncs(overrideUID, func(_ *testing.T, want, _ *types.Report) {
 					want.ArtifactName = s
 					for i := range want.Results {
 						want.Results[i].Target = fmt.Sprintf("%s (%s)", s, tt.os)
@@ -334,7 +334,7 @@ func requestRegistryToken(imageRef name.Reference, baseDir string, opt registryO
 	}
 
 	// Get a registry token
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/auth", opt.AuthURL), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/auth", opt.AuthURL), http.NoBody)
 	if err != nil {
 		return "", err
 	}

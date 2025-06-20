@@ -77,6 +77,7 @@ func TestPlugin(t *testing.T) {
 			}
 
 			err = execute(args)
+			require.NoError(t, err)
 
 			if *update {
 				fsutils.CopyFile(tempStdOut.Name(), tt.golden)

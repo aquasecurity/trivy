@@ -8,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
-
-	"github.com/stretchr/testify/require"
 )
 
 func TestTar(t *testing.T) {
@@ -168,7 +168,7 @@ func TestTar(t *testing.T) {
 				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
 				Distro: "alpine/3.10",
 			},
-			override: func(t *testing.T, want, got *types.Report) {
+			override: func(_ *testing.T, want, _ *types.Report) {
 				want.Metadata.OS.Name = "3.10"
 				want.Results[0].Target = "testdata/fixtures/images/alpine-39.tar.gz (alpine 3.10)"
 			},
@@ -425,7 +425,7 @@ func TestTar(t *testing.T) {
 			}
 			if len(tt.args.IgnoreIDs) != 0 {
 				trivyIgnore := ".trivyignore"
-				err := os.WriteFile(trivyIgnore, []byte(strings.Join(tt.args.IgnoreIDs, "\n")), 0444)
+				err := os.WriteFile(trivyIgnore, []byte(strings.Join(tt.args.IgnoreIDs, "\n")), 0o444)
 				require.NoError(t, err, "failed to write .trivyignore")
 				defer os.Remove(trivyIgnore)
 			}
