@@ -107,14 +107,12 @@ type CustomTransport struct {
 	auth       Auth
 	cachedETag string
 	newETag    string
-	insecure   bool
 }
 
 func NewCustomTransport(opts Options) *CustomTransport {
 	return &CustomTransport{
 		auth:       opts.Auth,
 		cachedETag: opts.ETag,
-		insecure:   opts.Insecure,
 	}
 }
 
