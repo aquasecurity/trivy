@@ -105,7 +105,10 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 	}
 
 	dirDeps := directDeps(project)
-	prodDeps := prodPackages(app, project.MainDeps())
+	mainDeps := project.MainDeps()
+	releaseDeps := project.ReleaseDeps()
+	toScanDeps := mainDeps.Union(releaseDeps)
+	prodDeps := prodPackages(app, toScanDeps)
 
 	// Identify the direct/transitive/dev dependencies
 	for i, pkg := range app.Packages {
@@ -117,6 +120,7 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 			app.Packages[i].Relationship = types.RelationshipIndirect
 		}
 	}
+
 	return nil
 }
 

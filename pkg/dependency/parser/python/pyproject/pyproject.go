@@ -51,6 +51,19 @@ func (p PyProject) MainDeps() set.Set[string] {
 	return deps
 }
 
+func (p PyProject) ReleaseDeps() set.Set[string] {
+	return p.GroupDeps("release")
+}
+
+func (p PyProject) GroupDeps(name string) set.Set[string] {
+	g := p.Tool.Poetry.Groups[name]
+	if g.Dependencies.Set == nil {
+		return set.New[string]()
+	}
+
+	return g.Dependencies.Clone()
+}
+
 func (d *Dependencies) UnmarshalTOML(data any) error {
 	switch deps := data.(type) {
 	case map[string]any: // For Poetry v1
@@ -78,8 +91,7 @@ func (d *Dependencies) UnmarshalTOML(data any) error {
 
 // Parser parses pyproject.toml defined in PEP518.
 // https://peps.python.org/pep-0518/
-type Parser struct {
-}
+type Parser struct{}
 
 func NewParser() *Parser {
 	return &Parser{}
