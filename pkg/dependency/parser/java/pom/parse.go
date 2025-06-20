@@ -25,9 +25,15 @@ import (
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-const (
-	centralURL = "https://repo.maven.apache.org/maven2/"
-)
+var centralURL string
+
+func init() {
+	if url, ok := os.LookupEnv("MAVEN_CENTRAL_URL"); ok {
+		centralURL = url
+	} else {
+		centralURL = "https://repo.maven.apache.org/maven2/"
+	}
+}
 
 type options struct {
 	offline             bool
