@@ -8,7 +8,7 @@ builds:
     ldflags:
       - -s -w
       - "-extldflags '-static'"
-      - -X github.com/aayachnes/trivy/pkg/version/app.ver={{.Version}}
+      - -X github.com/aayachnes/trivy/pkg/version/app.ver={{ .Version }}
     env:
       - CGO_ENABLED=0
     goos:
@@ -28,7 +28,7 @@ builds:
     ldflags:
       - -s -w
       - "-extldflags '-static'"
-      - -X github.com/aayachnes/trivy/pkg/version/app.ver={{.Version}}
+      - -X github.com/aayachnes/trivy/pkg/version/app.ver={{ .Version }}
     env:
       - CGO_ENABLED=0
     goos:
