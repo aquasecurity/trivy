@@ -18,6 +18,8 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/digest"
+	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
@@ -281,18 +283,81 @@ func (*Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 	return &cdxHashes
 }
 
-func (*Marshaler) Licenses(licenses []string) *cdx.Licenses {
+func (m *Marshaler) Licenses(licenses []string) *cdx.Licenses {
+	licenses = lo.Compact(licenses)
 	if len(licenses) == 0 {
 		return nil
 	}
 	choices := lo.Map(licenses, func(license string, _ int) cdx.LicenseChoice {
-		return cdx.LicenseChoice{
-			License: &cdx.License{
-				Name: license,
-			},
-		}
+		return m.normalizeLicense(license)
 	})
 	return lo.ToPtr(cdx.Licenses(choices))
+}
+
+func (*Marshaler) normalizeLicense(license string) cdx.LicenseChoice {
+	// Save text license as licenseChoice.license.name
+	if strings.HasPrefix(license, licensing.LicenseTextPrefix) {
+		return cdx.LicenseChoice{
+			License: &cdx.License{
+				Name: strings.TrimPrefix(license, licensing.LicenseTextPrefix),
+			},
+		}
+	}
+
+	var invalidSPDX bool
+	var spdxExpression bool
+	validateSPDXLicense := func(expr expression.Expression) expression.Expression {
+		// We already found that the license is invalid
+		// So we can skip further checks
+		if invalidSPDX {
+			return expr
+		}
+
+		switch e := expr.(type) {
+		case expression.SimpleExpr:
+			// Validate single license expression
+			invalidSPDX = !expression.ValidateSPDXLicense(e.License) && !expression.ValidateSPDXException(e.License)
+		case expression.CompoundExpr:
+			spdxExpression = true
+
+			// Check only license with "WITH" conjunction
+			// e.g. "GPL-2.0 WITH Classpath-exception-2.0"
+			// Other conjunctions we will check in SimpleExpr part.
+			if e.Conjunction() == expression.TokenWith {
+				invalidSPDX = !expression.ValidateSPDXLicense(e.Left().String()) || !expression.ValidateSPDXException(e.Right().String())
+			}
+		}
+
+		return expr
+	}
+
+	normalizedLicense, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX, validateSPDXLicense)
+	if err != nil {
+		// Not fail on the invalid license
+		// TODO add logger in marhaler
+		log.Warn("Unable to marshal SPDX licenses", log.String("license", license))
+		return cdx.LicenseChoice{}
+	}
+
+	var licenseChoice cdx.LicenseChoice
+	switch {
+	case invalidSPDX:
+		// Use licenseChoice.license.name for invalid SPDX ID / SPDX expression
+		licenseChoice.License = &cdx.License{
+			Name: normalizedLicense.String(),
+		}
+	case spdxExpression:
+		// Use licenseChoice.expression for valid SPDX expression (with any conjunction)
+		// e.g. "GPL-2.0 WITH Classpath-exception-2.0" or "GPL-2.0 AND MIT"
+		licenseChoice.Expression = normalizedLicense.String()
+	default:
+		// Use licenseChoice.license.id for valid SPDX ID
+		licenseChoice.License = &cdx.License{
+			ID: normalizedLicense.String(),
+		}
+	}
+
+	return licenseChoice
 }
 
 func (*Marshaler) Properties(properties []core.Property) *[]cdx.Property {
