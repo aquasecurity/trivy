@@ -179,7 +179,7 @@ func (sm *StaticMetadata) updateAliases(meta map[string]any) {
 	}
 }
 
-func (sm *StaticMetadata) hasAnyFramework(frameworks []framework.Framework) bool {
+func (sm *StaticMetadata) matchAnyFramework(frameworks []framework.Framework) bool {
 	if len(frameworks) == 0 {
 		frameworks = []framework.Framework{framework.Default}
 	}

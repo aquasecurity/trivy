@@ -125,7 +125,7 @@ func WithFrameworks(frameworks ...framework.Framework) options.ScannerOption {
 func WithTrivyVersion(version string) options.ScannerOption {
 	return func(s options.ConfigurableScanner) {
 		if ss, ok := s.(*Scanner); ok {
-			ss.trivyVersion = version
+			ss.moduleFilters = append(ss.moduleFilters, TrivyVersionFilter(version))
 		}
 	}
 }
