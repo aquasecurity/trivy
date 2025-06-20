@@ -195,7 +195,7 @@ func initializeRemoteImageScanService(ctx context.Context, imageName string, rem
 	if err != nil {
 		return scan.Service{}, nil, err
 	}
-	remoteCache := cache.NewRemoteCache(remoteCacheOptions)
+	remoteCache := cache.NewRemoteCache(ctx, remoteCacheOptions)
 	artifactArtifact, err := image2.NewArtifact(typesImage, remoteCache, artifactOption)
 	if err != nil {
 		cleanup()
@@ -220,7 +220,7 @@ func initializeRemoteArchiveScanService(ctx context.Context, filePath string, re
 	if err != nil {
 		return scan.Service{}, nil, err
 	}
-	remoteCache := cache.NewRemoteCache(remoteCacheOptions)
+	remoteCache := cache.NewRemoteCache(ctx, remoteCacheOptions)
 	artifactArtifact, err := image2.NewArtifact(typesImage, remoteCache, artifactOption)
 	if err != nil {
 		return scan.Service{}, nil, err
@@ -234,7 +234,7 @@ func initializeRemoteArchiveScanService(ctx context.Context, filePath string, re
 func initializeRemoteFilesystemScanService(ctx context.Context, path string, remoteCacheOptions cache.RemoteOptions, remoteScanOptions client.ServiceOption, artifactOption artifact.Option) (scan.Service, func(), error) {
 	v := _wireValue
 	service := client.NewService(remoteScanOptions, v...)
-	remoteCache := cache.NewRemoteCache(remoteCacheOptions)
+	remoteCache := cache.NewRemoteCache(ctx, remoteCacheOptions)
 	fs := walker.NewFS()
 	artifactArtifact, err := local2.NewArtifact(path, remoteCache, fs, artifactOption)
 	if err != nil {
@@ -249,7 +249,7 @@ func initializeRemoteFilesystemScanService(ctx context.Context, path string, rem
 func initializeRemoteRepositoryScanService(ctx context.Context, url string, remoteCacheOptions cache.RemoteOptions, remoteScanOptions client.ServiceOption, artifactOption artifact.Option) (scan.Service, func(), error) {
 	v := _wireValue
 	service := client.NewService(remoteScanOptions, v...)
-	remoteCache := cache.NewRemoteCache(remoteCacheOptions)
+	remoteCache := cache.NewRemoteCache(ctx, remoteCacheOptions)
 	fs := walker.NewFS()
 	artifactArtifact, cleanup, err := repo.NewArtifact(url, remoteCache, fs, artifactOption)
 	if err != nil {
@@ -265,7 +265,7 @@ func initializeRemoteRepositoryScanService(ctx context.Context, url string, remo
 func initializeRemoteSBOMScanService(ctx context.Context, path string, remoteCacheOptions cache.RemoteOptions, remoteScanOptions client.ServiceOption, artifactOption artifact.Option) (scan.Service, func(), error) {
 	v := _wireValue
 	service := client.NewService(remoteScanOptions, v...)
-	remoteCache := cache.NewRemoteCache(remoteCacheOptions)
+	remoteCache := cache.NewRemoteCache(ctx, remoteCacheOptions)
 	artifactArtifact, err := sbom.NewArtifact(path, remoteCache, artifactOption)
 	if err != nil {
 		return scan.Service{}, nil, err
@@ -279,7 +279,7 @@ func initializeRemoteSBOMScanService(ctx context.Context, path string, remoteCac
 func initializeRemoteVMScanService(ctx context.Context, path string, remoteCacheOptions cache.RemoteOptions, remoteScanOptions client.ServiceOption, artifactOption artifact.Option) (scan.Service, func(), error) {
 	v := _wireValue
 	service := client.NewService(remoteScanOptions, v...)
-	remoteCache := cache.NewRemoteCache(remoteCacheOptions)
+	remoteCache := cache.NewRemoteCache(ctx, remoteCacheOptions)
 	walkerVM := walker.NewVM()
 	artifactArtifact, err := vm.NewArtifact(path, remoteCache, walkerVM, artifactOption)
 	if err != nil {

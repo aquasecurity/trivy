@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"slices"
+	"time"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
@@ -34,6 +35,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scan"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
 // TargetKind represents what kind of artifact Trivy scans
@@ -599,6 +601,12 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 	// Disable the post handler for filtering system file when detection priority is comprehensive.
 	disabledHandlers := lo.Ternary(opts.DetectionPriority == ftypes.PriorityComprehensive,
 		[]ftypes.HandlerType{ftypes.SystemFileFilteringPostHandler}, nil)
+
+	// Set the default HTTP transport
+	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
+		Insecure: opts.Insecure,
+		Timeout:  10 * time.Minute,
+	}))
 
 	return ScannerConfig{
 		Target:             target,
