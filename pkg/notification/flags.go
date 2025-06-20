@@ -43,12 +43,14 @@ func getUsedFlags(cliOptions *flag.Options) string {
 					case flagger[[]string]:
 						val = strings.Join(ff.Value(), ",")
 					default:
-						val = "" // Default case for unsupported types
+						val = "***" // Default case for unsupported types
 					}
 				} else {
-					val = "******"
+					val = "***"
 				}
-				usedFlags = append(usedFlags, fmt.Sprintf("--%s=%s", f.GetName(), val))
+				if f.GetName() != "" {
+					usedFlags = append(usedFlags, fmt.Sprintf("--%s=%s", f.GetName(), val))
+				}
 			}
 		}
 	}

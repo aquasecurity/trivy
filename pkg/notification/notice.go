@@ -19,11 +19,7 @@ import (
 )
 
 type VersionChecker struct {
-	updatesApi       string
-	skipVersionCheck bool
-	quiet            bool
-	disableTelemetry bool
-
+	updatesApi  string
 	commandName string
 	cliOptions  *flag.Options
 
@@ -34,17 +30,13 @@ type VersionChecker struct {
 }
 
 // NewVersionChecker creates a new VersionChecker with the default
-// updates API URL. The URL can be overridden by passing an Option
-// to the NewVersionChecker function.
+// updates API URL.
 func NewVersionChecker(commandName string, cliOptions *flag.Options) *VersionChecker {
 	v := &VersionChecker{
-		updatesApi:       "https://check.trivy.dev/updates",
-		currentVersion:   app.Version(),
-		skipVersionCheck: cliOptions.SkipVersionCheck,
-		quiet:            cliOptions.Quiet,
-		disableTelemetry: cliOptions.DisableTelemetry,
-		commandName:      commandName,
-		cliOptions:       cliOptions,
+		updatesApi:     "https://check.trivy.dev/updates",
+		currentVersion: app.Version(),
+		commandName:    commandName,
+		cliOptions:     cliOptions,
 	}
 
 	return v
@@ -59,7 +51,7 @@ func NewVersionChecker(commandName string, cliOptions *flag.Options) *VersionChe
 func (v *VersionChecker) RunUpdateCheck(ctx context.Context) {
 	logger := log.WithPrefix("notification")
 
-	if v.skipVersionCheck && v.disableTelemetry {
+	if v.cliOptions.SkipVersionCheck && v.cliOptions.DisableTelemetry {
 		logger.Debug("Skipping update check and metric ping")
 		return
 	}
@@ -76,7 +68,7 @@ func (v *VersionChecker) RunUpdateCheck(ctx context.Context) {
 		}
 
 		// if the user hasn't disabled metrics, send the anonymous information as headers
-		if !v.disableTelemetry {
+		if !v.cliOptions.DisableTelemetry {
 			req.Header.Set("Trivy-Identifier", uniqueIdentifier())
 			req.Header.Set("Trivy-Command", v.commandName)
 			req.Header.Set("Trivy-Flags", commandParts)
@@ -98,7 +90,7 @@ func (v *VersionChecker) RunUpdateCheck(ctx context.Context) {
 		}
 
 		// enable priting if update allowed and quiet mode is not set
-		if !v.skipVersionCheck && !v.quiet {
+		if !v.cliOptions.SkipVersionCheck && !v.cliOptions.Quiet {
 			v.responseReceived = true
 		}
 		logger.Debug("Version check completed", log.String("latest_version", v.latestVersion.Trivy.LatestVersion))
@@ -180,17 +172,6 @@ func (v *VersionChecker) Warnings() []string {
 		return v.latestVersion.Warnings
 	}
 	return nil
-}
-
-// getFlags returns the just the flag portion without the values
-func getFlags(args []string) []string {
-	var flags []string
-	for _, arg := range args {
-		if strings.HasPrefix(arg, "-") {
-			flags = append(flags, strings.Split(arg, "=")[0])
-		}
-	}
-	return flags
 }
 
 func (fd *flexibleTime) UnmarshalJSON(b []byte) error {

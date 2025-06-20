@@ -9,9 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/flag"
 )
 
 func TestPrintNotices(t *testing.T) {
@@ -282,11 +283,9 @@ func TestCheckForNotices(t *testing.T) {
 			assert.ElementsMatch(t, tt.expectedAnnouncements, v.Announcements())
 
 			if tt.expectNoMetrics {
-				assert.True(t, v.disableTelemetry)
 				require.NotNil(t, updates.lastRequest)
 				assert.Empty(t, updates.lastRequest.Header.Get("Trivy-Identifier"))
 			} else {
-				assert.False(t, v.disableTelemetry)
 				require.NotNil(t, updates.lastRequest)
 				assert.NotEmpty(t, updates.lastRequest.Header.Get("Trivy-Identifier"))
 			}
@@ -400,7 +399,7 @@ func TestCheckCommandHeaders(t *testing.T) {
 			command:                   "fs",
 			commandArgs:               []string{"--severity=HIGH", "--vex", "repo", "--vuln-severity-source", "nvd,debian", "../trivy-ci-test"},
 			expectedCommandHeader:     "fs",
-			expectedCommandArgsHeader: "--severity=HIGH --vex=****** --vuln-severity-source=nvd,debian",
+			expectedCommandArgsHeader: "--severity=HIGH --vex=*** --vuln-severity-source=nvd,debian",
 		},
 		{
 			name:                      "filesystem command with flags including an invalid flag",
@@ -408,7 +407,7 @@ func TestCheckCommandHeaders(t *testing.T) {
 			commandArgs:               []string{"--severity=HIGH", "--vex", "repo", "--vuln-severity-source", "nvd,debian", "--invalid-flag", "../trivy-ci-test"},
 			ignoreParseError:          true,
 			expectedCommandHeader:     "fs",
-			expectedCommandArgsHeader: "--severity=HIGH --vex=****** --vuln-severity-source=nvd,debian",
+			expectedCommandArgsHeader: "--severity=HIGH --vex=*** --vuln-severity-source=nvd,debian",
 		},
 		{
 			name:        "filesystem with environment variables",
@@ -418,7 +417,7 @@ func TestCheckCommandHeaders(t *testing.T) {
 				"TRIVY_SCANNERS": "secret,misconfig",
 			},
 			expectedCommandHeader:     "fs",
-			expectedCommandArgsHeader: "--severity=HIGH --scanners=secret,misconfig --vex=******",
+			expectedCommandArgsHeader: "--severity=HIGH --scanners=secret,misconfig --vex=***",
 		},
 	}
 

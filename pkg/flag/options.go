@@ -76,7 +76,7 @@ type Flag[T FlagType] struct {
 	// Aliases represents aliases
 	Aliases []Alias
 
-	// TelemetrySafe indicates if the flag is safe to be used in telemetry.
+	// TelemetrySafe indicates if the flag value is safe to be included in telemetry.
 	TelemetrySafe bool
 
 	// value is the value passed through CLI flag, env, or config file.
@@ -226,6 +226,9 @@ func (f *Flag[T]) IsTelemetrySafe() bool {
 }
 
 func (f *Flag[T]) IsExplicitlySet() bool {
+	if f == nil {
+		return false
+	}
 	return f.isSet()
 }
 
