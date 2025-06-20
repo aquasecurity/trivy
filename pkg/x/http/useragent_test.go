@@ -78,7 +78,7 @@ func TestUserAgentTransport_RoundTrip(t *testing.T) {
 			client := &http.Client{Transport: transport}
 
 			// Create request
-			req, err := http.NewRequest(http.MethodGet, server.URL, nil)
+			req, err := http.NewRequest(http.MethodGet, server.URL, http.NoBody)
 			require.NoError(t, err)
 
 			// Set existing headers
