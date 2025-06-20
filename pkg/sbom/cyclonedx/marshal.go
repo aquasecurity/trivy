@@ -18,6 +18,8 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/digest"
+	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
@@ -38,11 +40,14 @@ type Marshaler struct {
 	appVersion   string // Trivy version
 	bom          *core.BOM
 	componentIDs map[uuid.UUID]string
+
+	logger *log.Logger
 }
 
 func NewMarshaler(version string) Marshaler {
 	return Marshaler{
 		appVersion: version,
+		logger:     log.WithPrefix(log.PrefixCycloneDX),
 	}
 }
 
@@ -250,7 +255,7 @@ func (*Marshaler) Supplier(supplier string) *cdx.OrganizationalEntity {
 	}
 }
 
-func (*Marshaler) Hashes(files []core.File) *[]cdx.Hash {
+func (m *Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 	digests := lo.FlatMap(files, func(file core.File, _ int) []digest.Digest {
 		return file.Digests
 	})
@@ -269,7 +274,7 @@ func (*Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 		case digest.MD5:
 			alg = cdx.HashAlgoMD5
 		default:
-			log.Debug("Unable to convert algorithm to CycloneDX format", log.Any("alg", d.Algorithm()))
+			m.logger.Debug("Unable to convert algorithm to CycloneDX format", log.Any("alg", d.Algorithm()))
 			continue
 		}
 
@@ -281,18 +286,81 @@ func (*Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 	return &cdxHashes
 }
 
-func (*Marshaler) Licenses(licenses []string) *cdx.Licenses {
+func (m *Marshaler) Licenses(licenses []string) *cdx.Licenses {
+	licenses = lo.Compact(licenses)
 	if len(licenses) == 0 {
 		return nil
 	}
 	choices := lo.Map(licenses, func(license string, _ int) cdx.LicenseChoice {
-		return cdx.LicenseChoice{
-			License: &cdx.License{
-				Name: license,
-			},
-		}
+		return m.normalizeLicense(license)
 	})
 	return lo.ToPtr(cdx.Licenses(choices))
+}
+
+func (m *Marshaler) normalizeLicense(license string) cdx.LicenseChoice {
+	// Save text license as licenseChoice.license.name
+	if strings.HasPrefix(license, licensing.LicenseTextPrefix) {
+		return cdx.LicenseChoice{
+			License: &cdx.License{
+				Name: strings.TrimPrefix(license, licensing.LicenseTextPrefix),
+			},
+		}
+	}
+
+	// e.g. GPL-3.0-with-autoconf-exception
+	license = strings.ReplaceAll(license, "-with-", " WITH ")
+	license = strings.ReplaceAll(license, "-WITH-", " WITH ")
+
+	var invalidSPDX, spdxExpression bool
+	validateSPDXLicense := func(expr expression.Expression) expression.Expression {
+		// We already found that the license is invalid
+		// So we can skip further checks
+		if invalidSPDX {
+			return expr
+		}
+
+		switch e := expr.(type) {
+		case expression.SimpleExpr:
+			// Validate single license expression
+			invalidSPDX = !expression.ValidateSPDXLicense(e.License) && !expression.ValidateSPDXException(e.License)
+		case expression.CompoundExpr:
+			spdxExpression = true
+
+			// Check only license with "WITH" conjunction
+			// e.g. "GPL-2.0 WITH Classpath-exception-2.0"
+			// Other conjunctions we will check in SimpleExpr part.
+			if e.Conjunction() == expression.TokenWith {
+				invalidSPDX = !expression.ValidateSPDXLicense(e.Left().String()) || !expression.ValidateSPDXException(e.Right().String())
+			}
+		}
+
+		return expr
+	}
+
+	normalizedLicense, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX, validateSPDXLicense)
+	if err != nil {
+		// Not fail on the invalid license
+		m.logger.Warn("Unable to marshal SPDX licenses", log.String("license", license))
+		return cdx.LicenseChoice{}
+	}
+
+	switch {
+	case invalidSPDX:
+		// Use licenseChoice.license.name for invalid SPDX ID / SPDX expression
+		return cdx.LicenseChoice{
+			License: &cdx.License{Name: normalizedLicense.String()},
+		}
+	case spdxExpression:
+		// Use licenseChoice.expression for valid SPDX expression (with any conjunction)
+		// e.g. "GPL-2.0 WITH Classpath-exception-2.0" or "GPL-2.0 AND MIT"
+		return cdx.LicenseChoice{Expression: normalizedLicense.String()}
+	default:
+		// Use licenseChoice.license.id for valid SPDX ID
+		return cdx.LicenseChoice{
+			License: &cdx.License{ID: normalizedLicense.String()},
+		}
+	}
+
 }
 
 func (*Marshaler) Properties(properties []core.Property) *[]cdx.Property {
@@ -396,7 +464,7 @@ func (*Marshaler) source(source *dtypes.DataSource) *cdx.Source {
 	}
 }
 
-func (*Marshaler) cwes(cweIDs []string) *[]int {
+func (m *Marshaler) cwes(cweIDs []string) *[]int {
 	// to skip cdx.Vulnerability.CWEs when generating json
 	// we should return 'clear' nil without 'type' interface part
 	if cweIDs == nil {
@@ -406,7 +474,7 @@ func (*Marshaler) cwes(cweIDs []string) *[]int {
 	for _, cweID := range cweIDs {
 		number, err := strconv.Atoi(strings.TrimPrefix(strings.ToLower(cweID), "cwe-"))
 		if err != nil {
-			log.Debug("CWE-ID parse error", log.Err(err))
+			m.logger.Debug("CWE-ID parse error", log.Err(err))
 			continue
 		}
 		ret = append(ret, number)
