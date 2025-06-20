@@ -69,7 +69,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -144,7 +144,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -185,7 +185,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -209,7 +209,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -233,7 +233,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
