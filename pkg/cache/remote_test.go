@@ -149,7 +149,6 @@ func TestRemoteCache_PutArtifact(t *testing.T) {
 			c := cache.NewRemoteCache(t.Context(), cache.RemoteOptions{
 				ServerAddr:    ts.URL,
 				CustomHeaders: tt.args.customHeaders,
-				Insecure:      false,
 			})
 			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
 			if tt.wantErr != "" {
@@ -212,7 +211,6 @@ func TestRemoteCache_PutBlob(t *testing.T) {
 			c := cache.NewRemoteCache(t.Context(), cache.RemoteOptions{
 				ServerAddr:    ts.URL,
 				CustomHeaders: tt.args.customHeaders,
-				Insecure:      false,
 			})
 			err := c.PutBlob(tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
@@ -292,7 +290,6 @@ func TestRemoteCache_MissingBlobs(t *testing.T) {
 			c := cache.NewRemoteCache(t.Context(), cache.RemoteOptions{
 				ServerAddr:    ts.URL,
 				CustomHeaders: tt.args.customHeaders,
-				Insecure:      false,
 			})
 			gotMissingImage, gotMissingLayerIDs, err := c.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
@@ -346,7 +343,6 @@ func TestRemoteCache_PutArtifactInsecure(t *testing.T) {
 			c := cache.NewRemoteCache(ctx, cache.RemoteOptions{
 				ServerAddr:    ts.URL,
 				CustomHeaders: nil,
-				Insecure:      tt.args.insecure,
 			})
 			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
 			if tt.wantErr != "" {
