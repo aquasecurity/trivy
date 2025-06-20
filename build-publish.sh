@@ -10,5 +10,4 @@ else
   exit 1
 fi
 
-# --snapshot 
 goreleaser release --clean --config=goreleaser.yml
