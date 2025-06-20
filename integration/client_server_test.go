@@ -11,14 +11,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/types"
-
 	dockercontainer "github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type csArgs struct {
@@ -60,7 +59,7 @@ func TestClientServer(t *testing.T) {
 				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
 				Distro: "alpine/3.10",
 			},
-			override: func(t *testing.T, want, got *types.Report) {
+			override: func(_ *testing.T, want, _ *types.Report) {
 				want.Metadata.OS.Name = "3.10"
 				want.Results[0].Target = "testdata/fixtures/images/alpine-39.tar.gz (alpine 3.10)"
 			},
@@ -312,7 +311,7 @@ func TestClientServer(t *testing.T) {
 				Target:           "https://github.com/knqyf263/trivy-ci-test",
 			},
 			golden: "testdata/test-repo.json.golden",
-			override: func(t *testing.T, want, got *types.Report) {
+			override: func(_ *testing.T, want, _ *types.Report) {
 				want.ArtifactName = "https://github.com/knqyf263/trivy-ci-test"
 			},
 		},
@@ -444,7 +443,7 @@ func TestClientServerWithFormat(t *testing.T) {
 	t.Setenv("GITHUB_WORKFLOW", "workflow-name")
 
 	t.Cleanup(func() {
-		report.CustomTemplateFuncMap = map[string]any{}
+		report.CustomTemplateFuncMap = make(map[string]any)
 	})
 
 	addr, cacheDir := setup(t, setupOptions{})
@@ -561,7 +560,7 @@ func TestClientServerWithCustomOptions(t *testing.T) {
 
 func TestClientServerWithRedis(t *testing.T) {
 	// Set up a Redis container
-	ctx := context.Background()
+	ctx := t.Context()
 	// This test includes 2 checks
 	// redisC container will terminate after first check
 	redisC, addr := setupRedis(t, ctx)
@@ -622,10 +621,14 @@ func setup(t *testing.T, options setupOptions) (string, string) {
 		osArgs := setupServer(addr, options.token, options.tokenHeader, options.pathPrefix, cacheDir, options.cacheBackend)
 
 		// Run Trivy server
-		require.NoError(t, execute(osArgs))
+		err := execute(osArgs)
+		if err != nil {
+			panic(err)
+		}
 	}()
 
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
 	err = waitPort(ctx, addr)
 	require.NoError(t, err)
 
@@ -653,7 +656,7 @@ func setupServer(addr, token, tokenHeader, pathPrefix, cacheDir, cacheBackend st
 	return osArgs
 }
 
-func setupClient(t *testing.T, c csArgs, addr string, cacheDir string) []string {
+func setupClient(t *testing.T, c csArgs, addr, cacheDir string) []string {
 	t.Helper()
 	if c.Command == "" {
 		c.Command = "image"
@@ -699,7 +702,7 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string) []string 
 
 	if len(c.IgnoreIDs) != 0 {
 		trivyIgnore := filepath.Join(t.TempDir(), ".trivyignore")
-		err := os.WriteFile(trivyIgnore, []byte(strings.Join(c.IgnoreIDs, "\n")), 0444)
+		err := os.WriteFile(trivyIgnore, []byte(strings.Join(c.IgnoreIDs, "\n")), 0o444)
 		require.NoError(t, err, "failed to write .trivyignore")
 		osArgs = append(osArgs, "--ignorefile", trivyIgnore)
 	}

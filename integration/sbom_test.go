@@ -186,8 +186,7 @@ func TestSBOM(t *testing.T) {
 				outputFile = tt.golden
 			}
 
-			osArgs = append(osArgs, "--output", outputFile)
-			osArgs = append(osArgs, tt.args.input)
+			osArgs = append(osArgs, "--output", outputFile, tt.args.input)
 
 			// Run "trivy sbom"
 			runTest(t, osArgs, tt.golden, outputFile, types.Format(tt.args.format), runOptions{
@@ -198,7 +197,7 @@ func TestSBOM(t *testing.T) {
 	}
 }
 
-func overrideSBOMReport(t *testing.T, want, got *types.Report) {
+func overrideSBOMReport(_ *testing.T, want, got *types.Report) {
 	want.Metadata.ImageID = ""
 	want.Metadata.ImageConfig = v1.ConfigFile{}
 	want.Metadata.DiffIDs = nil
