@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.64.0](https://github.com/aquasecurity/trivy/compare/v0.63.0...v0.64.0) (2025-06-20)
+
+
+### Features
+
+* **cli:** add version constraints to annoucements ([#9023](https://github.com/aquasecurity/trivy/issues/9023)) ([19efa9f](https://github.com/aquasecurity/trivy/commit/19efa9fd372242d2ec582a248e9e6573d2caef00))
+* **java:** dereference all maven settings.xml env placeholders ([#9024](https://github.com/aquasecurity/trivy/issues/9024)) ([5aade69](https://github.com/aquasecurity/trivy/commit/5aade698c71450badf8db028be61e12ec85c6248))
+* **misconf:** add OpenTofu file extension support ([#8747](https://github.com/aquasecurity/trivy/issues/8747)) ([57801d0](https://github.com/aquasecurity/trivy/commit/57801d0324384d990889ba39d856c881e5b8b070))
+* **misconf:** normalize CreatedBy for buildah and legacy docker builder ([#8953](https://github.com/aquasecurity/trivy/issues/8953)) ([65e155f](https://github.com/aquasecurity/trivy/commit/65e155fdaf0ad02ec82f00a004427f126faf65ed))
+* **redhat:** Add EOL date for RHEL 10. ([#8910](https://github.com/aquasecurity/trivy/issues/8910)) ([48258a7](https://github.com/aquasecurity/trivy/commit/48258a701a7adb210c433310de52f48568ccee19))
+* **ubuntu:** add eol date for 20.04-ESM ([#8981](https://github.com/aquasecurity/trivy/issues/8981)) ([87118a0](https://github.com/aquasecurity/trivy/commit/87118a0ec4a6ae492523b7bac9834c2b93a14557))
+
+
+### Bug Fixes
+
+* Add missing version check flags ([#8951](https://github.com/aquasecurity/trivy/issues/8951)) ([ef5f8de](https://github.com/aquasecurity/trivy/commit/ef5f8de8dadf5534a2c965aecca01c7067e5baca))
+* Correctly check for semver versions for trivy version check ([#8948](https://github.com/aquasecurity/trivy/issues/8948)) ([b813527](https://github.com/aquasecurity/trivy/commit/b813527449c4604f5afad71ae82b13399bb48680))
+* don't show corrupted trivy-db warning for first run ([#8991](https://github.com/aquasecurity/trivy/issues/8991)) ([4ed78e3](https://github.com/aquasecurity/trivy/commit/4ed78e39afe57e81c12482fef9102dc3f85d1493))
+* **misconf:** .Config.User always takes precedence over USER in .History ([#9050](https://github.com/aquasecurity/trivy/issues/9050)) ([371b8cc](https://github.com/aquasecurity/trivy/commit/371b8cc02f2ffa3f42534a437ce8727519e7b9b9))
+* **misconf:** correct Azure value-to-time conversion in AsTimeValue ([#9015](https://github.com/aquasecurity/trivy/issues/9015)) ([40d017b](https://github.com/aquasecurity/trivy/commit/40d017b67da38131734eab90c42ad945ac3b5013))
+* **misconf:** move disabled checks filtering after analyzer scan ([#9002](https://github.com/aquasecurity/trivy/issues/9002)) ([a58c36d](https://github.com/aquasecurity/trivy/commit/a58c36de124cba7250e1a5ae0cc32d83018391fe))
+* **misconf:** reduce log noise on incompatible check ([#9029](https://github.com/aquasecurity/trivy/issues/9029)) ([99c5151](https://github.com/aquasecurity/trivy/commit/99c5151d6ea1dabe85cce75ff9bb91166532b11f))
+* **nodejs:** correctly parse `packages` array of `bun.lock` file ([#8998](https://github.com/aquasecurity/trivy/issues/8998)) ([875ec3a](https://github.com/aquasecurity/trivy/commit/875ec3a9d2568e15a6824c8f84ad6a59f03eb212))
+* **report:** don't panic when report contains vulns, but doesn't contain packages for `table` format ([#8549](https://github.com/aquasecurity/trivy/issues/8549)) ([87fda76](https://github.com/aquasecurity/trivy/commit/87fda76f38a3a6939a87828c3df0c5ac2cf7fce3))
+* **sbom:** remove unnecessary OS detection check in SBOM decoding ([#9034](https://github.com/aquasecurity/trivy/issues/9034)) ([198789a](https://github.com/aquasecurity/trivy/commit/198789a07b857b053c73f8fcd1f508902fac344d))
+
 ## [0.63.0](https://github.com/aquasecurity/trivy/compare/v0.62.0...v0.63.0) (2025-05-29)
 
 
