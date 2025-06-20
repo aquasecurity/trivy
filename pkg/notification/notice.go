@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/go-version/pkg/semver"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/version/app"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
 type VersionChecker struct {
@@ -60,9 +61,7 @@ func (v *VersionChecker) RunUpdateCheck(ctx context.Context, args []string) {
 	go func() {
 		logger.Debug("Running version check")
 		args = getFlags(args)
-		client := &http.Client{
-			Timeout: 3 * time.Second,
-		}
+		client := xhttp.ClientWithContext(ctx, xhttp.WithTimeout(3*time.Second))
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, v.updatesApi, http.NoBody)
 		if err != nil {
