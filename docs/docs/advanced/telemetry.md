@@ -1,22 +1,23 @@
 # Usage Telemetry
 
-Trivy collect anonymous usage data in order to help us improve the product. This document explains what is collected and how you can control it.
+Trivy collects anonymous usage data in order to help us improve the product. This document explains what is collected and how you can control it.
 
 ## Data collected
 
 The following information could be collected:
 
-- Environmental information
-  - Installation identifier
-  - Trivy version
-  - Operating system
-- Scan
-  - Non-revealing scan options are captured with some flag discrete flag values included when they don't contain sensitive information. (See the section below)
+- Environmental information:
+    - Installation identifier
+    - Trivy version
+    - Operating system
+- Scan:
+    - Non-revealing scan options (see below for comprehensive list)
 
 ### Captured scan options
 The following flags will be included with their value:
 <!-- telemetry start -->
-```--detection-priority
+```
+--detection-priority
 --format
 --ignore-status
 --include-dev-deps
@@ -36,8 +37,8 @@ The following flags will be included with their value:
 
 No personal information, scan results, or sensitive data is specifically collected. We take the following measures to ensure that:
 
-- Installation identifier: one-way hash of machine fingerprint, resulting in opaque string.
-- Scaner: any option that is user controlled is omitted (never collected). For example, file paths, image names, etc are never collected.
+- Installation identifier: one-way hash of machine fingerprint, resulting in opaque ID.
+- Scan: any option that is user-controlled is omitted (never collected). For example, file paths, image names, etc are never collected.
 
 Trivy is an Aqua Security product and adheres to the company's privacy policy: <https://aquasec.com/privacy>.
 

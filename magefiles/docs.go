@@ -84,7 +84,7 @@ func updateTelemetryDocs(filename string, allFlagGroups []flag.FlagGroup) error 
 
 	sort.Strings(telemetryFlags)
 
-	newContent := string(content[:startIndex+len(start)]) + "\n```" +
+	newContent := string(content[:startIndex+len(start)]) + "\n```\n" +
 		strings.Join(telemetryFlags, "\n") + "\n```\n" +
 		string(content[endIndex:])
 
