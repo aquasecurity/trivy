@@ -2,7 +2,6 @@ package user.something
 
  __rego_metadata__ := {
  	"id": "TEST001",
- 	"avd_id": "AVD-TEST-0001",
  	"title": "Test policy",
  	"short_code": "empty-bucket-name",
  	"severity": "LOW",

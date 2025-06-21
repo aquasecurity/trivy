@@ -90,7 +90,6 @@ message MisconfResult {
 
 message PolicyMetadata {
   string          id                  = 1;
-  string          adv_id              = 2;
   string          type                = 3;
   string          title               = 4;
   string          description         = 5;
@@ -113,8 +112,8 @@ message DetectedMisconfiguration {
   string          status         = 11;
   Layer           layer          = 12;
   CauseMetadata   cause_metadata = 13;
-  string          avd_id         = 14;
-  string          query          = 15;
+  reserved 14;  // avd_id deprecated
+  string query = 15;
 }
 
 message Vulnerability {

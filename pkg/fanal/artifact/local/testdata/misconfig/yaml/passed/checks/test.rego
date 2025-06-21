@@ -2,7 +2,6 @@
 # title: Test check
 # custom:
 #   id: TEST001
-#   avd_id: TEST001
 #   severity: LOW
 package user.test_yaml_check
 
