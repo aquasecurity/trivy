@@ -17,18 +17,22 @@ The following information could be collected:
 The following flags will be included with their value:
 <!-- telemetry start -->
 ```
+--debug
 --detection-priority
 --format
 --ignore-status
 --include-dev-deps
+--insecure
 --list-all-pkgs
 --misconfig-scanners
 --pkg-relationships
 --pkg-types
+--quiet
 --report
 --scanners
 --severity
 --show-suppressed
+--timeout
 --vuln-severity-source
 ```
 <!-- telemetry end -->

@@ -118,12 +118,11 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 		opt(r)
 	}
 
-	commandName := "trivy" // backup command, but expecting sub command
+	// get the sub command name with fallback to trivy for version check telemetry
+	commandName := "trivy"
 	if len(os.Args) > 1 {
 		commandName = os.Args[1]
 	}
-
-	// If the user has not disabled notices or is running in quiet mode
 	r.versionChecker = notification.NewVersionChecker(commandName, &cliOptions)
 
 	// Update the vulnerability database if needed.

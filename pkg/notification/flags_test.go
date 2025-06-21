@@ -43,7 +43,7 @@ func TestFlagExtraction(t *testing.T) {
 		{
 			name:        "fs with discrete valued flags",
 			commandArgs: []string{"fs", "--severity", "HIGH", "--vex", "repo", "--vuln-severity-source", "nvd,debian", "../trivy-ci-test"},
-			expected:    "--severity=HIGH --vex=****** --vuln-severity-source=nvd,debian",
+			expected:    "--severity=HIGH --vex=*** --vuln-severity-source=nvd,debian",
 		},
 		{
 			name:        "use short and long flags for same option",
