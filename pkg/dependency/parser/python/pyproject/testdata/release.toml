@@ -1,0 +1,13 @@
+[project]
+name = "example"
+version = "0.1.0"
+description = "Release Group Test Case"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "8.3.4"
+
+[tool.poetry.group.release.dependencies]
+sentry-sdk = {version = "1.12.0"}
