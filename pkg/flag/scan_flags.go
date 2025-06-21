@@ -65,7 +65,8 @@ var (
 				Deprecated: true, // --security-checks was renamed to --scanners
 			},
 		},
-		Usage: "comma-separated list of what security issues to detect",
+		Usage:         "comma-separated list of what security issues to detect",
+		TelemetrySafe: true,
 	}
 	FilePatternsFlag = Flag[[]string]{
 		Name:       "file-patterns",
@@ -112,6 +113,7 @@ var (
   - "precise": Prioritizes precise by minimizing false positives.
   - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
 `,
+		TelemetrySafe: true,
 	}
 	DistroFlag = Flag[string]{
 		Name:       "distro",

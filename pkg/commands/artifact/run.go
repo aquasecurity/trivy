@@ -118,12 +118,12 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 		opt(r)
 	}
 
-	// If the user has not disabled notices or is running in quiet mode
-	r.versionChecker = notification.NewVersionChecker(
-		notification.WithSkipVersionCheck(cliOptions.SkipVersionCheck),
-		notification.WithQuietMode(cliOptions.Quiet),
-		notification.WithTelemetryDisabled(cliOptions.DisableTelemetry),
-	)
+	// get the sub command name with fallback to trivy for version check telemetry
+	commandName := "trivy"
+	if len(os.Args) > 1 {
+		commandName = os.Args[1]
+	}
+	r.versionChecker = notification.NewVersionChecker(commandName, &cliOptions)
 
 	// Update the vulnerability database if needed.
 	if err := r.initDB(ctx, cliOptions); err != nil {
@@ -150,7 +150,7 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 	// only do this if the user has not disabled notices or is running
 	// in quiet mode
 	if r.versionChecker != nil {
-		r.versionChecker.RunUpdateCheck(ctx, os.Args[1:])
+		r.versionChecker.RunUpdateCheck(ctx)
 	}
 
 	return r, nil
