@@ -880,9 +880,8 @@ func (p *Parser) cachedHTTPRequest(req *http.Request) ([]byte, int, error) {
 		return nil, resp.StatusCode, err
 	}
 
-	// Only cache successful responses
-	if resp.StatusCode == http.StatusOK {
-		// Store in cache
+	// Cache 2xx or 404 (we don't want to keep fetching artifacts that are not found via 404)
+	if resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusNotFound {
 		headers := make(map[string][]string)
 		for k, v := range resp.Header {
 			headers[k] = v
