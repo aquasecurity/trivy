@@ -33,7 +33,7 @@ import (
 // Default Maven central URL
 const defaultCentralUrl = "https://repo.maven.apache.org/maven2/"
 
-var httpCacheTtl = func() time.Duration {
+var mavenHttpCacheTtl = func() time.Duration {
 	if ttlStr := os.Getenv("MAVEN_CACHE_TTL_HOURS"); ttlStr != "" {
 		if ttl, err := strconv.Atoi(ttlStr); err == nil && ttl > 0 {
 			return time.Duration(ttl) * time.Hour
@@ -46,46 +46,45 @@ var httpCacheTtl = func() time.Duration {
 
 // Cache settings
 var (
-	httpCacheDir = "maven_http_cache"
-	cacheTTL     = httpCacheTtl
+	mavenHttpCacheDir = "maven_http_cache"
+	cacheTTL          = mavenHttpCacheTtl
 )
 
 // Ordered list of URLs to use to fetch Maven dependency metadata.
 // If there is an error fetching a dependency from a URL, the next URL is used, and so on.
 var mavenReleaseRepos []string
 
-// httpCacheEntry represents a cached HTTP response
-type httpCacheEntry struct {
+// mavenHttpCacheEntry represents a cached HTTP response
+type mavenHttpCacheEntry struct {
 	Data       []byte              `json:"data"`
 	ExpiresAt  time.Time           `json:"expires_at"`
 	Headers    map[string][]string `json:"headers"`
 	StatusCode int                 `json:"status_code"`
 }
 
-// httpCache handles filesystem caching of HTTP responses
-type httpCache struct {
+// mavenHttpCache handles filesystem caching of HTTP responses
+type mavenHttpCache struct {
 	cacheDir string
 }
 
-// newHTTPCache creates a new HTTP cache instance
-func newHTTPCache(logger *log.Logger) *httpCache {
-	var cacheDir string = filepath.Join(cache.DefaultDir(), httpCacheDir)
+func newMavenHttpCache(logger *log.Logger) *mavenHttpCache {
+	var cacheDir string = filepath.Join(cache.DefaultDir(), mavenHttpCacheDir)
 
-	logger.Debug("New HTTP cache ", log.String("cacheDir", cacheDir))
+	logger.Debug("New Maven cache ", log.String("cacheDir", cacheDir))
 
-	return &httpCache{
+	return &mavenHttpCache{
 		cacheDir: cacheDir,
 	}
 }
 
 // cacheKey generates a cache key for the given URL
-func (c *httpCache) cacheKey(path string) string {
+func (c *mavenHttpCache) cacheKey(path string) string {
 	h := sha256.Sum256([]byte(path))
 	return hex.EncodeToString(h[:])
 }
 
 // get retrieves a cached HTTP response if it exists and hasn't expired
-func (c *httpCache) get(path string) (*httpCacheEntry, error) {
+func (c *mavenHttpCache) get(path string) (*mavenHttpCacheEntry, error) {
 	key := c.cacheKey(path)
 	cacheFile := filepath.Join(c.cacheDir, key+".json")
 
@@ -100,7 +99,7 @@ func (c *httpCache) get(path string) (*httpCacheEntry, error) {
 		return nil, xerrors.Errorf("failed to read cache file: %w", err)
 	}
 
-	var entry httpCacheEntry
+	var entry mavenHttpCacheEntry
 	if err := json.Unmarshal(data, &entry); err != nil {
 		// If we can't parse the cache file, remove it and return cache miss
 		_ = os.Remove(cacheFile)
@@ -118,7 +117,7 @@ func (c *httpCache) get(path string) (*httpCacheEntry, error) {
 }
 
 // set stores an HTTP response in the cache
-func (c *httpCache) set(url string, path string, data []byte, headers map[string][]string, statusCode int) error {
+func (c *mavenHttpCache) set(url string, path string, data []byte, headers map[string][]string, statusCode int) error {
 	// Ensure cache directory exists
 	if err := os.MkdirAll(c.cacheDir, 0755); err != nil {
 		return xerrors.Errorf("failed to create cache directory: %w", err)
@@ -127,7 +126,7 @@ func (c *httpCache) set(url string, path string, data []byte, headers map[string
 	key := c.cacheKey(path)
 	cacheFile := filepath.Join(c.cacheDir, key+".json")
 
-	entry := httpCacheEntry{
+	entry := mavenHttpCacheEntry{
 		Data:       data,
 		ExpiresAt:  time.Now().Add(cacheTTL),
 		Headers:    headers,
@@ -185,7 +184,7 @@ type Parser struct {
 	logger              *log.Logger
 	rootPath            string
 	cache               pomCache
-	httpCache           *httpCache
+	mavenHttpCache      *mavenHttpCache
 	localRepository     string
 	releaseRemoteRepos  []string
 	snapshotRemoteRepos []string
@@ -218,7 +217,7 @@ func NewParser(filePath string, opts ...option) *Parser {
 		logger:              logger,
 		rootPath:            filepath.Clean(filePath),
 		cache:               newPOMCache(),
-		httpCache:           newHTTPCache(logger),
+		mavenHttpCache:      newMavenHttpCache(logger),
 		localRepository:     localRepository,
 		releaseRemoteRepos:  o.releaseRemoteRepos,
 		snapshotRemoteRepos: o.snapshotRemoteRepos,
@@ -857,7 +856,7 @@ func (p *Parser) cachedHTTPRequest(req *http.Request, path string) ([]byte, int,
 	url := req.URL.String()
 
 	// Try to get from cache first
-	if entry, err := p.httpCache.get(path); err != nil {
+	if entry, err := p.mavenHttpCache.get(path); err != nil {
 		p.logger.Debug("Cache read error", log.String("url", url), log.String("path", path), log.Err(err))
 	} else if entry != nil {
 		p.logger.Debug("Cache hit", log.String("url", url), log.String("path", path))
@@ -904,7 +903,7 @@ func (p *Parser) cachedHTTPRequest(req *http.Request, path string) ([]byte, int,
 
 	// Cache 2xx or 404 (we don't want to keep fetching artifacts that are not found via 404)
 	if statusCode == http.StatusOK || statusCode == http.StatusNotFound {
-		if cacheErr := p.httpCache.set(url, path, data, headers, statusCode); cacheErr != nil {
+		if cacheErr := p.mavenHttpCache.set(url, path, data, headers, statusCode); cacheErr != nil {
 			p.logger.Debug("Failed to cache response", log.String("url", url), log.String("path", path), log.Err(cacheErr))
 		} else {
 			p.logger.Debug("Cached response", log.String("url", url), log.String("path", path))
