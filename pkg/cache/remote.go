@@ -19,7 +19,6 @@ var _ ArtifactCache = (*RemoteCache)(nil)
 type RemoteOptions struct {
 	ServerAddr    string
 	CustomHeaders http.Header
-	Insecure      bool
 	PathPrefix    string
 }
 
