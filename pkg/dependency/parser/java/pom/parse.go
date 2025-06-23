@@ -25,13 +25,19 @@ import (
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-var centralURL string
+// Default Maven central URL
+const defaultCentralUrl = "https://repo.maven.apache.org/maven2/"
+
+// Ordered list of URLs to use to fetch Maven dependency metadata.
+// If there is an error fetching a dependency from a URL, the next URL is used, and so on.
+var mavenReleaseRepos []string
 
 func init() {
 	if url, ok := os.LookupEnv("MAVEN_CENTRAL_URL"); ok {
-		centralURL = url
+		// Use the default Maven central URL in case the 
+		mavenReleaseRepos = []string{url, defaultCentralUrl}
 	} else {
-		centralURL = "https://repo.maven.apache.org/maven2/"
+		mavenReleaseRepos = []string{defaultCentralUrl}
 	}
 }
 
@@ -75,7 +81,7 @@ type Parser struct {
 func NewParser(filePath string, opts ...option) *Parser {
 	o := &options{
 		offline:            false,
-		releaseRemoteRepos: []string{centralURL}, // Maven doesn't use central repository for snapshot dependencies
+		releaseRemoteRepos: mavenReleaseRepos, // Maven doesn't use central repository for snapshot dependencies
 	}
 
 	for _, opt := range opts {
