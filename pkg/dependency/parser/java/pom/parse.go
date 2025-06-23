@@ -1,6 +1,9 @@
 package pom
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -12,25 +15,120 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"time"
 
-	"github.com/hashicorp/go-multierror"
-	"github.com/samber/lo"
-	"golang.org/x/net/html/charset"
-	"golang.org/x/xerrors"
-
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	"github.com/hashicorp/go-multierror"
+	"github.com/samber/lo"
+	"golang.org/x/net/html/charset"
+	"golang.org/x/xerrors"
 )
 
 // Default Maven central URL
 const defaultCentralUrl = "https://repo.maven.apache.org/maven2/"
 
+// Cache settings
+const (
+	httpCacheDir = "maven_http_cache"
+	cacheTTL     = 1 * time.Hour
+)
+
 // Ordered list of URLs to use to fetch Maven dependency metadata.
 // If there is an error fetching a dependency from a URL, the next URL is used, and so on.
 var mavenReleaseRepos []string
+
+// httpCacheEntry represents a cached HTTP response
+type httpCacheEntry struct {
+	Data      []byte    `json:"data"`
+	ExpiresAt time.Time `json:"expires_at"`
+	Headers   map[string][]string `json:"headers"`
+	StatusCode int      `json:"status_code"`
+}
+
+// httpCache handles filesystem caching of HTTP responses
+type httpCache struct {
+	baseDir string
+}
+
+// newHTTPCache creates a new HTTP cache instance
+func newHTTPCache() *httpCache {
+	return &httpCache{
+		baseDir: filepath.Join(cache.DefaultDir(), httpCacheDir),
+	}
+}
+
+// cacheKey generates a cache key for the given URL
+func (c *httpCache) cacheKey(url string) string {
+	h := sha256.Sum256([]byte(url))
+	return hex.EncodeToString(h[:])
+}
+
+// get retrieves a cached HTTP response if it exists and hasn't expired
+func (c *httpCache) get(url string) (*httpCacheEntry, error) {
+	key := c.cacheKey(url)
+	cacheFile := filepath.Join(c.baseDir, key+".json")
+	
+	// Check if cache file exists
+	if _, err := os.Stat(cacheFile); os.IsNotExist(err) {
+		return nil, nil // Cache miss
+	}
+
+	// Read cache file
+	data, err := os.ReadFile(cacheFile)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to read cache file: %w", err)
+	}
+
+	var entry httpCacheEntry
+	if err := json.Unmarshal(data, &entry); err != nil {
+		// If we can't parse the cache file, remove it and return cache miss
+		_ = os.Remove(cacheFile)
+		return nil, nil
+	}
+
+	// Check if entry has expired
+	if time.Now().After(entry.ExpiresAt) {
+		// Lazy purge expired entry
+		_ = os.Remove(cacheFile)
+		return nil, nil
+	}
+
+	return &entry, nil
+}
+
+// set stores an HTTP response in the cache
+func (c *httpCache) set(url string, data []byte, headers map[string][]string, statusCode int) error {
+	// Ensure cache directory exists
+	if err := os.MkdirAll(c.baseDir, 0755); err != nil {
+		return xerrors.Errorf("failed to create cache directory: %w", err)
+	}
+
+	key := c.cacheKey(url)
+	cacheFile := filepath.Join(c.baseDir, key+".json")
+	
+	entry := httpCacheEntry{
+		Data:       data,
+		ExpiresAt:  time.Now().Add(cacheTTL),
+		Headers:    headers,
+		StatusCode: statusCode,
+	}
+
+	jsonData, err := json.Marshal(entry)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal cache entry: %w", err)
+	}
+
+	if err := os.WriteFile(cacheFile, jsonData, 0644); err != nil {
+		return xerrors.Errorf("failed to write cache file: %w", err)
+	}
+
+	return nil
+}
 
 func init() {
 	if url, ok := os.LookupEnv("MAVEN_CENTRAL_URL"); ok {
@@ -71,6 +169,7 @@ type Parser struct {
 	logger              *log.Logger
 	rootPath            string
 	cache               pomCache
+	httpCache           *httpCache
 	localRepository     string
 	releaseRemoteRepos  []string
 	snapshotRemoteRepos []string
@@ -99,6 +198,7 @@ func NewParser(filePath string, opts ...option) *Parser {
 		logger:              log.WithPrefix("pom"),
 		rootPath:            filepath.Clean(filePath),
 		cache:               newPOMCache(),
+		httpCache:           newHTTPCache(),
 		localRepository:     localRepository,
 		releaseRemoteRepos:  o.releaseRemoteRepos,
 		snapshotRemoteRepos: o.snapshotRemoteRepos,
@@ -732,6 +832,52 @@ func (p *Parser) remoteRepoRequest(repo string, paths []string) (*http.Request, 
 	return req, nil
 }
 
+// cachedHTTPRequest performs an HTTP request with caching support
+func (p *Parser) cachedHTTPRequest(req *http.Request) ([]byte, int, error) {
+	url := req.URL.String()
+	
+	// Try to get from cache first
+	if entry, err := p.httpCache.get(url); err != nil {
+		p.logger.Debug("Cache read error", log.String("url", url), log.Err(err))
+	} else if entry != nil {
+		p.logger.Debug("Cache hit", log.String("url", url))
+		return entry.Data, entry.StatusCode, nil
+	}
+
+	p.logger.Debug("Cache miss, making HTTP request", log.String("url", url))
+	
+	// Make HTTP request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer resp.Body.Close()
+
+	// Read response body
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, resp.StatusCode, err
+	}
+
+	// Only cache successful responses
+	if resp.StatusCode == http.StatusOK {
+		// Store in cache
+		headers := make(map[string][]string)
+		for k, v := range resp.Header {
+			headers[k] = v
+		}
+		
+		if cacheErr := p.httpCache.set(url, data, headers, resp.StatusCode); cacheErr != nil {
+			p.logger.Debug("Failed to cache response", log.String("url", url), log.Err(cacheErr))
+		} else {
+			p.logger.Debug("Cached response", log.String("url", url))
+		}
+	}
+
+	return data, resp.StatusCode, nil
+}
+
 // fetchPomFileNameFromMavenMetadata fetches `maven-metadata.xml` file to detect file name of pom file.
 func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) (string, error) {
 	// Overwrite pom file name to `maven-metadata.xml`
@@ -744,18 +890,16 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) 
 		return "", nil
 	}
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	data, statusCode, err := p.cachedHTTPRequest(req)
 	if err != nil {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
 		return "", nil
-	} else if resp.StatusCode != http.StatusOK {
-		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Int("statusCode", resp.StatusCode))
+	} else if statusCode != http.StatusOK {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Int("statusCode", statusCode))
 		return "", nil
 	}
-	defer resp.Body.Close()
 
-	mavenMetadata, err := parseMavenMetadata(resp.Body)
+	mavenMetadata, err := parseMavenMetadata(strings.NewReader(string(data)))
 	if err != nil {
 		return "", xerrors.Errorf("failed to parse maven-metadata.xml file: %w", err)
 	}
@@ -778,18 +922,16 @@ func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom
 		return nil, nil
 	}
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	data, statusCode, err := p.cachedHTTPRequest(req)
 	if err != nil {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
 		return nil, nil
-	} else if resp.StatusCode != http.StatusOK {
-		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Int("statusCode", resp.StatusCode))
+	} else if statusCode != http.StatusOK {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Int("statusCode", statusCode))
 		return nil, nil
 	}
-	defer resp.Body.Close()
 
-	content, err := parsePom(resp.Body)
+	content, err := parsePom(strings.NewReader(string(data)))
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse the remote POM: %w", err)
 	}
