@@ -56,10 +56,10 @@ var mavenReleaseRepos []string
 
 // httpCacheEntry represents a cached HTTP response
 type httpCacheEntry struct {
-	Data      []byte    `json:"data"`
-	ExpiresAt time.Time `json:"expires_at"`
-	Headers   map[string][]string `json:"headers"`
-	StatusCode int      `json:"status_code"`
+	Data       []byte              `json:"data"`
+	ExpiresAt  time.Time           `json:"expires_at"`
+	Headers    map[string][]string `json:"headers"`
+	StatusCode int                 `json:"status_code"`
 }
 
 // httpCache handles filesystem caching of HTTP responses
@@ -69,7 +69,7 @@ type httpCache struct {
 
 // newHTTPCache creates a new HTTP cache instance
 func newHTTPCache(logger *log.Logger) *httpCache {
-	var cacheDir string = filepath.Join(cache.DefaultDir(), httpCacheDir);
+	var cacheDir string = filepath.Join(cache.DefaultDir(), httpCacheDir)
 
 	logger.Debug("New HTTP cache ", log.String("cacheDir", cacheDir))
 
@@ -88,7 +88,7 @@ func (c *httpCache) cacheKey(url string) string {
 func (c *httpCache) get(url string) (*httpCacheEntry, error) {
 	key := c.cacheKey(url)
 	cacheFile := filepath.Join(c.cacheDir, key+".json")
-	
+
 	// Check if cache file exists
 	if _, err := os.Stat(cacheFile); os.IsNotExist(err) {
 		return nil, nil // Cache miss
@@ -126,7 +126,7 @@ func (c *httpCache) set(url string, data []byte, headers map[string][]string, st
 
 	key := c.cacheKey(url)
 	cacheFile := filepath.Join(c.cacheDir, key+".json")
-	
+
 	entry := httpCacheEntry{
 		Data:       data,
 		ExpiresAt:  time.Now().Add(cacheTTL),
@@ -148,7 +148,7 @@ func (c *httpCache) set(url string, data []byte, headers map[string][]string, st
 
 func init() {
 	if url, ok := os.LookupEnv("MAVEN_CENTRAL_URL"); ok {
-		// Use the default Maven central URL in case the 
+		// Use the default Maven central URL in case the
 		mavenReleaseRepos = []string{url, defaultCentralUrl}
 	} else {
 		mavenReleaseRepos = []string{defaultCentralUrl}
@@ -194,7 +194,7 @@ type Parser struct {
 }
 
 func NewParser(filePath string, opts ...option) *Parser {
-	var logger = log.WithPrefix("pom");
+	var logger = log.WithPrefix("pom")
 
 	o := &options{
 		offline:            false,
@@ -855,7 +855,7 @@ func (p *Parser) remoteRepoRequest(repo string, paths []string) (*http.Request, 
 // cachedHTTPRequest performs an HTTP request with caching support
 func (p *Parser) cachedHTTPRequest(req *http.Request) ([]byte, int, error) {
 	url := req.URL.String()
-	
+
 	// Try to get from cache first
 	if entry, err := p.httpCache.get(url); err != nil {
 		p.logger.Debug("Cache read error", log.String("url", url), log.Err(err))
@@ -865,41 +865,45 @@ func (p *Parser) cachedHTTPRequest(req *http.Request) ([]byte, int, error) {
 	}
 
 	p.logger.Debug("Cache miss, making HTTP request", log.String("url", url))
-	
+
 	// Make HTTP request
 	client := &http.Client{}
 	resp, err := client.Do(req)
 
-	var statusCode int;
+	var statusCode int = 0
+	var data = []byte{}
+	var headers = make(map[string][]string)
 
-	if err != nil {
-		p.logger.Debug("HTTP error", log.String("url", url), log.Err(err), log.Int("statusCode", resp.StatusCode));
-
-		if strings.Contains(err.Error(), "i/o timeout") {
-			p.logger.Debug("I/O timeout, falling back to 404");
-			statusCode = http.StatusNotFound
-		} else {
-			return nil, 0, err
-		}
-	} else {
+	// HTTP request was made successfully (doesn't mean it was a 2xx, just that the client did not return an error)
+	if err == nil {
 		defer resp.Body.Close()
-	}
 
-	// Read response body
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, resp.StatusCode, err
-	}
+		statusCode = resp.StatusCode
 
-	statusCode = resp.StatusCode
+		// Read response body
+		data, err = io.ReadAll(resp.Body)
 
-	// Cache 2xx or 404 (we don't want to keep fetching artifacts that are not found via 404)
-	if statusCode == http.StatusOK || statusCode == http.StatusNotFound {
-		headers := make(map[string][]string)
+		if err != nil {
+			return nil, statusCode, err
+		}
+
 		for k, v := range resp.Header {
 			headers[k] = v
 		}
-		
+	} else {
+		// Error when making HTTP request
+		p.logger.Debug("HTTP error", log.String("url", url), log.Err(err))
+
+		if strings.Contains(err.Error(), "i/o timeout") {
+			p.logger.Debug("I/O timeout, falling back to 404")
+			statusCode = http.StatusNotFound
+		} else {
+			return nil, statusCode, err
+		}
+	}
+
+	// Cache 2xx or 404 (we don't want to keep fetching artifacts that are not found via 404)
+	if statusCode == http.StatusOK || statusCode == http.StatusNotFound {
 		if cacheErr := p.httpCache.set(url, data, headers, statusCode); cacheErr != nil {
 			p.logger.Debug("Failed to cache response", log.String("url", url), log.Err(cacheErr))
 		} else {
