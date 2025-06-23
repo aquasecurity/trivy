@@ -869,10 +869,21 @@ func (p *Parser) cachedHTTPRequest(req *http.Request) ([]byte, int, error) {
 	// Make HTTP request
 	client := &http.Client{}
 	resp, err := client.Do(req)
+
+	var statusCode int;
+
 	if err != nil {
-		return nil, 0, err
+		p.logger.Debug("HTTP error", log.String("url", url), log.Err(err), log.Int("statusCode", resp.StatusCode));
+
+		if strings.Contains(err.Error(), "i/o timeout") {
+			p.logger.Debug("I/O timeout, falling back to 404");
+			statusCode = http.StatusNotFound
+		} else {
+			return nil, 0, err
+		}
+	} else {
+		defer resp.Body.Close()
 	}
-	defer resp.Body.Close()
 
 	// Read response body
 	data, err := io.ReadAll(resp.Body)
@@ -880,23 +891,25 @@ func (p *Parser) cachedHTTPRequest(req *http.Request) ([]byte, int, error) {
 		return nil, resp.StatusCode, err
 	}
 
+	statusCode = resp.StatusCode
+
 	// Cache 2xx or 404 (we don't want to keep fetching artifacts that are not found via 404)
-	if resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusNotFound {
+	if statusCode == http.StatusOK || statusCode == http.StatusNotFound {
 		headers := make(map[string][]string)
 		for k, v := range resp.Header {
 			headers[k] = v
 		}
 		
-		if cacheErr := p.httpCache.set(url, data, headers, resp.StatusCode); cacheErr != nil {
+		if cacheErr := p.httpCache.set(url, data, headers, statusCode); cacheErr != nil {
 			p.logger.Debug("Failed to cache response", log.String("url", url), log.Err(cacheErr))
 		} else {
 			p.logger.Debug("Cached response", log.String("url", url))
 		}
 	} else {
-		p.logger.Debug("Response not successful, no caching", log.String("url", url), log.Int("statusCode", resp.StatusCode))
+		p.logger.Debug("Response not successful, no caching", log.String("url", url), log.Int("statusCode", statusCode))
 	}
 
-	return data, resp.StatusCode, nil
+	return data, statusCode, nil
 }
 
 // fetchPomFileNameFromMavenMetadata fetches `maven-metadata.xml` file to detect file name of pom file.
