@@ -44,6 +44,10 @@ var mavenHttpCacheTtl = func() time.Duration {
 	return 6 * time.Hour
 }()
 
+// Maximum number of I/O timeouts Trivy will tolerate before skipping future requests to the domain
+// Without this, some scans can take a very long time because every request to a domain times out, one by one
+const MaxDomainTimeouts = 3
+
 // Cache settings
 var (
 	mavenHttpCacheDir = "maven_http_cache"
@@ -64,7 +68,8 @@ type mavenHttpCacheEntry struct {
 
 // mavenHttpCache handles filesystem caching of HTTP responses
 type mavenHttpCache struct {
-	cacheDir string
+	cacheDir       string
+	domainTimeouts map[string]int
 }
 
 func newMavenHttpCache(logger *log.Logger) *mavenHttpCache {
@@ -73,7 +78,8 @@ func newMavenHttpCache(logger *log.Logger) *mavenHttpCache {
 	logger.Debug("New Maven cache ", log.String("cacheDir", cacheDir))
 
 	return &mavenHttpCache{
-		cacheDir: cacheDir,
+		cacheDir:       cacheDir,
+		domainTimeouts: make(map[string]int),
 	}
 }
 
@@ -865,39 +871,52 @@ func (p *Parser) cachedHTTPRequest(req *http.Request, path string) ([]byte, int,
 
 	p.logger.Debug("Cache miss, making HTTP request", log.String("url", url), log.String("path", path))
 
-	// Make HTTP request
-	client := &http.Client{}
-	resp, err := client.Do(req)
-
+	var resp *http.Response
+	var err error
 	var statusCode int = 0
 	var data = []byte{}
 	var headers = make(map[string][]string)
 
-	// HTTP request was made successfully (doesn't mean it was a 2xx, just that the client did not return an error)
-	if err == nil {
-		defer resp.Body.Close()
-
-		statusCode = resp.StatusCode
-
-		// Read response body
-		data, err = io.ReadAll(resp.Body)
-
-		if err != nil {
-			return nil, statusCode, err
-		}
-
-		for k, v := range resp.Header {
-			headers[k] = v
-		}
+	if p.mavenHttpCache.domainTimeouts[req.Host] >= MaxDomainTimeouts {
+		p.logger.Debug(
+			fmt.Sprintf("Reached max timeouts (%d) for domain %s, assuming 404", MaxDomainTimeouts, req.Host),
+		)
+		statusCode = http.StatusNotFound
 	} else {
-		// Error when making HTTP request
-		p.logger.Debug("HTTP error", log.String("url", url), log.String("path", path), log.Err(err))
+		// Make HTTP request
+		client := &http.Client{}
+		resp, err = client.Do(req)
 
-		if strings.Contains(err.Error(), "i/o timeout") {
-			p.logger.Debug("I/O timeout, falling back to 404")
-			statusCode = http.StatusNotFound
+		// HTTP request was made successfully (doesn't mean it was a 2xx, just that the client did not return an error)
+		if err == nil {
+			defer resp.Body.Close()
+
+			statusCode = resp.StatusCode
+
+			// Read response body
+			data, err = io.ReadAll(resp.Body)
+
+			if err != nil {
+				return nil, statusCode, err
+			}
+
+			for k, v := range resp.Header {
+				headers[k] = v
+			}
 		} else {
-			return nil, statusCode, err
+			// Error when making HTTP request
+			p.logger.Debug("HTTP error", log.String("url", url), log.String("path", path), log.Err(err))
+
+			if strings.Contains(err.Error(), "i/o timeout") {
+				p.mavenHttpCache.domainTimeouts[req.Host]++
+				p.logger.Debug(
+					"I/O timeout, falling back to 404",
+					log.Int(fmt.Sprintf("numTimeouts[%s]", req.Host), p.mavenHttpCache.domainTimeouts[req.Host]),
+				)
+				statusCode = http.StatusNotFound
+			} else {
+				return nil, statusCode, err
+			}
 		}
 	}
 
