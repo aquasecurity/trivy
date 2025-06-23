@@ -52,13 +52,17 @@ type httpCacheEntry struct {
 
 // httpCache handles filesystem caching of HTTP responses
 type httpCache struct {
-	baseDir string
+	cacheDir string
 }
 
 // newHTTPCache creates a new HTTP cache instance
-func newHTTPCache() *httpCache {
+func newHTTPCache(logger *log.Logger) *httpCache {
+	var cacheDir string = filepath.Join(cache.DefaultDir(), httpCacheDir);
+
+	logger.Debug("New HTTP cache ", log.String("cacheDir", cacheDir))
+
 	return &httpCache{
-		baseDir: filepath.Join(cache.DefaultDir(), httpCacheDir),
+		cacheDir: cacheDir,
 	}
 }
 
@@ -71,7 +75,7 @@ func (c *httpCache) cacheKey(url string) string {
 // get retrieves a cached HTTP response if it exists and hasn't expired
 func (c *httpCache) get(url string) (*httpCacheEntry, error) {
 	key := c.cacheKey(url)
-	cacheFile := filepath.Join(c.baseDir, key+".json")
+	cacheFile := filepath.Join(c.cacheDir, key+".json")
 	
 	// Check if cache file exists
 	if _, err := os.Stat(cacheFile); os.IsNotExist(err) {
@@ -104,12 +108,12 @@ func (c *httpCache) get(url string) (*httpCacheEntry, error) {
 // set stores an HTTP response in the cache
 func (c *httpCache) set(url string, data []byte, headers map[string][]string, statusCode int) error {
 	// Ensure cache directory exists
-	if err := os.MkdirAll(c.baseDir, 0755); err != nil {
+	if err := os.MkdirAll(c.cacheDir, 0755); err != nil {
 		return xerrors.Errorf("failed to create cache directory: %w", err)
 	}
 
 	key := c.cacheKey(url)
-	cacheFile := filepath.Join(c.baseDir, key+".json")
+	cacheFile := filepath.Join(c.cacheDir, key+".json")
 	
 	entry := httpCacheEntry{
 		Data:       data,
@@ -194,11 +198,13 @@ func NewParser(filePath string, opts ...option) *Parser {
 		localRepository = filepath.Join(homeDir, ".m2", "repository")
 	}
 
+	var logger = log.WithPrefix("pom");
+
 	return &Parser{
-		logger:              log.WithPrefix("pom"),
+		logger:              logger,
 		rootPath:            filepath.Clean(filePath),
 		cache:               newPOMCache(),
-		httpCache:           newHTTPCache(),
+		httpCache:           newHTTPCache(logger),
 		localRepository:     localRepository,
 		releaseRemoteRepos:  o.releaseRemoteRepos,
 		snapshotRemoteRepos: o.snapshotRemoteRepos,
