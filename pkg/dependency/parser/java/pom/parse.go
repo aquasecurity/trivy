@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -32,10 +33,21 @@ import (
 // Default Maven central URL
 const defaultCentralUrl = "https://repo.maven.apache.org/maven2/"
 
+var httpCacheTtl = func() time.Duration {
+	if ttlStr := os.Getenv("MAVEN_CACHE_TTL_HOURS"); ttlStr != "" {
+		if ttl, err := strconv.Atoi(ttlStr); err == nil && ttl > 0 {
+			return time.Duration(ttl) * time.Hour
+		}
+	}
+
+	// Default TTL
+	return 6 * time.Hour
+}()
+
 // Cache settings
-const (
+var (
 	httpCacheDir = "maven_http_cache"
-	cacheTTL     = 1 * time.Hour
+	cacheTTL     = httpCacheTtl
 )
 
 // Ordered list of URLs to use to fetch Maven dependency metadata.
@@ -881,6 +893,8 @@ func (p *Parser) cachedHTTPRequest(req *http.Request) ([]byte, int, error) {
 		} else {
 			p.logger.Debug("Cached response", log.String("url", url))
 		}
+	} else {
+		p.logger.Debug("Response not successful, no caching", log.String("url", url), log.Int("statusCode", resp.StatusCode))
 	}
 
 	return data, resp.StatusCode, nil
