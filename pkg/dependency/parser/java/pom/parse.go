@@ -79,14 +79,14 @@ func newHTTPCache(logger *log.Logger) *httpCache {
 }
 
 // cacheKey generates a cache key for the given URL
-func (c *httpCache) cacheKey(url string) string {
-	h := sha256.Sum256([]byte(url))
+func (c *httpCache) cacheKey(path string) string {
+	h := sha256.Sum256([]byte(path))
 	return hex.EncodeToString(h[:])
 }
 
 // get retrieves a cached HTTP response if it exists and hasn't expired
-func (c *httpCache) get(url string) (*httpCacheEntry, error) {
-	key := c.cacheKey(url)
+func (c *httpCache) get(path string) (*httpCacheEntry, error) {
+	key := c.cacheKey(path)
 	cacheFile := filepath.Join(c.cacheDir, key+".json")
 
 	// Check if cache file exists
@@ -118,13 +118,13 @@ func (c *httpCache) get(url string) (*httpCacheEntry, error) {
 }
 
 // set stores an HTTP response in the cache
-func (c *httpCache) set(url string, data []byte, headers map[string][]string, statusCode int) error {
+func (c *httpCache) set(url string, path string, data []byte, headers map[string][]string, statusCode int) error {
 	// Ensure cache directory exists
 	if err := os.MkdirAll(c.cacheDir, 0755); err != nil {
 		return xerrors.Errorf("failed to create cache directory: %w", err)
 	}
 
-	key := c.cacheKey(url)
+	key := c.cacheKey(path)
 	cacheFile := filepath.Join(c.cacheDir, key+".json")
 
 	entry := httpCacheEntry{
@@ -852,19 +852,19 @@ func (p *Parser) remoteRepoRequest(repo string, paths []string) (*http.Request, 
 	return req, nil
 }
 
-// cachedHTTPRequest performs an HTTP request with caching support
-func (p *Parser) cachedHTTPRequest(req *http.Request) ([]byte, int, error) {
+// performs an HTTP request with caching support
+func (p *Parser) cachedHTTPRequest(req *http.Request, path string) ([]byte, int, error) {
 	url := req.URL.String()
 
 	// Try to get from cache first
-	if entry, err := p.httpCache.get(url); err != nil {
-		p.logger.Debug("Cache read error", log.String("url", url), log.Err(err))
+	if entry, err := p.httpCache.get(path); err != nil {
+		p.logger.Debug("Cache read error", log.String("url", url), log.String("path", path), log.Err(err))
 	} else if entry != nil {
-		p.logger.Debug("Cache hit", log.String("url", url))
+		p.logger.Debug("Cache hit", log.String("url", url), log.String("path", path))
 		return entry.Data, entry.StatusCode, nil
 	}
 
-	p.logger.Debug("Cache miss, making HTTP request", log.String("url", url))
+	p.logger.Debug("Cache miss, making HTTP request", log.String("url", url), log.String("path", path))
 
 	// Make HTTP request
 	client := &http.Client{}
@@ -892,7 +892,7 @@ func (p *Parser) cachedHTTPRequest(req *http.Request) ([]byte, int, error) {
 		}
 	} else {
 		// Error when making HTTP request
-		p.logger.Debug("HTTP error", log.String("url", url), log.Err(err))
+		p.logger.Debug("HTTP error", log.String("url", url), log.String("path", path), log.Err(err))
 
 		if strings.Contains(err.Error(), "i/o timeout") {
 			p.logger.Debug("I/O timeout, falling back to 404")
@@ -904,13 +904,13 @@ func (p *Parser) cachedHTTPRequest(req *http.Request) ([]byte, int, error) {
 
 	// Cache 2xx or 404 (we don't want to keep fetching artifacts that are not found via 404)
 	if statusCode == http.StatusOK || statusCode == http.StatusNotFound {
-		if cacheErr := p.httpCache.set(url, data, headers, statusCode); cacheErr != nil {
-			p.logger.Debug("Failed to cache response", log.String("url", url), log.Err(cacheErr))
+		if cacheErr := p.httpCache.set(url, path, data, headers, statusCode); cacheErr != nil {
+			p.logger.Debug("Failed to cache response", log.String("url", url), log.String("path", path), log.Err(cacheErr))
 		} else {
-			p.logger.Debug("Cached response", log.String("url", url))
+			p.logger.Debug("Cached response", log.String("url", url), log.String("path", path))
 		}
 	} else {
-		p.logger.Debug("Response not successful, no caching", log.String("url", url), log.Int("statusCode", statusCode))
+		p.logger.Debug("Response not successful, no caching", log.String("url", url), log.String("path", path), log.Int("statusCode", statusCode))
 	}
 
 	return data, statusCode, nil
@@ -928,7 +928,7 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) 
 		return "", nil
 	}
 
-	data, statusCode, err := p.cachedHTTPRequest(req)
+	data, statusCode, err := p.cachedHTTPRequest(req, strings.Join(mavenMetadataPaths, "/"))
 	if err != nil {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
 		return "", nil
@@ -960,7 +960,7 @@ func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom
 		return nil, nil
 	}
 
-	data, statusCode, err := p.cachedHTTPRequest(req)
+	data, statusCode, err := p.cachedHTTPRequest(req, strings.Join(paths, "/"))
 	if err != nil {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
 		return nil, nil
