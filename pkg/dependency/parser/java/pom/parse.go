@@ -182,10 +182,14 @@ type Parser struct {
 }
 
 func NewParser(filePath string, opts ...option) *Parser {
+	var logger = log.WithPrefix("pom");
+
 	o := &options{
 		offline:            false,
 		releaseRemoteRepos: mavenReleaseRepos, // Maven doesn't use central repository for snapshot dependencies
 	}
+
+	logger.Debug("Creating parser", log.String("releaseRemoteRepos", strings.Join(mavenReleaseRepos, ", ")))
 
 	for _, opt := range opts {
 		opt(o)
@@ -197,8 +201,6 @@ func NewParser(filePath string, opts ...option) *Parser {
 		homeDir, _ := os.UserHomeDir()
 		localRepository = filepath.Join(homeDir, ".m2", "repository")
 	}
-
-	var logger = log.WithPrefix("pom");
 
 	return &Parser{
 		logger:              logger,
