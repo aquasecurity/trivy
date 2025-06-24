@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"slices"
-	"time"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
@@ -605,7 +604,7 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 	// Set the default HTTP transport
 	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
 		Insecure: opts.Insecure,
-		Timeout:  10 * time.Minute,
+		Timeout:  opts.Timeout,
 	}))
 
 	return ScannerConfig{
