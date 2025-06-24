@@ -160,17 +160,8 @@ func (c *IgnoreConfig) MatchVulnerability(vulnID, filePath, pkgPath string, pkg 
 	return nil
 }
 
-func (c *IgnoreConfig) MatchMisconfiguration(misconfID, ID, filePath string) *IgnoreFinding {
-	ids := []string{
-		misconfID,
-		ID,
-	}
-	for _, id := range ids {
-		if f := c.Misconfigurations.Match(id, filePath, nil); f != nil {
-			return f
-		}
-	}
-	return nil
+func (c *IgnoreConfig) MatchMisconfiguration(misconfID, filePath string) *IgnoreFinding {
+	return c.Misconfigurations.Match(misconfID, filePath, nil)
 }
 
 func (c *IgnoreConfig) MatchSecret(secretID, filePath string) *IgnoreFinding {

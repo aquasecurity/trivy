@@ -23,9 +23,8 @@ import (
 const annotationScopePackage = "package"
 
 type StaticMetadata struct {
-	Deprecated bool
-	ID         string
-	//ID               string
+	Deprecated          bool
+	ID                  string
 	Title               string
 	ShortCode           string
 	Aliases             []string
