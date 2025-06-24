@@ -119,6 +119,12 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 		opt(r)
 	}
 
+	// Set the default HTTP transport
+	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
+		Insecure: cliOptions.Insecure,
+		Timeout:  cliOptions.Timeout,
+	}))
+
 	// If the user has not disabled notices or is running in quiet mode
 	r.versionChecker = notification.NewVersionChecker(
 		notification.WithSkipVersionCheck(cliOptions.SkipVersionCheck),
@@ -600,12 +606,6 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 	// Disable the post handler for filtering system file when detection priority is comprehensive.
 	disabledHandlers := lo.Ternary(opts.DetectionPriority == ftypes.PriorityComprehensive,
 		[]ftypes.HandlerType{ftypes.SystemFileFilteringPostHandler}, nil)
-
-	// Set the default HTTP transport
-	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
-		Insecure: opts.Insecure,
-		Timeout:  opts.Timeout,
-	}))
 
 	return ScannerConfig{
 		Target:             target,
