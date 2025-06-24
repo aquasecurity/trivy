@@ -60,13 +60,12 @@ func Transport(ctx context.Context) http.RoundTripper {
 func NewTransport(opts Options) http.RoundTripper {
 	tr := http.DefaultTransport.(*http.Transport).Clone()
 
-	// Set timeout if specified
-	if opts.Timeout > 0 {
-		d := &net.Dialer{
-			Timeout: opts.Timeout,
-		}
-		tr.DialContext = d.DialContext
+	// Set timeout (default to 5 minutes)
+	timeout := cmp.Or(opts.Timeout, 5*time.Minute)
+	d := &net.Dialer{
+		Timeout: timeout,
 	}
+	tr.DialContext = d.DialContext
 
 	// Configure TLS
 	if opts.Insecure {
