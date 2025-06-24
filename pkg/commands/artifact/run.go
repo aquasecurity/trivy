@@ -34,6 +34,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scan"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
 // TargetKind represents what kind of artifact Trivy scans
@@ -117,6 +118,12 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 	for _, opt := range opts {
 		opt(r)
 	}
+
+	// Set the default HTTP transport
+	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
+		Insecure: cliOptions.Insecure,
+		Timeout:  cliOptions.Timeout,
+	}))
 
 	// If the user has not disabled notices or is running in quiet mode
 	r.versionChecker = notification.NewVersionChecker(

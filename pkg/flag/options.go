@@ -517,7 +517,6 @@ func (o *Options) RemoteCacheOpts() cache.RemoteOptions {
 	return cache.RemoteOptions{
 		ServerAddr:    o.ServerAddr,
 		CustomHeaders: o.CustomHeaders,
-		Insecure:      o.Insecure,
 		PathPrefix:    o.PathPrefix,
 	}
 }
