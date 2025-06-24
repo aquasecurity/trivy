@@ -42,7 +42,7 @@ func TestJSONWriter_Write(t *testing.T) {
 					{
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
-								ID:     "AVD-KSV013",
+								ID:     "AVD-KSV-0013",
 								Status: types.MisconfStatusFailure,
 							},
 						},

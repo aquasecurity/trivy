@@ -41,7 +41,7 @@
           "Target": "",
           "Misconfigurations": [
             {
-              "ID": "AVD-KSV013",
+              "ID": "AVD-KSV-0013",
               "Status": "FAIL",
               "Layer": {},
               "CauseMetadata": {

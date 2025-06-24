@@ -35,10 +35,10 @@
           "Query": "data.builtin.dockerfile.DS002.deny",
           "Resolution": "Add 'USER \u003cnon root user name\u003e' line to the Dockerfile",
           "Severity": "HIGH",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds002",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-ds-0002",
           "References": [
             "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/",
-            "https://avd.aquasec.com/misconfig/ds002"
+            "https://avd.aquasec.com/misconfig/avd-ds-0002"
           ],
           "Status": "FAIL",
           "Layer": {},
