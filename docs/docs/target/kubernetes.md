@@ -331,10 +331,10 @@ trivy k8s --format json -o results.json cluster
               "Query": "data.builtin.kubernetes.KSV001.deny",
               "Resolution": "Set 'set containers[].securityContext.allowPrivilegeEscalation' to 'false'.",
               "Severity": "MEDIUM",
-              "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv001",
+              "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-ksv-0001",
               "References": [
                 "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
-                "https://avd.aquasec.com/misconfig/ksv001"
+                "https://avd.aquasec.com/misconfig/avd-ksv-0001"
               ],
               "Status": "FAIL",
               "Layer": {},
@@ -355,10 +355,10 @@ trivy k8s --format json -o results.json cluster
               "Query": "data.builtin.kubernetes.KSV003.deny",
               "Resolution": "Add 'ALL' to containers[].securityContext.capabilities.drop.",
               "Severity": "LOW",
-              "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv003",
+              "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-ksv-0003",
               "References": [
                 "https://kubesec.io/basics/containers-securitycontext-capabilities-drop-index-all/",
-                "https://avd.aquasec.com/misconfig/ksv003"
+                "https://avd.aquasec.com/misconfig/avd-ksv-0003"
               ],
               "Status": "FAIL",
               "Layer": {},
