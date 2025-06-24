@@ -348,13 +348,13 @@ type Lint mg.Namespace
 // Run runs linters
 func (Lint) Run() error {
 	mg.Deps(Tool{}.GolangciLint)
-	return sh.RunV("golangci-lint", "run")
+	return sh.RunV("golangci-lint", "run", "--build-tags=integration")
 }
 
 // Fix auto fixes linters
 func (Lint) Fix() error {
 	mg.Deps(Tool{}.GolangciLint)
-	return sh.RunV("golangci-lint", "run", "--fix")
+	return sh.RunV("golangci-lint", "run", "--fix", "--build-tags=integration")
 }
 
 // Fmt formats Go code and proto files

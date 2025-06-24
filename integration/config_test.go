@@ -202,7 +202,7 @@ severity:
 			outputFile := filepath.Join(t.TempDir(), "output.json")
 
 			configFile := tt.args.configFile
-			configFile = configFile + fmt.Sprintf(`
+			configFile += fmt.Sprintf(`
 format: json
 output: %s
 cache:
@@ -212,7 +212,7 @@ db:
 `, outputFile, cacheDir)
 
 			configPath := filepath.Join(t.TempDir(), "trivy.yaml")
-			err := os.WriteFile(configPath, []byte(configFile), 0444)
+			err := os.WriteFile(configPath, []byte(configFile), 0o444)
 			require.NoError(t, err)
 
 			osArgs := []string{
