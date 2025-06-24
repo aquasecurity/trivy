@@ -375,3 +375,19 @@ func overrideUID(t *testing.T, want, got *types.Report) {
 		}
 	}
 }
+
+// overrideDockerRemovedFields clears image config fields that were removed from Docker API
+// cf. https://github.com/moby/moby/blob/d0ad1357a141c795e1e0490e3fed00ddabcb91b9/docs/api/version-history.md
+func overrideDockerRemovedFields(t *testing.T, want, got *types.Report) {
+	// Clear Container field (removed in Docker API v1.45)
+	got.Metadata.ImageConfig.Container = ""
+	want.Metadata.ImageConfig.Container = ""
+
+	// Clear Image field (removed in Docker API v1.50)
+	got.Metadata.ImageConfig.Config.Image = ""
+	want.Metadata.ImageConfig.Config.Image = ""
+
+	// Clear Hostname field (removed in Docker API v1.50)
+	got.Metadata.ImageConfig.Config.Hostname = ""
+	want.Metadata.ImageConfig.Config.Hostname = ""
+}

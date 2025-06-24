@@ -190,7 +190,6 @@ func Test_image_ConfigFile(t *testing.T) {
 				},
 				Config: v1.Config{
 					Cmd:         []string{"/bin/sh"},
-					Image:       "sha256:74df73bb19fbfc7fb5ab9a8234b3d98ee2fb92df5b824496679802685205ab8c",
 					Env:         []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
 					ArgsEscaped: true,
 				},

@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/docker/docker/api/types"
+	dockerimage "github.com/docker/docker/api/types/image"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
@@ -48,7 +48,7 @@ func TestPodmanImage(t *testing.T) {
 	type fields struct {
 		Image   v1.Image
 		opener  opener
-		inspect types.ImageInspect
+		inspect dockerimage.InspectResponse
 	}
 	tests := []struct {
 		name           string

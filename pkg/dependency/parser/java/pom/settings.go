@@ -76,5 +76,17 @@ func openSettings(filePath string) (settings, error) {
 	if err = decoder.Decode(&s); err != nil {
 		return settings{}, err
 	}
+
+	expandAllEnvPlaceholders(&s)
+
 	return s, nil
+}
+
+func expandAllEnvPlaceholders(s *settings) {
+	s.LocalRepository = evaluateVariable(s.LocalRepository, nil, nil)
+	for i, server := range s.Servers {
+		s.Servers[i].ID = evaluateVariable(server.ID, nil, nil)
+		s.Servers[i].Username = evaluateVariable(server.Username, nil, nil)
+		s.Servers[i].Password = evaluateVariable(server.Password, nil, nil)
+	}
 }

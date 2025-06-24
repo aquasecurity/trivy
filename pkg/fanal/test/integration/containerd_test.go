@@ -332,6 +332,7 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 						Env: []string{
 							"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
 						},
+						ArgsEscaped: true,
 					},
 					History: []v1.History{
 						{
@@ -492,6 +493,7 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 							"/bin/sh",
 							"/docker-entrypoint.sh",
 						},
+						ArgsEscaped: true,
 					},
 					History: []v1.History{
 						{
@@ -782,7 +784,7 @@ func TestContainerd_PullImage(t *testing.T) {
 						Env: []string{
 							"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
 						},
-						ArgsEscaped: false,
+						ArgsEscaped: true,
 					},
 					History: []v1.History{
 						{
