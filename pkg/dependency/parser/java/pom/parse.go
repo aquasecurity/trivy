@@ -49,9 +49,10 @@ var mavenHttpCacheTtl = func() time.Duration {
 const MaxDomainTimeouts = 3
 
 // Cache settings
-var (
+
+const (
 	mavenHttpCacheDir = "maven_http_cache"
-	cacheTTL          = mavenHttpCacheTtl
+	domainsFileName   = "domains.json"
 )
 
 // Ordered list of URLs to use to fetch Maven dependency metadata.
@@ -68,19 +69,40 @@ type mavenHttpCacheEntry struct {
 
 // mavenHttpCache handles filesystem caching of HTTP responses
 type mavenHttpCache struct {
-	cacheDir       string
-	domainTimeouts map[string]int
+	cacheDir string
+	// cache entry TTL
+	ttl             time.Duration
+	domainsFilePath string
+	domainBlocklist []blocklistEntry
+	domainTimeouts  map[string]int
+	initialized     bool
 }
 
 func newMavenHttpCache(logger *log.Logger) *mavenHttpCache {
 	var cacheDir string = filepath.Join(cache.DefaultDir(), mavenHttpCacheDir)
+	var domainsFilePath string = filepath.Join(cacheDir, domainsFileName)
 
-	logger.Debug("New Maven cache ", log.String("cacheDir", cacheDir))
+	logger.Debug("New Maven cache ", log.String("cacheDir", cacheDir), log.String("domainsFilePath", domainsFilePath))
 
-	return &mavenHttpCache{
-		cacheDir:       cacheDir,
-		domainTimeouts: make(map[string]int),
+	var cache = &mavenHttpCache{
+		cacheDir:        cacheDir,
+		ttl:             mavenHttpCacheTtl,
+		domainsFilePath: domainsFilePath,
+		domainBlocklist: []blocklistEntry{},
+		domainTimeouts:  make(map[string]int),
+		initialized:     false,
 	}
+
+	cache.domainBlocklist, _ = cache.readDomainBlocklist()
+
+	// Ensure cache directory exists
+	if err := os.MkdirAll(cache.cacheDir, 0755); err != nil {
+		return cache
+	}
+
+	cache.initialized = true
+
+	return cache
 }
 
 // cacheKey generates a cache key for the given URL
@@ -91,6 +113,10 @@ func (c *mavenHttpCache) cacheKey(path string) string {
 
 // get retrieves a cached HTTP response if it exists and hasn't expired
 func (c *mavenHttpCache) get(path string) (*mavenHttpCacheEntry, error) {
+	if !c.initialized {
+		return nil, xerrors.Errorf("Maven cache is not initialized")
+	}
+
 	key := c.cacheKey(path)
 	cacheFile := filepath.Join(c.cacheDir, key+".json")
 
@@ -124,9 +150,8 @@ func (c *mavenHttpCache) get(path string) (*mavenHttpCacheEntry, error) {
 
 // set stores an HTTP response in the cache
 func (c *mavenHttpCache) set(url string, path string, data []byte, headers map[string][]string, statusCode int) error {
-	// Ensure cache directory exists
-	if err := os.MkdirAll(c.cacheDir, 0755); err != nil {
-		return xerrors.Errorf("failed to create cache directory: %w", err)
+	if !c.initialized {
+		return xerrors.Errorf("Maven cache is not initialized")
 	}
 
 	key := c.cacheKey(path)
@@ -134,7 +159,7 @@ func (c *mavenHttpCache) set(url string, path string, data []byte, headers map[s
 
 	entry := mavenHttpCacheEntry{
 		Data:       data,
-		ExpiresAt:  time.Now().Add(cacheTTL),
+		ExpiresAt:  time.Now().Add(c.ttl),
 		Headers:    headers,
 		StatusCode: statusCode,
 	}
@@ -149,6 +174,134 @@ func (c *mavenHttpCache) set(url string, path string, data []byte, headers map[s
 	}
 
 	return nil
+}
+
+type blocklistEntry struct {
+	Name      string    `json:"name"`
+	ExpiresAt time.Time `json:"expires_at"`
+}
+
+type domainsJson struct {
+	Blocklist []blocklistEntry `json:"blocklist"`
+}
+
+func isMavenReleaseDomain(name string) bool {
+	for _, repoUrl := range mavenReleaseRepos {
+		u, err := url.Parse(repoUrl)
+
+		if err != nil {
+			continue // skip malformed URLs
+		}
+
+		if name == u.Host {
+			return true
+		}
+	}
+
+	return false
+}
+
+// Blocklist a domain for the cache TTL period. Repos in mavenReleaseRepos cannot be blocklisted
+func (c *mavenHttpCache) blocklistDomain(name string) error {
+	var newBlocklistEntry blocklistEntry = blocklistEntry{
+		Name:      name,
+		ExpiresAt: time.Now().Add(c.ttl),
+	}
+
+	if !c.initialized {
+		return xerrors.Errorf("Maven cache is not initialized")
+	}
+
+	currentDomainBlocklist, err := c.readDomainBlocklist()
+
+	if err != nil {
+		return xerrors.Errorf("Failed to read domain blocklist, skipping blocklist: %w", err)
+	}
+
+	// Skip blocklisting configured Maven release domains to avoid DoS
+	if isMavenReleaseDomain(name) {
+		return nil
+	}
+
+	// Skip adding the domain to the blocklist if it's already present
+	for _, d := range currentDomainBlocklist {
+		if d.Name == name {
+			return nil
+		}
+	}
+
+	// Add the new domain to blocklist
+	currentDomainBlocklist = append(currentDomainBlocklist, newBlocklistEntry)
+	// Update the in-memory blocklist
+	c.domainBlocklist = currentDomainBlocklist
+
+	// Encode and write back
+	jsonData, err := json.Marshal(domainsJson{
+		Blocklist: currentDomainBlocklist,
+	})
+
+	if err != nil {
+		return xerrors.Errorf("failed to marshal domains json: %w", err)
+	}
+
+	if err := os.WriteFile(c.domainsFilePath, jsonData, 0644); err != nil {
+		return xerrors.Errorf("failed to write domains json file: %w", err)
+	}
+
+	// Success
+	return nil
+}
+
+// readDomainBlocklist reads and returns the current domain blocklist, filtering out expired entries
+func (c *mavenHttpCache) readDomainBlocklist() ([]blocklistEntry, error) {
+	if !c.initialized {
+		return []blocklistEntry{}, xerrors.Errorf("Maven cache is not initialized, default to empty blocklist")
+	}
+
+	if _, err := os.Stat(c.domainsFilePath); os.IsNotExist(err) {
+		return []blocklistEntry{}, xerrors.Errorf("Domains file does not exist, default to empty blocklist")
+	}
+
+	var currentDomainBlocklist []blocklistEntry
+
+	b, err := os.ReadFile(c.domainsFilePath)
+	if err != nil {
+		return []blocklistEntry{}, xerrors.Errorf("Failed to read domains file: %w", err)
+	}
+
+	if err := json.Unmarshal(b, &currentDomainBlocklist); err != nil {
+		return []blocklistEntry{}, xerrors.Errorf("Failed to unmarshal domains file: %w", err)
+	}
+
+	now := time.Now()
+
+	var unexpiredBlocklist []blocklistEntry
+	for _, d := range currentDomainBlocklist {
+		if now.Before(d.ExpiresAt) {
+			unexpiredBlocklist = append(unexpiredBlocklist, d)
+		}
+	}
+
+	return unexpiredBlocklist, nil
+}
+
+// Determine whether a domain is blocklisted by consulting the in-memory blocklist (synced with filesystem blocklist at process startup)
+func (c *mavenHttpCache) isDomainBlocklisted(name string) bool {
+	if !c.initialized {
+		return false
+	}
+
+	now := time.Now()
+
+	for _, d := range c.domainBlocklist {
+		if now.Before(d.ExpiresAt) {
+			if d.Name == name {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 func init() {
@@ -877,11 +1030,11 @@ func (p *Parser) cachedHTTPRequest(req *http.Request, path string) ([]byte, int,
 	var data = []byte{}
 	var headers = make(map[string][]string)
 
-	if p.mavenHttpCache.domainTimeouts[req.Host] >= MaxDomainTimeouts {
+	if p.mavenHttpCache.isDomainBlocklisted(req.URL.Host) {
 		p.logger.Debug(
-			fmt.Sprintf("Reached max timeouts (%d) for domain %s, assuming 404", MaxDomainTimeouts, req.Host),
+			fmt.Sprintf("Domain %s is blocklisted, assuming 404", req.URL.Host),
 		)
-		statusCode = http.StatusNotFound
+		return nil, http.StatusNotFound, nil
 	} else {
 		// Make HTTP request
 		client := &http.Client{}
@@ -909,11 +1062,19 @@ func (p *Parser) cachedHTTPRequest(req *http.Request, path string) ([]byte, int,
 
 			if strings.Contains(err.Error(), "i/o timeout") {
 				p.mavenHttpCache.domainTimeouts[req.Host]++
+
 				p.logger.Debug(
 					"I/O timeout, falling back to 404",
 					log.Int(fmt.Sprintf("numTimeouts[%s]", req.Host), p.mavenHttpCache.domainTimeouts[req.Host]),
 				)
-				statusCode = http.StatusNotFound
+
+				p.logger.Warn(
+					fmt.Sprintf("Blocklisting domain %s due to too many timeouts", req.URL.Host),
+				)
+
+				p.mavenHttpCache.blocklistDomain(req.URL.Host)
+
+				return nil, http.StatusNotFound, nil
 			} else {
 				return nil, statusCode, err
 			}
