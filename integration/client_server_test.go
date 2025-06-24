@@ -13,6 +13,7 @@ import (
 
 	dockercontainer "github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 
@@ -621,10 +622,7 @@ func setup(t *testing.T, options setupOptions) (string, string) {
 		osArgs := setupServer(addr, options.token, options.tokenHeader, options.pathPrefix, cacheDir, options.cacheBackend)
 
 		// Run Trivy server
-		err := execute(osArgs)
-		if err != nil {
-			panic(err)
-		}
+		assert.NoError(t, execute(osArgs))
 	}()
 
 	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
