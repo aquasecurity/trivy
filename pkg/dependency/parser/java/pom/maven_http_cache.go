@@ -47,16 +47,13 @@ type mavenHttpCache struct {
 	initialized     bool
 }
 
-func (c *mavenHttpCache) logDomainBlocklist() {
-	names := make([]string, len(c.domainBlocklist))
-	for i, entry := range c.domainBlocklist {
+func blocklistToString(blocklist []blocklistEntry) string {
+	names := make([]string, len(blocklist))
+	for i, entry := range blocklist {
 		names[i] = entry.Name
 	}
 
-	c.logger.Debug(
-		"Maven cache domainBlocklist ",
-		log.String("domainBlocklist", strings.Join(names, ", ")),
-	)
+	return strings.Join(names, ", ")
 }
 
 func newMavenHttpCache(logger *log.Logger, ttlMinutes int) *mavenHttpCache {
@@ -81,9 +78,6 @@ func newMavenHttpCache(logger *log.Logger, ttlMinutes int) *mavenHttpCache {
 		initialized:     false,
 	}
 
-	cache.domainBlocklist, _ = cache.readDomainBlocklist()
-	cache.logDomainBlocklist()
-
 	// Ensure cache directory exists
 	if err := os.MkdirAll(cache.cacheDir, 0755); err != nil {
 		logger.Warn(
@@ -94,6 +88,21 @@ func newMavenHttpCache(logger *log.Logger, ttlMinutes int) *mavenHttpCache {
 	}
 
 	cache.initialized = true
+	domainBlocklist, err := cache.readDomainBlocklist()
+
+	if err != nil {
+		logger.Warn(
+			"Error reading Maven cache domain blocklist ",
+			log.Err(err),
+		)
+	}
+
+	logger.Debug(
+		"Maven cache domainBlocklist ",
+		log.String("domainBlocklist", blocklistToString(domainBlocklist)),
+	)
+
+	cache.domainBlocklist = domainBlocklist
 
 	return cache
 }
@@ -256,6 +265,10 @@ func (c *mavenHttpCache) blocklistDomain(name string) error {
 
 // readDomainBlocklist reads and returns the current domain blocklist, filtering out expired entries
 func (c *mavenHttpCache) readDomainBlocklist() ([]blocklistEntry, error) {
+	if !c.initialized {
+		return nil, xerrors.Errorf("Maven cache is not initialized")
+	}
+
 	if _, err := os.Stat(c.domainsFilePath); os.IsNotExist(err) {
 		c.logger.Debug("Domains file does not exist, default to empty blocklist")
 		return []blocklistEntry{}, nil
