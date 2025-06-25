@@ -715,7 +715,7 @@
         },
         {
           "license": {
-            "name": "GFDL-1.3-or-later"
+            "id": "GFDL-1.3-or-later"
           }
         }
       ],
@@ -1003,7 +1003,7 @@
         },
         {
           "license": {
-            "name": "GFDL-1.3-only"
+            "id": "GFDL-1.3-only"
           }
         }
       ],
@@ -1060,7 +1060,7 @@
         },
         {
           "license": {
-            "name": "GFDL-1.2-only"
+            "id": "GFDL-1.2-only"
           }
         },
         {
@@ -2481,7 +2481,7 @@
         },
         {
           "license": {
-            "name": "GFDL-1.3-no-invariants-or-later"
+            "id": "GFDL-1.3-no-invariants-or-later"
           }
         },
         {
@@ -2548,7 +2548,7 @@
         },
         {
           "license": {
-            "name": "GFDL-1.3-no-invariants-or-later"
+            "id": "GFDL-1.3-no-invariants-or-later"
           }
         },
         {
@@ -2696,7 +2696,7 @@
         },
         {
           "license": {
-            "name": "GFDL-1.3-only"
+            "id": "GFDL-1.3-only"
           }
         },
         {
@@ -3791,7 +3791,7 @@
         },
         {
           "license": {
-            "name": "GFDL-1.3-or-later"
+            "id": "GFDL-1.3-or-later"
           }
         }
       ],
@@ -4569,7 +4569,7 @@
         },
         {
           "license": {
-            "name": "GFDL-1.3-only"
+            "id": "GFDL-1.3-only"
           }
         }
       ],
@@ -4758,7 +4758,7 @@
         },
         {
           "license": {
-            "name": "GFDL-1.2-or-later"
+            "id": "GFDL-1.2-or-later"
           }
         },
         {
@@ -4783,7 +4783,7 @@
         },
         {
           "license": {
-            "name": "GFDL-1.2-only"
+            "id": "GFDL-1.2-only"
           }
         }
       ],
@@ -5544,7 +5544,7 @@
         },
         {
           "license": {
-            "name": "GFDL-1.3-or-later"
+            "id": "GFDL-1.3-or-later"
           }
         }
       ],
