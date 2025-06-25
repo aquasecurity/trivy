@@ -6,6 +6,7 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -13,31 +14,38 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-
 // Scanner implements the Root.io scanner
 type Scanner struct {
-	baseOS   ftypes.OSType
 	comparer version.Comparer
 	vs       VulnSrc
+	logger   *log.Logger
 }
 
 // NewScanner is the factory method for Scanner
 func NewScanner(baseOS ftypes.OSType) Scanner {
-	return Scanner{
-		baseOS:   baseOS,
-		comparer: selectComparer(baseOS),
-		vs:       newMockVulnSrc(baseOS),
-	}
-}
+	var comparer version.Comparer
+	var vs VulnSrc
 
-func selectComparer(baseOS ftypes.OSType) version.Comparer {
 	switch baseOS {
-	case ftypes.Debian, ftypes.Ubuntu:
-		return version.NewDEBComparer()
+	case ftypes.Debian:
+		comparer = version.NewDEBComparer()
+		vs = newMockVulnSrc(vulnerability.Debian)
+	case ftypes.Ubuntu:
+		comparer = version.NewDEBComparer()
+		vs = newMockVulnSrc(vulnerability.Ubuntu)
 	case ftypes.Alpine:
-		return version.NewAPKComparer()
+		comparer = version.NewAPKComparer()
+		vs = newMockVulnSrc(vulnerability.Alpine)
 	default:
-		return version.NewDEBComparer()
+		// Should never happen as it's validated in the provider
+		comparer = version.NewDEBComparer()
+		vs = newMockVulnSrc(vulnerability.Debian)
+	}
+
+	return Scanner{
+		comparer: comparer,
+		vs:       vs,
+		logger:   log.WithPrefix("rootio"),
 	}
 }
 
@@ -79,46 +87,42 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 func (s *Scanner) isVulnerable(ctx context.Context, installedVersion string, adv dbTypes.Advisory) bool {
 	// Handle unfixed vulnerabilities
-	if adv.FixedVersion == "" {
-		// Check if the package is affected by parsing the AffectedVersion constraints
-		if adv.AffectedVersion != "" {
-			return s.checkConstraints(ctx, installedVersion, adv.AffectedVersion)
-		}
-		// If no constraints, assume vulnerable
+	if len(adv.VulnerableVersions) == 0 {
+		// If no vulnerable versions are specified, it means the package is always vulnerable
 		return true
 	}
 
 	// For fixed vulnerabilities, check if installed version satisfies the constraint
-	return s.checkConstraints(ctx, installedVersion, adv.FixedVersion)
+	return s.checkConstraints(ctx, installedVersion, adv.VulnerableVersions)
 }
 
-func (s *Scanner) checkConstraints(ctx context.Context, installedVersion, constraintStr string) bool {
-	if constraintStr == "" || installedVersion == "" {
+func (s *Scanner) checkConstraints(ctx context.Context, installedVersion string, constraintsStr []string) bool {
+	if installedVersion == "" {
 		return false
 	}
 
-	// Use DEB comparer as default - Root.io constraints are generic
-	comparer := version.NewDEBComparer()
-	constraints, err := version.NewConstraints(constraintStr, comparer)
-	if err != nil {
-		log.DebugContext(ctx, "Failed to parse constraints",
-			log.String("constraints", constraintStr), log.Err(err))
-		return false
-	}
+	for _, constraintStr := range constraintsStr {
+		constraints, err := version.NewConstraints(constraintStr, s.comparer)
+		if err != nil {
+			s.logger.DebugContext(ctx, "Failed to parse constraints",
+				log.String("constraints", constraintStr), log.Err(err))
+			return false
+		}
 
-	satisfied, err := constraints.Check(installedVersion)
-	if err != nil {
-		log.DebugContext(ctx, "Failed to check version constraints",
-			log.String("version", installedVersion),
-			log.String("constraints", constraintStr), log.Err(err))
-		return false
+		if satisfied, err := constraints.Check(installedVersion); err != nil {
+			s.logger.DebugContext(ctx, "Failed to check version constraints",
+				log.String("version", installedVersion),
+				log.String("constraints", constraintStr), log.Err(err))
+			return false
+		} else if satisfied {
+			return true
+		}
 	}
-
-	return satisfied
+	return false
 }
 
 // IsSupportedVersion checks if the version is supported.
-// Root.io provides generic vulnerability data, so all versions are supported.
+// TODO: Should check if the base OS reaches EOL?
 func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ string) bool {
 	return true
 }
