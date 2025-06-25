@@ -436,11 +436,7 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 		var licenseName string
 		switch e := expr.(type) {
 		case expression.SimpleExpr:
-			if strings.HasPrefix(e.License, LicenseRefPrefix) {
-				return e
-			}
-
-			if expression.ValidateSPDXLicense(e.License) || expression.ValidateSPDXException(e.License) {
+			if strings.HasPrefix(e.License, LicenseRefPrefix) || e.IsSPDXExpression() {
 				return e
 			}
 
@@ -452,7 +448,7 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 			}
 
 			// Check that license and exception are valid
-			if expression.ValidateSPDXLicense(e.Left().String()) && expression.ValidateSPDXException(e.Right().String()) {
+			if e.IsSPDXExpression() {
 				// Use SimpleExpr for a valid SPDX license with an exception,
 				// to avoid parsing the license and exception separately.
 				return e
