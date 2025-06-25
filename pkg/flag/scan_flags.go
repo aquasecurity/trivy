@@ -36,7 +36,7 @@ var (
 	MavenCacheTtlFlag = Flag[int]{
 		Name:       "maven-cache-ttl",
 		ConfigName: "scan.maven-cache-ttl",
-		Default:    360,
+		Default:    720,
 		Usage:      "TTL in minutes for Maven cache entries",
 	}
 	ScannersFlag = Flag[[]string]{

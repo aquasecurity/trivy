@@ -98,6 +98,7 @@ func NewParser(filePath string, opts ...option) *Parser {
 	o := &options{
 		offline:            false,
 		useMavenCache:      false,
+		mavenCacheTtl:      720,
 		releaseRemoteRepos: mavenReleaseRepos, // Maven doesn't use central repository for snapshot dependencies
 	}
 
