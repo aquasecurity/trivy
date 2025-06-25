@@ -43,6 +43,7 @@ func (v *mockVulnSrc) Get(osVer, pkgName string) ([]dbTypes.Advisory, error) {
 	// Get advisories from the original distributors, like Debian or Alpine
 	advs, err := v.inner.Get(osVer, pkgName)
 	if err != nil {
+		return nil, err
 	}
 
 	// Simulate the advisories with Root.io's version constraints
@@ -58,6 +59,7 @@ func (v *mockVulnSrc) Get(osVer, pkgName string) ([]dbTypes.Advisory, error) {
 
 	advs, err = v.dbc.GetAdvisories(osVer, pkgName)
 	if err != nil {
+		return nil, err
 	}
 
 	rootAdvs := lo.SliceToMap(advs, func(adv dbTypes.Advisory) (string, dbTypes.Advisory) {

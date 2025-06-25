@@ -22,7 +22,7 @@ type Scanner struct {
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner(baseOS ftypes.OSType) Scanner {
+func NewScanner(baseOS ftypes.OSType) *Scanner {
 	var comparer version.Comparer
 	var vs VulnSrc
 
@@ -42,7 +42,7 @@ func NewScanner(baseOS ftypes.OSType) Scanner {
 		vs = newMockVulnSrc(vulnerability.Debian)
 	}
 
-	return Scanner{
+	return &Scanner{
 		comparer: comparer,
 		vs:       vs,
 		logger:   log.WithPrefix("rootio"),
