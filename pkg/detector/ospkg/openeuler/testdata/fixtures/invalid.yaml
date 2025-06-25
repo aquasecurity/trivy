@@ -1,0 +1,9 @@
+- bucket: openEuler-22.03-LTS-SP2
+  pairs:
+    - bucket: perf
+      pairs:
+        - key: CVE-2021-47014
+          value:
+            FixedVersion:
+              - foo
+              - bar

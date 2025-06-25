@@ -33,6 +33,7 @@ const (
 	Echo               OSType = "echo"
 	Fedora             OSType = "fedora"
 	MinimOS            OSType = "minimos"
+	OpenEuler          OSType = "openEuler"
 	OpenSUSE           OSType = "opensuse"
 	OpenSUSELeap       OSType = "opensuse-leap"
 	OpenSUSETumbleweed OSType = "opensuse-tumbleweed"

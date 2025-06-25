@@ -1,0 +1,10 @@
+- bucket: openEuler-22.03-LTS-SP2
+  pairs:
+    - bucket: postgresql
+      pairs:
+        - key: openEuler-SA-2024-1349
+          value:
+            FixedVersion: "5.10.0-153.48.0.126"
+            Arches:
+              - x86_64
+              - aarch64
