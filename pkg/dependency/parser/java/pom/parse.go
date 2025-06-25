@@ -292,7 +292,8 @@ func (c *mavenHttpCache) blocklistDomain(name string) error {
 // readDomainBlocklist reads and returns the current domain blocklist, filtering out expired entries
 func (c *mavenHttpCache) readDomainBlocklist() ([]blocklistEntry, error) {
 	if _, err := os.Stat(c.domainsFilePath); os.IsNotExist(err) {
-		return []blocklistEntry{}, xerrors.Errorf("Domains file does not exist, default to empty blocklist")
+		c.logger.Debug("Domains file does not exist, default to empty blocklist")
+		return []blocklistEntry{}, nil
 	}
 
 	var currentDomainBlocklist []blocklistEntry
