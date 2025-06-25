@@ -36,7 +36,7 @@ type VersionChecker struct {
 // updates API URL.
 func NewVersionChecker(commandName string, cliOptions *flag.Options) *VersionChecker {
 	v := &VersionChecker{
-		updatesApi:     "https://check.trivy.cloud/updates",
+		updatesApi:     "https://check.trivy.dev/updates",
 		currentVersion: app.Version(),
 		commandName:    commandName,
 		cliOptions:     cliOptions,
@@ -205,7 +205,7 @@ func (fd *flexibleTime) UnmarshalJSON(b []byte) error {
 
 func (v *VersionChecker) getFlags() string {
 	var flags []string
-	for _, f := range v.cliOptions.GetSetFlags() {
+	for _, f := range v.cliOptions.GetUsedFlags() {
 		name := f.GetName()
 		if name == "" {
 			continue // Skip flags without a name

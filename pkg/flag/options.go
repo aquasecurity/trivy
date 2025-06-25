@@ -408,8 +408,8 @@ type Options struct {
 	// args is the arguments passed to the command.
 	args []string
 
-	// flags allows us to get the underlying flags for the options
-	flags *Flags
+	// usedFlags allows us to get the underlying flags for the options
+	usedFlags []Flagger
 }
 
 // Align takes consistency of options
@@ -574,22 +574,9 @@ func (o *Options) OutputWriter(ctx context.Context) (io.Writer, func() error, er
 	return f, f.Close, nil
 }
 
-// GetSetFlags returns the explicitly set flags for the options.
-func (o *Options) GetSetFlags() []Flagger {
-	var usedFlags []Flagger
-
-	if o.flags == nil {
-		return usedFlags
-	}
-
-	for _, group := range *o.flags {
-		for _, flag := range group.Flags() {
-			if flag.IsSet() {
-				usedFlags = append(usedFlags, flag)
-			}
-		}
-	}
-	return usedFlags
+// GetUsedFlags returns the explicitly set flags for the options.
+func (o *Options) GetUsedFlags() []Flagger {
+	return o.usedFlags
 }
 
 func (o *Options) outputPluginWriter(ctx context.Context) (io.Writer, func() error, error) {
@@ -680,7 +667,6 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 func (f *Flags) ToOptions(args []string) (Options, error) {
 	opts := Options{
 		AppVersion: app.Version(),
-		flags:      f,
 		args:       args,
 	}
 
@@ -688,6 +674,8 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 		if err := parseFlags(group); err != nil {
 			return Options{}, xerrors.Errorf("unable to parse flags: %w", err)
 		}
+
+		opts.usedFlags = append(opts.usedFlags, usedFlags(group)...)
 
 		if err := group.ToOptions(&opts); err != nil {
 			return Options{}, xerrors.Errorf("unable to convert flags to options: %w", err)
@@ -788,4 +776,22 @@ func findFlagGroup[T FlagGroup](f *Flags) (T, bool) {
 	}
 	var zero T
 	return zero, false
+}
+
+// usedFlags returns a slice of flags that are set in the given FlagGroup.
+func usedFlags(fg FlagGroup) []Flagger {
+	if fg == nil || fg.Flags() == nil {
+		return nil
+	}
+
+	var flags []Flagger
+	for _, flag := range fg.Flags() {
+		if flag == nil {
+			continue
+		}
+		if flag.IsSet() {
+			flags = append(flags, flag)
+		}
+	}
+	return flags
 }
