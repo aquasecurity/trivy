@@ -753,12 +753,11 @@ func (p *Parser) remoteRepoRequest(repo string, paths []string) (*http.Request, 
 
 var client = &http.Client{}
 
-func httpRequest(req *http.Request) ([]byte, map[string][]string, int, error) {
+func httpRequest(req *http.Request) ([]byte, int, error) {
 	var resp *http.Response
 	var err error
 	var statusCode int = 0
 	var data = []byte{}
-	var headers = make(map[string][]string)
 
 	resp, err = client.Do(req)
 
@@ -772,17 +771,13 @@ func httpRequest(req *http.Request) ([]byte, map[string][]string, int, error) {
 		data, err = io.ReadAll(resp.Body)
 
 		if err != nil {
-			return nil, nil, statusCode, err
+			return nil, statusCode, err
 		}
 
-		for k, v := range resp.Header {
-			headers[k] = v
-		}
-
-		return data, headers, statusCode, nil
+		return data, statusCode, nil
 	} else {
 		// Error when making HTTP request
-		return nil, nil, statusCode, err
+		return nil, statusCode, err
 	}
 }
 
@@ -791,11 +786,10 @@ func (p *Parser) cachedHTTPRequest(req *http.Request, path string) ([]byte, int,
 	var err error
 	var statusCode int = 0
 	var data = []byte{}
-	var headers = make(map[string][]string)
 
 	// E.g. if the cache is disabled, make a regular HTTP request without caching
 	if p.mavenHttpCache == nil {
-		data, _, statusCode, err = httpRequest(req)
+		data, statusCode, err = httpRequest(req)
 		return data, statusCode, err
 	}
 
@@ -816,12 +810,10 @@ func (p *Parser) cachedHTTPRequest(req *http.Request, path string) ([]byte, int,
 		)
 		return nil, http.StatusNotFound, nil
 	} else {
-
-		data, headers, statusCode, err = httpRequest(req)
+		data, statusCode, err = httpRequest(req)
 
 		// Error when making HTTP request
 		if err != nil {
-
 			p.logger.Debug("HTTP error", log.String("url", url), log.String("path", path), log.Err(err))
 
 			if strings.Contains(err.Error(), "i/o timeout") {
@@ -849,7 +841,7 @@ func (p *Parser) cachedHTTPRequest(req *http.Request, path string) ([]byte, int,
 
 	// Cache 2xx or 404 (we don't want to keep fetching artifacts that are not found via 404)
 	if statusCode == http.StatusOK || statusCode == http.StatusNotFound {
-		if cacheErr := p.mavenHttpCache.set(url, path, data, headers, statusCode); cacheErr != nil {
+		if cacheErr := p.mavenHttpCache.set(url, path, data, statusCode); cacheErr != nil {
 			p.logger.Debug("Failed to cache response", log.String("url", url), log.String("path", path), log.Err(cacheErr))
 		} else {
 			p.logger.Debug("Cached response", log.String("url", url), log.String("path", path))

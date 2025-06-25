@@ -40,10 +40,9 @@ const (
 
 // mavenHttpCacheEntry represents a cached HTTP response
 type mavenHttpCacheEntry struct {
-	Data       []byte              `json:"data"`
-	ExpiresAt  time.Time           `json:"expires_at"`
-	Headers    map[string][]string `json:"headers"`
-	StatusCode int                 `json:"status_code"`
+	Data       []byte    `json:"data"`
+	ExpiresAt  time.Time `json:"expires_at"`
+	StatusCode int       `json:"status_code"`
 	// The URL this cached entry was resolved from, for record-keeping
 	Url string `json:"url"`
 }
@@ -155,7 +154,7 @@ func (c *mavenHttpCache) get(path string) (*mavenHttpCacheEntry, error) {
 }
 
 // set stores an HTTP response in the cache
-func (c *mavenHttpCache) set(url string, path string, data []byte, headers map[string][]string, statusCode int) error {
+func (c *mavenHttpCache) set(url string, path string, data []byte, statusCode int) error {
 	if !c.initialized {
 		return xerrors.Errorf("Maven cache is not initialized")
 	}
@@ -166,7 +165,6 @@ func (c *mavenHttpCache) set(url string, path string, data []byte, headers map[s
 	entry := mavenHttpCacheEntry{
 		Data:       data,
 		ExpiresAt:  time.Now().Add(c.ttl),
-		Headers:    headers,
 		StatusCode: statusCode,
 		Url:        url,
 	}

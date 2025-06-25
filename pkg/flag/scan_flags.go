@@ -31,7 +31,7 @@ var (
 	MavenCacheFlag = Flag[bool]{
 		Name:       "maven-cache",
 		ConfigName: "maven.cache",
-		Usage:      "Use a Maven HTTP cache for POM metadata resolution",
+		Usage:      "Use a Maven HTTP cache on the filesystem for POM metadata resolution",
 	}
 	ScannersFlag = Flag[[]string]{
 		Name:       "scanners",
