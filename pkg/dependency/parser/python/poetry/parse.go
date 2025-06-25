@@ -57,11 +57,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			ID:      pkgID,
 			Name:    pkg.Name,
 			Version: pkg.Version,
-			// TODO upgrade logic for working with groups
-			// Mark only:
-			// - `category = "dev"`
-			// - groups without `main`. e.g. `groups = ["dev"]`
-			Dev: pkg.Category == "dev" || (len(pkg.Groups) > 0 && !slices.Contains(pkg.Groups, "main")),
+			Dev:     pkg.Category == "dev" || (len(pkg.Groups) > 0 && !slices.Contains(pkg.Groups, "main") && !slices.Contains(pkg.Groups, "release")),
 		})
 
 		dependsOn := p.parseDependencies(pkg.Dependencies, pkgVersions)

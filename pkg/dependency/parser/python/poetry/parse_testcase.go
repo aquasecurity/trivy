@@ -14,6 +14,28 @@ var (
 		{ID: "pypi@2.1", Name: "pypi", Version: "2.1"},
 	}
 
+	// generated based on pkg/dependency/parser/python/pyproject/testdata/release.toml
+
+	poetryRelease = []ftypes.Package{
+		{ID: "certifi@2025.6.15", Name: "certifi", Version: "2025.6.15", Dev: false},
+		{ID: "colorama@0.4.6", Name: "colorama", Version: "0.4.6", Dev: true},
+		{ID: "exceptiongroup@1.3.0", Name: "exceptiongroup", Version: "1.3.0", Dev: true},
+		{ID: "iniconfig@2.1.0", Name: "iniconfig", Version: "2.1.0", Dev: true},
+		{ID: "packaging@25.0", Name: "packaging", Version: "25.0", Dev: true},
+		{ID: "pluggy@1.6.0", Name: "pluggy", Version: "1.6.0", Dev: true},
+		{ID: "pytest@8.3.4", Name: "pytest", Version: "8.3.4", Dev: true},
+		{ID: "sentry-sdk@1.12.0", Name: "sentry-sdk", Version: "1.12.0", Dev: false}, // sentry is release group dependency
+		{ID: "tomli@2.2.1", Name: "tomli", Version: "2.2.1", Dev: true},
+		{ID: "typing-extensions@4.14.0", Name: "typing-extensions", Version: "4.14.0", Dev: true},
+		{ID: "urllib3@2.5.0", Name: "urllib3", Version: "2.5.0", Dev: false},
+	}
+
+	poetryReleaseDeps = []ftypes.Dependency{
+		{ID: "exceptiongroup@1.3.0", DependsOn: []string{"typing-extensions@4.14.0"}},
+		{ID: "pytest@8.3.4", DependsOn: []string{"colorama@0.4.6", "exceptiongroup@1.3.0", "iniconfig@2.1.0", "packaging@25.0", "pluggy@1.6.0", "tomli@2.2.1"}},
+		{ID: "sentry-sdk@1.12.0", DependsOn: []string{"certifi@2025.6.15", "urllib3@2.5.0"}},
+	}
+
 	// docker run --name poetry --rm -it python@sha256:e1141f10176d74d1a0e87a7c0a0a5a98dd98ec5ac12ce867768f40c6feae2fd9 sh
 	// apk add curl
 	// curl -sSL https://install.python-poetry.org | POETRY_VERSION=1.1.7 python3 -

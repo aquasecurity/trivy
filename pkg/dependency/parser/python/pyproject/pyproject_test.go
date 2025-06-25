@@ -76,6 +76,32 @@ func TestParser_Parse(t *testing.T) {
 			file:    "testdata/sad.toml",
 			wantErr: assert.Error,
 		},
+		{
+			name: "release group",
+			file: "testdata/release.toml",
+			want: pyproject.PyProject{
+				Tool: pyproject.Tool{
+					Poetry: pyproject.Poetry{
+						Dependencies: pyproject.Dependencies{
+							Set: set.New[string]("python"),
+						},
+						Groups: map[string]pyproject.Group{
+							"dev": {
+								Dependencies: pyproject.Dependencies{
+									Set: set.New[string]("pytest"),
+								},
+							},
+							"release": {
+								Dependencies: pyproject.Dependencies{
+									Set: set.New[string]("sentry-sdk"),
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
