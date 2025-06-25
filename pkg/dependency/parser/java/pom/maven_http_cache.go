@@ -29,7 +29,7 @@ const (
 // mavenHttpCacheEntry represents a cached HTTP response
 type mavenHttpCacheEntry struct {
 	Data       []byte    `json:"data"`
-	ExpiresAt  time.Time `json:"expires_at"`
+	CachedAt   time.Time `json:"cached_at"`
 	StatusCode int       `json:"status_code"`
 	// The URL this cached entry was resolved from, for record-keeping
 	Url string `json:"url"`
@@ -132,7 +132,7 @@ func (c *mavenHttpCache) get(path string) (*mavenHttpCacheEntry, error) {
 	}
 
 	// Check if entry has expired
-	if time.Now().After(entry.ExpiresAt) {
+	if time.Now().After(entry.CachedAt.Add(c.ttl)) {
 		// Lazy purge expired entry
 		_ = os.Remove(cacheFile)
 		return nil, nil
@@ -152,7 +152,7 @@ func (c *mavenHttpCache) set(url string, path string, data []byte, statusCode in
 
 	entry := mavenHttpCacheEntry{
 		Data:       data,
-		ExpiresAt:  time.Now().Add(c.ttl),
+		CachedAt:   time.Now(),
 		StatusCode: statusCode,
 		Url:        url,
 	}
@@ -170,8 +170,8 @@ func (c *mavenHttpCache) set(url string, path string, data []byte, statusCode in
 }
 
 type blocklistEntry struct {
-	Name      string    `json:"name"`
-	ExpiresAt time.Time `json:"expires_at"`
+	Name     string    `json:"name"`
+	CachedAt time.Time `json:"cached_at"`
 }
 
 type domainsJson struct {
@@ -198,8 +198,8 @@ func isMavenReleaseDomain(name string) bool {
 func (c *mavenHttpCache) blocklistDomain(name string) error {
 	c.logger.Debug("blocklistDomain[" + name + "] blocklisting domain...")
 	var newBlocklistEntry blocklistEntry = blocklistEntry{
-		Name:      name,
-		ExpiresAt: time.Now().Add(c.ttl),
+		Name:     name,
+		CachedAt: time.Now(),
 	}
 
 	if !c.initialized {
@@ -276,7 +276,7 @@ func (c *mavenHttpCache) readDomainBlocklist() ([]blocklistEntry, error) {
 
 	var unexpiredBlocklist []blocklistEntry
 	for _, d := range currentDomainBlocklist {
-		if now.Before(d.ExpiresAt) {
+		if now.Before(d.CachedAt.Add(c.ttl)) {
 			unexpiredBlocklist = append(unexpiredBlocklist, d)
 		}
 	}
@@ -293,7 +293,7 @@ func (c *mavenHttpCache) isDomainBlocklisted(name string) bool {
 	now := time.Now()
 
 	for _, d := range c.domainBlocklist {
-		if now.Before(d.ExpiresAt) {
+		if now.Before(d.CachedAt.Add(c.ttl)) {
 			if d.Name == name {
 				return true
 			}
