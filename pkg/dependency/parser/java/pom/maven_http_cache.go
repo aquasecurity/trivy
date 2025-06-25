@@ -274,21 +274,21 @@ func (c *mavenHttpCache) readDomainBlocklist() ([]blocklistEntry, error) {
 		return []blocklistEntry{}, nil
 	}
 
-	var currentDomainBlocklist []blocklistEntry
+	var domainsJson domainsJson
 
 	b, err := os.ReadFile(c.domainsFilePath)
 	if err != nil {
 		return []blocklistEntry{}, xerrors.Errorf("Failed to read domains file: %w", err)
 	}
 
-	if err := json.Unmarshal(b, &currentDomainBlocklist); err != nil {
-		return []blocklistEntry{}, xerrors.Errorf("Failed to unmarshal domains file: %w", err)
+	if err := json.Unmarshal(b, &domainsJson); err != nil {
+		return domainsJson.Blocklist, xerrors.Errorf("Failed to unmarshal domains file: %w", err)
 	}
 
 	now := time.Now()
 
 	var unexpiredBlocklist []blocklistEntry
-	for _, d := range currentDomainBlocklist {
+	for _, d := range domainsJson.Blocklist {
 		if now.Before(d.CachedAt.Add(c.ttl)) {
 			unexpiredBlocklist = append(unexpiredBlocklist, d)
 		}
