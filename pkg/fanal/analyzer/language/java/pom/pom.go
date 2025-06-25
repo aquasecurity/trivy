@@ -25,7 +25,7 @@ type pomAnalyzer struct{}
 
 func (a pomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	filePath := filepath.Join(input.Dir, input.FilePath)
-	p := pom.NewParser(filePath, pom.WithOffline(input.Options.Offline), pom.WithUseMavenCache(input.Options.UseMavenCache))
+	p := pom.NewParser(filePath, pom.WithOffline(input.Options.Offline), pom.WithUseMavenCache(input.Options.UseMavenCache), pom.WithMavenCacheTtl(input.Options.MavenCacheTtl))
 	res, err := language.Analyze(types.Pom, input.FilePath, input.Content, p)
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)

@@ -251,9 +251,10 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	// Prepare variables
 	var wg sync.WaitGroup
 	opts := analyzer.AnalysisOptions{
-		Offline:      a.artifactOption.Offline,
+		Offline:       a.artifactOption.Offline,
 		UseMavenCache: a.artifactOption.UseMavenCache,
-		FileChecksum: a.artifactOption.FileChecksum,
+		MavenCacheTtl: a.artifactOption.MavenCacheTtl,
+		FileChecksum:  a.artifactOption.FileChecksum,
 	}
 	result := analyzer.NewAnalysisResult()
 	limit := semaphore.New(a.artifactOption.Parallel)

@@ -7,7 +7,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 
@@ -15,17 +14,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"golang.org/x/xerrors"
 )
-
-var mavenHttpCacheTtl = func() time.Duration {
-	if ttlStr := os.Getenv("MAVEN_CACHE_TTL_HOURS"); ttlStr != "" {
-		if ttl, err := strconv.Atoi(ttlStr); err == nil && ttl > 0 {
-			return time.Duration(ttl) * time.Hour
-		}
-	}
-
-	// Default TTL
-	return 6 * time.Hour
-}()
 
 // Maximum number of I/O timeouts Trivy will tolerate before skipping future requests to the domain
 // Without this, some scans can take a very long time because every request to a domain times out, one by one
@@ -71,10 +59,10 @@ func (c *mavenHttpCache) logDomainBlocklist() {
 	)
 }
 
-func newMavenHttpCache(logger *log.Logger) *mavenHttpCache {
+func newMavenHttpCache(logger *log.Logger, ttlMinutes int) *mavenHttpCache {
 	var cacheDir string = filepath.Join(cache.DefaultDir(), mavenHttpCacheDir)
 	var domainsFilePath string = filepath.Join(cacheDir, domainsFileName)
-	var ttl time.Duration = mavenHttpCacheTtl
+	var ttl time.Duration = time.Duration(ttlMinutes) * time.Minute
 
 	logger.Debug(
 		"New Maven cache ",

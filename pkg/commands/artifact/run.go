@@ -560,6 +560,7 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 			Parallel:          opts.Parallel,
 			Offline:           opts.OfflineScan,
 			UseMavenCache:     opts.UseMavenCache,
+			MavenCacheTtl:     opts.MavenCacheTtl,
 			NoProgress:        opts.NoProgress || opts.Quiet,
 			Insecure:          opts.Insecure,
 			RepoBranch:        opts.RepoBranch,

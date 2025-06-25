@@ -43,6 +43,7 @@ func init() {
 type options struct {
 	offline             bool
 	useMavenCache       bool
+	mavenCacheTtl       int
 	releaseRemoteRepos  []string
 	snapshotRemoteRepos []string
 }
@@ -58,6 +59,12 @@ func WithOffline(offline bool) option {
 func WithUseMavenCache(useMavenCache bool) option {
 	return func(opts *options) {
 		opts.useMavenCache = useMavenCache
+	}
+}
+
+func WithMavenCacheTtl(ttl int) option {
+	return func(opts *options) {
+		opts.mavenCacheTtl = ttl
 	}
 }
 
@@ -110,7 +117,7 @@ func NewParser(filePath string, opts ...option) *Parser {
 	var mavenHttpCache *mavenHttpCache = nil
 
 	if o.useMavenCache {
-		mavenHttpCache = newMavenHttpCache(logger)
+		mavenHttpCache = newMavenHttpCache(logger, o.mavenCacheTtl)
 	}
 
 	return &Parser{

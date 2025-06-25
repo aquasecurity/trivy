@@ -23,6 +23,7 @@ type Option struct {
 	Insecure          bool
 	Offline           bool
 	UseMavenCache     bool
+	MavenCacheTtl     int
 	AppDirs           []string
 	SBOMSources       []string
 	RekorURL          string
