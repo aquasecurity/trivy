@@ -148,6 +148,7 @@ type PostAnalysisInput struct {
 
 type AnalysisOptions struct {
 	Offline      bool
+	UseMavenCache bool
 	FileChecksum bool
 }
 

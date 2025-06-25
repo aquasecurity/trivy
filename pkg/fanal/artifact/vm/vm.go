@@ -98,6 +98,7 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 
 	opts := analyzer.AnalysisOptions{
 		Offline:      a.artifactOption.Offline,
+		UseMavenCache: a.artifactOption.UseMavenCache,
 		FileChecksum: a.artifactOption.FileChecksum,
 	}
 

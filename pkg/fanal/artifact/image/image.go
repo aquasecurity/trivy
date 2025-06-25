@@ -252,6 +252,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	var wg sync.WaitGroup
 	opts := analyzer.AnalysisOptions{
 		Offline:      a.artifactOption.Offline,
+		UseMavenCache: a.artifactOption.UseMavenCache,
 		FileChecksum: a.artifactOption.FileChecksum,
 	}
 	result := analyzer.NewAnalysisResult()

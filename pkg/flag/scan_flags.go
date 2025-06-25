@@ -28,6 +28,11 @@ var (
 		ConfigName: "scan.offline",
 		Usage:      "do not issue API requests to identify dependencies",
 	}
+	MavenCacheFlag = Flag[bool]{
+		Name:       "maven-cache",
+		ConfigName: "maven.cache",
+		Usage:      "Use a Maven HTTP cache for POM metadata resolution",
+	}
 	ScannersFlag = Flag[[]string]{
 		Name:       "scanners",
 		ConfigName: "scan.scanners",
@@ -116,6 +121,7 @@ type ScanFlagGroup struct {
 	SkipDirs          *Flag[[]string]
 	SkipFiles         *Flag[[]string]
 	OfflineScan       *Flag[bool]
+	UseMavenCache     *Flag[bool]
 	Scanners          *Flag[[]string]
 	FilePatterns      *Flag[[]string]
 	Slow              *Flag[bool] // deprecated
@@ -130,6 +136,7 @@ type ScanOptions struct {
 	SkipDirs          []string
 	SkipFiles         []string
 	OfflineScan       bool
+	UseMavenCache     bool
 	Scanners          types.Scanners
 	FilePatterns      []string
 	Parallel          int
@@ -143,6 +150,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		SkipDirs:          SkipDirsFlag.Clone(),
 		SkipFiles:         SkipFilesFlag.Clone(),
 		OfflineScan:       OfflineScanFlag.Clone(),
+		UseMavenCache:     MavenCacheFlag.Clone(),
 		Scanners:          ScannersFlag.Clone(),
 		FilePatterns:      FilePatternsFlag.Clone(),
 		Parallel:          ParallelFlag.Clone(),
@@ -162,6 +170,7 @@ func (f *ScanFlagGroup) Flags() []Flagger {
 		f.SkipDirs,
 		f.SkipFiles,
 		f.OfflineScan,
+		f.UseMavenCache,
 		f.Scanners,
 		f.FilePatterns,
 		f.Slow,
@@ -193,6 +202,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		SkipDirs:          f.SkipDirs.Value(),
 		SkipFiles:         f.SkipFiles.Value(),
 		OfflineScan:       f.OfflineScan.Value(),
+		UseMavenCache:     f.UseMavenCache.Value(),
 		Scanners:          xstrings.ToTSlice[types.Scanner](f.Scanners.Value()),
 		FilePatterns:      f.FilePatterns.Value(),
 		Parallel:          parallel,

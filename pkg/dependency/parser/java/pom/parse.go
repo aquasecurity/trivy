@@ -42,6 +42,7 @@ func init() {
 
 type options struct {
 	offline             bool
+	useMavenCache       bool
 	releaseRemoteRepos  []string
 	snapshotRemoteRepos []string
 }
@@ -51,6 +52,12 @@ type option func(*options)
 func WithOffline(offline bool) option {
 	return func(opts *options) {
 		opts.offline = offline
+	}
+}
+
+func WithUseMavenCache(useMavenCache bool) option {
+	return func(opts *options) {
+		opts.useMavenCache = useMavenCache
 	}
 }
 
@@ -83,6 +90,7 @@ func NewParser(filePath string, opts ...option) *Parser {
 
 	o := &options{
 		offline:            false,
+		useMavenCache:      false,
 		releaseRemoteRepos: mavenReleaseRepos, // Maven doesn't use central repository for snapshot dependencies
 	}
 
@@ -99,11 +107,17 @@ func NewParser(filePath string, opts ...option) *Parser {
 		localRepository = filepath.Join(homeDir, ".m2", "repository")
 	}
 
+	var mavenHttpCache *mavenHttpCache = nil
+
+	if o.useMavenCache {
+		mavenHttpCache = newMavenHttpCache(logger)
+	}
+
 	return &Parser{
 		logger:              logger,
 		rootPath:            filepath.Clean(filePath),
 		cache:               newPOMCache(),
-		mavenHttpCache:      newMavenHttpCache(logger),
+		mavenHttpCache:      mavenHttpCache,
 		localRepository:     localRepository,
 		releaseRemoteRepos:  o.releaseRemoteRepos,
 		snapshotRemoteRepos: o.snapshotRemoteRepos,
@@ -737,25 +751,64 @@ func (p *Parser) remoteRepoRequest(repo string, paths []string) (*http.Request, 
 	return req, nil
 }
 
-// performs an HTTP request with caching support
-func (p *Parser) cachedHTTPRequest(req *http.Request, path string) ([]byte, int, error) {
-	url := req.URL.String()
+var client = &http.Client{}
 
-	// Try to get from cache first
-	if entry, err := p.mavenHttpCache.get(path); err != nil {
-		p.logger.Debug("Cache read error", log.String("url", url), log.String("path", path), log.Err(err))
-	} else if entry != nil {
-		p.logger.Debug("Cache hit", log.String("url", url), log.String("path", path))
-		return entry.Data, entry.StatusCode, nil
-	}
-
-	p.logger.Debug("Cache miss, making HTTP request", log.String("url", url), log.String("path", path))
-
+func httpRequest(req *http.Request) ([]byte, map[string][]string, int, error) {
 	var resp *http.Response
 	var err error
 	var statusCode int = 0
 	var data = []byte{}
 	var headers = make(map[string][]string)
+
+	resp, err = client.Do(req)
+
+	// HTTP request was made successfully (doesn't mean it was a 2xx, just that the client did not return an error)
+	if err == nil {
+		defer resp.Body.Close()
+
+		statusCode = resp.StatusCode
+
+		// Read response body
+		data, err = io.ReadAll(resp.Body)
+
+		if err != nil {
+			return nil, nil, statusCode, err
+		}
+
+		for k, v := range resp.Header {
+			headers[k] = v
+		}
+
+		return data, headers, statusCode, nil
+	} else {
+		// Error when making HTTP request
+		return nil, nil, statusCode, err
+	}
+}
+
+// performs an HTTP request with caching support (if enabled)
+func (p *Parser) cachedHTTPRequest(req *http.Request, path string) ([]byte, int, error) {
+	var err error
+	var statusCode int = 0
+	var data = []byte{}
+	var headers = make(map[string][]string)
+
+	// E.g. if the cache is disabled, make a regular HTTP request without caching
+	if p.mavenHttpCache == nil {
+		data, _, statusCode, err = httpRequest(req)
+		return data, statusCode, err
+	}
+
+	url := req.URL.String()
+
+	if entry, err := p.mavenHttpCache.get(path); err != nil {
+		p.logger.Debug("Cache read error", log.String("url", url), log.String("path", path), log.Err(err))
+	} else if entry != nil {
+		p.logger.Debug("Cache hit", log.String("url", url), log.String("path", path))
+		return entry.Data, entry.StatusCode, nil
+	} else {
+		p.logger.Debug("Cache miss, making HTTP request", log.String("url", url), log.String("path", path))
+	}
 
 	if p.mavenHttpCache.isDomainBlocklisted(req.URL.Host) {
 		p.logger.Debug(
@@ -763,28 +816,12 @@ func (p *Parser) cachedHTTPRequest(req *http.Request, path string) ([]byte, int,
 		)
 		return nil, http.StatusNotFound, nil
 	} else {
-		// Make HTTP request
-		client := &http.Client{}
-		resp, err = client.Do(req)
 
-		// HTTP request was made successfully (doesn't mean it was a 2xx, just that the client did not return an error)
-		if err == nil {
-			defer resp.Body.Close()
+		data, headers, statusCode, err = httpRequest(req)
 
-			statusCode = resp.StatusCode
+		// Error when making HTTP request
+		if err != nil {
 
-			// Read response body
-			data, err = io.ReadAll(resp.Body)
-
-			if err != nil {
-				return nil, statusCode, err
-			}
-
-			for k, v := range resp.Header {
-				headers[k] = v
-			}
-		} else {
-			// Error when making HTTP request
 			p.logger.Debug("HTTP error", log.String("url", url), log.String("path", path), log.Err(err))
 
 			if strings.Contains(err.Error(), "i/o timeout") {
