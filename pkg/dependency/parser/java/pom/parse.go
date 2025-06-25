@@ -65,6 +65,8 @@ type mavenHttpCacheEntry struct {
 	ExpiresAt  time.Time           `json:"expires_at"`
 	Headers    map[string][]string `json:"headers"`
 	StatusCode int                 `json:"status_code"`
+	// The URL this cached entry was resolved from, for record-keeping
+	Url string `json:"url"`
 }
 
 // mavenHttpCache handles filesystem caching of HTTP responses
@@ -75,28 +77,53 @@ type mavenHttpCache struct {
 	domainsFilePath string
 	domainBlocklist []blocklistEntry
 	domainTimeouts  map[string]int
+	logger          *log.Logger
 	initialized     bool
+}
+
+func (c *mavenHttpCache) logDomainBlocklist() {
+	names := make([]string, len(c.domainBlocklist))
+	for i, entry := range c.domainBlocklist {
+		names[i] = entry.Name
+	}
+
+	c.logger.Debug(
+		"Maven cache domainBlocklist ",
+		log.String("domainBlocklist", strings.Join(names, ", ")),
+	)
 }
 
 func newMavenHttpCache(logger *log.Logger) *mavenHttpCache {
 	var cacheDir string = filepath.Join(cache.DefaultDir(), mavenHttpCacheDir)
 	var domainsFilePath string = filepath.Join(cacheDir, domainsFileName)
+	var ttl time.Duration = mavenHttpCacheTtl
 
-	logger.Debug("New Maven cache ", log.String("cacheDir", cacheDir), log.String("domainsFilePath", domainsFilePath))
+	logger.Debug(
+		"New Maven cache ",
+		log.String("cacheDir", cacheDir),
+		log.Duration("ttl", ttl),
+		log.String("domainsFilePath", domainsFilePath),
+	)
 
 	var cache = &mavenHttpCache{
 		cacheDir:        cacheDir,
-		ttl:             mavenHttpCacheTtl,
+		ttl:             ttl,
 		domainsFilePath: domainsFilePath,
 		domainBlocklist: []blocklistEntry{},
 		domainTimeouts:  make(map[string]int),
+		logger:          logger,
 		initialized:     false,
 	}
 
 	cache.domainBlocklist, _ = cache.readDomainBlocklist()
+	cache.logDomainBlocklist()
 
 	// Ensure cache directory exists
 	if err := os.MkdirAll(cache.cacheDir, 0755); err != nil {
+		logger.Warn(
+			"Error creating Maven cache directory ",
+			log.Err(err),
+		)
 		return cache
 	}
 
@@ -162,6 +189,7 @@ func (c *mavenHttpCache) set(url string, path string, data []byte, headers map[s
 		ExpiresAt:  time.Now().Add(c.ttl),
 		Headers:    headers,
 		StatusCode: statusCode,
+		Url:        url,
 	}
 
 	jsonData, err := json.Marshal(entry)
@@ -254,10 +282,6 @@ func (c *mavenHttpCache) blocklistDomain(name string) error {
 
 // readDomainBlocklist reads and returns the current domain blocklist, filtering out expired entries
 func (c *mavenHttpCache) readDomainBlocklist() ([]blocklistEntry, error) {
-	if !c.initialized {
-		return []blocklistEntry{}, xerrors.Errorf("Maven cache is not initialized, default to empty blocklist")
-	}
-
 	if _, err := os.Stat(c.domainsFilePath); os.IsNotExist(err) {
 		return []blocklistEntry{}, xerrors.Errorf("Domains file does not exist, default to empty blocklist")
 	}
@@ -1061,18 +1085,20 @@ func (p *Parser) cachedHTTPRequest(req *http.Request, path string) ([]byte, int,
 			p.logger.Debug("HTTP error", log.String("url", url), log.String("path", path), log.Err(err))
 
 			if strings.Contains(err.Error(), "i/o timeout") {
-				p.mavenHttpCache.domainTimeouts[req.Host]++
+				p.mavenHttpCache.domainTimeouts[req.URL.Host]++
 
 				p.logger.Debug(
 					"I/O timeout, falling back to 404",
-					log.Int(fmt.Sprintf("numTimeouts[%s]", req.Host), p.mavenHttpCache.domainTimeouts[req.Host]),
+					log.Int(fmt.Sprintf("numTimeouts[%s]", req.URL.Host), p.mavenHttpCache.domainTimeouts[req.URL.Host]),
 				)
 
-				p.logger.Warn(
-					fmt.Sprintf("Blocklisting domain %s due to too many timeouts", req.URL.Host),
-				)
+				if p.mavenHttpCache.domainTimeouts[req.URL.Host] >= MaxDomainTimeouts {
+					p.logger.Warn(
+						fmt.Sprintf("Blocklisting domain %s due to too many timeouts", req.URL.Host),
+					)
 
-				p.mavenHttpCache.blocklistDomain(req.URL.Host)
+					p.mavenHttpCache.blocklistDomain(req.URL.Host)
+				}
 
 				return nil, http.StatusNotFound, nil
 			} else {
