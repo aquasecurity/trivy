@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -434,9 +435,6 @@ func TestCheckCommandHeaders(t *testing.T) {
 			// clean up the env
 			defer func() {
 				server.Close()
-				for key := range tt.env {
-					t.Setenv(key, "")
-				}
 			}()
 
 			opts := getOptionsForArgs(t, tt.commandArgs, tt.ignoreParseError)
@@ -451,4 +449,31 @@ func TestCheckCommandHeaders(t *testing.T) {
 			assert.Equal(t, tt.expectedCommandArgsHeader, updates.lastRequest.Header.Get("Trivy-Flags"))
 		})
 	}
+}
+
+// getOptionsForArgs uses a basic command to parse the flags so we can generate
+// an options object from it
+func getOptionsForArgs(t *testing.T, commandArgs []string, ignoreParseError bool) *flag.Options {
+	flags := flag.Flags{
+		flag.NewGlobalFlagGroup(),
+		flag.NewImageFlagGroup(),
+		flag.NewMisconfFlagGroup(),
+		flag.NewPackageFlagGroup(),
+		flag.NewReportFlagGroup(),
+		flag.NewScanFlagGroup(),
+		flag.NewVulnerabilityFlagGroup(),
+	}
+
+	// simple command to facilitate flag parsing
+	cmd := &cobra.Command{}
+	flags.AddFlags(cmd)
+	err := cmd.ParseFlags(commandArgs)
+	if !ignoreParseError {
+		require.NoError(t, err)
+	}
+
+	require.NoError(t, flags.Bind(cmd))
+	opts, err := flags.ToOptions(commandArgs)
+	require.NoError(t, err)
+	return &opts
 }

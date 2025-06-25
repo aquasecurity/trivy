@@ -225,7 +225,7 @@ func (f *Flag[T]) IsTelemetrySafe() bool {
 	return f.TelemetrySafe
 }
 
-func (f *Flag[T]) IsExplicitlySet() bool {
+func (f *Flag[T]) IsSet() bool {
 	if f == nil {
 		return false
 	}
@@ -364,7 +364,7 @@ type Flagger interface {
 	GetAliases() []Alias
 	Hidden() bool
 	IsTelemetrySafe() bool
-	IsExplicitlySet() bool
+	IsSet() bool
 
 	Parse() error
 	Add(cmd *cobra.Command)
@@ -401,15 +401,15 @@ type Options struct {
 	// We don't want to allow disabled analyzers to be passed by users, but it is necessary for internal use.
 	DisabledAnalyzers []analyzer.Type
 
-	// Flags allows us to get the underlying flags for the options
-	Flags *Flags
-
 	// outputWriter is not initialized via the CLI.
 	// It is mainly used for testing purposes or by tools that use Trivy as a library.
 	outputWriter io.Writer
 
 	// args is the arguments passed to the command.
 	args []string
+
+	// flags allows us to get the underlying flags for the options
+	flags *Flags
 }
 
 // Align takes consistency of options
@@ -574,6 +574,24 @@ func (o *Options) OutputWriter(ctx context.Context) (io.Writer, func() error, er
 	return f, f.Close, nil
 }
 
+// GetSetFlags returns the explicitly set flags for the options.
+func (o *Options) GetSetFlags() []Flagger {
+	var usedFlags []Flagger
+
+	if o.flags == nil {
+		return usedFlags
+	}
+
+	for _, group := range *o.flags {
+		for _, flag := range group.Flags() {
+			if flag.IsSet() {
+				usedFlags = append(usedFlags, flag)
+			}
+		}
+	}
+	return usedFlags
+}
+
 func (o *Options) outputPluginWriter(ctx context.Context) (io.Writer, func() error, error) {
 	pluginName := strings.TrimPrefix(o.Output, "plugin=")
 
@@ -662,7 +680,7 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 func (f *Flags) ToOptions(args []string) (Options, error) {
 	opts := Options{
 		AppVersion: app.Version(),
-		Flags:      f,
+		flags:      f,
 		args:       args,
 	}
 

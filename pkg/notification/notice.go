@@ -8,8 +8,11 @@ import (
 	"io"
 	"net/http"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
+
+	"github.com/samber/lo"
 
 	"github.com/aquasecurity/go-version/pkg/semver"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -33,7 +36,7 @@ type VersionChecker struct {
 // updates API URL.
 func NewVersionChecker(commandName string, cliOptions *flag.Options) *VersionChecker {
 	v := &VersionChecker{
-		updatesApi:     "https://check.trivy.dev/updates",
+		updatesApi:     "https://check.trivy.cloud/updates",
 		currentVersion: app.Version(),
 		commandName:    commandName,
 		cliOptions:     cliOptions,
@@ -58,7 +61,7 @@ func (v *VersionChecker) RunUpdateCheck(ctx context.Context) {
 
 	go func() {
 		logger.Debug("Running version check")
-		commandParts := getUsedFlags(v.cliOptions)
+		commandParts := v.getFlags()
 		client := xhttp.ClientWithContext(ctx, xhttp.WithTimeout(3*time.Second))
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, v.updatesApi, http.NoBody)
@@ -198,4 +201,40 @@ func (fd *flexibleTime) UnmarshalJSON(b []byte) error {
 	}
 
 	return fmt.Errorf("unable to parse date: %s", s)
+}
+
+func (v *VersionChecker) getFlags() string {
+	var flags []string
+	for _, f := range v.cliOptions.GetSetFlags() {
+		name := f.GetName()
+		if name == "" {
+			continue // Skip flags without a name
+		}
+		value := lo.Ternary(!f.IsTelemetrySafe(), "***", getFlagValue(f))
+
+		flags = append(flags, fmt.Sprintf("--%s=%s", name, value))
+	}
+	return strings.Join(flags, " ")
+}
+
+func getFlagValue(f flag.Flagger) string {
+	type flagger[T flag.FlagType] interface {
+		Value() T
+	}
+	switch ff := f.(type) {
+	case flagger[string]:
+		return ff.Value()
+	case flagger[int]:
+		return strconv.Itoa(ff.Value())
+	case flagger[float64]:
+		return fmt.Sprintf("%f", ff.Value())
+	case flagger[bool]:
+		return strconv.FormatBool(ff.Value())
+	case flagger[time.Duration]:
+		return ff.Value().String()
+	case flagger[[]string]:
+		return strings.Join(ff.Value(), ",")
+	default:
+		return "***" // Default case for unsupported types
+	}
 }
