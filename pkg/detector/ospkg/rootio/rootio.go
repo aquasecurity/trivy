@@ -26,7 +26,7 @@ func NewScanner(baseOS ftypes.OSType) Scanner {
 	return Scanner{
 		baseOS:   baseOS,
 		comparer: selectComparer(baseOS),
-		vs:       newMockVulnSrc(),
+		vs:       newMockVulnSrc(baseOS),
 	}
 }
 
