@@ -231,29 +231,36 @@ func isMavenReleaseDomain(name string) bool {
 
 // Blocklist a domain for the cache TTL period. Repos in mavenReleaseRepos cannot be blocklisted
 func (c *mavenHttpCache) blocklistDomain(name string) error {
+	c.logger.Debug("blocklistDomain[" + name + "] blocklisting domain...")
 	var newBlocklistEntry blocklistEntry = blocklistEntry{
 		Name:      name,
 		ExpiresAt: time.Now().Add(c.ttl),
 	}
 
 	if !c.initialized {
+		c.logger.Debug("blocklistDomain[" + name + "] Maven cache is not initialized. Exiting")
 		return xerrors.Errorf("Maven cache is not initialized")
 	}
 
 	currentDomainBlocklist, err := c.readDomainBlocklist()
 
+	c.logger.Debug("blocklistDomain[" + name + "] Read domain blocklist")
+
 	if err != nil {
+		c.logger.Debug("blocklistDomain["+name+"] Failed to read domain blocklist", log.Err(err))
 		return xerrors.Errorf("Failed to read domain blocklist, skipping blocklist: %w", err)
 	}
 
 	// Skip blocklisting configured Maven release domains to avoid DoS
 	if isMavenReleaseDomain(name) {
+		c.logger.Debug("blocklistDomain[" + name + "] Domain is Maven release domain, skipping blocklist")
 		return nil
 	}
 
 	// Skip adding the domain to the blocklist if it's already present
 	for _, d := range currentDomainBlocklist {
 		if d.Name == name {
+			c.logger.Debug("blocklistDomain[" + name + "] Domain is already in blocklist, skipping blocklist")
 			return nil
 		}
 	}
@@ -269,10 +276,12 @@ func (c *mavenHttpCache) blocklistDomain(name string) error {
 	})
 
 	if err != nil {
+		c.logger.Debug("blocklistDomain["+name+"] failed to marshal domains json", log.Err(err))
 		return xerrors.Errorf("failed to marshal domains json: %w", err)
 	}
 
 	if err := os.WriteFile(c.domainsFilePath, jsonData, 0644); err != nil {
+		c.logger.Debug("blocklistDomain["+name+"] failed to write domains json file", log.Err(err))
 		return xerrors.Errorf("failed to write domains json file: %w", err)
 	}
 
@@ -1097,10 +1106,10 @@ func (p *Parser) cachedHTTPRequest(req *http.Request, path string) ([]byte, int,
 						fmt.Sprintf("Blocklisting domain %s due to too many timeouts", req.URL.Host),
 					)
 
-					p.mavenHttpCache.blocklistDomain(req.URL.Host)
+					err = p.mavenHttpCache.blocklistDomain(req.URL.Host)
 				}
 
-				return nil, http.StatusNotFound, nil
+				return nil, http.StatusNotFound, err
 			} else {
 				return nil, statusCode, err
 			}
