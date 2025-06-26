@@ -2,10 +2,12 @@ package rootio
 
 import (
 	"context"
+	"strings"
 
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/rootio"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -17,29 +19,29 @@ import (
 // Scanner implements the Root.io scanner
 type Scanner struct {
 	comparer version.Comparer
-	vs       VulnSrc
+	vs       rootio.VulnSrc
 	logger   *log.Logger
 }
 
 // NewScanner is the factory method for Scanner
 func NewScanner(baseOS ftypes.OSType) *Scanner {
 	var comparer version.Comparer
-	var vs VulnSrc
+	var vs rootio.VulnSrc
 
 	switch baseOS {
 	case ftypes.Debian:
 		comparer = version.NewDEBComparer()
-		vs = newMockVulnSrc(vulnerability.Debian)
+		vs = rootio.NewVulnSrc(vulnerability.Debian)
 	case ftypes.Ubuntu:
 		comparer = version.NewDEBComparer()
-		vs = newMockVulnSrc(vulnerability.Ubuntu)
+		vs = rootio.NewVulnSrc(vulnerability.Ubuntu)
 	case ftypes.Alpine:
 		comparer = version.NewAPKComparer()
-		vs = newMockVulnSrc(vulnerability.Alpine)
+		vs = rootio.NewVulnSrc(vulnerability.Alpine)
 	default:
 		// Should never happen as it's validated in the provider
 		comparer = version.NewDEBComparer()
-		vs = newMockVulnSrc(vulnerability.Debian)
+		vs = rootio.NewVulnSrc(vulnerability.Debian)
 	}
 
 	return &Scanner{
@@ -74,7 +76,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 				PkgID:            pkg.ID,
 				PkgName:          pkg.Name,
 				InstalledVersion: utils.FormatVersion(pkg),
-				FixedVersion:     adv.FixedVersion,
+				FixedVersion:     strings.Join(adv.PatchedVersions, ", "),
 				Layer:            pkg.Layer,
 				PkgIdentifier:    pkg.Identifier,
 				Custom:           adv.Custom,

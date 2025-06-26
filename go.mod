@@ -328,7 +328,7 @@ require (
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/nozzle/throttler v0.0.0-20180817012639-2ea982251481 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
-	github.com/oklog/ulid/v2 v2.1.0 // indirect
+	github.com/oklog/ulid/v2 v2.1.1 // indirect
 	github.com/opencontainers/runtime-spec v1.2.1 // indirect
 	github.com/opencontainers/selinux v1.12.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
@@ -352,7 +352,7 @@ require (
 	github.com/rubenv/sql-migrate v1.7.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sagikazarmark/locafero v0.7.0 // indirect
-	github.com/samber/oops v1.16.1 // indirect
+	github.com/samber/oops v1.18.1 // indirect
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1 // indirect
 	github.com/sassoftware/relic v7.2.1+incompatible // indirect
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
@@ -450,3 +450,6 @@ tool (
 	golang.org/x/tools/cmd/goyacc
 	sigs.k8s.io/kind
 )
+
+// TODO: Delete it once https://github.com/aquasecurity/trivy-db/pull/546 gets merged.
+replace github.com/aquasecurity/trivy-db => github.com/chait-slim/trivy-db v0.0.0-20250626080309-36695f101e75
