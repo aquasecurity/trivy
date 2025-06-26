@@ -112,7 +112,7 @@ func (c *constraint) String() string {
 }
 
 // Check returns true if the given version satisfies any of the constraints
-// Multiple constraints are combined with OR logic
+// Multiple constraints are combined with AND logic
 func (cs *Constraints) Check(version string) (bool, error) {
 	if version == "" {
 		return false, xerrors.New("version is empty")
@@ -127,12 +127,12 @@ func (cs *Constraints) Check(version string) (bool, error) {
 		if err != nil {
 			return false, err
 		}
-		if satisfied {
-			return true, nil
+		if !satisfied {
+			return false, nil
 		}
 	}
 
-	return false, nil
+	return true, nil
 }
 
 // String returns the string representation of constraints
