@@ -117,6 +117,7 @@ nav:
               - Overview: docs/coverage/others/index.md
               - Bitnami Images: docs/coverage/others/bitnami.md
               - Conda: docs/coverage/others/conda.md
+              - Root.io Images: docs/coverage/others/rootio.md
               - RPM Archives: docs/coverage/others/rpm.md
           - Kubernetes: docs/coverage/kubernetes.md
       - Configuration:
