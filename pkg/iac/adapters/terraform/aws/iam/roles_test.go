@@ -2,6 +2,7 @@ package iam
 
 import (
 	"sort"
+	"strings"
 	"testing"
 
 	"github.com/aquasecurity/iamgo"
@@ -375,5 +376,93 @@ data "aws_partition" "current" {}
 			})
 			testutil.AssertDefsecEqual(t, test.expected, adapted)
 		})
+	}
+}
+
+func Test_attachmentCountForEachMap(t *testing.T) {
+	source := `
+locals {
+  platform_role_principals = {
+    lambda    = "lambda.amazonaws.com"
+    ecs-tasks = "ecs-tasks.amazonaws.com"
+  }
+}
+
+data "aws_iam_policy_document" "platform_role_assume_policy" {
+  for_each = local.platform_role_principals
+
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = [each.value]
+    }
+  }
+}
+
+resource "aws_iam_role" "platform_role" {
+  for_each           = local.platform_role_principals
+  name               = "platform-${each.key}"
+  assume_role_policy = data.aws_iam_policy_document.platform_role_assume_policy[each.key].json
+}
+
+locals {
+  platform_roles = {
+    for role_key, role_res in aws_iam_role.platform_role :
+    role_key => {
+      role = role_res.name
+    }
+  }
+}
+
+data "aws_iam_policy_document" "administrative_policy_doc" {
+  statement {
+    resources = ["*"]
+    actions   = ["Tag:GetResources", "Tag:TagResources", "Tag:UntagResources"]
+  }
+}
+
+resource "aws_iam_policy" "administrative_policy" {
+  name   = "administrative-policy"
+  policy = data.aws_iam_policy_document.administrative_policy_doc.json
+}
+
+resource "aws_iam_role_policy_attachment" "administrative_policy_attachment" {
+  for_each   = local.platform_roles
+  role       = each.value.role
+  policy_arn = aws_iam_policy.administrative_policy.arn
+}
+`
+
+	modules := tftestutil.CreateModulesFromSource(t, source, ".tf")
+	attachments := modules.GetResourcesByType("aws_iam_role_policy_attachment")
+
+	var attachmentRefs []string
+	for _, a := range attachments {
+		attachmentRefs = append(attachmentRefs, a.Reference().String())
+	}
+
+	// Expected attachment keys (they will include the map key)
+	expectedCount := 2
+
+	sort.Strings(attachmentRefs)
+
+	if len(attachments) != expectedCount {
+		t.Fatalf("expected %d policy attachments, got %d: %v", expectedCount, len(attachments), attachmentRefs)
+	}
+
+	// Additional sanity check: ensure both map keys appear once
+	hasLambda := false
+	hasEcs := false
+	for _, ref := range attachmentRefs {
+		if strings.Contains(ref, "lambda") {
+			hasLambda = true
+		}
+		if strings.Contains(ref, "ecs-tasks") {
+			hasEcs = true
+		}
+	}
+	if !hasLambda || !hasEcs {
+		t.Fatalf("expected attachment refs to include both lambda and ecs-tasks keys, got %v", attachmentRefs)
 	}
 }
