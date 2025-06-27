@@ -26,9 +26,10 @@ import (
 )
 
 const (
-	ToolVendor = "aquasecurity"
-	ToolName   = "trivy"
-	Namespace  = ToolVendor + ":" + ToolName + ":"
+	ToolVendor       = "aquasecurity"
+	ToolName         = "trivy"
+	ToolManufacturer = "Aqua Security Software Ltd."
+	Namespace        = ToolVendor + ":" + ToolName + ":"
 
 	// https://json-schema.org/understanding-json-schema/reference/string.html#dates-and-times
 	timeLayout = "2006-01-02T15:04:05+00:00"
@@ -88,10 +89,11 @@ func (m *Marshaler) Metadata(ctx context.Context) *cdx.Metadata {
 		Tools: &cdx.ToolsChoice{
 			Components: &[]cdx.Component{
 				{
-					Type:    cdx.ComponentTypeApplication,
-					Group:   ToolVendor,
-					Name:    ToolName,
-					Version: m.appVersion,
+					Type:         cdx.ComponentTypeApplication,
+					Group:        ToolVendor,
+					Name:         ToolName,
+					Version:      m.appVersion,
+					Manufacturer: &cdx.OrganizationalEntity{Name: ToolManufacturer},
 				},
 			},
 		},
