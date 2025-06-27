@@ -18,41 +18,51 @@ import (
 
 // Scanner implements the Root.io scanner
 type Scanner struct {
-	comparer version.Comparer
-	vsg      rootio.VulnSrcGetter
-	logger   *log.Logger
+	comparer       version.Comparer
+	vsg            rootio.VulnSrcGetter
+	versionTrimmer func(string) string
+	logger         *log.Logger
 }
 
 // NewScanner is the factory method for Scanner
 func NewScanner(baseOS ftypes.OSType) *Scanner {
 	var comparer version.Comparer
 	var vsg rootio.VulnSrcGetter
+	var versionTrimmer func(string) string
 
 	switch baseOS {
 	case ftypes.Debian:
 		comparer = version.NewDEBComparer()
 		vsg = rootio.NewVulnSrcGetter(vulnerability.Debian)
+		versionTrimmer = version.Major
 	case ftypes.Ubuntu:
 		comparer = version.NewDEBComparer()
 		vsg = rootio.NewVulnSrcGetter(vulnerability.Ubuntu)
+		versionTrimmer = version.Minor
 	case ftypes.Alpine:
 		comparer = version.NewAPKComparer()
 		vsg = rootio.NewVulnSrcGetter(vulnerability.Alpine)
+		versionTrimmer = version.Minor
 	default:
 		// Should never happen as it's validated in the provider
 		comparer = version.NewDEBComparer()
 		vsg = rootio.NewVulnSrcGetter(vulnerability.Debian)
+		versionTrimmer = version.Major
 	}
 
 	return &Scanner{
-		comparer: comparer,
-		vsg:      vsg,
-		logger:   log.WithPrefix("rootio"),
+		comparer:       comparer,
+		vsg:            vsg,
+		versionTrimmer: versionTrimmer,
+		logger:         log.WithPrefix("rootio"),
 	}
 }
 
 // Detect vulnerabilities in package using Root.io scanner
 func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+	// Trim patch/minor part of osVer.
+	// e.g. "12.0.1" -> "12" (Debian), "24.04.1" -> "24.04" (Ubuntu), "3.17.2" -> "3.17" (Alpine)
+	osVer = s.versionTrimmer(osVer)
 	log.InfoContext(ctx, "Detecting vulnerabilities...", log.String("os_version", osVer), log.Int("pkg_num", len(pkgs)))
 
 	var vulns []types.DetectedVulnerability

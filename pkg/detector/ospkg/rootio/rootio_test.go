@@ -99,7 +99,7 @@ func TestScanner_Detect(t *testing.T) {
 				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
-				osVer: "3.19",
+				osVer: "3.19.3",
 				pkgs: []ftypes.Package{
 					{
 						Name:       "less",
