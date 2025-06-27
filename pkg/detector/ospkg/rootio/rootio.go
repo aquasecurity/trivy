@@ -124,7 +124,7 @@ func (s *Scanner) checkConstraints(ctx context.Context, installedVersion string,
 }
 
 // IsSupportedVersion checks if the version is supported.
-// TODO: Should check if the base OS reaches EOL?
+// Root.io creates fixes for EOL distributions, so we assume all versions are supported.
 func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ string) bool {
 	return true
 }
