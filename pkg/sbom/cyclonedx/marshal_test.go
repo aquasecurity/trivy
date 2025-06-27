@@ -287,6 +287,9 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "trivy",
 								Group:   "aquasecurity",
 								Version: "dev",
+								Manufacturer: &cdx.OrganizationalEntity{
+									Name: "Aqua Security Software Ltd.",
+								},
 							},
 						},
 					},
@@ -923,6 +926,9 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "trivy",
 								Group:   "aquasecurity",
 								Version: "dev",
+								Manufacturer: &cdx.OrganizationalEntity{
+									Name: "Aqua Security Software Ltd.",
+								},
 							},
 						},
 					},
@@ -1308,6 +1314,9 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "trivy",
 								Group:   "aquasecurity",
 								Version: "dev",
+								Manufacturer: &cdx.OrganizationalEntity{
+									Name: "Aqua Security Software Ltd.",
+								},
 							},
 						},
 					},
@@ -1535,6 +1544,9 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "trivy",
 								Group:   "aquasecurity",
 								Version: "dev",
+								Manufacturer: &cdx.OrganizationalEntity{
+									Name: "Aqua Security Software Ltd.",
+								},
 							},
 						},
 					},
@@ -1791,6 +1803,9 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "trivy",
 								Group:   "aquasecurity",
 								Version: "dev",
+								Manufacturer: &cdx.OrganizationalEntity{
+									Name: "Aqua Security Software Ltd.",
+								},
 							},
 						},
 					},
@@ -1978,6 +1993,9 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "trivy",
 								Group:   "aquasecurity",
 								Version: "dev",
+								Manufacturer: &cdx.OrganizationalEntity{
+									Name: "Aqua Security Software Ltd.",
+								},
 							},
 						},
 					},
@@ -2066,6 +2084,9 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "trivy",
 								Group:   "aquasecurity",
 								Version: "dev",
+								Manufacturer: &cdx.OrganizationalEntity{
+									Name: "Aqua Security Software Ltd.",
+								},
 							},
 						},
 					},
