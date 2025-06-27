@@ -3,15 +3,14 @@
 package integration
 
 import (
-	"context"
 	"os"
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/types"
-
-	"github.com/stretchr/testify/require"
 )
 
 func TestDockerEngine(t *testing.T) {
@@ -216,7 +215,7 @@ func TestDockerEngine(t *testing.T) {
 	// Set a temp dir so that modules will not be loaded
 	t.Setenv("XDG_DATA_HOME", cacheDir)
 
-	ctx := context.Background()
+	ctx := t.Context()
 	defer ctx.Done()
 
 	cli := testutil.NewDockerClient(t)
@@ -272,7 +271,7 @@ func TestDockerEngine(t *testing.T) {
 			}
 			if len(tt.ignoreIDs) != 0 {
 				trivyIgnore := ".trivyignore"
-				err := os.WriteFile(trivyIgnore, []byte(strings.Join(tt.ignoreIDs, "\n")), 0444)
+				err := os.WriteFile(trivyIgnore, []byte(strings.Join(tt.ignoreIDs, "\n")), 0o444)
 				require.NoError(t, err, "failed to write .trivyignore")
 				defer os.Remove(trivyIgnore)
 			}

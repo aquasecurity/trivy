@@ -296,7 +296,7 @@ func compareRawFiles(t *testing.T, wantFile, gotFile string) {
 	require.NoError(t, err)
 	got, err := os.ReadFile(gotFile)
 	require.NoError(t, err)
-	assert.EqualValues(t, string(want), string(got))
+	assert.Equal(t, string(want), string(got))
 }
 
 func compareReports(t *testing.T, wantFile, gotFile string, override func(t *testing.T, want, got *types.Report)) {
@@ -378,7 +378,7 @@ func overrideUID(t *testing.T, want, got *types.Report) {
 
 // overrideDockerRemovedFields clears image config fields that were removed from Docker API
 // cf. https://github.com/moby/moby/blob/d0ad1357a141c795e1e0490e3fed00ddabcb91b9/docs/api/version-history.md
-func overrideDockerRemovedFields(t *testing.T, want, got *types.Report) {
+func overrideDockerRemovedFields(_ *testing.T, want, got *types.Report) {
 	// Clear Container field (removed in Docker API v1.45)
 	got.Metadata.ImageConfig.Container = ""
 	want.Metadata.ImageConfig.Container = ""
