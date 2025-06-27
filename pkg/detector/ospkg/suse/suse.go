@@ -87,7 +87,7 @@ const (
 
 // Scanner implements the SUSE scanner
 type Scanner struct {
-	vs susecvrf.VulnSrc
+	vs *susecvrf.VulnSrc
 }
 
 // NewScanner is the factory method for Scanner
