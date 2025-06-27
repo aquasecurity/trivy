@@ -16,6 +16,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
 )
@@ -178,7 +179,55 @@ func (c *IgnoreConfig) MatchSecret(secretID, filePath string) *IgnoreFinding {
 }
 
 func (c *IgnoreConfig) MatchLicense(licenseID, filePath string) *IgnoreFinding {
-	return c.Licenses.Match(licenseID, filePath, nil)
+	// First try exact match for the full expression
+	if finding := c.Licenses.Match(licenseID, filePath, nil); finding != nil {
+		return finding
+	}
+
+	// Try to parse as SPDX expression and check individual components
+	expr, err := expression.Normalize(licenseID)
+	if err != nil {
+		// If parsing fails, not a valid SPDX expression
+		return nil
+	}
+
+	// Extract license IDs from the expression
+	var licenseIDs []string
+	extractFromExpression(expr, &licenseIDs)
+
+	// If we have multiple components, check if all are ignored
+	if len(licenseIDs) > 1 {
+		for _, id := range licenseIDs {
+			if c.Licenses.Match(id, filePath, nil) == nil {
+				return nil // If any component is not ignored, don't ignore the expression
+			}
+		}
+		// All components are ignored, return a match
+		return &IgnoreFinding{
+			ID:        licenseID,
+			Statement: "All license components are individually ignored",
+		}
+	}
+
+	return nil
+}
+
+// extractFromExpression recursively walks the expression tree to extract license IDs
+func extractFromExpression(expr expression.Expression, licenseIDs *[]string) {
+	switch e := expr.(type) {
+	case expression.SimpleExpr:
+		// Use the String() method to get the complete license ID including any suffix
+		*licenseIDs = append(*licenseIDs, e.String())
+	case expression.CompoundExpr:
+		// For WITH expressions, treat as a single license
+		if e.Conjunction() == expression.TokenWith {
+			*licenseIDs = append(*licenseIDs, expr.String())
+		} else {
+			// For AND/OR expressions, recursively extract from both sides
+			extractFromExpression(e.Left(), licenseIDs)
+			extractFromExpression(e.Right(), licenseIDs)
+		}
+	}
 }
 
 func ParseIgnoreFile(ctx context.Context, ignoreFile string) (IgnoreConfig, error) {
