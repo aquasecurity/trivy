@@ -169,6 +169,7 @@ trivy filesystem [flags] PATH
                                             - govulndb
                                             - echo
                                             - minimos
+                                            - rootio
                                             - auto
                                            (default [auto])
 ```
