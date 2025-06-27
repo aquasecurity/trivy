@@ -178,6 +178,7 @@ trivy kubernetes [flags] [CONTEXT]
                                             - govulndb
                                             - echo
                                             - minimos
+                                            - rootio
                                             - auto
                                            (default [auto])
 ```
