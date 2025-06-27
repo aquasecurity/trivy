@@ -5503,6 +5503,23 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Data collected">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#captured-scan-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Captured scan options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -7963,6 +7980,23 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Data collected">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#captured-scan-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Captured scan options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -8013,22 +8047,46 @@ You're not viewing the latest version of the documentation.
 
 
 <h1 id="usage-telemetry">Usage Telemetry<a class="headerlink" href="#usage-telemetry" title="Permanent link">&para;</a></h1>
-<p>Trivy collect anonymous usage data in order to help us improve the product. This document explains what is collected and how you can control it.</p>
+<p>Trivy collects anonymous usage data in order to help us improve the product. This document explains what is collected and how you can control it.</p>
 <h2 id="data-collected">Data collected<a class="headerlink" href="#data-collected" title="Permanent link">&para;</a></h2>
 <p>The following information could be collected:</p>
 <ul>
-<li>Environmental information</li>
+<li>Environmental information:<ul>
 <li>Installation identifier</li>
 <li>Trivy version</li>
 <li>Operating system</li>
-<li>Scan</li>
-<li>Non-revealing scan options</li>
 </ul>
+</li>
+<li>Scan:<ul>
+<li>Non-revealing scan options (see below for comprehensive list)</li>
+</ul>
+</li>
+</ul>
+<h3 id="captured-scan-options">Captured scan options<a class="headerlink" href="#captured-scan-options" title="Permanent link">&para;</a></h3>
+<p>The following flags will be included with their value:</p>
+<div class="highlight"><pre><span></span><code>--debug
+--detection-priority
+--format
+--ignore-status
+--include-dev-deps
+--insecure
+--list-all-pkgs
+--misconfig-scanners
+--pkg-relationships
+--pkg-types
+--quiet
+--report
+--scanners
+--severity
+--show-suppressed
+--timeout
+--vuln-severity-source
+</code></pre></div>
 <h2 id="privacy">Privacy<a class="headerlink" href="#privacy" title="Permanent link">&para;</a></h2>
 <p>No personal information, scan results, or sensitive data is specifically collected. We take the following measures to ensure that:</p>
 <ul>
-<li>Installation identifier: one-way hash of machine fingerprint, resulting in opaque string.</li>
-<li>Scaner: any option that is user controlled is omitted (never collected). For example, file paths, image names, etc are never collected.</li>
+<li>Installation identifier: one-way hash of machine fingerprint, resulting in opaque ID.</li>
+<li>Scan: any option that is user-controlled is omitted (never collected). For example, file paths, image names, etc are never collected.</li>
 </ul>
 <p>Trivy is an Aqua Security product and adheres to the company's privacy policy: <a href="https://aquasec.com/privacy">https://aquasec.com/privacy</a>.</p>
 <h2 id="disabling-telemetry">Disabling telemetry<a class="headerlink" href="#disabling-telemetry" title="Permanent link">&para;</a></h2>
