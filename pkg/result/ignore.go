@@ -179,7 +179,7 @@ func (c *IgnoreConfig) MatchSecret(secretID, filePath string) *IgnoreFinding {
 }
 
 func (c *IgnoreConfig) MatchLicense(licenseID, filePath string) *IgnoreFinding {
-	if b := expression.ValidateSPDXLicense(licenseID); b != true {
+	if b := expression.ValidateSPDXLicense(licenseID); !b {
 		log.Debug("Invalid SPDX license", log.String("license", licenseID))
 		return nil
 	}
@@ -216,7 +216,7 @@ func extractFromExpression(expr expression.Expression, licenseIDs *[]string) {
 		*licenseIDs = append(*licenseIDs, e.String())
 	case expression.CompoundExpr:
 		if e.Conjunction() == expression.TokenWith {
-            // For WITH expressions, treat as a single license
+			// For WITH expressions, treat as a single license
 			*licenseIDs = append(*licenseIDs, expr.String())
 		} else {
 			// For AND/OR expressions, recursively extract from both sides
