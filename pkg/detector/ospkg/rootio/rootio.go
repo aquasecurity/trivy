@@ -19,34 +19,34 @@ import (
 // Scanner implements the Root.io scanner
 type Scanner struct {
 	comparer version.Comparer
-	vs       rootio.VulnSrc
+	vsg      rootio.VulnSrcGetter
 	logger   *log.Logger
 }
 
 // NewScanner is the factory method for Scanner
 func NewScanner(baseOS ftypes.OSType) *Scanner {
 	var comparer version.Comparer
-	var vs rootio.VulnSrc
+	var vsg rootio.VulnSrcGetter
 
 	switch baseOS {
 	case ftypes.Debian:
 		comparer = version.NewDEBComparer()
-		vs = rootio.NewVulnSrc(vulnerability.Debian)
+		vsg = rootio.NewVulnSrcGetter(vulnerability.Debian)
 	case ftypes.Ubuntu:
 		comparer = version.NewDEBComparer()
-		vs = rootio.NewVulnSrc(vulnerability.Ubuntu)
+		vsg = rootio.NewVulnSrcGetter(vulnerability.Ubuntu)
 	case ftypes.Alpine:
 		comparer = version.NewAPKComparer()
-		vs = rootio.NewVulnSrc(vulnerability.Alpine)
+		vsg = rootio.NewVulnSrcGetter(vulnerability.Alpine)
 	default:
 		// Should never happen as it's validated in the provider
 		comparer = version.NewDEBComparer()
-		vs = rootio.NewVulnSrc(vulnerability.Debian)
+		vsg = rootio.NewVulnSrcGetter(vulnerability.Debian)
 	}
 
 	return &Scanner{
 		comparer: comparer,
-		vs:       vs,
+		vsg:      vsg,
 		logger:   log.WithPrefix("rootio"),
 	}
 }
@@ -62,7 +62,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 			srcName = pkg.Name
 		}
 
-		advisories, err := s.vs.Get(osVer, srcName)
+		advisories, err := s.vsg.Get(osVer, srcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Root.io advisories: %w", err)
 		}

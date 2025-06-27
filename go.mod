@@ -448,4 +448,4 @@ tool (
 )
 
 // TODO: Delete it once https://github.com/aquasecurity/trivy-db/pull/546 gets merged.
-replace github.com/aquasecurity/trivy-db => github.com/chait-slim/trivy-db v0.0.0-20250626121835-ca687309f19d
+replace github.com/aquasecurity/trivy-db => github.com/chait-slim/trivy-db v0.0.0-20250627093245-30c99094fbec
