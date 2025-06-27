@@ -15,7 +15,6 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 	t.Run("happy", func(t *testing.T) {
 		sm := StaticMetadata{
 			ID:                  "i",
-			AVDID:               "a",
 			Title:               "t",
 			ShortCode:           "sc",
 			Aliases:             []string{"a", "b", "c"},
@@ -34,7 +33,6 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 		require.NoError(t, sm.populate(
 			map[string]any{
 				"id":                  "i_n",
-				"avd_id":              "a_n",
 				"title":               "t_n",
 				"short_code":          "sc_n",
 				"aliases":             []any{"a_n", "b_n", "c_n"},
@@ -54,7 +52,6 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 
 		expected := StaticMetadata{
 			ID:                  "i_n",
-			AVDID:               "a_n",
 			Title:               "t_n",
 			ShortCode:           "sc_n",
 			Aliases:             []string{"a", "b", "c", "a_n", "b_n", "c_n"},
@@ -249,7 +246,6 @@ func TestMetadataFromAnnotations(t *testing.T) {
 # title: test
 # custom:
 #   id: test-001
-#   avd_id: test-001
 #   severity: LOW
 #   minimum_trivy_version: 1.2.3
 #   input:
@@ -260,7 +256,6 @@ package user.test
 			expected: &StaticMetadata{
 				Title:    "test",
 				ID:       "test-001",
-				AVDID:    "test-001",
 				Severity: "LOW",
 				InputOptions: InputOptions{
 					Selectors: []Selector{

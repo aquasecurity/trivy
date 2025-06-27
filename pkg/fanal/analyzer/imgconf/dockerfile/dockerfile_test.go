@@ -101,8 +101,7 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 							Query:     "data.builtin.dockerfile.DS005.deny",
 							Message:   "Consider using 'COPY foo.txt /' command instead of 'ADD foo.txt /'",
 							PolicyMetadata: types.PolicyMetadata{
-								ID:                 "DS005",
-								AVDID:              "AVD-DS-0005",
+								ID:                 "AVD-DS-0005",
 								Type:               "Dockerfile Security Check",
 								Title:              "ADD instead of COPY",
 								Description:        "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
@@ -188,8 +187,7 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 							Query:     "data.builtin.dockerfile.DS005.deny",
 							Message:   "Consider using 'COPY ./foo.txt /foo.txt' command instead of 'ADD ./foo.txt /foo.txt'",
 							PolicyMetadata: types.PolicyMetadata{
-								ID:                 "DS005",
-								AVDID:              "AVD-DS-0005",
+								ID:                 "AVD-DS-0005",
 								Type:               "Dockerfile Security Check",
 								Title:              "ADD instead of COPY",
 								Description:        "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
@@ -262,8 +260,7 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 							Query:     "data.builtin.dockerfile.DS002.deny",
 							Message:   "Specify at least 1 USER command in Dockerfile with non-root user as argument",
 							PolicyMetadata: types.PolicyMetadata{
-								ID:                 "DS002",
-								AVDID:              "AVD-DS-0002",
+								ID:                 "AVD-DS-0002",
 								Type:               "Dockerfile Security Check",
 								Title:              "Image user should not be 'root'",
 								Description:        "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
@@ -290,7 +287,7 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "DS016 check not detected",
+			name: "AVD-DS-0016 check not detected",
 			input: analyzer.ConfigAnalysisInput{
 				Config: &v1.ConfigFile{
 					Config: v1.Config{

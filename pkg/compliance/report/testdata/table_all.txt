@@ -8,7 +8,7 @@ MEDIUM: Container 'metrics-server' of Deployment 'metrics-server' should set 'se
 ════════════════════════════════════════
 A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.
 
-See https://avd.aquasec.com/misconfig/ksv001
+See https://avd.aquasec.com/misconfig/avd-ksv-0001
 ────────────────────────────────────────
  Deployment/metrics-server:132-140
 ────────────────────────────────────────
@@ -34,7 +34,7 @@ LOW: Container 'metrics-server' of Deployment 'metrics-server' should add 'ALL' 
 ════════════════════════════════════════
 The container should drop all default capabilities and add only those that are needed for its execution.
 
-See https://avd.aquasec.com/misconfig/ksv003
+See https://avd.aquasec.com/misconfig/avd-ksv-0003
 ────────────────────────────────────────
  Deployment/metrics-server:132-140
 ────────────────────────────────────────

@@ -242,8 +242,7 @@ func TestArtifact_Inspect(t *testing.T) {
 }
 
 var terraformPolicyMetadata = types.PolicyMetadata{
-	ID:                 "TEST001",
-	AVDID:              "AVD-TEST-0001",
+	ID:                 "AVD-TEST-0001",
 	Type:               "Terraform Security Check",
 	Title:              "Test policy",
 	Description:        "This is a test policy.",
@@ -661,8 +660,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 										Query:     "data.user.test002.deny",
 										Message:   "Empty bucket name!",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:       "TEST002",
-											AVDID:    "AVD-TEST-0002",
+											ID:       "AVD-TEST-0002",
 											Type:     "Terraform Security Check",
 											Title:    "Test policy",
 											Severity: "LOW",
@@ -717,8 +715,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 const emptyBucketCheck = `package user.something
 
 __rego_metadata__ := {
-	"id": "TEST001",
-	"avd_id": "AVD-TEST-0001",
+	"id": "AVD-TEST-0001",
 	"title": "Test policy",
 	"short_code": "empty-bucket-name",
 	"severity": "LOW",
@@ -749,8 +746,7 @@ deny[res] {
 }`
 
 var terraformPlanPolicyMetadata = types.PolicyMetadata{
-	ID:                 "TEST001",
-	AVDID:              "AVD-TEST-0001",
+	ID:                 "AVD-TEST-0001",
 	Type:               "Terraform Plan Snapshot Security Check",
 	Title:              "Test policy",
 	Description:        "This is a test policy.",
@@ -1005,8 +1001,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 										Query:     "data.user.something.deny",
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "CloudFormation Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1064,8 +1059,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 										Query:     "data.user.something.deny",
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "CloudFormation Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1086,8 +1080,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 										Query:     "data.user.something.deny",
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "CloudFormation Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1174,8 +1167,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "CloudFormation Security Check",
 											Title:              "Bad stuff is bad",
 											Description:        "Its not good!",
@@ -1228,8 +1220,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "CloudFormation Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1316,8 +1307,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "Dockerfile Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1371,8 +1361,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "Dockerfile Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1454,8 +1443,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "Dockerfile Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1545,8 +1533,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 										Query:     "data.user.something.deny",
 										Message:   "No evil containers allowed!",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "Kubernetes Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1605,8 +1592,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 										Query:     "data.user.something.deny",
 										Message:   "No evil containers allowed!",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "Kubernetes Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1628,8 +1614,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 										Query:     "data.user.something.deny",
 										Message:   "No evil containers allowed!",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "Kubernetes Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1715,8 +1700,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "Kubernetes Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1805,8 +1789,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 										Query:     "data.user.something.deny",
 										Message:   "No account allowed!",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "Azure ARM Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1863,8 +1846,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 										Query:     "data.user.something.deny",
 										Message:   "No account allowed!",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "Azure ARM Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1885,8 +1867,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 										Query:     "data.user.something.deny",
 										Message:   "No account allowed!",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "Azure ARM Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1970,8 +1951,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "Azure ARM Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -2059,8 +2039,7 @@ func TestMixedConfigurationScan(t *testing.T) {
 										Query:     "data.user.something.deny",
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "CloudFormation Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -2087,8 +2066,7 @@ func TestMixedConfigurationScan(t *testing.T) {
 										Query:     "data.user.something.deny",
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
+											ID:                 "AVD-TEST-0001",
 											Type:               "Terraform Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -2180,8 +2158,7 @@ func TestJSONConfigScan(t *testing.T) {
 										Query:     "data.user.test_json_check.deny",
 										Message:   `Service "foo" should not be used`,
 										PolicyMetadata: types.PolicyMetadata{
-											ID:       "TEST001",
-											AVDID:    "TEST001",
+											ID:       "AVD-TEST-0001",
 											Type:     "JSON Security Check",
 											Title:    "Test check",
 											Severity: "LOW",
@@ -2202,8 +2179,7 @@ func TestJSONConfigScan(t *testing.T) {
 										Query:     "data.user.test_json_check.deny",
 										Message:   `Provider "bar" should not be used`,
 										PolicyMetadata: types.PolicyMetadata{
-											ID:       "TEST001",
-											AVDID:    "TEST001",
+											ID:       "AVD-TEST-0001",
 											Type:     "JSON Security Check",
 											Title:    "Test check",
 											Severity: "LOW",
@@ -2251,8 +2227,7 @@ func TestJSONConfigScan(t *testing.T) {
 										Query:     "data.user.test_json_check.deny",
 										Message:   `Service "foo" should not be used`,
 										PolicyMetadata: types.PolicyMetadata{
-											ID:       "TEST001",
-											AVDID:    "TEST001",
+											ID:       "AVD-TEST-0001",
 											Type:     "JSON Security Check",
 											Title:    "Test check",
 											Severity: "LOW",
@@ -2342,8 +2317,7 @@ func TestYAMLConfigScan(t *testing.T) {
 										Query:     "data.user.test_yaml_check.deny",
 										Message:   `Service "foo" should not be used`,
 										PolicyMetadata: types.PolicyMetadata{
-											ID:       "TEST001",
-											AVDID:    "TEST001",
+											ID:       "AVD-TEST-0001",
 											Type:     "YAML Security Check",
 											Title:    "Test check",
 											Severity: "LOW",
@@ -2364,8 +2338,7 @@ func TestYAMLConfigScan(t *testing.T) {
 										Query:     "data.user.test_yaml_check.deny",
 										Message:   `Provider "bar" should not be used`,
 										PolicyMetadata: types.PolicyMetadata{
-											ID:       "TEST001",
-											AVDID:    "TEST001",
+											ID:       "AVD-TEST-0001",
 											Type:     "YAML Security Check",
 											Title:    "Test check",
 											Severity: "LOW",
@@ -2413,8 +2386,7 @@ func TestYAMLConfigScan(t *testing.T) {
 										Query:     "data.user.test_yaml_check.deny",
 										Message:   `Service "foo" should not be used`,
 										PolicyMetadata: types.PolicyMetadata{
-											ID:       "TEST001",
-											AVDID:    "TEST001",
+											ID:       "AVD-TEST-0001",
 											Type:     "YAML Security Check",
 											Title:    "Test check",
 											Severity: "LOW",

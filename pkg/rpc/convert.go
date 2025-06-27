@@ -350,7 +350,6 @@ func ConvertToRPCMisconfs(misconfs []types.DetectedMisconfiguration) []*common.D
 		rpcMisconfs = append(rpcMisconfs, &common.DetectedMisconfiguration{
 			Type:          m.Type,
 			Id:            m.ID,
-			AvdId:         m.AVDID,
 			Title:         m.Title,
 			Description:   m.Description,
 			Message:       m.Message,
@@ -381,7 +380,6 @@ func ConvertToRPCLayer(layer ftypes.Layer) *common.Layer {
 func ConvertToRPCPolicyMetadata(policy ftypes.PolicyMetadata) *common.PolicyMetadata {
 	return &common.PolicyMetadata{
 		Id:                 policy.ID,
-		AdvId:              policy.AVDID,
 		Type:               policy.Type,
 		Title:              policy.Title,
 		Description:        policy.Description,
@@ -637,7 +635,6 @@ func ConvertFromRPCMisconfs(rpcMisconfs []*common.DetectedMisconfiguration) []ty
 		misconfs = append(misconfs, types.DetectedMisconfiguration{
 			Type:          rpcMisconf.Type,
 			ID:            rpcMisconf.Id,
-			AVDID:         rpcMisconf.AvdId,
 			Title:         rpcMisconf.Title,
 			Description:   rpcMisconf.Description,
 			Message:       rpcMisconf.Message,
@@ -675,7 +672,6 @@ func ConvertFromRPCPolicyMetadata(rpcPolicy *common.PolicyMetadata) ftypes.Polic
 
 	return ftypes.PolicyMetadata{
 		ID:                 rpcPolicy.Id,
-		AVDID:              rpcPolicy.AdvId,
 		Type:               rpcPolicy.Type,
 		Title:              rpcPolicy.Title,
 		Description:        rpcPolicy.Description,

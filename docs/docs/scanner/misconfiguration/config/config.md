@@ -190,7 +190,7 @@ Example for Helm:
 ```yaml
       serviceAccountName: "testchart.serviceAccountName"
       containers:
-        # trivy:ignore:KSV018
+        # trivy:ignore:AVD-KSV-0018
         - name: "testchart"
           securityContext:
             runAsUser: 1000

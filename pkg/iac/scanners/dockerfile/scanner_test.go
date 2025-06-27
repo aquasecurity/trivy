@@ -26,8 +26,7 @@ const DS006PolicyWithDockerfileSchema = `# METADATA
 # related_resources:
 # - https://docs.docker.com/develop/develop-images/multistage-build/
 # custom:
-#   id: DS006
-#   avd_id: AVD-DS-0006
+#   id: AVD-DS-0006
 #   severity: CRITICAL
 #   short_code: no-self-referencing-copy-from
 #   recommended_action: "Change the '--from' so that it will not refer to itself"
@@ -82,8 +81,7 @@ const DS006PolicyWithMyFancyDockerfileSchema = `# METADATA
 # related_resources:
 # - https://docs.docker.com/develop/develop-images/multistage-build/
 # custom:
-#   id: DS006
-#   avd_id: AVD-DS-0006
+#   id: AVD-DS-0006
 #   severity: CRITICAL
 #   short_code: no-self-referencing-copy-from
 #   recommended_action: "Change the '--from' so that it will not refer to itself"
@@ -138,8 +136,7 @@ const DS006PolicyWithOldSchemaSelector = `# METADATA
 # related_resources:
 # - https://docs.docker.com/develop/develop-images/multistage-build/
 # custom:
-#   id: DS006
-#   avd_id: AVD-DS-0006
+#   id: AVD-DS-0006
 #   severity: CRITICAL
 #   short_code: no-self-referencing-copy-from
 #   recommended_action: "Change the '--from' so that it will not refer to itself"
@@ -187,8 +184,7 @@ deny[res] {
 const DS006LegacyWithOldStyleMetadata = `package builtin.dockerfile.DS006
 
 __rego_metadata__ := {
-	"id": "DS006",
-	"avd_id": "AVD-DS-0006",
+	"id": "AVD-DS-0006",
 	"title": "COPY '--from' referring to the current image",
 	"short_code": "no-self-referencing-copy-from",
 	"version": "v1.0.0",
@@ -237,8 +233,8 @@ USER root
 	assert.Equal(
 		t,
 		scan.Rule{
-			AVDID:          "AVD-DS-0006",
-			Aliases:        []string{"DS006"},
+			ID:             "AVD-DS-0006",
+			Aliases:        []string{"AVD-DS-0006"},
 			ShortCode:      "no-self-referencing-copy-from",
 			Summary:        "COPY '--from' referring to the current image",
 			Explanation:    "COPY '--from' should not mention the current FROM alias, since it is impossible to copy from itself.",
@@ -586,8 +582,8 @@ COPY --from=dep /binary /`
 				assert.Equal(
 					t,
 					scan.Rule{
-						AVDID:          "AVD-DS-0006",
-						Aliases:        []string{"DS006"},
+						ID:             "AVD-DS-0006",
+						Aliases:        []string{"AVD-DS-0006"},
 						ShortCode:      "no-self-referencing-copy-from",
 						Summary:        "COPY '--from' referring to the current image",
 						Explanation:    "COPY '--from' should not mention the current FROM alias, since it is impossible to copy from itself.",
@@ -658,7 +654,7 @@ MAINTAINER moby@example.com`,
 # schemas:
 # - input: schema["dockerfile"]
 # custom:
-#   avd_id: USER-TEST-0001
+#   id: USER-TEST-0001
 #   short_code: maintainer-deprecated
 #   input:
 #     selector:
