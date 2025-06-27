@@ -273,13 +273,17 @@ func (s Service) scanLicenses(target types.ScanTarget, options types.ScanOptions
 	var results types.Results
 	scanner := licensing.NewScanner(options.LicenseCategories)
 
-	// Scan licenses for OS packages
-	if result := s.scanOSPackageLicenses(target.Packages, scanner); result != nil {
-		results = append(results, *result)
+	if slices.Contains(options.PkgTypes, types.PkgTypeOS) {
+		// Scan licenses for OS packages
+		if result := s.scanOSPackageLicenses(target.Packages, scanner); result != nil {
+			results = append(results, *result)
+		}
 	}
 
-	// Scan licenses for language-specific packages
-	results = append(results, s.scanApplicationLicenses(target.Applications, scanner)...)
+	if slices.Contains(options.PkgTypes, types.PkgTypeLibrary) {		
+		// Scan licenses for language-specific packages
+		results = append(results, s.scanApplicationLicenses(target.Applications, scanner)...)
+	}
 
 	// Scan licenses in file headers or license files
 	if result := s.scanFileLicenses(target.Licenses, scanner, options); result != nil {
