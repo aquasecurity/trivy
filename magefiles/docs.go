@@ -7,13 +7,13 @@ import (
 	"fmt"
 	"os"
 	"slices"
+	"sort"
 	"strings"
-
-	"github.com/spf13/cobra/doc"
 
 	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/spf13/cobra/doc"
 )
 
 const (
@@ -35,50 +35,43 @@ func main() {
 	os.Setenv("XDG_DATA_HOME", os.TempDir())
 
 	cmd := commands.NewApp()
+	allFlagGroups := getAllFlags()
+
 	cmd.DisableAutoGenTag = true
 	if err := doc.GenMarkdownTree(cmd, "./docs/docs/references/configuration/cli"); err != nil {
 		log.Fatal("Fatal error", log.Err(err))
 	}
-	if err := generateConfigDocs("./docs/docs/references/configuration/config-file.md"); err != nil {
+	if err := generateConfigDocs("./docs/docs/references/configuration/config-file.md", allFlagGroups); err != nil {
 		log.Fatal("Fatal error in config file generation", log.Err(err))
+	}
+	if err := generateTelemetryFlagDocs("./docs/docs/advanced/telemetry-flags.md", allFlagGroups); err != nil {
+		log.Fatal("Fatal error in telemetry docs generation", log.Err(err))
 	}
 }
 
-// generateConfigDocs creates markdown file for Trivy config.
-func generateConfigDocs(filename string) error {
-	// remoteFlags should contain Client and Server flags.
-	// NewClientFlags doesn't initialize `Listen` field
-	remoteFlags := flag.NewClientFlags()
-	remoteFlags.Listen = flag.ServerListenFlag.Clone()
-
-	// These flags don't work from config file.
-	// Clear configName to skip them later.
-	globalFlags := flag.NewGlobalFlagGroup()
-	globalFlags.ConfigFile.ConfigName = ""
-	globalFlags.ShowVersion.ConfigName = ""
-	globalFlags.GenerateDefaultConfig.ConfigName = ""
-
-	var allFlagGroups = []flag.FlagGroup{
-		globalFlags,
-		flag.NewCacheFlagGroup(),
-		flag.NewCleanFlagGroup(),
-		remoteFlags,
-		flag.NewDBFlagGroup(),
-		flag.NewImageFlagGroup(),
-		flag.NewK8sFlagGroup(),
-		flag.NewLicenseFlagGroup(),
-		flag.NewMisconfFlagGroup(),
-		flag.NewModuleFlagGroup(),
-		flag.NewPackageFlagGroup(),
-		flag.NewRegistryFlagGroup(),
-		flag.NewRegoFlagGroup(),
-		flag.NewReportFlagGroup(),
-		flag.NewRepoFlagGroup(),
-		flag.NewScanFlagGroup(),
-		flag.NewSecretFlagGroup(),
-		flag.NewVulnerabilityFlagGroup(),
+// generateTelemetryFlagDocs updates the telemetry section in the documentation file
+// with the flags that are safe to be included in telemetry.
+func generateTelemetryFlagDocs(filename string, allFlagGroups []flag.FlagGroup) error {
+	var telemetryFlags []string
+	for _, group := range allFlagGroups {
+		flags := group.Flags()
+		for _, f := range flags {
+			if f.IsTelemetrySafe() && f.GetConfigName() != "" {
+				telemetryFlags = append(telemetryFlags, fmt.Sprintf("--%s", f.GetName()))
+			}
+		}
 	}
 
+	sort.Strings(telemetryFlags)
+	flagContent := fmt.Sprintf("```\n%s\n```\n", strings.Join(telemetryFlags, "\n"))
+	if err := os.WriteFile(filename, []byte(flagContent), 0644); err != nil {
+		return fmt.Errorf("failed to write to %s: %w", filename, err)
+	}
+	return nil
+}
+
+// generateConfigDocs creates markdown file for Trivy config.
+func generateConfigDocs(filename string, allFlagGroups []flag.FlagGroup) error {
 	f, err := os.Create(filename)
 	if err != nil {
 		return err
@@ -86,6 +79,10 @@ func generateConfigDocs(filename string) error {
 	defer f.Close()
 	f.WriteString("# " + title + "\n\n")
 	f.WriteString(description + "\n")
+
+	if len(allFlagGroups) == 0 {
+		return fmt.Errorf("no flag groups found")
+	}
 
 	for _, group := range allFlagGroups {
 		f.WriteString("## " + group.Name() + " options\n")
@@ -160,4 +157,40 @@ func writeFlagValue(val any, ind string, w *os.File) {
 	default:
 		fmt.Fprintf(w, " %v\n", v)
 	}
+}
+
+func getAllFlags() []flag.FlagGroup {
+	// remoteFlags should contain Client and Server flags.
+	// NewClientFlags doesn't initialize `Listen` field
+	remoteFlags := flag.NewClientFlags()
+	remoteFlags.Listen = flag.ServerListenFlag.Clone()
+
+	// These flags don't work from config file.
+	// Clear configName to skip them later.
+	globalFlags := flag.NewGlobalFlagGroup()
+	globalFlags.ConfigFile.ConfigName = ""
+	globalFlags.ShowVersion.ConfigName = ""
+	globalFlags.GenerateDefaultConfig.ConfigName = ""
+
+	return []flag.FlagGroup{
+		globalFlags,
+		flag.NewCacheFlagGroup(),
+		flag.NewCleanFlagGroup(),
+		remoteFlags,
+		flag.NewDBFlagGroup(),
+		flag.NewImageFlagGroup(),
+		flag.NewK8sFlagGroup(),
+		flag.NewLicenseFlagGroup(),
+		flag.NewMisconfFlagGroup(),
+		flag.NewModuleFlagGroup(),
+		flag.NewPackageFlagGroup(),
+		flag.NewRegistryFlagGroup(),
+		flag.NewRegoFlagGroup(),
+		flag.NewReportFlagGroup(),
+		flag.NewRepoFlagGroup(),
+		flag.NewScanFlagGroup(),
+		flag.NewSecretFlagGroup(),
+		flag.NewVulnerabilityFlagGroup(),
+	}
+
 }
