@@ -1,0 +1,32 @@
+- bucket: root.io debian 12
+  pairs:
+    - bucket: openssl
+      pairs:
+        - key: CVE-2024-13176
+          value:
+            VulnerableVersions:
+              - "<3.0.15-1~deb12u1.root.io.1"
+              - ">3.0.15-1~deb12u1.root.io.1 <3.0.16-1~deb12u1"
+            PatchedVersions:
+              - "3.0.15-1~deb12u1.root.io.1"
+              - "3.0.16-1~deb12u1"
+- bucket: root.io ubuntu 20.04
+  pairs:
+    - bucket: nginx
+      pairs:
+        - key: CVE-2023-44487
+          value:
+            VulnerableVersions:
+              - "<1.22.1-9+deb12u2.root.io.1"
+            PatchedVersions:
+              - "1.22.1-9+deb12u2.root.io.1"
+- bucket: root.io alpine 3.19
+  pairs:
+    - bucket: less
+      pairs:
+        - key: CVE-2024-32487
+          value:
+            VulnerableVersions:
+              - "<643-r10072"
+            PatchedVersions:
+              - "643-r10072"
