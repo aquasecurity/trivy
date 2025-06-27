@@ -14,6 +14,7 @@ var (
 
 type Expression interface {
 	String() string
+	IsSPDXLicense() bool
 }
 
 type Token struct {
@@ -40,6 +41,10 @@ func (s SimpleExpr) String() string {
 		return s.License + "+"
 	}
 	return s.License
+}
+
+func (s SimpleExpr) IsSPDXLicense() bool {
+	return ValidateSPDXLicense(s.String())
 }
 
 type CompoundExpr struct {
@@ -80,4 +85,12 @@ func (c CompoundExpr) String() string {
 		}
 	}
 	return fmt.Sprintf("%s %s %s", left, c.conjunction.literal, right)
+}
+
+func (c CompoundExpr) IsSPDXLicense() bool {
+	if c.conjunction.token == WITH {
+		// e.g. A WITH B
+		return c.left.IsSPDXLicense() && ValidateSPDXException(c.right.String())
+	}
+	return c.left.IsSPDXLicense() && c.right.IsSPDXLicense()
 }
