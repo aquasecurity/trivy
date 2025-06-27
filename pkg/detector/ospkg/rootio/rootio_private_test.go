@@ -16,41 +16,121 @@ func TestScanner_IsVulnerable(t *testing.T) {
 		vulnerableRanges []string
 		want             bool
 	}{
-		// Case 1
-		{"1-a", "1.0.0", []string{"<1.0.0-2"}, true},
-		{"1-b", "1.0.0-2", []string{"<1.0.0-2"}, false},
-		{"1-c", "1.0.0-2", []string{"<1.0.0-2.root.io", ">=1.0.0-2 <1.0.0-3"}, true},
-		{"1-d", "1.0.0-3", []string{"<1.0.0-2.root.io", ">=1.0.0-2 <1.0.0-3"}, false},
-
-		// Case 2
-		{"2-a", "1.0.0-1", []string{"<1.0.0-2"}, true},
-		{"2-b", "1.0.0-2", []string{"<1.0.0-2"}, false},
-
-		// Case 3
-		{"3-a", "1.0.0-1", []string{"<1.0.0-2.root.io"}, true},
-		// Impossible to detect
-		// {"3-b", "1.0.0-3", []string{"<1.0.0-2.root.io"}, false},
-
-		// Case 4
-		{"4", "1.0.0", []string{}, true},
-
-		// Case 5
-		{"5-a", "1.0.0-1.root.io", []string{"<1.0.0-2.root.io", ">=1.0.0-2 <1.0.0-2"}, true},
-		{"5-b", "1.0.0-2.root.io", []string{"<1.0.0-2.root.io", ">=1.0.0-2 <1.0.0-2"}, false},
-		{"5-c", "1.0.0-1.root.io", []string{"<1.0.0-2.root.io", ">=1.0.0-2 <1.0.0-3"}, true},
-		// Incorrect range. Ranges are intersect. Debian order is 1.0.0-2 < 1.0.0-2.root.io < 1.0.0-3.
-		// {"5-d", "1.0.0-2.root.io", []string{"<1.0.0-2.root.io", ">=1.0.0-2 <1.0.0-3"}, false},
-
-		// Case 6
-		{"6-a", "1.0.0-1.root.io", []string{"<1.0.0-2.root.io"}, true},
-		{"6-b", "1.0.0-2.root.io", []string{"<1.0.0-2.root.io"}, false},
-
-		// Case 7
-		{"7-a", "1.0.0-1.root.io", []string{"<1.0.0-2"}, true},
-		{"7-b", "1.0.0-3.root.io", []string{"<1.0.0-2"}, false},
-
-		// Case 8
-		{"8", "1.0.0-1.root.io", []string{}, true},
+		{
+			name:             "Installed vulnerable vendor version. There is no fix",
+			installedVersion: "1.0.0",
+			vulnerableRanges: []string{},
+			want:             true,
+		},
+		{
+			name:             "Installed vulnerable vendor version, fix by vendor",
+			installedVersion: "1.0.0",
+			vulnerableRanges: []string{
+				"<1.0.0-2",
+			},
+			want: true,
+		},
+		{
+			name:             "Installed non-vulnerable vendor version, fix by vendor",
+			installedVersion: "1.0.0-2",
+			vulnerableRanges: []string{
+				"<1.0.0-2",
+			},
+			want: false,
+		},
+		{
+			name:             "Installed vulnerable vendor version, fix by root.io (root.io version)",
+			installedVersion: "1.0.0-2",
+			vulnerableRanges: []string{
+				"<1.0.0-2.root.io",
+			},
+			want: true,
+		},
+		{
+			name:             "Installed non-vulnerable vendor version, fix by root.io (root.io version)",
+			installedVersion: "1.0.0-3",
+			vulnerableRanges: []string{
+				"<1.0.0-2.root.io",
+			},
+			want: false,
+		},
+		{
+			name:             "Installed vulnerable vendor version, fix by root.io (root.io + vendor versions)",
+			installedVersion: "1.0.0-2",
+			vulnerableRanges: []string{
+				"<1.0.0-2.root.io",
+				">=1.0.0-2 <1.0.0-3",
+			},
+			want: true,
+		},
+		{
+			name:             "Installed non-vulnerable vendor version, fix by root.io (root.io + vendor versions)",
+			installedVersion: "1.0.0-3",
+			vulnerableRanges: []string{
+				"<1.0.0-2.root.io",
+				">=1.0.0-2 <1.0.0-3",
+			},
+			want: false,
+		},
+		{
+			name:             "Installed vulnerable root.io version, fix by root.io",
+			installedVersion: "1.0.0-1.root.io",
+			vulnerableRanges: []string{
+				"<1.0.0-2.root.io",
+			},
+			want: true,
+		},
+		{
+			name:             "Installed non-vulnerable root.io version, fix by root.io",
+			installedVersion: "1.0.0-2.root.io",
+			vulnerableRanges: []string{
+				"<1.0.0-2.root.io",
+			},
+			want: false,
+		},
+		{
+			name:             "Installed vulnerable root.io version, fix by vendor",
+			installedVersion: "1.0.0-1.root.io",
+			vulnerableRanges: []string{
+				"<1.0.0-2",
+			},
+			want: true,
+		},
+		{
+			name:             "Installed non-vulnerable root.io version, fix by vendor",
+			installedVersion: "1.0.0-2.root.io",
+			vulnerableRanges: []string{
+				"<1.0.0-1",
+			},
+			want: false,
+		},
+		{
+			name:             "Installed vulnerable root.io version, fix by root.io (root.io + vendor versions)",
+			installedVersion: "1.0.0-1.root.io",
+			vulnerableRanges: []string{
+				"<1.0.0-2.root.io",
+				">=1.0.0-2 <1.0.0-2",
+			},
+			want: true,
+		},
+		{
+			name:             "Installed non-vulnerable root.io version, fix by root.io (root.io + vendor versions)",
+			installedVersion: "1.0.0-2.root.io",
+			vulnerableRanges: []string{
+				"<1.0.0-2.root.io",
+				">=1.0.0-2 <1.0.0-2",
+			},
+			want: false,
+		},
+		{
+			name:             "Installed non-vulnerable root.io version, fix by root.io (root.io + root.io + vendor versions)",
+			installedVersion: "1.0.0-2.root.io",
+			vulnerableRanges: []string{
+				"<1.0.0-2.root.io",
+				">1.0.0-2.root.io <1.0.0-2",
+			},
+			want: false,
+		},
 	}
 
 	for _, tt := range tests {
