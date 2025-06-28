@@ -14,19 +14,19 @@ var (
 )
 
 type VMFlagGroup struct {
-	Region       *Flag[string]
-	Endpoint     *Flag[string]
+	Region   *Flag[string]
+	Endpoint *Flag[string]
 }
 
 type VMOptions struct {
-	Region       string
-	Endpoint     string
+	Region   string
+	Endpoint string
 }
 
 func NewVMFlagGroup() *VMFlagGroup {
 	return &VMFlagGroup{
-		Region:       awsRegionFlag.Clone(),
-		Endpoint:     awsEndpointFlag.Clone(),
+		Region:   awsRegionFlag.Clone(),
+		Endpoint: awsEndpointFlag.Clone(),
 	}
 }
 
@@ -43,8 +43,8 @@ func (f *VMFlagGroup) Flags() []Flagger {
 
 func (f *VMFlagGroup) ToOptions(opts *Options) error {
 	opts.VMOptions = VMOptions{
-		Region:       f.Region.Value(),
-		Endpoint:     f.Endpoint.Value(),
+		Region:   f.Region.Value(),
+		Endpoint: f.Endpoint.Value(),
 	}
 	return nil
 }
