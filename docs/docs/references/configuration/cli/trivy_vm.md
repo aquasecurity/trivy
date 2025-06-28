@@ -20,7 +20,6 @@ trivy vm [flags] VM_IMAGE
 ### Options
 
 ```
-      --aws-region string                 AWS region to scan
       --cache-backend string              [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "mirror.gcr.io/aquasec/trivy-checks:1")
@@ -38,6 +37,7 @@ trivy vm [flags] VM_IMAGE
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
       --enable-modules strings            [EXPERIMENTAL] module names to enable
+      --endpoint string                   AWS Endpoint override
       --exit-code int                     specify exit code when any security issues are found
       --exit-on-eol int                   exit with the specified code when the OS reaches end of service/life
       --file-patterns strings             specify config file patterns
@@ -97,6 +97,7 @@ trivy vm [flags] VM_IMAGE
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
+      --region string                     AWS Region to scan
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform)
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (allowed values: oci,rekor)
