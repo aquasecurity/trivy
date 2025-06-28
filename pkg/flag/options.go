@@ -376,7 +376,7 @@ type Flags []FlagGroup
 // Options holds all the runtime configuration
 type Options struct {
 	GlobalOptions
-	AWSOptions
+	VMOptions
 	CacheOptions
 	CleanOptions
 	DBOptions
@@ -499,7 +499,7 @@ func (o *Options) RegistryOpts() ftypes.RegistryOptions {
 		RegistryToken:   o.RegistryToken,
 		Insecure:        o.Insecure,
 		Platform:        o.Platform,
-		AWSRegion:       o.AWSOptions.Region,
+		AWSRegion:       o.VMOptions.Region,
 		RegistryMirrors: o.RegistryMirrors,
 	}
 }
