@@ -107,7 +107,10 @@ func (p *pom) listProperties(val reflect.Value) map[string]string {
 				props[key] = v
 			}
 		default:
-			props[tag] = val.Field(i).String()
+			fv := val.Field(i)
+			if !fv.IsZero() {
+				props[tag] = fv.String()
+			}
 		}
 	}
 	return props
