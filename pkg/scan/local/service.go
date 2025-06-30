@@ -280,7 +280,7 @@ func (s Service) scanLicenses(target types.ScanTarget, options types.ScanOptions
 		}
 	}
 
-	if slices.Contains(options.PkgTypes, types.PkgTypeLibrary) {		
+	if slices.Contains(options.PkgTypes, types.PkgTypeLibrary) {
 		// Scan licenses for language-specific packages
 		results = append(results, s.scanApplicationLicenses(target.Applications, scanner)...)
 	}
