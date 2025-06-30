@@ -23,7 +23,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
-	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
 var checkTypesWithSubtype = set.New(types.SourceCloud, types.SourceDefsec, types.SourceKubernetes)
@@ -62,7 +61,8 @@ type Scanner struct {
 	includeDeprecatedChecks  bool
 	includeEmbeddedPolicies  bool
 	includeEmbeddedLibraries bool
-	trivyVersion             string
+
+	moduleFilters []RegoModuleFilter
 
 	embeddedLibs   map[string]*ast.Module
 	embeddedChecks map[string]*ast.Module
@@ -98,12 +98,18 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 		logger:         log.WithPrefix("rego"),
 		customSchemas:  make(map[string][]byte),
 		moduleMetadata: make(map[string]*StaticMetadata),
-		trivyVersion:   app.Version(),
 	}
 
 	for _, opt := range opts {
 		opt(s)
 	}
+
+	s.moduleFilters = append(
+		s.moduleFilters,
+		FrameworksFilter(s.frameworks),
+		IncludeDeprecatedFilter(s.includeDeprecatedChecks),
+	)
+
 	return s
 }
 
@@ -204,10 +210,6 @@ func (s *Scanner) ScanInput(ctx context.Context, sourceType types.Source, inputs
 				log.Err(err),
 			)
 			continue
-		}
-
-		if !s.includeDeprecatedChecks && staticMeta.Deprecated {
-			continue // skip deprecated checks
 		}
 
 		// skip if check isn't relevant to what is being scanned

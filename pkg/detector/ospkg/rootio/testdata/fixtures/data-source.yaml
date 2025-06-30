@@ -1,0 +1,17 @@
+- bucket: data-source
+  pairs:
+    - key: root.io debian 12
+      value:
+        ID: "rootio"
+        Name: "Root.io Security Patches"
+        URL: "https://api.root.io/external/patch_feed"
+    - key: root.io ubuntu 20.04
+      value:
+        ID: "rootio"
+        Name: "Root.io Security Patches"
+        URL: "https://api.root.io/external/patch_feed"
+    - key: root.io alpine 3.19
+      value:
+        ID: "rootio"
+        Name: "Root.io Security Patches"
+        URL: "https://api.root.io/external/patch_feed"

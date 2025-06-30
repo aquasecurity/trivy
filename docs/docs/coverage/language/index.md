@@ -61,7 +61,7 @@ Example: [Dockerfile](https://github.com/aquasecurity/trivy-ci-test/blob/main/Do
 [license]: ../../scanner/license.md
 
 [^1]: `*.egg-info`, `*.egg-info/PKG-INFO`, `*.egg` and `EGG-INFO/PKG-INFO`
-[^2]: `.dist-info/META-DATA`
+[^2]: `.dist-info/METADATA`
 [^3]: `*.jar`, `*.war`, `*.par` and `*.ear`
 [^4]: ✅ means "enabled" and `-` means "disabled" in the image scanning
 [^5]: ✅ means "enabled" and `-` means "disabled" in the rootfs scanning
