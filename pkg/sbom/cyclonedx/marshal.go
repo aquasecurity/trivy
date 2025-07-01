@@ -319,7 +319,7 @@ func (m *Marshaler) normalizeLicense(license string) cdx.LicenseChoice {
 		onceValidateSPDXLicense.Do(func() {
 			_, compoundExpr := expr.(expression.CompoundExpr)
 			switch {
-			case !expr.IsSPDXLicense():
+			case !expr.IsSPDXExpression():
 				// Use licenseChoice.license.name for invalid SPDX ID / SPDX expression
 				licenseChoice.License = &cdx.License{Name: expr.String()}
 			case compoundExpr:

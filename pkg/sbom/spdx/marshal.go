@@ -24,7 +24,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
-	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 )
@@ -433,14 +432,11 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 		return fmt.Sprintf("(%s)", license)
 	}), " AND ")
 
-	// SPDX exception will be normalized as a SimpleExpr, so we need to check them separately.
-	foundSPDXExceptions := set.New[string]()
 	replaceOtherLicenses := func(expr expression.Expression) expression.Expression {
 		var licenseName string
 		switch e := expr.(type) {
 		case expression.SimpleExpr:
-			// Check if the license is a valid SPDX license or an exception or already replaced to OtherLicense
-			if strings.HasPrefix(e.License, LicenseRefPrefix) || e.IsSPDXLicense() || foundSPDXExceptions.Contains(e.String()) {
+			if strings.HasPrefix(e.License, LicenseRefPrefix) || e.IsSPDXExpression() {
 				return e
 			}
 
@@ -452,10 +448,9 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 			}
 
 			// Check that license and exception are valid
-			if e.IsSPDXLicense() {
-				foundSPDXExceptions.Append(e.Right().String())
+			if e.IsSPDXExpression() {
 				// Use SimpleExpr for a valid SPDX license with an exception,
-				// to avoid parsing the license and exception separately.s
+				// to avoid parsing the license and exception separately.
 				return e
 			}
 
