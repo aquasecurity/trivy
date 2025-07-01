@@ -64,10 +64,6 @@ func (p *pom) projectProperties() map[string]string {
 	// https://maven.apache.org/pom.html#properties
 	projectProperties := make(map[string]string)
 	for k, v := range props {
-		// Skip empty properties (e.g. ${project.parent.version} for empty parent)
-		if v == "" {
-			continue
-		}
 		if strings.HasPrefix(k, "project.") {
 			continue
 		}
