@@ -651,4 +651,16 @@ vulnerability:
   vex: []
 
 ```
+## AWS options
+
+```yaml
+cloud:
+  aws:
+    # Same as '--endpoint'
+    endpoint: ""
+
+    # Same as '--region'
+    region: ""
+
+```
 [example]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/trivy-conf/trivy.yaml
