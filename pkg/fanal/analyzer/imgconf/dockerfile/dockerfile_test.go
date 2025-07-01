@@ -168,6 +168,10 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 							EmptyLayer: false,
 						},
 						{
+							CreatedBy:  "USER root", // .Config.User takes precedence over this line
+							EmptyLayer: true,
+						},
+						{
 							CreatedBy:  `HEALTHCHECK &{["CMD-SHELL" "curl -sS 127.0.0.1 || exit 1"] "10s" "3s" "0s" '\x00'}`,
 							EmptyLayer: true,
 						},

@@ -16,6 +16,7 @@ import (
 
 	"github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
 type registryResolver struct {
@@ -23,10 +24,8 @@ type registryResolver struct {
 }
 
 var Registry = &registryResolver{
-	client: &http.Client{
-		// give it a maximum 5 seconds to resolve the module
-		Timeout: time.Second * 5,
-	},
+	// give it a maximum 5 seconds to resolve the module
+	client: xhttp.Client(xhttp.WithTimeout(5 * time.Second)),
 }
 
 type moduleVersions struct {

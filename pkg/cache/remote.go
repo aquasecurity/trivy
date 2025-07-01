@@ -2,7 +2,6 @@ package cache
 
 import (
 	"context"
-	"crypto/tls"
 	"net/http"
 
 	"github.com/twitchtv/twirp"
@@ -11,6 +10,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 )
 
@@ -19,7 +19,6 @@ var _ ArtifactCache = (*RemoteCache)(nil)
 type RemoteOptions struct {
 	ServerAddr    string
 	CustomHeaders http.Header
-	Insecure      bool
 	PathPrefix    string
 }
 
@@ -30,23 +29,14 @@ type RemoteCache struct {
 }
 
 // NewRemoteCache is the factory method for RemoteCache
-func NewRemoteCache(opts RemoteOptions) *RemoteCache {
-	ctx := client.WithCustomHeaders(context.Background(), opts.CustomHeaders)
-
-	httpClient := &http.Client{
-		Transport: &http.Transport{
-			Proxy: http.ProxyFromEnvironment,
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: opts.Insecure,
-			},
-		},
-	}
+func NewRemoteCache(ctx context.Context, opts RemoteOptions) *RemoteCache {
+	ctx = client.WithCustomHeaders(ctx, opts.CustomHeaders)
 
 	var twirpOpts []twirp.ClientOption
 	if opts.PathPrefix != "" {
 		twirpOpts = append(twirpOpts, twirp.WithClientPathPrefix(opts.PathPrefix))
 	}
-	c := rpcCache.NewCacheProtobufClient(opts.ServerAddr, httpClient, twirpOpts...)
+	c := rpcCache.NewCacheProtobufClient(opts.ServerAddr, xhttp.ClientWithContext(ctx), twirpOpts...)
 	return &RemoteCache{
 		ctx:    ctx,
 		client: c,

@@ -139,6 +139,7 @@ trivy sbom [flags] SBOM_PATH
                                          - govulndb
                                          - echo
                                          - minimos
+                                         - rootio
                                          - auto
                                         (default [auto])
 ```

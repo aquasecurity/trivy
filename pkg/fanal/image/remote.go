@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/remote"
@@ -19,6 +20,11 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 	desc, err := remote.Get(ctx, ref, option.RegistryOptions)
 	if err != nil {
 		return nil, cleanup, err
+	}
+	// ArtifactType being non-empty indicates this is not a regular container image
+	// (e.g., Helm charts, WASM modules, or other OCI artifacts)
+	if desc.ArtifactType != "" {
+		return nil, cleanup, xerrors.Errorf("unsupported artifact type %q for image %q", desc.ArtifactType, imageName)
 	}
 	img, err := desc.Image()
 	if err != nil {

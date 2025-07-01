@@ -76,8 +76,7 @@ func TestConvert(t *testing.T) {
 				outputFile = tt.golden
 			}
 
-			osArgs = append(osArgs, "--output", outputFile)
-			osArgs = append(osArgs, tt.args.input)
+			osArgs = append(osArgs, "--output", outputFile, tt.args.input)
 
 			// Run "trivy convert"
 			runTest(t, osArgs, tt.golden, outputFile, types.Format(tt.args.format), runOptions{
