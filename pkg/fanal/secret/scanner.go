@@ -463,13 +463,12 @@ func (s *Scanner) Scan(args ScanArgs) types.Secret {
 }
 
 func censorLocation(loc Location, input []byte) []byte {
-	return append(
-		input[:loc.Start],
-		append(
-			bytes.Repeat([]byte("*"), loc.End-loc.Start),
-			input[loc.End:]...,
-		)...,
-	)
+	for i := loc.Start; i < loc.End; i++ {
+		if input[i] != '\n' {
+			input[i] = '*'
+		}
+	}
+	return input
 }
 
 func toFinding(rule Rule, loc Location, content []byte) types.SecretFinding {
