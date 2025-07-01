@@ -2,9 +2,11 @@ package flag
 
 import (
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -70,6 +72,13 @@ var (
 		Usage:      "write the default config to trivy-default.yaml",
 		Persistent: true,
 	}
+	TraceHTTPFlag = Flag[bool]{
+		Name:          "trace-http",
+		ConfigName:    "trace.http",
+		Usage:         "[DANGEROUS] enable HTTP request/response trace logging (may expose sensitive data)",
+		Persistent:    true,
+		TelemetrySafe: false,
+	}
 )
 
 // GlobalFlagGroup composes global flags
@@ -82,6 +91,7 @@ type GlobalFlagGroup struct {
 	Timeout               *Flag[time.Duration]
 	CacheDir              *Flag[string]
 	GenerateDefaultConfig *Flag[bool]
+	TraceHTTP             *Flag[bool]
 }
 
 // GlobalOptions defines flags and other configuration parameters for all the subcommands
@@ -94,6 +104,7 @@ type GlobalOptions struct {
 	Timeout               time.Duration
 	CacheDir              string
 	GenerateDefaultConfig bool
+	TraceHTTP             bool
 }
 
 func NewGlobalFlagGroup() *GlobalFlagGroup {
@@ -106,6 +117,7 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 		Timeout:               TimeoutFlag.Clone(),
 		CacheDir:              CacheDirFlag.Clone(),
 		GenerateDefaultConfig: GenerateDefaultConfigFlag.Clone(),
+		TraceHTTP:             TraceHTTPFlag.Clone(),
 	}
 }
 
@@ -123,6 +135,7 @@ func (f *GlobalFlagGroup) Flags() []Flagger {
 		f.Timeout,
 		f.CacheDir,
 		f.GenerateDefaultConfig,
+		f.TraceHTTP,
 	}
 }
 
@@ -145,6 +158,13 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 	// Keep TRIVY_NON_SSL for backward compatibility
 	insecure := f.Insecure.Value() || os.Getenv("TRIVY_NON_SSL") != ""
 
+	// Check for dangerous trace-http flag in CI environment
+	if f.TraceHTTP.Value() {
+		if ci, _ := strconv.ParseBool(os.Getenv("CI")); ci {
+			return xerrors.New("--trace-http is not allowed in CI environments due to security risks")
+		}
+	}
+
 	log.Debug("Cache dir", log.String("dir", f.CacheDir.Value()))
 
 	opts.GlobalOptions = GlobalOptions{
@@ -156,6 +176,7 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 		Timeout:               f.Timeout.Value(),
 		CacheDir:              f.CacheDir.Value(),
 		GenerateDefaultConfig: f.GenerateDefaultConfig.Value(),
+		TraceHTTP:             f.TraceHTTP.Value(),
 	}
 	return nil
 }

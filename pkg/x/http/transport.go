@@ -31,6 +31,7 @@ type Options struct {
 	Insecure  bool
 	Timeout   time.Duration
 	UserAgent string
+	TraceHTTP bool
 }
 
 // SetDefaultTransport sets the default transport configuration
@@ -75,5 +76,10 @@ func NewTransport(opts Options) http.RoundTripper {
 	}
 
 	userAgent := cmp.Or(opts.UserAgent, fmt.Sprintf("trivy/%s", app.Version()))
-	return NewUserAgent(tr, userAgent)
+	uaTransport := NewUserAgent(tr, userAgent)
+
+	if opts.TraceHTTP {
+		return NewTraceTransport(uaTransport)
+	}
+	return uaTransport
 }
