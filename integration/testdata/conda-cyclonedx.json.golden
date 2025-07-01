@@ -46,7 +46,7 @@
       "licenses": [
         {
           "license": {
-            "name": "OpenSSL"
+            "id": "OpenSSL"
           }
         }
       ],
@@ -76,7 +76,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
