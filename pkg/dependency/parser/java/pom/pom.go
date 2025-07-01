@@ -64,6 +64,10 @@ func (p *pom) projectProperties() map[string]string {
 	// https://maven.apache.org/pom.html#properties
 	projectProperties := make(map[string]string)
 	for k, v := range props {
+		// Skip empty properties (e.g. ${project.parent.version} for empty parent)
+		if v == "" {
+			continue
+		}
 		if strings.HasPrefix(k, "project.") {
 			continue
 		}
@@ -98,6 +102,16 @@ func (p *pom) listProperties(val reflect.Value) map[string]string {
 			m := val.Field(i)
 			for _, e := range m.MapKeys() {
 				v := m.MapIndex(e)
+
+				// <properties> element may contain:
+				// - properties from <properties> element of current POM
+				// - properties from parent POMs (we added these properties early)
+				//    - properties from <properties> element of parent POMs
+				//    - properties got from fields of parent POMs (`project.groupId`, `parent.project.version`, etc.)
+				// Properties from field has higher priority than properties from <properties> element.
+				if tag == "properties" && props[e.String()] != "" {
+					continue
+				}
 				props[e.String()] = v.String()
 			}
 		case reflect.Struct:
