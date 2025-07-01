@@ -7,9 +7,10 @@ import (
 
 var (
 	LicenseFull = Flag[bool]{
-		Name:       "license-full",
-		ConfigName: "license.full",
-		Usage:      "eagerly look for licenses in source code headers and license files",
+		Name:          "license-full",
+		ConfigName:    "license.full",
+		Usage:         "eagerly look for licenses in source code headers and license files",
+		TelemetrySafe: true,
 	}
 	IgnoredLicenses = Flag[[]string]{
 		Name:       "ignored-licenses",
