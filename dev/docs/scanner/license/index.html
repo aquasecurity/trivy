@@ -2632,6 +2632,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#enabling-a-subset-of-package-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling a Subset of Package Types
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -8155,6 +8166,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#enabling-a-subset-of-package-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling a Subset of Package Types
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -8573,6 +8595,23 @@ For example:
 <p class="admonition-title">Note</p>
 <p><code>regex</code> is only used for text licenses and can't be used to configure license IDs.</p>
 </div>
+<h3 id="enabling-a-subset-of-package-types">Enabling a Subset of Package Types<a class="headerlink" href="#enabling-a-subset-of-package-types" title="Permanent link">&para;</a></h3>
+<p>It's possible to only enable certain package types if you prefer.
+You can do so by passing the <code>--pkg-types</code> option.
+This flag takes a comma-separated list of package types.</p>
+<p>Available values:</p>
+<ul>
+<li>os<ul>
+<li>Scan OS packages managed by the OS package manager (e.g. <code>dpkg</code>, <code>yum</code>, <code>apk</code>).</li>
+</ul>
+</li>
+<li>library<ul>
+<li>Scan language-specific packages (e.g. packages installed by <code>pip</code>, <code>npm</code>, or <code>gem</code>).</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--pkg-types<span class="w"> </span>os<span class="w"> </span>ruby:2.4.0
+</code></pre></div>
 <div class="footnote">
 <hr />
 <ol>
