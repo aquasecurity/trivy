@@ -429,15 +429,19 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
+		// [INFO] com.example:child:jar:1.2.3
+		// [INFO] +- org.example:example-dependency:jar:1.2.3:compile
+		// [INFO] |  \- org.example:example-api:jar:4.0.0:compile
+		// [INFO] \- org.example:example-api3:jar:4.0.3:compile
 		{
 			name:      "dependencyManagement prefers child properties",
 			inputFile: filepath.Join("testdata", "parent-child-properties", "child", "pom.xml"),
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:child:1.0.0",
+					ID:           "com.example:child:1.2.3",
 					Name:         "com.example:child",
-					Version:      "1.0.0",
+					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
@@ -447,8 +451,8 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: ftypes.RelationshipDirect,
 					Locations: ftypes.Locations{
 						{
-							StartLine: 28,
-							EndLine:   32,
+							StartLine: 30,
+							EndLine:   34,
 						},
 					},
 				},
@@ -459,8 +463,8 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: ftypes.RelationshipDirect,
 					Locations: ftypes.Locations{
 						{
-							StartLine: 23,
-							EndLine:   27,
+							StartLine: 25,
+							EndLine:   29,
 						},
 					},
 				},
@@ -473,7 +477,7 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:child:1.0.0",
+					ID: "com.example:child:1.2.3",
 					DependsOn: []string{
 						"org.example:example-api3:4.0.3",
 						"org.example:example-dependency:1.2.3",

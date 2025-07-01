@@ -5,7 +5,7 @@
     <artifactId>child</artifactId>
 
     <name>child</name>
-    <version>1.0.0</version>
+    <version>1.2.3</version>
     <description>Child</description>
 
     <parent>
@@ -17,13 +17,15 @@
 
     <properties>
         <bom.version>4.0.0</bom.version>
+        <project.parent.version>1.1.1</project.parent.version>
+        <project.version>2.3.4</project.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.example</groupId>
             <artifactId>example-dependency</artifactId>
-            <version>1.2.3</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.example</groupId>
