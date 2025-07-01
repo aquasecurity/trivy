@@ -8,7 +8,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/package-url/packageurl-go"
@@ -312,35 +311,33 @@ func (m *Marshaler) normalizeLicense(license string) cdx.LicenseChoice {
 	license = strings.ReplaceAll(license, "-with-", " WITH ")
 	license = strings.ReplaceAll(license, "-WITH-", " WITH ")
 
-	var licenseChoice cdx.LicenseChoice
-	onceValidateSPDXLicense := sync.Once{}
-	validateSPDXLicense := func(expr expression.Expression) expression.Expression {
-		// We only need to check the main license (not its parts).
-		onceValidateSPDXLicense.Do(func() {
-			_, compoundExpr := expr.(expression.CompoundExpr)
-			switch {
-			case !expr.IsSPDXExpression():
-				// Use licenseChoice.license.name for invalid SPDX ID / SPDX expression
-				licenseChoice.License = &cdx.License{Name: expr.String()}
-			case compoundExpr:
-				// Use licenseChoice.expression for valid SPDX expression (with any conjunction)
-				// e.g. "GPL-2.0 WITH Classpath-exception-2.0" or "GPL-2.0 AND MIT"
-				licenseChoice.Expression = expr.String()
-			default:
-				// Use licenseChoice.license.id for valid SPDX ID
-				licenseChoice.License = &cdx.License{ID: expr.String()}
-			}
-		})
-
-		return expr
-	}
-
-	_, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX, validateSPDXLicense)
+	normalizedLicenses, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX)
 	if err != nil {
 		// Not fail on the invalid license
 		m.logger.Warn("Unable to marshal SPDX licenses", log.String("license", license))
 		return cdx.LicenseChoice{}
 	}
+
+	// The license is not a valid SPDX ID or SPDX expression
+	if !normalizedLicenses.IsSPDXLicense() {
+		// Use LicenseChoice.License.Name for invalid SPDX ID / SPDX expression
+		return cdx.LicenseChoice{
+			License: &cdx.License{Name: normalizedLicenses.String()},
+		}
+	}
+
+	// The license is a valid SPDX ID or SPDX expression
+	var licenseChoice cdx.LicenseChoice
+	switch normalizedLicenses.(type) {
+	case expression.SimpleExpr:
+		// Use LicenseChoice.License.ID for valid SPDX ID
+		licenseChoice.License = &cdx.License{ID: normalizedLicenses.String()}
+	case expression.CompoundExpr:
+		// Use LicenseChoice.Expression for valid SPDX expression (with any conjunction)
+		// e.g. "GPL-2.0 WITH Classpath-exception-2.0" or "GPL-2.0 AND MIT"
+		licenseChoice.Expression = normalizedLicenses.String()
+	}
+
 	return licenseChoice
 }
 
