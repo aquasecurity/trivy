@@ -319,7 +319,7 @@ func (m *Marshaler) normalizeLicense(license string) cdx.LicenseChoice {
 	}
 
 	// The license is not a valid SPDX ID or SPDX expression
-	if !normalizedLicenses.IsSPDXLicense() {
+	if !normalizedLicenses.IsSPDXExpression() {
 		// Use LicenseChoice.License.Name for invalid SPDX ID / SPDX expression
 		return cdx.LicenseChoice{
 			License: &cdx.License{Name: normalizedLicenses.String()},
