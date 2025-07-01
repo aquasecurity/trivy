@@ -91,7 +91,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -134,12 +134,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -182,7 +182,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         }
       ],
@@ -225,7 +225,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
@@ -273,7 +273,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         }
       ],
@@ -320,12 +320,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
@@ -335,62 +335,62 @@
         },
         {
           "license": {
-            "name": "BSD-4-Clause"
+            "id": "BSD-4-Clause"
           }
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         },
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-or-later"
+            "id": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-or-later"
+            "id": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-only"
+            "id": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-only"
+            "id": "LGPL-3.0-only"
           }
         }
       ],
@@ -437,17 +437,17 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "MPL-2.0"
+            "id": "MPL-2.0"
           }
         }
       ],
@@ -490,7 +490,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         }
       ],
@@ -537,7 +537,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         }
       ],
@@ -584,7 +584,7 @@
       "licenses": [
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         }
       ],
@@ -627,7 +627,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         }
       ],
@@ -670,7 +670,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         }
       ],
@@ -713,12 +713,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.3-or-later"
+            "id": "GFDL-1.3-or-later"
           }
         }
       ],
@@ -769,17 +769,17 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         },
         {
@@ -832,12 +832,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-only"
+            "id": "LGPL-2.0-only"
           }
         }
       ],
@@ -884,12 +884,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
@@ -899,62 +899,62 @@
         },
         {
           "license": {
-            "name": "BSD-4-Clause"
+            "id": "BSD-4-Clause"
           }
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         },
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-or-later"
+            "id": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-or-later"
+            "id": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-only"
+            "id": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-only"
+            "id": "LGPL-3.0-only"
           }
         }
       ],
@@ -1001,12 +1001,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.3-only"
+            "id": "GFDL-1.3-only"
           }
         }
       ],
@@ -1053,32 +1053,32 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.2-only"
+            "id": "GFDL-1.2-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "Artistic-2.0"
+            "id": "Artistic-2.0"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         }
       ],
@@ -1125,7 +1125,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
@@ -1135,22 +1135,22 @@
         },
         {
           "license": {
-            "name": "LGPL-2.1-or-later"
+            "id": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-or-later"
+            "id": "LGPL-3.0-or-later"
           }
         },
         {
@@ -1165,22 +1165,22 @@
         },
         {
           "license": {
-            "name": "CC0-1.0"
+            "id": "CC0-1.0"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-only"
+            "id": "LGPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         }
       ],
@@ -1227,12 +1227,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         }
       ],
@@ -1279,7 +1279,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         }
       ],
@@ -1326,7 +1326,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -1369,17 +1369,17 @@
       "licenses": [
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -1422,22 +1422,22 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         }
       ],
@@ -1484,12 +1484,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -1532,22 +1532,22 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         }
       ],
@@ -1598,17 +1598,17 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "GPL-1.0-only"
+            "id": "GPL-1.0-only"
           }
         }
       ],
@@ -1659,17 +1659,17 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "GPL-1.0-only"
+            "id": "GPL-1.0-only"
           }
         }
       ],
@@ -1720,12 +1720,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
@@ -1735,62 +1735,62 @@
         },
         {
           "license": {
-            "name": "BSD-4-Clause"
+            "id": "BSD-4-Clause"
           }
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         },
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-or-later"
+            "id": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-or-later"
+            "id": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-only"
+            "id": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-only"
+            "id": "LGPL-3.0-only"
           }
         }
       ],
@@ -1837,12 +1837,12 @@
       "licenses": [
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -1889,12 +1889,12 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -1941,12 +1941,12 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -1993,17 +1993,17 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         }
       ],
@@ -2166,12 +2166,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-only"
+            "id": "LGPL-2.0-only"
           }
         }
       ],
@@ -2218,12 +2218,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
@@ -2233,62 +2233,62 @@
         },
         {
           "license": {
-            "name": "BSD-4-Clause"
+            "id": "BSD-4-Clause"
           }
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         },
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-or-later"
+            "id": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-or-later"
+            "id": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-only"
+            "id": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-only"
+            "id": "LGPL-3.0-only"
           }
         }
       ],
@@ -2335,7 +2335,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         }
       ],
@@ -2422,12 +2422,12 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -2474,27 +2474,27 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.3-no-invariants-or-later"
+            "id": "GFDL-1.3-no-invariants-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -2541,27 +2541,27 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.3-no-invariants-or-later"
+            "id": "GFDL-1.3-no-invariants-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -2608,22 +2608,22 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-3.0-only"
+            "id": "LGPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         }
       ],
@@ -2674,57 +2674,57 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-only"
+            "id": "LGPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.3-only"
+            "id": "GFDL-1.3-only"
           }
         },
         {
           "license": {
-            "name": "CC0-1.0"
+            "id": "CC0-1.0"
           }
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-or-later"
+            "id": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         }
       ],
@@ -2771,12 +2771,12 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1-or-later"
+            "id": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
@@ -2786,17 +2786,17 @@
         },
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         }
       ],
@@ -2883,17 +2883,17 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-or-later"
+            "id": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
@@ -2903,17 +2903,17 @@
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-only"
+            "id": "LGPL-3.0-only"
           }
         }
       ],
@@ -2960,7 +2960,7 @@
       "licenses": [
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         },
         {
@@ -2975,7 +2975,7 @@
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
@@ -2985,7 +2985,7 @@
         },
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         }
       ],
@@ -3032,17 +3032,17 @@
       "licenses": [
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -3099,12 +3099,12 @@
         },
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-or-later"
+            "id": "LGPL-2.1-or-later"
           }
         },
         {
@@ -3124,7 +3124,7 @@
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
@@ -3139,12 +3139,12 @@
         },
         {
           "license": {
-            "name": "LGPL-2.0-only"
+            "id": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
@@ -3159,7 +3159,7 @@
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         }
       ],
@@ -3206,12 +3206,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
@@ -3221,62 +3221,62 @@
         },
         {
           "license": {
-            "name": "BSD-4-Clause"
+            "id": "BSD-4-Clause"
           }
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         },
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-or-later"
+            "id": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-or-later"
+            "id": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-only"
+            "id": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-only"
+            "id": "LGPL-3.0-only"
           }
         }
       ],
@@ -3403,17 +3403,17 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1-or-later"
+            "id": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-only"
+            "id": "LGPL-2.0-only"
           }
         },
         {
@@ -3423,12 +3423,12 @@
         },
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-with-autoconf-exception+"
+            "name": "GPL-2.0-only WITH autoconf-exception+"
           }
         },
         {
@@ -3438,7 +3438,7 @@
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
@@ -3490,7 +3490,7 @@
       "licenses": [
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
@@ -3500,12 +3500,12 @@
         },
         {
           "license": {
-            "name": "ISC"
+            "id": "ISC"
           }
         },
         {
           "license": {
-            "name": "ISC+IBM"
+            "name": "ISC-IBM"
           }
         },
         {
@@ -3557,7 +3557,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         }
       ],
@@ -3604,7 +3604,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         }
       ],
@@ -3651,7 +3651,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         }
       ],
@@ -3698,7 +3698,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         }
       ],
@@ -3789,12 +3789,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.3-or-later"
+            "id": "GFDL-1.3-or-later"
           }
         }
       ],
@@ -3841,22 +3841,22 @@
       "licenses": [
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         },
         {
           "license": {
-            "name": "Ruby"
+            "id": "Ruby"
           }
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
@@ -3886,7 +3886,7 @@
         },
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
@@ -3901,27 +3901,27 @@
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "Artistic-2.0"
+            "id": "Artistic-2.0"
           }
         },
         {
           "license": {
-            "name": "zlib-acknowledgement"
+            "id": "zlib-acknowledgement"
           }
         },
         {
           "license": {
-            "name": "GPL-1.0-or-later"
+            "id": "GPL-1.0-or-later"
           }
         },
         {
           "license": {
-            "name": "CC0-1.0"
+            "id": "CC0-1.0"
           }
         },
         {
@@ -3936,12 +3936,12 @@
         },
         {
           "license": {
-            "name": "GPL-1.0-only"
+            "id": "GPL-1.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         }
       ],
@@ -3988,7 +3988,7 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         }
       ],
@@ -4035,12 +4035,12 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -4087,12 +4087,12 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         }
       ],
@@ -4139,12 +4139,12 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         }
       ],
@@ -4191,12 +4191,12 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         }
       ],
@@ -4243,12 +4243,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
@@ -4258,62 +4258,62 @@
         },
         {
           "license": {
-            "name": "BSD-4-Clause"
+            "id": "BSD-4-Clause"
           }
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         },
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-or-later"
+            "id": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-or-later"
+            "id": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-only"
+            "id": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-only"
+            "id": "LGPL-3.0-only"
           }
         }
       ],
@@ -4480,27 +4480,27 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1-or-later"
+            "id": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "CC0-1.0"
+            "id": "CC0-1.0"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
@@ -4510,7 +4510,7 @@
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         }
       ],
@@ -4557,22 +4557,22 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.3-only"
+            "id": "GFDL-1.3-only"
           }
         }
       ],
@@ -4659,27 +4659,27 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1-or-later"
+            "id": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "CC0-1.0"
+            "id": "CC0-1.0"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
@@ -4689,7 +4689,7 @@
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         }
       ],
@@ -4736,12 +4736,12 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-3.0-or-later"
+            "id": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
@@ -4751,42 +4751,42 @@
         },
         {
           "license": {
-            "name": "GPL-2+ with distribution exception"
+            "name": "GPL-2.0-or-later WITH distribution-exception"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.2-or-later"
+            "id": "GFDL-1.2-or-later"
           }
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-only"
+            "id": "LGPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.2-only"
+            "id": "GFDL-1.2-only"
           }
         }
       ],
@@ -4833,12 +4833,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
@@ -4848,62 +4848,62 @@
         },
         {
           "license": {
-            "name": "BSD-4-Clause"
+            "id": "BSD-4-Clause"
           }
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         },
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-or-later"
+            "id": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-or-later"
+            "id": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-only"
+            "id": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-only"
+            "id": "LGPL-3.0-only"
           }
         }
       ],
@@ -4950,7 +4950,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
@@ -5002,27 +5002,27 @@
       "licenses": [
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "Zlib"
+            "id": "Zlib"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -5069,7 +5069,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -5120,7 +5120,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -5167,12 +5167,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
@@ -5182,62 +5182,62 @@
         },
         {
           "license": {
-            "name": "BSD-4-Clause"
+            "id": "BSD-4-Clause"
           }
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         },
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-or-later"
+            "id": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-or-later"
+            "id": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-only"
+            "id": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-only"
+            "id": "LGPL-3.0-only"
           }
         }
       ],
@@ -5404,7 +5404,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -5495,7 +5495,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -5542,12 +5542,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.3-or-later"
+            "id": "GFDL-1.3-or-later"
           }
         }
       ],
@@ -5594,7 +5594,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -5641,7 +5641,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -5688,7 +5688,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Ruby"
+            "id": "Ruby"
           }
         }
       ],
@@ -5735,12 +5735,12 @@
       "licenses": [
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         },
         {
           "license": {
-            "name": "Ruby"
+            "id": "Ruby"
           }
         }
       ],
@@ -5787,12 +5787,12 @@
       "licenses": [
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         },
         {
           "license": {
-            "name": "Ruby"
+            "id": "Ruby"
           }
         },
         {
@@ -5802,7 +5802,7 @@
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         }
       ],
@@ -5849,7 +5849,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Ruby"
+            "id": "Ruby"
           }
         }
       ],
@@ -5896,22 +5896,22 @@
       "licenses": [
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         },
         {
           "license": {
-            "name": "Ruby"
+            "id": "Ruby"
           }
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
@@ -5941,7 +5941,7 @@
         },
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
@@ -5956,27 +5956,27 @@
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "Artistic-2.0"
+            "id": "Artistic-2.0"
           }
         },
         {
           "license": {
-            "name": "zlib-acknowledgement"
+            "id": "zlib-acknowledgement"
           }
         },
         {
           "license": {
-            "name": "GPL-1.0-or-later"
+            "id": "GPL-1.0-or-later"
           }
         },
         {
           "license": {
-            "name": "CC0-1.0"
+            "id": "CC0-1.0"
           }
         },
         {
@@ -5991,12 +5991,12 @@
         },
         {
           "license": {
-            "name": "GPL-1.0-only"
+            "id": "GPL-1.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         }
       ],
@@ -6043,12 +6043,12 @@
       "licenses": [
         {
           "license": {
-            "name": "Ruby"
+            "id": "Ruby"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         }
       ],
@@ -6095,7 +6095,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -6138,7 +6138,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         }
       ],
@@ -6185,12 +6185,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -6237,12 +6237,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         }
       ],
@@ -6329,12 +6329,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0-or-later"
+            "id": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-only"
+            "id": "GPL-2.0-only"
           }
         },
         {
@@ -6344,62 +6344,62 @@
         },
         {
           "license": {
-            "name": "BSD-4-Clause"
+            "id": "BSD-4-Clause"
           }
         },
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         },
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         },
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-or-later"
+            "id": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-or-later"
+            "id": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-or-later"
+            "id": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-or-later"
+            "id": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0-only"
+            "id": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0-only"
+            "id": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1-only"
+            "id": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0-only"
+            "id": "LGPL-3.0-only"
           }
         }
       ],
@@ -6446,7 +6446,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Zlib"
+            "id": "Zlib"
           }
         }
       ],
@@ -6500,7 +6500,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -6538,7 +6538,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         }
       ],
@@ -6576,7 +6576,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -6645,7 +6645,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -6683,17 +6683,17 @@
       "licenses": [
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         },
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         },
         {
           "license": {
-            "name": "MPL-2.0"
+            "id": "MPL-2.0"
           }
         }
       ],
@@ -6731,7 +6731,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         }
       ],
@@ -6769,7 +6769,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         }
       ],
@@ -6807,7 +6807,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         }
       ],
@@ -6845,7 +6845,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -6883,7 +6883,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -6921,7 +6921,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         }
       ],
@@ -6959,7 +6959,7 @@
       "licenses": [
         {
           "license": {
-            "name": "BSD-3-Clause"
+            "id": "BSD-3-Clause"
           }
         }
       ],
@@ -6997,7 +6997,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -7035,7 +7035,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         }
       ],
@@ -7073,7 +7073,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         }
       ],
@@ -7111,7 +7111,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         }
       ],
@@ -7149,7 +7149,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         }
       ],
@@ -7187,7 +7187,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         }
       ],
@@ -7225,7 +7225,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         }
       ],
@@ -7263,7 +7263,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         }
       ],
@@ -7332,7 +7332,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -7370,7 +7370,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -7408,7 +7408,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -7446,7 +7446,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -7484,7 +7484,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -7522,7 +7522,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -7560,7 +7560,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -7598,7 +7598,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -7636,7 +7636,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -7674,7 +7674,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -7712,7 +7712,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -7750,7 +7750,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         }
       ],
@@ -7788,7 +7788,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -7826,7 +7826,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -7864,7 +7864,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -7902,7 +7902,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -7940,7 +7940,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         }
       ],
@@ -7978,7 +7978,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -8016,7 +8016,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         }
       ],
@@ -8054,7 +8054,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -8092,7 +8092,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -8130,7 +8130,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -8168,7 +8168,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         }
       ],
@@ -8206,7 +8206,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -8244,7 +8244,7 @@
       "licenses": [
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         }
       ],
@@ -8282,7 +8282,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -8320,7 +8320,7 @@
       "licenses": [
         {
           "license": {
-            "name": "Apache-2.0"
+            "id": "Apache-2.0"
           }
         }
       ],
@@ -8358,7 +8358,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -8396,7 +8396,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -8434,7 +8434,7 @@
       "licenses": [
         {
           "license": {
-            "name": "BSD-2-Clause"
+            "id": "BSD-2-Clause"
           }
         }
       ],
@@ -8472,7 +8472,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -8510,7 +8510,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -8548,7 +8548,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
