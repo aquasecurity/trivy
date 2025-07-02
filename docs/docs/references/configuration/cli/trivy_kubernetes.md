@@ -144,7 +144,7 @@ trivy kubernetes [flags] [CONTEXT]
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tolerations strings               specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)
-      --trace-rego                        enable Rego policy engine trace logging
+      --trace-rego                        enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
       --vex strings                       [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
       --vuln-severity-source strings      order of data sources for selecting vulnerability severity level
