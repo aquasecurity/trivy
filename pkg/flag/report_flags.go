@@ -52,9 +52,10 @@ var (
 		Usage:      "output template",
 	}
 	DependencyTreeFlag = Flag[bool]{
-		Name:       "dependency-tree",
-		ConfigName: "dependency-tree",
-		Usage:      "[EXPERIMENTAL] show dependency origin tree of vulnerable packages",
+		Name:          "dependency-tree",
+		ConfigName:    "dependency-tree",
+		Usage:         "[EXPERIMENTAL] show dependency origin tree of vulnerable packages",
+		TelemetrySafe: true,
 	}
 	ListAllPkgsFlag = Flag[bool]{
 		Name:          "list-all-pkgs",
@@ -74,14 +75,16 @@ var (
 		Usage:      "specify the Rego file path to evaluate each vulnerability",
 	}
 	ExitCodeFlag = Flag[int]{
-		Name:       "exit-code",
-		ConfigName: "exit-code",
-		Usage:      "specify exit code when any security issues are found",
+		Name:          "exit-code",
+		ConfigName:    "exit-code",
+		Usage:         "specify exit code when any security issues are found",
+		TelemetrySafe: true,
 	}
 	ExitOnEOLFlag = Flag[int]{
-		Name:       "exit-on-eol",
-		ConfigName: "exit-on-eol",
-		Usage:      "exit with the specified code when the OS reaches end of service/life",
+		Name:          "exit-on-eol",
+		ConfigName:    "exit-on-eol",
+		Usage:         "exit with the specified code when the OS reaches end of service/life",
+		TelemetrySafe: true,
 	}
 	OutputFlag = Flag[string]{
 		Name:       "output",
