@@ -22,9 +22,10 @@ var (
 		Usage:      "password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.",
 	}
 	PasswordStdinFlag = Flag[bool]{
-		Name:       "password-stdin",
-		ConfigName: "registry.password-stdin",
-		Usage:      "password from stdin. Comma-separated passwords are not supported.",
+		Name:          "password-stdin",
+		ConfigName:    "registry.password-stdin",
+		Usage:         "password from stdin. Comma-separated passwords are not supported.",
+		TelemetrySafe: true,
 	}
 	RegistryTokenFlag = Flag[string]{
 		Name:       "registry-token",

@@ -5,6 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/scan/utils"
 )
 
 var (
@@ -37,7 +38,7 @@ func isRootIOEnvironment(osFamily ftypes.OSType, pkgs []ftypes.Package) bool {
 // hasPackageWithPattern checks if any package version matches the specified pattern
 func hasPackageWithPattern(pkgs []ftypes.Package, pattern *regexp.Regexp) bool {
 	for _, pkg := range pkgs {
-		if pattern.MatchString(pkg.Version) {
+		if pattern.MatchString(utils.FormatVersion(pkg)) {
 			return true
 		}
 	}

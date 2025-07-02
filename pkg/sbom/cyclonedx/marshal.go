@@ -18,6 +18,8 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/digest"
+	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
@@ -39,11 +41,14 @@ type Marshaler struct {
 	appVersion   string // Trivy version
 	bom          *core.BOM
 	componentIDs map[uuid.UUID]string
+
+	logger *log.Logger
 }
 
 func NewMarshaler(version string) Marshaler {
 	return Marshaler{
 		appVersion: version,
+		logger:     log.WithPrefix(log.PrefixCycloneDX),
 	}
 }
 
@@ -252,7 +257,7 @@ func (*Marshaler) Supplier(supplier string) *cdx.OrganizationalEntity {
 	}
 }
 
-func (*Marshaler) Hashes(files []core.File) *[]cdx.Hash {
+func (m *Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 	digests := lo.FlatMap(files, func(file core.File, _ int) []digest.Digest {
 		return file.Digests
 	})
@@ -273,7 +278,7 @@ func (*Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 		case digest.MD5:
 			alg = cdx.HashAlgoMD5
 		default:
-			log.Debug("Unable to convert algorithm to CycloneDX format", log.Any("alg", d.Algorithm()))
+			m.logger.Debug("Unable to convert algorithm to CycloneDX format", log.Any("alg", d.Algorithm()))
 			continue
 		}
 
@@ -285,18 +290,59 @@ func (*Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 	return &cdxHashes
 }
 
-func (*Marshaler) Licenses(licenses []string) *cdx.Licenses {
+func (m *Marshaler) Licenses(licenses []string) *cdx.Licenses {
+	licenses = lo.Compact(licenses)
 	if len(licenses) == 0 {
 		return nil
 	}
 	choices := lo.Map(licenses, func(license string, _ int) cdx.LicenseChoice {
-		return cdx.LicenseChoice{
-			License: &cdx.License{
-				Name: license,
-			},
-		}
+		return m.normalizeLicense(license)
 	})
 	return lo.ToPtr(cdx.Licenses(choices))
+}
+
+func (m *Marshaler) normalizeLicense(license string) cdx.LicenseChoice {
+	// Save text license as licenseChoice.license.name
+	if strings.HasPrefix(license, licensing.LicenseTextPrefix) {
+		return cdx.LicenseChoice{
+			License: &cdx.License{
+				Name: strings.TrimPrefix(license, licensing.LicenseTextPrefix),
+			},
+		}
+	}
+
+	// e.g. GPL-3.0-with-autoconf-exception
+	license = strings.ReplaceAll(license, "-with-", " WITH ")
+	license = strings.ReplaceAll(license, "-WITH-", " WITH ")
+
+	normalizedLicenses, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX)
+	if err != nil {
+		// Not fail on the invalid license
+		m.logger.Warn("Unable to marshal SPDX licenses", log.String("license", license))
+		return cdx.LicenseChoice{}
+	}
+
+	// The license is not a valid SPDX ID or SPDX expression
+	if !normalizedLicenses.IsSPDXExpression() {
+		// Use LicenseChoice.License.Name for invalid SPDX ID / SPDX expression
+		return cdx.LicenseChoice{
+			License: &cdx.License{Name: normalizedLicenses.String()},
+		}
+	}
+
+	// The license is a valid SPDX ID or SPDX expression
+	var licenseChoice cdx.LicenseChoice
+	switch normalizedLicenses.(type) {
+	case expression.SimpleExpr:
+		// Use LicenseChoice.License.ID for valid SPDX ID
+		licenseChoice.License = &cdx.License{ID: normalizedLicenses.String()}
+	case expression.CompoundExpr:
+		// Use LicenseChoice.Expression for valid SPDX expression (with any conjunction)
+		// e.g. "GPL-2.0 WITH Classpath-exception-2.0" or "GPL-2.0 AND MIT"
+		licenseChoice.Expression = normalizedLicenses.String()
+	}
+
+	return licenseChoice
 }
 
 func (*Marshaler) Properties(properties []core.Property) *[]cdx.Property {
@@ -400,7 +446,7 @@ func (*Marshaler) source(source *dtypes.DataSource) *cdx.Source {
 	}
 }
 
-func (*Marshaler) cwes(cweIDs []string) *[]int {
+func (m *Marshaler) cwes(cweIDs []string) *[]int {
 	// to skip cdx.Vulnerability.CWEs when generating json
 	// we should return 'clear' nil without 'type' interface part
 	if cweIDs == nil {
@@ -410,7 +456,7 @@ func (*Marshaler) cwes(cweIDs []string) *[]int {
 	for _, cweID := range cweIDs {
 		number, err := strconv.Atoi(strings.TrimPrefix(strings.ToLower(cweID), "cwe-"))
 		if err != nil {
-			log.Debug("CWE-ID parse error", log.Err(err))
+			m.logger.Debug("CWE-ID parse error", log.Err(err))
 			continue
 		}
 		ret = append(ret, number)

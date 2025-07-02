@@ -23,12 +23,14 @@ var (
 			types.MisconfigScanner,
 			types.SecretScanner,
 		}),
-		Usage: "comma-separated list of what security issues to detect on container image configurations",
+		Usage:         "comma-separated list of what security issues to detect on container image configurations",
+		TelemetrySafe: true,
 	}
 	ScanRemovedPkgsFlag = Flag[bool]{
-		Name:       "removed-pkgs",
-		ConfigName: "image.removed-pkgs",
-		Usage:      "detect vulnerabilities of removed packages (only for Alpine)",
+		Name:          "removed-pkgs",
+		ConfigName:    "image.removed-pkgs",
+		Usage:         "detect vulnerabilities of removed packages (only for Alpine)",
+		TelemetrySafe: true,
 	}
 	InputFlag = Flag[string]{
 		Name:       "input",
