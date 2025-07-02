@@ -83,6 +83,6 @@ func NewTransport(opts Options) http.RoundTripper {
 	if opts.TraceHTTP {
 		transport = NewTraceTransport(transport)
 	}
-	
+
 	return NewUserAgent(transport, userAgent)
 }
