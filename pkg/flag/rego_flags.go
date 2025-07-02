@@ -35,7 +35,6 @@ var (
 		Aliases: []Alias{
 			{
 				Name:       "trace",
-				ConfigName: "trace",
 				Deprecated: true,
 			},
 		},
