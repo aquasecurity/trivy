@@ -473,7 +473,7 @@ func colorizeHTTPDump(dump string, isRequest bool) string {
 
 // getStatusCodeColor returns the appropriate color function for a status code
 func getStatusCodeColor(statusCode string) func(...any) string {
-	if len(statusCode) == 0 {
+	if statusCode == "" {
 		return headerValueColor
 	}
 
