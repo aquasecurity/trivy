@@ -77,7 +77,7 @@ var (
 		ConfigName:    "trace.http",
 		Usage:         "[DANGEROUS] enable HTTP request/response trace logging (may expose sensitive data)",
 		Persistent:    true,
-		TelemetrySafe: false,
+		TelemetrySafe: true,
 	}
 )
 
