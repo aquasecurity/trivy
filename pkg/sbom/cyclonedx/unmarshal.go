@@ -180,17 +180,20 @@ func (b *BOM) parseComponent(c cdx.Component) (*core.Component, error) {
 		identifier.PURL = &purl
 	}
 
+	var files []core.File
+	if digests := b.unmarshalHashes(c.Hashes); len(digests) > 0 {
+		files = append(files, core.File{
+			Digests: digests,
+		})
+	}
+
 	component := &core.Component{
-		Type:     componentType,
-		Name:     c.Name,
-		Group:    c.Group,
-		Version:  c.Version,
-		Licenses: b.unmarshalLicenses(c.Licenses),
-		Files: []core.File{
-			{
-				Digests: b.unmarshalHashes(c.Hashes),
-			},
-		},
+		Type:          componentType,
+		Name:          c.Name,
+		Group:         c.Group,
+		Version:       c.Version,
+		Licenses:      b.unmarshalLicenses(c.Licenses),
+		Files:         files,
 		PkgIdentifier: identifier,
 		Supplier:      b.unmarshalSupplier(c.Supplier),
 		Properties:    b.unmarshalProperties(c.Properties),
