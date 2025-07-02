@@ -33,9 +33,10 @@ var (
 		},
 	}
 	IncludeNonFailuresFlag = Flag[bool]{
-		Name:       "include-non-failures",
-		ConfigName: "misconfiguration.include-non-failures",
-		Usage:      "include successes, available with '--scanners misconfig'",
+		Name:          "include-non-failures",
+		ConfigName:    "misconfiguration.include-non-failures",
+		Usage:         "include successes, available with '--scanners misconfig'",
+		TelemetrySafe: true,
 	}
 	HelmValuesFileFlag = Flag[[]string]{
 		Name:       "helm-values",
@@ -79,9 +80,10 @@ var (
 		Usage:      "specify paths to override the CloudFormation parameters files",
 	}
 	TerraformExcludeDownloaded = Flag[bool]{
-		Name:       "tf-exclude-downloaded-modules",
-		ConfigName: "misconfiguration.terraform.exclude-downloaded-modules",
-		Usage:      "exclude misconfigurations for downloaded terraform modules",
+		Name:          "tf-exclude-downloaded-modules",
+		ConfigName:    "misconfiguration.terraform.exclude-downloaded-modules",
+		Usage:         "exclude misconfigurations for downloaded terraform modules",
+		TelemetrySafe: true,
 	}
 	ChecksBundleRepositoryFlag = Flag[string]{
 		Name:       "checks-bundle-repository",
