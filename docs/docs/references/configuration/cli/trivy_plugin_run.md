@@ -22,6 +22,7 @@ trivy plugin run NAME | URL | FILE_PATH
       --insecure                  allow insecure server connections
   -q, --quiet                     suppress progress bar and log output
       --timeout duration          timeout (default 5m0s)
+      --trace-http                [DANGEROUS] enable HTTP request/response trace logging (may expose sensitive data)
   -v, --version                   show version
 ```
 

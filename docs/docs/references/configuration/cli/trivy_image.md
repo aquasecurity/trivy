@@ -156,7 +156,7 @@ trivy image [flags] IMAGE_NAME
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --token string                      for authentication in client/server mode
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")
-      --trace                             enable more verbose trace output for custom queries
+      --trace-rego                        enable Rego policy engine trace logging
       --username strings                  username. Comma-separated usernames allowed.
       --vex strings                       [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
       --vuln-severity-source strings      order of data sources for selecting vulnerability severity level
@@ -205,6 +205,7 @@ trivy image [flags] IMAGE_NAME
       --insecure                  allow insecure server connections
   -q, --quiet                     suppress progress bar and log output
       --timeout duration          timeout (default 5m0s)
+      --trace-http                [DANGEROUS] enable HTTP request/response trace logging (may expose sensitive data)
   -v, --version                   show version
 ```
 

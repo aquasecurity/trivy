@@ -144,7 +144,7 @@ trivy kubernetes [flags] [CONTEXT]
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tolerations strings               specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)
-      --trace                             enable more verbose trace output for custom queries
+      --trace-rego                        enable Rego policy engine trace logging
       --username strings                  username. Comma-separated usernames allowed.
       --vex strings                       [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
       --vuln-severity-source strings      order of data sources for selecting vulnerability severity level
@@ -193,6 +193,7 @@ trivy kubernetes [flags] [CONTEXT]
       --insecure                  allow insecure server connections
   -q, --quiet                     suppress progress bar and log output
       --timeout duration          timeout (default 5m0s)
+      --trace-http                [DANGEROUS] enable HTTP request/response trace logging (may expose sensitive data)
   -v, --version                   show version
 ```
 

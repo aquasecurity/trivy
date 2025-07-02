@@ -15,5 +15,6 @@
 --severity
 --show-suppressed
 --timeout
+--trace-rego
 --vuln-severity-source
 ```
