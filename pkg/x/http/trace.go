@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/google/go-containerregistry/pkg/v1/types"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
@@ -42,6 +43,26 @@ const (
 )
 
 var (
+	// Colors for HTTP trace output
+	requestHeaderColor  = color.New(color.FgCyan, color.Bold).SprintFunc()
+	responseHeaderColor = color.New(color.FgGreen, color.Bold).SprintFunc()
+	errorHeaderColor    = color.New(color.FgRed, color.Bold).SprintFunc()
+	redactedColor       = color.New(color.FgYellow).SprintFunc()
+
+	// HTTP method colors
+	methodColor = color.New(color.FgMagenta, color.Bold).SprintFunc()
+	urlColor    = color.New(color.FgBlue).SprintFunc()
+
+	// Header colors
+	headerKeyColor   = color.New(color.FgCyan).SprintFunc()
+	headerValueColor = color.New(color.FgWhite).SprintFunc()
+
+	// Status code colors
+	statusSuccessColor  = color.New(color.FgGreen).SprintFunc()           // 2xx
+	statusRedirectColor = color.New(color.FgYellow).SprintFunc()          // 3xx
+	statusClientError   = color.New(color.FgRed).SprintFunc()             // 4xx
+	statusServerError   = color.New(color.FgRed, color.Bold).SprintFunc() // 5xx
+
 	// Sensitive headers that should be redacted
 	sensitiveHeaders = []string{
 		"Authorization",
@@ -78,14 +99,32 @@ var (
 )
 
 type traceTransport struct {
-	inner http.RoundTripper
+	inner  http.RoundTripper
+	writer io.Writer
+}
+
+// TraceOption is a functional option for traceTransport
+type TraceOption func(*traceTransport)
+
+// WithWriter sets the writer for trace output
+func WithWriter(w io.Writer) TraceOption {
+	return func(tt *traceTransport) {
+		tt.writer = w
+	}
 }
 
 // NewTraceTransport returns an http.RoundTripper that logs HTTP requests and responses
-func NewTraceTransport(inner http.RoundTripper) http.RoundTripper {
-	return &traceTransport{
-		inner: inner,
+func NewTraceTransport(inner http.RoundTripper, opts ...TraceOption) http.RoundTripper {
+	tt := &traceTransport{
+		inner:  inner,
+		writer: os.Stderr, // default
 	}
+
+	for _, opt := range opts {
+		opt(tt)
+	}
+
+	return tt
 }
 
 // RoundTrip implements http.RoundTripper with HTTP tracing
@@ -94,25 +133,27 @@ func (tt *traceTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	reqDump, err := dumpRequest(req)
 	if err != nil {
 		log.Debug("Failed to dump HTTP request", log.Err(err))
-	} else {
-		fmt.Fprintf(os.Stderr, "\n--- HTTP REQUEST ---\n%s\n", reqDump)
 	}
+
+	coloredDump := colorizeHTTPDump(reqDump, true)
+	fmt.Fprintf(tt.writer, "\n%s\n%s\n", requestHeaderColor("--- HTTP REQUEST ---"), coloredDump)
 
 	// Make the request
 	resp, err := tt.inner.RoundTrip(req)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "\n--- HTTP ERROR ---\n%v\n", err)
+		fmt.Fprintf(tt.writer, "\n%s\n%v\n", errorHeaderColor("--- HTTP ERROR ---"), err)
 		return nil, err
+	} else if resp == nil {
+		return nil, nil
 	}
 
 	// Dump and redact response
-	if resp != nil {
-		respDump, err := dumpResponse(resp)
-		if err != nil {
-			log.Debug("Failed to dump HTTP response", log.Err(err))
-		} else {
-			fmt.Fprintf(os.Stderr, "\n--- HTTP RESPONSE ---\n%s\n", respDump)
-		}
+	respDump, err := dumpResponse(resp)
+	if err != nil {
+		log.Debug("Failed to dump HTTP response", log.Err(err))
+	} else {
+		coloredDump = colorizeHTTPDump(respDump, false)
+		fmt.Fprintf(tt.writer, "\n%s\n%s\n", responseHeaderColor("--- HTTP RESPONSE ---"), coloredDump)
 	}
 
 	return resp, nil
@@ -209,7 +250,7 @@ func redactHeaders(headers http.Header) {
 	for _, header := range sensitiveHeaders {
 		for k := range headers {
 			if strings.EqualFold(k, header) {
-				headers[k] = []string{redactedText}
+				headers[k] = []string{redactedColor(redactedText)}
 			}
 		}
 	}
@@ -224,7 +265,7 @@ func redactQueryParams(u *url.URL) *url.URL {
 	for _, param := range sensitiveQueryParams {
 		for k := range values {
 			if strings.EqualFold(k, param) {
-				values[k] = []string{redactedText}
+				values[k] = []string{redactedColor(redactedText)}
 			}
 		}
 	}
@@ -242,7 +283,7 @@ func redactBody(body []byte, contentType string) []byte {
 
 	// Check if body is binary
 	if isBinaryContent(contentType) || isBinaryData(body) {
-		return []byte(binaryRedactText)
+		return []byte(redactedColor(binaryRedactText))
 	}
 
 	// Redact sensitive patterns in text content
@@ -254,9 +295,9 @@ func redactBody(body []byte, contentType string) []byte {
 		colonIndex := strings.Index(match, ":")
 		if colonIndex != -1 {
 			key := match[:colonIndex+1]
-			return key + ` "` + redactedText + `"`
+			return key + ` "` + redactedColor(redactedText) + `"`
 		}
-		return redactedText
+		return redactedColor(redactedText)
 	})
 
 	// Handle form data patterns
@@ -265,18 +306,18 @@ func redactBody(body []byte, contentType string) []byte {
 		equalIndex := strings.Index(match, "=")
 		if equalIndex != -1 {
 			key := match[:equalIndex+1]
-			return key + redactedText
+			return key + redactedColor(redactedText)
 		}
-		return redactedText
+		return redactedColor(redactedText)
 	})
 
 	// Handle private keys
 	privateKeyPattern := regexp.MustCompile(`-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----[\s\S]*?-----END (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----`)
-	redacted = privateKeyPattern.ReplaceAllString(redacted, redactedText)
+	redacted = privateKeyPattern.ReplaceAllString(redacted, redactedColor(redactedText))
 
 	// Handle Bearer tokens
 	bearerPattern := regexp.MustCompile(`(?i)Bearer\s+[A-Za-z0-9\-._~+/]+=*`)
-	redacted = bearerPattern.ReplaceAllString(redacted, redactedText)
+	redacted = bearerPattern.ReplaceAllString(redacted, redactedColor(redactedText))
 
 	return []byte(redacted)
 }
@@ -349,4 +390,103 @@ func isBinaryData(data []byte) bool {
 
 	isBinary, _ := utils.IsBinary(reader, int64(len(data)))
 	return isBinary
+}
+
+// colorizeHTTPDump adds colors to HTTP request/response dumps
+func colorizeHTTPDump(dump string, isRequest bool) string {
+	lines := strings.Split(dump, "\n")
+	if len(lines) == 0 {
+		return dump
+	}
+
+	var result []string
+	isBody := false
+
+	for i, line := range lines {
+		// Empty line indicates start of body
+		if line == "" || line == "\r" {
+			isBody = true
+			result = append(result, line)
+			continue
+		}
+
+		// First line processing
+		if i == 0 {
+			if isRequest {
+				// Colorize request line: METHOD URL HTTP/1.1
+				parts := strings.Fields(line)
+				if len(parts) >= 3 {
+					coloredLine := fmt.Sprintf("%s %s %s",
+						methodColor(parts[0]),
+						urlColor(parts[1]),
+						strings.Join(parts[2:], " "))
+					result = append(result, coloredLine)
+				} else {
+					result = append(result, line)
+				}
+			} else {
+				// Colorize response line: HTTP/1.1 STATUS_CODE STATUS_TEXT
+				parts := strings.SplitN(line, " ", 3)
+				if len(parts) >= 2 {
+					statusCode := parts[1]
+					statusColor := getStatusCodeColor(statusCode)
+					coloredLine := fmt.Sprintf("%s %s",
+						parts[0],
+						statusColor(strings.Join(parts[1:], " ")))
+					result = append(result, coloredLine)
+				} else {
+					result = append(result, line)
+				}
+			}
+			continue
+		}
+
+		// Header processing
+		if !isBody && strings.Contains(line, ":") {
+			parts := strings.SplitN(line, ":", 2)
+			if len(parts) == 2 {
+				key := parts[0]
+				value := strings.TrimSpace(parts[1])
+				// Don't color the value if it's already colored (e.g., redacted text)
+				if strings.Contains(value, "\x1b[") {
+					coloredLine := fmt.Sprintf("%s: %s",
+						headerKeyColor(key),
+						value)
+					result = append(result, coloredLine)
+				} else {
+					coloredLine := fmt.Sprintf("%s: %s",
+						headerKeyColor(key),
+						headerValueColor(value))
+					result = append(result, coloredLine)
+				}
+			} else {
+				result = append(result, line)
+			}
+		} else {
+			// Body content - no additional coloring
+			result = append(result, line)
+		}
+	}
+
+	return strings.Join(result, "\n")
+}
+
+// getStatusCodeColor returns the appropriate color function for a status code
+func getStatusCodeColor(statusCode string) func(...any) string {
+	if len(statusCode) == 0 {
+		return headerValueColor
+	}
+
+	switch statusCode[0] {
+	case '2':
+		return statusSuccessColor
+	case '3':
+		return statusRedirectColor
+	case '4':
+		return statusClientError
+	case '5':
+		return statusServerError
+	default:
+		return headerValueColor
+	}
 }

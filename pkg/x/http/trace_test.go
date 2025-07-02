@@ -1,244 +1,246 @@
-package http
+package http_test
 
 import (
 	"bytes"
+	"cmp"
 	"io"
 	"net/http"
-	"net/http/httptest"
-	"net/url"
-	"os"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
-func TestRedactHeaders(t *testing.T) {
+func TestTraceTransport_RoundTrip(t *testing.T) {
+	// Disable colors for consistent testing
+	t.Setenv("NO_COLOR", "1")
+
 	tests := []struct {
-		name     string
-		headers  http.Header
-		contains []string
-		notContains []string
+		name            string
+		method          string
+		url             string
+		headers         map[string]string
+		body            io.Reader
+		wantOutput      string
+		responseStatus  int
+		responseBody    string
+		responseHeaders map[string]string
+		wantError       error
 	}{
 		{
-			name: "redact authorization header",
-			headers: http.Header{
-				"Authorization": []string{"Bearer secret-token"},
-				"Content-Type":  []string{mimeApplicationJSON},
+			name:   "traces GET request",
+			method: "GET",
+			url:    "http://example.com/test",
+			headers: map[string]string{
+				"Accept": "application/json",
 			},
-			contains: []string{"Content-Type: " + mimeApplicationJSON, redactedText},
-			notContains: []string{"secret-token"},
+			wantOutput: `
+--- HTTP REQUEST ---
+GET /test HTTP/1.1
+Host: example.com
+User-Agent: test-agent/1.0
+Accept: application/json
+Accept-Encoding: gzip
+
+
+
+--- HTTP RESPONSE ---
+HTTP/1.1 200 OK
+Content-Length: 0
+
+
+`,
 		},
 		{
-			name: "redact multiple sensitive headers",
-			headers: http.Header{
-				"Cookie":       []string{"session=abc123"},
-				"X-API-Key":    []string{"my-secret-key"},
-				"Accept":       []string{"*/*"},
+			name:   "redacts sensitive headers",
+			method: "POST",
+			url:    "http://api.example.com/auth?token=secret123",
+			headers: map[string]string{
+				"Authorization": "Bearer my-secret-token",
+				"Content-Type":  "application/json",
 			},
-			contains: []string{redactedText, "Accept: */*"},
-			notContains: []string{"abc123", "my-secret-key"},
+			body: strings.NewReader(`{"password": "secret-password"}`),
+			wantOutput: `
+--- HTTP REQUEST ---
+POST /auth?token=%3Credacted%3E HTTP/1.1
+Host: api.example.com
+User-Agent: test-agent/1.0
+Content-Length: 26
+Authorization: <redacted>
+Content-Type: application/json
+Accept-Encoding: gzip
+
+{"password": "<redacted>"}
+
+--- HTTP RESPONSE ---
+HTTP/1.1 200 OK
+Content-Length: 0
+
+
+`,
+		},
+		{
+			name:           "traces error responses",
+			method:         "GET",
+			url:            "http://example.com/error",
+			responseStatus: 404,
+			responseBody:   "Not Found",
+			wantOutput: `
+--- HTTP REQUEST ---
+GET /error HTTP/1.1
+Host: example.com
+User-Agent: test-agent/1.0
+Accept-Encoding: gzip
+
+
+
+--- HTTP RESPONSE ---
+HTTP/1.1 404 Not Found
+Content-Length: 9
+
+Not Found
+`,
+		},
+		{
+			name:           "redacts sensitive response headers",
+			method:         "GET",
+			url:            "http://example.com/login",
+			responseStatus: 200,
+			responseHeaders: map[string]string{
+				"Set-Cookie":   "session=abc123; HttpOnly",
+				"Content-Type": "text/plain",
+			},
+			responseBody: "OK",
+			wantOutput: `
+--- HTTP REQUEST ---
+GET /login HTTP/1.1
+Host: example.com
+User-Agent: test-agent/1.0
+Accept-Encoding: gzip
+
+
+
+--- HTTP RESPONSE ---
+HTTP/1.1 200 OK
+Content-Length: 2
+Content-Type: text/plain
+Set-Cookie: <redacted>
+
+OK
+`,
+		},
+		{
+			name:   "handles binary content",
+			method: "POST",
+			url:    "http://example.com/upload",
+			headers: map[string]string{
+				"Content-Type": "application/octet-stream",
+			},
+			body: bytes.NewReader([]byte{
+				0x00,
+				0x01,
+				0x02,
+				0x03,
+			}),
+			wantOutput: `
+--- HTTP REQUEST ---
+POST /upload HTTP/1.1
+Host: example.com
+User-Agent: test-agent/1.0
+Content-Length: 22
+Content-Type: application/octet-stream
+Accept-Encoding: gzip
+
+<binary data redacted>
+
+--- HTTP RESPONSE ---
+HTTP/1.1 200 OK
+Content-Length: 0
+
+
+`,
+		},
+		{
+			name:   "handles transport errors",
+			method: "GET",
+			url:    "http://example.com/test",
+			wantOutput: `
+--- HTTP REQUEST ---
+GET /test HTTP/1.1
+Host: example.com
+
+--- HTTP ERROR ---
+http: use last response
+`,
+			wantError: http.ErrUseLastResponse,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			headers := tt.headers.Clone()
-			redactHeaders(headers)
-			
-			// Check that sensitive values are redacted
-			for _, header := range headers {
-				for _, value := range header {
-					for _, forbidden := range tt.notContains {
-						assert.NotContains(t, value, forbidden)
-					}
+			// Create a buffer to capture output
+			var output bytes.Buffer
+
+			// Create request recorder
+			var recorder *RequestRecorder
+			switch {
+			case tt.wantError != nil:
+				recorder = NewRequestRecorder(WithError(tt.wantError))
+			case tt.responseStatus != 0 || tt.responseBody != "" || len(tt.responseHeaders) > 0:
+				status := cmp.Or(tt.responseStatus, http.StatusOK)
+				mockResponse := &http.Response{
+					StatusCode: status,
+					Status:     http.StatusText(status),
+					Proto:      "HTTP/1.1",
+					ProtoMajor: 1,
+					ProtoMinor: 1,
+					Header:     make(http.Header),
+					Body:       io.NopCloser(strings.NewReader(tt.responseBody)),
 				}
+				for k, v := range tt.responseHeaders {
+					mockResponse.Header.Set(k, v)
+				}
+				recorder = NewRequestRecorder(WithResponse(mockResponse))
+			default:
+				recorder = NewRequestRecorder()
 			}
-		})
-	}
-}
 
-func TestRedactQueryParams(t *testing.T) {
-	tests := []struct {
-		name        string
-		url         string
-		notContains []string
-	}{
-		{
-			name:        "redact token parameter",
-			url:         "https://api.example.com/path?token=secret123&foo=bar",
-			notContains: []string{"secret123"},
-		},
-		{
-			name:        "redact multiple sensitive parameters",
-			url:         "https://api.example.com?api_key=key123&password=pass123&user=john",
-			notContains: []string{"key123", "pass123"},
-		},
-	}
+			// Create trace transport with output writer
+			transport := xhttp.NewTraceTransport(recorder, xhttp.WithWriter(&output))
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			u, err := url.Parse(tt.url)
+			// Create request
+			req, err := http.NewRequest(tt.method, tt.url, tt.body)
 			require.NoError(t, err)
-			
-			redacted := redactQueryParams(u)
-			
-			for _, forbidden := range tt.notContains {
-				assert.NotContains(t, redacted.String(), forbidden)
+
+			// Set User-Agent for consistent testing
+			req.Header.Set("User-Agent", "test-agent/1.0")
+
+			// Set headers
+			for k, v := range tt.headers {
+				req.Header.Set(k, v)
 			}
-		})
-	}
-}
 
-func TestRedactBody(t *testing.T) {
-	tests := []struct {
-		name        string
-		body        []byte
-		contentType string
-		contains    []string
-		notContains []string
-	}{
-		{
-			name:        "redact JSON password field",
-			body:        []byte(`{"username": "john", "password": "secret123"}`),
-			contentType: mimeApplicationJSON,
-			contains:    []string{`"username": "john"`, redactedText},
-			notContains: []string{"secret123"},
-		},
-		{
-			name:        "redact form data",
-			body:        []byte(`username=john&password=secret123&api_key=mykey`),
-			contentType: mimeApplicationFormURLEncoded,
-			contains:    []string{"username=john", redactedText},
-			notContains: []string{"secret123", "mykey"},
-		},
-		{
-			name:        "binary content",
-			body:        []byte{0x00, 0x01, 0x02, 0x03, 0x04},
-			contentType: mimeApplicationOctetStream,
-			contains:    []string{binaryRedactText},
-			notContains: []string{},
-		},
-		{
-			name:        "preserve non-sensitive data",
-			body:        []byte(`{"name": "John", "email": "john@example.com"}`),
-			contentType: mimeApplicationJSON,
-			contains:    []string{`"name": "John"`, `"email": "john@example.com"`},
-			notContains: []string{redactedText},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			redacted := redactBody(tt.body, tt.contentType)
-			result := string(redacted)
-			
-			for _, expected := range tt.contains {
-				assert.Contains(t, result, expected)
+			// Make request
+			resp, err := transport.RoundTrip(req)
+			if tt.wantError != nil {
+				assert.Equal(t, tt.wantError, err)
+				return
 			}
-			for _, forbidden := range tt.notContains {
-				assert.NotContains(t, result, forbidden)
-			}
+			require.NoError(t, err)
+			defer resp.Body.Close()
+
+			// Normalize CRLF to LF for consistent testing
+			got := strings.ReplaceAll(output.String(), "\r\n", "\n")
+			assert.Equal(t, tt.wantOutput, got)
+
+			// Verify request was recorded
+			recorded := recorder.Request()
+			require.NotNil(t, recorded)
+			assert.Equal(t, tt.method, recorded.Method)
+			assert.Equal(t, tt.url, recorded.URL.String())
 		})
 	}
-}
-
-func TestIsBinaryContent(t *testing.T) {
-	tests := []struct {
-		name        string
-		contentType string
-		expected    bool
-	}{
-		{"octet-stream", mimeApplicationOctetStream, true},
-		{"image", mimeImagePrefix + "png", true},
-		{"json", mimeApplicationJSON, false},
-		{"text", mimeTextPrefix + "plain", false},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result := isBinaryContent(tt.contentType)
-			assert.Equal(t, tt.expected, result)
-		})
-	}
-}
-
-func TestIsBinaryData(t *testing.T) {
-	tests := []struct {
-		name     string
-		data     []byte
-		expected bool
-	}{
-		{"null bytes", []byte{0x00, 0x01, 0x02}, true},
-		{"text data", []byte("Hello, World!"), false},
-		{"empty data", []byte{}, false},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result := isBinaryData(tt.data)
-			assert.Equal(t, tt.expected, result)
-		})
-	}
-}
-
-func TestTraceTransport(t *testing.T) {
-	// Create a test server
-	server := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Set-Cookie", "session=test123")
-		w.Header().Set("Content-Type", mimeApplicationJSON)
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"api_key": "response-secret", "status": "ok"}`))
-	})
-	
-	// Capture stderr
-	oldStderr := os.Stderr
-	r, w, _ := os.Pipe()
-	os.Stderr = w
-	
-	// Create request
-	req, err := http.NewRequest("POST", "http://example.com/test?token=secret", strings.NewReader(`{"password": "test123"}`))
-	require.NoError(t, err)
-	req.Header.Set("Authorization", "Bearer my-token")
-	req.Header.Set("Content-Type", mimeApplicationJSON)
-	
-	// Use RoundTripper with mock
-	transport := NewTraceTransport(RoundTripperFunc(func(req *http.Request) (*http.Response, error) {
-		rec := httptest.NewRecorder()
-		server.ServeHTTP(rec, req)
-		return rec.Result(), nil
-	}))
-	
-	resp, err := transport.RoundTrip(req)
-	require.NoError(t, err)
-	defer resp.Body.Close()
-	
-	// Restore stderr
-	w.Close()
-	os.Stderr = oldStderr
-	
-	// Read captured output
-	var buf bytes.Buffer
-	io.Copy(&buf, r)
-	output := buf.String()
-	
-	// Verify request trace - secrets should be redacted
-	assert.Contains(t, output, "--- HTTP REQUEST ---")
-	assert.Contains(t, output, redactedText) // Authorization should be redacted
-	assert.NotContains(t, output, "my-token") // Original token should not appear
-	assert.NotContains(t, output, "test123") // Password should not appear
-	assert.NotContains(t, output, "secret") // Query param should not appear
-	
-	// Verify response trace - secrets should be redacted
-	assert.Contains(t, output, "--- HTTP RESPONSE ---")
-	assert.NotContains(t, output, "response-secret") // API key should not appear
-	assert.NotContains(t, output, "session=test123") // Cookie value should not appear
-}
-
-// RoundTripperFunc is an adapter to use a function as RoundTripper
-type RoundTripperFunc func(*http.Request) (*http.Response, error)
-
-func (f RoundTripperFunc) RoundTrip(req *http.Request) (*http.Response, error) {
-	return f(req)
 }
