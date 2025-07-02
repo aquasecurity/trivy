@@ -48,6 +48,13 @@ var (
 			},
 		},
 	}
+	libunistring5Pkg = ftypes.Package{
+		Name:       "libunistring5",
+		Version:    "1.1-2build1.1",
+		SrcName:    "libunistring5",
+		SrcVersion: "1.1-2build1.1",
+		Licenses:   []string{"GFDL-NIV-1.2+"},
+	}
 	railsPkg = ftypes.Package{
 		Name:    "rails",
 		Version: "4.0.2",
@@ -371,6 +378,8 @@ func TestScanner_Scan(t *testing.T) {
 					LicenseCategories: map[ftypes.LicenseCategory][]string{
 						ftypes.CategoryNotice: {
 							"MIT",
+							"GFDL-1.2-no-invariants", // License before normalization
+							// 	"GFDL-1.2-no-invariants-or-later", // License after normalization
 						},
 					},
 				},
@@ -390,6 +399,7 @@ func TestScanner_Scan(t *testing.T) {
 							FilePath: "lib/apk/db/installed",
 							Packages: []ftypes.Package{
 								muslPkg,
+								libunistring5Pkg,
 							},
 						},
 					},
@@ -412,6 +422,13 @@ func TestScanner_Scan(t *testing.T) {
 						Target: "OS Packages",
 						Class:  types.ClassLicense,
 						Licenses: []types.DetectedLicense{
+							{
+								Severity:   "LOW",
+								Category:   "notice",
+								PkgName:    libunistring5Pkg.Name,
+								Name:       "GFDL-NIV-1.2+",
+								Confidence: 1,
+							},
 							{
 								Severity:   "LOW",
 								Category:   "notice",
@@ -475,6 +492,7 @@ func TestScanner_Scan(t *testing.T) {
 							FilePath: "lib/apk/db/installed",
 							Packages: []ftypes.Package{
 								muslPkg,
+								libunistring5Pkg,
 							},
 						},
 					},
