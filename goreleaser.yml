@@ -35,7 +35,8 @@ builds:
       - freebsd
     goarch:
       # modernc.org/sqlite doesn't support freebsd/arm64, etc.
-      - 386
+      # Also, freebsd/386 is no longer supported in modernc.org/libc
+      # See: https://gitlab.com/cznic/libc/-/issues/45
       - amd64
   - id: build-macos
     main: ./cmd/trivy/

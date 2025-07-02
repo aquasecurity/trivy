@@ -8,9 +8,10 @@ package flag
 //	  policy-namespaces: "user"
 var (
 	IncludeDeprecatedChecksFlag = Flag[bool]{
-		Name:       "include-deprecated-checks",
-		ConfigName: "rego.include-deprecated-checks",
-		Usage:      "include deprecated checks",
+		Name:          "include-deprecated-checks",
+		ConfigName:    "rego.include-deprecated-checks",
+		Usage:         "include deprecated checks",
+		TelemetrySafe: true,
 	}
 	SkipCheckUpdateFlag = Flag[bool]{
 		Name:       "skip-check-update",
@@ -23,16 +24,18 @@ var (
 				Deprecated: true,
 			},
 		},
+		TelemetrySafe: true,
 	}
 	TraceRegoFlag = Flag[bool]{
 		Name:          "trace-rego",
 		ConfigName:    "rego.trace",
-		Usage:         "enable Rego policy engine trace logging",
+		Usage:         "enable more verbose trace output for custom queries",
 		Persistent:    true,
 		TelemetrySafe: true,
 		Aliases: []Alias{
 			{
 				Name:       "trace",
+				ConfigName: "trace",
 				Deprecated: true,
 			},
 		},
