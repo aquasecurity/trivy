@@ -210,13 +210,12 @@ http: use last response
 
 			// Create trace transport with output writer
 			transport := xhttp.NewTraceTransport(recorder, xhttp.WithWriter(&output))
+			// Wrap with user agent transport for consistent testing
+			transport = xhttp.NewUserAgent(transport, "test-agent/1.0")
 
 			// Create request
 			req, err := http.NewRequest(tt.method, tt.url, tt.body)
 			require.NoError(t, err)
-
-			// Set User-Agent for consistent testing
-			req.Header.Set("User-Agent", "test-agent/1.0")
 
 			// Set headers
 			for k, v := range tt.headers {

@@ -76,10 +76,13 @@ func NewTransport(opts Options) http.RoundTripper {
 	}
 
 	userAgent := cmp.Or(opts.UserAgent, fmt.Sprintf("trivy/%s", app.Version()))
-	uaTransport := NewUserAgent(tr, userAgent)
 
+	// Apply trace transport first, then user agent transport
+	// so that the user agent is set before the request is logged
+	var transport http.RoundTripper = tr
 	if opts.TraceHTTP {
-		return NewTraceTransport(uaTransport)
+		transport = NewTraceTransport(transport)
 	}
-	return uaTransport
+	
+	return NewUserAgent(transport, userAgent)
 }
