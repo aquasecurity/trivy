@@ -21,7 +21,7 @@ func TestProvider(t *testing.T) {
 			name:     "Debian with .root.io package",
 			osFamily: ftypes.Debian,
 			pkgs: []ftypes.Package{
-				{Name: "libc6", Version: "2.31-13+deb11u4.root.io"},
+				{Name: "libc6", Version: "2.31", Release: "13+deb11u4.root.io"},
 				{Name: "bash", Version: "5.1-2+deb11u1"},
 			},
 			want: true,
