@@ -273,14 +273,10 @@ func (a dpkgAnalyzer) parseDpkgPkg(header textproto.MIMEHeader) *types.Package {
 
 func (a dpkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	dir, fileName := filepath.Split(filePath)
-	if a.isMd5SumsFile(dir, fileName) || filePath == statusFile || filePath == availableFile {
+	if a.isMd5SumsFile(dir, fileName) || filePath == statusFile || filePath == availableFile || dir == statusDir {
 		return true
 	}
 
-	// Take only `*.md5sums` files from `status.d` directory
-	if dir == statusDir && filepath.Ext(fileName) != md5sumsExtension {
-		return true
-	}
 	return false
 }
 
