@@ -21,7 +21,8 @@ func (a Algorithm) String() string {
 const (
 	SHA1   Algorithm = "sha1"   // sha1 with hex encoding (lower case only)
 	SHA256 Algorithm = "sha256" // sha256 with hex encoding (lower case only)
-	MD5    Algorithm = "md5"    // md5 with hex encoding (lower case only)
+	SHA512 Algorithm = "sha512"
+	MD5    Algorithm = "md5" // md5 with hex encoding (lower case only)
 )
 
 // Digest allows simple protection of hex formatted digest strings, prefixed by their algorithm.

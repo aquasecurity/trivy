@@ -849,6 +849,34 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
+			name:      "SHA-512",
+			inputFile: "testdata/happy/package-hashes.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: ftypes.NodePkg,
+						Packages: ftypes.Packages{
+							{
+								ID:      "@angular/animations@19.2.10",
+								Name:    "@angular/animations",
+								Version: "19.2.10",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeNPM,
+										Namespace: "@angular",
+										Name:      "animations",
+										Version:   "19.2.10",
+									},
+									BOMRef: "@angular/animations@19.2.10",
+								},
+								Digest: "sha512:2e51fa9add03f3e308d0b57c40dc7dfeba8b2efd1609f60f4bfe625d21a92327ec7e52e83b97511a1b52e297506eee60aa69cb75ff62eebe257512637fbc1bfa",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "invalid serial",
 			inputFile: "testdata/sad/invalid-serial.json",
 			wantErr:   "CycloneDX decode error",
