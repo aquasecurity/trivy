@@ -1,0 +1,40 @@
+{
+    "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+    "bomFormat": "CycloneDX",
+    "specVersion": "1.5",
+    "serialNumber": "urn:uuid:379ddfdb-306b-44e4-bff3-9bfb9bbc5fa5",
+    "version": 1,
+    "metadata": {
+        "timestamp": "2022-05-28T10:20:03.79527Z",
+        "tools": [
+            {
+                "vendor": "aquasecurity",
+                "name": "trivy",
+                "version": "dev"
+            }
+        ],
+        "component": {
+            "bom-ref": "0f585d64-4815-4b72-92c5-97dae191fa4a",
+            "type": "container",
+            "name": "maven-test-project"
+        }
+    },
+    "components": [
+        {
+            "bom-ref": "@angular/animations@19.2.10",
+            "type": "library",
+            "name": "@angular/animations",
+            "version": "19.2.10",
+            "scope": "required",
+            "author": "angular",
+            "description": "Angular - animations integration with web-animations",
+            "purl": "pkg:npm/%40angular/animations@19.2.10",
+            "hashes": [
+                {
+                    "alg": "SHA-512",
+                    "content": "2e51fa9add03f3e308d0b57c40dc7dfeba8b2efd1609f60f4bfe625d21a92327ec7e52e83b97511a1b52e297506eee60aa69cb75ff62eebe257512637fbc1bfa"
+                }
+            ]
+        }
+    ]
+}
