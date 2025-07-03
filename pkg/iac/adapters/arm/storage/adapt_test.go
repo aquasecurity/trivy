@@ -26,8 +26,11 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: storage.Storage{
 				Accounts: []storage.Account{{
+					MinimumTLSVersion: types.StringTest("TLS1_0"),
+					EnforceHTTPS:      types.BoolTest(true),
 					NetworkRules: []storage.NetworkRule{{
-						Bypass: []types.StringValue{types.StringTest("")},
+						Bypass:         []types.StringValue{types.StringTest("AzureServices")},
+						AllowByDefault: types.BoolTest(true),
 					}},
 					PublicNetworkAccess: types.BoolTest(true),
 				}},
