@@ -27,7 +27,8 @@ func TestAdapt(t *testing.T) {
 			expected: storage.Storage{
 				Accounts: []storage.Account{{
 					NetworkRules: []storage.NetworkRule{{
-						Bypass: []types.StringValue{types.StringTest("")},
+						Bypass:         []types.StringValue{types.StringTest("None")},
+						AllowByDefault: types.BoolTest(true),
 					}},
 					PublicNetworkAccess: types.BoolTest(true),
 				}},
