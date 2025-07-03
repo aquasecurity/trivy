@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+    <servers>
+        <server>
+            <id>mycompany-internal-releases</id>
+            <username>mypassword</username>
+            <password>mypassword</password>
+        </server>
+        <server>
+            <id>mycompany-global-releases</id>
+            <username>mypassword</username>
+            <password>mypassword</password>
+        </server>
+    </servers>
+    <profiles>
+        <profile>
+            <id>test-cicd</id>
+            <repositories>
+                <repository>
+                    <id>mycompany-internal-releases</id>
+                    <url>https://mycompany.example.com/repository/internal-releases</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>mycompany-global-releases</id>
+                    <url>https://mycompany.example.com/repository/global-releases</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+    <mirrors>
+        <mirror>
+            <id>google-maven-central</id>
+            <name>GCS Maven Central mirror EU</name>
+            <url>https://maven-central-eu.storage-download.googleapis.com/maven2/</url>
+            <mirrorOf>*,!mycompany-internal-releases,!mycompany-global-releases</mirrorOf>
+        </mirror>
+    </mirrors>
+</settings>
