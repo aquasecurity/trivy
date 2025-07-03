@@ -53,8 +53,9 @@ func TestUserAgentTransport_RoundTrip(t *testing.T) {
 			// Create transport with user agent
 			transport := xhttp.NewUserAgent(recorder, tt.userAgent)
 
-			// Create request
-			req, err := http.NewRequest(http.MethodGet, "http://example.com/test", http.NoBody)
+			// Create request with an invalid URL to avoid actual network calls
+			// cf. https://www.rfc-editor.org/rfc/rfc6761
+			req, err := http.NewRequest(http.MethodGet, "http://example.invalid/test", http.NoBody)
 			require.NoError(t, err)
 
 			// Set existing headers
