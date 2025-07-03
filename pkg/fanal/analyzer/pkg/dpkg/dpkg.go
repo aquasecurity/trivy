@@ -79,7 +79,7 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 			scanner := bufio.NewScanner(r)
 			systemFiles, err := a.parseDpkgMd5sums(scanner)
 			if err != nil {
-				return err
+				return xerrors.Errorf("failed to parse %s file: %w", path, err)
 			}
 			packageFiles[strings.TrimSuffix(filepath.Base(path), md5sumsExtension)] = systemFiles
 			systemInstalledFiles = append(systemInstalledFiles, systemFiles...)
@@ -129,6 +129,10 @@ func (a dpkgAnalyzer) parseDpkgMd5sums(scanner *bufio.Scanner) ([]string, error)
 			return nil, xerrors.Errorf("invalid md5sums line format: %s", current)
 		}
 		installedFiles = append(installedFiles, "/"+file) // md5sums files don't contain leading slash
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, xerrors.Errorf("scan error: %w", err)
 	}
 
 	sort.Strings(installedFiles)
@@ -273,7 +277,7 @@ func (a dpkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 		return true
 	}
 
-	// skip `*.md5sums` files from `status.d` directory
+	// Take only `*.md5sums` files from `status.d` directory
 	if dir == statusDir && filepath.Ext(fileName) != md5sumsExtension {
 		return true
 	}
