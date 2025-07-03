@@ -121,8 +121,9 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 
 	// Set the default HTTP transport
 	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
-		Insecure: cliOptions.Insecure,
-		Timeout:  cliOptions.Timeout,
+		Insecure:  cliOptions.Insecure,
+		Timeout:   cliOptions.Timeout,
+		TraceHTTP: cliOptions.TraceHTTP,
 	}))
 	// get the sub command that is being used or fallback to "trivy"
 	commandName := lo.Ternary(len(os.Args) > 1, os.Args[1], "trivy")
@@ -711,7 +712,7 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 	}
 
 	misconfOpts := misconf.ScannerOption{
-		Trace:                    opts.Trace,
+		Trace:                    opts.RegoOptions.Trace,
 		Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
 		PolicyPaths:              policyPaths,
 		DataPaths:                opts.DataPaths,

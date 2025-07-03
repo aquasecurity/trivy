@@ -24,6 +24,7 @@ trivy module uninstall [flags] REPOSITORY
       --module-dir string         specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
   -q, --quiet                     suppress progress bar and log output
       --timeout duration          timeout (default 5m0s)
+      --trace-http                [DANGEROUS] enable HTTP request/response trace logging (may expose sensitive data)
   -v, --version                   show version
 ```
 
