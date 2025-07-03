@@ -338,6 +338,32 @@ resource "aws_iam_role_policy_attachment" "test" {
 				},
 			},
 		},
+		{
+			name: "policy is template with unknown part",
+			terraform: `resource "aws_iam_role" "default" {
+  name = "test"
+}
+
+resource "aws_iam_role_policy_attachment" "amazon_eks_cluster_policy" {
+  role       = aws_iam_role.default.name
+  policy_arn = format("arn:%s:iam::aws:policy/AmazonEKSClusterPolicy", data.aws_partition.current.partition)
+}
+
+
+data "aws_partition" "current" {}
+`,
+			expected: []iam.Role{
+				{
+					Name: iacTypes.StringTest("test"),
+					Policies: []iam.Policy{
+						{
+							Name:     iacTypes.StringTest(""),
+							Document: iam.Document{},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
