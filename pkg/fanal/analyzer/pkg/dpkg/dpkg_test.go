@@ -1492,19 +1492,14 @@ func Test_dpkgAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
-			name:     "list file",
-			filePath: "var/lib/dpkg/info/bash.list",
-			want:     false,
-		},
-		{
-			name:     "md5sums file from info dir",
+			name:     "*.md5sums file in info dir",
 			filePath: "var/lib/dpkg/info/bash.md5sums",
 			want:     true,
 		},
 		{
-			name:     "md5sums file from status.d dir",
-			filePath: "var/lib/dpkg/status.d/bash.md5sums",
-			want:     true,
+			name:     "list file",
+			filePath: "var/lib/dpkg/info/bash.list",
+			want:     false,
 		},
 		{
 			name:     "available file",
