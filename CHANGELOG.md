@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.64.1](https://github.com/aquasecurity/trivy/compare/v0.64.0...v0.64.1) (2025-07-03)
+
+
+### Bug Fixes
+
+* **alma:** parse epochs from rpmqa file [backport: release/v0.64] ([#9119](https://github.com/aquasecurity/trivy/issues/9119)) ([8cf1bf9](https://github.com/aquasecurity/trivy/commit/8cf1bf9f6f86936ee7dcd29e0d1cd1ec106e28f6))
+* **cli:** Add more non-sensitive flags to telemetry [backport: release/v0.64] ([#9124](https://github.com/aquasecurity/trivy/issues/9124)) ([9a7d384](https://github.com/aquasecurity/trivy/commit/9a7d38432cf00f00970259e5ac3edd060e00ccff))
+* **misconf:** skip rewriting expr if attr is nil [backport: release/v0.64] ([#9127](https://github.com/aquasecurity/trivy/issues/9127)) ([4e12722](https://github.com/aquasecurity/trivy/commit/4e1272283a643bfca2d7231d286006219715fada))
+* **rootio:** check full version to detect `root.io` packages [backport: release/v0.64] ([#9120](https://github.com/aquasecurity/trivy/issues/9120)) ([53adfba](https://github.com/aquasecurity/trivy/commit/53adfba3c25664b01e3a36fdec334b39b53c07f1))
+
 ## [0.64.0](https://github.com/aquasecurity/trivy/compare/v0.63.0...v0.64.0) (2025-06-30)
 
 
