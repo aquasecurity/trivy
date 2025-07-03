@@ -2813,3 +2813,49 @@ func TestProvidedWorkingDirectory(t *testing.T) {
 	attr := foo.GetAttribute("cwd")
 	require.Equal(t, fakeCwd, attr.Value().AsString())
 }
+
+func TestEagerLocals(t *testing.T) {
+	// Eager locals are evaluated before the resources in the expression are ready.
+	//
+	// 1. `evaluateStep` is called
+	//   -> data.foo.bar is not yet expanded, so data.foo.bar[0].value is unknown
+	//   -> local.one = 1
+	//   -> local.number = try(unknown, 0) = 0
+	// 2. `expandBlock` is called
+	//   -> data.foo.bar is expanded,
+	//      -> data.foo.bar[0].value = 1
+	//   -> data.other.baz is expanded using local.number = 0
+	//      -> data.other.baz.count = 0
+	// 3. `evaluateStep` is called again
+	//   -> local.number = try(data.foo.bar[0].value, 0) = 1 *Now correct!*
+	// 4. `expandBlock` is called again
+	//   -> data.other.baz is marked as expanded, so stays count = 0
+	fsys := testutil.CreateFS(t, map[string]string{
+		"main.tf": `
+			locals {
+				number = try(data.foo.bar[0].value, 0)
+				one = 1
+			}
+
+			data "foo" "bar" {
+              count = local.one
+			  value = 1
+			}
+
+			data "other" "baz" {
+			  count = local.number
+			}
+		`,
+	})
+
+	parser := New(fsys, "")
+	err := parser.ParseFS(t.Context(), ".")
+	require.NoError(t, err)
+
+	modules, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+
+	require.Len(t, modules, 1)
+	others := modules[0].GetDatasByType("other")
+	require.Len(t, others, 1)
+}
