@@ -1,6 +1,8 @@
 package iam
 
 import (
+	"github.com/hashicorp/hcl/v2/hclsyntax"
+
 	"github.com/aquasecurity/iamgo"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
@@ -140,11 +142,20 @@ func findAttachmentPolicy(modules terraform.Modules) func(resource *terraform.Bl
 			}
 		}
 
-		if block, err := modules.GetReferencedBlock(attr, resource); err == nil {
-			return findPolicy(modules)(block)
+		// Searching for a referenced block only makes sense for traversal expressions,
+		// since only they can directly reference other blocks in the configuration.
+		switch attr.HCLAttribute().Expr.(type) {
+		case *hclsyntax.RelativeTraversalExpr, *hclsyntax.ScopeTraversalExpr:
+			if block, err := modules.GetReferencedBlock(attr, resource); err == nil {
+				return findPolicy(modules)(block)
+			}
 		}
-
-		return nil
+		return &iam.Policy{
+			Metadata: resource.GetMetadata(),
+			Document: iam.Document{
+				Metadata: resource.GetMetadata(),
+			},
+		}
 	}
 }
 
