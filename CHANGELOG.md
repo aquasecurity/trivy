@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.65.0](https://github.com/aquasecurity/trivy/compare/v0.64.0...v0.65.0) (2025-07-04)
+
+
+### Features
+
+* **license:** observe pkg types option in license scanner ([#9091](https://github.com/aquasecurity/trivy/issues/9091)) ([d44af8c](https://github.com/aquasecurity/trivy/commit/d44af8cfa21a145d14ca6e5e1ed4742d892f2dc5))
+* **sbom:** add SHA-512 hash support for CycloneDX SBOM ([#9126](https://github.com/aquasecurity/trivy/issues/9126)) ([12d6706](https://github.com/aquasecurity/trivy/commit/12d6706961423acb12430c8b3d986b4aa4671d04))
+
+
+### Bug Fixes
+
+* **alma:** parse epochs from rpmqa file ([#9101](https://github.com/aquasecurity/trivy/issues/9101)) ([82db2fc](https://github.com/aquasecurity/trivy/commit/82db2fcc8034c911cc7a67f5a82d2f081d9c1fdf))
+* **cli:** Add more non-sensitive flags to telemetry ([#9110](https://github.com/aquasecurity/trivy/issues/9110)) ([7041a39](https://github.com/aquasecurity/trivy/commit/7041a39bdcf21c5b3114137d9a931f529eac2566))
+* **license:** add missed `GFDL-NIV-1.1` and `GFDL-NIV-1.2` into Trivy mapping ([#9116](https://github.com/aquasecurity/trivy/issues/9116)) ([a692f29](https://github.com/aquasecurity/trivy/commit/a692f296d15f7241ba5ff082e4e69926b1c728a8))
+* migrate from `*.list` to `*.md5sums` files for `dpkg` ([#9131](https://github.com/aquasecurity/trivy/issues/9131)) ([f224de3](https://github.com/aquasecurity/trivy/commit/f224de3e39b08672212ec0f94660c36bef77bc30))
+* **misconf:** skip rewriting expr if attr is nil ([#9113](https://github.com/aquasecurity/trivy/issues/9113)) ([42ccd3d](https://github.com/aquasecurity/trivy/commit/42ccd3df9a7c838a99facb8248e1a68eaf47a999))
+* **rootio:** check full version to detect `root.io` packages ([#9117](https://github.com/aquasecurity/trivy/issues/9117)) ([c2ddd44](https://github.com/aquasecurity/trivy/commit/c2ddd44d98594a2066cb5b5acbb9ad2aaad8fd96))
+* **sbom:** use correct field for licenses in CycloneDX reports ([#9057](https://github.com/aquasecurity/trivy/issues/9057)) ([143da88](https://github.com/aquasecurity/trivy/commit/143da88dd82dfbe204f4c2afe46af3b01701675d))
+* **secret:** fix line numbers for multiple-line secrets ([#9104](https://github.com/aquasecurity/trivy/issues/9104)) ([e579746](https://github.com/aquasecurity/trivy/commit/e57974649e4a3a275b9cf02db191b3f6bf10340f))
+
 ## [0.64.0](https://github.com/aquasecurity/trivy/compare/v0.63.0...v0.64.0) (2025-06-30)
 
 
