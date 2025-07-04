@@ -115,7 +115,11 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 
 }
 
-// parseDpkgMd5sums parses /var/lib/dpkg/*/*.md5sums file:
+// parseDpkgMd5sums parses `/var/lib/dpkg/*/*.md5sums` file.
+//
+// `*.md5sums` files don't contain links (see https://github.com/aquasecurity/trivy/pull/9131#discussion_r2182557288).
+// But Trivy doesn't support links, so this will not cause problems.
+// TODO use `*.list` files instead of `*.md5sums` files when Trivy will support links.
 func (a dpkgAnalyzer) parseDpkgMd5sums(scanner *bufio.Scanner) ([]string, error) {
 	var installedFiles []string
 	for scanner.Scan() {
