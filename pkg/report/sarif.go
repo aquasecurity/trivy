@@ -49,25 +49,27 @@ type SarifWriter struct {
 	Version       string
 	run           *sarif.Run
 	locationCache map[string][]location
+	lineHashCache map[string]map[int]string
 	Target        string
 }
 
 type sarifData struct {
-	title            string
-	vulnerabilityId  string
-	shortDescription string
-	fullDescription  string
-	helpText         string
-	helpMarkdown     string
-	resourceClass    types.ResultClass
-	severity         string
-	url              *url.URL
-	resultIndex      int
-	artifactLocation *url.URL
-	locationMessage  string
-	message          string
-	cvssScore        string
-	locations        []location
+	title              string
+	vulnerabilityId    string
+	shortDescription   string
+	fullDescription    string
+	helpText           string
+	helpMarkdown       string
+	resourceClass      types.ResultClass
+	severity           string
+	url                *url.URL
+	resultIndex        int
+	artifactLocation   *url.URL
+	locationMessage    string
+	message            string
+	cvssScore          string
+	locations          []location
+	partialFingerprint string
 }
 
 type location struct {
@@ -110,6 +112,12 @@ func (sw *SarifWriter) addSarifResult(data *sarifData) {
 		WithMessage(sarif.NewTextMessage(data.message)).
 		WithLevel(toSarifErrorLevel(data.severity)).
 		WithLocations(toSarifLocations(data.locations, data.artifactLocation.String(), data.locationMessage))
+
+	if data.partialFingerprint != "" {
+		result = result.WithPartialFingerPrints(map[string]any{
+			"primaryLocationLineHash": data.partialFingerprint,
+		})
+	}
 	sw.run.AddResult(result)
 }
 
@@ -132,6 +140,7 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 	sw.run.Tool.Driver.WithVersion(sw.Version)
 	sw.run.Tool.Driver.WithFullName("Trivy Vulnerability Scanner")
 	sw.locationCache = make(map[string][]location)
+	sw.lineHashCache = make(map[string]map[int]string)
 	if report.ArtifactType == ftypes.TypeContainerImage {
 		sw.run.Properties = sarif.Properties{
 			"imageName":   report.ArtifactName,
@@ -158,19 +167,29 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 			if vuln.PkgPath != "" {
 				path = ToPathUri(vuln.PkgPath, res.Class)
 			}
+
+			locs := sw.getLocations(vuln.PkgName, vuln.InstalledVersion, path, res.Packages)
+			absBase, _ := filepath.Abs(sw.Target)
+
+			lineHash := ""
+			if len(locs) > 0 && locs[0].startLine > 0 {
+				lineHash = sw.getLineFingerprint(absBase, res.Target, locs[0].startLine)
+			}
+
 			sw.addSarifResult(&sarifData{
-				title:            "vulnerability",
-				vulnerabilityId:  vuln.VulnerabilityID,
-				severity:         vuln.Severity,
-				cvssScore:        getCVSSScore(vuln),
-				url:              toUri(vuln.PrimaryURL),
-				resourceClass:    res.Class,
-				artifactLocation: toUri(path),
-				locationMessage:  fmt.Sprintf("%v: %v@%v", path, vuln.PkgName, vuln.InstalledVersion),
-				locations:        sw.getLocations(vuln.PkgName, vuln.InstalledVersion, path, res.Packages),
-				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
-				shortDescription: vuln.Title,
-				fullDescription:  fullDescription,
+				title:              "vulnerability",
+				vulnerabilityId:    vuln.VulnerabilityID,
+				severity:           vuln.Severity,
+				cvssScore:          getCVSSScore(vuln),
+				url:                toUri(vuln.PrimaryURL),
+				resourceClass:      res.Class,
+				artifactLocation:   toUri(path),
+				locationMessage:    fmt.Sprintf("%v: %v@%v", path, vuln.PkgName, vuln.InstalledVersion),
+				locations:          locs,
+				partialFingerprint: lineHash,
+				resultIndex:        getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
+				shortDescription:   vuln.Title,
+				fullDescription:    fullDescription,
 				helpText: fmt.Sprintf("Vulnerability %v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)\n%v",
 					vuln.VulnerabilityID, vuln.Severity, vuln.PkgName, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL, vuln.Description),
 				helpMarkdown: fmt.Sprintf("**Vulnerability %v**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|%v|%v|%v|[%v](%v)|\n\n%v",
@@ -181,6 +200,9 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 		}
 		for _, misconf := range res.Misconfigurations {
 			locationURI := clearURI(res.Target)
+			absBase, _ := filepath.Abs(sw.Target)
+			lineHash := sw.getLineFingerprint(absBase, res.Target, misconf.CauseMetadata.StartLine)
+
 			sw.addSarifResult(&sarifData{
 				title:            "misconfiguration",
 				vulnerabilityId:  misconf.ID,
@@ -196,9 +218,10 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 						endLine:   misconf.CauseMetadata.EndLine,
 					},
 				},
-				resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
-				shortDescription: misconf.Title,
-				fullDescription:  misconf.Description,
+				partialFingerprint: lineHash,
+				resultIndex:        getRuleIndex(misconf.ID, ruleIndexes),
+				shortDescription:   misconf.Title,
+				fullDescription:    misconf.Description,
 				helpText: fmt.Sprintf("Misconfiguration %v\nType: %s\nSeverity: %v\nCheck: %v\nMessage: %v\nLink: [%v](%v)\n%s",
 					misconf.ID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.ID, misconf.PrimaryURL, misconf.Description),
 				helpMarkdown: fmt.Sprintf("**Misconfiguration %v**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|%v|%v|%v|%s|[%v](%v)|\n\n%v",
@@ -208,6 +231,10 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 			})
 		}
 		for _, secret := range res.Secrets {
+
+			absBase, _ := filepath.Abs(sw.Target)
+			lineHash := sw.getLineFingerprint(absBase, res.Target, secret.StartLine)
+
 			sw.addSarifResult(&sarifData{
 				title:            "secret",
 				vulnerabilityId:  secret.RuleID,
@@ -223,9 +250,10 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 						endLine:   secret.EndLine,
 					},
 				},
-				resultIndex:      getRuleIndex(secret.RuleID, ruleIndexes),
-				shortDescription: secret.Title,
-				fullDescription:  secret.Match,
+				partialFingerprint: lineHash,
+				resultIndex:        getRuleIndex(secret.RuleID, ruleIndexes),
+				shortDescription:   secret.Title,
+				fullDescription:    secret.Match,
 				helpText: fmt.Sprintf("Secret %v\nSeverity: %v\nMatch: %s",
 					secret.Title, secret.Severity, secret.Match),
 				helpMarkdown: fmt.Sprintf("**Secret %v**\n| Severity | Match |\n| --- | --- |\n|%v|%v|",
@@ -437,4 +465,38 @@ func severityToScore(severity string) string {
 	default:
 		return "0.0"
 	}
+}
+
+// getLineFingerprint tries to resolve the full path and generate a fingerprint for the given line.
+func (sw *SarifWriter) getLineFingerprint(base, target string, line int) string {
+	absFullPath := target
+	if !filepath.IsAbs(target) {
+		absFullPath = filepath.Join(base, target)
+	}
+	absFullPath, err := filepath.Abs(absFullPath)
+	if err != nil {
+		log.WithPrefix("sarif").Error("Failed to resolve absolute path for fingerprinting", log.String("file", absFullPath), log.Err(err))
+		return ""
+	}
+
+	// use or initialize the hash cache for this file
+	lines, ok := sw.lineHashCache[absFullPath]
+	if !ok {
+		lines = make(map[int]string)
+		sw.lineHashCache[absFullPath] = lines
+	}
+
+	// return cached fingerprint if available
+	if fp, ok := lines[line]; ok {
+		return fp
+	}
+
+	// generate and cache the fingerprint
+	fp, err := generateCodeQLFingerprint(absFullPath, line)
+	if err != nil {
+		log.WithPrefix("sarif").Error("Could not generate partialFingerprint", log.String("file", absFullPath), log.Err(err))
+		return ""
+	}
+	lines[line] = fp
+	return fp
 }
