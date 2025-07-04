@@ -191,6 +191,7 @@ func getAllFlags() []flag.FlagGroup {
 		flag.NewScanFlagGroup(),
 		flag.NewSecretFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
+		flag.NewVMFlagGroup(),
 	}
 
 }
