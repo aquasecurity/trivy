@@ -67,45 +67,45 @@ body {
 
 
 .generic_title {
-	font-size: 1.75rem;
+	font-size: 28px; //1.75rem
 	font-weight: $weight-bold;
-	margin: 0.75rem;
+	margin: 12px; //0.75rem
 	color: $aq-royal-blue;
 }
 
 .generic_subtitle {
-	font-size: 1.125rem;
+	font-size: 18px; //1.125rem
 	opacity: 0.8;
-	margin: 0.75rem;
+	margin: 12px; //0.75rem
 }
 
 
 	.section_title {
 		color: #ffffff; //$aq-neon-blue;
-		font-size: 3rem; //3.75rem;
+		font-size: 48px; //3rem
 		font-weight: $weight-bold;
-		margin-bottom: 1.5rem;
+		margin-bottom: 24px; //1.5rem
 		line-height: 1.2;
 
 		&.is_smaller {
-			font-size: 2.5rem;
+			font-size: 40px; //2.5rem
 		}
 	}
 
 	.section_subtitle  {
 		color: #ffffff;
-		font-size: 1.625rem;
-		margin-bottom: 1.5rem;
+		font-size: 26px; //1.625rem
+		margin-bottom: 24px; //1.5rem
 	}
 
 
 	@media screen and (max-width: $tablet) {
 
 		.section_title, .section_title.is_smaller {
-			font-size: 2rem;
+			font-size: 32px; //2rem
 		}
 		.section_subtitle {
-			font-size: 1.125rem;
+			font-size: 18px; //1.125rem
 		}
 
 	} //until
@@ -168,7 +168,7 @@ body {
 		background-color: $aq-neon-blue;
 		font-weight: 700;
 		border: 2px solid $aq-neon-blue;
-		font-size: 22px; //1.375rem; //1.125rem;
+		font-size: 22px; //1.375rem
 		padding: 16px 27px;
 		color: $aq-blue-abyss;
 

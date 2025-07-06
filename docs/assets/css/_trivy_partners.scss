@@ -4,7 +4,7 @@
 	z-index: 3;
 	background-color: $aq-trivy-dark;
 	color: #ffffff;
-	padding-bottom: 5rem;
+	padding-bottom: 80px; //5rem
 
 	.generic_title {
 		color: #ffffff;
@@ -69,7 +69,7 @@
 
 
 		.section_title_icon + .section_title {
-			margin-top: 0rem;
+			margin-top: 0px;
 		}
 
 
@@ -173,7 +173,7 @@
 
 
 					.page_title {
-						font-size: 4rem;
+						font-size: 64px; //4rem
 						margin-bottom: 0px;
 					}
 
@@ -199,7 +199,7 @@
 						width: 70%;
 
 						.page_title {
-							font-size: 3rem;
+							font-size: 48px; //3rem
 						}
 					} //until widescreen
 
@@ -208,11 +208,11 @@
 						width: 100%;
 
 						.page_title {
-							font-size: 2rem;
+							font-size: 32px; //2rem
 						}//page_title
 			
 						.page_subtitle {
-							font-size: 1.125rem;
+							font-size: 18px; //1.125rem
 						}//page_subtitle
 			
 					} //until tablet
@@ -248,7 +248,7 @@
 		flex-direction: row;
 		justify-content: center;
 		align-items: center;
-		gap: 4rem;
+		gap: 64px; //4rem
 		flex-wrap: wrap;
 
 		.logo_item {
@@ -270,7 +270,7 @@
 
 		@media screen and (max-width: $tablet) {
 
-			gap: 2rem;
+			gap: 32px; //2rem
 
 			.logo_item {
 				img {
@@ -295,7 +295,7 @@
 		display: flex;
 		flex-direction: row;
 		gap: $gap;
-		padding: .75rem;
+		padding: 12px; //.75rem
 		position: relative;
 		z-index: 5;
 
@@ -319,14 +319,14 @@
 			
 			.benefit_title {
 				text-align: center;
-				font-size: 2rem;
+				font-size: 32px; //2rem
 			}
 
 
 			.benefit_content {
-				font-size: 1.125rem;
+				font-size: 18px; //1.125rem
 				line-height: 1.3;
-				margin: .75rem;
+				margin: 12px; //.75rem
 				text-align: center;
 			}
 		} //benefit_item
@@ -347,7 +347,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: $gap;
-		padding: .75rem;
+		padding: 12px; //.75rem
 		position: relative;
 		z-index: 5;
 
@@ -362,7 +362,7 @@
 				flex-direction: row;
 				align-items: center;
 				gap: $gap;
-				margin: 0 0.75rem;
+				margin: 0 12px; //.75rem
 				min-height: 180px;
 
 				.plan_titles_wrap {
@@ -370,20 +370,20 @@
 					width: 80%;
 	
 					.plan_title {
-						font-size: 2rem;
-						margin: 0.75rem 0px;
+						font-size: 32px; //2rem
+						margin: 12px 0px;
 					}
 		
 					.plan_subtitle {
-						font-size: 1.625rem;
-						margin: 0.75rem 0px;
+						font-size: 26px; //1.625rem
+						margin: 12px 0px;
 					}
 				} //plan_titles_wrap
 
 				.plan_content {
-					font-size: 1.25rem;
+					font-size: 20px; //1.25rem
 					line-height: 1.3;
-					margin: .75rem;
+					margin: 12px; //.75rem
 					width: 100%;
 				}
 

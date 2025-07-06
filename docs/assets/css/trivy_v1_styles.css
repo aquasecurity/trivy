@@ -19,41 +19,41 @@ body {
 }
 
 .generic_title {
-  font-size: 1.75rem;
+  font-size: 28px;
   font-weight: 700;
-  margin: 0.75rem;
+  margin: 12px;
   color: #1904da;
 }
 
 .generic_subtitle {
-  font-size: 1.125rem;
+  font-size: 18px;
   opacity: 0.8;
-  margin: 0.75rem;
+  margin: 12px;
 }
 
 .section_title {
   color: #ffffff;
-  font-size: 3rem;
+  font-size: 48px;
   font-weight: 700;
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px;
   line-height: 1.2;
 }
 .section_title.is_smaller {
-  font-size: 2.5rem;
+  font-size: 40px;
 }
 
 .section_subtitle {
   color: #ffffff;
-  font-size: 1.625rem;
-  margin-bottom: 1.5rem;
+  font-size: 26px;
+  margin-bottom: 24px;
 }
 
 @media screen and (max-width: 769px) {
   .section_title, .section_title.is_smaller {
-    font-size: 2rem;
+    font-size: 32px;
   }
   .section_subtitle {
-    font-size: 1.125rem;
+    font-size: 18px;
   }
 }
 .button {
@@ -511,7 +511,7 @@ body {
 }
 
 .hs-form label {
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 400;
 }
 
@@ -552,7 +552,7 @@ body {
   list-style-type: none;
   padding-left: 0px;
   margin: 5px 0 0 0;
-  font-size: 0.875rem;
+  font-size: 14px;
 }
 
 .hs-form .hs-error-msgs label {
@@ -624,7 +624,7 @@ body .hs-form fieldset.form-columns-1 .hs-input {
 }
 
 .hs-form .hs-field-desc {
-  font-size: 0.875rem;
+  font-size: 14px;
   margin-bottom: 10px;
 }
 
@@ -984,7 +984,7 @@ body .hs-form fieldset.form-columns-1 .hs-input {
   z-index: 3;
   background-color: #0a0b23;
   color: #ffffff;
-  padding-bottom: 5rem;
+  padding-bottom: 80px;
 }
 .trivy_v1_homepage_wrap.partners_wrap .generic_title {
   color: #ffffff;
@@ -1038,7 +1038,7 @@ body .hs-form fieldset.form-columns-1 .hs-input {
   }
 }
 .trivy_v1_homepage_wrap.partners_wrap .section_title_wrap .section_title_icon + .section_title {
-  margin-top: 0rem;
+  margin-top: 0px;
 }
 .trivy_v1_homepage_wrap.partners_wrap .section_title_wrap::before {
   content: "";
@@ -1114,7 +1114,7 @@ body .hs-form fieldset.form-columns-1 .hs-input {
   z-index: 3;
 }
 .trivy_v1_homepage_wrap.partners_wrap .hero .hero-body .header_title_wrap.with_columns .header_title_content_wrap .page_title {
-  font-size: 4rem;
+  font-size: 64px;
   margin-bottom: 0px;
 }
 .trivy_v1_homepage_wrap.partners_wrap .hero .hero-body .header_title_wrap.with_columns .header_title_content_wrap.partners_hero_titles {
@@ -1137,7 +1137,7 @@ body .hs-form fieldset.form-columns-1 .hs-input {
     width: 70%;
   }
   .trivy_v1_homepage_wrap.partners_wrap .hero .hero-body .header_title_wrap.with_columns .header_title_content_wrap .page_title {
-    font-size: 3rem;
+    font-size: 48px;
   }
 }
 @media screen and (max-width: 769px), print {
@@ -1145,10 +1145,10 @@ body .hs-form fieldset.form-columns-1 .hs-input {
     width: 100%;
   }
   .trivy_v1_homepage_wrap.partners_wrap .hero .hero-body .header_title_wrap.with_columns .header_title_content_wrap .page_title {
-    font-size: 2rem;
+    font-size: 32px;
   }
   .trivy_v1_homepage_wrap.partners_wrap .hero .hero-body .header_title_wrap.with_columns .header_title_content_wrap .page_subtitle {
-    font-size: 1.125rem;
+    font-size: 18px;
   }
 }
 @media screen and (min-width: 769px), print {
@@ -1171,7 +1171,7 @@ body .hs-form fieldset.form-columns-1 .hs-input {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 4rem;
+  gap: 64px;
   flex-wrap: wrap;
 }
 .partners_logos_wrap .partners_logos .logo_item {
@@ -1189,7 +1189,7 @@ body .hs-form fieldset.form-columns-1 .hs-input {
 }
 @media screen and (max-width: 769px) {
   .partners_logos_wrap .partners_logos {
-    gap: 2rem;
+    gap: 32px;
   }
   .partners_logos_wrap .partners_logos .logo_item img {
     max-height: 80px;
@@ -1207,7 +1207,7 @@ body .hs-form fieldset.form-columns-1 .hs-input {
   display: flex;
   flex-direction: row;
   gap: 32px;
-  padding: 0.75rem;
+  padding: 12px;
   position: relative;
   z-index: 5;
 }
@@ -1230,12 +1230,12 @@ body .hs-form fieldset.form-columns-1 .hs-input {
 }
 .partners_benefits_wrap .benefit_items .benefit_item .benefit_title {
   text-align: center;
-  font-size: 2rem;
+  font-size: 32px;
 }
 .partners_benefits_wrap .benefit_items .benefit_item .benefit_content {
-  font-size: 1.125rem;
+  font-size: 18px;
   line-height: 1.3;
-  margin: 0.75rem;
+  margin: 12px;
   text-align: center;
 }
 
@@ -1249,7 +1249,7 @@ body .hs-form fieldset.form-columns-1 .hs-input {
   display: flex;
   flex-direction: column;
   gap: 32px;
-  padding: 0.75rem;
+  padding: 12px;
   position: relative;
   z-index: 5;
 }
@@ -1261,24 +1261,24 @@ body .hs-form fieldset.form-columns-1 .hs-input {
   flex-direction: row;
   align-items: center;
   gap: 32px;
-  margin: 0 0.75rem;
+  margin: 0 12px;
   min-height: 180px;
 }
 .partners_plans_wrap .plan_items .plan_item .glass_content .plan_titles_wrap {
   width: 80%;
 }
 .partners_plans_wrap .plan_items .plan_item .glass_content .plan_titles_wrap .plan_title {
-  font-size: 2rem;
-  margin: 0.75rem 0px;
+  font-size: 32px;
+  margin: 12px 0px;
 }
 .partners_plans_wrap .plan_items .plan_item .glass_content .plan_titles_wrap .plan_subtitle {
-  font-size: 1.625rem;
-  margin: 0.75rem 0px;
+  font-size: 26px;
+  margin: 12px 0px;
 }
 .partners_plans_wrap .plan_items .plan_item .glass_content .plan_content {
-  font-size: 1.25rem;
+  font-size: 20px;
   line-height: 1.3;
-  margin: 0.75rem;
+  margin: 12px;
   width: 100%;
 }
 @media screen and (max-width: 1024px) {
