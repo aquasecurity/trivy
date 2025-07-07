@@ -317,7 +317,7 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks) terraform.Bloc
 
 		forEachAttr := block.GetAttribute("for_each")
 
-		if forEachAttr.IsNil() || block.IsExpanded() || !isBlockSupportsForEachMetaArgument(block) || e.shouldDeferForEachExpansion(forEachAttr, block) {
+		if forEachAttr.IsNil() || block.IsExpanded() || !isBlockSupportsForEachMetaArgument(block) || e.shouldDeferForEachExpansion(forEachAttr) {
 			forEachFiltered = append(forEachFiltered, block)
 			continue
 		}
@@ -654,7 +654,7 @@ func isForEachKey(key cty.Value) bool {
 	return key.Type().Equals(cty.Number) || key.Type().Equals(cty.String)
 }
 
-func (e *evaluator) shouldDeferForEachExpansion(forEachAttr *terraform.Attribute, block *terraform.Block) bool {
+func (e *evaluator) shouldDeferForEachExpansion(forEachAttr *terraform.Attribute) bool {
 	// Check if the for_each references a local value
 	for _, ref := range forEachAttr.AllReferences() {
 		if ref.BlockType().Name() == "locals" {
