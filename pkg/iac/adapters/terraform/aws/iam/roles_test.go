@@ -1,7 +1,6 @@
 package iam
 
 import (
-	"fmt"
 	"sort"
 	"strings"
 	"testing"
@@ -380,8 +379,32 @@ data "aws_partition" "current" {}
 	}
 }
 
-func Test_attachmentCountForEachMap(t *testing.T) {
-	source := `
+// validateLambdaEcsKeys validates that attachment references contain both lambda and ecs-tasks keys
+func validateLambdaEcsKeys(t *testing.T, attachmentRefs []string) {
+	hasLambda := false
+	hasEcs := false
+	for _, ref := range attachmentRefs {
+		if strings.Contains(ref, "lambda") {
+			hasLambda = true
+		}
+		if strings.Contains(ref, "ecs-tasks") {
+			hasEcs = true
+		}
+	}
+	if !hasLambda || !hasEcs {
+		t.Errorf("expected attachment refs to include both lambda and ecs-tasks keys, got %v", attachmentRefs)
+	}
+}
+
+func Test_forEachReferences(t *testing.T) {
+	tests := []struct {
+		name          string
+		terraform     string
+		expectedCount int
+	}{
+		{
+			name: "computed local with for_each map",
+			terraform: `
 locals {
   platform_role_principals = {
     lambda    = "lambda.amazonaws.com"
@@ -432,66 +455,12 @@ resource "aws_iam_role_policy_attachment" "administrative_policy_attachment" {
   for_each   = local.platform_roles
   role       = each.value.role
   policy_arn = aws_iam_policy.administrative_policy.arn
-}
-`
-
-	modules := tftestutil.CreateModulesFromSource(t, source, ".tf")
-	attachments := modules.GetResourcesByType("aws_iam_role_policy_attachment")
-
-	// Debug output - let's see what's actually happening
-	fmt.Printf("DEBUG: Total resources found: %d\n", len(attachments))
-	for i, attachment := range attachments {
-		fmt.Printf("DEBUG: Attachment %d: %s\n", i, attachment.Reference().String())
-		fmt.Printf("  - FullName: %s\n", attachment.FullName())
-		fmt.Printf("  - TypeLabel: %s\n", attachment.TypeLabel())
-		fmt.Printf("  - NameLabel: %s\n", attachment.NameLabel())
-		if key := attachment.Reference().RawKey(); !key.IsNull() && key.IsKnown() {
-			fmt.Printf("  - Key: %s (%s)\n", key.GoString(), key.Type().GoString())
-		}
-	}
-
-	// Also check all blocks to see what's available
-	allBlocks := modules.GetBlocks()
-	fmt.Printf("\nDEBUG: All blocks:\n")
-	for i, block := range allBlocks {
-		if strings.Contains(block.Reference().String(), "platform") {
-			fmt.Printf("  Block %d: %s (%s)\n", i, block.Reference().String(), block.Type())
-		}
-	}
-
-	var attachmentRefs []string
-	for _, a := range attachments {
-		attachmentRefs = append(attachmentRefs, a.Reference().String())
-	}
-
-	// Expected attachment keys (they will include the map key)
-	expectedCount := 2
-
-	sort.Strings(attachmentRefs)
-
-	if len(attachments) != expectedCount {
-		t.Fatalf("expected %d policy attachments, got %d: %v", expectedCount, len(attachments), attachmentRefs)
-	}
-
-	// Additional sanity check: ensure both map keys appear once
-	hasLambda := false
-	hasEcs := false
-	for _, ref := range attachmentRefs {
-		if strings.Contains(ref, "lambda") {
-			hasLambda = true
-		}
-		if strings.Contains(ref, "ecs-tasks") {
-			hasEcs = true
-		}
-	}
-	if !hasLambda || !hasEcs {
-		t.Fatalf("expected attachment refs to include both lambda and ecs-tasks keys, got %v", attachmentRefs)
-	}
-}
-
-func Test_simpleForEachReference(t *testing.T) {
-	// Test 1: Simple for_each with direct reference - this should work
-	source1 := `
+}`,
+			expectedCount: 2,
+		},
+		{
+			name: "direct for_each reference",
+			terraform: `
 locals {
   roles = {
     lambda    = "lambda.amazonaws.com"
@@ -508,21 +477,12 @@ resource "aws_iam_role_policy_attachment" "test" {
   for_each = aws_iam_role.platform_role
   role     = each.value.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-}`
-
-	modules1 := tftestutil.CreateModulesFromSource(t, source1, ".tf")
-	attachments1 := modules1.GetResourcesByType("aws_iam_role_policy_attachment")
-
-	fmt.Printf("Test 1 - Direct reference - Attachments found: %d\n", len(attachments1))
-	for i, attachment := range attachments1 {
-		fmt.Printf("  %d: %s\n", i, attachment.Reference().String())
-		if key := attachment.Reference().RawKey(); !key.IsNull() && key.IsKnown() {
-			fmt.Printf("     Key: %s\n", key.GoString())
-		}
-	}
-
-	// Test 2: for_each with computed local (the problematic case)
-	source2 := `
+}`,
+			expectedCount: 2,
+		},
+		{
+			name: "for_each with computed local reference",
+			terraform: `
 locals {
   role_principals = {
     lambda    = "lambda.amazonaws.com"
@@ -548,29 +508,41 @@ resource "aws_iam_role_policy_attachment" "test" {
   for_each = local.platform_roles
   role     = each.value.role
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-}`
-
-	modules2 := tftestutil.CreateModulesFromSource(t, source2, ".tf")
-	attachments2 := modules2.GetResourcesByType("aws_iam_role_policy_attachment")
-
-	fmt.Printf("\nTest 2 - Computed local - Attachments found: %d\n", len(attachments2))
-	for i, attachment := range attachments2 {
-		fmt.Printf("  %d: %s\n", i, attachment.Reference().String())
-		if key := attachment.Reference().RawKey(); !key.IsNull() && key.IsKnown() {
-			fmt.Printf("     Key: %s\n", key.GoString())
-		}
+}`,
+			expectedCount: 2,
+		},
 	}
 
-	// Let's also examine the local.platform_roles value
-	allBlocks := modules2.GetBlocks()
-	for _, block := range allBlocks {
-		if block.Type() == "locals" {
-			for _, attr := range block.GetAttributes() {
-				if attr.Name() == "platform_roles" {
-					fmt.Printf("\nlocal.platform_roles value: %s\n", attr.Value().GoString())
-					fmt.Printf("local.platform_roles type: %s\n", attr.Value().Type().GoString())
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			modules := tftestutil.CreateModulesFromSource(t, test.terraform, ".tf")
+			attachments := modules.GetResourcesByType("aws_iam_role_policy_attachment")
+
+			// Debug output for troubleshooting
+			t.Logf("Total resources found: %d", len(attachments))
+			for i, attachment := range attachments {
+				t.Logf("Attachment %d: %s", i, attachment.Reference().String())
+				t.Logf("  - FullName: %s", attachment.FullName())
+				t.Logf("  - TypeLabel: %s", attachment.TypeLabel())
+				t.Logf("  - NameLabel: %s", attachment.NameLabel())
+				if key := attachment.Reference().RawKey(); !key.IsNull() && key.IsKnown() {
+					t.Logf("  - Key: %s (%s)", key.GoString(), key.Type().GoString())
 				}
 			}
-		}
+
+			var attachmentRefs []string
+			for _, a := range attachments {
+				attachmentRefs = append(attachmentRefs, a.Reference().String())
+			}
+
+			sort.Strings(attachmentRefs)
+
+			if len(attachments) != test.expectedCount {
+				t.Fatalf("expected %d policy attachments, got %d: %v", test.expectedCount, len(attachments), attachmentRefs)
+			}
+
+			// Validate that both lambda and ecs-tasks keys are present
+			validateLambdaEcsKeys(t, attachmentRefs)
+		})
 	}
 }
