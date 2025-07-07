@@ -118,6 +118,16 @@ func TestReportWriter_Sarif(t *testing.T) {
 											},
 											"precision":         "very-high",
 											"security-severity": "7.5",
+											"cvss-vector": map[string]any{
+												"nvd": map[string]any{
+													"V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+													"V3Score":  9.8,
+												},
+												"redhat": map[string]any{
+													"V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+													"V3Score":  7.5,
+												},
+											},
 										},
 										Help: &sarif.MultiformatMessageString{
 											Text:     lo.ToPtr("Vulnerability CVE-2020-0001\nSeverity: HIGH\nPackage: foo\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)\nbaz"),
@@ -244,6 +254,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 											},
 											"precision":         "very-high",
 											"security-severity": "8.0",
+											"cvss-vector":       nil,
 										},
 										Help: &sarif.MultiformatMessageString{
 											Text:     lo.ToPtr("Misconfiguration KSV001\nType: Kubernetes Security Check\nSeverity: HIGH\nCheck: Image tag ':latest' used\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)\n"),
@@ -267,6 +278,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 											},
 											"precision":         "very-high",
 											"security-severity": "9.5",
+											"cvss-vector":       nil,
 										},
 										Help: &sarif.MultiformatMessageString{
 											Text:     lo.ToPtr("Misconfiguration KSV002\nType: Kubernetes Security Check\nSeverity: CRITICAL\nCheck: SYS_ADMIN capability added\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)\n"),
@@ -384,6 +396,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 											},
 											"precision":         "very-high",
 											"security-severity": "9.5",
+											"cvss-vector":       nil,
 										},
 										Help: &sarif.MultiformatMessageString{
 											Text:     lo.ToPtr("Secret AWS Secret Access Key\nSeverity: CRITICAL\nMatch: 'AWS_secret_KEY'=\"****************************************\""),
@@ -477,6 +490,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 											},
 											"precision":         "very-high",
 											"security-severity": "8.0",
+											"cvss-vector":       nil,
 										},
 									},
 								},
@@ -659,6 +673,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 											},
 											"precision":         "very-high",
 											"security-severity": "8.0",
+											"cvss-vector":       nil,
 										},
 									},
 								},

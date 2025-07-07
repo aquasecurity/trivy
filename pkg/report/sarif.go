@@ -13,6 +13,7 @@ import (
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"golang.org/x/xerrors"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -67,6 +68,7 @@ type sarifData struct {
 	locationMessage  string
 	message          string
 	cvssScore        string
+	cvssVector       dbTypes.VendorCVSS
 	locations        []location
 }
 
@@ -96,6 +98,7 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 			},
 			"precision":         "very-high",
 			"security-severity": data.cvssScore,
+			"cvss-vector":       data.cvssVector,
 		})
 	if data.url != nil && data.url.String() != "" {
 		r.WithHelpURI(data.url.String())
@@ -163,6 +166,7 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 				vulnerabilityId:  vuln.VulnerabilityID,
 				severity:         vuln.Severity,
 				cvssScore:        getCVSSScore(vuln),
+				cvssVector:       vuln.CVSS,
 				url:              toUri(vuln.PrimaryURL),
 				resourceClass:    res.Class,
 				artifactLocation: toUri(path),
