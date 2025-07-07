@@ -21,16 +21,17 @@ jobs:
         run: go install tool # GOBIN is added to the PATH by the setup-go action
 
       - name: Check if SPDX exceptions are up-to-date
+        id: exceptions_check
         run: |
           mage spdx:updateLicenseExceptions
           if [ -n "$(git status --porcelain)" ]; then
             echo "Run 'mage spdx:updateLicenseExceptions' and push it"
-            exit 1
-          fi        
+            echo "send_notify=true" >> $GITHUB_OUTPUT
+          fi
 
       - name: Microsoft Teams Notification
         uses: Skitionek/notify-microsoft-teams@e7a2493ac87dad8aa7a62f079f295e54ff511d88
-        if: failure()
+        if: steps.exceptions_check.outputs.send_notify == 'true'
         with:
           webhook_url: ${{ secrets.TRIVY_MSTEAMS_WEBHOOK }}
           needs: ${{ toJson(needs) }}
