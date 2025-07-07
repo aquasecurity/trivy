@@ -1,0 +1,210 @@
+/* glass_v2 */
+
+.glass_v2 {
+	position: relative;
+	min-width: 100px;
+	min-height: 100px;
+	border-radius: 20px;
+	border: 1px solid rgba(#ffffff, 0.15);
+	padding: 2em;
+	background: 
+		linear-gradient(235deg, rgba($aq-royal-blue, 0.18), rgba($aq-royal-blue, 0) 33%), 
+		linear-gradient(45deg, rgba($aq-neon-blue, 0.18), rgba($aq-neon-blue, 0) 33%), 
+		linear-gradient(rgba($aq-trivy-dark, 0.45));
+	backdrop-filter: blur(12px);
+	box-shadow: 
+		rgba($aq-neon-blue, 0.08) 0px 8px 12px -6px, 
+		rgba($aq-neon-blue, 0.12) 0px 16px 24px -10px,
+		inset 0 1px 0 rgba($aq-royal-blue, 0.4),
+		inset 1px 0 0 rgba($aq-royal-blue, 0.3),
+		inset 0 0 0 0.5px rgba(#ffffff, 0.1);
+
+	//top-right shine effect
+	&::before {
+		content: "";
+		pointer-events: none;
+		position: absolute;
+		right: -1px;
+		top: -1px;
+		width: 50%;
+		height: 50%;
+		border-radius: 0;
+		border-top-right-radius: inherit;
+		border-bottom-left-radius: inherit;
+		border: 1px solid transparent;
+		z-index: 1;
+		background: conic-gradient(
+			from -45deg at center in oklch,
+			transparent 8%, 
+			rgba($aq-royal-blue, 0.5), 
+			transparent 45%
+		) border-box;
+		mask: 
+			linear-gradient(transparent), 
+			linear-gradient(black);
+		mask-repeat: no-repeat;
+		mask-clip: padding-box, border-box;
+		mask-composite: subtract;
+	}
+
+	//bottom-left shine effect
+	&::after {
+		content: "";
+		pointer-events: none;
+		position: absolute;
+		left: -1px;
+		bottom: -1px;
+		width: 25%;
+		height: 25%;
+		border-radius: 0;
+		border-top-right-radius: inherit;
+		border-bottom-left-radius: inherit;
+		border: 1px solid transparent;
+		z-index: 1;
+		background: conic-gradient(
+			from 135deg at center in oklch,
+			transparent 15%, 
+			rgba($aq-neon-blue, 0.15), 
+			transparent 30%
+		) border-box;
+		mask: 
+			linear-gradient(transparent), 
+			linear-gradient(black);
+		mask-repeat: no-repeat;
+		mask-clip: padding-box, border-box;
+		mask-composite: subtract;
+	}
+
+	.glow_topright {
+		pointer-events: none;
+		position: absolute;
+		right: -12px;
+		top: -12px;
+		width: 40%;
+		height: 40%;
+		border-top-right-radius: 20px;
+		border-bottom-left-radius: 20px;
+		border: 12px solid transparent;
+		opacity: 0.7;
+		filter: blur(8px) saturate(1.2) brightness(0.7);
+		mix-blend-mode: plus-lighter;
+		z-index: 3;
+
+		&::before {
+			content: "";
+			position: absolute;
+			inset: 0;
+			border: inherit;
+			border-radius: inherit;
+			background: conic-gradient(
+				from -45deg at center in oklch,
+				transparent 5%, 
+				rgba($aq-royal-blue, 0.4), 
+				transparent 40%
+			) border-box;
+			mask: 
+				linear-gradient(transparent), 
+				linear-gradient(black);
+			mask-repeat: no-repeat;
+			mask-clip: padding-box, border-box;
+			mask-composite: subtract;
+		}
+
+		&::after {
+			content: "";
+			position: absolute;
+			inset: -3px;
+			border: 18px solid transparent;
+			border-radius: 25px;
+			z-index: 4;
+			opacity: 0.5;
+			background: conic-gradient(
+				from -45deg at center in oklch,
+				transparent 8%, 
+				rgba($aq-royal-blue, 0.6), 
+				transparent 35%
+			) border-box;
+			mask: 
+				linear-gradient(transparent), 
+				linear-gradient(black);
+			mask-repeat: no-repeat;
+			mask-clip: padding-box, border-box;
+			mask-composite: subtract;
+		}
+	}
+
+	//bottom-left glow
+	.glow_bottomleft {
+		pointer-events: none;
+		position: absolute;
+		left: -4px;
+		bottom: -4px;
+		width: 20%;
+		height: 20%;
+		border-top-right-radius: 15px;
+		border-bottom-left-radius: 15px;
+		border: 4px solid transparent;
+		opacity: 0.2;
+		filter: blur(6px) saturate(1.0) brightness(0.4);
+		mix-blend-mode: plus-lighter;
+		z-index: 3;
+
+		&::before {
+			content: "";
+			position: absolute;
+			inset: 0;
+			border: inherit;
+			border-radius: inherit;
+			background: conic-gradient(
+				from 135deg at center in oklch,
+				transparent 12%, 
+				rgba($aq-neon-blue, 0.15), 
+				transparent 28%
+			) border-box;
+			mask: 
+				linear-gradient(transparent), 
+				linear-gradient(black);
+			mask-repeat: no-repeat;
+			mask-clip: padding-box, border-box;
+			mask-composite: subtract;
+		}
+
+		&::after {
+			content: "";
+			position: absolute;
+			inset: -1px;
+			border: 6px solid transparent;
+			border-radius: 18px;
+			z-index: 4;
+			opacity: 0.15;
+			background: conic-gradient(
+				from 135deg at center in oklch,
+				transparent 15%, 
+				rgba($aq-neon-blue, 0.25), 
+				transparent 25%
+			) border-box;
+			mask: 
+				linear-gradient(transparent), 
+				linear-gradient(black);
+			mask-repeat: no-repeat;
+			mask-clip: padding-box, border-box;
+			mask-composite: subtract;
+		}
+	} //glow_bottomleft
+
+
+&.light_glass {
+	background: 
+		linear-gradient(235deg, rgba(#ffffff, 0.6), rgba(#ffffff, 0.3) 33%),
+		linear-gradient(45deg, rgba(#ffffff, 0.7), rgba(#ffffff, 0.20) 33%),
+		linear-gradient(rgba(#ffffff, 0.25));
+
+	border: 1px solid rgba(#ffffff, 0.3);
+	color: $aq-blue-abyss;
+}
+
+
+
+
+
+} //glass_v2
