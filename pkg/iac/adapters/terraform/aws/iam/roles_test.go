@@ -1,6 +1,7 @@
 package iam
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 	"testing"
@@ -437,6 +438,27 @@ resource "aws_iam_role_policy_attachment" "administrative_policy_attachment" {
 	modules := tftestutil.CreateModulesFromSource(t, source, ".tf")
 	attachments := modules.GetResourcesByType("aws_iam_role_policy_attachment")
 
+	// Debug output - let's see what's actually happening
+	fmt.Printf("DEBUG: Total resources found: %d\n", len(attachments))
+	for i, attachment := range attachments {
+		fmt.Printf("DEBUG: Attachment %d: %s\n", i, attachment.Reference().String())
+		fmt.Printf("  - FullName: %s\n", attachment.FullName())
+		fmt.Printf("  - TypeLabel: %s\n", attachment.TypeLabel())
+		fmt.Printf("  - NameLabel: %s\n", attachment.NameLabel())
+		if key := attachment.Reference().RawKey(); !key.IsNull() && key.IsKnown() {
+			fmt.Printf("  - Key: %s (%s)\n", key.GoString(), key.Type().GoString())
+		}
+	}
+
+	// Also check all blocks to see what's available
+	allBlocks := modules.GetBlocks()
+	fmt.Printf("\nDEBUG: All blocks:\n")
+	for i, block := range allBlocks {
+		if strings.Contains(block.Reference().String(), "platform") {
+			fmt.Printf("  Block %d: %s (%s)\n", i, block.Reference().String(), block.Type())
+		}
+	}
+
 	var attachmentRefs []string
 	for _, a := range attachments {
 		attachmentRefs = append(attachmentRefs, a.Reference().String())
@@ -464,5 +486,91 @@ resource "aws_iam_role_policy_attachment" "administrative_policy_attachment" {
 	}
 	if !hasLambda || !hasEcs {
 		t.Fatalf("expected attachment refs to include both lambda and ecs-tasks keys, got %v", attachmentRefs)
+	}
+}
+
+func Test_simpleForEachReference(t *testing.T) {
+	// Test 1: Simple for_each with direct reference - this should work
+	source1 := `
+locals {
+  roles = {
+    lambda    = "lambda.amazonaws.com"
+    ecs-tasks = "ecs-tasks.amazonaws.com"
+  }
+}
+
+resource "aws_iam_role" "platform_role" {
+  for_each = local.roles
+  name     = "platform-${each.key}"
+}
+
+resource "aws_iam_role_policy_attachment" "test" {
+  for_each = aws_iam_role.platform_role
+  role     = each.value.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}`
+
+	modules1 := tftestutil.CreateModulesFromSource(t, source1, ".tf")
+	attachments1 := modules1.GetResourcesByType("aws_iam_role_policy_attachment")
+
+	fmt.Printf("Test 1 - Direct reference - Attachments found: %d\n", len(attachments1))
+	for i, attachment := range attachments1 {
+		fmt.Printf("  %d: %s\n", i, attachment.Reference().String())
+		if key := attachment.Reference().RawKey(); !key.IsNull() && key.IsKnown() {
+			fmt.Printf("     Key: %s\n", key.GoString())
+		}
+	}
+
+	// Test 2: for_each with computed local (the problematic case)
+	source2 := `
+locals {
+  role_principals = {
+    lambda    = "lambda.amazonaws.com"
+    ecs-tasks = "ecs-tasks.amazonaws.com"
+  }
+}
+
+resource "aws_iam_role" "platform_role" {
+  for_each = local.role_principals
+  name     = "platform-${each.key}"
+}
+
+locals {
+  platform_roles = {
+    for role_key, role_res in aws_iam_role.platform_role :
+    role_key => {
+      role = role_res.name
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "test" {
+  for_each = local.platform_roles
+  role     = each.value.role
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}`
+
+	modules2 := tftestutil.CreateModulesFromSource(t, source2, ".tf")
+	attachments2 := modules2.GetResourcesByType("aws_iam_role_policy_attachment")
+
+	fmt.Printf("\nTest 2 - Computed local - Attachments found: %d\n", len(attachments2))
+	for i, attachment := range attachments2 {
+		fmt.Printf("  %d: %s\n", i, attachment.Reference().String())
+		if key := attachment.Reference().RawKey(); !key.IsNull() && key.IsKnown() {
+			fmt.Printf("     Key: %s\n", key.GoString())
+		}
+	}
+
+	// Let's also examine the local.platform_roles value
+	allBlocks := modules2.GetBlocks()
+	for _, block := range allBlocks {
+		if block.Type() == "locals" {
+			for _, attr := range block.GetAttributes() {
+				if attr.Name() == "platform_roles" {
+					fmt.Printf("\nlocal.platform_roles value: %s\n", attr.Value().GoString())
+					fmt.Printf("local.platform_roles type: %s\n", attr.Value().Type().GoString())
+				}
+			}
+		}
 	}
 }

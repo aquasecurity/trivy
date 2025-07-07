@@ -142,6 +142,14 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	e.blocks = e.expandBlocks(e.blocks)
 	e.blocks = e.expandBlocks(e.blocks)
 
+	// Re-evaluate locals after all expansions to ensure computed locals
+	// that depend on expanded resources get the correct values
+	e.ctx.Replace(e.getValuesByBlockType("locals"), "local")
+
+	// Final expansion round to handle any previously deferred for_each blocks
+	// that now have correct local values
+	e.blocks = e.expandBlockForEaches(e.blocks)
+
 	// rootModule is initialized here, but not fully evaluated until all submodules are evaluated.
 	// Initializing it up front to keep the module hierarchy of parents correct.
 	rootModule := terraform.NewModule(e.projectRootPath, e.modulePath, e.blocks, e.ignores)
@@ -309,7 +317,7 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks) terraform.Bloc
 
 		forEachAttr := block.GetAttribute("for_each")
 
-		if forEachAttr.IsNil() || block.IsExpanded() || !isBlockSupportsForEachMetaArgument(block) {
+		if forEachAttr.IsNil() || block.IsExpanded() || !isBlockSupportsForEachMetaArgument(block) || e.shouldDeferForEachExpansion(forEachAttr, block) {
 			forEachFiltered = append(forEachFiltered, block)
 			continue
 		}
@@ -545,7 +553,8 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 			}
 			values[b.Label()] = val
 		case "locals", "moved", "import":
-			maps.Copy(values, b.Values().AsValueMap())
+			localValues := b.Values().AsValueMap()
+			maps.Copy(values, localValues)
 		case "provider", "module", "check":
 			if b.Label() == "" {
 				continue
@@ -558,7 +567,7 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 
 			// Data blocks should all be loaded into the top level 'values'
 			// object. The hierarchy of the map is:
-			//  values = map[<type>]map[<name>] =
+			//  values = map[<type>]map[<n>] =
 			//              Block -> Block's attributes as a cty.Object
 			//              Tuple(Block) -> Instances of the block
 			//              Object(Block) -> Field values are instances of the block
@@ -597,12 +606,16 @@ func (e *evaluator) getResources() map[string]cty.Value {
 			typeValues = make(map[string]cty.Value)
 			values[ref.TypeLabel()] = typeValues
 		}
-		typeValues[ref.NameLabel()] = blockInstanceValues(b, typeValues, b.Values())
+
+		instanceVal := blockInstanceValues(b, typeValues, b.Values())
+		typeValues[ref.NameLabel()] = instanceVal
 	}
 
-	return lo.MapValues(values, func(v map[string]cty.Value, _ string) cty.Value {
+	result := lo.MapValues(values, func(v map[string]cty.Value, _ string) cty.Value {
 		return cty.ObjectVal(v)
 	})
+
+	return result
 }
 
 // blockInstanceValues returns a cty.Value containing the values of the block instances.
@@ -639,4 +652,53 @@ func blockInstanceValues(b *terraform.Block, typeValues map[string]cty.Value, va
 
 func isForEachKey(key cty.Value) bool {
 	return key.Type().Equals(cty.Number) || key.Type().Equals(cty.String)
+}
+
+func (e *evaluator) shouldDeferForEachExpansion(forEachAttr *terraform.Attribute, block *terraform.Block) bool {
+	// Check if the for_each references a local value
+	for _, ref := range forEachAttr.AllReferences() {
+		if ref.BlockType().Name() == "locals" {
+			// Get the local value from context
+			localName := ref.NameLabel()
+			if localVal := e.ctx.Get("local", localName); localVal != cty.NilVal && localVal.IsKnown() {
+				// Check if this local contains unresolved dynamic values or looks like
+				// it was computed from a single resource object instead of an expanded collection
+				if e.localHasDynamicValues(localVal) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func (e *evaluator) localHasDynamicValues(localVal cty.Value) bool {
+	if !localVal.Type().IsObjectType() {
+		return false
+	}
+
+	valueMap := localVal.AsValueMap()
+	if valueMap == nil {
+		return false
+	}
+
+	// Check if the local contains DynamicVal which indicates unresolved references
+	for _, val := range valueMap {
+		if val.Type() == cty.DynamicPseudoType {
+			return true
+		}
+
+		// If it's an object, check recursively for dynamic values
+		if val.Type().IsObjectType() {
+			if subMap := val.AsValueMap(); subMap != nil {
+				for _, subVal := range subMap {
+					if subVal.Type() == cty.DynamicPseudoType {
+						return true
+					}
+				}
+			}
+		}
+	}
+
+	return false
 }
