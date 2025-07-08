@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	multierror "github.com/hashicorp/go-multierror"
+	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -24,6 +24,8 @@ var imageSourceFuncs = map[types.ImageSource]imageSourceFunc{
 }
 
 func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOptions) (types.Image, func(), error) {
+	ctx = log.WithContextPrefix(ctx, log.PrefixContainerImage)
+	
 	if len(opt.ImageSources) == 0 {
 		return nil, func() {}, xerrors.New("no image sources supplied")
 	}
@@ -42,13 +44,14 @@ func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOpt
 	for _, src := range opt.ImageSources {
 		trySrc, ok := imageSourceFuncs[src]
 		if !ok {
-			log.Warn("Unknown image source", log.String("source", string(src)))
+			log.WarnContext(ctx, "Unknown image source", log.String("source", string(src)))
 			continue
 		}
 
 		img, cleanup, err := trySrc(ctx, imageName, ref, opt)
 		if err == nil {
 			// Return v1.Image if the image is found
+			log.DebugContext(ctx, "Image found", log.String("image", imageName), log.String("source", string(src)))
 			return img, cleanup, nil
 		}
 		err = multierror.Prefix(err, fmt.Sprintf("%s error:", src))
