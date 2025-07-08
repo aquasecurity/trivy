@@ -118,7 +118,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 											},
 											"precision":         "very-high",
 											"security-severity": "7.5",
-											"cvss-vector": map[string]any{
+											"cvss": map[string]any{
 												"nvd": map[string]any{
 													"V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
 													"V3Score":  9.8,
@@ -254,7 +254,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 											},
 											"precision":         "very-high",
 											"security-severity": "8.0",
-											"cvss-vector":       nil,
+											"cvss":              nil,
 										},
 										Help: &sarif.MultiformatMessageString{
 											Text:     lo.ToPtr("Misconfiguration KSV001\nType: Kubernetes Security Check\nSeverity: HIGH\nCheck: Image tag ':latest' used\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)\n"),
@@ -278,7 +278,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 											},
 											"precision":         "very-high",
 											"security-severity": "9.5",
-											"cvss-vector":       nil,
+											"cvss":              nil,
 										},
 										Help: &sarif.MultiformatMessageString{
 											Text:     lo.ToPtr("Misconfiguration KSV002\nType: Kubernetes Security Check\nSeverity: CRITICAL\nCheck: SYS_ADMIN capability added\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)\n"),
@@ -396,7 +396,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 											},
 											"precision":         "very-high",
 											"security-severity": "9.5",
-											"cvss-vector":       nil,
+											"cvss":              nil,
 										},
 										Help: &sarif.MultiformatMessageString{
 											Text:     lo.ToPtr("Secret AWS Secret Access Key\nSeverity: CRITICAL\nMatch: 'AWS_secret_KEY'=\"****************************************\""),
@@ -490,7 +490,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 											},
 											"precision":         "very-high",
 											"security-severity": "8.0",
-											"cvss-vector":       nil,
+											"cvss":              nil,
 										},
 									},
 								},
@@ -673,7 +673,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 											},
 											"precision":         "very-high",
 											"security-severity": "8.0",
-											"cvss-vector":       nil,
+											"cvss":              nil,
 										},
 									},
 								},

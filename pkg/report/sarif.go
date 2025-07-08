@@ -98,7 +98,7 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 			},
 			"precision":         "very-high",
 			"security-severity": data.cvssScore,
-			"cvss-vector":       data.cvssVector,
+			"cvss":              data.cvssVector,
 		})
 	if data.url != nil && data.url.String() != "" {
 		r.WithHelpURI(data.url.String())
