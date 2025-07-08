@@ -2,7 +2,7 @@ name: Temporary workflow to validate the configuration
 on:
   workflow_dispatch:
     inputs:
-      trivy_version:
+      version:
         description: 'Trivy version to update'
         required: true
         type: string
@@ -22,4 +22,4 @@ jobs:
           gh workflow run update_version.yml \
             --repo aquasecurity/trivy-telemetry \
             --ref main \
-            --field trivy_version=${{ github.event.inputs.trivy_version }}
+            --field version=${{ github.event.inputs.version }}
