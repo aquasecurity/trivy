@@ -85,3 +85,32 @@ jobs:
           # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
           # This allows the created PR to trigger tests and other workflows
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+
+  # `trigger-version-update` triggers the `update_version` workflow in the `trivy-telemetry` repository
+  # and the trivy-downloads repository.
+  trigger-version-update:
+    needs: deploy-packages
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Trigger update_version workflow in trivy-telemetry
+        env:
+          # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
+          # This allows triggering workflows in other repositories
+          GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+        run: |
+          gh workflow run update_version.yml \
+            --repo aquasecurity/trivy-telemetry \
+            --ref main \
+            --field version=${{ github.ref_name }}
+
+      - name: Trigger update_version workflow in trivy-downloads
+        env:
+          # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
+          # This allows triggering workflows in other repositories
+          GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+        run: |
+          gh workflow run update_version.yml \
+            --repo aquasecurity/trivy-downloads \
+            --ref main \
+            --field version=${{ github.ref_name }} \
+            --field artifact=trivy
