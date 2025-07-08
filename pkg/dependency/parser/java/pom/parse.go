@@ -70,8 +70,7 @@ type Parser struct {
 
 func NewParser(filePath string, opts ...option) *Parser {
 	o := &options{
-		offline:            false,
-		releaseRemoteRepos: []string{centralURL}, // Maven doesn't use central repository for snapshot dependencies
+		offline: false,
 	}
 
 	for _, opt := range opts {

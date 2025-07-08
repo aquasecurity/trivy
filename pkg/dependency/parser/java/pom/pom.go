@@ -174,10 +174,19 @@ func (p *pom) repositories(settings settings) ([]string, []string) {
 func (p *pom) effectiveRepositories(settings *settings) []repository {
 	logger := log.WithPrefix("pom")
 
-	repositories := p.content.Repositories.Repository
-	if repositories == nil {
-		repositories = make([]repository, 0)
+	var repositories []repository
+
+	// Always add the central repository
+	central := repository{
+		ID:       "central",
+		Name:     "Maven Central Repository",
+		URL:      centralURL,
+		Releases: repositoryPolicy{Enabled: true},
 	}
+	repositories = append(repositories, central)
+
+	// Add repositories defined in the pom.xml file
+	repositories = append(repositories, p.content.Repositories.Repository...)
 
 	if settings != nil {
 		// Add repositories defined for profiles in the pom.xml file

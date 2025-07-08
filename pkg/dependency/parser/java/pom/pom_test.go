@@ -20,8 +20,8 @@ func Test_effectiveRepositories(t *testing.T) {
 					Repositories: repositories{
 						Repository: []repository{
 							{
-								ID:       "central",
-								URL:      "http://repo.maven.apache.org/maven2",
+								ID:       "my-repo",
+								URL:      "http://myrepo",
 								Releases: repositoryPolicy{Enabled: true},
 							},
 						},
@@ -32,7 +32,38 @@ func Test_effectiveRepositories(t *testing.T) {
 			wantRepositories: []repository{
 				{
 					ID:       "central",
-					URL:      "http://repo.maven.apache.org/maven2",
+					Name:     "Maven Central Repository",
+					URL:      "https://repo.maven.apache.org/maven2/",
+					Releases: repositoryPolicy{Enabled: true},
+				},
+				{
+					ID:       "my-repo",
+					URL:      "http://myrepo",
+					Releases: repositoryPolicy{Enabled: true},
+				},
+			},
+		},
+		{
+			name: "pom with central repository - no settings",
+			pom: &pom{
+				content: &pomXML{
+					Repositories: repositories{
+						Repository: []repository{
+							{
+								ID:       "central",
+								URL:      "http://repo.maven.apache.org/maven2/will/be/overridden/by/internal/central",
+								Releases: repositoryPolicy{Enabled: true},
+							},
+						},
+					},
+				},
+			},
+			settings: nil,
+			wantRepositories: []repository{
+				{
+					ID:       "central",
+					Name:     "Maven Central Repository",
+					URL:      "https://repo.maven.apache.org/maven2/",
 					Releases: repositoryPolicy{Enabled: true},
 				},
 			},
@@ -74,6 +105,12 @@ func Test_effectiveRepositories(t *testing.T) {
 			},
 			wantRepositories: []repository{
 				{
+					ID:       "central",
+					Name:     "Maven Central Repository",
+					URL:      "https://repo.maven.apache.org/maven2/",
+					Releases: repositoryPolicy{Enabled: true},
+				},
+				{
 					ID:       "r1-releases",
 					URL:      "http://mirror1",
 					Releases: repositoryPolicy{Enabled: true},
@@ -93,8 +130,78 @@ func Test_effectiveRepositories(t *testing.T) {
 			pom: &pom{
 				content: &pomXML{},
 			},
-			settings:         nil,
-			wantRepositories: []repository{},
+			settings: nil,
+			wantRepositories: []repository{
+				{
+					ID:       "central",
+					Name:     "Maven Central Repository",
+					URL:      "https://repo.maven.apache.org/maven2/",
+					Releases: repositoryPolicy{Enabled: true},
+				},
+			},
+		},
+		{
+			name: "pom without repositories - settings with only central mirror",
+			pom: &pom{
+				content: &pomXML{},
+			},
+			settings: &settings{
+				ActiveProfiles: []string{"default"},
+				Mirrors: []Mirror{
+					{ID: "mirror-central", MirrorOf: "central", URL: "http://mirror1"},
+				},
+			},
+			wantRepositories: []repository{
+				{
+					ID:        "central",
+					Name:      "Maven Central Repository",
+					URL:       "http://mirror1",
+					Releases:  repositoryPolicy{Enabled: true},
+					Snapshots: repositoryPolicy{Enabled: true},
+				},
+			},
+		},
+		{
+			name: "pom without repositories - settings with only central mirror asterisk match",
+			pom: &pom{
+				content: &pomXML{},
+			},
+			settings: &settings{
+				ActiveProfiles: []string{"default"},
+				Mirrors: []Mirror{
+					{ID: "mirror-central", MirrorOf: "*", URL: "http://mirror2"},
+				},
+			},
+			wantRepositories: []repository{
+				{
+					ID:        "central",
+					Name:      "Maven Central Repository",
+					URL:       "http://mirror2",
+					Releases:  repositoryPolicy{Enabled: true},
+					Snapshots: repositoryPolicy{Enabled: true},
+				},
+			},
+		},
+		{
+			name: "pom without repositories - settings with only mirror but not for central",
+			pom: &pom{
+				content: &pomXML{},
+			},
+			settings: &settings{
+				ActiveProfiles: []string{"default"},
+				Mirrors: []Mirror{
+					{ID: "mirror-central", MirrorOf: "*,!central", URL: "http://mirror3"},
+				},
+			},
+			wantRepositories: []repository{
+				{
+					ID:        "central",
+					Name:      "Maven Central Repository",
+					URL:       "https://repo.maven.apache.org/maven2/",
+					Releases:  repositoryPolicy{Enabled: true},
+					Snapshots: repositoryPolicy{Enabled: false},
+				},
+			},
 		},
 		{
 			name: "pom with repository in profile - settings with different active profile",
@@ -117,7 +224,14 @@ func Test_effectiveRepositories(t *testing.T) {
 			settings: &settings{
 				ActiveProfiles: []string{"not-this-one"},
 			},
-			wantRepositories: []repository{},
+			wantRepositories: []repository{
+				{
+					ID:       "central",
+					Name:     "Maven Central Repository",
+					URL:      "https://repo.maven.apache.org/maven2/",
+					Releases: repositoryPolicy{Enabled: true},
+				},
+			},
 		},
 		{
 			name: "pom having repository with releases and snapshots disabled - no settings",
@@ -137,6 +251,12 @@ func Test_effectiveRepositories(t *testing.T) {
 			},
 			settings: nil,
 			wantRepositories: []repository{
+				{
+					ID:       "central",
+					Name:     "Maven Central Repository",
+					URL:      "https://repo.maven.apache.org/maven2/",
+					Releases: repositoryPolicy{Enabled: true},
+				},
 				{
 					ID:        "disabled-repo",
 					URL:       "http://disabled",
@@ -167,6 +287,12 @@ func Test_effectiveRepositories(t *testing.T) {
 			},
 			wantRepositories: []repository{
 				{
+					ID:       "central",
+					Name:     "Maven Central Repository",
+					URL:      "https://repo.maven.apache.org/maven2/",
+					Releases: repositoryPolicy{Enabled: true},
+				},
+				{
 					ID:       "settings-repo",
 					URL:      "http://from-settings",
 					Releases: repositoryPolicy{Enabled: true},
@@ -194,6 +320,12 @@ func Test_effectiveRepositories(t *testing.T) {
 				},
 			},
 			wantRepositories: []repository{
+				{
+					ID:       "central",
+					Name:     "Maven Central Repository",
+					URL:      "https://repo.maven.apache.org/maven2/",
+					Releases: repositoryPolicy{Enabled: true},
+				},
 				{
 					ID:       "real-repo",
 					URL:      "http://real",
@@ -224,6 +356,12 @@ func Test_effectiveRepositories(t *testing.T) {
 				},
 			},
 			wantRepositories: []repository{
+				{
+					ID:       "central",
+					Name:     "Maven Central Repository",
+					URL:      "https://repo.maven.apache.org/maven2/",
+					Releases: repositoryPolicy{Enabled: true},
+				},
 				{
 					ID:       "auto-repo",
 					URL:      "http://autodefault",
@@ -266,6 +404,12 @@ func Test_effectiveRepositories(t *testing.T) {
 				},
 			},
 			wantRepositories: []repository{
+				{
+					ID:       "central",
+					Name:     "Maven Central Repository",
+					URL:      "https://repo.maven.apache.org/maven2/",
+					Releases: repositoryPolicy{Enabled: true},
+				},
 				// Expecting the one from the pom to take precedence
 				{
 					ID:        "repo-with-same-id",
