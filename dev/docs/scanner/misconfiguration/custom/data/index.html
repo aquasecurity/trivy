@@ -2255,6 +2255,23 @@ You're not viewing the latest version of the documentation.
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    
+  
+    Data
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -2270,6 +2287,36 @@ You're not viewing the latest version of the documentation.
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#customizing-default-checks-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing default checks data
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -7910,6 +7957,25 @@ You're not viewing the latest version of the documentation.
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#customizing-default-checks-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing default checks data
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -7934,10 +8000,10 @@ You're not viewing the latest version of the documentation.
 
 
 <h1 id="custom-data">Custom Data<a class="headerlink" href="#custom-data" title="Permanent link">&para;</a></h1>
-<p>Custom checks may require additional data in order to make a resolution. You can pass arbitrary data files to Trivy to be used when evaluating rego checks using the <code>--data</code> flag. 
+<p>Custom checks may require additional data in order to make a resolution. You can pass arbitrary data files to Trivy to be used when evaluating rego checks using the <code>--config-data</code> flag. 
 Trivy recursively searches the specified data paths for JSON (<code>*.json</code>) and YAML (<code>*.yaml</code>) files.</p>
 <p>For example, consider an allowed list of resources that can be created. 
-Instead of hardcoding this information inside your policy, you can maintain the list in a separate file.</p>
+Instead of hardcoding this information inside your check, you can maintain the list in a separate file.</p>
 <p>Example data file:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">ports</span><span class="p">:</span>
@@ -7953,7 +8019,37 @@ Instead of hardcoding this information inside your policy, you can maintain the 
 ports := services.ports
 </code></pre></div>
 <p>Example loading the data file:</p>
-<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--config-check<span class="w"> </span>./checks<span class="w"> </span>--data<span class="w"> </span>./data<span class="w"> </span>--namespaces<span class="w"> </span>user<span class="w"> </span>./configs
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--config-check<span class="w"> </span>./checks<span class="w"> </span>--config-data<span class="w"> </span>./data<span class="w"> </span>--namespaces<span class="w"> </span>user<span class="w"> </span>./configs
+</code></pre></div>
+<h2 id="customizing-default-checks-data">Customizing default checks data<a class="headerlink" href="#customizing-default-checks-data" title="Permanent link">&para;</a></h2>
+<p>Some checks allow you to customize the default data values. To do this, simply pass a data file via <code>--config-data</code> (see the section above).</p>
+<p>Table of supported data for customizing and their paths:</p>
+<table>
+<thead>
+<tr>
+<th>Check ID</th>
+<th>Data path</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/aquasecurity/trivy-checks/blob/db2e49de5ff5fd5c8e5cd702b7891f9d9e971a65/checks/kubernetes/uses_untrusted_registry.rego#L76-L78">KSV0125</a></td>
+<td><code>ksv0125.trusted_registries</code></td>
+<td>List of trusted container registries</td>
+</tr>
+<tr>
+<td><a href="https://github.com/aquasecurity/trivy-checks/blob/db2e49de5ff5fd5c8e5cd702b7891f9d9e971a65/checks/docker/leaked_secrets.rego#L135">DS031</a></td>
+<td><code>ds031.included_envs</code></td>
+<td>List of allowed environment variables (merged with defaults)</td>
+</tr>
+</tbody>
+</table>
+<p>Example of overriding trusted registries for <code>KSV0125</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">ksv0125</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">trusted_registries</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;my-registry.example.com&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;registry.internal.local&quot;</span>
 </code></pre></div>
 
 
