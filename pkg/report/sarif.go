@@ -13,7 +13,6 @@ import (
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"golang.org/x/xerrors"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -44,6 +43,17 @@ var (
 	pathRegex = regexp.MustCompile(`(?P<path>.+?)(?:\s*\((?:.*?)\).*?)?$`)
 )
 
+type CVSSData struct {
+	CVSSV2Vector string  `json:"cvssv2_vector,omitempty"`
+	CVSSV2Score  float64 `json:"cvssv2_score,omitempty"`
+
+	CVSSV3Vector string  `json:"cvssv3_vector,omitempty"`
+	CVSSV3Score  float64 `json:"cvssv3_score,omitempty"`
+
+	CVSSV40Vector string  `json:"cvssv40_vector,omitempty"`
+	CVSSV40Score  float64 `json:"cvssv40_score,omitempty"`
+}
+
 // SarifWriter implements result Writer
 type SarifWriter struct {
 	Output        io.Writer
@@ -68,7 +78,7 @@ type sarifData struct {
 	locationMessage  string
 	message          string
 	cvssScore        string
-	cvssVector       dbTypes.VendorCVSS
+	cvssData         CVSSData
 	locations        []location
 }
 
@@ -90,16 +100,7 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 		WithDefaultConfiguration(&sarif.ReportingConfiguration{
 			Level: toSarifErrorLevel(data.severity),
 		}).
-		WithProperties(sarif.Properties{
-			"tags": []string{
-				data.title,
-				"security",
-				data.severity,
-			},
-			"precision":         "very-high",
-			"security-severity": data.cvssScore,
-			"cvss":              data.cvssVector,
-		})
+		WithProperties(makeProperties(data))
 	if data.url != nil && data.url.String() != "" {
 		r.WithHelpURI(data.url.String())
 	}
@@ -166,7 +167,7 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 				vulnerabilityId:  vuln.VulnerabilityID,
 				severity:         vuln.Severity,
 				cvssScore:        getCVSSScore(vuln),
-				cvssVector:       vuln.CVSS,
+				cvssData:         getCVSSData(vuln),
 				url:              toUri(vuln.PrimaryURL),
 				resourceClass:    res.Class,
 				artifactLocation: toUri(path),
@@ -428,6 +429,21 @@ func getCVSSScore(vuln types.DetectedVulnerability) string {
 	return severityToScore(vuln.Severity)
 }
 
+func getCVSSData(vuln types.DetectedVulnerability) CVSSData {
+	if cvss, ok := vuln.CVSS[vuln.SeveritySource]; ok {
+		return CVSSData{
+			CVSSV2Score:   cvss.V2Score,
+			CVSSV2Vector:  cvss.V2Vector,
+			CVSSV3Score:   cvss.V3Score,
+			CVSSV3Vector:  cvss.V3Vector,
+			CVSSV40Score:  cvss.V40Score,
+			CVSSV40Vector: cvss.V40Vector,
+		}
+	}
+
+	return CVSSData{}
+}
+
 func severityToScore(severity string) string {
 	switch severity {
 	case "CRITICAL":
@@ -441,4 +457,22 @@ func severityToScore(severity string) string {
 	default:
 		return "0.0"
 	}
+}
+
+func makeProperties(data *sarifData) sarif.Properties {
+	properties := sarif.Properties{
+		"tags": []string{
+			data.title,
+			"security",
+			data.severity,
+		},
+		"precision":         "very-high",
+		"security-severity": data.cvssScore,
+	}
+
+	if data.cvssData != (CVSSData{}) {
+		properties["cvss"] = data.cvssData
+	}
+
+	return properties
 }

@@ -28,16 +28,10 @@
               },
               "properties": {
                 "cvss": {
-                  "nvd": {
-                    "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
-                    "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
-                    "V2Score": 5,
-                    "V3Score": 5.3
-                  },
-                  "redhat": {
-                    "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N",
-                    "V3Score": 4.8
-                  }
+                  "cvssv2_vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+                  "cvssv2_score": 5,
+                  "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+                  "cvssv3_score": 5.3
                 },
                 "precision": "very-high",
                 "security-severity": "5.3",
@@ -67,16 +61,10 @@
               },
               "properties": {
                 "cvss": {
-                  "nvd": {
-                    "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
-                    "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
-                    "V2Score": 5,
-                    "V3Score": 5.3
-                  },
-                  "redhat": {
-                    "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N",
-                    "V3Score": 4.8
-                  }
+                  "cvssv2_vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+                  "cvssv2_score": 5,
+                  "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+                  "cvssv3_score": 5.3
                 },
                 "precision": "very-high",
                 "security-severity": "5.3",
