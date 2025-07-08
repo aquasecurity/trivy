@@ -1,0 +1,25 @@
+name: Temporary workflow to validate the configuration 
+on:
+  workflow_dispatch:
+    inputs:
+      trivy_version:
+        description: 'Trivy version to update'
+        required: true
+        type: string
+        default: 'v0.64.1'    
+  pull_request:
+    branches:
+        - main
+
+jobs:
+  trigger-telemetry-update:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Trigger update_version workflow in trivy-telemetry
+        env:
+          GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+        run: |
+          gh workflow run update_version.yml \
+            --repo aquasecurity/trivy-telemetry \
+            --ref main \
+            --field trivy_version=${{ github.event.inputs.trivy_version }}
