@@ -38,6 +38,24 @@
                 </repository>
             </repositories>
         </profile>
+        <profile>
+            <id>default</id>
+            <repositories>
+                <repository>
+                    <id>mycompany-default-releases</id>
+                    <url>https://mycompany.example.com/repository/default-releases</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
     </profiles>
     <mirrors>
         <mirror>

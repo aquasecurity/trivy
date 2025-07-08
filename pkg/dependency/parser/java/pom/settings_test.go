@@ -162,17 +162,7 @@ func Test_ReadSettings(t *testing.T) {
 				LocalRepository: "",
 				Servers: []Server{
 					{
-						ID:       "mycompany-maven-central-mirror",
-						Username: "myusername",
-						Password: "mypassword",
-					},
-					{
 						ID:       "mycompany-internal-releases",
-						Username: "mypassword",
-						Password: "mypassword",
-					},
-					{
-						ID:       "mycompany-maven-central-mirror",
 						Username: "mypassword",
 						Password: "mypassword",
 					},
@@ -186,16 +176,6 @@ func Test_ReadSettings(t *testing.T) {
 					{
 						ID: "mycompany",
 						Repositories: []repository{
-							{
-								ID:  "mycompany-maven-central-mirror",
-								URL: "https://mycompany.example.com/repository/maven-central-mirror",
-								Releases: repositoryPolicy{
-									Enabled: false,
-								},
-								Snapshots: repositoryPolicy{
-									Enabled: false,
-								},
-							},
 							{
 								ID:  "mycompany-internal-releases",
 								URL: "https://mycompany.example.com/repository/internal-releases",
@@ -241,17 +221,7 @@ func Test_ReadSettings(t *testing.T) {
 				LocalRepository: "",
 				Servers: []Server{
 					{
-						ID:       "mycompany-maven-central-mirror",
-						Username: "myusername",
-						Password: "mypassword",
-					},
-					{
 						ID:       "mycompany-internal-releases",
-						Username: "mypassword",
-						Password: "mypassword",
-					},
-					{
-						ID:       "mycompany-maven-central-mirror",
 						Username: "mypassword",
 						Password: "mypassword",
 					},
@@ -270,16 +240,6 @@ func Test_ReadSettings(t *testing.T) {
 					{
 						ID: "mycompany",
 						Repositories: []repository{
-							{
-								ID:  "mycompany-maven-central-mirror",
-								URL: "https://mycompany.example.com/repository/maven-central-mirror",
-								Releases: repositoryPolicy{
-									Enabled: false,
-								},
-								Snapshots: repositoryPolicy{
-									Enabled: false,
-								},
-							},
 							{
 								ID:  "mycompany-internal-releases",
 								URL: "https://mycompany.example.com/repository/internal-releases",
@@ -326,6 +286,22 @@ func Test_ReadSettings(t *testing.T) {
 								},
 							},
 						},
+					},
+					{
+						ID: "default",
+						Repositories: []repository{
+							{
+								ID:  "mycompany-default-releases",
+								URL: "https://mycompany.example.com/repository/default-releases",
+								Releases: repositoryPolicy{
+									Enabled: true,
+								},
+								Snapshots: repositoryPolicy{
+									Enabled: false,
+								},
+							},
+						},
+						Activation: activation{ActiveByDefault: true},
 					},
 				},
 				ActiveProfiles: []string{"mycompany", "test-cicd"},
