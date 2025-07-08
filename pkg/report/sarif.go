@@ -44,14 +44,14 @@ var (
 )
 
 type CVSSData struct {
-	CVSSV2Vector string  `json:"cvssv2_vector,omitempty"`
-	CVSSV2Score  float64 `json:"cvssv2_score,omitempty"`
+	CVSSV2Vector string
+	CVSSV2Score  float64
 
-	CVSSV3Vector string  `json:"cvssv3_vector,omitempty"`
-	CVSSV3Score  float64 `json:"cvssv3_score,omitempty"`
+	CVSSV3Vector string
+	CVSSV3Score  float64
 
-	CVSSV40Vector string  `json:"cvssv40_vector,omitempty"`
-	CVSSV40Score  float64 `json:"cvssv40_score,omitempty"`
+	CVSSV40Vector string
+	CVSSV40Score  float64
 }
 
 // SarifWriter implements result Writer
@@ -100,7 +100,7 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 		WithDefaultConfiguration(&sarif.ReportingConfiguration{
 			Level: toSarifErrorLevel(data.severity),
 		}).
-		WithProperties(makeProperties(data))
+		WithProperties(MakeProperties(data.title, data.severity, data.cvssScore, data.cvssData))
 	if data.url != nil && data.url.String() != "" {
 		r.WithHelpURI(data.url.String())
 	}
@@ -459,19 +459,39 @@ func severityToScore(severity string) string {
 	}
 }
 
-func makeProperties(data *sarifData) sarif.Properties {
+func MakeProperties(title, severity, cvssScore string, cvssData CVSSData) sarif.Properties {
 	properties := sarif.Properties{
 		"tags": []string{
-			data.title,
+			title,
 			"security",
-			data.severity,
+			severity,
 		},
 		"precision":         "very-high",
-		"security-severity": data.cvssScore,
+		"security-severity": cvssScore,
 	}
 
-	if data.cvssData != (CVSSData{}) {
-		properties["cvss"] = data.cvssData
+	// Add CVSS v2
+	if cvssData.CVSSV2Vector != "" {
+		properties["cvssv2_vector"] = cvssData.CVSSV2Vector
+	}
+	if cvssData.CVSSV2Score != 0 {
+		properties["cvssv2_score"] = cvssData.CVSSV2Score
+	}
+
+	// Add CVSS v3
+	if cvssData.CVSSV3Vector != "" {
+		properties["cvssv3_vector"] = cvssData.CVSSV3Vector
+	}
+	if cvssData.CVSSV3Score != 0 {
+		properties["cvssv3_score"] = cvssData.CVSSV3Score
+	}
+
+	// Add CVSS v4
+	if cvssData.CVSSV40Vector != "" {
+		properties["cvssv40_vector"] = cvssData.CVSSV40Vector
+	}
+	if cvssData.CVSSV40Score != 0 {
+		properties["cvssv40_score"] = cvssData.CVSSV40Score
 	}
 
 	return properties

@@ -118,10 +118,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 											},
 											"precision":         "very-high",
 											"security-severity": "7.5",
-											"cvss": map[string]any{
-												"cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
-												"cvssv3_score":  7.5,
-											},
+											"cvssv3_vector":     "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+											"cvssv3_score":      7.5,
 										},
 										Help: &sarif.MultiformatMessageString{
 											Text:     lo.ToPtr("Vulnerability CVE-2020-0001\nSeverity: HIGH\nPackage: foo\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)\nbaz"),
@@ -789,5 +787,119 @@ func TestToPathUri(t *testing.T) {
 		if got != test.output {
 			t.Errorf("toPathUri(%q) got %q, wanted %q", test.input, got, test.output)
 		}
+	}
+}
+
+func TestMakePropertiesMarshal(t *testing.T) {
+	tests := []struct {
+		name      string
+		title     string
+		severity  string
+		cvssScore string
+		cvssData  report.CVSSData
+		expected  string
+	}{
+		{
+			name:      "no CVSS data",
+			title:     "test",
+			severity:  "HIGH",
+			cvssScore: "5.0",
+			cvssData:  report.CVSSData{},
+			expected: `{
+				"precision": "very-high",
+				"security-severity": "5.0",
+				"tags": ["test", "security", "HIGH"]
+			}`,
+		},
+		{
+			name:      "only CVSS v2",
+			title:     "test",
+			severity:  "CRITICAL",
+			cvssScore: "4.0",
+			cvssData: report.CVSSData{
+				CVSSV2Vector: "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+				CVSSV2Score:  5.0,
+			},
+			expected: `{
+				"cvssv2_score": 5,
+				"cvssv2_vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+				"precision": "very-high",
+				"security-severity": "4.0",
+				"tags": ["test", "security", "CRITICAL"]
+			}`,
+		},
+		{
+			name:      "only CVSS v3",
+			title:     "test",
+			severity:  "CRITICAL",
+			cvssScore: "9.8",
+			cvssData: report.CVSSData{
+				CVSSV3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+				CVSSV3Score:  9.8,
+			},
+			expected: `{
+				"cvssv3_score": 9.8,
+				"cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+				"precision": "very-high",
+				"security-severity": "9.8",
+				"tags": ["test", "security", "CRITICAL"]
+			}`,
+		},
+		{
+			name:      "only CVSS v4",
+			title:     "test",
+			severity:  "LOW",
+			cvssScore: "3.5",
+			cvssData: report.CVSSData{
+				CVSSV40Vector: "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+				CVSSV40Score:  3.5,
+			},
+			expected: `{
+				"cvssv40_score": 3.5,
+				"cvssv40_vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+				"precision": "very-high",
+				"security-severity": "3.5",
+				"tags": ["test", "security", "LOW"]
+			}`,
+		},
+		{
+			name:      "all CVSS versions",
+			title:     "test",
+			severity:  "HIGH",
+			cvssScore: "8.1",
+			cvssData: report.CVSSData{
+				CVSSV2Vector:  "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+				CVSSV2Score:   7.5,
+				CVSSV3Vector:  "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+				CVSSV3Score:   9.8,
+				CVSSV40Vector: "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+				CVSSV40Score:  9.3,
+			},
+			expected: `{
+				"cvssv2_score": 7.5,
+				"cvssv2_vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+				"cvssv3_score": 9.8,
+				"cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+				"cvssv40_score": 9.3,
+				"cvssv40_vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+				"precision": "very-high",
+				"security-severity": "8.1",
+				"tags": ["test", "security", "HIGH"]
+			}`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := report.MakeProperties(tt.title, tt.severity, tt.cvssScore, tt.cvssData)
+
+			actualJSON, err := json.Marshal(result)
+			require.NoError(t, err)
+
+			var expectedJSON bytes.Buffer
+			err = json.Compact(&expectedJSON, []byte(tt.expected))
+			require.NoError(t, err)
+			assert.JSONEq(t, expectedJSON.String(), string(actualJSON))
+		})
 	}
 }
