@@ -24,15 +24,15 @@ require (
 	github.com/aquasecurity/testdocker v0.0.0-20250616060700-ba6845ac6d17
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-checks v1.11.3-0.20250623233426-059ccd3c6ae8
-	github.com/aquasecurity/trivy-db v0.0.0-20250529093513-a12dfc204b6e
+	github.com/aquasecurity/trivy-db v0.0.0-20250627124416-ca81c496a932
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
 	github.com/aquasecurity/trivy-kubernetes v0.9.0
 	github.com/aws/aws-sdk-go-v2 v1.36.5
 	github.com/aws/aws-sdk-go-v2/config v1.29.17
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.70
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.225.2
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.230.0
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.45.1
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.81.0
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.83.0
 	github.com/aws/smithy-go v1.22.4
 	github.com/bitnami/go-version v0.0.0-20231130084017-bb00604d650c
 	github.com/bmatcuk/doublestar/v4 v4.8.1
@@ -41,8 +41,8 @@ require (
 	github.com/containerd/containerd/v2 v2.1.3
 	github.com/containerd/platforms v1.0.0-rc.1
 	github.com/distribution/reference v0.6.0
-	github.com/docker/cli v28.2.2+incompatible
-	github.com/docker/docker v28.2.2+incompatible
+	github.com/docker/cli v28.3.1+incompatible
+	github.com/docker/docker v28.3.1+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/docker/go-units v0.5.0
 	github.com/fatih/color v1.18.0
@@ -63,7 +63,7 @@ require (
 	github.com/hashicorp/go-version v1.7.0
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/hashicorp/hc-install v0.9.2
-	github.com/hashicorp/hcl/v2 v2.23.0
+	github.com/hashicorp/hcl/v2 v2.24.0
 	github.com/hashicorp/terraform-exec v0.23.0
 	github.com/in-toto/in-toto-golang v0.9.0
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
@@ -84,9 +84,9 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/mitchellh/mapstructure v1.5.0
-	github.com/moby/buildkit v0.23.1
+	github.com/moby/buildkit v0.23.2
 	github.com/moby/docker-image-spec v1.3.1
-	github.com/open-policy-agent/opa v1.5.1
+	github.com/open-policy-agent/opa v1.6.0
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.1.1
 	github.com/openvex/discovery v0.1.1-0.20240802171711-7c54efc57553
@@ -115,7 +115,7 @@ require (
 	github.com/xlab/treeprint v1.2.0
 	github.com/zclconf/go-cty v1.16.3
 	github.com/zclconf/go-cty-yaml v1.1.0
-	go.etcd.io/bbolt v1.4.1
+	go.etcd.io/bbolt v1.4.2
 	golang.org/x/crypto v0.39.0
 	golang.org/x/mod v0.25.0
 	golang.org/x/net v0.41.0
@@ -129,7 +129,7 @@ require (
 	helm.sh/helm/v3 v3.18.3
 	k8s.io/api v0.33.2
 	k8s.io/utils v0.0.0-20241104100929-3ea5e8cea738
-	modernc.org/sqlite v1.37.0
+	modernc.org/sqlite v1.38.0
 )
 
 require (
@@ -248,7 +248,7 @@ require (
 	github.com/go-openapi/strfmt v0.23.0 // indirect
 	github.com/go-openapi/swag v0.23.1 // indirect
 	github.com/go-openapi/validate v0.24.0 // indirect
-	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
+	github.com/go-viper/mapstructure/v2 v2.3.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/goccy/go-yaml v1.15.23 // indirect
 	github.com/gofrs/uuid v4.3.1+incompatible // indirect
@@ -323,7 +323,7 @@ require (
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/nozzle/throttler v0.0.0-20180817012639-2ea982251481 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
-	github.com/oklog/ulid/v2 v2.1.0 // indirect
+	github.com/oklog/ulid/v2 v2.1.1 // indirect
 	github.com/opencontainers/runtime-spec v1.2.1 // indirect
 	github.com/opencontainers/selinux v1.12.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
@@ -347,7 +347,7 @@ require (
 	github.com/rubenv/sql-migrate v1.8.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sagikazarmark/locafero v0.7.0 // indirect
-	github.com/samber/oops v1.16.1 // indirect
+	github.com/samber/oops v1.18.1 // indirect
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1 // indirect
 	github.com/sassoftware/relic v7.2.1+incompatible // indirect
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
@@ -375,7 +375,7 @@ require (
 	github.com/transparency-dev/merkle v0.0.2 // indirect
 	github.com/ulikunitz/xz v0.5.12 // indirect
 	github.com/vbatts/tar-split v0.12.1 // indirect
-	github.com/vektah/gqlparser/v2 v2.5.26 // indirect
+	github.com/vektah/gqlparser/v2 v2.5.28 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
@@ -408,8 +408,8 @@ require (
 	golang.org/x/tools v0.34.0 // indirect
 	google.golang.org/api v0.228.0 // indirect
 	google.golang.org/genproto v0.0.0-20250303144028-a0af3efb3deb // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20250303144028-a0af3efb3deb // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250313205543-e70fdf4c4cb4 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250519155744-55703ea1f237 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250519155744-55703ea1f237 // indirect
 	google.golang.org/grpc v1.72.2 // indirect
 	gopkg.in/cheggaaa/pb.v1 v1.0.28 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
@@ -425,7 +425,7 @@ require (
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20250318190949-c8a335a9a2ff // indirect
 	k8s.io/kubectl v0.33.1 // indirect
-	modernc.org/libc v1.62.1 // indirect
+	modernc.org/libc v1.65.10 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 	mvdan.cc/sh/v3 v3.11.0 // indirect

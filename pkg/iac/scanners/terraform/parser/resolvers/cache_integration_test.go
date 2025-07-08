@@ -4,7 +4,6 @@ package resolvers_test
 
 import (
 	"context"
-	"crypto/tls"
 	"io/fs"
 	"net/http"
 	"net/http/httptest"
@@ -18,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/gittest"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
 type moduleResolver interface {
@@ -73,9 +73,7 @@ func TestResolveModuleFromCache(t *testing.T) {
 			opts: resolvers.Options{
 				Source: registryAddress + "/terraform-aws-modules/s3-bucket/aws",
 				Client: &http.Client{
-					Transport: &http.Transport{
-						TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-					},
+					Transport: xhttp.NewTransport(xhttp.Options{Insecure: true}),
 				},
 			},
 			firstResolver:  resolvers.Registry,
@@ -87,9 +85,7 @@ func TestResolveModuleFromCache(t *testing.T) {
 			opts: resolvers.Options{
 				Source: registryAddress + "/terraform-aws-modules/s3-bucket/aws//modules/object",
 				Client: &http.Client{
-					Transport: &http.Transport{
-						TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-					},
+					Transport: xhttp.NewTransport(xhttp.Options{Insecure: true}),
 				},
 			},
 			firstResolver:  resolvers.Registry,

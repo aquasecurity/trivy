@@ -190,6 +190,7 @@ trivy image [flags] IMAGE_NAME
                                             - govulndb
                                             - echo
                                             - minimos
+                                            - rootio
                                             - auto
                                            (default [auto])
 ```

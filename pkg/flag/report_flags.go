@@ -26,12 +26,13 @@ import (
 //	severity: HIGH,CRITICAL
 var (
 	FormatFlag = Flag[string]{
-		Name:       "format",
-		ConfigName: "format",
-		Shorthand:  "f",
-		Default:    string(types.FormatTable),
-		Values:     xstrings.ToStringSlice(types.SupportedFormats),
-		Usage:      "format",
+		Name:          "format",
+		ConfigName:    "format",
+		Shorthand:     "f",
+		Default:       string(types.FormatTable),
+		Values:        xstrings.ToStringSlice(types.SupportedFormats),
+		Usage:         "format",
+		TelemetrySafe: true,
 	}
 	ReportFormatFlag = Flag[string]{
 		Name:       "report",
@@ -41,7 +42,8 @@ var (
 			"all",
 			"summary",
 		},
-		Usage: "specify a report format for the output",
+		Usage:         "specify a report format for the output",
+		TelemetrySafe: true,
 	}
 	TemplateFlag = Flag[string]{
 		Name:       "template",
@@ -50,14 +52,16 @@ var (
 		Usage:      "output template",
 	}
 	DependencyTreeFlag = Flag[bool]{
-		Name:       "dependency-tree",
-		ConfigName: "dependency-tree",
-		Usage:      "[EXPERIMENTAL] show dependency origin tree of vulnerable packages",
+		Name:          "dependency-tree",
+		ConfigName:    "dependency-tree",
+		Usage:         "[EXPERIMENTAL] show dependency origin tree of vulnerable packages",
+		TelemetrySafe: true,
 	}
 	ListAllPkgsFlag = Flag[bool]{
-		Name:       "list-all-pkgs",
-		ConfigName: "list-all-pkgs",
-		Usage:      "output all packages in the JSON report regardless of vulnerability",
+		Name:          "list-all-pkgs",
+		ConfigName:    "list-all-pkgs",
+		Usage:         "output all packages in the JSON report regardless of vulnerability",
+		TelemetrySafe: true,
 	}
 	IgnoreFileFlag = Flag[string]{
 		Name:       "ignorefile",
@@ -71,14 +75,16 @@ var (
 		Usage:      "specify the Rego file path to evaluate each vulnerability",
 	}
 	ExitCodeFlag = Flag[int]{
-		Name:       "exit-code",
-		ConfigName: "exit-code",
-		Usage:      "specify exit code when any security issues are found",
+		Name:          "exit-code",
+		ConfigName:    "exit-code",
+		Usage:         "specify exit code when any security issues are found",
+		TelemetrySafe: true,
 	}
 	ExitOnEOLFlag = Flag[int]{
-		Name:       "exit-on-eol",
-		ConfigName: "exit-on-eol",
-		Usage:      "exit with the specified code when the OS reaches end of service/life",
+		Name:          "exit-on-eol",
+		ConfigName:    "exit-on-eol",
+		Usage:         "exit with the specified code when the OS reaches end of service/life",
+		TelemetrySafe: true,
 	}
 	OutputFlag = Flag[string]{
 		Name:       "output",
@@ -92,12 +98,13 @@ var (
 		Usage:      "[EXPERIMENTAL] output plugin arguments",
 	}
 	SeverityFlag = Flag[[]string]{
-		Name:       "severity",
-		ConfigName: "severity",
-		Shorthand:  "s",
-		Default:    dbTypes.SeverityNames,
-		Values:     dbTypes.SeverityNames,
-		Usage:      "severities of security issues to be displayed",
+		Name:          "severity",
+		ConfigName:    "severity",
+		Shorthand:     "s",
+		Default:       dbTypes.SeverityNames,
+		Values:        dbTypes.SeverityNames,
+		Usage:         "severities of security issues to be displayed",
+		TelemetrySafe: true,
 	}
 	ComplianceFlag = Flag[string]{
 		Name:       "compliance",
@@ -105,9 +112,10 @@ var (
 		Usage:      "compliance report to generate",
 	}
 	ShowSuppressedFlag = Flag[bool]{
-		Name:       "show-suppressed",
-		ConfigName: "scan.show-suppressed",
-		Usage:      "[EXPERIMENTAL] show suppressed vulnerabilities",
+		Name:          "show-suppressed",
+		ConfigName:    "scan.show-suppressed",
+		Usage:         "[EXPERIMENTAL] show suppressed vulnerabilities",
+		TelemetrySafe: true,
 	}
 	TableModeFlag = Flag[[]string]{
 		Name:       "table-mode",

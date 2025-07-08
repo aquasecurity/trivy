@@ -27,31 +27,35 @@ var (
 		Persistent: true,
 	}
 	QuietFlag = Flag[bool]{
-		Name:       "quiet",
-		ConfigName: "quiet",
-		Shorthand:  "q",
-		Usage:      "suppress progress bar and log output",
-		Persistent: true,
+		Name:          "quiet",
+		ConfigName:    "quiet",
+		Shorthand:     "q",
+		Usage:         "suppress progress bar and log output",
+		Persistent:    true,
+		TelemetrySafe: true,
 	}
 	DebugFlag = Flag[bool]{
-		Name:       "debug",
-		ConfigName: "debug",
-		Shorthand:  "d",
-		Usage:      "debug mode",
-		Persistent: true,
+		Name:          "debug",
+		ConfigName:    "debug",
+		Shorthand:     "d",
+		Usage:         "debug mode",
+		Persistent:    true,
+		TelemetrySafe: true,
 	}
 	InsecureFlag = Flag[bool]{
-		Name:       "insecure",
-		ConfigName: "insecure",
-		Usage:      "allow insecure server connections",
-		Persistent: true,
+		Name:          "insecure",
+		ConfigName:    "insecure",
+		Usage:         "allow insecure server connections",
+		Persistent:    true,
+		TelemetrySafe: true,
 	}
 	TimeoutFlag = Flag[time.Duration]{
-		Name:       "timeout",
-		ConfigName: "timeout",
-		Default:    time.Second * 300, // 5 mins
-		Usage:      "timeout",
-		Persistent: true,
+		Name:          "timeout",
+		ConfigName:    "timeout",
+		Default:       time.Second * 300, // 5 mins
+		Usage:         "timeout",
+		Persistent:    true,
+		TelemetrySafe: true,
 	}
 	CacheDirFlag = Flag[string]{
 		Name:       "cache-dir",

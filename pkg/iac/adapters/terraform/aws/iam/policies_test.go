@@ -402,6 +402,73 @@ data "aws_iam_policy_document" "policy" {
 				},
 			},
 		},
+		{
+			name: "policy is template with unknown part",
+			terraform: `variable "action" {
+ default = null
+}
+
+resource "aws_iam_policy" "test" {
+  name = "test"
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "${var.action}",
+                "s3:get*",
+                "s3:list*"
+            ],
+            "Resource": "*"
+        },
+         {
+            "Effect": "Allow",
+            "Action": [
+                "kinesis:DescribeStream",
+                "kinesis:GetRecords"
+            ],
+            "Resource": [
+                "${aws_kinesis_stream.stepfunction_ecs_kinesis_stream.arn}"
+            ]
+        }
+    ]
+}
+EOF
+}`,
+			expected: []iam.Policy{
+				{
+					Name: iacTypes.StringTest("test"),
+					Document: func() iam.Document {
+						builder := iamgo.NewPolicyBuilder().
+							WithStatement(
+								iamgo.NewStatementBuilder().
+									WithActions([]string{"__UNRESOLVED__", "s3:get*", "s3:list*"}).
+									WithResources([]string{"*"}).
+									WithEffect("Allow").
+									Build(),
+							).
+							WithStatement(
+								iamgo.NewStatementBuilder().
+									WithActions([]string{"kinesis:DescribeStream", "kinesis:GetRecords"}).
+									WithResources([]string{"__UNRESOLVED__"}).
+									WithEffect("Allow").
+									Build(),
+							).
+							WithVersion("2012-10-17")
+
+						return iam.Document{
+							Parsed:   builder.Build(),
+							Metadata: iacTypes.NewTestMetadata(),
+							IsOffset: false,
+							HasRefs:  true,
+						}
+					}(),
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {

@@ -18,7 +18,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name string
 		// testFiles contains path in testdata and path in OS
-		// e.g. tar.list => var/lib/dpkg/info/tar.list
+		// e.g. tar.md5sums => var/lib/dpkg/info/tar.md5sums
 		testFiles map[string]string
 		want      *analyzer.AnalysisResult
 		wantErr   bool
@@ -1372,7 +1372,9 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 						Packages: []types.Package{
 							{
 								ID: "apt@1.6.3ubuntu0.1", Name: "apt", Version: "1.6.3ubuntu0.1",
-								SrcName: "apt", SrcVersion: "1.6.3ubuntu0.1", Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>", Arch: "amd64"},
+								SrcName: "apt", SrcVersion: "1.6.3ubuntu0.1",
+								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>", Arch: "amd64",
+							},
 						},
 					},
 				},
@@ -1418,12 +1420,11 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "info list",
-			testFiles: map[string]string{"./testdata/tar.list": "var/lib/dpkg/info/tar.list"},
+			name:      "md5sums",
+			testFiles: map[string]string{"./testdata/tar.md5sums": "var/lib/dpkg/info/tar.md5sums"},
 			want: &analyzer.AnalysisResult{
 				SystemInstalledFiles: []string{
-					"/bin/tar",
-					"/etc/rmt",
+					"/usr/bin/tar",
 					"/usr/lib/mime/packages/tar",
 					"/usr/sbin/rmt-tar",
 					"/usr/sbin/tarcat",
@@ -1488,12 +1489,17 @@ func Test_dpkgAnalyzer_Required(t *testing.T) {
 		{
 			name:     "*.md5sums file in status dir",
 			filePath: "var/lib/dpkg/status.d/base-files.md5sums",
-			want:     false,
+			want:     true,
+		},
+		{
+			name:     "*.md5sums file in info dir",
+			filePath: "var/lib/dpkg/info/bash.md5sums",
+			want:     true,
 		},
 		{
 			name:     "list file",
 			filePath: "var/lib/dpkg/info/bash.list",
-			want:     true,
+			want:     false,
 		},
 		{
 			name:     "available file",
@@ -1502,7 +1508,7 @@ func Test_dpkgAnalyzer_Required(t *testing.T) {
 		},
 		{
 			name:     "sad path",
-			filePath: "var/lib/dpkg/status/bash.list",
+			filePath: "var/lib/dpkg/status/bash.md5sums",
 			want:     false,
 		},
 	}

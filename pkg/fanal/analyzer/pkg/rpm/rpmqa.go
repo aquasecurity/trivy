@@ -5,6 +5,7 @@ import (
 	"context"
 	"os"
 	"slices"
+	"strconv"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -50,6 +51,7 @@ func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r xio.ReadSeekerAt) ([]types.Packag
 	for scanner.Scan() {
 		line := scanner.Text()
 		var name, ver, rel, sourceRpm, arch string
+		var epoch int
 		// %{NAME}\t%{VERSION}-%{RELEASE}\t%{INSTALLTIME}\t%{BUILDTIME}\t%{VENDOR}\t(none)\t%{SIZE}\t%{ARCH}\t%{EPOCHNUM}\t%{SOURCERPM}
 		s := strings.Split(line, "\t")
 		if len(s) != 10 {
@@ -68,12 +70,18 @@ func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r xio.ReadSeekerAt) ([]types.Packag
 		if err != nil {
 			return nil, xerrors.Errorf("failed to split source rpm: %w", err)
 		}
+		epoch, err = strconv.Atoi(s[8])
+		if err != nil {
+			return nil, xerrors.Errorf("failed to parse epoch number (%s): %w", s[8], err)
+		}
 		pkgs = append(pkgs, types.Package{
 			Name:       name,
 			Version:    ver,
+			Epoch:      epoch,
 			Release:    rel,
 			Arch:       arch,
 			SrcName:    srcName,
+			SrcEpoch:   epoch,
 			SrcVersion: srcVer,
 			SrcRelease: srcRel,
 		})

@@ -67,6 +67,7 @@ jobs:
             distroless
             windows
             minimos
+            rootio
 
             # Languages
             ruby

@@ -168,6 +168,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
                                             - govulndb
                                             - echo
                                             - minimos
+                                            - rootio
                                             - auto
                                            (default [auto])
 ```

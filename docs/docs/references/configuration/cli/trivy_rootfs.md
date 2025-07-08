@@ -170,6 +170,7 @@ trivy rootfs [flags] ROOTDIR
                                             - govulndb
                                             - echo
                                             - minimos
+                                            - rootio
                                             - auto
                                            (default [auto])
 ```
