@@ -43,17 +43,6 @@ var (
 	pathRegex = regexp.MustCompile(`(?P<path>.+?)(?:\s*\((?:.*?)\).*?)?$`)
 )
 
-type CVSSData struct {
-	CVSSV2Vector string
-	CVSSV2Score  float64
-
-	CVSSV3Vector string
-	CVSSV3Score  float64
-
-	CVSSV40Vector string
-	CVSSV40Score  float64
-}
-
 // SarifWriter implements result Writer
 type SarifWriter struct {
 	Output        io.Writer
@@ -78,7 +67,7 @@ type sarifData struct {
 	locationMessage  string
 	message          string
 	cvssScore        string
-	cvssData         CVSSData
+	cvssData         map[string]any
 	locations        []location
 }
 
@@ -100,7 +89,7 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 		WithDefaultConfiguration(&sarif.ReportingConfiguration{
 			Level: toSarifErrorLevel(data.severity),
 		}).
-		WithProperties(MakeRuleProperties(data.title, data.severity, data.cvssScore, data.cvssData))
+		WithProperties(toProperties(data.title, data.severity, data.cvssScore, data.cvssData))
 	if data.url != nil && data.url.String() != "" {
 		r.WithHelpURI(data.url.String())
 	}
@@ -162,12 +151,13 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 			if vuln.PkgPath != "" {
 				path = ToPathUri(vuln.PkgPath, res.Class)
 			}
+			cvssData, cvssScore := toCVSSData(vuln)
 			sw.addSarifResult(&sarifData{
 				title:            "vulnerability",
 				vulnerabilityId:  vuln.VulnerabilityID,
 				severity:         vuln.Severity,
-				cvssScore:        getCVSSScore(vuln),
-				cvssData:         getCVSSData(vuln),
+				cvssScore:        cvssScore,
+				cvssData:         cvssData,
 				url:              toUri(vuln.PrimaryURL),
 				resourceClass:    res.Class,
 				artifactLocation: toUri(path),
@@ -419,29 +409,26 @@ func (sw *SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Pa
 	return locs
 }
 
-func getCVSSScore(vuln types.DetectedVulnerability) string {
-	// Take the vendor score
-	if cvss, ok := vuln.CVSS[vuln.SeveritySource]; ok {
-		return fmt.Sprintf("%.1f", cvss.V3Score)
-	}
+// toCVSSData extracts CVSS data from the vulnerability and returns it along with the score.
+// If CVSS V3 Score is not available, it returns an empty CVSSData struct and a score based on severity.
+func toCVSSData(vuln types.DetectedVulnerability) (map[string]any, string) {
+	score := severityToScore(vuln.Severity)
+	var data = make(map[string]any)
 
-	// Converts severity to score
-	return severityToScore(vuln.Severity)
-}
-
-func getCVSSData(vuln types.DetectedVulnerability) CVSSData {
 	if cvss, ok := vuln.CVSS[vuln.SeveritySource]; ok {
-		return CVSSData{
-			CVSSV2Score:   cvss.V2Score,
-			CVSSV2Vector:  cvss.V2Vector,
-			CVSSV3Score:   cvss.V3Score,
-			CVSSV3Vector:  cvss.V3Vector,
-			CVSSV40Score:  cvss.V40Score,
-			CVSSV40Vector: cvss.V40Vector,
+		data["cvssv2_vector"] = cvss.V2Vector
+		data["cvssv2_score"] = cvss.V2Score
+		data["cvssv3_vector"] = cvss.V3Vector
+		data["cvssv3_score"] = cvss.V3Score
+		data["cvssv40_vector"] = cvss.V40Vector
+		data["cvssv40_score"] = cvss.V40Score
+
+		if cvss.V3Score != 0 {
+			score = fmt.Sprintf("%.1f", cvss.V3Score)
 		}
 	}
 
-	return CVSSData{}
+	return data, score
 }
 
 func severityToScore(severity string) string {
@@ -459,7 +446,7 @@ func severityToScore(severity string) string {
 	}
 }
 
-func MakeRuleProperties(title, severity, cvssScore string, cvssData CVSSData) sarif.Properties {
+func toProperties(title, severity, cvssScore string, cvssData map[string]any) sarif.Properties {
 	properties := sarif.Properties{
 		"tags": []string{
 			title,
@@ -470,28 +457,18 @@ func MakeRuleProperties(title, severity, cvssScore string, cvssData CVSSData) sa
 		"security-severity": cvssScore,
 	}
 
-	// Add CVSS v2
-	if cvssData.CVSSV2Vector != "" {
-		properties["cvssv2_vector"] = cvssData.CVSSV2Vector
-	}
-	if cvssData.CVSSV2Score != 0 {
-		properties["cvssv2_score"] = cvssData.CVSSV2Score
-	}
-
-	// Add CVSS v3
-	if cvssData.CVSSV3Vector != "" {
-		properties["cvssv3_vector"] = cvssData.CVSSV3Vector
-	}
-	if cvssData.CVSSV3Score != 0 {
-		properties["cvssv3_score"] = cvssData.CVSSV3Score
-	}
-
-	// Add CVSS v4
-	if cvssData.CVSSV40Vector != "" {
-		properties["cvssv40_vector"] = cvssData.CVSSV40Vector
-	}
-	if cvssData.CVSSV40Score != 0 {
-		properties["cvssv40_score"] = cvssData.CVSSV40Score
+	for key, value := range cvssData {
+		switch v := value.(type) {
+		case string:
+			if v == "" {
+				continue
+			}
+		case float64:
+			if v == 0 {
+				continue
+			}
+		}
+		properties[key] = value
 	}
 
 	return properties
