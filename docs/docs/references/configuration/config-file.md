@@ -25,10 +25,6 @@ quiet: false
 # Same as '--timeout'
 timeout: 5m0s
 
-trace:
-  # Same as '--trace-http'
-  http: false
-
 ```
 ## Cache options
 

@@ -2,11 +2,9 @@ package flag
 
 import (
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -78,6 +76,7 @@ var (
 		Usage:         "[DANGEROUS] enable HTTP request/response trace logging (may expose sensitive data)",
 		Persistent:    true,
 		TelemetrySafe: true,
+		Internal:      true, // Hidden from help output, intended for maintainer debugging only
 	}
 )
 
@@ -157,13 +156,6 @@ func (f *GlobalFlagGroup) Bind(cmd *cobra.Command) error {
 func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 	// Keep TRIVY_NON_SSL for backward compatibility
 	insecure := f.Insecure.Value() || os.Getenv("TRIVY_NON_SSL") != ""
-
-	// Check for dangerous trace-http flag in CI environment
-	if f.TraceHTTP.Value() {
-		if ci, _ := strconv.ParseBool(os.Getenv("CI")); ci {
-			return xerrors.New("--trace-http is not allowed in CI environments due to security risks")
-		}
-	}
 
 	log.Debug("Cache dir", log.String("dir", f.CacheDir.Value()))
 
