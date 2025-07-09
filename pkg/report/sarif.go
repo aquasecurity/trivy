@@ -419,7 +419,7 @@ func toCVSSData(vuln types.DetectedVulnerability) (map[string]any, string) {
 		data["cvssv2_vector"] = cvss.V2Vector
 		data["cvssv2_score"] = cvss.V2Score
 		data["cvssv3_vector"] = cvss.V3Vector
-		data["cvssv3_score"] = cvss.V3Score
+		data["cvssv3_baseScore"] = cvss.V3Score
 		data["cvssv40_vector"] = cvss.V40Vector
 		data["cvssv40_score"] = cvss.V40Score
 

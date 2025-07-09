@@ -29,7 +29,7 @@
               "properties": {
                 "cvssv2_score": 5,
                 "cvssv2_vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
-                "cvssv3_score": 5.3,
+                "cvssv3_baseScore": 5.3,
                 "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
                 "precision": "very-high",
                 "security-severity": "5.3",
@@ -60,7 +60,7 @@
               "properties": {
                 "cvssv2_score": 5,
                 "cvssv2_vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
-                "cvssv3_score": 5.3,
+                "cvssv3_baseScore": 5.3,
                 "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
                 "precision": "very-high",
                 "security-severity": "5.3",
