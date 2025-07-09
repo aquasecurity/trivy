@@ -41,7 +41,7 @@ jobs:
         uses: golangci/golangci-lint-action@v7.0.0
         with:
           version: v2.1
-          args: --verbose ${{ github.base_ref && format('--new-from-merge-base=origin/{0} --whole-files', github.base_ref) || '' }}
+          args: --verbose
         if: matrix.operating-system == 'ubuntu-latest'
 
       - name: Check if linter failed
