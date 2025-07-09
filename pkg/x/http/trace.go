@@ -14,6 +14,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/google/go-containerregistry/pkg/v1/types"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
@@ -96,11 +97,15 @@ var (
 		"signature",
 		"oauth_token",
 	}
+
+	// Regex patterns for redaction
+	asteriskPattern = regexp.MustCompile(`\*+`)
 )
 
 type traceTransport struct {
-	inner  http.RoundTripper
-	writer io.Writer
+	inner         http.RoundTripper
+	writer        io.Writer
+	secretScanner secret.Scanner
 }
 
 // TraceOption is a functional option for traceTransport
@@ -116,8 +121,9 @@ func WithWriter(w io.Writer) TraceOption {
 // NewTraceTransport returns an http.RoundTripper that logs HTTP requests and responses
 func NewTraceTransport(inner http.RoundTripper, opts ...TraceOption) http.RoundTripper {
 	tt := &traceTransport{
-		inner:  inner,
-		writer: os.Stderr, // default
+		inner:         inner,
+		writer:        os.Stderr,              // default
+		secretScanner: secret.NewScanner(nil), // Use built-in rules
 	}
 
 	for _, opt := range opts {
@@ -130,7 +136,7 @@ func NewTraceTransport(inner http.RoundTripper, opts ...TraceOption) http.RoundT
 // RoundTrip implements http.RoundTripper with HTTP tracing
 func (tt *traceTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	// Dump and redact request
-	reqDump, err := dumpRequest(req)
+	reqDump, err := tt.dumpRequest(req)
 	if err != nil {
 		log.Debug("Failed to dump HTTP request", log.Err(err))
 	}
@@ -148,7 +154,7 @@ func (tt *traceTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 
 	// Dump and redact response
-	respDump, err := dumpResponse(resp)
+	respDump, err := tt.dumpResponse(resp)
 	if err != nil {
 		log.Debug("Failed to dump HTTP response", log.Err(err))
 	} else {
@@ -160,7 +166,7 @@ func (tt *traceTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 }
 
 // dumpRequest dumps and redacts sensitive information from the request
-func dumpRequest(req *http.Request) (string, error) {
+func (tt *traceTransport) dumpRequest(req *http.Request) (string, error) {
 	// Clone request to avoid modifying the original
 	reqClone := req.Clone(req.Context())
 
@@ -182,7 +188,7 @@ func dumpRequest(req *http.Request) (string, error) {
 		req.Body = io.NopCloser(bytes.NewReader(bodyBytes))
 
 		// Set redacted body on clone
-		redactedBody := redactBody(bodyBytes, req.Header.Get("Content-Type"))
+		redactedBody := tt.redactBody(bodyBytes, req.Header.Get("Content-Type"))
 		reqClone.Body = io.NopCloser(bytes.NewReader(redactedBody))
 		reqClone.ContentLength = int64(len(redactedBody))
 	}
@@ -197,7 +203,7 @@ func dumpRequest(req *http.Request) (string, error) {
 }
 
 // dumpResponse dumps and redacts sensitive information from the response
-func dumpResponse(resp *http.Response) (string, error) {
+func (tt *traceTransport) dumpResponse(resp *http.Response) (string, error) {
 	// Read response body
 	var bodyBytes []byte
 	if resp.Body != nil {
@@ -231,7 +237,7 @@ func dumpResponse(resp *http.Response) (string, error) {
 
 	// Set redacted body
 	if len(bodyBytes) > 0 {
-		redactedBody := redactBody(bodyBytes, resp.Header.Get("Content-Type"))
+		redactedBody := tt.redactBody(bodyBytes, resp.Header.Get("Content-Type"))
 		respClone.Body = io.NopCloser(bytes.NewReader(redactedBody))
 		respClone.ContentLength = int64(len(redactedBody))
 	}
@@ -274,8 +280,8 @@ func redactQueryParams(u *url.URL) *url.URL {
 	return cloned
 }
 
-// redactBody redacts sensitive information from request/response bodies
-func redactBody(body []byte, contentType string) []byte {
+// redactBody redacts sensitive information from request/response bodies using various methods including Trivy's secret scanner
+func (tt *traceTransport) redactBody(body []byte, contentType string) []byte {
 	// Check if body is too large
 	if len(body) > maxBodySize {
 		return []byte(fmt.Sprintf("<body too large: %d bytes>", len(body)))
@@ -286,8 +292,33 @@ func redactBody(body []byte, contentType string) []byte {
 		return []byte(redactedColor(binaryRedactText))
 	}
 
-	// Redact sensitive patterns in text content
+	// Start with the original content
 	redacted := string(body)
+
+	// First, use Trivy's secret scanner for detection
+	scanResult := tt.secretScanner.Scan(secret.ScanArgs{
+		FilePath: "http-request.txt",
+		Content:  body,
+		Binary:   false,
+	})
+
+	// If scanner found secrets, redact them
+	if len(scanResult.Findings) > 0 {
+		lines := strings.Split(redacted, "\n")
+		for _, finding := range scanResult.Findings {
+			for _, line := range finding.Code.Lines {
+				if line.IsCause && line.Number > 0 && line.Number <= len(lines) {
+					// Replace one or more * with <redacted> using regex
+					redactedLine := asteriskPattern.ReplaceAllString(line.Content, redactedColor(redactedText))
+					lines[line.Number-1] = redactedLine
+				}
+			}
+		}
+		redacted = strings.Join(lines, "\n")
+	}
+
+	// Apply additional pattern-based redactions
+	coloredRedactedText := redactedColor(redactedText)
 
 	// Handle JSON patterns
 	jsonPattern := regexp.MustCompile(`(?i)"(password|passwd|pwd|secret|token|api_key|apikey|access_token|client_secret|auth_token|private_key)"\s*:\s*"[^"]*"`)
@@ -295,9 +326,9 @@ func redactBody(body []byte, contentType string) []byte {
 		colonIndex := strings.Index(match, ":")
 		if colonIndex != -1 {
 			key := match[:colonIndex+1]
-			return key + ` "` + redactedColor(redactedText) + `"`
+			return key + ` "` + coloredRedactedText + `"`
 		}
-		return redactedColor(redactedText)
+		return coloredRedactedText
 	})
 
 	// Handle form data patterns
@@ -306,18 +337,14 @@ func redactBody(body []byte, contentType string) []byte {
 		equalIndex := strings.Index(match, "=")
 		if equalIndex != -1 {
 			key := match[:equalIndex+1]
-			return key + redactedColor(redactedText)
+			return key + coloredRedactedText
 		}
-		return redactedColor(redactedText)
+		return coloredRedactedText
 	})
-
-	// Handle private keys
-	privateKeyPattern := regexp.MustCompile(`-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----[\s\S]*?-----END (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----`)
-	redacted = privateKeyPattern.ReplaceAllString(redacted, redactedColor(redactedText))
 
 	// Handle Bearer tokens
 	bearerPattern := regexp.MustCompile(`(?i)Bearer\s+[A-Za-z0-9\-._~+/]+=*`)
-	redacted = bearerPattern.ReplaceAllString(redacted, redactedColor(redactedText))
+	redacted = bearerPattern.ReplaceAllString(redacted, coloredRedactedText)
 
 	return []byte(redacted)
 }

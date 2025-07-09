@@ -164,6 +164,48 @@ Content-Length: 0
 `,
 		},
 		{
+			name:   "redacts private keys detected by scanner",
+			method: "POST",
+			url:    "http://api.company.com/keys",
+			headers: map[string]string{
+				"Content-Type": "text/plain",
+			},
+			body: strings.NewReader(`-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA7WXkqw8EQOLGWVzsUJ7tAwVAV5zTW8V+O1KoZFpENWKDZlPU
+VwEiQxaZq8pQJbm2O9zKlMSU7J6PZpuBvb8ZUhxWz9SLKmzqZjIqI4Vg5UUrUpOo
+V9aVzqf8ZoMxLQGjCa8iGPp6r6qF5a+FGQ5z9b5x8y1dF3cJNmzGVqw6XlHzpQZJ
+z7YwWJmQyOsQKSGQUfZMSgNQs4qT8dOZqYq9iOzGWt1s3Q6QZO4vA4iJoXl8MgU2
+EyG0ZxO7zBqQGKzXzMKJQP4Z+4qQ9Q1iNiQsUz8PzQgU8MzfzMGDQCJOJQZzX1zK
+EwQwQ7CQJQJ8qQMqJ9Q2MQMqJ8qQKJQZMQOKJQZ4zX1zKEwQwQ7CQJQJ8
+-----END RSA PRIVATE KEY-----
+Normal text here`),
+			wantOutput: `
+--- HTTP REQUEST ---
+POST /keys HTTP/1.1
+Host: api.company.com
+User-Agent: test-agent/1.0
+Content-Length: 144
+Content-Type: text/plain
+Accept-Encoding: gzip
+
+-----BEGIN RSA PRIVATE KEY-----
+<redacted>
+<redacted>
+<redacted>
+<redacted>
+<redacted>
+<redacted>
+-----END RSA PRIVATE KEY-----
+Normal text here
+
+--- HTTP RESPONSE ---
+HTTP/1.1 200 OK
+Content-Length: 0
+
+
+`,
+		},
+		{
 			name:   "handles transport errors",
 			method: "GET",
 			url:    "http://example.com/test",
