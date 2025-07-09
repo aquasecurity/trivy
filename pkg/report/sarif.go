@@ -100,7 +100,7 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 		WithDefaultConfiguration(&sarif.ReportingConfiguration{
 			Level: toSarifErrorLevel(data.severity),
 		}).
-		WithProperties(MakeProperties(data.title, data.severity, data.cvssScore, data.cvssData))
+		WithProperties(MakeRuleProperties(data.title, data.severity, data.cvssScore, data.cvssData))
 	if data.url != nil && data.url.String() != "" {
 		r.WithHelpURI(data.url.String())
 	}
@@ -459,7 +459,7 @@ func severityToScore(severity string) string {
 	}
 }
 
-func MakeProperties(title, severity, cvssScore string, cvssData CVSSData) sarif.Properties {
+func MakeRuleProperties(title, severity, cvssScore string, cvssData CVSSData) sarif.Properties {
 	properties := sarif.Properties{
 		"tags": []string{
 			title,

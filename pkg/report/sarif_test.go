@@ -891,7 +891,7 @@ func TestMakePropertiesMarshal(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := report.MakeProperties(tt.title, tt.severity, tt.cvssScore, tt.cvssData)
+			result := report.MakeRuleProperties(tt.title, tt.severity, tt.cvssScore, tt.cvssData)
 
 			actualJSON, err := json.Marshal(result)
 			require.NoError(t, err)
