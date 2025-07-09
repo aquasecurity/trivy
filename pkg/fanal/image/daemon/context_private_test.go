@@ -22,8 +22,8 @@ const (
 func createTestContext(dockerConfigDir string) error {
 	// Create context store with proper configuration
 	cfg := store.NewConfig(
-		func() interface{} { return &store.Metadata{} },
-		store.EndpointTypeGetter(docker.DockerEndpoint, func() interface{} { return &docker.EndpointMeta{} }),
+		func() any { return &store.Metadata{} },
+		store.EndpointTypeGetter(docker.DockerEndpoint, func() any { return &docker.EndpointMeta{} }),
 	)
 	contextStore := store.New(dockerConfigDir, cfg)
 
@@ -125,13 +125,13 @@ func TestResolveDockerHost(t *testing.T) {
 			require.NoError(t, err)
 
 			// Create config.json
-			configData := map[string]interface{}{
+			configData := map[string]any{
 				"currentContext": tt.currentContext,
 			}
 
 			configJSON, err := json.MarshalIndent(configData, "", "  ")
 			require.NoError(t, err)
-			require.NoError(t, os.WriteFile(filepath.Join(testDir, "config.json"), configJSON, 0644))
+			require.NoError(t, os.WriteFile(filepath.Join(testDir, "config.json"), configJSON, 0o644))
 
 			// Test resolveDockerHost
 			got, err := resolveDockerHost(tt.hostFlag)
