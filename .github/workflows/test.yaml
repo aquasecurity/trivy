@@ -20,6 +20,8 @@ jobs:
         operating-system: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4.1.6
+        with:
+          fetch-depth: 0  # Fetch full history for proper diff analysis
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -41,7 +43,7 @@ jobs:
         uses: golangci/golangci-lint-action@v7.0.0
         with:
           version: v2.1
-          args: --verbose
+          args: --verbose ${{ github.event_name == 'pull_request' && format('--new-from-merge-base=origin/{0} --whole-files', github.base_ref) || '' }}
         if: matrix.operating-system == 'ubuntu-latest'
 
       - name: Check if linter failed
