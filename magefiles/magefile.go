@@ -436,14 +436,14 @@ func Clean() error {
 // Label updates labels
 func Label() error {
 	mg.Deps(Tool{}.Install) // Install labeler
-	
+
 	args := []string{"apply", "misc/triage/labels.yaml", "-l", "5"}
-	
+
 	// Add --repo flag if GITHUB_REPOSITORY environment variable is set
 	if repo := os.Getenv("GITHUB_REPOSITORY"); repo != "" {
 		args = append(args, "-r", repo)
 	}
-	
+
 	return sh.RunV("labeler", args...)
 }
 
