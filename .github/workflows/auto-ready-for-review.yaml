@@ -1,0 +1,118 @@
+name: Auto Ready for Review
+
+on:
+  workflow_run:
+    workflows: ["Test", "Validate PR Title"]
+    types: [completed]
+
+jobs:
+  auto-ready-for-review:
+    runs-on: ubuntu-24.04
+    if: github.event.workflow_run.event == 'pull_request'
+    steps:
+      - name: Check PR and all workflows status
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const prNumber = context.payload.workflow_run.pull_requests[0].number;
+            console.log(`[INFO] Processing PR #${prNumber}`);
+            
+            // Get PR info
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+            
+            console.log(`[INFO] PR #${prNumber} - Draft: ${pr.draft}, Labels: ${pr.labels.map(l => l.name).join(', ')}`);
+            
+            // Check if PR has autoready label and is draft
+            const hasAutoreadyLabel = pr.labels.some(label => label.name === 'autoready');
+            
+            if (!pr.draft) {
+              console.log(`[INFO] PR #${prNumber} is not draft, skipping`);
+              return;
+            }
+            
+            if (!hasAutoreadyLabel) {
+              console.log(`[INFO] PR #${prNumber} doesn't have autoready label, skipping`);
+              return;
+            }
+            
+            // Get all workflow runs for this PR's head commit (head_sha)
+            const { data: workflowRuns } = await github.rest.actions.listWorkflowRunsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head_sha: pr.head.sha,
+              per_page: 100
+            });
+            
+            console.log(`[INFO] Found ${workflowRuns.workflow_runs.length} workflow runs for PR #${prNumber}`);
+            
+            // Check workflow status
+            const runningWorkflows = workflowRuns.workflow_runs.filter(run => 
+              run.status === 'in_progress' || run.status === 'queued'
+            );
+            
+            const failedWorkflows = workflowRuns.workflow_runs.filter(run => 
+              run.conclusion === 'failure' || run.conclusion === 'cancelled'
+            );
+            
+            const successfulWorkflows = workflowRuns.workflow_runs.filter(run => 
+              run.conclusion === 'success'
+            );
+            
+            console.log(`[INFO] Workflow status - Running: ${runningWorkflows.length}, Failed: ${failedWorkflows.length}, Success: ${successfulWorkflows.length}`);
+            
+            if (runningWorkflows.length > 0) {
+              console.log(`[INFO] Some workflows are still running: ${runningWorkflows.map(w => w.name).join(', ')}`);
+              return;
+            }
+            
+            if (failedWorkflows.length > 0) {
+              console.log(`[INFO] Some workflows failed: ${failedWorkflows.map(w => w.name).join(', ')}`);
+              return;
+            }
+            
+            console.log(`[INFO] All workflows passed! Marking PR #${prNumber} as ready for review...`);
+            
+            // Mark PR as ready for review using GraphQL API
+            // Reference: https://github.com/orgs/community/discussions/70061
+            try {
+              const mutation = `
+                mutation MarkPullRequestReadyForReview($pullRequestId: ID!) {
+                  markPullRequestReadyForReview(input: { pullRequestId: $pullRequestId }) {
+                    pullRequest {
+                      id
+                      isDraft
+                      number
+                    }
+                  }
+                }
+              `;
+              
+              const updateResult = await github.graphql(mutation, {
+                pullRequestId: pr.node_id
+              });
+              
+              const isDraft = updateResult.markPullRequestReadyForReview.pullRequest.isDraft;
+              console.log(`[SUCCESS] PR #${prNumber} marked as ready for review. Draft status: ${isDraft}`);
+            } catch (error) {
+              console.log(`[ERROR] Failed to mark PR #${prNumber} as ready for review: ${error.message}`);
+              console.log(`[ERROR] Error details: ${JSON.stringify(error.response?.data || error, null, 2)}`);
+              return;
+            }
+            
+            // Remove autoready label
+            try {
+              const labelResult = await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                name: 'autoready'
+              });
+              console.log(`[SUCCESS] autoready label removed from PR #${prNumber}. Status: ${labelResult.status}`);
+            } catch (error) {
+              console.log(`[WARNING] Could not remove autoready label from PR #${prNumber}: ${error.message}`);
+              console.log(`[WARNING] Error details: ${JSON.stringify(error.response?.data || error, null, 2)}`);
+            }
