@@ -35,6 +35,7 @@
 --slow
 --tf-exclude-downloaded-modules
 --timeout
---trace
+--trace-http
+--trace-rego
 --vuln-severity-source
 ```
