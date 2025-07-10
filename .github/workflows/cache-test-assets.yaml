@@ -1,7 +1,12 @@
-name: Cache test images
+name: Cache test assets
+# This workflow runs on the main branch to create caches that can be accessed by PRs.
+# GitHub Actions cache isolation restricts access:
+# - PRs can only restore caches from: current branch, base branch, and default branch (main)
+# - PRs cannot restore caches from sibling branches or other PR branches
+# - By creating caches on the main branch, all PRs can benefit from shared cache
 on:
-  schedule:
-    - cron: "0 0 * * *" # Run this workflow every day at 00:00 to avoid cache deletion.
+  push:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -22,7 +27,6 @@ jobs:
         run: go install tool # GOBIN is added to the PATH by the setup-go action
 
       - name: Generate image list digest
-        if: github.ref_name == 'main'
         id: image-digest
         run: |
           source integration/testimages.ini
@@ -30,16 +34,13 @@ jobs:
           DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags += ["containerd"] | .Tags |= sort' | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
-      ## We need to work with test image cache only for main branch
       - name: Restore and save test images cache
-        if: github.ref_name == 'main'
         uses: actions/cache@v4
         with:
           path: integration/testdata/fixtures/images
           key: cache-test-images-${{ steps.image-digest.outputs.digest }}
 
       - name: Download test images
-        if: github.ref_name == 'main'
         run: mage test:fixtureContainerImages
 
   test-vm-images:
@@ -59,7 +60,6 @@ jobs:
         run: go install tool # GOBIN is added to the PATH by the setup-go action
 
       - name: Generate image list digest
-        if: github.ref_name == 'main'
         id: image-digest
         run: |
           source integration/testimages.ini
@@ -67,14 +67,30 @@ jobs:
           DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags |= sort' | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
-      ## We need to work with test VM image cache only for main branch
       - name: Restore and save test VM images cache
-        if: github.ref_name == 'main'
         uses: actions/cache@v4
         with:
           path: integration/testdata/fixtures/vm-images
           key: cache-test-vm-images-${{ steps.image-digest.outputs.digest }}
 
       - name: Download test VM images
-        if: github.ref_name == 'main'
         run: mage test:fixtureVMImages
+
+  lint-cache:
+    name: Cache lint results
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4.1.6
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Run golangci-lint for caching
+        uses: golangci/golangci-lint-action@v7.0.0
+        with:
+          version: v2.1
+          args: --verbose
