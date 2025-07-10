@@ -39,7 +39,7 @@ jobs:
               return;
             }
             
-            // Get all workflow runs for this PR
+            // Get all workflow runs for this PR's head commit (head_sha)
             const { data: workflowRuns } = await github.rest.actions.listWorkflowRunsForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
