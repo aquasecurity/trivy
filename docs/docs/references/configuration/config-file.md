@@ -504,7 +504,7 @@ rego:
   # Same as '--skip-check-update'
   skip-check-update: false
 
-  # Same as '--trace'
+  # Same as '--trace-rego'
   trace: false
 
 ```
