@@ -53,8 +53,8 @@ func TestScanner_Detect(t *testing.T) {
 					FixedVersion:     "3.0.15-1~deb12u1.root.io.1, 3.0.16-1~deb12u1",
 					SeveritySource:   vulnerability.Debian,
 					DataSource: &dbTypes.DataSource{
-						ID:   vulnerability.RootIO,
-						Name: "Root.io Security Patches",
+						ID:   vulnerability.RootIO + "+" + vulnerability.Debian,
+						Name: "Root.io Security Patches + Debian Security Tracker",
 						URL:  "https://api.root.io/external/patch_feed",
 					},
 					Vulnerability: dbTypes.Vulnerability{
