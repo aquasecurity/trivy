@@ -1,4 +1,9 @@
-name: Cache test images and lint
+name: Cache test assets
+# This workflow runs on the main branch to create caches that can be accessed by PRs.
+# GitHub Actions cache isolation restricts access:
+# - PRs can only restore caches from: current branch, base branch, and default branch (main)
+# - PRs cannot restore caches from sibling branches or other PR branches
+# - By creating caches on the main branch, all PRs can benefit from shared cache
 on:
   push:
     branches: [main]
