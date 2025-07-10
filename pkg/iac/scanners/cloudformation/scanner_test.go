@@ -14,7 +14,6 @@ import (
 )
 
 func Test_BasicScan(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"/code/main.yaml": `---
 Resources:

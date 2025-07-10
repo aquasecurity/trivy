@@ -290,7 +290,6 @@ func TestCheckForNotices(t *testing.T) {
 				require.NotNil(t, updates.lastRequest)
 				assert.NotEmpty(t, updates.lastRequest.Header.Get("Trivy-Identifier"))
 			}
-
 		})
 	}
 }

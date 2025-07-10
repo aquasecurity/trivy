@@ -66,7 +66,6 @@ deny[res] {
 }
 
 func Test_ScanJSON(t *testing.T) {
-
 	file := `
 {
   "apiVersion": "v1",
@@ -131,7 +130,6 @@ deny[res] {
 }
 
 func Test_YamlWithSeparator(t *testing.T) {
-
 	fsys := buildFS(map[string]string{
 		"check.rego": `# METADATA
 # title: Custom policy
@@ -307,7 +305,7 @@ func assertLines(t *testing.T, content string, results scan.Results) {
 }
 
 func buildFS(files map[string]string) fs.FS {
-	return fstest.MapFS(lo.MapValues(files, func(val string, _ string) *fstest.MapFile {
+	return fstest.MapFS(lo.MapValues(files, func(val, _ string) *fstest.MapFile {
 		return &fstest.MapFile{Data: []byte(val)}
 	}))
 }

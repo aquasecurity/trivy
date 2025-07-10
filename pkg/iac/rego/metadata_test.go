@@ -182,7 +182,7 @@ Resources:
 		},
 	}
 
-	var testCases = []struct {
+	testCases := []struct {
 		schema string
 		want   *scan.EngineMetadata
 	}{

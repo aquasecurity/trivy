@@ -533,7 +533,6 @@ func BenchmarkIsType_BigFile(b *testing.B) {
 }
 
 func Test_IsFileMatchesSchemas(t *testing.T) {
-
 	schema := `{
   "$id": "https://example.com/test.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",

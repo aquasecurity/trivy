@@ -6,7 +6,6 @@ import (
 )
 
 func (n *node) decodeArray(v reflect.Value) error {
-
 	length := len(n.content)
 
 	var original reflect.Value

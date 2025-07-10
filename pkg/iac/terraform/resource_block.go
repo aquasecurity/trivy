@@ -43,7 +43,6 @@ func (rb *PlanBlock) HasAttribute(attribute string) bool {
 }
 
 func (rb *PlanBlock) ToHCL() string {
-
 	resourceTmpl, err := template.New("resource").Funcs(template.FuncMap{
 		"RenderValue":     renderTemplateValue,
 		"RenderPrimitive": renderPrimitive,
@@ -99,7 +98,6 @@ func renderPrimitive(val any) string {
 	default:
 		return fmt.Sprintf("%#v", t)
 	}
-
 }
 
 func parseStringPrimitive(input string) string {

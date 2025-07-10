@@ -28,8 +28,8 @@ type naivePkgParser struct {
 }
 
 func (parser *naivePkgParser) parse() map[string]pkgPosition {
-	var currentPkg = minPkg{}
-	var idx = make(map[string]pkgPosition, 0)
+	currentPkg := minPkg{}
+	idx := make(map[string]pkgPosition, 0)
 
 	scanner := bufio.NewScanner(parser.r)
 	lineNum := 1
@@ -63,6 +63,7 @@ func (parser *naivePkgParser) parse() map[string]pkgPosition {
 	}
 	return idx
 }
+
 func propertyValue(line string) string {
 	parts := strings.Split(line, "=")
 	if len(parts) == 2 {

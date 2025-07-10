@@ -17,7 +17,6 @@ import (
 )
 
 func Test_OptionWithPolicyDirs(t *testing.T) {
-
 	fsys := testutil.CreateFS(t, map[string]string{
 		"/code/main.tf":    `resource "aws_s3_bucket" "my-bucket" {}`,
 		"/rules/test.rego": emptyBucketCheck,
@@ -48,11 +47,9 @@ func Test_OptionWithPolicyDirs(t *testing.T) {
 			LastCause:  true,
 		},
 	}, actualCode.Lines)
-
 }
 
 func Test_OptionWithPolicyNamespaces(t *testing.T) {
-
 	tests := []struct {
 		includedNamespaces []string
 		policyNamespace    string
@@ -110,9 +107,7 @@ func Test_OptionWithPolicyNamespaces(t *testing.T) {
 	}
 
 	for i, test := range tests {
-
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-
 			fs := testutil.CreateFS(t, map[string]string{
 				"/code/main.tf": `
 resource "aws_s3_bucket" "my-bucket" {
@@ -157,7 +152,6 @@ cause := bucket.name
 			assert.Equal(t, test.wantFailure, found)
 		})
 	}
-
 }
 
 func Test_IAMPolicyRego(t *testing.T) {
@@ -225,7 +219,6 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 	assert.Equal(t, "AVD-TEST-0123", results[0].Rule().AVDID)
 	assert.NotNil(t, results[0].Metadata().Range().GetFS())
-
 }
 
 func Test_ContainerDefinitionRego(t *testing.T) {
@@ -308,11 +301,9 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 	assert.Equal(t, "AVD-TEST-0123", results[0].Rule().AVDID)
 	assert.NotNil(t, results[0].Metadata().Range().GetFS())
-
 }
 
 func Test_S3_Linking(t *testing.T) {
-
 	code := `
 ## tfsec:ignore:aws-s3-enable-bucket-encryption
 ## tfsec:ignore:aws-s3-enable-bucket-logging
@@ -372,7 +363,6 @@ resource "aws_s3_bucket_public_access_block" "foo" {
 }
 
 func Test_S3_Linking_PublicAccess(t *testing.T) {
-
 	code := `
 resource "aws_s3_bucket" "testA" {
   bucket = "com.test.testA"
@@ -425,12 +415,10 @@ resource "aws_s3_bucket_public_access_block" "testB" {
 		// public access block
 		assert.NotEqual(t, "AVD-AWS-0094", result.Rule().AVDID)
 	}
-
 }
 
 // PoC for replacing Go with Rego: AVD-AWS-0001
 func Test_RegoRules(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"/code/main.tf": `
 resource "aws_apigatewayv2_stage" "bad_example" {
@@ -1010,7 +998,6 @@ deny contains res if {
 }
 
 func TestRenderedCause(t *testing.T) {
-
 	s3check := `# METADATA
 # title: S3 Data should be versioned
 # custom:
@@ -1118,7 +1105,8 @@ resource "aws_s3_bucket" "test" {
 			name:       "misconfigured resource instance in the module",
 			inputCheck: s3check,
 			fsys: fstest.MapFS{
-				"main.tf": &fstest.MapFile{Data: []byte(`
+				"main.tf": &fstest.MapFile{
+					Data: []byte(`
 module "bucket" {
 	source = "../modules/bucket"
 }
@@ -1147,7 +1135,8 @@ resource "aws_s3_bucket" "test" {
 		{
 			name:       "misconfigured resource",
 			inputCheck: iamcheck,
-			fsys: fstest.MapFS{`main.tf`: &fstest.MapFile{Data: []byte(`
+			fsys: fstest.MapFS{`main.tf`: &fstest.MapFile{
+				Data: []byte(`
 resource "google_storage_bucket_iam_binding" "service-a" {
   bucket = google_storage_bucket.service-a.name
   role   = "roles/storage.objectAdmin"

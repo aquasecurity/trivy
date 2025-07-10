@@ -14,7 +14,6 @@ import (
 )
 
 func BenchmarkCalculate(b *testing.B) {
-
 	f, err := createBadBlocks()
 	if err != nil {
 		b.Fatal(err)
@@ -31,7 +30,6 @@ func BenchmarkCalculate(b *testing.B) {
 }
 
 func createBadBlocks() (fs.FS, error) {
-
 	files := make(map[string]string)
 
 	files["/project/main.tf"] = `

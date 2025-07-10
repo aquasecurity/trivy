@@ -9,7 +9,6 @@ import (
 )
 
 func adaptLaunchTemplates(modules terraform.Modules) (templates []ec2.LaunchTemplate) {
-
 	blocks := modules.GetResourcesByType("aws_launch_template")
 
 	for _, b := range blocks {

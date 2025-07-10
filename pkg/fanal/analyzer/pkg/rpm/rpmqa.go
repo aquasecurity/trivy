@@ -21,10 +21,8 @@ func init() {
 
 const versionRpmqa = 1
 
-var (
-	// For CBL-Mariner Distroless
-	requiredRpmqaFiles = []string{"var/lib/rpmmanifest/container-manifest-2"}
-)
+// For CBL-Mariner Distroless
+var requiredRpmqaFiles = []string{"var/lib/rpmmanifest/container-manifest-2"}
 
 // rpmqaPkgAnalyzer parses the output of
 // "rpm -qa --qf %{NAME}\t%{VERSION}-%{RELEASE}\t%{INSTALLTIME}\t%{BUILDTIME}\t%{VENDOR}\t(none)\t%{SIZE}\t%{ARCH}\t%{EPOCHNUM}\t%{SOURCERPM}".

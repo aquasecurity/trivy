@@ -47,7 +47,8 @@ func newHistoryAnalyzer(opts analyzer.ConfigAnalyzerOptions) (analyzer.ConfigAna
 }
 
 func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnalysisInput) (*analyzer.
-	ConfigAnalysisResult, error) {
+	ConfigAnalysisResult, error,
+) {
 	if input.Config == nil {
 		return nil, nil
 	}

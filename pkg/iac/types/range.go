@@ -19,8 +19,9 @@ func NewRange(filename string, startLine, endLine int, sourcePrefix string, srcF
 	return r
 }
 
-func NewRangeWithLogicalSource(filename string, startLine int, endLine int, sourcePrefix string,
-	srcFS fs.FS) Range {
+func NewRangeWithLogicalSource(filename string, startLine, endLine int, sourcePrefix string,
+	srcFS fs.FS,
+) Range {
 	r := Range{
 		filename:        filename,
 		startLine:       startLine,

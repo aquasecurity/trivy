@@ -82,9 +82,11 @@ func defaultManager() *Manager {
 func Install(ctx context.Context, name string, opts Options) (Plugin, error) {
 	return defaultManager().Install(ctx, name, opts)
 }
+
 func Start(ctx context.Context, name string, opts Options) (Wait, error) {
 	return defaultManager().Start(ctx, name, opts)
 }
+
 func Run(ctx context.Context, name string, opts Options) error {
 	return defaultManager().Run(ctx, name, opts)
 }

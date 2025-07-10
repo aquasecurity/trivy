@@ -8,7 +8,6 @@ import (
 )
 
 func Test_resolve_select_value(t *testing.T) {
-
 	source := `---
 Parameters:
     EngineIndex:
@@ -73,5 +72,4 @@ Resources:
 	topic, ok := first.AsMap()["TopicARN"]
 	require.True(t, ok)
 	require.Equal(t, "notification::arn::2", topic.AsString())
-
 }

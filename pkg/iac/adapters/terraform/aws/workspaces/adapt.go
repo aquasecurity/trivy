@@ -23,7 +23,6 @@ func adaptWorkspaces(modules terraform.Modules) []workspaces.WorkSpace {
 }
 
 func adaptWorkspace(resource *terraform.Block) workspaces.WorkSpace {
-
 	workspace := workspaces.WorkSpace{
 		Metadata: resource.GetMetadata(),
 		RootVolume: workspaces.Volume{

@@ -112,7 +112,6 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		PackageInfos:         packageInfos,
 		SystemInstalledFiles: systemInstalledFiles,
 	}, nil
-
 }
 
 // parseDpkgMd5sums parses `/var/lib/dpkg/*/*.md5sums` file.

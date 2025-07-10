@@ -117,7 +117,8 @@ resource "google_iam_workload_identity_pool_provider" "example" {
 							{
 								Metadata: iacTypes.NewTestMetadata(),
 								Members: []iacTypes.StringValue{
-									iacTypes.String("user:member_2@gmail.com", iacTypes.NewTestMetadata())},
+									iacTypes.String("user:member_2@gmail.com", iacTypes.NewTestMetadata()),
+								},
 								Role:                          iacTypes.String("roles/browser", iacTypes.NewTestMetadata()),
 								IncludesDefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 							},

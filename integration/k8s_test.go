@@ -9,12 +9,12 @@ import (
 	"testing"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
-	"github.com/aquasecurity/trivy/pkg/k8s/report"
-	"github.com/aquasecurity/trivy/pkg/types"
-
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/k8s/report"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // Note: the test required k8s (kind) cluster installed.
@@ -155,6 +155,5 @@ func TestK8s(t *testing.T) {
 		assert.True(t, lo.SomeBy(results, func(r types.Result) bool {
 			return len(r.Misconfigurations) > 0
 		}))
-
 	})
 }

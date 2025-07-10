@@ -39,9 +39,11 @@ type Metadata struct {
 // Results to hold list of Result
 type Results []Result
 
-type ResultClass string
-type Compliance = string
-type Format string
+type (
+	ResultClass string
+	Compliance  = string
+	Format      string
+)
 
 const (
 	ClassUnknown     ResultClass = "unknown"

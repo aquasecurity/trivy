@@ -12,9 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-var (
-	postHandlerInits = make(map[types.HandlerType]postHandlerInit)
-)
+var postHandlerInits = make(map[types.HandlerType]postHandlerInit)
 
 type postHandlerInit func(artifact.Option) (PostHandler, error)
 

@@ -72,7 +72,6 @@ func Test_image_ConfigName(t *testing.T) {
 }
 
 func Test_image_ConfigNameWithCustomDockerHost(t *testing.T) {
-
 	ref, err := name.ParseReference("alpine:3.11")
 	require.NoError(t, err)
 

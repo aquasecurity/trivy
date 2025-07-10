@@ -10,7 +10,7 @@ const bigVal = 0xFFFFFF
 
 // Decimal to integer.
 // Returns number, characters consumed, success.
-func dtoi(s string) (n int, i int, ok bool) {
+func dtoi(s string) (n, i int, ok bool) {
 	n = 0
 	for i = 0; i < len(s) && '0' <= s[i] && s[i] <= '9'; i++ {
 		n = n*10 + int(s[i]-'0')
@@ -26,7 +26,7 @@ func dtoi(s string) (n int, i int, ok bool) {
 
 // Hexadecimal to integer.
 // Returns number, characters consumed, success.
-func xtoi(s string) (n int, i int, ok bool) {
+func xtoi(s string) (n, i int, ok bool) {
 	n = 0
 	for i = 0; i < len(s); i++ {
 		if '0' <= s[i] && s[i] <= '9' {
@@ -55,15 +55,21 @@ func xtoi(s string) (n int, i int, ok bool) {
 // Lean on the standard net lib as much as possible.
 //
 
-type IP = stdnet.IP
-type IPNet = stdnet.IPNet
-type ParseError = stdnet.ParseError
+type (
+	IP         = stdnet.IP
+	IPNet      = stdnet.IPNet
+	ParseError = stdnet.ParseError
+)
 
-const IPv4len = stdnet.IPv4len
-const IPv6len = stdnet.IPv6len
+const (
+	IPv4len = stdnet.IPv4len
+	IPv6len = stdnet.IPv6len
+)
 
-var CIDRMask = stdnet.CIDRMask
-var IPv4 = stdnet.IPv4
+var (
+	CIDRMask = stdnet.CIDRMask
+	IPv4     = stdnet.IPv4
+)
 
 // Parse IPv4 address (d.d.d.d).
 func parseIPv4(s string) IP {

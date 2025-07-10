@@ -39,8 +39,10 @@ func WithConfigsFS(fsys fs.FS) options.ScannerOption {
 	}
 }
 
-var _ scanners.FSScanner = (*Scanner)(nil)
-var _ options.ConfigurableScanner = (*Scanner)(nil)
+var (
+	_ scanners.FSScanner          = (*Scanner)(nil)
+	_ options.ConfigurableScanner = (*Scanner)(nil)
+)
 
 type Scanner struct {
 	*rego.RegoScannerProvider
@@ -73,7 +75,6 @@ func New(opts ...options.ScannerOption) *Scanner {
 }
 
 func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (results scan.Results, err error) {
-
 	contexts, err := s.parser.ParseFS(ctx, fsys, dir)
 	if err != nil {
 		return nil, err

@@ -13,13 +13,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
-var (
-	emptyVersionWarn = sync.OnceFunc(func() {
-		log.WithPrefix("pom").Warn("Dependency version cannot be determined. Child dependencies will not be found.",
-			// e.g. https://trivy.dev/latest/docs/coverage/language/java/#empty-dependency-version
-			log.String("details", doc.URL("/docs/coverage/language/java/", "empty-dependency-version")))
-	})
-)
+var emptyVersionWarn = sync.OnceFunc(func() {
+	log.WithPrefix("pom").Warn("Dependency version cannot be determined. Child dependencies will not be found.",
+		// e.g. https://trivy.dev/latest/docs/coverage/language/java/#empty-dependency-version
+		log.String("details", doc.URL("/docs/coverage/language/java/", "empty-dependency-version")))
+})
 
 type artifact struct {
 	GroupID    string

@@ -38,7 +38,6 @@ var matchers = make(map[FileType]func(name string, r io.ReadSeeker) bool)
 // TODO(nikita): refactor. If the file matches the schema, it no longer needs to be checked for other scanners.
 // nolint
 func init() {
-
 	matchers[FileTypeJSON] = func(name string, r io.ReadSeeker) bool {
 		if !isJSON(name) {
 			return false
@@ -135,7 +134,6 @@ func init() {
 	}
 
 	matchers[FileTypeAzureARM] = func(name string, r io.ReadSeeker) bool {
-
 		if resetReader(r) == nil {
 			return false
 		}
@@ -198,7 +196,6 @@ func init() {
 	}
 
 	matchers[FileTypeKubernetes] = func(name string, r io.ReadSeeker) bool {
-
 		if !IsType(name, r, FileTypeYAML) && !IsType(name, r, FileTypeJSON) {
 			return false
 		}
@@ -326,6 +323,7 @@ func isJSON(name string) bool {
 	ext := filepath.Ext(name)
 	return strings.EqualFold(ext, ".json")
 }
+
 func isYAML(name string) bool {
 	ext := filepath.Ext(name)
 	return strings.EqualFold(ext, ".yaml") || strings.EqualFold(ext, ".yml")

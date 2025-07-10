@@ -6,7 +6,6 @@ import (
 )
 
 func getCloudTrails(ctx parser.FileContext) (trails []cloudtrail.Trail) {
-
 	cloudtrailResources := ctx.GetResourcesByType("AWS::CloudTrail::Trail")
 
 	for _, r := range cloudtrailResources {

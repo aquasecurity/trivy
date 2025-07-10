@@ -38,7 +38,6 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 		ref:        implicitReference{ref: ref},
 		descriptor: desc,
 	}, cleanup, nil
-
 }
 
 type remoteImage struct {

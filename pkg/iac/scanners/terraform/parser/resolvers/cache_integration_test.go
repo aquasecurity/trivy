@@ -49,7 +49,6 @@ func newRegistry(repoURL string) *httptest.Server {
 func buildGitSource(repoURL string) string { return "git::" + repoURL }
 
 func TestResolveModuleFromCache(t *testing.T) {
-
 	repo := "terraform-aws-s3-bucket"
 	gs := gittest.NewServer(t, repo, "testdata/terraform-aws-s3-bucket")
 	defer gs.Close()
@@ -114,7 +113,6 @@ func TestResolveModuleFromCache(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
 			tt.opts.OriginalSource = tt.opts.Source
 			tt.opts.AllowDownloads = true
 			tt.opts.CacheDir = t.TempDir()

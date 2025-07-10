@@ -248,7 +248,6 @@ func (a *gomodAnalyzer) resolveDeps(modDir fs.FS) ([]string, error) {
 	})
 
 	return dependsOn, nil
-
 }
 
 // addOrphanIndirectDepsUnderRoot handles indirect dependencies that have no identifiable parent packages in the dependency tree.

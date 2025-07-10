@@ -104,7 +104,8 @@ module "something" {
 `,
 				"problem/main.tf": `
 resource "aws_s3_bucket" "test" {}
-`},
+`,
+			},
 			expected: true,
 		},
 		{
@@ -127,7 +128,8 @@ variable "bucket" {}
 resource "aws_s3_bucket" "test" {
   bucket = var.bucket
 }
-`},
+`,
+			},
 			expected: true,
 		},
 		{
@@ -314,7 +316,8 @@ resource "something" "this" {
 resource "aws_s3_bucket" "test" {
   secure = something.this.blah[0].bucket
 }
-`},
+`,
+			},
 			expected: true,
 		},
 		{
@@ -332,7 +335,8 @@ resource "something" "else" {
 
 resource "aws_s3_bucket" "test" {
   bucket = something.else.blah.bucket
-}`},
+}`,
+			},
 			expected: false,
 		},
 		{
@@ -357,7 +361,8 @@ variable "bucket" {
 resource "aws_s3_bucket" "test" {
   bucket = var.bucket
 }
-`},
+`,
+			},
 			expected: false,
 		},
 	}

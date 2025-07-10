@@ -189,5 +189,4 @@ func TestAdapt(t *testing.T) {
 			adaptertest.AdaptAndCompare(t, tt.source, tt.expected, Adapt)
 		})
 	}
-
 }

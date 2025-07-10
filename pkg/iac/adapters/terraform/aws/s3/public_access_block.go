@@ -5,7 +5,6 @@ import (
 )
 
 func (a *adapter) adaptPublicAccessBlocks() {
-
 	for _, b := range a.modules.GetResourcesByType("aws_s3_bucket_public_access_block") {
 
 		pba := s3.PublicAccessBlock{

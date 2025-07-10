@@ -90,7 +90,6 @@ func (m Modules) GetBlockById(id string) (*Block, error) {
 		if found := module.blocks.WithID(id); found != nil {
 			return found, nil
 		}
-
 	}
 	return nil, errors.New("block not found")
 }

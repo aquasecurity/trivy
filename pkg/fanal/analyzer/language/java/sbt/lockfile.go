@@ -26,7 +26,6 @@ func (a sbtDependencyLockAnalyzer) Analyze(_ context.Context, input analyzer.Ana
 	parser := lockfile.NewParser()
 
 	res, err := language.Analyze(types.Sbt, input.FilePath, input.Content, parser)
-
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
 	}

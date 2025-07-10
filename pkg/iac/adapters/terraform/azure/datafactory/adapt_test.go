@@ -73,5 +73,4 @@ func TestLines(t *testing.T) {
 
 	assert.Equal(t, 6, dataFactory.EnablePublicNetwork.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 6, dataFactory.EnablePublicNetwork.GetMetadata().Range().GetEndLine())
-
 }

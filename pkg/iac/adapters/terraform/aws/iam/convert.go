@@ -73,7 +73,6 @@ func unescapeVars(input string) string {
 
 // ConvertTerraformDocument converts a terraform data policy into an iamgo policy https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document
 func ConvertTerraformDocument(modules terraform.Modules, block *terraform.Block) (*wrappedDocument, error) {
-
 	builder := iamgo.NewPolicyBuilder()
 
 	if sourceAttr := block.GetAttribute("source_json"); sourceAttr.IsString() {
@@ -124,7 +123,6 @@ func ConvertTerraformDocument(modules terraform.Modules, block *terraform.Block)
 
 // nolint
 func parseStatement(statementBlock *terraform.Block) iamgo.Statement {
-
 	metadata := statementBlock.GetMetadata()
 
 	builder := iamgo.NewStatementBuilder()

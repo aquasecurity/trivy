@@ -71,7 +71,6 @@ func retrieveExternalVEXDocuments(ctx context.Context, refs []*url.URL, report *
 		return nil, nil
 	}
 	return docs, nil
-
 }
 
 func retrieveExternalVEXDocument(ctx context.Context, vexUrl *url.URL, report *types.Report) (VEX, error) {

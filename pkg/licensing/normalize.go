@@ -637,8 +637,10 @@ var versionRegexp = regexp.MustCompile("(?i)" + versionRegexpString)
 var versionSuffixRegexp = regexp.MustCompile(versionRegexpString + "$")
 
 // suffixes from https://spdx.dev/learn/handling-license-info/
-var onlySuffixes = [2]string{"-ONLY", " ONLY"}
-var plusSuffixes = [3]string{"+", "-OR-LATER", " OR LATER"}
+var (
+	onlySuffixes = [2]string{"-ONLY", " ONLY"}
+	plusSuffixes = [3]string{"+", "-OR-LATER", " OR LATER"}
+)
 
 func standardizeKeyAndSuffix(name string) expr.SimpleExpr {
 	// Standardize space, including newline

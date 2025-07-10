@@ -234,7 +234,6 @@ func Test_parseDepPath(t *testing.T) {
 			require.Equal(t, tt.wantVersion, gotVersion)
 			require.Equal(t, tt.wantRef, gotRef)
 		})
-
 	}
 }
 
@@ -283,6 +282,5 @@ func Test_parseVersion(t *testing.T) {
 			gotVer := p.parseVersion("depPath", tt.ver, tt.lockVer)
 			require.Equal(t, tt.wantVer, gotVer)
 		})
-
 	}
 }

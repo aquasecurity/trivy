@@ -7,7 +7,6 @@ import (
 )
 
 func Adapt(modules terraform.Modules) lambda.Lambda {
-
 	adapter := adapter{
 		permissionIDs: modules.GetChildResourceIDMapByType("aws_lambda_permission"),
 	}
@@ -22,7 +21,6 @@ type adapter struct {
 }
 
 func (a *adapter) adaptFunctions(modules terraform.Modules) []lambda.Function {
-
 	var functions []lambda.Function
 	for _, module := range modules {
 		for _, resource := range module.GetResourcesByType("aws_lambda_function") {

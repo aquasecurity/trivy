@@ -7,7 +7,6 @@ import (
 )
 
 func getParameterGroups(ctx parser.FileContext) (parametergroups []rds.ParameterGroups) {
-
 	for _, r := range ctx.GetResourcesByType("AWS::RDS::DBParameterGroup") {
 
 		paramgroup := rds.ParameterGroups{
@@ -24,7 +23,6 @@ func getParameterGroups(ctx parser.FileContext) (parametergroups []rds.Parameter
 }
 
 func getParameters(r *parser.Resource) (parameters []rds.Parameters) {
-
 	dBParam := r.GetProperty("Parameters")
 
 	// TODO: parameters is JSON

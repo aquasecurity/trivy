@@ -30,7 +30,6 @@ func adaptMSSQLServer(resource azure2.Resource, deployment azure2.Deployment) da
 }
 
 func adaptExtendedAuditingPolicies(_ azure2.Resource, deployment azure2.Deployment) (policies []database.ExtendedAuditingPolicy) {
-
 	for _, policy := range deployment.GetResourcesByType("Microsoft.Sql/servers/extendedAuditingSettings") {
 		policies = append(policies, database.ExtendedAuditingPolicy{
 			Metadata:        policy.Metadata,

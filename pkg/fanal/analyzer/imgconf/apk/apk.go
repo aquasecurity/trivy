@@ -90,6 +90,7 @@ func (a alpineCmdAnalyzer) Analyze(_ context.Context, input analyzer.ConfigAnaly
 		HistoryPackages: pkgs,
 	}, nil
 }
+
 func (a alpineCmdAnalyzer) fetchApkIndexArchive(targetOS types.OS) (*apkIndex, error) {
 	// 3.9.3 => 3.9
 	osVer := targetOS.Name
@@ -179,6 +180,7 @@ func (a alpineCmdAnalyzer) parseCommand(command string, envs map[string]string) 
 	}
 	return pkgs
 }
+
 func (a alpineCmdAnalyzer) resolveDependencies(apkIndexArchive *apkIndex, originalPkgs []string) (pkgs []string) {
 	uniqPkgs := set.New[string]()
 	for _, pkgName := range originalPkgs {
@@ -195,7 +197,8 @@ func (a alpineCmdAnalyzer) resolveDependencies(apkIndexArchive *apkIndex, origin
 }
 
 func (a alpineCmdAnalyzer) resolveDependency(apkIndexArchive *apkIndex, pkgName string,
-	seenPkgs set.Set[string]) (pkgNames []string) {
+	seenPkgs set.Set[string],
+) (pkgNames []string) {
 	pkg, ok := apkIndexArchive.Package[pkgName]
 	if !ok {
 		return nil
@@ -233,7 +236,8 @@ type historyVersion struct {
 }
 
 func (a alpineCmdAnalyzer) guessVersion(apkIndexArchive *apkIndex, originalPkgs []string,
-	createdAt time.Time) (pkgs []types.Package) {
+	createdAt time.Time,
+) (pkgs []types.Package) {
 	for _, pkg := range originalPkgs {
 		archive, ok := apkIndexArchive.Package[pkg]
 		if !ok {

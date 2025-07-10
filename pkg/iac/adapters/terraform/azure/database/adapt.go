@@ -7,7 +7,6 @@ import (
 )
 
 func Adapt(modules terraform.Modules) database.Database {
-
 	mssqlAdapter := mssqlAdapter{
 		alertPolicyIDs:    modules.GetChildResourceIDMapByType("azurerm_mssql_server_security_alert_policy"),
 		auditingPolicyIDs: modules.GetChildResourceIDMapByType("azurerm_mssql_server_extended_auditing_policy", "azurerm_mssql_database_extended_auditing_policy"),
@@ -120,6 +119,7 @@ func (a *mssqlAdapter) adaptMSSQLServers(modules terraform.Modules) []database.M
 
 	return mssqlServers
 }
+
 func (a *mysqlAdapter) adaptMySQLServers(modules terraform.Modules) []database.MySQLServer {
 	var mySQLServers []database.MySQLServer
 	for _, module := range modules {
@@ -397,7 +397,6 @@ func adaptPostgreSQLConfig(resource *terraform.Block, configBlocks []*terraform.
 }
 
 func adaptMSSQLSecurityAlertPolicy(resource *terraform.Block) database.SecurityAlertPolicy {
-
 	emailAddressesAttr := resource.GetAttribute("email_addresses")
 	disabledAlertsAttr := resource.GetAttribute("disabled_alerts")
 

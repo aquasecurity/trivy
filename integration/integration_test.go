@@ -228,12 +228,14 @@ func readSpdxJson(t *testing.T, filePath string) *spdx.Document {
 	return bom
 }
 
-type OverrideFunc func(t *testing.T, want, got *types.Report)
-type runOptions struct {
-	wantErr  string
-	override OverrideFunc
-	fakeUUID string
-}
+type (
+	OverrideFunc func(t *testing.T, want, got *types.Report)
+	runOptions   struct {
+		wantErr  string
+		override OverrideFunc
+		fakeUUID string
+	}
+)
 
 // runTest runs Trivy with the given args and compares the output with the golden file.
 // If outputFile is empty, the output file is created in a temporary directory.

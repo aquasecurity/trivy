@@ -11,7 +11,6 @@ import (
 )
 
 func Test_resolve_referenced_value(t *testing.T) {
-
 	property := &Property{
 		ctx: &FileContext{
 			Parameters: map[string]*Parameter{
@@ -40,7 +39,6 @@ func Test_resolve_referenced_value(t *testing.T) {
 }
 
 func Test_property_value_correct_when_not_reference(t *testing.T) {
-
 	property := &Property{
 		name:  "BucketName",
 		rng:   types.NewRange("testfile", 1, 1, "", nil),

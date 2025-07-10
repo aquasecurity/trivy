@@ -18,9 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
-var (
-	ErrUnsupportedType = errors.New("unsupported type")
-)
+var ErrUnsupportedType = errors.New("unsupported type")
 
 type BOM struct {
 	*core.BOM
@@ -113,7 +111,7 @@ func (b *BOM) parseExternalReferences(bom *cdx.BOM) []core.ExternalReference {
 	if bom.ExternalReferences == nil {
 		return nil
 	}
-	var refs = make([]core.ExternalReference, 0)
+	refs := make([]core.ExternalReference, 0, len(*bom.ExternalReferences))
 
 	for _, ref := range *bom.ExternalReferences {
 		t, err := b.unmarshalReferenceType(ref.Type)
