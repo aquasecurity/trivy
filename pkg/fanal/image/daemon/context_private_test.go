@@ -9,14 +9,12 @@ import (
 	"github.com/docker/cli/cli/config"
 	"github.com/docker/cli/cli/context/docker"
 	"github.com/docker/cli/cli/context/store"
+	dockerclient "github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	testContextName = "test-context"
-	testContextHost = "unix:///tmp/test-context.sock"
-)
+const testContextName = "test-context"
 
 // createTestContext creates a Docker context using docker/cli context store API
 func createTestContext(dockerConfigDir string) error {
@@ -56,19 +54,19 @@ func TestResolveDockerHost(t *testing.T) {
 	}{
 		{
 			name:           "flag takes highest priority",
-			hostFlag:       "unix:///tmp/flag-docker.sock",
-			hostEnv:        "unix:///tmp/env-docker.sock",
+			hostFlag:       testFlagHost,
+			hostEnv:        testEnvHost,
 			contextEnv:     "",
 			currentContext: "",
-			want:           "unix:///tmp/flag-docker.sock",
+			want:           testFlagHost,
 		},
 		{
 			name:           "DOCKER_HOST takes priority over context",
 			hostFlag:       "",
-			hostEnv:        "unix:///tmp/env-docker.sock",
+			hostEnv:        testEnvHost,
 			contextEnv:     "",
 			currentContext: "",
-			want:           "unix:///tmp/env-docker.sock",
+			want:           testEnvHost,
 		},
 		{
 			name:           "valid context is used",
@@ -92,7 +90,7 @@ func TestResolveDockerHost(t *testing.T) {
 			hostEnv:        "",
 			contextEnv:     "",
 			currentContext: "",
-			want:           "unix:///var/run/docker.sock",
+			want:           dockerclient.DefaultDockerHost,
 		},
 		{
 			name:           "invalid context fails",
