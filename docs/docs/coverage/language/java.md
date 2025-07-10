@@ -48,6 +48,7 @@ Trivy parses your `pom.xml` file and tries to find files with dependencies from 
 If your machine doesn't have the necessary files - Trivy tries to find the information about these dependencies in the remote repositories:
 
 - [repositories from pom files][maven-pom-repos]
+- [repositories from settings files][maven-settings-repos]
 - [maven central repository][maven-central]
 
 Trivy reproduces Maven's repository selection and priority:
@@ -56,7 +57,10 @@ Trivy reproduces Maven's repository selection and priority:
     - check only snapshot repositories from pom files (if exists)
 - for other artifacts:
     - check release repositories from pom files (if exists)
+    - check release repositories from settings files (if exists)
     - check [maven central][maven-central]
+
+Applying mirror configurations for repositories, if specified in the settings file.
 
 !!! Note
     Trivy only takes information about packages. We don't take a list of vulnerabilities for packages from the `maven repository`.
@@ -133,7 +137,8 @@ Make sure that you have cache[^8] directory to find licenses from `*.pom` depend
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [maven-invoker-plugin]: https://maven.apache.org/plugins/maven-invoker-plugin/usage.html
 [maven-central]: https://repo.maven.apache.org/maven2/
-[maven-pom-repos]: https://maven.apache.org/settings.html#repositories
+[maven-pom-repos]: https://maven.apache.org/pom.html#Repositories
+[maven-settings-repos]: https://maven.apache.org/settings.html#Repositories
 [maven-scopes]: https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope
 [sbt-dependency-lock]: https://stringbean.github.io/sbt-dependency-lock
 [detection-priority]: ../../scanner/vulnerability.md#detection-priority
