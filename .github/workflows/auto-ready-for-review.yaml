@@ -10,11 +10,31 @@ jobs:
     runs-on: ubuntu-24.04
     if: github.event.workflow_run.event == 'pull_request'
     steps:
+      - name: Get PR context
+        id: pr-context
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_BRANCH: |-
+            ${{
+              (github.event.workflow_run.head_repository.owner.login != github.event.workflow_run.repository.owner.login)
+                && format('{0}:{1}', github.event.workflow_run.head_repository.owner.login, github.event.workflow_run.head_branch)
+                || github.event.workflow_run.head_branch
+            }}
+        run: |
+          echo "[INFO] Searching for PR with branch: ${PR_BRANCH}"
+          if gh pr view --repo "${{ github.repository }}" "${PR_BRANCH}" --json 'number' --jq '"number=\(.number)"' >> "${GITHUB_OUTPUT}"; then
+            echo "[INFO] PR found successfully"
+          else
+            echo "[INFO] No PR found for branch ${PR_BRANCH}, skipping"
+            echo "skip=true" >> "${GITHUB_OUTPUT}"
+          fi
+          
       - name: Check PR and all workflows status
+        if: steps.pr-context.outputs.skip != 'true'
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
-            const prNumber = context.payload.workflow_run.pull_requests[0].number;
+            const prNumber = ${{ steps.pr-context.outputs.number }};
             console.log(`[INFO] Processing PR #${prNumber}`);
             
             // Get PR info
