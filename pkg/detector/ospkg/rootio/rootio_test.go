@@ -51,10 +51,29 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2024-13176",
 					InstalledVersion: "3.0.15-1~deb12u1.root.io.0",
 					FixedVersion:     "3.0.15-1~deb12u1.root.io.1, 3.0.16-1~deb12u1",
+					SeveritySource:   vulnerability.Debian,
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.RootIO,
 						Name: "Root.io Security Patches",
 						URL:  "https://api.root.io/external/patch_feed",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+				{
+					PkgName:          "openssl",
+					VulnerabilityID:  "CVE-2025-27587",
+					InstalledVersion: "3.0.15-1~deb12u1.root.io.0",
+					FixedVersion:     "3.0.16-1~deb12u1",
+					SeveritySource:   vulnerability.Debian,
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Debian,
+						Name: "Debian Security Tracker",
+						URL:  "https://salsa.debian.org/security-tracker-team/security-tracker",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityLow.String(),
 					},
 				},
 			},

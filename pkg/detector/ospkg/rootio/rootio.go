@@ -81,7 +81,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 			if !s.isVulnerable(ctx, utils.FormatSrcVersion(pkg), adv) {
 				continue
 			}
-			vulns = append(vulns, types.DetectedVulnerability{
+			vuln := types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgID:            pkg.ID,
 				PkgName:          pkg.Name,
@@ -91,7 +91,17 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 				PkgIdentifier:    pkg.Identifier,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,
-			})
+			}
+
+			// We add the severity from the base OS, so we need to keep the severity level from the base OS (as source).
+			if adv.Severity != dbTypes.SeverityUnknown {
+				vuln.SeveritySource = s.vsg.BaseOS()
+				vuln.Vulnerability = dbTypes.Vulnerability{
+					Severity: adv.Severity.String(),
+				}
+			}
+
+			vulns = append(vulns, vuln)
 		}
 	}
 	return vulns, nil
