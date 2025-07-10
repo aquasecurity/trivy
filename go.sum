@@ -684,8 +684,8 @@ github.com/DATA-DOG/go-sqlmock v1.5.2 h1:OcvFkGmslmlZibjAjaHm3L//6LiuBgolP7Oputl
 github.com/DATA-DOG/go-sqlmock v1.5.2/go.mod h1:88MAG/4G7SMwSE3CeA0ZKzrT5CiOU3OJ+JlNzwDqpNU=
 github.com/DataDog/zstd v1.5.5 h1:oWf5W7GtOLgp6bciQYDmhHHjdhYkALu6S/5Ni9ZgSvQ=
 github.com/DataDog/zstd v1.5.5/go.mod h1:g4AWEaM3yOg3HYfnJ3YIawPnVdXJh9QME85blwSAmyw=
-github.com/DmitriyLewen/trivy-db v0.0.0-20250710090750-c9655c093e1d h1:xGL4ZU5vtfwtBFALCTKURNdmHSddFi5EOJ9IdcUA5UM=
-github.com/DmitriyLewen/trivy-db v0.0.0-20250710090750-c9655c093e1d/go.mod h1:Ubl2YWA6Zg7eaojg4MDmeDdYU4+PiGPsnwo6B5UIwqw=
+github.com/DmitriyLewen/trivy-db v0.0.0-20250710123115-668fd653a743 h1:LvrS3aetUSSyGtfD0rZArl0AMD9er0nagxi4yHpxTE0=
+github.com/DmitriyLewen/trivy-db v0.0.0-20250710123115-668fd653a743/go.mod h1:Ubl2YWA6Zg7eaojg4MDmeDdYU4+PiGPsnwo6B5UIwqw=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible h1:juIaKLLVhqzP55d8x4cSVgwyQv76Z55/fRv/UBr2KkQ=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible/go.mod h1:BB1eHdMLYEFuFdBlRMb0N7YGVdM5s6Pt0njxgvfbGGs=
 github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.26.0 h1:f2Qw/Ehhimh5uO1fayV0QIW7DShEQqhtUfhYc+cBPlw=

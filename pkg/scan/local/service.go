@@ -158,7 +158,7 @@ func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, option
 
 	for i := range results {
 		// Fill vulnerability details
-		s.vulnClient.FillInfo(results[i].Type, results[i].Vulnerabilities, options.VulnSeveritySources)
+		s.vulnClient.FillInfo(results[i].Vulnerabilities, options.VulnSeveritySources)
 	}
 
 	// Call post-scan hooks
