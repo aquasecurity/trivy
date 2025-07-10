@@ -14,13 +14,18 @@ import (
 func DockerImage(ref name.Reference, host string) (Image, func(), error) {
 	cleanup := func() {}
 
+	// Resolve Docker host based on priority: --docker-host > DOCKER_HOST > DOCKER_CONTEXT > current context
+	resolvedHost, err := resolveDockerHost(host)
+	if err != nil {
+		return nil, cleanup, xerrors.Errorf("failed to resolve Docker host: %w", err)
+	}
+
 	opts := []client.Opt{
 		client.FromEnv,
 		client.WithAPIVersionNegotiation(),
 	}
-	if host != "" {
-		// adding host parameter to the last assuming it will pick up more preference
-		opts = append(opts, client.WithHost(host))
+	if resolvedHost != "" {
+		opts = append(opts, client.WithHost(resolvedHost))
 	}
 	c, err := client.NewClientWithOpts(opts...)
 
