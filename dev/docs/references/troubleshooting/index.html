@@ -7254,6 +7254,34 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#http-requestresponse-tracing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP Request/Response Tracing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#others" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8509,6 +8537,34 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#http-requestresponse-tracing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP Request/Response Tracing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#others" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8808,6 +8864,21 @@ Error: aquasecurity/trivy/trivy 64 already installed
 <div class="highlight"><pre><span></span><code>$ brew unlink trivy &amp;&amp; brew uninstall trivy
 ($ rm -rf /usr/local/Cellar/trivy/64)
 $ brew install aquasecurity/trivy/trivy
+</code></pre></div>
+<h2 id="debugging">Debugging<a class="headerlink" href="#debugging" title="Permanent link">&para;</a></h2>
+<h3 id="http-requestresponse-tracing">HTTP Request/Response Tracing<a class="headerlink" href="#http-requestresponse-tracing" title="Permanent link">&para;</a></h3>
+<p>For debugging network issues, connection problems, or authentication failures, you can enable HTTP request/response tracing using the <code>--trace-http</code> flag.</p>
+<div class="admonition danger">
+<p class="admonition-title">Security Warning</p>
+<p>While Trivy attempts to redact known sensitive information such as authentication headers and common secrets, the <code>--trace-http</code> flag may still expose sensitive data in HTTP requests and responses.</p>
+<p><strong>Never use this flag in production environments or CI/CD pipelines.</strong>
+This flag is automatically disabled in CI environments for security.</p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Enable HTTP tracing for debugging registry issues</span>
+$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--trace-http<span class="w"> </span>registry.example.com/my-image:latest
+
+<span class="c1"># HTTP tracing with other debugging options</span>
+$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--trace-http<span class="w"> </span>--debug<span class="w"> </span>--insecure<span class="w"> </span>my-image:tag
 </code></pre></div>
 <h2 id="others">Others<a class="headerlink" href="#others" title="Permanent link">&para;</a></h2>
 <h3 id="unknown-error">Unknown error<a class="headerlink" href="#unknown-error" title="Permanent link">&para;</a></h3>

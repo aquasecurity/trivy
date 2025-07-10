@@ -7935,13 +7935,13 @@ You're not viewing the latest version of the documentation.
 
 <h1 id="debugging-checks">Debugging checks<a class="headerlink" href="#debugging-checks" title="Permanent link">&para;</a></h1>
 <p>When working on more complex queries (or when learning Rego), it's useful to see exactly how the policy is applied.
-For this purpose you can use the <code>--trace</code> flag.
+For this purpose you can use the <code>--trace-rego</code> flag.
 This will output a large trace from Open Policy Agent like the following:</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Only failed checks show traces. If you want to debug a passed check, you need to make it fail on purpose.</p>
 </div>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>config<span class="w"> </span>--trace<span class="w"> </span>configs/
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>config<span class="w"> </span>--trace-rego<span class="w"> </span>configs/
 <span class="m">2022</span>-05-16T13:47:58.853+0100<span class="w">    </span>INFO<span class="w">    </span>Detected<span class="w"> </span>config<span class="w"> </span>files:<span class="w"> </span><span class="m">1</span>
 
 Dockerfile<span class="w"> </span><span class="o">(</span>dockerfile<span class="o">)</span>
