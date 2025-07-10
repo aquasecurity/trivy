@@ -341,6 +341,18 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			inputFile: "testdata/sad/invalid-purl.json",
 			wantErr:   "purl is missing type or name",
 		},
+		{
+			name:      "happy path package with hash",
+			inputFile: "testdata/happy/package-hashes.json",
+			want: types.SBOM{
+				Metadata: types.Metadata{
+					OS: &ftypes.OS{
+						Family: "alpine",
+						Name:   "3.16.0",
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

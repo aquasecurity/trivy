@@ -481,6 +481,23 @@ func TestMarshaler_Marshal(t *testing.T) {
 								FilePath: "tools/project-doe/specifications/actionpack.gemspec",
 								Digest:   "sha1:413f98442c83808042b5d1d2611a346b999bdca5",
 							},
+							{
+								Name:    "ruby-typeprof",
+								Version: "0.20.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeNPM,
+										Name:    "ruby-typeprof",
+										Version: "0.20.1",
+									},
+								},
+								Licenses: []string{"MIT"},
+								Layer: ftypes.Layer{
+									DiffID: "sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
+								},
+								Digest:   "sha512:bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a",
+								FilePath: "usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
+							},
 						},
 					},
 				},
@@ -490,7 +507,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				DataLicense:       spdx.DataLicense,
 				SPDXIdentifier:    "DOCUMENT",
 				DocumentName:      "centos:latest",
-				DocumentNamespace: "http://trivy.dev/container_image/centos:latest-3ff14136-e09f-4df9-80ea-000000000006",
+				DocumentNamespace: "http://trivy.dev/container_image/centos:latest-3ff14136-e09f-4df9-80ea-000000000007",
 				CreationInfo: &spdx.CreationInfo{
 					Creators: []common.Creator{
 						{
@@ -595,6 +612,31 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
+						PackageSPDXIdentifier:   spdx.ElementID("Package-52b8e939bac2d133"),
+						PackageName:             "ruby-typeprof",
+						PackageVersion:          "0.20.1",
+						PackageDownloadLocation: "NONE",
+						PackageLicenseConcluded: "MIT",
+						PackageLicenseDeclared:  "MIT",
+						PrimaryPackagePurpose:   tspdx.PackagePurposeLibrary,
+						PackageSupplier:         &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						FilesAnalyzed:           true,
+						PackageVerificationCode: &spdx.PackageVerificationCode{
+							Value: "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+						},
+						PackageExternalReferences: []*spdx.PackageExternalReference{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:npm/ruby-typeprof@0.20.1",
+							},
+						},
+						Annotations: []spdx.Annotation{
+							annotation(t, "LayerDiffID: sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e"),
+							annotation(t, "PkgType: gemspec"),
+						},
+					},
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("OperatingSystem-20f7fa3049cc748c"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "centos",
@@ -624,6 +666,16 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Algorithm: spdx.SHA1,
 								Value:     "d2f9f9aed5161f6e4116a3f9573f41cd832f137c",
+							},
+						},
+					},
+					{
+						FileSPDXIdentifier: "File-a52825a3e5bc6dfe",
+						FileName: "usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
+						Checksums: []common.Checksum{
+							{
+								Algorithm: common.SHA512,
+								Value: "bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a",
 							},
 						},
 					},
@@ -662,6 +714,16 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Package-da2cda24d2ecbfe6"},
 						RefB:         spdx.DocElementID{ElementRefID: "File-6a540784b0dc6d55"},
+						Relationship: "CONTAINS",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "ContainerImage-413bfede37ad01fc"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-52b8e939bac2d133"},
+						Relationship: "CONTAINS",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Package-52b8e939bac2d133"},
+						RefB:         spdx.DocElementID{ElementRefID: "File-a52825a3e5bc6dfe"},
 						Relationship: "CONTAINS",
 					},
 				},
@@ -1443,125 +1505,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Filesystem-e340f27468b382be"},
 						RefB:         spdx.DocElementID{ElementRefID: "Application-aab0f4e8cf174c67"},
-						Relationship: "CONTAINS",
-					},
-				},
-			},
-		},
-		{
-			name: "happy path for SHA512 digest",
-			inputReport: types.Report{
-				SchemaVersion: report.SchemaVersion,
-				ArtifactName:  "http://test-aggregate",
-				ArtifactType:  ftypes.TypeRepository,
-				Results: types.Results{
-					{
-						Target: "Node.js",
-						Class:  types.ClassLangPkg,
-						Type:   ftypes.NodePkg,
-						Packages: []ftypes.Package{
-							{
-								Name:    "ruby-typeprof",
-								Version: "0.20.1",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    packageurl.TypeNPM,
-										Name:    "ruby-typeprof",
-										Version: "0.20.1",
-									},
-								},
-								Licenses: []string{"MIT"},
-								Layer: ftypes.Layer{
-									DiffID: "sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
-								},
-								Digest:   "sha512:bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a",
-								FilePath: "usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
-							},
-						},
-					},
-				},
-			},
-			wantSBOM: &spdx.Document{
-				SPDXVersion:       spdx.Version,
-				DataLicense:       spdx.DataLicense,
-				SPDXIdentifier:    "DOCUMENT",
-				DocumentName:      "http://test-aggregate",
-				DocumentNamespace: "http://trivy.dev/repository/test-aggregate-3ff14136-e09f-4df9-80ea-000000000003",
-				CreationInfo: &spdx.CreationInfo{
-					Creators: []common.Creator{
-						{
-							Creator:     "aquasecurity",
-							CreatorType: "Organization",
-						},
-						{
-							Creator:     "trivy-0.56.2",
-							CreatorType: "Tool",
-						},
-					},
-					Created: "2021-08-25T12:20:30Z",
-				},
-				Packages: []*spdx.Package{
-					{
-						PackageSPDXIdentifier:   spdx.ElementID("Package-52b8e939bac2d133"),
-						PackageDownloadLocation: "git+http://test-aggregate",
-						PackageName:             "ruby-typeprof",
-						PackageVersion:          "0.20.1",
-						PackageLicenseConcluded: "MIT",
-						PackageLicenseDeclared:  "MIT",
-						PackageExternalReferences: []*spdx.PackageExternalReference{
-							{
-								Category: tspdx.CategoryPackageManager,
-								RefType:  tspdx.RefTypePurl,
-								Locator:  "pkg:npm/ruby-typeprof@0.20.1",
-							},
-						},
-						Annotations: []spdx.Annotation{
-							annotation(t, "LayerDiffID: sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e"),
-							annotation(t, "PkgType: node-pkg"),
-						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
-						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
-						FilesAnalyzed:         true,
-						PackageVerificationCode: &spdx.PackageVerificationCode{
-							Value: "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-						},
-					},
-					{
-						PackageSPDXIdentifier:   "Repository-1a78857c1a6a759e",
-						PackageName:             "http://test-aggregate",
-						PackageDownloadLocation: "git+http://test-aggregate",
-						Annotations: []spdx.Annotation{
-							annotation(t, "SchemaVersion: 2"),
-						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
-					},
-				},
-				Files: []*spdx.File{
-					{
-						FileName:           "usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
-						FileSPDXIdentifier: "File-a52825a3e5bc6dfe",
-						Checksums: []common.Checksum{
-							{
-								Algorithm: common.SHA512,
-								Value:     "bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a",
-							},
-						},
-					},
-				},
-				Relationships: []*spdx.Relationship{
-					{
-						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
-						RefB:         spdx.DocElementID{ElementRefID: "Repository-1a78857c1a6a759e"},
-						Relationship: "DESCRIBES",
-					},
-					{
-						RefA:         spdx.DocElementID{ElementRefID: "Package-52b8e939bac2d133"},
-						RefB:         spdx.DocElementID{ElementRefID: "File-a52825a3e5bc6dfe"},
-						Relationship: "CONTAINS",
-					},
-					{
-						RefA:         spdx.DocElementID{ElementRefID: "Repository-1a78857c1a6a759e"},
-						RefB:         spdx.DocElementID{ElementRefID: "Package-52b8e939bac2d133"},
 						Relationship: "CONTAINS",
 					},
 				},

@@ -1,0 +1,26 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "creationInfo": {
+    "created": "2022-09-12T17:02:46.826609Z",
+    "creators": [
+      "Tool: trivy-dev",
+      "Organization: aquasecurity"
+    ]
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "http://trivy.dev/container/meven-test-project-eb7a0384-b04a-4fc6-8afb-1662fe59ca79",
+  "name": "maven-test-projecct",
+  "packages": [
+    {
+      "name": "lodash",
+      "SPDXID": "SPDXRef-Package-lodash-4.17.21",
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a"
+        }
+      ]
+    }
+  ],
+  "spdxVersion": "SPDX-2.3"
+}
