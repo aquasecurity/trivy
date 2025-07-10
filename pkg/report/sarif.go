@@ -421,7 +421,7 @@ func toCVSSData(vuln types.DetectedVulnerability) (map[string]any, string) {
 		data["cvssv3_vector"] = cvss.V3Vector
 		data["cvssv3_baseScore"] = cvss.V3Score
 		data["cvssv40_vector"] = cvss.V40Vector
-		data["cvssv40_score"] = cvss.V40Score
+		data["cvssv40_baseScore"] = cvss.V40Score
 
 		if cvss.V3Score != 0 {
 			score = fmt.Sprintf("%.1f", cvss.V3Score)
