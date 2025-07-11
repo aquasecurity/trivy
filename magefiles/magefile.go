@@ -3,9 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"io/fs"
 	"log/slog"
 	"os"
 	"os/exec"
@@ -33,10 +31,6 @@ var (
 		"CGO_ENABLED": "0",
 	}
 )
-
-var protoFiles = []string{
-	"pkg/iac/scanners/terraformplan/snapshot/planproto/planfile.proto",
-}
 
 func init() {
 	slog.SetDefault(log.New(log.NewHandler(os.Stderr, nil))) // stdout is suppressed in mage
@@ -128,7 +122,7 @@ type Protoc mg.Namespace
 // Generate parses PROTO_FILES and generates the Go code for client/server mode
 func (Protoc) Generate() error {
 	mg.Deps(Tool{}.Install) // Install buf and protoc-gen-twirp
-	
+
 	// Run buf generate
 	return sh.RunV("buf", "generate")
 }
@@ -136,7 +130,7 @@ func (Protoc) Generate() error {
 // Fmt formats protobuf files using buf
 func (Protoc) Fmt() error {
 	mg.Deps(Tool{}.Install) // Install buf
-	
+
 	// Run buf format
 	return sh.RunV("buf", "format", "-w")
 }
@@ -144,11 +138,18 @@ func (Protoc) Fmt() error {
 // Lint runs linting on protobuf files using buf
 func (Protoc) Lint() error {
 	mg.Deps(Tool{}.Install) // Install buf
-	
+
 	// Run buf lint
 	return sh.RunV("buf", "lint")
 }
 
+// Breaking checks for breaking changes in protobuf files using buf
+func (Protoc) Breaking() error {
+	mg.Deps(Tool{}.Install) // Install buf
+
+	// Run buf breaking against main branch
+	return sh.RunV("buf", "breaking", "--against", ".git#branch=main")
+}
 
 // Yacc generates parser
 func Yacc() error {
@@ -344,26 +345,8 @@ func (Lint) Fix() error {
 	return sh.RunV("golangci-lint", "run", "--fix", "--build-tags=integration")
 }
 
-// Fmt formats Go code and proto files
+// Fmt formats Go code
 func Fmt() error {
-	// Check if clang-format is installed
-	if !installed("clang-format") {
-		return errors.New("need to install clang-format")
-	}
-
-	// Format proto files
-	rpcProtoFiles, err := findRPCProtoFiles()
-	if err != nil {
-		return err
-	}
-
-	allProtoFiles := append(protoFiles, rpcProtoFiles...)
-	for _, file := range allProtoFiles {
-		if err = sh.Run("clang-format", "-i", file); err != nil {
-			return err
-		}
-	}
-
 	// Format Go code
 	return sh.Run("go", "fmt", "./...")
 }
@@ -479,25 +462,6 @@ func (Docs) Serve() error {
 // Generate generates CLI references
 func (Docs) Generate() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_docs", "./magefiles")
-}
-
-func findRPCProtoFiles() ([]string, error) {
-	var files []string
-	err := filepath.WalkDir("rpc", func(path string, d fs.DirEntry, err error) error {
-		switch {
-		case err != nil:
-			return err
-		case d.IsDir():
-			return nil
-		case filepath.Ext(path) == ".proto":
-			files = append(files, path)
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return files, nil
 }
 
 func exists(filename string) bool {
