@@ -145,7 +145,7 @@ Trivy parses the manifest files of installed packages in container image scannin
 See [here](https://packaging.python.org/en/latest/discussions/package-formats/) for the detail.
 
 ### Egg
-Trivy looks for `*.egg-info`, `*.egg-info/PKG-INFO`, `*.egg` and `EGG-INFO/PKG-INFO` to identify Python packages.
+Trivy looks for `*.egg-info`, `*.egg-info/METADATA`, `*.egg-info/PKG-INFO`, `*.egg` and `EGG-INFO/PKG-INFO` to identify Python packages.
 
 ### Wheel
 Trivy looks for `.dist-info/METADATA` to identify Python packages.
