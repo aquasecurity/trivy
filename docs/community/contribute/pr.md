@@ -54,6 +54,21 @@ Your PR must pass all the integration tests. You can test it as below.
 $ mage test:integration
 ```
 
+### Protocol Buffers
+If you update protobuf files (`.proto`), you need to regenerate the Go code:
+
+```shell
+$ mage protoc:generate
+```
+
+You can also format and lint protobuf files:
+
+```shell
+$ mage protoc:fmt     # Format protobuf files
+$ mage protoc:lint    # Lint protobuf files
+$ mage protoc:breaking # Check for breaking changes against main branch
+```
+
 ### Documentation
 If you update CLI flags, you need to generate the CLI references.
 The test will fail if they are not up-to-date.
