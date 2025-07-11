@@ -36,7 +36,7 @@ func TestComplianceSpec_Scanners(t *testing.T) {
 						Description: "Check that container is not running as root",
 						ID:          "1.0",
 						Checks: []iacTypes.SpecCheck{
-							{ID: "AVD-KSV-0012"},
+							{ID: "KSV-0012"},
 						},
 					},
 					{
@@ -69,7 +69,7 @@ func TestComplianceSpec_Scanners(t *testing.T) {
 						Description: "Check that container is not running as root",
 						ID:          "1.0",
 						Checks: []iacTypes.SpecCheck{
-							{ID: "AVD-KSV-0012"},
+							{ID: "KSV-0012"},
 						},
 					},
 					{
@@ -157,7 +157,7 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 						Description: "Check that container is not running as root",
 						ID:          "1.0",
 						Checks: []iacTypes.SpecCheck{
-							{ID: "AVD-KSV-0012"},
+							{ID: "KSV-0012"},
 						},
 					},
 					{
@@ -173,7 +173,7 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 			},
 			want: map[types.Scanner][]string{
 				types.MisconfigScanner: {
-					"AVD-KSV-0012",
+					"KSV-0012",
 					"AVD-1.2.31",
 					"AVD-1.2.32",
 				},
@@ -195,7 +195,7 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 						Description: "Check that container is not running as root",
 						ID:          "1.0",
 						Checks: []iacTypes.SpecCheck{
-							{ID: "AVD-KSV-0012"},
+							{ID: "KSV-0012"},
 						},
 					},
 					{
@@ -219,7 +219,7 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 			},
 			want: map[types.Scanner][]string{
 				types.MisconfigScanner: {
-					"AVD-KSV-0012",
+					"KSV-0012",
 					"AVD-1.2.31",
 					"AVD-1.2.32",
 				},

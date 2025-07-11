@@ -189,7 +189,7 @@ resource "aws_sqs_queue_policy" "bad_example" {
 # - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-using-identity-based-policies.html
 # custom:
 #   id: AVD-TEST-0123
-#   short_code: no-wildcard-actions
+#   long_id: aws-sqs-no-wildcard-actions
 #   severity: CRITICAL
 #   recommended_action: Avoid using "*" for actions in SQS policies and specify only required actions.
 #   input:
@@ -274,7 +274,7 @@ package defsec.abcdefg
 __rego_metadata__ := {
 	"id": "AVD-TEST-0123",
 	"title": "Buckets should not be evil",
-	"short_code": "no-evil-buckets",
+	"long_id": "no-evil-buckets",
 	"severity": "CRITICAL",
 	"type": "DefSec Security Check",
 	"description": "You should not allow buckets to be evil",
@@ -981,7 +981,7 @@ resource "aws_s3_bucket_versioning" "test" {
 #   provider: custom
 #   service: custom
 #   severity: LOW
-#   short_code: custom-policy
+#   long_id: custom-policy
 #   recommended_action: Custom policy for testing
 
 package test
@@ -1213,7 +1213,7 @@ func TestScanRawTerraform(t *testing.T) {
 # - input: schema["terraform-raw"]
 # custom:
 #   id: USER0001
-#   short_code: evil-bucket
+#   long_id: evil-bucket
 #   severity: HIGH
 #   input:
 #     selector:

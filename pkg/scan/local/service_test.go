@@ -1410,6 +1410,9 @@ func TestScanner_Scan(t *testing.T) {
 										Description:        "When using a 'FROM' statement you should use a specific tag to avoid uncontrolled behavior when the image is updated.",
 										Severity:           "MEDIUM",
 										RecommendedActions: "Add a tag to the image in the 'FROM' statement",
+										Aliases: []string{
+											"AVD-DS-0001",
+										},
 									},
 									CauseMetadata: ftypes.CauseMetadata{
 										Provider: "Dockerfile",
@@ -1424,12 +1427,15 @@ func TestScanner_Scan(t *testing.T) {
 									Query:     "data.builtin.dockerfile.DS002.deny",
 									Message:   "Specify at least 1 USER command in Dockerfile with non-root user as argument",
 									PolicyMetadata: ftypes.PolicyMetadata{
-										ID:                 "AVD-DS-0002",
+										ID:                 "DS-0002",
 										Type:               "Dockerfile Security Check",
 										Title:              "Image user should not be 'root'",
 										Description:        "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
 										Severity:           "HIGH",
 										RecommendedActions: "Add 'USER <non root user name>' line to the Dockerfile",
+										Aliases: []string{
+											"AVD-DS-0002",
+										},
 									},
 									CauseMetadata: ftypes.CauseMetadata{
 										Provider: "Dockerfile",
@@ -1455,7 +1461,7 @@ func TestScanner_Scan(t *testing.T) {
 								Query:       "data.builtin.dockerfile.DS002.deny",
 								Message:     "Specify at least 1 USER command in Dockerfile with non-root user as argument",
 								Type:        "Dockerfile Security Check",
-								ID:          "AVD-DS-0002",
+								ID:          "DS-0002",
 								Title:       "Image user should not be 'root'",
 								Description: "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
 								Severity:    "HIGH",

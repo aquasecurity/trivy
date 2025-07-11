@@ -9,7 +9,7 @@
 #   provider: aws
 #   service: sqs
 #   severity: HIGH
-#   short_code: foo-bar-baz
+#   long_id: foo-bar-baz
 #   recommended_action: "Remove bad stuff"
 #   input:
 #     selector:

@@ -22,7 +22,7 @@ import (
 )
 
 var (
-	disabledChecks = set.New("AVD-DS-0007", "AVD-DS-0016")
+	disabledChecks = set.New("DS-0007", "DS-0016")
 	reason         = "See " + doc.URL("docs/target/container_image", "disabled-checks")
 )
 

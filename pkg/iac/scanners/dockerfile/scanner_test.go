@@ -28,7 +28,7 @@ const DS006PolicyWithDockerfileSchema = `# METADATA
 # custom:
 #   id: AVD-DS-0006
 #   severity: CRITICAL
-#   short_code: no-self-referencing-copy-from
+#   long_id: docker-no-self-referencing-copy-from
 #   recommended_action: "Change the '--from' so that it will not refer to itself"
 #   input:
 #     selector:
@@ -83,7 +83,7 @@ const DS006PolicyWithMyFancyDockerfileSchema = `# METADATA
 # custom:
 #   id: AVD-DS-0006
 #   severity: CRITICAL
-#   short_code: no-self-referencing-copy-from
+#   long_id: docker-no-self-referencing-copy-from
 #   recommended_action: "Change the '--from' so that it will not refer to itself"
 #   input:
 #     selector:
@@ -138,7 +138,7 @@ const DS006PolicyWithOldSchemaSelector = `# METADATA
 # custom:
 #   id: AVD-DS-0006
 #   severity: CRITICAL
-#   short_code: no-self-referencing-copy-from
+#   long_id: docker-no-self-referencing-copy-from
 #   recommended_action: "Change the '--from' so that it will not refer to itself"
 #   input:
 #     selector:
@@ -186,7 +186,7 @@ const DS006LegacyWithOldStyleMetadata = `package builtin.dockerfile.DS006
 __rego_metadata__ := {
 	"id": "AVD-DS-0006",
 	"title": "COPY '--from' referring to the current image",
-	"short_code": "no-self-referencing-copy-from",
+	"long_id": "docker-no-self-referencing-copy-from",
 	"version": "v1.0.0",
 	"severity": "CRITICAL",
 	"type": "Dockerfile Security Check",
@@ -234,8 +234,7 @@ USER root
 		t,
 		scan.Rule{
 			ID:             "AVD-DS-0006",
-			Aliases:        []string{"AVD-DS-0006"},
-			ShortCode:      "no-self-referencing-copy-from",
+			LongID:         "docker-no-self-referencing-copy-from",
 			Summary:        "COPY '--from' referring to the current image",
 			Explanation:    "COPY '--from' should not mention the current FROM alias, since it is impossible to copy from itself.",
 			Impact:         "",
@@ -583,8 +582,7 @@ COPY --from=dep /binary /`
 					t,
 					scan.Rule{
 						ID:             "AVD-DS-0006",
-						Aliases:        []string{"AVD-DS-0006"},
-						ShortCode:      "no-self-referencing-copy-from",
+						LongID:         "docker-no-self-referencing-copy-from",
 						Summary:        "COPY '--from' referring to the current image",
 						Explanation:    "COPY '--from' should not mention the current FROM alias, since it is impossible to copy from itself.",
 						Impact:         "",
@@ -655,7 +653,7 @@ MAINTAINER moby@example.com`,
 # - input: schema["dockerfile"]
 # custom:
 #   id: USER-TEST-0001
-#   short_code: maintainer-deprecated
+#   long_id: docker-maintainer-deprecated
 #   input:
 #     selector:
 #     - type: dockerfile
@@ -690,9 +688,9 @@ deny contains res if {
 			results, err := scanner.ScanFS(t.Context(), fsys, ".")
 			require.NoError(t, err)
 			if tt.expected {
-				testutil.AssertRuleFound(t, "dockerfile-general-maintainer-deprecated", results, "")
+				testutil.AssertRuleFound(t, "docker-maintainer-deprecated", results, "")
 			} else {
-				testutil.AssertRuleNotFailed(t, "dockerfile-general-maintainer-deprecated", results, "")
+				testutil.AssertRuleNotFailed(t, "docker-maintainer-deprecated", results, "")
 			}
 		})
 	}

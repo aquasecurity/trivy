@@ -268,15 +268,7 @@ func (r *Results) AddIgnored(source any, descriptions ...string) {
 
 func (r *Results) Ignore(ignoreRules ignore.Rules, ignores map[string]ignore.Ignorer) {
 	for i, result := range *r {
-		allIDs := []string{
-			result.Rule().LongID(),
-			result.Rule().ID,
-			strings.ToLower(result.Rule().ID),
-			result.Rule().ShortCode,
-		}
-		allIDs = append(allIDs, result.Rule().Aliases...)
-
-		if ignoreRules.Ignore(result.Metadata(), allIDs, ignores) {
+		if ignoreRules.Ignore(result.Metadata(), result.Rule().AllIDs(), ignores) {
 			(*r)[i].OverrideStatus(StatusIgnored)
 		}
 	}

@@ -16,7 +16,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 		sm := StaticMetadata{
 			ID:                  "i",
 			Title:               "t",
-			ShortCode:           "sc",
+			LongID:              "li",
 			Aliases:             []string{"a", "b", "c"},
 			Description:         "d",
 			Severity:            "s",
@@ -34,7 +34,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 			map[string]any{
 				"id":                  "i_n",
 				"title":               "t_n",
-				"short_code":          "sc_n",
+				"long_id":             "li_n",
 				"aliases":             []any{"a_n", "b_n", "c_n"},
 				"description":         "d_n",
 				"service":             "srvc_n",
@@ -53,7 +53,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 		expected := StaticMetadata{
 			ID:                  "i_n",
 			Title:               "t_n",
-			ShortCode:           "sc_n",
+			LongID:              "li_n",
 			Aliases:             []string{"a", "b", "c", "a_n", "b_n", "c_n"},
 			Description:         "d_n",
 			Severity:            "S_N",

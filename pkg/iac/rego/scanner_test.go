@@ -47,7 +47,7 @@ func Test_RegoScanning_Deny(t *testing.T) {
 #   provider: custom
 #   service: custom
 #   severity: LOW
-#   short_code: custom-policy
+#   long_id: custom-policy
 #   recommended_action: Custom policy for testing
 
 package defsec.test
@@ -94,7 +94,7 @@ func Test_RegoScanning_AbsolutePolicyPath_Deny(t *testing.T) {
 #   provider: custom
 #   service: custom
 #   severity: LOW
-#   short_code: custom-policy
+#   long_id: custom-policy
 #   recommended_action: Custom policy for testing
 package defsec.test
 
@@ -138,7 +138,7 @@ func Test_RegoScanning_Allow(t *testing.T) {
 #   provider: custom
 #   service: custom
 #   severity: LOW
-#   short_code: custom-policy
+#   long_id: custom-policy
 #   recommended_action: Custom policy for testing
 
 package defsec.test
@@ -185,7 +185,7 @@ func Test_RegoScanning_WithRuntimeValues(t *testing.T) {
 #   provider: custom
 #   service: custom
 #   severity: LOW
-#   short_code: custom-policy
+#   long_id: custom-policy
 #   recommended_action: Custom policy for testing
 
 package defsec.test
@@ -228,7 +228,7 @@ func Test_RegoScanning_WithDenyMessage(t *testing.T) {
 #   provider: custom
 #   service: custom
 #   severity: LOW
-#   short_code: custom-policy
+#   long_id: custom-policy
 #   recommended_action: Custom policy for testing
 
 package defsec.test
@@ -275,7 +275,7 @@ func Test_RegoScanning_WithDenyMetadata_ImpliedPath(t *testing.T) {
 #   provider: custom
 #   service: custom
 #   severity: LOW
-#   short_code: custom-policy
+#   long_id: custom-policy
 #   recommended_action: Custom policy for testing
 
 package defsec.test
@@ -329,7 +329,7 @@ func Test_RegoScanning_WithDenyMetadata_PersistedPath(t *testing.T) {
 #   provider: custom
 #   service: custom
 #   severity: LOW
-#   short_code: custom-policy
+#   long_id: custom-policy
 #   recommended_action: Custom policy for testing
 
 package defsec.test
@@ -378,7 +378,7 @@ package defsec.test
 __rego_metadata__ := {
 	"id": "AVD-XX-9999",
 	"title": "This is a title",
-	"short_code": "short-code",
+	"long_id": "long-id",
 	"severity": "LOW",
 	"type": "Dockerfile Security Check",
 	"description": "This is a description",
@@ -442,7 +442,7 @@ func Test_RegoScanning_WithMatchingInputSelector(t *testing.T) {
 #   provider: custom
 #   service: custom
 #   severity: LOW
-#   short_code: custom-policy
+#   long_id: custom-policy
 #   recommended_action: Custom policy for testing
 
 package defsec.test
@@ -523,7 +523,7 @@ func Test_RegoScanning_NoTracingByDefault(t *testing.T) {
 #   provider: custom
 #   service: custom
 #   severity: LOW
-#   short_code: custom-policy
+#   long_id: custom-policy
 #   recommended_action: Custom policy for testing
 
 package defsec.test
@@ -568,7 +568,7 @@ func Test_RegoScanning_GlobalTracingEnabled(t *testing.T) {
 #   provider: custom
 #   service: custom
 #   severity: LOW
-#   short_code: custom-policy
+#   long_id: custom-policy
 #   recommended_action: Custom policy for testing
 
 package defsec.test
@@ -617,7 +617,7 @@ func Test_RegoScanning_PerResultTracingEnabled(t *testing.T) {
 #   provider: custom
 #   service: custom
 #   severity: LOW
-#   short_code: custom-policy
+#   long_id: custom-policy
 #   recommended_action: Custom policy for testing
 package defsec.test
 
@@ -844,7 +844,7 @@ func Test_RegoScanning_CustomData(t *testing.T) {
 #   provider: custom
 #   service: custom
 #   severity: LOW
-#   short_code: custom-policy
+#   long_id: custom-policy
 #   recommended_action: Custom policy for testing
 
 package defsec.test
@@ -896,7 +896,7 @@ func Test_RegoScanning_InvalidFS(t *testing.T) {
 #   provider: custom
 #   service: custom
 #   severity: LOW
-#   short_code: custom-policy
+#   long_id: custom-policy
 #   recommended_action: Custom policy for testing
 
 package defsec.test

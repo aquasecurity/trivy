@@ -40,7 +40,7 @@ type Rule struct {
 	Deprecated          bool                             `json:"deprecated"`
 	ID                  string                           `json:"id"`
 	Aliases             []string                         `json:"aliases"`
-	ShortCode           string                           `json:"short_code"`
+	LongID              string                           `json:"long_id"`
 	Summary             string                           `json:"summary"`
 	Explanation         string                           `json:"explanation"`
 	Impact              string                           `json:"impact"`
@@ -64,14 +64,28 @@ func (r Rule) IsDeprecated() bool {
 }
 
 func (r Rule) HasID(id string) bool {
-	if r.ID == id || r.LongID() == id {
+	if r.ID == id || r.LongID == id {
 		return true
 	}
 	return slices.Contains(r.Aliases, id)
 }
 
-func (r Rule) LongID() string {
-	return strings.ToLower(fmt.Sprintf("%s-%s-%s", r.Provider, r.Service, r.ShortCode))
+func (r Rule) AllIDs() []string {
+	allIDs := []string{
+		r.ID,
+		r.LongID,
+		strings.ToLower(r.ID),
+	}
+	return append(allIDs, r.Aliases...)
+}
+
+func (r Rule) ShortCode() string {
+	for _, prefix := range []string{"docker-", "kubernetes-"} {
+		if s, ok := strings.CutPrefix(r.LongID, prefix); ok {
+			return s
+		}
+	}
+	return strings.TrimPrefix(r.LongID, fmt.Sprintf("%s-%s-", r.Provider, r.Service))
 }
 
 func (r Rule) ServiceDisplayName() string {
@@ -79,7 +93,7 @@ func (r Rule) ServiceDisplayName() string {
 }
 
 func (r Rule) ShortCodeDisplayName() string {
-	return nicify(r.ShortCode)
+	return nicify(r.ShortCode())
 }
 
 var acronyms = []string{

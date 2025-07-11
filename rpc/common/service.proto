@@ -114,6 +114,7 @@ message DetectedMisconfiguration {
   Layer layer = 12;
   CauseMetadata cause_metadata = 13;
   string query = 15;
+  repeated string aliases        = 16;
 
   reserved 14;  // avd_id deprecated
 }

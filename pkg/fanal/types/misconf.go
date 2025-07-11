@@ -74,6 +74,7 @@ type PolicyMetadata struct {
 	Severity           string   `json:",omitempty"`
 	RecommendedActions string   `json:",omitempty" mapstructure:"recommended_actions"`
 	References         []string `json:",omitempty"`
+	Aliases            []string `json:"-"`
 }
 
 type PolicyInputOption struct {
