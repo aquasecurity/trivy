@@ -123,45 +123,32 @@ func Wire() error {
 	return sh.RunV("go", "tool", "wire", "gen", "./pkg/commands/...", "./pkg/rpc/...", "./pkg/k8s/...")
 }
 
-// Protoc parses PROTO_FILES and generates the Go code for client/server mode
-func Protoc() error {
-	// It is called in the protoc container
-	if _, ok := os.LookupEnv("TRIVY_PROTOC_CONTAINER"); ok {
-		rpcProtoFiles, err := findRPCProtoFiles()
-		if err != nil {
-			return err
-		}
-		for _, file := range rpcProtoFiles {
-			// Check if the generated Go file is up-to-date
-			dst := strings.TrimSuffix(file, ".proto") + ".pb.go"
-			if updated, err := target.Path(dst, file); err != nil {
-				return err
-			} else if !updated {
-				continue
-			}
+type Protoc mg.Namespace
 
-			// Generate
-			if err = sh.RunV("protoc", "--twirp_out", ".", "--twirp_opt", "paths=source_relative",
-				"--go_out", ".", "--go_opt", "paths=source_relative", file); err != nil {
-				return err
-			}
-		}
-
-		for _, file := range protoFiles {
-			if err := sh.RunV("protoc", ".", "paths=source_relative", "--go_out", ".", "--go_opt",
-				"paths=source_relative", file); err != nil {
-				return err
-			}
-		}
-		return nil
-	}
-
-	// It is called on the host
-	if err := sh.RunV("bash", "-c", "docker build -t trivy-protoc - < Dockerfile.protoc"); err != nil {
-		return err
-	}
-	return sh.Run("docker", "run", "--rm", "-it", "--platform", "linux/x86_64", "-v", "${PWD}:/app", "-w", "/app", "trivy-protoc", "mage", "protoc")
+// Generate parses PROTO_FILES and generates the Go code for client/server mode
+func (Protoc) Generate() error {
+	mg.Deps(Tool{}.Install) // Install buf and protoc-gen-twirp
+	
+	// Run buf generate
+	return sh.RunV("buf", "generate")
 }
+
+// Fmt formats protobuf files using buf
+func (Protoc) Fmt() error {
+	mg.Deps(Tool{}.Install) // Install buf
+	
+	// Run buf format
+	return sh.RunV("buf", "format", "-w")
+}
+
+// Lint runs linting on protobuf files using buf
+func (Protoc) Lint() error {
+	mg.Deps(Tool{}.Install) // Install buf
+	
+	// Run buf lint
+	return sh.RunV("buf", "lint")
+}
+
 
 // Yacc generates parser
 func Yacc() error {
