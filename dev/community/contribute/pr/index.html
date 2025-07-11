@@ -7485,6 +7485,17 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
+  <a href="#protocol-buffers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protocol Buffers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#documentation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8114,6 +8125,17 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
+  <a href="#protocol-buffers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protocol Buffers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#documentation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8255,6 +8277,15 @@ $<span class="w"> </span>./trivy<span class="w"> </span>-h
 <h3 id="integration-tests">Integration tests<a class="headerlink" href="#integration-tests" title="Permanent link">&para;</a></h3>
 <p>Your PR must pass all the integration tests. You can test it as below.</p>
 <div class="highlight"><pre><span></span><code>$ mage test:integration
+</code></pre></div>
+<h3 id="protocol-buffers">Protocol Buffers<a class="headerlink" href="#protocol-buffers" title="Permanent link">&para;</a></h3>
+<p>If you update protobuf files (<code>.proto</code>), you need to regenerate the Go code:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>mage<span class="w"> </span>protoc:generate
+</code></pre></div>
+<p>You can also format and lint protobuf files:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>mage<span class="w"> </span>protoc:fmt<span class="w">     </span><span class="c1"># Format protobuf files</span>
+$<span class="w"> </span>mage<span class="w"> </span>protoc:lint<span class="w">    </span><span class="c1"># Lint protobuf files</span>
+$<span class="w"> </span>mage<span class="w"> </span>protoc:breaking<span class="w"> </span><span class="c1"># Check for breaking changes against main branch</span>
 </code></pre></div>
 <h3 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
 <p>If you update CLI flags, you need to generate the CLI references.
