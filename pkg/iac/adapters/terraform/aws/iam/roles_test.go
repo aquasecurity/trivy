@@ -2,6 +2,7 @@ package iam
 
 import (
 	"sort"
+	"strings"
 	"testing"
 
 	"github.com/aquasecurity/iamgo"
@@ -374,6 +375,174 @@ data "aws_partition" "current" {}
 				return adapted[i].Name.Value() < adapted[j].Name.Value()
 			})
 			testutil.AssertDefsecEqual(t, test.expected, adapted)
+		})
+	}
+}
+
+// validateLambdaEcsKeys validates that attachment references contain both lambda and ecs-tasks keys
+func validateLambdaEcsKeys(t *testing.T, attachmentRefs []string) {
+	hasLambda := false
+	hasEcs := false
+	for _, ref := range attachmentRefs {
+		if strings.Contains(ref, "lambda") {
+			hasLambda = true
+		}
+		if strings.Contains(ref, "ecs-tasks") {
+			hasEcs = true
+		}
+	}
+	if !hasLambda || !hasEcs {
+		t.Errorf("expected attachment refs to include both lambda and ecs-tasks keys, got %v", attachmentRefs)
+	}
+}
+
+func Test_forEachReferences(t *testing.T) {
+	tests := []struct {
+		name          string
+		terraform     string
+		expectedCount int
+	}{
+		{
+			name: "computed local with for_each map",
+			terraform: `
+locals {
+  platform_role_principals = {
+    lambda    = "lambda.amazonaws.com"
+    ecs-tasks = "ecs-tasks.amazonaws.com"
+  }
+}
+
+data "aws_iam_policy_document" "platform_role_assume_policy" {
+  for_each = local.platform_role_principals
+
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = [each.value]
+    }
+  }
+}
+
+resource "aws_iam_role" "platform_role" {
+  for_each           = local.platform_role_principals
+  name               = "platform-${each.key}"
+  assume_role_policy = data.aws_iam_policy_document.platform_role_assume_policy[each.key].json
+}
+
+locals {
+  platform_roles = {
+    for role_key, role_res in aws_iam_role.platform_role :
+    role_key => {
+      role = role_res.name
+    }
+  }
+}
+
+data "aws_iam_policy_document" "administrative_policy_doc" {
+  statement {
+    resources = ["*"]
+    actions   = ["Tag:GetResources", "Tag:TagResources", "Tag:UntagResources"]
+  }
+}
+
+resource "aws_iam_policy" "administrative_policy" {
+  name   = "administrative-policy"
+  policy = data.aws_iam_policy_document.administrative_policy_doc.json
+}
+
+resource "aws_iam_role_policy_attachment" "administrative_policy_attachment" {
+  for_each   = local.platform_roles
+  role       = each.value.role
+  policy_arn = aws_iam_policy.administrative_policy.arn
+}`,
+			expectedCount: 2,
+		},
+		{
+			name: "direct for_each reference",
+			terraform: `
+locals {
+  roles = {
+    lambda    = "lambda.amazonaws.com"
+    ecs-tasks = "ecs-tasks.amazonaws.com"
+  }
+}
+
+resource "aws_iam_role" "platform_role" {
+  for_each = local.roles
+  name     = "platform-${each.key}"
+}
+
+resource "aws_iam_role_policy_attachment" "test" {
+  for_each = aws_iam_role.platform_role
+  role     = each.value.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}`,
+			expectedCount: 2,
+		},
+		{
+			name: "for_each with computed local reference",
+			terraform: `
+locals {
+  role_principals = {
+    lambda    = "lambda.amazonaws.com"
+    ecs-tasks = "ecs-tasks.amazonaws.com"
+  }
+}
+
+resource "aws_iam_role" "platform_role" {
+  for_each = local.role_principals
+  name     = "platform-${each.key}"
+}
+
+locals {
+  platform_roles = {
+    for role_key, role_res in aws_iam_role.platform_role :
+    role_key => {
+      role = role_res.name
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "test" {
+  for_each = local.platform_roles
+  role     = each.value.role
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}`,
+			expectedCount: 2,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			modules := tftestutil.CreateModulesFromSource(t, test.terraform, ".tf")
+			attachments := modules.GetResourcesByType("aws_iam_role_policy_attachment")
+
+			// Debug output for troubleshooting
+			t.Logf("Total resources found: %d", len(attachments))
+			for i, attachment := range attachments {
+				t.Logf("Attachment %d: %s", i, attachment.Reference().String())
+				t.Logf("  - FullName: %s", attachment.FullName())
+				t.Logf("  - TypeLabel: %s", attachment.TypeLabel())
+				t.Logf("  - NameLabel: %s", attachment.NameLabel())
+				if key := attachment.Reference().RawKey(); !key.IsNull() && key.IsKnown() {
+					t.Logf("  - Key: %s (%s)", key.GoString(), key.Type().GoString())
+				}
+			}
+
+			var attachmentRefs []string
+			for _, a := range attachments {
+				attachmentRefs = append(attachmentRefs, a.Reference().String())
+			}
+
+			sort.Strings(attachmentRefs)
+
+			if len(attachments) != test.expectedCount {
+				t.Fatalf("expected %d policy attachments, got %d: %v", test.expectedCount, len(attachments), attachmentRefs)
+			}
+
+			// Validate that both lambda and ecs-tasks keys are present
+			validateLambdaEcsKeys(t, attachmentRefs)
 		})
 	}
 }
