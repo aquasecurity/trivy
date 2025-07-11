@@ -8455,7 +8455,7 @@ To build the correct dependency graph, <code>pyproject.toml</code> also needs to
 <p>Trivy parses the manifest files of installed packages in container image scanning and so on.
 See <a href="https://packaging.python.org/en/latest/discussions/package-formats/">here</a> for the detail.</p>
 <h3 id="egg">Egg<a class="headerlink" href="#egg" title="Permanent link">&para;</a></h3>
-<p>Trivy looks for <code>*.egg-info</code>, <code>*.egg-info/PKG-INFO</code>, <code>*.egg</code> and <code>EGG-INFO/PKG-INFO</code> to identify Python packages.</p>
+<p>Trivy looks for <code>*.egg-info</code>, <code>*.egg-info/METADATA</code>, <code>*.egg-info/PKG-INFO</code>, <code>*.egg</code> and <code>EGG-INFO/PKG-INFO</code> to identify Python packages.</p>
 <h3 id="wheel">Wheel<a class="headerlink" href="#wheel" title="Permanent link">&para;</a></h3>
 <p>Trivy looks for <code>.dist-info/METADATA</code> to identify Python packages.</p>
 <div class="footnote">
