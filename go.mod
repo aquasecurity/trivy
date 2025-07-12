@@ -495,3 +495,6 @@ tool (
 	golang.org/x/tools/cmd/goyacc
 	sigs.k8s.io/kind
 )
+
+// update trivy-db after merge https://github.com/aquasecurity/trivy-db/pull/554 and remove this section
+replace github.com/aquasecurity/trivy-db => github.com/DmitriyLewen/trivy-db v0.0.0-20250710123115-668fd653a743
