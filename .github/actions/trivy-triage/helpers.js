@@ -1,6 +1,11 @@
+const patterns = {
+    Scanner: /### Scanner\n\n(.+)/,
+    Target: /### Target\n\n(.+)/,
+};
+
 module.exports = {
     detectDiscussionLabels: (discussion, configDiscussionLabels) => {
-        res = [];
+        const res = [];
         const discussionId = discussion.id;
         const category = discussion.category.name;
         const body = discussion.body;
@@ -8,15 +13,21 @@ module.exports = {
             console.log(`skipping discussion with category ${category} and body ${body}`);
             return [];
         }
-        const scannerPattern = /### Scanner\n\n(.+)/;
-        const scannerFound = body.match(scannerPattern);
-        if (scannerFound && scannerFound.length > 1) {
-            res.push(configDiscussionLabels[scannerFound[1]]);
-        }
-        const targetPattern = /### Target\n\n(.+)/;
-        const targetFound = body.match(targetPattern);
-        if (targetFound && targetFound.length > 1) {
-            res.push(configDiscussionLabels[targetFound[1]]);
+
+        for (const key in patterns) {
+            const match = body.match(patterns[key]);
+            if (match && match.length > 1 && match[1] !== "None") {
+                const val = configDiscussionLabels[match[1]];
+                if (val === undefined && match[1]) {
+                    console.warn(
+                        `Value for ${key.toLowerCase()} key "${
+                            match[1]
+                        }" not found in configDiscussionLabels`
+                    );
+                } else {
+                    res.push(val);
+                }
+            }
         }
         return res;
     },
