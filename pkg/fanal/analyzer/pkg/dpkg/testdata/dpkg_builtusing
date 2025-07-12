@@ -1,0 +1,11 @@
+Package: helloworld
+Status: install ok installed
+Priority: optional
+Section: base
+Maintainer: Your Name <you@email.com>
+Architecture: amd64
+Version: 1.0-1
+Description: Hello World
+ When you need some sunshine, just run this
+ small program!
+Built-Using: python3 (= 2.13.3-0ubuntu1)
