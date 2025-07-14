@@ -9,4 +9,5 @@ type SubNetwork struct {
 	Name           iacTypes.StringValue
 	Purpose        iacTypes.StringValue
 	EnableFlowLogs iacTypes.BoolValue
+	PrivateIPGoogleAccess iacTypes.BoolValue
 }

@@ -33,6 +33,7 @@ func adaptNetworks(modules terraform.Modules) (networks []compute.Network) {
 			Name:           subnetworkBlock.GetAttribute("name").AsStringValueOrDefault("", subnetworkBlock),
 			Purpose:        subnetworkBlock.GetAttribute("purpose").AsStringValueOrDefault(defaultSubnetPurpose, subnetworkBlock),
 			EnableFlowLogs: iacTypes.BoolDefault(false, subnetworkBlock.GetMetadata()),
+			PrivateIPGoogleAccess: subnetworkBlock.GetAttribute("private_ip_google_access").AsBoolValueOrDefault(false, subnetworkBlock),
 		}
 
 		// logging
