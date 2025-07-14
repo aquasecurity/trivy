@@ -87,6 +87,24 @@ var (
 		},
 		Licenses: []string{"GPL-2.0"},
 	}
+
+	orphanedApkComponent = &core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "orphaned-package",
+		Version: "1.0.0",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			PURL: &packageurl.PackageURL{
+				Type:    packageurl.TypeApk,
+				Name:    "orphaned-package",
+				Version: "1.0.0",
+				Qualifiers: packageurl.Qualifiers{
+					{Key: "arch", Value: "aarch64"},
+					{Key: "distro", Value: "wolfi-20230201"},
+				},
+			},
+		},
+		Licenses: []string{"MIT"},
+	}
 )
 
 func TestDecoder_Decode_OSPackages(t *testing.T) {
@@ -141,16 +159,17 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 			},
 		},
 		{
-			name: "multiple OS packages without OS metadata should be included",
+			name: "multiple OS packages without OS metadata should be included and merged",
 			setupBOM: func() *core.BOM {
 				bom := core.NewBOM(core.Options{})
 				bom.SerialNumber = "test-multiple-no-os"
 				bom.Version = 1
 
-				// Add multiple APK packages
+				// Add multiple APK packages including orphaned package
 				bom.AddComponent(apkToolsComponent)
 				bom.AddComponent(busyboxComponent)
 				bom.AddComponent(caCertificatesComponent)
+				bom.AddComponent(orphanedApkComponent)
 
 				return bom
 			},
@@ -197,6 +216,18 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 									PURL: caCertificatesComponent.PkgIdentifier.PURL,
 								},
 							},
+							{
+								ID:         "orphaned-package@1.0.0",
+								Name:       "orphaned-package",
+								Version:    "1.0.0",
+								Arch:       "aarch64",
+								SrcName:    "orphaned-package",
+								SrcVersion: "1.0.0",
+								Licenses:   []string{"MIT"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: orphanedApkComponent.PkgIdentifier.PURL,
+								},
+							},
 						},
 					},
 				},
@@ -233,6 +264,66 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "mixed OS packages (in-graph and out-of-graph) should be merged",
+			setupBOM: func() *core.BOM {
+				bom := core.NewBOM(core.Options{})
+				bom.SerialNumber = "test-mixed-os-packages"
+				bom.Version = 1
+
+				// Add OS component
+				bom.AddComponent(wolfiOSComponent)
+
+				// Add OS packages - busybox is connected to OS (in-graph)
+				bom.AddComponent(busyboxComponent)
+				// Add orphaned package not connected to OS (out-of-graph)
+				bom.AddComponent(orphanedApkComponent)
+
+				// Create relationship between OS and busybox only
+				bom.AddRelationship(wolfiOSComponent, busyboxComponent, core.RelationshipContains)
+				// orphanedApkComponent is not connected to OS component
+
+				return bom
+			},
+			wantSBOM: types.SBOM{
+				Metadata: types.Metadata{
+					OS: &ftypes.OS{
+						Family: ftypes.Wolfi,
+						Name:   "20230201",
+					},
+				},
+				Packages: []ftypes.PackageInfo{
+					{
+						Packages: ftypes.Packages{
+							{
+								ID:         "busybox@1.37.0-r42",
+								Name:       "busybox",
+								Version:    "1.37.0-r42",
+								Arch:       "aarch64",
+								SrcName:    "busybox",
+								SrcVersion: "1.37.0-r42",
+								Licenses:   []string{"GPL-2.0-only"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: busyboxComponent.PkgIdentifier.PURL,
+								},
+							},
+							{
+								ID:         "orphaned-package@1.0.0",
+								Name:       "orphaned-package",
+								Version:    "1.0.0",
+								Arch:       "aarch64",
+								SrcName:    "orphaned-package",
+								SrcVersion: "1.0.0",
+								Licenses:   []string{"MIT"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: orphanedApkComponent.PkgIdentifier.PURL,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -252,7 +343,8 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 			tt.wantSBOM.BOM = gotSBOM.BOM
 
 			// Compare the entire SBOM structure
-			assert.Equal(t, tt.wantSBOM, gotSBOM)
+			assert.EqualExportedValues(t, tt.wantSBOM, gotSBOM)
 		})
 	}
 }
+
