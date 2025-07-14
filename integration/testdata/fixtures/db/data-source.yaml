@@ -149,3 +149,8 @@
         ID:   "k8s"
         Name: "Official Kubernetes CVE Feed"
         URL:  "https://kubernetes.io/docs/reference/issues-security/official-cve-feed/index.json"
+    - key: Red Hat
+      value:
+        ID: "redhat-oval"
+        Name: "Red Hat OVAL v2"
+        URL: "https://www.redhat.com/security/data/oval/v2/"
