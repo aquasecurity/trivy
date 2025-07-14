@@ -448,4 +448,4 @@ tool (
 )
 
 // update trivy-db after merge https://github.com/aquasecurity/trivy-db/pull/554 and remove this section
-replace github.com/aquasecurity/trivy-db => github.com/DmitriyLewen/trivy-db v0.0.0-20250710123115-668fd653a743
+replace github.com/aquasecurity/trivy-db => github.com/DmitriyLewen/trivy-db v0.0.0-20250714091739-8d3698bf073d
