@@ -415,6 +415,8 @@ func toCVSSData(vuln types.DetectedVulnerability) (map[string]any, string) {
 	score := severityToScore(vuln.Severity)
 	var data = make(map[string]any)
 
+	// Note: 'cvssv3_baseScore' uses a hybrid naming convention (snake_case + camelCase)
+	// Reference: https://docs.aws.amazon.com/codecatalyst/latest/userguide/test.sarif.html
 	if cvss, ok := vuln.CVSS[vuln.SeveritySource]; ok {
 		data["cvssv2_vector"] = cvss.V2Vector
 		data["cvssv2_score"] = cvss.V2Score
