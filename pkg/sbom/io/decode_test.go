@@ -347,4 +347,3 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 		})
 	}
 }
-
