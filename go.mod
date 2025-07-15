@@ -24,7 +24,7 @@ require (
 	github.com/aquasecurity/testdocker v0.0.0-20250616060700-ba6845ac6d17
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-checks v1.11.3-0.20250604022615-9a7efa7c9169
-	github.com/aquasecurity/trivy-db v0.0.0-20250627124416-ca81c496a932
+	github.com/aquasecurity/trivy-db v0.0.0-20250715075956-68f941d6a641
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
 	github.com/aquasecurity/trivy-kubernetes v0.9.0
 	github.com/aws/aws-sdk-go-v2 v1.36.5
@@ -446,6 +446,3 @@ tool (
 	golang.org/x/tools/cmd/goyacc
 	sigs.k8s.io/kind
 )
-
-// update trivy-db after merge https://github.com/aquasecurity/trivy-db/pull/554 and remove this section
-replace github.com/aquasecurity/trivy-db => github.com/DmitriyLewen/trivy-db v0.0.0-20250714091739-8d3698bf073d
