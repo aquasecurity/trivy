@@ -3924,6 +3924,19 @@
         }
       }
     },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.aws.sam.AccessLogging": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "cloudwatchloggrouparn": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        }
+      }
+    },
     "github.com.aquasecurity.trivy.pkg.iac.providers.aws.sam.Application": {
       "type": "object",
       "properties": {
@@ -5508,6 +5521,19 @@
         }
       }
     },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.synapse.Workspace": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "enablemanagedvirtualnetwork": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
+        }
+      }
+    },
     "github.com.aquasecurity.trivy.pkg.iac.providers.cloudstack.CloudStack": {
       "type": "object",
       "properties": {
@@ -6292,6 +6318,30 @@
         }
       }
     },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.google.compute.ServiceAccount": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "email": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "isdefault": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+          }
+        }
+      }
+    },
     "github.com.aquasecurity.trivy.pkg.iac.providers.google.compute.ShieldedVMConfig": {
       "type": "object",
       "properties": {
@@ -6331,10 +6381,6 @@
         "purpose": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
-        },
-        "privateipgoogleaccess": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
         }
       }
     },
@@ -7062,6 +7108,45 @@
         "ipconfiguration": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.sql.IPConfiguration"
+        }
+      }
+    },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.google.storage.Bucket": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "bindings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.Binding"
+          }
+        },
+        "enableuniformbucketlevelaccess": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
+        },
+        "encryption": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.storage.BucketEncryption"
+        },
+        "location": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.Member"
+          }
+        },
+        "name": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         }
       }
     },
