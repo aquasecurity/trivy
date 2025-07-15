@@ -8,15 +8,15 @@
     - key: root.io debian 12
       value:
         ID: "rootio-for-debian"
-        Name: "Root.io Security Patches"
+        Name: "Root.io Security Patches (debian)"
         URL: "https://api.root.io/external/patch_feed"
     - key: root.io ubuntu 20.04
       value:
         ID: "rootio-for-ubuntu"
-        Name: "Root.io Security Patches"
+        Name: "Root.io Security Patches (ubuntu)"
         URL: "https://api.root.io/external/patch_feed"
     - key: root.io alpine 3.19
       value:
         ID: "rootio-for-alpine"
-        Name: "Root.io Security Patches"
+        Name: "Root.io Security Patches (alpine)"
         URL: "https://api.root.io/external/patch_feed"

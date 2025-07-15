@@ -54,7 +54,7 @@ func TestScanner_Detect(t *testing.T) {
 					SeveritySource:   vulnerability.Debian,
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.RootIO + "-for-" + vulnerability.Debian,
-						Name: "Root.io Security Patches",
+						Name: "Root.io Security Patches (debian)",
 						URL:  "https://api.root.io/external/patch_feed",
 					},
 					Vulnerability: dbTypes.Vulnerability{
@@ -104,7 +104,7 @@ func TestScanner_Detect(t *testing.T) {
 					FixedVersion:     "1.22.1-9+deb12u2.root.io.1",
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.RootIO + "-for-" + vulnerability.Ubuntu,
-						Name: "Root.io Security Patches",
+						Name: "Root.io Security Patches (ubuntu)",
 						URL:  "https://api.root.io/external/patch_feed",
 					},
 				},
@@ -136,7 +136,7 @@ func TestScanner_Detect(t *testing.T) {
 					FixedVersion:     "643-r10072",
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.RootIO + "-for-" + vulnerability.Alpine,
-						Name: "Root.io Security Patches",
+						Name: "Root.io Security Patches (alpine)",
 						URL:  "https://api.root.io/external/patch_feed",
 					},
 				},

@@ -95,12 +95,15 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 			// We add the severity from the base OS, so we need to keep the severity level from the base OS (as SeveritySource).
 			if adv.Severity != dbTypes.SeverityUnknown {
-				// Root.io uses `rootio-for-<baseOS>` as the DataSource ID.
-				// e.g. "rootio-for-debian"
-				_, baseOS, _ := strings.Cut(string(adv.DataSource.ID), "-for-")
-				vuln.SeveritySource = dbTypes.SourceID(baseOS)
 				vuln.Vulnerability = dbTypes.Vulnerability{
 					Severity: adv.Severity.String(),
+				}
+				vuln.SeveritySource = adv.DataSource.ID
+				// Root.io uses `rootio-for-<baseOS>` as the DataSource ID for Root.io advisories,
+				// and `<baseOS>` as the DataSource ID for advisories from the base OS (e.g. Debian, Ubuntu).
+				// e.g. "rootio-for-debian" or "debian"
+				if _, base, ok := strings.Cut(string(adv.DataSource.ID), "-for-"); ok {
+					vuln.SeveritySource = dbTypes.SourceID(base)
 				}
 			}
 
