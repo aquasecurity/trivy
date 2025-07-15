@@ -16,7 +16,7 @@ function create_common_rpm_repo () {
 
                 mkdir -p $rpm_path/$arch
                 cp ../dist/*${prefix}.rpm ${rpm_path}/$arch/
-                createrepo_c -u https://github.com/aquasecurity/trivy/releases/download/ --location-prefix="v"$TRIVY_VERSION --update $rpm_path/$arch
+                createrepo_c -u https://get.trivy.cloud/rpm/ --location-prefix="v"$TRIVY_VERSION --update $rpm_path/$arch
                 rm ${rpm_path}/$arch/*${prefix}.rpm
         done
 }
@@ -28,7 +28,7 @@ function create_rpm_repo () {
         mkdir -p $rpm_path
         cp ../dist/*64bit.rpm ${rpm_path}/
 
-        createrepo_c -u https://github.com/aquasecurity/trivy/releases/download/ --location-prefix="v"$TRIVY_VERSION --update $rpm_path
+        createrepo_c -u https://get.trivy.cloud/rpm/ --location-prefix="v"$TRIVY_VERSION --update $rpm_path
 
         rm ${rpm_path}/*64bit.rpm
 }
