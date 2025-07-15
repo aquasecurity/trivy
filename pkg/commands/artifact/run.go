@@ -126,7 +126,7 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 		TraceHTTP: cliOptions.TraceHTTP,
 	}))
 	// get the sub command that is being used or fallback to "trivy"
-	commandName := lo.Ternary(len(os.Args) > 1, os.Args[1], "trivy")
+	commandName := lo.TernaryF(len(os.Args) > 1, func() string { return os.Args[1] }, func() string { return "trivy" })
 	r.versionChecker = notification.NewVersionChecker(commandName, &cliOptions)
 
 	// Update the vulnerability database if needed.
