@@ -810,8 +810,8 @@ github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
-github.com/aquasecurity/go-npm-version v0.0.1 h1:2i/MM+A4KI8AJrqJa/Cwsa4qyljA8S/qngPyQiIVHcA=
-github.com/aquasecurity/go-npm-version v0.0.1/go.mod h1:hxbJZtKlO4P8sZ9nztizR6XLoE33O+BkPmuYQ4ACyz0=
+github.com/aquasecurity/go-npm-version v0.0.2-0.20250716070109-f686488af083 h1:/x8/8BP79pW+8ZApxKuZjSXyWwSxxjbzuCh/599rexQ=
+github.com/aquasecurity/go-npm-version v0.0.2-0.20250716070109-f686488af083/go.mod h1:DXyKqRe2yb83peANMjQr8dGDkHanEgoFv8BOQdWlSUQ=
 github.com/aquasecurity/go-pep440-version v0.0.1 h1:8VKKQtH2aV61+0hovZS3T//rUF+6GDn18paFTVS0h0M=
 github.com/aquasecurity/go-pep440-version v0.0.1/go.mod h1:3naPe+Bp6wi3n4l5iBFCZgS0JG8vY6FT0H4NGhFJ+i4=
 github.com/aquasecurity/go-version v0.0.0-20201107203531-5e48ac5d022a/go.mod h1:9Beu8XsUNNfzml7WBf3QmyPToP1wm1Gj/Vc5UJKqTzU=
