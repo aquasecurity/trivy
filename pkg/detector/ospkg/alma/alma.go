@@ -22,6 +22,7 @@ var (
 		// https://endoflife.date/almalinux
 		"8": time.Date(2029, 3, 1, 23, 59, 59, 0, time.UTC),
 		"9": time.Date(2032, 5, 31, 23, 59, 59, 0, time.UTC),
+		"10": time.Date(2035, 5, 31, 23, 59, 59, 0, time.UTC),
 	}
 )
 
