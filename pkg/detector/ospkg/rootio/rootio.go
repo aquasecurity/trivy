@@ -1,6 +1,7 @@
 package rootio
 
 import (
+	"cmp"
 	"context"
 	"strings"
 
@@ -98,13 +99,10 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 				vuln.Vulnerability = dbTypes.Vulnerability{
 					Severity: adv.Severity.String(),
 				}
-				vuln.SeveritySource = adv.DataSource.ID
-				// Root.io uses `rootio-for-<baseOS>` as the DataSource ID for Root.io advisories,
-				// and `<baseOS>` as the DataSource ID for advisories from the base OS (e.g. Debian, Ubuntu).
-				// e.g. "rootio-for-debian" or "debian"
-				if _, base, ok := strings.Cut(string(adv.DataSource.ID), "-for-"); ok {
-					vuln.SeveritySource = dbTypes.SourceID(base)
-				}
+
+				// Datasource contains BaseID + ID for root.io advisories,
+				// But baseOS (e.g. Debian) advisories use ID only.
+				vuln.SeveritySource = cmp.Or(adv.DataSource.BaseID, adv.DataSource.ID)
 			}
 
 			vulns = append(vulns, vuln)
