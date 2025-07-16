@@ -32,7 +32,7 @@ spec:
 		"checks/rule.rego": `# METADATA
 # title: test check
 # custom:
-#   id: AVD-KSV-0011
+#   id: KSV-0011
 #   severity: LOW
 #   input:
 #     selector:
@@ -60,7 +60,7 @@ deny[res] {
 	failed := results.GetFailed()
 	require.Len(t, failed, 1)
 
-	assert.Equal(t, "AVD-KSV-0011", failed[0].Rule().ID)
+	assert.Equal(t, "KSV-0011", failed[0].Rule().ID)
 	assertLines(t, file, failed)
 }
 
@@ -94,7 +94,7 @@ func Test_ScanJSON(t *testing.T) {
 		"checks/rule.rego": `# METADATA
 # title: test check
 # custom:
-#   id: AVD-KSV-0011
+#   id: KSV-0011
 #   severity: LOW
 #   input:
 #     selector:
@@ -124,7 +124,7 @@ deny[res] {
 	failed := results.GetFailed()
 	require.Len(t, failed, 1)
 
-	assert.Equal(t, "AVD-KSV-0011", failed[0].Rule().ID)
+	assert.Equal(t, "KSV-0011", failed[0].Rule().ID)
 	assertLines(t, file, failed)
 }
 
@@ -223,7 +223,7 @@ func Test_CheckWithSubtype(t *testing.T) {
 # schemas:
 # - input: schema["kubernetes"]
 # custom:
-#   id: AVD-KSV-0001
+#   id: KSV-0001
 #   severity: MEDIUM
 #   input:
 #     selector:
@@ -244,7 +244,7 @@ deny[res] {
 # schemas:
 # - input: schema["kubernetes"]
 # custom:
-#   id: AVD-KSV-0002
+#   id: KSV-0002
 #   severity: LOW
 #   input:
 #     selector:
@@ -286,7 +286,7 @@ spec:
 
 	failure := results.GetFailed()[0]
 
-	assert.Equal(t, "AVD-KSV-0001", failure.Rule().ID)
+	assert.Equal(t, "KSV-0001", failure.Rule().ID)
 }
 
 func assertLines(t *testing.T, content string, results scan.Results) {

@@ -380,6 +380,7 @@ func ConvertToRPCLayer(layer ftypes.Layer) *common.Layer {
 func ConvertToRPCPolicyMetadata(policy ftypes.PolicyMetadata) *common.PolicyMetadata {
 	return &common.PolicyMetadata{
 		Id:                 policy.ID,
+		Aliases:            policy.Aliases,
 		Type:               policy.Type,
 		Title:              policy.Title,
 		Description:        policy.Description,
@@ -672,6 +673,7 @@ func ConvertFromRPCPolicyMetadata(rpcPolicy *common.PolicyMetadata) ftypes.Polic
 
 	return ftypes.PolicyMetadata{
 		ID:                 rpcPolicy.Id,
+		Aliases:            rpcPolicy.Aliases,
 		Type:               rpcPolicy.Type,
 		Title:              rpcPolicy.Title,
 		Description:        rpcPolicy.Description,

@@ -17,7 +17,7 @@ const defaultCheck = `package defsec.abcdefg
 __rego_metadata__ := {
 	"id": "AVD-TEST-0123",
 	"title": "Buckets should not be evil",
-	"short_code": "no-evil-buckets",
+	"long_id": "no-evil-buckets",
 	"severity": "CRITICAL",
 	"type": "DefSec Security Check",
 	"description": "You should not allow buckets to be evil",
@@ -75,7 +75,7 @@ func Test_TerraformScanner(t *testing.T) {
 # custom:
 #   id: AVD-TEST-0123
 #   severity: CRITICAL
-#   short_code: very-bad-misconfig
+#   long_id: very-bad-misconfig
 #   recommended_action: "Fix the s3 bucket"
 
 package user.foobar.ABC001

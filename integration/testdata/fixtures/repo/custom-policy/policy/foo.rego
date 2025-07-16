@@ -9,7 +9,7 @@
 #   provider: custom
 #   service: custom
 #   severity: LOW
-#   short_code: custom-policy
+#   long_id: custom-policy
 #   recommended_action: Custom policy for testing
 package user.foo
 

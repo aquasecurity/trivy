@@ -168,7 +168,7 @@ As an example, consider the following check metadata:
   # provider: aws
   # service: s3
   # severity: LOW
-  # short_code: enable-logging
+  # long_id: aws-s3-enable-logging
 ```
 Long ID would look like the following: `aws-s3-enable-logging`.
 
@@ -190,7 +190,7 @@ Example for Helm:
 ```yaml
       serviceAccountName: "testchart.serviceAccountName"
       containers:
-        # trivy:ignore:AVD-KSV-0018
+        # trivy:ignore:KSV-0018
         - name: "testchart"
           securityContext:
             runAsUser: 1000

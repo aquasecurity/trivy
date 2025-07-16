@@ -96,6 +96,7 @@ message PolicyMetadata {
   string severity = 6;
   string recommended_actions = 7;
   repeated string references = 8;
+  repeated string aliases = 9;
 
   reserved 2; // deprecated 'adv_id'
 }
@@ -116,7 +117,7 @@ message DetectedMisconfiguration {
   CauseMetadata cause_metadata = 13;
   string query = 15;
 
-  reserved 14;  // deprecated 'avd_id'
+  reserved 14; // deprecated 'avd_id'
 }
 
 message Vulnerability {

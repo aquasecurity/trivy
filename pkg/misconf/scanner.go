@@ -35,6 +35,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/version/app"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 
 	_ "embed"
 )
@@ -493,6 +494,7 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 				Severity:           string(flattened.Severity),
 				RecommendedActions: flattened.Resolution,
 				References:         flattened.Links,
+				Aliases:            xslices.ZeroToNil(result.Rule().Aliases),
 			},
 			CauseMetadata: cause,
 			Traces:        result.Traces(),

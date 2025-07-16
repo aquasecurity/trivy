@@ -6,7 +6,7 @@
 # custom:
 #   id: AVD-TEST-0001
 #   severity: LOW
-#   short_code: no-buckets
+#   long_id: no-buckets
 #   recommended_actions: Have a cup of tea.
 #   input:
 #     selector:

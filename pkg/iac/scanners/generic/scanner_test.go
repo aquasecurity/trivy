@@ -21,7 +21,7 @@ func TestJsonScanner(t *testing.T) {
 __rego_metadata__ := {
 	"id": "AVD-ABC-0123",
 	"title": "title",
-	"short_code": "short",
+	"long_id": "long",
 	"severity": "CRITICAL",
 	"type": "JSON Check",
 	"description": "description",
@@ -55,8 +55,7 @@ deny[res] {
 
 	assert.Equal(t, scan.Rule{
 		ID:             "AVD-ABC-0123",
-		Aliases:        []string{"AVD-ABC-0123"},
-		ShortCode:      "short",
+		LongID:         "long",
 		Summary:        "title",
 		Explanation:    "description",
 		Impact:         "",
@@ -89,7 +88,7 @@ x:
 __rego_metadata__ := {
 	"id": "AVD-ABC-0123",
 	"title": "title",
-	"short_code": "short",
+	"long_id": "long",
 	"severity": "CRITICAL",
 	"type": "YAML Check",
 	"description": "description",
@@ -123,8 +122,7 @@ deny[res] {
 
 	assert.Equal(t, scan.Rule{
 		ID:             "AVD-ABC-0123",
-		Aliases:        []string{"AVD-ABC-0123"},
-		ShortCode:      "short",
+		LongID:         "long",
 		Summary:        "title",
 		Explanation:    "description",
 		Impact:         "",
@@ -156,7 +154,7 @@ z = ["a", "b", "c"]
 __rego_metadata__ := {
 	"id": "AVD-ABC-0123",
 	"title": "title",
-	"short_code": "short",
+	"long_id": "long",
 	"severity": "CRITICAL",
 	"type": "TOML Check",
 	"description": "description",
@@ -190,8 +188,7 @@ deny[res] {
 
 	assert.Equal(t, scan.Rule{
 		ID:             "AVD-ABC-0123",
-		Aliases:        []string{"AVD-ABC-0123"},
-		ShortCode:      "short",
+		LongID:         "long",
 		Summary:        "title",
 		Explanation:    "description",
 		Impact:         "",

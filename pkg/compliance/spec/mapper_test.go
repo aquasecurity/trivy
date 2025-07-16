@@ -14,7 +14,7 @@ import (
 func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 	checkIDs := map[types.Scanner][]string{
 		types.MisconfigScanner: {
-			"AVD-KSV-0012",
+			"KSV-0012",
 			"AVD-1.2.31",
 			"AVD-1.2.32",
 		},
@@ -41,11 +41,11 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 				Type:   ftypes.Kubernetes,
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:     "AVD-KSV-0012",
+						ID:     "KSV-0012",
 						Status: types.MisconfStatusFailure,
 					},
 					{
-						ID:     "AVD-KSV-0013",
+						ID:     "KSV-0013",
 						Status: types.MisconfStatusFailure,
 					},
 					{
@@ -55,7 +55,7 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 				},
 			},
 			want: map[string]types.Results{
-				"AVD-KSV-0012": {
+				"KSV-0012": {
 					{
 						Target: "target",
 						Class:  types.ClassConfig,
@@ -66,7 +66,7 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
-								ID:     "AVD-KSV-0012",
+								ID:     "KSV-0012",
 								Status: types.MisconfStatusFailure,
 							},
 						},

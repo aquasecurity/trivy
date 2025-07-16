@@ -20,7 +20,7 @@ var emptyBucketCheck = `# METADATA
 # - input: schema.cloud
 # custom:
 #   id: USER-TEST-0123
-#   short_code: non-empty-bucket
+#   long_id: aws-s3-non-empty-bucket
 #   provider: aws
 #   service: s3
 #   aliases:
@@ -51,7 +51,7 @@ var enforceGroupMfaCheck = `# METADATA
 #     - aws-iam-enforce-mfa
 #   provider: aws
 #   service: iam
-#   short_code: enforce-group-mfa
+#   long_id: aws-iam-enforce-group-mfa
 #   input:
 #     selector:
 #       - type: cloud
