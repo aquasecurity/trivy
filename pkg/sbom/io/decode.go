@@ -391,8 +391,14 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 	for _, pkgs := range osPkgMap {
 		// TODO: mismatch between the OS and the packages should be rejected.
 		// e.g. OS: debian, Packages: rpm
-		sort.Sort(pkgs)
-		sbom.Packages = append(sbom.Packages, ftypes.PackageInfo{Packages: pkgs})
+
+		// addOSPkgs creates exactly one PackageInfo with empty FilePath, so we can merge directly
+		if len(sbom.Packages) == 0 {
+			sbom.Packages = append(sbom.Packages, ftypes.PackageInfo{})
+		}
+		// Merge with existing PackageInfo (always sbom.Packages[0])
+		sbom.Packages[0].Packages = append(sbom.Packages[0].Packages, pkgs...)
+		sort.Sort(sbom.Packages[0].Packages)
 
 		break // Just take the first element
 	}
