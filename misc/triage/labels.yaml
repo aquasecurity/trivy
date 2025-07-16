@@ -139,3 +139,8 @@ labels:
 - name: backport
   color: A8F7BC
   description: Backport PRs
+
+# automation
+- name: autoready
+  color: 1d76db
+  description: Automatically mark PR as ready for review when all checks pass

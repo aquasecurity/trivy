@@ -67,6 +67,7 @@ type sarifData struct {
 	locationMessage  string
 	message          string
 	cvssScore        string
+	cvssData         map[string]any
 	locations        []location
 }
 
@@ -88,15 +89,7 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 		WithDefaultConfiguration(&sarif.ReportingConfiguration{
 			Level: toSarifErrorLevel(data.severity),
 		}).
-		WithProperties(sarif.Properties{
-			"tags": []string{
-				data.title,
-				"security",
-				data.severity,
-			},
-			"precision":         "very-high",
-			"security-severity": data.cvssScore,
-		})
+		WithProperties(toProperties(data.title, data.severity, data.cvssScore, data.cvssData))
 	if data.url != nil && data.url.String() != "" {
 		r.WithHelpURI(data.url.String())
 	}
@@ -158,11 +151,13 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 			if vuln.PkgPath != "" {
 				path = ToPathUri(vuln.PkgPath, res.Class)
 			}
+			cvssData, cvssScore := toCVSSData(vuln)
 			sw.addSarifResult(&sarifData{
 				title:            "vulnerability",
 				vulnerabilityId:  vuln.VulnerabilityID,
 				severity:         vuln.Severity,
-				cvssScore:        getCVSSScore(vuln),
+				cvssScore:        cvssScore,
+				cvssData:         cvssData,
 				url:              toUri(vuln.PrimaryURL),
 				resourceClass:    res.Class,
 				artifactLocation: toUri(path),
@@ -414,14 +409,28 @@ func (sw *SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Pa
 	return locs
 }
 
-func getCVSSScore(vuln types.DetectedVulnerability) string {
-	// Take the vendor score
+// toCVSSData extracts CVSS data from the vulnerability and returns it along with the score.
+// If CVSS V3 Score is not available, it returns an empty CVSSData struct and a score based on severity.
+func toCVSSData(vuln types.DetectedVulnerability) (map[string]any, string) {
+	score := severityToScore(vuln.Severity)
+	var data = make(map[string]any)
+
+	// Note: 'cvssv3_baseScore' uses a hybrid naming convention (snake_case + camelCase)
+	// Reference: https://docs.aws.amazon.com/codecatalyst/latest/userguide/test.sarif.html
 	if cvss, ok := vuln.CVSS[vuln.SeveritySource]; ok {
-		return fmt.Sprintf("%.1f", cvss.V3Score)
+		data["cvssv2_vector"] = cvss.V2Vector
+		data["cvssv2_score"] = cvss.V2Score
+		data["cvssv3_vector"] = cvss.V3Vector
+		data["cvssv3_baseScore"] = cvss.V3Score
+		data["cvssv40_vector"] = cvss.V40Vector
+		data["cvssv40_baseScore"] = cvss.V40Score
+
+		if cvss.V3Score != 0 {
+			score = fmt.Sprintf("%.1f", cvss.V3Score)
+		}
 	}
 
-	// Converts severity to score
-	return severityToScore(vuln.Severity)
+	return data, score
 }
 
 func severityToScore(severity string) string {
@@ -437,4 +446,32 @@ func severityToScore(severity string) string {
 	default:
 		return "0.0"
 	}
+}
+
+func toProperties(title, severity, cvssScore string, cvssData map[string]any) sarif.Properties {
+	properties := sarif.Properties{
+		"tags": []string{
+			title,
+			"security",
+			severity,
+		},
+		"precision":         "very-high",
+		"security-severity": cvssScore,
+	}
+
+	for key, value := range cvssData {
+		switch v := value.(type) {
+		case string:
+			if v == "" {
+				continue
+			}
+		case float64:
+			if v == 0 {
+				continue
+			}
+		}
+		properties[key] = value
+	}
+
+	return properties
 }

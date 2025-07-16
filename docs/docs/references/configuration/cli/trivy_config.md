@@ -76,7 +76,7 @@ trivy config [flags] DIR
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tf-vars strings                   specify paths to override the Terraform tfvars files
-      --trace                             enable more verbose trace output for custom queries
+      --trace-rego                        enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
 ```
 

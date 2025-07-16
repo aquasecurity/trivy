@@ -122,6 +122,34 @@ func Test_adaptNetworks(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "private_ip_google_access_enabled",
+			terraform: `
+			resource "google_compute_subnetwork" "example" {
+				name          = "test-subnetwork"
+				network       = google_compute_network.example.id
+				private_ip_google_access = true
+			}
+			resource "google_compute_network" "example" {
+				name = "test-network"
+			}
+			`,
+			expected: []compute.Network{
+				{
+					Metadata: iacTypes.NewTestMetadata(),
+					Firewall: nil,
+					Subnetworks: []compute.SubNetwork{
+						{
+							Metadata:              iacTypes.NewTestMetadata(),
+							Name:                  iacTypes.String("test-subnetwork", iacTypes.NewTestMetadata()),
+							Purpose:               iacTypes.StringDefault("PRIVATE_RFC_1918", iacTypes.NewTestMetadata()),
+							EnableFlowLogs:        iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							PrivateIPGoogleAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {

@@ -42,6 +42,7 @@ jobs:
         with:
           version: v2.1
           args: --verbose
+          skip-save-cache: true  # Restore cache from main branch but don't save new cache
         if: matrix.operating-system == 'ubuntu-latest'
 
       - name: Check if linter failed
