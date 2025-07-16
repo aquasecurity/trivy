@@ -52,8 +52,7 @@ func TestAnalyzer_PostAnalyze(t *testing.T) {
 								Namespace: "user.something",
 								Query:     "data.user.something.deny",
 								PolicyMetadata: types.PolicyMetadata{
-									ID:                 "TEST001",
-									AVDID:              "AVD-TEST-0001",
+									ID:                 "AVD-TEST-0001",
 									Type:               "Dockerfile Security Check",
 									Title:              "Test policy",
 									Description:        "This is a test policy.",

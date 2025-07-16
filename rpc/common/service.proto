@@ -90,13 +90,15 @@ message MisconfResult {
 
 message PolicyMetadata {
   string id = 1;
-  string adv_id = 2;
   string type = 3;
   string title = 4;
   string description = 5;
   string severity = 6;
   string recommended_actions = 7;
   repeated string references = 8;
+  repeated string aliases = 9;
+
+  reserved 2; // deprecated 'adv_id'
 }
 
 message DetectedMisconfiguration {
@@ -113,8 +115,9 @@ message DetectedMisconfiguration {
   string status = 11;
   Layer layer = 12;
   CauseMetadata cause_metadata = 13;
-  string avd_id = 14;
   string query = 15;
+
+  reserved 14; // deprecated 'avd_id'
 }
 
 message Vulnerability {

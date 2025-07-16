@@ -15,10 +15,9 @@ import (
 const defaultCheck = `package defsec.abcdefg
 
 __rego_metadata__ := {
-	"id": "TEST123",
-	"avd_id": "AVD-TEST-0123",
+	"id": "AVD-TEST-0123",
 	"title": "Buckets should not be evil",
-	"short_code": "no-evil-buckets",
+	"long_id": "no-evil-buckets",
 	"severity": "CRITICAL",
 	"type": "DefSec Security Check",
 	"description": "You should not allow buckets to be evil",
@@ -74,9 +73,9 @@ func Test_TerraformScanner(t *testing.T) {
 # schemas:
 #   - input: schema["cloud"]
 # custom:
-#   avd_id: AVD-TEST-0123
+#   id: AVD-TEST-0123
 #   severity: CRITICAL
-#   short_code: very-bad-misconfig
+#   long_id: very-bad-misconfig
 #   recommended_action: "Fix the s3 bucket"
 
 package user.foobar.ABC001
@@ -121,7 +120,7 @@ deny[cause] {
 
 			failure := results.GetFailed()[0]
 
-			assert.Equal(t, "AVD-TEST-0123", failure.Rule().AVDID)
+			assert.Equal(t, "AVD-TEST-0123", failure.Rule().ID)
 		})
 	}
 }

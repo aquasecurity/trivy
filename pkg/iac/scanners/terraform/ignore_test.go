@@ -426,8 +426,8 @@ func Test_IgnoreByDynamicBlockValue(t *testing.T) {
 
 	check := `# METADATA
 # custom:
-#   avd_id: USER-TEST-0124
-#   short_code: test
+#   id: USER-TEST-0124
+#   long_id: test
 #   provider: aws
 #   service: ec2
 package user.test124
@@ -551,7 +551,7 @@ resource "aws_s3_bucket" "test" {}`,
 	}
 }
 
-func Test_IgnoreInlineByAVDID(t *testing.T) {
+func Test_IgnoreInlineByID(t *testing.T) {
 	testCases := []struct {
 		input string
 	}{
@@ -571,8 +571,7 @@ func Test_IgnoreInlineByAVDID(t *testing.T) {
 
 	for _, tc := range testCases {
 		ids := []string{
-			"USER-TEST-0123", strings.ToLower("user-test-0123"),
-			"non-empty-bucket", "aws-s3-non-empty-bucket",
+			"USER-TEST-0123", strings.ToLower("user-test-0123"), "aws-s3-non-empty-bucket",
 		}
 
 		for _, id := range ids {

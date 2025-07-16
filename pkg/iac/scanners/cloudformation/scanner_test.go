@@ -27,10 +27,10 @@ Resources:
 		"/rules/rule.rego": `package builtin.dockerfile.DS006
 
 __rego_metadata__ := {
-	"id": "DS006",
-	"avd_id": "AVD-DS-0006",
+	"id": "AVD-DS-0006",
+	"aliases": ["DS006"],
 	"title": "COPY '--from' referring to the current image",
-	"short_code": "no-self-referencing-copy-from",
+	"long_id": "docker-no-self-referencing-copy-from",
 	"version": "v1.0.0",
 	"severity": "CRITICAL",
 	"type": "Dockerfile Security Check",
@@ -64,9 +64,9 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 
 	assert.Equal(t, scan.Rule{
-		AVDID:          "AVD-DS-0006",
+		ID:             "AVD-DS-0006",
 		Aliases:        []string{"DS006"},
-		ShortCode:      "no-self-referencing-copy-from",
+		LongID:         "docker-no-self-referencing-copy-from",
 		Summary:        "COPY '--from' referring to the current image",
 		Explanation:    "COPY '--from' should not mention the current FROM alias, since it is impossible to copy from itself.",
 		Impact:         "",
@@ -108,7 +108,6 @@ const bucketNameCheck = `# METADATA
 # - input: schema["cloud"]
 # custom:
 #   id: AVD-AWS-001
-#   avd_id: AVD-AWS-001
 #   provider: aws
 #   service: s3
 #   severity: LOW
