@@ -41,6 +41,10 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 		comparer = version.NewDEBComparer()
 		vsg = rootio.NewVulnSrcGetter(vulnerability.Ubuntu)
 		versionTrimmer = version.Minor
+	case ftypes.Rocky:
+		comparer = version.NewDEBComparer()
+		vsg = rootio.NewVulnSrcGetter(vulnerability.Rocky)
+		versionTrimmer = version.Major
 	case ftypes.Alpine:
 		comparer = version.NewAPKComparer()
 		vsg = rootio.NewVulnSrcGetter(vulnerability.Alpine)

@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	// debianRootIOPattern matches Debian/Ubuntu Root.io version pattern: .root.io
-	debianRootIOPattern = regexp.MustCompile(`\.root\.io`)
+	// defaultRootIOPattern matches Debian/Ubuntu/Rocky Root.io version pattern: .root.io
+	defaultRootIOPattern = regexp.MustCompile(`\.root\.io`)
 	// alpineRootIOPattern matches Alpine Root.io version pattern: -r\d007\d (e.g., -r10071, -r20072)
 	alpineRootIOPattern = regexp.MustCompile(`-r\d007\d`)
 )
@@ -26,8 +26,8 @@ func Provider(osFamily ftypes.OSType, pkgs []ftypes.Package) driver.Driver {
 // isRootIOEnvironment detects if the environment is Root.io based on package suffixes
 func isRootIOEnvironment(osFamily ftypes.OSType, pkgs []ftypes.Package) bool {
 	switch osFamily {
-	case ftypes.Debian, ftypes.Ubuntu:
-		return hasPackageWithPattern(pkgs, debianRootIOPattern)
+	case ftypes.Debian, ftypes.Ubuntu, ftypes.Rocky:
+		return hasPackageWithPattern(pkgs, defaultRootIOPattern)
 	case ftypes.Alpine:
 		return hasPackageWithPattern(pkgs, alpineRootIOPattern)
 	default:

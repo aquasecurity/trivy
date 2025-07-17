@@ -17,6 +17,11 @@
         BaseID: "ubuntu"
         Name: "Root.io Security Patches (ubuntu)"
         URL: "https://api.root.io/external/patch_feed"
+    - key: root.io rocky 8.9
+      value:
+        ID: "rootio"
+        Name: "Root.io Security Patches"
+        URL: "https://api.root.io/external/patch_feed"
     - key: root.io alpine 3.19
       value:
         ID: "rootio"
