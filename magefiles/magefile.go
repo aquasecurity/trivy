@@ -331,6 +331,12 @@ func (t Test) UpdateVMGolden() error {
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=vm_integration", "./integration/...", "-update")
 }
 
+// E2e runs E2E tests using testscript framework
+func (t Test) E2e() error {
+	mg.Deps(Build) // Ensure trivy binary is built
+	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=e2e", "./e2e/...")
+}
+
 type Lint mg.Namespace
 
 // Run runs linters

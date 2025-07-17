@@ -132,6 +132,8 @@ require (
 	modernc.org/sqlite v1.38.0
 )
 
+require github.com/rogpeppe/go-internal v1.14.1
+
 require (
 	buf.build/gen/go/bufbuild/bufplugin/protocolbuffers/go v1.36.6-20250121211742-6d880cc6cc8d.1 // indirect
 	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.6-20250613105001-9f2d3c737feb.1 // indirect

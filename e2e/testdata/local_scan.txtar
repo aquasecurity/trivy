@@ -1,0 +1,22 @@
+# Local Docker image scan test
+# This test verifies that Trivy can scan images from local Docker daemon
+
+[condition:docker]
+
+# Pre-pull the image to Docker daemon
+exec docker pull alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+
+# Test local image scanning from Docker daemon
+exec trivy image --image-src docker alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+
+# Verify scan completed successfully
+! stderr 'FATAL'
+stdout 'Total: [0-9]+ packages'
+stdout 'Vulnerabilities: [0-9]+'
+
+# Verify no remote download occurred (since we're using local Docker)
+! stderr 'Downloading.*image'
+
+# Verify cache directory was created
+exists $WORK/.cache
+exists $WORK/.tmp
