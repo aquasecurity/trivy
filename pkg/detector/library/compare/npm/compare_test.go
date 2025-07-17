@@ -31,6 +31,17 @@ func TestNpmComparer_IsVulnerable(t *testing.T) {
 			want: true,
 		},
 		{
+			name: "prerelease",
+			args: args{
+				currentVersion: "1.45.1-lts.1",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=1.4.4-lts.1, <2.0.0"},
+					PatchedVersions:    []string{"2.0.0"},
+				},
+			},
+			want: true,
+		},
+		{
 			name: "no patch",
 			args: args{
 				currentVersion: "1.2.3",
@@ -68,8 +79,12 @@ func TestNpmComparer_IsVulnerable(t *testing.T) {
 			args: args{
 				currentVersion: "2.0.0",
 				advisory: dbTypes.Advisory{
-					VulnerableVersions: []string{">=1.7.0 <1.7.16", ">=1.8.0 <1.8.8", ">=2.0.0 <2.0.8", ">=3.0.0-beta.1 <3.0.0-beta.7"},
-					PatchedVersions:    []string{">=3.0.0-beta.7", ">=2.0.8 <3.0.0-beta.1", ">=1.8.8 <2.0.0", ">=1.7.16 <1.8.0"},
+					VulnerableVersions: []string{
+						">=1.7.0 <1.7.16", ">=1.8.0 <1.8.8", ">=2.0.0 <2.0.8", ">=3.0.0-beta.1 <3.0.0-beta.7",
+					},
+					PatchedVersions: []string{
+						">=3.0.0-beta.7", ">=2.0.8 <3.0.0-beta.1", ">=1.8.8 <2.0.0", ">=1.7.16 <1.8.0",
+					},
 				},
 			},
 			want: true,
