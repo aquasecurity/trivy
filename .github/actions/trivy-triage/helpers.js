@@ -1,6 +1,6 @@
 const patterns = {
-    Scanner: /### Scanner\n\n(.+)/,
-    Target: /### Target\n\n(.+)/,
+    Scanner: /### Scanner\r?\n\r?\n(.+)/,
+    Target: /### Target\r?\n\r?\n(.+)/,
 };
 
 module.exports = {

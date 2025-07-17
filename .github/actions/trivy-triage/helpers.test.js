@@ -62,6 +62,17 @@ describe('trivy-triage', async function() {
       assert(labels.includes('ContainerImageLabel'));
       assert(labels.includes('VulnerabilityLabel'));
     });
+    it('detect scanner and target labels on windows', async function() {
+      const discussion = {
+        body: 'hello hello\r\nbla bla.\r\n### Scanner\r\n\r\nVulnerability\r\n### Target\r\n\r\nContainer Image\r\nbye bye.',
+        category: {
+          name: 'Ideas'
+        }
+      };
+      const labels = detectDiscussionLabels(discussion, configDiscussionLabels);
+      assert(labels.includes('ContainerImageLabel'));
+      assert(labels.includes('VulnerabilityLabel'));
+    });
     it('not detect other labels', async function() {
       const discussion = {
         body: 'hello hello\nbla bla.\n### Scanner\n\nVulnerability\n### Target\n\nContainer Image\nbye bye.', 
