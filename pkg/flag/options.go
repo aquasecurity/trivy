@@ -76,6 +76,9 @@ type Flag[T FlagType] struct {
 	// Aliases represents aliases
 	Aliases []Alias
 
+	// TelemetrySafe indicates if the flag value is safe to be included in telemetry.
+	TelemetrySafe bool
+
 	// value is the value passed through CLI flag, env, or config file.
 	// It is populated after flag.Parse() is called.
 	value T
@@ -218,6 +221,17 @@ func (f *Flag[T]) GetAliases() []Alias {
 	return f.Aliases
 }
 
+func (f *Flag[T]) IsTelemetrySafe() bool {
+	return f.TelemetrySafe
+}
+
+func (f *Flag[T]) IsSet() bool {
+	if f == nil {
+		return false
+	}
+	return f.isSet()
+}
+
 func (f *Flag[T]) Hidden() bool {
 	return f.Deprecated != "" || f.Removed != "" || f.Internal
 }
@@ -349,6 +363,8 @@ type Flagger interface {
 	GetDefaultValue() any
 	GetAliases() []Alias
 	Hidden() bool
+	IsTelemetrySafe() bool
+	IsSet() bool
 
 	Parse() error
 	Add(cmd *cobra.Command)
@@ -391,6 +407,9 @@ type Options struct {
 
 	// args is the arguments passed to the command.
 	args []string
+
+	// usedFlags allows us to get the underlying flags for the options
+	usedFlags []Flagger
 }
 
 // Align takes consistency of options
@@ -517,7 +536,6 @@ func (o *Options) RemoteCacheOpts() cache.RemoteOptions {
 	return cache.RemoteOptions{
 		ServerAddr:    o.ServerAddr,
 		CustomHeaders: o.CustomHeaders,
-		Insecure:      o.Insecure,
 		PathPrefix:    o.PathPrefix,
 	}
 }
@@ -554,6 +572,11 @@ func (o *Options) OutputWriter(ctx context.Context) (io.Writer, func() error, er
 		return nil, nil, xerrors.Errorf("failed to create output file: %w", err)
 	}
 	return f, f.Close, nil
+}
+
+// GetUsedFlags returns the explicitly set flags for the options.
+func (o *Options) GetUsedFlags() []Flagger {
+	return o.usedFlags
 }
 
 func (o *Options) outputPluginWriter(ctx context.Context) (io.Writer, func() error, error) {
@@ -651,6 +674,8 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 		if err := parseFlags(group); err != nil {
 			return Options{}, xerrors.Errorf("unable to parse flags: %w", err)
 		}
+
+		opts.usedFlags = append(opts.usedFlags, usedFlags(group)...)
 
 		if err := group.ToOptions(&opts); err != nil {
 			return Options{}, xerrors.Errorf("unable to convert flags to options: %w", err)
@@ -751,4 +776,22 @@ func findFlagGroup[T FlagGroup](f *Flags) (T, bool) {
 	}
 	var zero T
 	return zero, false
+}
+
+// usedFlags returns a slice of flags that are set in the given FlagGroup.
+func usedFlags(fg FlagGroup) []Flagger {
+	if fg == nil || fg.Flags() == nil {
+		return nil
+	}
+
+	var flags []Flagger
+	for _, flag := range fg.Flags() {
+		if flag == nil {
+			continue
+		}
+		if flag.IsSet() {
+			flags = append(flags, flag)
+		}
+	}
+	return flags
 }

@@ -3,6 +3,8 @@ package iam
 import (
 	"strings"
 
+	"github.com/hashicorp/hcl/v2/hclsyntax"
+
 	"github.com/aquasecurity/iamgo"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
@@ -15,6 +17,18 @@ type wrappedDocument struct {
 }
 
 func ParsePolicyFromAttr(attr *terraform.Attribute, owner *terraform.Block, modules terraform.Modules) (*iam.Document, error) {
+	if attr == nil {
+		return &iam.Document{
+			Metadata: owner.GetMetadata(),
+		}, nil
+	}
+	attr.RewriteExpr(func(e hclsyntax.Expression) hclsyntax.Expression {
+		if te, ok := e.(*hclsyntax.TemplateExpr); ok {
+			return &terraform.PartialTemplateExpr{TemplateExpr: te}
+		}
+		return e
+	})
+
 	if !attr.IsString() {
 		return &iam.Document{
 			Metadata: owner.GetMetadata(),

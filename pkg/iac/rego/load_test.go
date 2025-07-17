@@ -319,6 +319,12 @@ func TestIsMinimumTrivyVersion(t *testing.T) {
 			MinimumTrivyVersion: "",
 			expectedResults:     1,
 		},
+		{
+			name:                "trivy version is dev",
+			trivyVersion:        "dev",
+			MinimumTrivyVersion: "1.2.3",
+			expectedResults:     1,
+		},
 	}
 
 	for _, tc := range testCases {

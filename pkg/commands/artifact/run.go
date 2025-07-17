@@ -34,6 +34,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scan"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
 // TargetKind represents what kind of artifact Trivy scans
@@ -118,12 +119,15 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 		opt(r)
 	}
 
-	// If the user has not disabled notices or is running in quiet mode
-	r.versionChecker = notification.NewVersionChecker(
-		notification.WithSkipVersionCheck(cliOptions.SkipVersionCheck),
-		notification.WithQuietMode(cliOptions.Quiet),
-		notification.WithTelemetryDisabled(cliOptions.DisableTelemetry),
-	)
+	// Set the default HTTP transport
+	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
+		Insecure:  cliOptions.Insecure,
+		Timeout:   cliOptions.Timeout,
+		TraceHTTP: cliOptions.TraceHTTP,
+	}))
+	// get the sub command that is being used or fallback to "trivy"
+	commandName := lo.NthOr(os.Args, 1, "trivy")
+	r.versionChecker = notification.NewVersionChecker(commandName, &cliOptions)
 
 	// Update the vulnerability database if needed.
 	if err := r.initDB(ctx, cliOptions); err != nil {
@@ -150,7 +154,7 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 	// only do this if the user has not disabled notices or is running
 	// in quiet mode
 	if r.versionChecker != nil {
-		r.versionChecker.RunUpdateCheck(ctx, os.Args[1:])
+		r.versionChecker.RunUpdateCheck(ctx)
 	}
 
 	return r, nil
@@ -171,7 +175,7 @@ func (r *runner) Close(ctx context.Context) error {
 
 	// silently check if there is notifications
 	if r.versionChecker != nil {
-		r.versionChecker.PrintNotices(os.Stderr)
+		r.versionChecker.PrintNotices(ctx, os.Stderr)
 	}
 
 	return errs
@@ -708,7 +712,7 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 	}
 
 	misconfOpts := misconf.ScannerOption{
-		Trace:                    opts.Trace,
+		Trace:                    opts.RegoOptions.Trace,
 		Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
 		PolicyPaths:              policyPaths,
 		DataPaths:                opts.DataPaths,

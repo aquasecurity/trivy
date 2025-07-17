@@ -13,7 +13,6 @@ import (
 	"github.com/open-policy-agent/opa/v1/bundle"
 	"github.com/samber/lo"
 
-	"github.com/aquasecurity/go-version/pkg/semver"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
@@ -297,32 +296,6 @@ func (s *Scanner) handleModulesMetadata(path string, module *ast.Module) {
 	s.moduleMetadata[path] = metadata
 }
 
-func (s *Scanner) IsMinimumVersionSupported(metadata *StaticMetadata, module *ast.Module, tv semver.Version) bool {
-	if metadata.MinimumTrivyVersion == "" { // to ensure compatibility with old modules without minimum trivy version
-		return true
-	}
-
-	mmsv, err := semver.Parse(metadata.MinimumTrivyVersion)
-	if err != nil {
-		s.logger.Warn(
-			"Failed to parse minimum trivy version - skipping as cannot confirm if module will work with current version",
-			log.FilePath(module.Package.Location.File),
-			log.Err(err),
-		)
-		return false
-	}
-
-	if tv.LessThan(mmsv) {
-		s.logger.Warn(
-			"Module will be skipped as current version of Trivy is older than minimum trivy version required - please update Trivy to use this module",
-			log.FilePath(module.Package.Location.File),
-			log.String("minimum_trivy_version", metadata.MinimumTrivyVersion),
-		)
-		return false
-	}
-	return true
-}
-
 // moduleHasLegacyMetadataFormat checks if the module has a legacy metadata format.
 // Returns true if the metadata is represented as a “__rego_metadata__” rule,
 // which was used before annotations were introduced.
@@ -344,54 +317,35 @@ func moduleHasLegacyInputFormat(module *ast.Module) bool {
 // filterModules filters the Rego modules based on metadata.
 func (s *Scanner) filterModules() error {
 	filtered := make(map[string]*ast.Module)
+
 	for name, module := range s.policies {
 		metadata, err := s.metadataForModule(context.Background(), name, module, nil)
 		if err != nil {
 			return fmt.Errorf("retrieve metadata for module %s: %w", name, err)
 		}
-
-		if metadata != nil {
-			tv, err := semver.Parse(s.trivyVersion)
-			if err != nil {
-				s.logger.Warn(
-					"Failed to parse Trivy version - cannot confirm if module will work with current version",
-					log.String("trivy_version", s.trivyVersion),
-					log.FilePath(module.Package.Location.File),
-					log.Err(err),
-				)
-			} else if !s.IsMinimumVersionSupported(metadata, module, tv) {
-				continue
-			}
-
-			if s.isModuleApplicable(module, metadata, name) {
-				filtered[name] = module
-			}
+		if metadata == nil {
+			continue
 		}
+
+		if !lo.EveryBy(s.moduleFilters, func(filter RegoModuleFilter) bool {
+			return filter(module, metadata)
+		}) {
+			continue
+		}
+
+		if len(metadata.InputOptions.Selectors) == 0 && !metadata.Library {
+			s.logger.Warn(
+				"Module has no input selectors - it will be loaded for all inputs",
+				log.FilePath(module.Package.Location.File),
+				log.String("module", name),
+			)
+		}
+
+		filtered[name] = module
 	}
 
 	s.policies = filtered
 	return nil
-}
-
-func (s *Scanner) isModuleApplicable(module *ast.Module, metadata *StaticMetadata, name string) bool {
-	if !metadata.hasAnyFramework(s.frameworks) {
-		return false
-	}
-
-	// ignore disabled built-in checks
-	if IsBuiltinNamespace(getModuleNamespace(module)) && s.disabledCheckIDs.Contains(metadata.ID) {
-		return false
-	}
-
-	if len(metadata.InputOptions.Selectors) == 0 && !metadata.Library {
-		s.logger.Warn(
-			"Module has no input selectors - it will be loaded for all inputs",
-			log.FilePath(module.Package.Location.File),
-			log.String("module", name),
-		)
-	}
-
-	return true
 }
 
 func ParseRegoModule(name, input string) (*ast.Module, error) {

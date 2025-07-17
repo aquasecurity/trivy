@@ -267,6 +267,25 @@ $ brew install aquasecurity/trivy/trivy
 ```
 
 
+## Debugging
+### HTTP Request/Response Tracing
+
+For debugging network issues, connection problems, or authentication failures, you can enable HTTP request/response tracing using the `--trace-http` flag.
+
+!!! danger "Security Warning"
+    While Trivy attempts to redact known sensitive information such as authentication headers and common secrets, the `--trace-http` flag may still expose sensitive data in HTTP requests and responses.
+    
+    **Never use this flag in production environments or CI/CD pipelines.**
+    This flag is automatically disabled in CI environments for security.
+
+```bash
+# Enable HTTP tracing for debugging registry issues
+$ trivy image --trace-http registry.example.com/my-image:latest
+
+# HTTP tracing with other debugging options
+$ trivy image --trace-http --debug --insecure my-image:tag
+```
+
 ## Others
 ### Unknown error
 

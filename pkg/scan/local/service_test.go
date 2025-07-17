@@ -48,6 +48,13 @@ var (
 			},
 		},
 	}
+	libunistring5Pkg = ftypes.Package{
+		Name:       "libunistring5",
+		Version:    "1.1-2build1.1",
+		SrcName:    "libunistring5",
+		SrcVersion: "1.1-2build1.1",
+		Licenses:   []string{"GFDL-NIV-1.2+"},
+	}
 	railsPkg = ftypes.Package{
 		Name:    "rails",
 		Version: "4.0.2",
@@ -357,7 +364,7 @@ func TestScanner_Scan(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path license scanner",
+			name: "happy path license scanner (exclude language-specific packages)",
 			args: args{
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
@@ -365,16 +372,18 @@ func TestScanner_Scan(t *testing.T) {
 					PkgRelationships: ftypes.Relationships,
 					Scanners:         types.Scanners{types.LicenseScanner},
 					LicenseFull:      true,
+					PkgTypes: []string{
+						types.PkgTypeOS,
+					},
 					LicenseCategories: map[ftypes.LicenseCategory][]string{
 						ftypes.CategoryNotice: {
 							"MIT",
-							"text://\\(c\\) 2015.*",
-							"text://.* 2016 Continuum.*",
+							"GFDL-1.2-no-invariants", // License before normalization
+							// 	"GFDL-1.2-no-invariants-or-later", // License after normalization
 						},
 					},
 				},
 			},
-			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
 				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
@@ -390,6 +399,100 @@ func TestScanner_Scan(t *testing.T) {
 							FilePath: "lib/apk/db/installed",
 							Packages: []ftypes.Package{
 								muslPkg,
+								libunistring5Pkg,
+							},
+						},
+					},
+					Applications: []ftypes.Application{
+						{
+							Type:     ftypes.PythonPkg,
+							FilePath: "",
+							Packages: []ftypes.Package{
+								urllib3Pkg,
+								menuinstPkg,
+							},
+						},
+					},
+				}))
+				return c
+			},
+			want: types.ScanResponse{
+				Results: types.Results{
+					{
+						Target: "OS Packages",
+						Class:  types.ClassLicense,
+						Licenses: []types.DetectedLicense{
+							{
+								Severity:   "LOW",
+								Category:   "notice",
+								PkgName:    libunistring5Pkg.Name,
+								Name:       "GFDL-NIV-1.2+",
+								Confidence: 1,
+							},
+							{
+								Severity:   "LOW",
+								Category:   "notice",
+								PkgName:    muslPkg.Name,
+								Name:       "MIT",
+								Confidence: 1,
+							},
+						},
+					},
+					{
+						Target: "Loose File License(s)",
+						Class:  types.ClassLicenseFile,
+					},
+				},
+				OS: ftypes.OS{
+					Family: "alpine",
+					Name:   "3.11",
+					Eosl:   false,
+				},
+				Layers: ftypes.Layers{
+					{
+						Size:   1000,
+						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+					},
+				},
+			},
+		},
+		{
+			name: "happy path license scanner (exclude OS packages)",
+			args: args{
+				target:   "alpine:latest",
+				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+				options: types.ScanOptions{
+					PkgRelationships: ftypes.Relationships,
+					Scanners:         types.Scanners{types.LicenseScanner},
+					LicenseFull:      true,
+					PkgTypes: []string{
+						types.PkgTypeLibrary,
+					},
+					LicenseCategories: map[ftypes.LicenseCategory][]string{
+						ftypes.CategoryNotice: {
+							"MIT",
+							"text://\\(c\\) 2015.*",
+							"text://.* 2016 Continuum.*",
+						},
+					},
+				},
+			},
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					Size:          1000,
+					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+					OS: ftypes.OS{
+						Family: ftypes.Alpine,
+						Name:   "3.11",
+					},
+					PackageInfos: []ftypes.PackageInfo{
+						{
+							FilePath: "lib/apk/db/installed",
+							Packages: []ftypes.Package{
+								muslPkg,
+								libunistring5Pkg,
 							},
 						},
 					},
@@ -415,19 +518,6 @@ func TestScanner_Scan(t *testing.T) {
 			},
 			want: types.ScanResponse{
 				Results: types.Results{
-					{
-						Target: "OS Packages",
-						Class:  types.ClassLicense,
-						Licenses: []types.DetectedLicense{
-							{
-								Severity:   "LOW",
-								Category:   "notice",
-								PkgName:    muslPkg.Name,
-								Name:       "MIT",
-								Confidence: 1,
-							},
-						},
-					},
 					{
 						Target: "/app/go.mod",
 						Class:  types.ClassLicense,

@@ -513,6 +513,32 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			name:      "happy path for third party sbom, no operation-system component",
 			inputFile: "testdata/happy/third-party-bom-no-os.json",
 			want: types.SBOM{
+				Packages: []ftypes.PackageInfo{
+					{
+						Packages: ftypes.Packages{
+							{
+								ID:         "musl@1.2.3-r0",
+								Name:       "musl",
+								Version:    "1.2.3-r0",
+								SrcName:    "musl",
+								SrcVersion: "1.2.3-r0",
+								Licenses:   []string{"MIT"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeApk,
+										Namespace: "alpine",
+										Name:      "musl",
+										Version:   "1.2.3-r0",
+										Qualifiers: packageurl.Qualifiers{
+											{Key: "distro", Value: "3.16.0"},
+										},
+									},
+									BOMRef: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+								},
+							},
+						},
+					},
+				},
 				Applications: []ftypes.Application{
 					{
 						Type:     "composer",
@@ -816,6 +842,34 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 									},
 									BOMRef: "pkg:composer/pear/core@1.13.1",
 								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "SHA-512",
+			inputFile: "testdata/happy/package-hashes.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: ftypes.NodePkg,
+						Packages: ftypes.Packages{
+							{
+								ID:      "@angular/animations@19.2.10",
+								Name:    "@angular/animations",
+								Version: "19.2.10",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeNPM,
+										Namespace: "@angular",
+										Name:      "animations",
+										Version:   "19.2.10",
+									},
+									BOMRef: "@angular/animations@19.2.10",
+								},
+								Digest: "sha512:2e51fa9add03f3e308d0b57c40dc7dfeba8b2efd1609f60f4bfe625d21a92327ec7e52e83b97511a1b52e297506eee60aa69cb75ff62eebe257512637fbc1bfa",
 							},
 						},
 					},

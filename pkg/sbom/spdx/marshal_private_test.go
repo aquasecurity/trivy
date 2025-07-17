@@ -70,10 +70,24 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 		{
 			name: "happy path with WITH operator",
 			input: []string{
-				"AFL 2.0",
+				"GPLv2",
+				"AFL 3.0 with wrong-exceptions",
+				"LGPL 2.0 and unknown-license and GNU LESSER",
 				"AFL 3.0 with Autoconf-exception-3.0",
 			},
-			wantLicenseName: "AFL-2.0 AND AFL-3.0 WITH Autoconf-exception-3.0",
+			wantLicenseName: "GPL-2.0-only AND LicenseRef-51373b28fab165e9 AND LGPL-2.0-only AND LicenseRef-a0bb0951a6dfbdbe AND LGPL-2.1-only AND AFL-3.0 WITH Autoconf-exception-3.0",
+			wantOtherLicenses: []*spdx.OtherLicense{
+				{
+					LicenseIdentifier: "LicenseRef-51373b28fab165e9",
+					LicenseName:       "AFL-3.0 WITH wrong-exceptions",
+					ExtractedText:     `This component is licensed under "AFL-3.0 WITH wrong-exceptions"`,
+				},
+				{
+					LicenseIdentifier: "LicenseRef-a0bb0951a6dfbdbe",
+					LicenseName:       "unknown-license",
+					ExtractedText:     `This component is licensed under "unknown-license"`,
+				},
+			},
 		},
 		{
 			name: "happy path with non-SPDX exception",

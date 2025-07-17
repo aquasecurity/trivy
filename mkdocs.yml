@@ -117,6 +117,7 @@ nav:
               - Overview: docs/coverage/others/index.md
               - Bitnami Images: docs/coverage/others/bitnami.md
               - Conda: docs/coverage/others/conda.md
+              - Root.io Images: docs/coverage/others/rootio.md
               - RPM Archives: docs/coverage/others/rpm.md
           - Kubernetes: docs/coverage/kubernetes.md
       - Configuration:
@@ -224,6 +225,7 @@ nav:
           - Overview: community/contribute/checks/overview.md
           - Add Service Support: community/contribute/checks/service-support.md
       - Maintainer:
+          - PR Review: community/maintainer/pr-review.md
           - Release Flow: community/maintainer/release-flow.md
           - Backporting: community/maintainer/backporting.md
           - Help Wanted: community/maintainer/help-wanted.md
@@ -261,6 +263,7 @@ markdown_extensions:
   - pymdownx.highlight
   - pymdownx.details
   - pymdownx.magiclink
+  - pymdownx.snippets
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid

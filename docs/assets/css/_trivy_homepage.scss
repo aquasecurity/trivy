@@ -157,14 +157,14 @@
 					.page_title {
 						color: #ffffff;
 						font-weight: $weight-bold;
-						font-size: 48px; //3rem;
+						font-size: 48px; //3rem
 						line-height: 1.3;
 					}//page_title
 			
 					.page_subtitle {
 						color: #ffffff;
 						font-weight: $weight-normal;
-						font-size: 24px; //1.5rem;
+						font-size: 24px; //1.5rem
 						line-height: 1.3;
 						margin-bottom: 30px;
 					} //page_subtitle
@@ -179,11 +179,11 @@
 						width: 100%;
 
 						.page_title {
-							font-size: 32px; //2rem;
+							font-size: 32px; //2rem
 						}//page_title
 			
 						.page_subtitle {
-							font-size: 18px; //1.125rem;
+							font-size: 18px; //1.125rem
 						}//page_subtitle
 			
 					} //until tablet
@@ -194,7 +194,7 @@
 			} //header_title_wrap
 
 			@media screen and (min-width: $tablet), print { //769
-				padding: 48px 24px; //3rem 1.5rem;
+				padding: 48px 24px; //3rem 1.5rem
 			}
 		}
 
@@ -256,10 +256,10 @@
 
 
 	.community_title {
-		color: $aq-sea-foam;
-		font-size: 60px; //3.75rem;
+		color: $aq-neon-blue;
+		font-size: 60px; //3.75rem
 		font-weight: $weight-bold;
-		margin-bottom: 24px; ////1.5rem;
+		margin-bottom: 24px; //1.5rem
 		line-height: 1.2;
 		
 
@@ -267,8 +267,8 @@
 
 	.community_subtitle  {
 		color: #ffffff;
-		font-size: 26px; //1.625rem;
-		margin-bottom: 24px; ////1.5rem;
+		font-size: 26px; //1.625rem
+		margin-bottom: 24px; //1.5rem
 		
 
 	}
@@ -309,28 +309,28 @@
 				display: block;
 				position: relative;
 				color: #ffffff;
-				border: 1px solid rgba($aq-sea-foam,0.2);
-				background-color: rgba($aq-sea-foam,0.05);
+				border: 1px solid rgba($aq-neon-blue,0.2);
+				background-color: rgba($aq-neon-blue,0.05);
 				border-radius: 4px;
 				padding: 25px;
 
 				.quote_name {
-					font-size: 16px; //1rem;
+					font-size: 16px; //1rem
 					font-weight: $weight-semibold;
 				}
 
 				.quote_twitter_handle {
 					opacity: 0.6;
-					font-size: 13px; //0.8125rem;
+					font-size: 13px; //0.8125rem
 				}
 
 				.quote_company {
 					opacity: 0.6;
-					font-size: 13px; //0.8125rem;
+					font-size: 13px; //0.8125rem
 				}
 
 				.quote_text {
-					font-size: 16px; //1rem;
+					font-size: 16px; //1rem
 					font-weight: $weight-normal;
 					line-height: 1.3;
 				}
@@ -397,10 +397,10 @@
 	@media screen and (max-width: $tablet), print { //tablet
 
 		.community_title {
-			font-size: 32px; //2rem;
+			font-size: 32px; //2rem
 		}
 		.community_subtitle {
-			font-size: 18px; //1.125rem;
+			font-size: 18px; //1.125rem
 		}
 
 	} //until

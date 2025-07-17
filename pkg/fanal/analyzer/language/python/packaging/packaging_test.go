@@ -162,6 +162,11 @@ func Test_packagingAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
+			name:     "egg-info/METADATA",
+			filePath: "Amazon/AWSCLIV2/cryptography-3.3.2-py3.8.egg-info/METADATA",
+			want:     true,
+		},
+		{
 			name:     "egg-info",
 			filePath: "python3.8/site-packages/wrapt-1.12.1.egg-info",
 			want:     true,

@@ -52,12 +52,6 @@ var enablediacTypes = map[detection.FileType]types.ConfigType{
 	detection.FileTypeYAML:                  types.YAML,
 }
 
-type DisabledCheck struct {
-	ID      string
-	Scanner string // For logging
-	Reason  string // For logging
-}
-
 type ScannerOption struct {
 	Trace                    bool
 	Namespaces               []string
@@ -82,9 +76,8 @@ type ScannerOption struct {
 	FilePatterns      []string
 	ConfigFileSchemas []*ConfigFileSchema
 
-	DisabledChecks []DisabledCheck
-	SkipFiles      []string
-	SkipDirs       []string
+	SkipFiles []string
+	SkipDirs  []string
 
 	RegoScanner *rego.Scanner
 }
@@ -236,17 +229,10 @@ func InitRegoScanner(opt ScannerOption) (*rego.Scanner, error) {
 }
 
 func initRegoOptions(opt ScannerOption) ([]options.ScannerOption, error) {
-	disabledCheckIDs := lo.Map(opt.DisabledChecks, func(check DisabledCheck, _ int) string {
-		log.Info("Check disabled", log.Prefix(log.PrefixMisconfiguration), log.String("ID", check.ID),
-			log.String("scanner", check.Scanner), log.String("reason", check.Reason))
-		return check.ID
-	})
-
 	opts := []options.ScannerOption{
 		rego.WithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
 		rego.WithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
 		rego.WithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
-		rego.WithDisabledCheckIDs(disabledCheckIDs...),
 		rego.WithTrivyVersion(app.Version()),
 	}
 

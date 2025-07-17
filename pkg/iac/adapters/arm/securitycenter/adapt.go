@@ -22,7 +22,9 @@ func adaptContacts(deployment azure.Deployment) (contacts []securitycenter.Conta
 
 func adaptContact(resource azure.Resource) securitycenter.Contact {
 	return securitycenter.Contact{
-		Metadata:                 resource.Metadata,
+		Metadata: resource.Metadata,
+		// TODO: The email field does not exist
+		// https://learn.microsoft.com/en-us/azure/templates/microsoft.security/securitycontacts?pivots=deployment-language-arm-template#securitycontactproperties-1
 		EnableAlertNotifications: resource.Properties.GetMapValue("email").AsBoolValue(false, resource.Metadata),
 		Phone:                    resource.Properties.GetMapValue("phone").AsStringValue("", resource.Metadata),
 	}

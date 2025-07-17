@@ -8,9 +8,10 @@ package flag
 //	  policy-namespaces: "user"
 var (
 	IncludeDeprecatedChecksFlag = Flag[bool]{
-		Name:       "include-deprecated-checks",
-		ConfigName: "rego.include-deprecated-checks",
-		Usage:      "include deprecated checks",
+		Name:          "include-deprecated-checks",
+		ConfigName:    "rego.include-deprecated-checks",
+		Usage:         "include deprecated checks",
+		TelemetrySafe: true,
 	}
 	SkipCheckUpdateFlag = Flag[bool]{
 		Name:       "skip-check-update",
@@ -23,19 +24,34 @@ var (
 				Deprecated: true,
 			},
 		},
+		TelemetrySafe: true,
 	}
-	TraceFlag = Flag[bool]{
-		Name:       "trace",
-		ConfigName: "rego.trace",
-		Usage:      "enable more verbose trace output for custom queries",
+	TraceRegoFlag = Flag[bool]{
+		Name:          "trace-rego",
+		ConfigName:    "rego.trace",
+		Usage:         "enable more verbose trace output for custom queries",
+		Persistent:    true,
+		TelemetrySafe: true,
+		Aliases: []Alias{
+			{
+				Name:       "trace",
+				Deprecated: true,
+			},
+		},
 	}
 	ConfigCheckFlag = Flag[[]string]{
 		Name:       "config-check",
 		ConfigName: "rego.check",
 		Usage:      "specify the paths to the Rego check files or to the directories containing them, applying config files",
 		Aliases: []Alias{
-			{Name: "policy", Deprecated: true},
-			{Name: "config-policy", Deprecated: true},
+			{
+				Name:       "policy",
+				Deprecated: true,
+			},
+			{
+				Name:       "config-policy",
+				Deprecated: true,
+			},
 		},
 	}
 	ConfigDataFlag = Flag[[]string]{
@@ -52,7 +68,10 @@ var (
 		Usage:      "Rego namespaces",
 		Aliases: []Alias{
 			{Name: "namespaces"},
-			{Name: "policy-namespaces", Deprecated: true},
+			{
+				Name:       "policy-namespaces",
+				Deprecated: true,
+			},
 		},
 	}
 )
@@ -80,7 +99,7 @@ func NewRegoFlagGroup() *RegoFlagGroup {
 	return &RegoFlagGroup{
 		IncludeDeprecatedChecks: IncludeDeprecatedChecksFlag.Clone(),
 		SkipCheckUpdate:         SkipCheckUpdateFlag.Clone(),
-		Trace:                   TraceFlag.Clone(),
+		Trace:                   TraceRegoFlag.Clone(),
 		CheckPaths:              ConfigCheckFlag.Clone(),
 		DataPaths:               ConfigDataFlag.Clone(),
 		CheckNamespaces:         CheckNamespaceFlag.Clone(),

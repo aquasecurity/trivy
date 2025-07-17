@@ -258,7 +258,7 @@ func TestApplyLayers(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path with duplicate of debian packages",
+			name: "happy path with duplicate packages",
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 2,
@@ -273,6 +273,36 @@ func TestApplyLayers(t *testing.T) {
 									Name:    "libssl1.1",
 									Version: "1.1.1n",
 									Release: "0+deb11u3",
+								},
+							},
+						},
+						{
+							FilePath: "foo/socat-1.7.3.2-2.el7.x86_64.rpm",
+							Packages: types.Packages{
+								{
+									Name:       "socat",
+									Version:    "1.7.3.2",
+									Release:    "2.el7",
+									Arch:       "x86_64",
+									SrcName:    "socat",
+									SrcVersion: "1.7.3.2",
+									SrcRelease: "2.el7",
+									FilePath:   "foo/socat-1.7.3.2-2.el7.x86_64.rpm",
+								},
+							},
+						},
+						{
+							FilePath: "bar/socat-1.7.3.2-2.el7.x86_64.rpm",
+							Packages: types.Packages{
+								{
+									Name:       "socat",
+									Version:    "1.7.3.2",
+									Release:    "2.el7",
+									Arch:       "x86_64",
+									SrcName:    "socat",
+									SrcVersion: "1.7.3.2",
+									SrcRelease: "2.el7",
+									FilePath:   "bar/socat-1.7.3.2-2.el7.x86_64.rpm",
 								},
 							},
 						},
@@ -309,6 +339,38 @@ func TestApplyLayers(t *testing.T) {
 						},
 						Layer: types.Layer{
 							DiffID: "sha256:96e320b34b5478d8b369ca43ffaa88ff6dd9499ec72b792ca21b1e8b0c55670f",
+						},
+					},
+					{
+						Name:       "socat",
+						Version:    "1.7.3.2",
+						Release:    "2.el7",
+						Arch:       "x86_64",
+						SrcName:    "socat",
+						SrcVersion: "1.7.3.2",
+						SrcRelease: "2.el7",
+						FilePath:   "bar/socat-1.7.3.2-2.el7.x86_64.rpm",
+						Layer: types.Layer{
+							DiffID: "sha256:96e320b34b5478d8b369ca43ffaa88ff6dd9499ec72b792ca21b1e8b0c55670f",
+						},
+						Identifier: types.PkgIdentifier{
+							UID: "bfb68335f6284b36",
+						},
+					},
+					{
+						Name:       "socat",
+						Version:    "1.7.3.2",
+						Release:    "2.el7",
+						Arch:       "x86_64",
+						SrcName:    "socat",
+						SrcVersion: "1.7.3.2",
+						SrcRelease: "2.el7",
+						FilePath:   "foo/socat-1.7.3.2-2.el7.x86_64.rpm",
+						Layer: types.Layer{
+							DiffID: "sha256:96e320b34b5478d8b369ca43ffaa88ff6dd9499ec72b792ca21b1e8b0c55670f",
+						},
+						Identifier: types.PkgIdentifier{
+							UID: "4d8db4fac0caf460",
 						},
 					},
 				},
