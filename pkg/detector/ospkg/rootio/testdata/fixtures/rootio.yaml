@@ -1,3 +1,21 @@
+- bucket: debian 12
+  pairs:
+    - bucket: openssl
+      pairs:
+        - key: CVE-2024-13176
+          value:
+            VulnerableVersions:
+              - "<3.0.16-1~deb12u1"
+            PatchedVersions:
+              - "3.0.16-1~deb12u1"
+            Severity: 2
+        - key: CVE-2025-27587
+          value:
+            VulnerableVersions:
+              - "<3.0.16-1~deb12u1"
+            PatchedVersions:
+              - "3.0.16-1~deb12u1"
+            Severity: 1
 - bucket: root.io debian 12
   pairs:
     - bucket: openssl

@@ -1,6 +1,7 @@
 package rootio
 
 import (
+	"cmp"
 	"context"
 	"strings"
 
@@ -81,7 +82,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 			if !s.isVulnerable(ctx, utils.FormatSrcVersion(pkg), adv) {
 				continue
 			}
-			vulns = append(vulns, types.DetectedVulnerability{
+			vuln := types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgID:            pkg.ID,
 				PkgName:          pkg.Name,
@@ -91,7 +92,20 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 				PkgIdentifier:    pkg.Identifier,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,
-			})
+			}
+
+			// We add the severity from the base OS, so we need to keep the severity level from the base OS (as SeveritySource).
+			if adv.Severity != dbTypes.SeverityUnknown {
+				vuln.Vulnerability = dbTypes.Vulnerability{
+					Severity: adv.Severity.String(),
+				}
+
+				// Datasource contains BaseID + ID for root.io advisories,
+				// But baseOS (e.g. Debian) advisories use ID only.
+				vuln.SeveritySource = cmp.Or(adv.DataSource.BaseID, adv.DataSource.ID)
+			}
+
+			vulns = append(vulns, vuln)
 		}
 	}
 	return vulns, nil

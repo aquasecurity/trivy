@@ -48,13 +48,33 @@ func TestScanner_Detect(t *testing.T) {
 			want: []types.DetectedVulnerability{
 				{
 					PkgName:          "openssl",
-					VulnerabilityID:  "CVE-2024-13176",
+					VulnerabilityID:  "CVE-2024-13176", // Debian and Root.io contain this CVE
 					InstalledVersion: "3.0.15-1~deb12u1.root.io.0",
 					FixedVersion:     "3.0.15-1~deb12u1.root.io.1, 3.0.16-1~deb12u1",
+					SeveritySource:   vulnerability.Debian,
 					DataSource: &dbTypes.DataSource{
-						ID:   vulnerability.RootIO,
-						Name: "Root.io Security Patches",
-						URL:  "https://api.root.io/external/patch_feed",
+						ID:     vulnerability.RootIO,
+						BaseID: vulnerability.Debian,
+						Name:   "Root.io Security Patches (debian)",
+						URL:    "https://api.root.io/external/patch_feed",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+				{
+					PkgName:          "openssl",
+					VulnerabilityID:  "CVE-2025-27587", // Debian only contains this CVE
+					InstalledVersion: "3.0.15-1~deb12u1.root.io.0",
+					FixedVersion:     "3.0.16-1~deb12u1",
+					SeveritySource:   vulnerability.Debian,
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Debian,
+						Name: "Debian Security Tracker",
+						URL:  "https://salsa.debian.org/security-tracker-team/security-tracker",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityLow.String(),
 					},
 				},
 			},
@@ -84,9 +104,10 @@ func TestScanner_Detect(t *testing.T) {
 					InstalledVersion: "1.22.1-9+deb12u2.root.io.0",
 					FixedVersion:     "1.22.1-9+deb12u2.root.io.1",
 					DataSource: &dbTypes.DataSource{
-						ID:   vulnerability.RootIO,
-						Name: "Root.io Security Patches",
-						URL:  "https://api.root.io/external/patch_feed",
+						ID:     vulnerability.RootIO,
+						BaseID: vulnerability.Ubuntu,
+						Name:   "Root.io Security Patches (ubuntu)",
+						URL:    "https://api.root.io/external/patch_feed",
 					},
 				},
 			},
@@ -116,9 +137,10 @@ func TestScanner_Detect(t *testing.T) {
 					InstalledVersion: "643-r00072",
 					FixedVersion:     "643-r10072",
 					DataSource: &dbTypes.DataSource{
-						ID:   vulnerability.RootIO,
-						Name: "Root.io Security Patches",
-						URL:  "https://api.root.io/external/patch_feed",
+						ID:     vulnerability.RootIO,
+						BaseID: vulnerability.Alpine,
+						Name:   "Root.io Security Patches (alpine)",
+						URL:    "https://api.root.io/external/patch_feed",
 					},
 				},
 			},
