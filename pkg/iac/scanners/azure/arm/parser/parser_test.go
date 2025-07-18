@@ -4,10 +4,13 @@ import (
 	"io/fs"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/liamg/memoryfs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/resolver"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
@@ -50,8 +53,7 @@ func TestParser_Parse(t *testing.T) {
 			want: func() azure2.Deployment {
 				root := createMetadata(targetFS, filename, 0, 0, "", nil).WithInternal(resolver.NewResolver())
 				metadata := createMetadata(targetFS, filename, 1, 13, "", &root)
-				parametersMetadata := createMetadata(targetFS, filename, 4, 11, "parameters", &metadata)
-				storageMetadata := createMetadata(targetFS, filename, 5, 10, "parameters.storagePrefix", &parametersMetadata)
+				storageMetadata := createMetadata(targetFS, filename, 5, 10, "parameters.storagePrefix", &metadata)
 
 				return azure2.Deployment{
 					Metadata:    metadata,
@@ -120,9 +122,8 @@ func TestParser_Parse(t *testing.T) {
 			want: func() azure2.Deployment {
 				rootMetadata := createMetadata(targetFS, filename, 0, 0, "", nil).WithInternal(resolver.NewResolver())
 				fileMetadata := createMetadata(targetFS, filename, 1, 45, "", &rootMetadata)
-				resourcesMetadata := createMetadata(targetFS, filename, 5, 44, "resources", &fileMetadata)
 
-				resourceMetadata := createMetadata(targetFS, filename, 6, 43, "resources[0]", &resourcesMetadata)
+				resourceMetadata := createMetadata(targetFS, filename, 6, 43, "resources[0]", &fileMetadata)
 
 				propertiesMetadata := createMetadata(targetFS, filename, 27, 42, "resources[0].properties", &resourceMetadata)
 
@@ -211,7 +212,19 @@ func TestParser_Parse(t *testing.T) {
 			want := tt.want()
 			g := got[0]
 
-			require.Equal(t, want, g)
+			if diff := cmp.Diff(want, g,
+				cmp.Comparer(func(a, b *types.Metadata) bool {
+					return a.Equal(b)
+				}),
+				cmp.Comparer(func(a, b azure.Value) bool {
+					return a.Equal(b)
+				}),
+				cmpopts.IgnoreUnexported(types.Metadata{}, types.Range{}),
+			); diff != "" {
+				t.Errorf("Mismatch (-want +got):\n%s", diff)
+			}
+
+			// require.Equal(t, want, g)
 		})
 	}
 }

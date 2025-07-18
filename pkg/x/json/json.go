@@ -18,8 +18,8 @@ type lineReader struct {
 	line int
 }
 
-// newLineReader creates a new line reader.
-func newLineReader(r io.Reader) *lineReader {
+// NewLineReader creates a new line reader.
+func NewLineReader(r io.Reader) *lineReader {
 	return &lineReader{
 		r:    r,
 		line: 1,
@@ -44,8 +44,8 @@ func Unmarshal(data []byte, v any) error {
 }
 
 func UnmarshalRead(r io.Reader, v any) error {
-	lr := newLineReader(r)
-	unmarshalers := unmarshalerWithObjectLocation(lr)
+	lr := NewLineReader(r)
+	unmarshalers := UnmarshalerWithObjectLocation(lr)
 	return json.UnmarshalRead(lr, v, json.WithUnmarshalers(unmarshalers))
 }
 
@@ -62,15 +62,20 @@ type ObjectLocation interface {
 	SetLocation(location types.Location)
 }
 
-// unmarshalerWithObjectLocation creates json.Unmarshaler for ObjectLocation to save object location into xjson.Location
-// To use UnmarshalerWithObjectLocation for primitive types, you must implement the UnmarshalerFrom interface for those objects.
-// cf. https://pkg.go.dev/github.com/go-json-experiment/json#UnmarshalerFrom
-func unmarshalerWithObjectLocation(r *lineReader) *json.Unmarshalers {
-	visited := set.New[int]()
-	return unmarshaler(r, visited)
+type DecodeHook struct {
+	Before func(dec *jsontext.Decoder, obj any)
+	After  func(dec *jsontext.Decoder, obj any, loc types.Location)
 }
 
-func unmarshaler(r *lineReader, visited set.Set[int]) *json.Unmarshalers {
+// UnmarshalerWithObjectLocation creates json.Unmarshaler for ObjectLocation to save object location into xjson.Location
+// To use UnmarshalerWithObjectLocation for primitive types, you must implement the UnmarshalerFrom interface for those objects.
+// cf. https://pkg.go.dev/github.com/go-json-experiment/json#UnmarshalerFrom
+func UnmarshalerWithObjectLocation(r *lineReader, hooks ...DecodeHook) *json.Unmarshalers {
+	visited := set.New[int]()
+	return unmarshaler(r, visited, hooks...)
+}
+
+func unmarshaler(r *lineReader, visited set.Set[int], hooks ...DecodeHook) *json.Unmarshalers {
 	return json.UnmarshalFromFunc(func(dec *jsontext.Decoder, loc ObjectLocation) error {
 		// Decoder.InputOffset reports the offset after the last token,
 		// but we want to record the offset before the next token.
@@ -95,13 +100,26 @@ func unmarshaler(r *lineReader, visited set.Set[int]) *json.Unmarshalers {
 			return xerrors.Errorf("structures with single primitive type should implement UnmarshalJSONFrom: %T", loc)
 		}
 
-		if err := json.UnmarshalDecode(dec, loc, json.WithUnmarshalers(unmarshaler(r, visited))); err != nil {
+		for _, h := range hooks {
+			if h.Before != nil {
+				h.Before(dec, loc)
+			}
+		}
+
+		if err := json.UnmarshalDecode(dec, loc, json.WithUnmarshalers(unmarshaler(r, visited, hooks...))); err != nil {
 			return err
 		}
-		loc.SetLocation(types.Location{
+		location := types.Location{
 			StartLine: start,
 			EndLine:   r.Line() - bytes.Count(dec.UnreadBuffer(), []byte("\n")),
-		})
+		}
+		loc.SetLocation(location)
+
+		for _, h := range hooks {
+			if h.After != nil {
+				h.After(dec, loc, location)
+			}
+		}
 		return nil
 	})
 }

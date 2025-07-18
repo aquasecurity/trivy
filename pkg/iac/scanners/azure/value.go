@@ -1,12 +1,18 @@
 package azure
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 	"time"
 
-	armjson2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
+	"github.com/go-json-experiment/json"
+	"github.com/go-json-experiment/json/jsontext"
+	"github.com/samber/lo"
+
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 type EvalContext struct{}
@@ -25,7 +31,8 @@ const (
 )
 
 type Value struct {
-	types.Metadata
+	xjson.Location
+	metadata *types.Metadata
 	rLit     any
 	rMap     map[string]Value
 	rArr     []Value
@@ -40,7 +47,11 @@ var NullValue = Value{
 func NewValue(value any, metadata types.Metadata) Value {
 
 	v := Value{
-		Metadata: metadata,
+		metadata: &metadata,
+		Location: xjson.Location{
+			StartLine: metadata.Range().GetStartLine(),
+			EndLine:   metadata.Range().GetEndLine(),
+		},
 	}
 
 	switch ty := value.(type) {
@@ -94,27 +105,79 @@ func NewValue(value any, metadata types.Metadata) Value {
 }
 
 func (v *Value) GetMetadata() types.Metadata {
-	return v.Metadata
+	return lo.FromPtr(v.metadata)
 }
 
-func (v *Value) UnmarshalJSONWithMetadata(node armjson2.Node) error {
+func (v *Value) SetMetadata(m *types.Metadata) {
+	v.metadata = m
+}
+
+func (v *Value) WithLocation(loc xjson.Location) *Value {
+	v.Location = loc
+	return v
+}
+
+func (n *Value) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	switch k := dec.PeekKind(); k {
+	case 't', 'f':
+		n.Kind = KindBoolean
+		if err := json.UnmarshalDecode(dec, &n.rLit); err != nil {
+			return err
+		}
+	case '"':
+		n.Kind = KindString
+		if err := json.UnmarshalDecode(dec, &n.rLit); err != nil {
+			return err
+		}
+	case '0':
+		n.Kind = KindNumber
+		if err := json.UnmarshalDecode(dec, &n.rLit); err != nil {
+			return err
+		}
+		if f, ok := n.rLit.(float64); ok {
+			if i := int64(f); float64(i) == f {
+				n.rLit = i
+			}
+		}
+	case '[':
+		n.Kind = KindArray
+		if err := json.UnmarshalDecode(dec, &n.rArr); err != nil {
+			return err
+		}
+	case '{':
+		n.Kind = KindObject
+		if err := json.UnmarshalDecode(dec, &n.rMap); err != nil {
+			return err
+		}
+	case 'n':
+		// TODO: UnmarshalJSONFrom is called only for the root null
+		return dec.SkipValue()
+	case 0:
+		return dec.SkipValue()
+	default:
+		return fmt.Errorf("unexpected token kind %q at %d", k.String(), dec.InputOffset())
+	}
+	return nil
+}
+
+func (v *Value) UnmarshalJSONWithMetadata(node armjson.Node) error {
 
 	v.updateValueKind(node)
 
-	v.Metadata = node.Metadata()
+	v.metadata = lo.ToPtr(node.Metadata())
 
 	switch node.Kind() {
-	case armjson2.KindArray:
+	case armjson.KindArray:
 		err := v.unmarshallArray(node)
 		if err != nil {
 			return err
 		}
-	case armjson2.KindObject:
+	case armjson.KindObject:
 		err := v.unmarshalObject(node)
 		if err != nil {
 			return err
 		}
-	case armjson2.KindString:
+	case armjson.KindString:
 		err := v.unmarshalString(node)
 		if err != nil {
 			return err
@@ -138,7 +201,7 @@ func (v *Value) UnmarshalJSONWithMetadata(node armjson2.Node) error {
 	return nil
 }
 
-func (v *Value) unmarshalString(node armjson2.Node) error {
+func (v *Value) unmarshalString(node armjson.Node) error {
 	var str string
 	if err := node.Decode(&str); err != nil {
 		return err
@@ -153,7 +216,7 @@ func (v *Value) unmarshalString(node armjson2.Node) error {
 	return nil
 }
 
-func (v *Value) unmarshalObject(node armjson2.Node) error {
+func (v *Value) unmarshalObject(node armjson.Node) error {
 	obj := make(map[string]Value)
 	for i := 0; i < len(node.Content()); i += 2 {
 		var key string
@@ -170,7 +233,7 @@ func (v *Value) unmarshalObject(node armjson2.Node) error {
 	return nil
 }
 
-func (v *Value) unmarshallArray(node armjson2.Node) error {
+func (v *Value) unmarshallArray(node armjson.Node) error {
 	var arr []Value
 	for _, child := range node.Content() {
 		var val Value
@@ -183,19 +246,19 @@ func (v *Value) unmarshallArray(node armjson2.Node) error {
 	return nil
 }
 
-func (v *Value) updateValueKind(node armjson2.Node) {
+func (v *Value) updateValueKind(node armjson.Node) {
 	switch node.Kind() {
-	case armjson2.KindString:
+	case armjson.KindString:
 		v.Kind = KindString
-	case armjson2.KindNumber:
+	case armjson.KindNumber:
 		v.Kind = KindNumber
-	case armjson2.KindBoolean:
+	case armjson.KindBoolean:
 		v.Kind = KindBoolean
-	case armjson2.KindObject:
+	case armjson.KindObject:
 		v.Kind = KindObject
-	case armjson2.KindNull:
+	case armjson.KindNull:
 		v.Kind = KindNull
-	case armjson2.KindArray:
+	case armjson.KindArray:
 		v.Kind = KindArray
 	default:
 		panic(node.Kind())
@@ -280,7 +343,7 @@ func (v Value) AsStringValue(defaultValue string, metadata types.Metadata) types
 	if v.Kind != KindString {
 		return types.StringDefault(defaultValue, metadata)
 	}
-	return types.String(v.rLit.(string), v.Metadata)
+	return types.String(v.rLit.(string), v.GetMetadata())
 }
 
 func (v Value) GetMapValue(key string) Value {
@@ -348,7 +411,7 @@ func (v Value) AsTimeValue(parentMeta types.Metadata) types.TimeValue {
 		if err != nil {
 			return types.Time(time.Time{}, parentMeta)
 		}
-		return types.Time(t, v.Metadata)
+		return types.Time(t, v.GetMetadata())
 	case KindNumber:
 		var tv int64
 		switch vv := v.rLit.(type) {
@@ -357,7 +420,7 @@ func (v Value) AsTimeValue(parentMeta types.Metadata) types.TimeValue {
 		case int64:
 			tv = vv
 		}
-		return types.Time(time.Unix(tv, 0), v.Metadata)
+		return types.Time(time.Unix(tv, 0), v.GetMetadata())
 	default:
 		return types.Time(time.Time{}, parentMeta)
 	}
@@ -369,7 +432,7 @@ func (v Value) AsStringValuesList(defaultValue string) (stringValues []types.Str
 		return
 	}
 	for _, item := range v.rArr {
-		stringValues = append(stringValues, item.AsStringValue(defaultValue, item.Metadata))
+		stringValues = append(stringValues, item.AsStringValue(defaultValue, item.GetMetadata()))
 	}
 
 	return stringValues
@@ -377,4 +440,42 @@ func (v Value) AsStringValuesList(defaultValue string) (stringValues []types.Str
 
 func (v Value) IsNull() bool {
 	return v.Kind == KindNull
+}
+
+func (v Value) Equal(other Value) bool {
+	return v.Location == other.Location &&
+		v.Kind == other.Kind &&
+		slices.Equal(v.Comments, other.Comments) &&
+		v.rLit == other.rLit &&
+		compareMap(v.rMap, other.rMap) &&
+		compareValueSlices(v.rArr, other.rArr) &&
+		v.metadata.Equal(other.metadata)
+}
+
+func compareValueSlices(a, b []Value) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if !a[i].Equal(b[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+func compareMap(a, b map[string]Value) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for k, va := range a {
+		vb, ok := b[k]
+		if !ok {
+			return false
+		}
+		if !va.Equal(vb) {
+			return false
+		}
+	}
+	return true
 }
