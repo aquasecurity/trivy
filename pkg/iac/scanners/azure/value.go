@@ -1,12 +1,16 @@
 package azure
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 	"time"
 
-	armjson2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
+	"github.com/go-json-experiment/json"
+	"github.com/go-json-experiment/json/jsontext"
 )
 
 type EvalContext struct{}
@@ -25,6 +29,7 @@ const (
 )
 
 type Value struct {
+	xjson.Location
 	types.Metadata
 	rLit     any
 	rMap     map[string]Value
@@ -97,24 +102,66 @@ func (v *Value) GetMetadata() types.Metadata {
 	return v.Metadata
 }
 
-func (v *Value) UnmarshalJSONWithMetadata(node armjson2.Node) error {
+func (v *Value) SetMetadata(m types.Metadata) {
+	v.Metadata = m
+}
+
+func (n *Value) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	switch k := dec.PeekKind(); k {
+	case 't', 'f':
+		n.Kind = KindBoolean
+		if err := json.UnmarshalDecode(dec, &n.rLit); err != nil {
+			return err
+		}
+	case '"':
+		n.Kind = KindString
+		if err := json.UnmarshalDecode(dec, &n.rLit); err != nil {
+			return err
+		}
+	case '0':
+		n.Kind = KindNumber
+		if err := json.UnmarshalDecode(dec, &n.rLit); err != nil {
+			return err
+		}
+	case '[':
+		n.Kind = KindArray
+		if err := json.UnmarshalDecode(dec, &n.rArr); err != nil {
+			return err
+		}
+	case '{':
+		n.Kind = KindObject
+		if err := json.UnmarshalDecode(dec, &n.rMap); err != nil {
+			return err
+		}
+	case 'n':
+		// TODO: UnmarshalJSONFrom is called only for the root null
+		return dec.SkipValue()
+	case 0:
+		return dec.SkipValue()
+	default:
+		return fmt.Errorf("unexpected token kind %q at %d", k.String(), dec.InputOffset())
+	}
+	return nil
+}
+
+func (v *Value) UnmarshalJSONWithMetadata(node armjson.Node) error {
 
 	v.updateValueKind(node)
 
 	v.Metadata = node.Metadata()
 
 	switch node.Kind() {
-	case armjson2.KindArray:
+	case armjson.KindArray:
 		err := v.unmarshallArray(node)
 		if err != nil {
 			return err
 		}
-	case armjson2.KindObject:
+	case armjson.KindObject:
 		err := v.unmarshalObject(node)
 		if err != nil {
 			return err
 		}
-	case armjson2.KindString:
+	case armjson.KindString:
 		err := v.unmarshalString(node)
 		if err != nil {
 			return err
@@ -138,7 +185,7 @@ func (v *Value) UnmarshalJSONWithMetadata(node armjson2.Node) error {
 	return nil
 }
 
-func (v *Value) unmarshalString(node armjson2.Node) error {
+func (v *Value) unmarshalString(node armjson.Node) error {
 	var str string
 	if err := node.Decode(&str); err != nil {
 		return err
@@ -153,7 +200,7 @@ func (v *Value) unmarshalString(node armjson2.Node) error {
 	return nil
 }
 
-func (v *Value) unmarshalObject(node armjson2.Node) error {
+func (v *Value) unmarshalObject(node armjson.Node) error {
 	obj := make(map[string]Value)
 	for i := 0; i < len(node.Content()); i += 2 {
 		var key string
@@ -170,7 +217,7 @@ func (v *Value) unmarshalObject(node armjson2.Node) error {
 	return nil
 }
 
-func (v *Value) unmarshallArray(node armjson2.Node) error {
+func (v *Value) unmarshallArray(node armjson.Node) error {
 	var arr []Value
 	for _, child := range node.Content() {
 		var val Value
@@ -183,19 +230,19 @@ func (v *Value) unmarshallArray(node armjson2.Node) error {
 	return nil
 }
 
-func (v *Value) updateValueKind(node armjson2.Node) {
+func (v *Value) updateValueKind(node armjson.Node) {
 	switch node.Kind() {
-	case armjson2.KindString:
+	case armjson.KindString:
 		v.Kind = KindString
-	case armjson2.KindNumber:
+	case armjson.KindNumber:
 		v.Kind = KindNumber
-	case armjson2.KindBoolean:
+	case armjson.KindBoolean:
 		v.Kind = KindBoolean
-	case armjson2.KindObject:
+	case armjson.KindObject:
 		v.Kind = KindObject
-	case armjson2.KindNull:
+	case armjson.KindNull:
 		v.Kind = KindNull
-	case armjson2.KindArray:
+	case armjson.KindArray:
 		v.Kind = KindArray
 	default:
 		panic(node.Kind())
