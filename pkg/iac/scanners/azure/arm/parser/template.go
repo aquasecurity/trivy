@@ -4,9 +4,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 type Template struct {
+	xjson.Location
 	Metadata       types.Metadata         `json:"-"`
 	Schema         azure.Value            `json:"$schema"`
 	ContentVersion azure.Value            `json:"contentVersion"`
@@ -19,6 +21,7 @@ type Template struct {
 }
 
 type Parameter struct {
+	xjson.Location
 	Metadata     types.Metadata
 	Type         azure.Value `json:"type"`
 	DefaultValue azure.Value `json:"defaultValue"`
@@ -33,24 +36,25 @@ type Resource struct {
 	innerResource
 }
 
-func (t *Template) SetMetadata(m *types.Metadata) {
-	t.Metadata = *m
+func (t *Template) SetMetadata(m types.Metadata) {
+	t.Metadata = m
 }
 
-func (r *Resource) SetMetadata(m *types.Metadata) {
-	r.Metadata = *m
+func (r *Resource) SetMetadata(m types.Metadata) {
+	r.Metadata = m
 }
 
-func (p *Parameter) SetMetadata(m *types.Metadata) {
-	p.Metadata = *m
+func (p *Parameter) SetMetadata(m types.Metadata) {
+	p.Metadata = m
 }
 
 type innerResource struct {
+	xjson.Location
 	APIVersion azure.Value `json:"apiVersion"`
 	Type       azure.Value `json:"type"`
 	Kind       azure.Value `json:"kind"`
 	Name       azure.Value `json:"name"`
-	Location   azure.Value `json:"location"`
+	Loc        azure.Value `json:"location"`
 	Tags       azure.Value `json:"tags"`
 	Sku        azure.Value `json:"sku"`
 	Properties azure.Value `json:"properties"`
