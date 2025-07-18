@@ -2,11 +2,8 @@
 # This test verifies that Trivy can work through HTTP/HTTPS proxy with self-signed certificates
 # Tests both --insecure flag behavior: failure without it, success with it
 
-# Start mitmdump proxy in background on port 8080
-exec bash -c 'mitmdump --listen-port 8080 --set confdir=$WORK/.mitmproxy >/dev/null 2>&1 &'
-
-# Wait for proxy to start
-exec sleep 2
+# Start mitmdump proxy container on port 8080
+start-proxy 8080
 
 # Set proxy environment variables
 env HTTPS_PROXY=http://localhost:8080
@@ -31,8 +28,8 @@ cmp proxy_result.txt proxy_scan_golden.txt
 # Verify cache directory was created
 exists $WORK/.cache
 
-# Stop proxy process
-exec bash -c 'pkill -f mitmdump || true'
+# Stop proxy container
+stop-proxy
 
 -- proxy_scan_golden.txt --
 
