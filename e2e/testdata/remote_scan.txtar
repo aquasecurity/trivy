@@ -1,8 +1,6 @@
 # Remote image scan test
 # This test verifies that Trivy can scan remote images directly
 
-[condition:internet]
-
 # Test remote image scanning with fixed image digest
 trivy image --image-src remote alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
 

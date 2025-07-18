@@ -25,9 +25,6 @@ func TestE2E(t *testing.T) {
 		Setup: func(env *testscript.Env) error {
 			return setupTestEnvironment(env)
 		},
-		Condition: func(cond string) (bool, error) {
-			return checkCondition(cond)
-		},
 	})
 }
 
@@ -149,20 +146,31 @@ func setupTestEnvironment(env *testscript.Env) error {
 		}
 	}
 	
+	// Validate Docker availability - fail if not available
+	if err := validateDockerAvailability(); err != nil {
+		return fmt.Errorf("Docker validation failed: %v", err)
+	}
+	
+	// Validate internet connectivity - fail if not available
+	if err := validateInternetConnectivity(); err != nil {
+		return fmt.Errorf("Internet connectivity validation failed: %v", err)
+	}
+	
 	return nil
 }
 
-func checkCondition(cond string) (bool, error) {
-	switch cond {
-	case "docker":
-		cmd := exec.Command("docker", "version")
-		err := cmd.Run()
-		return err == nil, nil
-	case "internet":
-		cmd := exec.Command("ping", "-c", "1", "google.com")
-		err := cmd.Run()
-		return err == nil, nil
-	default:
-		return false, fmt.Errorf("unknown condition: %s", cond)
+func validateDockerAvailability() error {
+	cmd := exec.Command("docker", "version")
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("Docker is not available or not running: %v", err)
 	}
+	return nil
+}
+
+func validateInternetConnectivity() error {
+	cmd := exec.Command("ping", "-c", "1", "google.com")
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("Internet connectivity is not available: %v", err)
+	}
+	return nil
 }

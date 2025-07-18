@@ -1,8 +1,6 @@
 # SBOM scan test
 # This test verifies that Trivy can generate SBOM and scan it consistently
 
-[condition:internet]
-
 # 1. Scan image and generate JSON report
 trivy image --format json --output result1.json alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
 
