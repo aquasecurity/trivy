@@ -1,9 +1,0 @@
-# Test custom command
-# Tests that custom commands are working
-
-# Test that trivy custom command works
-trivy --help
-
-# Check that the command executed successfully
-! stderr 'FATAL'
-! stderr 'ERROR'

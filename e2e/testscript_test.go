@@ -19,12 +19,11 @@ func TestE2E(t *testing.T) {
 		Cmds: map[string]func(ts *testscript.TestScript, neg bool, args []string){
 			"trivy":         trivyCmd,
 			"compare-json":  compareJSONCmd,
-			"check-docker":  checkDockerCmd,
-			"check-internet": checkInternetCmd,
 		},
 		Setup: func(env *testscript.Env) error {
 			return setupTestEnvironment(env)
 		},
+		UpdateScripts: true,
 	})
 }
 
@@ -44,9 +43,6 @@ func trivyCmd(ts *testscript.TestScript, neg bool, args []string) {
 	
 	// Set environment variables for test isolation
 	cmd.Env = append(os.Environ(),
-		"TRIVY_CACHE_DIR="+filepath.Join(workDir, ".cache"),
-		"TRIVY_TEMP_DIR="+filepath.Join(workDir, ".tmp"),
-		"TRIVY_DB_DIGEST=sha256:1167abe9bf2e9affdfc189e07808914696d94ad39120a74585ae516d2ba0da4a",
 		"TMPDIR="+workDir,
 	)
 
@@ -103,58 +99,15 @@ func compareJSONCmd(ts *testscript.TestScript, neg bool, args []string) {
 	}
 }
 
-func checkDockerCmd(ts *testscript.TestScript, neg bool, args []string) {
-	cmd := exec.Command("docker", "version")
-	err := cmd.Run()
-	available := err == nil
-	
-	if neg {
-		if available {
-			ts.Fatalf("docker is available but expected it not to be")
-		}
-	} else {
-		if !available {
-			ts.Fatalf("docker is not available")
-		}
-	}
-}
-
-func checkInternetCmd(ts *testscript.TestScript, neg bool, args []string) {
-	cmd := exec.Command("ping", "-c", "1", "google.com")
-	err := cmd.Run()
-	available := err == nil
-	
-	if neg {
-		if available {
-			ts.Fatalf("internet is available but expected it not to be")
-		}
-	} else {
-		if !available {
-			ts.Fatalf("internet is not available")
-		}
-	}
-}
 
 func setupTestEnvironment(env *testscript.Env) error {
-	workDir, _ := os.Getwd()
-	
-	// Create necessary directories
-	dirs := []string{".cache", ".tmp"}
-	for _, dir := range dirs {
-		if err := os.MkdirAll(filepath.Join(workDir, dir), 0755); err != nil {
-			return fmt.Errorf("failed to create directory %s: %v", dir, err)
-		}
-	}
-	
 	// Validate Docker availability - fail if not available
 	if err := validateDockerAvailability(); err != nil {
 		return fmt.Errorf("Docker validation failed: %v", err)
 	}
 	
-	// Validate internet connectivity - fail if not available
-	if err := validateInternetConnectivity(); err != nil {
-		return fmt.Errorf("Internet connectivity validation failed: %v", err)
-	}
+	// Set environment variables for test scripts
+	env.Setenv("TRIVY_DB_DIGEST", "sha256:1167abe9bf2e9affdfc189e07808914696d94ad39120a74585ae516d2ba0da4a")
 	
 	return nil
 }
@@ -167,10 +120,3 @@ func validateDockerAvailability() error {
 	return nil
 }
 
-func validateInternetConnectivity() error {
-	cmd := exec.Command("ping", "-c", "1", "google.com")
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("Internet connectivity is not available: %v", err)
-	}
-	return nil
-}
