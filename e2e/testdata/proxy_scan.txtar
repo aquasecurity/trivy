@@ -1,23 +1,40 @@
-# Remote image scan test
-# This test verifies that Trivy can scan remote images directly
+# Proxy scan test
+# This test verifies that Trivy can work through HTTP/HTTPS proxy with self-signed certificates
+# Tests both --insecure flag behavior: failure without it, success with it
 
-# Test remote image scanning with fixed image digest
-trivy image --image-src remote --cache-dir $WORK/.cache --format table --output remote_scan_result.txt --db-repository mirror.gcr.io/aquasec/trivy-db@${TRIVY_DB_DIGEST} alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+# Start mitmdump proxy in background on port 8080
+exec bash -c 'mitmdump --listen-port 8080 --set confdir=$WORK/.mitmproxy >/dev/null 2>&1 &'
 
-# Verify DB download message appears
-stdout 'Downloading vulnerability DB...'
+# Wait for proxy to start
+exec sleep 2
 
-# Verify scan completed successfully
+# Set proxy environment variables
+env HTTPS_PROXY=http://localhost:8080
+env HTTP_PROXY=http://localhost:8080
+
+# Test 1: Scan without --insecure flag (should fail due to certificate issues)
+! trivy image --cache-dir $WORK/.cache --format table --db-repository mirror.gcr.io/aquasec/trivy-db@${TRIVY_DB_DIGEST} alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+
+# Verify certificate error occurred
+stderr 'certificate'
+
+# Test 2: Scan with --insecure flag (should succeed despite certificate issues)
+trivy image --insecure --cache-dir $WORK/.cache --format table --output proxy_result.txt --db-repository mirror.gcr.io/aquasec/trivy-db@${TRIVY_DB_DIGEST} alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+
+# Verify scan completed successfully with --insecure
 ! stderr 'FATAL'
-exists remote_scan_result.txt
+exists proxy_result.txt
 
 # Compare with golden file
-cmp remote_scan_result.txt remote_scan_golden.txt
+cmp proxy_result.txt proxy_scan_golden.txt
 
 # Verify cache directory was created
 exists $WORK/.cache
 
--- remote_scan_golden.txt --
+# Stop proxy process
+exec bash -c 'pkill -f mitmdump || true'
+
+-- proxy_scan_golden.txt --
 
 Report Summary
 

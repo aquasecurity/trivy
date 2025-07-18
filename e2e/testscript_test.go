@@ -64,6 +64,11 @@ func setupTestEnvironment(env *testscript.Env) error {
 		return fmt.Errorf("Docker validation failed: %v", err)
 	}
 	
+	// Validate mitmdump availability for proxy tests - fail if not available
+	if err := validateMitmdumpAvailability(); err != nil {
+		return fmt.Errorf("mitmdump validation failed: %v", err)
+	}
+	
 	// Set environment variables for test scripts
 	env.Setenv("TRIVY_DB_DIGEST", "sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025")
 	
@@ -74,6 +79,14 @@ func validateDockerAvailability() error {
 	cmd := exec.Command("docker", "version")
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("Docker is not available or not running: %v", err)
+	}
+	return nil
+}
+
+func validateMitmdumpAvailability() error {
+	cmd := exec.Command("mitmdump", "--version")
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("mitmdump is not available: %v. Install mitmproxy package", err)
 	}
 	return nil
 }

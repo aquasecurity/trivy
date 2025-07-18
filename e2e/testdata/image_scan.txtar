@@ -1,39 +1,49 @@
-# SBOM scan test
-# This test verifies that Trivy can generate SBOM and scan it consistently
+# Image scan test
+# This test verifies that Trivy can scan images from both local Docker daemon and remote registry
+# and that both methods produce equivalent results
 
-# 1. Scan image and generate table report
-trivy image --cache-dir $WORK/.cache --format table --output normal_scan.txt --db-repository mirror.gcr.io/aquasec/trivy-db@${TRIVY_DB_DIGEST} alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+# Pre-pull the image to Docker daemon for local testing
+exec docker pull alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
 
-# 2. Generate SBOM in CycloneDX format  
-trivy image --cache-dir $WORK/.cache --format cyclonedx --output sbom.json --db-repository mirror.gcr.io/aquasec/trivy-db@${TRIVY_DB_DIGEST} alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+# Test 1: Remote image scanning
+trivy image --image-src remote --cache-dir $WORK/.cache --format table --output remote_result.txt --db-repository mirror.gcr.io/aquasec/trivy-db@${TRIVY_DB_DIGEST} alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
 
-# 3. Scan the generated SBOM
-trivy sbom --cache-dir $WORK/.cache --format table --output sbom_scan.txt --db-repository mirror.gcr.io/aquasec/trivy-db@${TRIVY_DB_DIGEST} sbom.json
+# Verify DB download message appears for remote scan
+stdout 'Downloading vulnerability DB...'
 
-# 4. Verify all files were created
-exists normal_scan.txt
-exists sbom_scan.txt
-exists sbom.json
+# Test 2: Local Docker daemon scanning  
+trivy image --image-src docker --cache-dir $WORK/.cache --format table --output local_result.txt --db-repository mirror.gcr.io/aquasec/trivy-db@${TRIVY_DB_DIGEST} alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
 
-# 5. Compare results - both should have similar vulnerability findings
-cmp normal_scan.txt sbom_scan_golden.txt
-cmp sbom_scan.txt sbom_scan_golden.txt
+# Test 3: Exit code testing - scan with exit code for vulnerabilities
+! trivy image --exit-code 1 --cache-dir $WORK/.cache --format table --db-repository mirror.gcr.io/aquasec/trivy-db@${TRIVY_DB_DIGEST} alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
 
-# Verify scan completed successfully
+# Verify all scans completed successfully
 ! stderr 'FATAL'
+exists remote_result.txt
+exists local_result.txt
+
+# Verify both scans produce equivalent results
+cmp remote_result.txt local_result.txt
+
+# Compare with golden file to ensure expected output format
+cmp remote_result.txt image_scan_golden.txt
 
 # Verify cache directory was created
 exists $WORK/.cache
 
--- sbom_scan_golden.txt --
+# Verify no remote download occurred for local scan (image already pulled)
+! stderr 'Downloading.*image'
+
+-- image_scan_golden.txt --
 
 Report Summary
 
-┌───────────────────────────┬────────┬─────────────────┐
-│          Target           │  Type  │ Vulnerabilities │
-├───────────────────────────┼────────┼─────────────────┤
-│ sbom.json (alpine 3.19.1) │ alpine │       28        │
-└───────────────────────────┴────────┴─────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────┬────────┬─────────────────┬─────────┐
+│                                      Target                                      │  Type  │ Vulnerabilities │ Secrets │
+├──────────────────────────────────────────────────────────────────────────────────┼────────┼─────────────────┼─────────┤
+│ alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1- │ alpine │       28        │    -    │
+│ ad6b (alpine 3.19.1)                                                             │        │                 │         │
+└──────────────────────────────────────────────────────────────────────────────────┴────────┴─────────────────┴─────────┘
 Legend:
 - '-': Not scanned
 - '0': Clean (no security findings detected)
@@ -48,8 +58,8 @@ Learn more and start using VEX: https://trivy.dev/dev/docs/supply-chain/vex/repo
 To disable this notice, set the TRIVY_DISABLE_VEX_NOTICE environment variable.
 
 
-sbom.json (alpine 3.19.1)
-=========================
+alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b (alpine 3.19.1)
+===================================================================================================
 Total: 28 (UNKNOWN: 2, LOW: 4, MEDIUM: 20, HIGH: 2, CRITICAL: 0)
 
 ┌───────────────┬────────────────┬──────────┬────────┬──────────────────────┬──────────────────────┬─────────────────────────────────────────────────────────────┐
