@@ -32,14 +32,17 @@ func TestE2E(t *testing.T) {
 }
 
 func trivyCmd(ts *testscript.TestScript, neg bool, args []string) {
-	// Find trivy binary
-	trivyPath := "./trivy"
-	if _, err := os.Stat(trivyPath); os.IsNotExist(err) {
-		ts.Fatalf("trivy binary not found at %s", trivyPath)
+	// Build trivy binary path - look for it in the repository root
+	wd, _ := os.Getwd()
+	repoRoot := filepath.Dir(wd) // Go up one directory from e2e to repository root
+	trivyPath := filepath.Join(repoRoot, "trivy")
+	
+	if _, err := os.Stat(trivyPath); err != nil {
+		ts.Fatalf("trivy binary not found at %s: %v", trivyPath, err)
 	}
 
 	cmd := exec.Command(trivyPath, args...)
-	workDir, _ := os.Getwd()
+	workDir := ts.Getenv("WORK")
 	cmd.Dir = workDir
 	
 	// Set environment variables for test isolation

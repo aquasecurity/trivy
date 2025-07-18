@@ -4,10 +4,10 @@
 [condition:internet]
 
 # Test remote image scanning with fixed image digest
-exec trivy image --image-src remote alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+trivy image --image-src remote alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
 
 # Verify DB download message appears
-stderr 'Downloading DB'
+stdout 'Downloading vulnerability DB...'
 
 # Verify scan completed successfully
 ! stderr 'FATAL'
