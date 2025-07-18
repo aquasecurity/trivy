@@ -12,11 +12,18 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
 	rpcServer "github.com/aquasecurity/trivy/pkg/rpc/server"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
 // Run runs the scan
 func Run(ctx context.Context, opts flag.Options) (err error) {
 	log.InitLogger(opts.Debug, opts.Quiet)
+
+	// Set the default HTTP transport
+	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
+		Insecure: opts.Insecure,
+		Timeout:  opts.Timeout,
+	}))
 
 	// configure cache dir
 	cacheClient, cleanup, err := cache.New(opts.CacheOpts())
