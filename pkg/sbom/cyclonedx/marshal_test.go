@@ -364,23 +364,6 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:     "3ff14136-e09f-4df9-80ea-000000000005",
-						Type:       cdx.ComponentTypeLibrary,
-						Name:       "actionpack",
-						Version:    "7.0.0",
-						PackageURL: "pkg:gem/actionpack@7.0.0",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:PkgID",
-								Value: "actionpack@7.0.0",
-							},
-							{
-								Name:  "aquasecurity:trivy:PkgType",
-								Value: "bundler",
-							},
-						},
-					},
-					{
 						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000007",
 						Type:    cdx.ComponentTypeApplication,
 						Name:    "app/Gemfile.lock",
@@ -467,6 +450,23 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:PkgID",
 								Value: "actioncontroller@7.0.0",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "bundler",
+							},
+						},
+					},
+					{
+						BOMRef:     "pkg:gem/actionpack@7.0.0",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "actionpack",
+						Version:    "7.0.0",
+						PackageURL: "pkg:gem/actionpack@7.0.0",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "actionpack@7.0.0",
 							},
 							{
 								Name:  "aquasecurity:trivy:PkgType",
@@ -564,10 +564,6 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						},
 					},
 					{
-						Ref:          "3ff14136-e09f-4df9-80ea-000000000005",
-						Dependencies: &[]string{},
-					},
-					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000007",
 						Dependencies: &[]string{
 							"3ff14136-e09f-4df9-80ea-000000000008",
@@ -597,8 +593,12 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					{
 						Ref: "pkg:gem/actioncontroller@7.0.0",
 						Dependencies: &[]string{
-							"3ff14136-e09f-4df9-80ea-000000000005",
+							"pkg:gem/actionpack@7.0.0",
 						},
+					},
+					{
+						Ref:          "pkg:gem/actionpack@7.0.0",
+						Dependencies: &[]string{},
 					},
 					{
 						Ref:          "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
