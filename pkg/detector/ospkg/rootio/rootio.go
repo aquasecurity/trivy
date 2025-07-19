@@ -7,7 +7,6 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/rootio"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
@@ -78,10 +77,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 			srcName = pkg.Name
 		}
 
-		advisories, err := s.vsg.Get(db.GetParams{
-			Release: osVer,
-			PkgName: srcName,
-		})
+		advisories, err := s.vsg.Get(osVer, srcName, pkg.Arch)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Root.io advisories: %w", err)
 		}
