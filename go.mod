@@ -132,6 +132,8 @@ require (
 	modernc.org/sqlite v1.38.0
 )
 
+replace github.com/aquasecurity/trivy-db => github.com/urimils/trivy-db v0.0.0-20250720081430-24f0f92ab8cd
+
 require (
 	buf.build/gen/go/bufbuild/bufplugin/protocolbuffers/go v1.36.6-20250121211742-6d880cc6cc8d.1 // indirect
 	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.6-20250613105001-9f2d3c737feb.1 // indirect

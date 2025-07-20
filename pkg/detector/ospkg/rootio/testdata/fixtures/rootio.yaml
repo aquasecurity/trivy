@@ -48,6 +48,16 @@
               - "<1.22.1-9+rocky8.9.root.io.1"
             PatchedVersions:
               - "1.22.1-9+rocky8.9.root.io.1"
+- bucket: root.io rocky 8
+  pairs:
+    - bucket: nginx
+      pairs:
+        - key: CVE-2023-44487
+          value:
+            VulnerableVersions:
+              - "<1.22.1-9+rocky8.9.root.io.1"
+            PatchedVersions:
+              - "1.22.1-9+rocky8.9.root.io.1"
 - bucket: root.io alpine 3.19
   pairs:
     - bucket: less
