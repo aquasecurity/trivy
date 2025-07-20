@@ -33,6 +33,6 @@ type BucketLogging struct {
 }
 
 type BucketVersioning struct {
-	Metadata  iacTypes.Metadata
-	Enabled   iacTypes.BoolValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
 }
