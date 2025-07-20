@@ -42,6 +42,19 @@ func (a *adapter) adaptBuckets() []storage.Bucket {
 		EnableUniformBucketLevelAccess: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 		Members:                        nil,
 		Bindings:                       nil,
+		Encryption: storage.BucketEncryption{
+			Metadata:          iacTypes.NewUnmanagedMetadata(),
+			DefaultKMSKeyName: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+		},
+		Logging: storage.BucketLogging{
+			Metadata:     iacTypes.NewUnmanagedMetadata(),
+			Enabled:      iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+			TargetBucket: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+		},
+		Versioning: storage.BucketVersioning{
+			Metadata: iacTypes.NewUnmanagedMetadata(),
+			Enabled:  iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+		},
 	}
 	for _, orphanedBindingID := range a.bindingMap.Orphans() {
 		for _, binding := range a.bindings {
@@ -89,12 +102,32 @@ func (a *adapter) adaptBucketResource(resourceBlock *terraform.Block) storage.Bu
 			Metadata:          resourceBlock.GetMetadata(),
 			DefaultKMSKeyName: iacTypes.StringDefault("", resourceBlock.GetMetadata()),
 		},
+		Logging: storage.BucketLogging{
+			Metadata:     resourceBlock.GetMetadata(),
+			Enabled:      iacTypes.BoolDefault(false, resourceBlock.GetMetadata()),
+			TargetBucket: iacTypes.StringDefault("", resourceBlock.GetMetadata()),
+		},
+		Versioning: storage.BucketVersioning{
+			Metadata: resourceBlock.GetMetadata(),
+			Enabled:  iacTypes.BoolDefault(false, resourceBlock.GetMetadata()),
+		},
 	}
 
 	if encBlock := resourceBlock.GetBlock("encryption"); encBlock.IsNotNil() {
 		bucket.Encryption.Metadata = encBlock.GetMetadata()
 		kmsKeyNameAttr := encBlock.GetAttribute("default_kms_key_name")
 		bucket.Encryption.DefaultKMSKeyName = kmsKeyNameAttr.AsStringValueOrDefault("", encBlock)
+	}
+
+	if logBlock := resourceBlock.GetBlock("logging"); logBlock.IsNotNil() {
+		bucket.Logging.Metadata = logBlock.GetMetadata()
+		bucket.Logging.Enabled = logBlock.GetAttribute("enabled").AsBoolValueOrDefault(false, logBlock)
+		bucket.Logging.TargetBucket = logBlock.GetAttribute("target_bucket").AsStringValueOrDefault("", logBlock)
+	}
+
+	if versioningBlock := resourceBlock.GetBlock("versioning"); versioningBlock.IsNotNil() {
+		bucket.Versioning.Metadata = versioningBlock.GetMetadata()
+		bucket.Versioning.Enabled = versioningBlock.GetAttribute("enabled").AsBoolValueOrDefault(false, versioningBlock)
 	}
 
 	var name string

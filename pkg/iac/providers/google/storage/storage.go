@@ -17,9 +17,22 @@ type Bucket struct {
 	Members                        []iam.Member
 	Bindings                       []iam.Binding
 	Encryption                     BucketEncryption
+	Logging                        BucketLogging
+	Versioning                     BucketVersioning
 }
 
 type BucketEncryption struct {
 	Metadata          iacTypes.Metadata
 	DefaultKMSKeyName iacTypes.StringValue
+}
+
+type BucketLogging struct {
+	Metadata     iacTypes.Metadata
+	Enabled      iacTypes.BoolValue
+	TargetBucket iacTypes.StringValue
+}
+
+type BucketVersioning struct {
+	Metadata  iacTypes.Metadata
+	Enabled   iacTypes.BoolValue
 }
