@@ -47,8 +47,8 @@ func (a *adapter) adaptBuckets() []storage.Bucket {
 			DefaultKMSKeyName: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 		},
 		Logging: storage.BucketLogging{
-			Metadata:  iacTypes.NewUnmanagedMetadata(),
-			LogBucket: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+			Metadata:        iacTypes.NewUnmanagedMetadata(),
+			LogBucket:       iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 			LogObjectPrefix: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 		},
 		Versioning: storage.BucketVersioning{
