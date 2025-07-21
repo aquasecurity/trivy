@@ -75,9 +75,8 @@ func Test_Adapt(t *testing.T) {
 							DefaultKMSKeyName: iacTypes.String("default-kms-key-name", iacTypes.NewTestMetadata()),
 						},
 						Logging: storage.BucketLogging{
-							Metadata:     iacTypes.NewTestMetadata(),
-							Enabled:      iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							TargetBucket: iacTypes.String("", iacTypes.NewTestMetadata()),
+							Metadata:  iacTypes.NewTestMetadata(),
+							LogBucket: iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
 						Versioning: storage.BucketVersioning{
 							Metadata: iacTypes.NewTestMetadata(),
@@ -127,9 +126,8 @@ func Test_Adapt(t *testing.T) {
 							DefaultKMSKeyName: iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
 						Logging: storage.BucketLogging{
-							Metadata:     iacTypes.NewTestMetadata(),
-							Enabled:      iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							TargetBucket: iacTypes.String("", iacTypes.NewTestMetadata()),
+							Metadata:  iacTypes.NewTestMetadata(),
+							LogBucket: iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
 						Versioning: storage.BucketVersioning{
 							Metadata: iacTypes.NewTestMetadata(),
@@ -168,9 +166,8 @@ func Test_Adapt(t *testing.T) {
 							DefaultKMSKeyName: iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
 						Logging: storage.BucketLogging{
-							Metadata:     iacTypes.NewTestMetadata(),
-							Enabled:      iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							TargetBucket: iacTypes.String("access-logs-bucket", iacTypes.NewTestMetadata()),
+							Metadata:  iacTypes.NewTestMetadata(),
+							LogBucket: iacTypes.String("access-logs-bucket", iacTypes.NewTestMetadata()),
 						},
 						Versioning: storage.BucketVersioning{
 							Metadata: iacTypes.NewTestMetadata(),

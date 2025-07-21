@@ -47,9 +47,8 @@ func (a *adapter) adaptBuckets() []storage.Bucket {
 			DefaultKMSKeyName: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 		},
 		Logging: storage.BucketLogging{
-			Metadata:     iacTypes.NewUnmanagedMetadata(),
-			Enabled:      iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
-			TargetBucket: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+			Metadata:  iacTypes.NewUnmanagedMetadata(),
+			LogBucket: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 		},
 		Versioning: storage.BucketVersioning{
 			Metadata: iacTypes.NewUnmanagedMetadata(),
@@ -103,9 +102,8 @@ func (a *adapter) adaptBucketResource(resourceBlock *terraform.Block) storage.Bu
 			DefaultKMSKeyName: iacTypes.StringDefault("", resourceBlock.GetMetadata()),
 		},
 		Logging: storage.BucketLogging{
-			Metadata:     resourceBlock.GetMetadata(),
-			Enabled:      iacTypes.BoolDefault(false, resourceBlock.GetMetadata()),
-			TargetBucket: iacTypes.StringDefault("", resourceBlock.GetMetadata()),
+			Metadata:  resourceBlock.GetMetadata(),
+			LogBucket: iacTypes.StringDefault("", resourceBlock.GetMetadata()),
 		},
 		Versioning: storage.BucketVersioning{
 			Metadata: resourceBlock.GetMetadata(),
@@ -121,8 +119,7 @@ func (a *adapter) adaptBucketResource(resourceBlock *terraform.Block) storage.Bu
 
 	if logBlock := resourceBlock.GetBlock("logging"); logBlock.IsNotNil() {
 		bucket.Logging.Metadata = logBlock.GetMetadata()
-		bucket.Logging.Enabled = logBlock.GetAttribute("enabled").AsBoolValueOrDefault(false, logBlock)
-		bucket.Logging.TargetBucket = logBlock.GetAttribute("target_bucket").AsStringValueOrDefault("", logBlock)
+		bucket.Logging.LogBucket = logBlock.GetAttribute("target_bucket").AsStringValueOrDefault("", logBlock)
 	}
 
 	if versioningBlock := resourceBlock.GetBlock("versioning"); versioningBlock.IsNotNil() {
