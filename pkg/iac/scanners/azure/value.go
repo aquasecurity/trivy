@@ -116,36 +116,36 @@ func (v *Value) WithLocation(loc xjson.Location) *Value {
 	return v
 }
 
-func (n *Value) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+func (v *Value) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch k := dec.PeekKind(); k {
 	case 't', 'f':
-		n.Kind = KindBoolean
-		if err := json.UnmarshalDecode(dec, &n.rLit); err != nil {
+		v.Kind = KindBoolean
+		if err := json.UnmarshalDecode(dec, &v.rLit); err != nil {
 			return err
 		}
 	case '"':
-		n.Kind = KindString
-		if err := json.UnmarshalDecode(dec, &n.rLit); err != nil {
+		v.Kind = KindString
+		if err := json.UnmarshalDecode(dec, &v.rLit); err != nil {
 			return err
 		}
 	case '0':
-		n.Kind = KindNumber
-		if err := json.UnmarshalDecode(dec, &n.rLit); err != nil {
+		v.Kind = KindNumber
+		if err := json.UnmarshalDecode(dec, &v.rLit); err != nil {
 			return err
 		}
-		if f, ok := n.rLit.(float64); ok {
+		if f, ok := v.rLit.(float64); ok {
 			if i := int64(f); float64(i) == f {
-				n.rLit = i
+				v.rLit = i
 			}
 		}
 	case '[':
-		n.Kind = KindArray
-		if err := json.UnmarshalDecode(dec, &n.rArr); err != nil {
+		v.Kind = KindArray
+		if err := json.UnmarshalDecode(dec, &v.rArr); err != nil {
 			return err
 		}
 	case '{':
-		n.Kind = KindObject
-		if err := json.UnmarshalDecode(dec, &n.rMap); err != nil {
+		v.Kind = KindObject
+		if err := json.UnmarshalDecode(dec, &v.rMap); err != nil {
 			return err
 		}
 	case 'n':

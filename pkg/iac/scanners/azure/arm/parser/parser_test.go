@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
-	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/resolver"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -32,7 +31,7 @@ func TestParser_Parse(t *testing.T) {
 	tests := []struct {
 		name           string
 		input          string
-		want           func() azure2.Deployment
+		want           func() azure.Deployment
 		wantDeployment bool
 	}{
 		{
@@ -50,21 +49,21 @@ func TestParser_Parse(t *testing.T) {
   },
   "resources": []
 }`,
-			want: func() azure2.Deployment {
+			want: func() azure.Deployment {
 				root := createMetadata(targetFS, filename, 0, 0, "", nil).WithInternal(resolver.NewResolver())
 				metadata := createMetadata(targetFS, filename, 1, 13, "", &root)
 				storageMetadata := createMetadata(targetFS, filename, 5, 10, "parameters.storagePrefix", &metadata)
 
-				return azure2.Deployment{
+				return azure.Deployment{
 					Metadata:    metadata,
-					TargetScope: azure2.ScopeResourceGroup,
-					Parameters: []azure2.Parameter{
+					TargetScope: azure.ScopeResourceGroup,
+					Parameters: []azure.Parameter{
 						{
-							Variable: azure2.Variable{
+							Variable: azure.Variable{
 								Name:  "storagePrefix",
-								Value: azure2.NewValue("x", createMetadata(targetFS, filename, 7, 7, "parameters.storagePrefix.defaultValue", &storageMetadata)),
+								Value: azure.NewValue("x", createMetadata(targetFS, filename, 7, 7, "parameters.storagePrefix.defaultValue", &storageMetadata)),
 							},
-							Default:    azure2.NewValue("x", createMetadata(targetFS, filename, 7, 7, "parameters.storagePrefix.defaultValue", &storageMetadata)),
+							Default:    azure.NewValue("x", createMetadata(targetFS, filename, 7, 7, "parameters.storagePrefix.defaultValue", &storageMetadata)),
 							Decorators: nil,
 						},
 					},
@@ -119,7 +118,7 @@ func TestParser_Parse(t *testing.T) {
 }
 ]
 }`,
-			want: func() azure2.Deployment {
+			want: func() azure.Deployment {
 				rootMetadata := createMetadata(targetFS, filename, 0, 0, "", nil).WithInternal(resolver.NewResolver())
 				fileMetadata := createMetadata(targetFS, filename, 1, 45, "", &rootMetadata)
 
@@ -133,52 +132,52 @@ func TestParser_Parse(t *testing.T) {
 				networkACL0Metadata := createMetadata(targetFS, filename, 35, 37, "resources[0].properties.networkAcls[0]", &networkACLListMetadata)
 				networkACL1Metadata := createMetadata(targetFS, filename, 38, 40, "resources[0].properties.networkAcls[1]", &networkACLListMetadata)
 
-				return azure2.Deployment{
+				return azure.Deployment{
 					Metadata:    fileMetadata,
-					TargetScope: azure2.ScopeResourceGroup,
-					Resources: []azure2.Resource{
+					TargetScope: azure.ScopeResourceGroup,
+					Resources: []azure.Resource{
 						{
 							Metadata: resourceMetadata,
-							APIVersion: azure2.NewValue(
+							APIVersion: azure.NewValue(
 								"2022-05-01",
 								createMetadata(targetFS, filename, 8, 8, "resources[0].apiVersion", &resourceMetadata),
 							),
-							Type: azure2.NewValue(
+							Type: azure.NewValue(
 								"Microsoft.Storage/storageAccounts",
 								createMetadata(targetFS, filename, 7, 7, "resources[0].type", &resourceMetadata),
 							),
-							Kind: azure2.NewValue(
+							Kind: azure.NewValue(
 								"string",
 								createMetadata(targetFS, filename, 18, 18, "resources[0].kind", &resourceMetadata),
 							),
-							Name: azure2.NewValue(
+							Name: azure.NewValue(
 								"myResource",
 								createMetadata(targetFS, filename, 9, 9, "resources[0].name", &resourceMetadata),
 							),
-							Location: azure2.NewValue(
+							Location: azure.NewValue(
 								"string",
 								createMetadata(targetFS, filename, 10, 10, "resources[0].location", &resourceMetadata),
 							),
-							Properties: azure2.NewValue(
-								map[string]azure2.Value{
-									"allowSharedKeyAccess": azure2.NewValue(false, createMetadata(targetFS, filename, 28, 28, "resources[0].properties.allowSharedKeyAccess", &propertiesMetadata)),
-									"customDomain": azure2.NewValue(
-										map[string]azure2.Value{
-											"name":             azure2.NewValue("string", createMetadata(targetFS, filename, 30, 30, "resources[0].properties.customDomain.name", &customDomainMetadata)),
-											"useSubDomainName": azure2.NewValue(false, createMetadata(targetFS, filename, 31, 31, "resources[0].properties.customDomain.useSubDomainName", &customDomainMetadata)),
-											"number":           azure2.NewValue(int64(123), createMetadata(targetFS, filename, 32, 32, "resources[0].properties.customDomain.number", &customDomainMetadata)),
+							Properties: azure.NewValue(
+								map[string]azure.Value{
+									"allowSharedKeyAccess": azure.NewValue(false, createMetadata(targetFS, filename, 28, 28, "resources[0].properties.allowSharedKeyAccess", &propertiesMetadata)),
+									"customDomain": azure.NewValue(
+										map[string]azure.Value{
+											"name":             azure.NewValue("string", createMetadata(targetFS, filename, 30, 30, "resources[0].properties.customDomain.name", &customDomainMetadata)),
+											"useSubDomainName": azure.NewValue(false, createMetadata(targetFS, filename, 31, 31, "resources[0].properties.customDomain.useSubDomainName", &customDomainMetadata)),
+											"number":           azure.NewValue(int64(123), createMetadata(targetFS, filename, 32, 32, "resources[0].properties.customDomain.number", &customDomainMetadata)),
 										}, customDomainMetadata),
-									"networkAcls": azure2.NewValue(
-										[]azure2.Value{
-											azure2.NewValue(
-												map[string]azure2.Value{
-													"bypass": azure2.NewValue("AzureServices1", createMetadata(targetFS, filename, 36, 36, "resources[0].properties.networkAcls[0].bypass", &networkACL0Metadata)),
+									"networkAcls": azure.NewValue(
+										[]azure.Value{
+											azure.NewValue(
+												map[string]azure.Value{
+													"bypass": azure.NewValue("AzureServices1", createMetadata(targetFS, filename, 36, 36, "resources[0].properties.networkAcls[0].bypass", &networkACL0Metadata)),
 												},
 												networkACL0Metadata,
 											),
-											azure2.NewValue(
-												map[string]azure2.Value{
-													"bypass": azure2.NewValue("AzureServices2", createMetadata(targetFS, filename, 39, 39, "resources[0].properties.networkAcls[1].bypass", &networkACL1Metadata)),
+											azure.NewValue(
+												map[string]azure.Value{
+													"bypass": azure.NewValue("AzureServices2", createMetadata(targetFS, filename, 39, 39, "resources[0].properties.networkAcls[1].bypass", &networkACL1Metadata)),
 												},
 												networkACL1Metadata,
 											),
