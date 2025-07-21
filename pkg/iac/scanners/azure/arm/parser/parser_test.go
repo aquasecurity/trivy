@@ -315,24 +315,3 @@ func Test_NestedResourceParsing(t *testing.T) {
 
 	assert.Equal(t, "queueServices/queues", queue.Type.AsString())
 }
-
-//
-// func Test_JsonFile(t *testing.T) {
-//
-// 	input, err := os.ReadFile("testdata/postgres.json")
-// 	require.NoError(t, err)
-//
-// 	targetFS := memoryfs.New()
-//
-// 	require.NoError(t, targetFS.WriteFile("postgres.json", input, 0o644))
-//
-// 	p := New(targetFS, options.ParserWithDebug(os.Stderr))
-// 	got, err := p.ParseFS(context.Background(), ".")
-// 	require.NoError(t, err)
-//
-// 	got[0].Resources[3].Name.Resolve()
-//
-// 	name := got[0].Resources[3].Name.AsString()
-// 	assert.Equal(t, "myserver", name)
-//
-// }

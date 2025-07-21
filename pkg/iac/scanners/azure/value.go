@@ -10,7 +10,6 @@ import (
 	"github.com/go-json-experiment/json/jsontext"
 	"github.com/samber/lo"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
@@ -158,111 +157,6 @@ func (n *Value) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		return fmt.Errorf("unexpected token kind %q at %d", k.String(), dec.InputOffset())
 	}
 	return nil
-}
-
-func (v *Value) UnmarshalJSONWithMetadata(node armjson.Node) error {
-
-	v.updateValueKind(node)
-
-	v.metadata = lo.ToPtr(node.Metadata())
-
-	switch node.Kind() {
-	case armjson.KindArray:
-		err := v.unmarshallArray(node)
-		if err != nil {
-			return err
-		}
-	case armjson.KindObject:
-		err := v.unmarshalObject(node)
-		if err != nil {
-			return err
-		}
-	case armjson.KindString:
-		err := v.unmarshalString(node)
-		if err != nil {
-			return err
-		}
-	default:
-		if err := node.Decode(&v.rLit); err != nil {
-			return err
-		}
-	}
-
-	for _, comment := range node.Comments() {
-		var str string
-		if err := comment.Decode(&str); err != nil {
-			return err
-		}
-		// remove `\r` from comment when running windows
-		str = strings.ReplaceAll(str, "\r", "")
-
-		v.Comments = append(v.Comments, str)
-	}
-	return nil
-}
-
-func (v *Value) unmarshalString(node armjson.Node) error {
-	var str string
-	if err := node.Decode(&str); err != nil {
-		return err
-	}
-	if strings.HasPrefix(str, "[") && !strings.HasPrefix(str, "[[") && strings.HasSuffix(str, "]") {
-		// function!
-		v.Kind = KindExpression
-		v.rLit = str[1 : len(str)-1]
-	} else {
-		v.rLit = str
-	}
-	return nil
-}
-
-func (v *Value) unmarshalObject(node armjson.Node) error {
-	obj := make(map[string]Value)
-	for i := 0; i < len(node.Content()); i += 2 {
-		var key string
-		if err := node.Content()[i].Decode(&key); err != nil {
-			return err
-		}
-		var val Value
-		if err := val.UnmarshalJSONWithMetadata(node.Content()[i+1]); err != nil {
-			return err
-		}
-		obj[key] = val
-	}
-	v.rMap = obj
-	return nil
-}
-
-func (v *Value) unmarshallArray(node armjson.Node) error {
-	var arr []Value
-	for _, child := range node.Content() {
-		var val Value
-		if err := val.UnmarshalJSONWithMetadata(child); err != nil {
-			return err
-		}
-		arr = append(arr, val)
-	}
-	v.rArr = arr
-	return nil
-}
-
-func (v *Value) updateValueKind(node armjson.Node) {
-	switch node.Kind() {
-	case armjson.KindString:
-		v.Kind = KindString
-	case armjson.KindNumber:
-		v.Kind = KindNumber
-	case armjson.KindBoolean:
-		v.Kind = KindBoolean
-	case armjson.KindObject:
-		v.Kind = KindObject
-	case armjson.KindNull:
-		v.Kind = KindNull
-	case armjson.KindArray:
-		v.Kind = KindArray
-	default:
-		panic(node.Kind())
-	}
 }
 
 func (v Value) AsString() string {
