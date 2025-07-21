@@ -7141,6 +7141,10 @@
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         },
+        "logging": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.storage.BucketLogging"
+        },
         "members": {
           "type": "array",
           "items": {
@@ -7151,6 +7155,10 @@
         "name": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "versioning": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.storage.BucketVersioning"
         }
       }
     },
@@ -7164,6 +7172,40 @@
         "defaultkmskeyname": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        }
+      }
+    },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.google.storage.BucketLogging": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "enabled": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
+        },
+        "targetbucket": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "logobjectprefix": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        }
+      }
+    },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.google.storage.BucketVersioning": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "enabled": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
         }
       }
     },
