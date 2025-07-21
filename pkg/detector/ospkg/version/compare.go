@@ -3,6 +3,7 @@ package version
 import (
 	apkver "github.com/knqyf263/go-apk-version"
 	debver "github.com/knqyf263/go-deb-version"
+	rpmver "github.com/knqyf263/go-rpm-version"
 )
 
 // Comparer defines the interface for version comparison
@@ -60,6 +61,27 @@ func (c *APKComparer) Compare(version1, version2 string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
+
+	return v1.Compare(v2), nil
+}
+
+// RPMComparer implements Comparer for Rocky/Redhat packages
+type RPMComparer struct{}
+
+// NewRPMComparer creates a new RPM version comparer
+func NewRPMComparer() *RPMComparer {
+	return &RPMComparer{}
+}
+
+// Compare compares two RPM package versions
+// Returns:
+//   - positive if version1 > version2
+//   - negative if version1 < version2
+//   - zero if version1 == version2
+func (c *RPMComparer) Compare(version1, version2 string) (int, error) {
+	v1 := rpmver.NewVersion(version1)
+
+	v2 := rpmver.NewVersion(version2)
 
 	return v1.Compare(v2), nil
 }

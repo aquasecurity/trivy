@@ -41,7 +41,7 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 		vsg = rootio.NewVulnSrcGetter(vulnerability.Ubuntu)
 		versionTrimmer = version.Minor
 	case ftypes.Rocky:
-		comparer = version.NewDEBComparer()
+		comparer = version.NewRPMComparer()
 		vsg = rootio.NewVulnSrcGetter(vulnerability.Rocky)
 		versionTrimmer = version.Major
 	case ftypes.Alpine:
