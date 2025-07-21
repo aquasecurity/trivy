@@ -63,8 +63,7 @@ type ObjectLocation interface {
 }
 
 type DecodeHook struct {
-	Before func(dec *jsontext.Decoder, obj any)
-	After  func(dec *jsontext.Decoder, obj any, loc types.Location)
+	After func(dec *jsontext.Decoder, obj any, loc types.Location)
 }
 
 // UnmarshalerWithObjectLocation creates json.Unmarshaler for ObjectLocation to save object location into xjson.Location
@@ -98,12 +97,6 @@ func unmarshaler(r *lineReader, visited set.Set[int], hooks ...DecodeHook) *json
 		// Return more detailed error for cases when UnmarshalJSONFrom is not implemented for primitive type.
 		if _, ok := loc.(json.UnmarshalerFrom); !ok && kind != '[' && kind != '{' {
 			return xerrors.Errorf("structures with single primitive type should implement UnmarshalJSONFrom: %T", loc)
-		}
-
-		for _, h := range hooks {
-			if h.Before != nil {
-				h.Before(dec, loc)
-			}
 		}
 
 		if err := json.UnmarshalDecode(dec, loc, json.WithUnmarshalers(unmarshaler(r, visited, hooks...))); err != nil {

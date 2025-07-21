@@ -85,11 +85,9 @@ func ParseTemplate(fsys fs.FS, path string) (*Template, error) {
 	lr := xjson.NewLineReader(bytes.NewReader(xjson.ToRFC8259(data)))
 
 	mc := metadataCollector{
-		path: path,
-		fsys: fsys,
-		entries: map[jsontext.Pointer]*types.Metadata{
-			"": {},
-		},
+		path:    path,
+		fsys:    fsys,
+		entries: make(map[jsontext.Pointer]*types.Metadata),
 	}
 
 	var template Template

@@ -222,8 +222,6 @@ func TestParser_Parse(t *testing.T) {
 			); diff != "" {
 				t.Errorf("Mismatch (-want +got):\n%s", diff)
 			}
-
-			// require.Equal(t, want, g)
 		})
 	}
 }
