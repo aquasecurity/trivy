@@ -75,8 +75,9 @@ func Test_Adapt(t *testing.T) {
 							DefaultKMSKeyName: iacTypes.String("default-kms-key-name", iacTypes.NewTestMetadata()),
 						},
 						Logging: storage.BucketLogging{
-							Metadata:  iacTypes.NewTestMetadata(),
-							LogBucket: iacTypes.String("", iacTypes.NewTestMetadata()),
+							Metadata:        iacTypes.NewTestMetadata(),
+							LogBucket:       iacTypes.String("", iacTypes.NewTestMetadata()),
+							LogObjectPrefix: iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
 						Versioning: storage.BucketVersioning{
 							Metadata: iacTypes.NewTestMetadata(),
@@ -126,8 +127,9 @@ func Test_Adapt(t *testing.T) {
 							DefaultKMSKeyName: iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
 						Logging: storage.BucketLogging{
-							Metadata:  iacTypes.NewTestMetadata(),
-							LogBucket: iacTypes.String("", iacTypes.NewTestMetadata()),
+							Metadata:        iacTypes.NewTestMetadata(),
+							LogBucket:       iacTypes.String("", iacTypes.NewTestMetadata()),
+							LogObjectPrefix: iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
 						Versioning: storage.BucketVersioning{
 							Metadata: iacTypes.NewTestMetadata(),
@@ -166,12 +168,51 @@ func Test_Adapt(t *testing.T) {
 							DefaultKMSKeyName: iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
 						Logging: storage.BucketLogging{
-							Metadata:  iacTypes.NewTestMetadata(),
-							LogBucket: iacTypes.String("access-logs-bucket", iacTypes.NewTestMetadata()),
+							Metadata:        iacTypes.NewTestMetadata(),
+							LogBucket:       iacTypes.String("access-logs-bucket", iacTypes.NewTestMetadata()),
+							LogObjectPrefix: iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
 						Versioning: storage.BucketVersioning{
 							Metadata: iacTypes.NewTestMetadata(),
 							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "with logging including log object prefix",
+			terraform: `
+			resource "google_storage_bucket" "example" {
+			  name     = "example-bucket"
+			  location = "US"
+
+			  logging {
+			    target_bucket = "access-logs-bucket"
+			    log_object_prefix = "access-logs/"
+			  }
+			}`,
+			expected: storage.Storage{
+				Buckets: []storage.Bucket{
+					{
+						Metadata:                       iacTypes.NewTestMetadata(),
+						Name:                           iacTypes.String("example-bucket", iacTypes.NewTestMetadata()),
+						Location:                       iacTypes.String("US", iacTypes.NewTestMetadata()),
+						EnableUniformBucketLevelAccess: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						Members:                        nil,
+						Bindings:                       nil,
+						Encryption: storage.BucketEncryption{
+							Metadata:          iacTypes.NewTestMetadata(),
+							DefaultKMSKeyName: iacTypes.String("", iacTypes.NewTestMetadata()),
+						},
+						Logging: storage.BucketLogging{
+							Metadata:        iacTypes.NewTestMetadata(),
+							LogBucket:       iacTypes.String("access-logs-bucket", iacTypes.NewTestMetadata()),
+							LogObjectPrefix: iacTypes.String("access-logs/", iacTypes.NewTestMetadata()),
+						},
+						Versioning: storage.BucketVersioning{
+							Metadata: iacTypes.NewTestMetadata(),
+							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
 					},
 				},

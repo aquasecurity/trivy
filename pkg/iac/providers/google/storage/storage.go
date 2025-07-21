@@ -27,8 +27,10 @@ type BucketEncryption struct {
 }
 
 type BucketLogging struct {
-	Metadata  iacTypes.Metadata
-	LogBucket iacTypes.StringValue
+	Metadata     iacTypes.Metadata
+	LogBucket    iacTypes.StringValue
+	LogObjectPrefix    iacTypes.StringValue
+	
 }
 
 type BucketVersioning struct {
