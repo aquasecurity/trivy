@@ -203,9 +203,6 @@ jobs:
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
 
-      - name: Pull mitmproxy Docker image
-        run: docker pull mitmproxy/mitmproxy:latest
-
       - name: Run E2E tests
         run: mage test:e2e
 

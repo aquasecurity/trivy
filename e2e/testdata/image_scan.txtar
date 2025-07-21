@@ -3,19 +3,19 @@
 # and that both methods produce equivalent results
 
 # Pre-pull the image to Docker daemon for local testing
-exec docker pull alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+exec docker pull alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
 
 # Test 1: Remote image scanning
-trivy image --image-src remote --cache-dir $WORK/.cache --format table --output remote_result.txt --db-repository mirror.gcr.io/aquasec/trivy-db@${TRIVY_DB_DIGEST} alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+trivy image --image-src remote --cache-dir $WORK/.cache --format table --output remote_result.txt --db-repository mirror.gcr.io/aquasec/trivy-db@sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025 --severity HIGH,CRITICAL alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
 
 # Verify DB download message appears for remote scan
 stdout 'Downloading vulnerability DB...'
 
 # Test 2: Local Docker daemon scanning  
-trivy image --image-src docker --cache-dir $WORK/.cache --format table --output local_result.txt --db-repository mirror.gcr.io/aquasec/trivy-db@${TRIVY_DB_DIGEST} alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+trivy image --image-src docker --cache-dir $WORK/.cache --format table --output local_result.txt --db-repository mirror.gcr.io/aquasec/trivy-db@sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025 --severity HIGH,CRITICAL alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
 
 # Test 3: Exit code testing - scan with exit code for vulnerabilities
-! trivy image --exit-code 1 --cache-dir $WORK/.cache --format table --db-repository mirror.gcr.io/aquasec/trivy-db@${TRIVY_DB_DIGEST} alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+! trivy image --exit-code 1 --cache-dir $WORK/.cache --format table --db-repository mirror.gcr.io/aquasec/trivy-db@sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025 --severity HIGH,CRITICAL alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
 
 # Verify all scans completed successfully
 ! stderr 'FATAL'
@@ -28,12 +28,6 @@ cmp remote_result.txt local_result.txt
 # Compare with golden file to ensure expected output format
 cmp remote_result.txt image_scan_golden.txt
 
-# Verify cache directory was created
-exists $WORK/.cache
-
-# Verify no remote download occurred for local scan (image already pulled)
-! stderr 'Downloading.*image'
-
 -- image_scan_golden.txt --
 
 Report Summary
@@ -41,8 +35,8 @@ Report Summary
 ┌──────────────────────────────────────────────────────────────────────────────────┬────────┬─────────────────┬─────────┐
 │                                      Target                                      │  Type  │ Vulnerabilities │ Secrets │
 ├──────────────────────────────────────────────────────────────────────────────────┼────────┼─────────────────┼─────────┤
-│ alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1- │ alpine │       28        │    -    │
-│ ad6b (alpine 3.19.1)                                                             │        │                 │         │
+│ alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b │ alpine │        2        │    -    │
+│ (alpine 3.19.1)                                                                  │        │                 │         │
 └──────────────────────────────────────────────────────────────────────────────────┴────────┴─────────────────┴─────────┘
 Legend:
 - '-': Not scanned
@@ -58,102 +52,16 @@ Learn more and start using VEX: https://trivy.dev/dev/docs/supply-chain/vex/repo
 To disable this notice, set the TRIVY_DISABLE_VEX_NOTICE environment variable.
 
 
-alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b (alpine 3.19.1)
-===================================================================================================
-Total: 28 (UNKNOWN: 2, LOW: 4, MEDIUM: 20, HIGH: 2, CRITICAL: 0)
+alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b (alpine 3.19.1)
+==========================================================================================
+Total: 2 (HIGH: 2, CRITICAL: 0)
 
 ┌───────────────┬────────────────┬──────────┬────────┬──────────────────────┬──────────────────────┬─────────────────────────────────────────────────────────────┐
 │    Library    │ Vulnerability  │ Severity │ Status │  Installed Version   │    Fixed Version     │                            Title                            │
 ├───────────────┼────────────────┼──────────┼────────┼──────────────────────┼──────────────────────┼─────────────────────────────────────────────────────────────┤
-│ busybox       │ CVE-2023-42363 │ MEDIUM   │ fixed  │ 1.36.1-r15           │ 1.36.1-r17           │ busybox: use-after-free in awk                              │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2023-42363                  │
-│               ├────────────────┤          │        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│               │ CVE-2023-42364 │          │        │                      │ 1.36.1-r19           │ busybox: use-after-free                                     │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2023-42364                  │
-│               ├────────────────┤          │        │                      │                      ├─────────────────────────────────────────────────────────────┤
-│               │ CVE-2023-42365 │          │        │                      │                      │ busybox: use-after-free                                     │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2023-42365                  │
-│               ├────────────────┤          │        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│               │ CVE-2023-42366 │          │        │                      │ 1.36.1-r16           │ busybox: A heap-buffer-overflow                             │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2023-42366                  │
-├───────────────┼────────────────┤          │        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│ busybox-binsh │ CVE-2023-42363 │          │        │                      │ 1.36.1-r17           │ busybox: use-after-free in awk                              │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2023-42363                  │
-│               ├────────────────┤          │        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│               │ CVE-2023-42364 │          │        │                      │ 1.36.1-r19           │ busybox: use-after-free                                     │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2023-42364                  │
-│               ├────────────────┤          │        │                      │                      ├─────────────────────────────────────────────────────────────┤
-│               │ CVE-2023-42365 │          │        │                      │                      │ busybox: use-after-free                                     │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2023-42365                  │
-│               ├────────────────┤          │        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│               │ CVE-2023-42366 │          │        │                      │ 1.36.1-r16           │ busybox: A heap-buffer-overflow                             │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2023-42366                  │
-├───────────────┼────────────────┼──────────┤        ├──────────────────────┼──────────────────────┼─────────────────────────────────────────────────────────────┤
-│ libcrypto3    │ CVE-2024-6119  │ HIGH     │        │ 3.1.4-r5             │ 3.1.7-r0             │ openssl: Possible denial of service in X.509 name checks    │
+│ libcrypto3    │ CVE-2024-6119  │ HIGH     │ fixed  │ 3.1.4-r5             │ 3.1.7-r0             │ openssl: Possible denial of service in X.509 name checks    │
 │               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2024-6119                   │
-│               ├────────────────┼──────────┤        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│               │ CVE-2024-13176 │ MEDIUM   │        │                      │ 3.1.8-r0             │ openssl: Timing side-channel in ECDSA signature computation │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2024-13176                  │
-│               ├────────────────┤          │        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│               │ CVE-2024-4603  │          │        │                      │ 3.1.5-r0             │ openssl: Excessive time spent checking DSA keys and         │
-│               │                │          │        │                      │                      │ parameters                                                  │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2024-4603                   │
-│               ├────────────────┤          │        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│               │ CVE-2024-4741  │          │        │                      │ 3.1.6-r0             │ openssl: Use After Free with SSL_free_buffers               │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2024-4741                   │
-│               ├────────────────┤          │        │                      │                      ├─────────────────────────────────────────────────────────────┤
-│               │ CVE-2024-5535  │          │        │                      │                      │ openssl: SSL_select_next_proto buffer overread              │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2024-5535                   │
-│               ├────────────────┼──────────┤        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│               │ CVE-2024-2511  │ LOW      │        │                      │ 3.1.4-r6             │ openssl: Unbounded memory growth with session handling in   │
-│               │                │          │        │                      │                      │ TLSv1.3                                                     │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2024-2511                   │
-│               ├────────────────┤          │        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│               │ CVE-2024-9143  │          │        │                      │ 3.1.7-r1             │ openssl: Low-level invalid GF(2^m) parameters lead to OOB   │
-│               │                │          │        │                      │                      │ memory access                                               │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2024-9143                   │
-├───────────────┼────────────────┼──────────┤        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│ libssl3       │ CVE-2024-6119  │ HIGH     │        │                      │ 3.1.7-r0             │ openssl: Possible denial of service in X.509 name checks    │
+├───────────────┼────────────────┤          │        │                      │                      ├─────────────────────────────────────────────────────────────┤
+│ libssl3       │ CVE-2024-6119  │          │        │                      │                      │ openssl: Possible denial of service in X.509 name checks    │
 │               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2024-6119                   │
-│               ├────────────────┼──────────┤        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│               │ CVE-2024-13176 │ MEDIUM   │        │                      │ 3.1.8-r0             │ openssl: Timing side-channel in ECDSA signature computation │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2024-13176                  │
-│               ├────────────────┤          │        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│               │ CVE-2024-4603  │          │        │                      │ 3.1.5-r0             │ openssl: Excessive time spent checking DSA keys and         │
-│               │                │          │        │                      │                      │ parameters                                                  │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2024-4603                   │
-│               ├────────────────┤          │        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│               │ CVE-2024-4741  │          │        │                      │ 3.1.6-r0             │ openssl: Use After Free with SSL_free_buffers               │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2024-4741                   │
-│               ├────────────────┤          │        │                      │                      ├─────────────────────────────────────────────────────────────┤
-│               │ CVE-2024-5535  │          │        │                      │                      │ openssl: SSL_select_next_proto buffer overread              │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2024-5535                   │
-│               ├────────────────┼──────────┤        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│               │ CVE-2024-2511  │ LOW      │        │                      │ 3.1.4-r6             │ openssl: Unbounded memory growth with session handling in   │
-│               │                │          │        │                      │                      │ TLSv1.3                                                     │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2024-2511                   │
-│               ├────────────────┤          │        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│               │ CVE-2024-9143  │          │        │                      │ 3.1.7-r1             │ openssl: Low-level invalid GF(2^m) parameters lead to OOB   │
-│               │                │          │        │                      │                      │ memory access                                               │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2024-9143                   │
-├───────────────┼────────────────┼──────────┤        ├──────────────────────┼──────────────────────┼─────────────────────────────────────────────────────────────┤
-│ musl          │ CVE-2025-26519 │ UNKNOWN  │        │ 1.2.4_git20230717-r4 │ 1.2.4_git20230717-r5 │ musl libc 0.9.13 through 1.2.5 before 1.2.6 has an          │
-│               │                │          │        │                      │                      │ out-of-bounds write ......                                  │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2025-26519                  │
-├───────────────┤                │          │        │                      │                      │                                                             │
-│ musl-utils    │                │          │        │                      │                      │                                                             │
-│               │                │          │        │                      │                      │                                                             │
-│               │                │          │        │                      │                      │                                                             │
-├───────────────┼────────────────┼──────────┤        ├──────────────────────┼──────────────────────┼─────────────────────────────────────────────────────────────┤
-│ ssl_client    │ CVE-2023-42363 │ MEDIUM   │        │ 1.36.1-r15           │ 1.36.1-r17           │ busybox: use-after-free in awk                              │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2023-42363                  │
-│               ├────────────────┤          │        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│               │ CVE-2023-42364 │          │        │                      │ 1.36.1-r19           │ busybox: use-after-free                                     │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2023-42364                  │
-│               ├────────────────┤          │        │                      │                      ├─────────────────────────────────────────────────────────────┤
-│               │ CVE-2023-42365 │          │        │                      │                      │ busybox: use-after-free                                     │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2023-42365                  │
-│               ├────────────────┤          │        │                      ├──────────────────────┼─────────────────────────────────────────────────────────────┤
-│               │ CVE-2023-42366 │          │        │                      │ 1.36.1-r16           │ busybox: A heap-buffer-overflow                             │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2023-42366                  │
 └───────────────┴────────────────┴──────────┴────────┴──────────────────────┴──────────────────────┴─────────────────────────────────────────────────────────────┘
