@@ -5,8 +5,10 @@ package e2e
 import (
 	"flag"
 	"fmt"
+	"go/build"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"testing"
 
 	"github.com/rogpeppe/go-internal/testscript"
@@ -30,17 +32,11 @@ func setupTestEnvironment(env *testscript.Env) error {
 		return fmt.Errorf("Docker validation failed: %v", err)
 	}
 
-	// Get GOPATH using go env (handles all defaults and environment resolution)
-	cmd := exec.Command("go", "env", "GOPATH")
-	output, err := cmd.Output()
-	if err != nil {
-		return fmt.Errorf("failed to get GOPATH: %v", err)
-	}
-	gopath := string(output)
-	gopath = gopath[:len(gopath)-1] // Remove trailing newline
+	// Get GOPATH using go/build package (handles all defaults and environment resolution)
+	gopath := build.Default.GOPATH
 
 	// Add $GOPATH/bin to PATH
-	gopathBin := gopath + string(os.PathSeparator) + "bin"
+	gopathBin := filepath.Join(gopath, "bin")
 	currentPath := env.Getenv("PATH")
 	env.Setenv("PATH", gopathBin+string(os.PathListSeparator)+currentPath)
 
