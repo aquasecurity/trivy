@@ -42,11 +42,6 @@ func trivyCmd(ts *testscript.TestScript, neg bool, args []string) {
 	// Ensure cache directory exists
 	cacheDir := filepath.Join(workDir, ".cache")
 	os.MkdirAll(cacheDir, 0755)
-	
-	// Set environment variables for test isolation
-	cmd.Env = os.Environ()
-	// Add environment variable to disable VEX notice
-	cmd.Env = append(cmd.Env, "TRIVY_DISABLE_VEX_NOTICE=true")
 
 	output, err := cmd.CombinedOutput()
 	if neg {
@@ -72,6 +67,13 @@ func setupTestEnvironment(env *testscript.Env) error {
 	
 	// Set environment variables for test scripts
 	env.Setenv("TRIVY_DB_DIGEST", "sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025")
+	// Disable VEX notice in test environment
+	env.Setenv("TRIVY_DISABLE_VEX_NOTICE", "true")
+	
+	// Pass through DOCKER_HOST if set
+	if dockerHost := os.Getenv("DOCKER_HOST"); dockerHost != "" {
+		env.Setenv("DOCKER_HOST", dockerHost)
+	}
 	
 	return nil
 }

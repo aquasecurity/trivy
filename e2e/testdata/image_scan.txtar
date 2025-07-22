@@ -32,36 +32,27 @@ cmp remote_result.txt image_scan_golden.txt
 
 Report Summary
 
-┌──────────────────────────────────────────────────────────────────────────────────┬────────┬─────────────────┬─────────┐
-│                                      Target                                      │  Type  │ Vulnerabilities │ Secrets │
-├──────────────────────────────────────────────────────────────────────────────────┼────────┼─────────────────┼─────────┤
+┌────────────────────────────────────────────────────────────────────────────────┬────────┬─────────────────┬─────────┐
+│                                     Target                                     │  Type  │ Vulnerabilities │ Secrets │
+├────────────────────────────────────────────────────────────────────────────────┼────────┼─────────────────┼─────────┤
 │ alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b │ alpine │        2        │    -    │
-│ (alpine 3.19.1)                                                                  │        │                 │         │
-└──────────────────────────────────────────────────────────────────────────────────┴────────┴─────────────────┴─────────┘
+│ (alpine 3.19.1)                                                                │        │                 │         │
+└────────────────────────────────────────────────────────────────────────────────┴────────┴─────────────────┴─────────┘
 Legend:
 - '-': Not scanned
 - '0': Clean (no security findings detected)
 
 
-For OSS Maintainers: VEX Notice
---------------------------------
-If you're an OSS maintainer and Trivy has detected vulnerabilities in your project that you believe are not actually exploitable, consider issuing a VEX (Vulnerability Exploitability eXchange) statement.
-VEX allows you to communicate the actual status of vulnerabilities in your project, improving security transparency and reducing false positives for your users.
-Learn more and start using VEX: https://trivy.dev/dev/docs/supply-chain/vex/repo#publishing-vex-documents
-
-To disable this notice, set the TRIVY_DISABLE_VEX_NOTICE environment variable.
-
-
 alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b (alpine 3.19.1)
-==========================================================================================
+==============================================================================================
 Total: 2 (HIGH: 2, CRITICAL: 0)
 
-┌───────────────┬────────────────┬──────────┬────────┬──────────────────────┬──────────────────────┬─────────────────────────────────────────────────────────────┐
-│    Library    │ Vulnerability  │ Severity │ Status │  Installed Version   │    Fixed Version     │                            Title                            │
-├───────────────┼────────────────┼──────────┼────────┼──────────────────────┼──────────────────────┼─────────────────────────────────────────────────────────────┤
-│ libcrypto3    │ CVE-2024-6119  │ HIGH     │ fixed  │ 3.1.4-r5             │ 3.1.7-r0             │ openssl: Possible denial of service in X.509 name checks    │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2024-6119                   │
-├───────────────┼────────────────┤          │        │                      │                      ├─────────────────────────────────────────────────────────────┤
-│ libssl3       │ CVE-2024-6119  │          │        │                      │                      │ openssl: Possible denial of service in X.509 name checks    │
-│               │                │          │        │                      │                      │ https://avd.aquasec.com/nvd/cve-2024-6119                   │
-└───────────────┴────────────────┴──────────┴────────┴──────────────────────┴──────────────────────┴─────────────────────────────────────────────────────────────┘
+┌────────────┬───────────────┬──────────┬────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────┐
+│  Library   │ Vulnerability │ Severity │ Status │ Installed Version │ Fixed Version │                          Title                           │
+├────────────┼───────────────┼──────────┼────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────┤
+│ libcrypto3 │ CVE-2024-6119 │ HIGH     │ fixed  │ 3.1.4-r5          │ 3.1.7-r0      │ openssl: Possible denial of service in X.509 name checks │
+│            │               │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2024-6119                │
+├────────────┤               │          │        │                   │               │                                                          │
+│ libssl3    │               │          │        │                   │               │                                                          │
+│            │               │          │        │                   │               │                                                          │
+└────────────┴───────────────┴──────────┴────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────┘
