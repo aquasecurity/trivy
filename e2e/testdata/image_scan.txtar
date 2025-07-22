@@ -6,21 +6,22 @@
 exec docker pull alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
 
 # Test 1: Remote image scanning
-trivy image --image-src remote --cache-dir $WORK/.cache --format table --output remote_result.txt --db-repository mirror.gcr.io/aquasec/trivy-db@sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025 --severity HIGH,CRITICAL alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+exec trivy image --image-src remote --cache-dir $WORK/.cache --format table --output remote_result.txt --db-repository mirror.gcr.io/aquasec/trivy-db@sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025 --severity HIGH,CRITICAL --no-progress alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
 
 # Verify DB download message appears for remote scan
-stdout 'Downloading vulnerability DB...'
+stderr 'Downloading vulnerability DB...'
 
 # Test 2: Local Docker daemon scanning  
-trivy image --image-src docker --cache-dir $WORK/.cache --format table --output local_result.txt --db-repository mirror.gcr.io/aquasec/trivy-db@sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025 --severity HIGH,CRITICAL alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+exec trivy image --image-src docker --cache-dir $WORK/.cache --format table --output local_result.txt --db-repository mirror.gcr.io/aquasec/trivy-db@sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025 --severity HIGH,CRITICAL --no-progress alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
 
 # Test 3: Exit code testing - scan with exit code for vulnerabilities
-! trivy image --exit-code 1 --cache-dir $WORK/.cache --format table --db-repository mirror.gcr.io/aquasec/trivy-db@sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025 --severity HIGH,CRITICAL alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+! exec trivy image --exit-code 1 --cache-dir $WORK/.cache --format table --db-repository mirror.gcr.io/aquasec/trivy-db@sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025 --severity HIGH,CRITICAL --no-progress alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
 
 # Verify all scans completed successfully
 ! stderr 'FATAL'
 exists remote_result.txt
 exists local_result.txt
+
 
 # Verify both scans produce equivalent results
 cmp remote_result.txt local_result.txt

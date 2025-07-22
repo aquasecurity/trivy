@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"testing"
 
 	"github.com/rogpeppe/go-internal/testscript"
@@ -18,9 +17,6 @@ var update = flag.Bool("update", false, "update golden files")
 func TestE2E(t *testing.T) {
 	testscript.Run(t, testscript.Params{
 		Dir: "testdata",
-		Cmds: map[string]func(ts *testscript.TestScript, neg bool, args []string){
-			"trivy": trivyCmd,
-		},
 		Setup: func(env *testscript.Env) error {
 			return setupTestEnvironment(env)
 		},
@@ -28,56 +24,36 @@ func TestE2E(t *testing.T) {
 	})
 }
 
-func trivyCmd(ts *testscript.TestScript, neg bool, args []string) {
-	// Build trivy binary path - look for it in the repository root
-	wd, _ := os.Getwd()
-	repoRoot := filepath.Dir(wd) // Go up one directory from e2e to repository root
-	trivyPath := filepath.Join(repoRoot, "trivy")
-	
-	if _, err := os.Stat(trivyPath); err != nil {
-		ts.Fatalf("trivy binary not found at %s: %v", trivyPath, err)
-	}
-
-	cmd := exec.Command(trivyPath, args...)
-	workDir := ts.Getenv("WORK")
-	cmd.Dir = workDir
-	
-	// Ensure cache directory exists
-	cacheDir := filepath.Join(workDir, ".cache")
-	os.MkdirAll(cacheDir, 0755)
-
-	output, err := cmd.CombinedOutput()
-	if neg {
-		if err == nil {
-			ts.Fatalf("trivy command succeeded unexpectedly: %s", output)
-		}
-	} else {
-		if err != nil {
-			ts.Fatalf("trivy command failed: %v\nOutput: %s", err, output)
-		}
-	}
-	
-	// Send output to testscript for pattern matching - write to stdout
-	fmt.Fprint(ts.Stdout(), string(output))
-}
-
-
 func setupTestEnvironment(env *testscript.Env) error {
 	// Validate Docker availability - fail if not available
 	if err := validateDockerAvailability(); err != nil {
 		return fmt.Errorf("Docker validation failed: %v", err)
 	}
-	
+
+	// Get GOPATH using go env (handles all defaults and environment resolution)
+	cmd := exec.Command("go", "env", "GOPATH")
+	output, err := cmd.Output()
+	if err != nil {
+		return fmt.Errorf("failed to get GOPATH: %v", err)
+	}
+	gopath := string(output)
+	gopath = gopath[:len(gopath)-1] // Remove trailing newline
+
+	// Add $GOPATH/bin to PATH
+	gopathBin := gopath + string(os.PathSeparator) + "bin"
+	currentPath := env.Getenv("PATH")
+	env.Setenv("PATH", gopathBin+string(os.PathListSeparator)+currentPath)
+
 	// Set environment variables for test scripts
 	env.Setenv("TRIVY_DB_DIGEST", "sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025")
 	// Disable VEX notice in test environment
 	env.Setenv("TRIVY_DISABLE_VEX_NOTICE", "true")
-	
+
 	// Pass through DOCKER_HOST if set
 	if dockerHost := os.Getenv("DOCKER_HOST"); dockerHost != "" {
 		env.Setenv("DOCKER_HOST", dockerHost)
 	}
-	
+
 	return nil
 }
 
@@ -88,5 +64,3 @@ func validateDockerAvailability() error {
 	}
 	return nil
 }
-
-

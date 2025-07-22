@@ -333,7 +333,7 @@ func (t Test) UpdateVMGolden() error {
 
 // E2e runs E2E tests using testscript framework
 func (t Test) E2e() error {
-	mg.Deps(Build) // Ensure trivy binary is built
+	mg.Deps(Install) // Install trivy to $GOPATH/bin
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=e2e", "./e2e/...")
 }
 

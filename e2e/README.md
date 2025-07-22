@@ -33,6 +33,15 @@ E2E tests should **avoid** detailed assertions and comprehensive validation:
 - **Docker**: Required for local image scanning tests
 - **Internet access**: Required for downloading images and databases
 
+### Test Execution
+
+The E2E tests execute the trivy binary from `$GOPATH/bin`. When you run `mage test:e2e`, it automatically:
+1. Installs trivy to `$GOPATH/bin` (via `mage install`)
+2. Adds `$GOPATH/bin` to the PATH for test execution
+3. Runs the E2E tests using the installed binary
+
+This ensures tests use a properly built trivy binary regardless of your local environment setup.
+
 ### Running Tests
 
 ```bash
