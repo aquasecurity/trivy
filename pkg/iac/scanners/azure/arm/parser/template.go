@@ -23,7 +23,6 @@ type MetadataReceiver interface {
 }
 
 type Template struct {
-	xjson.Location
 	Metadata       *types.Metadata        `json:"-"`
 	Schema         azure.Value            `json:"$schema"`
 	ContentVersion azure.Value            `json:"contentVersion"`
@@ -36,7 +35,6 @@ type Template struct {
 }
 
 type Parameter struct {
-	xjson.Location
 	Metadata     *types.Metadata
 	Type         azure.Value `json:"type"`
 	DefaultValue azure.Value `json:"defaultValue"`
@@ -64,7 +62,6 @@ func (p *Parameter) SetMetadata(m *types.Metadata) {
 }
 
 type innerResource struct {
-	xjson.Location
 	APIVersion azure.Value `json:"apiVersion"`
 	Type       azure.Value `json:"type"`
 	Kind       azure.Value `json:"kind"`
@@ -92,13 +89,11 @@ func ParseTemplate(fsys fs.FS, path string) (*Template, error) {
 
 	var template Template
 	if err := json.UnmarshalRead(lr, &template, json.WithUnmarshalers(
-		json.JoinUnmarshalers(
-			xjson.UnmarshalerWithObjectLocation(lr, func() xjson.DecodeHook {
-				return xjson.DecodeHook{
-					After: mc.After,
-				}
-			}()),
-		),
+		xjson.UnmarshalerWithLocation[MetadataReceiver](lr, func() xjson.DecodeHook {
+			return xjson.DecodeHook{
+				After: mc.After,
+			}
+		}()),
 	)); err != nil {
 		return nil, fmt.Errorf("unmarshal template: %w", err)
 	}

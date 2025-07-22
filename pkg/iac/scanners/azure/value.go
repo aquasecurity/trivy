@@ -11,7 +11,6 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/iac/types"
-	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 type EvalContext struct{}
@@ -30,7 +29,6 @@ const (
 )
 
 type Value struct {
-	xjson.Location
 	metadata *types.Metadata
 	rLit     any
 	rMap     map[string]Value
@@ -47,10 +45,6 @@ func NewValue(value any, metadata types.Metadata) Value {
 
 	v := Value{
 		metadata: &metadata,
-		Location: xjson.Location{
-			StartLine: metadata.Range().GetStartLine(),
-			EndLine:   metadata.Range().GetEndLine(),
-		},
 	}
 
 	switch ty := value.(type) {
@@ -109,11 +103,6 @@ func (v *Value) GetMetadata() types.Metadata {
 
 func (v *Value) SetMetadata(m *types.Metadata) {
 	v.metadata = m
-}
-
-func (v *Value) WithLocation(loc xjson.Location) *Value {
-	v.Location = loc
-	return v
 }
 
 func (v *Value) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
@@ -337,8 +326,7 @@ func (v Value) IsNull() bool {
 }
 
 func (v Value) Equal(other Value) bool {
-	return v.Location == other.Location &&
-		v.Kind == other.Kind &&
+	return v.Kind == other.Kind &&
 		slices.Equal(v.Comments, other.Comments) &&
 		v.rLit == other.rLit &&
 		compareMap(v.rMap, other.rMap) &&
