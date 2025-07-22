@@ -145,12 +145,20 @@ func adaptFirewallRule(firewall *compute.Firewall, firewallBlock, ruleBlock *ter
 
 	var rngs []compute.PortRange
 	rawPorts := portsAttr.AsStringValues()
-	for _, portStr := range rawPorts {
-		rng, ok := expandRange(portStr.Value(), portsAttr.GetMetadata())
-		if !ok {
-			continue
+	if len(rawPorts) == 0 {
+		rngs = []compute.PortRange{{
+			Metadata: ruleBlock.GetMetadata(),
+			Start:    iacTypes.Int(0, ruleBlock.GetMetadata()),
+			End:      iacTypes.Int(65535, ruleBlock.GetMetadata()),
+		}}
+	} else {
+		for _, portStr := range rawPorts {
+			rng, ok := expandRange(portStr.Value(), portsAttr.GetMetadata())
+			if !ok {
+				continue
+			}
+			rngs = append(rngs, rng)
 		}
-		rngs = append(rngs, rng)
 	}
 
 	// ingress by default

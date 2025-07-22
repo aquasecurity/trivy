@@ -150,6 +150,43 @@ func Test_adaptNetworks(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "firewall without ports",
+			terraform: `resource "google_compute_firewall" "example" {
+  network       = "test"
+  source_ranges = ["1.2.3.4/32"]
+  allow {
+    protocol = "tcp"
+  }
+}
+`,
+			expected: []compute.Network{
+				{
+					Metadata: iacTypes.NewTestMetadata(),
+					Firewall: &compute.Firewall{
+						Metadata: iacTypes.NewTestMetadata(),
+						IngressRules: []compute.IngressRule{
+							{
+								FirewallRule: compute.FirewallRule{
+									Enforced: iacTypes.BoolTest(true),
+									IsAllow:  iacTypes.BoolTest(true),
+									Protocol: iacTypes.StringTest("tcp"),
+									Ports: []compute.PortRange{
+										{
+											Start: iacTypes.IntTest(0),
+											End:   iacTypes.IntTest(65535),
+										},
+									},
+								},
+								SourceRanges: []iacTypes.StringValue{
+									iacTypes.StringTest("1.2.3.4/32"),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
