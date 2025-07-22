@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/compute"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -57,7 +58,7 @@ func Test_adaptNetworks(t *testing.T) {
 									IsAllow:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 									Protocol: iacTypes.String("icmp", iacTypes.NewTestMetadata()),
 									Enforced: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-									Ports: []compute.PortRange{
+									Ports: []common.PortRange{
 										{
 											Start: iacTypes.IntTest(80),
 											End:   iacTypes.IntTest(80),
@@ -171,7 +172,7 @@ func Test_adaptNetworks(t *testing.T) {
 									Enforced: iacTypes.BoolTest(true),
 									IsAllow:  iacTypes.BoolTest(true),
 									Protocol: iacTypes.StringTest("tcp"),
-									Ports: []compute.PortRange{
+									Ports: []common.PortRange{
 										{
 											Start: iacTypes.IntTest(0),
 											End:   iacTypes.IntTest(65535),
