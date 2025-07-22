@@ -29,6 +29,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/semaphore"
 	trivyTypes "github.com/aquasecurity/trivy/pkg/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 const artifactVersion = 1
@@ -64,7 +65,7 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 		return nil, xerrors.Errorf("config analyzer group error: %w", err)
 	}
 
-	cacheDir, err := os.MkdirTemp("", "layers")
+	cacheDir, err := xos.MkdirTemp("", "layers")
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create a cache layers temp dir: %w", err)
 	}

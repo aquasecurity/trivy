@@ -17,6 +17,7 @@ import (
 	"golang.org/x/xerrors"
 
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 var ErrSkipDownload = errors.New("skip download")
@@ -36,7 +37,7 @@ type Auth struct {
 
 // DownloadToTempDir downloads the configured source to a temp dir.
 func DownloadToTempDir(ctx context.Context, src string, opts Options) (string, error) {
-	tempDir, err := os.MkdirTemp("", "trivy-download")
+	tempDir, err := xos.MkdirTemp("", "trivy-download")
 	if err != nil {
 		return "", xerrors.Errorf("failed to create a temp dir: %w", err)
 	}

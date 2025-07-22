@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 func init() {
@@ -261,7 +262,7 @@ func packageProvidedByVendor(pkg *rpmdb.PackageInfo) bool {
 }
 
 func writeToTempFile(rc io.Reader) (string, error) {
-	tmpDir, err := os.MkdirTemp("", "rpm")
+	tmpDir, err := xos.MkdirTemp("", "rpm")
 	if err != nil {
 		return "", xerrors.Errorf("failed to create a temp dir: %w", err)
 	}
