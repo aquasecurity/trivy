@@ -4,8 +4,6 @@ import (
 	"io/fs"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/liamg/memoryfs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -209,19 +207,7 @@ func TestParser_Parse(t *testing.T) {
 
 			require.Len(t, got, 1)
 			want := tt.want()
-			g := got[0]
-
-			if diff := cmp.Diff(want, g,
-				cmp.Comparer(func(a, b *types.Metadata) bool {
-					return a.Equal(b)
-				}),
-				cmp.Comparer(func(a, b azure.Value) bool {
-					return a.Equal(b)
-				}),
-				cmpopts.IgnoreUnexported(types.Metadata{}, types.Range{}),
-			); diff != "" {
-				t.Errorf("Mismatch (-want +got):\n%s", diff)
-			}
+			assert.Equal(t, want, got[0])
 		})
 	}
 }

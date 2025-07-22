@@ -221,12 +221,3 @@ func (m *Metadata) SetReference(ref string) {
 func (m *Metadata) SetRange(r Range) {
 	m.rnge = r
 }
-
-func (m *Metadata) Equal(other *Metadata) bool {
-	if m == nil || other == nil {
-		return m == other
-	}
-	return m.Reference() == other.Reference() &&
-		m.Range().Equal(other.Range()) &&
-		m.Parent().Equal(other.Parent())
-}
