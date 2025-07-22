@@ -25,28 +25,12 @@ E2E tests should **avoid** detailed assertions and comprehensive validation:
 - **Minimal assertions**: Focus on basic functionality rather than detailed output validation
 - **External dependencies**: Use real registries, databases, and services where practical
 - **Environment isolation**: Each test should use isolated cache and working directories
-- **Golden files**: Use UpdateScripts feature for maintainable output comparison
+- **Golden files**: Use -update flag for maintainable output comparison
 - **Conditional execution**: Tests should validate required dependencies during setup
-
-### Current Test Coverage
-
-#### Image Scanning (`image_scan.txtar`)
-- Tests both local Docker daemon and remote registry image sources
-- Verifies that both methods produce equivalent scan results
-- Includes --exit-code testing for vulnerability detection
-- Uses fixed image digest for reproducible results
-
-#### Proxy Testing (`proxy_scan.txtar`) 
-- Tests Trivy functionality through HTTP/HTTPS proxy
-- Uses mitmdump with self-signed certificates
-- Validates both --insecure flag behavior:
-  - Without --insecure: Should fail with certificate errors
-  - With --insecure: Should succeed despite certificate issues
 
 ### Dependencies
 
 - **Docker**: Required for local image scanning tests
-- **mitmdump**: Required for proxy testing (from mitmproxy package)
 - **Internet access**: Required for downloading images and databases
 
 ### Running Tests
@@ -67,7 +51,7 @@ go test -v -tags=e2e ./e2e/ -update
 When adding new E2E tests:
 1. Focus on external dependencies and real-world scenarios
 2. Use minimal assertions - verify functionality, not detailed output
-3. Use golden files with UpdateScripts for output comparison
+3. Use golden files with -update flag for output comparison
 4. Validate required dependencies in test setup
 5. Use fixed/pinned versions for reproducible results
 6. Include clear test documentation explaining the scenario being tested

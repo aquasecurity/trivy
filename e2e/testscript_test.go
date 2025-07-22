@@ -3,6 +3,7 @@
 package e2e
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -11,6 +12,8 @@ import (
 
 	"github.com/rogpeppe/go-internal/testscript"
 )
+
+var update = flag.Bool("update", false, "update golden files")
 
 func TestE2E(t *testing.T) {
 	testscript.Run(t, testscript.Params{
@@ -21,7 +24,7 @@ func TestE2E(t *testing.T) {
 		Setup: func(env *testscript.Env) error {
 			return setupTestEnvironment(env)
 		},
-		UpdateScripts: true,
+		UpdateScripts: *update,
 	})
 }
 
