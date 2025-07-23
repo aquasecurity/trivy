@@ -82,6 +82,10 @@ func (f readerFunc) Read(p []byte) (int, error) {
 
 // Copy copies from src to dst until either EOF is reached on src or the context is canceled.
 // It returns the number of bytes copied and the first error encountered while copying, if any.
+//
+// Note: This implementation wraps the reader with a context check, which means it won't
+// benefit from WriterTo optimization in io.Copy if the source implements it. This is a trade-off
+// for being able to cancel the operation on context cancellation.
 func Copy(ctx context.Context, dst io.Writer, src io.Reader) (int64, error) {
 	return io.Copy(dst, readerFunc(func(p []byte) (int, error) {
 		select {
