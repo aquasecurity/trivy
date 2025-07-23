@@ -21,9 +21,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	"github.com/aquasecurity/trivy/pkg/version"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
-	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 const updateInterval = 1 * time.Hour

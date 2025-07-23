@@ -14,34 +14,32 @@ import (
 
 // resetForTest resets global variables for testing
 func resetForTest() {
-	tempDir = ""
-	initOnce = sync.Once{}
+	tempDirOnce = sync.OnceValues(initTempDir)
 }
 
 func TestTempDir(t *testing.T) {
 	resetForTest()
+	t.Cleanup(func() {
+		_ = Cleanup()
+		resetForTest()
+	})
 
-	dir := TempDir()
+	got := TempDir()
 
 	// Should contain process ID
 	pid := os.Getpid()
-	expected := filepath.Join(os.TempDir(), "trivy-"+strconv.Itoa(pid))
-	assert.Equal(t, expected, dir)
+	want := filepath.Join(os.TempDir(), "trivy-"+strconv.Itoa(pid))
+	assert.Equal(t, want, got)
 
 	// Directory should exist
-	_, err := os.Stat(dir)
-	assert.NoError(t, err)
-
-	t.Cleanup(func() {
-		Cleanup()
-		resetForTest()
-	})
+	_, err := os.Stat(got)
+	require.NoError(t, err)
 }
 
 func TestCreateTemp(t *testing.T) {
 	resetForTest()
 
-	testCases := []struct {
+	tests := []struct {
 		name    string
 		pattern string
 	}{
@@ -59,16 +57,20 @@ func TestCreateTemp(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			// Test with empty dir (should use process-specific dir)
-			file, err := CreateTemp("", tc.pattern)
+			file, err := CreateTemp("", tt.pattern) //nolint: usetesting
 			require.NoError(t, err)
-			defer file.Close()
+			t.Cleanup(func() {
+				_ = file.Close()
+				_ = Cleanup()
+				resetForTest()
+			})
 
 			// File should exist
 			_, err = os.Stat(file.Name())
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			// File should be in our temp directory
 			pid := os.Getpid()
@@ -77,27 +79,22 @@ func TestCreateTemp(t *testing.T) {
 
 			// Test with specific dir
 			customDir := t.TempDir()
-			file2, err := CreateTemp(customDir, tc.pattern)
+			file2, err := CreateTemp(customDir, tt.pattern)
 			require.NoError(t, err)
 			defer file2.Close()
 
 			// File should exist and be in custom dir
 			_, err = os.Stat(file2.Name())
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.True(t, strings.HasPrefix(file2.Name(), customDir))
 		})
 	}
-
-	t.Cleanup(func() {
-		Cleanup()
-		resetForTest()
-	})
 }
 
 func TestMkdirTemp(t *testing.T) {
 	resetForTest()
 
-	testCases := []struct {
+	tests := []struct {
 		name    string
 		pattern string
 	}{
@@ -111,64 +108,68 @@ func TestMkdirTemp(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Cleanup(func() {
+				Cleanup()
+				resetForTest()
+			})
+
 			// Test with empty dir (should use process-specific dir)
-			dir, err := MkdirTemp("", tc.pattern)
+			dir, err := MkdirTemp("", tt.pattern) //nolint:usetesting
 			require.NoError(t, err)
 
 			// Directory should exist
 			_, err = os.Stat(dir)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			// Directory should be in our temp directory
-			pid := os.Getpid()
-			expectedParent := filepath.Join(os.TempDir(), "trivy-"+strconv.Itoa(pid))
-			assert.True(t, strings.HasPrefix(dir, expectedParent))
+			wantParent := filepath.Join(os.TempDir(), "trivy-"+strconv.Itoa(os.Getpid()))
+			assert.True(t, strings.HasPrefix(dir, wantParent))
 
 			// Test with specific dir
 			customParent := t.TempDir()
-			dir2, err := MkdirTemp(customParent, tc.pattern)
+			dir2, err := MkdirTemp(customParent, tt.pattern) //nolint:usetesting
 			require.NoError(t, err)
 
 			// Directory should exist and be in custom parent
 			_, err = os.Stat(dir2)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.True(t, strings.HasPrefix(dir2, customParent))
 		})
 	}
-
-	t.Cleanup(func() {
-		Cleanup()
-		resetForTest()
-	})
 }
 
 func TestCleanup(t *testing.T) {
 	resetForTest()
+	t.Cleanup(func() {
+		resetForTest()
+	})
 
 	// Create a temp file
-	file, err := CreateTemp("", "test-")
+	file, err := CreateTemp("", "test-") //nolint: usetesting
 	require.NoError(t, err)
 	filename := file.Name()
-	file.Close()
+	require.NoError(t, file.Close())
+
+	// Directory should exist
+	dir := filepath.Join(os.TempDir(), "trivy-"+strconv.Itoa(os.Getpid()))
+	_, err = os.Stat(dir)
+	require.NoError(t, err)
 
 	// File should exist
 	_, err = os.Stat(filename)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// Cleanup
 	err = Cleanup()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// File should be gone
 	_, err = os.Stat(filename)
-	assert.True(t, os.IsNotExist(err))
+	require.ErrorIs(t, err, os.ErrNotExist)
 
 	// Directory should be gone
-	dir := TempDir()
 	_, err = os.Stat(dir)
-	assert.True(t, os.IsNotExist(err))
-
-	resetForTest()
+	assert.ErrorIs(t, err, os.ErrNotExist)
 }
