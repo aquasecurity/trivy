@@ -365,8 +365,15 @@ func TestLaxSplitLicense(t *testing.T) {
 			},
 		},
 		{
-			license: "GPL-2.0-only WITH Classpath-exception-2.0 AND MPL-2.0 ASL 2.0",
+			license: "GPL-2.0-only WITH Classpath-exception-2.0",
 			wantLicenses: []string{
+				"GPL-2.0-only WITH Classpath-exception-2.0",
+			},
+		},
+		{
+			license: "BSD-3-CLAUSE OR GPL-2.0-only WITH Classpath-exception-2.0 AND MPL-2.0 ASL 2.0",
+			wantLicenses: []string{
+				"BSD-3-Clause",
 				"GPL-2.0-only WITH Classpath-exception-2.0",
 				"MPL-2.0",
 				"Apache-2.0",
