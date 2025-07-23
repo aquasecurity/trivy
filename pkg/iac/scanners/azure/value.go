@@ -97,6 +97,14 @@ func NewValue(value any, metadata types.Metadata) Value {
 	return v
 }
 
+func NewExprValue(value string, metadata types.Metadata) Value {
+	return Value{
+		metadata: &metadata,
+		Kind:     KindExpression,
+		rLit:     value,
+	}
+}
+
 func (v *Value) GetMetadata() types.Metadata {
 	return lo.FromPtr(v.metadata)
 }
@@ -113,9 +121,16 @@ func (v *Value) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			return err
 		}
 	case '"':
-		v.Kind = KindString
-		if err := json.UnmarshalDecode(dec, &v.rLit); err != nil {
+		var s string
+		if err := json.UnmarshalDecode(dec, &s); err != nil {
 			return err
+		}
+		if strings.HasPrefix(s, "[") && !strings.HasPrefix(s, "[[") && strings.HasSuffix(s, "]") {
+			v.Kind = KindExpression
+			v.rLit = s[1 : len(s)-1]
+		} else {
+			v.Kind = KindString
+			v.rLit = s
 		}
 	case '0':
 		v.Kind = KindNumber

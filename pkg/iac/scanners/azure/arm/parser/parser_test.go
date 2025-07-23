@@ -102,7 +102,8 @@ func TestParser_Parse(t *testing.T) {
     "customDomain": {
       "name": "string",
       "useSubDomainName":false,
-      "number": 123
+      "number": 123,
+	  "expr": "[toLower('Production')]"
     },
     "networkAcls": [
 		{
@@ -118,17 +119,17 @@ func TestParser_Parse(t *testing.T) {
 }`,
 			want: func() azure.Deployment {
 				rootMetadata := createMetadata(targetFS, filename, 0, 0, "", nil).WithInternal(resolver.NewResolver())
-				fileMetadata := createMetadata(targetFS, filename, 1, 45, "", &rootMetadata)
+				fileMetadata := createMetadata(targetFS, filename, 1, 46, "", &rootMetadata)
 
-				resourceMetadata := createMetadata(targetFS, filename, 6, 43, "resources[0]", &fileMetadata)
+				resourceMetadata := createMetadata(targetFS, filename, 6, 44, "resources[0]", &fileMetadata)
 
-				propertiesMetadata := createMetadata(targetFS, filename, 27, 42, "resources[0].properties", &resourceMetadata)
+				propertiesMetadata := createMetadata(targetFS, filename, 27, 43, "resources[0].properties", &resourceMetadata)
 
-				customDomainMetadata := createMetadata(targetFS, filename, 29, 33, "resources[0].properties.customDomain", &propertiesMetadata)
-				networkACLListMetadata := createMetadata(targetFS, filename, 34, 41, "resources[0].properties.networkAcls", &propertiesMetadata)
+				customDomainMetadata := createMetadata(targetFS, filename, 29, 34, "resources[0].properties.customDomain", &propertiesMetadata)
+				networkACLListMetadata := createMetadata(targetFS, filename, 35, 42, "resources[0].properties.networkAcls", &propertiesMetadata)
 
-				networkACL0Metadata := createMetadata(targetFS, filename, 35, 37, "resources[0].properties.networkAcls[0]", &networkACLListMetadata)
-				networkACL1Metadata := createMetadata(targetFS, filename, 38, 40, "resources[0].properties.networkAcls[1]", &networkACLListMetadata)
+				networkACL0Metadata := createMetadata(targetFS, filename, 36, 38, "resources[0].properties.networkAcls[0]", &networkACLListMetadata)
+				networkACL1Metadata := createMetadata(targetFS, filename, 39, 41, "resources[0].properties.networkAcls[1]", &networkACLListMetadata)
 
 				return azure.Deployment{
 					Metadata:    fileMetadata,
@@ -164,18 +165,19 @@ func TestParser_Parse(t *testing.T) {
 											"name":             azure.NewValue("string", createMetadata(targetFS, filename, 30, 30, "resources[0].properties.customDomain.name", &customDomainMetadata)),
 											"useSubDomainName": azure.NewValue(false, createMetadata(targetFS, filename, 31, 31, "resources[0].properties.customDomain.useSubDomainName", &customDomainMetadata)),
 											"number":           azure.NewValue(int64(123), createMetadata(targetFS, filename, 32, 32, "resources[0].properties.customDomain.number", &customDomainMetadata)),
+											"expr":             azure.NewExprValue("toLower('Production')", createMetadata(targetFS, filename, 33, 33, "resources[0].properties.customDomain.expr", &customDomainMetadata)),
 										}, customDomainMetadata),
 									"networkAcls": azure.NewValue(
 										[]azure.Value{
 											azure.NewValue(
 												map[string]azure.Value{
-													"bypass": azure.NewValue("AzureServices1", createMetadata(targetFS, filename, 36, 36, "resources[0].properties.networkAcls[0].bypass", &networkACL0Metadata)),
+													"bypass": azure.NewValue("AzureServices1", createMetadata(targetFS, filename, 37, 37, "resources[0].properties.networkAcls[0].bypass", &networkACL0Metadata)),
 												},
 												networkACL0Metadata,
 											),
 											azure.NewValue(
 												map[string]azure.Value{
-													"bypass": azure.NewValue("AzureServices2", createMetadata(targetFS, filename, 39, 39, "resources[0].properties.networkAcls[1].bypass", &networkACL1Metadata)),
+													"bypass": azure.NewValue("AzureServices2", createMetadata(targetFS, filename, 40, 40, "resources[0].properties.networkAcls[1].bypass", &networkACL1Metadata)),
 												},
 												networkACL1Metadata,
 											),
