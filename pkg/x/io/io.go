@@ -2,6 +2,7 @@ package io
 
 import (
 	"bytes"
+	"context"
 	"io"
 
 	"golang.org/x/xerrors"
@@ -71,3 +72,23 @@ type nopCloser struct {
 }
 
 func (nopCloser) Close() error { return nil }
+
+// readerFunc is a function that implements io.Reader
+type readerFunc func([]byte) (int, error)
+
+func (f readerFunc) Read(p []byte) (int, error) {
+	return f(p)
+}
+
+// Copy copies from src to dst until either EOF is reached on src or the context is canceled.
+// It returns the number of bytes copied and the first error encountered while copying, if any.
+func Copy(ctx context.Context, dst io.Writer, src io.Reader) (int64, error) {
+	return io.Copy(dst, readerFunc(func(p []byte) (int, error) {
+		select {
+		case <-ctx.Done():
+			return 0, ctx.Err()
+		default:
+			return src.Read(p)
+		}
+	}))
+}
