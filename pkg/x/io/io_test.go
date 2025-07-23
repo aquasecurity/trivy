@@ -12,7 +12,7 @@ import (
 
 func TestCopy(t *testing.T) {
 	t.Run("successful copy", func(t *testing.T) {
-		ctx := context.Background()
+		ctx := t.Context()
 		src := strings.NewReader("hello world")
 		dst := &bytes.Buffer{}
 
@@ -23,20 +23,20 @@ func TestCopy(t *testing.T) {
 	})
 
 	t.Run("context canceled before read", func(t *testing.T) {
-		ctx, cancel := context.WithCancel(context.Background())
+		ctx, cancel := context.WithCancel(t.Context())
 		cancel() // Cancel immediately
 
 		src := strings.NewReader("hello world")
 		dst := &bytes.Buffer{}
 
 		n, err := Copy(ctx, dst, src)
-		assert.ErrorIs(t, err, context.Canceled)
+		require.ErrorIs(t, err, context.Canceled)
 		assert.Equal(t, int64(0), n)
 		assert.Empty(t, dst.String())
 	})
 
 	t.Run("context canceled during read", func(t *testing.T) {
-		ctx, cancel := context.WithCancel(context.Background())
+		ctx, cancel := context.WithCancel(t.Context())
 
 		// Create a reader that will be canceled after first read
 		reader := &dummyReader{
@@ -45,7 +45,7 @@ func TestCopy(t *testing.T) {
 		dst := &bytes.Buffer{}
 
 		n, err := Copy(ctx, dst, reader)
-		assert.ErrorIs(t, err, context.Canceled)
+		require.ErrorIs(t, err, context.Canceled)
 		// Should have written first chunk before cancellation
 		assert.Equal(t, int64(5), n)
 		assert.Equal(t, "dummy", dst.String())

@@ -64,8 +64,9 @@ func (s Server) ListenAndServe(ctx context.Context, serverCache cache.Cache, ski
 	dbUpdateWg := &sync.WaitGroup{}
 
 	server := &http.Server{
-		Addr:    s.addr,
-		Handler: s.NewServeMux(ctx, serverCache, dbUpdateWg, requestWg),
+		Addr:              s.addr,
+		Handler:           s.NewServeMux(ctx, serverCache, dbUpdateWg, requestWg),
+		ReadHeaderTimeout: 10 * time.Second,
 	}
 
 	// Start DB update worker
@@ -81,11 +82,10 @@ func (s Server) ListenAndServe(ctx context.Context, serverCache cache.Cache, ski
 
 				// Give active requests time to complete
 				shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-				defer cancel()
-
 				if err := server.Shutdown(shutdownCtx); err != nil {
 					log.Errorf("Server shutdown error: %v", err)
 				}
+				cancel()
 				return
 			case <-ticker.C:
 				if err := worker.update(ctx, s.appVersion, s.dbDir, skipDBUpdate, dbUpdateWg, requestWg, s.RegistryOptions); err != nil {
