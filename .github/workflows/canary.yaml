@@ -61,7 +61,7 @@ jobs:
 
       - name: Delete cache after upload
         run: |
-          gh cache delete "$CACHE_KEY"
+          gh cache delete "$CACHE_KEY" --repo "${{ github.repository }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CACHE_KEY: ${{ runner.os }}-bins-${{ github.workflow }}-${{ github.sha }}
