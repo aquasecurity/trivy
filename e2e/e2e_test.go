@@ -65,6 +65,17 @@ func setupTestEnvironment(t *testing.T, env *testscript.Env) error {
 	env.Setenv("TRIVY_DB_DIGEST", "sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025")
 	// Disable VEX notice in test environment
 	env.Setenv("TRIVY_DISABLE_VEX_NOTICE", "true")
+	
+	// Define test image
+	testImage := "alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b"
+	env.Setenv("TEST_IMAGE", testImage)
+
+	// Pre-pull the test image to Docker daemon
+	t.Logf("Pre-pulling test image: %s", testImage)
+	cmd := exec.Command("docker", "pull", testImage)
+	if output, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to pull test image: %v\nOutput: %s", err, output)
+	}
 
 	// Pass through DOCKER_HOST if set
 	if dockerHost := os.Getenv("DOCKER_HOST"); dockerHost != "" {
