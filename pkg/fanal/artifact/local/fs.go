@@ -13,6 +13,8 @@ import (
 	"sync"
 
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/config"
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/google/wire"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -130,6 +132,60 @@ func gitCommitHash(dir string) (string, error) {
 	return head.Hash().String(), nil
 }
 
+// extractGitMetadata extracts comprehensive git repository metadata
+func extractGitMetadata(dir string) (artifact.RepoMetadata, error) {
+	var metadata artifact.RepoMetadata
+
+	repo, err := git.PlainOpen(dir)
+	if err != nil {
+		return metadata, xerrors.Errorf("failed to open git repository: %w", err)
+	}
+
+	// Get HEAD commit
+	head, err := repo.Head()
+	if err != nil {
+		return metadata, xerrors.Errorf("failed to get HEAD: %w", err)
+	}
+
+	commit, err := repo.CommitObject(head.Hash())
+	if err != nil {
+		return metadata, xerrors.Errorf("failed to get commit object: %w", err)
+	}
+
+	metadata.Commit = head.Hash().String()
+	metadata.CommitMsg = strings.TrimSpace(commit.Message)
+	metadata.Author = commit.Author.String()
+	metadata.Committer = commit.Committer.String()
+
+	// Get branch name
+	if head.Name().IsBranch() {
+		metadata.Branch = head.Name().Short()
+	}
+
+	// Get tag name if HEAD points to a tag
+	tags, err := repo.Tags()
+	if err == nil {
+		tags.ForEach(func(tag *plumbing.Reference) error {
+			if tag.Hash() == head.Hash() {
+				metadata.Tag = tag.Name().Short()
+				return nil
+			}
+			return nil
+		})
+	}
+
+	// Get repository URL - prefer upstream, fallback to origin
+	remoteConfig, err := repo.Remote("upstream")
+	if err != nil {
+		remoteConfig, err = repo.Remote("origin")
+	}
+	if err == nil && len(remoteConfig.Config().URLs) > 0 {
+		metadata.RepoURL = remoteConfig.Config().URLs[0]
+	}
+
+	return metadata, nil
+}
+
 func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	// Calculate cache key
 	cacheKey, err := a.calcCacheKey()
@@ -230,12 +286,23 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 		hostName = filepath.ToSlash(target) // To slash for Windows
 	}
 
-	return artifact.Reference{
+	ref := artifact.Reference{
 		Name:    hostName,
 		Type:    a.artifactOption.Type,
 		ID:      cacheKey, // use a cache key as pseudo artifact ID
 		BlobIDs: []string{cacheKey},
-	}, nil
+	}
+
+	// Extract git metadata for repository artifacts
+	if a.artifactOption.Type == types.TypeRepository {
+		if gitMetadata, err := extractGitMetadata(a.rootPath); err == nil {
+			ref.RepoMetadata = gitMetadata
+		} else {
+			a.logger.Debug("Failed to extract git metadata", log.Err(err))
+		}
+	}
+
+	return ref, nil
 }
 
 func (a Artifact) analyzeWithRootDir(ctx context.Context, wg *sync.WaitGroup, limit *semaphore.Weighted,

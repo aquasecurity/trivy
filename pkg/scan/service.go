@@ -207,6 +207,15 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 			ImageConfig: artifactInfo.ImageMetadata.ConfigFile,
 			Size:        scanResponse.Layers.TotalSize(),
 			Layers:      lo.Ternary(len(scanResponse.Layers) > 0, scanResponse.Layers, nil),
+
+			// Git repository
+			RepoURL:   artifactInfo.RepoMetadata.RepoURL,
+			Branch:    artifactInfo.RepoMetadata.Branch,
+			Tag:       artifactInfo.RepoMetadata.Tag,
+			Commit:    artifactInfo.RepoMetadata.Commit,
+			CommitMsg: artifactInfo.RepoMetadata.CommitMsg,
+			Author:    artifactInfo.RepoMetadata.Author,
+			Committer: artifactInfo.RepoMetadata.Committer,
 		},
 		Results: scanResponse.Results,
 		BOM:     artifactInfo.BOM,

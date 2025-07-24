@@ -34,6 +34,15 @@ type Metadata struct {
 	RepoDigests []string      `json:",omitempty"`
 	ImageConfig v1.ConfigFile `json:",omitempty"`
 	Layers      ftypes.Layers `json:",omitzero"`
+
+	// Git repository
+	RepoURL    string `json:",omitempty"`
+	Branch     string `json:",omitempty"`
+	Tag        string `json:",omitempty"`
+	Commit     string `json:",omitempty"`
+	CommitMsg  string `json:",omitempty"`
+	Author     string `json:",omitempty"`
+	Committer  string `json:",omitempty"`
 }
 
 // Results to hold list of Result
