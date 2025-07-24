@@ -21,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/remote"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 const (
@@ -188,7 +189,7 @@ func (a *Artifact) download(ctx context.Context, layer v1.Layer, fileName, dir s
 	}()
 
 	// Download the layer content into a temporal file
-	if _, err = io.Copy(f, pr); err != nil {
+	if _, err = xio.Copy(ctx, f, pr); err != nil {
 		return xerrors.Errorf("copy error: %w", err)
 	}
 
