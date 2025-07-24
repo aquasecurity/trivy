@@ -45,7 +45,7 @@ func Unmarshal(data []byte, v any) error {
 
 func UnmarshalRead(r io.Reader, v any) error {
 	lr := NewLineReader(r)
-	unmarshalers := UnmarshalerWithLocation[ObjectLocation](lr, WithLocationHook())
+	unmarshalers := UnmarshalerWithLocation[ObjectLocation](lr, SetLocationHook)
 	return json.UnmarshalRead(lr, v, json.WithUnmarshalers(unmarshalers))
 }
 
@@ -63,17 +63,15 @@ type ObjectLocation interface {
 }
 
 type DecodeHook struct {
-	After func(dec *jsontext.Decoder, obj any, loc types.Location)
+	After func(dec *jsontext.Decoder, target any, loc types.Location)
 }
 
-func WithLocationHook() DecodeHook {
-	return DecodeHook{
-		After: func(_ *jsontext.Decoder, target any, location types.Location) {
-			if loc, ok := target.(ObjectLocation); ok {
-				loc.SetLocation(location)
-			}
-		},
-	}
+var SetLocationHook = DecodeHook{
+	After: func(_ *jsontext.Decoder, target any, location types.Location) {
+		if loc, ok := target.(ObjectLocation); ok {
+			loc.SetLocation(location)
+		}
+	},
 }
 
 // UnmarshalerWithLocation returns a json.Unmarshaler that captures the source code location
