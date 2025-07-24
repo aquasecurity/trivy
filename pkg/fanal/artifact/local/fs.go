@@ -13,7 +13,6 @@ import (
 	"sync"
 
 	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/google/wire"
 	"github.com/samber/lo"
@@ -58,7 +57,8 @@ type Artifact struct {
 
 	artifactOption artifact.Option
 
-	commitHash string // only set when the git repository is clean
+	commitHash   string                // only set when the git repository is clean
+	repoMetadata artifact.RepoMetadata // git repository metadata
 }
 
 func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.Option) (artifact.Artifact, error) {
@@ -88,10 +88,11 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 	art.logger.Debug("Analyzing...", log.String("root", art.rootPath),
 		lo.Ternary(opt.Original != "", log.String("original", opt.Original), log.Nil))
 
-	// Check if the directory is a git repository and clean
-	if hash, err := gitCommitHash(art.rootPath); err == nil {
+	// Check if the directory is a git repository and extract metadata
+	if hash, metadata, err := extractGitInfo(art.rootPath); err == nil {
 		art.logger.Debug("Using the latest commit hash for calculating cache key", log.String("commit_hash", hash))
 		art.commitHash = hash
+		art.repoMetadata = metadata
 	} else if !errors.Is(err, git.ErrRepositoryNotExists) {
 		// Only log if the file path is a git repository
 		art.logger.Debug("Random cache key will be used", log.Err(err))
@@ -100,58 +101,29 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 	return art, nil
 }
 
-// gitCommitHash returns the latest commit hash if the git repository is clean, otherwise returns an error
-func gitCommitHash(dir string) (string, error) {
-	repo, err := git.PlainOpen(dir)
-	if err != nil {
-		return "", xerrors.Errorf("failed to open git repository: %w", err)
-	}
-
-	// Get the working tree
-	worktree, err := repo.Worktree()
-	if err != nil {
-		return "", xerrors.Errorf("failed to get worktree: %w", err)
-	}
-
-	// Get the current status
-	status, err := worktree.Status()
-	if err != nil {
-		return "", xerrors.Errorf("failed to get status: %w", err)
-	}
-
-	if !status.IsClean() {
-		return "", xerrors.New("repository is dirty")
-	}
-
-	// Get the HEAD commit hash
-	head, err := repo.Head()
-	if err != nil {
-		return "", xerrors.Errorf("failed to get HEAD: %w", err)
-	}
-
-	return head.Hash().String(), nil
-}
-
-// extractGitMetadata extracts comprehensive git repository metadata
-func extractGitMetadata(dir string) (artifact.RepoMetadata, error) {
+// extractGitInfo extracts git repository information including commit hash and metadata
+// Returns commit hash (for caching), metadata, and error
+// Only returns commit hash if the repository is clean
+func extractGitInfo(dir string) (string, artifact.RepoMetadata, error) {
 	var metadata artifact.RepoMetadata
 
 	repo, err := git.PlainOpen(dir)
 	if err != nil {
-		return metadata, xerrors.Errorf("failed to open git repository: %w", err)
+		return "", metadata, xerrors.Errorf("failed to open git repository: %w", err)
 	}
 
 	// Get HEAD commit
 	head, err := repo.Head()
 	if err != nil {
-		return metadata, xerrors.Errorf("failed to get HEAD: %w", err)
+		return "", metadata, xerrors.Errorf("failed to get HEAD: %w", err)
 	}
 
 	commit, err := repo.CommitObject(head.Hash())
 	if err != nil {
-		return metadata, xerrors.Errorf("failed to get commit object: %w", err)
+		return "", metadata, xerrors.Errorf("failed to get commit object: %w", err)
 	}
 
+	// Extract basic commit metadata
 	metadata.Commit = head.Hash().String()
 	metadata.CommitMsg = strings.TrimSpace(commit.Message)
 	metadata.Author = commit.Author.String()
@@ -183,8 +155,25 @@ func extractGitMetadata(dir string) (artifact.RepoMetadata, error) {
 		metadata.RepoURL = remoteConfig.Config().URLs[0]
 	}
 
-	return metadata, nil
+	// Check if repository is clean for caching purposes
+	worktree, err := repo.Worktree()
+	if err != nil {
+		return "", metadata, xerrors.Errorf("failed to get worktree: %w", err)
+	}
+
+	status, err := worktree.Status()
+	if err != nil {
+		return "", metadata, xerrors.Errorf("failed to get status: %w", err)
+	}
+
+	if !status.IsClean() {
+		return "", metadata, xerrors.New("repository is dirty")
+	}
+
+	// Return commit hash only if repository is clean
+	return head.Hash().String(), metadata, nil
 }
+
 
 func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	// Calculate cache key
@@ -293,13 +282,9 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 		BlobIDs: []string{cacheKey},
 	}
 
-	// Extract git metadata for repository artifacts
+	// Use pre-extracted git metadata for repository artifacts
 	if a.artifactOption.Type == types.TypeRepository {
-		if gitMetadata, err := extractGitMetadata(a.rootPath); err == nil {
-			ref.RepoMetadata = gitMetadata
-		} else {
-			a.logger.Debug("Failed to extract git metadata", log.Err(err))
-		}
+		ref.RepoMetadata = a.repoMetadata
 	}
 
 	return ref, nil
