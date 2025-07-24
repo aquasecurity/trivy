@@ -1,0 +1,58 @@
+# Image scan test
+# This test verifies that Trivy can scan images from both local Docker daemon and remote registry
+# and that both methods produce equivalent results
+#
+# Image is already pre-pulled in setupTestEnvironment
+
+# Test 1: Remote image scanning
+exec trivy image --image-src remote --cache-dir $WORK/.cache --format table --output remote_result.txt --db-repository mirror.gcr.io/aquasec/trivy-db@sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025 --severity HIGH,CRITICAL --no-progress $TEST_IMAGE
+
+# Verify DB download message appears for remote scan
+stderr 'Downloading vulnerability DB...'
+
+# Test 2: Local Docker daemon scanning  
+exec trivy image --image-src docker --cache-dir $WORK/.cache --format table --output local_result.txt --db-repository mirror.gcr.io/aquasec/trivy-db@sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025 --severity HIGH,CRITICAL --no-progress $TEST_IMAGE
+
+# Test 3: Exit code testing - scan with exit code for vulnerabilities
+! exec trivy image --exit-code 1 --cache-dir $WORK/.cache --format table --db-repository mirror.gcr.io/aquasec/trivy-db@sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025 --severity HIGH,CRITICAL --no-progress $TEST_IMAGE
+
+# Verify all scans completed successfully
+! stderr 'FATAL'
+exists remote_result.txt
+exists local_result.txt
+
+
+# Verify both scans produce equivalent results
+cmp remote_result.txt local_result.txt
+
+# Compare with golden file to ensure expected output format
+cmp remote_result.txt image_scan_golden.txt
+
+-- image_scan_golden.txt --
+
+Report Summary
+
+┌────────────────────────────────────────────────────────────────────────────────┬────────┬─────────────────┬─────────┐
+│                                     Target                                     │  Type  │ Vulnerabilities │ Secrets │
+├────────────────────────────────────────────────────────────────────────────────┼────────┼─────────────────┼─────────┤
+│ alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b │ alpine │        2        │    -    │
+│ (alpine 3.19.1)                                                                │        │                 │         │
+└────────────────────────────────────────────────────────────────────────────────┴────────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b (alpine 3.19.1)
+==============================================================================================
+Total: 2 (HIGH: 2, CRITICAL: 0)
+
+┌────────────┬───────────────┬──────────┬────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────┐
+│  Library   │ Vulnerability │ Severity │ Status │ Installed Version │ Fixed Version │                          Title                           │
+├────────────┼───────────────┼──────────┼────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────┤
+│ libcrypto3 │ CVE-2024-6119 │ HIGH     │ fixed  │ 3.1.4-r5          │ 3.1.7-r0      │ openssl: Possible denial of service in X.509 name checks │
+│            │               │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2024-6119                │
+├────────────┤               │          │        │                   │               │                                                          │
+│ libssl3    │               │          │        │                   │               │                                                          │
+│            │               │          │        │                   │               │                                                          │
+└────────────┴───────────────┴──────────┴────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────┘

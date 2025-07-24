@@ -1,0 +1,27 @@
+# Proxy scan test
+# This test verifies that Trivy can work through HTTP/HTTPS proxy with self-signed certificates
+# Tests both --insecure flag behavior: failure without it, success with it
+
+# Start mitmdump proxy container on port 18080
+exec docker rm -f mitmproxy-e2e-test
+exec docker run -d --name mitmproxy-e2e-test -p 18080:8080 mitmproxy/mitmproxy:latest mitmdump
+exec sleep 3
+
+# Set proxy environment variables
+env HTTPS_PROXY=http://localhost:18080
+env HTTP_PROXY=http://localhost:18080
+
+# Test 1: Scan without --insecure flag (should fail due to certificate issues)
+! exec trivy image --cache-dir $WORK/.cache --format table --db-repository mirror.gcr.io/aquasec/trivy-db@sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025 --severity HIGH,CRITICAL --no-progress alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+
+# Verify certificate error occurred
+stderr 'certificate'
+
+# Test 2: Scan with --insecure flag (should succeed despite certificate issues)
+exec trivy image --insecure --cache-dir $WORK/.cache --format table --db-repository mirror.gcr.io/aquasec/trivy-db@sha256:b4d3718a89a78d4a6b02250953e92fcd87776de4774e64e818c1d0e01c928025 --severity HIGH,CRITICAL --no-progress alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+
+# Verify scan completed successfully with --insecure
+! stderr 'FATAL'
+
+# Stop proxy container
+exec docker rm -f mitmproxy-e2e-test
