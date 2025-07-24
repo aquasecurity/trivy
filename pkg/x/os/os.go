@@ -3,10 +3,10 @@ package os
 import (
 	"fmt"
 	"os"
-	"os/signal"
 	"path/filepath"
 	"sync"
-	"syscall"
+
+	"golang.org/x/xerrors"
 )
 
 var tempDirOnce = sync.OnceValues(initTempDir)
@@ -17,20 +17,8 @@ func initTempDir() (string, error) {
 	tempDir := filepath.Join(os.TempDir(), fmt.Sprintf("trivy-%d", pid))
 
 	if err := os.MkdirAll(tempDir, 0o755); err != nil {
-		return "", err
+		return "", xerrors.Errorf("failed to create temp dir: %w", err)
 	}
-
-	// Setup signal handler for cleanup
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-
-	go func() {
-		<-c
-		_ = os.RemoveAll(tempDir)
-		// Let the signal continue - don't call os.Exit(0) here
-		// This allows other handlers to run and proper cleanup to occur
-	}()
-
 	return tempDir, nil
 }
 
