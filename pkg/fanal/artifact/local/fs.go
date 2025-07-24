@@ -174,7 +174,6 @@ func extractGitInfo(dir string) (string, artifact.RepoMetadata, error) {
 	return head.Hash().String(), metadata, nil
 }
 
-
 func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	// Calculate cache key
 	cacheKey, err := a.calcCacheKey()

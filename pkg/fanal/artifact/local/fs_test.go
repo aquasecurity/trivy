@@ -2539,11 +2539,11 @@ func TestArtifact_AnalysisStrategy(t *testing.T) {
 
 func TestExtractGitInfo(t *testing.T) {
 	tests := []struct {
-		name          string
-		setupRepo     func(t *testing.T) string
-		wantHash      string
-		wantMetadata  artifact.RepoMetadata
-		wantErr       string
+		name         string
+		setupRepo    func(t *testing.T) string
+		wantHash     string
+		wantMetadata artifact.RepoMetadata
+		wantErr      string
 	}{
 		{
 			name: "non-git directory",
@@ -2557,7 +2557,7 @@ func TestExtractGitInfo(t *testing.T) {
 			name: "clean git repository with branch and tag",
 			setupRepo: func(t *testing.T) string {
 				tmpDir := t.TempDir()
-				
+
 				// Initialize git repository
 				repo, err := git.PlainInit(tmpDir, false)
 				require.NoError(t, err)
@@ -2571,7 +2571,7 @@ func TestExtractGitInfo(t *testing.T) {
 
 				// Add upstream remote
 				_, err = repo.CreateRemote(&config.RemoteConfig{
-					Name: "upstream", 
+					Name: "upstream",
 					URLs: []string{"https://github.com/upstream/test.git"},
 				})
 				require.NoError(t, err)
@@ -2641,7 +2641,7 @@ func TestExtractGitInfo(t *testing.T) {
 				_, err = worktree.Commit("Initial commit", &git.CommitOptions{
 					Author: &object.Signature{
 						Name:  "Test User",
-						Email: "test@example.com", 
+						Email: "test@example.com",
 						When:  time.Now(),
 					},
 				})
@@ -2777,7 +2777,7 @@ func TestExtractGitInfo(t *testing.T) {
 			assert.Equal(t, tt.wantMetadata.Branch, metadata.Branch)
 			assert.Equal(t, tt.wantMetadata.Tag, metadata.Tag)
 			assert.Equal(t, tt.wantMetadata.CommitMsg, metadata.CommitMsg)
-			
+
 			if tt.wantMetadata.Author != "" {
 				assert.Contains(t, metadata.Author, "Test User")
 				assert.Contains(t, metadata.Author, "test@example.com")
