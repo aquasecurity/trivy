@@ -136,7 +136,7 @@ func (a *SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 
 	result := a.scanner.Scan(secret.ScanArgs{
 		FilePath: filePath,
-		Content:  content,
+		Content:  bytes.NewReader(content),
 		Binary:   binary,
 	})
 
