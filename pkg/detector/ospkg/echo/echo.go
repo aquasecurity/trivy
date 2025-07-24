@@ -6,6 +6,7 @@ import (
 	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	echoDb "github.com/aquasecurity/trivy-db/pkg/vulnsrc/echo"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
@@ -29,7 +30,9 @@ func (s *Scanner) Detect(ctx context.Context, _ string, _ *ftypes.Repository, pk
 	log.InfoContext(ctx, "Detecting vulnerabilities...", log.Int("pkg_num", len(pkgs)))
 	var detectedVulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := s.vs.Get("", pkg.SrcName)
+		advisories, err := s.vs.Get(db.GetParams{
+			PkgName: pkg.SrcName,
+		})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get echo advisories: %w", err)
 		}
