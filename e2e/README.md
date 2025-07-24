@@ -35,12 +35,16 @@ E2E tests should **avoid** detailed assertions and comprehensive validation:
 
 ### Test Execution
 
-The E2E tests execute the trivy binary from `$GOPATH/bin`. When you run `mage test:e2e`, it automatically:
-1. Installs trivy to `$GOPATH/bin` (via `mage install`)
-2. Adds `$GOPATH/bin` to the PATH for test execution
-3. Runs the E2E tests using the installed binary
+The E2E tests build and execute trivy in isolated temporary directories. When you run `mage test:e2e`, it automatically:
+1. Builds trivy in a test-specific temporary directory (via `t.TempDir()`)
+2. Adds the temporary directory to the PATH for test execution
+3. Runs the E2E tests using the isolated binary
 
-This ensures tests use a properly built trivy binary regardless of your local environment setup.
+This approach ensures:
+- No pollution of the global environment
+- Each test run uses a freshly built binary
+- Test isolation between different test runs
+- Clean test environment without side effects
 
 ### Running Tests
 
