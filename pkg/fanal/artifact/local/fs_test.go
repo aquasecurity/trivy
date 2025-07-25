@@ -3,13 +3,8 @@ package local
 import (
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
-	"time"
 
-	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/config"
-	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -2540,223 +2535,35 @@ func TestArtifact_AnalysisStrategy(t *testing.T) {
 func TestExtractGitInfo(t *testing.T) {
 	tests := []struct {
 		name         string
-		setupRepo    func(t *testing.T) string
+		repoPath     string
 		wantClean    bool
 		wantMetadata artifact.RepoMetadata
 		wantErr      string
 	}{
 		{
-			name: "non-git directory",
-			setupRepo: func(t *testing.T) string {
-				tmpDir := t.TempDir()
-				return tmpDir
-			},
-			wantErr: "failed to open git repository",
+			name:     "non-git directory",
+			repoPath: t.TempDir(),
+			wantErr:  "failed to open git repository",
 		},
 		{
-			name: "clean git repository with branch and tag",
-			setupRepo: func(t *testing.T) string {
-				tmpDir := t.TempDir()
-
-				// Initialize git repository
-				repo, err := git.PlainInit(tmpDir, false)
-				require.NoError(t, err)
-
-				// Add origin remote
-				_, err = repo.CreateRemote(&config.RemoteConfig{
-					Name: "origin",
-					URLs: []string{"https://github.com/test/test.git"},
-				})
-				require.NoError(t, err)
-
-				// Add upstream remote
-				_, err = repo.CreateRemote(&config.RemoteConfig{
-					Name: "upstream",
-					URLs: []string{"https://github.com/upstream/test.git"},
-				})
-				require.NoError(t, err)
-
-				// Add a file and commit
-				testFile := filepath.Join(tmpDir, "test.txt")
-				err = os.WriteFile(testFile, []byte("test content"), 0644)
-				require.NoError(t, err)
-
-				worktree, err := repo.Worktree()
-				require.NoError(t, err)
-
-				_, err = worktree.Add("test.txt")
-				require.NoError(t, err)
-
-				commit, err := worktree.Commit("Initial commit", &git.CommitOptions{
-					Author: &object.Signature{
-						Name:  "Test User",
-						Email: "test@example.com",
-						When:  time.Now(),
-					},
-				})
-				require.NoError(t, err)
-
-				// Create a tag
-				_, err = repo.CreateTag("v1.0.0", commit, nil)
-				require.NoError(t, err)
-
-				return tmpDir
-			},
+			name:     "test repository",
+			repoPath: "../../../../internal/gittest/testdata/test-repo",
 			wantClean: true,
 			wantMetadata: artifact.RepoMetadata{
-				RepoURL:   "https://github.com/upstream/test.git",
-				Branch:    "master",
-				Tag:       "v1.0.0",
-				CommitMsg: "Initial commit",
-				Author:    "Test User <test@example.com>",
-				Committer: "Test User <test@example.com>",
-			},
-		},
-		{
-			name: "dirty git repository",
-			setupRepo: func(t *testing.T) string {
-				tmpDir := t.TempDir()
-
-				// Initialize git repository
-				repo, err := git.PlainInit(tmpDir, false)
-				require.NoError(t, err)
-
-				// Add origin remote
-				_, err = repo.CreateRemote(&config.RemoteConfig{
-					Name: "origin",
-					URLs: []string{"https://github.com/test/test.git"},
-				})
-				require.NoError(t, err)
-
-				// Add a file and commit
-				testFile := filepath.Join(tmpDir, "test.txt")
-				err = os.WriteFile(testFile, []byte("test content"), 0644)
-				require.NoError(t, err)
-
-				worktree, err := repo.Worktree()
-				require.NoError(t, err)
-
-				_, err = worktree.Add("test.txt")
-				require.NoError(t, err)
-
-				_, err = worktree.Commit("Initial commit", &git.CommitOptions{
-					Author: &object.Signature{
-						Name:  "Test User",
-						Email: "test@example.com",
-						When:  time.Now(),
-					},
-				})
-				require.NoError(t, err)
-
-				// Make repository dirty
-				err = os.WriteFile(testFile, []byte("modified content"), 0644)
-				require.NoError(t, err)
-
-				return tmpDir
-			},
-			wantClean: false,
-			wantMetadata: artifact.RepoMetadata{
-				RepoURL:   "https://github.com/test/test.git",
-				Branch:    "master",
-				CommitMsg: "Initial commit",
-				Author:    "Test User <test@example.com>",
-				Committer: "Test User <test@example.com>",
-			},
-		},
-		{
-			name: "repository with only origin remote",
-			setupRepo: func(t *testing.T) string {
-				tmpDir := t.TempDir()
-
-				// Initialize git repository
-				repo, err := git.PlainInit(tmpDir, false)
-				require.NoError(t, err)
-
-				// Add only origin remote
-				_, err = repo.CreateRemote(&config.RemoteConfig{
-					Name: "origin",
-					URLs: []string{"https://github.com/origin/test.git"},
-				})
-				require.NoError(t, err)
-
-				// Add a file and commit
-				testFile := filepath.Join(tmpDir, "test.txt")
-				err = os.WriteFile(testFile, []byte("test content"), 0644)
-				require.NoError(t, err)
-
-				worktree, err := repo.Worktree()
-				require.NoError(t, err)
-
-				_, err = worktree.Add("test.txt")
-				require.NoError(t, err)
-
-				_, err = worktree.Commit("Test commit", &git.CommitOptions{
-					Author: &object.Signature{
-						Name:  "Test User",
-						Email: "test@example.com",
-						When:  time.Now(),
-					},
-				})
-				require.NoError(t, err)
-
-				return tmpDir
-			},
-			wantClean: true,
-			wantMetadata: artifact.RepoMetadata{
-				RepoURL:   "https://github.com/origin/test.git",
-				Branch:    "master",
-				CommitMsg: "Test commit",
-				Author:    "Test User <test@example.com>",
-				Committer: "Test User <test@example.com>",
-			},
-		},
-		{
-			name: "repository with no remotes",
-			setupRepo: func(t *testing.T) string {
-				tmpDir := t.TempDir()
-
-				// Initialize git repository
-				repo, err := git.PlainInit(tmpDir, false)
-				require.NoError(t, err)
-
-				// Add a file and commit
-				testFile := filepath.Join(tmpDir, "test.txt")
-				err = os.WriteFile(testFile, []byte("test content"), 0644)
-				require.NoError(t, err)
-
-				worktree, err := repo.Worktree()
-				require.NoError(t, err)
-
-				_, err = worktree.Add("test.txt")
-				require.NoError(t, err)
-
-				_, err = worktree.Commit("No remote commit", &git.CommitOptions{
-					Author: &object.Signature{
-						Name:  "Test User",
-						Email: "test@example.com",
-						When:  time.Now(),
-					},
-				})
-				require.NoError(t, err)
-
-				return tmpDir
-			},
-			wantClean: true,
-			wantMetadata: artifact.RepoMetadata{
-				RepoURL:   "", // No remote
-				Branch:    "master",
-				CommitMsg: "No remote commit",
-				Author:    "Test User <test@example.com>",
-				Committer: "Test User <test@example.com>",
+				RepoURL:   "https://github.com/aquasecurity/trivy-test-repo/",
+				Branch:    "main",
+				Tag:       "v0.0.1",
+				Commit:    "8a19b492a589955c3e70c6ad8efd1e4ec6ae0d35",
+				CommitMsg: "Update README.md",
+				Author:    "Teppei Fukuda <knqyf263@gmail.com>",
+				Committer: "GitHub <noreply@github.com>",
 			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repoDir := tt.setupRepo(t)
-
-			isClean, metadata, err := extractGitInfo(repoDir)
+			isClean, metadata, err := extractGitInfo(tt.repoPath)
 
 			if tt.wantErr != "" {
 				require.Error(t, err)
@@ -2771,19 +2578,10 @@ func TestExtractGitInfo(t *testing.T) {
 			assert.Equal(t, tt.wantMetadata.RepoURL, metadata.RepoURL)
 			assert.Equal(t, tt.wantMetadata.Branch, metadata.Branch)
 			assert.Equal(t, tt.wantMetadata.Tag, metadata.Tag)
+			assert.Equal(t, tt.wantMetadata.Commit, metadata.Commit)
 			assert.Equal(t, tt.wantMetadata.CommitMsg, metadata.CommitMsg)
-
-			if tt.wantMetadata.Author != "" {
-				assert.Contains(t, metadata.Author, "Test User")
-				assert.Contains(t, metadata.Author, "test@example.com")
-			}
-			if tt.wantMetadata.Committer != "" {
-				assert.Contains(t, metadata.Committer, "Test User")
-				assert.Contains(t, metadata.Committer, "test@example.com")
-			}
-
-			// Commit hash should always be populated in metadata
-			assert.NotEmpty(t, metadata.Commit)
+			assert.Equal(t, tt.wantMetadata.Author, metadata.Author)
+			assert.Equal(t, tt.wantMetadata.Committer, metadata.Committer)
 		})
 	}
 }

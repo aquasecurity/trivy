@@ -112,18 +112,18 @@ func extractGitInfo(dir string) (bool, artifact.RepoMetadata, error) {
 
 	repo, err := git.PlainOpen(dir)
 	if err != nil {
-		return "", metadata, xerrors.Errorf("failed to open git repository: %w", err)
+		return false, metadata, xerrors.Errorf("failed to open git repository: %w", err)
 	}
 
 	// Get HEAD commit
 	head, err := repo.Head()
 	if err != nil {
-		return "", metadata, xerrors.Errorf("failed to get HEAD: %w", err)
+		return false, metadata, xerrors.Errorf("failed to get HEAD: %w", err)
 	}
 
 	commit, err := repo.CommitObject(head.Hash())
 	if err != nil {
-		return "", metadata, xerrors.Errorf("failed to get commit object: %w", err)
+		return false, metadata, xerrors.Errorf("failed to get commit object: %w", err)
 	}
 
 	// Extract basic commit metadata
@@ -161,12 +161,12 @@ func extractGitInfo(dir string) (bool, artifact.RepoMetadata, error) {
 	// Check if repository is clean for caching purposes
 	worktree, err := repo.Worktree()
 	if err != nil {
-		return "", metadata, xerrors.Errorf("failed to get worktree: %w", err)
+		return false, metadata, xerrors.Errorf("failed to get worktree: %w", err)
 	}
 
 	status, err := worktree.Status()
 	if err != nil {
-		return "", metadata, xerrors.Errorf("failed to get status: %w", err)
+		return false, metadata, xerrors.Errorf("failed to get status: %w", err)
 	}
 
 	// Return clean status and metadata
