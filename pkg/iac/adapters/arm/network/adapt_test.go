@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/adaptertest"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -42,9 +43,7 @@ func TestAdapt(t *testing.T) {
 				SecurityGroups: []network.SecurityGroup{{
 					Rules: []network.SecurityGroupRule{{
 						DestinationAddresses: []types.StringValue{types.StringTest("")},
-						DestinationPorts:     []network.PortRange{{Start: types.IntTest(0), End: types.IntTest(65535)}},
 						SourceAddresses:      []types.StringValue{types.StringTest("")},
-						SourcePorts:          []network.PortRange{{Start: types.IntTest(0), End: types.IntTest(65535)}},
 					}},
 				}},
 			},
@@ -111,7 +110,7 @@ func TestAdapt(t *testing.T) {
 							types.StringTest("10.0.2.0/24"),
 							types.StringTest("10.0.0.0/24"),
 						},
-						SourcePorts: []network.PortRange{
+						SourcePorts: []common.PortRange{
 							{
 								Start: types.IntTest(1000),
 								End:   types.IntTest(2000),
@@ -130,7 +129,7 @@ func TestAdapt(t *testing.T) {
 							types.StringTest("172.16.2.0/24"),
 							types.StringTest("172.16.0.0/16"),
 						},
-						DestinationPorts: []network.PortRange{
+						DestinationPorts: []common.PortRange{
 							{
 								Start: types.IntTest(8080),
 								End:   types.IntTest(8080),

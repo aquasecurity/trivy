@@ -1,6 +1,7 @@
 package compute
 
 import (
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -18,13 +19,7 @@ type FirewallRule struct {
 	Enforced iacTypes.BoolValue
 	IsAllow  iacTypes.BoolValue
 	Protocol iacTypes.StringValue
-	Ports    []PortRange
-}
-
-type PortRange struct {
-	Metadata iacTypes.Metadata
-	Start    iacTypes.IntValue
-	End      iacTypes.IntValue
+	Ports    []common.PortRange
 }
 
 type IngressRule struct {
