@@ -2541,7 +2541,7 @@ func TestExtractGitInfo(t *testing.T) {
 	tests := []struct {
 		name         string
 		setupRepo    func(t *testing.T) string
-		wantHash     string
+		wantClean    bool
 		wantMetadata artifact.RepoMetadata
 		wantErr      string
 	}{
@@ -2602,6 +2602,7 @@ func TestExtractGitInfo(t *testing.T) {
 
 				return tmpDir
 			},
+			wantClean: true,
 			wantMetadata: artifact.RepoMetadata{
 				RepoURL:   "https://github.com/upstream/test.git",
 				Branch:    "master",
@@ -2653,7 +2654,7 @@ func TestExtractGitInfo(t *testing.T) {
 
 				return tmpDir
 			},
-			wantErr: "repository is dirty",
+			wantClean: false,
 			wantMetadata: artifact.RepoMetadata{
 				RepoURL:   "https://github.com/test/test.git",
 				Branch:    "master",
@@ -2700,6 +2701,7 @@ func TestExtractGitInfo(t *testing.T) {
 
 				return tmpDir
 			},
+			wantClean: true,
 			wantMetadata: artifact.RepoMetadata{
 				RepoURL:   "https://github.com/origin/test.git",
 				Branch:    "master",
@@ -2739,6 +2741,7 @@ func TestExtractGitInfo(t *testing.T) {
 
 				return tmpDir
 			},
+			wantClean: true,
 			wantMetadata: artifact.RepoMetadata{
 				RepoURL:   "", // No remote
 				Branch:    "master",
@@ -2753,7 +2756,7 @@ func TestExtractGitInfo(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repoDir := tt.setupRepo(t)
 
-			hash, metadata, err := extractGitInfo(repoDir)
+			isClean, metadata, err := extractGitInfo(repoDir)
 
 			if tt.wantErr != "" {
 				require.Error(t, err)
@@ -2761,16 +2764,8 @@ func TestExtractGitInfo(t *testing.T) {
 				return
 			}
 
-			if tt.wantHash != "" {
-				require.NoError(t, err)
-				assert.Equal(t, tt.wantHash, hash)
-			} else if err != nil && strings.Contains(err.Error(), "repository is dirty") {
-				// For dirty repositories, we expect empty hash but populated metadata
-				assert.Empty(t, hash)
-			} else {
-				require.NoError(t, err)
-				assert.NotEmpty(t, hash) // Should have some commit hash
-			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantClean, isClean)
 
 			// Verify metadata fields
 			assert.Equal(t, tt.wantMetadata.RepoURL, metadata.RepoURL)

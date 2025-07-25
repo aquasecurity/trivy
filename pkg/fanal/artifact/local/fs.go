@@ -57,7 +57,7 @@ type Artifact struct {
 
 	artifactOption artifact.Option
 
-	commitHash   string                // only set when the git repository is clean
+	isClean      bool                   // whether git repository is clean (for caching)
 	repoMetadata artifact.RepoMetadata // git repository metadata
 }
 
@@ -89,10 +89,14 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 		lo.Ternary(opt.Original != "", log.String("original", opt.Original), log.Nil))
 
 	// Check if the directory is a git repository and extract metadata
-	if hash, metadata, err := extractGitInfo(art.rootPath); err == nil {
-		art.logger.Debug("Using the latest commit hash for calculating cache key", log.String("commit_hash", hash))
-		art.commitHash = hash
+	if isClean, metadata, err := extractGitInfo(art.rootPath); err == nil {
+		art.isClean = isClean
 		art.repoMetadata = metadata
+		if isClean {
+			art.logger.Debug("Using the latest commit hash for calculating cache key", log.String("commit_hash", metadata.Commit))
+		} else {
+			art.logger.Debug("Repository is dirty, random cache key will be used")
+		}
 	} else if !errors.Is(err, git.ErrRepositoryNotExists) {
 		// Only log if the file path is a git repository
 		art.logger.Debug("Random cache key will be used", log.Err(err))
@@ -101,10 +105,9 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 	return art, nil
 }
 
-// extractGitInfo extracts git repository information including commit hash and metadata
-// Returns commit hash (for caching), metadata, and error
-// Only returns commit hash if the repository is clean
-func extractGitInfo(dir string) (string, artifact.RepoMetadata, error) {
+// extractGitInfo extracts git repository information including clean status and metadata
+// Returns clean status (for caching), metadata, and error
+func extractGitInfo(dir string) (bool, artifact.RepoMetadata, error) {
 	var metadata artifact.RepoMetadata
 
 	repo, err := git.PlainOpen(dir)
@@ -166,12 +169,8 @@ func extractGitInfo(dir string) (string, artifact.RepoMetadata, error) {
 		return "", metadata, xerrors.Errorf("failed to get status: %w", err)
 	}
 
-	if !status.IsClean() {
-		return "", metadata, xerrors.New("repository is dirty")
-	}
-
-	// Return commit hash only if repository is clean
-	return head.Hash().String(), metadata, nil
+	// Return clean status and metadata
+	return status.IsClean(), metadata, nil
 }
 
 func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
@@ -182,7 +181,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	}
 
 	// Check if the cache exists only when it's a clean git repository
-	if a.commitHash != "" {
+	if a.isClean && a.repoMetadata.Commit != "" {
 		_, missingBlobs, err := a.cache.MissingBlobs(cacheKey, []string{cacheKey})
 		if err != nil {
 			return artifact.Reference{}, xerrors.Errorf("unable to get missing blob: %w", err)
@@ -346,7 +345,7 @@ func (a Artifact) analyzeWithTraversal(ctx context.Context, root, relativePath s
 
 func (a Artifact) Clean(reference artifact.Reference) error {
 	// Don't delete cache if it's a clean git repository
-	if a.commitHash != "" {
+	if a.isClean && a.repoMetadata.Commit != "" {
 		return nil
 	}
 	return a.cache.DeleteBlobs(reference.BlobIDs)
@@ -354,8 +353,8 @@ func (a Artifact) Clean(reference artifact.Reference) error {
 
 func (a Artifact) calcCacheKey() (string, error) {
 	// If this is a clean git repository, use the commit hash as cache key
-	if a.commitHash != "" {
-		return cache.CalcKey(a.commitHash, artifactVersion, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
+	if a.isClean && a.repoMetadata.Commit != "" {
+		return cache.CalcKey(a.repoMetadata.Commit, artifactVersion, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
 	}
 
 	// For non-git repositories or dirty git repositories, use UUID as cache key
