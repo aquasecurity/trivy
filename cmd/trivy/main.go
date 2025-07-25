@@ -42,8 +42,7 @@ func run() error {
 	}
 
 	// Set up signal handling for graceful shutdown
-	ctx, stop := commands.NotifyContext(context.Background())
-	defer stop()
+	ctx := commands.NotifyContext(context.Background())
 
 	app := commands.NewApp()
 	return app.ExecuteContext(ctx)
