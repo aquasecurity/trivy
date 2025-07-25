@@ -2,6 +2,7 @@ package spec_test
 
 import (
 	"path/filepath"
+	"slices"
 	"sort"
 	"testing"
 
@@ -129,9 +130,7 @@ func TestComplianceSpec_Scanners(t *testing.T) {
 			if !tt.wantErr(t, err, "Scanners()") {
 				return
 			}
-			sort.Slice(got, func(i, j int) bool {
-				return got[i] < got[j]
-			}) // for consistency
+			slices.Sort(got) // for consistency
 			assert.Equalf(t, tt.want, got, "Scanners()")
 		})
 	}

@@ -54,8 +54,8 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 			continue
 		}
 		// etc/.wh.hostname
-		if strings.HasPrefix(fileName, wh) {
-			name := strings.TrimPrefix(fileName, wh)
+		if after, ok := strings.CutPrefix(fileName, wh); ok {
+			name := after
 			fpath := path.Join(fileDir, name)
 			whFiles = append(whFiles, fpath)
 			continue

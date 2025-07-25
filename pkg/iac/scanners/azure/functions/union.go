@@ -1,5 +1,7 @@
 package functions
 
+import "maps"
+
 import "sort"
 
 func Union(args ...any) any {
@@ -26,9 +28,7 @@ func unionMap(args ...any) any {
 
 	for _, arg := range args {
 		if iType, ok := arg.(map[string]any); ok {
-			for k, v := range iType {
-				result[k] = v
-			}
+			maps.Copy(result, iType)
 		}
 	}
 

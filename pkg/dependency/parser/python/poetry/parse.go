@@ -101,9 +101,7 @@ func (p *Parser) parseDependencies(deps map[string]any, pkgVersions map[string][
 			dependsOn = append(dependsOn, dep)
 		}
 	}
-	sort.Slice(dependsOn, func(i, j int) bool {
-		return dependsOn[i] < dependsOn[j]
-	})
+	slices.Sort(dependsOn)
 	return dependsOn
 }
 
