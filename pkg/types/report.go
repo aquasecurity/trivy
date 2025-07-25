@@ -36,13 +36,13 @@ type Metadata struct {
 	Layers      ftypes.Layers `json:",omitzero"`
 
 	// Git repository
-	RepoURL    string `json:",omitempty"`
-	Branch     string `json:",omitempty"`
-	Tag        string `json:",omitempty"`
-	Commit     string `json:",omitempty"`
-	CommitMsg  string `json:",omitempty"`
-	Author     string `json:",omitempty"`
-	Committer  string `json:",omitempty"`
+	RepoURL   string `json:",omitzero"`
+	Branch    string `json:",omitzero"`
+	Tag       string `json:",omitzero"`
+	Commit    string `json:",omitzero"`
+	CommitMsg string `json:",omitzero"`
+	Author    string `json:",omitzero"`
+	Committer string `json:",omitzero"`
 }
 
 // Results to hold list of Result

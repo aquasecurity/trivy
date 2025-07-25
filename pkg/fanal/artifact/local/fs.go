@@ -57,7 +57,7 @@ type Artifact struct {
 
 	artifactOption artifact.Option
 
-	isClean      bool                   // whether git repository is clean (for caching)
+	isClean      bool                  // whether git repository is clean (for caching)
 	repoMetadata artifact.RepoMetadata // git repository metadata
 }
 
@@ -280,10 +280,8 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 		BlobIDs: []string{cacheKey},
 	}
 
-	// Use pre-extracted git metadata for repository artifacts
-	if a.artifactOption.Type == types.TypeRepository {
-		ref.RepoMetadata = a.repoMetadata
-	}
+	// Use pre-extracted git metadata when available
+	ref.RepoMetadata = a.repoMetadata
 
 	return ref, nil
 }
