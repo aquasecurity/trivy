@@ -65,13 +65,12 @@ type Parser struct {
 	releaseRemoteRepos  []string
 	snapshotRemoteRepos []string
 	offline             bool
-	servers             []Server
+	settings            settings
 }
 
 func NewParser(filePath string, opts ...option) *Parser {
 	o := &options{
-		offline:            false,
-		releaseRemoteRepos: []string{centralURL}, // Maven doesn't use central repository for snapshot dependencies
+		offline: false,
 	}
 
 	for _, opt := range opts {
@@ -93,7 +92,7 @@ func NewParser(filePath string, opts ...option) *Parser {
 		releaseRemoteRepos:  o.releaseRemoteRepos,
 		snapshotRemoteRepos: o.snapshotRemoteRepos,
 		offline:             o.offline,
-		servers:             s.Servers,
+		settings:            s,
 	}
 }
 
@@ -354,7 +353,7 @@ func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 		opts.exclusions = set.New[string]()
 	}
 	// Update remoteRepositories
-	pomReleaseRemoteRepos, pomSnapshotRemoteRepos := pom.repositories(p.servers)
+	pomReleaseRemoteRepos, pomSnapshotRemoteRepos := pom.repositories(p.settings)
 	p.releaseRemoteRepos = lo.Uniq(append(pomReleaseRemoteRepos, p.releaseRemoteRepos...))
 	p.snapshotRemoteRepos = lo.Uniq(append(pomSnapshotRemoteRepos, p.snapshotRemoteRepos...))
 
