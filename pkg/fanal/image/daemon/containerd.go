@@ -29,6 +29,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 const (
@@ -130,7 +131,7 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 
 	img := imgs[0]
 
-	f, err := os.CreateTemp("", "fanal-containerd-*")
+	f, err := xos.CreateTemp("", "fanal-containerd-*")
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to create a temporary file: %w", err)
 	}
