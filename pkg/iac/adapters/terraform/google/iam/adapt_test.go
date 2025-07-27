@@ -483,7 +483,7 @@ resource "google_folder_iam_audit_config" "folder_audit" {
 	// First audit log config - ADMIN_READ
 	adminReadConfig := projectAudit.AuditLogConfigs[0]
 	assert.Equal(t, "ADMIN_READ", adminReadConfig.LogType.Value())
-	assert.Len(t, adminReadConfig.ExemptedMembers, 0)
+	assert.Empty(t, adminReadConfig.ExemptedMembers)
 
 	// Second audit log config - DATA_WRITE with exempted members
 	dataWriteConfig := projectAudit.AuditLogConfigs[1]
@@ -515,5 +515,5 @@ resource "google_folder_iam_audit_config" "folder_audit" {
 
 	folderLogConfig := folderAudit.AuditLogConfigs[0]
 	assert.Equal(t, "ADMIN_READ", folderLogConfig.LogType.Value())
-	assert.Len(t, folderLogConfig.ExemptedMembers, 0)
+	assert.Empty(t, folderLogConfig.ExemptedMembers)
 }
