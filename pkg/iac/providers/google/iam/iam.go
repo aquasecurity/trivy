@@ -12,15 +12,17 @@ type IAM struct {
 }
 
 type Organization struct {
-	Metadata iacTypes.Metadata
-	Members  []Member
-	Bindings []Binding
+	Metadata     iacTypes.Metadata
+	Members      []Member
+	Bindings     []Binding
+	AuditConfigs []AuditConfig
 }
 
 type Folder struct {
-	Metadata iacTypes.Metadata
-	Members  []Member
-	Bindings []Binding
+	Metadata     iacTypes.Metadata
+	Members      []Member
+	Bindings     []Binding
+	AuditConfigs []AuditConfig
 }
 
 type Project struct {
@@ -28,6 +30,7 @@ type Project struct {
 	AutoCreateNetwork iacTypes.BoolValue
 	Members           []Member
 	Bindings          []Binding
+	AuditConfigs      []AuditConfig
 }
 
 type Binding struct {
@@ -42,6 +45,18 @@ type Member struct {
 	Member                iacTypes.StringValue
 	Role                  iacTypes.StringValue
 	DefaultServiceAccount iacTypes.BoolValue
+}
+
+type AuditConfig struct {
+	Metadata        iacTypes.Metadata
+	Service         iacTypes.StringValue
+	AuditLogConfigs []AuditLogConfig
+}
+
+type AuditLogConfig struct {
+	Metadata        iacTypes.Metadata
+	LogType         iacTypes.StringValue
+	ExemptedMembers []iacTypes.StringValue
 }
 
 type WorkloadIdentityPoolProvider struct {
