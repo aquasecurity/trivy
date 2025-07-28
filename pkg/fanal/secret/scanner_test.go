@@ -1406,6 +1406,42 @@ func TestSecretScanner(t *testing.T) {
 				Findings: []types.SecretFinding{wantFindingTokenInsideJs},
 			},
 		},
+		{
+			name:          "invalid UTF-8 sequences in secrets",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "invalid-utf8.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "invalid-utf8.txt"),
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "github-pat",
+						Category:  secret.CategoryGitHub,
+						Title:     "GitHub Personal Access Token",
+						Severity:  "CRITICAL",
+						StartLine: 1,
+						EndLine:   1,
+						Match:     "token=****************************************",
+						Code: types.Code{
+							Lines: []types.Line{
+								{
+									Number:      1,
+									Content:     "token=****************************************",
+									Highlighted: "token=****************************************",
+									IsCause:     true,
+									FirstCause:  true,
+									LastCause:   true,
+								},
+								{
+									Number:      2,
+									Content:     "# Comment with invalid UTF-8: �",
+									Highlighted: "# Comment with invalid UTF-8: �",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
