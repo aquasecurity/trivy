@@ -106,14 +106,6 @@ func (Tool) matchGolangciLintVersion(bin, version string) bool {
 	return true
 }
 
-// Modernize installs modernize tool if not available
-func (Tool) Modernize() error {
-	if installed("modernize") {
-		return nil
-	}
-	return sh.Run("go", "install", "golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize@latest")
-}
-
 func (Tool) Install() error {
 	log.Info("Installing tools, make sure you add $GOBIN to the $PATH")
 	return sh.Run("go", "install", "tool")
@@ -343,26 +335,20 @@ type Lint mg.Namespace
 
 // Run runs linters
 func (l Lint) Run() error {
-	mg.Deps(Tool{}.GolangciLint, Tool{}.Modernize)
+	mg.Deps(Tool{}.GolangciLint, Tool{}.Install)
 	if err := sh.RunV("golangci-lint", "run", "--build-tags=integration"); err != nil {
 		return err
 	}
-	return l.Modernize()
+	return sh.RunV("modernize", "./...")
 }
 
 // Fix auto fixes linters
 func (l Lint) Fix() error {
-	mg.Deps(Tool{}.GolangciLint, Tool{}.Modernize)
+	mg.Deps(Tool{}.GolangciLint, Tool{}.Install)
 	if err := sh.RunV("golangci-lint", "run", "--fix", "--build-tags=integration"); err != nil {
 		return err
 	}
 	return sh.RunV("modernize", "-fix", "./...")
-}
-
-// Modernize runs the modernize linter to check for outdated Go constructs
-func (Lint) Modernize() error {
-	mg.Deps(Tool{}.Modernize)
-	return sh.RunV("modernize", "./...")
 }
 
 // Fmt formats Go code
