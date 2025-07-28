@@ -3,13 +3,19 @@ package os
 import (
 	"fmt"
 	"os"
-	"os/signal"
 	"path/filepath"
 	"sync"
-	"syscall"
+	"sync/atomic"
+
+	"golang.org/x/xerrors"
 )
 
-var tempDirOnce = sync.OnceValues(initTempDir)
+var (
+	tempDirOnce = sync.OnceValues(initTempDir)
+	// initialized tracks whether the temp directory has been created.
+	// This is used by Cleanup() to avoid creating a directory just to delete it.
+	initialized atomic.Bool
+)
 
 // initTempDir initializes the process-specific temp directory
 func initTempDir() (string, error) {
@@ -17,20 +23,10 @@ func initTempDir() (string, error) {
 	tempDir := filepath.Join(os.TempDir(), fmt.Sprintf("trivy-%d", pid))
 
 	if err := os.MkdirAll(tempDir, 0o755); err != nil {
-		return "", err
+		return "", xerrors.Errorf("failed to create temp dir: %w", err)
 	}
 
-	// Setup signal handler for cleanup
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-
-	go func() {
-		<-c
-		_ = os.RemoveAll(tempDir)
-		// Let the signal continue - don't call os.Exit(0) here
-		// This allows other handlers to run and proper cleanup to occur
-	}()
-
+	initialized.Store(true)
 	return tempDir, nil
 }
 
@@ -72,7 +68,13 @@ func TempDir() string {
 }
 
 // Cleanup removes the entire process-specific temp directory
+// Note: On Windows, directory deletion may fail if files are still open
 func Cleanup() error {
+	// If temp dir was never initialized, nothing to clean up
+	if !initialized.Load() {
+		return nil
+	}
+	
 	tempDir, err := tempDirOnce()
 	if err != nil || tempDir == "" {
 		return nil
