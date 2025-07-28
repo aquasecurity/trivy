@@ -74,7 +74,7 @@ func Cleanup() error {
 	if !initialized.Load() {
 		return nil
 	}
-	
+
 	tempDir, err := tempDirOnce()
 	if err != nil || tempDir == "" {
 		return nil
