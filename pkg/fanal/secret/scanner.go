@@ -21,7 +21,7 @@ import (
 )
 
 var (
-	lineSep = []byte{'\n'}
+	lineSep      = []byte{'\n'}
 	warnUTF8Once = sync.OnceFunc(func() {
 		log.WithPrefix(log.PrefixSecret).Warn("Invalid UTF-8 sequences detected in file content, replacing with empty string")
 	})
@@ -567,8 +567,8 @@ func sanitizeUTF8String(data []byte) string {
 	if utf8.Valid(data) {
 		return string(data)
 	}
-	
+
 	warnUTF8Once()
-	
+
 	return strings.ToValidUTF8(string(data), "")
 }
