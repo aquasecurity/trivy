@@ -84,6 +84,16 @@ describe('trivy-triage', async function() {
       assert(!labels.includes('FilesystemLabel'));
       assert(!labels.includes('MisconfigurationLabel'));
     });
+    it('ignores unmatched label values from body', async function() {
+      const discussion = {
+        body: '### Target\r\n\r\nNone\r\n\r\n### Scanner\r\n\r\nMisconfiguration', 
+        category: {
+          name: 'Ideas'
+        }
+      };
+      const labels = detectDiscussionLabels(discussion, configDiscussionLabels);
+      assert.deepStrictEqual(labels, ['MisconfigurationLabel']);
+    });
     it('process only relevant categories', async function() {
       const discussion = {
         body: 'hello world', 
