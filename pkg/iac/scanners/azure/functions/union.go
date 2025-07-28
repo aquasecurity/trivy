@@ -1,8 +1,9 @@
 package functions
 
-import "maps"
-
-import "sort"
+import (
+	"maps"
+	"sort"
+)
 
 func Union(args ...any) any {
 	if len(args) == 0 {
