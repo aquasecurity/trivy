@@ -2,7 +2,6 @@ package poetry
 
 import (
 	"slices"
-	"sort"
 
 	"github.com/BurntSushi/toml"
 	"golang.org/x/xerrors"

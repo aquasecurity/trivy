@@ -3,7 +3,6 @@ package spec_test
 import (
 	"path/filepath"
 	"slices"
-	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
