@@ -16,7 +16,7 @@ import (
 // When a signal is received, Trivy will attempt to gracefully shut down by canceling
 // the context and waiting for all operations to complete. If users want to force an
 // immediate exit, they can send a second SIGINT or SIGTERM signal.
-func NotifyContext(parent context.Context) (context.Context, context.CancelFunc) {
+func NotifyContext(parent context.Context) context.Context {
 	ctx, stop := signal.NotifyContext(parent, os.Interrupt, syscall.SIGTERM)
 
 	// Start a goroutine to handle cleanup when context is done
@@ -27,8 +27,8 @@ func NotifyContext(parent context.Context) (context.Context, context.CancelFunc)
 		log.Info("Received signal, attempting graceful shutdown...")
 		log.Info("Press Ctrl+C again to force exit")
 
-		// Clean up temporary files
-		if err := xos.Cleanup(); err != nil {
+		// Perform cleanup
+		if err := Cleanup(); err != nil {
 			log.Debug("Failed to clean up temporary files", log.Err(err))
 		}
 
@@ -37,5 +37,10 @@ func NotifyContext(parent context.Context) (context.Context, context.CancelFunc)
 		stop()
 	}()
 
-	return ctx, stop
+	return ctx
+}
+
+// Cleanup performs cleanup tasks before Trivy exits
+func Cleanup() error {
+	return xos.Cleanup()
 }
