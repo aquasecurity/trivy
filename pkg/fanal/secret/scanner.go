@@ -20,23 +20,16 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-var lineSep = []byte{'\n'}
+var (
+	lineSep = []byte{'\n'}
+	warnUTF8Once = sync.OnceFunc(func() {
+		log.WithPrefix(log.PrefixSecret).Warn("Invalid UTF-8 sequences detected in file content, replacing with empty string")
+	})
+)
 
 type Scanner struct {
 	logger *log.Logger
 	*Global
-	warnUTF8Once func()
-}
-
-// sanitizeUTF8String converts bytes to a valid UTF-8 string, logging a warning once if invalid sequences are found
-func (s *Scanner) sanitizeUTF8String(data []byte, context string) string {
-	if utf8.Valid(data) {
-		return string(data)
-	}
-	
-	s.warnUTF8Once()
-	
-	return strings.ToValidUTF8(string(data), "")
 }
 
 type Config struct {
@@ -293,7 +286,7 @@ func ParseConfig(configPath string) (*Config, error) {
 		return nil, nil
 	}
 
-	logger := log.WithPrefix("secret").With("config_path", configPath)
+	logger := log.WithPrefix(log.PrefixSecret).With("config_path", configPath)
 	f, err := os.Open(configPath)
 	if errors.Is(err, os.ErrNotExist) {
 		// If the specified file doesn't exist, it just uses built-in rules and allow rules.
@@ -331,10 +324,7 @@ func convertSeverity(logger *log.Logger, severity string) string {
 }
 
 func NewScanner(config *Config) Scanner {
-	logger := log.WithPrefix("secret")
-	warnUTF8Once := sync.OnceFunc(func() {
-		logger.Warn("Invalid UTF-8 sequences detected in file content, replacing with empty string")
-	})
+	logger := log.WithPrefix(log.PrefixSecret)
 
 	// Use the default rules
 	if config == nil {
@@ -344,7 +334,6 @@ func NewScanner(config *Config) Scanner {
 				Rules:      builtinRules,
 				AllowRules: builtinAllowRules,
 			},
-			warnUTF8Once: warnUTF8Once,
 		}
 	}
 
@@ -377,7 +366,6 @@ func NewScanner(config *Config) Scanner {
 			AllowRules:   allowRules,
 			ExcludeBlock: config.ExcludeBlock,
 		},
-		warnUTF8Once: warnUTF8Once,
 	}
 }
 
@@ -454,7 +442,7 @@ func (s *Scanner) Scan(args ScanArgs) types.Secret {
 		}
 	}
 	for _, match := range matched {
-		finding := s.toFinding(match.Rule, match.Location, censored)
+		finding := toFinding(match.Rule, match.Location, censored)
 		// Rewrite unreadable fields for binary files
 		if args.Binary {
 			finding.Match = fmt.Sprintf("Binary file %q matches a rule %q", args.FilePath, match.Rule.Title)
@@ -489,8 +477,8 @@ func censorLocation(loc Location, input []byte) []byte {
 	return input
 }
 
-func (s *Scanner) toFinding(rule Rule, loc Location, content []byte) types.SecretFinding {
-	startLine, endLine, code, matchLine := s.findLocation(loc.Start, loc.End, content)
+func toFinding(rule Rule, loc Location, content []byte) types.SecretFinding {
+	startLine, endLine, code, matchLine := findLocation(loc.Start, loc.End, content)
 
 	return types.SecretFinding{
 		RuleID:    rule.ID,
@@ -509,7 +497,7 @@ const (
 	maxLineLength         = 100 // all lines longer will be cut off
 )
 
-func (s *Scanner) findLocation(start, end int, content []byte) (int, int, types.Code, string) {
+func findLocation(start, end int, content []byte) (int, int, types.Code, string) {
 	startLineNum := bytes.Count(content[:start], lineSep)
 
 	lineStart := bytes.LastIndex(content[:start], lineSep)
@@ -530,7 +518,7 @@ func (s *Scanner) findLocation(start, end int, content []byte) (int, int, types.
 		lineStart = lo.Ternary(start-lineStart-30 < 0, lineStart, start-30)
 		lineEnd = lo.Ternary(end+20 > lineEnd, lineEnd, end+20)
 	}
-	matchLine := s.sanitizeUTF8String(content[lineStart:lineEnd], "secret match line")
+	matchLine := sanitizeUTF8String(content[lineStart:lineEnd])
 	endLineNum := startLineNum + bytes.Count(content[start:end], lineSep)
 
 	var code types.Code
@@ -547,9 +535,9 @@ func (s *Scanner) findLocation(start, end int, content []byte) (int, int, types.
 
 		var strRawLine string
 		if len(rawLine) > maxLineLength {
-			strRawLine = lo.Ternary(inCause, matchLine, s.sanitizeUTF8String(rawLine[:maxLineLength], "long code line"))
+			strRawLine = lo.Ternary(inCause, matchLine, sanitizeUTF8String(rawLine[:maxLineLength]))
 		} else {
-			strRawLine = s.sanitizeUTF8String(rawLine, "code line")
+			strRawLine = sanitizeUTF8String(rawLine)
 		}
 
 		code.Lines = append(code.Lines, types.Line{
@@ -572,4 +560,15 @@ func (s *Scanner) findLocation(start, end int, content []byte) (int, int, types.
 	}
 
 	return startLineNum + 1, endLineNum + 1, code, matchLine
+}
+
+// sanitizeUTF8String converts bytes to a valid UTF-8 string, logging a warning once if invalid sequences are found
+func sanitizeUTF8String(data []byte) string {
+	if utf8.Valid(data) {
+		return string(data)
+	}
+	
+	warnUTF8Once()
+	
+	return strings.ToValidUTF8(string(data), "")
 }
