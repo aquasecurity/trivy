@@ -11,12 +11,12 @@ import (
 
 // Report represents a scan result
 type Report struct {
-	SchemaVersion int `json:",omitempty"`
-	CreatedAt     time.Time `json:",omitzero"`
+	SchemaVersion int                 `json:",omitempty"`
+	CreatedAt     time.Time           `json:",omitzero"`
 	ArtifactName  string              `json:",omitempty"`
 	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
-	Metadata      Metadata `json:",omitzero"`
-	Results       Results `json:",omitempty"`
+	Metadata      Metadata            `json:",omitzero"`
+	Results       Results             `json:",omitempty"`
 
 	// parsed SBOM
 	BOM *core.BOM `json:"-"` // Just for internal usage, not exported in JSON
@@ -28,10 +28,10 @@ type Metadata struct {
 	OS   *ftypes.OS `json:",omitempty"`
 
 	// Container image
-	ImageID     string   `json:",omitempty"`
-	DiffIDs     []string `json:",omitempty"`
-	RepoTags    []string `json:",omitempty"`
-	RepoDigests []string `json:",omitempty"`
+	ImageID     string        `json:",omitempty"`
+	DiffIDs     []string      `json:",omitempty"`
+	RepoTags    []string      `json:",omitempty"`
+	RepoDigests []string      `json:",omitempty"`
 	ImageConfig v1.ConfigFile `json:",omitzero"`
 	Layers      ftypes.Layers `json:",omitzero"`
 }

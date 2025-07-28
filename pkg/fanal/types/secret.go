@@ -16,5 +16,5 @@ type SecretFinding struct {
 	EndLine   int
 	Code      Code
 	Match     string
-	Layer     Layer
+	Layer     Layer `json:",omitzero"`
 }
