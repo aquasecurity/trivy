@@ -7,6 +7,8 @@ import (
 	"sync"
 
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var tempDirOnce = sync.OnceValues(initTempDir)
@@ -19,6 +21,8 @@ func initTempDir() (string, error) {
 	if err := os.MkdirAll(tempDir, 0o755); err != nil {
 		return "", xerrors.Errorf("failed to create temp dir: %w", err)
 	}
+
+	log.Debug("Created process-specific temp directory", log.String("path", tempDir))
 	return tempDir, nil
 }
 
@@ -54,6 +58,7 @@ func MkdirTemp(dir, pattern string) (string, error) {
 func TempDir() string {
 	tempDir, err := tempDirOnce()
 	if err != nil {
+		log.Debug("Failed to get process-specific temp directory, falling back to system temp", log.Err(err))
 		return os.TempDir() // fallback
 	}
 	return tempDir
@@ -65,5 +70,6 @@ func Cleanup() error {
 	if err != nil || tempDir == "" {
 		return nil
 	}
+	log.Debug("Cleaning up temp directory", log.String("path", tempDir))
 	return os.RemoveAll(tempDir)
 }
