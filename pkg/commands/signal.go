@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	"github.com/aquasecurity/trivy/pkg/log"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 // NotifyContext returns a context that is canceled when SIGINT or SIGTERM is received.
@@ -26,7 +27,8 @@ func NotifyContext(parent context.Context) context.Context {
 		log.Info("Received signal, attempting graceful shutdown...")
 		log.Info("Press Ctrl+C again to force exit")
 
-		// TODO: Add any necessary cleanup logic here
+		// Perform cleanup
+		_ = Cleanup()
 
 		// Clean up signal handling
 		// After calling stop(), a second signal will cause immediate termination
@@ -34,4 +36,9 @@ func NotifyContext(parent context.Context) context.Context {
 	}()
 
 	return ctx
+}
+
+// Cleanup performs cleanup tasks before Trivy exits
+func Cleanup() error {
+	return xos.Cleanup()
 }
