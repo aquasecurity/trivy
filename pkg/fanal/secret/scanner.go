@@ -22,21 +22,21 @@ import (
 
 var lineSep = []byte{'\n'}
 
-// sanitizeUTF8String converts bytes to a valid UTF-8 string, logging a warning if invalid sequences are found
-func sanitizeUTF8String(logger *log.Logger, data []byte, context string) string {
+type Scanner struct {
+	logger *log.Logger
+	*Global
+	warnUTF8Once func()
+}
+
+// sanitizeUTF8String converts bytes to a valid UTF-8 string, logging a warning once if invalid sequences are found
+func (s *Scanner) sanitizeUTF8String(data []byte, context string) string {
 	if utf8.Valid(data) {
 		return string(data)
 	}
 	
-	logger.Warn("Invalid UTF-8 sequences detected, replacing with empty string",
-		log.String("context", context))
+	s.warnUTF8Once()
 	
 	return strings.ToValidUTF8(string(data), "")
-}
-
-type Scanner struct {
-	logger *log.Logger
-	*Global
 }
 
 type Config struct {
@@ -332,6 +332,9 @@ func convertSeverity(logger *log.Logger, severity string) string {
 
 func NewScanner(config *Config) Scanner {
 	logger := log.WithPrefix("secret")
+	warnUTF8Once := sync.OnceFunc(func() {
+		logger.Warn("Invalid UTF-8 sequences detected in file content, replacing with empty string")
+	})
 
 	// Use the default rules
 	if config == nil {
@@ -341,6 +344,7 @@ func NewScanner(config *Config) Scanner {
 				Rules:      builtinRules,
 				AllowRules: builtinAllowRules,
 			},
+			warnUTF8Once: warnUTF8Once,
 		}
 	}
 
@@ -373,6 +377,7 @@ func NewScanner(config *Config) Scanner {
 			AllowRules:   allowRules,
 			ExcludeBlock: config.ExcludeBlock,
 		},
+		warnUTF8Once: warnUTF8Once,
 	}
 }
 
@@ -449,7 +454,7 @@ func (s *Scanner) Scan(args ScanArgs) types.Secret {
 		}
 	}
 	for _, match := range matched {
-		finding := toFinding(match.Rule, match.Location, censored, logger)
+		finding := s.toFinding(match.Rule, match.Location, censored)
 		// Rewrite unreadable fields for binary files
 		if args.Binary {
 			finding.Match = fmt.Sprintf("Binary file %q matches a rule %q", args.FilePath, match.Rule.Title)
@@ -484,8 +489,8 @@ func censorLocation(loc Location, input []byte) []byte {
 	return input
 }
 
-func toFinding(rule Rule, loc Location, content []byte, logger *log.Logger) types.SecretFinding {
-	startLine, endLine, code, matchLine := findLocation(loc.Start, loc.End, content, logger)
+func (s *Scanner) toFinding(rule Rule, loc Location, content []byte) types.SecretFinding {
+	startLine, endLine, code, matchLine := s.findLocation(loc.Start, loc.End, content)
 
 	return types.SecretFinding{
 		RuleID:    rule.ID,
@@ -504,7 +509,7 @@ const (
 	maxLineLength         = 100 // all lines longer will be cut off
 )
 
-func findLocation(start, end int, content []byte, logger *log.Logger) (int, int, types.Code, string) {
+func (s *Scanner) findLocation(start, end int, content []byte) (int, int, types.Code, string) {
 	startLineNum := bytes.Count(content[:start], lineSep)
 
 	lineStart := bytes.LastIndex(content[:start], lineSep)
@@ -525,7 +530,7 @@ func findLocation(start, end int, content []byte, logger *log.Logger) (int, int,
 		lineStart = lo.Ternary(start-lineStart-30 < 0, lineStart, start-30)
 		lineEnd = lo.Ternary(end+20 > lineEnd, lineEnd, end+20)
 	}
-	matchLine := sanitizeUTF8String(logger, content[lineStart:lineEnd], "secret match line")
+	matchLine := s.sanitizeUTF8String(content[lineStart:lineEnd], "secret match line")
 	endLineNum := startLineNum + bytes.Count(content[start:end], lineSep)
 
 	var code types.Code
@@ -542,9 +547,9 @@ func findLocation(start, end int, content []byte, logger *log.Logger) (int, int,
 
 		var strRawLine string
 		if len(rawLine) > maxLineLength {
-			strRawLine = lo.Ternary(inCause, matchLine, sanitizeUTF8String(logger, rawLine[:maxLineLength], "long code line"))
+			strRawLine = lo.Ternary(inCause, matchLine, s.sanitizeUTF8String(rawLine[:maxLineLength], "long code line"))
 		} else {
-			strRawLine = sanitizeUTF8String(logger, rawLine, "code line")
+			strRawLine = s.sanitizeUTF8String(rawLine, "code line")
 		}
 
 		code.Lines = append(code.Lines, types.Line{
