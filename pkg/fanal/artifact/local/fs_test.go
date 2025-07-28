@@ -2546,8 +2546,8 @@ func TestExtractGitInfo(t *testing.T) {
 			wantErr:  "failed to open git repository",
 		},
 		{
-			name:     "test repository",
-			repoPath: "../../../../internal/gittest/testdata/test-repo",
+			name:      "test repository",
+			repoPath:  "../../../../internal/gittest/testdata/test-repo",
 			wantClean: true,
 			wantMetadata: artifact.RepoMetadata{
 				RepoURL:   "https://github.com/aquasecurity/trivy-test-repo/",
