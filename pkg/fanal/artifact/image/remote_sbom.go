@@ -21,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/oci"
 	"github.com/aquasecurity/trivy/pkg/remote"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 var errNoSBOMFound = xerrors.New("remote SBOM not found")
@@ -88,9 +89,9 @@ func (a Artifact) parseReferrer(ctx context.Context, repo string, desc v1.Descri
 	const fileName string = "referrer.sbom"
 	repoName := fmt.Sprintf("%s@%s", repo, desc.Digest)
 
-	tmpDir, err := os.MkdirTemp("", "trivy-sbom-*")
+	tmpDir, err := xos.MkdirTemp("", "sbom-referrer-")
 	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("mkdir temp error: %w", err)
+		return artifact.Reference{}, xerrors.Errorf("failed to create temp directory: %w", err)
 	}
 	defer os.RemoveAll(tmpDir)
 
@@ -133,7 +134,7 @@ func (a Artifact) inspectRekorSBOMAttestation(ctx context.Context) (artifact.Ref
 		return artifact.Reference{}, xerrors.Errorf("failed to retrieve SBOM attestation: %w", err)
 	}
 
-	f, err := os.CreateTemp("", "sbom-*")
+	f, err := xos.CreateTemp("", "sbom-attestation-")
 	if err != nil {
 		return artifact.Reference{}, xerrors.Errorf("failed to create a temporary file: %w", err)
 	}

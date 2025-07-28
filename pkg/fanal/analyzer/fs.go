@@ -10,6 +10,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/mapfs"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 	"github.com/aquasecurity/trivy/pkg/x/sync"
 )
 
@@ -20,7 +21,7 @@ type CompositeFS struct {
 }
 
 func NewCompositeFS() (*CompositeFS, error) {
-	tmpDir, err := os.MkdirTemp("", "analyzer-fs-*")
+	tmpDir, err := xos.MkdirTemp("", "analyzer-composite-")
 	if err != nil {
 		return nil, xerrors.Errorf("unable to create temporary directory: %w", err)
 	}
@@ -35,7 +36,7 @@ func NewCompositeFS() (*CompositeFS, error) {
 func (c *CompositeFS) CopyFileToTemp(opener Opener, _ os.FileInfo) (string, error) {
 	// Create a temporary file to which the file in the layer will be copied
 	// so that all the files will not be loaded into memory
-	f, err := os.CreateTemp(c.dir, "file-*")
+	f, err := xos.CreateTemp("", "analyzer-file-")
 	if err != nil {
 		return "", xerrors.Errorf("create temp error: %w", err)
 	}

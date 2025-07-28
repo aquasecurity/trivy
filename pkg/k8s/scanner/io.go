@@ -12,6 +12,7 @@ import (
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 var r = regexp.MustCompile("[\\\\/:*?<>]")
@@ -22,7 +23,7 @@ func generateTempFileByArtifact(artifact *artifacts.Artifact, tempDir string) (s
 		// removes characters not permitted in file/directory names on Windows
 		filename = filenameWindowsFriendly(filename)
 	}
-	file, err := os.CreateTemp(tempDir, filename)
+	file, err := xos.CreateTemp(tempDir, filename)
 	if err != nil {
 		return "", xerrors.Errorf("failed to create temporary file: %w", err)
 	}
@@ -45,7 +46,7 @@ func generateTempFileByArtifact(artifact *artifacts.Artifact, tempDir string) (s
 // generateTempDir creates a directory with yaml files generated from kubernetes artifacts
 // returns a directory name, a map for mapping a temp target file to k8s artifact and error
 func generateTempDir(arts []*artifacts.Artifact) (string, map[string]*artifacts.Artifact, error) {
-	tempDir, err := os.MkdirTemp("", "trivyk8s*")
+	tempDir, err := xos.MkdirTemp("", "k8s-scan-")
 	if err != nil {
 		return "", nil, xerrors.Errorf("failed to create temp directory: %w", err)
 	}
