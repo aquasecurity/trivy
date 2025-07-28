@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"unicode/utf8"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -20,6 +21,18 @@ import (
 )
 
 var lineSep = []byte{'\n'}
+
+// sanitizeUTF8String converts bytes to a valid UTF-8 string, logging a warning if invalid sequences are found
+func sanitizeUTF8String(logger *log.Logger, data []byte, context string) string {
+	if utf8.Valid(data) {
+		return string(data)
+	}
+	
+	logger.Warn("Invalid UTF-8 sequences detected, replacing with empty string",
+		log.String("context", context))
+	
+	return strings.ToValidUTF8(string(data), "")
+}
 
 type Scanner struct {
 	logger *log.Logger
@@ -436,7 +449,7 @@ func (s *Scanner) Scan(args ScanArgs) types.Secret {
 		}
 	}
 	for _, match := range matched {
-		finding := toFinding(match.Rule, match.Location, censored)
+		finding := toFinding(match.Rule, match.Location, censored, logger)
 		// Rewrite unreadable fields for binary files
 		if args.Binary {
 			finding.Match = fmt.Sprintf("Binary file %q matches a rule %q", args.FilePath, match.Rule.Title)
@@ -471,8 +484,8 @@ func censorLocation(loc Location, input []byte) []byte {
 	return input
 }
 
-func toFinding(rule Rule, loc Location, content []byte) types.SecretFinding {
-	startLine, endLine, code, matchLine := findLocation(loc.Start, loc.End, content)
+func toFinding(rule Rule, loc Location, content []byte, logger *log.Logger) types.SecretFinding {
+	startLine, endLine, code, matchLine := findLocation(loc.Start, loc.End, content, logger)
 
 	return types.SecretFinding{
 		RuleID:    rule.ID,
@@ -491,7 +504,7 @@ const (
 	maxLineLength         = 100 // all lines longer will be cut off
 )
 
-func findLocation(start, end int, content []byte) (int, int, types.Code, string) {
+func findLocation(start, end int, content []byte, logger *log.Logger) (int, int, types.Code, string) {
 	startLineNum := bytes.Count(content[:start], lineSep)
 
 	lineStart := bytes.LastIndex(content[:start], lineSep)
@@ -512,7 +525,7 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 		lineStart = lo.Ternary(start-lineStart-30 < 0, lineStart, start-30)
 		lineEnd = lo.Ternary(end+20 > lineEnd, lineEnd, end+20)
 	}
-	matchLine := string(content[lineStart:lineEnd])
+	matchLine := sanitizeUTF8String(logger, content[lineStart:lineEnd], "secret match line")
 	endLineNum := startLineNum + bytes.Count(content[start:end], lineSep)
 
 	var code types.Code
@@ -529,9 +542,9 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 
 		var strRawLine string
 		if len(rawLine) > maxLineLength {
-			strRawLine = lo.Ternary(inCause, matchLine, string(rawLine[:maxLineLength]))
+			strRawLine = lo.Ternary(inCause, matchLine, sanitizeUTF8String(logger, rawLine[:maxLineLength], "long code line"))
 		} else {
-			strRawLine = string(rawLine)
+			strRawLine = sanitizeUTF8String(logger, rawLine, "code line")
 		}
 
 		code.Lines = append(code.Lines, types.Line{
