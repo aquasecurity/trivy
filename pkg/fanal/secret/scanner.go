@@ -570,5 +570,5 @@ func sanitizeUTF8String(data []byte) string {
 
 	warnUTF8Once()
 
-	return strings.ToValidUTF8(string(data), "")
+	return strings.ToValidUTF8(string(data), string(utf8.RuneError))
 }

@@ -1433,8 +1433,8 @@ func TestSecretScanner(t *testing.T) {
 								},
 								{
 									Number:      2,
-									Content:     "# Comment with invalid UTF-8: ",
-									Highlighted: "# Comment with invalid UTF-8: ",
+									Content:     "# Comment with invalid UTF-8: �",
+									Highlighted: "# Comment with invalid UTF-8: �",
 								},
 							},
 						},
