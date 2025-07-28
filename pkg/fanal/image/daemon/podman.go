@@ -132,7 +132,7 @@ func PodmanImage(ref, host string) (Image, func(), error) {
 		return nil, cleanup, xerrors.Errorf("unable to inspect the image (%s): %w", ref, err)
 	}
 
-	f, err := xos.CreateTemp("", "fanal-*")
+	f, err := xos.CreateTemp("", "podman-export-")
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to create a temporary file: %w", err)
 	}

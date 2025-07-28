@@ -65,7 +65,7 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 		return nil, xerrors.Errorf("config analyzer group error: %w", err)
 	}
 
-	cacheDir, err := xos.MkdirTemp("", "layers")
+	cacheDir, err := xos.MkdirTemp("", "image-layers-")
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create a cache layers temp dir: %w", err)
 	}

@@ -37,7 +37,7 @@ type Auth struct {
 
 // DownloadToTempDir downloads the configured source to a temp dir.
 func DownloadToTempDir(ctx context.Context, src string, opts Options) (string, error) {
-	tempDir, err := xos.MkdirTemp("", "trivy-download")
+	tempDir, err := xos.MkdirTemp("", "download-")
 	if err != nil {
 		return "", xerrors.Errorf("failed to create a temp dir: %w", err)
 	}

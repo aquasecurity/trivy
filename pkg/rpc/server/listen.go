@@ -190,7 +190,7 @@ func (w dbWorker) update(ctx context.Context, appVersion, dbDir string,
 }
 
 func (w dbWorker) hotUpdate(ctx context.Context, dbDir string, dbUpdateWg, requestWg *sync.WaitGroup, opt types.RegistryOptions) error {
-	tmpDir, err := xos.MkdirTemp("", "db")
+	tmpDir, err := xos.MkdirTemp("", "db-worker-")
 	if err != nil {
 		return xerrors.Errorf("failed to create a temp dir: %w", err)
 	}

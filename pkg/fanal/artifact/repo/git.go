@@ -94,7 +94,7 @@ func tryRemoteRepo(target string, c cache.ArtifactCache, w Walker, artifactOpt a
 }
 
 func cloneRepo(u *url.URL, artifactOpt artifact.Option) (string, error) {
-	tmpDir, err := xos.MkdirTemp("", "trivy-remote-repo")
+	tmpDir, err := xos.MkdirTemp("", "git-clone-")
 	if err != nil {
 		return "", xerrors.Errorf("failed to create a temp dir: %w", err)
 	}

@@ -38,7 +38,7 @@ func (o *cachedFile) Open() (xio.ReadSeekCloserAt, error) {
 	o.once.Do(func() {
 		// When the file is large, it will be written down to a temp file.
 		if o.size >= defaultSizeThreshold {
-			f, err := xos.CreateTemp("", "fanal-*")
+			f, err := xos.CreateTemp("", "cached-file-")
 			if err != nil {
 				o.err = xerrors.Errorf("failed to create the temp file: %w", err)
 				return

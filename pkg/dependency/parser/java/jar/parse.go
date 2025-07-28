@@ -199,7 +199,7 @@ func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]ftypes.Package,
 		return nil, nil, xerrors.Errorf("unable to open %s: %w", zf.Name, err)
 	}
 
-	f, err := xos.CreateTemp("", "inner")
+	f, err := xos.CreateTemp("", "jar-inner-")
 	if err != nil {
 		return nil, nil, xerrors.Errorf("unable to create a temp file: %w", err)
 	}

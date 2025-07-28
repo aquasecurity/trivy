@@ -58,7 +58,7 @@ func DockerImage(ref name.Reference, host string) (Image, func(), error) {
 		return nil, cleanup, xerrors.Errorf("unable to get history (%s): %w", imageID, err)
 	}
 
-	f, err := xos.CreateTemp("", "fanal-*")
+	f, err := xos.CreateTemp("", "docker-export-")
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to create a temporary file: %w", err)
 	}

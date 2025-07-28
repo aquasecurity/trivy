@@ -131,7 +131,7 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 
 	img := imgs[0]
 
-	f, err := xos.CreateTemp("", "fanal-containerd-*")
+	f, err := xos.CreateTemp("", "containerd-export-")
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to create a temporary file: %w", err)
 	}
