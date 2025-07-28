@@ -22,6 +22,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	"github.com/aquasecurity/trivy/pkg/version"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
@@ -189,7 +190,7 @@ func (w dbWorker) update(ctx context.Context, appVersion, dbDir string,
 }
 
 func (w dbWorker) hotUpdate(ctx context.Context, dbDir string, dbUpdateWg, requestWg *sync.WaitGroup, opt types.RegistryOptions) error {
-	tmpDir, err := os.MkdirTemp("", "db")
+	tmpDir, err := xos.MkdirTemp("", "db-worker-")
 	if err != nil {
 		return xerrors.Errorf("failed to create a temp dir: %w", err)
 	}

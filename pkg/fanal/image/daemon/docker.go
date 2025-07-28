@@ -7,6 +7,8 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/google/go-containerregistry/pkg/name"
 	"golang.org/x/xerrors"
+
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 // DockerImage implements v1.Image by extending daemon.Image.
@@ -56,7 +58,7 @@ func DockerImage(ref name.Reference, host string) (Image, func(), error) {
 		return nil, cleanup, xerrors.Errorf("unable to get history (%s): %w", imageID, err)
 	}
 
-	f, err := os.CreateTemp("", "fanal-*")
+	f, err := xos.CreateTemp("", "docker-export-")
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to create a temporary file: %w", err)
 	}
