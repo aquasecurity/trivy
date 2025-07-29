@@ -37,8 +37,9 @@ const (
 )
 
 type Scanner struct {
-	logger     *log.Logger
-	bufferSize int
+	logger      *log.Logger
+	bufferSize  int
+	overlapSize int
 	*Global
 }
 
@@ -333,19 +334,51 @@ func convertSeverity(logger *log.Logger, severity string) string {
 	}
 }
 
-func NewScanner(config *Config) Scanner {
-	logger := log.WithPrefix("secret")
+// Option represents a functional option for configuring Scanner
+type Option func(*Scanner)
+
+// WithBufferSize configures the buffer size for streaming secret scanning
+func WithBufferSize(size int) Option {
+	return func(s *Scanner) {
+		s.bufferSize = size
+	}
+}
+
+// WithOverlapSize configures the overlap size between chunks
+func WithOverlapSize(size int) Option {
+	return func(s *Scanner) {
+		s.overlapSize = size
+	}
+}
+
+func NewScanner(config *Config, opts ...Option) Scanner {
+	scanner := Scanner{
+		logger:      log.WithPrefix(log.PrefixSecret),
+		bufferSize:  DefaultBufferSize,
+		overlapSize: DefaultOverlap,
+	}
 
 	// Use the default rules
 	if config == nil {
-		return Scanner{
-			logger:     logger,
-			bufferSize: DefaultBufferSize,
-			Global: &Global{
-				Rules:      builtinRules,
-				AllowRules: builtinAllowRules,
-			},
+		scanner.Global = &Global{
+			Rules:      builtinRules,
+			AllowRules: builtinAllowRules,
 		}
+		
+		// Apply functional options
+		for _, opt := range opts {
+			opt(&scanner)
+		}
+		
+		// Validate configuration
+		if scanner.overlapSize >= scanner.bufferSize {
+			scanner.logger.Warn("Overlap size exceeds buffer size, adjusting to 1/4 of buffer size",
+				log.Int("overlap_size", scanner.overlapSize),
+				log.Int("buffer_size", scanner.bufferSize))
+			scanner.overlapSize = scanner.bufferSize / 4
+		}
+		
+		return scanner
 	}
 
 	enabledRules := builtinRules
@@ -370,34 +403,28 @@ func NewScanner(config *Config) Scanner {
 		return !slices.Contains(config.DisableAllowRuleIDs, v.ID)
 	})
 
-	return Scanner{
-		logger:     logger,
-		bufferSize: DefaultBufferSize,
-		Global: &Global{
-			Rules:        rules,
-			AllowRules:   allowRules,
-			ExcludeBlock: config.ExcludeBlock,
-		},
+	scanner.Global = &Global{
+		Rules:        rules,
+		AllowRules:   allowRules,
+		ExcludeBlock: config.ExcludeBlock,
 	}
+	
+	// Apply functional options
+	for _, opt := range opts {
+		opt(&scanner)
+	}
+	
+	// Validate configuration
+	if scanner.overlapSize >= scanner.bufferSize {
+		scanner.logger.Warn("Overlap size exceeds buffer size, adjusting to 1/4 of buffer size",
+			log.Int("overlap_size", scanner.overlapSize),
+			log.Int("buffer_size", scanner.bufferSize))
+		scanner.overlapSize = scanner.bufferSize / 4
+	}
+	
+	return scanner
 }
 
-// WithBufferSize configures the buffer size for streaming secret scanning
-// Larger buffer sizes:
-//   - Use more memory but reduce I/O operations
-//   - Better performance for very large files
-//   - May process more content per chunk
-//
-// Smaller buffer sizes:
-//   - Use less memory (important for resource-constrained environments)
-//   - More I/O operations but better memory efficiency
-//   - Useful for testing chunk boundary behavior
-//
-// Minimum recommended size: 4KB (to accommodate overlap + meaningful content)
-// Maximum practical size: 1MB (beyond this, benefits diminish)
-func (s *Scanner) WithBufferSize(size int) *Scanner {
-	s.bufferSize = size
-	return s
-}
 
 type ScanArgs struct {
 	FilePath string
@@ -494,16 +521,10 @@ type chunkState struct {
 
 // initializeStreamingContext sets up the initial state for streaming
 func (s *Scanner) initializeStreamingContext() *chunkState {
-	// Calculate overlap size - ensure it's not too large compared to buffer
-	overlap := DefaultOverlap
-	if overlap > s.bufferSize/4 {
-		overlap = s.bufferSize / 4
-	}
-
 	return &chunkState{
 		buffer:        make([]byte, s.bufferSize),
-		overlapBuffer: make([]byte, 0, overlap),
-		overlap:       overlap,
+		overlapBuffer: make([]byte, 0, s.overlapSize),
+		overlap:       s.overlapSize,
 		lineOffset:    0,
 	}
 }

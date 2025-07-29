@@ -1469,7 +1469,7 @@ func TestScannerStreamingWithSmallBuffer(t *testing.T) {
 			c, err := secret.ParseConfig(filepath.Join("testdata", "config.yaml"))
 			require.NoError(t, err)
 			
-			s := secret.NewScanner(c).WithBufferSize(tt.bufferSize)
+			s := secret.NewScanner(c, secret.WithBufferSize(tt.bufferSize))
 			
 			result := s.Scan(secret.ScanArgs{
 				FilePath: "test-streaming.txt",
@@ -1607,7 +1607,7 @@ func TestLineNumberAccuracyAcrossChunks(t *testing.T) {
 			c, err := secret.ParseConfig(filepath.Join("testdata", tt.configPath))
 			require.NoError(t, err)
 			
-			s := secret.NewScanner(c).WithBufferSize(tt.bufferSize)
+			s := secret.NewScanner(c, secret.WithBufferSize(tt.bufferSize))
 			
 			result := s.Scan(secret.ScanArgs{
 				FilePath: "test-line-numbers.txt",
@@ -1703,7 +1703,7 @@ func TestChunkBoundarySecretDetection(t *testing.T) {
 			c, err := secret.ParseConfig(filepath.Join("testdata", tt.configPath))
 			require.NoError(t, err)
 			
-			s := secret.NewScanner(c).WithBufferSize(tt.bufferSize)
+			s := secret.NewScanner(c, secret.WithBufferSize(tt.bufferSize))
 			
 			result := s.Scan(secret.ScanArgs{
 				FilePath: "test-boundary.txt",
