@@ -91,7 +91,8 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 	// Check if the directory is a git repository and extract metadata
 	if art.isClean, art.repoMetadata, err = extractGitInfo(art.rootPath); err == nil {
 		if art.isClean {
-			art.logger.Debug("Using the latest commit hash for calculating cache key", log.String("commit_hash", metadata.Commit))
+			art.logger.Debug("Using the latest commit hash for calculating cache key",
+				log.String("commit_hash", art.repoMetadata.Commit))
 		} else {
 			art.logger.Debug("Repository is dirty, random cache key will be used")
 		}
@@ -136,10 +137,9 @@ func extractGitInfo(dir string) (bool, artifact.RepoMetadata, error) {
 	}
 
 	// Get all tag names that point to HEAD
-	tags, err := repo.Tags()
-	if err == nil {
+	if tags, err := repo.Tags(); err == nil {
 		var headTags []string
-		tags.ForEach(func(tag *plumbing.Reference) error {
+		_ = tags.ForEach(func(tag *plumbing.Reference) error {
 			if tag.Hash() == head.Hash() {
 				headTags = append(headTags, tag.Name().Short())
 			}
