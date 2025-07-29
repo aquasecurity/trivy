@@ -99,7 +99,7 @@ func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 			fields: fields{
 				Server: "localhost:8080",
 			},
-			wantErr: "server address must include HTTP or HTTPS schema",
+			wantErr: "server address must use HTTP or HTTPS schema, got 'localhost'",
 		},
 		{
 			name: "server address with invalid schema",
@@ -118,11 +118,13 @@ func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 		{
 			name: "server address with https schema",
 			fields: fields{
-				Server: "https://localhost:4954",
+				Server:      "https://localhost:4954",
+				TokenHeader: "Trivy-Token",
 			},
 			want: flag.RemoteOptions{
 				CustomHeaders: http.Header{},
 				ServerAddr:    "https://localhost:4954",
+				TokenHeader:   "Trivy-Token",
 			},
 		},
 	}
