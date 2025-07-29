@@ -180,8 +180,7 @@ func TestReportWriter_Template(t *testing.T) {
   "PkgIdentifier": {
     "PURL": "pkg:npm/foobar@1.2.3"
   },
-  "Status": "affected",
-  "Layer": {}
+  "Status": "affected"
 }`,
 		},
 		{

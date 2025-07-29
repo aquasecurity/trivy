@@ -1,9 +1,7 @@
 package compute
 
 import (
-	"strconv"
-	"strings"
-
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/compute"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -106,51 +104,21 @@ func adaptNetworks(modules terraform.Modules) (networks []compute.Network) {
 	return networks
 }
 
-func expandRange(ports string, meta iacTypes.Metadata) (compute.PortRange, bool) {
-	ports = strings.ReplaceAll(ports, " ", "")
-	if !strings.Contains(ports, "-") {
-		i, err := strconv.Atoi(ports)
-		if err != nil {
-			return compute.PortRange{}, false
-		}
-		return compute.PortRange{
-			Metadata: meta,
-			Start:    iacTypes.Int(i, meta),
-			End:      iacTypes.Int(i, meta),
-		}, true
-	}
-	parts := strings.Split(ports, "-")
-	if len(parts) != 2 {
-		return compute.PortRange{}, false
-	}
-	start, err := strconv.Atoi(parts[0])
-	if err != nil {
-		return compute.PortRange{}, false
-	}
-	end, err := strconv.Atoi(parts[1])
-	if err != nil {
-		return compute.PortRange{}, false
-	}
-
-	return compute.PortRange{
-		Metadata: meta,
-		Start:    iacTypes.Int(start, meta),
-		End:      iacTypes.Int(end, meta),
-	}, true
-}
-
 func adaptFirewallRule(firewall *compute.Firewall, firewallBlock, ruleBlock *terraform.Block, allow bool) {
 	protocolAttr := ruleBlock.GetAttribute("protocol")
 	portsAttr := ruleBlock.GetAttribute("ports")
 
-	var rngs []compute.PortRange
+	var rngs []common.PortRange
 	rawPorts := portsAttr.AsStringValues()
-	for _, portStr := range rawPorts {
-		rng, ok := expandRange(portStr.Value(), portsAttr.GetMetadata())
-		if !ok {
-			continue
+	if len(rawPorts) == 0 {
+		rngs = []common.PortRange{common.FullPortRange(ruleBlock.GetMetadata())}
+	} else {
+		for _, portStr := range rawPorts {
+			rng := common.ParsePortRange(portStr.Value(), portsAttr.GetMetadata())
+			if rng.Valid() {
+				rngs = append(rngs, rng)
+			}
 		}
-		rngs = append(rngs, rng)
 	}
 
 	// ingress by default

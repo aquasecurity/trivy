@@ -11,6 +11,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"unicode/utf8"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -20,7 +21,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-var lineSep = []byte{'\n'}
+var (
+	lineSep      = []byte{'\n'}
+	warnUTF8Once = sync.OnceFunc(func() {
+		log.WithPrefix(log.PrefixSecret).Warn("Invalid UTF-8 sequences detected in file content, replacing with empty string")
+	})
+)
 
 const (
 	// DefaultBufferSize is the default chunk size for streaming secret scanning
@@ -297,7 +303,7 @@ func ParseConfig(configPath string) (*Config, error) {
 		return nil, nil
 	}
 
-	logger := log.WithPrefix("secret").With("config_path", configPath)
+	logger := log.WithPrefix(log.PrefixSecret).With("config_path", configPath)
 	f, err := os.Open(configPath)
 	if errors.Is(err, os.ErrNotExist) {
 		// If the specified file doesn't exist, it just uses built-in rules and allow rules.
@@ -782,7 +788,7 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 		lineStart = lo.Ternary(start-lineStart-30 < 0, lineStart, start-30)
 		lineEnd = lo.Ternary(end+20 > lineEnd, lineEnd, end+20)
 	}
-	matchLine := string(content[lineStart:lineEnd])
+	matchLine := sanitizeUTF8String(content[lineStart:lineEnd])
 	endLineNum := startLineNum + bytes.Count(content[start:end], lineSep)
 
 	var code types.Code
@@ -799,9 +805,9 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 
 		var strRawLine string
 		if len(rawLine) > maxLineLength {
-			strRawLine = lo.Ternary(inCause, matchLine, string(rawLine[:maxLineLength]))
+			strRawLine = lo.Ternary(inCause, matchLine, sanitizeUTF8String(rawLine[:maxLineLength]))
 		} else {
-			strRawLine = string(rawLine)
+			strRawLine = sanitizeUTF8String(rawLine)
 		}
 
 		code.Lines = append(code.Lines, types.Line{
@@ -824,4 +830,15 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 	}
 
 	return startLineNum + 1, endLineNum + 1, code, matchLine
+}
+
+// sanitizeUTF8String converts bytes to a valid UTF-8 string, logging a warning once if invalid sequences are found
+func sanitizeUTF8String(data []byte) string {
+	if utf8.Valid(data) {
+		return string(data)
+	}
+
+	warnUTF8Once()
+
+	return strings.ToValidUTF8(string(data), string(utf8.RuneError))
 }

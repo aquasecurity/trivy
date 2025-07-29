@@ -9,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 // cachedFile represents a file cached in memory or storage according to the file size.
@@ -37,7 +38,7 @@ func (o *cachedFile) Open() (xio.ReadSeekCloserAt, error) {
 	o.once.Do(func() {
 		// When the file is large, it will be written down to a temp file.
 		if o.size >= defaultSizeThreshold {
-			f, err := os.CreateTemp("", "fanal-*")
+			f, err := xos.CreateTemp("", "cached-file-")
 			if err != nil {
 				o.err = xerrors.Errorf("failed to create the temp file: %w", err)
 				return

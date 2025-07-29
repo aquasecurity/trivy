@@ -303,10 +303,10 @@ func (m *Marshaler) Licenses(licenses []string) *cdx.Licenses {
 
 func (m *Marshaler) normalizeLicense(license string) cdx.LicenseChoice {
 	// Save text license as licenseChoice.license.name
-	if strings.HasPrefix(license, licensing.LicenseTextPrefix) {
+	if after, ok := strings.CutPrefix(license, licensing.LicenseTextPrefix); ok {
 		return cdx.LicenseChoice{
 			License: &cdx.License{
-				Name: strings.TrimPrefix(license, licensing.LicenseTextPrefix),
+				Name: after,
 			},
 		}
 	}

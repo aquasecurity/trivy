@@ -43,6 +43,23 @@
     }
   },
   "definitions": {
+    "github.com.aquasecurity.trivy.pkg.iac.adapters.common.PortRange": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "end": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
+        },
+        "start": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
+        }
+      }
+    },
     "github.com.aquasecurity.trivy.pkg.iac.providers.aws.AWS": {
       "type": "object",
       "properties": {
@@ -5244,23 +5261,6 @@
         }
       }
     },
-    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.network.PortRange": {
-      "type": "object",
-      "properties": {
-        "__defsec_metadata": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
-        },
-        "end": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
-        },
-        "start": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
-        }
-      }
-    },
     "github.com.aquasecurity.trivy.pkg.iac.providers.azure.network.RetentionPolicy": {
       "type": "object",
       "properties": {
@@ -5316,7 +5316,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.network.PortRange"
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.adapters.common.PortRange"
           }
         },
         "outbound": {
@@ -5338,7 +5338,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.network.PortRange"
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.adapters.common.PortRange"
           }
         }
       }
@@ -6135,7 +6135,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.compute.PortRange"
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.adapters.common.PortRange"
           }
         },
         "protocol": {
@@ -6264,23 +6264,6 @@
         "subnetwork": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.compute.SubNetwork"
-        }
-      }
-    },
-    "github.com.aquasecurity.trivy.pkg.iac.providers.google.compute.PortRange": {
-      "type": "object",
-      "properties": {
-        "__defsec_metadata": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
-        },
-        "end": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
-        },
-        "start": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
         }
       }
     },
@@ -7182,11 +7165,7 @@
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
         },
-        "enabled": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
-        },
-        "targetbucket": {
+        "logbucket": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         },
