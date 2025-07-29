@@ -298,7 +298,7 @@ func (tt *traceTransport) redactBody(body []byte, contentType string) []byte {
 	// First, use Trivy's secret scanner for detection
 	scanResult := tt.secretScanner.Scan(secret.ScanArgs{
 		FilePath: "http-body.txt",
-		Content:  body,
+		Content:  bytes.NewReader(body),
 		Binary:   false,
 	})
 
