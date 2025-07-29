@@ -80,7 +80,6 @@ func fixtureTerraformPlanSnapshots(ctx context.Context) error {
 	g.SetLimit(terraformParallelLimit)
 
 	for _, workingDir := range workingDirs {
-		workingDir := workingDir
 		g.Go(func() error {
 			if err := os.Remove(tfplanFile); err != nil && !errors.Is(err, os.ErrNotExist) {
 				return err

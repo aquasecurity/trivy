@@ -34,7 +34,7 @@ func BenchmarkUnmarshal_JFather(b *testing.B) {
     }
 }`)
 
-	for n := 0; n < b.N; n++ {
+	for b.Loop() {
 		metadata := types.NewTestMetadata()
 		require.NoError(b, Unmarshal(input, &target, &metadata))
 	}
@@ -65,7 +65,7 @@ func BenchmarkUnmarshal_Traditional(b *testing.B) {
     }
 }`)
 
-	for n := 0; n < b.N; n++ {
+	for b.Loop() {
 		require.NoError(b, json.Unmarshal(input, &target))
 	}
 }

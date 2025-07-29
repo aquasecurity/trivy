@@ -17,8 +17,8 @@ type DetectedMisconfiguration struct {
 	PrimaryURL    string               `json:",omitempty"`
 	References    []string             `json:",omitempty"`
 	Status        MisconfStatus        `json:",omitempty"`
-	Layer         ftypes.Layer         `json:",omitempty"`
-	CauseMetadata ftypes.CauseMetadata `json:",omitempty"`
+	Layer         ftypes.Layer         `json:",omitzero"`
+	CauseMetadata ftypes.CauseMetadata `json:",omitzero"`
 
 	// For debugging
 	Traces []string `json:",omitempty"`

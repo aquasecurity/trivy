@@ -122,7 +122,6 @@ func (s *Scanner) getScanResults(ctx context.Context, path string, target fs.FS)
 	}
 
 	for _, file := range chartFiles {
-		file := file
 		s.logger.Debug("Processing rendered chart file", log.FilePath(file.TemplateFilePath))
 
 		ignoreRules := ignore.Parse(file.ManifestContent, file.TemplateFilePath, "")

@@ -1979,7 +1979,6 @@ func TestModuleParents(t *testing.T) {
 	modSet := set.New[*terraform.Module]()
 	var root *terraform.Module
 	for _, mod := range modules {
-		mod := mod
 		modChildren[mod] = make([]*terraform.Module, 0)
 		modSet.Append(mod)
 

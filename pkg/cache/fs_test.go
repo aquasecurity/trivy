@@ -227,9 +227,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 				      "Packages": [
 				        {
 				          "Name": "musl",
-				          "Version": "1.1.22-r3",
-                          "Identifier": {},
-						  "Layer": {}
+				          "Version": "1.1.22-r3"
 				        }
 				      ]
 				    }
@@ -241,15 +239,11 @@ func TestFSCache_PutBlob(t *testing.T) {
 				      "Packages": [
                         {
                            "Name":"guzzlehttp/guzzle",
-                           "Version":"6.2.0",
-                           "Identifier": {},
-						   "Layer": {}
+                           "Version":"6.2.0"
                         },
                         {
                            "Name":"guzzlehttp/promises",
-                           "Version":"v1.3.1",
-                           "Identifier": {},
-						   "Layer": {}
+                           "Version":"v1.3.1"
                         }
 				      ]
 				    }
@@ -347,9 +341,7 @@ func TestFSCache_PutArtifact(t *testing.T) {
 				  "HistoryPackages": [
 				    {
 				      "Name": "musl",
-				      "Version": "1.2.3",
-                      "Identifier": {},
-					  "Layer": {}
+				      "Version": "1.2.3"
 				    }
 				  ]
 				}

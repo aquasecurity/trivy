@@ -48,8 +48,6 @@ func MergeMaps(parent, child map[string]string) map[string]string {
 	}
 	// Clone parent map to avoid shadow overwrite
 	newParent := maps.Clone(parent)
-	for k, v := range child {
-		newParent[k] = v
-	}
+	maps.Copy(newParent, child)
 	return newParent
 }

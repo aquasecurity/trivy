@@ -339,15 +339,21 @@ func (t Test) E2e() error {
 type Lint mg.Namespace
 
 // Run runs linters
-func (Lint) Run() error {
-	mg.Deps(Tool{}.GolangciLint)
-	return sh.RunV("golangci-lint", "run", "--build-tags=integration")
+func (l Lint) Run() error {
+	mg.Deps(Tool{}.GolangciLint, Tool{}.Install)
+	if err := sh.RunV("golangci-lint", "run", "--build-tags=integration"); err != nil {
+		return err
+	}
+	return sh.RunV("modernize", "./...")
 }
 
 // Fix auto fixes linters
-func (Lint) Fix() error {
-	mg.Deps(Tool{}.GolangciLint)
-	return sh.RunV("golangci-lint", "run", "--fix", "--build-tags=integration")
+func (l Lint) Fix() error {
+	mg.Deps(Tool{}.GolangciLint, Tool{}.Install)
+	if err := sh.RunV("golangci-lint", "run", "--fix", "--build-tags=integration"); err != nil {
+		return err
+	}
+	return sh.RunV("modernize", "-fix", "./...")
 }
 
 // Fmt formats Go code

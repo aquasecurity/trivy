@@ -431,8 +431,8 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 func toDetectedLicense(scanner licensing.Scanner, license, pkgName, filePath string) types.DetectedLicense {
 	var category ftypes.LicenseCategory
 	var severity, licenseText string
-	if strings.HasPrefix(license, licensing.LicenseTextPrefix) { // License text
-		licenseText = strings.TrimPrefix(license, licensing.LicenseTextPrefix)
+	if after, ok := strings.CutPrefix(license, licensing.LicenseTextPrefix); ok { // License text
+		licenseText = after
 		category, severity = scanner.ScanTextLicense(licenseText)
 		license = licensing.CustomLicensePrefix + ": " + licensing.TrimLicenseText(licenseText) // Use `CUSTOM LICENSE: *...` format for text licenses
 	} else { // License name
