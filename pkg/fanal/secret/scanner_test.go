@@ -124,38 +124,7 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
-	wantFinding3 := types.SecretFinding{
-		RuleID:    "rule1",
-		Category:  "general",
-		Title:     "Generic Rule",
-		Severity:  "HIGH",
-		StartLine: 5,
-		EndLine:   5,
-		Match:     "credentials: { user: \"********\" password: \"*********\" }",
-		Code: types.Code{
-			Lines: []types.Line{
-				{
-					Number:      3,
-					Content:     "--- ignore block stop ---",
-					Highlighted: "--- ignore block stop ---",
-				},
-				{
-					Number:      4,
-					Content:     "secret=\"othervalue\"",
-					Highlighted: "secret=\"othervalue\"",
-				},
-				{
-					Number:      5,
-					Content:     "credentials: { user: \"********\" password: \"*********\" }",
-					Highlighted: "credentials: { user: \"********\" password: \"*********\" }",
-					IsCause:     true,
-					FirstCause:  true,
-					LastCause:   true,
-				},
-			},
-		},
-	}
-	wantFinding4 := types.SecretFinding{
+	wantFindingMultipleGroups := types.SecretFinding{
 		RuleID:    "rule1",
 		Category:  "general",
 		Title:     "Generic Rule",
@@ -1300,8 +1269,7 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{
-					wantFinding3,
-					wantFinding4,
+					wantFindingMultipleGroups,
 				},
 			},
 		},
