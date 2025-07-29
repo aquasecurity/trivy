@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"slices"
@@ -111,21 +110,6 @@ func (a *SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 		log.WithPrefix("secret").Warn("The size of the scanned file is too large. It is recommended to use `--skip-files` for this file to avoid high memory consumption.", log.FilePath(input.FilePath), log.Int64("size (MB)", size/1048576))
 	}
 
-	var content []byte
-
-	if !binary {
-		content, err = io.ReadAll(input.Content)
-		if err != nil {
-			return nil, xerrors.Errorf("read error %s: %w", input.FilePath, err)
-		}
-		content = bytes.ReplaceAll(content, []byte("\r"), []byte(""))
-	} else {
-		content, err = utils.ExtractPrintableBytes(input.Content)
-		if err != nil {
-			return nil, xerrors.Errorf("binary read error %s: %w", input.FilePath, err)
-		}
-	}
-
 	filePath := input.FilePath
 	// Files extracted from the image have an empty input.Dir.
 	// Also, paths to these files do not have "/" prefix.
@@ -134,9 +118,18 @@ func (a *SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 		filePath = fmt.Sprintf("/%s", filePath)
 	}
 
+	reader := input.Content
+	if binary {
+		content, err := utils.ExtractPrintableBytes(input.Content)
+		if err != nil {
+			return nil, xerrors.Errorf("binary read error %s: %w", input.FilePath, err)
+		}
+		reader = bytes.NewReader(content)
+	}
+
 	result := a.scanner.Scan(secret.ScanArgs{
 		FilePath: filePath,
-		Content:  bytes.NewReader(content),
+		Content:  reader,
 		Binary:   binary,
 	})
 

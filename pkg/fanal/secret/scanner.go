@@ -788,7 +788,7 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 		lineStart = lo.Ternary(start-lineStart-30 < 0, lineStart, start-30)
 		lineEnd = lo.Ternary(end+20 > lineEnd, lineEnd, end+20)
 	}
-	matchLine := sanitizeUTF8String(content[lineStart:lineEnd])
+	matchLine := sanitizeString(content[lineStart:lineEnd])
 	endLineNum := startLineNum + bytes.Count(content[start:end], lineSep)
 
 	var code types.Code
@@ -805,9 +805,9 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 
 		var strRawLine string
 		if len(rawLine) > maxLineLength {
-			strRawLine = lo.Ternary(inCause, matchLine, sanitizeUTF8String(rawLine[:maxLineLength]))
+			strRawLine = lo.Ternary(inCause, matchLine, sanitizeString(rawLine[:maxLineLength]))
 		} else {
-			strRawLine = sanitizeUTF8String(rawLine)
+			strRawLine = sanitizeString(rawLine)
 		}
 
 		code.Lines = append(code.Lines, types.Line{
@@ -832,8 +832,13 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 	return startLineNum + 1, endLineNum + 1, code, matchLine
 }
 
-// sanitizeUTF8String converts bytes to a valid UTF-8 string, logging a warning once if invalid sequences are found
-func sanitizeUTF8String(data []byte) string {
+// sanitizeString converts bytes to a valid string for display
+// It removes carriage return characters for consistent output across different line ending styles
+// and ensures valid UTF-8 encoding, logging a warning once if invalid sequences are found
+func sanitizeString(data []byte) string {
+	// Remove carriage returns for consistent display
+	data = bytes.ReplaceAll(data, []byte("\r"), []byte(""))
+
 	if utf8.Valid(data) {
 		return string(data)
 	}
