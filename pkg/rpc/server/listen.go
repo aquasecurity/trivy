@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"os"
 	"strings"
@@ -21,6 +22,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	"github.com/aquasecurity/trivy/pkg/version"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
@@ -62,20 +64,46 @@ func (s Server) ListenAndServe(ctx context.Context, serverCache cache.Cache, ski
 	requestWg := &sync.WaitGroup{}
 	dbUpdateWg := &sync.WaitGroup{}
 
+	server := &http.Server{
+		Addr:              s.addr,
+		Handler:           s.NewServeMux(ctx, serverCache, dbUpdateWg, requestWg),
+		ReadHeaderTimeout: 10 * time.Second,
+	}
+
+	// Start DB update worker
 	go func() {
 		worker := newDBWorker(db.NewClient(s.dbDir, true, db.WithDBRepository(s.dbRepositories)))
+		ticker := time.NewTicker(updateInterval)
+		defer ticker.Stop()
+
 		for {
-			time.Sleep(updateInterval)
-			if err := worker.update(ctx, s.appVersion, s.dbDir, skipDBUpdate, dbUpdateWg, requestWg, s.RegistryOptions); err != nil {
-				log.Errorf("%+v\n", err)
+			select {
+			case <-ctx.Done():
+				log.Debug("Server shutting down gracefully...")
+
+				// Give active requests time to complete
+				shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+				if err := server.Shutdown(shutdownCtx); err != nil {
+					log.Errorf("Server shutdown error: %v", err)
+				}
+				cancel()
+				return
+			case <-ticker.C:
+				if err := worker.update(ctx, s.appVersion, s.dbDir, skipDBUpdate, dbUpdateWg, requestWg, s.RegistryOptions); err != nil {
+					log.Errorf("%+v\n", err)
+				}
 			}
 		}
 	}()
 
-	mux := s.NewServeMux(ctx, serverCache, dbUpdateWg, requestWg)
 	log.Infof("Listening %s...", s.addr)
 
-	return http.ListenAndServe(s.addr, mux)
+	// This will block until Shutdown is called
+	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		return xerrors.Errorf("server error: %w", err)
+	}
+
+	return nil
 }
 
 func (s Server) NewServeMux(ctx context.Context, serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup) *http.ServeMux {
@@ -162,7 +190,7 @@ func (w dbWorker) update(ctx context.Context, appVersion, dbDir string,
 }
 
 func (w dbWorker) hotUpdate(ctx context.Context, dbDir string, dbUpdateWg, requestWg *sync.WaitGroup, opt types.RegistryOptions) error {
-	tmpDir, err := os.MkdirTemp("", "db")
+	tmpDir, err := xos.MkdirTemp("", "db-worker-")
 	if err != nil {
 		return xerrors.Errorf("failed to create a temp dir: %w", err)
 	}

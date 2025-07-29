@@ -419,8 +419,8 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 		// We need to save text licenses before normalization,
 		// because it is impossible to handle all cases possible in the text.
 		// as an example, parse a license with 2 consecutive tokens (see https://github.com/aquasecurity/trivy/issues/8465)
-		if strings.HasPrefix(license, licensing.LicenseTextPrefix) {
-			license = strings.TrimPrefix(license, licensing.LicenseTextPrefix)
+		if after, ok := strings.CutPrefix(license, licensing.LicenseTextPrefix); ok {
+			license = after
 			otherLicense := m.newOtherLicense(license, true)
 			otherLicenses[otherLicense.LicenseIdentifier] = otherLicense
 			return otherLicense.LicenseIdentifier

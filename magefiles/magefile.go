@@ -331,18 +331,29 @@ func (t Test) UpdateVMGolden() error {
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=vm_integration", "./integration/...", "-update")
 }
 
+// E2e runs E2E tests using testscript framework
+func (t Test) E2e() error {
+	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=e2e", "./e2e/...")
+}
+
 type Lint mg.Namespace
 
 // Run runs linters
-func (Lint) Run() error {
-	mg.Deps(Tool{}.GolangciLint)
-	return sh.RunV("golangci-lint", "run", "--build-tags=integration")
+func (l Lint) Run() error {
+	mg.Deps(Tool{}.GolangciLint, Tool{}.Install)
+	if err := sh.RunV("golangci-lint", "run", "--build-tags=integration"); err != nil {
+		return err
+	}
+	return sh.RunV("modernize", "./...")
 }
 
 // Fix auto fixes linters
-func (Lint) Fix() error {
-	mg.Deps(Tool{}.GolangciLint)
-	return sh.RunV("golangci-lint", "run", "--fix", "--build-tags=integration")
+func (l Lint) Fix() error {
+	mg.Deps(Tool{}.GolangciLint, Tool{}.Install)
+	if err := sh.RunV("golangci-lint", "run", "--fix", "--build-tags=integration"); err != nil {
+		return err
+	}
+	return sh.RunV("modernize", "-fix", "./...")
 }
 
 // Fmt formats Go code

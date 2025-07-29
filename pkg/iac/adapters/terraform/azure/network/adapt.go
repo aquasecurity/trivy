@@ -1,15 +1,17 @@
 package network
 
 import (
-	"strconv"
-	"strings"
-
 	"github.com/google/uuid"
 
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
+
+func parsePortRange(input string, meta iacTypes.Metadata) common.PortRange {
+	return common.ParsePortRange(input, meta, common.WithWildcard())
+}
 
 func Adapt(modules terraform.Modules) network.Network {
 	return network.Network{
@@ -128,13 +130,19 @@ func (a *adapter) adaptSource(ruleBlock *terraform.Block, rule *network.Security
 	if sourcePortRangesAttr := ruleBlock.GetAttribute("source_port_ranges"); sourcePortRangesAttr.IsNotNil() {
 		ports := sourcePortRangesAttr.AsStringValues()
 		for _, value := range ports {
-			rule.SourcePorts = append(rule.SourcePorts, expandRange(value.Value(), value.GetMetadata()))
+			rng := parsePortRange(value.Value(), value.GetMetadata())
+			if rng.Valid() {
+				rule.SourcePorts = append(rule.SourcePorts, rng)
+			}
 		}
 	} else if sourcePortRangeAttr := ruleBlock.GetAttribute("source_port_range"); sourcePortRangeAttr.IsString() {
-		rule.SourcePorts = append(rule.SourcePorts, expandRange(sourcePortRangeAttr.Value().AsString(), sourcePortRangeAttr.GetMetadata()))
+		rng := parsePortRange(sourcePortRangeAttr.Value().AsString(), sourcePortRangeAttr.GetMetadata())
+		if rng.Valid() {
+			rule.SourcePorts = append(rule.SourcePorts, rng)
+		}
 	} else if sourcePortRangeAttr := ruleBlock.GetAttribute("source_port_range"); sourcePortRangeAttr.IsNumber() {
 		f := sourcePortRangeAttr.AsNumber()
-		rule.SourcePorts = append(rule.SourcePorts, network.PortRange{
+		rule.SourcePorts = append(rule.SourcePorts, common.PortRange{
 			Metadata: sourcePortRangeAttr.GetMetadata(),
 			Start:    iacTypes.Int(int(f), sourcePortRangeAttr.GetMetadata()),
 			End:      iacTypes.Int(int(f), sourcePortRangeAttr.GetMetadata()),
@@ -152,45 +160,23 @@ func (a *adapter) adaptDestination(ruleBlock *terraform.Block, rule *network.Sec
 	if destPortRangesAttr := ruleBlock.GetAttribute("destination_port_ranges"); destPortRangesAttr.IsNotNil() {
 		ports := destPortRangesAttr.AsStringValues()
 		for _, value := range ports {
-			rule.DestinationPorts = append(rule.DestinationPorts, expandRange(value.Value(), destPortRangesAttr.GetMetadata()))
+			rng := parsePortRange(value.Value(), destPortRangesAttr.GetMetadata())
+			if rng.Valid() {
+				rule.DestinationPorts = append(rule.DestinationPorts, rng)
+			}
 		}
 	} else if destPortRangeAttr := ruleBlock.GetAttribute("destination_port_range"); destPortRangeAttr.IsString() {
-		rule.DestinationPorts = append(rule.DestinationPorts, expandRange(destPortRangeAttr.Value().AsString(), destPortRangeAttr.GetMetadata()))
+		rng := parsePortRange(destPortRangeAttr.Value().AsString(), destPortRangeAttr.GetMetadata())
+		if rng.Valid() {
+			rule.DestinationPorts = append(rule.DestinationPorts, rng)
+		}
 	} else if destPortRangeAttr := ruleBlock.GetAttribute("destination_port_range"); destPortRangeAttr.IsNumber() {
 		f := destPortRangeAttr.AsNumber()
-		rule.DestinationPorts = append(rule.DestinationPorts, network.PortRange{
+		rule.DestinationPorts = append(rule.DestinationPorts, common.PortRange{
 			Metadata: destPortRangeAttr.GetMetadata(),
 			Start:    iacTypes.Int(int(f), destPortRangeAttr.GetMetadata()),
 			End:      iacTypes.Int(int(f), destPortRangeAttr.GetMetadata()),
 		})
-	}
-}
-
-func expandRange(r string, m iacTypes.Metadata) network.PortRange {
-	start := 0
-	end := 65535
-	switch {
-	case r == "*":
-	case strings.Contains(r, "-"):
-		if parts := strings.Split(r, "-"); len(parts) == 2 {
-			if p1, err := strconv.ParseInt(parts[0], 10, 32); err == nil {
-				start = int(p1)
-			}
-			if p2, err := strconv.ParseInt(parts[1], 10, 32); err == nil {
-				end = int(p2)
-			}
-		}
-	default:
-		if val, err := strconv.ParseInt(r, 10, 32); err == nil {
-			start = int(val)
-			end = int(val)
-		}
-	}
-
-	return network.PortRange{
-		Metadata: m,
-		Start:    iacTypes.Int(start, m),
-		End:      iacTypes.Int(end, m),
 	}
 }
 

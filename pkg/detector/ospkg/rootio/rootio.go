@@ -1,11 +1,13 @@
 package rootio
 
 import (
+	"cmp"
 	"context"
 	"strings"
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/rootio"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
@@ -72,7 +74,10 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 			srcName = pkg.Name
 		}
 
-		advisories, err := s.vsg.Get(osVer, srcName)
+		advisories, err := s.vsg.Get(db.GetParams{
+			Release: osVer,
+			PkgName: srcName,
+		})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Root.io advisories: %w", err)
 		}
@@ -81,7 +86,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 			if !s.isVulnerable(ctx, utils.FormatSrcVersion(pkg), adv) {
 				continue
 			}
-			vulns = append(vulns, types.DetectedVulnerability{
+			vuln := types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgID:            pkg.ID,
 				PkgName:          pkg.Name,
@@ -91,7 +96,20 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 				PkgIdentifier:    pkg.Identifier,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,
-			})
+			}
+
+			// We add the severity from the base OS, so we need to keep the severity level from the base OS (as SeveritySource).
+			if adv.Severity != dbTypes.SeverityUnknown {
+				vuln.Vulnerability = dbTypes.Vulnerability{
+					Severity: adv.Severity.String(),
+				}
+
+				// Datasource contains BaseID + ID for root.io advisories,
+				// But baseOS (e.g. Debian) advisories use ID only.
+				vuln.SeveritySource = cmp.Or(adv.DataSource.BaseID, adv.DataSource.ID)
+			}
+
+			vulns = append(vulns, vuln)
 		}
 	}
 	return vulns, nil

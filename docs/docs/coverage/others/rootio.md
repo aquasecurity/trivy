@@ -13,6 +13,9 @@ Root.io patches are detected when Trivy finds packages with specific version suf
 When Root.io patches are detected, Trivy automatically switches to Root.io scanning mode for vulnerability detection.
 Even when the original OS distributor (Debian, Ubuntu, Alpine) has not provided a patch for a vulnerability, Trivy will display Root.io patches if they are available.
 
+!!! note
+    For vulnerabilities, Trivy uses the severity level from the original OS vendor (if the vendor has specified a severity).
+
 For detailed information about supported scanners, features, and functionality, please refer to the documentation for the underlying OS:
 
 - [Debian](../os/debian.md)
