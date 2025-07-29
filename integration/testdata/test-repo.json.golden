@@ -13,7 +13,13 @@
         "diff_ids": null
       },
       "config": {}
-    }
+    },
+    "RepoURL": "https://github.com/knqyf263/trivy-ci-test",
+    "Branch": "master",
+    "Commit": "5ae342eb2802672402d9b2c26f09e2051bbd91b8",
+    "CommitMsg": "Use COPY instead of ADD in Dockerfile (#4)",
+    "Author": "gy741 <gy741.kim@gmail.com>",
+    "Committer": "knqyf263 <knqyf263@gmail.com>"
   },
   "Results": [
     {
