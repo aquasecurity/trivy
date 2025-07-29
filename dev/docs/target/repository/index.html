@@ -1921,6 +1921,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#git-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Git Metadata
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#scan-cache" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8187,6 +8198,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#git-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Git Metadata
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#scan-cache" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8366,6 +8388,22 @@ See <a href="../../scanner/license/">here</a> for the detail.</p>
 <h2 id="sbom-generation">SBOM generation<a class="headerlink" href="#sbom-generation" title="Permanent link">&para;</a></h2>
 <p>Trivy can generate SBOM for code repositories.
 See <a href="../../supply-chain/sbom/">here</a> for the detail.</p>
+<h2 id="git-metadata">Git Metadata<a class="headerlink" href="#git-metadata" title="Permanent link">&para;</a></h2>
+<p>When scanning git repositories (both local and remote), Trivy automatically extracts and includes git metadata in the scan results.
+This metadata provides context about the scanned repository.</p>
+<p>The metadata includes information such as:</p>
+<ul>
+<li>Repository URL</li>
+<li>Branch name</li>
+<li>Tags</li>
+<li>Commit details (hash, message, commiter)</li>
+<li>Author information</li>
+</ul>
+<p>This feature works automatically for any git repository.
+When using JSON format output, the git metadata will be included in the <code>Metadata</code> field.
+For detailed information about the available fields, please refer to the JSON output of your scan results.</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>repo<span class="w"> </span>--format<span class="w"> </span>json<span class="w"> </span>&lt;repo-name&gt;
+</code></pre></div>
 <h2 id="scan-cache">Scan Cache<a class="headerlink" href="#scan-cache" title="Permanent link">&para;</a></h2>
 <p>When scanning git repositories, it stores analysis results in the cache, using the latest commit hash as the key.
 Note that the cache is not used when the repository is dirty, otherwise Trivy will miss the files that are not committed.</p>
