@@ -211,7 +211,7 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 			// Git repository
 			RepoURL:   artifactInfo.RepoMetadata.RepoURL,
 			Branch:    artifactInfo.RepoMetadata.Branch,
-			Tag:       artifactInfo.RepoMetadata.Tag,
+			Tags:      artifactInfo.RepoMetadata.Tags,
 			Commit:    artifactInfo.RepoMetadata.Commit,
 			CommitMsg: artifactInfo.RepoMetadata.CommitMsg,
 			Author:    artifactInfo.RepoMetadata.Author,

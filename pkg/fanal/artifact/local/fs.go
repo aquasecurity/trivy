@@ -137,16 +137,17 @@ func extractGitInfo(dir string) (bool, artifact.RepoMetadata, error) {
 		metadata.Branch = head.Name().Short()
 	}
 
-	// Get tag name if HEAD points to a tag
+	// Get all tag names that point to HEAD
 	tags, err := repo.Tags()
 	if err == nil {
+		var headTags []string
 		tags.ForEach(func(tag *plumbing.Reference) error {
 			if tag.Hash() == head.Hash() {
-				metadata.Tag = tag.Name().Short()
-				return nil
+				headTags = append(headTags, tag.Name().Short())
 			}
 			return nil
 		})
+		metadata.Tags = headTags
 	}
 
 	// Get repository URL - prefer upstream, fallback to origin

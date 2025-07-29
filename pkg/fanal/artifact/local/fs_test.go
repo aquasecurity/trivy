@@ -2552,7 +2552,7 @@ func TestExtractGitInfo(t *testing.T) {
 			wantMetadata: artifact.RepoMetadata{
 				RepoURL:   "https://github.com/aquasecurity/trivy-test-repo/",
 				Branch:    "main",
-				Tag:       "v0.0.1",
+				Tags:      []string{"v0.0.1"},
 				Commit:    "8a19b492a589955c3e70c6ad8efd1e4ec6ae0d35",
 				CommitMsg: "Update README.md",
 				Author:    "Teppei Fukuda <knqyf263@gmail.com>",
@@ -2577,7 +2577,7 @@ func TestExtractGitInfo(t *testing.T) {
 			// Verify metadata fields
 			assert.Equal(t, tt.wantMetadata.RepoURL, metadata.RepoURL)
 			assert.Equal(t, tt.wantMetadata.Branch, metadata.Branch)
-			assert.Equal(t, tt.wantMetadata.Tag, metadata.Tag)
+			assert.Equal(t, tt.wantMetadata.Tags, metadata.Tags)
 			assert.Equal(t, tt.wantMetadata.Commit, metadata.Commit)
 			assert.Equal(t, tt.wantMetadata.CommitMsg, metadata.CommitMsg)
 			assert.Equal(t, tt.wantMetadata.Author, metadata.Author)
