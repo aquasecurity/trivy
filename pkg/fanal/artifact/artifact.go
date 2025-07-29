@@ -92,6 +92,7 @@ type Reference struct {
 	ID            string
 	BlobIDs       []string
 	ImageMetadata ImageMetadata
+	RepoMetadata  RepoMetadata
 
 	// SBOM
 	BOM *core.BOM
@@ -103,4 +104,14 @@ type ImageMetadata struct {
 	RepoTags    []string
 	RepoDigests []string
 	ConfigFile  v1.ConfigFile
+}
+
+type RepoMetadata struct {
+	RepoURL   string   // repository URL (from upstream/origin)
+	Branch    string   // current branch name
+	Tags      []string // tag names pointing to HEAD
+	Commit    string   // commit hash
+	CommitMsg string   // commit message
+	Author    string   // commit author
+	Committer string   // commit committer
 }
