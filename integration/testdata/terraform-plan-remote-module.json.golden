@@ -1,0 +1,582 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/terraform-plan/remote-module/tfplan",
+  "ArtifactType": "repository",
+  "Results": [
+    {
+      "Target": ".",
+      "Class": "config",
+      "Type": "terraformplan-snapshot",
+      "MisconfSummary": {
+        "Successes": 45,
+        "Failures": 0
+      }
+    },
+    {
+      "Target": "terraform-aws-modules/s3-bucket/aws/main.tf",
+      "Class": "config",
+      "Type": "terraformplan-snapshot",
+      "MisconfSummary": {
+        "Successes": 0,
+        "Failures": 4
+      },
+      "Misconfigurations": [
+        {
+          "Type": "Terraform Plan Snapshot Security Check",
+          "ID": "AVD-AWS-0088",
+          "AVDID": "AVD-AWS-0088",
+          "Title": "Unencrypted S3 bucket.",
+          "Description": "S3 Buckets should be encrypted to protect the data that is stored within them if access is compromised.\n",
+          "Message": "Bucket does not have encryption enabled",
+          "Namespace": "builtin.aws.s3.aws0088",
+          "Query": "data.builtin.aws.s3.aws0088.deny",
+          "Resolution": "Configure bucket encryption",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0088",
+          "References": [
+            "https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-encryption.html",
+            "https://avd.aquasec.com/misconfig/avd-aws-0088"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "module.s3_bucket",
+            "Provider": "AWS",
+            "Service": "s3",
+            "StartLine": 25,
+            "EndLine": 34,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 25,
+                  "Content": "resource \"aws_s3_bucket\" \"this\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"aws_s3_bucket\"\u001b[0m \u001b[38;5;37m\"this\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 26,
+                  "Content": "  count = local.create_bucket ? 1 : 0",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mcount\u001b[0m = local.create_bucket \u001b[38;5;245m?\u001b[0m \u001b[38;5;37m1\u001b[0m \u001b[38;5;245m:\u001b[0m \u001b[38;5;37m0",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 27,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 28,
+                  "Content": "  bucket        = var.bucket",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mbucket\u001b[0m        = \u001b[38;5;33mvar\u001b[0m.bucket",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 29,
+                  "Content": "  bucket_prefix = var.bucket_prefix",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mbucket_prefix\u001b[0m = \u001b[38;5;33mvar\u001b[0m.bucket_prefix",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 30,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 31,
+                  "Content": "  force_destroy       = var.force_destroy",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mforce_destroy\u001b[0m       = \u001b[38;5;33mvar\u001b[0m.force_destroy",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 32,
+                  "Content": "  object_lock_enabled = var.object_lock_enabled",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mobject_lock_enabled\u001b[0m = \u001b[38;5;33mvar\u001b[0m.object_lock_enabled",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 33,
+                  "Content": "  tags                = var.tags",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mtags\u001b[0m                = \u001b[38;5;33mvar\u001b[0m.tags",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 34,
+                  "Content": "}",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "}",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "module.s3_bucket",
+                "Filename": "main.tf",
+                "Location": {
+                  "StartLine": 1,
+                  "EndLine": 6
+                }
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Terraform Plan Snapshot Security Check",
+          "ID": "s3-bucket-logging",
+          "AVDID": "AVD-AWS-0089",
+          "Title": "S3 Bucket Logging",
+          "Description": "Ensures S3 bucket logging is enabled for S3 buckets",
+          "Message": "Bucket has logging disabled",
+          "Namespace": "builtin.aws.s3.aws0089",
+          "Query": "data.builtin.aws.s3.aws0089.deny",
+          "Resolution": "Add a logging block to the resource to enable access logging",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/s3-bucket-logging",
+          "References": [
+            "https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerLogs.html",
+            "https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html",
+            "https://avd.aquasec.com/misconfig/s3-bucket-logging"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "module.s3_bucket",
+            "Provider": "AWS",
+            "Service": "s3",
+            "StartLine": 25,
+            "EndLine": 34,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 25,
+                  "Content": "resource \"aws_s3_bucket\" \"this\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"aws_s3_bucket\"\u001b[0m \u001b[38;5;37m\"this\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 26,
+                  "Content": "  count = local.create_bucket ? 1 : 0",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mcount\u001b[0m = local.create_bucket \u001b[38;5;245m?\u001b[0m \u001b[38;5;37m1\u001b[0m \u001b[38;5;245m:\u001b[0m \u001b[38;5;37m0",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 27,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 28,
+                  "Content": "  bucket        = var.bucket",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mbucket\u001b[0m        = \u001b[38;5;33mvar\u001b[0m.bucket",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 29,
+                  "Content": "  bucket_prefix = var.bucket_prefix",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mbucket_prefix\u001b[0m = \u001b[38;5;33mvar\u001b[0m.bucket_prefix",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 30,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 31,
+                  "Content": "  force_destroy       = var.force_destroy",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mforce_destroy\u001b[0m       = \u001b[38;5;33mvar\u001b[0m.force_destroy",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 32,
+                  "Content": "  object_lock_enabled = var.object_lock_enabled",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mobject_lock_enabled\u001b[0m = \u001b[38;5;33mvar\u001b[0m.object_lock_enabled",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 33,
+                  "Content": "  tags                = var.tags",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mtags\u001b[0m                = \u001b[38;5;33mvar\u001b[0m.tags",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 34,
+                  "Content": "}",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "}",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "module.s3_bucket",
+                "Filename": "main.tf",
+                "Location": {
+                  "StartLine": 1,
+                  "EndLine": 6
+                }
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Terraform Plan Snapshot Security Check",
+          "ID": "AVD-AWS-0090",
+          "AVDID": "AVD-AWS-0090",
+          "Title": "S3 Data should be versioned",
+          "Description": "Versioning in Amazon S3 is a means of keeping multiple variants of an object in the same bucket.\n\nYou can use the S3 Versioning feature to preserve, retrieve, and restore every version of every object stored in your buckets.\n\nWith versioning you can recover more easily from both unintended user actions and application failures.\n\nWhen you enable versioning, also keep in mind the potential costs of storing noncurrent versions of objects. To help manage those costs, consider setting up an S3 Lifecycle configuration.\n",
+          "Message": "Bucket does not have versioning enabled",
+          "Namespace": "builtin.aws.s3.aws0090",
+          "Query": "data.builtin.aws.s3.aws0090.deny",
+          "Resolution": "Enable versioning to protect against accidental/malicious removal or modification",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0090",
+          "References": [
+            "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html",
+            "https://aws.amazon.com/blogs/storage/reduce-storage-costs-with-fewer-noncurrent-versions-using-amazon-s3-lifecycle/",
+            "https://avd.aquasec.com/misconfig/avd-aws-0090"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "module.s3_bucket",
+            "Provider": "AWS",
+            "Service": "s3",
+            "StartLine": 25,
+            "EndLine": 34,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 25,
+                  "Content": "resource \"aws_s3_bucket\" \"this\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"aws_s3_bucket\"\u001b[0m \u001b[38;5;37m\"this\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 26,
+                  "Content": "  count = local.create_bucket ? 1 : 0",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mcount\u001b[0m = local.create_bucket \u001b[38;5;245m?\u001b[0m \u001b[38;5;37m1\u001b[0m \u001b[38;5;245m:\u001b[0m \u001b[38;5;37m0",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 27,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 28,
+                  "Content": "  bucket        = var.bucket",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mbucket\u001b[0m        = \u001b[38;5;33mvar\u001b[0m.bucket",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 29,
+                  "Content": "  bucket_prefix = var.bucket_prefix",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mbucket_prefix\u001b[0m = \u001b[38;5;33mvar\u001b[0m.bucket_prefix",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 30,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 31,
+                  "Content": "  force_destroy       = var.force_destroy",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mforce_destroy\u001b[0m       = \u001b[38;5;33mvar\u001b[0m.force_destroy",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 32,
+                  "Content": "  object_lock_enabled = var.object_lock_enabled",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mobject_lock_enabled\u001b[0m = \u001b[38;5;33mvar\u001b[0m.object_lock_enabled",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 33,
+                  "Content": "  tags                = var.tags",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mtags\u001b[0m                = \u001b[38;5;33mvar\u001b[0m.tags",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 34,
+                  "Content": "}",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "}",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "module.s3_bucket",
+                "Filename": "main.tf",
+                "Location": {
+                  "StartLine": 1,
+                  "EndLine": 6
+                }
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Terraform Plan Snapshot Security Check",
+          "ID": "AVD-AWS-0132",
+          "AVDID": "AVD-AWS-0132",
+          "Title": "S3 encryption should use Customer Managed Keys",
+          "Description": "Encryption using AWS keys provides protection for your S3 buckets. To gain greater control over encryption, such as key rotation, access policies, and auditability, use customer managed keys (CMKs) with SSE-KMS.\nNote that SSE-KMS is not supported for S3 server access logging destination buckets; in such cases, use SSE-S3 instead.\n",
+          "Message": "Bucket does not encrypt data with a customer managed key.",
+          "Namespace": "builtin.aws.s3.aws0132",
+          "Query": "data.builtin.aws.s3.aws0132.deny",
+          "Resolution": "Use SSE-KMS with a customer managed key (CMK)",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0132",
+          "References": [
+            "https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-encryption.html",
+            "https://avd.aquasec.com/misconfig/avd-aws-0132"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "module.s3_bucket",
+            "Provider": "AWS",
+            "Service": "s3",
+            "StartLine": 25,
+            "EndLine": 34,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 25,
+                  "Content": "resource \"aws_s3_bucket\" \"this\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"aws_s3_bucket\"\u001b[0m \u001b[38;5;37m\"this\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 26,
+                  "Content": "  count = local.create_bucket ? 1 : 0",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mcount\u001b[0m = local.create_bucket \u001b[38;5;245m?\u001b[0m \u001b[38;5;37m1\u001b[0m \u001b[38;5;245m:\u001b[0m \u001b[38;5;37m0",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 27,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 28,
+                  "Content": "  bucket        = var.bucket",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mbucket\u001b[0m        = \u001b[38;5;33mvar\u001b[0m.bucket",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 29,
+                  "Content": "  bucket_prefix = var.bucket_prefix",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mbucket_prefix\u001b[0m = \u001b[38;5;33mvar\u001b[0m.bucket_prefix",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 30,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 31,
+                  "Content": "  force_destroy       = var.force_destroy",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mforce_destroy\u001b[0m       = \u001b[38;5;33mvar\u001b[0m.force_destroy",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 32,
+                  "Content": "  object_lock_enabled = var.object_lock_enabled",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mobject_lock_enabled\u001b[0m = \u001b[38;5;33mvar\u001b[0m.object_lock_enabled",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 33,
+                  "Content": "  tags                = var.tags",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mtags\u001b[0m                = \u001b[38;5;33mvar\u001b[0m.tags",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 34,
+                  "Content": "}",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "}",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "module.s3_bucket",
+                "Filename": "main.tf",
+                "Location": {
+                  "StartLine": 1,
+                  "EndLine": 6
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
