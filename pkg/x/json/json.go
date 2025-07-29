@@ -74,13 +74,19 @@ var SetLocationHook = DecodeHook{
 	},
 }
 
-// UnmarshalerWithLocation returns a json.Unmarshaler that captures the source code location
+// UnmarshalerWithLocation returns a [json.Unmarshalers] that captures the source code location
 // (start and end lines) of each decoded object and optionally invokes hooks after decoding.
 //
-// To use UnmarshalerWithLocation for primitive types, you must implement the UnmarshalerFrom interface for those objects.
+// By default, the [SetLocationHook] is used to record source code locations,
+// unless other hooks are explicitly provided.
+//
+// To use UnmarshalerWithLocation for primitive types, you must implement the [json.UnmarshalerFrom] interface for those objects.
 // cf. https://pkg.go.dev/github.com/go-json-experiment/json#UnmarshalerFrom
 func UnmarshalerWithLocation[T any](r *lineReader, hooks ...DecodeHook) *json.Unmarshalers {
 	visited := set.New[int]()
+	if len(hooks) == 0 {
+		hooks = []DecodeHook{SetLocationHook}
+	}
 	return unmarshaler[T](r, visited, hooks...)
 }
 
