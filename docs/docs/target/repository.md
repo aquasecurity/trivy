@@ -118,7 +118,7 @@ The metadata includes information such as:
 - Repository URL
 - Branch name
 - Tags
-- Commit details
+- Commit details (hash, message, commiter)
 - Author information
 
 This feature works automatically for any git repository.
