@@ -125,8 +125,9 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 100,
 	}
-	wantFindingMultipleGroups := types.SecretFinding{
+	wantFindingMultipleGroupsUsername := types.SecretFinding{
 		RuleID:    "rule1",
 		Category:  "general",
 		Title:     "Generic Rule",
@@ -156,6 +157,39 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 134,
+	}
+	wantFindingMultipleGroupsPassword := types.SecretFinding{
+		RuleID:    "rule1",
+		Category:  "general",
+		Title:     "Generic Rule",
+		Severity:  "HIGH",
+		StartLine: 5,
+		EndLine:   5,
+		Match:     "credentials: { user: \"********\" password: \"*********\" }",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      3,
+					Content:     "--- ignore block stop ---",
+					Highlighted: "--- ignore block stop ---",
+				},
+				{
+					Number:      4,
+					Content:     "secret=\"othervalue\"",
+					Highlighted: "secret=\"othervalue\"",
+				},
+				{
+					Number:      5,
+					Content:     "credentials: { user: \"********\" password: \"*********\" }",
+					Highlighted: "credentials: { user: \"********\" password: \"*********\" }",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+		Offset: 155,
 	}
 	wantFinding5 := types.SecretFinding{
 		RuleID:    "aws-access-key-id",
@@ -214,6 +248,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 70,
 	}
 	wantFindingPATDisabled := types.SecretFinding{
 		RuleID:    "aws-access-key-id",
@@ -240,6 +275,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 70,
 	}
 	wantFinding6 := types.SecretFinding{
 		RuleID:    "github-pat",
@@ -266,6 +302,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 11,
 	}
 	wantFindingGitHubPAT := types.SecretFinding{
 		RuleID:    "github-fine-grained-pat",
@@ -287,6 +324,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 13,
 	}
 	wantFindingMyAwsAccessKey := types.SecretFinding{
 		RuleID:    "aws-secret-access-key",
@@ -313,6 +351,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 18,
 	}
 	wantFindingMyGitHubPAT := types.SecretFinding{
 		RuleID:    "github-fine-grained-pat",
@@ -339,6 +378,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 63,
 	}
 	wantFindingGHButDisableAWS := types.SecretFinding{
 		RuleID:    "github-pat",
@@ -365,6 +405,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 11,
 	}
 	wantFinding7 := types.SecretFinding{
 		RuleID:    "github-pat",
@@ -386,6 +427,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 67,
 	}
 	wantFinding8 := types.SecretFinding{
 		RuleID:    "rule1",
@@ -417,6 +459,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 55,
 	}
 	wantFinding9 := types.SecretFinding{
 		RuleID:    "aws-secret-access-key",
@@ -591,6 +634,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 32,
 	}
 	wantFindingMinimumAsymmSecretKey := types.SecretFinding{
 		RuleID:    "private-key",
@@ -628,6 +672,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 1842,
 	}
 	wantFindingAlibabaAccessKeyId := types.SecretFinding{
 		RuleID:    "alibaba-access-key-id",
@@ -753,6 +798,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 15,
 	}
 	wantFindingPrivatePackagistOrgUpdateToken := types.SecretFinding{
 		RuleID:    "private-packagist-token",
@@ -790,6 +836,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 114,
 	}
 	wantFindingPrivatePackagistUserToken := types.SecretFinding{
 		RuleID:    "private-packagist-token",
@@ -835,6 +882,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 208,
 	}
 	wantFindingHuggingFace := types.SecretFinding{
 		RuleID:    "hugging-face-access-token",
@@ -953,6 +1001,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 4,
 	}
 	wantFindingTokenInsideJs := types.SecretFinding{
 		RuleID:    "stripe-publishable-token",
@@ -974,6 +1023,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 4016,
 	}
 	wantFindingJWT := types.SecretFinding{
 		RuleID:    "jwt-token",
@@ -1281,7 +1331,8 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{
-					wantFindingMultipleGroups,
+					wantFindingMultipleGroupsUsername,
+					wantFindingMultipleGroupsPassword,
 				},
 			},
 		},
@@ -1466,8 +1517,8 @@ func TestSecretScannerWithStreaming(t *testing.T) {
 			name: "secret at exact chunk boundary",
 			input: strings.Repeat("a", 383) + "\n" +
 				"AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF", // Exactly at boundary
-			bufferSize:  384, // Boundary right after the newline
-			overlapSize: 96,  // 1/4 of buffer
+			bufferSize:  384,                             // Boundary right after the newline
+			overlapSize: 96,                              // 1/4 of buffer
 			configPath:  filepath.Join("testdata", "skip-test.yaml"),
 			wantCount:   1,
 			wantRuleIDs: []string{"aws-access-key-id"},
