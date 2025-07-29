@@ -46,13 +46,9 @@ func executeFunction(functionName string, criteriaValues, testValue any) bool {
 func isAny(criteriaValues, testValue any) bool {
 	switch t := criteriaValues.(type) {
 	case []any:
-		if slices.Contains(t, testValue) {
-			return true
-		}
+		return slices.Contains(t, testValue)
 	case []string:
-		if slices.Contains(t, testValue.(string)) {
-			return true
-		}
+		return slices.Contains(t, testValue.(string))
 	}
 	return false
 }

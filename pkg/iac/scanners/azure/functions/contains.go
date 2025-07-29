@@ -24,9 +24,7 @@ func Contains(args ...any) any {
 			return strings.Contains(strings.ToLower(cType), fmt.Sprintf("%d", iType))
 		}
 	case []any:
-		if slices.Contains(cType, itemToFind) {
-			return true
-		}
+		return slices.Contains(cType, itemToFind)
 	case map[string]any:
 		for key := range cType {
 			if key == itemToFind {
