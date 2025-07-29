@@ -89,10 +89,8 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 		lo.Ternary(opt.Original != "", log.String("original", opt.Original), log.Nil))
 
 	// Check if the directory is a git repository and extract metadata
-	if isClean, metadata, err := extractGitInfo(art.rootPath); err == nil {
-		art.isClean = isClean
-		art.repoMetadata = metadata
-		if isClean {
+	if art.isClean, art.repoMetadata, err = extractGitInfo(art.rootPath); err == nil {
+		if art.isClean {
 			art.logger.Debug("Using the latest commit hash for calculating cache key", log.String("commit_hash", metadata.Commit))
 		} else {
 			art.logger.Debug("Repository is dirty, random cache key will be used")
@@ -274,17 +272,13 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 		hostName = filepath.ToSlash(target) // To slash for Windows
 	}
 
-	ref := artifact.Reference{
-		Name:    hostName,
-		Type:    a.artifactOption.Type,
-		ID:      cacheKey, // use a cache key as pseudo artifact ID
-		BlobIDs: []string{cacheKey},
-	}
-
-	// Use pre-extracted git metadata when available
-	ref.RepoMetadata = a.repoMetadata
-
-	return ref, nil
+	return artifact.Reference{
+		Name:         hostName,
+		Type:         a.artifactOption.Type,
+		ID:           cacheKey, // use a cache key as pseudo artifact ID
+		BlobIDs:      []string{cacheKey},
+		RepoMetadata: a.repoMetadata,
+	}, nil
 }
 
 func (a Artifact) analyzeWithRootDir(ctx context.Context, wg *sync.WaitGroup, limit *semaphore.Weighted,
