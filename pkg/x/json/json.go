@@ -45,7 +45,7 @@ func Unmarshal(data []byte, v any) error {
 
 func UnmarshalRead(r io.Reader, v any) error {
 	lr := NewLineReader(r)
-	unmarshalers := UnmarshalerWithLocation[ObjectLocation](lr, SetLocationHook)
+	unmarshalers := UnmarshalerWithLocation[ObjectLocation](lr)
 	return json.UnmarshalRead(lr, v, json.WithUnmarshalers(unmarshalers))
 }
 
