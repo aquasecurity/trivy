@@ -28,7 +28,7 @@ const (
 	// Larger buffers reduce I/O operations but use more memory
 	// Smaller buffers use less memory but may increase I/O overhead
 	DefaultBufferSize = 64 * 1024 // 64KB default buffer size
-	
+
 	// DefaultOverlap is the number of bytes to overlap between chunks
 	// This ensures that secrets spanning chunk boundaries are not missed
 	// Must be large enough to contain the longest possible secret pattern
@@ -386,14 +386,15 @@ func NewScanner(config *Config) Scanner {
 //   - Use more memory but reduce I/O operations
 //   - Better performance for very large files
 //   - May process more content per chunk
+//
 // Smaller buffer sizes:
 //   - Use less memory (important for resource-constrained environments)
 //   - More I/O operations but better memory efficiency
 //   - Useful for testing chunk boundary behavior
-// 
+//
 // Minimum recommended size: 4KB (to accommodate overlap + meaningful content)
 // Maximum practical size: 1MB (beyond this, benefits diminish)
-func (s Scanner) WithBufferSize(size int) Scanner {
+func (s *Scanner) WithBufferSize(size int) *Scanner {
 	s.bufferSize = size
 	return s
 }
@@ -420,7 +421,7 @@ type Match struct {
 // 4. Adjusts line numbers to account for chunk positioning
 // 5. Combines results from all chunks
 func (s *Scanner) Scan(args ScanArgs) types.Secret {
-	logger := s.logger.With("file_path", args.FilePath)
+	logger := s.logger.With(log.FilePath(args.FilePath))
 
 	// Check if path is globally allowed (skip scanning entirely)
 	if s.AllowPath(args.FilePath) {
@@ -439,11 +440,11 @@ func (s *Scanner) Scan(args ScanArgs) types.Secret {
 // scanStream performs streaming secret scanning by processing files in chunks
 // This approach keeps memory usage constant (O(buffer_size)) regardless of file size
 func (s *Scanner) scanStream(filePath string, reader io.Reader, binary bool) types.Secret {
-	logger := s.logger.With("file_path", filePath)
-	
+	logger := s.logger.With(log.FilePath(filePath))
+
 	// Initialize streaming context
 	ctx := s.initializeStreamingContext()
-	
+
 	// Process file in chunks until EOF
 	var allFindings []types.SecretFinding
 	for {
@@ -453,18 +454,18 @@ func (s *Scanner) scanStream(filePath string, reader io.Reader, binary bool) typ
 			logger.Error("Failed to read content during streaming", log.Err(err))
 			break
 		}
-		
+
 		// Process the chunk for secrets if we have data
 		if len(chunk) > 0 {
 			chunkFindings := s.processChunkForSecrets(filePath, chunk, ctx, binary)
 			allFindings = append(allFindings, chunkFindings...)
 		}
-		
+
 		// Break if we've reached end of file
 		if isEOF {
 			break
 		}
-		
+
 		// Prepare for next iteration by updating context
 		s.updateStreamingContext(chunk, ctx)
 	}
@@ -483,42 +484,41 @@ func (s *Scanner) scanStream(filePath string, reader io.Reader, binary bool) typ
 	}
 }
 
-// streamingContext holds the state for streaming secret scanning
-type streamingContext struct {
-	buffer       []byte // Main buffer for reading chunks
+// chunkState holds the state for streaming secret scanning
+type chunkState struct {
+	buffer        []byte // Main buffer for reading chunks
 	overlapBuffer []byte // Buffer to store overlap from previous chunk
-	overlap      int    // Size of overlap to maintain between chunks
-	lineOffset   int    // Running count of lines processed so far
-	chunkOffset  int    // Running count of bytes processed so far
+	overlap       int    // Size of overlap to maintain between chunks
+	lineOffset    int    // Running count of lines processed so far
 }
 
 // initializeStreamingContext sets up the initial state for streaming
-func (s *Scanner) initializeStreamingContext() *streamingContext {
+func (s *Scanner) initializeStreamingContext() *chunkState {
 	// Calculate overlap size - ensure it's not too large compared to buffer
 	overlap := DefaultOverlap
 	if overlap > s.bufferSize/4 {
 		overlap = s.bufferSize / 4
 	}
-	
-	return &streamingContext{
+
+	return &chunkState{
 		buffer:        make([]byte, s.bufferSize),
 		overlapBuffer: make([]byte, 0, overlap),
 		overlap:       overlap,
 		lineOffset:    0,
-		chunkOffset:   0,
 	}
 }
 
 // readNextChunk reads the next chunk of data, incorporating overlap from the previous chunk
 // Returns the chunk data, whether EOF was reached, and any error
-func (s *Scanner) readNextChunk(reader io.Reader, ctx *streamingContext) ([]byte, bool, error) {
+func (s *Scanner) readNextChunk(reader io.Reader, ctx *chunkState) ([]byte, bool, error) {
 	// Copy overlap data from previous chunk to beginning of buffer
 	overlapLen := len(ctx.overlapBuffer)
 	copy(ctx.buffer[:overlapLen], ctx.overlapBuffer)
-	
+
 	// Read new data after the overlap
 	n, err := reader.Read(ctx.buffer[overlapLen:])
-	if n == 0 && err == io.EOF {
+	isEOF := errors.Is(err, io.EOF)
+	if n == 0 && isEOF {
 		// Handle final overlap data if any exists
 		if overlapLen > 0 {
 			// Return the remaining overlap data as the final chunk
@@ -527,58 +527,54 @@ func (s *Scanner) readNextChunk(reader io.Reader, ctx *streamingContext) ([]byte
 		// No more data to process
 		return nil, true, nil
 	}
-	
-	if err != nil && err != io.EOF {
+
+	if err != nil && !isEOF {
 		// Read error occurred
-		return nil, false, err
+		return nil, false, xerrors.Errorf("failed to read next chunk: %w", err)
 	}
-	
+
 	// Combine overlap and new data
 	totalLen := overlapLen + n
 	chunk := ctx.buffer[:totalLen]
-	
-	// Check if this is the last chunk (partial read indicates EOF)
-	isEOF := n < s.bufferSize-overlapLen
-	
+
 	return chunk, isEOF, nil
 }
 
 // processChunkForSecrets scans a chunk for secrets and adjusts line numbers based on global offset
-func (s *Scanner) processChunkForSecrets(filePath string, chunk []byte, ctx *streamingContext, binary bool) []types.SecretFinding {
-	// Scan the chunk using existing chunk scanning logic
-	chunkResult := s.scanChunk(filePath, chunk, ctx.chunkOffset, binary)
-	
+func (s *Scanner) processChunkForSecrets(filePath string, chunk []byte, ctx *chunkState, binary bool) []types.SecretFinding {
+	// Scan the chunk
+	chunkResult := s.scanChunk(filePath, chunk, binary)
+
 	// Adjust line numbers to account for previous chunks
 	for i := range chunkResult.Findings {
 		// Adjust finding line numbers by adding the cumulative line offset
 		chunkResult.Findings[i].StartLine += ctx.lineOffset
 		chunkResult.Findings[i].EndLine += ctx.lineOffset
-		
+
 		// Adjust code context line numbers as well
 		for j := range chunkResult.Findings[i].Code.Lines {
 			chunkResult.Findings[i].Code.Lines[j].Number += ctx.lineOffset
 		}
 	}
-	
+
 	return chunkResult.Findings
 }
 
 // updateStreamingContext prepares the context for the next iteration
 // This involves setting up overlap and updating line/chunk offsets
-func (s *Scanner) updateStreamingContext(chunk []byte, ctx *streamingContext) {
+func (s *Scanner) updateStreamingContext(chunk []byte, ctx *chunkState) {
 	totalLen := len(chunk)
-	
+
 	// Prepare overlap for next iteration to ensure secrets spanning chunk boundaries are detected
 	if totalLen > ctx.overlap {
 		// Save the last 'overlap' bytes for the next chunk
 		ctx.overlapBuffer = ctx.overlapBuffer[:ctx.overlap]
 		copy(ctx.overlapBuffer, chunk[totalLen-ctx.overlap:])
-		
+
 		// Update line and chunk offset based on non-overlapping part
 		// We only count lines/bytes that won't be reprocessed in the next chunk
 		nonOverlapPart := chunk[:totalLen-ctx.overlap]
 		ctx.lineOffset += bytes.Count(nonOverlapPart, lineSep)
-		ctx.chunkOffset += len(nonOverlapPart)
 	} else {
 		// If chunk is smaller than overlap size, keep entire chunk as overlap
 		// This can happen with very small chunks near EOF
@@ -605,8 +601,8 @@ func (s *Scanner) finalizeScanResults(findings []types.SecretFinding) []types.Se
 	return findings
 }
 
-func (s *Scanner) scanChunk(filePath string, content []byte, offset int, binary bool) types.Secret {
-	logger := s.logger.With("file_path", filePath)
+func (s *Scanner) scanChunk(filePath string, content []byte, binary bool) types.Secret {
+	logger := s.logger.With(log.FilePath(filePath))
 
 	var censored []byte
 	var copyCensored sync.Once
@@ -614,7 +610,7 @@ func (s *Scanner) scanChunk(filePath string, content []byte, offset int, binary 
 
 	var findings []types.SecretFinding
 	globalExcludedBlocks := newBlocks(content, s.ExcludeBlock.Regexes)
-	
+
 	for _, rule := range s.Rules {
 		ruleLogger := logger.With("rule_id", rule.ID)
 		// Check if the file path should be scanned by this rule
@@ -659,7 +655,7 @@ func (s *Scanner) scanChunk(filePath string, content []byte, offset int, binary 
 			censored = censorLocation(loc, censored)
 		}
 	}
-	
+
 	for _, match := range matched {
 		finding := toFinding(match.Rule, match.Location, censored)
 		// Rewrite unreadable fields for binary files
@@ -688,19 +684,10 @@ func (s *Scanner) scanChunk(filePath string, content []byte, offset int, binary 
 }
 
 // deduplicateFindings removes duplicate secret findings that may occur at chunk boundaries
-// Currently, we preserve all findings to avoid accidentally removing legitimate secrets
-// that might appear similar but are actually different (e.g., multiple secret groups on same line)
 func (s *Scanner) deduplicateFindings(findings []types.SecretFinding) []types.SecretFinding {
-	// Our chunking strategy with proper overlap handling should minimize true duplicates
-	// However, we preserve all findings to be conservative and avoid false negatives
-	// 
-	// Future enhancement: Could implement more sophisticated deduplication based on:
-	// - Exact position matching (StartLine, EndLine, Match content)
-	// - Rule ID and file path combination
-	// - Content hash comparison
-	//
-	// For now, we prioritize recall over precision to ensure no secrets are missed
-	return findings
+	return lo.UniqBy(findings, func(f types.SecretFinding) string {
+		return fmt.Sprintf("%s:%d-%d:%s", f.RuleID, f.StartLine, f.EndLine, f.Match)
+	})
 }
 
 func censorLocation(loc Location, input []byte) []byte {
