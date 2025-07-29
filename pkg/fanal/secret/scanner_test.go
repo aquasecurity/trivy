@@ -1470,89 +1470,189 @@ func TestSecretScannerWithStreaming(t *testing.T) {
 		bufferSize  int
 		overlapSize int
 		configPath  string
-		wantCount   int
-		wantRuleIDs []string
+		want        types.Secret
 	}{
 		{
 			name: "secret in second chunk",
-			input: strings.Repeat("padding content to ensure secret is in second chunk ", 10) + "\n" +
-				"AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF\n" +
-				strings.Repeat("additional padding content ", 5),
+			input: strings.Repeat("x", 520) + "\n" + // 520 bytes to push secret to second chunk
+				"AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF\n" + // at offset 521
+				strings.Repeat("y", 100), // padding
 			bufferSize:  512,
 			overlapSize: 128,
 			configPath:  filepath.Join("testdata", "skip-test.yaml"),
-			wantCount:   1,
-			wantRuleIDs: []string{"aws-access-key-id"},
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "aws-access-key-id",
+						Category:  secret.CategoryAWS,
+						Title:     "AWS Access Key ID",
+						Severity:  "CRITICAL",
+						StartLine: 2,
+						EndLine:   2,
+						Match:     "AWS_ACCESS_KEY_ID=********************",
+						Offset:    539, // 521 + 18 (position of the actual key value)
+					},
+				},
+			},
 		},
 		{
 			name: "secret spanning chunk boundary",
-			input: strings.Repeat("x", 480) + "\n" +
-				"AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF\n" +
-				strings.Repeat("y", 200),
+			input: strings.Repeat("x", 480) + "\n" + // 480 bytes
+				"AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF\n" + // at offset 481, spans chunk boundary at 512
+				strings.Repeat("y", 200), // padding
 			bufferSize:  512, // Boundary will be in the middle of the secret
 			overlapSize: 128,
 			configPath:  filepath.Join("testdata", "skip-test.yaml"),
-			wantCount:   1,
-			wantRuleIDs: []string{"aws-access-key-id"},
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "aws-access-key-id",
+						Category:  secret.CategoryAWS,
+						Title:     "AWS Access Key ID",
+						Severity:  "CRITICAL",
+						StartLine: 2,
+						EndLine:   2,
+						Match:     "AWS_ACCESS_KEY_ID=********************",
+						Offset:    499, // 481 + 18
+					},
+				},
+			},
 		},
 		{
 			name: "multiple secrets across chunks",
-			input: "GITHUB_PAT=ghp_012345678901234567890123456789abcdef\n" +
-				strings.Repeat("padding content between secrets to spread them across chunks ", 20) + "\n" +
-				"AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF\n" +
-				strings.Repeat("more padding content to create distance between secrets ", 25) + "\n" +
-				"stripe_key=sk_test_51H5Z3jGXvP5CVwYOLLllllllllllllllllllllllll\n" +
-				strings.Repeat("final padding content ", 10),
+			input: "GITHUB_PAT=ghp_012345678901234567890123456789abcdef\n" + // at offset 0, 52 bytes
+				strings.Repeat("x", 1200) + "\n" + // 1200 bytes padding
+				"AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF\n" + // at offset 1253
+				strings.Repeat("y", 1400) + "\n" + // 1400 bytes padding
+				"stripe_key=sk_test_51H5Z3jGXvP5CVwYOLLllllllllllllllllllllllll\n" + // at offset 2693
+				strings.Repeat("z", 200), // final padding
 			bufferSize:  1024,
-			overlapSize: 256, // 1/4 of buffer
+			overlapSize: 256,
 			configPath:  filepath.Join("testdata", "skip-test.yaml"),
-			wantCount:   3,
-			wantRuleIDs: []string{
-				"aws-access-key-id",
-				"github-pat",
-				"stripe-secret-token",
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "aws-access-key-id",
+						Category:  secret.CategoryAWS,
+						Title:     "AWS Access Key ID",
+						Severity:  "CRITICAL",
+						StartLine: 3,
+						EndLine:   3,
+						Match:     "AWS_ACCESS_KEY_ID=********************",
+						Offset:    1271, // 1253 + 18
+					},
+					{
+						RuleID:    "github-pat",
+						Category:  secret.CategoryGitHub,
+						Title:     "GitHub Personal Access Token",
+						Severity:  "CRITICAL",
+						StartLine: 1,
+						EndLine:   1,
+						Match:     "GITHUB_PAT=****************************************", // 40 asterisks for 40-char token
+						Offset:    11,                                                    // position of the token value
+					},
+					{
+						RuleID:    "stripe-secret-token",
+						Category:  secret.CategoryStripe,
+						Title:     "Stripe Secret Key",
+						Severity:  "CRITICAL",
+						StartLine: 5,
+						EndLine:   5,
+						Match:     "stripe_key=****************************************lllllllllll", // Stripe key pattern includes literal 'l' chars
+						Offset:    2704,                                                             // 2693 + 11
+					},
+				},
 			},
 		},
 		{
 			name: "secret at exact chunk boundary",
-			input: strings.Repeat("a", 383) + "\n" +
-				"AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF", // Exactly at boundary
-			bufferSize:  384,                             // Boundary right after the newline
-			overlapSize: 96,                              // 1/4 of buffer
+			input: strings.Repeat("x", 383) + "\n" + // 383 bytes + newline = 384
+				"AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF", // Starts exactly at chunk boundary (384)
+			bufferSize:  384, // Boundary right after the newline
+			overlapSize: 96,
 			configPath:  filepath.Join("testdata", "skip-test.yaml"),
-			wantCount:   1,
-			wantRuleIDs: []string{"aws-access-key-id"},
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "aws-access-key-id",
+						Category:  secret.CategoryAWS,
+						Title:     "AWS Access Key ID",
+						Severity:  "CRITICAL",
+						StartLine: 2,
+						EndLine:   2,
+						Match:     "AWS_ACCESS_KEY_ID=********************",
+						Offset:    402, // 384 + 18
+					},
+				},
+			},
 		},
 		{
 			name: "very small buffer and overlap",
-			input: strings.Repeat("prefix padding ", 10) + "\n" +
-				"secret=\"mysecret123\"\n" +
-				strings.Repeat("middle padding content ", 15) + "\n" +
-				"secret=\"anothersecret456\"\n" +
-				strings.Repeat("suffix padding ", 10),
-			bufferSize:  256,
-			overlapSize: 64, // 1/4 of buffer
+			input: strings.Repeat("x", 150) + "\n" + // 150 bytes padding
+				"secret=\"mysecret123\"\n" + // at offset 151
+				strings.Repeat("y", 345) + "\n" + // 345 bytes padding
+				"secret=\"anothersecret456\"\n" + // at offset 517
+				strings.Repeat("z", 150), // suffix padding
+			bufferSize:  128,
+			overlapSize: 32,
 			configPath:  filepath.Join("testdata", "config.yaml"),
-			wantCount:   2,
-			wantRuleIDs: []string{
-				"rule1",
-				"rule1",
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "rule1",
+						Category:  "general",
+						Title:     "Generic Rule",
+						Severity:  "HIGH",
+						StartLine: 2,
+						EndLine:   2,
+						Match:     "secret=\"***********\"",
+						Offset:    159, // 151 + 8 (position of "mysecret123")
+					},
+					{
+						RuleID:    "rule1",
+						Category:  "general",
+						Title:     "Generic Rule",
+						Severity:  "HIGH",
+						StartLine: 4,
+						EndLine:   4,
+						Match:     "secret=\"****************\"",
+						Offset:    526, // 517 + 9
+					},
+				},
 			},
 		},
 		{
 			name: "multi-line secret with small chunks",
-			input: strings.Repeat("prefix padding to make input larger ", 20) + "\n" +
-				"-----BEGIN RSA PRIVATE KEY-----\n" +
+			input: strings.Repeat("x", 720) + "\n" + // 720 bytes padding
+				"-----BEGIN RSA PRIVATE KEY-----\n" + // at offset 721
 				"MIIEpAIBAAKCAQEA1234567890abcdefghijklmnopqrstuvwxyz\n" +
 				"ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnop\n" +
 				"qrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12345678\n" +
 				"-----END RSA PRIVATE KEY-----\n" +
-				strings.Repeat("suffix padding content ", 20),
-			bufferSize:  1024, // Increased to ensure the entire key fits in one chunk
-			overlapSize: 256,  // 1/4 of buffer
+				strings.Repeat("z", 460), // suffix padding
+			bufferSize:  1024, // Ensure the entire key fits in one chunk
+			overlapSize: 256,
 			configPath:  filepath.Join("testdata", "skip-test.yaml"),
-			wantCount:   1,
-			wantRuleIDs: []string{"private-key"},
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "private-key",
+						Category:  secret.CategoryAsymmetricPrivateKey,
+						Title:     "Asymmetric Private Key",
+						Severity:  "HIGH",
+						StartLine: 3,
+						EndLine:   5,
+						Match:     "****************************************************", // Multi-line secret content
+						Offset:    753,                                                    // 721 + 32 (after BEGIN line)
+					},
+				},
+			},
 		},
 		{
 			name:        "no secrets in any chunk",
@@ -1560,42 +1660,90 @@ func TestSecretScannerWithStreaming(t *testing.T) {
 			bufferSize:  512,
 			overlapSize: 128, // 1/4 of buffer
 			configPath:  filepath.Join("testdata", "config.yaml"),
-			wantCount:   0,
-			wantRuleIDs: nil,
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: nil,
+			},
 		},
 		{
 			name: "secret in last chunk with EOF",
-			input: strings.Repeat("padding content to push secret to the end of file ", 30) + "\n" +
-				"final_secret=\"supersecretvalue\"",
+			input: strings.Repeat("x", 1500) + "\n" + // 1500 bytes to push secret to end
+				"final_secret=\"supersecretvalue\"", // at offset 1501, no newline at end
 			bufferSize:  640,
 			overlapSize: 160, // 1/4 of buffer
 			configPath:  filepath.Join("testdata", "config.yaml"),
-			wantCount:   1,
-			wantRuleIDs: []string{"rule1"},
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "rule1",
+						Category:  "general",
+						Title:     "Generic Rule",
+						Severity:  "HIGH",
+						StartLine: 2,
+						EndLine:   2,
+						Match:     "final_secret=\"****************\"",
+						Offset:    1515, // 1501 + 14 (position of "supersecretvalue")
+					},
+				},
+			},
 		},
 		{
 			name: "deduplicate findings at chunk boundaries",
-			input: strings.Repeat("x", 380) + "\n" +
-				"secret=\"duplicatetest123\"\n" + // This might be detected in two chunks
-				strings.Repeat("y", 200),
-			bufferSize:  400, // Boundary near the secret
-			overlapSize: 100, // 1/4 of buffer, overlap contains the secret
+			input: strings.Repeat("x", 330) + "\n" + // 330 bytes
+				"secret=\"duplicatetest123\"\n" + // at offset 331, ends at 356
+				strings.Repeat("y", 200), // padding
+			bufferSize:  400, // First chunk: 0-399, overlap: 300-399
+			overlapSize: 100, // Secret (331-356) is within overlap region
 			configPath:  filepath.Join("testdata", "config.yaml"),
-			wantCount:   1,
-			wantRuleIDs: []string{"rule1"},
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "rule1",
+						Category:  "general",
+						Title:     "Generic Rule",
+						Severity:  "HIGH",
+						StartLine: 2,
+						EndLine:   2,
+						Match:     "secret=\"****************\"",
+						Offset:    339, // 331 + 8 (position of "duplicatetest123")
+					},
+				},
+			},
 		},
 		{
 			name: "multiple secrets on same line",
-			input: strings.Repeat("padding ", 60) + "\n" + // Increase padding to push secrets closer to chunk boundary
-				"secret=\"first123\" and secret=\"second456\" on same line\n" +
-				strings.Repeat("more padding ", 100), // Make it larger to force multiple chunks
+			input: strings.Repeat("x", 480) + "\n" + // 480 bytes padding
+				"secret=\"first123\" and secret=\"second456\" on same line\n" + // at offset 481
+				strings.Repeat("y", 1300), // large padding to force multiple chunks
 			bufferSize:  512,
 			overlapSize: 128, // 1/4 of buffer
 			configPath:  filepath.Join("testdata", "config.yaml"),
-			wantCount:   2,
-			wantRuleIDs: []string{
-				"rule1",
-				"rule1",
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "rule1",
+						Category:  "general",
+						Title:     "Generic Rule",
+						Severity:  "HIGH",
+						StartLine: 2,
+						EndLine:   2,
+						Match:     "secret=\"********\" and secret=\"*********\" on same line", // Full line match for second secret
+						Offset:    511,                                                         // 481 + 30 (position of "second456")
+					},
+					{
+						RuleID:    "rule1",
+						Category:  "general",
+						Title:     "Generic Rule",
+						Severity:  "HIGH",
+						StartLine: 2,
+						EndLine:   2,
+						Match:     "secret=\"********\" and secret=\"s", // Truncated match for first secret
+						Offset:    489,                                  // 481 + 8 (position of "first123")
+					},
+				},
 			},
 		},
 	}
@@ -1618,16 +1766,16 @@ func TestSecretScannerWithStreaming(t *testing.T) {
 				Content:  reader,
 			})
 
-			// Check count
-			assert.Equal(t, tt.wantCount, len(got.Findings), "unexpected number of findings")
-
-			// Check rule IDs
-			var gotRuleIDs []string
-			for i, f := range got.Findings {
-				gotRuleIDs = append(gotRuleIDs, f.RuleID)
-				t.Logf("Finding %d: %s at offset %d, line %d: %q", i, f.RuleID, f.Offset, f.StartLine, f.Match)
+			// Clear Code field as it's too verbose to specify in test expectations
+			for i := range got.Findings {
+				got.Findings[i].Code = types.Code{}
 			}
-			assert.ElementsMatch(t, tt.wantRuleIDs, gotRuleIDs, "unexpected rule IDs")
+			for i := range tt.want.Findings {
+				tt.want.Findings[i].Code = types.Code{}
+			}
+
+			// Compare all findings at once
+			assert.Equal(t, tt.want.Findings, got.Findings, "unexpected findings")
 		})
 	}
 }
