@@ -272,8 +272,8 @@ func parseIgnore(ignoreFile string) (IgnoreFindings, error) {
 
 func getExpirationDate(fields []string) (time.Time, error) {
 	for _, field := range fields {
-		if strings.HasPrefix(field, "exp:") {
-			return time.Parse("2006-01-02", strings.TrimPrefix(field, "exp:"))
+		if after, ok := strings.CutPrefix(field, "exp:"); ok {
+			return time.Parse("2006-01-02", after)
 		}
 	}
 

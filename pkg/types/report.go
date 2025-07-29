@@ -12,10 +12,10 @@ import (
 // Report represents a scan result
 type Report struct {
 	SchemaVersion int                 `json:",omitempty"`
-	CreatedAt     time.Time           `json:",omitempty"`
+	CreatedAt     time.Time           `json:",omitzero"`
 	ArtifactName  string              `json:",omitempty"`
 	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
-	Metadata      Metadata            `json:",omitempty"`
+	Metadata      Metadata            `json:",omitzero"`
 	Results       Results             `json:",omitempty"`
 
 	// parsed SBOM
@@ -32,7 +32,7 @@ type Metadata struct {
 	DiffIDs     []string      `json:",omitempty"`
 	RepoTags    []string      `json:",omitempty"`
 	RepoDigests []string      `json:",omitempty"`
-	ImageConfig v1.ConfigFile `json:",omitempty"`
+	ImageConfig v1.ConfigFile `json:",omitzero"`
 	Layers      ftypes.Layers `json:",omitzero"`
 }
 

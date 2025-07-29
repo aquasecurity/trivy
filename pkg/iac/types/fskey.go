@@ -10,5 +10,5 @@ func CreateFSKey(filesystem fs.FS) string {
 	if filesystem == nil {
 		return ""
 	}
-	return fmt.Sprintf("%x", sha256.Sum256([]byte(fmt.Sprintf("%s%#[1]v", filesystem))))
+	return fmt.Sprintf("%x", sha256.Sum256(fmt.Appendf(nil, "%s%#[1]v", filesystem)))
 }

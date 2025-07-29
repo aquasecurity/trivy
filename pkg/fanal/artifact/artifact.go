@@ -2,6 +2,7 @@ package artifact
 
 import (
 	"context"
+	"slices"
 	"sort"
 
 	"github.com/google/go-containerregistry/pkg/v1"
@@ -73,9 +74,7 @@ func (o *Option) ConfigAnalyzerOptions() analyzer.ConfigAnalyzerOptions {
 }
 
 func (o *Option) Sort() {
-	sort.Slice(o.DisabledAnalyzers, func(i, j int) bool {
-		return o.DisabledAnalyzers[i] < o.DisabledAnalyzers[j]
-	})
+	slices.Sort(o.DisabledAnalyzers)
 	sort.Strings(o.WalkerOption.SkipFiles)
 	sort.Strings(o.WalkerOption.SkipDirs)
 	sort.Strings(o.FilePatterns)

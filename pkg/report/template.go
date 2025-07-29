@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"html"
 	"io"
+	"maps"
 	"os"
 	"strings"
 	"text/template"
@@ -29,8 +30,8 @@ type TemplateWriter struct {
 
 // NewTemplateWriter is the factory method to return TemplateWriter object
 func NewTemplateWriter(output io.Writer, outputTemplate, appVersion string) (*TemplateWriter, error) {
-	if strings.HasPrefix(outputTemplate, "@") {
-		buf, err := os.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
+	if after, ok := strings.CutPrefix(outputTemplate, "@"); ok {
+		buf, err := os.ReadFile(after)
 		if err != nil {
 			return nil, xerrors.Errorf("error retrieving template from path: %w", err)
 		}
@@ -60,9 +61,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate, appVersion string) (*Te
 	}
 
 	// Overwrite functions
-	for k, v := range CustomTemplateFuncMap {
-		templateFuncMap[k] = v
-	}
+	maps.Copy(templateFuncMap, CustomTemplateFuncMap)
 
 	tmpl, err := template.New("output template").Funcs(templateFuncMap).Parse(outputTemplate)
 	if err != nil {
