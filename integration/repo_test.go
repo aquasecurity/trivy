@@ -446,6 +446,22 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/terraform-exclude-misconfs-remote-module.json.golden",
 		},
 		{
+			name: "module from Terraform registry",
+			args: repoTestArgs{
+				scanner: types.MisconfigScanner,
+				input:   "testdata/fixtures/repo/terraform/opentofu-registry",
+			},
+			golden: "testdata/terraform-terraform-registry.json.golden",
+		},
+		{
+			name: "module from OpenTofu registry",
+			args: repoTestArgs{
+				scanner: types.MisconfigScanner,
+				input:   "testdata/fixtures/repo/terraform/opentofu-registry",
+			},
+			golden: "testdata/terraform-opentofu-registry.json.golden",
+		},
+		{
 			name: "secrets",
 			args: repoTestArgs{
 				scanner:      "vuln,secret",
