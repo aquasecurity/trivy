@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/url"
 	"reflect"
+	slicesGo "slices"
 	"strings"
 
 	"github.com/samber/lo"
@@ -123,12 +124,13 @@ func (p *pom) licenses() []string {
 	}))
 }
 
-func (p *pom) repositories(servers []Server) ([]string, []string) {
+func (p *pom) repositories(settings settings) ([]string, []string) {
 	logger := log.WithPrefix("pom")
 	var releaseRepos, snapshotRepos []string
-	for _, rep := range p.content.Repositories.Repository {
-		snapshot := rep.Snapshots.Enabled == "true"
-		release := rep.Releases.Enabled == "true"
+	effectiveRepositories := p.effectiveRepositories(&settings)
+	for _, rep := range effectiveRepositories {
+		snapshot := rep.Snapshots.Enabled
+		release := rep.Releases.Enabled
 		// Add only enabled repositories
 		if !release && !snapshot {
 			continue
@@ -142,23 +144,73 @@ func (p *pom) repositories(servers []Server) ([]string, []string) {
 
 		// Get the credentials from settings.xml based on matching server id
 		// with the repository id from pom.xml and use it for accessing the repository url
-		for _, server := range servers {
+		for _, server := range settings.Servers {
 			if rep.ID == server.ID && server.Username != "" && server.Password != "" {
 				repoURL.User = url.UserPassword(server.Username, server.Password)
 				break
 			}
 		}
 
-		logger.Debug("Adding repository", log.String("id", rep.ID), log.String("url", rep.URL))
 		if snapshot {
+			logger.Debug("Adding snapshot repository",
+				log.String("id", rep.ID), log.String("url", rep.URL))
 			snapshotRepos = append(snapshotRepos, repoURL.String())
 		}
 		if release {
+			logger.Debug("Adding release repository",
+				log.String("id", rep.ID), log.String("url", rep.URL))
 			releaseRepos = append(releaseRepos, repoURL.String())
 		}
 	}
 
 	return releaseRepos, snapshotRepos
+}
+
+// effectiveRepositories returns the effective repositories for the POM.
+// It combines the repositories defined in the pom.xml file with those defined in the settings.xml file.
+// The repositories from the pom.xml (and settings.xml as well) are updated with mirror settings,
+// if applicable mirrors exist in the settings.xml.
+// Does not include pluginRepositories!
+func (p *pom) effectiveRepositories(settings *settings) []repository {
+	logger := log.WithPrefix("pom")
+
+	var repositories []repository
+
+	// Always add the central repository
+	central := repository{
+		ID:       "central",
+		Name:     "Maven Central Repository",
+		URL:      centralURL,
+		Releases: repositoryPolicy{Enabled: true},
+	}
+	repositories = append(repositories, central)
+
+	// Add repositories defined in the pom.xml file
+	repositories = append(repositories, p.content.Repositories.Repository...)
+
+	if settings != nil {
+		// Add repositories defined for profiles in the pom.xml file
+		if len(p.content.Profiles) == 0 {
+			logger.Debug("POM doesn't have any profiles")
+		} else {
+			logger.Debug("POM has profiles")
+			for _, profile := range p.content.Profiles {
+				if slicesGo.Contains(settings.ActiveProfiles, profile.ID) {
+					logger.Debug("Using repositories from active profile", log.String("id", profile.ID))
+					repositories = append(repositories, profile.Repositories...)
+				}
+			}
+		}
+
+		// Apply mirror settings for repositories defined in the pom.xml
+		applyMirrorSettingsForRepositories(repositories, settings)
+
+		// Combine repositories from settings.xml (for those mirrors have already been applied)
+		repositories = append(repositories, settings.getEffectiveRepositories()...)
+	}
+	return lo.UniqBy(repositories, func(r repository) string {
+		return r.ID
+	})
 }
 
 type pomXML struct {
@@ -177,7 +229,8 @@ type pomXML struct {
 		Dependencies pomDependencies `xml:"dependencies"`
 	} `xml:"dependencyManagement"`
 	Dependencies pomDependencies `xml:"dependencies"`
-	Repositories pomRepositories `xml:"repositories"`
+	Repositories repositories    `xml:"repositories"`
+	Profiles     []Profile       `xml:"profiles>profile"`
 }
 
 type pomParent struct {
@@ -373,24 +426,4 @@ func findDep(name string, depManagement []pomDependency) (pomDependency, bool) {
 	return lo.Find(depManagement, func(item pomDependency) bool {
 		return item.Name() == name
 	})
-}
-
-type pomRepositories struct {
-	Text       string          `xml:",chardata"`
-	Repository []pomRepository `xml:"repository"`
-}
-
-type pomRepository struct {
-	Text     string `xml:",chardata"`
-	ID       string `xml:"id"`
-	Name     string `xml:"name"`
-	URL      string `xml:"url"`
-	Releases struct {
-		Text    string `xml:",chardata"`
-		Enabled string `xml:"enabled"`
-	} `xml:"releases"`
-	Snapshots struct {
-		Text    string `xml:",chardata"`
-		Enabled string `xml:"enabled"`
-	} `xml:"snapshots"`
 }
