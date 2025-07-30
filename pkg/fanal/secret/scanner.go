@@ -120,6 +120,7 @@ type Rule struct {
 	AllowRules      AllowRules               `yaml:"allow-rules"`
 	ExcludeBlock    ExcludeBlock             `yaml:"exclude-block"`
 	SecretGroupName string                   `yaml:"secret-group-name"`
+	keywordsLower   [][]byte                 // Pre-computed lowercase keywords
 }
 
 func (s *Scanner) FindLocations(r Rule, content []byte) []Location {
@@ -194,13 +195,13 @@ func (r *Rule) MatchPath(path string) bool {
 	return r.Path == nil || r.Path.MatchString(path)
 }
 
-func (r *Rule) MatchKeywords(content []byte) bool {
+func (r *Rule) MatchKeywords(contentLower []byte) bool {
 	if len(r.Keywords) == 0 {
 		return true
 	}
-	contentLower := bytes.ToLower(content)
-	for _, kw := range r.Keywords {
-		if bytes.Contains(contentLower, []byte(strings.ToLower(kw))) {
+
+	for _, kwLower := range r.keywordsLower {
+		if bytes.Contains(contentLower, kwLower) {
 			return true
 		}
 	}
@@ -357,6 +358,16 @@ func WithOverlapSize(size int) Option {
 	}
 }
 
+// precomputeLowercaseKeywords pre-computes lowercase versions of keywords for a slice of rules
+func precomputeLowercaseKeywords(rules []Rule) {
+	for i := range rules {
+		rules[i].keywordsLower = make([][]byte, len(rules[i].Keywords))
+		for j, kw := range rules[i].Keywords {
+			rules[i].keywordsLower[j] = []byte(strings.ToLower(kw))
+		}
+	}
+}
+
 func NewScanner(config *Config, opts ...Option) Scanner {
 	scanner := Scanner{
 		logger:      log.WithPrefix(log.PrefixSecret),
@@ -379,6 +390,9 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 
 	// Use the default rules
 	if config == nil {
+		// Pre-compute lowercase keywords for builtin rules
+		precomputeLowercaseKeywords(builtinRules)
+
 		scanner.Global = &Global{
 			Rules:      builtinRules,
 			AllowRules: builtinAllowRules,
@@ -407,6 +421,9 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 	allowRules = lo.Filter(allowRules, func(v AllowRule, _ int) bool {
 		return !slices.Contains(config.DisableAllowRuleIDs, v.ID)
 	})
+
+	// Pre-compute lowercase keywords for all rules
+	precomputeLowercaseKeywords(rules)
 
 	scanner.Global = &Global{
 		Rules:        rules,
@@ -653,6 +670,9 @@ func (s *Scanner) scanChunk(filePath string, content []byte, binary bool) types.
 	var findings []types.SecretFinding
 	globalExcludedBlocks := newBlocks(content, s.ExcludeBlock.Regexes)
 
+	// Convert content to lowercase once for all keyword matching
+	contentLower := bytes.ToLower(content)
+
 	for _, rule := range s.Rules {
 		ruleLogger := logger.With("rule_id", rule.ID)
 		// Check if the file path should be scanned by this rule
@@ -668,7 +688,7 @@ func (s *Scanner) scanChunk(filePath string, content []byte, binary bool) types.
 		}
 
 		// Check if the file content contains keywords and should be scanned
-		if !rule.MatchKeywords(content) {
+		if !rule.MatchKeywords(contentLower) {
 			continue
 		}
 
