@@ -12,9 +12,9 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/liamg/memoryfs"
 	"github.com/zclconf/go-cty/cty"
 
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 	iox "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -200,7 +200,7 @@ func (s *snapshot) getOrCreateModuleSnapshot(key string) *snapshotModule {
 }
 
 func (s *snapshot) toFS() (fs.FS, error) {
-	fsys := memoryfs.New()
+	fsys := mapfs.New()
 
 	for _, module := range s.modules {
 		if err := fsys.MkdirAll(module.dir, fs.ModePerm); err != nil && !errors.Is(err, os.ErrExist) {
@@ -211,7 +211,7 @@ func (s *snapshot) toFS() (fs.FS, error) {
 			if module.dir != "" {
 				filePath = path.Join(module.dir, filename)
 			}
-			if err := fsys.WriteFile(filePath, file, fs.ModePerm); err != nil {
+			if err := fsys.WriteVirtualFile(filePath, file, fs.ModePerm); err != nil {
 				return nil, fmt.Errorf("failed to add file: %w", err)
 			}
 		}
