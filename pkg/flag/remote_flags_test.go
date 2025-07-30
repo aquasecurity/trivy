@@ -24,6 +24,7 @@ func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 		fields   fields
 		want     flag.RemoteOptions
 		wantLogs []string
+		wantErr  string
 	}{
 		{
 			name: "happy",
@@ -93,6 +94,39 @@ func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 				`"--token-header" should be used with "--token"`,
 			},
 		},
+		{
+			name: "server address without schema",
+			fields: fields{
+				Server: "localhost:8080",
+			},
+			wantErr: "server address must use HTTP or HTTPS schema, got 'localhost'",
+		},
+		{
+			name: "server address with invalid schema",
+			fields: fields{
+				Server: "ftp://localhost:8080",
+			},
+			wantErr: "server address must use HTTP or HTTPS schema, got 'ftp'",
+		},
+		{
+			name: "server address with malformed URL",
+			fields: fields{
+				Server: "http://[::1:8080",
+			},
+			wantErr: "invalid server address format",
+		},
+		{
+			name: "server address with https schema",
+			fields: fields{
+				Server:      "https://localhost:4954",
+				TokenHeader: "Trivy-Token",
+			},
+			want: flag.RemoteOptions{
+				CustomHeaders: http.Header{},
+				ServerAddr:    "https://localhost:4954",
+				TokenHeader:   "Trivy-Token",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -112,6 +146,12 @@ func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 			}
 			flags := flag.Flags{f}
 			got, err := flags.ToOptions(nil)
+
+			if tt.wantErr != "" {
+				assert.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got.RemoteOptions)
 
