@@ -47,6 +47,7 @@ const (
 	TargetRepository     TargetKind = "repo"
 	TargetSBOM           TargetKind = "sbom"
 	TargetVM             TargetKind = "vm"
+	TargetK8s            TargetKind = "k8s"
 )
 
 var (
@@ -113,7 +114,7 @@ func WithInitializeService(f InitializeScanService) RunnerOption {
 
 // NewRunner initializes Runner that provides scanning functionalities.
 // It is possible to return SkipScan and it must be handled by caller.
-func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOption) (Runner, error) {
+func NewRunner(ctx context.Context, cliOptions flag.Options, targetKind TargetKind, opts ...RunnerOption) (Runner, error) {
 	r := &runner{}
 	for _, opt := range opts {
 		opt(r)
@@ -125,9 +126,8 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 		Timeout:   cliOptions.Timeout,
 		TraceHTTP: cliOptions.TraceHTTP,
 	}))
-	// get the sub command that is being used or fallback to "trivy"
-	commandName := lo.NthOr(os.Args, 1, "trivy")
-	r.versionChecker = notification.NewVersionChecker(commandName, &cliOptions)
+
+	r.versionChecker = notification.NewVersionChecker(string(targetKind), &cliOptions)
 
 	// Update the vulnerability database if needed.
 	if err := r.initDB(ctx, cliOptions); err != nil {
@@ -421,7 +421,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 }
 
 func run(ctx context.Context, opts flag.Options, targetKind TargetKind) (types.Report, error) {
-	r, err := NewRunner(ctx, opts)
+	r, err := NewRunner(ctx, opts, targetKind)
 	if err != nil {
 		if errors.Is(err, SkipScan) {
 			return types.Report{}, nil

@@ -62,7 +62,7 @@ func newRunner(flagOpts flag.Options, cluster string) *runner {
 }
 
 func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) error {
-	runner, err := cmd.NewRunner(ctx, r.flagOpts)
+	runner, err := cmd.NewRunner(ctx, r.flagOpts, cmd.TargetK8s)
 	if err != nil {
 		if errors.Is(err, cmd.SkipScan) {
 			return nil
