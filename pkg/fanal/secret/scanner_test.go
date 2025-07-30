@@ -1786,6 +1786,23 @@ func TestSecretScannerWithStreaming(t *testing.T) {
 			},
 		},
 		{
+			name: "multi-line secret exceeding overlap size (known limitation)",
+			input: strings.Repeat("x", 920) + "\n" + // Position key at chunk boundary (1024 - ~100 bytes for key)
+				"-----BEGIN RSA PRIVATE KEY-----\n" + // at offset 921
+				"MIIEpAIBAAKCAQEA1234567890abcdefghijklmnopqrstuvwxyz\n" +
+				"ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnop\n" +
+				"qrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12345678\n" +
+				"-----END RSA PRIVATE KEY-----\n" +
+				strings.Repeat("z", 460), // suffix padding
+			bufferSize:  1024,
+			overlapSize: 100, // Too small to capture the entire key
+			configPath:  filepath.Join("testdata", "skip-test.yaml"),
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: nil, // Key won't be detected as it spans beyond the overlap
+			},
+		},
+		{
 			name:        "no secrets in any chunk",
 			input:       strings.Repeat("this is just normal content without any secrets in it at all\n", 50),
 			bufferSize:  512,

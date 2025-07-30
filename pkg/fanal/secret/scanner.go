@@ -38,8 +38,8 @@ const (
 	// DefaultOverlap is the number of bytes to overlap between chunks
 	// This ensures that secrets spanning chunk boundaries are not missed
 	// Must be large enough to contain the longest possible secret pattern
-	// 2KB should be sufficient for most secret types while keeping memory usage low
-	DefaultOverlap = 2048 // 2KB overlap for boundary handling
+	// 4KB is sufficient for all secret types including RSA 4096-bit keys
+	DefaultOverlap = 4096 // 4KB overlap for boundary handling
 )
 
 type Scanner struct {
