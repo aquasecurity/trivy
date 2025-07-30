@@ -8,6 +8,7 @@ import (
 	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ubuntu"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
@@ -65,6 +66,7 @@ var (
 		"23.10":     time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
 		"24.04":     time.Date(2034, 3, 31, 23, 59, 59, 0, time.UTC),
 		"24.10":     time.Date(2025, 7, 9, 23, 59, 59, 0, time.UTC),
+		"25.04":     time.Date(2026, 1, 16, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -104,7 +106,10 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
 		osVer = s.versionFromEolDates(ctx, osVer)
-		advisories, err := s.vs.Get(osVer, pkg.SrcName)
+		advisories, err := s.vs.Get(db.GetParams{
+			Release: osVer,
+			PkgName: pkg.SrcName,
+		})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Ubuntu advisories: %w", err)
 		}

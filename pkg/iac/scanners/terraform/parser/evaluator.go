@@ -142,6 +142,14 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	e.blocks = e.expandBlocks(e.blocks)
 	e.blocks = e.expandBlocks(e.blocks)
 
+	// Re-evaluate locals after all expansions to ensure computed locals
+	// that depend on expanded resources get the correct values
+	e.ctx.Replace(e.getValuesByBlockType("locals"), "local")
+
+	// Final expansion round to handle any previously deferred for_each blocks
+	// that now have correct local values
+	e.blocks = e.expandBlockForEaches(e.blocks)
+
 	// rootModule is initialized here, but not fully evaluated until all submodules are evaluated.
 	// Initializing it up front to keep the module hierarchy of parents correct.
 	rootModule := terraform.NewModule(e.projectRootPath, e.modulePath, e.blocks, e.ignores)
@@ -163,7 +171,7 @@ func (e *evaluator) evaluateSubmodules(ctx context.Context, parent *terraform.Mo
 
 	e.logger.Debug("Starting submodules evaluation...")
 
-	for i := 0; i < maxContextIterations; i++ {
+	for i := range maxContextIterations {
 		changed := false
 		for _, sm := range submodules {
 			changed = changed || e.evaluateSubmodule(ctx, sm)
@@ -188,9 +196,7 @@ func (e *evaluator) evaluateSubmodules(ctx context.Context, parent *terraform.Mo
 		}
 
 		modules = append(modules, sm.modules...)
-		for k, v := range sm.fsMap {
-			fsMap[k] = v
-		}
+		maps.Copy(fsMap, sm.fsMap)
 	}
 
 	e.logger.Debug("Finished processing submodule(s).", log.Int("count", len(modules)))
@@ -260,7 +266,7 @@ func (e *evaluator) evaluateSubmodule(ctx context.Context, sm *submodule) bool {
 
 func (e *evaluator) evaluateSteps() {
 	var lastContext hcl.EvalContext
-	for i := 0; i < maxContextIterations; i++ {
+	for i := range maxContextIterations {
 
 		e.logger.Debug("Starting iteration", log.Int("iteration", i))
 		e.evaluateStep()
@@ -273,9 +279,7 @@ func (e *evaluator) evaluateSteps() {
 		if len(e.ctx.Inner().Variables) != len(lastContext.Variables) {
 			lastContext.Variables = make(map[string]cty.Value, len(e.ctx.Inner().Variables))
 		}
-		for k, v := range e.ctx.Inner().Variables {
-			lastContext.Variables[k] = v
-		}
+		maps.Copy(lastContext.Variables, e.ctx.Inner().Variables)
 	}
 }
 
@@ -309,7 +313,7 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks) terraform.Bloc
 
 		forEachAttr := block.GetAttribute("for_each")
 
-		if forEachAttr.IsNil() || block.IsExpanded() || !isBlockSupportsForEachMetaArgument(block) {
+		if forEachAttr.IsNil() || block.IsExpanded() || !isBlockSupportsForEachMetaArgument(block) || e.shouldDeferForEachExpansion(forEachAttr) {
 			forEachFiltered = append(forEachFiltered, block)
 			continue
 		}
@@ -545,7 +549,8 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 			}
 			values[b.Label()] = val
 		case "locals", "moved", "import":
-			maps.Copy(values, b.Values().AsValueMap())
+			localValues := b.Values().AsValueMap()
+			maps.Copy(values, localValues)
 		case "provider", "module", "check":
 			if b.Label() == "" {
 				continue
@@ -597,12 +602,16 @@ func (e *evaluator) getResources() map[string]cty.Value {
 			typeValues = make(map[string]cty.Value)
 			values[ref.TypeLabel()] = typeValues
 		}
-		typeValues[ref.NameLabel()] = blockInstanceValues(b, typeValues, b.Values())
+
+		instanceVal := blockInstanceValues(b, typeValues, b.Values())
+		typeValues[ref.NameLabel()] = instanceVal
 	}
 
-	return lo.MapValues(values, func(v map[string]cty.Value, _ string) cty.Value {
+	result := lo.MapValues(values, func(v map[string]cty.Value, _ string) cty.Value {
 		return cty.ObjectVal(v)
 	})
+
+	return result
 }
 
 // blockInstanceValues returns a cty.Value containing the values of the block instances.
@@ -639,4 +648,53 @@ func blockInstanceValues(b *terraform.Block, typeValues map[string]cty.Value, va
 
 func isForEachKey(key cty.Value) bool {
 	return key.Type().Equals(cty.Number) || key.Type().Equals(cty.String)
+}
+
+func (e *evaluator) shouldDeferForEachExpansion(forEachAttr *terraform.Attribute) bool {
+	// Check if the for_each references a local value
+	for _, ref := range forEachAttr.AllReferences() {
+		if ref.BlockType().Name() == "locals" {
+			// Get the local value from context
+			localName := ref.NameLabel()
+			if localVal := e.ctx.Get("local", localName); localVal != cty.NilVal && localVal.IsKnown() {
+				// Check if this local contains unresolved dynamic values or looks like
+				// it was computed from a single resource object instead of an expanded collection
+				if e.localHasDynamicValues(localVal) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func (e *evaluator) localHasDynamicValues(localVal cty.Value) bool {
+	if !localVal.Type().IsObjectType() {
+		return false
+	}
+
+	valueMap := localVal.AsValueMap()
+	if valueMap == nil {
+		return false
+	}
+
+	// Check if the local contains DynamicVal which indicates unresolved references
+	for _, val := range valueMap {
+		if val.Type() == cty.DynamicPseudoType {
+			return true
+		}
+
+		// If it's an object, check recursively for dynamic values
+		if val.Type().IsObjectType() {
+			if subMap := val.AsValueMap(); subMap != nil {
+				for _, subVal := range subMap {
+					if subVal.Type() == cty.DynamicPseudoType {
+						return true
+					}
+				}
+			}
+		}
+	}
+
+	return false
 }

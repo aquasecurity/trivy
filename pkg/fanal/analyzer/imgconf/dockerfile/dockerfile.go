@@ -14,21 +14,17 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/misconf"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
-var disabledChecks = []misconf.DisabledCheck{
-	{
-		ID: "DS007", Scanner: string(analyzer.TypeHistoryDockerfile),
-		Reason: "See " + doc.URL("docs/target/container_image", "disabled-checks"),
-	},
-	{
-		ID: "DS016", Scanner: string(analyzer.TypeHistoryDockerfile),
-		Reason: "See " + doc.URL("docs/target/container_image", "disabled-checks"),
-	},
-}
+var (
+	disabledChecks = set.New("AVD-DS-0007", "AVD-DS-0016")
+	reason         = "See " + doc.URL("docs/target/container_image", "disabled-checks")
+)
 
 const analyzerVersion = 1
 
@@ -41,7 +37,6 @@ type historyAnalyzer struct {
 }
 
 func newHistoryAnalyzer(opts analyzer.ConfigAnalyzerOptions) (analyzer.ConfigAnalyzer, error) {
-	opts.MisconfScannerOption.DisabledChecks = append(opts.MisconfScannerOption.DisabledChecks, disabledChecks...)
 	s, err := misconf.NewScanner(detection.FileTypeDockerfile, opts.MisconfScannerOption)
 	if err != nil {
 		return nil, xerrors.Errorf("misconfiguration scanner error: %w", err)
@@ -72,14 +67,15 @@ func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnal
 		return nil, nil
 	}
 
+	misconfig := misconfs[0]
+	misconfig.Failures = filterDisabledChecks(misconfig.Failures)
 	return &analyzer.ConfigAnalysisResult{
-		Misconfiguration: &misconfs[0],
+		Misconfiguration: &misconfig,
 	}, nil
 }
 
 func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 	dockerfile := new(bytes.Buffer)
-	var userFound bool
 	baseLayerIndex := image.GuessBaseImageIndex(cfg.History)
 	for i := baseLayerIndex + 1; i < len(cfg.History); i++ {
 		h := cfg.History[i]
@@ -104,7 +100,6 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 		case strings.HasPrefix(h.CreatedBy, "USER"):
 			// USER instruction
 			createdBy = h.CreatedBy
-			userFound = true
 		case strings.HasPrefix(h.CreatedBy, "HEALTHCHECK"):
 			// HEALTHCHECK instruction
 			createdBy = buildHealthcheckInstruction(cfg.Config.Healthcheck)
@@ -122,7 +117,8 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 		dockerfile.WriteString(strings.TrimSpace(createdBy) + "\n")
 	}
 
-	if !userFound && cfg.Config.User != "" {
+	// The user can be changed from the config file or with the `--user` flag (for docker CLI), so we need to add this user to avoid incorrect user detection
+	if cfg.Config.User != "" {
 		user := fmt.Sprintf("USER %s", cfg.Config.User)
 		dockerfile.WriteString(user)
 	}
@@ -173,4 +169,17 @@ func (a *historyAnalyzer) Type() analyzer.Type {
 
 func (a *historyAnalyzer) Version() int {
 	return analyzerVersion
+}
+
+func filterDisabledChecks(results types.MisconfResults) types.MisconfResults {
+	var filtered types.MisconfResults
+	for _, r := range results {
+		if disabledChecks.Contains(r.AVDID) {
+			log.WithPrefix("image history analyzer").Info("Skip disabled check",
+				log.String("ID", r.AVDID), log.String("reason", reason))
+			continue
+		}
+		filtered = append(filtered, r)
+	}
+	return filtered
 }

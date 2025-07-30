@@ -8,9 +8,10 @@ import (
 
 var (
 	IncludeDevDepsFlag = Flag[bool]{
-		Name:       "include-dev-deps",
-		ConfigName: "pkg.include-dev-deps",
-		Usage:      "include development dependencies in the report (supported: npm, yarn, gradle)",
+		Name:          "include-dev-deps",
+		ConfigName:    "pkg.include-dev-deps",
+		Usage:         "include development dependencies in the report (supported: npm, yarn, gradle)",
+		TelemetrySafe: true,
 	}
 	PkgTypesFlag = Flag[[]string]{
 		Name:       "pkg-types",
@@ -25,13 +26,15 @@ var (
 				Deprecated: true, // --vuln-type was renamed to --pkg-types
 			},
 		},
+		TelemetrySafe: true,
 	}
 	PkgRelationshipsFlag = Flag[[]string]{
-		Name:       "pkg-relationships",
-		ConfigName: "pkg.relationships",
-		Default:    xstrings.ToStringSlice(ftypes.Relationships),
-		Values:     xstrings.ToStringSlice(ftypes.Relationships),
-		Usage:      "list of package relationships",
+		Name:          "pkg-relationships",
+		ConfigName:    "pkg.relationships",
+		Default:       xstrings.ToStringSlice(ftypes.Relationships),
+		Values:        xstrings.ToStringSlice(ftypes.Relationships),
+		Usage:         "list of package relationships",
+		TelemetrySafe: true,
 	}
 )
 

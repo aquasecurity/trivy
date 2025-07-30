@@ -48,6 +48,8 @@ var (
 		// https://setuptools.readthedocs.io/en/latest/deprecated/python_eggs.html#eggs-and-their-formats
 		".egg-info",
 		".egg-info/PKG-INFO",
+		// https://github.com/aquasecurity/trivy/issues/9171
+		".egg-info/METADATA",
 	}
 )
 

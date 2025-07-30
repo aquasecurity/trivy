@@ -28,7 +28,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: dist/
-          key: ${{ runner.os }}-bins-${{github.workflow}}-${{github.sha}}
+          key: ${{ runner.os }}-bins-${{ github.workflow }}-${{ github.sha }}
 
         # Upload artifacts
       - name: Upload artifacts (trivy_Linux-64bit)
@@ -58,3 +58,10 @@ jobs:
           name: trivy_macOS-ARM64
           path: dist/trivy_*_macOS-ARM64.tar.gz
           if-no-files-found: error
+
+      - name: Delete cache after upload
+        run: |
+          gh cache delete "$CACHE_KEY" --repo "${{ github.repository }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CACHE_KEY: ${{ runner.os }}-bins-${{ github.workflow }}-${{ github.sha }}

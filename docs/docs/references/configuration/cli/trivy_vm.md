@@ -155,6 +155,7 @@ trivy vm [flags] VM_IMAGE
                                             - govulndb
                                             - echo
                                             - minimos
+                                            - rootio
                                             - auto
                                            (default [auto])
 ```

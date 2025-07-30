@@ -18,14 +18,7 @@
           "Misconfigurations": [
             {
               "AVDID": "AVD-KSV012",
-              "Status": "FAIL",
-              "Layer": {},
-              "CauseMetadata": {
-                "Code": {
-                  "Lines": null
-                },
-                "RenderedCause": {}
-              }
+              "Status": "FAIL"
             }
           ]
         }
@@ -42,14 +35,7 @@
           "Misconfigurations": [
             {
               "AVDID": "AVD-KSV013",
-              "Status": "FAIL",
-              "Layer": {},
-              "CauseMetadata": {
-                "Code": {
-                  "Lines": null
-                },
-                "RenderedCause": {}
-              }
+              "Status": "FAIL"
             }
           ]
         }

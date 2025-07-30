@@ -42,6 +42,7 @@ jobs:
         with:
           version: v2.1
           args: --verbose
+          skip-save-cache: true  # Restore cache from main branch but don't save new cache
         if: matrix.operating-system == 'ubuntu-latest'
 
       - name: Check if linter failed
@@ -185,6 +186,25 @@ jobs:
       - name: Run vm integration tests
         run: |
           mage test:vm
+
+  e2e-test:
+    name: E2E Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.6
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
+
+      - name: Run E2E tests
+        run: mage test:e2e
 
   build-test:
     name: Build Test

@@ -27,31 +27,35 @@ var (
 		Persistent: true,
 	}
 	QuietFlag = Flag[bool]{
-		Name:       "quiet",
-		ConfigName: "quiet",
-		Shorthand:  "q",
-		Usage:      "suppress progress bar and log output",
-		Persistent: true,
+		Name:          "quiet",
+		ConfigName:    "quiet",
+		Shorthand:     "q",
+		Usage:         "suppress progress bar and log output",
+		Persistent:    true,
+		TelemetrySafe: true,
 	}
 	DebugFlag = Flag[bool]{
-		Name:       "debug",
-		ConfigName: "debug",
-		Shorthand:  "d",
-		Usage:      "debug mode",
-		Persistent: true,
+		Name:          "debug",
+		ConfigName:    "debug",
+		Shorthand:     "d",
+		Usage:         "debug mode",
+		Persistent:    true,
+		TelemetrySafe: true,
 	}
 	InsecureFlag = Flag[bool]{
-		Name:       "insecure",
-		ConfigName: "insecure",
-		Usage:      "allow insecure server connections",
-		Persistent: true,
+		Name:          "insecure",
+		ConfigName:    "insecure",
+		Usage:         "allow insecure server connections",
+		Persistent:    true,
+		TelemetrySafe: true,
 	}
 	TimeoutFlag = Flag[time.Duration]{
-		Name:       "timeout",
-		ConfigName: "timeout",
-		Default:    time.Second * 300, // 5 mins
-		Usage:      "timeout",
-		Persistent: true,
+		Name:          "timeout",
+		ConfigName:    "timeout",
+		Default:       time.Second * 300, // 5 mins
+		Usage:         "timeout",
+		Persistent:    true,
+		TelemetrySafe: true,
 	}
 	CacheDirFlag = Flag[string]{
 		Name:       "cache-dir",
@@ -66,6 +70,14 @@ var (
 		Usage:      "write the default config to trivy-default.yaml",
 		Persistent: true,
 	}
+	TraceHTTPFlag = Flag[bool]{
+		Name:          "trace-http",
+		ConfigName:    "trace.http",
+		Usage:         "[DANGEROUS] enable HTTP request/response trace logging (may expose sensitive data)",
+		Persistent:    true,
+		TelemetrySafe: true,
+		Internal:      true, // Hidden from help output, intended for maintainer debugging only
+	}
 )
 
 // GlobalFlagGroup composes global flags
@@ -78,6 +90,7 @@ type GlobalFlagGroup struct {
 	Timeout               *Flag[time.Duration]
 	CacheDir              *Flag[string]
 	GenerateDefaultConfig *Flag[bool]
+	TraceHTTP             *Flag[bool]
 }
 
 // GlobalOptions defines flags and other configuration parameters for all the subcommands
@@ -90,6 +103,7 @@ type GlobalOptions struct {
 	Timeout               time.Duration
 	CacheDir              string
 	GenerateDefaultConfig bool
+	TraceHTTP             bool
 }
 
 func NewGlobalFlagGroup() *GlobalFlagGroup {
@@ -102,6 +116,7 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 		Timeout:               TimeoutFlag.Clone(),
 		CacheDir:              CacheDirFlag.Clone(),
 		GenerateDefaultConfig: GenerateDefaultConfigFlag.Clone(),
+		TraceHTTP:             TraceHTTPFlag.Clone(),
 	}
 }
 
@@ -119,6 +134,7 @@ func (f *GlobalFlagGroup) Flags() []Flagger {
 		f.Timeout,
 		f.CacheDir,
 		f.GenerateDefaultConfig,
+		f.TraceHTTP,
 	}
 }
 
@@ -152,6 +168,7 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 		Timeout:               f.Timeout.Value(),
 		CacheDir:              f.CacheDir.Value(),
 		GenerateDefaultConfig: f.GenerateDefaultConfig.Value(),
+		TraceHTTP:             f.TraceHTTP.Value(),
 	}
 	return nil
 }

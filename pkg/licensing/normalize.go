@@ -154,9 +154,11 @@ var mapping = map[string]expr.SimpleExpr{
 	"GFDL-1.1":                         licence(expr.GFDL11, false),
 	"GFDL-1.1-INVARIANTS":              licence(expr.GFDL11WithInvariants, false),
 	"GFDL-1.1-NO-INVARIANTS":           licence(expr.GFDL11NoInvariants, false),
+	"GFDL-NIV-1.1":                     licence(expr.GFDL11NoInvariants, false),
 	"GFDL-1.2":                         licence(expr.GFDL12, false),
 	"GFDL-1.2-INVARIANTS":              licence(expr.GFDL12WithInvariants, false),
 	"GFDL-1.2-NO-INVARIANTS":           licence(expr.GFDL12NoInvariants, false),
+	"GFDL-NIV-1.2":                     licence(expr.GFDL12NoInvariants, false),
 	"GFDL-1.3":                         licence(expr.GFDL13, false),
 	"GFDL-1.3-INVARIANTS":              licence(expr.GFDL13WithInvariants, false),
 	"GFDL-1.3-NO-INVARIANTS":           licence(expr.GFDL13NoInvariants, false),
@@ -618,10 +620,7 @@ func isLicenseText(str string) bool {
 
 func TrimLicenseText(text string) string {
 	s := strings.Split(text, " ")
-	n := len(s)
-	if n > 3 {
-		n = 3
-	}
+	n := min(len(s), 3)
 	return strings.Join(s[:n], " ") + "..."
 }
 
@@ -751,6 +750,7 @@ func LaxSplitLicenses(str string) []string {
 		return nil
 	}
 	var licenses []string
+	var afterWith bool
 	str = versionRegexp.ReplaceAllString(str, "$1-$4")
 	for s := range strings.FieldsSeq(str) {
 		s = strings.Trim(s, "()")
@@ -759,8 +759,19 @@ func LaxSplitLicenses(str string) []string {
 			continue
 		case "AND", "OR":
 			continue
+		case "WITH":
+			afterWith = true
+			continue
 		default:
-			licenses = append(licenses, Normalize(s))
+			normalizedLicense := Normalize(s)
+			if afterWith && len(licenses) > 0 {
+				// If we found "WITH" operator, we should not split the license
+				// e.g. "GPL-2 WITH Autoconf exception" => {"GPL-2 WITH Autoconf exception"}
+				licenses[len(licenses)-1] += " WITH " + normalizedLicense
+				afterWith = false
+			} else {
+				licenses = append(licenses, normalizedLicense)
+			}
 		}
 	}
 	return licenses

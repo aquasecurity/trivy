@@ -364,6 +364,23 @@ license:
 !!! note
     `regex` is only used for text licenses and can't be used to configure license IDs.
 
+### Enabling a Subset of Package Types
+
+It's possible to only enable certain package types if you prefer.
+You can do so by passing the `--pkg-types` option.
+This flag takes a comma-separated list of package types.
+
+Available values:
+
+- os
+    - Scan OS packages managed by the OS package manager (e.g. `dpkg`, `yum`, `apk`).
+- library
+    - Scan language-specific packages (e.g. packages installed by `pip`, `npm`, or `gem`).
+
+```bash
+$ trivy image --pkg-types os ruby:2.4.0
+```
+
 [^1]: See the list of supported language files [here](../coverage/language/index.md).
 [^2]: Some lock files require additional files (e.g. files from the cache directory) to detect licenses. Check [coverage][coverage] for more information.
 

@@ -14,6 +14,8 @@ linters:
               desc: "Use 'slices' instead"
             - pkg: "golang.org/x/exp/maps"
               desc: "Use 'maps' or 'github.com/samber/lo' instead"
+            - pkg: "io/ioutil"
+              desc: "io/ioutil is deprecated. Use 'io' or 'os' instead"
     dupl:
       threshold: 100
     errcheck:

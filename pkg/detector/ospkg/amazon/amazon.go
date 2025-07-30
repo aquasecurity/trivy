@@ -8,6 +8,7 @@ import (
 	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/amazon"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -21,7 +22,7 @@ var (
 		// https://aws.amazon.com/jp/blogs/aws/update-on-amazon-linux-ami-end-of-life/
 		"1": time.Date(2023, 12, 31, 23, 59, 59, 0, time.UTC),
 		// https://aws.amazon.com/amazon-linux-2/faqs/?nc1=h_ls
-		"2": time.Date(2025, 6, 30, 23, 59, 59, 0, time.UTC),
+		"2": time.Date(2026, 6, 30, 23, 59, 59, 0, time.UTC),
 		// Amazon Linux 2022 was renamed to 2023. AL2022 is not currently supported.
 		"2023": time.Date(2028, 3, 15, 23, 59, 59, 0, time.UTC),
 	}
@@ -53,7 +54,10 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := s.ac.Get(osVer, pkg.Name)
+		advisories, err := s.ac.Get(db.GetParams{
+			Release: osVer,
+			PkgName: pkg.Name,
+		})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get amazon advisories: %w", err)
 		}

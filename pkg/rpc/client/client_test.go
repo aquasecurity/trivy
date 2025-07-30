@@ -1,7 +1,6 @@
 package client
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -18,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 	"github.com/aquasecurity/trivy/rpc/common"
 	rpc "github.com/aquasecurity/trivy/rpc/scanner"
 )
@@ -236,11 +236,7 @@ func TestScanner_ScanServerInsecure(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := rpc.NewScannerProtobufClient(ts.URL, &http.Client{
-				Transport: &http.Transport{
-					TLSClientConfig: &tls.Config{
-						InsecureSkipVerify: tt.insecure,
-					},
-				},
+				Transport: xhttp.NewTransport(xhttp.Options{Insecure: tt.insecure}),
 			})
 			s := NewService(ServiceOption{Insecure: tt.insecure}, WithRPCClient(c))
 			_, err := s.Scan(t.Context(), "dummy", "", nil, types.ScanOptions{})

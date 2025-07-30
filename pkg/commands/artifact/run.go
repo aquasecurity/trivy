@@ -34,6 +34,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scan"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
 // TargetKind represents what kind of artifact Trivy scans
@@ -46,6 +47,7 @@ const (
 	TargetRepository     TargetKind = "repo"
 	TargetSBOM           TargetKind = "sbom"
 	TargetVM             TargetKind = "vm"
+	TargetK8s            TargetKind = "k8s"
 )
 
 var (
@@ -112,18 +114,20 @@ func WithInitializeService(f InitializeScanService) RunnerOption {
 
 // NewRunner initializes Runner that provides scanning functionalities.
 // It is possible to return SkipScan and it must be handled by caller.
-func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOption) (Runner, error) {
+func NewRunner(ctx context.Context, cliOptions flag.Options, targetKind TargetKind, opts ...RunnerOption) (Runner, error) {
 	r := &runner{}
 	for _, opt := range opts {
 		opt(r)
 	}
 
-	// If the user has not disabled notices or is running in quiet mode
-	r.versionChecker = notification.NewVersionChecker(
-		notification.WithSkipVersionCheck(cliOptions.SkipVersionCheck),
-		notification.WithQuietMode(cliOptions.Quiet),
-		notification.WithTelemetryDisabled(cliOptions.DisableTelemetry),
-	)
+	// Set the default HTTP transport
+	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
+		Insecure:  cliOptions.Insecure,
+		Timeout:   cliOptions.Timeout,
+		TraceHTTP: cliOptions.TraceHTTP,
+	}))
+
+	r.versionChecker = notification.NewVersionChecker(string(targetKind), &cliOptions)
 
 	// Update the vulnerability database if needed.
 	if err := r.initDB(ctx, cliOptions); err != nil {
@@ -150,7 +154,7 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 	// only do this if the user has not disabled notices or is running
 	// in quiet mode
 	if r.versionChecker != nil {
-		r.versionChecker.RunUpdateCheck(ctx, os.Args[1:])
+		r.versionChecker.RunUpdateCheck(ctx)
 	}
 
 	return r, nil
@@ -417,7 +421,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 }
 
 func run(ctx context.Context, opts flag.Options, targetKind TargetKind) (types.Report, error) {
-	r, err := NewRunner(ctx, opts)
+	r, err := NewRunner(ctx, opts, targetKind)
 	if err != nil {
 		if errors.Is(err, SkipScan) {
 			return types.Report{}, nil
@@ -708,7 +712,7 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 	}
 
 	misconfOpts := misconf.ScannerOption{
-		Trace:                    opts.Trace,
+		Trace:                    opts.RegoOptions.Trace,
 		Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
 		PolicyPaths:              policyPaths,
 		DataPaths:                opts.DataPaths,

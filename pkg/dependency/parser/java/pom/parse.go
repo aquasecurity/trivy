@@ -23,6 +23,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -742,7 +743,7 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) 
 		return "", nil
 	}
 
-	client := &http.Client{}
+	client := xhttp.Client()
 	resp, err := client.Do(req)
 	if err != nil {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
@@ -776,7 +777,7 @@ func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom
 		return nil, nil
 	}
 
-	client := &http.Client{}
+	client := xhttp.Client()
 	resp, err := client.Do(req)
 	if err != nil {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
@@ -831,4 +832,12 @@ func packageID(name, version string) string {
 // cf. https://github.com/apache/maven/blob/259404701402230299fe05ee889ecdf1c9dae816/maven-artifact/src/main/java/org/apache/maven/artifact/DefaultArtifact.java#L482-L486
 func isSnapshot(ver string) bool {
 	return strings.HasSuffix(ver, "SNAPSHOT") || ver == "LATEST"
+}
+
+func isDirectory(path string) (bool, error) {
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		return false, err
+	}
+	return fileInfo.IsDir(), err
 }

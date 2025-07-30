@@ -156,7 +156,7 @@ trivy image [flags] IMAGE_NAME
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --token string                      for authentication in client/server mode
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")
-      --trace                             enable more verbose trace output for custom queries
+      --trace-rego                        enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
       --vex strings                       [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
       --vuln-severity-source strings      order of data sources for selecting vulnerability severity level
@@ -190,6 +190,7 @@ trivy image [flags] IMAGE_NAME
                                             - govulndb
                                             - echo
                                             - minimos
+                                            - rootio
                                             - auto
                                            (default [auto])
 ```

@@ -2,20 +2,15 @@ package remote
 
 import (
 	"context"
-	"crypto/tls"
 	"errors"
-	"fmt"
-	"net"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/authn/github"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
-	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	v1types "github.com/google/go-containerregistry/pkg/v1/types"
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
@@ -24,7 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/image/registry"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/version/app"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
 type Descriptor = remote.Descriptor
@@ -32,13 +27,8 @@ type Descriptor = remote.Descriptor
 // Get is a wrapper of google/go-containerregistry/pkg/v1/remote.Get
 // so that it can try multiple authentication methods.
 func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) (*Descriptor, error) {
-	tr, err := httpTransport(option)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to create http transport: %w", err)
-	}
-
 	return tryWithMirrors(ref, option, func(r name.Reference) (*Descriptor, error) {
-		return tryGet(ctx, tr, r, option)
+		return tryGet(ctx, xhttp.Transport(ctx), r, option)
 	})
 }
 
@@ -81,13 +71,8 @@ func tryGet(ctx context.Context, tr http.RoundTripper, ref name.Reference, optio
 // Image is a wrapper of google/go-containerregistry/pkg/v1/remote.Image
 // so that it can try multiple authentication methods.
 func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions) (v1.Image, error) {
-	tr, err := httpTransport(option)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to create http transport: %w", err)
-	}
-
 	return tryWithMirrors(ref, option, func(r name.Reference) (v1.Image, error) {
-		return tryImage(ctx, tr, r, option)
+		return tryImage(ctx, xhttp.Transport(ctx), r, option)
 	})
 }
 
@@ -148,16 +133,11 @@ func tryImage(ctx context.Context, tr http.RoundTripper, ref name.Reference, opt
 // Referrers is a wrapper of google/go-containerregistry/pkg/v1/remote.Referrers
 // so that it can try multiple authentication methods.
 func Referrers(ctx context.Context, d name.Digest, option types.RegistryOptions) (v1.ImageIndex, error) {
-	tr, err := httpTransport(option)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to create http transport: %w", err)
-	}
-
 	var errs error
 	// Try each authentication method until it succeeds
 	for _, authOpt := range authOptions(ctx, d, option) {
 		remoteOpts := []remote.Option{
-			remote.WithTransport(tr),
+			remote.WithTransport(xhttp.Transport(ctx)),
 			authOpt,
 		}
 		index, err := remote.Referrers(d, remoteOpts...)
@@ -195,26 +175,6 @@ func registryMirrors(hostRef name.Reference, option types.RegistryOptions) ([]na
 		}
 	}
 	return mirrors, nil
-}
-
-func httpTransport(option types.RegistryOptions) (http.RoundTripper, error) {
-	d := &net.Dialer{
-		Timeout: 10 * time.Minute,
-	}
-	tr := http.DefaultTransport.(*http.Transport).Clone()
-	tr.DialContext = d.DialContext
-	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: option.Insecure}
-
-	if len(option.ClientCert) != 0 && len(option.ClientKey) != 0 {
-		cert, err := tls.X509KeyPair(option.ClientCert, option.ClientKey)
-		if err != nil {
-			return nil, err
-		}
-		tr.TLSClientConfig.Certificates = []tls.Certificate{cert}
-	}
-
-	tripper := transport.NewUserAgent(tr, fmt.Sprintf("trivy/%s", app.Version()))
-	return tripper, nil
 }
 
 func authOptions(ctx context.Context, ref name.Reference, option types.RegistryOptions) []remote.Option {

@@ -109,6 +109,26 @@ $ trivy repo --scanners license (REPO_PATH | REPO_URL)
 Trivy can generate SBOM for code repositories.
 See [here](../supply-chain/sbom.md) for the detail.
 
+## Git Metadata
+When scanning git repositories (both local and remote), Trivy automatically extracts and includes git metadata in the scan results.
+This metadata provides context about the scanned repository.
+
+The metadata includes information such as:
+
+- Repository URL
+- Branch name
+- Tags
+- Commit details (hash, message, commiter)
+- Author information
+
+This feature works automatically for any git repository.
+When using JSON format output, the git metadata will be included in the `Metadata` field.
+For detailed information about the available fields, please refer to the JSON output of your scan results.
+
+```bash
+$ trivy repo --format json <repo-name>
+```
+
 ## Scan Cache
 When scanning git repositories, it stores analysis results in the cache, using the latest commit hash as the key.
 Note that the cache is not used when the repository is dirty, otherwise Trivy will miss the files that are not committed.

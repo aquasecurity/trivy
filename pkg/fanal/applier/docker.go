@@ -238,7 +238,9 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	// De-duplicate same debian packages from different dirs
 	// cf. https://github.com/aquasecurity/trivy/issues/8297
 	mergedLayer.Packages = xslices.ZeroToNil(lo.UniqBy(mergedLayer.Packages, func(pkg ftypes.Package) string {
-		return cmp.Or(pkg.ID, fmt.Sprintf("%s@%s", pkg.Name, utils.FormatVersion(pkg)))
+		id := cmp.Or(pkg.ID, fmt.Sprintf("%s@%s", pkg.Name, utils.FormatVersion(pkg)))
+		// To avoid deduplicating packages with the same ID but from different locations (e.g. RPM archives), check the file path.
+		return fmt.Sprintf("%s/%s", id, pkg.FilePath)
 	}))
 
 	for _, app := range mergedLayer.Applications {
