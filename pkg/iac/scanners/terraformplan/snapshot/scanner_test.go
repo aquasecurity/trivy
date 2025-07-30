@@ -89,6 +89,10 @@ func Test_ScanFS(t *testing.T) {
 			expectedIDs: []string{"ID001"},
 		},
 		{
+			dir:         "with-remote-module",
+			expectedIDs: []string{"ID001"},
+		},
+		{
 			dir:         "with-var",
 			expectedIDs: []string{"ID001"},
 		},

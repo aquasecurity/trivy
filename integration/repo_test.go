@@ -397,26 +397,10 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/helm_badname.json.golden",
 		},
 		{
-			// the command to generate a terraform plan file
-			// docker run --rm \
-			// -v .:/workdir -w /workdir \
-			// --entrypoint /bin/sh hashicorp/terraform:1.7.3 \
-			// -c "\
-			//  git config --global --add safe.directory '*' && \
-			//  terraform init && \
-			//  terraform show -json tfplan > tfplan.json"
-			name: "terraform plan file with remote module",
-			args: repoTestArgs{
-				scanner: types.MisconfigScanner,
-				input:   "testdata/fixtures/repo/terraform-plan/remote-module/tfplan",
-			},
-			golden: "testdata/terraform-plan-remote-module.json.golden",
-		},
-		{
 			name: "terraform config with remote module",
 			args: repoTestArgs{
 				scanner: types.MisconfigScanner,
-				input:   "testdata/fixtures/repo/terraform-plan/remote-module",
+				input:   "testdata/fixtures/repo/terraform/remote-module",
 			},
 			golden: "testdata/terraform-remote-module.json.golden",
 		},
