@@ -6,19 +6,21 @@ import (
 	"path"
 )
 
-const manifestSnapshotFile = ".terraform/modules/modules.json"
+const ManifestSnapshotFile = ".terraform/modules/modules.json"
 
-type modulesMetadata struct {
-	Modules []struct {
-		Key     string `json:"Key"`
-		Source  string `json:"Source"`
-		Version string `json:"Version"`
-		Dir     string `json:"Dir"`
-	} `json:"Modules"`
+type ModulesMetadata struct {
+	Modules []ModuleMetadata `json:"Modules"`
 }
 
-func loadModuleMetadata(target fs.FS, fullPath string) (*modulesMetadata, string, error) {
-	metadataPath := path.Join(fullPath, manifestSnapshotFile)
+type ModuleMetadata struct {
+	Key     string `json:"Key"`
+	Source  string `json:"Source"`
+	Version string `json:"Version"`
+	Dir     string `json:"Dir"`
+}
+
+func loadModuleMetadata(target fs.FS, fullPath string) (*ModulesMetadata, string, error) {
+	metadataPath := path.Join(fullPath, ManifestSnapshotFile)
 
 	f, err := target.Open(metadataPath)
 	if err != nil {
@@ -26,7 +28,7 @@ func loadModuleMetadata(target fs.FS, fullPath string) (*modulesMetadata, string
 	}
 	defer f.Close()
 
-	var metadata modulesMetadata
+	var metadata ModulesMetadata
 	if err := json.NewDecoder(f).Decode(&metadata); err != nil {
 		return nil, metadataPath, err
 	}
