@@ -353,8 +353,8 @@ func isUnlikelyAffected(pkg ftypes.Package, artifactType ftypes.ArtifactType) bo
 		return true
 	}
 
-	// Filter documentation, license, and debug packages regardless of artifact type
-	if isDocumentationPackage(pkg.Name) {
+	// Filter non-runtime packages regardless of artifact type
+	if isNonRuntimePackage(pkg.Name) {
 		return true
 	}
 
@@ -376,8 +376,11 @@ func isKernelPackage(pkg ftypes.Package) bool {
 	return false
 }
 
-// isDocumentationPackage checks if a package is a documentation, license, or debug package
-func isDocumentationPackage(pkgName string) bool {
+// isNonRuntimePackage checks if a package doesn't contribute to runtime functionality,
+// such as documentation, debug symbols, or license files. These packages are not used
+// during normal operation in production environments, making their vulnerabilities
+// unlikely to be exploitable at runtime.
+func isNonRuntimePackage(pkgName string) bool {
 	unlikelyPatterns := []string{
 		"-doc",
 		"-docs",

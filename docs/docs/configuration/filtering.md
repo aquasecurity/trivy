@@ -425,9 +425,10 @@ The `--ignore-unlikely-affected` flag filters out vulnerabilities in packages th
 Currently, this flag filters:
 
 - **Kernel packages in container images**: Since containers share the host's kernel, kernel packages within container images are not used and their vulnerabilities don't pose a risk.
-- **Documentation packages**: Packages with `-doc`, `-docs` suffixes are filtered as they contain only documentation files.
-- **Debug packages**: Packages with `-dbg`, `-debug` suffixes are filtered as they are typically not used in production.
-- **License packages**: Packages with `-license` suffix are filtered as they contain only license files.
+- **Non-runtime packages**: Packages that don't contribute to runtime functionality are filtered:
+    - Documentation packages (`-doc`, `-docs` suffixes)
+    - Debug symbol packages (`-dbg`, `-debug` suffixes)
+    - License packages (`-license` suffix)
 
 ```bash
 $ trivy image --ignore-unlikely-affected python:3.8.5
