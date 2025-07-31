@@ -11,11 +11,11 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/python"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	goversion "github.com/aquasecurity/go-version/pkg/version"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/python"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/packaging"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/pip"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
