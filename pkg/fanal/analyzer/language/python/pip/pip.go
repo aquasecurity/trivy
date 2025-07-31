@@ -113,6 +113,7 @@ func (a pipLibraryAnalyzer) pkgLicense(pkgName, pkgVer, spDir string) []string {
 	if metadataFile == nil {
 		return nil
 	}
+	defer metadataFile.Close()
 
 	metadataPkg, _, err := a.metadataParser.Parse(metadataFile)
 	if err != nil {
