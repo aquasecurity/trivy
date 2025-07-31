@@ -29,6 +29,10 @@ func Test_NormalizePkgName(t *testing.T) {
 			pkgName:  "green_gdk",
 			expected: "green-gdk",
 		},
+		{
+			pkgName:  "foo--bar__baz",
+			expected: "foo-bar-baz",
+		},
 	}
 
 	for _, tt := range tests {
