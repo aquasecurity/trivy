@@ -72,6 +72,7 @@ trivy vm [flags] VM_IMAGE
                                             - fix_deferred
                                             - end_of_life
       --ignore-unfixed                    display only fixed vulnerabilities
+      --ignore-unlikely-affected          ignore vulnerabilities in packages unlikely to affect the artifact (kernel, documentation, etc.)
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --include-non-failures              include successes, available with '--scanners misconfig'
       --java-db-repository strings        OCI repository(ies) to retrieve trivy-java-db in order of priority (default [mirror.gcr.io/aquasec/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1])

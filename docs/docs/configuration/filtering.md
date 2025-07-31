@@ -12,7 +12,8 @@ flowchart LR
     end
     subgraph Suppression
         Status --> Ignore("By Finding IDs")
-        Ignore --> Rego("By Rego")
+        Ignore --> Unlikely("By Unlikely Affected")
+        Unlikely --> Rego("By Rego")
         Rego --> VEX("By VEX")
     end
   end
@@ -232,6 +233,7 @@ $ trivy image --ignore-unfixed ruby:2.4.0
 You can filter the results by
 
 - [Finding IDs](#by-finding-ids)
+- [Unlikely Affected](#by-unlikely-affected)
 - [Rego](#by-rego)
 - [Vulnerability Exploitability Exchange (VEX)](#by-vulnerability-exploitability-exchange-vex)
 
@@ -408,6 +410,57 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 ```
 
 </details>
+
+### By Unlikely Affected
+
+|     Scanner      | Supported |
+|:----------------:|:---------:|
+|  Vulnerability   |     ✓     |
+| Misconfiguration |           |
+|      Secret      |           |
+|     License      |           |
+
+The `--ignore-unlikely-affected` flag filters out vulnerabilities in packages that are unlikely to affect the artifact in its operational context.
+
+Currently, this flag filters:
+
+- **Kernel packages in container images**: Since containers share the host's kernel, kernel packages within container images are not used and their vulnerabilities don't pose a risk.
+- **Documentation packages**: Packages with `-doc`, `-docs` suffixes are filtered as they contain only documentation files.
+- **Debug packages**: Packages with `-dbg`, `-debug` suffixes are filtered as they are typically not used in production.
+- **License packages**: Packages with `-license` suffix are filtered as they contain only license files.
+
+```bash
+$ trivy image --ignore-unlikely-affected python:3.8.5
+```
+
+To see which vulnerabilities were filtered, use the `--show-suppressed` flag:
+
+```bash
+$ trivy image --ignore-unlikely-affected --show-suppressed python:3.8.5
+```
+
+<details>
+<summary>Result</summary>
+
+```bash
+...
+Suppressed Vulnerabilities (Total: 2)
+
+┌────────────────┬───────────────┬──────────┬─────────┬────────────────────────────────────┬────────────────────────────┐
+│    Library     │ Vulnerability │ Severity │ Status  │             Statement              │           Source           │
+├────────────────┼───────────────┼──────────┼─────────┼────────────────────────────────────┼────────────────────────────┤
+│ linux-libc-dev │ CVE-2023-6270 │ HIGH     │ ignored │ Package is unlikely to be affected │ --ignore-unlikely-affected │
+│                ├───────────────┤          │         │                                    │                            │
+│                │ CVE-2021-3640 │          │         │                                    │                            │
+└────────────────┴───────────────┴──────────┴─────────┴────────────────────────────────────┴────────────────────────────┘
+```
+
+</details>
+
+This filtering is context-aware:
+
+- Kernel packages are only filtered in container images, not in filesystem or VM scans
+- Documentation and debug packages are filtered in all artifact types
 
 ### By Rego
 

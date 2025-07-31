@@ -186,12 +186,13 @@ func TestFilter(t *testing.T) {
 		}
 	)
 	type args struct {
-		report         types.Report
-		severities     []dbTypes.Severity
-		ignoreStatuses []dbTypes.Status
-		ignoreFile     string
-		policyFile     string
-		vexPath        string
+		report                 types.Report
+		severities             []dbTypes.Severity
+		ignoreStatuses         []dbTypes.Status
+		ignoreFile             string
+		policyFile             string
+		vexPath                string
+		ignoreUnlikelyAffected bool
 	}
 	tests := []struct {
 		name string
@@ -996,6 +997,416 @@ func TestFilter(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "filter unlikely affected packages",
+			args: args{
+				report: types.Report{
+					ArtifactType: ftypes.TypeContainerImage,
+					Results: types.Results{
+						{
+							Packages: []ftypes.Package{
+								{
+									ID:         "linux-headers-5.15.0-56-generic@5.15.0-56.62",
+									Name:       "linux-headers-5.15.0-56-generic",
+									Version:    "5.15.0-56.62",
+									SrcName:    "linux",
+									SrcVersion: "5.15.0",
+									Identifier: ftypes.PkgIdentifier{
+										UID: "kernel-01",
+									},
+								},
+								{
+									ID:         "linux-image-5.15.0-56-generic@5.15.0-56.62",
+									Name:       "linux-image-5.15.0-56-generic",
+									Version:    "5.15.0-56.62",
+									SrcName:    "linux",
+									SrcVersion: "5.15.0",
+									Identifier: ftypes.PkgIdentifier{
+										UID: "kernel-02",
+									},
+								},
+								{
+									ID:         "vim@8.0.1453",
+									Name:       "vim",
+									Version:    "8.0.1453",
+									SrcName:    "vim",
+									SrcVersion: "8.0.1453",
+									Identifier: ftypes.PkgIdentifier{
+										UID: "vim-01",
+									},
+								},
+								{
+									ID:         "vim-doc@8.0.1453",
+									Name:       "vim-doc",
+									Version:    "8.0.1453",
+									SrcName:    "vim",
+									SrcVersion: "8.0.1453",
+									Identifier: ftypes.PkgIdentifier{
+										UID: "vim-doc-01",
+									},
+								},
+								{
+									ID:         "libc-dbg@2.31",
+									Name:       "libc-dbg",
+									Version:    "2.31",
+									SrcName:    "glibc",
+									SrcVersion: "2.31",
+									Identifier: ftypes.PkgIdentifier{
+										UID: "libc-dbg-01",
+									},
+								},
+							},
+							Vulnerabilities: []types.DetectedVulnerability{
+								{
+									VulnerabilityID:  "CVE-2022-0001",
+									PkgName:          "linux-headers-5.15.0-56-generic",
+									InstalledVersion: "5.15.0-56.62",
+									FixedVersion:     "5.15.0-57.63",
+									PkgIdentifier: ftypes.PkgIdentifier{
+										UID: "kernel-01",
+									},
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityHigh.String(),
+									},
+								},
+								{
+									VulnerabilityID:  "CVE-2022-0002",
+									PkgName:          "linux-image-5.15.0-56-generic",
+									InstalledVersion: "5.15.0-56.62",
+									FixedVersion:     "5.15.0-57.63",
+									PkgIdentifier: ftypes.PkgIdentifier{
+										UID: "kernel-02",
+									},
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityHigh.String(),
+									},
+								},
+								{
+									VulnerabilityID:  "CVE-2022-0003",
+									PkgName:          "vim",
+									InstalledVersion: "8.0.1453",
+									FixedVersion:     "8.0.1454",
+									PkgIdentifier: ftypes.PkgIdentifier{
+										UID: "vim-01",
+									},
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityHigh.String(),
+									},
+								},
+								{
+									VulnerabilityID:  "CVE-2022-0004",
+									PkgName:          "vim-doc",
+									InstalledVersion: "8.0.1453",
+									FixedVersion:     "8.0.1454",
+									PkgIdentifier: ftypes.PkgIdentifier{
+										UID: "vim-doc-01",
+									},
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityHigh.String(),
+									},
+								},
+								{
+									VulnerabilityID:  "CVE-2022-0005",
+									PkgName:          "libc-dbg",
+									InstalledVersion: "2.31",
+									FixedVersion:     "2.32",
+									PkgIdentifier: ftypes.PkgIdentifier{
+										UID: "libc-dbg-01",
+									},
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityHigh.String(),
+									},
+								},
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityCritical,
+					dbTypes.SeverityHigh,
+					dbTypes.SeverityMedium,
+					dbTypes.SeverityLow,
+				},
+				ignoreUnlikelyAffected: true,
+			},
+			want: types.Report{
+				ArtifactType: ftypes.TypeContainerImage,
+				Results: types.Results{
+					{
+						Packages: []ftypes.Package{
+							{
+								ID:         "linux-headers-5.15.0-56-generic@5.15.0-56.62",
+								Name:       "linux-headers-5.15.0-56-generic",
+								Version:    "5.15.0-56.62",
+								SrcName:    "linux",
+								SrcVersion: "5.15.0",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "kernel-01",
+								},
+							},
+							{
+								ID:         "linux-image-5.15.0-56-generic@5.15.0-56.62",
+								Name:       "linux-image-5.15.0-56-generic",
+								Version:    "5.15.0-56.62",
+								SrcName:    "linux",
+								SrcVersion: "5.15.0",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "kernel-02",
+								},
+							},
+							{
+								ID:         "vim@8.0.1453",
+								Name:       "vim",
+								Version:    "8.0.1453",
+								SrcName:    "vim",
+								SrcVersion: "8.0.1453",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "vim-01",
+								},
+							},
+							{
+								ID:         "vim-doc@8.0.1453",
+								Name:       "vim-doc",
+								Version:    "8.0.1453",
+								SrcName:    "vim",
+								SrcVersion: "8.0.1453",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "vim-doc-01",
+								},
+							},
+							{
+								ID:         "libc-dbg@2.31",
+								Name:       "libc-dbg",
+								Version:    "2.31",
+								SrcName:    "glibc",
+								SrcVersion: "2.31",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "libc-dbg-01",
+								},
+							},
+						},
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2022-0003",
+								PkgName:          "vim",
+								InstalledVersion: "8.0.1453",
+								FixedVersion:     "8.0.1454",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									UID: "vim-01",
+								},
+								Vulnerability: dbTypes.Vulnerability{
+									Severity: dbTypes.SeverityHigh.String(),
+								},
+							},
+						},
+						ModifiedFindings: []types.ModifiedFinding{
+							{
+								Type:      types.FindingTypeVulnerability,
+								Status:    types.FindingStatusIgnored,
+								Statement: "Package is unlikely to be affected",
+								Source:    "--ignore-unlikely-affected",
+								Finding: types.DetectedVulnerability{
+									VulnerabilityID:  "CVE-2022-0001",
+									PkgName:          "linux-headers-5.15.0-56-generic",
+									InstalledVersion: "5.15.0-56.62",
+									FixedVersion:     "5.15.0-57.63",
+									PkgIdentifier: ftypes.PkgIdentifier{
+										UID: "kernel-01",
+									},
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityHigh.String(),
+									},
+								},
+							},
+							{
+								Type:      types.FindingTypeVulnerability,
+								Status:    types.FindingStatusIgnored,
+								Statement: "Package is unlikely to be affected",
+								Source:    "--ignore-unlikely-affected",
+								Finding: types.DetectedVulnerability{
+									VulnerabilityID:  "CVE-2022-0002",
+									PkgName:          "linux-image-5.15.0-56-generic",
+									InstalledVersion: "5.15.0-56.62",
+									FixedVersion:     "5.15.0-57.63",
+									PkgIdentifier: ftypes.PkgIdentifier{
+										UID: "kernel-02",
+									},
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityHigh.String(),
+									},
+								},
+							},
+							{
+								Type:      types.FindingTypeVulnerability,
+								Status:    types.FindingStatusIgnored,
+								Statement: "Package is unlikely to be affected",
+								Source:    "--ignore-unlikely-affected",
+								Finding: types.DetectedVulnerability{
+									VulnerabilityID:  "CVE-2022-0004",
+									PkgName:          "vim-doc",
+									InstalledVersion: "8.0.1453",
+									FixedVersion:     "8.0.1454",
+									PkgIdentifier: ftypes.PkgIdentifier{
+										UID: "vim-doc-01",
+									},
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityHigh.String(),
+									},
+								},
+							},
+							{
+								Type:      types.FindingTypeVulnerability,
+								Status:    types.FindingStatusIgnored,
+								Statement: "Package is unlikely to be affected",
+								Source:    "--ignore-unlikely-affected",
+								Finding: types.DetectedVulnerability{
+									VulnerabilityID:  "CVE-2022-0005",
+									PkgName:          "libc-dbg",
+									InstalledVersion: "2.31",
+									FixedVersion:     "2.32",
+									PkgIdentifier: ftypes.PkgIdentifier{
+										UID: "libc-dbg-01",
+									},
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityHigh.String(),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "filter unlikely affected packages - filesystem (kernel packages not filtered)",
+			args: args{
+				report: types.Report{
+					ArtifactType: ftypes.TypeFilesystem,
+					Results: types.Results{
+						{
+							Packages: []ftypes.Package{
+								{
+									ID:         "linux-headers-5.15.0-56-generic@5.15.0-56.62",
+									Name:       "linux-headers-5.15.0-56-generic",
+									Version:    "5.15.0-56.62",
+									SrcName:    "linux",
+									SrcVersion: "5.15.0",
+									Identifier: ftypes.PkgIdentifier{
+										UID: "kernel-01",
+									},
+								},
+								{
+									ID:         "vim-doc@8.0.1453",
+									Name:       "vim-doc",
+									Version:    "8.0.1453",
+									SrcName:    "vim",
+									SrcVersion: "8.0.1453",
+									Identifier: ftypes.PkgIdentifier{
+										UID: "vim-doc-01",
+									},
+								},
+							},
+							Vulnerabilities: []types.DetectedVulnerability{
+								{
+									VulnerabilityID:  "CVE-2022-0001",
+									PkgName:          "linux-headers-5.15.0-56-generic",
+									InstalledVersion: "5.15.0-56.62",
+									FixedVersion:     "5.15.0-57.63",
+									PkgIdentifier: ftypes.PkgIdentifier{
+										UID: "kernel-01",
+									},
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityHigh.String(),
+									},
+								},
+								{
+									VulnerabilityID:  "CVE-2022-0004",
+									PkgName:          "vim-doc",
+									InstalledVersion: "8.0.1453",
+									FixedVersion:     "8.0.1454",
+									PkgIdentifier: ftypes.PkgIdentifier{
+										UID: "vim-doc-01",
+									},
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityHigh.String(),
+									},
+								},
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityCritical,
+					dbTypes.SeverityHigh,
+					dbTypes.SeverityMedium,
+					dbTypes.SeverityLow,
+				},
+				ignoreUnlikelyAffected: true,
+			},
+			want: types.Report{
+				ArtifactType: ftypes.TypeFilesystem,
+				Results: types.Results{
+					{
+						Packages: []ftypes.Package{
+							{
+								ID:         "linux-headers-5.15.0-56-generic@5.15.0-56.62",
+								Name:       "linux-headers-5.15.0-56-generic",
+								Version:    "5.15.0-56.62",
+								SrcName:    "linux",
+								SrcVersion: "5.15.0",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "kernel-01",
+								},
+							},
+							{
+								ID:         "vim-doc@8.0.1453",
+								Name:       "vim-doc",
+								Version:    "8.0.1453",
+								SrcName:    "vim",
+								SrcVersion: "8.0.1453",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "vim-doc-01",
+								},
+							},
+						},
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2022-0001",
+								PkgName:          "linux-headers-5.15.0-56-generic",
+								InstalledVersion: "5.15.0-56.62",
+								FixedVersion:     "5.15.0-57.63",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									UID: "kernel-01",
+								},
+								Vulnerability: dbTypes.Vulnerability{
+									Severity: dbTypes.SeverityHigh.String(),
+								},
+							},
+						},
+						ModifiedFindings: []types.ModifiedFinding{
+							{
+								Type:      types.FindingTypeVulnerability,
+								Status:    types.FindingStatusIgnored,
+								Statement: "Package is unlikely to be affected",
+								Source:    "--ignore-unlikely-affected",
+								Finding: types.DetectedVulnerability{
+									VulnerabilityID:  "CVE-2022-0004",
+									PkgName:          "vim-doc",
+									InstalledVersion: "8.0.1453",
+									FixedVersion:     "8.0.1454",
+									PkgIdentifier: ftypes.PkgIdentifier{
+										UID: "vim-doc-01",
+									},
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityHigh.String(),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -1011,11 +1422,12 @@ func TestFilter(t *testing.T) {
 			}
 
 			err := result.Filter(ctx, tt.args.report, result.FilterOptions{
-				Severities:     tt.args.severities,
-				VEXSources:     vexSources,
-				IgnoreStatuses: tt.args.ignoreStatuses,
-				IgnoreFile:     tt.args.ignoreFile,
-				PolicyFile:     tt.args.policyFile,
+				Severities:             tt.args.severities,
+				VEXSources:             vexSources,
+				IgnoreStatuses:         tt.args.ignoreStatuses,
+				IgnoreFile:             tt.args.ignoreFile,
+				PolicyFile:             tt.args.policyFile,
+				IgnoreUnlikelyAffected: tt.args.ignoreUnlikelyAffected,
 			})
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, tt.args.report)

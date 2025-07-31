@@ -61,6 +61,7 @@ trivy sbom [flags] SBOM_PATH
                                          - fix_deferred
                                          - end_of_life
       --ignore-unfixed                 display only fixed vulnerabilities
+      --ignore-unlikely-affected       ignore vulnerabilities in packages unlikely to affect the artifact (kernel, documentation, etc.)
       --ignored-licenses strings       specify a list of license to ignore
       --ignorefile string              specify .trivyignore file (default ".trivyignore")
       --java-db-repository strings     OCI repository(ies) to retrieve trivy-java-db in order of priority (default [mirror.gcr.io/aquasec/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1])

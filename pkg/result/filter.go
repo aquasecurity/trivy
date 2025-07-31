@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"slices"
 	"sort"
+	"strings"
 
 	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/open-policy-agent/opa/v1/rego"
@@ -14,6 +15,7 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vex"
 )
@@ -32,6 +34,9 @@ type FilterOptions struct {
 	IgnoreLicenses     []string
 	CacheDir           string
 	VEXSources         []vex.Source
+
+	// For filtering unlikely affected packages
+	IgnoreUnlikelyAffected bool
 }
 
 // Filter filters out the report
@@ -42,7 +47,7 @@ func Filter(ctx context.Context, report types.Report, opts FilterOptions) error 
 	}
 
 	for i := range report.Results {
-		if err = FilterResult(ctx, &report.Results[i], ignoreConf, opts); err != nil {
+		if err = FilterResult(ctx, report.ArtifactType, &report.Results[i], ignoreConf, opts); err != nil {
 			return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
 	}
@@ -59,13 +64,13 @@ func Filter(ctx context.Context, report types.Report, opts FilterOptions) error 
 }
 
 // FilterResult filters out the result
-func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreConfig, opt FilterOptions) error {
+func FilterResult(ctx context.Context, artifactType ftypes.ArtifactType, result *types.Result, ignoreConf IgnoreConfig, opt FilterOptions) error {
 	// Convert dbTypes.Severity to string
 	severities := lo.Map(opt.Severities, func(s dbTypes.Severity, _ int) string {
 		return s.String()
 	})
 
-	filterVulnerabilities(result, severities, opt.IgnoreStatuses, ignoreConf)
+	filterVulnerabilities(result, artifactType, severities, opt.IgnoreStatuses, ignoreConf, opt)
 	filterMisconfigurations(result, severities, opt.IncludeNonFailures, ignoreConf)
 	filterSecrets(result, severities, ignoreConf)
 	filterLicenses(result, severities, opt.IgnoreLicenses, ignoreConf)
@@ -80,7 +85,12 @@ func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreCo
 	return nil
 }
 
-func filterVulnerabilities(result *types.Result, severities []string, ignoreStatuses []dbTypes.Status, ignoreConfig IgnoreConfig) {
+func filterVulnerabilities(result *types.Result, artifactType ftypes.ArtifactType, severities []string, ignoreStatuses []dbTypes.Status, ignoreConfig IgnoreConfig, filterOpts FilterOptions) {
+	// Build a map of UID to Package for efficient lookup
+	pkgByUID := lo.KeyBy(result.Packages, func(pkg ftypes.Package) string {
+		return pkg.Identifier.UID
+	})
+
 	uniqVulns := make(map[string]types.DetectedVulnerability)
 	for _, vuln := range result.Vulnerabilities {
 		if vuln.Severity == "" {
@@ -101,6 +111,17 @@ func filterVulnerabilities(result *types.Result, severities []string, ignoreStat
 			result.ModifiedFindings = append(result.ModifiedFindings,
 				types.NewModifiedFinding(vuln, types.FindingStatusIgnored, f.Statement, ignoreConfig.FilePath))
 			continue
+		}
+
+		// Filter unlikely affected packages when --ignore-unlikely-affected is specified
+		if filterOpts.IgnoreUnlikelyAffected {
+			if pkg, found := pkgByUID[vuln.PkgIdentifier.UID]; found {
+				if isUnlikelyAffected(pkg, artifactType) {
+					result.ModifiedFindings = append(result.ModifiedFindings,
+						types.NewModifiedFinding(vuln, types.FindingStatusIgnored, "Package is unlikely to be affected", "--ignore-unlikely-affected"))
+					continue
+				}
+			}
 		}
 
 		// Check if there is a duplicate vulnerability
@@ -323,4 +344,53 @@ func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input any) (boo
 func shouldOverwrite(oldVuln, newVuln types.DetectedVulnerability) bool {
 	// The same vulnerability must be picked always.
 	return oldVuln.FixedVersion < newVuln.FixedVersion
+}
+
+// isUnlikelyAffected checks if a package is unlikely to affect the artifact
+func isUnlikelyAffected(pkg ftypes.Package, artifactType ftypes.ArtifactType) bool {
+	// Filter kernel packages only for container images
+	if artifactType == ftypes.TypeContainerImage && isKernelPackage(pkg) {
+		return true
+	}
+
+	// Filter documentation, license, and debug packages regardless of artifact type
+	if isDocumentationPackage(pkg.Name) {
+		return true
+	}
+
+	return false
+}
+
+// isKernelPackage checks if a package is a kernel package across different distributions
+func isKernelPackage(pkg ftypes.Package) bool {
+	// Debian/Ubuntu/Alpine and others: source name "linux" or "linux-*"
+	if pkg.SrcName == "linux" || strings.HasPrefix(pkg.SrcName, "linux-") {
+		return true
+	}
+
+	// Red Hat/CentOS/RHEL/Alma/Rocky/Fedora/SUSE/Amazon Linux: source name starting with "kernel"
+	if strings.HasPrefix(pkg.SrcName, "kernel") {
+		return true
+	}
+
+	return false
+}
+
+// isDocumentationPackage checks if a package is a documentation, license, or debug package
+func isDocumentationPackage(pkgName string) bool {
+	unlikelyPatterns := []string{
+		"-doc",
+		"-docs",
+		"-license",
+		"-dbg",
+		"-debug",
+	}
+
+	for _, pattern := range unlikelyPatterns {
+		if strings.HasSuffix(pkgName, pattern) {
+			return true
+		}
+	}
+
+	return false
 }
