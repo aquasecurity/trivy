@@ -28,37 +28,6 @@ release:
       - glob: ./bom.json
     discussion_category_name: Announcements
 
-nfpms:
-  -
-    formats:
-      - deb
-      - rpm
-    vendor: "aquasecurity"
-    homepage: "https://github.com/aquasecurity"
-    maintainer: "Teppei Fukuda <knqyf263@gmail.com>"
-    description: "A Fast Vulnerability Scanner for Containers"
-    license: "Apache-2.0"
-    file_name_template: >-
-      {{ .ProjectName }}_{{ .Version }}_
-      {{- if eq .Os "darwin" }}macOS
-      {{- else if eq .Os "openbsd" }}OpenBSD
-      {{- else if eq .Os "netbsd" }}NetBSD
-      {{- else if eq .Os "freebsd" }}FreeBSD
-      {{- else if eq .Os "dragonfly" }}DragonFlyBSD
-      {{- else}}{{- title .Os }}{{ end }}-
-      {{- if eq .Arch "amd64" }}64bit
-      {{- else if eq .Arch "386" }}32bit
-      {{- else if eq .Arch "arm" }}ARM
-      {{- else if eq .Arch "arm64" }}ARM64
-      {{- else if eq .Arch "ppc64le" }}PPC64LE
-      {{- else }}{{ .Arch }}{{ end }}
-    contents:
-     - src: contrib/*.tpl
-       dst: /usr/local/share/trivy/templates
-    rpm:
-      signature:
-         key_file: '{{ .Env.GPG_FILE }}'
-
 archives:
   - id: archive
     format: tar.gz
@@ -85,18 +54,3 @@ archives:
       - goos: windows
         format: zip
 
-signs:
-- cmd: cosign
-  env:
-  - COSIGN_EXPERIMENTAL=1
-  signature: "${artifact}.sig"
-  certificate: "${artifact}.pem"
-  args:
-    - "sign-blob"
-    - "--oidc-issuer=https://token.actions.githubusercontent.com"
-    - "--output-certificate=${certificate}"
-    - "--output-signature=${signature}"
-    - "${artifact}"
-    - "--yes"
-  artifacts: all
-  output: true
