@@ -315,6 +315,61 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path with application with file and type from purl",
+			inputFile: "testdata/happy/app-with-file-and-type-from-purl.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type:     ftypes.Bitnami,
+						FilePath: "opt/bitnami/harbor-exporter/bin/harbor_exporter",
+						Packages: ftypes.Packages{
+							{
+								ID:           "harbor-exporter@2.13.0-3",
+								Name:         "harbor-exporter",
+								Version:      "2.13.0-3",
+								Relationship: ftypes.RelationshipRoot,
+								FilePath:     "opt/bitnami/harbor-exporter/bin/harbor_exporter",
+								Arch:         "arm64",
+								Licenses: []string{
+									"Apache-2.0",
+								},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeBitnami,
+										Name:    "harbor-exporter",
+										Version: "2.13.0-3",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "arm64",
+											},
+											{
+												Key:   "distro",
+												Value: "debian-12",
+											},
+										},
+									},
+								},
+							},
+							{
+								ID:      "github.com/CloudNativeAI/model-spec@v0.0.3",
+								Name:    "github.com/CloudNativeAI/model-spec",
+								Version: "v0.0.3",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "github.com/cloudnativeai",
+										Name:      "model-spec",
+										Version:   "v0.0.3",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "happy path with file as parent of relationship",
 			inputFile: "testdata/happy/with-file-as-relationship-parent.json",
 			want:      types.SBOM{},
