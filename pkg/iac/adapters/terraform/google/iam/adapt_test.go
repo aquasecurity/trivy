@@ -366,7 +366,7 @@ resource "google_folder_iam_audit_config" "folder_audit" {
 									{
 										Metadata:        iacTypes.NewTestMetadata(),
 										LogType:         iacTypes.String("ADMIN_READ", iacTypes.NewTestMetadata()),
-										ExemptedMembers: []iacTypes.StringValue{},
+										ExemptedMembers: nil,
 									},
 									{
 										Metadata: iacTypes.NewTestMetadata(),
@@ -412,7 +412,7 @@ resource "google_folder_iam_audit_config" "folder_audit" {
 									{
 										Metadata:        iacTypes.NewTestMetadata(),
 										LogType:         iacTypes.String("ADMIN_READ", iacTypes.NewTestMetadata()),
-										ExemptedMembers: []iacTypes.StringValue{},
+										ExemptedMembers: nil,
 									},
 								},
 							},
