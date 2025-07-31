@@ -298,6 +298,129 @@ resource "google_project_iam_member" "project" {
 				},
 			},
 		},
+		{
+			name: "audit configs",
+			terraform: `
+data "google_organization" "org" {
+  domain = "example.com"
+}
+
+resource "google_project" "test" {
+  name                = "Test project"
+  project_id          = "test"
+  org_id              = data.google_organization.org.org_id
+  auto_create_network = false
+}
+
+resource "google_folder" "test" {
+  display_name = "Test folder"
+  parent       = data.google_organization.org.org_id
+}
+
+resource "google_project_iam_audit_config" "project_audit" {
+  project = google_project.test.project_id
+  service = "allServices"
+  
+  audit_log_config {
+    log_type = "ADMIN_READ"
+  }
+  
+  audit_log_config {
+    log_type = "DATA_WRITE"
+    exempted_members = [
+      "user:alice@example.com",
+      "serviceAccount:test@project.iam.gserviceaccount.com"
+    ]
+  }
+}
+
+resource "google_organization_iam_audit_config" "org_audit" {
+  org_id  = data.google_organization.org.org_id
+  service = "storage.googleapis.com"
+  
+  audit_log_config {
+    log_type = "DATA_READ"
+    exempted_members = ["user:bob@example.com"]
+  }
+}
+
+resource "google_folder_iam_audit_config" "folder_audit" {
+  folder  = google_folder.test.name
+  service = "compute.googleapis.com"
+  
+  audit_log_config {
+    log_type = "ADMIN_READ"
+  }
+}
+`,
+			expected: iam.IAM{
+				Projects: []iam.Project{
+					{
+						Metadata:          iacTypes.NewTestMetadata(),
+						AutoCreateNetwork: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						AuditConfigs: []iam.AuditConfig{
+							{
+								Metadata: iacTypes.NewTestMetadata(),
+								Service:  iacTypes.String("allServices", iacTypes.NewTestMetadata()),
+								AuditLogConfigs: []iam.AuditLogConfig{
+									{
+										Metadata:        iacTypes.NewTestMetadata(),
+										LogType:         iacTypes.String("ADMIN_READ", iacTypes.NewTestMetadata()),
+										ExemptedMembers: []iacTypes.StringValue{},
+									},
+									{
+										Metadata: iacTypes.NewTestMetadata(),
+										LogType:  iacTypes.String("DATA_WRITE", iacTypes.NewTestMetadata()),
+										ExemptedMembers: []iacTypes.StringValue{
+											iacTypes.String("user:alice@example.com", iacTypes.NewTestMetadata()),
+											iacTypes.String("serviceAccount:test@project.iam.gserviceaccount.com", iacTypes.NewTestMetadata()),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Organizations: []iam.Organization{
+					{
+						Metadata: iacTypes.NewTestMetadata(),
+						AuditConfigs: []iam.AuditConfig{
+							{
+								Metadata: iacTypes.NewTestMetadata(),
+								Service:  iacTypes.String("storage.googleapis.com", iacTypes.NewTestMetadata()),
+								AuditLogConfigs: []iam.AuditLogConfig{
+									{
+										Metadata: iacTypes.NewTestMetadata(),
+										LogType:  iacTypes.String("DATA_READ", iacTypes.NewTestMetadata()),
+										ExemptedMembers: []iacTypes.StringValue{
+											iacTypes.String("user:bob@example.com", iacTypes.NewTestMetadata()),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Folders: []iam.Folder{
+					{
+						Metadata: iacTypes.NewTestMetadata(),
+						AuditConfigs: []iam.AuditConfig{
+							{
+								Metadata: iacTypes.NewTestMetadata(),
+								Service:  iacTypes.String("compute.googleapis.com", iacTypes.NewTestMetadata()),
+								AuditLogConfigs: []iam.AuditLogConfig{
+									{
+										Metadata:        iacTypes.NewTestMetadata(),
+										LogType:         iacTypes.String("ADMIN_READ", iacTypes.NewTestMetadata()),
+										ExemptedMembers: []iacTypes.StringValue{},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
@@ -424,96 +547,4 @@ func TestLines(t *testing.T) {
 	assert.Equal(t, 44, binding.Members[0].GetMetadata().Range().GetEndLine())
 
 	assert.Equal(t, 51, pool.Metadata.Range().GetEndLine())
-}
-
-func TestAdaptAuditConfigs(t *testing.T) {
-	modules := tftestutil.CreateModulesFromSource(t, `
-resource "google_project_iam_audit_config" "project_audit" {
-  project = "test-project"
-  service = "allServices"
-  
-  audit_log_config {
-    log_type = "ADMIN_READ"
-  }
-  
-  audit_log_config {
-    log_type = "DATA_WRITE"
-    exempted_members = [
-      "user:alice@example.com",
-      "serviceAccount:test@project.iam.gserviceaccount.com"
-    ]
-  }
-}
-
-resource "google_organization_iam_audit_config" "org_audit" {
-  org_id  = "123456789"
-  service = "storage.googleapis.com"
-  
-  audit_log_config {
-    log_type = "DATA_READ"
-    exempted_members = ["user:bob@example.com"]
-  }
-}
-
-resource "google_folder_iam_audit_config" "folder_audit" {
-  folder  = "folders/987654321"
-  service = "compute.googleapis.com"
-  
-  audit_log_config {
-    log_type = "ADMIN_READ"
-  }
-}
-`, ".tf")
-
-	adapted := Adapt(modules)
-
-	// These will be unmanaged resources since we didn't create base resources
-	require.GreaterOrEqual(t, len(adapted.Projects), 1)
-	require.GreaterOrEqual(t, len(adapted.Organizations), 1)
-	require.GreaterOrEqual(t, len(adapted.Folders), 1)
-
-	// Test project audit config
-	project := adapted.Projects[0]
-	require.Len(t, project.AuditConfigs, 1)
-
-	projectAudit := project.AuditConfigs[0]
-	assert.Equal(t, "allServices", projectAudit.Service.Value())
-	require.Len(t, projectAudit.AuditLogConfigs, 2)
-
-	// First audit log config - ADMIN_READ
-	adminReadConfig := projectAudit.AuditLogConfigs[0]
-	assert.Equal(t, "ADMIN_READ", adminReadConfig.LogType.Value())
-	assert.Empty(t, adminReadConfig.ExemptedMembers)
-
-	// Second audit log config - DATA_WRITE with exempted members
-	dataWriteConfig := projectAudit.AuditLogConfigs[1]
-	assert.Equal(t, "DATA_WRITE", dataWriteConfig.LogType.Value())
-	require.Len(t, dataWriteConfig.ExemptedMembers, 2)
-	assert.Equal(t, "user:alice@example.com", dataWriteConfig.ExemptedMembers[0].Value())
-	assert.Equal(t, "serviceAccount:test@project.iam.gserviceaccount.com", dataWriteConfig.ExemptedMembers[1].Value())
-
-	// Test organization audit config
-	org := adapted.Organizations[0]
-	require.Len(t, org.AuditConfigs, 1)
-
-	orgAudit := org.AuditConfigs[0]
-	assert.Equal(t, "storage.googleapis.com", orgAudit.Service.Value())
-	require.Len(t, orgAudit.AuditLogConfigs, 1)
-
-	orgLogConfig := orgAudit.AuditLogConfigs[0]
-	assert.Equal(t, "DATA_READ", orgLogConfig.LogType.Value())
-	require.Len(t, orgLogConfig.ExemptedMembers, 1)
-	assert.Equal(t, "user:bob@example.com", orgLogConfig.ExemptedMembers[0].Value())
-
-	// Test folder audit config
-	folder := adapted.Folders[0]
-	require.Len(t, folder.AuditConfigs, 1)
-
-	folderAudit := folder.AuditConfigs[0]
-	assert.Equal(t, "compute.googleapis.com", folderAudit.Service.Value())
-	require.Len(t, folderAudit.AuditLogConfigs, 1)
-
-	folderLogConfig := folderAudit.AuditLogConfigs[0]
-	assert.Equal(t, "ADMIN_READ", folderLogConfig.LogType.Value())
-	assert.Empty(t, folderLogConfig.ExemptedMembers)
 }
