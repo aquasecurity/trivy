@@ -169,7 +169,7 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	p.logger.Debug("Parsing FS", log.FilePath(slashed))
 	fileInfos, err := fs.ReadDir(p.moduleFS, slashed)
 	if err != nil {
-		return err
+		return fmt.Errorf("read dir: %w", err)
 	}
 
 	var paths []string
