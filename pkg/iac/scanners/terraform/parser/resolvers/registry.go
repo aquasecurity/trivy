@@ -29,11 +29,15 @@ var Registry = &registryResolver{
 }
 
 type moduleVersions struct {
-	Modules []struct {
-		Versions []struct {
-			Version string `json:"version"`
-		} `json:"versions"`
-	} `json:"modules"`
+	Modules []moduleProviderVersions `json:"modules"`
+}
+
+type moduleProviderVersions struct {
+	Versions []moduleVersion `json:"versions"`
+}
+
+type moduleVersion struct {
+	Version string `json:"version"`
 }
 
 const registryHostname = "registry.terraform.io"

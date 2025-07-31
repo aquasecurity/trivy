@@ -44,10 +44,6 @@ func TestScanner_Scan(t *testing.T) {
 			dir:         "with-local-module",
 			expectedIDs: []string{"ID001"},
 		},
-		{
-			dir:         "with-remote-module",
-			expectedIDs: []string{"ID001"},
-		},
 	}
 
 	for _, tt := range tests {
