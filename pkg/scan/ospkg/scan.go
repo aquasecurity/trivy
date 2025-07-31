@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"sort"
-	"time"
 
 	"golang.org/x/xerrors"
 
@@ -50,8 +49,7 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.
 		return result, false, nil
 	}
 
-	vulns, eosl, err := ospkgDetector.Detect(ctx, "", target.OS.Family, target.OS.Name, target.Repository, time.Time{},
-		target.Packages)
+	vulns, eosl, err := ospkgDetector.Detect(ctx, target, opts)
 	if err != nil {
 		// Return a result for those who want to override the error handling.
 		return result, false, xerrors.Errorf("failed vulnerability detection of OS packages: %w", err)
