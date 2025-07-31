@@ -11,6 +11,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/python"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -110,7 +111,7 @@ func (a pipLibraryAnalyzer) Version() int {
 // pkgLicense parses `METADATA` pkg file to look for licenses
 func (a pipLibraryAnalyzer) pkgLicense(pkgName, pkgVer, spDir string) []string {
 	// METADATA path is `**/site-packages/<pkg_name>-<pkg_version>.dist-info/METADATA`
-	pkgDir := fmt.Sprintf("%s-%s.dist-info", pkgName, pkgVer)
+	pkgDir := distInfoDir(pkgName, pkgVer)
 	metadataPath := filepath.Join(spDir, pkgDir, "METADATA")
 	metadataFile, err := os.Open(metadataPath)
 	if os.IsNotExist(err) {
@@ -230,4 +231,13 @@ func (a pipLibraryAnalyzer) sortPythonDirs(entries []os.DirEntry) []string {
 	return lo.Map(pythonVers, func(v goversion.Version, _ int) string {
 		return "python" + v.String()
 	})
+}
+
+// distInfoDir returns normalized dist-info dir name for package
+// cf. https://packaging.python.org/en/latest/specifications/recording-installed-packages/#the-dist-info-directory
+// e.g. `foo-1.0.dist-info` or `foo_bar-1.0.dist-info`
+func distInfoDir(name, version string) string {
+	name = python.NormalizePkgName(name)
+	name = strings.ReplaceAll(name, "-", "_")
+	return fmt.Sprintf("%s-%s.dist-info", name, version)
 }
