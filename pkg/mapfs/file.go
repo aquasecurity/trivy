@@ -254,13 +254,16 @@ func (f *file) glob(pattern string) ([]string, error) {
 
 	var err error
 	f.files.Range(func(name string, sub *file) bool {
-		if ok, err := filepath.Match(parts[0], name); err != nil {
+		var ok bool
+		ok, err = filepath.Match(parts[0], name)
+		if err != nil {
 			return false
 		} else if ok {
 			if len(parts) == 1 {
 				entries = append(entries, name)
 			} else {
-				subEntries, err := sub.glob(strings.Join(parts[1:], separator))
+				var subEntries []string
+				subEntries, err = sub.glob(strings.Join(parts[1:], separator))
 				if err != nil {
 					return false
 				}

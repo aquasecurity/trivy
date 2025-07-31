@@ -394,6 +394,11 @@ func TestFS_Glob(t *testing.T) {
 			pattern: "nosuch",
 			wantErr: assert.NoError,
 		},
+		{
+			name:    "invalid pattern",
+			pattern: "[abc",
+			wantErr: assert.Error,
+		},
 	}
 
 	for _, tt := range tests {
