@@ -24,7 +24,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 var manifestNameRegex = regexp.MustCompile("# Source: [^/]+/(.+)")
@@ -83,10 +82,10 @@ func New(src string, opts ...Option) (*Parser, error) {
 }
 
 func (p *Parser) ParseFS(ctx context.Context, fsys fs.FS, target string) error {
-	return p.parseFS(ctx, fsys, target, set.New[string]())
+	return p.parseFS(ctx, fsys, target)
 }
 
-func (p *Parser) parseFS(ctx context.Context, fsys fs.FS, target string, seenArchives set.Set[string]) error {
+func (p *Parser) parseFS(ctx context.Context, fsys fs.FS, target string) error {
 	target = filepath.ToSlash(target)
 	if err := fs.WalkDir(fsys, target, func(filePath string, entry fs.DirEntry, err error) error {
 		select {
@@ -102,11 +101,6 @@ func (p *Parser) parseFS(ctx context.Context, fsys fs.FS, target string, seenArc
 		}
 
 		if detection.IsArchive(filePath) && !isDependencyChartArchive(fsys, filePath) {
-			if ok := seenArchives.Contains(filePath); ok {
-				return nil
-			}
-			seenArchives.Append(filePath)
-
 			memFS := memoryfs.New()
 			if err := p.unpackArchive(fsys, memFS, filePath); errors.Is(err, errSkipFS) {
 				// an unpacked Chart already exists
@@ -115,7 +109,7 @@ func (p *Parser) parseFS(ctx context.Context, fsys fs.FS, target string, seenArc
 				return fmt.Errorf("unpack archive %q: %w", filePath, err)
 			}
 
-			if err := p.parseFS(ctx, memFS, ".", seenArchives); err != nil {
+			if err := p.parseFS(ctx, memFS, "."); err != nil {
 				return fmt.Errorf("parse archive FS error: %w", err)
 			}
 			return nil
