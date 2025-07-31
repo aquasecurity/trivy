@@ -9,8 +9,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Trivy
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4.1.6
+        with:
+          fetch-depth: 0
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -18,11 +20,21 @@ jobs:
           go-version-file: go.mod
           cache: false
 
+      - name: Generate SBOM
+        uses: CycloneDX/gh-gomod-generate-sbom@v2
+        with:
+          args: mod -licenses -json -output bom.json
+          version: ^v1
+
       - name: GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
           version: v2.1.0
           args: release --snapshot --skip publish --clean -f=goreleaser-aikido.yml
+
+      - name: List files
+        run: |
+          ls -lR dist
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
