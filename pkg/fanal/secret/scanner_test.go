@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -50,6 +51,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 55,
 	}
 	wantFinding2 := types.SecretFinding{
 		RuleID:    "rule1",
@@ -86,6 +88,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 100,
 	}
 	wantFindingRegexDisabled := types.SecretFinding{
 		RuleID:    "rule1",
@@ -122,8 +125,9 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 100,
 	}
-	wantFinding3 := types.SecretFinding{
+	wantFindingMultipleGroupsUsername := types.SecretFinding{
 		RuleID:    "rule1",
 		Category:  "general",
 		Title:     "Generic Rule",
@@ -153,8 +157,9 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 134,
 	}
-	wantFinding4 := types.SecretFinding{
+	wantFindingMultipleGroupsPassword := types.SecretFinding{
 		RuleID:    "rule1",
 		Category:  "general",
 		Title:     "Generic Rule",
@@ -184,6 +189,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 155,
 	}
 	wantFinding5 := types.SecretFinding{
 		RuleID:    "aws-access-key-id",
@@ -215,6 +221,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 78,
 	}
 	wantFinding5a := types.SecretFinding{
 		RuleID:    "aws-access-key-id",
@@ -241,6 +248,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 70,
 	}
 	wantFindingPATDisabled := types.SecretFinding{
 		RuleID:    "aws-access-key-id",
@@ -267,6 +275,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 70,
 	}
 	wantFinding6 := types.SecretFinding{
 		RuleID:    "github-pat",
@@ -293,6 +302,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 11,
 	}
 	wantFindingGitHubPAT := types.SecretFinding{
 		RuleID:    "github-fine-grained-pat",
@@ -314,6 +324,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 13,
 	}
 	wantFindingMyAwsAccessKey := types.SecretFinding{
 		RuleID:    "aws-secret-access-key",
@@ -340,8 +351,8 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 18,
 	}
-
 	wantFindingMyGitHubPAT := types.SecretFinding{
 		RuleID:    "github-fine-grained-pat",
 		Category:  secret.CategoryGitHub,
@@ -367,6 +378,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 63,
 	}
 	wantFindingGHButDisableAWS := types.SecretFinding{
 		RuleID:    "github-pat",
@@ -393,6 +405,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 11,
 	}
 	wantFinding7 := types.SecretFinding{
 		RuleID:    "github-pat",
@@ -414,6 +427,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 67,
 	}
 	wantFinding8 := types.SecretFinding{
 		RuleID:    "rule1",
@@ -445,6 +459,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 55,
 	}
 	wantFinding9 := types.SecretFinding{
 		RuleID:    "aws-secret-access-key",
@@ -471,8 +486,8 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 18,
 	}
-
 	wantFinding10 := types.SecretFinding{
 		RuleID:    "aws-secret-access-key",
 		Category:  secret.CategoryAWS,
@@ -503,6 +518,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 200,
 	}
 	wantFindingAsymmetricPrivateKeyJson := types.SecretFinding{
 		RuleID:    "private-key",
@@ -524,6 +540,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 40,
 	}
 	wantFindingAsymmetricPrivateKey := types.SecretFinding{
 		RuleID:    "private-key",
@@ -571,6 +588,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 32,
 	}
 	wantFindingAsymmSecretKey := types.SecretFinding{
 		RuleID:    "private-key",
@@ -616,6 +634,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 32,
 	}
 	wantFindingMinimumAsymmSecretKey := types.SecretFinding{
 		RuleID:    "private-key",
@@ -653,6 +672,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 1842,
 	}
 	wantFindingAlibabaAccessKeyId := types.SecretFinding{
 		RuleID:    "alibaba-access-key-id",
@@ -684,6 +704,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 40,
 	}
 	wantFindingDockerKey1 := types.SecretFinding{
 		RuleID:    "dockerconfig-secret",
@@ -715,6 +736,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 62,
 	}
 	wantFindingDockerKey2 := types.SecretFinding{
 		RuleID:    "dockerconfig-secret",
@@ -746,6 +768,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 28,
 	}
 	wantFindingPrivatePackagistOrgReadToken := types.SecretFinding{
 		RuleID:    "private-packagist-token",
@@ -775,6 +798,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 15,
 	}
 	wantFindingPrivatePackagistOrgUpdateToken := types.SecretFinding{
 		RuleID:    "private-packagist-token",
@@ -812,6 +836,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 114,
 	}
 	wantFindingPrivatePackagistUserToken := types.SecretFinding{
 		RuleID:    "private-packagist-token",
@@ -857,6 +882,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 208,
 	}
 	wantFindingHuggingFace := types.SecretFinding{
 		RuleID:    "hugging-face-access-token",
@@ -878,8 +904,8 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 18,
 	}
-
 	wantFindingGrafanaQuoted := types.SecretFinding{
 		RuleID:    "grafana-api-token",
 		Category:  secret.CategoryGrafana,
@@ -908,8 +934,8 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 14,
 	}
-
 	wantFindingGrafanaUnquoted := types.SecretFinding{
 		RuleID:    "grafana-api-token",
 		Category:  secret.CategoryGrafana,
@@ -943,8 +969,8 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 123,
 	}
-
 	wantMultiLine := types.SecretFinding{
 		RuleID:    "multi-line-secret",
 		Category:  "general",
@@ -975,6 +1001,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 4,
 	}
 	wantFindingTokenInsideJs := types.SecretFinding{
 		RuleID:    "stripe-publishable-token",
@@ -996,6 +1023,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 4016,
 	}
 	wantFindingJWT := types.SecretFinding{
 		RuleID:    "jwt-token",
@@ -1032,6 +1060,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
+		Offset: 14,
 	}
 
 	tests := []struct {
@@ -1062,6 +1091,100 @@ func TestSecretScanner(t *testing.T) {
 					wantFinding5,
 					wantFinding10,
 					wantFinding9,
+				},
+			},
+		},
+		{
+			name:          "find secrets in CRLF line endings file",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "crlf-line-endings.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "crlf-line-endings.txt"),
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "aws-access-key-id",
+						Category:  secret.CategoryAWS,
+						Title:     "AWS Access Key ID",
+						Severity:  "CRITICAL",
+						StartLine: 2,
+						EndLine:   2,
+						Code: types.Code{
+							Lines: []types.Line{
+								{
+									Number:      1,
+									Content:     "This is a test file with CRLF line endings.",
+									IsCause:     false,
+									Highlighted: "This is a test file with CRLF line endings.",
+									FirstCause:  false,
+									LastCause:   false,
+								},
+								{
+									Number:      2,
+									Content:     "AWS Access Key ID: ********************",
+									IsCause:     true,
+									Highlighted: "AWS Access Key ID: ********************",
+									FirstCause:  true,
+									LastCause:   true,
+								},
+								{
+									Number:      3,
+									Content:     "This line has no secrets.",
+									IsCause:     false,
+									Highlighted: "This line has no secrets.",
+									FirstCause:  false,
+									LastCause:   false,
+								},
+							},
+						},
+						Match:  "AWS Access Key ID: ********************",
+						Offset: 63,
+					},
+					{
+						RuleID:    "github-pat",
+						Category:  secret.CategoryGitHub,
+						Title:     "GitHub Personal Access Token",
+						Severity:  "CRITICAL",
+						StartLine: 4,
+						EndLine:   4,
+						Code: types.Code{
+							Lines: []types.Line{
+								{
+									Number:      2,
+									Content:     "AWS Access Key ID: ********************",
+									IsCause:     false,
+									Highlighted: "AWS Access Key ID: ********************",
+									FirstCause:  false,
+									LastCause:   false,
+								},
+								{
+									Number:      3,
+									Content:     "This line has no secrets.",
+									IsCause:     false,
+									Highlighted: "This line has no secrets.",
+									FirstCause:  false,
+									LastCause:   false,
+								},
+								{
+									Number:      4,
+									Content:     "GitHub PAT: ****************************************12",
+									IsCause:     true,
+									Highlighted: "GitHub PAT: ****************************************12",
+									FirstCause:  true,
+									LastCause:   true,
+								},
+								{
+									Number:      5,
+									Content:     "End of file.",
+									IsCause:     false,
+									Highlighted: "End of file.",
+									FirstCause:  false,
+									LastCause:   false,
+								},
+							},
+						},
+						Match:  "GitHub PAT: ****************************************12",
+						Offset: 122,
+					},
 				},
 			},
 		},
@@ -1119,7 +1242,10 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: filepath.Join("testdata", "grafana-env.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "grafana-env.txt"),
-				Findings: []types.SecretFinding{wantFindingGrafanaUnquoted, wantFindingGrafanaQuoted},
+				Findings: []types.SecretFinding{
+					wantFindingGrafanaUnquoted,
+					wantFindingGrafanaQuoted,
+				},
 			},
 		},
 		{
@@ -1299,8 +1425,8 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{
-					wantFinding3,
-					wantFinding4,
+					wantFindingMultipleGroupsUsername,
+					wantFindingMultipleGroupsPassword,
 				},
 			},
 		},
@@ -1379,7 +1505,10 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: "testdata/asymmetric-private-key.txt",
 			want: types.Secret{
 				FilePath: "testdata/asymmetric-private-key.txt",
-				Findings: []types.SecretFinding{wantFindingAsymmSecretKey, wantFindingMinimumAsymmSecretKey},
+				Findings: []types.SecretFinding{
+					wantFindingAsymmSecretKey,
+					wantFindingMinimumAsymmSecretKey,
+				},
 			},
 		},
 		{
@@ -1438,6 +1567,7 @@ func TestSecretScanner(t *testing.T) {
 								},
 							},
 						},
+						Offset: 6,
 					},
 				},
 			},
@@ -1457,10 +1587,343 @@ func TestSecretScanner(t *testing.T) {
 			s := secret.NewScanner(c)
 			got := s.Scan(secret.ScanArgs{
 				FilePath: tt.inputFilePath,
-				Content:  content,
-			},
-			)
+				Content:  bytes.NewReader(content),
+			})
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestSecretScannerWithStreaming(t *testing.T) {
+	tests := []struct {
+		name        string
+		input       string
+		bufferSize  int
+		overlapSize int
+		configPath  string
+		want        types.Secret
+	}{
+		{
+			name: "secret in second chunk",
+			input: strings.Repeat("x", 520) + "\n" + // 520 bytes to push secret to second chunk
+				"AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF\n" + // at offset 521
+				strings.Repeat("y", 100), // padding
+			bufferSize:  512,
+			overlapSize: 128,
+			configPath:  filepath.Join("testdata", "skip-test.yaml"),
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "aws-access-key-id",
+						Category:  secret.CategoryAWS,
+						Title:     "AWS Access Key ID",
+						Severity:  "CRITICAL",
+						StartLine: 2,
+						EndLine:   2,
+						Match:     "AWS_ACCESS_KEY_ID=********************",
+						Offset:    539, // 521 + 18 (position of the actual key value)
+					},
+				},
+			},
+		},
+		{
+			name: "secret spanning chunk boundary",
+			input: strings.Repeat("x", 480) + "\n" + // 480 bytes
+				"AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF\n" + // at offset 481, spans chunk boundary at 512
+				strings.Repeat("y", 200), // padding
+			bufferSize:  512, // Boundary will be in the middle of the secret
+			overlapSize: 128,
+			configPath:  filepath.Join("testdata", "skip-test.yaml"),
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "aws-access-key-id",
+						Category:  secret.CategoryAWS,
+						Title:     "AWS Access Key ID",
+						Severity:  "CRITICAL",
+						StartLine: 2,
+						EndLine:   2,
+						Match:     "AWS_ACCESS_KEY_ID=********************",
+						Offset:    499, // 481 + 18
+					},
+				},
+			},
+		},
+		{
+			name: "multiple secrets across chunks",
+			input: "GITHUB_PAT=ghp_012345678901234567890123456789abcdef\n" + // at offset 0, 52 bytes
+				strings.Repeat("x", 1200) + "\n" + // 1200 bytes padding
+				"AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF\n" + // at offset 1253
+				strings.Repeat("y", 1400) + "\n" + // 1400 bytes padding
+				"stripe_key=sk_test_51H5Z3jGXvP5CVwYOLLllllllllllllllllllllllll\n" + // at offset 2693
+				strings.Repeat("z", 200), // final padding
+			bufferSize:  1024,
+			overlapSize: 256,
+			configPath:  filepath.Join("testdata", "skip-test.yaml"),
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "aws-access-key-id",
+						Category:  secret.CategoryAWS,
+						Title:     "AWS Access Key ID",
+						Severity:  "CRITICAL",
+						StartLine: 3,
+						EndLine:   3,
+						Match:     "AWS_ACCESS_KEY_ID=********************",
+						Offset:    1271, // 1253 + 18
+					},
+					{
+						RuleID:    "github-pat",
+						Category:  secret.CategoryGitHub,
+						Title:     "GitHub Personal Access Token",
+						Severity:  "CRITICAL",
+						StartLine: 1,
+						EndLine:   1,
+						Match:     "GITHUB_PAT=****************************************", // 40 asterisks for 40-char token
+						Offset:    11,                                                    // position of the token value
+					},
+					{
+						RuleID:    "stripe-secret-token",
+						Category:  secret.CategoryStripe,
+						Title:     "Stripe Secret Key",
+						Severity:  "CRITICAL",
+						StartLine: 5,
+						EndLine:   5,
+						Match:     "stripe_key=****************************************lllllllllll", // Stripe key pattern includes literal 'l' chars
+						Offset:    2704,                                                             // 2693 + 11
+					},
+				},
+			},
+		},
+		{
+			name: "secret at exact chunk boundary",
+			input: strings.Repeat("x", 383) + "\n" + // 383 bytes + newline = 384
+				"AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF", // Starts exactly at chunk boundary (384)
+			bufferSize:  384, // Boundary right after the newline
+			overlapSize: 96,
+			configPath:  filepath.Join("testdata", "skip-test.yaml"),
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "aws-access-key-id",
+						Category:  secret.CategoryAWS,
+						Title:     "AWS Access Key ID",
+						Severity:  "CRITICAL",
+						StartLine: 2,
+						EndLine:   2,
+						Match:     "AWS_ACCESS_KEY_ID=********************",
+						Offset:    402, // 384 + 18
+					},
+				},
+			},
+		},
+		{
+			name: "very small buffer and overlap",
+			input: strings.Repeat("x", 150) + "\n" + // 150 bytes padding
+				"secret=\"mysecret123\"\n" + // at offset 151
+				strings.Repeat("y", 345) + "\n" + // 345 bytes padding
+				"secret=\"anothersecret456\"\n" + // at offset 517
+				strings.Repeat("z", 150), // suffix padding
+			bufferSize:  128,
+			overlapSize: 32,
+			configPath:  filepath.Join("testdata", "config.yaml"),
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "rule1",
+						Category:  "general",
+						Title:     "Generic Rule",
+						Severity:  "HIGH",
+						StartLine: 2,
+						EndLine:   2,
+						Match:     "secret=\"***********\"",
+						Offset:    159, // 151 + 8 (position of "mysecret123")
+					},
+					{
+						RuleID:    "rule1",
+						Category:  "general",
+						Title:     "Generic Rule",
+						Severity:  "HIGH",
+						StartLine: 4,
+						EndLine:   4,
+						Match:     "secret=\"****************\"",
+						Offset:    526, // 517 + 9
+					},
+				},
+			},
+		},
+		{
+			name: "multi-line secret with small chunks",
+			input: strings.Repeat("x", 720) + "\n" + // 720 bytes padding
+				"-----BEGIN RSA PRIVATE KEY-----\n" + // at offset 721
+				"MIIEpAIBAAKCAQEA1234567890abcdefghijklmnopqrstuvwxyz\n" +
+				"ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnop\n" +
+				"qrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12345678\n" +
+				"-----END RSA PRIVATE KEY-----\n" +
+				strings.Repeat("z", 460), // suffix padding
+			bufferSize:  1024, // Ensure the entire key fits in one chunk
+			overlapSize: 256,
+			configPath:  filepath.Join("testdata", "skip-test.yaml"),
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "private-key",
+						Category:  secret.CategoryAsymmetricPrivateKey,
+						Title:     "Asymmetric Private Key",
+						Severity:  "HIGH",
+						StartLine: 3,
+						EndLine:   5,
+						Match:     "****************************************************", // Multi-line secret content
+						Offset:    753,                                                    // 721 + 32 (after BEGIN line)
+					},
+				},
+			},
+		},
+		{
+			name: "multi-line secret exceeding overlap size (known limitation)",
+			input: strings.Repeat("x", 920) + "\n" + // Position key at chunk boundary (1024 - ~100 bytes for key)
+				"-----BEGIN RSA PRIVATE KEY-----\n" + // at offset 921
+				"MIIEpAIBAAKCAQEA1234567890abcdefghijklmnopqrstuvwxyz\n" +
+				"ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnop\n" +
+				"qrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12345678\n" +
+				"-----END RSA PRIVATE KEY-----\n" +
+				strings.Repeat("z", 460), // suffix padding
+			bufferSize:  1024,
+			overlapSize: 100, // Too small to capture the entire key
+			configPath:  filepath.Join("testdata", "skip-test.yaml"),
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: nil, // Key won't be detected as it spans beyond the overlap
+			},
+		},
+		{
+			name:        "no secrets in any chunk",
+			input:       strings.Repeat("this is just normal content without any secrets in it at all\n", 50),
+			bufferSize:  512,
+			overlapSize: 128, // 1/4 of buffer
+			configPath:  filepath.Join("testdata", "config.yaml"),
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: nil,
+			},
+		},
+		{
+			name: "secret in last chunk with EOF",
+			input: strings.Repeat("x", 1500) + "\n" + // 1500 bytes to push secret to end
+				"final_secret=\"supersecretvalue\"", // at offset 1501, no newline at end
+			bufferSize:  640,
+			overlapSize: 160, // 1/4 of buffer
+			configPath:  filepath.Join("testdata", "config.yaml"),
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "rule1",
+						Category:  "general",
+						Title:     "Generic Rule",
+						Severity:  "HIGH",
+						StartLine: 2,
+						EndLine:   2,
+						Match:     "final_secret=\"****************\"",
+						Offset:    1515, // 1501 + 14 (position of "supersecretvalue")
+					},
+				},
+			},
+		},
+		{
+			name: "deduplicate findings at chunk boundaries",
+			input: strings.Repeat("x", 330) + "\n" + // 330 bytes
+				"secret=\"duplicatetest123\"\n" + // at offset 331, ends at 356
+				strings.Repeat("y", 200), // padding
+			bufferSize:  400, // First chunk: 0-399, overlap: 300-399
+			overlapSize: 100, // Secret (331-356) is within overlap region
+			configPath:  filepath.Join("testdata", "config.yaml"),
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "rule1",
+						Category:  "general",
+						Title:     "Generic Rule",
+						Severity:  "HIGH",
+						StartLine: 2,
+						EndLine:   2,
+						Match:     "secret=\"****************\"",
+						Offset:    339, // 331 + 8 (position of "duplicatetest123")
+					},
+				},
+			},
+		},
+		{
+			name: "multiple secrets on same line",
+			input: strings.Repeat("x", 480) + "\n" + // 480 bytes padding
+				"secret=\"first123\" and secret=\"second456\" on same line\n" + // at offset 481
+				strings.Repeat("y", 1300), // large padding to force multiple chunks
+			bufferSize:  512,
+			overlapSize: 128, // 1/4 of buffer
+			configPath:  filepath.Join("testdata", "config.yaml"),
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "rule1",
+						Category:  "general",
+						Title:     "Generic Rule",
+						Severity:  "HIGH",
+						StartLine: 2,
+						EndLine:   2,
+						Match:     "secret=\"********\" and secret=\"*********\" on same line", // Full line match for second secret
+						Offset:    511,                                                         // 481 + 30 (position of "second456")
+					},
+					{
+						RuleID:    "rule1",
+						Category:  "general",
+						Title:     "Generic Rule",
+						Severity:  "HIGH",
+						StartLine: 2,
+						EndLine:   2,
+						Match:     "secret=\"********\" and secret=\"s", // Truncated match for first secret
+						Offset:    489,                                  // 481 + 8 (position of "first123")
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Parse config
+			c, err := secret.ParseConfig(tt.configPath)
+			require.NoError(t, err)
+
+			// Create scanner with custom buffer and overlap sizes
+			s := secret.NewScanner(c,
+				secret.WithBufferSize(tt.bufferSize),
+				secret.WithOverlapSize(tt.overlapSize))
+
+			// Scan with streaming
+			reader := strings.NewReader(tt.input)
+			got := s.Scan(secret.ScanArgs{
+				FilePath: "test.txt",
+				Content:  reader,
+			})
+
+			// Clear Code field as it's too verbose to specify in test expectations
+			for i := range got.Findings {
+				got.Findings[i].Code = types.Code{}
+			}
+			for i := range tt.want.Findings {
+				tt.want.Findings[i].Code = types.Code{}
+			}
+
+			// Compare all findings at once
+			assert.Equal(t, tt.want.Findings, got.Findings, "unexpected findings")
 		})
 	}
 }
