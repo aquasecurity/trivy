@@ -40,6 +40,7 @@ func TestScanner_Detect(t *testing.T) {
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
 				"testdata/fixtures/cpe.yaml",
+				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
 				osVer: "7.6",
@@ -69,12 +70,17 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "vim-minimal",
 					InstalledVersion: "2:7.4.160-5.el7",
 					Status:           dbTypes.StatusWillNotFix,
-					SeveritySource:   vulnerability.RedHat,
+					SeveritySource:   vulnerability.RedHatOVAL,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityLow.String(),
 					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHatOVAL,
+						Name: "Red Hat OVAL v2",
+						URL:  "https://www.redhat.com/security/data/oval/v2/",
 					},
 				},
 				{
@@ -85,12 +91,17 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "vim-minimal",
 					InstalledVersion: "2:7.4.160-5.el7",
 					FixedVersion:     "2:7.4.160-6.el7_6",
-					SeveritySource:   vulnerability.RedHat,
+					SeveritySource:   vulnerability.RedHatOVAL,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityHigh.String(),
 					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHatOVAL,
+						Name: "Red Hat OVAL v2",
+						URL:  "https://www.redhat.com/security/data/oval/v2/",
 					},
 				},
 			},
@@ -100,6 +111,7 @@ func TestScanner_Detect(t *testing.T) {
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
 				"testdata/fixtures/cpe.yaml",
+				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
 				osVer: "7.5",
@@ -132,12 +144,17 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "nss",
 					InstalledVersion: "3.36.0-7.1.el7_6",
 					FixedVersion:     "3.36.0-9.el7_6",
-					SeveritySource:   vulnerability.RedHat,
+					SeveritySource:   vulnerability.RedHatOVAL,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityMedium.String(),
 					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHatOVAL,
+						Name: "Red Hat OVAL v2",
+						URL:  "https://www.redhat.com/security/data/oval/v2/",
 					},
 				},
 				{
@@ -148,12 +165,17 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "nss",
 					InstalledVersion: "3.36.0-7.1.el7_6",
 					FixedVersion:     "3.53.1-17.el7_3",
-					SeveritySource:   vulnerability.RedHat,
+					SeveritySource:   vulnerability.RedHatOVAL,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityHigh.String(),
 					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHatOVAL,
+						Name: "Red Hat OVAL v2",
+						URL:  "https://www.redhat.com/security/data/oval/v2/",
 					},
 				},
 			},
@@ -163,6 +185,7 @@ func TestScanner_Detect(t *testing.T) {
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
 				"testdata/fixtures/cpe.yaml",
+				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
 				osVer: "8.3",
@@ -195,12 +218,17 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "expat",
 					InstalledVersion: "2.2.5-16.el8_10",
 					FixedVersion:     "2.2.5-18.el8_10",
-					SeveritySource:   vulnerability.RedHat,
+					SeveritySource:   vulnerability.RedHatOVAL,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityMedium.String(),
 					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHatOVAL,
+						Name: "Red Hat OVAL v2",
+						URL:  "https://www.redhat.com/security/data/oval/v2/",
 					},
 				},
 			},
@@ -210,6 +238,7 @@ func TestScanner_Detect(t *testing.T) {
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
 				"testdata/fixtures/cpe.yaml",
+				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
 				osVer: "7.6",
@@ -242,12 +271,17 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "kernel-headers",
 					InstalledVersion: "3.10.0-1127.19-1.el7",
 					FixedVersion:     "4.5.0-15.2.1.el7",
-					SeveritySource:   vulnerability.RedHat,
+					SeveritySource:   vulnerability.RedHatOVAL,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityHigh.String(),
 					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHatOVAL,
+						Name: "Red Hat OVAL v2",
+						URL:  "https://www.redhat.com/security/data/oval/v2/",
 					},
 				},
 			},
@@ -257,6 +291,7 @@ func TestScanner_Detect(t *testing.T) {
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
 				"testdata/fixtures/cpe.yaml",
+				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
 				osVer: "7.6",
@@ -289,12 +324,17 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "kernel-headers",
 					InstalledVersion: "3.10.0-326.36-3.el7",
 					FixedVersion:     "3.10.0-327.36.3.el7",
-					SeveritySource:   vulnerability.RedHat,
+					SeveritySource:   vulnerability.RedHatOVAL,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityHigh.String(),
 					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHatOVAL,
+						Name: "Red Hat OVAL v2",
+						URL:  "https://www.redhat.com/security/data/oval/v2/",
 					},
 				},
 			},
@@ -304,6 +344,7 @@ func TestScanner_Detect(t *testing.T) {
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
 				"testdata/fixtures/cpe.yaml",
+				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
 				osVer: "8.3",
@@ -326,9 +367,14 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "vim-minimal",
 					InstalledVersion: "2:7.4.160-5.el8",
 					FixedVersion:     "2:7.4.160-7.el8_7",
-					SeveritySource:   vulnerability.RedHat,
+					SeveritySource:   vulnerability.RedHatOVAL,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityMedium.String(),
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHatOVAL,
+						Name: "Red Hat OVAL v2",
+						URL:  "https://www.redhat.com/security/data/oval/v2/",
 					},
 				},
 			},
@@ -338,6 +384,7 @@ func TestScanner_Detect(t *testing.T) {
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
 				"testdata/fixtures/cpe.yaml",
+				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
 				osVer: "8.3",
@@ -370,12 +417,17 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "php",
 					InstalledVersion: "7.2.10-1.module_el8.2.0+313+b04d0a66",
 					FixedVersion:     "7.2.11-1.1.module+el8.0.0+4664+17bd8d65",
-					SeveritySource:   vulnerability.RedHat,
+					SeveritySource:   vulnerability.RedHatOVAL,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityCritical.String(),
 					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:3e968ecc016e1b9aa19023798229bf2d25c813d1bf092533f38b056aff820524",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHatOVAL,
+						Name: "Red Hat OVAL v2",
+						URL:  "https://www.redhat.com/security/data/oval/v2/",
 					},
 				},
 			},
@@ -425,6 +477,7 @@ func TestScanner_Detect(t *testing.T) {
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
 				"testdata/fixtures/cpe.yaml",
+				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
 				osVer: "8.3",
@@ -460,12 +513,17 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "vim-minimal",
 					InstalledVersion: "2:7.4.160-5.el8",
 					FixedVersion:     "2:7.4.160-7.el8_7",
-					SeveritySource:   vulnerability.RedHat,
+					SeveritySource:   vulnerability.RedHatOVAL,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityMedium.String(),
 					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHatOVAL,
+						Name: "Red Hat OVAL v2",
+						URL:  "https://www.redhat.com/security/data/oval/v2/",
 					},
 				},
 			},

@@ -89,7 +89,7 @@
           "PkgName": "glibc",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/centos/glibc@2.12-1.212.el6?arch=x86_64\u0026distro=centos-6.10",
-            "UID": "24b11591bb7262c4"
+            "UID": "84918f8d62b7364b"
           },
           "InstalledVersion": "2.12-1.212.el6",
           "Status": "end_of_life",
@@ -97,8 +97,14 @@
             "Digest": "sha256:ff50d722b38227ec8f2bbf0cdbce428b66745077c173d8117d91376128fa532e",
             "DiffID": "sha256:af6bf1987c2eb07d73f33836b0d8fd825d7c785273526b077e46780e8b4b2ae9"
           },
-          "SeveritySource": "redhat",
+          "SeveritySource": "redhat-oval",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-29573",
+          "DataSource": {
+            "ID": "redhat-oval",
+            "Name": "Red Hat OVAL v2",
+            "URL": "https://www.redhat.com/security/data/oval/v2/"
+          },
+          "Custom": null,
           "Title": "glibc: stack-based buffer overflow if the input to any of the printf family of functions is an 80-bit long double with a non-canonical bit pattern",
           "Description": "sysdeps/i386/ldbl2mpn.c in the GNU C Library (aka glibc or libc6) before 2.23 on x86 targets has a stack-based buffer overflow if the input to any of the printf family of functions is an 80-bit long double with a non-canonical bit pattern, as seen when passing a \\x00\\x04\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x04 value to sprintf. NOTE: the issue does not affect glibc by default in 2016 or later (i.e., 2.23 or later) because of commits made in 2015 for inlining of C99 math functions through use of GCC built-ins. In other words, the reference to 2.23 is intentional despite the mention of \"Fixed for glibc 2.33\" in the 26649 reference.",
           "Severity": "MEDIUM",
@@ -111,7 +117,8 @@
             "nvd": 3,
             "oracle-oval": 2,
             "photon": 3,
-            "redhat": 2
+            "redhat": 2,
+            "redhat-oval": 2
           },
           "CVSS": {
             "nvd": {
@@ -146,7 +153,7 @@
           "PkgName": "openssl",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/centos/openssl@1.0.1e-57.el6?arch=x86_64\u0026distro=centos-6.10",
-            "UID": "935959fd0ed81eb9"
+            "UID": "c6bd039ac4f1649c"
           },
           "InstalledVersion": "1.0.1e-57.el6",
           "FixedVersion": "1.0.1e-58.el6_10",
@@ -155,8 +162,14 @@
             "Digest": "sha256:ff50d722b38227ec8f2bbf0cdbce428b66745077c173d8117d91376128fa532e",
             "DiffID": "sha256:af6bf1987c2eb07d73f33836b0d8fd825d7c785273526b077e46780e8b4b2ae9"
           },
-          "SeveritySource": "redhat",
+          "SeveritySource": "redhat-oval",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1559",
+          "DataSource": {
+            "ID": "redhat-oval",
+            "Name": "Red Hat OVAL v2",
+            "URL": "https://www.redhat.com/security/data/oval/v2/"
+          },
+          "Custom": null,
           "Title": "openssl: 0-byte record padding oracle",
           "Description": "If an application encounters a fatal protocol error and then calls SSL_shutdown() twice (once to send a close_notify, and once to receive one) then OpenSSL can respond differently to the calling application if a 0 byte record is received with invalid padding compared to if a 0 byte record is received with an invalid MAC. If the application then behaves differently based on that in a way that is detectable to the remote peer, then this amounts to a padding oracle that could be used to decrypt data. In order for this to be exploitable \"non-stitched\" ciphersuites must be in use. Stitched ciphersuites are optimised implementations of certain commonly used ciphersuites. Also the application must call SSL_shutdown() twice even if a protocol error has occurred (applications should not do this but some do anyway). Fixed in OpenSSL 1.0.2r (Affected 1.0.2-1.0.2q).",
           "Severity": "MEDIUM",
@@ -169,6 +182,7 @@
             "nvd": 2,
             "oracle-oval": 2,
             "redhat": 2,
+            "redhat-oval": 2,
             "ubuntu": 2
           },
           "CVSS": {
