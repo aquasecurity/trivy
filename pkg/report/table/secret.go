@@ -120,6 +120,12 @@ func (r *secretRenderer) renderCode(target string, secret types.DetectedSecret) 
 			}
 		}
 
+		// Add offset information
+		var offsetInfo string
+		if secret.Offset > 0 {
+			offsetInfo = tml.Sprintf(" <dim>(offset: </dim><cyan>%d<dim>)</dim>", secret.Offset)
+		}
+
 		var note string
 		if c := secret.Layer.CreatedBy; c != "" {
 			if len(c) > 40 {
@@ -130,7 +136,7 @@ func (r *secretRenderer) renderCode(target string, secret types.DetectedSecret) 
 		} else if secret.Layer.DiffID != "" {
 			note = fmt.Sprintf(" (added in layer '%s')", strings.TrimPrefix(secret.Layer.DiffID, "sha256:")[:12])
 		}
-		r.printf(" <blue>%s%s<magenta>%s\r\n", target, lineInfo, note)
+		r.printf(" <blue>%s%s%s<magenta>%s\r\n", target, lineInfo, offsetInfo, note)
 		r.printSingleDivider()
 
 		for i, line := range lines {
