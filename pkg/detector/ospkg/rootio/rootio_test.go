@@ -113,6 +113,40 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			name:   "Rocky scanner",
+			baseOS: ftypes.Rocky,
+			fixtures: []string{
+				"testdata/fixtures/rootio.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "8",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "nginx",
+						Version:    "1.22.1-9+el8_9.rocky.root.io.0",
+						SrcName:    "nginx",
+						SrcVersion: "1.22.1-9+el8_9.rocky.root.io.0",
+						Arch:       "amd64",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "nginx",
+					VulnerabilityID:  "CVE-2023-44487",
+					InstalledVersion: "1.22.1-9+el8_9.rocky.root.io.0",
+					FixedVersion:     "1.22.1-9+el8_9.rocky.root.io.1",
+					DataSource: &dbTypes.DataSource{
+						ID:     vulnerability.RootIO,
+						BaseID: vulnerability.Rocky,
+						Name:   "Root.io Security Patches (rocky)",
+						URL:    "https://api.root.io/external/patch_feed",
+					},
+				},
+			},
+		},
+		{
 			name:   "Alpine scanner",
 			baseOS: ftypes.Alpine,
 			fixtures: []string{
