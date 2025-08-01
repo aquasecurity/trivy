@@ -3,13 +3,11 @@ package helm
 import (
 	"context"
 	"fmt"
-	"io"
 	"io/fs"
 	"path"
 	"path/filepath"
 	"strings"
 
-	"github.com/liamg/memoryfs"
 	"helm.sh/helm/v3/pkg/chartutil"
 
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
@@ -22,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)
@@ -140,13 +139,11 @@ func (s *Scanner) getScanResults(ctx context.Context, path string, target fs.FS)
 			}
 
 			if len(fileResults) > 0 {
-				renderedFS := memoryfs.New()
+				renderedFS := mapfs.New()
 				if err := renderedFS.MkdirAll(filepath.Dir(file.TemplateFilePath), fs.ModePerm); err != nil {
 					return nil, err
 				}
-				if err := renderedFS.WriteLazyFile(file.TemplateFilePath, func() (io.Reader, error) {
-					return strings.NewReader(file.ManifestContent), nil
-				}, fs.ModePerm); err != nil {
+				if err := renderedFS.WriteVirtualFile(file.TemplateFilePath, []byte(file.ManifestContent), fs.ModePerm); err != nil {
 					return nil, err
 				}
 				fileResults.SetSourceAndFilesystem(helmParser.ChartSource, renderedFS, detection.IsArchive(helmParser.ChartSource))
