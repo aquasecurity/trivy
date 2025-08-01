@@ -86,8 +86,7 @@ func (v *VersionChecker) RunUpdateCheck(ctx context.Context) {
 				logger.Debug("Failed getting response from Trivy api", log.Err(err))
 			}
 			return
-		}
-		if resp.StatusCode != http.StatusOK {
+		} else if resp.StatusCode != http.StatusOK {
 			logger.Debug("Unexpected status code from Trivy api", log.Int("status_code", resp.StatusCode))
 			return
 		}
