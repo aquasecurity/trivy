@@ -14,6 +14,7 @@ func (a *adapter) adaptFolderIAM() {
 	a.adaptFolders()
 	a.adaptFolderMembers()
 	a.adaptFolderBindings()
+	a.adaptFolderAuditConfigs()
 }
 
 const googleFolder = "google_folder"
@@ -96,4 +97,19 @@ func (a *adapter) findFolder(iamBlock *terraform.Block) *iam.Folder {
 	}
 
 	return nil
+}
+
+func (a *adapter) adaptFolderAuditConfigs() {
+	for _, iamBlock := range a.modules.GetResourcesByType("google_folder_iam_audit_config") {
+		auditConfig := AdaptAuditConfig(iamBlock)
+		if folder := a.findFolder(iamBlock); folder != nil {
+			folder.AuditConfigs = append(folder.AuditConfigs, auditConfig)
+		} else {
+			// we didn't find the folder - add an unmanaged one
+			a.folders[uuid.NewString()] = &iam.Folder{
+				Metadata:     types.NewUnmanagedMetadata(),
+				AuditConfigs: []iam.AuditConfig{auditConfig},
+			}
+		}
+	}
 }

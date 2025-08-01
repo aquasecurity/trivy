@@ -18,6 +18,7 @@ func (a *adapter) adaptProjectIAM() {
 	a.adaptProjects()
 	a.adaptProjectMembers()
 	a.adaptProjectBindings()
+	a.adaptProjectAuditConfigs()
 }
 
 func (a *adapter) adaptProjects() {
@@ -211,4 +212,46 @@ func (a *adapter) findProject(iamBlock *terraform.Block) *iam.Project {
 	}
 
 	return nil
+}
+
+func (a *adapter) adaptProjectAuditConfigs() {
+	for _, iamBlock := range a.modules.GetResourcesByType("google_project_iam_audit_config") {
+		auditConfig := AdaptAuditConfig(iamBlock)
+		if project := a.findProject(iamBlock); project != nil {
+			project.AuditConfigs = append(project.AuditConfigs, auditConfig)
+		} else {
+			// we didn't find the project - add an unmanaged one
+			a.projects[uuid.NewString()] = &iam.Project{
+				Metadata:          iacTypes.NewUnmanagedMetadata(),
+				AutoCreateNetwork: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+				AuditConfigs:      []iam.AuditConfig{auditConfig},
+			}
+		}
+	}
+}
+
+func AdaptAuditConfig(block *terraform.Block) iam.AuditConfig {
+	auditConfig := iam.AuditConfig{
+		Metadata: block.GetMetadata(),
+		Service:  block.GetAttribute("service").AsStringValueOrDefault("", block),
+	}
+
+	for _, logConfigBlock := range block.GetBlocks("audit_log_config") {
+		logConfig := iam.AuditLogConfig{
+			Metadata: logConfigBlock.GetMetadata(),
+			LogType:  logConfigBlock.GetAttribute("log_type").AsStringValueOrDefault("", logConfigBlock),
+		}
+
+		// Parse exempted_members array
+		if exemptedAttr := logConfigBlock.GetAttribute("exempted_members"); !exemptedAttr.IsNil() {
+			for _, member := range exemptedAttr.AsStringValues().AsStrings() {
+				logConfig.ExemptedMembers = append(logConfig.ExemptedMembers,
+					iacTypes.String(member, exemptedAttr.GetMetadata()))
+			}
+		}
+
+		auditConfig.AuditLogConfigs = append(auditConfig.AuditLogConfigs, logConfig)
+	}
+
+	return auditConfig
 }
