@@ -16,6 +16,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
 )
@@ -178,7 +179,51 @@ func (c *IgnoreConfig) MatchSecret(secretID, filePath string) *IgnoreFinding {
 }
 
 func (c *IgnoreConfig) MatchLicense(licenseID, filePath string) *IgnoreFinding {
-	return c.Licenses.Match(licenseID, filePath, nil)
+	if b := expression.ValidateSPDXLicense(licenseID); !b {
+		log.Debug("Invalid SPDX license", log.String("license", licenseID))
+		return nil
+	}
+
+	if f := c.Licenses.Match(licenseID, filePath, nil); f != nil {
+		return f
+	}
+
+	expr, err := expression.Normalize(licenseID)
+	if err != nil {
+		return nil
+	}
+
+	var licenseIDs []string
+	extractFromExpression(expr, &licenseIDs)
+
+	if len(licenseIDs) > 1 {
+		for _, id := range licenseIDs {
+			if c.Licenses.Match(id, filePath, nil) == nil {
+				return nil
+			}
+		}
+		return &IgnoreFinding{
+			ID:        licenseID,
+			Statement: "All license components are individually ignored",
+		}
+	}
+	return nil
+}
+
+func extractFromExpression(expr expression.Expression, licenseIDs *[]string) {
+	switch e := expr.(type) {
+	case expression.SimpleExpr:
+		*licenseIDs = append(*licenseIDs, e.String())
+	case expression.CompoundExpr:
+		if e.Conjunction() == expression.TokenWith {
+			// For WITH expressions, treat as a single license
+			*licenseIDs = append(*licenseIDs, expr.String())
+		} else {
+			// For AND/OR expressions, recursively extract from both sides
+			extractFromExpression(e.Left(), licenseIDs)
+			extractFromExpression(e.Right(), licenseIDs)
+		}
+	}
 }
 
 func ParseIgnoreFile(ctx context.Context, ignoreFile string) (IgnoreConfig, error) {

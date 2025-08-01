@@ -38,3 +38,5 @@ licenses:
   - id: GPL-3.0
     paths:
       - "usr/share/gcc/python/libstdcxx/v6/__init__.py"
+  - id: MIT
+  - id: LGPLv2+
