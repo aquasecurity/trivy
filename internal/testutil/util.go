@@ -3,11 +3,10 @@ package testutil
 import (
 	"encoding/json"
 	"io/fs"
-	"path/filepath"
 	"strings"
 	"testing"
+	"testing/fstest"
 
-	"github.com/liamg/memoryfs"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -57,15 +56,12 @@ func ruleIDInResults(ruleID string, results scan.Results) bool {
 }
 
 func CreateFS(t *testing.T, files map[string]string) fs.FS {
-	memfs := memoryfs.New()
+	fsys := fstest.MapFS{}
 	for name, content := range files {
 		name := strings.TrimPrefix(name, "/")
-		err := memfs.MkdirAll(filepath.Dir(name), 0o700)
-		require.NoError(t, err)
-		err = memfs.WriteFile(name, []byte(content), 0o644)
-		require.NoError(t, err)
+		fsys[name] = &fstest.MapFile{Data: []byte(content)}
 	}
-	return memfs
+	return fsys
 }
 
 func AssertDefsecEqual(t *testing.T, expected, actual any) {
