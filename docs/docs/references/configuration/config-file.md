@@ -640,6 +640,9 @@ vulnerability:
   # Same as '--ignore-unfixed'
   ignore-unfixed: false
 
+  # Same as '--ignore-unlikely-affected'
+  ignore-unlikely-affected: false
+
   # Same as '--vuln-severity-source'
   severity-source:
    - auto
