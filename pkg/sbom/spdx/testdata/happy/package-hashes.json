@@ -12,8 +12,19 @@
   "name": "maven-test-projecct",
   "packages": [
     {
-      "name": "lodash",
       "SPDXID": "SPDXRef-Package-lodash-4.17.21",
+      "name": "lodash",
+      "versionInfo": "4.17.21",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:npm/lodash@4.17.21",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
       "checksums": [
         {
           "algorithm": "SHA512",
