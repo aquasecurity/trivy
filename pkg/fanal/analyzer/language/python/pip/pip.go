@@ -2,7 +2,6 @@ package pip
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -15,6 +14,7 @@ import (
 	"golang.org/x/xerrors"
 
 	goversion "github.com/aquasecurity/go-version/pkg/version"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/python"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/packaging"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/pip"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -109,19 +109,15 @@ func (a pipLibraryAnalyzer) Version() int {
 
 // pkgLicense parses `METADATA` pkg file to look for licenses
 func (a pipLibraryAnalyzer) pkgLicense(pkgName, pkgVer, spDir string) []string {
-	// METADATA path is `**/site-packages/<pkg_name>-<pkg_version>.dist-info/METADATA`
-	pkgDir := fmt.Sprintf("%s-%s.dist-info", pkgName, pkgVer)
-	metadataPath := filepath.Join(spDir, pkgDir, "METADATA")
-	metadataFile, err := os.Open(metadataPath)
-	if os.IsNotExist(err) {
-		a.logger.Debug("No package metadata found", log.String("site-packages", pkgDir),
-			log.String("name", pkgName), log.String("version", pkgVer))
+	metadataFile := a.metadataFile(pkgName, pkgVer, spDir)
+	if metadataFile == nil {
 		return nil
 	}
+	defer metadataFile.Close()
 
 	metadataPkg, _, err := a.metadataParser.Parse(metadataFile)
 	if err != nil {
-		a.logger.Warn("Unable to parse METADATA file", log.FilePath(metadataPath), log.Err(err))
+		a.logger.Warn("Unable to parse METADATA file", log.FilePath(metadataFile.Name()), log.Err(err))
 		return nil
 	}
 
@@ -230,4 +226,39 @@ func (a pipLibraryAnalyzer) sortPythonDirs(entries []os.DirEntry) []string {
 	return lo.Map(pythonVers, func(v goversion.Version, _ int) string {
 		return "python" + v.String()
 	})
+}
+
+// metadataFile returns METADATA file for package (if exists)
+func (a pipLibraryAnalyzer) metadataFile(pkgName, pkgVer, spDir string) *os.File {
+	pkgDirs := distInfoDirs(pkgName, pkgVer)
+	for _, pkgDir := range distInfoDirs(pkgName, pkgVer) {
+		metadataPath := filepath.Join(spDir, pkgDir, "METADATA")
+		metadataFile, err := os.Open(metadataPath)
+		if err == nil {
+			return metadataFile
+		}
+	}
+
+	a.logger.Debug("No package metadata found", log.String("site-packages", spDir),
+		log.String("dist-info", strings.Join(pkgDirs, ", ")), log.String("name", pkgName), log.String("version", pkgVer))
+	return nil
+}
+
+// distInfoDir returns normalized dist-info dir name for package
+// cf. https://packaging.python.org/en/latest/specifications/recording-installed-packages/#the-dist-info-directory
+// e.g. `foo-1.0.dist-info` or `foo_bar-1.0.dist-info`
+func distInfoDirs(name, version string) []string {
+	dirs := []string{
+		// Any packages don't use lower case.
+		// e.g. Flask uses `Flask-2.0.1.dist-info`
+		python.NormalizePkgName(name, false),
+		python.NormalizePkgName(name, true),
+	}
+
+	for i := range dirs {
+		dirs[i] = strings.ReplaceAll(dirs[i], "-", "_")
+		dirs[i] = dirs[i] + "-" + version + ".dist-info"
+	}
+
+	return dirs
 }
