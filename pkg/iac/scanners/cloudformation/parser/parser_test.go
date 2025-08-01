@@ -338,7 +338,7 @@ Resources:
 	})
 
 	p := New(
-		WithParameterFiles("/workdir/parameters/queue.json", "/workdir/parameters/s3.json"),
+		WithParameterFiles("workdir/parameters/queue.json", "workdir/parameters/s3.json"),
 		WithConfigsFS(configFS),
 	)
 
