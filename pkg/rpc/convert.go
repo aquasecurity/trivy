@@ -166,6 +166,7 @@ func ConvertToRPCSecretFindings(findings []ftypes.SecretFinding) []*common.Secre
 			Code:      ConvertToRPCCode(f.Code),
 			Match:     f.Match,
 			Layer:     ConvertToRPCLayer(f.Layer),
+			Offset:    int32(f.Offset),
 		})
 	}
 	return rpcFindings
@@ -520,6 +521,7 @@ func ConvertFromRPCSecretFindings(rpcFindings []*common.SecretFinding) []ftypes.
 			EndLine:   int(finding.EndLine),
 			Code:      ConvertFromRPCCode(finding.Code),
 			Match:     finding.Match,
+			Offset:    int(finding.Offset),
 			Layer: ftypes.Layer{
 				Digest:    finding.Layer.Digest,
 				DiffID:    finding.Layer.DiffId,
