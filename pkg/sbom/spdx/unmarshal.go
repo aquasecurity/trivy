@@ -264,6 +264,7 @@ func (s *SPDX) unmarshalChecksums(checksums []spdx.Checksum) []digest.Digest {
 			alg = digest.MD5
 		default:
 			log.Warn("Unsupported hash algorithm", log.String("algorithm", string(h.Algorithm)))
+			continue
 		}
 		digests = append(digests, digest.NewDigestFromString(alg, h.Value))
 	}
