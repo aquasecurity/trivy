@@ -1,14 +1,22 @@
 package python
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
 
-// NormalizePkgName normalizes the package name based on pep-0426
-func NormalizePkgName(name string) string {
-	// The package names don't use `_`, `.` or upper case, but dependency names can contain them.
-	// We need to normalize those names.
-	// cf. https://peps.python.org/pep-0426/#name
-	name = strings.ToLower(name)              // e.g. https://github.com/python-poetry/poetry/blob/c8945eb110aeda611cc6721565d7ad0c657d453a/poetry.lock#L819
-	name = strings.ReplaceAll(name, "_", "-") // e.g. https://github.com/python-poetry/poetry/blob/c8945eb110aeda611cc6721565d7ad0c657d453a/poetry.lock#L50
-	name = strings.ReplaceAll(name, ".", "-") // e.g. https://github.com/python-poetry/poetry/blob/c8945eb110aeda611cc6721565d7ad0c657d453a/poetry.lock#L816
+var normalizePkgNameRegexp = regexp.MustCompile(`[-_.]+`)
+
+// NormalizePkgName normalizes the package name based on pep-0503 (with the option to disable conversion to lowercase).
+// cf. https://peps.python.org/pep-0503/#normalized-names:
+// The name should be lowercased with all runs of the characters ., -, or _ replaced with a single - character.
+func NormalizePkgName(name string, inLowerCase bool) string {
+	name = normalizePkgNameRegexp.ReplaceAllString(name, "-")
+
+	// pep-0503 requires that all packages names MUST be lowercase.
+	// But there are cases where the original case should be preserved (e.g. dist-info dir names).
+	if inLowerCase {
+		name = strings.ToLower(name)
+	}
 	return name
 }
