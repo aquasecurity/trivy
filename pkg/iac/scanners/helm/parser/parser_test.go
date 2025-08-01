@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -19,7 +20,7 @@ func TestParseFS(t *testing.T) {
 			"my-chart/Chart.yaml",
 			"my-chart/templates/pod.yaml",
 		}
-		assert.Equal(t, expectedFiles, p.filepaths)
+		assert.ElementsMatch(t, expectedFiles, lo.Keys(p.filepaths))
 	})
 
 	t.Run("archive with symlinks", func(t *testing.T) {
@@ -45,7 +46,7 @@ func TestParseFS(t *testing.T) {
 			"chart/sym-to-dir/Chart.yaml",
 			"chart/sym-to-file/Chart.yaml",
 		}
-		assert.Equal(t, expectedFiles, p.filepaths)
+		assert.ElementsMatch(t, expectedFiles, lo.Keys(p.filepaths))
 	})
 
 	t.Run("chart with multiple archived deps", func(t *testing.T) {
@@ -60,7 +61,7 @@ func TestParseFS(t *testing.T) {
 			"charts/common-2.26.0.tgz",
 			"charts/opentelemetry-collector-0.108.0.tgz",
 		}
-		assert.Equal(t, expectedFiles, p.filepaths)
+		assert.ElementsMatch(t, expectedFiles, lo.Keys(p.filepaths))
 	})
 
 	t.Run("archives are not dependencies", func(t *testing.T) {
@@ -75,6 +76,6 @@ func TestParseFS(t *testing.T) {
 			"backup_charts/wordpress-operator/Chart.yaml",
 			"backup_charts/mysql-operator/Chart.yaml",
 		}
-		assert.Subset(t, p.filepaths, expectedFiles)
+		assert.Subset(t, lo.Keys(p.filepaths), expectedFiles)
 	})
 }

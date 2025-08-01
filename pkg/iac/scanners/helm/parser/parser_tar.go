@@ -19,12 +19,10 @@ import (
 
 var errSkipFS = errors.New("skip parse FS")
 
-func (p *Parser) addTarToFS(archivePath string) (fs.FS, error) {
-	tarFS := memoryfs.CloneFS(p.workingFS)
-
-	file, err := tarFS.Open(archivePath)
+func (p *Parser) unpackArchive(srcFS fs.FS, targetFS *memoryfs.FS, archivePath string) error {
+	file, err := srcFS.Open(archivePath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open tar: %w", err)
+		return fmt.Errorf("failed to open tar: %w", err)
 	}
 	defer file.Close()
 
@@ -33,7 +31,7 @@ func (p *Parser) addTarToFS(archivePath string) (fs.FS, error) {
 	if detection.IsZip(archivePath) {
 		zipped, err := gzip.NewReader(file)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create gzip reader: %w", err)
+			return fmt.Errorf("failed to create gzip reader: %w", err)
 		}
 		defer zipped.Close()
 		tr = tar.NewReader(zipped)
@@ -50,7 +48,7 @@ func (p *Parser) addTarToFS(archivePath string) (fs.FS, error) {
 			if errors.Is(err, io.EOF) {
 				break
 			}
-			return nil, fmt.Errorf("failed to get next entry: %w", err)
+			return fmt.Errorf("failed to get next entry: %w", err)
 		}
 
 		name := filepath.ToSlash(header.Name)
@@ -59,28 +57,27 @@ func (p *Parser) addTarToFS(archivePath string) (fs.FS, error) {
 			// Do not add archive files to FS if the chart already exists
 			// This can happen when the source chart is located next to an archived chart (with the `helm package` command)
 			// The first level folder in the archive is equal to the Chart name
-			if _, err := tarFS.Stat(path.Dir(archivePath) + "/" + path.Dir(name)); err == nil {
-				return nil, errSkipFS
+			if _, err := fs.Stat(srcFS, path.Clean(path.Dir(archivePath)+"/"+path.Dir(name))); err == nil {
+				return errSkipFS
 			}
 			checkExistedChart = false
 		}
 
 		// get the individual path and extract to the current directory
-		targetPath := path.Join(path.Dir(archivePath), path.Clean(name))
-
-		link := filepath.ToSlash(header.Linkname)
+		targetPath := archiveEntryPath(archivePath, name)
 
 		switch header.Typeflag {
 		case tar.TypeDir:
-			if err := tarFS.MkdirAll(targetPath, os.FileMode(header.Mode)); err != nil && !errors.Is(err, fs.ErrExist) {
-				return nil, err
+			if err := targetFS.MkdirAll(targetPath, os.FileMode(header.Mode)); err != nil && !errors.Is(err, fs.ErrExist) {
+				return err
 			}
 		case tar.TypeReg:
 			p.logger.Debug("Unpacking tar entry", log.FilePath(targetPath))
-			if err := copyFile(tarFS, tr, targetPath); err != nil {
-				return nil, err
+			if err := copyFile(targetFS, tr, targetPath); err != nil {
+				return err
 			}
 		case tar.TypeSymlink:
+			link := filepath.ToSlash(header.Linkname)
 			if path.IsAbs(link) {
 				p.logger.Debug("Symlink is absolute, skipping", log.String("link", link))
 				continue
@@ -88,21 +85,21 @@ func (p *Parser) addTarToFS(archivePath string) (fs.FS, error) {
 
 			symlinks[targetPath] = path.Join(path.Dir(targetPath), link) // nolint:gosec // virtual file system is used
 		default:
-			return nil, fmt.Errorf("header type %q is not supported", header.Typeflag)
+			return fmt.Errorf("header type %q is not supported", header.Typeflag)
 		}
 	}
 
 	for target, link := range symlinks {
-		if err := copySymlink(tarFS, link, target); err != nil {
-			return nil, fmt.Errorf("copy symlink error: %w", err)
+		if err := copySymlink(targetFS, link, target); err != nil {
+			return fmt.Errorf("copy symlink error: %w", err)
 		}
 	}
 
-	if err := tarFS.Remove(archivePath); err != nil {
-		return nil, fmt.Errorf("remove tar from FS error: %w", err)
-	}
+	return nil
+}
 
-	return tarFS, nil
+func archiveEntryPath(archivePath, name string) string {
+	return path.Join(path.Dir(archivePath), path.Clean(name))
 }
 
 func copySymlink(fsys *memoryfs.FS, src, dst string) error {
