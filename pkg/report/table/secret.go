@@ -123,7 +123,7 @@ func (r *secretRenderer) renderCode(target string, secret types.DetectedSecret) 
 		// Add offset information
 		var offsetInfo string
 		if secret.Offset > 0 {
-			offsetInfo = tml.Sprintf(" <dim>(offset: </dim><cyan>%d<dim>)</dim>", secret.Offset)
+			offsetInfo = tml.Sprintf(" <dim>(offset: </dim><cyan>%d<dim> bytes)</dim>", secret.Offset)
 		}
 
 		var note string
