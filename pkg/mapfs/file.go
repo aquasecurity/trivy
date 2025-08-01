@@ -28,7 +28,7 @@ type file struct {
 }
 
 func (f *file) isVirtual() bool {
-	return f.underlyingPath == "" || f.stat.IsDir()
+	return f.underlyingPath == ""
 }
 
 func (f *file) Open(name string) (fs.File, error) {
