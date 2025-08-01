@@ -1,5 +1,5 @@
-FROM alpine:3.21.4
-RUN apk --no-cache add ca-certificates git
-COPY trivy /usr/local/bin/trivy
+FROM alpine:3.22.1
+RUN apk --no-cache add ca-certificates git catatonit
+COPY trivy /usr/local/bin/
 COPY contrib/*.tpl contrib/
-ENTRYPOINT ["trivy"]
+ENTRYPOINT ["catatonit", "--", "trivy"]
