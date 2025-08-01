@@ -81,8 +81,14 @@ func (v *VersionChecker) RunUpdateCheck(ctx context.Context) {
 
 		req.Header.Set("User-Agent", fmt.Sprintf("trivy/%s", v.currentVersion))
 		resp, err := client.Do(req)
-		if err != nil || resp.StatusCode != http.StatusOK {
-			logger.Debug("Failed getting response from Trivy api", log.Err(err))
+		if err != nil {
+			if !errors.Is(err, context.Canceled) && !errors.Is(err, context.DeadlineExceeded) {
+				logger.Debug("Failed getting response from Trivy api", log.Err(err))
+			}
+			return
+		}
+		if resp.StatusCode != http.StatusOK {
+			logger.Debug("Unexpected status code from Trivy api", log.Int("status_code", resp.StatusCode))
 			return
 		}
 
