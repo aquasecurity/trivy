@@ -6,7 +6,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -21,23 +20,46 @@ func TestReadSnapshot(t *testing.T) {
 		expectedFiles []string
 	}{
 		{
-			name:          "just resource",
-			dir:           "just-resource",
-			expectedFiles: []string{"main.tf", "terraform.tf"},
+			name: "just resource",
+			dir:  "just-resource",
+			expectedFiles: []string{
+				"main.tf",
+				"terraform.tf",
+				".terraform/modules/modules.json",
+			},
 		},
 		{
-			name:          "with local module",
-			dir:           "with-local-module",
-			expectedFiles: []string{"main.tf", "modules/ec2/main.tf", "terraform.tf"},
+			name: "with local module",
+			dir:  "with-local-module",
+			expectedFiles: []string{
+				"main.tf",
+				"terraform.tf",
+				"modules/ec2/main.tf",
+				".terraform/modules/modules.json",
+			},
 		},
 		{
 			name: "with nested modules",
 			dir:  "nested-modules",
 			expectedFiles: []string{
 				"main.tf",
+				"terraform.tf",
 				"modules/s3/main.tf",
 				"modules/s3/modules/logging/main.tf",
+				".terraform/modules/modules.json",
+			},
+		},
+		{
+			name: "with remote module",
+			dir:  "with-remote-module",
+			expectedFiles: []string{
+				"main.tf",
 				"terraform.tf",
+				".terraform/modules/modules.json",
+				".terraform/modules/s3_bucket/main.tf",
+				".terraform/modules/s3_bucket/outputs.tf",
+				".terraform/modules/s3_bucket/variables.tf",
+				".terraform/modules/s3_bucket/versions.tf",
 			},
 		},
 	}
@@ -58,7 +80,7 @@ func TestReadSnapshot(t *testing.T) {
 			files, err := getAllfiles(fsys)
 			require.NoError(t, err)
 
-			assert.Equal(t, tt.expectedFiles, files)
+			assert.ElementsMatch(t, tt.expectedFiles, files)
 		})
 	}
 }
@@ -80,8 +102,6 @@ func getAllfiles(fsys fs.FS) ([]string, error) {
 	if err := fs.WalkDir(fsys, ".", walkFn); err != nil {
 		return nil, err
 	}
-
-	sort.Strings(files)
 	return files, nil
 }
 
