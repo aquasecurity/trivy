@@ -147,7 +147,7 @@ func Test_Adapt(t *testing.T) {
 			  location = "US"
 
 			  logging {
-			    target_bucket = "access-logs-bucket"
+			    log_bucket = "access-logs-bucket"
 			  }
 
 			  versioning {
@@ -188,7 +188,7 @@ func Test_Adapt(t *testing.T) {
 			  location = "US"
 
 			  logging {
-			    target_bucket = "access-logs-bucket"
+			    log_bucket = "access-logs-bucket"
 			    log_object_prefix = "access-logs/"
 			  }
 			}`,
