@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.66.0](https://github.com/aquasecurity/trivy/compare/v0.65.0...v0.66.0) (2025-08-02)
+
+
+### Features
+
+* **misconf:** added audit config attribute ([#9249](https://github.com/aquasecurity/trivy/issues/9249)) ([4d4a244](https://github.com/aquasecurity/trivy/commit/4d4a2444b692512aca137dcbd367ff224fe25597))
+* **secret:** implement streaming secret scanner with byte offset tracking ([#9264](https://github.com/aquasecurity/trivy/issues/9264)) ([5a5e097](https://github.com/aquasecurity/trivy/commit/5a5e0972c72e629ddf2915ef066d632d58b8d3b0))
+
+
+### Bug Fixes
+
+* **fs:** avoid shadowing errors in file.glob ([#9286](https://github.com/aquasecurity/trivy/issues/9286)) ([b51c789](https://github.com/aquasecurity/trivy/commit/b51c789330141d634a9b14bd10994c997862940f))
+* **misconf:** preserve original paths of remote submodules from .terraform ([#9294](https://github.com/aquasecurity/trivy/issues/9294)) ([1319d8d](https://github.com/aquasecurity/trivy/commit/1319d8dc7f4796177876af18f0e13ba1f7086348))
+* **python:** impove package name normalization  ([#9290](https://github.com/aquasecurity/trivy/issues/9290)) ([1473e88](https://github.com/aquasecurity/trivy/commit/1473e88b74ca269691de7827e045703612b90050))
+* suppress debug log for context cancellation errors ([#9298](https://github.com/aquasecurity/trivy/issues/9298)) ([2458d5e](https://github.com/aquasecurity/trivy/commit/2458d5e28a54da9adec0b36f6b1e6bd4f15a72ce))
+
 ## [0.65.0](https://github.com/aquasecurity/trivy/compare/v0.64.0...v0.65.0) (2025-07-30)
 
 
