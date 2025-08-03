@@ -5,18 +5,18 @@
 ### Timeout
 
 !!! error
-`bash
+    ``` bash
     $ trivy image ...
     ...
     analyze error: timeout: context deadline exceeded
-   `
+    ```
 
 Your scan may time out. Java takes a particularly long time to scan. Try increasing the value of the ---timeout option such as `--timeout 15m`.
 
 ### Unable to initialize an image scanner
 
 !!! error
-`bash
+    ``` bash
     $ trivy image ...
     ...
     2024-01-19T08:15:33.288Z	FATAL	image scan error: scan error: unable to initialize a scanner: unable to initialize an image scanner: 4 errors occurred:
@@ -24,7 +24,7 @@ Your scan may time out. Java takes a particularly long time to scan. Try increas
 	* containerd error: containerd socket not found: /run/containerd/containerd.sock
 	* podman error: unable to initialize Podman client: no podman socket found: stat podman/podman.sock: no such file or directory
 	* remote error: GET https://index.docker.io/v2/ContainerImageName: MANIFEST_UNKNOWN: manifest unknown; unknown tag=0.1
-    `
+    ```
 
 It means Trivy is unable to find the container image in the following places:
 
@@ -77,7 +77,7 @@ Common mistakes include the following, depending on where you are pulling images
 ### Certification
 
 !!! error
-Error: x509: certificate signed by unknown authority
+    Error: x509: certificate signed by unknown authority
 
 `TRIVY_INSECURE` can be used to allow insecure connections to a container registry when using SSL.
 
@@ -100,11 +100,11 @@ $ SSL_CERT_DIR=/path/to/certs trivy image [YOUR_IMAGE]
 Trivy uses GitHub API for [VEX repositories](../supply-chain/vex/repo.md).
 
 !!! error
-`bash
+    ``` bash
     $ trivy image --vex repo ...
     ...
     API rate limit exceeded for xxx.xxx.xxx.xxx.
-   `
+    ```
 
 Specify GITHUB_TOKEN for [authentication](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28)
 
@@ -113,17 +113,17 @@ $ GITHUB_TOKEN=XXXXXXXXXX trivy image --vex repo [YOUR_IMAGE]
 ```
 
 !!! note
-`GITHUB_TOKEN` doesn't help with the rate limit for the vulnerability database and other assets.
-See https://github.com/aquasecurity/trivy/discussions/8009
+    `GITHUB_TOKEN` doesn't help with the rate limit for the vulnerability database and other assets.
+    See https://github.com/aquasecurity/trivy/discussions/8009
 
 ### Unable to open JAR files
 
 !!! error
-`bash
+    ``` bash
     $ trivy image ...
     ...
     failed to analyze file: failed to analyze usr/lib/jvm/java-1.8-openjdk/lib/tools.jar: unable to open usr/lib/jvm/java-1.8-openjdk/lib/tools.jar: failed to open: unable to read the file: stream error: stream ID 9; PROTOCOL_ERROR; received from peer
-   `
+    ```
 
 Currently, we're investigating this issue. As a temporary mitigation, you may be able to avoid this issue by downloading the Java DB in advance.
 
@@ -147,17 +147,18 @@ Reference : [boltdb: Opening a database][boltdb].
 ### Multiple Trivy servers
 
 !!! error
-`    $ trivy image --server http://xxx.com:xxxx test-image
+    ```
+    $ trivy image --server http://xxx.com:xxxx test-image
     ...
     - twirp error internal: failed scan, test-image: failed to apply layers: layer cache missing: sha256:*****
-   `
+    ```
 To run multiple Trivy servers, you need to use Redis as the cache backend so that those servers can share the cache.
 Follow [this instruction][redis-cache] to do so.
 
 ### Problems with `/tmp` on remote Git repository scans
 
 !!! error
-FATAL repository scan error: scan error: unable to initialize a scanner: unable to initialize a filesystem scanner: git clone error: write /tmp/fanal-remote...
+    FATAL repository scan error: scan error: unable to initialize a scanner: unable to initialize a filesystem scanner: git clone error: write /tmp/fanal-remote...
 
 Trivy clones remote Git repositories under the `/tmp` directory before scanning them. If `/tmp` doesn't work for you, you can change it by setting the `TMPDIR` environment variable.
 
@@ -170,11 +171,11 @@ $ TMPDIR=/my/custom/path trivy repo ...
 ### Running out of space during image scans
 
 !!! error
-`bash
+    ``` bash
     image scan failed:
     failed to copy the image:
     write /tmp/fanal-3323732142: no space left on device
-   `
+    ```
 
 Trivy uses a temporary directory during image scans.
 The directory path would be determined as follows:
@@ -217,21 +218,21 @@ In such cases, there are currently three workarounds:
 ### Old DB schema
 
 !!! error
---skip-update cannot be specified with the old DB schema.
+    --skip-update cannot be specified with the old DB schema.
 
 Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database or follow [the instruction of air-gapped environment][air-gapped].
 
 ### Error downloading vulnerability DB
 
 !!! error
-FATAL failed to download vulnerability DB
+    FATAL failed to download vulnerability DB
 
 If Trivy is running behind corporate firewall, refer to the necessary connectivity requirements as described [here][network].
 
 ### Denied
 
 !!! error
-GET https://ghcr.io/token?scope=repository%3Aaquasecurity%2Ftrivy-db%3Apull&service=ghcr.io: DENIED: denied
+    GET https://ghcr.io/token?scope=repository%3Aaquasecurity%2Ftrivy-db%3Apull&service=ghcr.io: DENIED: denied
 
 Your local GHCR (GitHub Container Registry) token might be expired.
 Please remove the token and try downloading the DB again.
@@ -251,7 +252,7 @@ unset GITHUB_TOKEN
 ### Scope error
 
 !!! error
-Error: Your macOS keychain GitHub credentials do not have sufficient scope!
+    Error: Your macOS keychain GitHub credentials do not have sufficient scope!
 
 ```
 $ brew tap aquasecurity/trivy
@@ -272,7 +273,7 @@ $ printf "protocol=https\nhost=github.com\n" | git credential-osxkeychain erase
 ### Already installed
 
 !!! error
-Error: aquasecurity/trivy/trivy 64 already installed
+    Error: aquasecurity/trivy/trivy 64 already installed
 
 ```
 $ brew upgrade
