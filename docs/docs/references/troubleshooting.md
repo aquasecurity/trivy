@@ -1,7 +1,6 @@
 # Troubleshooting
 
 ## Scan
-
 ### Timeout
 
 !!! error
@@ -16,7 +15,7 @@ Your scan may time out. Java takes a particularly long time to scan. Try increas
 ### Unable to initialize an image scanner
 
 !!! error
-    ``` bash
+    ```bash
     $ trivy image ...
     ...
     2024-01-19T08:15:33.288Z	FATAL	image scan error: scan error: unable to initialize a scanner: unable to initialize an image scanner: 4 errors occurred:
@@ -25,35 +24,31 @@ Your scan may time out. Java takes a particularly long time to scan. Try increas
 	* podman error: unable to initialize Podman client: no podman socket found: stat podman/podman.sock: no such file or directory
 	* remote error: GET https://index.docker.io/v2/ContainerImageName: MANIFEST_UNKNOWN: manifest unknown; unknown tag=0.1
     ```
-
 It means Trivy is unable to find the container image in the following places:
 
-- Docker Engine
-- containerd
-- Podman
-- A remote registry
+* Docker Engine
+* containerd
+* Podman
+* A remote registry
 
 Please see error messages for details of each error.
 
 Common mistakes include the following, depending on where you are pulling images from:
 
 #### Common
-
 - Typos in the image name
-  - Common mistake :)
+    - Common mistake :)
 - Forgetting to specify the registry
-  - By default, it is considered to be Docker Hub ( `index.docker.io` ).
+    - By default, it is considered to be Docker Hub ( `index.docker.io` ).
 
 #### Docker Engine
-
 - Incorrect Docker host
-  - If the Docker daemon's socket path is not `/var/run/docker.sock`, you need to specify the `--docker-host` flag or the `DOCKER_HOST` environment variable.
+    - If the Docker daemon's socket path is not `/var/run/docker.sock`, you need to specify the `--docker-host` flag or the `DOCKER_HOST` environment variable.
     The same applies when using TCP; you must specify the correct host address.
 
 #### containerd
-
 - Incorrect containerd address
-  - If you are using a non-default path, you need to specify the `CONTAINERD_ADDRESS` environment variable.
+    - If you are using a non-default path, you need to specify the `CONTAINERD_ADDRESS` environment variable.
     Please refer to [this documentation](../target/container_image.md#containerd).
 - Incorrect namespace
   - If you are using a non-default namespace, you need to specify the `CONTAINERD_NAMESPACE` environment variable.
@@ -63,16 +58,15 @@ Common mistakes include the following, depending on where you are pulling images
 #### Podman
 
 - Podman socket configuration
-  - You need to enable the Podman socket. Please refer to [this documentation](../target/container_image.md#podman).
+    - You need to enable the Podman socket. Please refer to [this documentation](../target/container_image.md#podman).
 
 #### Container Registry
-
 - Unauthenticated
-  - If you are using a private container registry, you need to authenticate. Please refer to [this documentation](../advanced/private-registries/index.md).
+    - If you are using a private container registry, you need to authenticate. Please refer to [this documentation](../advanced/private-registries/index.md).
 - Using a proxy
-  - If you are using a proxy within your network, you need to correctly set the `HTTP_PROXY`, `HTTPS_PROXY`, etc., environment variables.
+    - If you are using a proxy within your network, you need to correctly set the `HTTP_PROXY`, `HTTPS_PROXY`, etc., environment variables.
 - Use of a self-signed certificate in the registry
-  - Because certificate verification will fail, you need to either trust that certificate or use the `--insecure` flag (not recommended in production).
+    - Because certificate verification will fail, you need to either trust that certificate or use the `--insecure` flag (not recommended in production).
 
 ### Certification
 
@@ -96,7 +90,6 @@ $ SSL_CERT_DIR=/path/to/certs trivy image [YOUR_IMAGE]
 ```
 
 ### GitHub Rate limiting
-
 Trivy uses GitHub API for [VEX repositories](../supply-chain/vex/repo.md).
 
 !!! error
@@ -134,10 +127,8 @@ $ trivy image [YOUR_JAVA_IMAGE]
 ```
 
 ### Running in parallel takes same time as series run
-
 When running trivy on multiple images simultaneously, it will take same time as running trivy in series.
 This is because of a limitation of boltdb.
-
 > Bolt obtains a file lock on the data file so multiple processes cannot open the same database at the same time. Opening an already open Bolt database will cause it to hang until the other process closes it.
 
 Reference : [boltdb: Opening a database][boltdb].
@@ -152,9 +143,8 @@ Reference : [boltdb: Opening a database][boltdb].
     ...
     - twirp error internal: failed scan, test-image: failed to apply layers: layer cache missing: sha256:*****
     ```
-To run multiple Trivy servers, you need to use Redis as the cache backend so that those servers can share the cache.
+To run multiple Trivy servers, you need to use Redis as the cache backend so that those servers can share the cache. 
 Follow [this instruction][redis-cache] to do so.
-
 ### Problems with `/tmp` on remote Git repository scans
 
 !!! error
@@ -200,21 +190,20 @@ In such cases, there are currently three workarounds:
 
 1. Use a temporary directory with sufficient capacity
 
-   This is the same as explained above.
+    This is the same as explained above.
 
 2. Specify a small value for `--parallel`
 
-   By default, multiple layers are processed in parallel.
-   If each layer contains large files, disk space may be consumed rapidly.
-   By specifying a small value such as `--parallel 1`, parallelism is reduced, which can mitigate the issue.
+    By default, multiple layers are processed in parallel.
+    If each layer contains large files, disk space may be consumed rapidly.
+    By specifying a small value such as `--parallel 1`, parallelism is reduced, which can mitigate the issue.
 
 3. Specify `--skip-files` or `--skip-dirs`
 
-   If the container image contains large files that do not need to be scanned, you can skip their processing by specifying --skip-files or --skip-dirs.
-   For more details, please refer to [this documentation](../configuration/skipping.md).
+    If the container image contains large files that do not need to be scanned, you can skip their processing by specifying --skip-files or --skip-dirs.
+    For more details, please refer to [this documentation](../configuration/skipping.md).
 
 ## DB
-
 ### Old DB schema
 
 !!! error
@@ -248,9 +237,7 @@ unset GITHUB_TOKEN
 ```
 
 ## Homebrew
-
 ### Scope error
-
 !!! error
     Error: Your macOS keychain GitHub credentials do not have sufficient scope!
 
@@ -271,7 +258,6 @@ $ printf "protocol=https\nhost=github.com\n" | git credential-osxkeychain erase
 ```
 
 ### Already installed
-
 !!! error
     Error: aquasecurity/trivy/trivy 64 already installed
 
@@ -289,8 +275,8 @@ $ brew unlink trivy && brew uninstall trivy
 $ brew install aquasecurity/trivy/trivy
 ```
 
-## Others
 
+## Others
 ### Unknown error
 
 Try again after running `trivy clean --all`:
