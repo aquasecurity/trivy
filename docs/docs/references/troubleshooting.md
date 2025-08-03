@@ -54,8 +54,7 @@ Common mistakes include the following, depending on where you are pulling images
 - Incorrect namespace
     - If you are using a non-default namespace, you need to specify the `CONTAINERD_NAMESPACE` environment variable.
       Please refer to [this documentation](../target/container_image.md#containerd).
-    -
-
+    - 
 #### Podman
 - Podman socket configuration
     - You need to enable the Podman socket. Please refer to [this documentation](../target/container_image.md#podman).
@@ -202,8 +201,8 @@ In such cases, there are currently three workarounds:
 
 3. Specify `--skip-files` or `--skip-dirs`
  
-    If the container image contains large files that do not need to be scanned, you can skip their processing by specifying --skip-files or --skip-dirs.
-    For more details, please refer to [this documentation](../configuration/skipping.md). 
+    If the container image contains large files that do not need to be scanned, you can skip their processing by specifying --skip-files or --skip-dirs. 
+    For more details, please refer to [this documentation](../configuration/skipping.md).
 
 ## DB
 ### Old DB schema
