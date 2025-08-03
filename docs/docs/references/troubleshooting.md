@@ -24,6 +24,7 @@ Your scan may time out. Java takes a particularly long time to scan. Try increas
 	* podman error: unable to initialize Podman client: no podman socket found: stat podman/podman.sock: no such file or directory
 	* remote error: GET https://index.docker.io/v2/ContainerImageName: MANIFEST_UNKNOWN: manifest unknown; unknown tag=0.1
     ```
+
 It means Trivy is unable to find the container image in the following places:
 
 * Docker Engine
@@ -44,7 +45,7 @@ Common mistakes include the following, depending on where you are pulling images
 #### Docker Engine
 - Incorrect Docker host
     - If the Docker daemon's socket path is not `/var/run/docker.sock`, you need to specify the `--docker-host` flag or the `DOCKER_HOST` environment variable.
-    The same applies when using TCP; you must specify the correct host address.
+      The same applies when using TCP; you must specify the correct host address.
 
 #### containerd
 - Incorrect containerd address
@@ -52,11 +53,10 @@ Common mistakes include the following, depending on where you are pulling images
     Please refer to [this documentation](../target/container_image.md#containerd).
 - Incorrect namespace
   - If you are using a non-default namespace, you need to specify the `CONTAINERD_NAMESPACE` environment variable.
-    Please refer to [this documentation](../target/container_image.md#containerd).
+      Please refer to [this documentation](../target/container_image.md#containerd).
   -
 
 #### Podman
-
 - Podman socket configuration
     - You need to enable the Podman socket. Please refer to [this documentation](../target/container_image.md#podman).
 
@@ -189,17 +189,17 @@ Although these files are deleted after the scan is complete, they can temporaril
 In such cases, there are currently three workarounds:
 
 1. Use a temporary directory with sufficient capacity
-
+ 
     This is the same as explained above.
-
+ 
 2. Specify a small value for `--parallel`
-
+ 
     By default, multiple layers are processed in parallel.
     If each layer contains large files, disk space may be consumed rapidly.
     By specifying a small value such as `--parallel 1`, parallelism is reduced, which can mitigate the issue.
 
 3. Specify `--skip-files` or `--skip-dirs`
-
+ 
     If the container image contains large files that do not need to be scanned, you can skip their processing by specifying --skip-files or --skip-dirs.
     For more details, please refer to [this documentation](../configuration/skipping.md).
 
