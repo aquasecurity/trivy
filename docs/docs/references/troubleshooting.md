@@ -24,7 +24,7 @@ Your scan may time out. Java takes a particularly long time to scan. Try increas
 	* podman error: unable to initialize Podman client: no podman socket found: stat podman/podman.sock: no such file or directory
 	* remote error: GET https://index.docker.io/v2/ContainerImageName: MANIFEST_UNKNOWN: manifest unknown; unknown tag=0.1
     ```
-
+    
 It means Trivy is unable to find the container image in the following places:
 
 * Docker Engine
@@ -50,11 +50,11 @@ Common mistakes include the following, depending on where you are pulling images
 #### containerd
 - Incorrect containerd address
     - If you are using a non-default path, you need to specify the `CONTAINERD_ADDRESS` environment variable.
-    Please refer to [this documentation](../target/container_image.md#containerd).
-- Incorrect namespace
-  - If you are using a non-default namespace, you need to specify the `CONTAINERD_NAMESPACE` environment variable.
       Please refer to [this documentation](../target/container_image.md#containerd).
-  -
+- Incorrect namespace
+    - If you are using a non-default namespace, you need to specify the `CONTAINERD_NAMESPACE` environment variable.
+      Please refer to [this documentation](../target/container_image.md#containerd).
+    -
 
 #### Podman
 - Podman socket configuration
@@ -145,6 +145,8 @@ Reference : [boltdb: Opening a database][boltdb].
     ```
 To run multiple Trivy servers, you need to use Redis as the cache backend so that those servers can share the cache. 
 Follow [this instruction][redis-cache] to do so.
+
+
 ### Problems with `/tmp` on remote Git repository scans
 
 !!! error
@@ -201,7 +203,7 @@ In such cases, there are currently three workarounds:
 3. Specify `--skip-files` or `--skip-dirs`
  
     If the container image contains large files that do not need to be scanned, you can skip their processing by specifying --skip-files or --skip-dirs.
-    For more details, please refer to [this documentation](../configuration/skipping.md).
+    For more details, please refer to [this documentation](../configuration/skipping.md). 
 
 ## DB
 ### Old DB schema
