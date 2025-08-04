@@ -6,6 +6,6 @@ RUN apk --no-cache add ca-certificates git
 # example architecture folder: dist/trivy_canary_build_linux_arm64/trivy
 # GoReleaser adds _v* to the folder name, but only when GOARCH is amd64
 ARG TARGETARCH
-COPY "dist/trivy_canary_build_linux_${TARGETARCH}*/trivy" /usr/local/bin/
+COPY "dist/trivy_canary_build_linux_${TARGETARCH}*/trivy" /usr/local/bin/trivy
 COPY contrib/*.tpl contrib/
 ENTRYPOINT ["trivy"]
