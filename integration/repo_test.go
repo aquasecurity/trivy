@@ -16,24 +16,25 @@ import (
 )
 
 type repoTestArgs struct {
-	scanner             types.Scanner
-	ignoreIDs           []string
-	policyPaths         []string
-	namespaces          []string
-	listAllPkgs         bool
-	input               string
-	secretConfig        string
-	filePatterns        []string
-	helmSet             []string
-	helmValuesFile      []string
-	skipFiles           []string
-	skipDirs            []string
-	command             string
-	format              types.Format
-	includeDevDeps      bool
-	parallel            int
-	vex                 string
-	vulnSeveritySources []string
+	scanner                    types.Scanner
+	ignoreIDs                  []string
+	policyPaths                []string
+	namespaces                 []string
+	listAllPkgs                bool
+	input                      string
+	secretConfig               string
+	filePatterns               []string
+	helmSet                    []string
+	helmValuesFile             []string
+	skipFiles                  []string
+	skipDirs                   []string
+	command                    string
+	format                     types.Format
+	includeDevDeps             bool
+	parallel                   int
+	vex                        string
+	vulnSeveritySources        []string
+	tfExcludeDownloadedModules bool
 }
 
 // TestRepository tests `trivy repo` with the local code repositories
@@ -400,6 +401,55 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/helm_badname.json.golden",
 		},
 		{
+			name: "terraform config with remote module",
+			args: repoTestArgs{
+				scanner: types.MisconfigScanner,
+				input:   "testdata/fixtures/repo/terraform/remote-module",
+			},
+			golden: "testdata/terraform-remote-module.json.golden",
+		},
+		{
+			name: "terraform config with remote submodule",
+			args: repoTestArgs{
+				scanner: types.MisconfigScanner,
+				input:   "testdata/fixtures/repo/terraform/remote-submodule",
+			},
+			golden: "testdata/terraform-remote-submodule.json.golden",
+		},
+		{
+			name: "terraform config with remote module in child local module",
+			args: repoTestArgs{
+				scanner: types.MisconfigScanner,
+				input:   "testdata/fixtures/repo/terraform/remote-module-in-child",
+			},
+			golden: "testdata/terraform-remote-module-in-child.json.golden",
+		},
+		{
+			name: "exclude misconfigurations for remote module",
+			args: repoTestArgs{
+				scanner:                    types.MisconfigScanner,
+				input:                      "testdata/fixtures/repo/terraform/remote-module",
+				tfExcludeDownloadedModules: true,
+			},
+			golden: "testdata/terraform-exclude-misconfs-remote-module.json.golden",
+		},
+		{
+			name: "module from Terraform registry",
+			args: repoTestArgs{
+				scanner: types.MisconfigScanner,
+				input:   "testdata/fixtures/repo/terraform/opentofu-registry",
+			},
+			golden: "testdata/terraform-terraform-registry.json.golden",
+		},
+		{
+			name: "module from OpenTofu registry",
+			args: repoTestArgs{
+				scanner: types.MisconfigScanner,
+				input:   "testdata/fixtures/repo/terraform/opentofu-registry",
+			},
+			golden: "testdata/terraform-opentofu-registry.json.golden",
+		},
+		{
 			name: "secrets",
 			args: repoTestArgs{
 				scanner:      "vuln,secret",
@@ -587,6 +637,9 @@ func buildArgs(t *testing.T, cacheDir, command string, format types.Format, test
 	}
 	if testArgs.vex != "" {
 		osArgs = append(osArgs, "--vex", testArgs.vex)
+	}
+	if testArgs.tfExcludeDownloadedModules {
+		osArgs = append(osArgs, "--tf-exclude-downloaded-modules")
 	}
 
 	return osArgs

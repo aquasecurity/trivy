@@ -2812,3 +2812,45 @@ func TestProvidedWorkingDirectory(t *testing.T) {
 	attr := foo.GetAttribute("cwd")
 	require.Equal(t, fakeCwd, attr.Value().AsString())
 }
+
+func Test_ResolveRemoteSubmoduleFromTerraformCache(t *testing.T) {
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{Data: []byte(`module "aws_bucket" {
+  source = "github.com/foo/bar.git//aws/modules/bucket?ref=v0.0.1"
+}
+
+locals {
+  test = module.aws_bucket.out
+}
+`)},
+		".terraform/modules/modules.json": &fstest.MapFile{Data: []byte(`{
+    "Modules": [
+        { "Key": "", "Source": "", "Dir": "." },
+        {
+            "Key": "aws_bucket",
+            "Source": "git::https://github.com/foo/bar.git//aws/modules/bucket?ref=v0.0.1",
+            "Dir": ".terraform/modules/aws_bucket/aws/modules/bucket"
+        }
+    ]
+}`)},
+		".terraform/modules/aws_bucket/aws/modules/bucket/main.tf": &fstest.MapFile{Data: []byte(`output "out" {
+  value = "some_value"
+}`)},
+	}
+
+	parser := New(fsys, "",
+		OptionWithSkipCachedModules(true),
+		OptionWithDownloads(false),
+		OptionStopOnHCLError(true),
+	)
+	err := parser.ParseFS(t.Context(), ".")
+	require.NoError(t, err)
+
+	modules, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+
+	require.Len(t, modules, 2)
+	bucket := modules[0].GetBlocks().OfType("locals")[0]
+	attr := bucket.GetAttribute("test")
+	require.Equal(t, "some_value", attr.Value().AsString())
+}

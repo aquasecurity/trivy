@@ -17,4 +17,5 @@ type SecretFinding struct {
 	Code      Code
 	Match     string
 	Layer     Layer `json:",omitzero"`
+	Offset    int   `json:",omitempty"` // Byte offset in the original file
 }

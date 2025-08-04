@@ -14,6 +14,7 @@ func (a *adapter) adaptOrganizationIAM() {
 	a.adaptOrganizations()
 	a.adaptOrganizationMembers()
 	a.adaptOrganizationBindings()
+	a.adaptOrganizationAuditConfigs()
 }
 
 func (a *adapter) adaptOrganizations() {
@@ -99,4 +100,19 @@ func (a *adapter) findOrganization(iamBlock *terraform.Block) *iam.Organization 
 	}
 
 	return nil
+}
+
+func (a *adapter) adaptOrganizationAuditConfigs() {
+	for _, iamBlock := range a.modules.GetResourcesByType("google_organization_iam_audit_config") {
+		auditConfig := AdaptAuditConfig(iamBlock)
+		if org := a.findOrganization(iamBlock); org != nil {
+			org.AuditConfigs = append(org.AuditConfigs, auditConfig)
+		} else {
+			// we didn't find the org - add an unmanaged one
+			a.orgs[uuid.NewString()] = &iam.Organization{
+				Metadata:     types.NewUnmanagedMetadata(),
+				AuditConfigs: []iam.AuditConfig{auditConfig},
+			}
+		}
+	}
 }
