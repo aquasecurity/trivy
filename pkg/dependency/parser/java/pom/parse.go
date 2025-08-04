@@ -732,6 +732,11 @@ func (p *Parser) remoteRepoRequest(repo string, paths []string) (*http.Request, 
 
 // fetchPomFileNameFromMavenMetadata fetches `maven-metadata.xml` file to detect file name of pom file.
 func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) (string, error) {
+	if isObsoleteRepo(repo) {
+		p.logger.Debug("Obsolete remote repository", log.String("repo", repo))
+		return "", nil
+	}
+
 	// Overwrite pom file name to `maven-metadata.xml`
 	mavenMetadataPaths := slices.Clone(paths[:len(paths)-1]) // Clone slice to avoid shadow overwriting last element of `paths`
 	mavenMetadataPaths = append(mavenMetadataPaths, "maven-metadata.xml")
@@ -770,6 +775,11 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) 
 }
 
 func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
+	if isObsoleteRepo(repo) {
+		p.logger.Debug("Obsolete remote repository", log.String("repo", repo))
+		return nil, nil
+	}
+
 	req, err := p.remoteRepoRequest(repo, paths)
 	if err != nil {
 		p.logger.Debug("Unable to create request", log.String("repo", repo), log.Err(err))
