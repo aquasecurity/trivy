@@ -78,6 +78,16 @@ Common mistakes include the following, depending on where you are pulling images
 $ TRIVY_INSECURE=true trivy image [YOUR_IMAGE]
 ```
 
+Alternatively, you can specify the location of your certificate using `SSL_CERT_FILE` or `SSL_CERT_DIR` environment variables.
+
+```
+$ SSL_CERT_FILE=/path/to/cert trivy image [YOUR_IMAGE]
+```
+
+```
+$ SSL_CERT_DIR=/path/to/certs trivy image [YOUR_IMAGE]
+```
+
 ### GitHub Rate limiting
 Trivy uses GitHub API for [VEX repositories](../supply-chain/vex/repo.md).
 
