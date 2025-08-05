@@ -34,7 +34,7 @@ type updateResponse struct {
 	Warnings      []string       `json:"warnings"`
 }
 
-// shoudDisplay checks if the announcement should be displayed
+// shouldDisplay checks if the announcement should be displayed
 // based on the current time and version. If version and date constraints are provided
 // they are checked against the current time and version.
 func (a *announcement) shouldDisplay(ctx context.Context, currentVersion semver.Version) bool {
