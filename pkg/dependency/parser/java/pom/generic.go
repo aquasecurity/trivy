@@ -22,6 +22,7 @@ type repository struct {
 	URL       string           `xml:"url"`
 	Releases  repositoryPolicy `xml:"releases"`
 	Snapshots repositoryPolicy `xml:"snapshots"`
+	MirrorID  string
 }
 
 type repositoryPolicy struct {
@@ -64,6 +65,7 @@ func (r *repository) applyMirrorSettings(mirror *Mirror) {
 	if mirror.URL != "" {
 		logger.Debug("Overriding url for repository (and enabling both releases and snapshots)",
 			log.String("repository.URL", r.URL), log.String("mirror.URL", mirror.URL))
+		r.MirrorID = mirror.ID
 		r.URL = mirror.URL
 		r.Releases.Enabled = true
 		r.Snapshots.Enabled = true
