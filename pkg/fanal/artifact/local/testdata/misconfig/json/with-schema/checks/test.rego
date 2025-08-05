@@ -1,7 +1,7 @@
 # METADATA
 # title: Test check
 # custom:
-#   id: AVD-TEST-0001
+#   id: TEST-0001
 #   severity: LOW
 package user.test_json_check
 

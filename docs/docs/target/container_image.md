@@ -126,7 +126,7 @@ HIGH: Specify at least 1 USER command in Dockerfile with non-root user as argume
 ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.
 
-See https://avd.aquasec.com/misconfig/avd-ds-0002
+See https://avd.aquasec.com/misconfig/ds-0002
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 
@@ -160,8 +160,8 @@ The following checks are disabled for this scan type due to known issues. See th
 
 | Check ID | Reason | Issue |
 |----------|------------|--------|
-| [DS-0007](https://avd.aquasec.com/misconfig/dockerfile/general/avd-ds-0007/) | This check detects multiple `ENTRYPOINT` instructions in a stage, but since image history analysis does not identify stages, this check is not relevant for this scan type. | [#8364](https://github.com/aquasecurity/trivy/issues/8364) |
-| [DS-0016](https://avd.aquasec.com/misconfig/dockerfile/general/avd-ds-0016/) | This check detects multiple `CMD` instructions in a stage, but since image history analysis does not identify stages, this check is not relevant for this scan type. | [#7368](https://github.com/aquasecurity/trivy/issues/7368) |
+| [DS-0007](https://avd.aquasec.com/misconfig/dockerfile/general/ds-0007/) | This check detects multiple `ENTRYPOINT` instructions in a stage, but since image history analysis does not identify stages, this check is not relevant for this scan type. | [#8364](https://github.com/aquasecurity/trivy/issues/8364) |
+| [DS-0016](https://avd.aquasec.com/misconfig/dockerfile/general/ds-0016/) | This check detects multiple `CMD` instructions in a stage, but since image history analysis does not identify stages, this check is not relevant for this scan type. | [#7368](https://github.com/aquasecurity/trivy/issues/7368) |
 
 
 ### Secrets

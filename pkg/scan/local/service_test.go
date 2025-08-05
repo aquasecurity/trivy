@@ -1404,14 +1404,14 @@ func TestScanner_Scan(t *testing.T) {
 									Query:     "data.builtin.dockerfile.DS001.deny",
 									Message:   "",
 									PolicyMetadata: ftypes.PolicyMetadata{
-										ID:                 "AVD-DS-0001",
+										ID:                 "DS-0001",
 										Type:               "Dockerfile Security Check",
 										Title:              "':latest' tag used",
 										Description:        "When using a 'FROM' statement you should use a specific tag to avoid uncontrolled behavior when the image is updated.",
 										Severity:           "MEDIUM",
 										RecommendedActions: "Add a tag to the image in the 'FROM' statement",
 										Aliases: []string{
-											"AVD-DS-0001",
+											"DS-0001",
 										},
 									},
 									CauseMetadata: ftypes.CauseMetadata{
@@ -1434,7 +1434,7 @@ func TestScanner_Scan(t *testing.T) {
 										Severity:           "HIGH",
 										RecommendedActions: "Add 'USER <non root user name>' line to the Dockerfile",
 										Aliases: []string{
-											"AVD-DS-0002",
+											"DS-0002",
 										},
 									},
 									CauseMetadata: ftypes.CauseMetadata{
@@ -1467,8 +1467,8 @@ func TestScanner_Scan(t *testing.T) {
 								Severity:    "HIGH",
 								Resolution:  "Add 'USER <non root user name>' line to the Dockerfile",
 								Status:      types.MisconfStatusFailure,
-								PrimaryURL:  "https://avd.aquasec.com/misconfig/avd-ds-0002",
-								References:  []string{"https://avd.aquasec.com/misconfig/avd-ds-0002"},
+								PrimaryURL:  "https://avd.aquasec.com/misconfig/ds-0002",
+								References:  []string{"https://avd.aquasec.com/misconfig/ds-0002"},
 								CauseMetadata: ftypes.CauseMetadata{
 									Provider: "Dockerfile",
 									Service:  "general",
@@ -1483,7 +1483,7 @@ func TestScanner_Scan(t *testing.T) {
 								Query:       "data.builtin.dockerfile.DS001.deny",
 								Message:     "No issues found",
 								Type:        "Dockerfile Security Check",
-								ID:          "AVD-DS-0001",
+								ID:          "DS-0001",
 								Title:       "':latest' tag used",
 								Description: "When using a 'FROM' statement you should use a specific tag to avoid uncontrolled behavior when the image is updated.",
 								Severity:    "MEDIUM",
@@ -1494,8 +1494,8 @@ func TestScanner_Scan(t *testing.T) {
 									Service:  "general",
 									Code:     ftypes.Code{},
 								},
-								PrimaryURL: "https://avd.aquasec.com/misconfig/avd-ds-0001",
-								References: []string{"https://avd.aquasec.com/misconfig/avd-ds-0001"},
+								PrimaryURL: "https://avd.aquasec.com/misconfig/ds-0001",
+								References: []string{"https://avd.aquasec.com/misconfig/ds-0001"},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 								},

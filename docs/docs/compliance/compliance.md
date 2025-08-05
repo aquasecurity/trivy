@@ -60,7 +60,7 @@ spec:
     description: Ensure that the API server pod specification file has permissions
       of 600 or more restrictive
     checks:
-    - id: AVD-KCV-0073
+    - id: KCV-0073
     commands:
     - id: CMD-0001
     severity: HIGH

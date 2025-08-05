@@ -5,7 +5,7 @@
 # schemas:
 #   - input: schema["input"]
 # custom:
-#   id: AVD-BAR-0001
+#   id: BAR-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW

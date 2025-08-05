@@ -82,7 +82,7 @@ You can specify `--scanners vuln,misconfig,secret` to enable vulnerability and s
     ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
     Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.
     
-    See https://avd.aquasec.com/misconfig/avd-ds-0002
+    See https://avd.aquasec.com/misconfig/ds-0002
     ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     Dockerfile:3
     ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -119,7 +119,7 @@ HIGH: Specify at least 1 USER command in Dockerfile with non-root user as argume
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.
 
-See https://avd.aquasec.com/misconfig/avd-ds-0002
+See https://avd.aquasec.com/misconfig/ds-0002
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 
@@ -133,7 +133,7 @@ MEDIUM: Container 'hello-kubernetes' of Deployment 'hello-kubernetes' should set
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.
 
-See https://avd.aquasec.com/misconfig/avd-ksv-0001
+See https://avd.aquasec.com/misconfig/ksv-0001
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  deployment.yaml:16-19
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -148,7 +148,7 @@ HIGH: Deployment 'hello-kubernetes' should not specify '/var/run/docker.socker' 
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 Mounting docker.sock from the host can give the container full root access to the host.
 
-See https://avd.aquasec.com/misconfig/avd-ksv-0006
+See https://avd.aquasec.com/misconfig/ksv-0006
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  deployment.yaml:6-29
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -169,7 +169,7 @@ MEDIUM: Container 'hello-kubernetes' of Deployment 'hello-kubernetes' should set
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 'runAsNonRoot' forces the running image to run as a non-root user to ensure least privileges.
 
-See https://avd.aquasec.com/misconfig/avd-ksv-0012
+See https://avd.aquasec.com/misconfig/ksv-0012
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  deployment.yaml:16-19
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -184,7 +184,7 @@ MEDIUM: Deployment 'hello-kubernetes' should not set 'spec.template.volumes.host
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 HostPath volumes must be forbidden.
 
-See https://avd.aquasec.com/misconfig/avd-ksv-0023
+See https://avd.aquasec.com/misconfig/ksv-0023
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  deployment.yaml:6-29
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -205,7 +205,7 @@ MEDIUM: Deployment 'hello-kubernetes' should set 'securityContext.sysctl' to the
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 Sysctls can disable security mechanisms or affect all containers on a host, and should be disallowed except for an allowed 'safe' subset. A sysctl is considered safe if it is namespaced in the container or the Pod, and it is isolated from other Pods or processes on the same Node.
 
-See https://avd.aquasec.com/misconfig/avd-ksv-0026
+See https://avd.aquasec.com/misconfig/ksv-0026
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  deployment.yaml:6-29
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -232,7 +232,7 @@ MEDIUM: Container 'mysql' of StatefulSet 'mysql' should set 'securityContext.all
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.
 
-See https://avd.aquasec.com/misconfig/avd-ksv-0001
+See https://avd.aquasec.com/misconfig/ksv-0001
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  mysql-8.8.26.tar:templates/primary/statefulset.yaml:56-130
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -253,7 +253,7 @@ MEDIUM: Container 'mysql' of StatefulSet 'mysql' should set 'securityContext.run
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 'runAsNonRoot' forces the running image to run as a non-root user to ensure least privileges.
 
-See https://avd.aquasec.com/misconfig/avd-ksv-0012
+See https://avd.aquasec.com/misconfig/ksv-0012
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  mysql-8.8.26.tar:templates/primary/statefulset.yaml:56-130
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────

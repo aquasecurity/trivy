@@ -121,7 +121,7 @@ func TestFilter(t *testing.T) {
 		}
 		misconf1 = types.DetectedMisconfiguration{
 			Type:     "Kubernetes Security Check",
-			ID:       "AVD-ID-0100",
+			ID:       "ID-0100",
 			Title:    "Bad Deployment",
 			Message:  "something bad",
 			Severity: dbTypes.SeverityHigh.String(),
@@ -129,7 +129,7 @@ func TestFilter(t *testing.T) {
 		}
 		misconf2 = types.DetectedMisconfiguration{
 			Type:     "Kubernetes Security Check",
-			ID:       "AVD-ID-0200",
+			ID:       "ID-0200",
 			Title:    "Bad Pod",
 			Message:  "something bad",
 			Severity: dbTypes.SeverityLow.String(),
@@ -137,7 +137,7 @@ func TestFilter(t *testing.T) {
 		}
 		misconf3 = types.DetectedMisconfiguration{
 			Type:     "Kubernetes Security Check",
-			ID:       "AVD-ID-0300",
+			ID:       "ID-0300",
 			Title:    "Bad Job",
 			Message:  "something bad",
 			Severity: dbTypes.SeverityLow.String(),

@@ -116,7 +116,7 @@ func Test_RegisterDeprecatedRule(t *testing.T) {
 	}{
 		{
 			name: "deprecated check",
-			id:   "AVD-DEP-0001",
+			id:   "DEP-0001",
 			inputPolicy: `# METADATA
 # title: "deprecated check"
 # description: "some description"
@@ -124,7 +124,7 @@ func Test_RegisterDeprecatedRule(t *testing.T) {
 # schemas:
 # - input: schema["dockerfile"]
 # custom:
-#   id: AVD-DEP-0001
+#   id: DEP-0001
 #   input:
 #     selector:
 #     - type: dockerfile
@@ -139,7 +139,7 @@ deny[res]{
 		},
 		{
 			name: "not a deprecated check",
-			id:   "AVD-NOTDEP-0001",
+			id:   "NOTDEP-0001",
 			inputPolicy: `# METADATA
 # title: "not a deprecated check"
 # description: "some description"
@@ -147,7 +147,7 @@ deny[res]{
 # schemas:
 # - input: schema["dockerfile"]
 # custom:
-#   id: AVD-NOTDEP-0001
+#   id: NOTDEP-0001
 #   input:
 #     selector:
 #     - type: dockerfile
@@ -161,7 +161,7 @@ deny[res]{
 		},
 		{
 			name: "invalid deprecation value",
-			id:   "AVD-BADDEP-0001",
+			id:   "BADDEP-0001",
 			inputPolicy: `# METADATA
 # title: "badly deprecated check"
 # description: "some description"
@@ -169,7 +169,7 @@ deny[res]{
 # schemas:
 # - input: schema["dockerfile"]
 # custom:
-#   id: AVD-BADDEP-0001
+#   id: BADDEP-0001
 #   input:
 #     selector:
 #     - type: dockerfile

@@ -3,7 +3,7 @@
 # schemas:
 # - input: schema["terraform-raw"]
 # custom:
-#   id: AVD-TEST-0002
+#   id: TEST-0002
 #   long_id: empty-bucket-name
 #   severity: LOW
 #   input:

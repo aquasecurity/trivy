@@ -31,7 +31,7 @@ HIGH: Last USER command in Dockerfile should not be 'root'
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.
 
-See https://avd.aquasec.com/misconfig/avd-ds-0002
+See https://avd.aquasec.com/misconfig/ds-0002
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  Dockerfile:3
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────

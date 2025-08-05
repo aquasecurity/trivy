@@ -15,8 +15,8 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 	checkIDs := map[types.Scanner][]string{
 		types.MisconfigScanner: {
 			"KSV-0012",
-			"AVD-1.2.31",
-			"AVD-1.2.32",
+			"1.2.31",
+			"1.2.32",
 		},
 		types.VulnerabilityScanner: {
 			"CVE-9999-9999",
@@ -49,7 +49,7 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 						Status: types.MisconfStatusFailure,
 					},
 					{
-						ID:     "AVD-1.2.31",
+						ID:     "1.2.31",
 						Status: types.MisconfStatusFailure,
 					},
 				},
@@ -72,7 +72,7 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 						},
 					},
 				},
-				"AVD-1.2.31": {
+				"1.2.31": {
 					{
 						Target: "target",
 						Class:  types.ClassConfig,
@@ -83,7 +83,7 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
-								ID:     "AVD-1.2.31",
+								ID:     "1.2.31",
 								Status: types.MisconfStatusFailure,
 							},
 						},

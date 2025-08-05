@@ -11,5 +11,5 @@ spec:
       description: |-
         Test needs foo bar baz
       checks:
-        - id: AVD-TEST-1234
+        - id: TEST-1234
       severity: LOW

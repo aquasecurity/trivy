@@ -4,7 +4,7 @@
 # related_resources:
 # - "https://trivy.dev/"
 # custom:
-#   id: AVD-TEST-0001
+#   id: TEST-0001
 #   severity: LOW
 #   long_id: no-buckets
 #   recommended_actions: Have a cup of tea.

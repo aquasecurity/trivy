@@ -31,7 +31,7 @@ func TestMisconfigRenderer(t *testing.T) {
 				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:          "AVD-XYZ-0123",
+						ID:          "XYZ-0123",
 						Title:       "Config file is bad",
 						Description: "Your config file is not good.",
 						Message:     "Oh no, a bad config.",
@@ -50,7 +50,7 @@ my-file ()
 Tests: 1 (SUCCESSES: 0, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
-AVD-XYZ-0123 (HIGH): Oh no, a bad config.
+XYZ-0123 (HIGH): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -67,7 +67,7 @@ See https://google.com/search?q=bad%20config
 				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:          "AVD-XYZ-0123",
+						ID:          "XYZ-0123",
 						Title:       "Config file is bad",
 						Description: "Your config file is not good.",
 						Message:     "Oh no, a bad config.",
@@ -111,7 +111,7 @@ my-file ()
 Tests: 1 (SUCCESSES: 0, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
-AVD-XYZ-0123 (HIGH): Oh no, a bad config.
+XYZ-0123 (HIGH): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -134,7 +134,7 @@ See https://google.com/search?q=bad%20config
 				MisconfSummary: &types.MisconfSummary{Successes: 1, Failures: 1},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:          "AVD-XYZ-0123",
+						ID:          "XYZ-0123",
 						Title:       "Config file is bad",
 						Description: "Your config file is not good.",
 						Message:     "Oh no, a bad config.",
@@ -165,7 +165,7 @@ See https://google.com/search?q=bad%20config
 						},
 					},
 					{
-						ID:          "AVD-XYZ-0456",
+						ID:          "XYZ-0456",
 						Title:       "Config file is bad again",
 						Description: "Your config file is still not good.",
 						Message:     "Oh no, a bad config AGAIN.",
@@ -184,7 +184,7 @@ my-file ()
 Tests: 2 (SUCCESSES: 1, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
-FAIL: AVD-XYZ-0123 (HIGH): Oh no, a bad config.
+FAIL: XYZ-0123 (HIGH): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -198,7 +198,7 @@ See https://google.com/search?q=bad%20config
 ────────────────────────────────────────
 
 
-PASS: AVD-XYZ-0456 (MEDIUM): Oh no, a bad config AGAIN.
+PASS: XYZ-0456 (MEDIUM): Oh no, a bad config AGAIN.
 ════════════════════════════════════════
 Your config file is still not good.
 
@@ -221,17 +221,17 @@ See https://google.com/search?q=bad%20config
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						Type:        "Terraform Security Check",
-						ID:          "AVD-AWS-0107",
+						ID:          "AWS-0107",
 						Title:       "An ingress security group rule allows traffic from /0",
 						Description: "Opening up ports to the public internet is generally to be avoided. You should restrict access to IP addresses or ranges that explicitly require it where possible.",
 						Message:     "Security group rule allows ingress from public internet.",
 						Query:       "data..",
 						Resolution:  "Set a more restrictive cidr range",
 						Severity:    "CRITICAL",
-						PrimaryURL:  "https://avd.aquasec.com/misconfig/avd-aws-0107",
+						PrimaryURL:  "https://avd.aquasec.com/misconfig/aws-0107",
 						References: []string{
 							"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html",
-							"https://avd.aquasec.com/misconfig/avd-aws-0107",
+							"https://avd.aquasec.com/misconfig/aws-0107",
 						},
 						Status: "FAIL",
 						CauseMetadata: ftypes.CauseMetadata{
@@ -323,11 +323,11 @@ terraform-aws-modules/security-group/aws/main.tf (terraform)
 Tests: 6 (SUCCESSES: 5, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 1)
 
-AVD-AWS-0107 (CRITICAL): Security group rule allows ingress from public internet.
+AWS-0107 (CRITICAL): Security group rule allows ingress from public internet.
 ════════════════════════════════════════
 Opening up ports to the public internet is generally to be avoided. You should restrict access to IP addresses or ranges that explicitly require it where possible.
 
-See https://avd.aquasec.com/misconfig/avd-aws-0107
+See https://avd.aquasec.com/misconfig/aws-0107
 ────────────────────────────────────────
  terraform-aws-modules/security-group/aws/main.tf:197-204
    via terraform-aws-modules/security-group/aws/main.tf:191-227 (aws_security_group_rule.ingress_with_cidr_blocks[0])
@@ -361,7 +361,7 @@ See https://avd.aquasec.com/misconfig/avd-aws-0107
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						Type:        "Terraform Security Check",
-						ID:          "AVD-AWS-0320",
+						ID:          "AWS-0320",
 						Title:       "S3 DNS Compliant Bucket Names",
 						Description: "Ensures that S3 buckets have DNS complaint bucket names.",
 						Message:     "S3 bucket name is not compliant with DNS naming requirements",
@@ -369,10 +369,10 @@ See https://avd.aquasec.com/misconfig/avd-aws-0107
 						Query:       "data.builtin.aws.s3.aws0320.deny",
 						Resolution:  "Recreate S3 bucket to use - instead of . in S3 bucket names",
 						Severity:    "MEDIUM",
-						PrimaryURL:  "https://avd.aquasec.com/misconfig/avd-aws-0320",
+						PrimaryURL:  "https://avd.aquasec.com/misconfig/aws-0320",
 						References: []string{
 							"https://docs.aws.amazon.com/AmazonS3/latest./dev/transfer-acceleration.html",
-							"https://avd.aquasec.com/misconfig/avd-aws-0320",
+							"https://avd.aquasec.com/misconfig/aws-0320",
 						},
 						Status: "FAIL",
 						CauseMetadata: ftypes.CauseMetadata{
@@ -421,11 +421,11 @@ main.tf (terraform)
 Tests: 1 (SUCCESSES: 0, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
-AVD-AWS-0320 (MEDIUM): S3 bucket name is not compliant with DNS naming requirements
+AWS-0320 (MEDIUM): S3 bucket name is not compliant with DNS naming requirements
 ════════════════════════════════════════
 Ensures that S3 buckets have DNS complaint bucket names.
 
-See https://avd.aquasec.com/misconfig/avd-aws-0320
+See https://avd.aquasec.com/misconfig/aws-0320
 ────────────────────────────────────────
  main.tf:6
    via main.tf:5-7 (aws_s3_bucket.this)

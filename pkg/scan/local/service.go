@@ -392,7 +392,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 	// this ensures we don't generate bad links for custom policies
 	if res.Namespace == "" || rego.IsBuiltinNamespace(res.Namespace) {
 		id := res.ID
-		if len(res.Aliases) > 0 && strings.HasPrefix(res.Aliases[0], "AVD-") {
+		if len(res.Aliases) > 0 && strings.HasPrefix(res.Aliases[0], "") {
 			// use legacy id to build a correct link to the check page
 			id = res.Aliases[0]
 		}

@@ -6,7 +6,7 @@ CVE-2019-0005 exp:9999-01-01
 CVE-2019-0006 exp:9999-01-01 key2:value2
 
 # misconfigurations
-AVD-ID-0300
+ID-0300
 
 # secrets
 generic-unwanted-rule

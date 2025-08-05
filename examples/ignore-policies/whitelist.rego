@@ -3,7 +3,7 @@ package trivy
 import rego.v1
 
 allowed_checks := {
-    "AVD-AWS-0089"
+    "AWS-0089"
 }
 
 default ignore := false

@@ -26,7 +26,7 @@ const DS006PolicyWithDockerfileSchema = `# METADATA
 # related_resources:
 # - https://docs.docker.com/develop/develop-images/multistage-build/
 # custom:
-#   id: AVD-DS-0006
+#   id: DS-0006
 #   severity: CRITICAL
 #   long_id: docker-no-self-referencing-copy-from
 #   recommended_action: "Change the '--from' so that it will not refer to itself"
@@ -81,7 +81,7 @@ const DS006PolicyWithMyFancyDockerfileSchema = `# METADATA
 # related_resources:
 # - https://docs.docker.com/develop/develop-images/multistage-build/
 # custom:
-#   id: AVD-DS-0006
+#   id: DS-0006
 #   severity: CRITICAL
 #   long_id: docker-no-self-referencing-copy-from
 #   recommended_action: "Change the '--from' so that it will not refer to itself"
@@ -136,7 +136,7 @@ const DS006PolicyWithOldSchemaSelector = `# METADATA
 # related_resources:
 # - https://docs.docker.com/develop/develop-images/multistage-build/
 # custom:
-#   id: AVD-DS-0006
+#   id: DS-0006
 #   severity: CRITICAL
 #   long_id: docker-no-self-referencing-copy-from
 #   recommended_action: "Change the '--from' so that it will not refer to itself"
@@ -184,7 +184,7 @@ deny[res] {
 const DS006LegacyWithOldStyleMetadata = `package builtin.dockerfile.DS006
 
 __rego_metadata__ := {
-	"id": "AVD-DS-0006",
+	"id": "DS-0006",
 	"title": "COPY '--from' referring to the current image",
 	"long_id": "docker-no-self-referencing-copy-from",
 	"version": "v1.0.0",
@@ -233,7 +233,7 @@ USER root
 	assert.Equal(
 		t,
 		scan.Rule{
-			ID:             "AVD-DS-0006",
+			ID:             "DS-0006",
 			LongID:         "docker-no-self-referencing-copy-from",
 			Summary:        "COPY '--from' referring to the current image",
 			Explanation:    "COPY '--from' should not mention the current FROM alias, since it is impossible to copy from itself.",
@@ -581,7 +581,7 @@ COPY --from=dep /binary /`
 				assert.Equal(
 					t,
 					scan.Rule{
-						ID:             "AVD-DS-0006",
+						ID:             "DS-0006",
 						LongID:         "docker-no-self-referencing-copy-from",
 						Summary:        "COPY '--from' referring to the current image",
 						Explanation:    "COPY '--from' should not mention the current FROM alias, since it is impossible to copy from itself.",

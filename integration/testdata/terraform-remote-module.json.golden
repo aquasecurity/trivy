@@ -24,8 +24,8 @@
       "Misconfigurations": [
         {
           "Type": "Terraform Security Check",
-          "ID": "AVD-AWS-0088",
-          "AVDID": "AVD-AWS-0088",
+          "ID": "AWS-0088",
+          "AVDID": "AWS-0088",
           "Title": "Unencrypted S3 bucket.",
           "Description": "S3 Buckets should be encrypted to protect the data that is stored within them if access is compromised.\n",
           "Message": "Bucket does not have encryption enabled",
@@ -33,10 +33,10 @@
           "Query": "data.builtin.aws.s3.aws0088.deny",
           "Resolution": "Configure bucket encryption",
           "Severity": "HIGH",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0088",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/aws-0088",
           "References": [
             "https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-encryption.html",
-            "https://avd.aquasec.com/misconfig/avd-aws-0088"
+            "https://avd.aquasec.com/misconfig/aws-0088"
           ],
           "Status": "FAIL",
           "CauseMetadata": {
@@ -161,7 +161,7 @@
         {
           "Type": "Terraform Security Check",
           "ID": "s3-bucket-logging",
-          "AVDID": "AVD-AWS-0089",
+          "AVDID": "AWS-0089",
           "Title": "S3 Bucket Logging",
           "Description": "Ensures S3 bucket logging is enabled for S3 buckets",
           "Message": "Bucket has logging disabled",
@@ -297,8 +297,8 @@
         },
         {
           "Type": "Terraform Security Check",
-          "ID": "AVD-AWS-0090",
-          "AVDID": "AVD-AWS-0090",
+          "ID": "AWS-0090",
+          "AVDID": "AWS-0090",
           "Title": "S3 Data should be versioned",
           "Description": "Versioning in Amazon S3 is a means of keeping multiple variants of an object in the same bucket.\n\nYou can use the S3 Versioning feature to preserve, retrieve, and restore every version of every object stored in your buckets.\n\nWith versioning you can recover more easily from both unintended user actions and application failures.\n\nWhen you enable versioning, also keep in mind the potential costs of storing noncurrent versions of objects. To help manage those costs, consider setting up an S3 Lifecycle configuration.\n",
           "Message": "Bucket does not have versioning enabled",
@@ -306,11 +306,11 @@
           "Query": "data.builtin.aws.s3.aws0090.deny",
           "Resolution": "Enable versioning to protect against accidental/malicious removal or modification",
           "Severity": "MEDIUM",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0090",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/aws-0090",
           "References": [
             "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html",
             "https://aws.amazon.com/blogs/storage/reduce-storage-costs-with-fewer-noncurrent-versions-using-amazon-s3-lifecycle/",
-            "https://avd.aquasec.com/misconfig/avd-aws-0090"
+            "https://avd.aquasec.com/misconfig/aws-0090"
           ],
           "Status": "FAIL",
           "CauseMetadata": {
@@ -434,8 +434,8 @@
         },
         {
           "Type": "Terraform Security Check",
-          "ID": "AVD-AWS-0132",
-          "AVDID": "AVD-AWS-0132",
+          "ID": "AWS-0132",
+          "AVDID": "AWS-0132",
           "Title": "S3 encryption should use Customer Managed Keys",
           "Description": "Encryption using AWS keys provides protection for your S3 buckets. To gain greater control over encryption, such as key rotation, access policies, and auditability, use customer managed keys (CMKs) with SSE-KMS.\nNote that SSE-KMS is not supported for S3 server access logging destination buckets; in such cases, use SSE-S3 instead.\n",
           "Message": "Bucket does not encrypt data with a customer managed key.",
@@ -443,10 +443,10 @@
           "Query": "data.builtin.aws.s3.aws0132.deny",
           "Resolution": "Use SSE-KMS with a customer managed key (CMK)",
           "Severity": "HIGH",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0132",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/aws-0132",
           "References": [
             "https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-encryption.html",
-            "https://avd.aquasec.com/misconfig/avd-aws-0132"
+            "https://avd.aquasec.com/misconfig/aws-0132"
           ],
           "Status": "FAIL",
           "CauseMetadata": {

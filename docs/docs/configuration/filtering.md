@@ -119,7 +119,7 @@ HIGH: Last USER command in Dockerfile should not be 'root'
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.
 
-See https://avd.aquasec.com/misconfig/avd-ds-0002
+See https://avd.aquasec.com/misconfig/ds-0002
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  Dockerfile:3
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -144,7 +144,7 @@ CRITICAL: Classic resources should not be used.
 AWS Classic resources run in a shared environment with infrastructure owned by other AWS customers. You should run
 resources in a VPC instead.
 
-See https://avd.aquasec.com/misconfig/avd-aws-0081
+See https://avd.aquasec.com/misconfig/aws-0081
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  main.tf:2-4
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -295,7 +295,7 @@ CVE-2019-14697 exp:2023-01-01
 CVE-2019-1543
 
 # Ignore misconfigurations
-AVD-DS-0002
+DS-0002
 
 # Ignore secrets
 generic-unwanted-rule
@@ -362,8 +362,8 @@ vulnerabilities:
     expired_at: 2023-09-01
 
 misconfigurations:
-  - id: AVD-DS-0001
-  - id: AVD-DS-0002
+  - id: DS-0001
+  - id: DS-0002
     paths:
       - "docs/Dockerfile"
     statement: The image needs root privileges

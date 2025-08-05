@@ -650,7 +650,7 @@ func TestConvertFromRPCMisconfs(t *testing.T) {
 				misconfs: []*common.DetectedMisconfiguration{
 					{
 						Type:        "Dockerfile Security Check",
-						Id:          "AVD-DS-0005",
+						Id:          "DS-0005",
 						Title:       "ADD instead of COPY",
 						Description: "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
 						Message:     "Consider using 'COPY . /app' command instead of 'ADD . /app'",
@@ -690,7 +690,7 @@ func TestConvertFromRPCMisconfs(t *testing.T) {
 			want: []types.DetectedMisconfiguration{
 				{
 					Type:        "Dockerfile Security Check",
-					ID:          "AVD-DS-0005",
+					ID:          "DS-0005",
 					Title:       "ADD instead of COPY",
 					Description: "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
 					Message:     "Consider using 'COPY . /app' command instead of 'ADD . /app'",
@@ -752,7 +752,7 @@ func TestConvertToRPCMiconfs(t *testing.T) {
 				misconfs: []types.DetectedMisconfiguration{
 					{
 						Type:        "Dockerfile Security Check",
-						ID:          "AVD-DS-0005",
+						ID:          "DS-0005",
 						Title:       "ADD instead of COPY",
 						Description: "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
 						Message:     "Consider using 'COPY . /app' command instead of 'ADD . /app'",
@@ -792,7 +792,7 @@ func TestConvertToRPCMiconfs(t *testing.T) {
 			want: []*common.DetectedMisconfiguration{
 				{
 					Type:        "Dockerfile Security Check",
-					Id:          "AVD-DS-0005",
+					Id:          "DS-0005",
 					Title:       "ADD instead of COPY",
 					Description: "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
 					Message:     "Consider using 'COPY . /app' command instead of 'ADD . /app'",

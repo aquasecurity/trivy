@@ -1,7 +1,7 @@
 package user.something
 
 __rego_metadata__ := {
-	"id": "AVD-TEST-0001",
+	"id": "TEST-0001",
 	"title": "Test policy",
 	"long_id": "no-buckets",
 	"severity": "LOW",

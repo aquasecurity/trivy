@@ -23,7 +23,7 @@ import (
 // IgnoreFinding represents an item to be ignored.
 type IgnoreFinding struct {
 	// ID is the identifier of the vulnerability, misconfiguration, secret, or license.
-	// e.g. CVE-2019-8331, AVD-AWS-0175, etc.
+	// e.g. CVE-2019-8331, AWS-0175, etc.
 	// required: true
 	ID string `yaml:"id"`
 

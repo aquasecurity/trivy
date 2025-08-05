@@ -19,7 +19,7 @@ func TestJsonScanner(t *testing.T) {
 		"/rules/rule.rego": `package builtin.json.lol
 
 __rego_metadata__ := {
-	"id": "AVD-ABC-0123",
+	"id": "ABC-0123",
 	"title": "title",
 	"long_id": "long",
 	"severity": "CRITICAL",
@@ -54,7 +54,7 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 
 	assert.Equal(t, scan.Rule{
-		ID:             "AVD-ABC-0123",
+		ID:             "ABC-0123",
 		LongID:         "long",
 		Summary:        "title",
 		Explanation:    "description",
@@ -86,7 +86,7 @@ x:
 		"/rules/rule.rego": `package builtin.yaml.lol
 
 __rego_metadata__ := {
-	"id": "AVD-ABC-0123",
+	"id": "ABC-0123",
 	"title": "title",
 	"long_id": "long",
 	"severity": "CRITICAL",
@@ -121,7 +121,7 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 
 	assert.Equal(t, scan.Rule{
-		ID:             "AVD-ABC-0123",
+		ID:             "ABC-0123",
 		LongID:         "long",
 		Summary:        "title",
 		Explanation:    "description",
@@ -152,7 +152,7 @@ z = ["a", "b", "c"]
 		"/rules/rule.rego": `package builtin.toml.lol
 
 __rego_metadata__ := {
-	"id": "AVD-ABC-0123",
+	"id": "ABC-0123",
 	"title": "title",
 	"long_id": "long",
 	"severity": "CRITICAL",
@@ -187,7 +187,7 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 
 	assert.Equal(t, scan.Rule{
-		ID:             "AVD-ABC-0123",
+		ID:             "ABC-0123",
 		LongID:         "long",
 		Summary:        "title",
 		Explanation:    "description",

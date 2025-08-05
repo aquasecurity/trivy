@@ -86,7 +86,7 @@ $ cat serverless.rego
 # schemas:
 #   - input: schema["serverless-schema"]
 # custom:
-#   avd_id: AVD-SF-0001
+#   avd_id: SF-0001
 #   severity: LOW
 package user.serverless001
 
@@ -136,12 +136,12 @@ Trivy supports ignoring misconfigured resources by inline comments for Terraform
 
 In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned). The format for these comments is `trivy:ignore:<rule>` immediately following the format-specific line-comment [token](https://developer.hashicorp.com/terraform/language/syntax/configuration#comments).
 
-The ignore rule must contain one of the possible check IDs that can be found in its metadata: ID, short code or alias. The `id` from the metadata is not case-sensitive, so you can specify, for example, `AVD-AWS-0089` or `avd-aws-0089`.
+The ignore rule must contain one of the possible check IDs that can be found in its metadata: ID, short code or alias. The `id` from the metadata is not case-sensitive, so you can specify, for example, `AWS-0089` or `aws-0089`.
 
-For example, to ignore a misconfiguration ID `AVD-GCP-0051` in a Terraform HCL file:
+For example, to ignore a misconfiguration ID `GCP-0051` in a Terraform HCL file:
 
 ```terraform
-#trivy:ignore:AVD-GCP-0051
+#trivy:ignore:GCP-0051
 resource "google_container_cluster" "example" {
   name     = var.cluster_name
   location = var.region
@@ -150,7 +150,7 @@ resource "google_container_cluster" "example" {
 
 You can add multiple ignores on the same comment line:
 ```terraform
-#trivy:ignore:AVD-GCP-0051 trivy:ignore:AVD-GCP-0053
+#trivy:ignore:GCP-0051 trivy:ignore:GCP-0053
 resource "google_container_cluster" "example" {
   name     = var.cluster_name
   location = var.region
@@ -163,8 +163,8 @@ As an example, consider the following check metadata:
 
 ```yaml
 # custom:
-  # id: AVD-AWS-0089
-  # avd_id: AVD-AWS-0089
+  # id: AWS-0089
+  # avd_id: AWS-0089
   # provider: aws
   # service: s3
   # severity: LOW

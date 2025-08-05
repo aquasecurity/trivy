@@ -25,7 +25,7 @@ spec:
       securityContext:
         {}
       containers:
-          # trivy:ignore:AVD-KSV-0018
+          # trivy:ignore:KSV-0018
         - name: testchart
           securityContext:
             runAsUser: 0
