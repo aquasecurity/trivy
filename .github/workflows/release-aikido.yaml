@@ -35,14 +35,24 @@ jobs:
       - name: Rename trivy binary
         run: |
           mv dist/build-linux_linux_amd64_v1/trivy dist/build-linux_linux_amd64_v1/trivy-${{ github.ref_name }}-linux-amd64
+          mv dist/build-linux_linux_arm64/trivy dist/build-linux_linux_arm64/trivy-${{ github.ref_name }}-linux-arm64
+          mv dist/build-macos_darwin_arm64/trivy dist/build-macos_darwin_arm64/trivy-${{ github.ref_name }}-darwin-arm64
+          mv dist/build-windows_windows_amd64_v1/trivy.exe dist/build-windows_windows_amd64_v1/trivy-${{ github.ref_name }}-windows-amd64.exe
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          path: dist/build-linux_linux_amd64_v1/trivy-${{ github.ref_name }}-linux-amd64
-
+          path: |
+            dist/build-linux_linux_amd64_v1/trivy-${{ github.ref_name }}-linux-amd64
+            dist/build-linux_linux_arm64/trivy-${{ github.ref_name }}-linux-arm64
+            dist/build-macos_darwin_arm64/trivy-${{ github.ref_name }}-darwin-arm64
+            dist/build-windows_windows_amd64_v1/trivy-${{ github.ref_name }}-windows-amd64.exe
+            
       - name: Deploy to GitHub Release
         uses: softprops/action-gh-release@72f2c25fcb47643c292f7107632f7a47c1df5cd8 # v2
         with:
           files: |
             dist/build-linux_linux_amd64_v1/trivy-${{ github.ref_name }}-linux-amd64
+            dist/build-linux_linux_arm64/trivy-${{ github.ref_name }}-linux-arm64
+            dist/build-macos_darwin_arm64/trivy-${{ github.ref_name }}-darwin-arm64
+            dist/build-windows_windows_amd64_v1/trivy-${{ github.ref_name }}-windows-amd64.exe

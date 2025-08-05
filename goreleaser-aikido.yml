@@ -15,8 +15,39 @@ builds:
       - linux
     goarch:
       - amd64
+      - arm64
     goarm:
       - 7
 
+  - id: build-macos
+    main: ./cmd/trivy/
+    binary: trivy
+    ldflags:
+      - -s -w
+      - "-extldflags '-static'"
+      - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+    goarch:
+      - arm64
+    goarm:
+      - 7
 
-
+  - id: build-windows
+    main: ./cmd/trivy/
+    binary: trivy
+    ldflags:
+      - -s -w
+      - "-extldflags '-static'"
+      - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+    goarch:
+      # modernc.org/sqlite doesn't support windows/386 and windows/arm, etc.
+      - amd64
+    goarm:
+      - 7
