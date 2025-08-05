@@ -3,18 +3,6 @@
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/pubspec",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "pubspec.lock",
@@ -29,8 +17,7 @@
             "UID": "fe8339221b1b26b8"
           },
           "Version": "0.13.2",
-          "Relationship": "direct",
-          "Layer": {}
+          "Relationship": "direct"
         },
         {
           "ID": "shelf@1.3.1",
@@ -41,8 +28,7 @@
           },
           "Version": "1.3.1",
           "Indirect": true,
-          "Relationship": "indirect",
-          "Layer": {}
+          "Relationship": "indirect"
         }
       ],
       "Vulnerabilities": [
@@ -57,7 +43,6 @@
           "InstalledVersion": "0.13.2",
           "FixedVersion": "0.13.3",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-35669",
           "DataSource": {

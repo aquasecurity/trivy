@@ -3,18 +3,6 @@
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/bun",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "bun.lock",
@@ -30,7 +18,6 @@
           },
           "Version": "3.3.1",
           "Relationship": "direct",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 24,
@@ -47,7 +34,6 @@
           },
           "Version": "5.8.3",
           "Relationship": "direct",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 26,
@@ -68,7 +54,6 @@
           "InstalledVersion": "3.3.1",
           "FixedVersion": "3.4.0",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11358",
           "DataSource": {

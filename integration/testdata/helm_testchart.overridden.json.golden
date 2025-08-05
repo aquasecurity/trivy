@@ -3,25 +3,13 @@
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/helm_testchart",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "templates/deployment.yaml",
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 87,
+        "Successes": 90,
         "Failures": 8
       },
       "Misconfigurations": [
@@ -41,7 +29,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0001"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -149,8 +136,7 @@
                   "LastCause": false
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -169,7 +155,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0020"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -277,8 +262,7 @@
                   "LastCause": false
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -297,7 +281,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0030"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -405,8 +388,7 @@
                   "LastCause": false
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -425,7 +407,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0104"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -533,8 +514,7 @@
                   "LastCause": false
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -553,7 +533,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0105"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -632,8 +611,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -652,7 +630,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0110"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -731,8 +708,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -752,14 +728,9 @@
             "https://avd.aquasec.com/misconfig/ksv-0117"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
-            "Service": "general",
-            "Code": {
-              "Lines": null
-            },
-            "RenderedCause": {}
+            "Service": "general"
           }
         },
         {
@@ -778,7 +749,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0118"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -886,8 +856,7 @@
                   "LastCause": false
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         }
       ]
@@ -897,7 +866,7 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 59,
+        "Successes": 62,
         "Failures": 0
       }
     },
@@ -906,7 +875,7 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 58,
+        "Successes": 61,
         "Failures": 0
       }
     }

@@ -3,18 +3,6 @@
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/custom-policy",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "Dockerfile",
@@ -36,14 +24,9 @@
           "Resolution": "Custom policy for testing",
           "Severity": "LOW",
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Custom",
-            "Service": "custom",
-            "Code": {
-              "Lines": null
-            },
-            "RenderedCause": {}
+            "Service": "custom"
           }
         },
         {
@@ -57,14 +40,9 @@
           "Resolution": "Custom policy for testing",
           "Severity": "LOW",
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Custom",
-            "Service": "custom",
-            "Code": {
-              "Lines": null
-            },
-            "RenderedCause": {}
+            "Service": "custom"
           }
         }
       ]

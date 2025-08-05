@@ -3,25 +3,13 @@
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/helm",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "testchart.tar.gz:templates/pod.yaml",
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 78,
+        "Successes": 81,
         "Failures": 18
       },
       "Misconfigurations": [
@@ -41,7 +29,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0001"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -90,8 +77,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -110,7 +96,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0003"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -159,8 +144,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -179,7 +163,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0004"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -228,8 +211,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -248,7 +230,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0011"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -297,8 +278,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -317,7 +297,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0012"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -366,8 +345,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -386,7 +364,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0014"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -435,8 +412,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -455,7 +431,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0015"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -504,8 +479,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -524,7 +498,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0016"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -573,8 +546,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -593,7 +565,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0018"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -642,8 +613,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -662,7 +632,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0020"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -711,8 +680,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -731,7 +699,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0021"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -780,8 +747,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -800,7 +766,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0030"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -849,8 +814,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -869,7 +833,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0104"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -918,8 +881,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -938,7 +900,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0106"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -987,8 +948,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -1007,7 +967,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0110"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -1046,8 +1005,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -1067,14 +1025,9 @@
             "https://avd.aquasec.com/misconfig/ksv-0117"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
-            "Service": "general",
-            "Code": {
-              "Lines": null
-            },
-            "RenderedCause": {}
+            "Service": "general"
           }
         },
         {
@@ -1093,7 +1046,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0118"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -1142,8 +1094,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -1162,7 +1113,6 @@
             "https://avd.aquasec.com/misconfig/ksv-0118"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -1221,8 +1171,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         }
       ]

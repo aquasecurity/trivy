@@ -9,7 +9,7 @@
       "Class": "config",
       "Type": "terraform",
       "MisconfSummary": {
-        "Successes": 56,
+        "Successes": 63,
         "Failures": 0
       }
     },
@@ -24,8 +24,7 @@
       "Misconfigurations": [
         {
           "Type": "Terraform Security Check",
-          "ID": "aws-vpc-no-public-egress-sgr",
-          "AVDID": "AWS-0104",
+          "ID": "AWS-0104",
           "Title": "A security group rule should not allow unrestricted egress to any IP address.",
           "Description": "Opening up ports to connect out to the public internet is generally to be avoided. You should restrict access to IP addresses or ranges that are explicitly required where possible.\n",
           "Message": "Security group rule allows unrestricted egress to any IP address.",
@@ -33,10 +32,10 @@
           "Query": "data.builtin.aws.ec2.aws0104.deny",
           "Resolution": "Set a more restrictive cidr range",
           "Severity": "CRITICAL",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/aws-vpc-no-public-egress-sgr",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/aws-0104",
           "References": [
             "https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/centralized-egress-to-internet.html",
-            "https://avd.aquasec.com/misconfig/aws-vpc-no-public-egress-sgr"
+            "https://avd.aquasec.com/misconfig/aws-0104"
           ],
           "Status": "FAIL",
           "CauseMetadata": {
@@ -123,8 +122,7 @@
         },
         {
           "Type": "Terraform Security Check",
-          "ID": "aws-vpc-add-description-to-security-group-rule",
-          "AVDID": "AWS-0124",
+          "ID": "AWS-0124",
           "Title": "Missing description for security group rule.",
           "Description": "Security group rules should include a description for auditing purposes.\n\nSimplifies auditing, debugging, and managing security groups.\n",
           "Message": "Security group rule does not have a description.",
@@ -132,10 +130,10 @@
           "Query": "data.builtin.aws.ec2.aws0124.deny",
           "Resolution": "Add descriptions for all security groups rules",
           "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/aws-vpc-add-description-to-security-group-rule",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/aws-0124",
           "References": [
             "https://www.cloudconformity.com/knowledge-base/aws/EC2/security-group-rules-description.html",
-            "https://avd.aquasec.com/misconfig/aws-vpc-add-description-to-security-group-rule"
+            "https://avd.aquasec.com/misconfig/aws-0124"
           ],
           "Status": "FAIL",
           "CauseMetadata": {
