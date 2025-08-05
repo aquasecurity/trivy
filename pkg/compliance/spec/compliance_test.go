@@ -44,8 +44,8 @@ func TestComplianceSpec_Scanners(t *testing.T) {
 						Description: "Control checks whether encryption resource has been set",
 						ID:          "1.1",
 						Checks: []iacTypes.SpecCheck{
-							{ID: "AWS-1.2.31"},
-							{ID: "AWS-1.2.32"},
+							{ID: "AVD-1.2.31"},
+							{ID: "AVD-1.2.32"},
 						},
 					},
 				},
@@ -77,8 +77,8 @@ func TestComplianceSpec_Scanners(t *testing.T) {
 						Description: "Control checks whether encryption resource has been set",
 						ID:          "1.1",
 						Checks: []iacTypes.SpecCheck{
-							{ID: "AWS-1.2.31"},
-							{ID: "AWS-1.2.32"},
+							{ID: "AVD-1.2.31"},
+							{ID: "AVD-1.2.32"},
 						},
 					},
 					{
@@ -165,8 +165,8 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 						Description: "Control checks whether encryption resource has been set",
 						ID:          "1.1",
 						Checks: []iacTypes.SpecCheck{
-							{ID: "1.2.31"},
-							{ID: "1.2.32"},
+							{ID: "AVD-1.2.31"},
+							{ID: "AVD-1.2.32"},
 						},
 					},
 				},
@@ -174,8 +174,8 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 			want: map[types.Scanner][]string{
 				types.MisconfigScanner: {
 					"KSV-0012",
-					"1.2.31",
-					"1.2.32",
+					"AVD-1.2.31",
+					"AVD-1.2.32",
 				},
 			},
 		},
@@ -203,8 +203,8 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 						Description: "Control checks whether encryption resource has been set",
 						ID:          "1.1",
 						Checks: []iacTypes.SpecCheck{
-							{ID: "1.2.31"},
-							{ID: "1.2.32"},
+							{ID: "AVD-1.2.31"},
+							{ID: "AVD-1.2.32"},
 						},
 					},
 					{
@@ -220,8 +220,8 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 			want: map[types.Scanner][]string{
 				types.MisconfigScanner: {
 					"KSV-0012",
-					"1.2.31",
-					"1.2.32",
+					"AVD-1.2.31",
+					"AVD-1.2.32",
 				},
 				types.VulnerabilityScanner: {
 					"CVE-9999-9999",
