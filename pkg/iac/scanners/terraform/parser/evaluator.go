@@ -31,7 +31,7 @@ type evaluator struct {
 	ctx               *tfcontext.Context
 	blocks            terraform.Blocks
 	inputVars         map[string]cty.Value
-	moduleMetadata    *modulesMetadata
+	moduleMetadata    *ModulesMetadata
 	projectRootPath   string // root of the current scan
 	modulePath        string
 	moduleName        string
@@ -50,7 +50,7 @@ func newEvaluator(
 	moduleName string,
 	blocks terraform.Blocks,
 	inputVars map[string]cty.Value,
-	moduleMetadata *modulesMetadata,
+	moduleMetadata *ModulesMetadata,
 	workspace string,
 	ignores ignore.Rules,
 	logger *log.Logger,
