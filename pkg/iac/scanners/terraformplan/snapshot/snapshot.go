@@ -15,6 +15,8 @@ import (
 	"github.com/liamg/memoryfs"
 	"github.com/zclconf/go-cty/cty"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
+	"github.com/aquasecurity/trivy/pkg/log"
 	iox "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -27,13 +29,7 @@ const (
 )
 
 type (
-	configSnapshotModuleRecord struct {
-		Key        string `json:"Key"`
-		SourceAddr string `json:"Source,omitempty"`
-		Dir        string `json:"Dir"`
-	}
-
-	configSnapshotModuleManifest []configSnapshotModuleRecord
+	configSnapshotModuleManifest []parser.ModuleMetadata
 )
 
 var errNoTerraformPlan = errors.New("no terraform plan file")
@@ -79,13 +75,11 @@ func parseSnapshot(r io.Reader) (*snapshot, error) {
 		inputVariables: make(map[string]cty.Value),
 	}
 
-	var moduleManifest configSnapshotModuleManifest
-
 	for _, file := range zr.File {
 		switch {
 		case file.Name == configSnapshotManifestFile:
 			var err error
-			moduleManifest, err = readModuleManifest(file)
+			snap.moduleManifest, err = readModuleManifest(file)
 			if err != nil {
 				return nil, err
 			}
@@ -113,12 +107,7 @@ func parseSnapshot(r io.Reader) (*snapshot, error) {
 		}
 	}
 
-	for _, record := range moduleManifest {
-		// skip non-local modules
-		if record.Dir != "." && !strings.HasPrefix(record.SourceAddr, ".") {
-			delete(snap.modules, record.Key)
-			continue
-		}
+	for _, record := range snap.moduleManifest {
 		modSnap := snap.getOrCreateModuleSnapshot(record.Key)
 		modSnap.dir = record.Dir
 	}
@@ -159,6 +148,7 @@ type (
 	}
 
 	snapshot struct {
+		moduleManifest configSnapshotModuleManifest
 		modules        map[string]*snapshotModule
 		inputVariables map[string]cty.Value
 	}
@@ -202,6 +192,10 @@ func (s *snapshot) getOrCreateModuleSnapshot(key string) *snapshotModule {
 func (s *snapshot) toFS() (fs.FS, error) {
 	fsys := memoryfs.New()
 
+	if err := s.writeManifest(fsys); err != nil {
+		log.WithPrefix(log.PrefixMisconfiguration).Error("Failed to write manifest file", log.Err(err))
+	}
+
 	for _, module := range s.modules {
 		if err := fsys.MkdirAll(module.dir, fs.ModePerm); err != nil && !errors.Is(err, os.ErrExist) {
 			return nil, err
@@ -217,4 +211,20 @@ func (s *snapshot) toFS() (fs.FS, error) {
 		}
 	}
 	return fsys, nil
+}
+
+func (s *snapshot) writeManifest(fsys *memoryfs.FS) error {
+	if err := fsys.MkdirAll(path.Dir(parser.ManifestSnapshotFile), fs.ModePerm); err != nil {
+		return fmt.Errorf("create manifest directory: %w", err)
+	}
+
+	b, err := json.Marshal(parser.ModulesMetadata{Modules: s.moduleManifest})
+	if err != nil {
+		return fmt.Errorf("marshal manifest snapshot: %w", err)
+	}
+
+	if err := fsys.WriteFile(parser.ManifestSnapshotFile, b, fs.ModePerm); err != nil {
+		return fmt.Errorf("write manifest snapshot: %w", err)
+	}
+	return nil
 }

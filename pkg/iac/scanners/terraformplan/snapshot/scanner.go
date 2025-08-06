@@ -78,6 +78,7 @@ func (s *Scanner) scan(ctx context.Context, reader io.Reader) (scan.Results, err
 
 	s.inner.AddParserOptions(
 		tfparser.OptionsWithTfVars(snap.inputVariables),
+		tfparser.OptionWithDownloads(false),
 	)
 	return s.inner.ScanFS(ctx, fsys, ".")
 }
