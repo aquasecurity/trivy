@@ -263,6 +263,7 @@ func (b *BOM) unmarshalHashes(hashes *[]cdx.Hash) []digest.Digest {
 			alg = digest.MD5
 		default:
 			log.Warn("Unsupported hash algorithm", log.String("algorithm", string(h.Algorithm)))
+			continue
 		}
 		digests = append(digests, digest.NewDigestFromString(alg, h.Value))
 	}
