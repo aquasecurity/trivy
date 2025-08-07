@@ -507,14 +507,15 @@ func (o *Options) RegistryOpts() ftypes.RegistryOptions {
 // FilterOpts returns options for filtering
 func (o *Options) FilterOpts() result.FilterOptions {
 	return result.FilterOptions{
-		Severities:         o.Severities,
-		IgnoreStatuses:     o.IgnoreStatuses,
-		IncludeNonFailures: o.IncludeNonFailures,
-		IgnoreFile:         o.IgnoreFile,
-		PolicyFile:         o.IgnorePolicy,
-		IgnoreLicenses:     o.IgnoredLicenses,
-		CacheDir:           o.CacheDir,
-		VEXSources:         o.VEXSources,
+		Severities:             o.Severities,
+		IgnoreStatuses:         o.IgnoreStatuses,
+		IncludeNonFailures:     o.IncludeNonFailures,
+		IgnoreFile:             o.IgnoreFile,
+		PolicyFile:             o.IgnorePolicy,
+		IgnoreLicenses:         o.IgnoredLicenses,
+		CacheDir:               o.CacheDir,
+		VEXSources:             o.VEXSources,
+		IgnoreUnlikelyAffected: o.IgnoreUnlikelyAffected,
 	}
 }
 
