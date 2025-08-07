@@ -18,8 +18,8 @@ type lineReader struct {
 	line int
 }
 
-// newLineReader creates a new line reader.
-func newLineReader(r io.Reader) *lineReader {
+// NewLineReader creates a new line reader.
+func NewLineReader(r io.Reader) *lineReader {
 	return &lineReader{
 		r:    r,
 		line: 1,
@@ -44,8 +44,8 @@ func Unmarshal(data []byte, v any) error {
 }
 
 func UnmarshalRead(r io.Reader, v any) error {
-	lr := newLineReader(r)
-	unmarshalers := unmarshalerWithObjectLocation(lr)
+	lr := NewLineReader(r)
+	unmarshalers := UnmarshalerWithLocation[ObjectLocation](lr)
 	return json.UnmarshalRead(lr, v, json.WithUnmarshalers(unmarshalers))
 }
 
@@ -62,16 +62,36 @@ type ObjectLocation interface {
 	SetLocation(location types.Location)
 }
 
-// unmarshalerWithObjectLocation creates json.Unmarshaler for ObjectLocation to save object location into xjson.Location
-// To use UnmarshalerWithObjectLocation for primitive types, you must implement the UnmarshalerFrom interface for those objects.
-// cf. https://pkg.go.dev/github.com/go-json-experiment/json#UnmarshalerFrom
-func unmarshalerWithObjectLocation(r *lineReader) *json.Unmarshalers {
-	visited := set.New[int]()
-	return unmarshaler(r, visited)
+type DecodeHook struct {
+	After func(dec *jsontext.Decoder, target any, loc types.Location)
 }
 
-func unmarshaler(r *lineReader, visited set.Set[int]) *json.Unmarshalers {
-	return json.UnmarshalFromFunc(func(dec *jsontext.Decoder, loc ObjectLocation) error {
+var SetLocationHook = DecodeHook{
+	After: func(_ *jsontext.Decoder, target any, location types.Location) {
+		if loc, ok := target.(ObjectLocation); ok {
+			loc.SetLocation(location)
+		}
+	},
+}
+
+// UnmarshalerWithLocation returns a [json.Unmarshalers] that captures the source code location
+// (start and end lines) of each decoded object and optionally invokes hooks after decoding.
+//
+// By default, the [SetLocationHook] is used to record source code locations,
+// unless other hooks are explicitly provided.
+//
+// To use UnmarshalerWithLocation for primitive types, you must implement the [json.UnmarshalerFrom] interface for those objects.
+// cf. https://pkg.go.dev/github.com/go-json-experiment/json#UnmarshalerFrom
+func UnmarshalerWithLocation[T any](r *lineReader, hooks ...DecodeHook) *json.Unmarshalers {
+	visited := set.New[int]()
+	if len(hooks) == 0 {
+		hooks = []DecodeHook{SetLocationHook}
+	}
+	return unmarshaler[T](r, visited, hooks...)
+}
+
+func unmarshaler[T any](r *lineReader, visited set.Set[int], hooks ...DecodeHook) *json.Unmarshalers {
+	return json.UnmarshalFromFunc(func(dec *jsontext.Decoder, target T) error {
 		// Decoder.InputOffset reports the offset after the last token,
 		// but we want to record the offset before the next token.
 		//
@@ -91,17 +111,25 @@ func unmarshaler(r *lineReader, visited set.Set[int]) *json.Unmarshalers {
 		visited.Append(start)
 
 		// Return more detailed error for cases when UnmarshalJSONFrom is not implemented for primitive type.
-		if _, ok := loc.(json.UnmarshalerFrom); !ok && kind != '[' && kind != '{' {
-			return xerrors.Errorf("structures with single primitive type should implement UnmarshalJSONFrom: %T", loc)
+		if _, ok := any(target).(json.UnmarshalerFrom); !ok && kind != '[' && kind != '{' {
+			return xerrors.Errorf("structures with single primitive type should implement UnmarshalJSONFrom: %T", target)
 		}
 
-		if err := json.UnmarshalDecode(dec, loc, json.WithUnmarshalers(unmarshaler(r, visited))); err != nil {
+		if err := json.UnmarshalDecode(dec, target, json.WithUnmarshalers(unmarshaler[T](r, visited, hooks...))); err != nil {
 			return err
 		}
-		loc.SetLocation(types.Location{
+
+		location := types.Location{
 			StartLine: start,
 			EndLine:   r.Line() - bytes.Count(dec.UnreadBuffer(), []byte("\n")),
-		})
+		}
+
+		for _, h := range hooks {
+			if h.After != nil {
+				h.After(dec, target, location)
+			}
+		}
+
 		return nil
 	})
 }
