@@ -15,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/intf"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
 type ecrAPI interface {
@@ -80,7 +81,9 @@ func determineRegion(domain string) string {
 
 func (e *ECRClient) GetCredential(ctx context.Context) (username, password string, err error) {
 	input := &ecr.GetAuthorizationTokenInput{}
-	result, err := e.Client.GetAuthorizationToken(ctx, input)
+	result, err := e.Client.GetAuthorizationToken(ctx, input, func(options *ecr.Options) {
+		options.HTTPClient = xhttp.Client()
+	})
 	if err != nil {
 		return "", "", xerrors.Errorf("failed to get authorization token: %w", err)
 	}
