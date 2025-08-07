@@ -5,14 +5,18 @@
     <parent>
         <groupId>com.example</groupId>
         <artifactId>top-parent</artifactId>
-        <version>1.0.0</version>
+        <version>5.0.3</version>
         <relativePath>../top-parent</relativePath>
     </parent>
+
+    <properties>
+        <dep.version>1.2.3</dep.version>
+    </properties>
 
 
     <groupId>com.example</groupId>
     <artifactId>parent</artifactId>
-    <version>1.0.0</version>
+    <version>4.0.3</version>
 
     <packaging>pom</packaging>
     <name>parent</name>
