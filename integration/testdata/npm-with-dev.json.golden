@@ -3,18 +3,6 @@
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/npm",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "package-lock.json",
@@ -29,7 +17,6 @@
             "UID": "199d95f873330bd3"
           },
           "Version": "2.0.6",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 6,
@@ -48,7 +35,6 @@
           "Licenses": [
             "MIT"
           ],
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 11,
@@ -64,7 +50,6 @@
             "UID": "605df7770562762"
           },
           "Version": "4.0.0",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 16,
@@ -83,7 +68,6 @@
           "DependsOn": [
             "js-tokens@4.0.0"
           ],
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 21,
@@ -99,7 +83,6 @@
             "UID": "ec3b70276c206ac2"
           },
           "Version": "4.1.1",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 29,
@@ -121,7 +104,6 @@
           "DependsOn": [
             "asap@2.0.6"
           ],
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 34,
@@ -142,7 +124,6 @@
             "object-assign@4.1.1",
             "react-is@16.8.6"
           ],
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 42,
@@ -167,7 +148,6 @@
             "prop-types@15.7.2",
             "scheduler@0.13.6"
           ],
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 52,
@@ -186,7 +166,6 @@
           "Licenses": [
             "MIT"
           ],
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 63,
@@ -209,7 +188,6 @@
             "loose-envify@1.4.0",
             "symbol-observable@1.2.0"
           ],
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 68,
@@ -229,7 +207,6 @@
             "loose-envify@1.4.0",
             "object-assign@4.1.1"
           ],
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 77,
@@ -245,7 +222,6 @@
             "UID": "b14a083f8b9e59bc"
           },
           "Version": "1.2.0",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 86,
@@ -265,7 +241,6 @@
           "Licenses": [
             "MIT"
           ],
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 91,
@@ -286,7 +261,6 @@
           "InstalledVersion": "3.3.9",
           "FixedVersion": "3.4.0",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11358",
           "DataSource": {

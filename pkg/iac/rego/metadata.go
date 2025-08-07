@@ -25,9 +25,8 @@ const annotationScopePackage = "package"
 type StaticMetadata struct {
 	Deprecated          bool
 	ID                  string
-	AVDID               string
 	Title               string
-	ShortCode           string
+	LongID              string
 	Aliases             []string
 	Description         string
 	Severity            string
@@ -72,9 +71,8 @@ func (sm *StaticMetadata) populate(meta map[string]any) error {
 	}
 
 	upd(&sm.ID, "id")
-	upd(&sm.AVDID, "avd_id")
 	upd(&sm.Title, "title")
-	upd(&sm.ShortCode, "short_code")
+	upd(&sm.LongID, "long_id")
 	upd(&sm.Description, "description")
 	upd(&sm.Service, "service")
 	upd(&sm.Provider, "provider")
@@ -272,9 +270,9 @@ func (sm *StaticMetadata) ToRule() scan.Rule {
 
 	return scan.Rule{
 		Deprecated:          sm.Deprecated,
-		AVDID:               sm.AVDID,
-		Aliases:             append(sm.Aliases, sm.ID),
-		ShortCode:           sm.ShortCode,
+		ID:                  sm.ID,
+		Aliases:             sm.Aliases,
+		LongID:              sm.LongID,
 		Summary:             sm.Title,
 		Explanation:         sm.Description,
 		Impact:              "",

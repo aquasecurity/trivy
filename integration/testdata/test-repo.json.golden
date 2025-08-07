@@ -4,16 +4,6 @@
   "ArtifactName": "testdata/fixtures/repo/trivy-ci-test",
   "ArtifactType": "repository",
   "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    },
     "RepoURL": "https://github.com/knqyf263/trivy-ci-test",
     "Branch": "master",
     "Commit": "5ae342eb2802672402d9b2c26f09e2051bbd91b8",
@@ -38,7 +28,6 @@
           "InstalledVersion": "1.9.0",
           "FixedVersion": "\u003e= 2.1.0",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-15542",
           "DataSource": {
@@ -81,7 +70,6 @@
           "InstalledVersion": "1.9.0",
           "FixedVersion": "\u003e= 3.1.0, \u003e= 2.1.3, \u003c 3.0.0",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-38193",
           "DataSource": {

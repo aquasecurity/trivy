@@ -60,7 +60,7 @@ spec:
     description: Ensure that the API server pod specification file has permissions
       of 600 or more restrictive
     checks:
-    - id: AVD-KCV-0073
+    - id: KCV-0073
     commands:
     - id: CMD-0001
     severity: HIGH
@@ -123,9 +123,8 @@ Example of how to define check data under [checks folder](https://github.com/aqu
 # - https://www.cisecurity.org/benchmark/kubernetes
 # custom:
 #   id: KCV0073
-#   avd_id: AVD-KCV-0073
 #   severity: HIGH
-#   short_code: ensure-kubelet.conf-file-permissions-600-or-more-restrictive.
+#   long_id: kubernetes-ensure-kubelet.conf-file-permissions-600-or-more-restrictive.
 #   recommended_action: "Change the kubelet.conf file permissions to 600 or more restrictive if exist"
 #   input:
 #     selector:
@@ -275,13 +274,13 @@ spec:
       description: 'Check that container is not running as root' # Description (appears in the report as is). Any text.
       id: "1.0" # control identifier (string)
       checks:   # list of existing Trivy checks that define the control
-        - id: AVD-KSV-0012 # check ID. Must start with `AVD-` or `CVE-` 
+        - id: KSV-0012
       severity: "MEDIUM" # Severity for the control (note that checks severity isn't used)
     - name: "Immutable container file systems"
       description: 'Check that container root file system is immutable'
       id: "1.1"
       checks:
-        - id: AVD-KSV-0014
+        - id: KSV-0014
       severity: "LOW"
 ```
 
