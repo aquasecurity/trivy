@@ -45,8 +45,14 @@ func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
 	}
 	e.bom.AddComponent(root)
 
+	// Collect all packages from all results for building comprehensive parent dependency map
+	var allPackages ftypes.Packages
 	for _, result := range report.Results {
-		e.encodeResult(root, report.Metadata, result)
+		allPackages = append(allPackages, result.Packages...)
+	}
+
+	for _, result := range report.Results {
+		e.encodeResult(root, report.Metadata, result, allPackages)
 	}
 
 	// Components that do not have their own dependencies MUST be declared as empty elements within the graph.
@@ -145,7 +151,7 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 	return root, nil
 }
 
-func (e *Encoder) encodeResult(root *core.Component, metadata types.Metadata, result types.Result) {
+func (e *Encoder) encodeResult(root *core.Component, metadata types.Metadata, result types.Result, allPackages ftypes.Packages) {
 	if slices.Contains(ftypes.AggregatingTypes, result.Type) {
 		// If a package is language-specific package that isn't associated with a lock file,
 		// it will be a dependency of a component under "metadata".
@@ -157,7 +163,7 @@ func (e *Encoder) encodeResult(root *core.Component, metadata types.Metadata, re
 		// ref. https://cyclonedx.org/use-cases/#inventory
 
 		// Dependency graph from #1 to #2
-		e.encodePackages(root, result)
+		e.encodePackages(root, result, allPackages)
 	} else if result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg {
 		// If a package is OS package, it will be a dependency of "Operating System" component.
 		// e.g.
@@ -180,13 +186,31 @@ func (e *Encoder) encodeResult(root *core.Component, metadata types.Metadata, re
 		appComponent := e.resultComponent(root, result, metadata.OS)
 
 		// #3
-		e.encodePackages(appComponent, result)
+		e.encodePackages(appComponent, result, allPackages)
 	}
 }
 
-func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
-	// Get dependency parents first
-	parents := ftypes.Packages(result.Packages).ParentDeps()
+func (e *Encoder) encodePackages(parent *core.Component, result types.Result, allPackages ftypes.Packages) {
+	// Get dependency parents from packages in the current result for containment decisions
+	var currentResultPackages ftypes.Packages
+	for _, pkg := range result.Packages {
+		currentResultPackages = append(currentResultPackages, pkg)
+	}
+	localParents := currentResultPackages.ParentDeps()
+
+	// Build global dependencies map from all existing components in BOM for cross-result dependency lookup
+	globalDependencies := make(map[string]*core.Component)
+	for _, c := range e.bom.Components() {
+		if c != nil && len(c.Properties) > 0 {
+			// Find the pkg ID property
+			for _, prop := range c.Properties {
+				if prop.Name == core.PropertyPkgID {
+					globalDependencies[prop.Value] = c
+					break
+				}
+			}
+		}
+	}
 
 	// Group vulnerabilities by package ID
 	vulns := make(map[string][]core.Vulnerability)
@@ -197,7 +221,7 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 
 	// UID => Package Component
 	components := make(map[string]*core.Component, len(result.Packages))
-	// PkgID => Package Component
+	// PkgID => Package Component (for current result)
 	dependencies := make(map[string]*core.Component, len(result.Packages))
 	var hasRoot bool
 	for i, pkg := range result.Packages {
@@ -217,6 +241,7 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 		// For dependencies: the key "pkgID" might be duplicated in aggregated packages,
 		// but it doesn't matter as they don't have "DependsOn".
 		dependencies[pkgID] = c
+		globalDependencies[pkgID] = c // Also add to the global dependencies map
 
 		// Add a component
 		e.bom.AddComponent(c)
@@ -232,13 +257,15 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 		c := components[pkg.Identifier.UID]
 
 		// Add a relationship between the parent and the package if needed
-		if e.belongToParent(pkg, parents, hasRoot) {
+		// Use local parents for containment decisions
+		if e.belongToParent(pkg, localParents, hasRoot) {
 			e.bom.AddRelationship(parent, c, core.RelationshipContains)
 		}
 
 		// Add relationships between the package and its dependencies
 		for _, dep := range pkg.DependsOn {
-			dependsOn, ok := dependencies[dep]
+			// Look for dependency in ALL packages (from all results), not just current result
+			dependsOn, ok := globalDependencies[dep]
 			if !ok {
 				continue
 			}
