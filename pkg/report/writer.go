@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"strings"
+	"time"
 
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
@@ -97,10 +98,19 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 		if report.ArtifactType == ftypes.TypeFilesystem {
 			target = option.Target
 		}
+
+		// Set up timing information for SARIF invocation
+		var scanStartTime, scanEndTime *time.Time
+
+		// Use real timing in production, fixed timing in integration tests
+		scanStartTime, scanEndTime = getSarifTiming(ctx, report)
+
 		writer = &SarifWriter{
-			Output:  output,
-			Version: option.AppVersion,
-			Target:  target,
+			Output:        output,
+			Version:       option.AppVersion,
+			Target:        target,
+			ScanStartTime: scanStartTime,
+			ScanEndTime:   scanEndTime,
 		}
 	case types.FormatCosignVuln:
 		writer = predicate.NewVulnWriter(output, option.AppVersion)
