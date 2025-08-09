@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"strings"
 
-	"github.com/liamg/memoryfs"
-
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
 type Parser struct {
@@ -50,9 +50,9 @@ func (p *Parser) Parse(reader io.Reader) (*PlanFile, error) {
 
 }
 
-func (p *PlanFile) ToFS() (*memoryfs.FS, error) {
+func (p *PlanFile) ToFS() (fs.FS, error) {
 
-	rootFS := memoryfs.New()
+	rootFS := mapfs.New()
 
 	var fileResources []string
 
@@ -66,7 +66,7 @@ func (p *PlanFile) ToFS() (*memoryfs.FS, error) {
 	}
 
 	fileContent := strings.Join(fileResources, "\n\n")
-	if err := rootFS.WriteFile("main.tf", []byte(fileContent), os.ModePerm); err != nil {
+	if err := rootFS.WriteVirtualFile("main.tf", []byte(fileContent), os.ModePerm); err != nil {
 		return nil, err
 	}
 	return rootFS, nil
