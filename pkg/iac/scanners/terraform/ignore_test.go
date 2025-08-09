@@ -589,7 +589,7 @@ func Test_IgnoreInlineByAVDID(t *testing.T) {
 
 func TestIgnoreRemoteTerraformResource(t *testing.T) {
 
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"main.tf": `module "bucket" {
   source = "git::https://github.com/test/bucket"
 }`,

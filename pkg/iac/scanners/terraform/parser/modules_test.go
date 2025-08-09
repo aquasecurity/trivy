@@ -70,7 +70,7 @@ module "this" {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fsys := testutil.CreateFS(t, tt.files)
+			fsys := testutil.CreateFS(tt.files)
 			parser := New(fsys, "", OptionStopOnHCLError(true))
 
 			modules := lo.Map(lo.Keys(tt.files), func(p string, _ int) string {

@@ -55,7 +55,7 @@ func ruleIDInResults(ruleID string, results scan.Results) bool {
 	return false
 }
 
-func CreateFS(t *testing.T, files map[string]string) fs.FS {
+func CreateFS(files map[string]string) fs.FS {
 	return fstest.MapFS(lo.MapEntries(files, func(k, v string) (string, *fstest.MapFile) {
 		return strings.TrimPrefix(k, "/"), &fstest.MapFile{Data: []byte(v)}
 	}))
