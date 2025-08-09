@@ -124,7 +124,7 @@ func (s *Scanner) getScanResults(ctx context.Context, path string, target fs.FS)
 	for _, file := range chartFiles {
 		s.logger.Debug("Processing rendered chart file", log.FilePath(file.TemplateFilePath))
 
-		ignoreRules := ignore.Parse(file.ManifestContent, file.TemplateFilePath, "")
+		ignoreRules := ignore.Parse(file.ManifestContent, file.TemplateFilePath, helmParser.ChartSource)
 		manifests, err := kparser.Parse(ctx, strings.NewReader(file.ManifestContent), file.TemplateFilePath)
 		if err != nil {
 			return nil, fmt.Errorf("unmarshal yaml: %w", err)
