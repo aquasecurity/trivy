@@ -1,8 +1,6 @@
 package test
 
 import (
-	"io"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -22,14 +20,13 @@ import (
 func TestScanner_ScanFS(t *testing.T) {
 	tests := []struct {
 		name   string
-		fsys   fs.FS
+		target string
 		opts   []options.ScannerOption
 		assert func(t *testing.T, results scan.Results)
 	}{
 		{
-			name: "archived chart",
-			// TODO: Scan the archive directly
-			fsys: fsysForAcrhive(t, filepath.Join("testdata", "mysql-8.8.26.tar")),
+			name:   "archived chart",
+			target: filepath.Join("testdata", "mysql-8.8.26.tar"),
 			assert: assertIds([]string{
 				"KSV-0001", "KSV-0003",
 				"KSV-0011", "KSV-0012", "KSV-0014",
@@ -40,8 +37,8 @@ func TestScanner_ScanFS(t *testing.T) {
 			}),
 		},
 		{
-			name: "chart in directory",
-			fsys: os.DirFS(filepath.Join("testdata", "testchart")),
+			name:   "chart in directory",
+			target: filepath.Join("testdata", "testchart"),
 			assert: func(t *testing.T, results scan.Results) {
 				assertIds([]string{
 					"KSV-0001", "KSV-0003",
@@ -57,13 +54,13 @@ func TestScanner_ScanFS(t *testing.T) {
 				assert.Len(t, ignored, 1)
 
 				assert.Equal(t, "KSV-0018", ignored[0].Rule().ID)
-				assert.Equal(t, "templates/deployment.yaml", ignored[0].Metadata().Range().GetFilename())
+				assert.Equal(t, "templates/templates/deployment.yaml", ignored[0].Metadata().Range().GetFilename())
 			},
 		},
 		{
 			// TODO: The chart name isn't actually empty
-			name: "scanner with missing chart name can recover",
-			fsys: fsysForAcrhive(t, filepath.Join("testdata", "aws-cluster-autoscaler-bad.tar.gz")),
+			name:   "scanner with missing chart name can recover",
+			target: filepath.Join("testdata", "aws-cluster-autoscaler-bad.tar.gz"),
 			assert: assertIds([]string{
 				"KSV-0014", "KSV-0023", "KSV-0030",
 				"KSV-0104", "KSV-0003", "KSV-0018",
@@ -74,8 +71,8 @@ func TestScanner_ScanFS(t *testing.T) {
 			}),
 		},
 		{
-			name: "with custom check",
-			fsys: fsysForAcrhive(t, filepath.Join("testdata", "mysql-8.8.26.tar")),
+			name:   "with custom check",
+			target: filepath.Join("testdata", "mysql-8.8.26.tar"),
 			opts: []options.ScannerOption{
 				rego.WithPolicyNamespaces("user"),
 				rego.WithPolicyReader(strings.NewReader(`package user.kubernetes.ID001
@@ -108,16 +105,16 @@ deny[res] {
 			}),
 		},
 		{
-			name: "template-based name",
-			fsys: os.DirFS(filepath.Join("testdata", "templated-name")),
+			name:   "template-based name",
+			target: filepath.Join("testdata", "templated-name"),
 			opts: []options.ScannerOption{
 				rego.WithEmbeddedLibraries(false),
 				rego.WithEmbeddedPolicies(false),
 			},
 		},
 		{
-			name: "failed result contains the code",
-			fsys: os.DirFS("testdata/simmilar-templates"),
+			name:   "failed result contains the code",
+			target: filepath.Join("testdata", "simmilar-templates"),
 			opts: []options.ScannerOption{
 				rego.WithEmbeddedPolicies(false),
 				rego.WithEmbeddedLibraries(true),
@@ -148,8 +145,8 @@ deny[res] {
 			},
 		},
 		{
-			name: "scan the subchart once",
-			fsys: os.DirFS(filepath.Join("testdata", "with-subchart")),
+			name:   "scan the subchart once",
+			target: filepath.Join("testdata", "with-subchart"),
 			opts: []options.ScannerOption{
 				rego.WithEmbeddedPolicies(false),
 				rego.WithEmbeddedLibraries(true),
@@ -187,7 +184,8 @@ deny[res] {
 			}
 			opts = append(opts, tt.opts...)
 			scanner := helm.New(opts...)
-			results, err := scanner.ScanFS(t.Context(), tt.fsys, ".")
+			fsys := os.DirFS(filepath.Dir(tt.target))
+			results, err := scanner.ScanFS(t.Context(), fsys, filepath.Base(tt.target))
 			require.NoError(t, err)
 
 			if tt.assert != nil {
@@ -207,21 +205,6 @@ func assertIds(expected []string) func(t *testing.T, results scan.Results) {
 		}
 		assert.ElementsMatch(t, expected, errorCodes.Items())
 	}
-}
-
-func fsysForAcrhive(t *testing.T, src string) fs.FS {
-	in, err := os.Open(src)
-	require.NoError(t, err)
-	defer in.Close()
-
-	tmpDir := t.TempDir()
-	out, err := os.Create(filepath.Join(tmpDir, filepath.Base(src)))
-	require.NoError(t, err)
-	defer out.Close()
-
-	_, err = io.Copy(out, in)
-	require.NoError(t, err)
-	return os.DirFS(tmpDir)
 }
 
 func TestScaningNonHelmChartDoesNotCauseError(t *testing.T) {
