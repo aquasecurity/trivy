@@ -69,7 +69,7 @@ type playInner struct {
 	PreTasks        []*Task           `yaml:"pre_tasks"`
 	Tasks           []*Task           `yaml:"tasks"`
 	PostTasks       []*Task           `yaml:"post_tasks"`
-	Vars            Variables         `yaml:"vars"`
+	Vars            Vars              `yaml:"vars"`
 	VarFiles        []string          `yaml:"var_files"`
 }
 
