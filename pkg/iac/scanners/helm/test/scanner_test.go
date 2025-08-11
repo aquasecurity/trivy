@@ -54,7 +54,7 @@ func TestScanner_ScanFS(t *testing.T) {
 				assert.Len(t, ignored, 1)
 
 				assert.Equal(t, "KSV-0018", ignored[0].Rule().ID)
-				assert.Equal(t, "templates/templates/deployment.yaml", ignored[0].Metadata().Range().GetFilename())
+				assert.Equal(t, "testchart/templates/deployment.yaml", ignored[0].Metadata().Range().GetFilename())
 			},
 		},
 		{
