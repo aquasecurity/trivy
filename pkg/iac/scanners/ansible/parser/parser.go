@@ -9,7 +9,6 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/bmatcuk/doublestar/v4"
 	"github.com/samber/lo"
 	"gopkg.in/yaml.v3"
 
@@ -17,8 +16,6 @@ import (
 )
 
 const (
-	ansibleCfgFile = "ansible.cfg"
-
 	ansibleBuiltinPrefix = "ansible.builtin."
 )
 
@@ -73,23 +70,13 @@ func New(fsys fs.FS, root string) *Parser {
 	}
 }
 
-func ParseProjects(fsys fs.FS, dir string) ([]*AnsibleProject, error) {
-	projectPaths, err := findAnsibleProjects(fsys, dir)
+func ParseProject(fsys fs.FS, root string) (*AnsibleProject, error) {
+	parser := New(fsys, root)
+	project, err := parser.Parse()
 	if err != nil {
 		return nil, err
 	}
-
-	var projects []*AnsibleProject
-
-	for _, projectPath := range projectPaths {
-		parser := New(fsys, projectPath)
-		project, err := parser.Parse()
-		if err != nil {
-			return nil, err
-		}
-		projects = append(projects, project)
-	}
-	return projects, nil
+	return project, nil
 }
 
 func (p *Parser) Parse(playbooks ...string) (*AnsibleProject, error) {
@@ -330,7 +317,7 @@ func (p *Parser) resolveRolePath(name string) (string, bool) {
 	}
 
 	for _, rolePath := range rolePaths {
-		if isPathExists(p.fsys, rolePath) {
+		if pathExists(p.fsys, rolePath) {
 			return rolePath, true
 		}
 	}
@@ -454,7 +441,7 @@ func (p *Parser) decodeYAMLFileIgnoreExt(filePath string, dst any) error {
 
 	for _, ext := range extensions {
 		file := filePath + ext
-		if isPathExists(p.fsys, file) {
+		if pathExists(p.fsys, file) {
 			return p.decodeYAMLFile(file, dst)
 		}
 	}
@@ -493,69 +480,7 @@ func (p *Parser) resolvePlaybooksPaths(project *AnsibleProject) ([]string, error
 	return res, nil
 }
 
-func findAnsibleProjects(fsys fs.FS, root string) ([]string, error) {
-	var res []string
-	walkFn := func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if !d.IsDir() {
-			return nil
-		}
-
-		if !isAnsibleProject(fsys, path) {
-			return nil
-		}
-		res = append(res, path)
-		return fs.SkipDir
-	}
-
-	if err := fs.WalkDir(fsys, root, walkFn); err != nil {
-		return nil, err
-	}
-
-	return res, nil
-}
-
-// TODO if there are no directories listed below, then find the playbook among yaml files
-func isAnsibleProject(fsys fs.FS, filePath string) bool {
-	requiredDirs := []string{
-		ansibleCfgFile, "site.yml", "site.yaml", "group_vars", "host_vars", "inventory", "playbooks",
-	}
-	for _, filename := range requiredDirs {
-		if isPathExists(fsys, filepath.Join(filePath, filename)) {
-			return true
-		}
-	}
-
-	if entries, err := doublestar.Glob(fsys, "**/roles/**/{tasks,defaults,vars}"); err == nil && len(entries) > 0 {
-		return true
-	}
-
-	if entries, err := doublestar.Glob(fsys, "*.{.yml,yaml}"); err == nil && len(entries) > 0 {
-		for _, entry := range entries {
-			if isPlaybook(fsys, path.Join(filePath, entry)) {
-				return true
-			}
-		}
-	}
-
-	return false
-}
-
-func isPlaybook(fsys fs.FS, filePath string) bool {
-	f, err := fsys.Open(filePath)
-	if err != nil {
-		return false
-	}
-	defer f.Close()
-
-	var playbook Playbook
-	return yaml.NewDecoder(f).Decode(playbook) != nil
-}
-
-func isPathExists(fsys fs.FS, filePath string) bool {
+func pathExists(fsys fs.FS, filePath string) bool {
 	if filepath.IsAbs(filePath) {
 		if _, err := os.Stat(filePath); err == nil {
 			return true
