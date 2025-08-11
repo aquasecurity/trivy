@@ -1,21 +1,20 @@
 package parser
 
 import (
-	"fmt"
 	"io/fs"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/samber/lo"
+	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 const (
-	includeRoleAction  = "include_role"
-	importRoleAction   = "import_role"
-	includeTasksAction = "include_tasks"
-	importTasksAction  = "import_tasks"
+	ModuleIncludeRole  = "include_role"
+	ModuleImportRole   = "import_role"
+	ModuleIncludeTasks = "include_tasks"
+	ModuleImportTasks  = "import_tasks"
 )
 
 type Variables map[string]any
@@ -50,6 +49,20 @@ type TaskIncludeModule struct {
 	File string `mapstructure:"file"`
 }
 
+// Task represents a single Ansible task.
+//
+// A task defines a single unit of work, which may include running a module,
+// calling a role, or including other task files.
+//
+// Tasks can contain parameters, conditions (when), loops, and other
+// Ansible constructs.
+//
+// Example task:
+//
+//   - name: Install nginx
+//     apt:
+//     name: nginx
+//     state: present
 type Task struct {
 	inner    taskInner
 	rng      Range
@@ -84,7 +97,7 @@ func (t *Task) UnmarshalYAML(node *yaml.Node) error {
 	return nil
 }
 
-func (t *Task) name() string {
+func (t *Task) Name() string {
 	return t.inner.Name
 }
 
@@ -121,7 +134,7 @@ func (t *Task) getModule(name string) (Module, bool) {
 	}, true
 }
 
-func (t *Task) updateMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) {
+func (t *Task) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) {
 	t.metadata = iacTypes.NewMetadata(
 		iacTypes.NewRange(path, t.rng.startLine, t.rng.endLine, "", fsys),
 		"task", // TODO add reference
@@ -129,17 +142,73 @@ func (t *Task) updateMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string
 	t.metadata.SetParentPtr(parent)
 
 	for _, attr := range t.raw {
+		// TODO: parse null attributes
+		if attr == nil {
+			continue
+		}
 		attr.updateMetadata(fsys, &t.metadata, path)
 	}
 }
 
-// isModuleFreeForm determines whether a module parameter is defined as a free-form
-// string value within the task's raw data.
+// hasModuleKey checks if the task has any of the given module keys in its raw map.
+func (t *Task) hasModuleKey(modules []string) bool {
+	for _, module := range modules {
+		if _, exists := t.raw[module]; exists {
+			return true
+		}
+	}
+	return false
+}
+
+// isTaskInclude returns true if the task includes or imports other tasks (task include modules).
+func (t *Task) isTaskInclude() bool {
+	return t.hasModuleKey(withBuiltinPrefix(ModuleImportTasks, ModuleIncludeTasks))
+}
+
+// isRoleInclude returns true if the task includes or imports a role (role include modules).
+func (t *Task) isRoleInclude() bool {
+	return t.hasModuleKey(withBuiltinPrefix(ModuleImportRole, ModuleIncludeRole))
+}
+
+// decodeModuleParams searches for the first module name from the list (with or without builtin prefix)
+// present in the task's raw data and decodes its parameters into dst.
 //
-// Example:
-// - include_tasks: file.yml
-// TODO: add test
-func (t *Task) isModuleFreeForm(moduleName string) (string, bool) {
+// Supports both free-form string syntax and map-style syntax for module parameters.
+func (t *Task) decodeModuleParams(modules []string, dst any) error {
+	rawModule := make(map[string]string)
+	for _, key := range modules {
+		if val, ok := t.getModuleFreeFormParam(key); ok {
+			rawModule["file"] = val
+			break
+		} else if val, ok := t.getModule(key); ok {
+			rawModule = val.toStringMap()
+			break
+		}
+	}
+
+	if len(rawModule) == 0 {
+		return xerrors.New("module data not found")
+	}
+
+	if err := mapstructure.Decode(rawModule, &dst); err != nil {
+		return xerrors.Errorf("decode module: %w", err)
+	}
+
+	return nil
+}
+
+// getModuleFreeFormParam checks if the module parameter is specified as a free-form string
+// in the task's raw data, returning the string value if present.
+//
+// A free-form parameter means the module is used with a single string argument
+// instead of a key-value map. For example:
+//
+//   - include_tasks: file.yml
+//
+// Here, "file.yml" is a free-form string parameter passed directly to the module.
+//
+// TODO: add unit test for this case
+func (t *Task) getModuleFreeFormParam(moduleName string) (string, bool) {
 	param, exists := t.raw[moduleName]
 	if !exists {
 		return "", false
@@ -150,68 +219,4 @@ func (t *Task) isModuleFreeForm(moduleName string) (string, bool) {
 	}
 
 	return "", false
-}
-
-func (t *Task) actionOneOf(actions []string) bool {
-	return lo.SomeBy(actions, func(action string) bool {
-		_, exists := t.raw[action]
-		return exists
-	})
-}
-
-func (t *Task) isTaskInclude() bool {
-	return t.actionOneOf(withBuiltinPrefix(importTasksAction, includeTasksAction))
-}
-
-func (t *Task) isRoleInclude() bool {
-	return t.actionOneOf(withBuiltinPrefix(importRoleAction, includeRoleAction))
-}
-
-func (t *Task) getTaskInclude() (TaskIncludeModule, error) {
-	var module TaskIncludeModule
-	if err := t.getIncludeModule([]string{includeTasksAction, importTasksAction}, &module); err != nil {
-		return TaskIncludeModule{}, err
-	}
-	return module, nil
-}
-
-func (t *Task) getRoleInclude() (RoleIncludeModule, error) {
-	var module RoleIncludeModule
-	if err := t.getIncludeModule([]string{includeRoleAction, importRoleAction}, &module); err != nil {
-		return RoleIncludeModule{}, err
-	}
-	return module, nil
-}
-
-func (t *Task) getIncludeModule(actions []string, dst any) error {
-	rawModule := make(map[string]string)
-	for _, action := range withBuiltinPrefix(actions...) {
-		if val, ok := t.isModuleFreeForm(action); ok {
-			rawModule["file"] = val
-		} else if val, ok := t.getModule(action); ok {
-			rawModule = val.toStringMap()
-		}
-	}
-
-	if err := mapstructure.Decode(rawModule, &dst); err != nil {
-		return fmt.Errorf("failed to decode include module: %w", err)
-	}
-
-	return nil
-}
-
-func (t *Task) occurrences() []string {
-	var occurrences []string
-
-	mod := &t.metadata
-
-	for {
-		mod = mod.Parent()
-		if mod == nil {
-			break
-		}
-		parentRange := mod.Range()
-		occurrences = append(occurrences, parentRange.GetFilename())
-	}
-	return occurrences
 }

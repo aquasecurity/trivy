@@ -16,7 +16,6 @@ type Role struct {
 
 	opt LoadRoleOptions
 
-	// tasks    []*Task
 	tasks    map[string]Tasks
 	defaults Variables
 	vars     Variables
@@ -24,7 +23,7 @@ type Role struct {
 	directDeps []*Role
 }
 
-func (r *Role) updateMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) {
+func (r *Role) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) {
 	r.metadata = iacTypes.NewMetadata(
 		iacTypes.NewRange(path, 0, 0, "", fsys), // TORO range
 		"role",
