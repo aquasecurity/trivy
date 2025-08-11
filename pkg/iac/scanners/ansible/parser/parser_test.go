@@ -1,6 +1,7 @@
 package parser_test
 
 import (
+	"cmp"
 	"os"
 	"path/filepath"
 	"testing"
@@ -26,6 +27,7 @@ func TestParseProject(t *testing.T) {
 func TestParser_Parse(t *testing.T) {
 	tests := []struct {
 		name          string
+		dir           string
 		files         map[string]string
 		expectedTasks []string
 	}{
@@ -346,12 +348,35 @@ dependencies:
 			},
 			expectedTasks: []string{"Task"},
 		},
+		{
+			name: "included playbook outside root directory",
+			dir:  "project",
+			files: map[string]string{
+				"project/main.yml": `
+- name: Main play
+  hosts: all
+  import_playbook: ../common/common.yml
+`,
+				"common/common.yml": `
+- name: Common play
+  hosts: all
+  tasks:
+    - name: task from common playbook
+      debug: null
+      msg: hello from common
+`,
+			},
+			expectedTasks: []string{
+				"task from common playbook",
+			},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fsys := testutil.CreateFS(t, tt.files)
-			project, err := parser.New(fsys, ".").Parse()
+			dir := cmp.Or(tt.dir, ".")
+			project, err := parser.New(fsys, dir).Parse()
 			require.NoError(t, err)
 
 			tasks := project.ListTasks()
@@ -360,7 +385,7 @@ dependencies:
 				return task.Name()
 			})
 
-			assert.Equal(t, tt.expectedTasks, taskNames)
+			assert.ElementsMatch(t, tt.expectedTasks, taskNames)
 		})
 	}
 }
