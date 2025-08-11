@@ -17,8 +17,6 @@ const (
 	ModuleImportTasks  = "import_tasks"
 )
 
-type Variables map[string]any
-
 type Tasks []*Task
 
 func (t Tasks) GetModules(names ...string) []Module {
@@ -74,9 +72,9 @@ type Task struct {
 }
 
 type taskInner struct {
-	Name  string    `yaml:"name"`
-	Block []*Task   `yaml:"block"`
-	Vars  Variables `yaml:"vars"`
+	Name  string  `yaml:"name"`
+	Block []*Task `yaml:"block"`
+	Vars  Vars    `yaml:"vars"`
 }
 
 func (t *Task) UnmarshalYAML(node *yaml.Node) error {

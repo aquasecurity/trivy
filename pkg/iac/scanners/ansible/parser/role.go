@@ -14,11 +14,9 @@ type Role struct {
 	metadata iacTypes.Metadata
 	play     *Play
 
-	opt LoadRoleOptions
-
 	tasks    map[string]Tasks
-	defaults Variables
-	vars     Variables
+	defaults map[string]Vars
+	vars     map[string]Vars
 
 	directDeps []*Role
 }
@@ -31,16 +29,26 @@ func (r *Role) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) 
 	r.metadata.SetParentPtr(parent)
 }
 
-func (r *Role) getTasks() Tasks {
+func (r *Role) getTasks(tasksFile string) Tasks {
 	var tasks Tasks
 
 	for _, dep := range r.directDeps {
-		tasks = append(tasks, dep.getTasks()...)
+		// TODO: find out how direct dependency tasks are loaded
+		tasks = append(tasks, dep.getTasks("main")...)
 	}
 
-	tasks = append(tasks, r.tasks[r.opt.TasksFile]...)
+	// TODO: check if the task file exists
+	tasks = append(tasks, r.tasks[tasksFile]...)
 
 	return tasks
+}
+
+func (r *Role) effectiveVars(defaultsFrom, varsFrom string) Vars {
+	// TODO: implement variable resolution
+	defaults := r.defaults[defaultsFrom]
+	vars := r.vars[varsFrom]
+	effectiveVars := mergeVars(defaults, vars)
+	return effectiveVars
 }
 
 type RoleMeta struct {
