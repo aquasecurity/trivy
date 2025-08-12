@@ -1,9 +1,10 @@
 package parser
 
 import (
+	"errors"
 	"io/fs"
+	"log"
 
-	"github.com/mitchellh/mapstructure"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
@@ -17,34 +18,12 @@ const (
 	ModuleImportTasks  = "import_tasks"
 )
 
-type Tasks []*Task
-
-func (t Tasks) GetModules(names ...string) []Module {
-	var modules []Module
-
-	for _, task := range t {
-		for _, name := range names {
-			if module, exists := task.getModule(name); exists {
-				modules = append(modules, module)
-			}
-		}
-	}
-
-	return modules
-}
-
 // RoleIncludeModule represents the "include_role" or "import_role" module
 type RoleIncludeModule struct {
-	Name         string `mapstructure:"name"`
-	TasksFrom    string `mapstructure:"tasks_from"`
-	DefaultsFrom string `mapstructure:"defaults_from"`
-	VarsFrom     string `mapstructure:"vars_from"`
-	Public       bool   `mapstructure:"public"`
-}
-
-// TaskIncludeModule represents the "include_tasks" or "import_tasks" module
-type TaskIncludeModule struct {
-	File string `mapstructure:"file"`
+	Name         string
+	TasksFrom    string
+	DefaultsFrom string
+	VarsFrom     string
 }
 
 // Task represents a single Ansible task.
@@ -66,7 +45,7 @@ type Task struct {
 	rng      Range
 	metadata iacTypes.Metadata
 
-	raw  map[string]*Attribute
+	raw  map[string]*Node
 	role *Role
 	play *Play
 }
@@ -80,7 +59,7 @@ type taskInner struct {
 func (t *Task) UnmarshalYAML(node *yaml.Node) error {
 	t.rng = rangeFromNode(node)
 
-	var rawMap map[string]*Attribute
+	var rawMap map[string]*Node
 	if err := node.Decode(&rawMap); err != nil {
 		return err
 	}
@@ -95,11 +74,8 @@ func (t *Task) UnmarshalYAML(node *yaml.Node) error {
 	return nil
 }
 
-func (t *Task) Name() string {
-	return t.inner.Name
-}
-
 func (t *Task) path() string {
+	// TODO: set the path explicitly when creating the task
 	return t.metadata.Range().GetFilename()
 }
 
@@ -114,24 +90,6 @@ func (t *Task) isBlock() bool {
 	return len(t.inner.Block) > 0
 }
 
-func (t *Task) getModule(name string) (Module, bool) {
-	val, exists := t.raw[name]
-	if !exists {
-		return Module{}, false
-	}
-
-	if !val.IsMap() {
-		return Module{}, false
-	}
-
-	params := val.AsMap()
-
-	return Module{
-		metadata: val.Metadata(),
-		attrs:    params,
-	}, true
-}
-
 func (t *Task) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) {
 	t.metadata = iacTypes.NewMetadata(
 		iacTypes.NewRange(path, t.rng.startLine, t.rng.endLine, "", fsys),
@@ -139,12 +97,12 @@ func (t *Task) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) 
 	)
 	t.metadata.SetParentPtr(parent)
 
-	for _, attr := range t.raw {
+	for _, n := range t.raw {
 		// TODO: parse null attributes
-		if attr == nil {
+		if n == nil {
 			continue
 		}
-		attr.updateMetadata(fsys, &t.metadata, path)
+		n.initMetadata(fsys, &t.metadata, path)
 	}
 }
 
@@ -168,53 +126,75 @@ func (t *Task) isRoleInclude() bool {
 	return t.hasModuleKey(withBuiltinPrefix(ModuleImportRole, ModuleIncludeRole))
 }
 
-// decodeModuleParams searches for the first module name from the list (with or without builtin prefix)
-// present in the task's raw data and decodes its parameters into dst.
-//
-// Supports both free-form string syntax and map-style syntax for module parameters.
-func (t *Task) decodeModuleParams(modules []string, dst any) error {
-	rawModule := make(map[string]string)
-	for _, key := range modules {
-		if val, ok := t.getModuleFreeFormParam(key); ok {
-			rawModule["file"] = val
-			break
-		} else if val, ok := t.getModule(key); ok {
-			rawModule = val.toStringMap()
-			break
-		}
+func (t *Task) resolved(vars Vars) (*ResolvedTask, error) {
+	resolved := &ResolvedTask{
+		Name:     t.inner.Name,
+		Metadata: t.metadata,
+		Vars:     vars,
+		Range:    t.rng,
+		Fields:   t.raw,
 	}
 
-	if len(rawModule) == 0 {
-		return xerrors.New("module data not found")
-	}
-
-	if err := mapstructure.Decode(rawModule, &dst); err != nil {
-		return xerrors.Errorf("decode module: %w", err)
-	}
-
-	return nil
+	return resolved, nil
 }
 
-// getModuleFreeFormParam checks if the module parameter is specified as a free-form string
-// in the task's raw data, returning the string value if present.
-//
-// A free-form parameter means the module is used with a single string argument
-// instead of a key-value map. For example:
-//
-//   - include_tasks: file.yml
-//
-// Here, "file.yml" is a free-form string parameter passed directly to the module.
-//
-// TODO: add unit test for this case
-func (t *Task) getModuleFreeFormParam(moduleName string) (string, bool) {
-	param, exists := t.raw[moduleName]
-	if !exists {
-		return "", false
+type ResolvedTasks []*ResolvedTask
+
+func (t ResolvedTasks) GetModules(keys ...string) []Module {
+	var modules []Module
+
+	for _, task := range t {
+		m, err := task.ResolveModule(keys...)
+		if err != nil {
+			if errors.Is(err, ErrModuleNotFound) {
+				continue
+			}
+			// TODO: use pkg/log
+			log.Printf("Failed to find module: %v", err)
+			continue
+		}
+		modules = append(modules, m)
 	}
 
-	if param.IsString() {
-		return *param.AsString(), true
-	}
+	return modules
+}
 
-	return "", false
+// ResolvedTask represents an Ansible task with all variables resolved.
+//
+// It holds only the essential data needed for execution and
+// ensures the original Task remains unmodified.
+type ResolvedTask struct {
+	Name     string
+	Fields   map[string]*Node
+	Vars     Vars
+	Metadata iacTypes.Metadata
+	Range    Range
+}
+
+var ErrModuleNotFound = errors.New("module not found")
+
+// ResolveModule searches for the first module from given keys in task fields,
+// renders its parameters using task variables, and returns the module.
+// The module can be either structured (map of parameters) or free-form (string).
+// Returns an error if no module is found or if rendering fails.
+func (t *ResolvedTask) ResolveModule(keys ...string) (Module, error) {
+	for _, key := range keys {
+		f, exists := t.Fields[key]
+		if !exists {
+			continue
+		}
+
+		// TODO: cache the module?
+		rendered, err := f.Render(t.Vars)
+		if err != nil {
+			return Module{}, xerrors.Errorf("render module parameters: %w", err)
+		}
+		switch v := rendered.val.(type) {
+		case map[string]*Node:
+			return Module{metadata: rendered.metadata, params: v}, nil
+		case string:
+			return Module{metadata: rendered.metadata, freeForm: v}, nil
+		}
+	}
+	return Module{}, ErrModuleNotFound
 }

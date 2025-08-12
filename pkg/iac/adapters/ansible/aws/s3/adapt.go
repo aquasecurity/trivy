@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/parser"
 )
 
-func Adapt(tasks parser.Tasks) s3.S3 {
+func Adapt(tasks parser.ResolvedTasks) s3.S3 {
 	a := &adapter{
 		tasks:     tasks,
 		bucketMap: make(map[string]*s3.Bucket),

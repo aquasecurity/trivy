@@ -9,25 +9,27 @@ import (
 type Module struct {
 	metadata iacTypes.Metadata
 
-	attrs map[string]*Attribute
-}
+	// Value for a free-form call, for example, "file.yml" for - include_tasks: file.yml
+	freeForm string
 
-func (m *Module) toStringMap() map[string]string {
-	res := make(map[string]string)
-	for k, v := range m.attrs {
-		if v.IsString() {
-			res[k] = *v.AsString()
-		}
-	}
-	return res
+	params map[string]*Node
 }
 
 func (m *Module) Metadata() iacTypes.Metadata {
 	return m.metadata
 }
 
+func (m *Module) IsFreeForm() bool {
+	return len(m.params) == 0 && m.freeForm != ""
+}
+
 func (m *Module) GetAttr(name string) *Attribute {
-	return m.attrs[name]
+	attr, exists := m.params[name]
+	if !exists || attr == nil {
+		return nil
+	}
+
+	return &Attribute{metadata: attr.metadata, val: attr.val}
 }
 
 func (m *Module) GetNestedAttr(path string) *Attribute {
@@ -48,30 +50,32 @@ func (m *Module) GetNestedAttr(path string) *Attribute {
 
 func (m *Module) GetBoolAttr(name string, defValue ...bool) iacTypes.BoolValue {
 	def := iacTypes.BoolDefault(firstOrDefault(defValue), m.metadata)
-	attr, exists := m.attrs[name]
+	attr, exists := m.params[name]
 	if !exists {
 		return def
 	}
-	val := attr.AsBool()
-	if val == nil {
+
+	boolNode, ok := attr.val.(bool)
+	if !ok {
 		return def
 	}
 
-	return iacTypes.Bool(*val, m.metadata)
+	return iacTypes.Bool(boolNode, m.metadata)
 }
 
 func (m *Module) GetStringAttr(name string, defValue ...string) iacTypes.StringValue {
 	def := iacTypes.StringDefault(firstOrDefault(defValue), m.metadata)
-	attr, exists := m.attrs[name]
+	attr, exists := m.params[name]
 	if !exists {
 		return def
 	}
-	val := attr.AsString()
-	if val == nil {
+
+	strNode, ok := attr.val.(string)
+	if !ok {
 		return def
 	}
 
-	return iacTypes.String(*val, m.metadata)
+	return iacTypes.String(strNode, m.metadata)
 }
 
 func firstOrDefault[T any](a []T) T {
