@@ -179,16 +179,31 @@ func (c *IgnoreConfig) MatchSecret(secretID, filePath string) *IgnoreFinding {
 }
 
 func (c *IgnoreConfig) MatchLicense(licenseID, filePath string) *IgnoreFinding {
-	if b := expression.ValidateSPDXLicense(licenseID); !b {
-		log.Debug("Invalid SPDX license", log.String("license", licenseID))
-		return nil
-	}
-
 	if f := c.Licenses.Match(licenseID, filePath, nil); f != nil {
 		return f
 	}
 
-	expr, err := expression.Normalize(licenseID)
+	var licenseNotMatch bool
+	matchLicenses := func(expr expression.Expression) expression.Expression {
+		// If one of parts of the expression doesn't match - skip check for the rest of the expression
+		if licenseNotMatch {
+			return expr
+		}
+
+		if e, ok := expr.(expression.CompoundExpr); ok && e.Conjunction() != expression.TokenWith {
+			// Check only license with `WITH` operator as single license
+			if e.Conjunction() != expression.TokenWith {
+				return e
+			}
+		}
+
+		if !expr.IsSPDXExpression() || c.Licenses.Match(expr.String(), filePath, nil) == nil {
+			licenseNotMatch = true
+		}
+		return expr
+	}
+
+	expr, err := expression.Normalize(licenseID, matchLicenses)
 	if err != nil {
 		return nil
 	}
@@ -196,17 +211,13 @@ func (c *IgnoreConfig) MatchLicense(licenseID, filePath string) *IgnoreFinding {
 	var licenseIDs []string
 	extractFromExpression(expr, &licenseIDs)
 
-	if len(licenseIDs) > 1 {
-		for _, id := range licenseIDs {
-			if c.Licenses.Match(id, filePath, nil) == nil {
-				return nil
-			}
-		}
+	if !licenseNotMatch {
 		return &IgnoreFinding{
 			ID:        licenseID,
 			Statement: "All license components are individually ignored",
 		}
 	}
+
 	return nil
 }
 
