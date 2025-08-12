@@ -387,7 +387,7 @@ licenses:
 ```
 
 !!! info "Enhanced License Expression Support"
-Trivy now supports filtering complex SPDX license expressions including:
+    Trivy now supports filtering complex SPDX license expressions including:
 
     - **Compound expressions** with AND/OR operators: `MIT AND GPL-2.0-or-later`
     - **License exceptions** with WITH operator: `Apache-2.0 WITH LLVM-exception`
