@@ -29,7 +29,7 @@ func TestParseIgnoreFile(t *testing.T) {
 		assert.Len(t, got.Vulnerabilities, 5)
 		assert.Len(t, got.Misconfigurations, 3)
 		assert.Len(t, got.Secrets, 3)
-		assert.Len(t, got.Licenses, 3)
+		assert.Len(t, got.Licenses, 5)
 	})
 
 	t.Run("empty YAML file passed", func(t *testing.T) {
