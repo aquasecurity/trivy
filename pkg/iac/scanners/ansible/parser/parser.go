@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"cmp"
 	"errors"
 	"io/fs"
 	"os"
@@ -31,7 +32,7 @@ type AnsibleProject struct {
 	path string
 
 	cfg   AnsibleConfig
-	tasks Tasks
+	tasks []*ResolvedTask
 }
 
 func (p *AnsibleProject) Path() string {
@@ -39,7 +40,7 @@ func (p *AnsibleProject) Path() string {
 }
 
 // TODO(nikita): some tasks do not contain metadata
-func (p *AnsibleProject) ListTasks() Tasks {
+func (p *AnsibleProject) ListTasks() ResolvedTasks {
 	return p.tasks
 }
 
@@ -52,7 +53,7 @@ type Parser struct {
 
 	// resolvedTasks caches the fully expanded list of tasks for each playbook,
 	// keyed by the playbook's file path to avoid redundant parsing and resolution.
-	resolvedTasks map[string]Tasks
+	resolvedTasks map[string][]*ResolvedTask
 
 	// roleCache stores loaded role data keyed by role name,
 	// enabling reuse of roles across multiple playbooks without repeated loading.
@@ -65,7 +66,7 @@ func New(fsys fs.FS, root string) *Parser {
 		root:   root,
 		logger: log.WithPrefix("ansible parser"),
 
-		resolvedTasks: make(map[string]Tasks),
+		resolvedTasks: make(map[string][]*ResolvedTask),
 		roleCache:     make(map[string]*Role),
 	}
 }
@@ -115,7 +116,7 @@ func (p *Parser) initProject(root string) (*AnsibleProject, error) {
 	return project, nil
 }
 
-func (p *Parser) parsePlaybooks(_ *AnsibleProject, paths []string) (Tasks, error) {
+func (p *Parser) parsePlaybooks(_ *AnsibleProject, paths []string) ([]*ResolvedTask, error) {
 	playbooks := make(map[string]*Playbook)
 
 	for _, filePath := range paths {
@@ -138,8 +139,9 @@ func (p *Parser) parsePlaybooks(_ *AnsibleProject, paths []string) (Tasks, error
 
 	// Resolve tasks from entrypoint playbooks — those not only imported/included by others.
 	// This ensures processing of root playbooks that serve as execution starting points.
-	var allTasks Tasks
+	var allTasks []*ResolvedTask
 	for _, filePath := range entryPoints {
+		// TODO: pass invertory variables
 		tasks, err := p.resolvePlaybook(nil, nil, filePath, playbooks)
 		if err != nil {
 			return nil, xerrors.Errorf("resolve playbook: %w", err)
@@ -152,6 +154,7 @@ func (p *Parser) parsePlaybooks(_ *AnsibleProject, paths []string) (Tasks, error
 
 func (p *Parser) loadPlaybook(filePath string) (*Playbook, error) {
 	var plays []*Play
+	// TODO: parse templates of the following type without quotation marks: {{ public_access }}
 	if err := p.decodeYAMLFile(filePath, &plays); err != nil {
 		return nil, xerrors.Errorf("decode YAML file: %w", err)
 	}
@@ -187,7 +190,7 @@ func findEntryPoints(playbooks map[string]*Playbook) []string {
 // resolvePlaybook recursively expands tasks, roles, and included playbooks within the given playbook.
 func (p *Parser) resolvePlaybook(
 	parent *iacTypes.Metadata, parentVars Vars, filePath string, playbooks map[string]*Playbook,
-) (Tasks, error) {
+) ([]*ResolvedTask, error) {
 	pb, exists := playbooks[filePath]
 	if !exists {
 		// Attempt to load a playbook outside the scan directory
@@ -204,7 +207,7 @@ func (p *Parser) resolvePlaybook(
 		return cached, nil
 	}
 
-	var tasks Tasks
+	var tasks []*ResolvedTask
 	for _, play := range pb.Plays {
 
 		// Initializing the metadata of the play and its nested elements
@@ -243,14 +246,16 @@ func (p *Parser) resolvePlaybook(
 			// in its internal directories (tasks, defaults, vars, etc.).
 			role, err := p.loadRole(&roleDef.metadata, play, roleDef.name())
 
-			roleVars := mergeVars(parentVars, role.effectiveVars("main", "main"))
+			roleVars := mergeVars(playVars, role.effectiveVars("main", "main"))
 			if err != nil {
 				return nil, xerrors.Errorf("load role %q: %w", roleDef.name(), err)
 			}
 			for _, roleTask := range role.getTasks("main") {
-				// TODO: do not mutate variables
-				roleTask.inner.Vars = mergeVars(roleVars, roleTask.inner.Vars)
-				tasks = append(tasks, roleTask)
+				childrenTasks, err := p.expandTask(roleVars, roleTask)
+				if err != nil {
+					return nil, err
+				}
+				tasks = append(tasks, childrenTasks...)
 			}
 		}
 
@@ -294,7 +299,7 @@ func (p *Parser) loadRole(parent *iacTypes.Metadata, play *Play, roleName string
 	r := &Role{
 		name:  roleName,
 		play:  play,
-		tasks: make(map[string]Tasks),
+		tasks: make(map[string][]*Task),
 	}
 	r.initMetadata(p.fsys, parent, rolePath)
 
@@ -346,10 +351,10 @@ func (p *Parser) loadVarsFromDir(dir string) (map[string]Vars, error) {
 	for _, entry := range entries {
 		var vars Vars
 		path := path.Join(dir, entry.Name())
-		if err := p.decodeYAMLFileIgnoreExt(path, &vars); err != nil {
+		if err := p.decodeYAMLFile(path, &vars); err != nil {
 			return nil, xerrors.Errorf("load vars from %q: %w", path, err)
 		}
-		result[entry.Name()] = vars
+		result[cutExtension(entry.Name())] = vars
 	}
 
 	return result, nil
@@ -395,46 +400,54 @@ func (p *Parser) resolveRolePath(name string) (string, bool) {
 	return "", false
 }
 
-func (p *Parser) loadTasks(parent *iacTypes.Metadata, role *Role, filePath string) (Tasks, error) {
+func (p *Parser) loadTasks(parent *iacTypes.Metadata, role *Role, filePath string) ([]*Task, error) {
 
-	var tasks Tasks
+	var tasks []*Task
 	filePath = cutExtension(filePath)
 	if err := p.decodeYAMLFileIgnoreExt(filePath, &tasks); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return nil, xerrors.Errorf("decode tasks file %q: %w", filePath, err)
 	}
 
-	var allTasks Tasks
+	var allTasks []*Task
 	for _, roleTask := range tasks {
 		roleTask.initMetadata(p.fsys, parent, filePath)
 		roleTask.role = role
 		// pass parent variables
-		children, err := p.expandTask(nil, roleTask)
-		if err != nil {
-			return nil, err
-		}
-		allTasks = append(allTasks, children...)
+		allTasks = append(allTasks, roleTask)
 	}
 	return allTasks, nil
 }
 
 // expandTask dispatches task expansion based on task type (block, include, role).
-// See expandBlockTasks, expandTaskInclude, expandRoleInclude for details.
-func (p *Parser) expandTask(parentVars Vars, t *Task) (Tasks, error) {
+func (p *Parser) expandTask(parentVars Vars, t *Task) ([]*ResolvedTask, error) {
 
 	effectiveVars := mergeVars(parentVars, t.inner.Vars)
 
 	switch {
 	case t.isBlock():
-		return p.expandBlockTasks(effectiveVars, t)
+		tasks, err := p.expandBlockTasks(effectiveVars, t)
+		if err != nil {
+			return nil, xerrors.Errorf("expand block tasks: %w", err)
+		}
+		return tasks, nil
 	case t.isTaskInclude():
-		return p.expandTaskInclude(effectiveVars, t)
+		tasks, err := p.expandTaskInclude(effectiveVars, t)
+		if err != nil {
+			return nil, xerrors.Errorf("expand task incldue: %w", err)
+		}
+		return tasks, nil
 	case t.isRoleInclude():
-		return p.expandRoleInclude(effectiveVars, t)
+		tasks, err := p.expandRoleInclude(effectiveVars, t)
+		if err != nil {
+			return nil, xerrors.Errorf("expand role include: %w", err)
+		}
+		return tasks, nil
 	default:
-		// A regular task
-		// TODO: do not mutate variables
-		t.inner.Vars = effectiveVars
-		return Tasks{t}, nil
+		resolved, err := t.resolved(effectiveVars)
+		if err != nil {
+			return nil, xerrors.Errorf("resolve task: %w", err)
+		}
+		return []*ResolvedTask{resolved}, nil
 	}
 }
 
@@ -442,8 +455,8 @@ func (p *Parser) expandTask(parentVars Vars, t *Task) (Tasks, error) {
 //
 // Blocks group multiple tasks under a single block in a playbook.
 // See https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_blocks.html
-func (p *Parser) expandBlockTasks(parentVars Vars, t *Task) (Tasks, error) {
-	var res []*Task
+func (p *Parser) expandBlockTasks(parentVars Vars, t *Task) ([]*ResolvedTask, error) {
+	var res []*ResolvedTask
 	for _, task := range t.inner.Block {
 		children, err := p.expandTask(parentVars, task)
 		if err != nil {
@@ -458,15 +471,32 @@ func (p *Parser) expandBlockTasks(parentVars Vars, t *Task) (Tasks, error) {
 //
 // Supports Ansible modules 'include_tasks' and 'import_tasks'.
 // See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/include_tasks_module.html
-func (p *Parser) expandTaskInclude(parentVars Vars, task *Task) (Tasks, error) {
-	var module TaskIncludeModule
-	moduleNames := withBuiltinPrefix(ModuleIncludeTasks, ModuleImportTasks)
-	if err := task.decodeModuleParams(moduleNames, &module); err != nil {
-		return nil, xerrors.Errorf("decode task include module: %w", err)
+func (p *Parser) expandTaskInclude(parentVars Vars, task *Task) ([]*ResolvedTask, error) {
+	effectiveVars := mergeVars(parentVars, task.inner.Vars)
+	resolvedTask, err := task.resolved(effectiveVars)
+	if err != nil {
+		return nil, xerrors.Errorf("resolve task: %w", err)
+	}
+
+	moduleKeys := withBuiltinPrefix(ModuleIncludeTasks, ModuleImportTasks)
+	m, err := resolvedTask.ResolveModule(moduleKeys...)
+	if err != nil {
+		return nil, xerrors.Errorf("resolving module for keys %v: %w", moduleKeys, err)
+	}
+
+	var taskPath string
+	if m.IsFreeForm() {
+		taskPath = m.freeForm
+	} else {
+		taskPath = getStringParam(m, "file")
+	}
+
+	if taskPath == "" {
+		return nil, xerrors.New("task file is empty")
 	}
 
 	// TODO: the task path can be absolute
-	tasksFile := filepath.Join(filepath.Dir(task.path()), module.File)
+	tasksFile := path.Join(path.Dir(task.path()), filepath.ToSlash(taskPath))
 
 	// TODO: render Jinja2 template
 	// Example:
@@ -477,7 +507,7 @@ func (p *Parser) expandTaskInclude(parentVars Vars, task *Task) (Tasks, error) {
 		return nil, xerrors.Errorf("load tasks from %q: %w", tasksFile, err)
 	}
 
-	var allTasks []*Task
+	var allTasks []*ResolvedTask
 
 	for _, loadedTask := range loadedTasks {
 		children, err := p.expandTask(parentVars, loadedTask)
@@ -493,10 +523,38 @@ func (p *Parser) expandTaskInclude(parentVars Vars, task *Task) (Tasks, error) {
 //
 // Supports Ansible modules 'include_role' and 'import_role'.
 // See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/include_role_module.html
-func (p *Parser) expandRoleInclude(parentVars Vars, task *Task) (Tasks, error) {
+func (p *Parser) expandRoleInclude(parentVars Vars, task *Task) ([]*ResolvedTask, error) {
+	effectiveVars := mergeVars(parentVars, task.inner.Vars)
+	resolvedTask, err := task.resolved(effectiveVars)
+	if err != nil {
+		return nil, xerrors.Errorf("resolve task: %w", err)
+	}
+	moduleKeys := withBuiltinPrefix(ModuleIncludeRole, ModuleImportRole)
+	m, err := resolvedTask.ResolveModule(moduleKeys...)
+	if err != nil {
+		return nil, xerrors.Errorf("resolving module for keys %v: %w", moduleKeys, err)
+	}
+
 	var module RoleIncludeModule
-	if err := task.decodeModuleParams(withBuiltinPrefix(ModuleIncludeRole, ModuleImportRole), &module); err != nil {
-		return nil, xerrors.Errorf("decode role include module: %w", err)
+
+	if m.IsFreeForm() {
+		module = RoleIncludeModule{
+			Name:         m.freeForm,
+			TasksFrom:    "main",
+			VarsFrom:     "main",
+			DefaultsFrom: "main",
+		}
+	} else {
+		module = RoleIncludeModule{
+			Name:         getStringParam(m, "name"),
+			TasksFrom:    cmp.Or(getStringParam(m, "tasks_from"), "main"),
+			VarsFrom:     cmp.Or(getStringParam(m, "vars_from"), "main"),
+			DefaultsFrom: cmp.Or(getStringParam(m, "defaults_from"), "main"),
+		}
+	}
+
+	if module.Name == "" {
+		return nil, xerrors.New("role name is empty")
 	}
 
 	// When using include_role/import_role, custom file names or paths can be specified
@@ -510,7 +568,7 @@ func (p *Parser) expandRoleInclude(parentVars Vars, task *Task) (Tasks, error) {
 
 	roleVars := mergeVars(parentVars, role.effectiveVars(module.DefaultsFrom, module.VarsFrom))
 
-	var allTasks []*Task
+	var allTasks []*ResolvedTask
 
 	for _, roleTask := range role.getTasks(module.TasksFrom) {
 		// TODO: do not update the parent in the metadata here, as the dependency chain may be lost
@@ -524,6 +582,15 @@ func (p *Parser) expandRoleInclude(parentVars Vars, task *Task) (Tasks, error) {
 	}
 
 	return allTasks, nil
+}
+
+func getStringParam(m Module, paramKey string) string {
+	if f, exists := m.params[paramKey]; exists {
+		if s, ok := f.val.(string); ok {
+			return s
+		}
+	}
+	return ""
 }
 
 func (p *Parser) decodeYAMLFileIgnoreExt(filePath string, dst any) error {

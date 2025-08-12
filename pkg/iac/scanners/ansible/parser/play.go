@@ -31,7 +31,7 @@ import (
 type Playbook struct {
 	Path  string
 	Plays []*Play
-	Tasks Tasks
+	Tasks []*Task
 }
 
 func (pb *Playbook) resolveIncludedPath(incPath string) string {
@@ -139,8 +139,8 @@ func (p *Play) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) 
 	}
 }
 
-func (p *Play) listTasks() Tasks {
-	res := make(Tasks, 0, len(p.inner.PreTasks)+len(p.inner.Tasks)+len(p.inner.PostTasks))
+func (p *Play) listTasks() []*Task {
+	res := make([]*Task, 0, len(p.inner.PreTasks)+len(p.inner.Tasks)+len(p.inner.PostTasks))
 	res = append(res, p.inner.PreTasks...)
 	res = append(res, p.inner.Tasks...)
 	res = append(res, p.inner.PostTasks...)

@@ -7,7 +7,7 @@ import (
 )
 
 type adapter struct {
-	tasks     parser.Tasks
+	tasks     parser.ResolvedTasks
 	bucketMap map[string]*s3.Bucket
 }
 

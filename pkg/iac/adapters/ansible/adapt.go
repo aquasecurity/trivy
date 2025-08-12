@@ -7,7 +7,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/state"
 )
 
-func Adapt(tasks parser.Tasks) state.State {
+func Adapt(tasks parser.ResolvedTasks) state.State {
 	return state.State{
 		AWS: aws.AWS{
 			S3: s3.Adapt(tasks),

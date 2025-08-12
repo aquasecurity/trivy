@@ -381,11 +381,217 @@ dependencies:
 
 			tasks := project.ListTasks()
 
-			taskNames := lo.Map(tasks, func(task *parser.Task, _ int) string {
-				return task.Name()
+			taskNames := lo.Map(tasks, func(task *parser.ResolvedTask, _ int) string {
+				return task.Name
 			})
 
 			assert.ElementsMatch(t, tt.expectedTasks, taskNames)
+		})
+	}
+}
+
+func TestParse_ResolveVariables(t *testing.T) {
+	tests := []struct {
+		name  string
+		files map[string]string
+	}{
+		{
+			name: "vars in task",
+			files: map[string]string{
+				"main.yaml": `---
+- name: test
+  vars:
+    bucket: test
+  tasks:
+    - name: create bucket
+      vars:
+        public_access: "true"
+      s3_bucket:
+        name: '{{ bucket }}'
+        public_access: '{{ public_access }}'
+`,
+			},
+		},
+		{
+			name: "vars in play",
+			files: map[string]string{
+				"main.yaml": `---
+- name: test
+  vars:
+    bucket: test
+    public_access: "true"
+  tasks:
+    - name: create bucket
+      s3_bucket:
+        name: '{{ bucket }}'
+        public_access: '{{ public_access }}'
+`,
+			},
+		},
+		{
+			name: "vars in block",
+			files: map[string]string{
+				"main.yaml": `---
+- name: test
+  vars:
+    bucket: test
+  tasks:
+    - block:
+        - name: create bucket
+          s3_bucket:
+            name: '{{ bucket }}'
+            public_access: '{{ public_access }}'
+      vars:
+        public_access: "true"
+`,
+			},
+		},
+		// 		{
+		// 			name: "vars from vars_files",
+		// 			files: map[string]string{
+		// 				"main.yaml": `---
+		// - name: test
+		//   vars_files:
+		//     - vars.yaml
+		//   vars:
+		//     bucket: test
+		//   tasks:
+		//     - name: create bucket
+		//       s3_bucket:
+		//         name: '{{ bucket }}'
+		//         public_access: '{{ public_access }}'
+		// `,
+		// 				"vars.yaml": `public_access: "true"`,
+		// 			},
+		// 		},
+		// 		{
+		// 			name: "vars from include_vars",
+		// 			files: map[string]string{
+		// 				"main.yaml": `---
+		// - name: test
+		//   vars:
+		//     bucket: test
+		//   tasks:
+		//     - include_vars: vars.yaml
+		//     - name: create bucket
+		//       s3_bucket:
+		//         name: '{{ bucket }}'
+		//         public_access: '{{ public_access }}'
+		// `,
+		// 				"vars.yaml": `public_access: "true"`,
+		// 			},
+		// 		},
+		// 		{
+		// 			name: "vars from set_fact",
+		// 			files: map[string]string{
+		// 				"main.yaml": `---
+		// - name: test
+		//   vars:
+		//     bucket: test
+		//   tasks:
+		//     - set_fact:
+		//         public_access: "true"
+		//     - name: create bucket
+		//       s3_bucket:
+		//         name: '{{ bucket }}'
+		//         public_access: '{{ public_access }}'
+		// `,
+		// 			},
+		// 		},
+		{
+			name: "vars from included tasks",
+			files: map[string]string{
+				"main.yaml": `---
+- name: test
+  vars:
+    bucket: test
+  tasks:
+    - include_tasks: included.yaml
+`,
+				"included.yaml": `
+- name: create bucket
+  vars:
+    public_access: "true"
+  s3_bucket:
+    name: '{{ bucket }}'
+    public_access: '{{ public_access }}'
+`,
+			},
+		},
+		{
+			name: "vars from imported tasks",
+			files: map[string]string{
+				"main.yaml": `---
+- name: test
+  vars:
+    bucket: test
+  tasks:
+    - import_tasks: imported.yaml
+`,
+				"imported.yaml": `
+- name: create bucket
+  vars:
+    public_access: "true"
+  s3_bucket:
+    name: '{{ bucket }}'
+    public_access: '{{ public_access }}'
+`,
+			},
+		},
+		{
+			name: "vars from role defaults",
+			files: map[string]string{
+				"main.yaml": `---
+- name: test
+  vars:
+    bucket: test
+  roles:
+    - myrole
+`,
+				"roles/myrole/defaults/main.yaml": `public_access: "true"`,
+				"roles/myrole/tasks/main.yaml": `
+- name: create bucket
+  s3_bucket:
+    name: '{{ bucket }}'
+    public_access: '{{ public_access }}'
+`,
+			},
+		},
+		{
+			name: "vars from role vars",
+			files: map[string]string{
+				"main.yaml": `---
+- name: test
+  vars:
+    bucket: test
+  roles:
+    - myrole
+`,
+				"roles/myrole/vars/main.yaml": `public_access: "true"`,
+				"roles/myrole/tasks/main.yaml": `
+- name: create bucket
+  s3_bucket:
+    name: '{{ bucket }}'
+    public_access: '{{ public_access }}'
+`,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := testutil.CreateFS(t, tt.files)
+			p := parser.New(fsys, ".")
+			project, err := p.Parse()
+			require.NoError(t, err)
+
+			tasks := project.ListTasks()
+			modules := tasks.GetModules("s3_bucket")
+			require.Len(t, modules, 1)
+
+			m := modules[0]
+			assert.Equal(t, "test", m.GetStringAttr("name").Value())
+			assert.Equal(t, "true", m.GetStringAttr("public_access").Value())
 		})
 	}
 }
