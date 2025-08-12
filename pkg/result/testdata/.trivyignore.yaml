@@ -39,4 +39,6 @@ licenses:
     paths:
       - "usr/share/gcc/python/libstdcxx/v6/__init__.py"
   - id: MIT
-  - id: LGPLv2+
+  - id: GPL-2.0-or-later
+  - id: Apache-2.0 WITH LLVM-exception
+  - id: LLVM-exception
