@@ -280,8 +280,7 @@ Trivy supports the [.trivyignore](#trivyignore) and [.trivyignore.yaml](#trivyig
 |  Vulnerability   |     ✓     |
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
-|     License      |           |
-
+|     License      |     ✓     |
 
 ```bash
 $ cat .trivyignore
@@ -300,6 +299,10 @@ AVD-DS-0002
 # Ignore secrets
 generic-unwanted-rule
 aws-account-id
+
+# Ignore licenses
+GPL-3.0
+Apache-2.0 WITH LLVM-exception
 ```
 
 ```bash
@@ -324,7 +327,7 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 #### .trivyignore.yaml
 
 |     Scanner      | Supported |
-|:----------------:|:---------:|
+| :--------------: | :-------: |
 |  Vulnerability   |     ✓     |
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
@@ -378,7 +381,23 @@ licenses:
   - id: GPL-3.0 # License name is used as ID
     paths:
       - "usr/share/gcc/python/libstdcxx/v6/__init__.py"
+  - id: MIT AND GPL-2.0-or-later # Compound license expressions are supported
+  - id: Apache-2.0 WITH LLVM-exception # License expressions with exceptions are supported
+  - id: LLVM-exception # Individual license components or exceptions can be ignored
 ```
+
+!!! info "Enhanced License Expression Support"
+Trivy now supports filtering complex SPDX license expressions including:
+
+    - **Compound expressions** with AND/OR operators: `MIT AND GPL-2.0-or-later`
+    - **License exceptions** with WITH operator: `Apache-2.0 WITH LLVM-exception`
+    - **Individual components**: You can ignore specific license components or exceptions from compound expressions
+
+    When filtering compound expressions:
+
+    - **AND/OR expressions**: All individual license components must be explicitly ignored for the entire expression to be ignored
+    - **WITH expressions**: License expressions with exceptions are treated as single entities and can be ignored as a whole
+    - **Component matching**: You can also ignore individual license names or exception names to filter specific parts of compound expressions
 
 Since this feature is experimental, you must explicitly specify the YAML file path using the `--ignorefile` flag.
 Once this functionality is stable, the YAML file will be loaded automatically.
