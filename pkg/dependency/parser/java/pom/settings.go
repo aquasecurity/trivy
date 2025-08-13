@@ -226,7 +226,7 @@ func (s *settings) findMirrorForRepository(repositoryID string) *Mirror {
 		case slices.Contains(mirrorOfs, repositoryID):
 			logMirrorDetection(logger, "Detected specific mirror for repository", repositoryID, mirror, mirrorOfs)
 			specificMirrors = append(specificMirrors, mirror)
-		case slices.Contains(mirrorOfs, "*"):
+		case slices.Contains(mirrorOfs, "*") || slices.Contains(mirrorOfs, "external:*"):
 			logMirrorDetection(logger, "Detected generic mirror that may be used for repository", repositoryID, mirror, mirrorOfs)
 			genericMirrors = append(genericMirrors, mirror)
 		}

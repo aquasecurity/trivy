@@ -385,6 +385,18 @@ func Test_findMirrorForRepository(t *testing.T) {
 	require.Nil(t, s.findMirrorForRepository("test"))
 }
 
+func Test_findMirrorForRepositoryWithExternal(t *testing.T) {
+	s := settings{
+		Mirrors: []Mirror{
+			{ID: "mirror-generic", MirrorOf: "*, !test"},
+			{ID: "mirror-central", MirrorOf: "central"},
+		},
+	}
+	require.Equal(t, "mirror-central", s.findMirrorForRepository("central").ID)
+	require.Equal(t, "mirror-generic", s.findMirrorForRepository("other").ID)
+	require.Nil(t, s.findMirrorForRepository("test"))
+}
+
 func Test_getEffectiveRepositories(t *testing.T) {
 	s := settings{
 		Profiles: []Profile{
@@ -448,6 +460,11 @@ func Test_getEffectiveRepositories(t *testing.T) {
 				MirrorOf: "r1-releases",
 				URL:      "http://mirror1",
 			},
+			{
+				ID:       "mirror-external",
+				MirrorOf: "external:*",
+				URL:      "http://mirror-external",
+			},
 		},
 	}
 
@@ -460,12 +477,12 @@ func Test_getEffectiveRepositories(t *testing.T) {
 	require.True(t, effective[0].Snapshots.Enabled)
 
 	require.Equal(t, "r2-snapshots", effective[1].ID)
-	require.Equal(t, "http://repo2", effective[1].URL)
-	require.False(t, effective[1].Releases.Enabled)
+	require.Equal(t, "http://mirror-external", effective[1].URL)
+	require.True(t, effective[1].Releases.Enabled)
 	require.True(t, effective[1].Snapshots.Enabled)
 
 	require.Equal(t, "r5-releases", effective[2].ID)
-	require.Equal(t, "http://repo5", effective[2].URL)
+	require.Equal(t, "http://mirror-external", effective[2].URL)
 	require.True(t, effective[2].Releases.Enabled)
-	require.False(t, effective[2].Snapshots.Enabled)
+	require.True(t, effective[2].Snapshots.Enabled)
 }
