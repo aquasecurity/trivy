@@ -36,7 +36,7 @@ func LoadAuto(fsys fs.FS, opts LoadOptions) (*Inventory, error) {
 		return inv, nil
 	}
 
-	return nil, nil
+	return newInlineInventory(nil), nil
 }
 
 // LoadFromSources loads inventory files or directories from
