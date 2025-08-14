@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 const defaultHostsFile = "/etc/ansible/hosts"
@@ -71,7 +73,10 @@ func makeFileSource(file string) InventorySource {
 // defaultInventorySources returns sources from cfg or system defaults.
 func defaultInventorySources() ([]InventorySource, error) {
 	// TODO: use ANSIBLE_INVENTORY env
-	return []InventorySource{makeFileSource(defaultHostsFile)}, nil
+	if fsutils.FileExists(defaultHostsFile) {
+		return []InventorySource{makeFileSource(defaultHostsFile)}, nil
+	}
+	return nil, nil
 }
 
 // resolveSource resolves a single source path: file, dir, or dir tree.
