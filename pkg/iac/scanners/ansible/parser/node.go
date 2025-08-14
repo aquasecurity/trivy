@@ -4,8 +4,10 @@ import (
 	"io/fs"
 	"strconv"
 
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"gopkg.in/yaml.v3"
+
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Node struct {
@@ -60,16 +62,16 @@ func (n *Node) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) 
 	)
 	n.metadata.SetParentPtr(parent)
 
-	switch n.val.(type) {
+	switch val := n.val.(type) {
 	case map[string]*Node:
-		for _, attr := range n.val.(map[string]*Node) {
+		for _, attr := range val {
 			if attr == nil {
 				continue
 			}
 			attr.initMetadata(fsys, parent, path)
 		}
 	case []*Node:
-		for _, attr := range n.val.([]*Node) {
+		for _, attr := range val {
 			if attr == nil {
 				continue
 			}
@@ -78,14 +80,14 @@ func (n *Node) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) 
 	}
 }
 
-func (n *Node) Render(vars Vars) (*Node, error) {
+func (n *Node) Render(variables vars.Vars) (*Node, error) {
 	if n == nil {
-		return n, nil
+		return nil, nil
 	}
 
 	switch v := n.val.(type) {
 	case string:
-		rendered, err := evaluateTemplate(v, vars)
+		rendered, err := evaluateTemplate(v, variables)
 		if err != nil {
 			return nil, err
 		}
@@ -93,7 +95,7 @@ func (n *Node) Render(vars Vars) (*Node, error) {
 	case map[string]*Node:
 		renderedMap := make(map[string]*Node)
 		for key, val := range v {
-			r, err := val.Render(vars)
+			r, err := val.Render(variables)
 			if err != nil {
 				return nil, err
 			}
@@ -103,7 +105,7 @@ func (n *Node) Render(vars Vars) (*Node, error) {
 	case []*Node:
 		var renderedList []*Node
 		for _, val := range v {
-			r, err := val.Render(vars)
+			r, err := val.Render(variables)
 			if err != nil {
 				return nil, err
 			}

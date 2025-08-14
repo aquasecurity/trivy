@@ -8,6 +8,7 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -51,9 +52,9 @@ type Task struct {
 }
 
 type taskInner struct {
-	Name  string  `yaml:"name"`
-	Block []*Task `yaml:"block"`
-	Vars  Vars    `yaml:"vars"`
+	Name  string    `yaml:"name"`
+	Block []*Task   `yaml:"block"`
+	Vars  vars.Vars `yaml:"vars"`
 }
 
 func (t *Task) UnmarshalYAML(node *yaml.Node) error {
@@ -126,11 +127,11 @@ func (t *Task) isRoleInclude() bool {
 	return t.hasModuleKey(withBuiltinPrefix(ModuleImportRole, ModuleIncludeRole))
 }
 
-func (t *Task) resolved(vars Vars) (*ResolvedTask, error) {
+func (t *Task) resolved(variables vars.Vars) (*ResolvedTask, error) {
 	resolved := &ResolvedTask{
 		Name:     t.inner.Name,
 		Metadata: t.metadata,
-		Vars:     vars,
+		Vars:     variables,
 		Range:    t.rng,
 		Fields:   t.raw,
 	}
@@ -166,7 +167,7 @@ func (t ResolvedTasks) GetModules(keys ...string) []Module {
 type ResolvedTask struct {
 	Name     string
 	Fields   map[string]*Node
-	Vars     Vars
+	Vars     vars.Vars
 	Metadata iacTypes.Metadata
 	Range    Range
 }
