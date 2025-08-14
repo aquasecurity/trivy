@@ -29,10 +29,14 @@ func LoadAuto(fsys fs.FS, opts LoadOptions) (*Inventory, error) {
 
 	inv, err := LoadFromSources(fsys, sources)
 	if err != nil {
-		return nil, xerrors.Errorf("load inventories: %w", err)
+		return nil, xerrors.Errorf("load from sources: %w", err)
 	}
 
-	return inv, nil
+	if inv != nil {
+		return inv, nil
+	}
+
+	return nil, nil
 }
 
 // LoadFromSources loads inventory files or directories from
