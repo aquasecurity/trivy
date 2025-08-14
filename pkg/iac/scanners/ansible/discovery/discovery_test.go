@@ -5,9 +5,10 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/discovery"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/discovery"
 )
 
 func TestFindProjects(t *testing.T) {

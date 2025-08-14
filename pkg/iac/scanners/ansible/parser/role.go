@@ -5,6 +5,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -15,15 +16,17 @@ type Role struct {
 	play     *Play
 
 	tasks    map[string][]*Task
-	defaults map[string]Vars
-	vars     map[string]Vars
+	defaults map[string]vars.Vars
+	vars     map[string]vars.Vars
 
 	directDeps []*Role
 }
 
 func (r *Role) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) {
+	// TODO: roles should not have metadata or
+	// inherit range from role definition or include_role.
 	r.metadata = iacTypes.NewMetadata(
-		iacTypes.NewRange(path, 0, 0, "", fsys), // TORO range
+		iacTypes.NewRange(path, 0, 0, "", fsys),
 		"role",
 	)
 	r.metadata.SetParentPtr(parent)
@@ -44,11 +47,11 @@ func (r *Role) getTasks(tasksFile string) []*Task {
 	return allTasks
 }
 
-func (r *Role) effectiveVars(defaultsFrom, varsFrom string) Vars {
+func (r *Role) effectiveVars(defaultsFrom, varsFrom string) vars.Vars {
 	// TODO: implement variable resolution
 	defaults := r.defaults[defaultsFrom]
-	vars := r.vars[varsFrom]
-	effectiveVars := mergeVars(defaults, vars)
+	v := r.vars[varsFrom]
+	effectiveVars := vars.MergeVars(defaults, v)
 	return effectiveVars
 }
 

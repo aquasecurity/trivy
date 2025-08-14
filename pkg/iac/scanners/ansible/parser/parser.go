@@ -11,6 +11,8 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/inventory"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
@@ -22,8 +24,7 @@ const (
 func withBuiltinPrefix(actions ...string) []string {
 	result := make([]string, 0, len(actions)*2)
 	for _, action := range actions {
-		result = append(result, action)
-		result = append(result, ansibleBuiltinPrefix+action)
+		result = append(result, action, ansibleBuiltinPrefix+action)
 	}
 	return result
 }
@@ -31,7 +32,9 @@ func withBuiltinPrefix(actions ...string) []string {
 type AnsibleProject struct {
 	path string
 
-	cfg   AnsibleConfig
+	cfg       AnsibleConfig
+	inventory *inventory.Inventory
+
 	tasks []*ResolvedTask
 }
 
@@ -43,8 +46,6 @@ func (p *AnsibleProject) Path() string {
 func (p *AnsibleProject) ListTasks() ResolvedTasks {
 	return p.tasks
 }
-
-type AnsibleConfig struct{}
 
 type Parser struct {
 	fsys   fs.FS
@@ -81,7 +82,7 @@ func ParseProject(fsys fs.FS, root string) (*AnsibleProject, error) {
 }
 
 func (p *Parser) Parse(playbooks ...string) (*AnsibleProject, error) {
-	project, err := p.initProject(p.root)
+	project, err := p.initProject()
 	if err != nil {
 		return nil, err
 	}
@@ -102,21 +103,31 @@ func (p *Parser) Parse(playbooks ...string) (*AnsibleProject, error) {
 	return project, nil
 }
 
-func (p *Parser) initProject(root string) (*AnsibleProject, error) {
-	cfg, err := p.readAnsibleConfig(root)
+func (p *Parser) initProject() (*AnsibleProject, error) {
+	cfg, err := p.readAnsibleConfig()
 	if err != nil {
 		return nil, xerrors.Errorf("read config: %w", err)
 	}
 
+	// TODO: pass sources
+	inventory, err := inventory.LoadAuto(p.fsys, inventory.LoadOptions{
+		InventoryPath: cfg.Inventory,
+		Sources:       nil,
+	})
+	if err != nil {
+		return nil, xerrors.Errorf("load inventories: %w", err)
+	}
+
 	project := &AnsibleProject{
-		path: root,
-		cfg:  cfg,
+		path:      p.root,
+		cfg:       cfg,
+		inventory: inventory,
 	}
 
 	return project, nil
 }
 
-func (p *Parser) parsePlaybooks(_ *AnsibleProject, paths []string) ([]*ResolvedTask, error) {
+func (p *Parser) parsePlaybooks(proj *AnsibleProject, paths []string) ([]*ResolvedTask, error) {
 	playbooks := make(map[string]*Playbook)
 
 	for _, filePath := range paths {
@@ -141,8 +152,7 @@ func (p *Parser) parsePlaybooks(_ *AnsibleProject, paths []string) ([]*ResolvedT
 	// This ensures processing of root playbooks that serve as execution starting points.
 	var allTasks []*ResolvedTask
 	for _, filePath := range entryPoints {
-		// TODO: pass invertory variables
-		tasks, err := p.resolvePlaybook(nil, nil, filePath, playbooks)
+		tasks, err := p.resolvePlaybook(proj, nil, nil, filePath, playbooks)
 		if err != nil {
 			return nil, xerrors.Errorf("resolve playbook: %w", err)
 		}
@@ -189,7 +199,8 @@ func findEntryPoints(playbooks map[string]*Playbook) []string {
 
 // resolvePlaybook recursively expands tasks, roles, and included playbooks within the given playbook.
 func (p *Parser) resolvePlaybook(
-	parent *iacTypes.Metadata, parentVars Vars, filePath string, playbooks map[string]*Playbook,
+	proj *AnsibleProject, parent *iacTypes.Metadata, parentVars vars.Vars,
+	filePath string, playbooks map[string]*Playbook,
 ) ([]*ResolvedTask, error) {
 	pb, exists := playbooks[filePath]
 	if !exists {
@@ -213,7 +224,14 @@ func (p *Parser) resolvePlaybook(
 		// Initializing the metadata of the play and its nested elements
 		play.initMetadata(p.fsys, parent, pb.Path)
 
-		playVars := mergeVars(parentVars, play.inner.Vars)
+		// TODO: resolve hosts by pattern:
+		// https://docs.ansible.com/ansible/latest/inventory_guide/intro_patterns.html#common-patterns
+		hosts := play.inner.Hosts
+
+		// TODO: iterate over hosts
+		hostVars := proj.inventory.ResolveVars(hosts)
+		hostVars = vars.MergeVars(hostVars, parentVars)
+		playVars := vars.MergeVars(hostVars, play.inner.Vars)
 
 		for _, playTask := range play.listTasks() {
 			// TODO: pass parent metadata
@@ -246,7 +264,7 @@ func (p *Parser) resolvePlaybook(
 			// in its internal directories (tasks, defaults, vars, etc.).
 			role, err := p.loadRole(&roleDef.metadata, play, roleDef.name())
 
-			roleVars := mergeVars(playVars, role.effectiveVars("main", "main"))
+			roleVars := vars.MergeVars(playVars, role.effectiveVars("main", "main"))
 			if err != nil {
 				return nil, xerrors.Errorf("load role %q: %w", roleDef.name(), err)
 			}
@@ -259,18 +277,11 @@ func (p *Parser) resolvePlaybook(
 			}
 		}
 
-		// TODO: pass variables
-		// Example:
-		// - name: Set variables on an imported playbook
-		//   ansible.builtin.import_playbook: otherplays.yml
-		//   vars:
-		//     service: httpd
-
 		// https://docs.ansible.com/ansible/latest/collections/ansible/builtin/import_playbook_module.html
 		if incPath, ok := play.includedPlaybook(); ok {
 			// TODO: check metadata
 			fullIncPath := pb.resolveIncludedPath(incPath)
-			includedTasks, err := p.resolvePlaybook(&play.metadata, playVars, fullIncPath, playbooks)
+			includedTasks, err := p.resolvePlaybook(proj, &play.metadata, playVars, fullIncPath, playbooks)
 			if err != nil {
 				return nil, xerrors.Errorf("load playbook from %q: %w", fullIncPath, err)
 			}
@@ -283,7 +294,7 @@ func (p *Parser) resolvePlaybook(
 	return tasks, nil
 }
 
-// loadRoleWithOptions loads a role by name applying given options.
+// loadRole loads a role by name.
 func (p *Parser) loadRole(parent *iacTypes.Metadata, play *Play, roleName string) (*Role, error) {
 
 	cachedRole, exists := p.roleCache[roleName]
@@ -297,9 +308,11 @@ func (p *Parser) loadRole(parent *iacTypes.Metadata, play *Play, roleName string
 	}
 
 	r := &Role{
-		name:  roleName,
-		play:  play,
-		tasks: make(map[string][]*Task),
+		name:     roleName,
+		play:     play,
+		tasks:    make(map[string][]*Task),
+		defaults: make(map[string]vars.Vars),
+		vars:     make(map[string]vars.Vars),
 	}
 	r.initMetadata(p.fsys, parent, rolePath)
 
@@ -337,8 +350,9 @@ func (p *Parser) loadRole(parent *iacTypes.Metadata, play *Play, roleName string
 	return r, nil
 }
 
-func (p *Parser) loadVarsFromDir(dir string) (map[string]Vars, error) {
-	result := make(map[string]Vars)
+// TODO: use vars package
+func (p *Parser) loadVarsFromDir(dir string) (map[string]vars.Vars, error) {
+	result := make(map[string]vars.Vars)
 
 	entries, err := fs.ReadDir(p.fsys, dir)
 	if err != nil {
@@ -349,12 +363,12 @@ func (p *Parser) loadVarsFromDir(dir string) (map[string]Vars, error) {
 	}
 
 	for _, entry := range entries {
-		var vars Vars
+		var variables vars.Vars
 		path := path.Join(dir, entry.Name())
-		if err := p.decodeYAMLFile(path, &vars); err != nil {
+		if err := p.decodeYAMLFile(path, &variables); err != nil {
 			return nil, xerrors.Errorf("load vars from %q: %w", path, err)
 		}
-		result[cutExtension(entry.Name())] = vars
+		result[cutExtension(entry.Name())] = variables
 	}
 
 	return result, nil
@@ -419,9 +433,9 @@ func (p *Parser) loadTasks(parent *iacTypes.Metadata, role *Role, filePath strin
 }
 
 // expandTask dispatches task expansion based on task type (block, include, role).
-func (p *Parser) expandTask(parentVars Vars, t *Task) ([]*ResolvedTask, error) {
+func (p *Parser) expandTask(parentVars vars.Vars, t *Task) ([]*ResolvedTask, error) {
 
-	effectiveVars := mergeVars(parentVars, t.inner.Vars)
+	effectiveVars := vars.MergeVars(parentVars, t.inner.Vars)
 
 	switch {
 	case t.isBlock():
@@ -433,7 +447,7 @@ func (p *Parser) expandTask(parentVars Vars, t *Task) ([]*ResolvedTask, error) {
 	case t.isTaskInclude():
 		tasks, err := p.expandTaskInclude(effectiveVars, t)
 		if err != nil {
-			return nil, xerrors.Errorf("expand task incldue: %w", err)
+			return nil, xerrors.Errorf("expand task include: %w", err)
 		}
 		return tasks, nil
 	case t.isRoleInclude():
@@ -455,7 +469,7 @@ func (p *Parser) expandTask(parentVars Vars, t *Task) ([]*ResolvedTask, error) {
 //
 // Blocks group multiple tasks under a single block in a playbook.
 // See https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_blocks.html
-func (p *Parser) expandBlockTasks(parentVars Vars, t *Task) ([]*ResolvedTask, error) {
+func (p *Parser) expandBlockTasks(parentVars vars.Vars, t *Task) ([]*ResolvedTask, error) {
 	var res []*ResolvedTask
 	for _, task := range t.inner.Block {
 		children, err := p.expandTask(parentVars, task)
@@ -471,8 +485,8 @@ func (p *Parser) expandBlockTasks(parentVars Vars, t *Task) ([]*ResolvedTask, er
 //
 // Supports Ansible modules 'include_tasks' and 'import_tasks'.
 // See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/include_tasks_module.html
-func (p *Parser) expandTaskInclude(parentVars Vars, task *Task) ([]*ResolvedTask, error) {
-	effectiveVars := mergeVars(parentVars, task.inner.Vars)
+func (p *Parser) expandTaskInclude(parentVars vars.Vars, task *Task) ([]*ResolvedTask, error) {
+	effectiveVars := vars.MergeVars(parentVars, task.inner.Vars)
 	resolvedTask, err := task.resolved(effectiveVars)
 	if err != nil {
 		return nil, xerrors.Errorf("resolve task: %w", err)
@@ -497,11 +511,6 @@ func (p *Parser) expandTaskInclude(parentVars Vars, task *Task) ([]*ResolvedTask
 
 	// TODO: the task path can be absolute
 	tasksFile := path.Join(path.Dir(task.path()), filepath.ToSlash(taskPath))
-
-	// TODO: render Jinja2 template
-	// Example:
-	// ansible.builtin.include_tasks: "{{ hostvar }}.yaml"
-
 	loadedTasks, err := p.loadTasks(&task.metadata, task.role, tasksFile)
 	if err != nil {
 		return nil, xerrors.Errorf("load tasks from %q: %w", tasksFile, err)
@@ -523,8 +532,8 @@ func (p *Parser) expandTaskInclude(parentVars Vars, task *Task) ([]*ResolvedTask
 //
 // Supports Ansible modules 'include_role' and 'import_role'.
 // See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/include_role_module.html
-func (p *Parser) expandRoleInclude(parentVars Vars, task *Task) ([]*ResolvedTask, error) {
-	effectiveVars := mergeVars(parentVars, task.inner.Vars)
+func (p *Parser) expandRoleInclude(parentVars vars.Vars, task *Task) ([]*ResolvedTask, error) {
+	effectiveVars := vars.MergeVars(parentVars, task.inner.Vars)
 	resolvedTask, err := task.resolved(effectiveVars)
 	if err != nil {
 		return nil, xerrors.Errorf("resolve task: %w", err)
@@ -566,7 +575,7 @@ func (p *Parser) expandRoleInclude(parentVars Vars, task *Task) ([]*ResolvedTask
 		return nil, xerrors.Errorf("load included role %q: %w", module.Name, err)
 	}
 
-	roleVars := mergeVars(parentVars, role.effectiveVars(module.DefaultsFrom, module.VarsFrom))
+	roleVars := vars.MergeVars(parentVars, role.effectiveVars(module.DefaultsFrom, module.VarsFrom))
 
 	var allTasks []*ResolvedTask
 
@@ -617,9 +626,8 @@ func (p *Parser) decodeYAMLFile(filePath string, dst any) error {
 	return nil
 }
 
-func (p *Parser) readAnsibleConfig(_ string) (AnsibleConfig, error) {
-	// TODO(simar): Implement ansible config setup
-	return AnsibleConfig{}, nil
+func (p *Parser) readAnsibleConfig() (AnsibleConfig, error) {
+	return LoadConfig(p.fsys, p.root)
 }
 
 func (p *Parser) resolvePlaybooksPaths(project *AnsibleProject) ([]string, error) {

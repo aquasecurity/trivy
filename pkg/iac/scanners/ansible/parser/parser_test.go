@@ -576,6 +576,24 @@ func TestParse_ResolveVariables(t *testing.T) {
 `,
 			},
 		},
+		{
+			name: "vars for host",
+			files: map[string]string{
+				"main.yaml": `---
+- name: test
+  vars:
+    bucket: test
+  hosts: webservers
+  tasks:
+    - name: create bucket
+      vars:
+        public_access: "true"
+      s3_bucket:
+        name: '{{ bucket }}'
+        public_access: '{{ public_access }}'
+`,
+			},
+		},
 	}
 
 	for _, tt := range tests {

@@ -7,6 +7,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -69,7 +70,7 @@ type playInner struct {
 	PreTasks        []*Task           `yaml:"pre_tasks"`
 	Tasks           []*Task           `yaml:"tasks"`
 	PostTasks       []*Task           `yaml:"post_tasks"`
-	Vars            Vars              `yaml:"vars"`
+	Vars            vars.Vars         `yaml:"vars"`
 	VarFiles        []string          `yaml:"var_files"`
 }
 
