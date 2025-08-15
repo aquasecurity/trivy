@@ -3,18 +3,6 @@
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/packagesprops",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "Directory.Packages.props",
@@ -28,8 +16,7 @@
             "PURL": "pkg:nuget/Newtonsoft.Json@9.0.1",
             "UID": "a391c576ea549d63"
           },
-          "Version": "9.0.1",
-          "Layer": {}
+          "Version": "9.0.1"
         }
       ],
       "Vulnerabilities": [
@@ -44,7 +31,6 @@
           "InstalledVersion": "9.0.1",
           "FixedVersion": "13.0.1",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://github.com/advisories/GHSA-5crp-9r3c-p9vr",
           "DataSource": {

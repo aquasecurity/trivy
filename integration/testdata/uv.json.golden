@@ -3,18 +3,6 @@
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/uv",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "uv.lock",
@@ -33,8 +21,7 @@
           "DependsOn": [
             "click@8.1.3",
             "werkzeug@0.11.1"
-          ],
-          "Layer": {}
+          ]
         },
         {
           "ID": "click@8.1.3",
@@ -47,8 +34,7 @@
           "Relationship": "direct",
           "DependsOn": [
             "colorama@0.4.6"
-          ],
-          "Layer": {}
+          ]
         },
         {
           "ID": "werkzeug@0.11.1",
@@ -58,8 +44,7 @@
             "UID": "de1411a7bb678535"
           },
           "Version": "0.11.1",
-          "Relationship": "direct",
-          "Layer": {}
+          "Relationship": "direct"
         },
         {
           "ID": "colorama@0.4.6",
@@ -70,8 +55,7 @@
           },
           "Version": "0.4.6",
           "Indirect": true,
-          "Relationship": "indirect",
-          "Layer": {}
+          "Relationship": "indirect"
         }
       ],
       "Vulnerabilities": [
@@ -86,7 +70,6 @@
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.15.3",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14806",
           "DataSource": {
@@ -144,7 +127,6 @@
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.11.6",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-28724",
           "DataSource": {

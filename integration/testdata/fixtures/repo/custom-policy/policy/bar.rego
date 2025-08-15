@@ -5,12 +5,11 @@
 # schemas:
 #   - input: schema["input"]
 # custom:
-#   id: AVD-BAR-0001
-#   avd_id: AVD-BAR-0001
+#   id: BAR-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW
-#   short_code: custom-policy
+#   long_id: custom-policy
 #   recommended_action: Custom policy for testing
 package user.bar
 

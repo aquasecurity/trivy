@@ -3,18 +3,6 @@
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/pipenv",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "Pipfile.lock",
@@ -28,7 +16,6 @@
             "UID": "390fc5ac777dc4e0"
           },
           "Version": "0.11.1",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 19,
@@ -48,7 +35,6 @@
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.15.3",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14806",
           "DataSource": {
@@ -105,7 +91,6 @@
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.11.6",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-28724",
           "DataSource": {

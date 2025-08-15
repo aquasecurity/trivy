@@ -9,7 +9,7 @@
       "Class": "config",
       "Type": "terraform",
       "MisconfSummary": {
-        "Successes": 45,
+        "Successes": 52,
         "Failures": 0
       }
     },

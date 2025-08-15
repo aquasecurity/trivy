@@ -3,18 +3,6 @@
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/mixlock",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "mix.lock",
@@ -29,7 +17,6 @@
             "UID": "92fd0f5d45735c7c"
           },
           "Version": "0.1.18",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 2,
@@ -45,7 +32,6 @@
             "UID": "b9cff6ce54a65dae"
           },
           "Version": "1.4.0",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 3,
@@ -61,7 +47,6 @@
             "UID": "5b0d3fb75bef47e3"
           },
           "Version": "1.6.13",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 4,
@@ -77,7 +62,6 @@
             "UID": "8c18e24394b53ab"
           },
           "Version": "3.2.0",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 5,
@@ -93,7 +77,6 @@
             "UID": "89226dc20d54eb50"
           },
           "Version": "2.1.1",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 6,
@@ -109,7 +92,6 @@
             "UID": "5cd9afe7111a31b7"
           },
           "Version": "1.0.0",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 7,
@@ -125,7 +107,6 @@
             "UID": "2f4485f9653589ad"
           },
           "Version": "2.0.1",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 8,
@@ -141,7 +122,6 @@
             "UID": "2390188ac1142ded"
           },
           "Version": "1.14.0",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 9,
@@ -157,7 +137,6 @@
             "UID": "912b06dac071654"
           },
           "Version": "1.2.3",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 10,
@@ -173,7 +152,6 @@
             "UID": "15879b8627da74b9"
           },
           "Version": "1.1.0",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 11,
@@ -194,7 +172,6 @@
           "InstalledVersion": "1.6.13",
           "FixedVersion": "1.6.14",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-42975",
           "DataSource": {
