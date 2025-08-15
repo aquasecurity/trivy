@@ -41,7 +41,7 @@ import (
 
 var update = flag.Bool("update", false, "update golden files")
 
-const SPDXSchema = "https://raw.githubusercontent.com/spdx/spdx-spec/support/v%s/schemas/spdx-schema.json"
+const SPDXSchema = "https://raw.githubusercontent.com/spdx/spdx-spec/support/%s/schemas/spdx-schema.json"
 
 func initDB(t *testing.T) string {
 	fixtureDir := filepath.Join("testdata", "fixtures", "db")
@@ -336,7 +336,7 @@ func validateReport(t *testing.T, schema string, report any) {
 	schemaLoader := gojsonschema.NewReferenceLoader(schema)
 	documentLoader := gojsonschema.NewGoLoader(report)
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
-	require.NoError(t, err)
+	require.NoError(t, err, schema)
 
 	if valid := result.Valid(); !valid {
 		errs := lo.Map(result.Errors(), func(err gojsonschema.ResultError, _ int) string {
