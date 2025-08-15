@@ -9,6 +9,7 @@
 --format
 --ignore-status
 --ignore-unfixed
+--ignore-unlikely-affected
 --image-config-scanners
 --include-deprecated-checks
 --include-dev-deps

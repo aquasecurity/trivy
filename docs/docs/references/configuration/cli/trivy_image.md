@@ -89,6 +89,7 @@ trivy image [flags] IMAGE_NAME
                                             - fix_deferred
                                             - end_of_life
       --ignore-unfixed                    display only fixed vulnerabilities
+      --ignore-unlikely-affected          ignore vulnerabilities in packages unlikely to affect the artifact (kernel, documentation, etc.)
       --ignored-licenses strings          specify a list of license to ignore
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --image-config-scanners strings     comma-separated list of what security issues to detect on container image configurations (allowed values: misconfig,secret)
