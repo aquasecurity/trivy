@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/fs"
+	"maps"
 	"path"
 	"path/filepath"
 	"slices"
+	"sort"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -55,30 +57,48 @@ type VarsSource struct {
 	Match func(path string) bool
 }
 
-// Result of the loaded variable file
-type LoadedVars struct {
-	// File's full name
-	File string
-	// The name of the directory. This can be used as a host or group name.
-	Target string
-	// TODO: do not use enumeration, as variables can be loaded for the role.
-	// The scope of variables, such as the host or group
-	Scope VarScope
+// LoadedVars stores all loaded variables organized by scope and key (host or group).
+// The first map is by VarScope, the second by host/group name, each holding Vars.
+type LoadedVars map[VarScope]map[string]Vars
 
-	Vars Vars
+func (v *LoadedVars) Merge(other LoadedVars) {
+	if *v == nil {
+		*v = make(LoadedVars)
+	}
+	for scope, objs := range other {
+		if (*v)[scope] == nil {
+			(*v)[scope] = make(map[string]Vars)
+		}
+		for name, vars := range objs {
+			existing, ok := (*v)[scope][name]
+			if !ok {
+				(*v)[scope][name] = vars
+				continue
+			}
+			merged := make(Vars)
+			maps.Copy(merged, existing)
+			maps.Copy(merged, vars)
+			(*v)[scope][name] = merged
+		}
+	}
 }
 
-type VarsLoader struct{}
-
-func (l VarsLoader) Load(sources []VarsSource) []LoadedVars {
-	var allVars []LoadedVars
+func LoadVars(sources []VarsSource) LoadedVars {
+	allVars := make(LoadedVars)
 
 	for _, src := range sources {
 		srcVars, err := loadSourceVars(src)
 		if err != nil {
 			continue
 		}
-		allVars = append(allVars, srcVars...)
+
+		if allVars[src.Scope] == nil {
+			allVars[src.Scope] = make(map[string]Vars)
+		}
+
+		for key, vars := range srcVars {
+			allVars[src.Scope][key] = MergeVars(allVars[src.Scope][key], vars)
+		}
 	}
 
 	return allVars
@@ -86,57 +106,109 @@ func (l VarsLoader) Load(sources []VarsSource) []LoadedVars {
 
 var allowedVarsExt = []string{"", ".yml", ".yaml", ".json"}
 
-func loadSourceVars(src VarsSource) ([]LoadedVars, error) {
+func loadSourceVars(src VarsSource) (map[string]Vars, error) {
 	info, err := fs.Stat(src.FS, src.Path)
 	if err != nil {
 		return nil, err
 	}
 
-	var result []LoadedVars
+	result := make(map[string]Vars)
 
 	if info.IsDir() {
-		entries, _ := fs.ReadDir(src.FS, src.Path)
-		for _, e := range entries {
-			if e.IsDir() {
-				continue
-			}
-
-			if strings.HasPrefix(e.Name(), ".") || strings.HasSuffix(e.Name(), "~") {
-				continue
-			}
-
-			if !slices.Contains(allowedVarsExt, filepath.Ext(e.Name())) {
-				continue
-			}
-
-			filePath := filepath.Join(src.Path, e.Name())
-			if src.Match != nil && !src.Match(filePath) {
-				continue
-			}
-			vars, err := readVars(src.FS, filePath)
-			if err != nil {
-				continue
-			}
-			result = append(result, LoadedVars{
-				File:  filePath,
-				Vars:  vars,
-				Scope: src.Scope,
-			})
-		}
-	} else if src.Match == nil || src.Match(src.Path) {
-		// TODO: load only from a directory
-		vars, err := readVars(src.FS, src.Path)
+		entries, err := fs.ReadDir(src.FS, src.Path)
 		if err != nil {
 			return nil, err
 		}
-		result = append(result, LoadedVars{
-			File:  src.Path,
-			Vars:  vars,
-			Scope: src.Scope,
-		})
+
+		sortEntries(entries)
+
+		for _, e := range entries {
+			name := e.Name()
+			filePath := filepath.Join(src.Path, name)
+			target := strings.TrimSuffix(name, path.Ext(name))
+
+			if src.Match != nil && !src.Match(filePath) {
+				continue
+			}
+
+			if e.IsDir() {
+				walkFn := func(path string, d fs.DirEntry) error {
+					if !d.IsDir() {
+						processFile(src.FS, path, target, result)
+					}
+					return nil
+				}
+				if err := walkFilesFirst(src.FS, filePath, walkFn); err != nil {
+					// TODO: log error
+					continue
+				}
+			} else {
+				processFile(src.FS, filePath, target, result)
+			}
+
+		}
 	}
 
 	return result, nil
+}
+
+func processFile(fsys fs.FS, filePath string, target string, result map[string]Vars) {
+	if shouldSkipFile(filePath) {
+		return
+	}
+
+	vars, err := readVars(fsys, filePath)
+	if err != nil {
+		// TODO: log error
+		return
+	}
+
+	result[target] = MergeVars(result[target], vars)
+}
+
+func sortEntries(entries []fs.DirEntry) {
+	// sorting: files first
+	sort.Slice(entries, func(i, j int) bool {
+		if entries[i].IsDir() == entries[j].IsDir() {
+			return entries[i].Name() < entries[j].Name()
+		}
+		return !entries[i].IsDir() // files < directories
+	})
+}
+
+func walkFilesFirst(fsys fs.FS, root string, fn func(path string, d fs.DirEntry) error) error {
+	entries, err := fs.ReadDir(fsys, root)
+	if err != nil {
+		return err
+	}
+
+	sortEntries(entries)
+	for _, entry := range entries {
+		path := root + "/" + entry.Name()
+		if err := fn(path, entry); err != nil {
+			return err
+		}
+
+		if entry.IsDir() {
+			// recursively traversing the subdirectory
+			if err := walkFilesFirst(fsys, path, fn); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func shouldSkipFile(filePath string) bool {
+	base := path.Base(filePath)
+	if strings.HasPrefix(base, ".") || strings.HasSuffix(base, "~") {
+		return true
+	}
+	if !slices.Contains(allowedVarsExt, filepath.Ext(base)) {
+		return true
+	}
+	return false
 }
 
 func readVars(fsys fs.FS, filePath string) (map[string]any, error) {

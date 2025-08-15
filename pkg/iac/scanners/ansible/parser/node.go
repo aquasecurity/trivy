@@ -91,7 +91,7 @@ func (n *Node) Render(variables vars.Vars) (*Node, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &Node{val: rendered, rng: n.rng, metadata: n.metadata}, nil
+		return n.withValue(rendered), nil
 	case map[string]*Node:
 		renderedMap := make(map[string]*Node)
 		for key, val := range v {
@@ -101,7 +101,7 @@ func (n *Node) Render(variables vars.Vars) (*Node, error) {
 			}
 			renderedMap[key] = r
 		}
-		return &Node{val: renderedMap, rng: n.rng, metadata: n.metadata}, nil
+		return n.withValue(renderedMap), nil
 	case []*Node:
 		var renderedList []*Node
 		for _, val := range v {
@@ -111,8 +111,12 @@ func (n *Node) Render(variables vars.Vars) (*Node, error) {
 			}
 			renderedList = append(renderedList, r)
 		}
-		return &Node{val: renderedList, rng: n.rng, metadata: n.metadata}, nil
+		return n.withValue(renderedList), nil
 	default:
 		return n, nil
 	}
+}
+
+func (n *Node) withValue(val any) *Node {
+	return &Node{val: val, rng: n.rng, metadata: n.metadata}
 }
