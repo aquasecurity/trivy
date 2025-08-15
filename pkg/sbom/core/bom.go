@@ -177,6 +177,10 @@ type File struct {
 	Digests []digest.Digest
 }
 
+func (f File) IsEmpty() bool {
+	return f.Path == "" && len(f.Digests) == 0
+}
+
 type Property struct {
 	Name      string
 	Value     string
