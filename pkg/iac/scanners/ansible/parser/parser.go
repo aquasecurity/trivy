@@ -218,6 +218,8 @@ func (p *Parser) resolvePlaybook(
 		return cached, nil
 	}
 
+	playbookInvVars := vars.LoadVars(vars.PlaybookVarsSources(p.fsys, filePath))
+
 	var tasks []*ResolvedTask
 	for _, play := range pb.Plays {
 
@@ -229,7 +231,7 @@ func (p *Parser) resolvePlaybook(
 		hosts := play.inner.Hosts
 
 		// TODO: iterate over hosts
-		hostVars := proj.inventory.ResolveVars(hosts)
+		hostVars := proj.inventory.ResolveVars(hosts, playbookInvVars)
 		hostVars = vars.MergeVars(hostVars, parentVars)
 		playVars := vars.MergeVars(hostVars, play.inner.Vars)
 

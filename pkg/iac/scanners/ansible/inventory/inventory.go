@@ -5,9 +5,8 @@ import (
 	"maps"
 	"slices"
 
-	"github.com/samber/lo"
-
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type Host struct {
@@ -26,57 +25,64 @@ type Inventory struct {
 	groups     map[string]*Group
 	hostGroups map[string][]string
 
-	externalVars      map[vars.VarScope][]vars.LoadedVars
-	externalGroupVars map[string]vars.Vars
+	externalVars vars.LoadedVars
 }
 
 // ResolveVars evaluates the effective variables for the given host,
 // merging values from the host itself, its groups, and parent groups,
 // according to Ansible variable precedence rules.
 // https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#understanding-variable-precedence
-func (inv *Inventory) ResolveVars(hostName string) vars.Vars {
+func (inv *Inventory) ResolveVars(hostName string, playbookVars vars.LoadedVars) vars.Vars {
 	effective := make(vars.Vars)
 
 	host, ok := inv.hosts[hostName]
 	if !ok {
-		// TODO: log missing host
+		log.Debug("ResolveVars: host not found in inventory",
+			log.String("host", hostName))
 		return nil
 	}
 
-	order, err := inv.GroupTraversalOrder(hostName)
+	groupsOrder, err := inv.GroupTraversalOrder(hostName)
 	if err != nil {
-		// TODO: log or return error
+		log.Debug("ResolveVars: failed to get group traversal order for host",
+			log.String("host", hostName), log.Err(err))
 		return nil
 	}
 
 	// Resolve internal group vars
-	for _, groupName := range order {
+	for _, groupName := range groupsOrder {
 		if g, ok := inv.groups[groupName]; ok {
 			maps.Copy(effective, g.Vars)
 		}
 	}
 
 	// Resolve extenral group_vars/all
-	for _, external := range inv.externalVars[vars.ScopeGroupAll] {
-		maps.Copy(effective, external.Vars)
-	}
-
+	mergeScopeVars(effective, inv.externalVars, vars.ScopeGroupAll, "all")
+	// Resolve playbook group_vars/all
+	mergeScopeVars(effective, playbookVars, vars.ScopeGroupAll, "all")
 	// Resolve external group_vars/*
-	for _, groupName := range order {
-		maps.Copy(effective, inv.externalGroupVars[groupName])
-	}
-
+	mergeScopeVars(effective, inv.externalVars, vars.ScopeGroupSpecific, groupsOrder...)
+	// Resolve playbook group_vars/*
+	mergeScopeVars(effective, playbookVars, vars.ScopeGroupSpecific, groupsOrder...)
 	// Resolve internal host vars
 	maps.Copy(effective, host.Vars)
+	// Resolve external host_vars/*
+	mergeScopeVars(effective, inv.externalVars, vars.ScopeHost, hostName)
+	// Resolve playbook host_vars/*
+	mergeScopeVars(effective, playbookVars, vars.ScopeHost, hostName)
+	return effective
+}
 
-	// Resolve host_vars/*
-	for _, external := range inv.externalVars[vars.ScopeHost] {
-		if external.Target == hostName {
-			maps.Copy(effective, external.Vars)
+func mergeScopeVars(effective vars.Vars, src vars.LoadedVars, scope vars.VarScope, keys ...string) {
+	s, ok := src[scope]
+	if !ok {
+		return
+	}
+	for _, key := range keys {
+		if v, exists := s[key]; exists {
+			maps.Copy(effective, v)
 		}
 	}
-
-	return effective
 }
 
 func (inv *Inventory) GroupTraversalOrder(hostName string) ([]string, error) {
@@ -152,21 +158,76 @@ func (inv *Inventory) initDefaultGroups() {
 }
 
 // ApplyVars applies a list of external variables to the inventory
-func (inv *Inventory) ApplyVars(externalVars []vars.LoadedVars) {
-	inv.externalVars = lo.GroupBy(externalVars, func(v vars.LoadedVars) vars.VarScope {
-		return v.Scope
-	})
-
-	inv.externalGroupVars = make(map[string]vars.Vars)
-	for _, external := range inv.externalVars[vars.ScopeGroupSpecific] {
-		groupVars := inv.externalGroupVars[external.Target]
-		inv.externalGroupVars[external.Target] = vars.MergeVars(groupVars, external.Vars)
-	}
+func (inv *Inventory) ApplyVars(externalVars vars.LoadedVars) {
+	inv.externalVars = externalVars
 }
 
 // Merge combines several [Inventory] into one.
-// Merges groups, hosts, and priority variables.
-func Merge(_ ...*Inventory) *Inventory {
-	// TODO: implement
-	return nil
+func (inv *Inventory) Merge(other *Inventory) {
+	if inv.hosts == nil {
+		inv.hosts = make(map[string]*Host)
+	}
+	if inv.groups == nil {
+		inv.groups = make(map[string]*Group)
+	}
+	if inv.hostGroups == nil {
+		inv.hostGroups = make(map[string][]string)
+	}
+
+	// Merge hosts
+	for name, h := range other.hosts {
+		if existing, ok := inv.hosts[name]; ok {
+			// Merge Vars for existing host
+			inv.hosts[name].Vars = vars.MergeVars(existing.Vars, h.Vars)
+		} else {
+			// Add new host
+			inv.hosts[name] = &Host{
+				Vars: h.Vars.Clone(),
+			}
+		}
+	}
+
+	// Merge groups
+	for name, g := range other.groups {
+		if existing, ok := inv.groups[name]; ok {
+			// Merge Vars
+			existing.Vars = vars.MergeVars(existing.Vars, g.Vars)
+
+			// Merge Children and Parents without duplicates
+			existing.Children = mergeStringSlices(existing.Children, g.Children)
+			existing.Parents = mergeStringSlices(existing.Parents, g.Parents)
+		} else {
+			// Add new group
+			inv.groups[name] = &Group{
+				Vars:     g.Vars.Clone(),
+				Children: append([]string(nil), g.Children...),
+				Parents:  append([]string(nil), g.Parents...),
+			}
+		}
+	}
+
+	// Merge hostGroups
+	for host, groups := range other.hostGroups {
+		inv.hostGroups[host] = mergeStringSlices(inv.hostGroups[host], groups)
+	}
+}
+
+// mergeStringSlices merges two slices of strings without duplicates.
+func mergeStringSlices(a, b []string) []string {
+	seen := make(map[string]struct{}, len(a)+len(b))
+	var result []string
+
+	for _, s := range a {
+		if _, ok := seen[s]; !ok {
+			seen[s] = struct{}{}
+			result = append(result, s)
+		}
+	}
+	for _, s := range b {
+		if _, ok := seen[s]; !ok {
+			seen[s] = struct{}{}
+			result = append(result, s)
+		}
+	}
+	return result
 }
