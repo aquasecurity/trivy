@@ -11,7 +11,7 @@ import (
 )
 
 func CreateModulesFromSource(t *testing.T, source, ext string) terraform.Modules {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"source" + ext: source,
 	})
 	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
