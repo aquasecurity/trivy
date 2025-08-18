@@ -23,12 +23,14 @@ keys:
   - a
   - 101
   - true
+  - null
 state:
   name: test
   len: 200 
+  foo: null
 `,
 			expected: Node{
-				rng: Range{0, 9},
+				rng: Range{0, 11},
 				val: map[string]*Node{
 					"name": {
 						rng: Range{1, 1},
@@ -39,7 +41,7 @@ state:
 						val: 100,
 					},
 					"keys": {
-						rng: Range{3, 6},
+						rng: Range{3, 7},
 						val: []*Node{
 							{
 								rng: Range{4, 4},
@@ -53,18 +55,26 @@ state:
 								rng: Range{6, 6},
 								val: true,
 							},
+							{
+								rng: Range{7, 7},
+								val: nil,
+							},
 						},
 					},
 					"state": {
-						rng: Range{7, 9},
+						rng: Range{8, 11},
 						val: map[string]*Node{
 							"name": {
-								rng: Range{8, 8},
+								rng: Range{9, 9},
 								val: "test",
 							},
 							"len": {
-								rng: Range{9, 9},
+								rng: Range{10, 10},
 								val: 200,
+							},
+							"foo": {
+								rng: Range{11, 11},
+								val: nil,
 							},
 						},
 					},
@@ -79,7 +89,10 @@ state:
 			err := yaml.Unmarshal([]byte(tt.src), &attr)
 			require.NoError(t, err)
 
-			diff := cmp.Diff(tt.expected, attr, cmp.AllowUnexported(Node{}, Range{}), cmpopts.IgnoreFields(Node{}, "metadata"))
+			diff := cmp.Diff(tt.expected, attr,
+				cmp.AllowUnexported(Node{}, Range{}),
+				cmpopts.IgnoreFields(Node{}, "metadata"),
+			)
 
 			if diff != "" {
 				t.Error(diff)
