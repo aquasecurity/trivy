@@ -15,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 const (
@@ -177,19 +178,19 @@ func (p *Parser) loadPlaybook(filePath string) (*Playbook, error) {
 
 func findEntryPoints(playbooks map[string]*Playbook) []string {
 	// TODO: use set from pkg/set
-	included := make(map[string]bool)
+	included := set.New[string]()
 
 	for _, pb := range playbooks {
 		for _, p := range pb.Plays {
 			if incPath, ok := p.includedPlaybook(); ok {
-				included[pb.resolveIncludedPath(incPath)] = true
+				included.Append(pb.resolveIncludedPath(incPath))
 			}
 		}
 	}
 
 	var entryPoints []string
 	for path := range playbooks {
-		if !included[path] {
+		if !included.Contains(path) {
 			entryPoints = append(entryPoints, path)
 		}
 	}
