@@ -104,7 +104,7 @@ func parseGroup(name string, rg rawGroup, inv *Inventory, parents []string) erro
 	// Add hosts
 	for hostName, hostVars := range rg.Hosts {
 		groups := set.New(append(parents, name)...)
-		inv.addHost(hostName, NewHost(hostVars, groups))
+		inv.addHost(hostName, newHost(hostVars, groups))
 	}
 
 	// Recursively parse children groups
