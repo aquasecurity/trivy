@@ -16,14 +16,6 @@ all:
     location: dc1
     os: linux
 
-leafs0:
-  vars:
-    os: nxos
-  hosts:
-    leaf01:
-      ansible_host: 192.0.2.100
-      role: custom-leaf
-
 leafs1:
   vars:
     os: eos
@@ -34,6 +26,14 @@ leafs1:
       tag: leafs1
     leaf02:
       ansible_host: 192.0.2.110
+
+leafs0:
+  vars:
+    os: nxos
+  hosts:
+    leaf01:
+      ansible_host: 192.0.2.100
+      role: custom-leaf
 
 spines:
   vars:
@@ -87,12 +87,12 @@ datacenter:
 		{
 			hostName: "leaf01",
 			expected: vars.Vars{
-				"location":     "dc1",          // from all
-				"tag":          "leafs1",       // from leafs1
-				"os":           "eos",          // from leafs1
-				"role":         "custom-leaf2", // overridden at host
-				"environment":  "dev",          // from network1
-				"ansible_host": "192.0.2.100",  // from host
+				"location":     "dc1",         // from all
+				"tag":          "leafs1",      // from leafs1
+				"os":           "eos",         // from leafs1
+				"role":         "custom-leaf", // overridden at host
+				"environment":  "dev",         // from network1
+				"ansible_host": "192.0.2.100", // from host
 			},
 		},
 		{
