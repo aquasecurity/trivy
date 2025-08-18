@@ -21,7 +21,8 @@ func (n *Node) UnmarshalYAML(node *yaml.Node) error {
 
 	// TODO: parse null node
 
-	if node.Content == nil {
+	switch node.Kind {
+	case yaml.ScalarNode:
 		switch node.Tag {
 		case "!!int":
 			n.val, _ = strconv.Atoi(node.Value)
@@ -31,10 +32,7 @@ func (n *Node) UnmarshalYAML(node *yaml.Node) error {
 			n.val = node.Value
 		}
 		return nil
-	}
-
-	switch node.Tag {
-	case "!!map":
+	case yaml.MappingNode:
 		n.rng.startLine--
 		var childData map[string]*Node
 		if err := node.Decode(&childData); err != nil {
@@ -42,7 +40,7 @@ func (n *Node) UnmarshalYAML(node *yaml.Node) error {
 		}
 		n.val = childData
 		return nil
-	case "!!seq":
+	case yaml.SequenceNode:
 		n.rng.startLine--
 		var childData []*Node
 		if err := node.Decode(&childData); err != nil {

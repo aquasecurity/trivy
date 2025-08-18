@@ -38,7 +38,7 @@ func (m *OrderedMap[K, V]) Iter() iter.Seq2[K, V] {
 }
 
 func (m *OrderedMap[K, V]) UnmarshalYAML(n *yaml.Node) error {
-	if n.Tag != "!!map" {
+	if n.Kind != yaml.MappingNode {
 		return xerrors.Errorf("expected map node, got %s", n.Tag)
 	}
 
