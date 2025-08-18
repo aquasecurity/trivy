@@ -19,13 +19,13 @@ type Node struct {
 func (n *Node) UnmarshalYAML(node *yaml.Node) error {
 	n.rng = rangeFromNode(node)
 
-	// TODO: parse null node
-
 	switch node.Kind {
 	case yaml.ScalarNode:
 		switch node.Tag {
 		case "!!int":
 			n.val, _ = strconv.Atoi(node.Value)
+		case "!!float":
+			// TODO: handle float properly
 		case "!!bool":
 			n.val, _ = strconv.ParseBool(node.Value)
 		case "!!str", "!!string":
@@ -34,22 +34,67 @@ func (n *Node) UnmarshalYAML(node *yaml.Node) error {
 		return nil
 	case yaml.MappingNode:
 		n.rng.startLine--
-		var childData map[string]*Node
-		if err := node.Decode(&childData); err != nil {
+		childData, err := decodeMapNode(node)
+		if err != nil {
 			return err
 		}
 		n.val = childData
 		return nil
 	case yaml.SequenceNode:
 		n.rng.startLine--
-		var childData []*Node
-		if err := node.Decode(&childData); err != nil {
+		childData, err := decodeSequenceNode(node)
+		if err != nil {
 			return err
 		}
 		n.val = childData
 		return nil
 	}
 	return nil
+}
+
+func decodeMapNode(node *yaml.Node) (map[string]*Node, error) {
+	childData := make(map[string]*Node)
+
+	for i := 0; i < len(node.Content); i += 2 {
+		keyNode, valueNode := node.Content[i], node.Content[i+1]
+
+		var childNode Node
+		if valueNode.Kind == yaml.ScalarNode && valueNode.Tag == "!!null" {
+			childNode = Node{
+				rng: rangeFromNode(valueNode),
+				val: nil,
+			}
+		} else {
+			if err := valueNode.Decode(&childNode); err != nil {
+				return nil, err
+			}
+		}
+
+		childData[keyNode.Value] = &childNode
+	}
+
+	return childData, nil
+}
+
+func decodeSequenceNode(node *yaml.Node) ([]*Node, error) {
+	var childData []*Node
+
+	for _, elemNode := range node.Content {
+		var childNode Node
+		if elemNode.Kind == yaml.ScalarNode && elemNode.Tag == "!!null" {
+			childNode = Node{
+				rng: rangeFromNode(elemNode),
+				val: nil,
+			}
+		} else {
+			if err := elemNode.Decode(&childNode); err != nil {
+				return nil, err
+			}
+		}
+		childData = append(childData, &childNode)
+	}
+
+	return childData, nil
 }
 
 func (n *Node) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) {
