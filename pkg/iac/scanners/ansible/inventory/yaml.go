@@ -81,9 +81,8 @@ func ParseYAML(data []byte) (*Inventory, error) {
 	}
 
 	inv := &Inventory{
-		hosts:      make(map[string]*Host),
-		groups:     make(map[string]*Group),
-		hostGroups: make(map[string]set.Set[string]),
+		hosts:  make(map[string]*Host),
+		groups: make(map[string]*Group),
 	}
 
 	for groupName, groupRaw := range raw.Iter() {
@@ -104,8 +103,8 @@ func parseGroup(name string, rg rawGroup, inv *Inventory, parents []string) erro
 
 	// Add hosts
 	for hostName, hostVars := range rg.Hosts {
-		inv.addHost(hostName, &Host{Vars: hostVars})
-		inv.addHostGroups(hostName, set.New(append(parents, name)...))
+		groups := set.New(append(parents, name)...)
+		inv.addHost(hostName, NewHost(hostVars, groups))
 	}
 
 	// Recursively parse children groups
