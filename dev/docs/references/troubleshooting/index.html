@@ -7116,13 +7116,41 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#running-in-parallel-takes-same-time-as-series-run" class="md-nav__link">
+  <a href="#database-and-cache-lock-errors" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Running in parallel takes same time as series run
+        Database and cache lock errors
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Database and cache lock errors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Important Note
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Solutions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -8399,13 +8427,41 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#running-in-parallel-takes-same-time-as-series-run" class="md-nav__link">
+  <a href="#database-and-cache-lock-errors" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Running in parallel takes same time as series run
+        Database and cache lock errors
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Database and cache lock errors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Important Note
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Solutions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -8747,13 +8803,43 @@ failed<span class="w"> </span>to<span class="w"> </span>analyze<span class="w"> 
 <span class="m">2023</span>-02-01T16:57:04.322+0900<span class="w">    </span>INFO<span class="w">    </span>Downloading<span class="w"> </span>the<span class="w"> </span>Java<span class="w"> </span>DB...
 $<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span><span class="o">[</span>YOUR_JAVA_IMAGE<span class="o">]</span>
 </code></pre></div>
-<h3 id="running-in-parallel-takes-same-time-as-series-run">Running in parallel takes same time as series run<a class="headerlink" href="#running-in-parallel-takes-same-time-as-series-run" title="Permanent link">&para;</a></h3>
-<p>When running trivy on multiple images simultaneously, it will take same time as running trivy in series.
-This is because of a limitation of boltdb.</p>
+<h3 id="database-and-cache-lock-errors">Database and cache lock errors<a class="headerlink" href="#database-and-cache-lock-errors" title="Permanent link">&para;</a></h3>
+<div class="admonition error">
+<p class="admonition-title">Error</p>
+<div class="highlight"><pre><span></span><code>cache may be in use by another process
+</code></pre></div>
+</div>
+<div class="admonition error">
+<p class="admonition-title">Error</p>
+<div class="highlight"><pre><span></span><code>vulnerability database may be in use by another process
+</code></pre></div>
+</div>
+<p>By default, Trivy uses BoltDB for its vulnerability database and cache storage. BoltDB creates file locks to prevent data corruption, which means only one process can access the same database file at a time.</p>
+<p>As stated in the BoltDB documentation:</p>
 <blockquote>
-<p>Bolt obtains a file lock on the data file so multiple processes cannot open the same database at the same time. Opening an already open Bolt database will cause it to hang until the other process closes it.</p>
+<p>Please note that Bolt obtains a file lock on the data file so multiple processes cannot open the same database at the same time. Opening an already open Bolt database will cause it to hang until the other process closes it.</p>
 </blockquote>
-<p>Reference : <a href="https://github.com/boltdb/bolt#opening-a-database">boltdb: Opening a database</a>.</p>
+<p>Reference: <a href="https://github.com/boltdb/bolt#opening-a-database">BoltDB README</a></p>
+<p>These errors occur when:</p>
+<ul>
+<li>Multiple Trivy processes try to use the same cache directory simultaneously</li>
+<li>A previous Trivy process did not shut down cleanly</li>
+<li>Trivy server is running and holding locks on the database and cache</li>
+</ul>
+<h4 id="important-note">Important Note<a class="headerlink" href="#important-note" title="Permanent link">&para;</a></h4>
+<p>Running multiple Trivy processes on the same machine is <strong>not recommended</strong>. Using the same cache directory for multiple processes does not improve performance and can cause unexpected errors due to BoltDB's locking mechanism.</p>
+<h4 id="solutions">Solutions<a class="headerlink" href="#solutions" title="Permanent link">&para;</a></h4>
+<p><strong>Solution 1: Terminate conflicting processes</strong> (Recommended)</p>
+<p>Check for running Trivy processes and terminate them:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>trivy
+$<span class="w"> </span><span class="nb">kill</span><span class="w"> </span><span class="o">[</span>process_id<span class="o">]</span>
+</code></pre></div>
+<p><strong>Solution 2: Use different cache directories</strong> (If multiple processes are absolutely necessary)</p>
+<p>If you must run multiple Trivy processes on the same machine, specify different cache directories for each process:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--cache-dir<span class="w"> </span>/tmp/trivy-cache-1<span class="w"> </span>debian:11<span class="w"> </span><span class="p">&amp;</span>
+$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--cache-dir<span class="w"> </span>/tmp/trivy-cache-2<span class="w"> </span>debian:12<span class="w"> </span><span class="p">&amp;</span>
+</code></pre></div>
+<p>Note that each cache directory will download its own copy of the vulnerability database and other scan assets, which will increase network traffic and storage usage.</p>
 <h3 id="multiple-trivy-servers">Multiple Trivy servers<a class="headerlink" href="#multiple-trivy-servers" title="Permanent link">&para;</a></h3>
 <div class="admonition error">
 <p class="admonition-title">Error</p>
