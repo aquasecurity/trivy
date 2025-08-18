@@ -3,12 +3,12 @@ package inventory
 import (
 	"iter"
 	"maps"
-	"slices"
 
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 // OrderedMap is a map that preserves insertion order of keys.
@@ -44,7 +44,7 @@ func (m *OrderedMap[K, V]) UnmarshalYAML(n *yaml.Node) error {
 	}
 
 	if len(n.Content)%2 != 0 {
-		return xerrors.Errorf("invalid map node content length")
+		return xerrors.New("invalid map node content length")
 	}
 
 	size := len(n.Content) / 2
@@ -84,7 +84,7 @@ func ParseYAML(data []byte) (*Inventory, error) {
 	inv := &Inventory{
 		hosts:      make(map[string]*Host),
 		groups:     make(map[string]*Group),
-		hostGroups: make(map[string][]string),
+		hostGroups: make(map[string]set.Set[string]),
 	}
 
 	for groupName, groupRaw := range raw.Iter() {
@@ -99,11 +99,7 @@ func ParseYAML(data []byte) (*Inventory, error) {
 
 // parseGroup recursively parses a rawGroup and adds it to Inventory
 func parseGroup(name string, rg rawGroup, inv *Inventory, parents []string) error {
-	group := &Group{
-		Vars:     rg.Vars,
-		Children: make([]string, 0, rg.Children.Len()),
-		Parents:  slices.Clone(parents),
-	}
+	group := NewGroup(rg.Vars, set.New[string](), set.New(parents...))
 
 	// Add hosts
 	for hostName, hostVars := range rg.Hosts {
@@ -116,20 +112,18 @@ func parseGroup(name string, rg rawGroup, inv *Inventory, parents []string) erro
 			maps.Copy(existingHost.Vars, hostVars)
 		}
 
-		inv.hostGroups[hostName] = append(inv.hostGroups[hostName], append(parents, name)...)
+		if _, exists := inv.hostGroups[hostName]; !exists {
+			inv.hostGroups[hostName] = set.New[string]()
+		}
+		inv.hostGroups[hostName].Append(append(parents, name)...)
 	}
 
 	inv.groups[name] = group
 
 	// Recursively add children
-	for childName := range rg.Children.Iter() {
-		childGroup, exists := inv.groups[childName]
-		if !exists {
-			childGroup = &Group{}
-			inv.groups[childName] = childGroup
-		}
-		childGroup.Parents = append(childGroup.Parents, name)
-		group.Children = append(group.Children, childName)
+	for childName, childRg := range rg.Children.Iter() {
+		parseGroup(childName, childRg, inv, append(parents, name))
+		group.Children.Append(childName)
 	}
 
 	return nil

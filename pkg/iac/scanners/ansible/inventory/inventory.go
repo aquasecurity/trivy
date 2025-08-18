@@ -16,15 +16,22 @@ type Host struct {
 
 type Group struct {
 	Vars     vars.Vars
-	Children []string
+	Children set.Set[string]
+	Parents  set.Set[string]
+}
 
-	Parents []string
+func NewGroup(vars vars.Vars, children, parents set.Set[string]) *Group {
+	return &Group{
+		Vars:     vars,
+		Children: children,
+		Parents:  parents,
+	}
 }
 
 type Inventory struct {
 	hosts      map[string]*Host
 	groups     map[string]*Group
-	hostGroups map[string][]string
+	hostGroups map[string]set.Set[string]
 
 	externalVars vars.LoadedVars
 }
@@ -103,9 +110,9 @@ func (inv *Inventory) GroupTraversalOrder(hostName string) ([]string, error) {
 		temp.Append(name)
 		group, ok := inv.groups[name]
 		if ok {
-			sortedParents := slices.Clone(group.Parents)
-			slices.Sort(sortedParents)
-			for _, parent := range sortedParents {
+			parents := group.Parents.Items()
+			slices.Sort(parents)
+			for _, parent := range parents {
 				if err := visit(parent); err != nil {
 					return err
 				}
@@ -121,7 +128,7 @@ func (inv *Inventory) GroupTraversalOrder(hostName string) ([]string, error) {
 	if !exists {
 		return nil, fmt.Errorf("host %q not found", hostName)
 	}
-	sortedHostGroups := slices.Clone(hostGroups)
+	sortedHostGroups := hostGroups.Items()
 	slices.Sort(sortedHostGroups)
 	for _, name := range sortedHostGroups {
 		if err := visit(name); err != nil {
@@ -134,25 +141,25 @@ func (inv *Inventory) GroupTraversalOrder(hostName string) ([]string, error) {
 
 func (inv *Inventory) initDefaultGroups() {
 	if _, exists := inv.groups["all"]; !exists {
-		inv.groups["all"] = &Group{}
+		inv.groups["all"] = NewGroup(make(vars.Vars), set.New[string](), set.New[string]())
 	}
 
 	var ungroupedHosts []string
 	for hostName, groups := range inv.hostGroups {
-		if len(groups) == 0 {
+		if groups.Size() == 0 {
 			ungroupedHosts = append(ungroupedHosts, hostName)
 		}
 	}
 
 	if len(ungroupedHosts) > 0 {
 		if _, exists := inv.groups["ungrouped"]; !exists {
-			inv.groups["ungrouped"] = &Group{}
+			inv.groups["ungrouped"] = NewGroup(make(vars.Vars), set.New("all"), set.New[string]())
 		}
 	}
 
 	for groupName, group := range inv.groups {
-		if groupName != "all" && len(group.Parents) == 0 {
-			group.Parents = []string{"all"}
+		if groupName != "all" && group.Parents.Size() == 0 {
+			group.Parents = set.New("all")
 		}
 	}
 }
@@ -171,7 +178,7 @@ func (inv *Inventory) Merge(other *Inventory) {
 		inv.groups = make(map[string]*Group)
 	}
 	if inv.hostGroups == nil {
-		inv.hostGroups = make(map[string][]string)
+		inv.hostGroups = make(map[string]set.Set[string])
 	}
 
 	// Merge hosts
@@ -192,28 +199,21 @@ func (inv *Inventory) Merge(other *Inventory) {
 		if existing, ok := inv.groups[name]; ok {
 			// Merge Vars
 			existing.Vars = vars.MergeVars(existing.Vars, g.Vars)
-
 			// Merge Children and Parents without duplicates
-			existing.Children = mergeStringSlices(existing.Children, g.Children)
-			existing.Parents = mergeStringSlices(existing.Parents, g.Parents)
+			existing.Children = existing.Children.Union(g.Children)
+			existing.Parents = existing.Parents.Union(g.Parents)
 		} else {
 			// Add new group
 			inv.groups[name] = &Group{
 				Vars:     g.Vars.Clone(),
-				Children: slices.Clone(g.Children),
-				Parents:  slices.Clone(g.Parents),
+				Children: g.Children.Clone(),
+				Parents:  g.Parents.Clone(),
 			}
 		}
 	}
 
 	// Merge hostGroups
 	for host, groups := range other.hostGroups {
-		inv.hostGroups[host] = mergeStringSlices(inv.hostGroups[host], groups)
+		inv.hostGroups[host] = inv.hostGroups[host].Union(groups)
 	}
-}
-
-// mergeStringSlices merges two slices of strings without duplicates.
-func mergeStringSlices(a, b []string) []string {
-	seen := set.New(append(a, b...)...)
-	return seen.Items()
 }

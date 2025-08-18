@@ -254,14 +254,14 @@ func newInlineInventory(hosts []string) *Inventory {
 		groups: map[string]*Group{
 			"all": {},
 			"ungrouped": {
-				Parents: []string{"all"},
+				Parents: set.New("all"),
 			},
 		},
 		hosts: lo.SliceToMap(hosts, func(h string) (string, *Host) {
 			return h, &Host{}
 		}),
-		hostGroups: lo.SliceToMap(hosts, func(h string) (string, []string) {
-			return h, []string{"all", "ungrouped"}
+		hostGroups: lo.SliceToMap(hosts, func(h string) (string, set.Set[string]) {
+			return h, set.New("all", "ungrouped")
 		}),
 	}
 }
