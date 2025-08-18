@@ -134,7 +134,6 @@ require (
 
 require (
 	github.com/go-ini/ini v1.67.0
-	github.com/google/go-cmp v0.7.0
 	github.com/rogpeppe/go-internal v1.14.1
 )
 
@@ -288,6 +287,7 @@ require (
 	github.com/google/cel-go v0.25.0 // indirect
 	github.com/google/certificate-transparency-go v1.1.8 // indirect
 	github.com/google/gnostic-models v0.6.9 // indirect
+	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/go-github/v31 v31.0.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/pprof v0.0.0-20250607225305-033d6d78b36a // indirect

@@ -124,19 +124,19 @@ func (p *Play) roleDefinitions() []*RoleDefinition {
 	return p.inner.RoleDefinitions
 }
 
-func (p *Play) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) {
+func (p *Play) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, filePath string) {
 	p.metadata = iacTypes.NewMetadata(
-		iacTypes.NewRange(path, p.rng.startLine, p.rng.endLine, "", fsys),
+		iacTypes.NewRange(filePath, p.rng.startLine, p.rng.endLine, "", fsys),
 		"play",
 	)
 	p.metadata.SetParentPtr(parent)
 
 	for _, roleDef := range p.inner.RoleDefinitions {
-		roleDef.initMetadata(fsys, &p.metadata, path)
+		roleDef.initMetadata(fsys, &p.metadata, filePath)
 	}
 
 	for _, task := range p.listTasks() {
-		task.initMetadata(fsys, &p.metadata, path)
+		task.initMetadata(fsys, &p.metadata, filePath)
 	}
 }
 

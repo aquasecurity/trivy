@@ -91,9 +91,9 @@ func (t *Task) isBlock() bool {
 	return len(t.inner.Block) > 0
 }
 
-func (t *Task) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) {
+func (t *Task) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, filePath string) {
 	t.metadata = iacTypes.NewMetadata(
-		iacTypes.NewRange(path, t.rng.startLine, t.rng.endLine, "", fsys),
+		iacTypes.NewRange(filePath, t.rng.startLine, t.rng.endLine, "", fsys),
 		"task", // TODO add reference
 	)
 	t.metadata.SetParentPtr(parent)
@@ -103,7 +103,7 @@ func (t *Task) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) 
 		if n == nil {
 			continue
 		}
-		n.initMetadata(fsys, &t.metadata, path)
+		n.initMetadata(fsys, &t.metadata, filePath, nil)
 	}
 }
 

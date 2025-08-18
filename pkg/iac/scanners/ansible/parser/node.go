@@ -1,8 +1,10 @@
 package parser
 
 import (
+	"fmt"
 	"io/fs"
 	"strconv"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 
@@ -53,72 +55,67 @@ func (n *Node) UnmarshalYAML(node *yaml.Node) error {
 }
 
 func decodeMapNode(node *yaml.Node) (map[string]*Node, error) {
-	childData := make(map[string]*Node)
-
+	childData := make(map[string]*Node, len(node.Content)/2)
 	for i := 0; i < len(node.Content); i += 2 {
 		keyNode, valueNode := node.Content[i], node.Content[i+1]
-
-		var childNode Node
-		if valueNode.Kind == yaml.ScalarNode && valueNode.Tag == "!!null" {
-			childNode = Node{
-				rng: rangeFromNode(valueNode),
-				val: nil,
-			}
-		} else {
-			if err := valueNode.Decode(&childNode); err != nil {
-				return nil, err
-			}
+		childNode, err := decodeChildNode(valueNode)
+		if err != nil {
+			return nil, err
 		}
-
 		childData[keyNode.Value] = &childNode
 	}
-
 	return childData, nil
 }
 
 func decodeSequenceNode(node *yaml.Node) ([]*Node, error) {
-	var childData []*Node
-
+	childData := make([]*Node, 0, len(node.Content))
 	for _, elemNode := range node.Content {
-		var childNode Node
-		if elemNode.Kind == yaml.ScalarNode && elemNode.Tag == "!!null" {
-			childNode = Node{
-				rng: rangeFromNode(elemNode),
-				val: nil,
-			}
-		} else {
-			if err := elemNode.Decode(&childNode); err != nil {
-				return nil, err
-			}
+		childNode, err := decodeChildNode(elemNode)
+		if err != nil {
+			return nil, err
 		}
 		childData = append(childData, &childNode)
 	}
-
 	return childData, nil
 }
 
-func (n *Node) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) {
-	n.metadata = iacTypes.NewMetadata(
-		iacTypes.NewRange(path, n.rng.startLine, n.rng.endLine, "", fsys),
-		// TODO: use node path as reference
-		"",
-	)
+func decodeChildNode(yNode *yaml.Node) (Node, error) {
+	if yNode.Kind == yaml.ScalarNode && yNode.Tag == "!!null" {
+		return Node{
+			rng: rangeFromNode(yNode),
+			val: nil,
+		}, nil
+	}
+
+	var n Node
+	if err := yNode.Decode(&n); err != nil {
+		return Node{}, err
+	}
+	return n, nil
+}
+
+func (n *Node) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, filePath string, nodePath []string) {
+	ref := strings.Join(nodePath, ".")
+	rng := iacTypes.NewRange(filePath, n.rng.startLine, n.rng.endLine, "", fsys)
+	n.metadata = iacTypes.NewMetadata(rng, ref)
 	n.metadata.SetParentPtr(parent)
 
 	switch val := n.val.(type) {
 	case map[string]*Node:
-		for _, attr := range val {
+		for key, attr := range val {
 			if attr == nil {
 				continue
 			}
-			attr.initMetadata(fsys, parent, path)
+			childPath := append(nodePath, key)
+			attr.initMetadata(fsys, parent, filePath, childPath)
 		}
 	case []*Node:
-		for _, attr := range val {
+		for idx, attr := range val {
 			if attr == nil {
 				continue
 			}
-			attr.initMetadata(fsys, parent, path)
+			childPath := append(nodePath, fmt.Sprintf("[%d]", idx))
+			attr.initMetadata(fsys, parent, filePath, childPath)
 		}
 	}
 }
