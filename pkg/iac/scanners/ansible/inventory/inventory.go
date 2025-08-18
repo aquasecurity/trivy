@@ -11,7 +11,12 @@ import (
 )
 
 type Host struct {
-	Vars vars.Vars
+	Vars   vars.Vars
+	Groups set.Set[string]
+}
+
+func NewHost(vars vars.Vars, groups set.Set[string]) *Host {
+	return &Host{Vars: vars, Groups: groups}
 }
 
 type Group struct {
@@ -25,16 +30,12 @@ func (g *Group) merge(other *Group) {
 }
 
 func newGroup(vars vars.Vars, parents set.Set[string]) *Group {
-	return &Group{
-		Vars:    vars,
-		Parents: parents,
-	}
+	return &Group{Vars: vars, Parents: parents}
 }
 
 type Inventory struct {
-	hosts      map[string]*Host
-	groups     map[string]*Group
-	hostGroups map[string]set.Set[string]
+	hosts  map[string]*Host
+	groups map[string]*Group
 
 	externalVars vars.LoadedVars
 }
@@ -47,10 +48,12 @@ func (inv *Inventory) addHost(name string, newHost *Host) {
 	if existing, ok := inv.hosts[name]; ok {
 		// Merge Vars for existing host
 		existing.Vars = vars.MergeVars(existing.Vars, newHost.Vars)
+		existing.Groups = existing.Groups.Union(newHost.Groups)
 	} else {
 		// Add new host
 		inv.hosts[name] = &Host{
-			Vars: newHost.Vars.Clone(),
+			Vars:   newHost.Vars.Clone(),
+			Groups: newHost.Groups.Clone(),
 		}
 	}
 }
@@ -64,18 +67,6 @@ func (inv *Inventory) addGroup(name string, newGroup *Group) {
 		g.merge(newGroup)
 	} else {
 		inv.groups[name] = newGroup
-	}
-}
-
-func (inv *Inventory) addHostGroups(hostName string, groups set.Set[string]) {
-	if inv.hostGroups == nil {
-		inv.hostGroups = make(map[string]set.Set[string])
-	}
-
-	if s, ok := inv.hostGroups[hostName]; ok {
-		inv.hostGroups[hostName] = s.Union(groups)
-	} else {
-		inv.hostGroups[hostName] = groups.Clone()
 	}
 }
 
@@ -167,11 +158,11 @@ func (inv *Inventory) GroupTraversalOrder(hostName string) ([]string, error) {
 		return nil
 	}
 
-	hostGroups, exists := inv.hostGroups[hostName]
+	host, exists := inv.hosts[hostName]
 	if !exists {
 		return nil, fmt.Errorf("host %q not found", hostName)
 	}
-	sortedHostGroups := hostGroups.Items()
+	sortedHostGroups := host.Groups.Items()
 	slices.Sort(sortedHostGroups)
 	for _, name := range sortedHostGroups {
 		if err := visit(name); err != nil {
@@ -188,8 +179,8 @@ func (inv *Inventory) initDefaultGroups() {
 	}
 
 	var ungroupedHosts []string
-	for hostName, groups := range inv.hostGroups {
-		if groups.Size() == 0 {
+	for hostName, host := range inv.hosts {
+		if host.Groups.Size() == 0 {
 			ungroupedHosts = append(ungroupedHosts, hostName)
 		}
 	}
@@ -222,10 +213,5 @@ func (inv *Inventory) Merge(other *Inventory) {
 	// Merge groups
 	for name, g := range other.groups {
 		inv.addGroup(name, g)
-	}
-
-	// Merge hostGroups
-	for host, groups := range other.hostGroups {
-		inv.addHostGroups(host, groups)
 	}
 }
