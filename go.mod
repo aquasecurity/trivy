@@ -132,7 +132,10 @@ require (
 	modernc.org/sqlite v1.39.0
 )
 
-require github.com/go-ini/ini v1.67.0
+require (
+	github.com/go-ini/ini v1.67.0
+	github.com/nikolalohinski/gonja/v2 v2.3.5
+)
 
 require (
 	al.essio.dev/pkg/shellescape v1.5.1 // indirect
@@ -368,8 +371,6 @@ require (
 	github.com/nozzle/throttler v0.0.0-20180817012639-2ea982251481 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/oklog/ulid/v2 v2.1.1 // indirect
-	github.com/onsi/ginkgo/v2 v2.23.4 // indirect
-	github.com/onsi/gomega v1.36.3 // indirect
 	github.com/opencontainers/runtime-spec v1.2.1 // indirect
 	github.com/opencontainers/selinux v1.13.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
