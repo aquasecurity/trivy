@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
@@ -247,18 +246,4 @@ func LoadFromSources(fsys fs.FS, sources []InventorySource) (*Inventory, error) 
 
 	res.ApplyVars(externalVars)
 	return res, nil
-}
-
-func newInlineInventory(hosts []string) *Inventory {
-	return &Inventory{
-		groups: map[string]*Group{
-			"all": {},
-			"ungrouped": {
-				Parents: set.New("all"),
-			},
-		},
-		hosts: lo.SliceToMap(hosts, func(h string) (string, *Host) {
-			return h, NewHost(make(vars.Vars), set.New("all", "ungrouped"))
-		}),
-	}
 }

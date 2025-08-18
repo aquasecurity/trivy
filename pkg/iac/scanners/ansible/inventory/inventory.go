@@ -15,8 +15,13 @@ type Host struct {
 	Groups set.Set[string]
 }
 
-func NewHost(vars vars.Vars, groups set.Set[string]) *Host {
+func newHost(vars vars.Vars, groups set.Set[string]) *Host {
 	return &Host{Vars: vars, Groups: groups}
+}
+
+func (h *Host) merge(other *Host) {
+	h.Vars = vars.MergeVars(h.Vars, other.Vars)
+	h.Groups = h.Groups.Union(other.Groups)
 }
 
 type Group struct {
@@ -24,13 +29,13 @@ type Group struct {
 	Parents set.Set[string]
 }
 
+func newGroup(vars vars.Vars, parents set.Set[string]) *Group {
+	return &Group{Vars: vars, Parents: parents}
+}
+
 func (g *Group) merge(other *Group) {
 	g.Vars = vars.MergeVars(g.Vars, other.Vars)
 	g.Parents = g.Parents.Union(other.Parents)
-}
-
-func newGroup(vars vars.Vars, parents set.Set[string]) *Group {
-	return &Group{Vars: vars, Parents: parents}
 }
 
 type Inventory struct {
@@ -45,10 +50,9 @@ func (inv *Inventory) addHost(name string, newHost *Host) {
 		inv.hosts = make(map[string]*Host)
 	}
 
-	if existing, ok := inv.hosts[name]; ok {
+	if h, ok := inv.hosts[name]; ok {
 		// Merge Vars for existing host
-		existing.Vars = vars.MergeVars(existing.Vars, newHost.Vars)
-		existing.Groups = existing.Groups.Union(newHost.Groups)
+		h.merge(newHost)
 	} else {
 		// Add new host
 		inv.hosts[name] = &Host{
@@ -174,26 +178,19 @@ func (inv *Inventory) GroupTraversalOrder(hostName string) ([]string, error) {
 }
 
 func (inv *Inventory) initDefaultGroups() {
-	if _, exists := inv.groups["all"]; !exists {
-		inv.groups["all"] = newGroup(make(vars.Vars), set.New[string]())
-	}
+	allGroup := newGroup(make(vars.Vars), set.New[string]())
+	inv.addGroup("all", allGroup)
 
-	var ungroupedHosts []string
-	for hostName, host := range inv.hosts {
-		if host.Groups.Size() == 0 {
-			ungroupedHosts = append(ungroupedHosts, hostName)
-		}
-	}
-
-	if len(ungroupedHosts) > 0 {
-		if _, exists := inv.groups["ungrouped"]; !exists {
-			inv.groups["ungrouped"] = newGroup(make(vars.Vars), set.New("all"))
-		}
-	}
+	ungroupedGroup := newGroup(make(vars.Vars), set.New("all"))
+	inv.addGroup("ungrouped", ungroupedGroup)
 
 	for groupName, group := range inv.groups {
-		if groupName != "all" && group.Parents.Size() == 0 {
-			group.Parents = set.New("all")
+		if groupName != "ungrouped" && groupName != "all" && group.Parents.Size() == 0 {
+			group.Parents = set.New("ungrouped")
+		}
+
+		if groupName != "all" && group.Parents.Size() == 1 {
+			group.Parents.Union(set.New("all"))
 		}
 	}
 }
@@ -214,4 +211,13 @@ func (inv *Inventory) Merge(other *Inventory) {
 	for name, g := range other.groups {
 		inv.addGroup(name, g)
 	}
+}
+
+func newInlineInventory(hosts []string) *Inventory {
+	inv := &Inventory{}
+	for _, hostName := range hosts {
+		inv.addHost(hostName, newHost(make(vars.Vars), set.New[string]()))
+	}
+	inv.initDefaultGroups()
+	return inv
 }
