@@ -19,6 +19,6 @@ func (v Vars) Clone() Vars {
 	return c
 }
 
-func MergeVars(parent, child Vars) Vars {
-	return lo.Assign(parent, child)
+func MergeVars(variables ...Vars) Vars {
+	return lo.Assign(variables...)
 }

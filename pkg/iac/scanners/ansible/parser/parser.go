@@ -233,8 +233,7 @@ func (p *Parser) resolvePlaybook(
 
 		// TODO: iterate over hosts
 		hostVars := proj.inventory.ResolveVars(hosts, playbookInvVars)
-		hostVars = vars.MergeVars(hostVars, parentVars)
-		playVars := vars.MergeVars(hostVars, play.inner.Vars)
+		playVars := vars.MergeVars(hostVars, parentVars, play.inner.Vars)
 
 		for _, playTask := range play.listTasks() {
 			// TODO: pass parent metadata
@@ -266,8 +265,12 @@ func (p *Parser) resolvePlaybook(
 			// looks for files named main.yml, main.yaml, or main (without extension)
 			// in its internal directories (tasks, defaults, vars, etc.).
 			role, err := p.loadRole(&roleDef.metadata, play, roleDef.name())
-
-			roleVars := vars.MergeVars(playVars, role.effectiveVars("main", "main"))
+			// Role default variables have the lowest priority
+			roleVars := vars.MergeVars(
+				role.defaultVariables("main"),
+				playVars,
+				role.fileVariables("main"),
+			)
 			if err != nil {
 				return nil, xerrors.Errorf("load role %q: %w", roleDef.name(), err)
 			}
@@ -578,7 +581,12 @@ func (p *Parser) expandRoleInclude(parentVars vars.Vars, task *Task) ([]*Resolve
 		return nil, xerrors.Errorf("load included role %q: %w", module.Name, err)
 	}
 
-	roleVars := vars.MergeVars(parentVars, role.effectiveVars(module.DefaultsFrom, module.VarsFrom))
+	// Role default variables have the lowest priority
+	roleVars := vars.MergeVars(
+		role.defaultVariables(module.DefaultsFrom),
+		parentVars,
+		role.fileVariables(module.VarsFrom),
+	)
 
 	var allTasks []*ResolvedTask
 
