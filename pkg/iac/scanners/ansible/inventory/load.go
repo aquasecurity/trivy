@@ -12,6 +12,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
@@ -74,7 +75,7 @@ func LoadAuto(fsys fs.FS, opts LoadOptions) (*Inventory, error) {
 func ResolveSources(fsys fs.FS, opts LoadOptions) ([]InventorySource, error) {
 	if len(opts.Sources) == 0 {
 		if opts.InventoryPath != "" {
-			src, err := resolveSource(fsys, opts.InventoryPath, make(map[string]struct{}))
+			src, err := resolveSource(fsys, opts.InventoryPath, set.New[string]())
 			if err != nil {
 				return nil, xerrors.Errorf("resolve source from config: %w", err)
 			}
@@ -85,8 +86,7 @@ func ResolveSources(fsys fs.FS, opts LoadOptions) ([]InventorySource, error) {
 
 	var result []InventorySource
 
-	// TODO: use pkg/set
-	seen := make(map[string]struct{})
+	seen := set.New[string]()
 
 	for _, s := range opts.Sources {
 		src, err := resolveSource(fsys, s, seen)
@@ -116,7 +116,7 @@ func defaultInventorySources() ([]InventorySource, error) {
 }
 
 // resolveSource resolves a single source path: file, dir, or dir tree.
-func resolveSource(fsys fs.FS, path string, seen map[string]struct{}) (InventorySource, error) {
+func resolveSource(fsys fs.FS, path string, seen set.Set[string]) (InventorySource, error) {
 	// TODO: handle inline host list, e.g. "host1,host2"
 	if looksLikeInlineHosts(path) {
 		return resolveInlineHosts(path)
@@ -152,7 +152,7 @@ func resolveInlineHosts(path string) (InventorySource, error) {
 }
 
 // walkInventoryDir recursively walks a directory and returns all inventory dirs containing files.
-func walkInventoryDir(fsys fs.FS, root string, seen map[string]struct{}) (InventorySource, error) {
+func walkInventoryDir(fsys fs.FS, root string, seen set.Set[string]) (InventorySource, error) {
 	result := InventorySource{
 		VarsDir: root,
 	}
@@ -176,8 +176,8 @@ func walkInventoryDir(fsys fs.FS, root string, seen map[string]struct{}) (Invent
 		hasFiles, _ := dirHasFiles(fsys, path)
 		if hasFiles {
 			cleanPath := filepath.Clean(path)
-			if _, ok := seen[cleanPath]; !ok {
-				seen[cleanPath] = struct{}{}
+			if !seen.Contains(cleanPath) {
+				seen.Append(cleanPath)
 				result.HostsDirs = append(result.HostsDirs, cleanPath)
 			}
 		}

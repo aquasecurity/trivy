@@ -7,6 +7,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 type Host struct {
@@ -86,20 +87,20 @@ func mergeScopeVars(effective vars.Vars, src vars.LoadedVars, scope vars.VarScop
 }
 
 func (inv *Inventory) GroupTraversalOrder(hostName string) ([]string, error) {
-	visited := make(map[string]bool)
-	temp := make(map[string]bool)
+	visited := set.New[string]()
+	temp := set.New[string]()
 	order := make([]string, 0, len(inv.groups))
 
 	var visit func(string) error
 	visit = func(name string) error {
-		if temp[name] {
+		if temp.Contains(name) {
 			return fmt.Errorf("cycle detected in group hierarchy at %q", name)
 		}
-		if visited[name] {
+		if visited.Contains(name) {
 			return nil
 		}
 
-		temp[name] = true
+		temp.Append(name)
 		group, ok := inv.groups[name]
 		if ok {
 			sortedParents := slices.Clone(group.Parents)
@@ -110,16 +111,15 @@ func (inv *Inventory) GroupTraversalOrder(hostName string) ([]string, error) {
 				}
 			}
 		}
-		temp[name] = false
-		visited[name] = true
+		temp.Remove(name)
+		visited.Append(name)
 		order = append(order, name)
 		return nil
 	}
 
 	hostGroups, exists := inv.hostGroups[hostName]
 	if !exists {
-		// TODO: log missing host
-		return nil, nil
+		return nil, fmt.Errorf("host %q not found", hostName)
 	}
 	sortedHostGroups := slices.Clone(hostGroups)
 	slices.Sort(sortedHostGroups)
@@ -200,8 +200,8 @@ func (inv *Inventory) Merge(other *Inventory) {
 			// Add new group
 			inv.groups[name] = &Group{
 				Vars:     g.Vars.Clone(),
-				Children: append([]string(nil), g.Children...),
-				Parents:  append([]string(nil), g.Parents...),
+				Children: slices.Clone(g.Children),
+				Parents:  slices.Clone(g.Parents),
 			}
 		}
 	}
@@ -214,20 +214,6 @@ func (inv *Inventory) Merge(other *Inventory) {
 
 // mergeStringSlices merges two slices of strings without duplicates.
 func mergeStringSlices(a, b []string) []string {
-	seen := make(map[string]struct{}, len(a)+len(b))
-	var result []string
-
-	for _, s := range a {
-		if _, ok := seen[s]; !ok {
-			seen[s] = struct{}{}
-			result = append(result, s)
-		}
-	}
-	for _, s := range b {
-		if _, ok := seen[s]; !ok {
-			seen[s] = struct{}{}
-			result = append(result, s)
-		}
-	}
-	return result
+	seen := set.New(append(a, b...)...)
+	return seen.Items()
 }
