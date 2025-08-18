@@ -94,6 +94,9 @@ func findLicenseFromEnvDir(pkg types.Package, prefix string) ([]string, error) {
 			if err != nil {
 				return nil, xerrors.Errorf("unable to open packageJSON file: %w", err)
 			}
+
+			defer file.Close()
+
 			packageJson, _, err := meta.NewParser().Parse(file)
 			if err != nil {
 				return nil, xerrors.Errorf("unable to parse packageJSON file: %w", err)
