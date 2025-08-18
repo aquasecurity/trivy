@@ -132,10 +132,7 @@ require (
 	modernc.org/sqlite v1.39.0
 )
 
-require (
-	github.com/go-ini/ini v1.67.0
-	github.com/google/go-cmp v0.7.0
-)
+require github.com/go-ini/ini v1.67.0
 
 require (
 	al.essio.dev/pkg/shellescape v1.5.1 // indirect
@@ -298,6 +295,7 @@ require (
 	github.com/google/cel-go v0.26.0 // indirect
 	github.com/google/certificate-transparency-go v1.1.8 // indirect
 	github.com/google/gnostic-models v0.7.0 // indirect
+	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/go-github/v31 v31.0.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/pprof v0.0.0-20250607225305-033d6d78b36a // indirect

@@ -22,11 +22,11 @@ type Role struct {
 	directDeps []*Role
 }
 
-func (r *Role) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) {
+func (r *Role) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, filePath string) {
 	// TODO: roles should not have metadata or
 	// inherit range from role definition or include_role.
 	r.metadata = iacTypes.NewMetadata(
-		iacTypes.NewRange(path, 0, 0, "", fsys),
+		iacTypes.NewRange(filePath, 0, 0, "", fsys),
 		"role",
 	)
 	r.metadata.SetParentPtr(parent)
