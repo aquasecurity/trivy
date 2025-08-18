@@ -548,7 +548,9 @@ func TestParse_ResolveVariables(t *testing.T) {
   roles:
     - myrole
 `,
-				"roles/myrole/defaults/main.yaml": `public_access: "true"`,
+				"roles/myrole/defaults/main.yaml": `public_access: "true"
+bucket: "from-role"
+`,
 				"roles/myrole/tasks/main.yaml": `
 - name: create bucket
   s3_bucket:

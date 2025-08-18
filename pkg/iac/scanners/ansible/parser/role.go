@@ -47,12 +47,20 @@ func (r *Role) getTasks(tasksFile string) []*Task {
 	return allTasks
 }
 
-func (r *Role) effectiveVars(defaultsFrom, varsFrom string) vars.Vars {
-	// TODO: implement variable resolution
-	defaults := r.defaults[defaultsFrom]
-	v := r.vars[varsFrom]
-	effectiveVars := vars.MergeVars(defaults, v)
-	return effectiveVars
+func (r *Role) fileVariables(from string) vars.Vars {
+	v, exists := r.vars[from]
+	if exists {
+		return v
+	}
+	return make(vars.Vars)
+}
+
+func (r *Role) defaultVariables(from string) vars.Vars {
+	v, exists := r.defaults[from]
+	if exists {
+		return v
+	}
+	return make(vars.Vars)
 }
 
 type RoleMeta struct {
