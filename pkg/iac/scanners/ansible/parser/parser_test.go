@@ -407,8 +407,8 @@ func TestParse_ResolveVariables(t *testing.T) {
       vars:
         public_access: "true"
       s3_bucket:
-        name: '{{ bucket }}'
-        public_access: '{{ public_access }}'
+        name: {{ bucket }}
+        public_access: {{ public_access }}
 `,
 			},
 		},

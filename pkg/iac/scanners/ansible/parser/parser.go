@@ -631,7 +631,8 @@ func (p *Parser) decodeYAMLFile(filePath string, dst any) error {
 	if err != nil {
 		return xerrors.Errorf("read file %s: %w", filePath, err)
 	}
-	if err := yaml.Unmarshal(data, dst); err != nil {
+	processedData := wrapTemplatesQuotes(string(data))
+	if err := yaml.Unmarshal([]byte(processedData), dst); err != nil {
 		return xerrors.Errorf("unmarshal YAML file %s: %w", filePath, err)
 	}
 	return nil
