@@ -134,6 +134,7 @@ require (
 
 require (
 	github.com/go-ini/ini v1.67.0
+	github.com/nikolalohinski/gonja/v2 v2.3.5
 	github.com/rogpeppe/go-internal v1.14.1
 )
 
