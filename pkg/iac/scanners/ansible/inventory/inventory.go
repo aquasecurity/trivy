@@ -15,16 +15,19 @@ type Host struct {
 }
 
 type Group struct {
-	Vars     vars.Vars
-	Children set.Set[string]
-	Parents  set.Set[string]
+	Vars    vars.Vars
+	Parents set.Set[string]
 }
 
-func NewGroup(vars vars.Vars, children, parents set.Set[string]) *Group {
+func (g *Group) merge(other *Group) {
+	g.Vars = vars.MergeVars(g.Vars, other.Vars)
+	g.Parents = g.Parents.Union(other.Parents)
+}
+
+func newGroup(vars vars.Vars, parents set.Set[string]) *Group {
 	return &Group{
-		Vars:     vars,
-		Children: children,
-		Parents:  parents,
+		Vars:    vars,
+		Parents: parents,
 	}
 }
 
@@ -34,6 +37,46 @@ type Inventory struct {
 	hostGroups map[string]set.Set[string]
 
 	externalVars vars.LoadedVars
+}
+
+func (inv *Inventory) addHost(name string, newHost *Host) {
+	if inv.hosts == nil {
+		inv.hosts = make(map[string]*Host)
+	}
+
+	if existing, ok := inv.hosts[name]; ok {
+		// Merge Vars for existing host
+		existing.Vars = vars.MergeVars(existing.Vars, newHost.Vars)
+	} else {
+		// Add new host
+		inv.hosts[name] = &Host{
+			Vars: newHost.Vars.Clone(),
+		}
+	}
+}
+
+func (inv *Inventory) addGroup(name string, newGroup *Group) {
+	if inv.groups == nil {
+		inv.groups = make(map[string]*Group)
+	}
+
+	if g, exists := inv.groups[name]; exists {
+		g.merge(newGroup)
+	} else {
+		inv.groups[name] = newGroup
+	}
+}
+
+func (inv *Inventory) addHostGroups(hostName string, groups set.Set[string]) {
+	if inv.hostGroups == nil {
+		inv.hostGroups = make(map[string]set.Set[string])
+	}
+
+	if s, ok := inv.hostGroups[hostName]; ok {
+		inv.hostGroups[hostName] = s.Union(groups)
+	} else {
+		inv.hostGroups[hostName] = groups.Clone()
+	}
 }
 
 // ResolveVars evaluates the effective variables for the given host,
@@ -141,7 +184,7 @@ func (inv *Inventory) GroupTraversalOrder(hostName string) ([]string, error) {
 
 func (inv *Inventory) initDefaultGroups() {
 	if _, exists := inv.groups["all"]; !exists {
-		inv.groups["all"] = NewGroup(make(vars.Vars), set.New[string](), set.New[string]())
+		inv.groups["all"] = newGroup(make(vars.Vars), set.New[string]())
 	}
 
 	var ungroupedHosts []string
@@ -153,7 +196,7 @@ func (inv *Inventory) initDefaultGroups() {
 
 	if len(ungroupedHosts) > 0 {
 		if _, exists := inv.groups["ungrouped"]; !exists {
-			inv.groups["ungrouped"] = NewGroup(make(vars.Vars), set.New("all"), set.New[string]())
+			inv.groups["ungrouped"] = newGroup(make(vars.Vars), set.New("all"))
 		}
 	}
 
@@ -171,49 +214,18 @@ func (inv *Inventory) ApplyVars(externalVars vars.LoadedVars) {
 
 // Merge combines several [Inventory] into one.
 func (inv *Inventory) Merge(other *Inventory) {
-	if inv.hosts == nil {
-		inv.hosts = make(map[string]*Host)
-	}
-	if inv.groups == nil {
-		inv.groups = make(map[string]*Group)
-	}
-	if inv.hostGroups == nil {
-		inv.hostGroups = make(map[string]set.Set[string])
-	}
-
 	// Merge hosts
 	for name, h := range other.hosts {
-		if existing, ok := inv.hosts[name]; ok {
-			// Merge Vars for existing host
-			inv.hosts[name].Vars = vars.MergeVars(existing.Vars, h.Vars)
-		} else {
-			// Add new host
-			inv.hosts[name] = &Host{
-				Vars: h.Vars.Clone(),
-			}
-		}
+		inv.addHost(name, h)
 	}
 
 	// Merge groups
 	for name, g := range other.groups {
-		if existing, ok := inv.groups[name]; ok {
-			// Merge Vars
-			existing.Vars = vars.MergeVars(existing.Vars, g.Vars)
-			// Merge Children and Parents without duplicates
-			existing.Children = existing.Children.Union(g.Children)
-			existing.Parents = existing.Parents.Union(g.Parents)
-		} else {
-			// Add new group
-			inv.groups[name] = &Group{
-				Vars:     g.Vars.Clone(),
-				Children: g.Children.Clone(),
-				Parents:  g.Parents.Clone(),
-			}
-		}
+		inv.addGroup(name, g)
 	}
 
 	// Merge hostGroups
 	for host, groups := range other.hostGroups {
-		inv.hostGroups[host] = inv.hostGroups[host].Union(groups)
+		inv.addHostGroups(host, groups)
 	}
 }

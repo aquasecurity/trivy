@@ -2,7 +2,6 @@ package inventory
 
 import (
 	"iter"
-	"maps"
 
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
@@ -99,32 +98,19 @@ func ParseYAML(data []byte) (*Inventory, error) {
 
 // parseGroup recursively parses a rawGroup and adds it to Inventory
 func parseGroup(name string, rg rawGroup, inv *Inventory, parents []string) error {
-	group := NewGroup(rg.Vars, set.New[string](), set.New(parents...))
+	// Add group
+	newGroup := newGroup(rg.Vars, set.New(parents...))
+	inv.addGroup(name, newGroup)
 
 	// Add hosts
 	for hostName, hostVars := range rg.Hosts {
-
-		if existingHost, exists := inv.hosts[hostName]; !exists {
-			inv.hosts[hostName] = &Host{
-				Vars: hostVars,
-			}
-		} else {
-			maps.Copy(existingHost.Vars, hostVars)
-		}
-
-		if _, exists := inv.hostGroups[hostName]; !exists {
-			inv.hostGroups[hostName] = set.New[string]()
-		}
-		inv.hostGroups[hostName].Append(append(parents, name)...)
+		inv.addHost(hostName, &Host{Vars: hostVars})
+		inv.addHostGroups(hostName, set.New(append(parents, name)...))
 	}
 
-	inv.groups[name] = group
-
-	// Recursively add children
+	// Recursively parse children groups
 	for childName, childRg := range rg.Children.Iter() {
 		parseGroup(childName, childRg, inv, append(parents, name))
-		group.Children.Append(childName)
 	}
-
 	return nil
 }
