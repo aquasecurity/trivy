@@ -152,7 +152,7 @@ func loadSourceVars(src VarsSource) (map[string]Vars, error) {
 	return result, nil
 }
 
-func processFile(fsys fs.FS, filePath string, target string, result map[string]Vars) {
+func processFile(fsys fs.FS, filePath, target string, result map[string]Vars) {
 	if shouldSkipFile(filePath) {
 		return
 	}
