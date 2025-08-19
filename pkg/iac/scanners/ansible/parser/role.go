@@ -76,9 +76,29 @@ func (r *Role) defaultVariables(from string) (vars.Vars, error) {
 
 func (r *Role) loadVars(scope, from string) (vars.Vars, error) {
 	var variables vars.Vars
+
+	walkFn := func(fs fsutils.FileSource, de fs.DirEntry) error {
+		if de.IsDir() {
+			return nil
+		}
+
+		var fileVars vars.Vars
+		if err := decodeYAMLFileWithExtension(fs, &fileVars, vars.VarFilesExtensions); err != nil {
+			return xerrors.Errorf("load vars: %w", err)
+		}
+		variables = vars.MergeVars(variables, fileVars)
+		return nil
+	}
+
 	varsSrc := r.roleSrc.Join(scope, from)
-	if err := decodeYAMLFileWithExtension(varsSrc, &variables, vars.VarFilesExtensions); err != nil {
-		return nil, xerrors.Errorf("load vars from %q: %w", varsSrc.Path, err)
+
+	// try load from file
+	if err := decodeYAMLFileWithExtension(varsSrc, &variables, vars.VarFilesExtensions); err == nil {
+		return variables, nil
+	}
+
+	if err := fsutils.WalkDirsFirstAlpha(varsSrc, walkFn); err != nil {
+		return nil, xerrors.Errorf("collect variables from %q: %w", varsSrc.Path, err)
 	}
 
 	return variables, nil

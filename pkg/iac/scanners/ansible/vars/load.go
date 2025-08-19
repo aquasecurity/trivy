@@ -90,7 +90,7 @@ func LoadVars(sources []VarsSource) LoadedVars {
 	allVars := make(LoadedVars)
 
 	for _, src := range sources {
-		srcVars, err := loadSourceVars(src)
+		srcVars, err := LoadSourceVars(src)
 		if err != nil {
 			continue
 		}
@@ -107,7 +107,7 @@ func LoadVars(sources []VarsSource) LoadedVars {
 	return allVars
 }
 
-func loadSourceVars(src VarsSource) (map[string]Vars, error) {
+func LoadSourceVars(src VarsSource) (map[string]Vars, error) {
 	info, err := src.FileSrc.Stat()
 	if err != nil {
 		return nil, err

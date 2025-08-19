@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 )
 
 // FileSource represents a file together with the filesystem it belongs to.
@@ -124,4 +125,47 @@ func (f FileSource) WalkDirFS(fn func(FileSource, fs.DirEntry) error) error {
 		return fn(FileSource{FS: f.FS, Path: filepath.ToSlash(path)}, d)
 	}
 	return f.walkDir(walkFn)
+}
+
+func WalkDirsFirstAlpha(root FileSource, fn func(FileSource, fs.DirEntry) error) error {
+	var walk func(fileSrc FileSource) error
+	walk = func(fileSrc FileSource) error {
+		entries, err := fileSrc.ReadDir()
+		if err != nil {
+			return err
+		}
+
+		var dirs, files []fs.DirEntry
+		for _, e := range entries {
+			if e.IsDir() {
+				dirs = append(dirs, e)
+			} else {
+				files = append(files, e)
+			}
+		}
+
+		sort.Slice(dirs, func(i, j int) bool { return dirs[i].Name() < dirs[j].Name() })
+		sort.Slice(files, func(i, j int) bool { return files[i].Name() < files[j].Name() })
+
+		for _, d := range dirs {
+			sub := fileSrc.Join(d.Name())
+			if err := fn(sub, d); err != nil {
+				return err
+			}
+			if err := walk(sub); err != nil {
+				return err
+			}
+		}
+
+		for _, f := range files {
+			sub := fileSrc.Join(f.Name())
+			if err := fn(sub, f); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}
+
+	return walk(root)
 }
