@@ -201,6 +201,22 @@ dependencies:
 			expectedTasks: []string{"Test task"},
 		},
 		{
+			name: "inline include role in play",
+			files: map[string]string{
+				"playbook.yaml": `---
+- hosts: all
+  tasks:
+    - {include_role: {name: test, tasks_from: test}}
+`,
+				"roles/test/tasks/test.yaml": `---
+- name: Test task
+  debug:
+    msg: Test task
+`,
+			},
+			expectedTasks: []string{"Test task"},
+		},
+		{
 			name: "import role in play",
 			files: map[string]string{
 				"playbook.yaml": `---
@@ -329,24 +345,24 @@ dependencies:
 			expectedTasks: []string{"Main role task"},
 		},
 		{
-			name: "with main playbook",
+			name: "multiple playbooks",
 			files: map[string]string{
 				"site.yaml": `---
 - hosts: all
   tasks:
-    - name: Task
+    - name: Foo task
       debug:
         msg: Test
 `,
 				"playbook.yaml": `---
 - hosts: all
   tasks:
-    - name: Unused task
+    - name: Bar task
       debug:
         msg: Test
 `,
 			},
-			expectedTasks: []string{"Task"},
+			expectedTasks: []string{"Foo task", "Bar task"},
 		},
 		{
 			name: "included playbook outside root directory",
