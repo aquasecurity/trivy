@@ -21,69 +21,72 @@ func (a *Attribute) IsNil() bool {
 }
 
 func (a *Attribute) IsMap() bool {
-	_, ok := a.val.(map[string]*Attribute)
+	if a.IsNil() {
+		return false
+	}
+	_, ok := a.val.(map[string]*Node)
 	return ok
 }
 
 func (a *Attribute) IsList() bool {
-	_, ok := a.val.([]*Attribute)
+	if a.IsNil() {
+		return false
+	}
+	_, ok := a.val.([]*Node)
 	return ok
 }
 
 func (a *Attribute) IsBool() bool {
+	if a.IsNil() {
+		return false
+	}
 	_, ok := a.val.(bool)
 	return ok
 }
 
 func (a *Attribute) IsString() bool {
+	if a.IsNil() {
+		return false
+	}
 	_, ok := a.val.(string)
 	return ok
 }
 
 func (a *Attribute) ToList() []*Attribute {
-	if a == nil {
+	if a.IsNil() {
 		return nil
 	}
-	val, ok := a.val.([]any)
+	val, ok := a.val.([]*Node)
 	if !ok {
 		return nil
 	}
 
 	res := make([]*Attribute, 0, len(val))
 	for _, el := range val {
-		n, ok := el.(*Node)
-		if !ok {
-			continue
-		}
-		res = append(res, &Attribute{metadata: n.metadata, val: n.val})
+		res = append(res, &Attribute{metadata: el.metadata, val: el.val})
 	}
 
 	return res
 }
 
 func (a *Attribute) ToMap() map[string]*Attribute {
-	if a == nil {
-		return nil
+	if a.IsNil() {
+		return make(map[string]*Attribute)
 	}
-	val, ok := a.val.(map[string]any)
+	val, ok := a.val.(map[string]*Node)
 	if !ok {
 		return nil
 	}
 
 	res := make(map[string]*Attribute)
 	for k, el := range val {
-		n, ok := el.(*Node)
-		if !ok {
-			continue
-		}
-		res[k] = &Attribute{metadata: n.metadata, val: n.val}
+		res[k] = &Attribute{metadata: el.metadata, val: el.val}
 	}
 
 	return res
 }
 
 func (a *Attribute) GetNestedAttr(path string) *Attribute {
-
 	if path == "" || !a.IsMap() {
 		return nil
 	}
