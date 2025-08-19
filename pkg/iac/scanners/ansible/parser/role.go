@@ -46,7 +46,7 @@ func (r *Role) getTasks(tasksFile string) ([]*Task, error) {
 		depTasks, err := dep.getTasks("main")
 		if err != nil && !errors.Is(err, fs.ErrNotExist) {
 			return nil, xerrors.Errorf("load dependency tasks from %q", dep.name)
-		} else if err != nil {
+		} else if err == nil {
 			allTasks = append(allTasks, depTasks...)
 		}
 	}

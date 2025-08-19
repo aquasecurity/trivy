@@ -217,6 +217,23 @@ dependencies:
 			expectedTasks: []string{"Test task"},
 		},
 		{
+			name: "include role in play by path",
+			dir:  "playbooks",
+			files: map[string]string{
+				"playbooks/playbook.yaml": `---
+- hosts: all
+  tasks:
+    - {include_role: {name: ../roles/test, tasks_from: test}}
+`,
+				"roles/test/tasks/test.yaml": `---
+- name: Test task
+  debug:
+    msg: Test task
+`,
+			},
+			expectedTasks: []string{"Test task"},
+		},
+		{
 			name: "role task from subdir",
 			files: map[string]string{
 				"playbook.yaml": `---
