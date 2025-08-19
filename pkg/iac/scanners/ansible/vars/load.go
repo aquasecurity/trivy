@@ -14,6 +14,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+var VarFilesExtensions = []string{"", ".yml", ".yaml", ".json"}
+
 type VarScope int
 
 const (
@@ -103,8 +105,6 @@ func LoadVars(sources []VarsSource) LoadedVars {
 
 	return allVars
 }
-
-var allowedVarsExt = []string{"", ".yml", ".yaml", ".json"}
 
 func loadSourceVars(src VarsSource) (map[string]Vars, error) {
 	info, err := fs.Stat(src.FS, src.Path)
@@ -205,7 +205,7 @@ func shouldSkipFile(filePath string) bool {
 	if strings.HasPrefix(base, ".") || strings.HasSuffix(base, "~") {
 		return true
 	}
-	if !slices.Contains(allowedVarsExt, filepath.Ext(base)) {
+	if !slices.Contains(VarFilesExtensions, filepath.Ext(base)) {
 		return true
 	}
 	return false

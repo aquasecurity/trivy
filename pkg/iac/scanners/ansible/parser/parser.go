@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
@@ -165,7 +166,7 @@ func (p *Parser) parsePlaybooks(proj *AnsibleProject, paths []string) ([]*Resolv
 
 func (p *Parser) loadPlaybook(filePath string) (*Playbook, error) {
 	var plays []*Play
-	if err := p.decodeYAMLFile(filePath, &plays); err != nil {
+	if err := decodeYAMLFile(p.fsys, filePath, &plays); err != nil {
 		return nil, xerrors.Errorf("decode YAML file: %w", err)
 	}
 
@@ -263,21 +264,38 @@ func (p *Parser) resolvePlaybook(
 		for _, roleDef := range play.roleDefinitions() {
 
 			role, err := p.loadRole(&roleDef.metadata, play, roleDef.name())
-			// When using the roles option at the play level, each role ‘x’
-			// looks for files named main.yml, main.yaml, or main (without extension)
-			// in its internal directories (tasks, defaults, vars, etc.).
-			roleVars := vars.MergeVars(
-				// Role default variables have the lowest priority
-				role.defaultVariables("main"),
-				playVars,
-				role.fileVariables("main"),
-			)
 			if err != nil {
 				return nil, xerrors.Errorf("load role %q: %w", roleDef.name(), err)
 			}
 
-			for _, roleTask := range role.getTasks("main") {
-				childrenTasks, err := p.expandTask(roleVars, roleTask)
+			// Ignore non-existent files, as they are loaded by default and may be missing
+			roleDefaults, err := role.defaultVariables("main")
+			if err != nil && !errors.Is(err, fs.ErrNotExist) {
+				log.Debug("Failed to load role default variables", log.Err(err))
+			}
+			roleVariables, err := role.fileVariables("main")
+			if err != nil && !errors.Is(err, fs.ErrNotExist) {
+				log.Debug("Failed to load role variables", log.Err(err))
+			}
+
+			// When using the roles option at the play level, each role ‘x’
+			// looks for files named main.yml, main.yaml, or main (without extension)
+			// in its internal directories (tasks, defaults, vars, etc.).
+			roleScopeVars := vars.MergeVars(
+				// Role default variables have the lowest priority
+				roleDefaults,
+				playVars,
+				roleVariables,
+			)
+
+			// Ignore non-existent files, as they are loaded by default and may be missing
+			roleTasks, err := role.getTasks("main")
+			if err != nil && !errors.Is(err, fs.ErrNotExist) {
+				log.Debug("Failed to load role tasks", log.Err(err))
+			}
+
+			for _, roleTask := range roleTasks {
+				childrenTasks, err := p.expandTask(roleScopeVars, roleTask)
 				if err != nil {
 					return nil, err
 				}
@@ -316,70 +334,20 @@ func (p *Parser) loadRole(parent *iacTypes.Metadata, play *Play, roleName string
 	}
 
 	r := &Role{
-		name:     roleName,
-		play:     play,
-		tasks:    make(map[string][]*Task),
-		defaults: make(map[string]vars.Vars),
-		vars:     make(map[string]vars.Vars),
+		name:        roleName,
+		path:        rolePath,
+		fsys:        p.fsys,
+		play:        play,
+		cachedTasks: make(map[string][]*Task),
 	}
 	r.initMetadata(p.fsys, parent, rolePath)
-
-	var err error
-	r.defaults, err = p.loadVarsFromDir(path.Join(rolePath, "defaults"))
-	if err != nil {
-		return nil, err
-	}
-
-	r.vars, err = p.loadVarsFromDir(path.Join(rolePath, "vars"))
-	if err != nil {
-		return nil, err
-	}
 
 	if err := p.loadRoleDependencies(r, rolePath); err != nil {
 		return nil, xerrors.Errorf("load role deps: %w", err)
 	}
 
-	tasksDir := path.Join(rolePath, "tasks")
-	taskFiles, err := fs.ReadDir(p.fsys, tasksDir)
-	if err != nil {
-		return nil, xerrors.Errorf("read tasks dir: %w", err)
-	}
-
-	for _, taskFile := range taskFiles {
-		taskPath := path.Join(tasksDir, taskFile.Name())
-		roleTasks, err := p.loadTasks(&r.metadata, r, taskPath)
-		if err != nil {
-			return nil, xerrors.Errorf("load role tasks: %w", err)
-		}
-		r.tasks[cutExtension(taskFile.Name())] = roleTasks
-	}
-
 	p.roleCache[roleName] = r
 	return r, nil
-}
-
-// TODO: use vars package
-func (p *Parser) loadVarsFromDir(dir string) (map[string]vars.Vars, error) {
-	result := make(map[string]vars.Vars)
-
-	entries, err := fs.ReadDir(p.fsys, dir)
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			return result, nil
-		}
-		return nil, xerrors.Errorf("read dir %q: %w", dir, err)
-	}
-
-	for _, entry := range entries {
-		var variables vars.Vars
-		path := path.Join(dir, entry.Name())
-		if err := p.decodeYAMLFile(path, &variables); err != nil {
-			return nil, xerrors.Errorf("load vars from %q: %w", path, err)
-		}
-		result[cutExtension(entry.Name())] = variables
-	}
-
-	return result, nil
 }
 
 func (p *Parser) loadRoleDependencies(r *Role, rolePath string) error {
@@ -388,7 +356,7 @@ func (p *Parser) loadRoleDependencies(r *Role, rolePath string) error {
 	metaPath := path.Join(rolePath, "meta", "main")
 
 	var roleMeta RoleMeta
-	if err := p.decodeYAMLFileIgnoreExt(metaPath, &roleMeta); err != nil && !errors.Is(err, os.ErrNotExist) {
+	if err := decodeYAMLFileWithExtension(p.fsys, metaPath, &roleMeta, yamlExtensions); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return xerrors.Errorf("load meta: %w", err)
 	}
 
@@ -420,24 +388,6 @@ func (p *Parser) resolveRolePath(name string) (string, bool) {
 	}
 
 	return "", false
-}
-
-func (p *Parser) loadTasks(parent *iacTypes.Metadata, role *Role, filePath string) ([]*Task, error) {
-
-	var tasks []*Task
-	filePath = cutExtension(filePath)
-	if err := p.decodeYAMLFileIgnoreExt(filePath, &tasks); err != nil && !errors.Is(err, os.ErrNotExist) {
-		return nil, xerrors.Errorf("decode tasks file %q: %w", filePath, err)
-	}
-
-	var allTasks []*Task
-	for _, roleTask := range tasks {
-		roleTask.initMetadata(p.fsys, parent, filePath)
-		roleTask.role = role
-		// pass parent variables
-		allTasks = append(allTasks, roleTask)
-	}
-	return allTasks, nil
 }
 
 // expandTask dispatches task expansion based on task type (block, include, role).
@@ -519,14 +469,15 @@ func (p *Parser) expandTaskInclude(parentVars vars.Vars, task *Task) ([]*Resolve
 
 	// TODO: the task path can be absolute
 	tasksFile := path.Join(path.Dir(task.path()), filepath.ToSlash(taskPath))
-	loadedTasks, err := p.loadTasks(&task.metadata, task.role, tasksFile)
+
+	roleTasks, err := loadTasks(&task.metadata, p.fsys, tasksFile)
 	if err != nil {
 		return nil, xerrors.Errorf("load tasks from %q: %w", tasksFile, err)
 	}
 
 	var allTasks []*ResolvedTask
 
-	for _, loadedTask := range loadedTasks {
+	for _, loadedTask := range roleTasks {
 		children, err := p.expandTask(parentVars, loadedTask)
 		if err != nil {
 			return nil, xerrors.Errorf("expand task: %w", err)
@@ -583,20 +534,34 @@ func (p *Parser) expandRoleInclude(parentVars vars.Vars, task *Task) ([]*Resolve
 		return nil, xerrors.Errorf("load included role %q: %w", module.Name, err)
 	}
 
-	roleVars := vars.MergeVars(
+	roleDefaults, err := role.defaultVariables("main")
+	if err != nil {
+		log.Debug("Failed to load role default variables", log.Err(err))
+	}
+	roleVariables, err := role.fileVariables("main")
+	if err != nil {
+		log.Debug("Failed to load role variables", log.Err(err))
+	}
+
+	roleScopeVars := vars.MergeVars(
 		// Role default variables have the lowest priority
-		role.defaultVariables(module.DefaultsFrom),
+		roleDefaults,
 		parentVars,
-		role.fileVariables(module.VarsFrom),
+		roleVariables,
 	)
 
 	var allTasks []*ResolvedTask
 
-	for _, roleTask := range role.getTasks(module.TasksFrom) {
+	roleTasks, err := role.getTasks(module.TasksFrom)
+	if err != nil {
+		return nil, xerrors.Errorf("load tasks from %q: %w", module.TasksFrom, err)
+	}
+
+	for _, roleTask := range roleTasks {
 		// TODO: do not update the parent in the metadata here, as the dependency chain may be lost
 		// if the task is a role dependency task
 		// task.updateParent(t)
-		children, err := p.expandTask(roleVars, roleTask)
+		children, err := p.expandTask(roleScopeVars, roleTask)
 		if err != nil {
 			return nil, err
 		}
@@ -615,21 +580,18 @@ func getStringParam(m Module, paramKey string) string {
 	return ""
 }
 
-func (p *Parser) decodeYAMLFileIgnoreExt(filePath string, dst any) error {
-	extensions := []string{".yaml", ".yml"}
-
+func decodeYAMLFileWithExtension(fsys fs.FS, filePath string, dst any, extensions []string) error {
 	for _, ext := range extensions {
 		file := filePath + ext
-		if pathExists(p.fsys, file) {
-			return p.decodeYAMLFile(file, dst)
+		if pathExists(fsys, file) {
+			return decodeYAMLFile(fsys, file, dst)
 		}
 	}
-
 	return os.ErrNotExist
 }
 
-func (p *Parser) decodeYAMLFile(filePath string, dst any) error {
-	data, err := fs.ReadFile(p.fsys, filePath)
+func decodeYAMLFile(fsys fs.FS, filePath string, dst any) error {
+	data, err := fs.ReadFile(fsys, filePath)
 	if err != nil {
 		return xerrors.Errorf("read file %s: %w", filePath, err)
 	}
@@ -661,6 +623,18 @@ func (p *Parser) resolvePlaybooksPaths(project *AnsibleProject) ([]string, error
 	return res, nil
 }
 
+func loadTasks(parentMetadata *iacTypes.Metadata, fsys fs.FS, tasksFile string) ([]*Task, error) {
+	var fileTasks []*Task
+	tasksExtensions := append(yamlExtensions, "")
+	if err := decodeYAMLFileWithExtension(fsys, tasksFile, &fileTasks, tasksExtensions); err != nil {
+		return nil, xerrors.Errorf("decode tasks file %q: %w", tasksFile, err)
+	}
+	for _, roleTask := range fileTasks {
+		roleTask.initMetadata(fsys, parentMetadata, tasksFile)
+	}
+	return fileTasks, nil
+}
+
 func pathExists(fsys fs.FS, filePath string) bool {
 	if filepath.IsAbs(filePath) {
 		if _, err := os.Stat(filePath); err == nil {
@@ -673,12 +647,9 @@ func pathExists(fsys fs.FS, filePath string) bool {
 	return false
 }
 
+var yamlExtensions = []string{".yml", ".yaml"}
+
 func isYAMLFile(filePath string) bool {
 	ext := filepath.Ext(filePath)
-	return ext == ".yaml" || ext == ".yml"
-}
-
-func cutExtension(filePath string) string {
-	ext := filepath.Ext(filePath)
-	return filePath[0 : len(filePath)-len(ext)]
+	return slices.Contains(yamlExtensions, ext)
 }
