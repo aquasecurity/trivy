@@ -33,8 +33,8 @@ const (
 
 type options struct {
 	offline             bool
-	releaseRemoteRepos  []string
-	snapshotRemoteRepos []string
+	releaseRemoteRepos  []RemoteRepositoryConfig
+	snapshotRemoteRepos []RemoteRepositoryConfig
 }
 
 type option func(*options)
@@ -45,15 +45,25 @@ func WithOffline(offline bool) option {
 	}
 }
 
-func WithReleaseRemoteRepos(repos []string) option {
+func WithReleaseRemoteRepos(repos []RemoteRepositoryConfig) option {
 	return func(opts *options) {
 		opts.releaseRemoteRepos = repos
 	}
 }
 
-func WithSnapshotRemoteRepos(repos []string) option {
+func WithSnapshotRemoteRepos(repos []RemoteRepositoryConfig) option {
 	return func(opts *options) {
 		opts.snapshotRemoteRepos = repos
+	}
+}
+
+type RemoteRepositoryConfig struct {
+	URL         string
+	Username    string
+	Password    string
+	HTTPHeaders []struct {
+		Name  string
+		Value string
 	}
 }
 
@@ -62,8 +72,8 @@ type Parser struct {
 	rootPath            string
 	cache               pomCache
 	localRepository     string
-	releaseRemoteRepos  []string
-	snapshotRemoteRepos []string
+	releaseRemoteRepos  []RemoteRepositoryConfig
+	snapshotRemoteRepos []RemoteRepositoryConfig
 	offline             bool
 	settings            settings
 }
@@ -354,8 +364,12 @@ func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 	}
 	// Update remoteRepositories
 	pomReleaseRemoteRepos, pomSnapshotRemoteRepos := pom.repositories(p.settings)
-	p.releaseRemoteRepos = lo.Uniq(append(pomReleaseRemoteRepos, p.releaseRemoteRepos...))
-	p.snapshotRemoteRepos = lo.Uniq(append(pomSnapshotRemoteRepos, p.snapshotRemoteRepos...))
+	p.releaseRemoteRepos = lo.UniqBy(append(pomReleaseRemoteRepos, p.releaseRemoteRepos...), func(repo RemoteRepositoryConfig) string {
+		return repo.URL
+	})
+	p.snapshotRemoteRepos = lo.UniqBy(append(pomSnapshotRemoteRepos, p.snapshotRemoteRepos...), func(repo RemoteRepositoryConfig) string {
+		return repo.URL
+	})
 
 	// Resolve parent POM
 	if err := p.resolveParent(pom); err != nil {
@@ -709,8 +723,8 @@ func (p *Parser) fetchPOMFromRemoteRepositories(paths []string, snapshot bool) (
 	return nil, xerrors.Errorf("the POM was not found in remote remoteRepositories")
 }
 
-func (p *Parser) remoteRepoRequest(repo string, paths []string) (*http.Request, error) {
-	repoURL, err := url.Parse(repo)
+func (p *Parser) remoteRepoRequest(repo RemoteRepositoryConfig, paths []string) (*http.Request, error) {
+	repoURL, err := url.Parse(repo.URL)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse URL: %w", err)
 	}
@@ -722,18 +736,20 @@ func (p *Parser) remoteRepoRequest(repo string, paths []string) (*http.Request, 
 	if err != nil {
 		return nil, xerrors.Errorf("unable to create HTTP request: %w", err)
 	}
-	if repoURL.User != nil {
-		password, _ := repoURL.User.Password()
-		req.SetBasicAuth(repoURL.User.Username(), password)
+	if repo.Username != "" && repo.Password != "" {
+		req.SetBasicAuth(repo.Username, repo.Password)
+	}
+	for _, header := range repo.HTTPHeaders {
+		req.Header.Add(header.Name, header.Value)
 	}
 
 	return req, nil
 }
 
 // fetchPomFileNameFromMavenMetadata fetches `maven-metadata.xml` file to detect file name of pom file.
-func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) (string, error) {
-	if isObsoleteRepo(repo) {
-		p.logger.Debug("Obsolete remote repository", log.String("repo", repo))
+func (p *Parser) fetchPomFileNameFromMavenMetadata(repo RemoteRepositoryConfig, paths []string) (string, error) {
+	if isObsoleteRepo(repo.URL) {
+		p.logger.Debug("Obsolete remote repository", log.String("repo", repo.URL))
 		return "", nil
 	}
 
@@ -743,7 +759,7 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) 
 
 	req, err := p.remoteRepoRequest(repo, mavenMetadataPaths)
 	if err != nil {
-		p.logger.Debug("Unable to create request", log.String("repo", repo), log.Err(err))
+		p.logger.Debug("Unable to create request", log.String("repo", repo.URL), log.Err(err))
 		return "", nil
 	}
 
@@ -774,15 +790,15 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) 
 	return pomFileName, nil
 }
 
-func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
-	if isObsoleteRepo(repo) {
-		p.logger.Debug("Obsolete remote repository", log.String("repo", repo))
+func (p *Parser) fetchPOMFromRemoteRepository(repo RemoteRepositoryConfig, paths []string) (*pom, error) {
+	if isObsoleteRepo(repo.URL) {
+		p.logger.Debug("Obsolete remote repository", log.String("repo", repo.URL))
 		return nil, nil
 	}
 
 	req, err := p.remoteRepoRequest(repo, paths)
 	if err != nil {
-		p.logger.Debug("Unable to create request", log.String("repo", repo), log.Err(err))
+		p.logger.Debug("Unable to create request", log.String("repo", repo.URL), log.Err(err))
 		return nil, nil
 	}
 

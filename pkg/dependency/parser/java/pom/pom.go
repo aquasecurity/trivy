@@ -4,7 +4,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"net/url"
 	"reflect"
 	slicesGo "slices"
 	"strings"
@@ -124,9 +123,9 @@ func (p *pom) licenses() []string {
 	}))
 }
 
-func (p *pom) repositories(settings settings) ([]string, []string) {
+func (p *pom) repositories(settings settings) ([]RemoteRepositoryConfig, []RemoteRepositoryConfig) {
 	logger := log.WithPrefix("pom")
-	var releaseRepos, snapshotRepos []string
+	var releaseRepos, snapshotRepos []RemoteRepositoryConfig
 	effectiveRepositories := p.effectiveRepositories(&settings)
 	for _, rep := range effectiveRepositories {
 		snapshot := rep.Snapshots.Enabled
@@ -136,17 +135,18 @@ func (p *pom) repositories(settings settings) ([]string, []string) {
 			continue
 		}
 
-		repoURL, err := url.Parse(rep.URL)
-		if err != nil {
-			logger.Debug("Unable to parse remote repository url", log.Err(err))
-			continue
-		}
+		repoConfig := RemoteRepositoryConfig{URL: rep.URL}
 
 		// Get the credentials from settings.xml based on matching server id
 		// with the repository id from pom.xml and use it for accessing the repository url
 		for _, server := range settings.Servers {
-			if (rep.ID == server.ID || rep.MirrorID == server.ID) && server.Username != "" && server.Password != "" {
-				repoURL.User = url.UserPassword(server.Username, server.Password)
+			if rep.ID == server.ID || rep.MirrorID == server.ID {
+				repoConfig.Username = server.Username
+				repoConfig.Password = server.Password
+				repoConfig.HTTPHeaders = []struct {
+					Name  string
+					Value string
+				}(server.Configuration.HTTPHeaders.Property)
 				break
 			}
 		}
@@ -154,12 +154,12 @@ func (p *pom) repositories(settings settings) ([]string, []string) {
 		if snapshot {
 			logger.Debug("Adding snapshot repository",
 				log.String("id", rep.ID), log.String("url", rep.URL))
-			snapshotRepos = append(snapshotRepos, repoURL.String())
+			snapshotRepos = append(snapshotRepos, repoConfig)
 		}
 		if release {
 			logger.Debug("Adding release repository",
 				log.String("id", rep.ID), log.String("url", rep.URL))
-			releaseRepos = append(releaseRepos, repoURL.String())
+			releaseRepos = append(releaseRepos, repoConfig)
 		}
 	}
 
