@@ -24,12 +24,12 @@ func (m *Module) IsFreeForm() bool {
 }
 
 func (m *Module) GetAttr(name string) *Attribute {
-	attr, exists := m.params[name]
-	if !exists || attr == nil {
+	node, exists := m.params[name]
+	if !exists || node == nil {
 		return nil
 	}
 
-	return &Attribute{metadata: attr.metadata, val: attr.val}
+	return &Attribute{metadata: node.metadata, val: node.val}
 }
 
 func (m *Module) GetNestedAttr(path string) *Attribute {
