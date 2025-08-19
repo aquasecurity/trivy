@@ -70,9 +70,6 @@ func (t *Task) UnmarshalYAML(node *yaml.Node) error {
 	if err := node.Decode(&t.inner); err != nil {
 		return err
 	}
-	for _, b := range t.inner.Block {
-		b.metadata.SetParentPtr(&t.metadata)
-	}
 	return nil
 }
 
@@ -93,9 +90,19 @@ func (t *Task) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadat
 	t.src = fileSrc
 	t.metadata = iacTypes.NewMetadata(
 		iacTypes.NewRange(relPath, t.rng.startLine, t.rng.endLine, "", fsys),
-		"task", // TODO add reference
+		"tasks-block",
 	)
 	t.metadata.SetParentPtr(parent)
+
+	for _, tt := range t.inner.Block {
+		tt.src = fileSrc
+		tt.play = t.play
+		tt.metadata = iacTypes.NewMetadata(
+			iacTypes.NewRange(relPath, tt.rng.startLine, tt.rng.endLine, "", fsys),
+			"task",
+		)
+		tt.metadata.SetParentPtr(&t.metadata)
+	}
 
 	for _, n := range t.raw {
 		if n == nil {
