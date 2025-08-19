@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -380,6 +381,16 @@ func (p *Parser) loadRoleDependencies(r *Role) error {
 // TODO: support all possible locations of the role
 // https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html
 func (p *Parser) resolveRolePath(playbookDirSrc fsutils.FileSource, name string) (fsutils.FileSource, bool) {
+
+	isPath := filepath.IsAbs(name) || strings.HasPrefix(name, ".")
+	if isPath {
+		if !filepath.IsAbs(name) {
+			// If relative path, join with playbook directory
+			return playbookDirSrc.Join(name), true
+		}
+		return fsutils.NewFileSource(nil, name), true
+	}
+
 	roleSources := []fsutils.FileSource{
 		playbookDirSrc.Join("roles", name),
 	}
