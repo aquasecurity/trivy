@@ -5,13 +5,14 @@ import (
 	"errors"
 	"io/fs"
 	"os"
-	"path"
 	"path/filepath"
 	"slices"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/inventory"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -50,9 +51,9 @@ func (p *AnsibleProject) ListTasks() ResolvedTasks {
 }
 
 type Parser struct {
-	fsys   fs.FS
-	root   string
-	logger *log.Logger
+	fsys    fs.FS
+	rootSrc fsutils.FileSource
+	logger  *log.Logger
 
 	// resolvedTasks caches the fully expanded list of tasks for each playbook,
 	// keyed by the playbook's file path to avoid redundant parsing and resolution.
@@ -65,9 +66,9 @@ type Parser struct {
 
 func New(fsys fs.FS, root string) *Parser {
 	return &Parser{
-		fsys:   fsys,
-		root:   root,
-		logger: log.WithPrefix("ansible parser"),
+		fsys:    fsys,
+		rootSrc: fsutils.NewFileSource(fsys, root),
+		logger:  log.WithPrefix("ansible parser"),
 
 		resolvedTasks: make(map[string][]*ResolvedTask),
 		roleCache:     make(map[string]*Role),
@@ -89,14 +90,18 @@ func (p *Parser) Parse(playbooks ...string) (*AnsibleProject, error) {
 		return nil, err
 	}
 
-	if len(playbooks) == 0 {
-		playbooks, err = p.resolvePlaybooksPaths(project)
+	playbookSources := lo.Map(playbooks, func(playbookPath string, _ int) fsutils.FileSource {
+		return p.rootSrc.Join(playbookPath)
+	})
+
+	if len(playbookSources) == 0 {
+		playbookSources, err = p.resolvePlaybooksPaths(project)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	tasks, err := p.parsePlaybooks(project, playbooks)
+	tasks, err := p.parsePlaybooks(project, playbookSources)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +116,7 @@ func (p *Parser) initProject() (*AnsibleProject, error) {
 		return nil, xerrors.Errorf("read config: %w", err)
 	}
 
-	// TODO: pass sources
+	// TODO: pass sources, for example, from flags
 	inventory, err := inventory.LoadAuto(p.fsys, inventory.LoadOptions{
 		InventoryPath: cfg.Inventory,
 		Sources:       nil,
@@ -121,7 +126,7 @@ func (p *Parser) initProject() (*AnsibleProject, error) {
 	}
 
 	project := &AnsibleProject{
-		path:      p.root,
+		path:      p.rootSrc.Path,
 		cfg:       cfg,
 		inventory: inventory,
 	}
@@ -129,17 +134,18 @@ func (p *Parser) initProject() (*AnsibleProject, error) {
 	return project, nil
 }
 
-func (p *Parser) parsePlaybooks(proj *AnsibleProject, paths []string) ([]*ResolvedTask, error) {
+func (p *Parser) parsePlaybooks(proj *AnsibleProject, sources []fsutils.FileSource) ([]*ResolvedTask, error) {
 	playbooks := make(map[string]*Playbook)
 
-	for _, filePath := range paths {
-		pb, err := p.loadPlaybook(filePath)
+	for _, src := range sources {
+		pb, err := p.loadPlaybook(src)
 		if err != nil {
 			// Skip files that are YAML but not valid playbooks.
-			p.logger.Debug("Skipping YAML file: not a playbook", log.FilePath(filePath), log.Err(err))
+			p.logger.Debug("Skipping YAML file: not a playbook",
+				log.FilePath(src.Path), log.Err(err))
 			continue
 		}
-		playbooks[filePath] = pb
+		playbooks[src.Path] = pb
 	}
 
 	entryPoints := findEntryPoints(playbooks)
@@ -150,11 +156,10 @@ func (p *Parser) parsePlaybooks(proj *AnsibleProject, paths []string) ([]*Resolv
 	// Handle special cases such as 'all', 'localhost', and dynamic variables.
 	// Optionally, add a mode to bypass this filtering for full scans or debugging.
 
-	// Resolve tasks from entrypoint playbooks — those not only imported/included by others.
-	// This ensures processing of root playbooks that serve as execution starting points.
+	// Resolve tasks from entrypoint playbooks — those that are not imported/included by others.
 	var allTasks []*ResolvedTask
-	for _, filePath := range entryPoints {
-		tasks, err := p.resolvePlaybook(proj, nil, nil, filePath, playbooks)
+	for _, playbookSrc := range entryPoints {
+		tasks, err := p.resolvePlaybook(proj, nil, nil, playbookSrc, playbooks)
 		if err != nil {
 			return nil, xerrors.Errorf("resolve playbook: %w", err)
 		}
@@ -164,33 +169,34 @@ func (p *Parser) parsePlaybooks(proj *AnsibleProject, paths []string) ([]*Resolv
 	return allTasks, nil
 }
 
-func (p *Parser) loadPlaybook(filePath string) (*Playbook, error) {
+func (p *Parser) loadPlaybook(f fsutils.FileSource) (*Playbook, error) {
 	var plays []*Play
-	if err := decodeYAMLFile(p.fsys, filePath, &plays); err != nil {
+	if err := decodeYAMLFile(f, &plays); err != nil {
 		return nil, xerrors.Errorf("decode YAML file: %w", err)
 	}
 
 	return &Playbook{
-		Path:  filePath,
+		Src:   f,
 		Plays: plays,
 	}, nil
 }
 
-func findEntryPoints(playbooks map[string]*Playbook) []string {
+func findEntryPoints(playbooks map[string]*Playbook) []fsutils.FileSource {
 	included := set.New[string]()
 
 	for _, pb := range playbooks {
 		for _, p := range pb.Plays {
 			if incPath, ok := p.includedPlaybook(); ok {
-				included.Append(pb.resolveIncludedPath(incPath))
+				includedSrc := pb.resolveIncludedSrc(incPath)
+				included.Append(includedSrc.Path)
 			}
 		}
 	}
 
-	var entryPoints []string
-	for path := range playbooks {
+	var entryPoints []fsutils.FileSource
+	for path, pb := range playbooks {
 		if !included.Contains(path) {
-			entryPoints = append(entryPoints, path)
+			entryPoints = append(entryPoints, pb.Src)
 		}
 	}
 
@@ -200,34 +206,34 @@ func findEntryPoints(playbooks map[string]*Playbook) []string {
 // resolvePlaybook recursively expands tasks, roles, and included playbooks within the given playbook.
 func (p *Parser) resolvePlaybook(
 	proj *AnsibleProject, parent *iacTypes.Metadata, parentVars vars.Vars,
-	filePath string, playbooks map[string]*Playbook,
+	playbookSrc fsutils.FileSource, playbooks map[string]*Playbook,
 ) ([]*ResolvedTask, error) {
-	pb, exists := playbooks[filePath]
+	pb, exists := playbooks[playbookSrc.Path]
 	if !exists {
 		// Attempting to load a playbook outside the scan directory (may be an included playbook).
 		var err error
-		pb, err = p.loadPlaybook(filePath)
+		pb, err = p.loadPlaybook(playbookSrc)
 		if err != nil {
 			return nil, xerrors.Errorf("load playbook: %w", err)
 		}
 		// Caching the loading external playbook for reuse
-		playbooks[filePath] = pb
+		playbooks[playbookSrc.Path] = pb
 	}
 
-	if cached, exists := p.resolvedTasks[pb.Path]; exists {
+	if cached, exists := p.resolvedTasks[pb.Src.Path]; exists {
 		return cached, nil
 	}
 
 	// Ansible loads host and group variable files by searching paths
 	// relative to the playbook file.
 	// See https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#organizing-host-and-group-variables
-	playbookInvVars := vars.LoadVars(vars.PlaybookVarsSources(p.fsys, filePath))
+	playbookInvVars := vars.LoadVars(vars.PlaybookVarsSources(playbookSrc.Dir()))
 
 	var tasks []*ResolvedTask
 	for _, play := range pb.Plays {
 
 		// Initializing the metadata of the play and its nested elements
-		play.initMetadata(p.fsys, parent, pb.Path)
+		play.initMetadata(playbookSrc, parent)
 
 		// TODO: resolve hosts by pattern:
 		// https://docs.ansible.com/ansible/latest/inventory_guide/intro_patterns.html#common-patterns
@@ -306,17 +312,17 @@ func (p *Parser) resolvePlaybook(
 		// https://docs.ansible.com/ansible/latest/collections/ansible/builtin/import_playbook_module.html
 		if incPath, ok := play.includedPlaybook(); ok {
 			// TODO: check metadata
-			fullIncPath := pb.resolveIncludedPath(incPath)
-			includedTasks, err := p.resolvePlaybook(proj, &play.metadata, playVars, fullIncPath, playbooks)
+			fullIncSrc := pb.resolveIncludedSrc(incPath)
+			includedTasks, err := p.resolvePlaybook(proj, &play.metadata, playVars, fullIncSrc, playbooks)
 			if err != nil {
-				return nil, xerrors.Errorf("load playbook from %q: %w", fullIncPath, err)
+				return nil, xerrors.Errorf("load playbook from %q: %w", fullIncSrc.Path, err)
 			}
 
 			tasks = append(tasks, includedTasks...)
 		}
 	}
 
-	p.resolvedTasks[pb.Path] = tasks
+	p.resolvedTasks[pb.Src.Path] = tasks
 	return tasks, nil
 }
 
@@ -328,21 +334,20 @@ func (p *Parser) loadRole(parent *iacTypes.Metadata, play *Play, roleName string
 		return cachedRole, nil
 	}
 
-	rolePath, exists := p.resolveRolePath(roleName)
-	if !exists || rolePath == "" {
+	roleSrc, exists := p.resolveRolePath(play.src.Dir(), roleName)
+	if !exists || roleSrc.Path == "" {
 		return nil, xerrors.Errorf("role %q not found", roleName)
 	}
 
 	r := &Role{
 		name:        roleName,
-		path:        rolePath,
-		fsys:        p.fsys,
+		roleSrc:     roleSrc,
 		play:        play,
 		cachedTasks: make(map[string][]*Task),
 	}
-	r.initMetadata(p.fsys, parent, rolePath)
+	r.initMetadata(roleSrc.FS, parent, roleSrc.Path)
 
-	if err := p.loadRoleDependencies(r, rolePath); err != nil {
+	if err := p.loadRoleDependencies(r); err != nil {
 		return nil, xerrors.Errorf("load role deps: %w", err)
 	}
 
@@ -350,17 +355,17 @@ func (p *Parser) loadRole(parent *iacTypes.Metadata, play *Play, roleName string
 	return r, nil
 }
 
-func (p *Parser) loadRoleDependencies(r *Role, rolePath string) error {
+func (p *Parser) loadRoleDependencies(r *Role) error {
 	// The meta directory is an exception: it always uses the standard
 	// main.yml (or main.yaml/main) file without allowing custom filenames or overrides.
-	metaPath := path.Join(rolePath, "meta", "main")
+	metaSrc := r.roleSrc.Join("meta", "main")
 
 	var roleMeta RoleMeta
-	if err := decodeYAMLFileWithExtension(p.fsys, metaPath, &roleMeta, yamlExtensions); err != nil && !errors.Is(err, os.ErrNotExist) {
+	if err := decodeYAMLFileWithExtension(metaSrc, &roleMeta, yamlExtensions); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return xerrors.Errorf("load meta: %w", err)
 	}
 
-	roleMeta.updateMetadata(p.fsys, &r.metadata, metaPath)
+	roleMeta.updateMetadata(metaSrc.FS, &r.metadata, metaSrc.Path)
 
 	for _, dep := range roleMeta.dependencies() {
 		depRole, err := p.loadRole(&roleMeta.metadata, r.play, dep.name())
@@ -374,20 +379,23 @@ func (p *Parser) loadRoleDependencies(r *Role, rolePath string) error {
 
 // TODO: support all possible locations of the role
 // https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html
-func (p *Parser) resolveRolePath(name string) (string, bool) {
-	rolePaths := []string{path.Join(p.root, "roles", name)}
-	if defaultRolesPath, exists := os.LookupEnv("DEFAULT_ROLES_PATH"); exists {
-		// TODO: DEFAULT_ROLES_PATH can point to a directory outside of the virtual FS
-		rolePaths = append(rolePaths, filepath.Join(defaultRolesPath, name))
+func (p *Parser) resolveRolePath(playbookDirSrc fsutils.FileSource, name string) (fsutils.FileSource, bool) {
+	roleSources := []fsutils.FileSource{
+		playbookDirSrc.Join("roles", name),
 	}
 
-	for _, rolePath := range rolePaths {
-		if pathExists(p.fsys, rolePath) {
-			return rolePath, true
+	if defaultRolesPath, exists := os.LookupEnv("DEFAULT_ROLES_PATH"); exists {
+		rolesSrc := fsutils.NewFileSource(nil, defaultRolesPath)
+		roleSources = append(roleSources, rolesSrc.Join(name))
+	}
+
+	for _, roleSrc := range roleSources {
+		if exists, _ := roleSrc.Exists(); exists {
+			return roleSrc, true
 		}
 	}
 
-	return "", false
+	return fsutils.FileSource{}, false
 }
 
 // expandTask dispatches task expansion based on task type (block, include, role).
@@ -467,12 +475,10 @@ func (p *Parser) expandTaskInclude(parentVars vars.Vars, task *Task) ([]*Resolve
 		return nil, xerrors.New("task file is empty")
 	}
 
-	// TODO: the task path can be absolute
-	tasksFile := path.Join(path.Dir(task.path()), filepath.ToSlash(taskPath))
-
-	roleTasks, err := loadTasks(&task.metadata, p.fsys, tasksFile)
+	taskSrc := task.src.Dir().Join(taskPath)
+	roleTasks, err := loadTasks(&task.metadata, taskSrc)
 	if err != nil {
-		return nil, xerrors.Errorf("load tasks from %q: %w", tasksFile, err)
+		return nil, xerrors.Errorf("load tasks from %q: %w", taskSrc.Path, err)
 	}
 
 	var allTasks []*ResolvedTask
@@ -580,71 +586,59 @@ func getStringParam(m Module, paramKey string) string {
 	return ""
 }
 
-func decodeYAMLFileWithExtension(fsys fs.FS, filePath string, dst any, extensions []string) error {
+func decodeYAMLFileWithExtension(fileSrc fsutils.FileSource, dst any, extensions []string) error {
 	for _, ext := range extensions {
-		file := filePath + ext
-		if pathExists(fsys, file) {
-			return decodeYAMLFile(fsys, file, dst)
+		f := fsutils.FileSource{FS: fileSrc.FS, Path: fileSrc.Path + ext}
+		if exists, _ := f.Exists(); exists {
+			return decodeYAMLFile(f, dst)
 		}
 	}
-	return os.ErrNotExist
+	return fs.ErrNotExist
 }
 
-func decodeYAMLFile(fsys fs.FS, filePath string, dst any) error {
-	data, err := fs.ReadFile(fsys, filePath)
+func decodeYAMLFile(f fsutils.FileSource, dst any) error {
+	data, err := f.ReadFile()
 	if err != nil {
-		return xerrors.Errorf("read file %s: %w", filePath, err)
+		return xerrors.Errorf("read file %s: %w", f.Path, err)
 	}
 	processedData := wrapTemplatesQuotes(string(data))
 	if err := yaml.Unmarshal([]byte(processedData), dst); err != nil {
-		return xerrors.Errorf("unmarshal YAML file %s: %w", filePath, err)
+		return xerrors.Errorf("unmarshal YAML file %s: %w", f.Path, err)
 	}
 	return nil
 }
 
 func (p *Parser) readAnsibleConfig() (AnsibleConfig, error) {
-	return LoadConfig(p.fsys, p.root)
+	return LoadConfig(p.fsys, p.rootSrc.Path)
 }
 
-func (p *Parser) resolvePlaybooksPaths(project *AnsibleProject) ([]string, error) {
-	entries, err := fs.ReadDir(p.fsys, project.path)
+func (p *Parser) resolvePlaybooksPaths(_ *AnsibleProject) ([]fsutils.FileSource, error) {
+	entries, err := p.rootSrc.ReadDir()
 	if err != nil {
 		return nil, err
 	}
 
-	var res []string
+	var res []fsutils.FileSource
 
 	for _, entry := range entries {
 		if isYAMLFile(entry.Name()) {
-			res = append(res, filepath.Join(project.path, entry.Name()))
+			res = append(res, p.rootSrc.Join(entry.Name()))
 		}
 	}
 
 	return res, nil
 }
 
-func loadTasks(parentMetadata *iacTypes.Metadata, fsys fs.FS, tasksFile string) ([]*Task, error) {
+func loadTasks(parentMetadata *iacTypes.Metadata, fileSrc fsutils.FileSource) ([]*Task, error) {
 	var fileTasks []*Task
 	tasksExtensions := append(yamlExtensions, "")
-	if err := decodeYAMLFileWithExtension(fsys, tasksFile, &fileTasks, tasksExtensions); err != nil {
-		return nil, xerrors.Errorf("decode tasks file %q: %w", tasksFile, err)
+	if err := decodeYAMLFileWithExtension(fileSrc, &fileTasks, tasksExtensions); err != nil {
+		return nil, xerrors.Errorf("decode tasks file %q: %w", fileSrc.Path, err)
 	}
-	for _, roleTask := range fileTasks {
-		roleTask.initMetadata(fsys, parentMetadata, tasksFile)
+	for _, task := range fileTasks {
+		task.initMetadata(fileSrc, parentMetadata)
 	}
 	return fileTasks, nil
-}
-
-func pathExists(fsys fs.FS, filePath string) bool {
-	if filepath.IsAbs(filePath) {
-		if _, err := os.Stat(filePath); err == nil {
-			return true
-		}
-	}
-	if _, err := fs.Stat(fsys, filePath); err == nil {
-		return true
-	}
-	return false
 }
 
 var yamlExtensions = []string{".yml", ".yaml"}

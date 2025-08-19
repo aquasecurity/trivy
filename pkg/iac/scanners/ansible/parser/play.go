@@ -1,12 +1,11 @@
 package parser
 
 import (
-	"io/fs"
-	"path"
 	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -30,13 +29,13 @@ import (
 //
 //   - ...
 type Playbook struct {
-	Path  string
+	Src   fsutils.FileSource
 	Plays []*Play
 	Tasks []*Task
 }
 
-func (pb *Playbook) resolveIncludedPath(incPath string) string {
-	return path.Clean(path.Join(path.Dir(pb.Path), incPath))
+func (pb *Playbook) resolveIncludedSrc(incPath string) fsutils.FileSource {
+	return pb.Src.Dir().Join(incPath)
 }
 
 // Play represents a single play in an Ansible playbook.
@@ -56,6 +55,7 @@ func (pb *Playbook) resolveIncludedPath(incPath string) string {
 type Play struct {
 	inner playInner
 
+	src      fsutils.FileSource
 	metadata iacTypes.Metadata
 	rng      Range
 
@@ -124,19 +124,22 @@ func (p *Play) roleDefinitions() []*RoleDefinition {
 	return p.inner.RoleDefinitions
 }
 
-func (p *Play) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, filePath string) {
+func (p *Play) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadata) {
+	fsys, relPath := fileSrc.FSAndRelPath()
+
+	p.src = fileSrc
 	p.metadata = iacTypes.NewMetadata(
-		iacTypes.NewRange(filePath, p.rng.startLine, p.rng.endLine, "", fsys),
+		iacTypes.NewRange(relPath, p.rng.startLine, p.rng.endLine, "", fsys),
 		"play",
 	)
 	p.metadata.SetParentPtr(parent)
 
 	for _, roleDef := range p.inner.RoleDefinitions {
-		roleDef.initMetadata(fsys, &p.metadata, filePath)
+		roleDef.initMetadata(fileSrc, &p.metadata)
 	}
 
 	for _, task := range p.listTasks() {
-		task.initMetadata(fsys, &p.metadata, filePath)
+		task.initMetadata(fileSrc, &p.metadata)
 	}
 }
 
@@ -184,9 +187,10 @@ func (r *RoleDefinition) UnmarshalYAML(node *yaml.Node) error {
 	return node.Decode(&r.inner)
 }
 
-func (r *RoleDefinition) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) {
+func (r *RoleDefinition) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadata) {
+	fsys, relPath := fileSrc.FSAndRelPath()
 	r.metadata = iacTypes.NewMetadata(
-		iacTypes.NewRange(path, r.rng.startLine, r.rng.endLine, "", fsys),
+		iacTypes.NewRange(relPath, r.rng.startLine, r.rng.endLine, "", fsys),
 		"",
 	)
 	r.metadata.SetParentPtr(parent)

@@ -12,6 +12,8 @@ import (
 	"strings"
 
 	"gopkg.in/yaml.v3"
+
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
 )
 
 var VarFilesExtensions = []string{"", ".yml", ".yaml", ".json"}
@@ -36,27 +38,26 @@ func notAllGroup(path string) bool {
 	return !isAllGroup(path)
 }
 
-func InventoryVarsSources(fsys fs.FS, dir string) []VarsSource {
+func InventoryVarsSources(fileSrc fsutils.FileSource) []VarsSource {
 	return []VarsSource{
-		{FS: fsys, Path: path.Join(dir, "group_vars"), Scope: ScopeGroupAll, Match: isAllGroup},
-		{FS: fsys, Path: path.Join(dir, "group_vars"), Scope: ScopeGroupSpecific, Match: notAllGroup},
-		{FS: fsys, Path: path.Join(dir, "host_vars"), Scope: ScopeHost},
+		{FileSrc: fileSrc.Join("group_vars"), Scope: ScopeGroupAll, Match: isAllGroup},
+		{FileSrc: fileSrc.Join("group_vars"), Scope: ScopeGroupSpecific, Match: notAllGroup},
+		{FileSrc: fileSrc.Join("host_vars"), Scope: ScopeHost},
 	}
 }
 
-func PlaybookVarsSources(fsys fs.FS, dir string) []VarsSource {
+func PlaybookVarsSources(fileSrc fsutils.FileSource) []VarsSource {
 	return []VarsSource{
-		{FS: fsys, Path: path.Join(dir, "group_vars"), Scope: ScopeGroupAll, Match: isAllGroup},
-		{FS: fsys, Path: path.Join(dir, "group_vars"), Scope: ScopeGroupSpecific, Match: notAllGroup},
-		{FS: fsys, Path: path.Join(dir, "host_vars"), Scope: ScopeHost},
+		{FileSrc: fileSrc.Join("group_vars"), Scope: ScopeGroupAll, Match: isAllGroup},
+		{FileSrc: fileSrc.Join("group_vars"), Scope: ScopeGroupSpecific, Match: notAllGroup},
+		{FileSrc: fileSrc.Join("host_vars"), Scope: ScopeHost},
 	}
 }
 
 type VarsSource struct {
-	FS    fs.FS
-	Path  string
-	Scope VarScope // variables scope
-	Match func(path string) bool
+	FileSrc fsutils.FileSource
+	Scope   VarScope // variables scope
+	Match   func(path string) bool
 }
 
 // LoadedVars stores all loaded variables organized by scope and key (host or group).
@@ -107,7 +108,7 @@ func LoadVars(sources []VarsSource) LoadedVars {
 }
 
 func loadSourceVars(src VarsSource) (map[string]Vars, error) {
-	info, err := fs.Stat(src.FS, src.Path)
+	info, err := src.FileSrc.Stat()
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +116,7 @@ func loadSourceVars(src VarsSource) (map[string]Vars, error) {
 	result := make(map[string]Vars)
 
 	if info.IsDir() {
-		entries, err := fs.ReadDir(src.FS, src.Path)
+		entries, err := src.FileSrc.ReadDir()
 		if err != nil {
 			return nil, err
 		}
@@ -124,26 +125,26 @@ func loadSourceVars(src VarsSource) (map[string]Vars, error) {
 
 		for _, e := range entries {
 			name := e.Name()
-			filePath := filepath.Join(src.Path, name)
+			entrySrc := src.FileSrc.Join(name)
 			target := strings.TrimSuffix(name, path.Ext(name))
 
-			if src.Match != nil && !src.Match(filePath) {
+			if src.Match != nil && !src.Match(entrySrc.Path) {
 				continue
 			}
 
 			if e.IsDir() {
-				walkFn := func(path string, d fs.DirEntry) error {
+				walkFn := func(fileSrc fsutils.FileSource, d fs.DirEntry) error {
 					if !d.IsDir() {
-						processFile(src.FS, path, target, result)
+						processFile(fileSrc, target, result)
 					}
 					return nil
 				}
-				if err := walkFilesFirst(src.FS, filePath, walkFn); err != nil {
+				if err := walkFilesFirst(entrySrc, walkFn); err != nil {
 					// TODO: log error
 					continue
 				}
 			} else {
-				processFile(src.FS, filePath, target, result)
+				processFile(entrySrc, target, result)
 			}
 
 		}
@@ -152,12 +153,12 @@ func loadSourceVars(src VarsSource) (map[string]Vars, error) {
 	return result, nil
 }
 
-func processFile(fsys fs.FS, filePath, target string, result map[string]Vars) {
-	if shouldSkipFile(filePath) {
+func processFile(fileSrc fsutils.FileSource, target string, result map[string]Vars) {
+	if shouldSkipFile(fileSrc.Path) {
 		return
 	}
 
-	vars, err := readVars(fsys, filePath)
+	vars, err := readVars(fileSrc)
 	if err != nil {
 		// TODO: log error
 		return
@@ -176,22 +177,22 @@ func sortEntries(entries []fs.DirEntry) {
 	})
 }
 
-func walkFilesFirst(fsys fs.FS, root string, fn func(path string, d fs.DirEntry) error) error {
-	entries, err := fs.ReadDir(fsys, root)
+func walkFilesFirst(rootSrc fsutils.FileSource, fn func(fileSrc fsutils.FileSource, d fs.DirEntry) error) error {
+	entries, err := rootSrc.ReadDir()
 	if err != nil {
 		return err
 	}
 
 	sortEntries(entries)
 	for _, entry := range entries {
-		path := root + "/" + entry.Name()
-		if err := fn(path, entry); err != nil {
+		entrySrc := rootSrc.Join(entry.Name())
+		if err := fn(entrySrc, entry); err != nil {
 			return err
 		}
 
 		if entry.IsDir() {
 			// recursively traversing the subdirectory
-			if err := walkFilesFirst(fsys, path, fn); err != nil {
+			if err := walkFilesFirst(entrySrc, fn); err != nil {
 				return err
 			}
 		}
@@ -211,8 +212,8 @@ func shouldSkipFile(filePath string) bool {
 	return false
 }
 
-func readVars(fsys fs.FS, filePath string) (map[string]any, error) {
-	data, err := fs.ReadFile(fsys, filePath)
+func readVars(fileSrc fsutils.FileSource) (map[string]any, error) {
+	data, err := fileSrc.ReadFile()
 	if err != nil {
 		return nil, err
 	}

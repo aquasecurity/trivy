@@ -2,14 +2,14 @@ package parser
 
 import (
 	"errors"
-	"io/fs"
-	"log"
 
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const (
@@ -44,6 +44,7 @@ type RoleIncludeModule struct {
 type Task struct {
 	inner    taskInner
 	rng      Range
+	src      fsutils.FileSource
 	metadata iacTypes.Metadata
 
 	raw  map[string]*Node
@@ -75,11 +76,6 @@ func (t *Task) UnmarshalYAML(node *yaml.Node) error {
 	return nil
 }
 
-func (t *Task) path() string {
-	// TODO: set the path explicitly when creating the task
-	return t.metadata.Range().GetFilename()
-}
-
 func (t *Task) getPlay() *Play {
 	if t.role != nil {
 		return t.role.play
@@ -91,19 +87,21 @@ func (t *Task) isBlock() bool {
 	return len(t.inner.Block) > 0
 }
 
-func (t *Task) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, filePath string) {
+func (t *Task) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadata) {
+	fsys, relPath := fileSrc.FSAndRelPath()
+
+	t.src = fileSrc
 	t.metadata = iacTypes.NewMetadata(
-		iacTypes.NewRange(filePath, t.rng.startLine, t.rng.endLine, "", fsys),
+		iacTypes.NewRange(relPath, t.rng.startLine, t.rng.endLine, "", fsys),
 		"task", // TODO add reference
 	)
 	t.metadata.SetParentPtr(parent)
 
 	for _, n := range t.raw {
-		// TODO: parse null attributes
 		if n == nil {
 			continue
 		}
-		n.initMetadata(fsys, &t.metadata, filePath, nil)
+		n.initMetadata(fileSrc, &t.metadata, nil)
 	}
 }
 
@@ -150,8 +148,7 @@ func (t ResolvedTasks) GetModules(keys ...string) []Module {
 			if errors.Is(err, ErrModuleNotFound) {
 				continue
 			}
-			// TODO: use pkg/log
-			log.Printf("Failed to find module: %v", err)
+			log.Debug("Failed to find module", log.Err(err))
 			continue
 		}
 		modules = append(modules, m)

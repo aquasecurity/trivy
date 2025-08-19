@@ -4,37 +4,48 @@ import (
 	"io/fs"
 	"os"
 	"path"
-	"path/filepath"
 	"strings"
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 const defaultHostsFile = "/etc/ansible/hosts"
 
-// InventorySource defines a source from which inventory data can be loaded.
-//
-// It may point to filesystem directories containing hosts files and
-// variables, or directly provide an inline list of hosts.
-//
-// The source can contain either InlineHosts or a combination of HostsDirs and VarsDir.
-// HostsDirs may be empty.
-type InventorySource struct {
-	// HostsDirs is a list of paths to directories containing hosts files.
-	HostsDirs []string
-
-	// VarsDir is the path to the directory containing host_vars and group_vars.
-	VarsDir string
-
-	// InlineHosts is a list of hosts provided directly in-memory instead of
-	// loading them from files.
-	InlineHosts []string
+// InventorySource represents a source from which inventory data can be loaded.
+type InventorySource interface {
+	isInventorySource()
 }
+
+type InlineHostsSource struct {
+	// Hosts is a list of hosts provided directly in-memory instead of
+	// loading them from files.
+	Hosts []string
+}
+
+func (InlineHostsSource) isInventorySource() {}
+
+type HostsDirsSource struct {
+	// Dirs is a list of paths to directories containing hosts files.
+	Dirs []fsutils.FileSource
+	// VarsDir is the path to the directory containing host_vars and group_vars.
+	VarsDir fsutils.FileSource
+}
+
+func (HostsDirsSource) isInventorySource() {}
+
+type HostFileSource struct {
+	// File is a path to hosts file.
+	File fsutils.FileSource
+	// VarsDir is the path to the directory containing host_vars and group_vars.
+	VarsDir fsutils.FileSource
+}
+
+func (HostFileSource) isInventorySource() {}
 
 type LoadOptions struct {
 	// InventoryPath is the path from the "inventory" config
@@ -53,7 +64,7 @@ func LoadAuto(fsys fs.FS, opts LoadOptions) (*Inventory, error) {
 		return nil, xerrors.Errorf("resolve inventory sources: %w", err)
 	}
 
-	inv, err := LoadFromSources(fsys, sources)
+	inv, err := LoadFromSources(sources)
 	if err != nil {
 		return nil, xerrors.Errorf("load from sources: %w", err)
 	}
@@ -74,7 +85,8 @@ func LoadAuto(fsys fs.FS, opts LoadOptions) (*Inventory, error) {
 func ResolveSources(fsys fs.FS, opts LoadOptions) ([]InventorySource, error) {
 	if len(opts.Sources) == 0 {
 		if opts.InventoryPath != "" {
-			src, err := resolveSource(fsys, opts.InventoryPath, set.New[string]())
+			fileSrc := fsutils.NewFileSource(fsys, opts.InventoryPath)
+			src, err := resolveSource(fileSrc, set.New[string]())
 			if err != nil {
 				return nil, xerrors.Errorf("resolve source from config: %w", err)
 			}
@@ -88,7 +100,8 @@ func ResolveSources(fsys fs.FS, opts LoadOptions) ([]InventorySource, error) {
 	seen := set.New[string]()
 
 	for _, s := range opts.Sources {
-		src, err := resolveSource(fsys, s, seen)
+		fileSrc := fsutils.NewFileSource(fsys, s)
+		src, err := resolveSource(fileSrc, seen)
 		if err != nil {
 			return nil, err
 		}
@@ -98,39 +111,40 @@ func ResolveSources(fsys fs.FS, opts LoadOptions) ([]InventorySource, error) {
 	return result, nil
 }
 
-func makeFileSource(file string) InventorySource {
-	return InventorySource{
-		HostsDirs: []string{file},
-		VarsDir:   filepath.Dir(file),
+func makeHostFileSource(fileSrc fsutils.FileSource) InventorySource {
+	return HostFileSource{
+		File:    fileSrc,
+		VarsDir: fileSrc.Dir(),
 	}
 }
 
 // defaultInventorySources returns sources from cfg or system defaults.
 func defaultInventorySources() ([]InventorySource, error) {
 	// TODO: use ANSIBLE_INVENTORY env
-	if fsutils.FileExists(defaultHostsFile) {
-		return []InventorySource{makeFileSource(defaultHostsFile)}, nil
+	if _, err := os.Stat(defaultHostsFile); err == nil {
+		fileSrc := fsutils.NewFileSource(nil, defaultHostsFile)
+		return []InventorySource{makeHostFileSource(fileSrc)}, nil
 	}
 	return nil, nil
 }
 
 // resolveSource resolves a single source path: file, dir, or dir tree.
-func resolveSource(fsys fs.FS, path string, seen set.Set[string]) (InventorySource, error) {
+func resolveSource(fileSrc fsutils.FileSource, seen set.Set[string]) (InventorySource, error) {
 	// TODO: handle inline host list, e.g. "host1,host2"
-	if looksLikeInlineHosts(path) {
-		return resolveInlineHosts(path)
+	if looksLikeInlineHosts(fileSrc.Path) {
+		return resolveInlineHosts(fileSrc.Path)
 	}
 
-	info, err := fs.Stat(fsys, path)
+	info, err := fileSrc.Stat()
 	if err != nil {
-		return InventorySource{}, err
+		return nil, err
 	}
 
 	if !info.IsDir() {
-		return makeFileSource(path), nil
+		return makeHostFileSource(fileSrc), nil
 	}
 
-	return walkInventoryDir(fsys, path, seen)
+	return walkInventoryDir(fileSrc, seen)
 }
 
 // Stub: determine if path looks like inline host list
@@ -143,52 +157,57 @@ func looksLikeInlineHosts(path string) bool {
 func resolveInlineHosts(path string) (InventorySource, error) {
 	hosts := strings.Split(path, ",")
 	if len(hosts) > 0 {
-		return InventorySource{
-			InlineHosts: hosts,
+		return InlineHostsSource{
+			Hosts: hosts,
 		}, nil
 	}
-	return InventorySource{}, nil
+	return nil, nil
 }
 
 // walkInventoryDir recursively walks a directory and returns all inventory dirs containing files.
-func walkInventoryDir(fsys fs.FS, root string, seen set.Set[string]) (InventorySource, error) {
-	result := InventorySource{
-		VarsDir: root,
+func walkInventoryDir(fileSrc fsutils.FileSource, seen set.Set[string]) (InventorySource, error) {
+	result := HostsDirsSource{
+		VarsDir: fileSrc,
 	}
 
-	err := fs.WalkDir(fsys, root, func(path string, d os.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if !d.IsDir() {
+	if err := fileSrc.WalkDirFS(func(fileSrc fsutils.FileSource, de fs.DirEntry) error {
+		if !de.IsDir() {
 			return nil
 		}
 
 		// TODO: allow files with no extension or with the extensions .json, .yml, or .yaml
-
-		base := filepath.Base(path)
+		base := path.Base(fileSrc.Path)
 		if base == "group_vars" || base == "host_vars" {
 			return nil // skip vars directories
 		}
 
-		hasFiles, _ := dirHasFiles(fsys, path)
-		if hasFiles {
-			cleanPath := filepath.Clean(path)
-			if !seen.Contains(cleanPath) {
-				seen.Append(cleanPath)
-				result.HostsDirs = append(result.HostsDirs, cleanPath)
-			}
+		hasFiles, err := dirHasFiles(fileSrc)
+		if err != nil {
+			log.Debug("Failed to read directory", log.FilePath(fileSrc.Path), log.Err(err))
+			return nil
 		}
-		return nil
-	})
 
-	return result, err
+		if !hasFiles {
+			return nil
+		}
+
+		cleanPath := path.Clean(fileSrc.Path)
+		if !seen.Contains(cleanPath) {
+			seen.Append(cleanPath)
+			result.Dirs = append(result.Dirs, fileSrc)
+		}
+
+		return nil
+	}); err != nil {
+		return nil, xerrors.Errorf("walk dir: %w", err)
+	}
+
+	return result, nil
 }
 
 // dirHasFiles returns true if the directory contains at least one non-directory entry.
-func dirHasFiles(fsys fs.FS, dir string) (bool, error) {
-	ents, err := fs.ReadDir(fsys, dir)
+func dirHasFiles(fileSrc fsutils.FileSource) (bool, error) {
+	ents, err := fileSrc.ReadDir()
 	if err != nil {
 		return false, err
 	}
@@ -206,51 +225,64 @@ func dirHasFiles(fsys fs.FS, dir string) (bool, error) {
 // When multiple inventory sources are provided, Ansible merges
 // variables in the order the sources are specified.
 // See https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#managing-inventory-variable-load-order
-func LoadFromSources(fsys fs.FS, sources []InventorySource) (*Inventory, error) {
-	res := newInlineInventory(nil)
+func LoadFromSources(sources []InventorySource) (*Inventory, error) {
 
+	res := newInlineInventory(nil)
 	externalVars := make(vars.LoadedVars)
 
-	for _, src := range sources {
-
-		if len(src.InlineHosts) > 0 {
-			inv := newInlineInventory(src.InlineHosts)
-			res.Merge(inv)
-			continue
-		}
-
-		for _, hostsDir := range src.HostsDirs {
-			entries, err := fs.ReadDir(fsys, hostsDir)
-			if err != nil {
-				log.Debug("Failed to read dir with hosts files", log.FilePath(hostsDir), log.Err(err))
-				continue
-			}
-
-			for _, entry := range entries {
-				filePath := path.Join(hostsDir, entry.Name())
-				b, err := fs.ReadFile(fsys, filePath)
-				if err != nil {
-					log.Debug("Failed to read hosts file", log.FilePath(filePath), log.Err(err))
-					continue
-				}
-
-				inv, err := ParseYAML(b)
-				if err != nil {
-					log.Debug("Failed to parse hosts file", log.FilePath(filePath), log.Err(err))
-					continue
-				}
-
-				res.Merge(inv)
-			}
-		}
+	for _, source := range sources {
 
 		// Ansible loads host and group variable files by searching paths
 		// relative to the inventory source.
 		// See https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#organizing-host-and-group-variables
-		vars := vars.LoadVars(vars.InventoryVarsSources(fsys, src.VarsDir))
-		externalVars.Merge(vars)
+		switch src := source.(type) {
+		case InlineHostsSource:
+			inv := newInlineInventory(src.Hosts)
+			res.Merge(inv)
+		case HostFileSource:
+			inv, err := readAndParseHosts(src.File)
+			if err != nil {
+				log.Debug("Failed to parse hosts file",
+					log.FilePath(src.File.Path), log.Err(err))
+				continue
+			}
+			res.Merge(inv)
+
+			vars := vars.LoadVars(vars.InventoryVarsSources(src.VarsDir))
+			externalVars.Merge(vars)
+		case HostsDirsSource:
+			for _, hostsDirSrc := range src.Dirs {
+				entries, err := hostsDirSrc.ReadDir()
+				if err != nil {
+					log.Debug("Failed to read dir with hosts files",
+						log.FilePath(hostsDirSrc.Path), log.Err(err))
+					continue
+				}
+
+				for _, entry := range entries {
+					hostFileSrc := hostsDirSrc.Join(entry.Name())
+					inv, err := readAndParseHosts(hostFileSrc)
+					if err != nil {
+						log.Debug("Failed to parse hosts file",
+							log.FilePath(hostFileSrc.Path), log.Err(err))
+						continue
+					}
+					res.Merge(inv)
+				}
+			}
+			vars := vars.LoadVars(vars.InventoryVarsSources(src.VarsDir))
+			externalVars.Merge(vars)
+		}
 	}
 
 	res.applyVars(externalVars)
 	return res, nil
+}
+
+func readAndParseHosts(fileSrc fsutils.FileSource) (*Inventory, error) {
+	b, err := fileSrc.ReadFile()
+	if err != nil {
+		return nil, err
+	}
+	return ParseYAML(b)
 }

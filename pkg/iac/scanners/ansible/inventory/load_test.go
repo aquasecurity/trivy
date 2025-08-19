@@ -2,6 +2,7 @@ package inventory_test
 
 import (
 	"io/fs"
+	"os"
 	"testing"
 	"testing/fstest"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/inventory"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 )
@@ -73,7 +75,6 @@ foo: 10
 		expected vars.Vars
 	}{
 		{
-			name:     "host1 merged vars",
 			hostName: "host1",
 			expected: vars.Vars{
 				"foo":    10, // external host_var from common
@@ -83,13 +84,77 @@ foo: 10
 			},
 		},
 		{
-			name:     "host2 merged vars",
 			hostName: "host2",
 			expected: vars.Vars{
 				"foo":    10,    // external host_var override external group
 				"bar":    15,    // file host
 				"baz":    20,    // external host_var override file host
 				"common": "yes", // from group_vars
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.hostName, func(t *testing.T) {
+			got := inv.ResolveVars(tt.hostName, make(vars.LoadedVars))
+			assert.Equal(t, tt.expected, got)
+		})
+	}
+}
+
+func TestLoadAuto_AbsolutePath(t *testing.T) {
+	tmpFile, err := os.CreateTemp(t.TempDir(), "hosts-*.yml")
+	require.NoError(t, err)
+	defer os.Remove(tmpFile.Name())
+
+	_, err = tmpFile.WriteString(`
+group1:
+  hosts:
+    host1:
+      baz: 5
+  vars:
+    bar: 20
+`)
+	require.NoError(t, err)
+
+	files := map[string]string{
+
+		"dev/hosts": `
+group1:
+  hosts:
+    host1:
+      baz: 10
+    host2:	
+      bar: 15
+  vars:
+    bar: 10
+`,
+	}
+	fsys := testutil.CreateFS(t, files)
+
+	opts := inventory.LoadOptions{
+		Sources: []string{"dev", tmpFile.Name()},
+	}
+
+	inv, err := inventory.LoadAuto(fsys, opts)
+	require.NoError(t, err)
+
+	tests := []struct {
+		name     string
+		hostName string
+		expected vars.Vars
+	}{
+		{
+			hostName: "host1",
+			expected: vars.Vars{
+				"bar": 20, // from second file (group)
+				"baz": 5,  // from second file (host)
+			},
+		},
+		{
+			hostName: "host2",
+			expected: vars.Vars{
+				"bar": 15, // from first file (host)
 			},
 		},
 	}
@@ -118,6 +183,7 @@ func TestResolveInventorySources(t *testing.T) {
 	}
 
 	fsys := fstest.MapFS(files)
+	rootSrc := fsutils.NewFileSource(fsys, ".")
 
 	tests := []struct {
 		name     string
@@ -128,9 +194,9 @@ func TestResolveInventorySources(t *testing.T) {
 			name: "single file",
 			opts: inventory.LoadOptions{Sources: []string{"hosts.yml"}},
 			expected: []inventory.InventorySource{
-				{
-					HostsDirs: []string{"hosts.yml"},
-					VarsDir:   ".",
+				inventory.HostFileSource{
+					File:    rootSrc.Join("hosts.yml"),
+					VarsDir: rootSrc,
 				},
 			},
 		},
@@ -138,9 +204,9 @@ func TestResolveInventorySources(t *testing.T) {
 			name: "single file in subdirectory",
 			opts: inventory.LoadOptions{Sources: []string{"inv/hosts.yml"}},
 			expected: []inventory.InventorySource{
-				{
-					HostsDirs: []string{"inv/hosts.yml"},
-					VarsDir:   "inv",
+				inventory.HostFileSource{
+					File:    rootSrc.Join("inv", "hosts.yml"),
+					VarsDir: rootSrc.Join("inv"),
 				},
 			},
 		},
@@ -148,9 +214,13 @@ func TestResolveInventorySources(t *testing.T) {
 			name: "nested directories with vars",
 			opts: inventory.LoadOptions{Sources: []string{"inv"}},
 			expected: []inventory.InventorySource{
-				{
-					HostsDirs: []string{"inv", "inv/one", "inv/two"},
-					VarsDir:   "inv",
+				inventory.HostsDirsSource{
+					Dirs: []fsutils.FileSource{
+						rootSrc.Join("inv"),
+						rootSrc.Join("inv", "one"),
+						rootSrc.Join("inv", "two"),
+					},
+					VarsDir: rootSrc.Join("inv"),
 				},
 			},
 		},
@@ -158,7 +228,7 @@ func TestResolveInventorySources(t *testing.T) {
 			name: "inline hosts list",
 			opts: inventory.LoadOptions{Sources: []string{"host1,host2"}},
 			expected: []inventory.InventorySource{
-				{InlineHosts: []string{"host1", "host2"}},
+				inventory.InlineHostsSource{Hosts: []string{"host1", "host2"}},
 			},
 		},
 		{
@@ -167,20 +237,28 @@ func TestResolveInventorySources(t *testing.T) {
 				InventoryPath: "hosts.yml",
 			},
 			expected: []inventory.InventorySource{
-				{HostsDirs: []string{"hosts.yml"}, VarsDir: "."},
+				inventory.HostFileSource{File: rootSrc.Join("hosts.yml"), VarsDir: rootSrc},
 			},
 		},
 		{
-			name:     "directory without hosts files",
-			opts:     inventory.LoadOptions{Sources: []string{"emptydir"}},
-			expected: []inventory.InventorySource{{VarsDir: "emptydir"}},
+			name: "directory without hosts files",
+			opts: inventory.LoadOptions{Sources: []string{"emptydir"}},
+			expected: []inventory.InventorySource{
+				inventory.HostsDirsSource{VarsDir: rootSrc.Join("emptydir")},
+			},
 		},
 		{
 			name: "multiple sources",
 			opts: inventory.LoadOptions{Sources: []string{"inv/one", "inv/two"}},
 			expected: []inventory.InventorySource{
-				{HostsDirs: []string{"inv/one"}, VarsDir: "inv/one"},
-				{HostsDirs: []string{"inv/two"}, VarsDir: "inv/two"},
+				inventory.HostsDirsSource{
+					Dirs:    []fsutils.FileSource{rootSrc.Join("inv", "one")},
+					VarsDir: rootSrc.Join("inv", "one"),
+				},
+				inventory.HostsDirsSource{
+					Dirs:    []fsutils.FileSource{rootSrc.Join("inv", "two")},
+					VarsDir: rootSrc.Join("inv", "two"),
+				},
 			},
 		},
 	}
@@ -192,4 +270,31 @@ func TestResolveInventorySources(t *testing.T) {
 			require.ElementsMatch(t, tt.expected, res)
 		})
 	}
+}
+
+func TestResolveInventorySources_AbsolutePath(t *testing.T) {
+	// create a temporary inventory file
+	tmpFile, err := os.CreateTemp(t.TempDir(), "hosts-*.yml")
+	require.NoError(t, err)
+	defer os.Remove(tmpFile.Name())
+
+	opts := inventory.LoadOptions{
+		InventoryPath: tmpFile.Name(),
+	}
+
+	fsys := fstest.MapFS{}
+
+	res, err := inventory.ResolveSources(fsys, opts)
+	require.NoError(t, err)
+
+	fileSrc := fsutils.NewFileSource(nil, tmpFile.Name())
+
+	expected := []inventory.InventorySource{
+		inventory.HostFileSource{
+			File:    fileSrc,
+			VarsDir: fileSrc.Dir(),
+		},
+	}
+
+	require.ElementsMatch(t, expected, res)
 }
