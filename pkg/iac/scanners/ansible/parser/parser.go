@@ -274,49 +274,12 @@ func (p *Parser) resolvePlaybook(
 
 		// https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html#using-roles-at-the-play-level
 		for _, roleDef := range play.roleDefinitions() {
-
-			role, err := p.loadRole(&roleDef.metadata, play, roleDef.name())
+			roleTasks, err := p.resolveRoleDefinitionTasks(roleDef, play, playVars)
 			if err != nil {
-				return nil, xerrors.Errorf("load role %q: %w", roleDef.name(), err)
+				p.logger.Debug("Failed to load role", log.String("role", roleDef.name()))
+				continue
 			}
-
-			p.logger.Debug("Role at the play level loaded",
-				log.String("name", role.name), log.FilePath(role.roleSrc.Path))
-
-			// Ignore non-existent files, as they are loaded by default and may be missing
-			roleDefaults, err := role.defaultVariables("main")
-			if err != nil && !errors.Is(err, fs.ErrNotExist) {
-				p.logger.Debug("Failed to load role default variables", log.Err(err))
-			}
-			roleVariables, err := role.fileVariables("main")
-			if err != nil && !errors.Is(err, fs.ErrNotExist) {
-				p.logger.Debug("Failed to load role variables", log.Err(err))
-			}
-
-			// When using the roles option at the play level, each role ‘x’
-			// looks for files named main.yml, main.yaml, or main (without extension)
-			// in its internal directories (tasks, defaults, vars, etc.).
-			roleScopeVars := vars.MergeVars(
-				// Role default variables have the lowest priority
-				roleDefaults,
-				playVars,
-				roleVariables,
-			)
-
-			// Ignore non-existent files, as they are loaded by default and may be missing
-			roleTasks, err := role.getTasks("main")
-			if err != nil && !errors.Is(err, fs.ErrNotExist) {
-				p.logger.Debug("Failed to load role tasks", log.Err(err))
-			}
-
-			for _, roleTask := range roleTasks {
-				childrenTasks, err := p.expandTask(roleScopeVars, roleTask)
-				if err != nil {
-					p.logger.Debug("Failed to expand role tasks", log.Err(err))
-					continue
-				}
-				tasks = append(tasks, childrenTasks...)
-			}
+			tasks = append(tasks, roleTasks...)
 		}
 
 		// https://docs.ansible.com/ansible/latest/collections/ansible/builtin/import_playbook_module.html
@@ -342,6 +305,55 @@ func (p *Parser) resolvePlaybook(
 		log.FilePath(pb.Src.Path), log.Int("tasks_count", len(tasks)))
 
 	p.resolvedTasks[pb.Src.Path] = tasks
+	return tasks, nil
+}
+
+func (p *Parser) resolveRoleDefinitionTasks(
+	roleDef *RoleDefinition, play *Play, playVars vars.Vars,
+) ([]*ResolvedTask, error) {
+	role, err := p.loadRole(&roleDef.metadata, play, roleDef.name())
+	if err != nil {
+		return nil, xerrors.Errorf("load role %q: %w", roleDef.name(), err)
+	}
+
+	p.logger.Debug("Role at the play level loaded",
+		log.String("name", role.name), log.FilePath(role.roleSrc.Path))
+
+	// Ignore non-existent files, as they are loaded by default and may be missing
+	roleDefaults, err := role.defaultVariables("main")
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		p.logger.Debug("Failed to load role default variables", log.Err(err))
+	}
+	roleVariables, err := role.fileVariables("main")
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		p.logger.Debug("Failed to load role variables", log.Err(err))
+	}
+
+	// When using the roles option at the play level, each role ‘x’
+	// looks for files named main.yml, main.yaml, or main (without extension)
+	// in its internal directories (tasks, defaults, vars, etc.).
+	roleScopeVars := vars.MergeVars(
+		// Role default variables have the lowest priority
+		roleDefaults,
+		playVars,
+		roleVariables,
+	)
+
+	// Ignore non-existent files, as they are loaded by default and may be missing
+	roleTasks, err := role.getTasks("main")
+	if err != nil {
+		return nil, xerrors.Errorf("load role tasks: %w", err)
+	}
+
+	var tasks []*ResolvedTask
+	for _, roleTask := range roleTasks {
+		childrenTasks, err := p.expandTask(roleScopeVars, roleTask)
+		if err != nil {
+			p.logger.Debug("Failed to expand role tasks", log.Err(err))
+			continue
+		}
+		tasks = append(tasks, childrenTasks...)
+	}
 	return tasks, nil
 }
 
