@@ -165,7 +165,6 @@ func (p *Parser) parsePlaybooks(proj *AnsibleProject, paths []string) ([]*Resolv
 
 func (p *Parser) loadPlaybook(filePath string) (*Playbook, error) {
 	var plays []*Play
-	// TODO: parse templates of the following type without quotation marks: {{ public_access }}
 	if err := p.decodeYAMLFile(filePath, &plays); err != nil {
 		return nil, xerrors.Errorf("decode YAML file: %w", err)
 	}
@@ -177,7 +176,6 @@ func (p *Parser) loadPlaybook(filePath string) (*Playbook, error) {
 }
 
 func findEntryPoints(playbooks map[string]*Playbook) []string {
-	// TODO: use set from pkg/set
 	included := set.New[string]()
 
 	for _, pb := range playbooks {
@@ -205,7 +203,7 @@ func (p *Parser) resolvePlaybook(
 ) ([]*ResolvedTask, error) {
 	pb, exists := playbooks[filePath]
 	if !exists {
-		// Attempt to load a playbook outside the scan directory
+		// Attempting to load a playbook outside the scan directory (may be an included playbook).
 		var err error
 		pb, err = p.loadPlaybook(filePath)
 		if err != nil {
@@ -219,6 +217,9 @@ func (p *Parser) resolvePlaybook(
 		return cached, nil
 	}
 
+	// Ansible loads host and group variable files by searching paths
+	// relative to the playbook file.
+	// See https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#organizing-host-and-group-variables
 	playbookInvVars := vars.LoadVars(vars.PlaybookVarsSources(p.fsys, filePath))
 
 	var tasks []*ResolvedTask
@@ -261,12 +262,12 @@ func (p *Parser) resolvePlaybook(
 		// https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html#using-roles-at-the-play-level
 		for _, roleDef := range play.roleDefinitions() {
 
+			role, err := p.loadRole(&roleDef.metadata, play, roleDef.name())
 			// When using the roles option at the play level, each role ‘x’
 			// looks for files named main.yml, main.yaml, or main (without extension)
 			// in its internal directories (tasks, defaults, vars, etc.).
-			role, err := p.loadRole(&roleDef.metadata, play, roleDef.name())
-			// Role default variables have the lowest priority
 			roleVars := vars.MergeVars(
+				// Role default variables have the lowest priority
 				role.defaultVariables("main"),
 				playVars,
 				role.fileVariables("main"),
@@ -274,6 +275,7 @@ func (p *Parser) resolvePlaybook(
 			if err != nil {
 				return nil, xerrors.Errorf("load role %q: %w", roleDef.name(), err)
 			}
+
 			for _, roleTask := range role.getTasks("main") {
 				childrenTasks, err := p.expandTask(roleVars, roleTask)
 				if err != nil {
@@ -581,8 +583,8 @@ func (p *Parser) expandRoleInclude(parentVars vars.Vars, task *Task) ([]*Resolve
 		return nil, xerrors.Errorf("load included role %q: %w", module.Name, err)
 	}
 
-	// Role default variables have the lowest priority
 	roleVars := vars.MergeVars(
+		// Role default variables have the lowest priority
 		role.defaultVariables(module.DefaultsFrom),
 		parentVars,
 		role.fileVariables(module.VarsFrom),

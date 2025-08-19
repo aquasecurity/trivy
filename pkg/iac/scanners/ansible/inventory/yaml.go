@@ -102,8 +102,12 @@ func parseGroup(name string, rg rawGroup, inv *Inventory, parents []string) erro
 	inv.addGroup(name, newGroup)
 
 	// Add hosts
+	// A host can be in multiple groups, but Ansible processes only one instance of the host at runtime.
+	// Ansible merges the data from multiple groups.
 	for hostName, hostVars := range rg.Hosts {
 		groups := set.New(append(parents, name)...)
+		// TODO: support for host ranges, e.g. www[01:50:2].example.com
+		// https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#adding-ranges-of-hosts
 		inv.addHost(hostName, newHost(hostVars, groups))
 	}
 

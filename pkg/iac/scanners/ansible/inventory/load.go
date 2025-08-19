@@ -202,6 +202,10 @@ func dirHasFiles(fsys fs.FS, dir string) (bool, error) {
 
 // LoadFromSources loads inventory files or directories from
 // the given sources and merges them into a single Inventory.
+//
+// When multiple inventory sources are provided, Ansible merges
+// variables in the order the sources are specified.
+// See https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#managing-inventory-variable-load-order
 func LoadFromSources(fsys fs.FS, sources []InventorySource) (*Inventory, error) {
 	res := newInlineInventory(nil)
 
@@ -240,10 +244,13 @@ func LoadFromSources(fsys fs.FS, sources []InventorySource) (*Inventory, error) 
 			}
 		}
 
+		// Ansible loads host and group variable files by searching paths
+		// relative to the inventory source.
+		// See https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#organizing-host-and-group-variables
 		vars := vars.LoadVars(vars.InventoryVarsSources(fsys, src.VarsDir))
 		externalVars.Merge(vars)
 	}
 
-	res.ApplyVars(externalVars)
+	res.applyVars(externalVars)
 	return res, nil
 }
