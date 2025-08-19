@@ -53,6 +53,9 @@ func (f FileSource) FSAndRelPath() (fs.FS, string) {
 }
 
 func (f FileSource) Join(elem ...string) FileSource {
+	for i, e := range elem {
+		elem[i] = filepath.ToSlash(e)
+	}
 	return FileSource{
 		FS:   f.FS,
 		Path: path.Join(append([]string{f.Path}, elem...)...),
