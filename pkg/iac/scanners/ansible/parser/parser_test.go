@@ -161,6 +161,21 @@ dependencies:
 			expectedTasks: []string{"Test task", "Included task", "Imported task"},
 		},
 		{
+			name: "unresolved template in include",
+			files: map[string]string{
+				"playbook.yaml": `---
+- hosts: all
+  tasks:
+    - name: Test task
+      debug:
+        msg: Test task
+
+    - include_tasks: "{{item}}"
+`,
+			},
+			expectedTasks: []string{"Test task"},
+		},
+		{
 			name: "include and import tasks in role",
 			files: map[string]string{
 				"playbook.yaml": `---

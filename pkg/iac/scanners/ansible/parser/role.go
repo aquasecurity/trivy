@@ -10,6 +10,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // Role represent project role
@@ -45,7 +46,7 @@ func (r *Role) getTasks(tasksFile string) ([]*Task, error) {
 		// TODO: find out how direct dependency tasks are loaded
 		depTasks, err := dep.getTasks("main")
 		if err != nil && !errors.Is(err, fs.ErrNotExist) {
-			return nil, xerrors.Errorf("load dependency tasks from %q", dep.name)
+			log.Debug("Failed to load dependency tasks", log.String("dependency", dep.name))
 		} else if err == nil {
 			allTasks = append(allTasks, depTasks...)
 		}
@@ -61,6 +62,7 @@ func (r *Role) getTasks(tasksFile string) ([]*Task, error) {
 		roleTask.role = r
 	}
 	allTasks = append(allTasks, fileTasks...)
+	log.Debug("Role tasks loaded", log.FilePath(tasksFileSrc.Path))
 
 	r.cachedTasks[tasksFile] = allTasks
 	return allTasks, nil
@@ -94,6 +96,7 @@ func (r *Role) loadVars(scope, from string) (vars.Vars, error) {
 
 	// try load from file
 	if err := decodeYAMLFileWithExtension(varsSrc, &variables, vars.VarFilesExtensions); err == nil {
+		log.Debug("Loaded vars file", log.FilePath(varsSrc.Path))
 		return variables, nil
 	}
 
@@ -101,6 +104,7 @@ func (r *Role) loadVars(scope, from string) (vars.Vars, error) {
 		return nil, xerrors.Errorf("collect variables from %q: %w", varsSrc.Path, err)
 	}
 
+	log.Debug("Loaded vars from directory", log.FilePath(varsSrc.Path))
 	return variables, nil
 }
 
