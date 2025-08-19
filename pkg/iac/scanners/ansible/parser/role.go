@@ -3,11 +3,11 @@ package parser
 import (
 	"errors"
 	"io/fs"
-	"path"
 
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -15,8 +15,7 @@ import (
 // Role represent project role
 type Role struct {
 	name     string
-	path     string
-	fsys     fs.FS
+	roleSrc  fsutils.FileSource
 	metadata iacTypes.Metadata
 	play     *Play
 
@@ -47,13 +46,13 @@ func (r *Role) getTasks(tasksFile string) ([]*Task, error) {
 		depTasks, err := dep.getTasks("main")
 		if err != nil && !errors.Is(err, fs.ErrNotExist) {
 			return nil, xerrors.Errorf("load dependency tasks from %q", dep.name)
-		} else {
+		} else if err != nil {
 			allTasks = append(allTasks, depTasks...)
 		}
 	}
 
-	tasksFilePath := path.Join(r.path, "tasks", tasksFile)
-	fileTasks, err := loadTasks(&r.metadata, r.fsys, tasksFilePath)
+	tasksFileSrc := r.roleSrc.Join("tasks", tasksFile)
+	fileTasks, err := loadTasks(&r.metadata, tasksFileSrc)
 	if err != nil {
 		return nil, err
 	}
@@ -75,11 +74,11 @@ func (r *Role) defaultVariables(from string) (vars.Vars, error) {
 	return r.loadVars("defaults", from)
 }
 
-func (r *Role) loadVars(scope string, from string) (vars.Vars, error) {
+func (r *Role) loadVars(scope, from string) (vars.Vars, error) {
 	var variables vars.Vars
-	varsPath := path.Join(r.path, scope, from)
-	if err := decodeYAMLFileWithExtension(r.fsys, varsPath, &variables, vars.VarFilesExtensions); err != nil {
-		return nil, xerrors.Errorf("load vars from %q: %w", varsPath, err)
+	varsSrc := r.roleSrc.Join(scope, from)
+	if err := decodeYAMLFileWithExtension(varsSrc, &variables, vars.VarFilesExtensions); err != nil {
+		return nil, xerrors.Errorf("load vars from %q: %w", varsSrc.Path, err)
 	}
 
 	return variables, nil

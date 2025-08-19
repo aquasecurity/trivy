@@ -2,12 +2,12 @@ package parser
 
 import (
 	"fmt"
-	"io/fs"
 	"strconv"
 	"strings"
 
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -94,9 +94,11 @@ func decodeChildNode(yNode *yaml.Node) (Node, error) {
 	return n, nil
 }
 
-func (n *Node) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, filePath string, nodePath []string) {
+func (n *Node) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadata, nodePath []string) {
+	fsys, relPath := fileSrc.FSAndRelPath()
 	ref := strings.Join(nodePath, ".")
-	rng := iacTypes.NewRange(filePath, n.rng.startLine, n.rng.endLine, "", fsys)
+	rng := iacTypes.NewRange(relPath, n.rng.startLine, n.rng.endLine, "", fsys)
+
 	n.metadata = iacTypes.NewMetadata(rng, ref)
 	n.metadata.SetParentPtr(parent)
 
@@ -107,7 +109,7 @@ func (n *Node) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, filePath stri
 				continue
 			}
 			childPath := append(nodePath, key)
-			attr.initMetadata(fsys, parent, filePath, childPath)
+			attr.initMetadata(fileSrc, parent, childPath)
 		}
 	case []*Node:
 		for idx, attr := range val {
@@ -115,7 +117,7 @@ func (n *Node) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, filePath stri
 				continue
 			}
 			childPath := append(nodePath, fmt.Sprintf("[%d]", idx))
-			attr.initMetadata(fsys, parent, filePath, childPath)
+			attr.initMetadata(fileSrc, parent, childPath)
 		}
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 )
 
@@ -34,8 +35,9 @@ all_var: allvalue
 	}
 
 	fsys := testutil.CreateFS(t, files)
-	sources := vars.PlaybookVarsSources(fsys, ".")
-	sources = append(sources, vars.InventoryVarsSources(fsys, "inventory")...)
+	rootSrc := fsutils.NewFileSource(fsys, ".")
+	sources := vars.PlaybookVarsSources(rootSrc)
+	sources = append(sources, vars.InventoryVarsSources(rootSrc.Join("inventory"))...)
 	got := vars.LoadVars(sources)
 
 	expected := vars.LoadedVars{
