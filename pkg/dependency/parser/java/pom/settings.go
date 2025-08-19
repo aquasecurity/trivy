@@ -14,10 +14,20 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
+type Configuration struct {
+	HTTPHeaders struct {
+		Property []struct {
+			Name  string `xml:"name"`
+			Value string `xml:"value"`
+		} `xml:"property"`
+	} `xml:"httpHeaders"`
+}
+
 type Server struct {
-	ID       string `xml:"id"`
-	Username string `xml:"username"`
-	Password string `xml:"password"`
+	ID            string        `xml:"id"`
+	Username      string        `xml:"username"`
+	Password      string        `xml:"password"`
+	Configuration Configuration `xml:"configuration"`
 }
 
 func (s Server) GetID() string { return s.ID }

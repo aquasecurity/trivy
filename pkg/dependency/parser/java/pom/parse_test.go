@@ -2145,7 +2145,7 @@ func TestPom_Parse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			var remoteRepos []string
+			var remoteRepos []pom.RemoteRepositoryConfig
 			if tt.local {
 				// for local repository
 				t.Setenv("MAVEN_HOME", "testdata/settings/global")
@@ -2153,7 +2153,11 @@ func TestPom_Parse(t *testing.T) {
 				// for remote repository
 				h := http.FileServer(http.Dir(filepath.Join("testdata", "repository")))
 				ts := httptest.NewServer(h)
-				remoteRepos = []string{ts.URL}
+				remoteRepos = []pom.RemoteRepositoryConfig{
+					{
+						URL: ts.URL,
+					},
+				}
 			}
 
 			p := pom.NewParser(tt.inputFile, pom.WithReleaseRemoteRepos(remoteRepos), pom.WithSnapshotRemoteRepos(remoteRepos), pom.WithOffline(tt.offline))

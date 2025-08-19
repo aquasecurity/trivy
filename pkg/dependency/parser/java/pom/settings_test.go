@@ -211,6 +211,91 @@ func Test_ReadSettings(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with user settings containing http headers for authentication",
+			envs: map[string]string{
+				"HOME":           filepath.Join("testdata", "settings", "user-settings-with-http-headers"),
+				"MAVEN_HOME":     "NOT_EXISTING_PATH",
+				"ACTIVE_PROFILE": "test-cicd",
+			},
+			wantSettings: settings{
+				LocalRepository: "",
+				Servers: []Server{
+					{
+						ID: "mycompany-internal-releases",
+						Configuration: Configuration{
+							HTTPHeaders: struct {
+								Property []struct {
+									Name  string `xml:"name"`
+									Value string `xml:"value"`
+								} `xml:"property"`
+							}{
+								Property: []struct {
+									Name  string `xml:"name"`
+									Value string `xml:"value"`
+								}{
+									{Name: "Private-Token", Value: "MyPrivateToken"},
+								},
+							},
+						},
+					},
+					{
+						ID: "mycompany-internal-snapshots",
+						Configuration: Configuration{
+							HTTPHeaders: struct {
+								Property []struct {
+									Name  string `xml:"name"`
+									Value string `xml:"value"`
+								} `xml:"property"`
+							}{
+								Property: []struct {
+									Name  string `xml:"name"`
+									Value string `xml:"value"`
+								}{
+									{Name: "Private-Token", Value: "MyPrivateToken"},
+								},
+							},
+						},
+					},
+				},
+				Profiles: []Profile{
+					{
+						ID: "mycompany",
+						Repositories: []repository{
+							{
+								ID:  "mycompany-internal-releases",
+								URL: "https://mycompany.example.com/repository/internal-releases",
+								Releases: repositoryPolicy{
+									Enabled: true,
+								},
+								Snapshots: repositoryPolicy{
+									Enabled: false,
+								},
+							},
+							{
+								ID:  "mycompany-internal-snapshots",
+								URL: "https://mycompany.example.com/repository/internal-snapshots",
+								Releases: repositoryPolicy{
+									Enabled: false,
+								},
+								Snapshots: repositoryPolicy{
+									Enabled: true,
+								},
+							},
+						},
+					},
+				},
+				ActiveProfiles: []string{"mycompany", "test-cicd"},
+				Mirrors: []Mirror{
+					{
+						ID:       "mycompany-maven-central-mirror",
+						Name:     "mycompany-maven-central-mirror",
+						URL:      "https://mycompany.example.com/repository/maven-central-mirror",
+						MirrorOf: "central",
+					},
+				},
+			},
+		},
+		{
 			name: "happy path with global and user settings containing profile and repositories",
 			envs: map[string]string{
 				"HOME":           filepath.Join("testdata", "settings", "user-settings-with-profile-containing-repositories"),
