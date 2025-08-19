@@ -265,9 +265,9 @@ func init() {
 		return false
 	}
 
-	// TODO improve detection
+	// TODO: improve detection
 	matchers[FileTypeAnsible] = func(name string, r io.ReadSeeker) bool {
-		return slices.Contains([]string{".yml", ".yaml"}, filepath.Ext(name))
+		return slices.Contains([]string{"", ".yml", ".yaml", ".json", ".ini"}, filepath.Ext(name))
 	}
 }
 
