@@ -1,8 +1,11 @@
 package parser
 
 import (
+	"errors"
 	"io/fs"
+	"path"
 
+	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
@@ -12,12 +15,12 @@ import (
 // Role represent project role
 type Role struct {
 	name     string
+	path     string
+	fsys     fs.FS
 	metadata iacTypes.Metadata
 	play     *Play
 
-	tasks    map[string][]*Task
-	defaults map[string]vars.Vars
-	vars     map[string]vars.Vars
+	cachedTasks map[string][]*Task
 
 	directDeps []*Role
 }
@@ -32,35 +35,54 @@ func (r *Role) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, filePath stri
 	r.metadata.SetParentPtr(parent)
 }
 
-func (r *Role) getTasks(tasksFile string) []*Task {
+func (r *Role) getTasks(tasksFile string) ([]*Task, error) {
+	if cached, ok := r.cachedTasks[tasksFile]; ok {
+		return cached, nil
+	}
+
 	var allTasks []*Task
 
 	for _, dep := range r.directDeps {
 		// TODO: find out how direct dependency tasks are loaded
-		allTasks = append(allTasks, dep.getTasks("main")...)
+		depTasks, err := dep.getTasks("main")
+		if err != nil && !errors.Is(err, fs.ErrNotExist) {
+			return nil, xerrors.Errorf("load dependency tasks from %q", dep.name)
+		} else {
+			allTasks = append(allTasks, depTasks...)
+		}
 	}
 
-	// TODO: check if the task file exists
-	roleTasks, exists := r.tasks[tasksFile]
-	_ = exists
-	allTasks = append(allTasks, roleTasks...)
-	return allTasks
+	tasksFilePath := path.Join(r.path, "tasks", tasksFile)
+	fileTasks, err := loadTasks(&r.metadata, r.fsys, tasksFilePath)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, roleTask := range fileTasks {
+		roleTask.role = r
+	}
+	allTasks = append(allTasks, fileTasks...)
+
+	r.cachedTasks[tasksFile] = allTasks
+	return allTasks, nil
 }
 
-func (r *Role) fileVariables(from string) vars.Vars {
-	v, exists := r.vars[from]
-	if exists {
-		return v
-	}
-	return make(vars.Vars)
+func (r *Role) fileVariables(from string) (vars.Vars, error) {
+	return r.loadVars("vars", from)
 }
 
-func (r *Role) defaultVariables(from string) vars.Vars {
-	v, exists := r.defaults[from]
-	if exists {
-		return v
+func (r *Role) defaultVariables(from string) (vars.Vars, error) {
+	return r.loadVars("defaults", from)
+}
+
+func (r *Role) loadVars(scope string, from string) (vars.Vars, error) {
+	var variables vars.Vars
+	varsPath := path.Join(r.path, scope, from)
+	if err := decodeYAMLFileWithExtension(r.fsys, varsPath, &variables, vars.VarFilesExtensions); err != nil {
+		return nil, xerrors.Errorf("load vars from %q: %w", varsPath, err)
 	}
-	return make(vars.Vars)
+
+	return variables, nil
 }
 
 type RoleMeta struct {
