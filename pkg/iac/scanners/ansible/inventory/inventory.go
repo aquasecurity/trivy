@@ -51,14 +51,10 @@ func (inv *Inventory) addHost(name string, newHost *Host) {
 	}
 
 	if h, ok := inv.hosts[name]; ok {
-		// Merge Vars for existing host
 		h.merge(newHost)
 	} else {
 		// Add new host
-		inv.hosts[name] = &Host{
-			Vars:   newHost.Vars.Clone(),
-			Groups: newHost.Groups.Clone(),
-		}
+		inv.hosts[name] = newHost
 	}
 }
 
@@ -78,6 +74,8 @@ func (inv *Inventory) addGroup(name string, newGroup *Group) {
 // merging values from the host itself, its groups, and parent groups,
 // according to Ansible variable precedence rules.
 // https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#understanding-variable-precedence
+// TODO: Add support for "ansible_group_priority"
+// See https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#how-variables-are-merged
 func (inv *Inventory) ResolveVars(hostName string, playbookVars vars.LoadedVars) vars.Vars {
 	effective := make(vars.Vars)
 
@@ -88,7 +86,7 @@ func (inv *Inventory) ResolveVars(hostName string, playbookVars vars.LoadedVars)
 		return nil
 	}
 
-	groupsOrder, err := inv.GroupTraversalOrder(hostName)
+	groupsOrder, err := inv.groupTraversalOrder(hostName)
 	if err != nil {
 		log.Debug("ResolveVars: failed to get group traversal order for host",
 			log.String("host", hostName), log.Err(err))
@@ -131,7 +129,7 @@ func mergeScopeVars(effective vars.Vars, src vars.LoadedVars, scope vars.VarScop
 	}
 }
 
-func (inv *Inventory) GroupTraversalOrder(hostName string) ([]string, error) {
+func (inv *Inventory) groupTraversalOrder(hostName string) ([]string, error) {
 	visited := set.New[string]()
 	temp := set.New[string]()
 	order := make([]string, 0, len(inv.groups))
@@ -148,6 +146,7 @@ func (inv *Inventory) GroupTraversalOrder(hostName string) ([]string, error) {
 		temp.Append(name)
 		group, ok := inv.groups[name]
 		if ok {
+			// // By default, Ansible merges groups at the same parent/child level in alphabetical order.
 			parents := group.Parents.Items()
 			slices.Sort(parents)
 			for _, parent := range parents {
@@ -166,6 +165,8 @@ func (inv *Inventory) GroupTraversalOrder(hostName string) ([]string, error) {
 	if !exists {
 		return nil, fmt.Errorf("host %q not found", hostName)
 	}
+
+	// By default, Ansible merges groups at the same parent/child level in alphabetical order.
 	sortedHostGroups := host.Groups.Items()
 	slices.Sort(sortedHostGroups)
 	for _, name := range sortedHostGroups {
@@ -177,6 +178,10 @@ func (inv *Inventory) GroupTraversalOrder(hostName string) ([]string, error) {
 	return order, nil
 }
 
+// initDefaultGroups creates two default groups: "all" and "ungrouped".
+// The "all" group contains all hosts. The "ungrouped" group contains all hosts
+// that do not belong to any other group.
+// See https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#default-groups
 func (inv *Inventory) initDefaultGroups() {
 	allGroup := newGroup(make(vars.Vars), set.New[string]())
 	inv.addGroup("all", allGroup)
@@ -195,8 +200,8 @@ func (inv *Inventory) initDefaultGroups() {
 	}
 }
 
-// ApplyVars applies a list of external variables to the inventory
-func (inv *Inventory) ApplyVars(externalVars vars.LoadedVars) {
+// applyVars applies a list of external variables to the inventory
+func (inv *Inventory) applyVars(externalVars vars.LoadedVars) {
 	inv.externalVars = externalVars
 }
 
