@@ -628,6 +628,26 @@ bucket: "from-role"
 			},
 		},
 		{
+			name: "vars from nested role dirs",
+			files: map[string]string{
+				"main.yaml": `---
+- name: test
+  vars:
+    bucket: test
+  roles:
+    - myrole
+`,
+				"roles/myrole/vars/main/subdir/vars.yaml": `public_access: "foo"`,
+				"roles/myrole/vars/main/vars.yaml":        `public_access: "true"`,
+				"roles/myrole/tasks/main.yaml": `
+- name: create bucket
+  s3_bucket:
+    name: '{{ bucket }}'
+    public_access: '{{ public_access }}'
+`,
+			},
+		},
+		{
 			name: "vars for host",
 			files: map[string]string{
 				"main.yaml": `---
