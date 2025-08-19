@@ -67,10 +67,7 @@ func (t *Task) UnmarshalYAML(node *yaml.Node) error {
 	}
 
 	t.raw = rawMap
-	if err := node.Decode(&t.inner); err != nil {
-		return err
-	}
-	return nil
+	return node.Decode(&t.inner)
 }
 
 func (t *Task) getPlay() *Play {
