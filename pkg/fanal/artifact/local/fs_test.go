@@ -2383,7 +2383,7 @@ func TestYAMLConfigScan(t *testing.T) {
 											Severity: "LOW",
 										},
 										CauseMetadata: types.CauseMetadata{
-											Provider: "Generic",
+											Provider: "Yaml",
 											Service:  "general",
 										},
 									},
@@ -2405,7 +2405,7 @@ func TestYAMLConfigScan(t *testing.T) {
 											Severity: "LOW",
 										},
 										CauseMetadata: types.CauseMetadata{
-											Provider: "Generic",
+											Provider: "Yaml",
 											Service:  "general",
 										},
 									},
@@ -2454,7 +2454,7 @@ func TestYAMLConfigScan(t *testing.T) {
 											Severity: "LOW",
 										},
 										CauseMetadata: types.CauseMetadata{
-											Provider: "Generic",
+											Provider: "Yaml",
 											Service:  "general",
 										},
 									},
