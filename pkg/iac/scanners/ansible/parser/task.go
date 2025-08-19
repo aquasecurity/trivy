@@ -132,7 +132,7 @@ func (t *Task) isRoleInclude() bool {
 	return t.hasModuleKey(withBuiltinPrefix(ModuleImportRole, ModuleIncludeRole))
 }
 
-func (t *Task) resolved(variables vars.Vars) (*ResolvedTask, error) {
+func (t *Task) resolved(variables vars.Vars) *ResolvedTask {
 	resolved := &ResolvedTask{
 		Name:     t.inner.Name,
 		Metadata: t.metadata,
@@ -141,7 +141,7 @@ func (t *Task) resolved(variables vars.Vars) (*ResolvedTask, error) {
 		Fields:   t.raw,
 	}
 
-	return resolved, nil
+	return resolved
 }
 
 type ResolvedTasks []*ResolvedTask
