@@ -551,12 +551,12 @@ func (p *Parser) expandRoleInclude(parentVars vars.Vars, task *Task) ([]*Resolve
 		return nil, xerrors.Errorf("load included role %q: %w", module.Name, err)
 	}
 
-	roleDefaults, err := role.defaultVariables("main")
-	if err != nil {
+	roleDefaults, err := role.defaultVariables(module.DefaultsFrom)
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
 		log.Debug("Failed to load role default variables", log.Err(err))
 	}
-	roleVariables, err := role.fileVariables("main")
-	if err != nil {
+	roleVariables, err := role.fileVariables(module.VarsFrom)
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
 		log.Debug("Failed to load role variables", log.Err(err))
 	}
 
