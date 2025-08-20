@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -40,6 +41,11 @@ func (m *Manager) Update(ctx context.Context, opts Options) error {
 	tempDir, err := downloader.DownloadToTempDir(ctx, m.indexURL, downloader.Options{Insecure: opts.Insecure})
 	if err != nil {
 		return xerrors.Errorf("unable to download the plugin index: %w", err)
+	}
+
+	err = os.MkdirAll(filepath.Dir(m.indexPath), fs.ModePerm)
+	if err != nil {
+		return xerrors.Errorf("failed to create plugin index dir: %w", err)
 	}
 
 	_, err = fsutils.CopyFile(filepath.Join(tempDir, "index.yaml"), m.indexPath)
