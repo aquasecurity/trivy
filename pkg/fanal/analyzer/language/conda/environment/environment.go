@@ -90,17 +90,7 @@ func findLicenseFromEnvDir(pkg types.Package, prefix string) ([]string, error) {
 			return nil, xerrors.Errorf("incorrect packageJSON file pattern: %w", err)
 		}
 		if matched {
-			file, err := os.Open(filepath.Join(condaMetaDir, entry.Name()))
-			if err != nil {
-				return nil, xerrors.Errorf("unable to open packageJSON file: %w", err)
-			}
-			packageJson, _, err := meta.NewParser().Parse(file)
-			if err != nil {
-				return nil, xerrors.Errorf("unable to parse packageJSON file: %w", err)
-			}
-			// packageJson always contain only 1 element
-			// cf. https://github.com/aquasecurity/trivy/blob/c3192f061d7e84eaf38df8df7c879dc00b4ca137/pkg/dependency/parser/conda/meta/parse.go#L39-L45
-			return packageJson[0].Licenses, nil
+			return licenseFromPackageJson(condaMetaDir, entry.Name())
 		}
 	}
 	return nil, xerrors.Errorf("meta file didn't find")
@@ -116,4 +106,21 @@ func (a environmentAnalyzer) Type() analyzer.Type {
 
 func (a environmentAnalyzer) Version() int {
 	return version
+}
+
+func licenseFromPackageJson(condaMetaDir, fileName string) ([]string, error) {
+	file, err := os.Open(filepath.Join(condaMetaDir, fileName))
+	if err != nil {
+		return nil, xerrors.Errorf("unable to open packageJSON file: %w", err)
+	}
+
+	defer file.Close()
+
+	packageJson, _, err := meta.NewParser().Parse(file)
+	if err != nil {
+		return nil, xerrors.Errorf("unable to parse packageJSON file: %w", err)
+	}
+	// packageJson always contain only 1 element
+	// cf. https://github.com/aquasecurity/trivy/blob/c3192f061d7e84eaf38df8df7c879dc00b4ca137/pkg/dependency/parser/conda/meta/parse.go#L39-L45
+	return packageJson[0].Licenses, nil
 }
