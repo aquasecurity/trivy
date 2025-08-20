@@ -10,6 +10,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/samber/lo"
 )
 
 const (
@@ -83,12 +84,10 @@ func (t *Task) isBlock() bool {
 
 func (t *Task) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadata) {
 	fsys, relPath := fileSrc.FSAndRelPath()
-
+	ref := lo.Ternary(t.isBlock(), "tasks-block", "tasks")
+	rng := iacTypes.NewRange(relPath, t.rng.startLine, t.rng.endLine, "", fsys)
 	t.src = fileSrc
-	t.metadata = iacTypes.NewMetadata(
-		iacTypes.NewRange(relPath, t.rng.startLine, t.rng.endLine, "", fsys),
-		"tasks-block",
-	)
+	t.metadata = iacTypes.NewMetadata(rng, ref)
 	t.metadata.SetParentPtr(parent)
 
 	for _, tt := range t.inner.Block {
