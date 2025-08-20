@@ -26,12 +26,9 @@ type Role struct {
 }
 
 func (r *Role) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, filePath string) {
-	// TODO: roles should not have metadata or
-	// inherit range from role definition or include_role.
-	r.metadata = iacTypes.NewMetadata(
-		iacTypes.NewRange(filePath, 0, 0, "", fsys),
-		"role",
-	)
+	parentRng := parent.Range()
+	rng := iacTypes.NewRange(filePath, parentRng.GetStartLine(), parentRng.GetEndLine(), "", fsys)
+	r.metadata = iacTypes.NewMetadata(rng, "role")
 	r.metadata.SetParentPtr(parent)
 }
 
