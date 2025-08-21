@@ -45,6 +45,14 @@ type Inventory struct {
 	externalVars vars.LoadedVars
 }
 
+func NewInventory() *Inventory {
+	return &Inventory{
+		hosts:        make(map[string]*Host),
+		groups:       make(map[string]*Group),
+		externalVars: make(vars.LoadedVars),
+	}
+}
+
 func (inv *Inventory) addHost(name string, newHost *Host) {
 	if inv.hosts == nil {
 		inv.hosts = make(map[string]*Host)
