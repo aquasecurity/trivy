@@ -701,8 +701,7 @@ func loadTasks(play *Play, parentMetadata *iacTypes.Metadata, fileSrc fsutils.Fi
 		return nil, xerrors.Errorf("decode tasks file %q: %w", fileSrc.Path, err)
 	}
 	for _, task := range fileTasks {
-		task.play = play
-		task.initMetadata(fileSrc, parentMetadata)
+		task.init(play, fileSrc, parentMetadata)
 	}
 	return fileTasks, nil
 }

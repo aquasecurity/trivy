@@ -130,6 +130,27 @@ dependencies:
 			expectedTasks: []string{"Role task"},
 		},
 		{
+			name: "nested block includes tasks",
+			dir:  "playbooks",
+			files: map[string]string{
+				"playbooks/playbook.yaml": `---
+- tasks:
+    - name: Test block
+      block:
+        - name: nested block
+          block:
+            - include_tasks:
+                file: test.yaml
+`,
+				"playbooks/test.yaml": `---
+- name: Test task
+  debug:
+    msg: Test task
+`,
+			},
+			expectedTasks: []string{"Test task"},
+		},
+		{
 			name: "include and import tasks in play",
 			files: map[string]string{
 				"playbook.yaml": `---

@@ -139,7 +139,7 @@ func (p *Play) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadat
 	}
 
 	for _, task := range p.listTasks() {
-		task.initMetadata(fileSrc, &p.metadata)
+		task.init(p, fileSrc, &p.metadata)
 	}
 }
 
