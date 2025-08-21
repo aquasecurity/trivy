@@ -164,7 +164,7 @@ web1 ansible_host=192.168.1.11 http_port=8080
 web2 ansible_host=192.168.1.12
 
 [web:vars]
-timezone=Europe/Stockholm
+timezone = Europe/Stockholm
 http_port=80
 
 [db]
@@ -172,7 +172,7 @@ db1 ansible_host=192.168.1.21
 db2 ansible_host=192.168.1.22 db_engine=postgres
 
 [db:vars]
-ansible_user=db_admin
+ansible_user=  "db_admin"
 backup_enabled=true
 
 [app:children]
@@ -222,7 +222,7 @@ http_port=8081
 		{
 			hostName: "db1",
 			expected: vars.Vars{
-				"ansible_user":   "db_admin",      // db:vars > all:vars
+				"ansible_user":   "\"db_admin\"",  // db:vars > all:vars
 				"timezone":       "Europe/Berlin", // app:vars > all:vars
 				"backup_enabled": "true",          // db:vars
 				"ansible_host":   "192.168.1.21",  // host variable
@@ -232,7 +232,7 @@ http_port=8081
 		{
 			hostName: "db2",
 			expected: vars.Vars{
-				"ansible_user":   "db_admin",      // db:vars > all:vars
+				"ansible_user":   "\"db_admin\"",  // db:vars > all:vars
 				"timezone":       "Europe/Berlin", // app:vars > all:vars
 				"backup_enabled": "true",          // db:vars
 				"db_engine":      "postgres",      // host variable

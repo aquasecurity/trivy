@@ -74,12 +74,12 @@ func ParseINI(data []byte) (*Inventory, error) {
 			inv.addHost(hostName, newHost(hostVars, set.New(currentGroup)))
 		case sectionVars:
 			kv := strings.SplitN(line, "=", 2)
+			var val string
 			if len(kv) == 2 {
-				groupVars := vars.Vars{
-					kv[0]: kv[1],
-				}
-				inv.addGroup(currentGroup, newGroup(groupVars, set.New[string]()))
+				val = strings.TrimSpace(kv[1])
 			}
+			groupVars := vars.Vars{strings.TrimSpace(kv[0]): val}
+			inv.addGroup(currentGroup, newGroup(groupVars, set.New[string]()))
 		case sectionChildren:
 			inv.addGroup(line, newGroup(make(vars.Vars), set.New(currentGroup)))
 		}
