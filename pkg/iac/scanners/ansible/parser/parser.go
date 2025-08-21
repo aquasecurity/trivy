@@ -372,7 +372,6 @@ func (p *Parser) resolveRoleDefinitionTasks(
 
 // loadRole loads a role by name.
 func (p *Parser) loadRole(parent *iacTypes.Metadata, play *Play, roleName string) (*Role, error) {
-
 	cachedRole, exists := p.roleCache[roleName]
 	if exists {
 		return cachedRole, nil
@@ -399,6 +398,7 @@ func (p *Parser) loadRole(parent *iacTypes.Metadata, play *Play, roleName string
 
 	p.logger.Debug("Role found",
 		log.String("name", roleName),
+		log.String("source", parent.GetMetadata().Range().String()),
 		log.FilePath(roleSrc.Path))
 	return r, nil
 }
@@ -533,7 +533,7 @@ func (p *Parser) resolveTasksInclude(parentVars vars.Vars, task *Task) ([]*Resol
 
 	taskSrc := task.src.Dir().Join(tasksFilePath)
 
-	includedTasks, err := loadTasks(&task.metadata, taskSrc)
+	includedTasks, err := loadTasks(task.play, &task.metadata, taskSrc)
 	if err != nil {
 		return nil, xerrors.Errorf("load tasks from %q: %w", taskSrc.Path, err)
 	}
@@ -694,13 +694,14 @@ func (p *Parser) resolvePlaybooksPaths(_ *AnsibleProject) ([]fsutils.FileSource,
 	return res, nil
 }
 
-func loadTasks(parentMetadata *iacTypes.Metadata, fileSrc fsutils.FileSource) ([]*Task, error) {
+func loadTasks(play *Play, parentMetadata *iacTypes.Metadata, fileSrc fsutils.FileSource) ([]*Task, error) {
 	var fileTasks []*Task
 	tasksExtensions := append(yamlExtensions, "")
 	if err := decodeYAMLFileWithExtension(fileSrc, &fileTasks, tasksExtensions); err != nil {
 		return nil, xerrors.Errorf("decode tasks file %q: %w", fileSrc.Path, err)
 	}
 	for _, task := range fileTasks {
+		task.play = play
 		task.initMetadata(fileSrc, parentMetadata)
 	}
 	return fileTasks, nil
