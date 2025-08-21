@@ -3,6 +3,7 @@ package parser
 import (
 	"cmp"
 	"errors"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -70,7 +71,7 @@ func New(fsys fs.FS, root string) *Parser {
 	return &Parser{
 		fsys:    fsys,
 		rootSrc: fsutils.NewFileSource(fsys, root),
-		logger:  log.WithPrefix("ansible parser"),
+		logger:  log.WithPrefix("ansible"),
 
 		resolvedTasks: make(map[string][]*ResolvedTask),
 		roleCache:     make(map[string]*Role),
@@ -87,6 +88,7 @@ func ParseProject(fsys fs.FS, root string) (*AnsibleProject, error) {
 }
 
 func (p *Parser) Parse(playbooks ...string) (*AnsibleProject, error) {
+	p.logger.Debug("Parse Ansible project", log.FilePath(p.rootSrc.Path))
 	project, err := p.initProject()
 	if err != nil {
 		return nil, err
@@ -267,7 +269,8 @@ func (p *Parser) resolvePlaybook(
 
 			childrenTasks, err := p.expandTask(playVars, playTask)
 			if err != nil {
-				p.logger.Debug("Failed to expand playbook task", log.Err(err))
+				p.logger.Debug("Failed to expand playbook task",
+					log.String("source", playTask.metadata.Range().String()), log.Err(err))
 			}
 			tasks = append(tasks, childrenTasks...)
 		}
@@ -284,11 +287,16 @@ func (p *Parser) resolvePlaybook(
 
 		// https://docs.ansible.com/ansible/latest/collections/ansible/builtin/import_playbook_module.html
 		if incPath, ok := play.includedPlaybook(); ok {
+			p.logger.Debug("Resolve playbook include",
+				log.String("source", play.metadata.Range().String()),
+				log.String("include", incPath),
+			)
 			// TODO: check metadata
 			fullIncSrc := pb.resolveIncludedSrc(incPath)
 			includedTasks, err := p.resolvePlaybook(proj, &play.metadata, playVars, fullIncSrc, playbooks)
 			if err != nil && errors.Is(err, fs.ErrNotExist) {
-				p.logger.Debug("Failed to load included playbook", log.FilePath(fullIncSrc.Path))
+				p.logger.Debug("Failed to load included playbook",
+					log.FilePath(fullIncSrc.Path), log.Err(err))
 			} else {
 				if err != nil {
 					p.logger.Debug("An error occurred while resolving playbook tasks",
@@ -311,13 +319,18 @@ func (p *Parser) resolvePlaybook(
 func (p *Parser) resolveRoleDefinitionTasks(
 	roleDef *RoleDefinition, play *Play, playVars vars.Vars,
 ) ([]*ResolvedTask, error) {
+	p.logger.Debug("Resolve role at play level",
+		log.String("name", roleDef.name()),
+		log.String("source", roleDef.metadata.Range().String()))
+
 	role, err := p.loadRole(&roleDef.metadata, play, roleDef.name())
 	if err != nil {
 		return nil, xerrors.Errorf("load role %q: %w", roleDef.name(), err)
 	}
 
-	p.logger.Debug("Role at the play level loaded",
-		log.String("name", role.name), log.FilePath(role.roleSrc.Path))
+	// When using the roles option at the play level, each role ‘x’
+	// looks for files named main.yml, main.yaml, or main (without extension)
+	// in its internal directories (tasks, defaults, vars, etc.).
 
 	// Ignore non-existent files, as they are loaded by default and may be missing
 	roleDefaults, err := role.defaultVariables("main")
@@ -329,9 +342,6 @@ func (p *Parser) resolveRoleDefinitionTasks(
 		p.logger.Debug("Failed to load role variables", log.Err(err))
 	}
 
-	// When using the roles option at the play level, each role ‘x’
-	// looks for files named main.yml, main.yaml, or main (without extension)
-	// in its internal directories (tasks, defaults, vars, etc.).
 	roleScopeVars := vars.MergeVars(
 		// Role default variables have the lowest priority
 		roleDefaults,
@@ -339,7 +349,6 @@ func (p *Parser) resolveRoleDefinitionTasks(
 		roleVariables,
 	)
 
-	// Ignore non-existent files, as they are loaded by default and may be missing
 	roleTasks, err := role.getTasks("main")
 	if err != nil {
 		return nil, xerrors.Errorf("load role tasks: %w", err)
@@ -354,6 +363,9 @@ func (p *Parser) resolveRoleDefinitionTasks(
 		}
 		tasks = append(tasks, childrenTasks...)
 	}
+
+	p.logger.Debug("Included role loaded",
+		log.FilePath(role.roleSrc.Path), log.Int("tasks_count", len(tasks)))
 	return tasks, nil
 }
 
@@ -370,9 +382,6 @@ func (p *Parser) loadRole(parent *iacTypes.Metadata, play *Play, roleName string
 		return nil, xerrors.Errorf("role %q not found", roleName)
 	}
 
-	p.logger.Debug("Resolving role path",
-		log.String("name", roleName), log.FilePath(roleSrc.Path))
-
 	r := &Role{
 		name:        roleName,
 		roleSrc:     roleSrc,
@@ -386,6 +395,10 @@ func (p *Parser) loadRole(parent *iacTypes.Metadata, play *Play, roleName string
 	}
 
 	p.roleCache[roleName] = r
+
+	p.logger.Debug("Role found",
+		log.String("name", roleName),
+		log.FilePath(roleSrc.Path))
 	return r, nil
 }
 
@@ -447,16 +460,17 @@ func (p *Parser) expandTask(parentVars vars.Vars, t *Task) ([]*ResolvedTask, err
 
 	effectiveVars := vars.MergeVars(parentVars, t.inner.Vars)
 
+	taskSource := t.metadata.Range().String()
 	switch {
 	case t.isBlock():
 		tasks, err := p.expandBlockTasks(effectiveVars, t)
-		return wrapIfErr(tasks, "expand block tasks", err)
+		return wrapIfErr(tasks, fmt.Sprintf("expand block tasks %s", taskSource), err)
 	case t.isTaskInclude():
-		tasks, err := p.expandTaskInclude(effectiveVars, t)
-		return wrapIfErr(tasks, "expand task include", err)
+		tasks, err := p.resolveTasksInclude(effectiveVars, t)
+		return wrapIfErr(tasks, fmt.Sprintf("resolve tasks include %s", taskSource), err)
 	case t.isRoleInclude():
-		tasks, err := p.expandRoleInclude(effectiveVars, t)
-		return wrapIfErr(tasks, "expand role include", err)
+		tasks, err := p.resolveRoleInclude(effectiveVars, t)
+		return wrapIfErr(tasks, fmt.Sprintf("resolve role include %s", taskSource), err)
 	default:
 		return []*ResolvedTask{t.resolved(effectiveVars)}, nil
 	}
@@ -484,16 +498,19 @@ func (p *Parser) expandBlockTasks(parentVars vars.Vars, t *Task) ([]*ResolvedTas
 		}
 		res = append(res, children...)
 	}
+
+	p.logger.Debug("Expanded block tasks",
+		log.String("source", t.metadata.Range().String()),
+		log.Int("tasks_count", len(res)),
+	)
 	return res, errs
 }
 
-// expandTaskInclude expands tasks included or imported from external files.
+// resolveTasksInclude locates a tasks include or import file and loads its tasks.
 //
 // Supports Ansible modules 'include_tasks' and 'import_tasks'.
 // See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/include_tasks_module.html
-func (p *Parser) expandTaskInclude(parentVars vars.Vars, task *Task) ([]*ResolvedTask, error) {
-	p.logger.Debug("Expand task include", log.FilePath(task.src.Path))
-
+func (p *Parser) resolveTasksInclude(parentVars vars.Vars, task *Task) ([]*ResolvedTask, error) {
 	effectiveVars := vars.MergeVars(parentVars, task.inner.Vars)
 	resolvedTask := task.resolved(effectiveVars)
 	moduleKeys := withBuiltinPrefix(ModuleIncludeTasks, ModuleImportTasks)
@@ -502,18 +519,19 @@ func (p *Parser) expandTaskInclude(parentVars vars.Vars, task *Task) ([]*Resolve
 		return nil, xerrors.Errorf("resolving module for keys %v: %w", moduleKeys, err)
 	}
 
-	var taskPath string
+	var tasksFilePath string
 	if m.IsFreeForm() {
-		taskPath = m.freeForm
+		tasksFilePath = m.freeForm
 	} else {
-		taskPath = getStringParam(m, "file")
+		tasksFilePath = getStringParam(m, "file")
 	}
 
-	if taskPath == "" {
-		return nil, xerrors.New("task file is empty")
+	if tasksFilePath == "" {
+		return nil, xerrors.New("tasks file is empty")
 	}
 
-	taskSrc := task.src.Dir().Join(taskPath)
+	taskSrc := task.src.Dir().Join(tasksFilePath)
+
 	includedTasks, err := loadTasks(&task.metadata, taskSrc)
 	if err != nil {
 		return nil, xerrors.Errorf("load tasks from %q: %w", taskSrc.Path, err)
@@ -530,18 +548,18 @@ func (p *Parser) expandTaskInclude(parentVars vars.Vars, task *Task) ([]*Resolve
 		allTasks = append(allTasks, children...)
 	}
 
-	p.logger.Debug("Included task loaded",
-		log.FilePath(taskSrc.Path), log.Int("tasks_count", len(allTasks)))
+	p.logger.Debug("Included tasks loaded",
+		log.String("source", task.metadata.Range().String()),
+		log.FilePath(taskSrc.Path),
+		log.Int("tasks_count", len(allTasks)))
 	return allTasks, errs
 }
 
-// expandRoleInclude expands roles included or imported in the task.
+// resolveRoleInclude locates an included or imported role and loads its tasks.
 //
 // Supports Ansible modules 'include_role' and 'import_role'.
 // See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/include_role_module.html
-func (p *Parser) expandRoleInclude(parentVars vars.Vars, task *Task) ([]*ResolvedTask, error) {
-	p.logger.Debug("Expand role include", log.FilePath(task.src.Path))
-
+func (p *Parser) resolveRoleInclude(parentVars vars.Vars, task *Task) ([]*ResolvedTask, error) {
 	effectiveVars := vars.MergeVars(parentVars, task.inner.Vars)
 	resolvedTask := task.resolved(effectiveVars)
 	moduleKeys := withBuiltinPrefix(ModuleIncludeRole, ModuleImportRole)
@@ -597,9 +615,6 @@ func (p *Parser) expandRoleInclude(parentVars vars.Vars, task *Task) ([]*Resolve
 		roleVariables,
 	)
 
-	p.logger.Debug("Load role tasks",
-		log.String("role", role.name), log.FilePath(module.TasksFrom))
-
 	var allTasks []*ResolvedTask
 
 	roleTasks, err := role.getTasks(module.TasksFrom)
@@ -614,13 +629,15 @@ func (p *Parser) expandRoleInclude(parentVars vars.Vars, task *Task) ([]*Resolve
 		// task.updateParent(t)
 		children, err := p.expandTask(roleScopeVars, roleTask)
 		if err != nil {
-			errs = multierror.Append(xerrors.Errorf("expand role included task: %w", err))
+			errs = multierror.Append(xerrors.Errorf("expand task: %w", err))
 		}
 		allTasks = append(allTasks, children...)
 	}
 
 	p.logger.Debug("Included role loaded",
-		log.FilePath(role.roleSrc.Path), log.Int("tasks_count", len(allTasks)))
+		log.String("source", task.metadata.Range().String()),
+		log.FilePath(role.roleSrc.Path),
+		log.Int("tasks_count", len(allTasks)))
 	return allTasks, errs
 }
 

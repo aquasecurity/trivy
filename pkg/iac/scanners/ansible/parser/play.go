@@ -191,7 +191,7 @@ func (r *RoleDefinition) initMetadata(fileSrc fsutils.FileSource, parent *iacTyp
 	fsys, relPath := fileSrc.FSAndRelPath()
 	r.metadata = iacTypes.NewMetadata(
 		iacTypes.NewRange(relPath, r.rng.startLine, r.rng.endLine, "", fsys),
-		"",
+		"role-def",
 	)
 	r.metadata.SetParentPtr(parent)
 }

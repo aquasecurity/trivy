@@ -26,8 +26,7 @@ type Role struct {
 }
 
 func (r *Role) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, filePath string) {
-	parentRng := parent.Range()
-	rng := iacTypes.NewRange(filePath, parentRng.GetStartLine(), parentRng.GetEndLine(), "", fsys)
+	rng := iacTypes.NewRange(filePath, 0, 0, "", fsys)
 	r.metadata = iacTypes.NewMetadata(rng, "role")
 	r.metadata.SetParentPtr(parent)
 }
@@ -43,7 +42,8 @@ func (r *Role) getTasks(tasksFile string) ([]*Task, error) {
 		// TODO: find out how direct dependency tasks are loaded
 		depTasks, err := dep.getTasks("main")
 		if err != nil && !errors.Is(err, fs.ErrNotExist) {
-			log.Debug("Failed to load dependency tasks", log.String("dependency", dep.name))
+			log.WithPrefix("ansible").Debug("Failed to load dependency tasks",
+				log.String("dependency", dep.name))
 		} else if err == nil {
 			allTasks = append(allTasks, depTasks...)
 		}
@@ -59,7 +59,8 @@ func (r *Role) getTasks(tasksFile string) ([]*Task, error) {
 		roleTask.role = r
 	}
 	allTasks = append(allTasks, fileTasks...)
-	log.Debug("Role tasks loaded", log.FilePath(tasksFileSrc.Path))
+	log.WithPrefix("ansbile").Debug("Role tasks loaded",
+		log.FilePath(tasksFileSrc.Path), log.Int("tasks_count", len(allTasks)))
 
 	r.cachedTasks[tasksFile] = allTasks
 	return allTasks, nil
@@ -93,7 +94,7 @@ func (r *Role) loadVars(scope, from string) (vars.Vars, error) {
 
 	// try load from file
 	if err := decodeYAMLFileWithExtension(varsSrc, &variables, vars.VarFilesExtensions); err == nil {
-		log.Debug("Loaded vars file", log.FilePath(varsSrc.Path))
+		log.WithPrefix("ansible").Debug("Loaded vars file", log.FilePath(varsSrc.Path))
 		return variables, nil
 	}
 
@@ -101,7 +102,8 @@ func (r *Role) loadVars(scope, from string) (vars.Vars, error) {
 		return nil, xerrors.Errorf("collect variables from %q: %w", varsSrc.Path, err)
 	}
 
-	log.Debug("Loaded vars from directory", log.FilePath(varsSrc.Path))
+	log.WithPrefix("ansible").Debug("Loaded vars from directory",
+		log.String("scope", scope), log.FilePath(varsSrc.Path))
 	return variables, nil
 }
 

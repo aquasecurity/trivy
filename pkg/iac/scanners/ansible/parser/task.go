@@ -151,7 +151,7 @@ func (t ResolvedTasks) GetModules(keys ...string) []Module {
 			if errors.Is(err, ErrModuleNotFound) {
 				continue
 			}
-			log.Debug("Failed to find module", log.Err(err))
+			log.WithPrefix("ansible").Debug("Failed to find module", log.Err(err))
 			continue
 		}
 		modules = append(modules, m)
