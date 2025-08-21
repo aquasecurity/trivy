@@ -38,10 +38,15 @@ func getSession(domain, region string, option types.RegistryOptions) (aws.Config
 		return config.LoadDefaultConfig(
 			context.TODO(),
 			config.WithRegion(region),
+			config.WithHTTPClient(xhttp.Client()),
 			config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(option.AWSAccessKey, option.AWSSecretKey, option.AWSSessionToken)),
 		)
 	}
-	return config.LoadDefaultConfig(context.TODO(), config.WithRegion(region))
+	return config.LoadDefaultConfig(
+		context.TODO(),
+		config.WithRegion(region),
+		config.WithHTTPClient(xhttp.Client()),
+	)
 }
 
 func (e *ECR) CheckOptions(domain string, option types.RegistryOptions) (intf.RegistryClient, error) {
@@ -81,9 +86,7 @@ func determineRegion(domain string) string {
 
 func (e *ECRClient) GetCredential(ctx context.Context) (username, password string, err error) {
 	input := &ecr.GetAuthorizationTokenInput{}
-	result, err := e.Client.GetAuthorizationToken(ctx, input, func(options *ecr.Options) {
-		options.HTTPClient = xhttp.Client()
-	})
+	result, err := e.Client.GetAuthorizationToken(ctx, input)
 	if err != nil {
 		return "", "", xerrors.Errorf("failed to get authorization token: %w", err)
 	}
