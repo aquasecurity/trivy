@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"fmt"
-	"regexp"
 	"strings"
 	"time"
 
@@ -115,29 +114,4 @@ func newTemplate(input string) (*exec.Template, error) {
 	}
 
 	return tpl, nil
-}
-
-var templateRe = regexp.MustCompile(`(?m)^(\s*[^:\s]+(\s*):\s*)(\{\{.*\}\})(.*)$`)
-
-// wrapTemplatesQuotes wraps {{ ... }} templates in quotes.
-// This is necessary because YAML parsers fail on unquoted {{ ... }} expressions,
-// so we temporarily quote them to allow successful parsing.
-// TODO: find a more reliable and efficient way to handle templates in YAML.
-func wrapTemplatesQuotes(yamlStr string) string {
-	return templateRe.ReplaceAllStringFunc(yamlStr, func(line string) string {
-		colonIdx := strings.Index(line, ":")
-		if colonIdx == -1 {
-			return line
-		}
-
-		key := line[:colonIdx+1]
-		val := line[colonIdx+1:]
-
-		trimmed := strings.Trim(val, " \t")
-		if !strings.HasPrefix(trimmed, `"`) && !strings.HasPrefix(trimmed, `'`) {
-			val = strings.Replace(val, trimmed, `"`+trimmed+`"`, 1)
-		}
-
-		return key + val
-	})
 }
