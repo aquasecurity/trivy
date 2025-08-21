@@ -3,6 +3,7 @@ package parser
 import (
 	"errors"
 
+	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
@@ -103,8 +104,8 @@ func (t *Task) init(play *Play, fileSrc fsutils.FileSource, parent *iacTypes.Met
 }
 
 // hasModuleKey checks if the task has any of the given module keys in its raw map.
-func (t *Task) hasModuleKey(modules []string) bool {
-	for _, module := range modules {
+func (t *Task) hasModuleKey(keys []string) bool {
+	for _, module := range keys {
 		if _, exists := t.raw[module]; exists {
 			return true
 		}
@@ -140,7 +141,7 @@ func (t ResolvedTasks) GetModules(keys ...string) []Module {
 	var modules []Module
 
 	for _, task := range t {
-		m, err := task.ResolveModule(keys...)
+		m, err := task.ResolveModule(keys, false)
 		if err != nil {
 			if errors.Is(err, ErrModuleNotFound) {
 				continue
@@ -172,7 +173,7 @@ var ErrModuleNotFound = errors.New("module not found")
 // renders its parameters using task variables, and returns the module.
 // The module can be either structured (map of parameters) or free-form (string).
 // Returns an error if no module is found or if rendering fails.
-func (t *ResolvedTask) ResolveModule(keys ...string) (Module, error) {
+func (t *ResolvedTask) ResolveModule(keys []string, strict bool) (Module, error) {
 	for _, key := range keys {
 		f, exists := t.Fields[key]
 		if !exists {
@@ -182,6 +183,9 @@ func (t *ResolvedTask) ResolveModule(keys ...string) (Module, error) {
 		// TODO: cache the module?
 		rendered, err := f.Render(t.Vars)
 		if err != nil {
+			if strict {
+				return Module{}, xerrors.Errorf("render: %w", err)
+			}
 			log.WithPrefix("ansible").Debug("Failed to render module params",
 				log.String("source", t.Metadata.Range().String()),
 				log.Err(err))

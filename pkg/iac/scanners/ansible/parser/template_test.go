@@ -48,10 +48,10 @@ func TestEvaluateTemplate(t *testing.T) {
 			expectErr: true,
 		},
 		{
-			name:     "missing variable",
-			input:    "Hello {{ name }}",
-			vars:     vars.Vars{},
-			expected: "Hello ",
+			name:      "missing variable",
+			input:     "Hello {{ name }}",
+			vars:      vars.Vars{},
+			expectErr: true,
 		},
 		{
 			name:     "multiple variables",

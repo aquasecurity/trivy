@@ -389,6 +389,24 @@ dependencies:
 			expectedTasks: []string{"Test task"},
 		},
 		{
+			name: "include_tasks with templated path",
+			files: map[string]string{
+				"playbook.yaml": `---
+- hosts: all
+  tasks:
+    - include_tasks: "{{ tasks_file }}"
+      vars:
+        tasks_file: tasks/test.yml
+`,
+				"tasks/test.yml": `---
+- name: Test task
+  debug:
+    msg: Test task
+`,
+			},
+			expectedTasks: []string{"Test task"},
+		},
+		{
 			name: "import playbook",
 			files: map[string]string{
 				"playbook.yaml": `---

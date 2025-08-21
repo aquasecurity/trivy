@@ -25,8 +25,9 @@ type Role struct {
 	directDeps []*Role
 }
 
-func (r *Role) initMetadata(fsys fs.FS, parent *iacTypes.Metadata, filePath string) {
-	rng := iacTypes.NewRange(filePath, 0, 0, "", fsys)
+func (r *Role) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadata) {
+	fsys, relPath := fileSrc.FSAndRelPath()
+	rng := iacTypes.NewRange(relPath, 0, 0, "", fsys)
 	r.metadata = iacTypes.NewMetadata(rng, "role")
 	r.metadata.SetParentPtr(parent)
 }

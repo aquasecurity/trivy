@@ -292,8 +292,14 @@ func (p *Parser) resolvePlaybook(
 				log.String("source", play.metadata.Range().String()),
 				log.String("include", incPath),
 			)
-			// TODO: check metadata
-			fullIncSrc := pb.resolveIncludedSrc(incPath)
+			renderedPath, err := evaluateTemplate(incPath, playVars)
+			if err != nil {
+				p.logger.Debug("Failed to render path",
+					log.FilePath(incPath), log.Err(err))
+				continue
+			}
+
+			fullIncSrc := pb.resolveIncludedSrc(renderedPath)
 			includedTasks, err := p.resolvePlaybook(proj, &play.metadata, playVars, fullIncSrc, playbooks)
 			if err != nil && errors.Is(err, fs.ErrNotExist) {
 				p.logger.Debug("Failed to load included playbook",
@@ -388,7 +394,7 @@ func (p *Parser) loadRole(parent *iacTypes.Metadata, play *Play, roleName string
 		play:        play,
 		cachedTasks: make(map[string][]*Task),
 	}
-	r.initMetadata(roleSrc.FS, parent, roleSrc.Path)
+	r.initMetadata(roleSrc, parent)
 
 	if err := p.loadRoleDependencies(r); err != nil {
 		return nil, xerrors.Errorf("load role deps: %w", err)
@@ -515,7 +521,7 @@ func (p *Parser) resolveTasksInclude(parentVars vars.Vars, task *Task) ([]*Resol
 	effectiveVars := vars.MergeVars(parentVars, task.inner.Vars)
 	resolvedTask := task.resolved(effectiveVars)
 	moduleKeys := withBuiltinPrefix(ModuleIncludeTasks, ModuleImportTasks)
-	m, err := resolvedTask.ResolveModule(moduleKeys...)
+	m, err := resolvedTask.ResolveModule(moduleKeys, true)
 	if err != nil {
 		return nil, xerrors.Errorf("resolving module for keys %v: %w", moduleKeys, err)
 	}
@@ -564,7 +570,7 @@ func (p *Parser) resolveRoleInclude(parentVars vars.Vars, task *Task) ([]*Resolv
 	effectiveVars := vars.MergeVars(parentVars, task.inner.Vars)
 	resolvedTask := task.resolved(effectiveVars)
 	moduleKeys := withBuiltinPrefix(ModuleIncludeRole, ModuleImportRole)
-	m, err := resolvedTask.ResolveModule(moduleKeys...)
+	m, err := resolvedTask.ResolveModule(moduleKeys, true)
 	if err != nil {
 		return nil, xerrors.Errorf("resolving module for keys %v: %w", moduleKeys, err)
 	}
