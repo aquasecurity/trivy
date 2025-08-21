@@ -235,7 +235,7 @@ func dirHasFiles(fileSrc fsutils.FileSource) (bool, error) {
 func LoadFromSources(sources []InventorySource) (*Inventory, error) {
 	logger := log.WithPrefix("ansible")
 
-	res := newInlineInventory(nil)
+	res := NewInventory()
 	externalVars := make(vars.LoadedVars)
 
 	for _, source := range sources {

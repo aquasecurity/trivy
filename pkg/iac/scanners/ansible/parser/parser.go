@@ -121,18 +121,19 @@ func (p *Parser) initProject() (*AnsibleProject, error) {
 	}
 
 	// TODO: pass sources, for example, from flags
-	inventory, err := inventory.LoadAuto(p.fsys, inventory.LoadOptions{
+	inv, err := inventory.LoadAuto(p.fsys, inventory.LoadOptions{
 		InventoryPath: cfg.Inventory,
 		Sources:       nil,
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("load inventories: %w", err)
+		p.logger.Debug("Failed to load inventory", log.Err(err))
+		inv = inventory.NewInventory()
 	}
 
 	project := &AnsibleProject{
 		path:      p.rootSrc.Path,
 		cfg:       cfg,
-		inventory: inventory,
+		inventory: inv,
 	}
 
 	return project, nil

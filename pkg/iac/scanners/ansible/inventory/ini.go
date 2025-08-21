@@ -17,10 +17,7 @@ const (
 )
 
 func ParseINI(data []byte) (*Inventory, error) {
-	inv := &Inventory{
-		hosts:  make(map[string]*Host),
-		groups: make(map[string]*Group),
-	}
+	inv := NewInventory()
 
 	currentGroup := "ungrouped"
 	sectionType := sectionHosts
