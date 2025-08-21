@@ -284,5 +284,9 @@ func readAndParseHosts(fileSrc fsutils.FileSource) (*Inventory, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ParseYAML(b)
+	if inv, err := ParseYAML(b); err == nil {
+		return inv, nil
+	}
+
+	return ParseINI(b)
 }
