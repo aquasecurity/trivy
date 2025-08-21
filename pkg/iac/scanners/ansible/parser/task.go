@@ -3,7 +3,6 @@ package parser
 import (
 	"errors"
 
-	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
@@ -82,22 +81,17 @@ func (t *Task) isBlock() bool {
 	return len(t.inner.Block) > 0
 }
 
-func (t *Task) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadata) {
+func (t *Task) init(play *Play, fileSrc fsutils.FileSource, parent *iacTypes.Metadata) {
 	fsys, relPath := fileSrc.FSAndRelPath()
 	ref := lo.Ternary(t.isBlock(), "tasks-block", "tasks")
 	rng := iacTypes.NewRange(relPath, t.rng.startLine, t.rng.endLine, "", fsys)
+	t.play = play
 	t.src = fileSrc
 	t.metadata = iacTypes.NewMetadata(rng, ref)
 	t.metadata.SetParentPtr(parent)
 
 	for _, tt := range t.inner.Block {
-		tt.src = fileSrc
-		tt.play = t.play
-		tt.metadata = iacTypes.NewMetadata(
-			iacTypes.NewRange(relPath, tt.rng.startLine, tt.rng.endLine, "", fsys),
-			"task",
-		)
-		tt.metadata.SetParentPtr(&t.metadata)
+		tt.init(play, fileSrc, parent)
 	}
 
 	for _, n := range t.raw {
@@ -188,7 +182,9 @@ func (t *ResolvedTask) ResolveModule(keys ...string) (Module, error) {
 		// TODO: cache the module?
 		rendered, err := f.Render(t.Vars)
 		if err != nil {
-			return Module{}, xerrors.Errorf("render module parameters: %w", err)
+			log.WithPrefix("ansible").Debug("Failed to render module params",
+				log.String("source", t.Metadata.Range().String()),
+				log.Err(err))
 		}
 		switch v := rendered.val.(type) {
 		case map[string]*Node:
