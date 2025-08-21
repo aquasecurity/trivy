@@ -189,13 +189,15 @@ func (inv *Inventory) initDefaultGroups() {
 	ungroupedGroup := newGroup(make(vars.Vars), set.New("all"))
 	inv.addGroup("ungrouped", ungroupedGroup)
 
-	for groupName, group := range inv.groups {
-		if groupName != "ungrouped" && groupName != "all" && group.Parents.Size() == 0 {
-			group.Parents = set.New("ungrouped")
+	for _, host := range inv.hosts {
+		if host.Groups.Size() == 0 {
+			host.Groups = set.New("ungrouped")
 		}
+	}
 
-		if groupName != "all" && group.Parents.Size() == 1 {
-			group.Parents.Union(set.New("all"))
+	for groupName, group := range inv.groups {
+		if groupName != "all" && group.Parents.Size() == 0 {
+			group.Parents = set.New("all")
 		}
 	}
 }
