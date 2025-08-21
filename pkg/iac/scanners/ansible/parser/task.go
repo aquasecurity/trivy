@@ -71,13 +71,6 @@ func (t *Task) UnmarshalYAML(node *yaml.Node) error {
 	return node.Decode(&t.inner)
 }
 
-func (t *Task) getPlay() *Play {
-	if t.role != nil {
-		return t.role.play
-	}
-	return t.play
-}
-
 func (t *Task) isBlock() bool {
 	return len(t.inner.Block) > 0
 }

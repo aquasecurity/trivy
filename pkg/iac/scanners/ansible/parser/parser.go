@@ -292,7 +292,9 @@ func (p *Parser) resolvePlaybook(
 				log.String("source", play.metadata.Range().String()),
 				log.String("include", incPath),
 			)
-			renderedPath, err := evaluateTemplate(incPath, playVars)
+
+			effectiveVars := vars.MergeVars(playVars, play.specialVars())
+			renderedPath, err := evaluateTemplate(incPath, effectiveVars)
 			if err != nil {
 				p.logger.Debug("Failed to render path",
 					log.FilePath(incPath), log.Err(err))
@@ -372,7 +374,7 @@ func (p *Parser) resolveRoleDefinitionTasks(
 	}
 
 	p.logger.Debug("Included role loaded",
-		log.FilePath(role.roleSrc.Path), log.Int("tasks_count", len(tasks)))
+		log.FilePath(role.src.Path), log.Int("tasks_count", len(tasks)))
 	return tasks, nil
 }
 
@@ -390,7 +392,7 @@ func (p *Parser) loadRole(parent *iacTypes.Metadata, play *Play, roleName string
 
 	r := &Role{
 		name:        roleName,
-		roleSrc:     roleSrc,
+		src:         roleSrc,
 		play:        play,
 		cachedTasks: make(map[string][]*Task),
 	}
@@ -412,7 +414,7 @@ func (p *Parser) loadRole(parent *iacTypes.Metadata, play *Play, roleName string
 func (p *Parser) loadRoleDependencies(r *Role) error {
 	// The meta directory is an exception: it always uses the standard
 	// main.yml (or main.yaml/main) file without allowing custom filenames or overrides.
-	metaSrc := r.roleSrc.Join("meta", "main")
+	metaSrc := r.src.Join("meta", "main")
 
 	var roleMeta RoleMeta
 	if err := decodeYAMLFileWithExtension(metaSrc, &roleMeta, yamlExtensions); err != nil && !errors.Is(err, os.ErrNotExist) {
@@ -479,6 +481,7 @@ func (p *Parser) expandTask(parentVars vars.Vars, t *Task) ([]*ResolvedTask, err
 		tasks, err := p.resolveRoleInclude(effectiveVars, t)
 		return wrapIfErr(tasks, fmt.Sprintf("resolve role include %s", taskSource), err)
 	default:
+		effectiveVars = vars.MergeVars(effectiveVars, specialVarsForTask(t))
 		return []*ResolvedTask{t.resolved(effectiveVars)}, nil
 	}
 }
@@ -513,12 +516,21 @@ func (p *Parser) expandBlockTasks(parentVars vars.Vars, t *Task) ([]*ResolvedTas
 	return res, errs
 }
 
+func specialVarsForTask(task *Task) vars.Vars {
+	variables := task.play.specialVars()
+	if task.role != nil {
+		variables = vars.MergeVars(variables, task.role.specialVars())
+	}
+
+	return variables
+}
+
 // resolveTasksInclude locates a tasks include or import file and loads its tasks.
 //
 // Supports Ansible modules 'include_tasks' and 'import_tasks'.
 // See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/include_tasks_module.html
 func (p *Parser) resolveTasksInclude(parentVars vars.Vars, task *Task) ([]*ResolvedTask, error) {
-	effectiveVars := vars.MergeVars(parentVars, task.inner.Vars)
+	effectiveVars := vars.MergeVars(parentVars, task.inner.Vars, specialVarsForTask(task))
 	resolvedTask := task.resolved(effectiveVars)
 	moduleKeys := withBuiltinPrefix(ModuleIncludeTasks, ModuleImportTasks)
 	m, err := resolvedTask.ResolveModule(moduleKeys, true)
@@ -538,7 +550,6 @@ func (p *Parser) resolveTasksInclude(parentVars vars.Vars, task *Task) ([]*Resol
 	}
 
 	taskSrc := task.src.Dir().Join(tasksFilePath)
-
 	includedTasks, err := loadTasks(task.play, &task.metadata, taskSrc)
 	if err != nil {
 		return nil, xerrors.Errorf("load tasks from %q: %w", taskSrc.Path, err)
@@ -567,7 +578,7 @@ func (p *Parser) resolveTasksInclude(parentVars vars.Vars, task *Task) ([]*Resol
 // Supports Ansible modules 'include_role' and 'import_role'.
 // See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/include_role_module.html
 func (p *Parser) resolveRoleInclude(parentVars vars.Vars, task *Task) ([]*ResolvedTask, error) {
-	effectiveVars := vars.MergeVars(parentVars, task.inner.Vars)
+	effectiveVars := vars.MergeVars(parentVars, task.inner.Vars, specialVarsForTask(task))
 	resolvedTask := task.resolved(effectiveVars)
 	moduleKeys := withBuiltinPrefix(ModuleIncludeRole, ModuleImportRole)
 	m, err := resolvedTask.ResolveModule(moduleKeys, true)
@@ -601,7 +612,7 @@ func (p *Parser) resolveRoleInclude(parentVars vars.Vars, task *Task) ([]*Resolv
 	// for various role components instead of the default "main". This applies to tasks,
 	// defaults, vars, handlers, meta, etc.
 	// See: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/include_role_module.html
-	role, err := p.loadRole(&task.metadata, task.getPlay(), module.Name)
+	role, err := p.loadRole(&task.metadata, task.play, module.Name)
 	if err != nil {
 		return nil, xerrors.Errorf("load included role %q: %w", module.Name, err)
 	}
@@ -643,7 +654,7 @@ func (p *Parser) resolveRoleInclude(parentVars vars.Vars, task *Task) ([]*Resolv
 
 	p.logger.Debug("Included role loaded",
 		log.String("source", task.metadata.Range().String()),
-		log.FilePath(role.roleSrc.Path),
+		log.FilePath(role.src.Path),
 		log.Int("tasks_count", len(allTasks)))
 	return allTasks, errs
 }

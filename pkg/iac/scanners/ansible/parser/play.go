@@ -151,6 +151,14 @@ func (p *Play) listTasks() []*Task {
 	return res
 }
 
+// https://docs.ansible.com/ansible/latest/reference_appendices/special_variables.html
+func (p *Play) specialVars() vars.Vars {
+	return vars.Vars{
+		"ansible_play_name": p.inner.Name,
+		"playbook_dir":      p.src.Dir().Path,
+	}
+}
+
 // RoleDefinition represents a role reference within a play.
 //
 // It typically contains the role name and optional parameters
