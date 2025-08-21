@@ -125,7 +125,7 @@ func newTemplate(input string) (*exec.Template, error) {
 	return tpl, nil
 }
 
-func dirnameFilter(e *exec.Evaluator, in *exec.Value, params *exec.VarArgs) *exec.Value {
+func dirnameFilter(_ *exec.Evaluator, in *exec.Value, params *exec.VarArgs) *exec.Value {
 	if in == nil {
 		return exec.ValueError(errors.New("input value is nil"))
 	}
