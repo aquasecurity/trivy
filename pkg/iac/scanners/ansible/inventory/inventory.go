@@ -81,14 +81,14 @@ func (inv *Inventory) ResolveVars(hostName string, playbookVars vars.LoadedVars)
 
 	host, ok := inv.hosts[hostName]
 	if !ok {
-		log.Debug("ResolveVars: host not found in inventory",
+		log.WithPrefix("ansible").Debug("ResolveVars: host not found in inventory",
 			log.String("host", hostName))
 		return nil
 	}
 
 	groupsOrder, err := inv.groupTraversalOrder(hostName)
 	if err != nil {
-		log.Debug("ResolveVars: failed to get group traversal order for host",
+		log.WithPrefix("ansible").Debug("ResolveVars: failed to get group traversal order for host",
 			log.String("host", hostName), log.Err(err))
 		return nil
 	}

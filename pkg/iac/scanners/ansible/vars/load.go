@@ -14,6 +14,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var VarFilesExtensions = []string{"", ".yml", ".yaml", ".json"}
@@ -25,6 +26,19 @@ const (
 	ScopeGroupSpecific
 	ScopeHost
 )
+
+func (s VarScope) String() string {
+	switch s {
+	case ScopeGroupAll:
+		return "group_vars/all"
+	case ScopeGroupSpecific:
+		return "group_vars/*"
+	case ScopeHost:
+		return "host_vars"
+	default:
+		return ""
+	}
+}
 
 func fileBaseName(p string) string {
 	return strings.TrimSuffix(filepath.Base(p), filepath.Ext(p))
@@ -87,6 +101,7 @@ func (v *LoadedVars) Merge(other LoadedVars) {
 }
 
 func LoadVars(sources []VarsSource) LoadedVars {
+	logger := log.WithPrefix("ansible")
 	allVars := make(LoadedVars)
 
 	for _, src := range sources {
@@ -101,6 +116,9 @@ func LoadVars(sources []VarsSource) LoadedVars {
 
 		for key, vars := range srcVars {
 			allVars[src.Scope][key] = MergeVars(allVars[src.Scope][key], vars)
+
+			logger.Debug("Loaded vars from directory",
+				log.String("scope", src.Scope.String()), log.String("target", key))
 		}
 	}
 

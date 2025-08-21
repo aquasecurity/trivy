@@ -10,6 +10,7 @@ import (
 	"github.com/go-ini/ini"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
@@ -18,6 +19,7 @@ type AnsibleConfig struct {
 }
 
 func LoadConfig(fsys fs.FS, dir string) (AnsibleConfig, error) {
+	logger := log.WithPrefix("ansible")
 	// https://docs.ansible.com/ansible/latest/reference_appendices/config.html#the-configuration-file
 	cfgPaths := []struct {
 		path  string
@@ -37,13 +39,15 @@ func LoadConfig(fsys fs.FS, dir string) (AnsibleConfig, error) {
 		var b []byte
 		var err error
 
+		logger.Debug("Trying config", log.FilePath(p.path))
+
 		if p.useOS {
 			b, err = os.ReadFile(p.path)
 		} else {
 			b, err = fs.ReadFile(fsys, p.path)
 		}
 
-		if errors.Is(err, fs.ErrNotExist) || errors.Is(err, os.ErrNotExist) {
+		if errors.Is(err, fs.ErrNotExist) {
 			continue
 		}
 		if err != nil {
@@ -54,9 +58,12 @@ func LoadConfig(fsys fs.FS, dir string) (AnsibleConfig, error) {
 		if err != nil {
 			return AnsibleConfig{}, xerrors.Errorf("parse config %q: %w", p.path, err)
 		}
+
+		logger.Debug("Loaded config", log.FilePath(p.path))
 		return cfg, nil
 	}
 
+	logger.Debug("No config found in search paths")
 	return AnsibleConfig{}, nil
 }
 

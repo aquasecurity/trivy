@@ -83,8 +83,11 @@ func LoadAuto(fsys fs.FS, opts LoadOptions) (*Inventory, error) {
 // The returned slice of InventorySource can be used to load hosts, group_vars, and host_vars
 // for each inventory source.
 func ResolveSources(fsys fs.FS, opts LoadOptions) ([]InventorySource, error) {
+	logger := log.WithPrefix("ansible")
 	if len(opts.Sources) == 0 {
 		if opts.InventoryPath != "" {
+			// TODO: This is comma-separated list of Ansible inventory sources
+			logger.Debug("Resolve inventory source from config", log.FilePath(opts.InventoryPath))
 			fileSrc := fsutils.NewFileSource(fsys, opts.InventoryPath)
 			src, err := resolveSource(fileSrc, set.New[string]())
 			if err != nil {
@@ -92,6 +95,7 @@ func ResolveSources(fsys fs.FS, opts LoadOptions) ([]InventorySource, error) {
 			}
 			return []InventorySource{src}, nil
 		}
+		logger.Debug("Use default hosts file", log.FilePath(defaultHostsFile))
 		return defaultInventorySources()
 	}
 
@@ -100,6 +104,7 @@ func ResolveSources(fsys fs.FS, opts LoadOptions) ([]InventorySource, error) {
 	seen := set.New[string]()
 
 	for _, s := range opts.Sources {
+		logger.Debug("Resolve inventory source", log.String("source", s))
 		fileSrc := fsutils.NewFileSource(fsys, s)
 		src, err := resolveSource(fileSrc, seen)
 		if err != nil {
@@ -178,12 +183,14 @@ func walkInventoryDir(fileSrc fsutils.FileSource, seen set.Set[string]) (Invento
 		// TODO: allow files with no extension or with the extensions .json, .yml, or .yaml
 		base := path.Base(fileSrc.Path)
 		if base == "group_vars" || base == "host_vars" {
+			// TODO: use fs.SkipDir?
 			return nil // skip vars directories
 		}
 
 		hasFiles, err := dirHasFiles(fileSrc)
 		if err != nil {
-			log.Debug("Failed to read directory", log.FilePath(fileSrc.Path), log.Err(err))
+			log.WithPrefix("ansible").Debug("Failed to read directory",
+				log.FilePath(fileSrc.Path), log.Err(err))
 			return nil
 		}
 
@@ -226,6 +233,7 @@ func dirHasFiles(fileSrc fsutils.FileSource) (bool, error) {
 // variables in the order the sources are specified.
 // See https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#managing-inventory-variable-load-order
 func LoadFromSources(sources []InventorySource) (*Inventory, error) {
+	logger := log.WithPrefix("ansible")
 
 	res := newInlineInventory(nil)
 	externalVars := make(vars.LoadedVars)
@@ -237,16 +245,18 @@ func LoadFromSources(sources []InventorySource) (*Inventory, error) {
 		// See https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#organizing-host-and-group-variables
 		switch src := source.(type) {
 		case InlineHostsSource:
+			logger.Debug("Processing inline hosts source", log.Any("hosts", src.Hosts))
 			inv := newInlineInventory(src.Hosts)
 			res.Merge(inv)
 		case HostFileSource:
 			inv, err := readAndParseHosts(src.File)
 			if err != nil {
-				log.Debug("Failed to parse hosts file",
+				logger.Debug("Failed to parse hosts file",
 					log.FilePath(src.File.Path), log.Err(err))
 				continue
 			}
 			res.Merge(inv)
+			logger.Debug("Loaded hosts file", log.FilePath(src.File.Path))
 
 			vars := vars.LoadVars(vars.InventoryVarsSources(src.VarsDir))
 			externalVars.Merge(vars)
@@ -254,7 +264,7 @@ func LoadFromSources(sources []InventorySource) (*Inventory, error) {
 			for _, hostsDirSrc := range src.Dirs {
 				entries, err := hostsDirSrc.ReadDir()
 				if err != nil {
-					log.Debug("Failed to read dir with hosts files",
+					logger.Debug("Failed to read dir with hosts files",
 						log.FilePath(hostsDirSrc.Path), log.Err(err))
 					continue
 				}
@@ -263,11 +273,12 @@ func LoadFromSources(sources []InventorySource) (*Inventory, error) {
 					hostFileSrc := hostsDirSrc.Join(entry.Name())
 					inv, err := readAndParseHosts(hostFileSrc)
 					if err != nil {
-						log.Debug("Failed to parse hosts file",
+						logger.Debug("Failed to parse hosts file",
 							log.FilePath(hostFileSrc.Path), log.Err(err))
 						continue
 					}
 					res.Merge(inv)
+					logger.Debug("Loaded hosts file", log.FilePath(hostFileSrc.Path))
 				}
 			}
 			vars := vars.LoadVars(vars.InventoryVarsSources(src.VarsDir))
@@ -284,6 +295,7 @@ func readAndParseHosts(fileSrc fsutils.FileSource) (*Inventory, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if inv, err := ParseYAML(b); err == nil {
 		return inv, nil
 	}
