@@ -1,10 +1,12 @@
 package parser
 
 import (
+	"cmp"
 	"fmt"
 	"strconv"
 	"strings"
 
+	"github.com/hashicorp/go-multierror"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
@@ -97,6 +99,7 @@ func decodeChildNode(yNode *yaml.Node) (Node, error) {
 func (n *Node) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadata, nodePath []string) {
 	fsys, relPath := fileSrc.FSAndRelPath()
 	ref := strings.Join(nodePath, ".")
+	ref = cmp.Or(ref, ".")
 	rng := iacTypes.NewRange(relPath, n.rng.startLine, n.rng.endLine, "", fsys)
 
 	n.metadata = iacTypes.NewMetadata(rng, ref)
@@ -131,29 +134,32 @@ func (n *Node) Render(variables vars.Vars) (*Node, error) {
 	case string:
 		rendered, err := evaluateTemplate(v, variables)
 		if err != nil {
-			return nil, err
+			// TODO: mark as unknown
+			return n, fmt.Errorf("node ref %q: %w", n.metadata.Reference(), err)
 		}
 		return n.withValue(rendered), nil
 	case map[string]*Node:
+		var errs error
 		renderedMap := make(map[string]*Node)
 		for key, val := range v {
 			r, err := val.Render(variables)
 			if err != nil {
-				return nil, err
+				errs = multierror.Append(err)
 			}
 			renderedMap[key] = r
 		}
-		return n.withValue(renderedMap), nil
+		return n.withValue(renderedMap), errs
 	case []*Node:
-		var renderedList []*Node
+		var errs error
+		renderedList := make([]*Node, 0, len(v))
 		for _, val := range v {
 			r, err := val.Render(variables)
 			if err != nil {
-				return nil, err
+				errs = multierror.Append(err)
 			}
 			renderedList = append(renderedList, r)
 		}
-		return n.withValue(renderedList), nil
+		return n.withValue(renderedList), errs
 	default:
 		return n, nil
 	}
