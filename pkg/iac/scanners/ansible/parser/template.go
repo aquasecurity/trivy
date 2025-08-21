@@ -3,6 +3,7 @@ package parser
 import (
 	"bytes"
 	"crypto/sha256"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -13,14 +14,22 @@ import (
 	"github.com/nikolalohinski/gonja/v2/loaders"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 )
 
 var gonjaConfig *config.Config
+var gonjaEnv *exec.Environment
 
+// TODO: implement support for a subset of popular Ansible filter plugins.
+// https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html#filter-plugins
+// Example: see dirnameFilter for how the "dirname" filter is implemented.
 func init() {
 	gonjaConfig = gonja.DefaultConfig.Inherit()
 	gonjaConfig.StrictUndefined = true
+
+	gonjaEnv = gonja.DefaultEnvironment
+	gonjaEnv.Filters.Register("dirname", dirnameFilter)
 }
 
 // TODO: add support for a subset of popular Ansible lookup plugins.
@@ -108,10 +117,27 @@ func newTemplate(input string) (*exec.Template, error) {
 		return nil, xerrors.Errorf("create shifted loader: %w", err)
 	}
 
-	tpl, err := exec.NewTemplate(rootID, gonjaConfig, shiftedLoader, gonja.DefaultEnvironment)
+	tpl, err := exec.NewTemplate(rootID, gonjaConfig, shiftedLoader, gonjaEnv)
 	if err != nil {
 		return nil, xerrors.Errorf("create new template: %w", err)
 	}
 
 	return tpl, nil
+}
+
+func dirnameFilter(e *exec.Evaluator, in *exec.Value, params *exec.VarArgs) *exec.Value {
+	if in == nil {
+		return exec.ValueError(errors.New("input value is nil"))
+	}
+
+	if params != nil && len(params.Args) > 0 {
+		return exec.ValueError(errors.New("no parameters allowed"))
+	}
+
+	switch val := in.Val.Interface().(type) {
+	case fsutils.FileSource:
+		return exec.AsSafeValue(val.Dir())
+	default:
+		return exec.ValueError(fmt.Errorf("unsupported type %T", in.Val.Interface()))
+	}
 }

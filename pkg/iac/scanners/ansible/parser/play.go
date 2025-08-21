@@ -155,7 +155,7 @@ func (p *Play) listTasks() []*Task {
 func (p *Play) specialVars() vars.Vars {
 	return vars.Vars{
 		"ansible_play_name": p.inner.Name,
-		"playbook_dir":      p.src.Dir().Path,
+		"playbook_dir":      p.src.Dir(),
 	}
 }
 
