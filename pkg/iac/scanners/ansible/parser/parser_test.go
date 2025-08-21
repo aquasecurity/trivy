@@ -375,13 +375,14 @@ dependencies:
 		},
 		{
 			name: "include tasks is free form",
+			dir:  "playbooks",
 			files: map[string]string{
-				"playbook.yaml": `---
+				"playbooks/playbook.yaml": `---
 - hosts: all
   tasks:
-    - include_tasks: "{{ playbook_dir }}/tasks/test.yml"
+    - include_tasks: "{{ playbook_dir |dirname }}/tasks/test.yml"
 `,
-				"tasks/test.yml": `---
+				"playbooks/tasks/test.yml": `---
 - name: Test task
   debug:
     msg: Test task

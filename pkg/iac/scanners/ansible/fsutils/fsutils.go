@@ -36,6 +36,13 @@ func NewFileSource(fsys fs.FS, p string) FileSource {
 	}
 }
 
+func (f FileSource) String() string {
+	if f.FS != nil {
+		return f.Path
+	}
+	return f.osPath()
+}
+
 func (f FileSource) osPath() string {
 	return filepath.FromSlash(f.Path)
 }

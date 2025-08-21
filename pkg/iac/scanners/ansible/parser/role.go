@@ -112,7 +112,7 @@ func (r *Role) loadVars(scope, from string) (vars.Vars, error) {
 func (r *Role) specialVars() vars.Vars {
 	return vars.Vars{
 		"role_name": r.name,
-		"role_path": r.src.Path,
+		"role_path": r.src,
 	}
 }
 
