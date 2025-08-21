@@ -105,7 +105,6 @@ foo: 10
 func TestLoadAuto_AbsolutePath(t *testing.T) {
 	tmpFile, err := os.CreateTemp(t.TempDir(), "hosts-*.yml")
 	require.NoError(t, err)
-	defer os.Remove(tmpFile.Name())
 
 	_, err = tmpFile.WriteString(`
 group1:
@@ -276,7 +275,6 @@ func TestResolveInventorySources_AbsolutePath(t *testing.T) {
 	// create a temporary inventory file
 	tmpFile, err := os.CreateTemp(t.TempDir(), "hosts-*.yml")
 	require.NoError(t, err)
-	defer os.Remove(tmpFile.Name())
 
 	opts := inventory.LoadOptions{
 		InventoryPath: tmpFile.Name(),

@@ -16,7 +16,7 @@ import (
 // Role represent project role
 type Role struct {
 	name     string
-	roleSrc  fsutils.FileSource
+	src      fsutils.FileSource
 	metadata iacTypes.Metadata
 	play     *Play
 
@@ -50,7 +50,7 @@ func (r *Role) getTasks(tasksFile string) ([]*Task, error) {
 		}
 	}
 
-	tasksFileSrc := r.roleSrc.Join("tasks", tasksFile)
+	tasksFileSrc := r.src.Join("tasks", tasksFile)
 	fileTasks, err := loadTasks(r.play, &r.metadata, tasksFileSrc)
 	if err != nil {
 		return nil, err
@@ -91,7 +91,7 @@ func (r *Role) loadVars(scope, from string) (vars.Vars, error) {
 		return nil
 	}
 
-	varsSrc := r.roleSrc.Join(scope, from)
+	varsSrc := r.src.Join(scope, from)
 
 	// try load from file
 	if err := decodeYAMLFileWithExtension(varsSrc, &variables, vars.VarFilesExtensions); err == nil {
@@ -106,6 +106,14 @@ func (r *Role) loadVars(scope, from string) (vars.Vars, error) {
 	log.WithPrefix("ansible").Debug("Loaded vars from directory",
 		log.String("scope", scope), log.FilePath(varsSrc.Path))
 	return variables, nil
+}
+
+// https://docs.ansible.com/ansible/latest/reference_appendices/special_variables.html
+func (r *Role) specialVars() vars.Vars {
+	return vars.Vars{
+		"role_name": r.name,
+		"role_path": r.src.Path,
+	}
 }
 
 type RoleMeta struct {

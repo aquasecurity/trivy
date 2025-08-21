@@ -2,6 +2,7 @@ package parser_test
 
 import (
 	"cmp"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -378,9 +379,9 @@ dependencies:
 				"playbook.yaml": `---
 - hosts: all
   tasks:
-    - include_tasks: playbooks/test.yml
+    - include_tasks: "{{ playbook_dir }}/tasks/test.yml"
 `,
-				"playbooks/test.yml": `---
+				"tasks/test.yml": `---
 - name: Test task
   debug:
     msg: Test task
@@ -510,6 +511,45 @@ dependencies:
 			assert.ElementsMatch(t, tt.expectedTasks, taskNames)
 		})
 	}
+}
+
+func TestParser_AbsolutePath(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	tasksFile, err := os.CreateTemp(tmpDir, "tasks-*.yml")
+	require.NoError(t, err)
+
+	_, err = tasksFile.WriteString(`- name: Test task
+  debug:
+    msg: "From task"
+`)
+	require.NoError(t, err)
+
+	playbookFile, err := os.CreateTemp(tmpDir, "playbook-*.yml")
+	require.NoError(t, err)
+
+	playbookSrc := fmt.Sprintf(`- name: test
+  hosts: localhost
+  connection: local
+  tasks:
+  - name: test
+    include_tasks: "{{ playbook_dir }}/%s"
+`, filepath.Base(tasksFile.Name()))
+
+	_, err = playbookFile.WriteString(playbookSrc)
+	require.NoError(t, err)
+
+	project, err := parser.New(os.DirFS(tmpDir), ".").Parse()
+	require.NoError(t, err)
+	tasks := project.ListTasks()
+	taskNames := lo.Map(tasks, func(task *parser.ResolvedTask, _ int) string {
+		return task.Name
+	})
+
+	expected := []string{
+		"Test task",
+	}
+	assert.ElementsMatch(t, expected, taskNames)
 }
 
 func TestParse_ResolveVariables(t *testing.T) {
