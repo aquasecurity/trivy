@@ -50,7 +50,7 @@ func (r *Role) getTasks(tasksFile string) ([]*Task, error) {
 	}
 
 	tasksFileSrc := r.roleSrc.Join("tasks", tasksFile)
-	fileTasks, err := loadTasks(&r.metadata, tasksFileSrc)
+	fileTasks, err := loadTasks(r.play, &r.metadata, tasksFileSrc)
 	if err != nil {
 		return nil, err
 	}
