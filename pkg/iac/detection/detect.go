@@ -267,7 +267,8 @@ func init() {
 
 	// TODO: improve detection
 	matchers[FileTypeAnsible] = func(name string, r io.ReadSeeker) bool {
-		return slices.Contains([]string{"", ".yml", ".yaml", ".json", ".ini"}, filepath.Ext(name))
+		return filepath.Base(name) == "ansible.cfg" ||
+			slices.Contains([]string{"", ".yml", ".yaml", ".json", ".ini"}, filepath.Ext(name))
 	}
 }
 

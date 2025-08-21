@@ -514,11 +514,23 @@ rules:
 			},
 		},
 		{
-			name: "Ansbile inventory ini file",
+			name: "Ansbile inventory INI file",
 			path: "something.ini",
 			expected: []FileType{
 				FileTypeAnsible,
 			},
+		},
+		{
+			name: "Ansbile config file",
+			path: "ansible.cfg",
+			expected: []FileType{
+				FileTypeAnsible,
+			},
+		},
+		{
+			name:     " not Ansible config file",
+			path:     "something.cfg",
+			expected: []FileType{},
 		},
 	}
 

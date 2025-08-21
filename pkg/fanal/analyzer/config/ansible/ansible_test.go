@@ -28,6 +28,26 @@ func Test_ansibleConfigAnalyzer_Required(t *testing.T) {
 		{
 			name:     "json",
 			filePath: "test.json",
+			want:     true,
+		},
+		{
+			name:     "init",
+			filePath: "test.ini",
+			want:     true,
+		},
+		{
+			name:     "without extension",
+			filePath: "test",
+			want:     true,
+		},
+		{
+			name:     "config file",
+			filePath: "ansible.cfg",
+			want:     true,
+		},
+		{
+			name:     "just cfg",
+			filePath: "test.cfg",
 			want:     false,
 		},
 	}

@@ -32,5 +32,6 @@ func newAnsibleConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnaly
 }
 
 func (a *ansibleConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return slices.Contains([]string{".yml", ".yaml"}, filepath.Ext(filePath))
+	return filepath.Base(filePath) == "ansible.cfg" ||
+		slices.Contains([]string{"", ".yml", ".yaml", ".json", ".ini"}, filepath.Ext(filePath))
 }
