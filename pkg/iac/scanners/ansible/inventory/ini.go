@@ -5,9 +5,10 @@ import (
 	"bytes"
 	"strings"
 
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	"github.com/aquasecurity/trivy/pkg/set"
-	"golang.org/x/xerrors"
 )
 
 const (
@@ -143,14 +144,14 @@ func splitFields(input string) []string {
 		case '\\':
 			escape = true
 		case '"', '\'':
-			if inQuotes {
-				if r == quoteChar {
-					inQuotes = false
-					continue
-				}
-			} else {
+			if !inQuotes {
 				inQuotes = true
 				quoteChar = r
+				continue
+			}
+
+			if r == quoteChar {
+				inQuotes = false
 				continue
 			}
 			field.WriteRune(r)

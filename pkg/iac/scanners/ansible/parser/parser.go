@@ -683,7 +683,7 @@ func decodeYAMLFile(f fsutils.FileSource, dst any) error {
 	if err != nil {
 		return xerrors.Errorf("read file %s: %w", f.Path, err)
 	}
-	if err := yaml.Unmarshal([]byte(data), dst); err != nil {
+	if err := yaml.Unmarshal(data, dst); err != nil {
 		return xerrors.Errorf("unmarshal YAML file %s: %w", f.Path, err)
 	}
 	return nil
