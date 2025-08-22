@@ -585,22 +585,11 @@ func (p *Parser) resolveRoleInclude(parentVars vars.Vars, task *Task) ([]*Resolv
 		return nil, xerrors.Errorf("resolving module for keys %v: %w", moduleKeys, err)
 	}
 
-	var module RoleIncludeModule
-
-	if m.IsFreeForm() {
-		module = RoleIncludeModule{
-			Name:         m.freeForm,
-			TasksFrom:    "main",
-			VarsFrom:     "main",
-			DefaultsFrom: "main",
-		}
-	} else {
-		module = RoleIncludeModule{
-			Name:         getStringParam(m, "name"),
-			TasksFrom:    cmp.Or(getStringParam(m, "tasks_from"), "main"),
-			VarsFrom:     cmp.Or(getStringParam(m, "vars_from"), "main"),
-			DefaultsFrom: cmp.Or(getStringParam(m, "defaults_from"), "main"),
-		}
+	module := RoleIncludeModule{
+		Name:         getStringParam(m, "name"),
+		TasksFrom:    cmp.Or(getStringParam(m, "tasks_from"), "main"),
+		VarsFrom:     cmp.Or(getStringParam(m, "vars_from"), "main"),
+		DefaultsFrom: cmp.Or(getStringParam(m, "defaults_from"), "main"),
 	}
 
 	if module.Name == "" {
