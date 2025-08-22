@@ -152,6 +152,7 @@ const (
 	Helm                  ConfigType = "helm"
 	Cloud                 ConfigType = "cloud"
 	AzureARM              ConfigType = "azure-arm"
+	Ansible               ConfigType = "ansible"
 )
 
 // Language-specific file names
