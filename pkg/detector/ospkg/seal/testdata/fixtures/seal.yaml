@@ -1,0 +1,90 @@
+- bucket: debian 12
+  pairs:
+    - bucket: openssl
+      pairs:
+        - key: CVE-2025-27587
+          value:
+            VulnerableVersions:
+              - "<3.0.16-1~deb12u1"
+            PatchedVersions:
+              - "3.0.16-1~deb12u1"
+            Severity: 1
+- bucket: seal debian 12
+  pairs:
+    - bucket: seal-wget
+      pairs:
+        - key: CVE-2024-10524
+          value:
+            VulnerableVersions:
+              - ">=1.21-1+deb11u1, <1.21-1+deb11u1+sp999"
+            PatchedVersions:
+              - "1.21-1+deb11u1+sp999"
+    - bucket: wget
+      pairs:
+        - key: CVE-2024-10524
+          value:
+            VulnerableVersions:
+              - ">=1.21-1+deb11u1, <1.21-1+deb11u1+sp999"
+            PatchedVersions:
+              - "1.21-1+deb11u1+sp999"
+- bucket: seal ubuntu 22.04
+  pairs:
+    - bucket: seal-wget
+      pairs:
+        - key: CVE-2024-10524
+          value:
+            VulnerableVersions:
+              - ">=1.21-1+deb11u1, <1.21-1+deb11u1+sp999"
+            PatchedVersions:
+              - "1.21-1+deb11u1+sp999"
+- bucket: seal alpine 3.21
+  pairs:
+    - bucket: seal-zlib
+      pairs:
+        - key: CVE-2023-6992
+          value:
+            VulnerableVersions:
+              - ">=1.2.8-r2, <1.2.8-r2+sp999"
+            PatchedVersions:
+              - "1.2.8-r2+sp999"
+- bucket: seal redhat 9
+  pairs:
+    - bucket: seal-wget
+      pairs:
+        - key: CVE-2024-10524
+          value:
+            VulnerableVersions:
+              - ">=1.12-10.el6, <1.12-10.el6+sp999"
+            PatchedVersions:
+              - "1.12-10.el6+sp999"
+- bucket: seal centos 8
+  pairs:
+    - bucket: seal-wget
+      pairs:
+        - key: CVE-2024-10524
+          value:
+            VulnerableVersions:
+              - ">=1.12-10.el6, <1.12-10.el6+sp999"
+            PatchedVersions:
+              - "1.12-10.el6+sp999"
+- bucket: seal oracle-linux 8
+  pairs:
+    - bucket: seal-wget
+      pairs:
+        - key: CVE-2024-10524
+          value:
+            VulnerableVersions:
+              - ">=1.12-10.el6, <1.12-10.el6+sp999"
+            PatchedVersions:
+              - "1.12-10.el6+sp999"
+- bucket: seal cbl-mariner 2.0
+  pairs:
+    - bucket: seal-wget
+      pairs:
+        - key: CVE-2024-10524
+          value:
+            VulnerableVersions:
+              - ">=1.12-10.el6, <1.12-10.el6+sp999"
+            PatchedVersions:
+              - "1.12-10.el6+sp999"
+
