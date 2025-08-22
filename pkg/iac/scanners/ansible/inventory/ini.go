@@ -18,7 +18,7 @@ const (
 )
 
 func ParseINI(data []byte) (*Inventory, error) {
-	inv := NewInventory()
+	inv := newInventory()
 
 	currentGroup := "ungrouped"
 	sectionType := sectionHosts

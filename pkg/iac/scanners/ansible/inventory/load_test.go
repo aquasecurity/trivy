@@ -166,6 +166,33 @@ group1:
 	}
 }
 
+func TestLoadAuto_EmptySources(t *testing.T) {
+	inv, err := inventory.LoadAuto(fstest.MapFS{}, inventory.LoadOptions{})
+	require.NoError(t, err)
+
+	localhostVars := vars.Vars{
+		"foo": "test",
+	}
+	got := inv.ResolveVars("localhost", vars.LoadedVars{
+		vars.ScopeHost: map[string]vars.Vars{
+			"localhost": localhostVars,
+		},
+	})
+
+	assert.Equal(t, localhostVars, got)
+}
+
+func TestLoadAuto_ResolveSourcesError(t *testing.T) {
+	opts := inventory.LoadOptions{
+		InventoryPath: "nonexistent",
+	}
+
+	inv, err := inventory.LoadAuto(fstest.MapFS{}, opts)
+	require.Error(t, err)
+	assert.Nil(t, inv)
+	assert.Contains(t, err.Error(), "resolve inventory sources")
+}
+
 func TestResolveInventorySources(t *testing.T) {
 
 	files := map[string]*fstest.MapFile{
@@ -259,6 +286,11 @@ func TestResolveInventorySources(t *testing.T) {
 					VarsDir: rootSrc.Join("inv", "two"),
 				},
 			},
+		},
+		{
+			name:     "no sources",
+			opts:     inventory.LoadOptions{},
+			expected: []inventory.InventorySource{},
 		},
 	}
 
