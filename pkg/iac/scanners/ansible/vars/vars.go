@@ -6,6 +6,8 @@ import (
 	"github.com/samber/lo"
 )
 
+var VarFilesExtensions = []string{"", ".yml", ".yaml", ".json"}
+
 // Vars represents a set of variables as a map from string keys to arbitrary values.
 type Vars map[string]any
 

@@ -96,7 +96,7 @@ foo: 10
 
 	for _, tt := range tests {
 		t.Run(tt.hostName, func(t *testing.T) {
-			got := inv.ResolveVars(tt.hostName, make(vars.LoadedVars))
+			got := inv.ResolveVars(tt.hostName, make(inventory.LoadedVars))
 			assert.Equal(t, tt.expected, got)
 		})
 	}
@@ -160,7 +160,7 @@ group1:
 
 	for _, tt := range tests {
 		t.Run(tt.hostName, func(t *testing.T) {
-			got := inv.ResolveVars(tt.hostName, make(vars.LoadedVars))
+			got := inv.ResolveVars(tt.hostName, make(inventory.LoadedVars))
 			assert.Equal(t, tt.expected, got)
 		})
 	}
@@ -173,8 +173,8 @@ func TestLoadAuto_EmptySources(t *testing.T) {
 	localhostVars := vars.Vars{
 		"foo": "test",
 	}
-	got := inv.ResolveVars("localhost", vars.LoadedVars{
-		vars.ScopeHost: map[string]vars.Vars{
+	got := inv.ResolveVars("localhost", inventory.LoadedVars{
+		inventory.ScopeHost: map[string]vars.Vars{
 			"localhost": localhostVars,
 		},
 	})
