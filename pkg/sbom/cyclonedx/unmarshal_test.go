@@ -881,6 +881,63 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			inputFile: "testdata/sad/invalid-serial.json",
 			wantErr:   "CycloneDX decode error",
 		},
+		{
+			name:      "happy path - third-party SBOM scan of FS",
+			inputFile: "testdata/happy/third-party-scan-fs.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					ftypes.Application{
+						Type:     "jar",
+						FilePath: "",
+						Packages: ftypes.Packages{
+							ftypes.Package{
+								ID:   "commons-io:commons-io:2.13.0",
+								Name: "commons-io:commons-io",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "",
+									PURL: &packageurl.PackageURL{
+										Type:       "maven",
+										Namespace:  "commons-io",
+										Name:       "commons-io",
+										Version:    "2.13.0",
+										Qualifiers: nil,
+										Subpath:    "",
+									},
+									BOMRef: "pkg:maven/commons-io/commons-io@2.13.0?package-id=6033c6b2f2d3cf10",
+								},
+								Version:            "2.13.0",
+								Release:            "",
+								Epoch:              0,
+								Arch:               "",
+								Dev:                false,
+								SrcName:            "",
+								SrcVersion:         "",
+								SrcRelease:         "",
+								SrcEpoch:           0,
+								Licenses:           []string{"Apache-2.0"},
+								Maintainer:         "",
+								ExternalReferences: nil,
+								Modularitylabel:    "",
+								BuildInfo:          nil,
+								Indirect:           false,
+								Relationship:       0,
+								DependsOn:          nil,
+								Layer: ftypes.Layer{
+									Size:      0,
+									Digest:    "",
+									DiffID:    "",
+									CreatedBy: "",
+								},
+								FilePath:       "",
+								Digest:         "",
+								Locations:      nil,
+								InstalledFiles: nil,
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
