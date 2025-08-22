@@ -101,7 +101,11 @@ func (b *BOM) parseMetadataComponent(bom *cdx.BOM) (*core.Component, error) {
 		return nil, nil
 	}
 	root, err := b.parseComponent(*bom.Metadata.Component)
-	if err != nil {
+	if errors.Is(err, ErrUnsupportedType) {
+		log.Info("Skipping the metadata component with the unsupported type",
+			log.String("bom-ref", bom.Metadata.Component.BOMRef), log.String("type", string(bom.Metadata.Component.Type)))
+		return nil, nil
+	} else if err != nil {
 		return nil, xerrors.Errorf("failed to parse metadata component: %w", err)
 	}
 	root.Root = true
