@@ -126,8 +126,7 @@ func (p *Parser) initProject() (*AnsibleProject, error) {
 		Sources:       nil,
 	})
 	if err != nil {
-		p.logger.Debug("Failed to load inventory", log.Err(err))
-		inv = inventory.NewInventory()
+		return nil, xerrors.Errorf("load inventory: %w", err)
 	}
 
 	project := &AnsibleProject{

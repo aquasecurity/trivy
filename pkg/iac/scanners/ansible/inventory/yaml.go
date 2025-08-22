@@ -80,7 +80,7 @@ func ParseYAML(data []byte) (*Inventory, error) {
 		return nil, xerrors.Errorf("unmarshal inventory yaml: %w", err)
 	}
 
-	inv := NewInventory()
+	inv := newInventory()
 
 	for groupName, groupRaw := range raw.Iter() {
 		if err := parseGroup(groupName, groupRaw, inv, nil); err != nil {

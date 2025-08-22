@@ -45,7 +45,7 @@ type Inventory struct {
 	externalVars vars.LoadedVars
 }
 
-func NewInventory() *Inventory {
+func newInventory() *Inventory {
 	return &Inventory{
 		hosts:        make(map[string]*Host),
 		groups:       make(map[string]*Group),

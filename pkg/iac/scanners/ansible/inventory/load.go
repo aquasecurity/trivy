@@ -64,12 +64,7 @@ func LoadAuto(fsys fs.FS, opts LoadOptions) (*Inventory, error) {
 		return nil, xerrors.Errorf("resolve inventory sources: %w", err)
 	}
 
-	inv, err := LoadFromSources(sources)
-	if err != nil {
-		return nil, xerrors.Errorf("load from sources: %w", err)
-	}
-
-	return inv, nil
+	return LoadFromSources(sources), nil
 }
 
 // ResolveSources resolves one or more Ansible inventory sources into a list of InventorySource.
@@ -232,10 +227,16 @@ func dirHasFiles(fileSrc fsutils.FileSource) (bool, error) {
 // When multiple inventory sources are provided, Ansible merges
 // variables in the order the sources are specified.
 // See https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#managing-inventory-variable-load-order
-func LoadFromSources(sources []InventorySource) (*Inventory, error) {
+func LoadFromSources(sources []InventorySource) *Inventory {
 	logger := log.WithPrefix("ansible")
 
-	res := NewInventory()
+	if sources == nil {
+		logger.Debug("No inventory sources provided, falling back to implicit host 'localhost'")
+		// https://docs.ansible.com/ansible/latest/inventory/implicit_localhost.html#implicit-localhost
+		return newInlineInventory([]string{"localhost"})
+	}
+
+	res := newInventory()
 	externalVars := make(vars.LoadedVars)
 
 	for _, source := range sources {
@@ -287,7 +288,7 @@ func LoadFromSources(sources []InventorySource) (*Inventory, error) {
 	}
 
 	res.applyVars(externalVars)
-	return res, nil
+	return res
 }
 
 func readAndParseHosts(fileSrc fsutils.FileSource) (*Inventory, error) {
