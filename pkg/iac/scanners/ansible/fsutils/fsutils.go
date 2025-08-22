@@ -142,37 +142,31 @@ func WalkDirsFirstAlpha(root FileSource, fn func(FileSource, fs.DirEntry) error)
 			return err
 		}
 
-		var dirs, files []fs.DirEntry
-		for _, e := range entries {
-			if e.IsDir() {
-				dirs = append(dirs, e)
-			} else {
-				files = append(files, e)
-			}
-		}
+		SortDirsFirstAlpha(entries)
 
-		sort.Slice(dirs, func(i, j int) bool { return dirs[i].Name() < dirs[j].Name() })
-		sort.Slice(files, func(i, j int) bool { return files[i].Name() < files[j].Name() })
-
-		for _, d := range dirs {
-			sub := fileSrc.Join(d.Name())
-			if err := fn(sub, d); err != nil {
+		for _, entry := range entries {
+			entrySrc := fileSrc.Join(entry.Name())
+			if err := fn(entrySrc, entry); err != nil {
 				return err
 			}
-			if err := walk(sub); err != nil {
-				return err
+
+			if entry.IsDir() {
+				if err := walk(entrySrc); err != nil {
+					return err
+				}
 			}
 		}
-
-		for _, f := range files {
-			sub := fileSrc.Join(f.Name())
-			if err := fn(sub, f); err != nil {
-				return err
-			}
-		}
-
 		return nil
 	}
 
 	return walk(root)
+}
+
+func SortDirsFirstAlpha(entries []fs.DirEntry) {
+	sort.Slice(entries, func(i, j int) bool {
+		if entries[i].IsDir() != entries[j].IsDir() {
+			return entries[i].IsDir()
+		}
+		return entries[i].Name() < entries[j].Name()
+	})
 }
