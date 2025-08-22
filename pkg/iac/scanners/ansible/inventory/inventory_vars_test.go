@@ -1,4 +1,4 @@
-package vars_test
+package inventory_test
 
 import (
 	"testing"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/inventory"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 )
 
@@ -40,12 +41,12 @@ all_var: allvalue
 
 	fsys := testutil.CreateFS(t, files)
 	rootSrc := fsutils.NewFileSource(fsys, ".")
-	sources := vars.PlaybookVarsSources(rootSrc)
-	sources = append(sources, vars.InventoryVarsSources(rootSrc.Join("inventory"))...)
-	got := vars.LoadVars(sources)
+	sources := inventory.PlaybookVarsSources(rootSrc)
+	sources = append(sources, inventory.InventoryVarsSources(rootSrc.Join("inventory"))...)
+	got := inventory.LoadVars(sources)
 
-	expected := vars.LoadedVars{
-		vars.ScopeHost: map[string]vars.Vars{
+	expected := inventory.LoadedVars{
+		inventory.ScopeHost: map[string]vars.Vars{
 			"host1": {
 				"var1": "value1",
 				"var2": "value2",
@@ -55,12 +56,12 @@ all_var: allvalue
 				"var2": "value2",
 			},
 		},
-		vars.ScopeGroupAll: map[string]vars.Vars{
+		inventory.ScopeGroupAll: map[string]vars.Vars{
 			"all": {
 				"all_var": "allvalue",
 			},
 		},
-		vars.ScopeGroupSpecific: map[string]vars.Vars{
+		inventory.ScopeGroupSpecific: map[string]vars.Vars{
 			"group1": {
 				"group_var1": "gvalue1_2",
 			},

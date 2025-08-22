@@ -235,7 +235,7 @@ func (p *Parser) resolvePlaybook(
 	// Ansible loads host and group variable files by searching paths
 	// relative to the playbook file.
 	// See https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#organizing-host-and-group-variables
-	playbookInvVars := vars.LoadVars(vars.PlaybookVarsSources(playbookSrc.Dir()))
+	playbookInvVars := inventory.LoadVars(inventory.PlaybookVarsSources(playbookSrc.Dir()))
 
 	var tasks []*ResolvedTask
 	for _, play := range pb.Plays {

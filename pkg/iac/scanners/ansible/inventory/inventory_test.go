@@ -139,7 +139,7 @@ datacenter:
 
 	for _, tt := range tests {
 		t.Run(tt.hostName, func(t *testing.T) {
-			got := inv.ResolveVars(tt.hostName, make(vars.LoadedVars))
+			got := inv.ResolveVars(tt.hostName, make(inventory.LoadedVars))
 			assert.Equal(t, tt.expected, got)
 		})
 	}

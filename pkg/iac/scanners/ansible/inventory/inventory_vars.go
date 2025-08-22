@@ -1,4 +1,4 @@
-package vars
+package inventory
 
 import (
 	"bytes"
@@ -13,11 +13,10 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 )
-
-var VarFilesExtensions = []string{"", ".yml", ".yaml", ".json"}
 
 type VarScope int
 
@@ -76,7 +75,7 @@ type VarsSource struct {
 
 // LoadedVars stores all loaded variables organized by scope and key (host or group).
 // The first map is by VarScope, the second by host/group name, each holding Vars.
-type LoadedVars map[VarScope]map[string]Vars
+type LoadedVars map[VarScope]map[string]vars.Vars
 
 func (v *LoadedVars) Merge(other LoadedVars) {
 	if *v == nil {
@@ -84,17 +83,17 @@ func (v *LoadedVars) Merge(other LoadedVars) {
 	}
 	for scope, objs := range other {
 		if (*v)[scope] == nil {
-			(*v)[scope] = make(map[string]Vars)
+			(*v)[scope] = make(map[string]vars.Vars)
 		}
-		for name, vars := range objs {
+		for name, targetVars := range objs {
 			existing, ok := (*v)[scope][name]
 			if !ok {
-				(*v)[scope][name] = vars
+				(*v)[scope][name] = targetVars
 				continue
 			}
-			merged := make(Vars)
+			merged := make(vars.Vars)
 			maps.Copy(merged, existing)
-			maps.Copy(merged, vars)
+			maps.Copy(merged, targetVars)
 			(*v)[scope][name] = merged
 		}
 	}
@@ -111,11 +110,11 @@ func LoadVars(sources []VarsSource) LoadedVars {
 		}
 
 		if allVars[src.Scope] == nil {
-			allVars[src.Scope] = make(map[string]Vars)
+			allVars[src.Scope] = make(map[string]vars.Vars)
 		}
 
-		for key, vars := range srcVars {
-			allVars[src.Scope][key] = MergeVars(allVars[src.Scope][key], vars)
+		for key, v := range srcVars {
+			allVars[src.Scope][key] = vars.MergeVars(allVars[src.Scope][key], v)
 
 			logger.Debug("Loaded vars from directory",
 				log.String("scope", src.Scope.String()), log.String("target", key))
@@ -125,13 +124,13 @@ func LoadVars(sources []VarsSource) LoadedVars {
 	return allVars
 }
 
-func LoadSourceVars(src VarsSource) (map[string]Vars, error) {
+func LoadSourceVars(src VarsSource) (map[string]vars.Vars, error) {
 	info, err := src.FileSrc.Stat()
 	if err != nil {
 		return nil, err
 	}
 
-	result := make(map[string]Vars)
+	result := make(map[string]vars.Vars)
 
 	if info.IsDir() {
 		entries, err := listEntries(src.FileSrc)
@@ -171,18 +170,19 @@ func LoadSourceVars(src VarsSource) (map[string]Vars, error) {
 	return result, nil
 }
 
-func processFile(fileSrc fsutils.FileSource, target string, result map[string]Vars) {
+func processFile(fileSrc fsutils.FileSource, target string, result map[string]vars.Vars) {
 	if shouldSkipFile(fileSrc.Path) {
 		return
 	}
 
-	vars, err := readVars(fileSrc)
+	v, err := readVars(fileSrc)
 	if err != nil {
-		// TODO: log error
+		log.WithPrefix("ansible").Debug("Failed to read vars",
+			log.FilePath(fileSrc.Path), log.Err(err))
 		return
 	}
 
-	result[target] = MergeVars(result[target], vars)
+	result[target] = vars.MergeVars(result[target], v)
 }
 
 // listEntries returns directory entries sorted alphabetically,
@@ -224,7 +224,7 @@ func shouldSkipFile(filePath string) bool {
 	if strings.HasPrefix(base, ".") || strings.HasSuffix(base, "~") {
 		return true
 	}
-	if !slices.Contains(VarFilesExtensions, filepath.Ext(base)) {
+	if !slices.Contains(vars.VarFilesExtensions, filepath.Ext(base)) {
 		return true
 	}
 	return false

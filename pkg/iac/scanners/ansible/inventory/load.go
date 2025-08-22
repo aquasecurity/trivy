@@ -9,7 +9,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 )
@@ -237,7 +236,7 @@ func LoadFromSources(sources []InventorySource) *Inventory {
 	}
 
 	res := newInventory()
-	externalVars := make(vars.LoadedVars)
+	externalVars := make(LoadedVars)
 
 	for _, source := range sources {
 
@@ -259,7 +258,7 @@ func LoadFromSources(sources []InventorySource) *Inventory {
 			res.Merge(inv)
 			logger.Debug("Loaded hosts file", log.FilePath(src.File.Path))
 
-			vars := vars.LoadVars(vars.InventoryVarsSources(src.VarsDir))
+			vars := LoadVars(InventoryVarsSources(src.VarsDir))
 			externalVars.Merge(vars)
 		case HostsDirsSource:
 			for _, hostsDirSrc := range src.Dirs {
@@ -282,7 +281,7 @@ func LoadFromSources(sources []InventorySource) *Inventory {
 					logger.Debug("Loaded hosts file", log.FilePath(hostFileSrc.Path))
 				}
 			}
-			vars := vars.LoadVars(vars.InventoryVarsSources(src.VarsDir))
+			vars := LoadVars(InventoryVarsSources(src.VarsDir))
 			externalVars.Merge(vars)
 		}
 	}

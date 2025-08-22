@@ -42,14 +42,14 @@ type Inventory struct {
 	hosts  map[string]*Host
 	groups map[string]*Group
 
-	externalVars vars.LoadedVars
+	externalVars LoadedVars
 }
 
 func newInventory() *Inventory {
 	return &Inventory{
 		hosts:        make(map[string]*Host),
 		groups:       make(map[string]*Group),
-		externalVars: make(vars.LoadedVars),
+		externalVars: make(LoadedVars),
 	}
 }
 
@@ -84,7 +84,7 @@ func (inv *Inventory) addGroup(name string, newGroup *Group) {
 // https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#understanding-variable-precedence
 // TODO: Add support for "ansible_group_priority"
 // See https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#how-variables-are-merged
-func (inv *Inventory) ResolveVars(hostName string, playbookVars vars.LoadedVars) vars.Vars {
+func (inv *Inventory) ResolveVars(hostName string, playbookVars LoadedVars) vars.Vars {
 	effective := make(vars.Vars)
 
 	host, ok := inv.hosts[hostName]
@@ -109,23 +109,23 @@ func (inv *Inventory) ResolveVars(hostName string, playbookVars vars.LoadedVars)
 	}
 
 	// Resolve extenral group_vars/all
-	mergeScopeVars(effective, inv.externalVars, vars.ScopeGroupAll, "all")
+	mergeScopeVars(effective, inv.externalVars, ScopeGroupAll, "all")
 	// Resolve playbook group_vars/all
-	mergeScopeVars(effective, playbookVars, vars.ScopeGroupAll, "all")
+	mergeScopeVars(effective, playbookVars, ScopeGroupAll, "all")
 	// Resolve external group_vars/*
-	mergeScopeVars(effective, inv.externalVars, vars.ScopeGroupSpecific, groupsOrder...)
+	mergeScopeVars(effective, inv.externalVars, ScopeGroupSpecific, groupsOrder...)
 	// Resolve playbook group_vars/*
-	mergeScopeVars(effective, playbookVars, vars.ScopeGroupSpecific, groupsOrder...)
+	mergeScopeVars(effective, playbookVars, ScopeGroupSpecific, groupsOrder...)
 	// Resolve internal host vars
 	maps.Copy(effective, host.Vars)
 	// Resolve external host_vars/*
-	mergeScopeVars(effective, inv.externalVars, vars.ScopeHost, hostName)
+	mergeScopeVars(effective, inv.externalVars, ScopeHost, hostName)
 	// Resolve playbook host_vars/*
-	mergeScopeVars(effective, playbookVars, vars.ScopeHost, hostName)
+	mergeScopeVars(effective, playbookVars, ScopeHost, hostName)
 	return effective
 }
 
-func mergeScopeVars(effective vars.Vars, src vars.LoadedVars, scope vars.VarScope, keys ...string) {
+func mergeScopeVars(effective vars.Vars, src LoadedVars, scope VarScope, keys ...string) {
 	s, ok := src[scope]
 	if !ok {
 		return
@@ -211,7 +211,7 @@ func (inv *Inventory) initDefaultGroups() {
 }
 
 // applyVars applies a list of external variables to the inventory
-func (inv *Inventory) applyVars(externalVars vars.LoadedVars) {
+func (inv *Inventory) applyVars(externalVars LoadedVars) {
 	inv.externalVars = externalVars
 }
 
