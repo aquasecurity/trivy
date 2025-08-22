@@ -22,12 +22,16 @@ var2: value2
 `,
 		"group_vars/group1.yaml": `
 group_var1: gvalue1
+group_var2: skipped
 `,
 		"group_vars/group1/vars.yaml": `
 group_var1: gvalue1_1
 `,
 		"group_vars/group1/vars2.yaml": `
 group_var1: gvalue1_2
+`,
+		"group_vars/group1/first/vars2.yaml": `
+group_var1: gvalue1_0
 `,
 		"group_vars/all": `
 all_var: allvalue

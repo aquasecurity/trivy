@@ -8,13 +8,13 @@ import (
 	"path"
 	"path/filepath"
 	"slices"
-	"sort"
 	"strings"
 
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 var VarFilesExtensions = []string{"", ".yml", ".yaml", ".json"}
@@ -134,12 +134,12 @@ func LoadSourceVars(src VarsSource) (map[string]Vars, error) {
 	result := make(map[string]Vars)
 
 	if info.IsDir() {
-		entries, err := src.FileSrc.ReadDir()
+		entries, err := listEntries(src.FileSrc)
 		if err != nil {
 			return nil, err
 		}
 
-		sortEntries(entries)
+		fsutils.SortDirsFirstAlpha(entries)
 
 		for _, e := range entries {
 			name := e.Name()
@@ -157,8 +157,8 @@ func LoadSourceVars(src VarsSource) (map[string]Vars, error) {
 					}
 					return nil
 				}
-				if err := walkFilesFirst(entrySrc, walkFn); err != nil {
-					// TODO: log error
+				if err := fsutils.WalkDirsFirstAlpha(entrySrc, walkFn); err != nil {
+					log.WithPrefix("ansible").Debug("Walk error", log.FilePath(entrySrc.Path))
 					continue
 				}
 			} else {
@@ -185,38 +185,38 @@ func processFile(fileSrc fsutils.FileSource, target string, result map[string]Va
 	result[target] = MergeVars(result[target], vars)
 }
 
-func sortEntries(entries []fs.DirEntry) {
-	// sorting: files first
-	sort.Slice(entries, func(i, j int) bool {
-		if entries[i].IsDir() == entries[j].IsDir() {
-			return entries[i].Name() < entries[j].Name()
-		}
-		return !entries[i].IsDir() // files < directories
-	})
-}
-
-func walkFilesFirst(rootSrc fsutils.FileSource, fn func(fileSrc fsutils.FileSource, d fs.DirEntry) error) error {
-	entries, err := rootSrc.ReadDir()
+// listEntries returns directory entries sorted alphabetically,
+// with directories listed before files.
+//
+// At the top level, if a directory and a file share the same
+// base name, the directory takes precedence and the file is ignored.
+//
+// For example, if "host_vars/group_vars" contains both "all/"
+// and "all.yaml", "all.yaml" will be skipped in favor of the directory.
+func listEntries(root fsutils.FileSource) ([]fs.DirEntry, error) {
+	entries, err := root.ReadDir()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	sortEntries(entries)
-	for _, entry := range entries {
-		entrySrc := rootSrc.Join(entry.Name())
-		if err := fn(entrySrc, entry); err != nil {
-			return err
+	dirs := set.New[string]()
+	for _, e := range entries {
+		if e.IsDir() {
+			dirs.Append(e.Name())
 		}
+	}
 
-		if entry.IsDir() {
-			// recursively traversing the subdirectory
-			if err := walkFilesFirst(entrySrc, fn); err != nil {
-				return err
+	filtered := make([]fs.DirEntry, 0, len(entries))
+	for _, e := range entries {
+		if !e.IsDir() {
+			name := strings.TrimSuffix(e.Name(), path.Ext(e.Name()))
+			if dirs.Contains(name) {
+				continue
 			}
 		}
+		filtered = append(filtered, e)
 	}
-
-	return nil
+	return filtered, nil
 }
 
 func shouldSkipFile(filePath string) bool {
