@@ -64,10 +64,9 @@ foo: 10
 	}
 
 	fsys := testutil.CreateFS(t, files)
-	inv, err := inventory.LoadAuto(fsys, inventory.LoadOptions{
+	inv := inventory.LoadAuto(fsys, inventory.LoadOptions{
 		Sources: []string{"dev", "common"},
 	})
-	require.NoError(t, err)
 
 	tests := []struct {
 		name     string
@@ -135,8 +134,7 @@ group1:
 		Sources: []string{"dev", tmpFile.Name()},
 	}
 
-	inv, err := inventory.LoadAuto(fsys, opts)
-	require.NoError(t, err)
+	inv := inventory.LoadAuto(fsys, opts)
 
 	tests := []struct {
 		name     string
@@ -167,8 +165,7 @@ group1:
 }
 
 func TestLoadAuto_EmptySources(t *testing.T) {
-	inv, err := inventory.LoadAuto(fstest.MapFS{}, inventory.LoadOptions{})
-	require.NoError(t, err)
+	inv := inventory.LoadAuto(fstest.MapFS{}, inventory.LoadOptions{})
 
 	localhostVars := vars.Vars{
 		"foo": "test",
@@ -182,15 +179,22 @@ func TestLoadAuto_EmptySources(t *testing.T) {
 	assert.Equal(t, localhostVars, got)
 }
 
-func TestLoadAuto_ResolveSourcesError(t *testing.T) {
+func TestLoadAuto_NonExistentSource(t *testing.T) {
 	opts := inventory.LoadOptions{
 		InventoryPath: "nonexistent",
 	}
 
-	inv, err := inventory.LoadAuto(fstest.MapFS{}, opts)
-	require.Error(t, err)
-	assert.Nil(t, inv)
-	assert.Contains(t, err.Error(), "resolve inventory sources")
+	inv := inventory.LoadAuto(fstest.MapFS{}, opts)
+	localhostVars := vars.Vars{
+		"foo": "test",
+	}
+	got := inv.ResolveVars("localhost", inventory.LoadedVars{
+		inventory.ScopeHost: map[string]vars.Vars{
+			"localhost": localhostVars,
+		},
+	})
+
+	assert.Equal(t, localhostVars, got)
 }
 
 func TestResolveInventorySources(t *testing.T) {

@@ -57,13 +57,20 @@ type LoadOptions struct {
 
 // LoadAuto resolves inventory sources from configuration, environment variables,
 // and command-line flags, then loads the resulting inventory.
-func LoadAuto(fsys fs.FS, opts LoadOptions) (*Inventory, error) {
+func LoadAuto(fsys fs.FS, opts LoadOptions) *Inventory {
 	sources, err := ResolveSources(fsys, opts)
 	if err != nil {
-		return nil, xerrors.Errorf("resolve inventory sources: %w", err)
+		log.WithPrefix("ansible").Debug("Failed to resolve inventory sources", log.Err(err))
 	}
 
-	return LoadFromSources(sources), nil
+	if len(sources) == 0 {
+		log.WithPrefix("ansible").Debug(
+			"No inventory sources provided, falling back to implicit host 'localhost'")
+		// https://docs.ansible.com/ansible/latest/inventory/implicit_localhost.html#implicit-localhost
+		return newInlineInventory([]string{"localhost"})
+	}
+
+	return LoadFromSources(sources)
 }
 
 // ResolveSources resolves one or more Ansible inventory sources into a list of InventorySource.
@@ -89,7 +96,6 @@ func ResolveSources(fsys fs.FS, opts LoadOptions) ([]InventorySource, error) {
 			}
 			return []InventorySource{src}, nil
 		}
-		logger.Debug("Use default hosts file", log.FilePath(defaultHostsFile))
 		return defaultInventorySources()
 	}
 
@@ -121,6 +127,7 @@ func makeHostFileSource(fileSrc fsutils.FileSource) InventorySource {
 func defaultInventorySources() ([]InventorySource, error) {
 	// TODO: use ANSIBLE_INVENTORY env
 	if _, err := os.Stat(defaultHostsFile); err == nil {
+		log.WithPrefix("ansible").Debug("Use default hosts file", log.FilePath(defaultHostsFile))
 		fileSrc := fsutils.NewFileSource(nil, defaultHostsFile)
 		return []InventorySource{makeHostFileSource(fileSrc)}, nil
 	}
@@ -228,12 +235,6 @@ func dirHasFiles(fileSrc fsutils.FileSource) (bool, error) {
 // See https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#managing-inventory-variable-load-order
 func LoadFromSources(sources []InventorySource) *Inventory {
 	logger := log.WithPrefix("ansible")
-
-	if sources == nil {
-		logger.Debug("No inventory sources provided, falling back to implicit host 'localhost'")
-		// https://docs.ansible.com/ansible/latest/inventory/implicit_localhost.html#implicit-localhost
-		return newInlineInventory([]string{"localhost"})
-	}
 
 	res := newInventory()
 	externalVars := make(LoadedVars)

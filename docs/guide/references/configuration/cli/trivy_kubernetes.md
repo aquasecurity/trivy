@@ -29,6 +29,9 @@ trivy kubernetes [flags] [CONTEXT]
 ### Options
 
 ```
+      --ansible-extra-vars strings        set additional variables as key=value or @file (YAML/JSON)
+      --ansible-inventory strings         specify inventory host path or comma separated host list
+      --ansible-playbook strings          specify playbook file path(s) to scan
       --burst int                         specify the maximum burst for throttle (default 10)
       --cache-backend string              [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
@@ -92,7 +95,7 @@ trivy kubernetes [flags] [CONTEXT]
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --kubeconfig string                 specify the kubeconfig file path to use
       --list-all-pkgs                     output all packages in the JSON report regardless of vulnerability (default true)
-      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
+      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot,ansible])
       --no-progress                       suppress progress bar
       --node-collector-imageref string    indicate the image reference for the node-collector scan job (default "ghcr.io/aquasecurity/node-collector:0.3.1")
       --node-collector-namespace string   specify the namespace in which the node-collector job should be deployed (default "trivy-temp")

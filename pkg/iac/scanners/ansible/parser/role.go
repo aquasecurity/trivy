@@ -60,7 +60,7 @@ func (r *Role) getTasks(tasksFile string) ([]*Task, error) {
 		roleTask.role = r
 	}
 	allTasks = append(allTasks, fileTasks...)
-	log.WithPrefix("ansbile").Debug("Role tasks loaded",
+	log.WithPrefix("ansible").Debug("Role tasks loaded",
 		log.FilePath(tasksFileSrc.Path), log.Int("tasks_count", len(allTasks)))
 
 	r.cachedTasks[tasksFile] = allTasks

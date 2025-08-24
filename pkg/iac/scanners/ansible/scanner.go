@@ -13,15 +13,42 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var (
-	_ scanners.FSScanner = (*Scanner)(nil)
+	_ scanners.FSScanner          = (*Scanner)(nil)
+	_ options.ConfigurableScanner = (*Scanner)(nil)
 )
 
 type Scanner struct {
 	*rego.RegoScannerProvider
-	opts []options.ScannerOption
+	opts       []options.ScannerOption
+	parserOpts []parser.Option
+}
+
+func WithPlaybooks(playbooks []string) options.ScannerOption {
+	return func(s options.ConfigurableScanner) {
+		if ss, ok := s.(*Scanner); ok {
+			ss.parserOpts = append(ss.parserOpts, parser.WithPlaybooks(playbooks...))
+		}
+	}
+}
+
+func WithInventories(inventories []string) options.ScannerOption {
+	return func(s options.ConfigurableScanner) {
+		if ss, ok := s.(*Scanner); ok {
+			ss.parserOpts = append(ss.parserOpts, parser.WithInventories(inventories...))
+		}
+	}
+}
+
+func WithExtraVars(evars map[string]any) options.ScannerOption {
+	return func(s options.ConfigurableScanner) {
+		if ss, ok := s.(*Scanner); ok {
+			ss.parserOpts = append(ss.parserOpts, parser.WithExtraVars(evars))
+		}
+	}
 }
 
 func New(opts ...options.ScannerOption) *Scanner {
@@ -47,7 +74,8 @@ func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Resu
 
 	var results scan.Results
 	for _, projectRoot := range roots {
-		project, err := parser.ParseProject(fsys, projectRoot)
+		log.WithPrefix("ansible").Debug("Detected ansible project", log.FilePath(projectRoot))
+		project, err := parser.ParseProject(fsys, projectRoot, s.parserOpts...)
 		if err != nil {
 			return nil, fmt.Errorf("parse project: %w", err)
 		}

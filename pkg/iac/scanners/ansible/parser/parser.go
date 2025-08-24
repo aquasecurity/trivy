@@ -53,10 +53,34 @@ func (p *AnsibleProject) ListTasks() ResolvedTasks {
 	return p.tasks
 }
 
+type Option func(p *Parser)
+
+func WithPlaybooks(playbooks ...string) Option {
+	return func(p *Parser) {
+		p.playbooks = playbooks
+	}
+}
+
+func WithInventories(inventories ...string) Option {
+	return func(p *Parser) {
+		p.inventories = inventories
+	}
+}
+
+func WithExtraVars(evars map[string]any) Option {
+	return func(p *Parser) {
+		p.extraVars = evars
+	}
+}
+
 type Parser struct {
 	fsys    fs.FS
 	rootSrc fsutils.FileSource
 	logger  *log.Logger
+
+	inventories []string
+	playbooks   []string
+	extraVars   map[string]any
 
 	// resolvedTasks caches the fully expanded list of tasks for each playbook,
 	// keyed by the playbook's file path to avoid redundant parsing and resolution.
@@ -67,19 +91,26 @@ type Parser struct {
 	roleCache map[string]*Role
 }
 
-func New(fsys fs.FS, root string) *Parser {
-	return &Parser{
-		fsys:    fsys,
-		rootSrc: fsutils.NewFileSource(fsys, root),
-		logger:  log.WithPrefix("ansible"),
+func New(fsys fs.FS, root string, opts ...Option) *Parser {
+	p := &Parser{
+		fsys:      fsys,
+		rootSrc:   fsutils.NewFileSource(fsys, root),
+		logger:    log.WithPrefix("ansible"),
+		extraVars: make(map[string]any),
 
 		resolvedTasks: make(map[string][]*ResolvedTask),
 		roleCache:     make(map[string]*Role),
 	}
+
+	for _, opt := range opts {
+		opt(p)
+	}
+
+	return p
 }
 
-func ParseProject(fsys fs.FS, root string) (*AnsibleProject, error) {
-	parser := New(fsys, root)
+func ParseProject(fsys fs.FS, root string, opts ...Option) (*AnsibleProject, error) {
+	parser := New(fsys, root, opts...)
 	project, err := parser.Parse()
 	if err != nil {
 		return nil, err
@@ -87,14 +118,14 @@ func ParseProject(fsys fs.FS, root string) (*AnsibleProject, error) {
 	return project, nil
 }
 
-func (p *Parser) Parse(playbooks ...string) (*AnsibleProject, error) {
+func (p *Parser) Parse() (*AnsibleProject, error) {
 	p.logger.Debug("Parse Ansible project", log.FilePath(p.rootSrc.Path))
 	project, err := p.initProject()
 	if err != nil {
 		return nil, err
 	}
 
-	playbookSources := lo.Map(playbooks, func(playbookPath string, _ int) fsutils.FileSource {
+	playbookSources := lo.Map(p.playbooks, func(playbookPath string, _ int) fsutils.FileSource {
 		return p.rootSrc.Join(playbookPath)
 	})
 
@@ -120,14 +151,10 @@ func (p *Parser) initProject() (*AnsibleProject, error) {
 		return nil, xerrors.Errorf("read config: %w", err)
 	}
 
-	// TODO: pass sources, for example, from flags
-	inv, err := inventory.LoadAuto(p.fsys, inventory.LoadOptions{
+	inv := inventory.LoadAuto(p.fsys, inventory.LoadOptions{
 		InventoryPath: cfg.Inventory,
-		Sources:       nil,
+		Sources:       p.inventories,
 	})
-	if err != nil {
-		return nil, xerrors.Errorf("load inventory: %w", err)
-	}
 
 	project := &AnsibleProject{
 		path:      p.rootSrc.Path,
@@ -179,7 +206,7 @@ func (p *Parser) loadPlaybook(f fsutils.FileSource) (*Playbook, error) {
 		return nil, xerrors.Errorf("decode YAML file: %w", err)
 	}
 
-	p.logger.Debug("Finished loading playbook",
+	p.logger.Debug("Loaded playbook",
 		log.FilePath(f.Path), log.Int("plays_count", len(plays)))
 	return &Playbook{
 		Src:   f,
@@ -279,7 +306,7 @@ func (p *Parser) resolvePlaybook(
 		for _, roleDef := range play.roleDefinitions() {
 			roleTasks, err := p.resolveRoleDefinitionTasks(roleDef, play, playVars)
 			if err != nil {
-				p.logger.Debug("Failed to load role", log.String("role", roleDef.name()))
+				p.logger.Debug("Failed to load role", log.String("role", roleDef.name()), log.Err(err))
 				continue
 			}
 			tasks = append(tasks, roleTasks...)
@@ -317,7 +344,7 @@ func (p *Parser) resolvePlaybook(
 		}
 	}
 
-	p.logger.Debug("Finished resolving playbook tasks",
+	p.logger.Debug("Resolved playbook tasks",
 		log.FilePath(pb.Src.Path), log.Int("tasks_count", len(tasks)))
 
 	p.resolvedTasks[pb.Src.Path] = tasks
@@ -480,8 +507,9 @@ func (p *Parser) expandTask(parentVars vars.Vars, t *Task) ([]*ResolvedTask, err
 		tasks, err := p.resolveRoleInclude(effectiveVars, t)
 		return wrapIfErr(tasks, fmt.Sprintf("resolve role include %s", taskSource), err)
 	default:
-		effectiveVars = vars.MergeVars(effectiveVars, specialVarsForTask(t))
-		return []*ResolvedTask{t.resolved(effectiveVars)}, nil
+		resolvedTask := p.resolveTask(t, parentVars)
+		// TODO: check that the task is not absent
+		return []*ResolvedTask{resolvedTask}, nil
 	}
 }
 
@@ -515,6 +543,14 @@ func (p *Parser) expandBlockTasks(parentVars vars.Vars, t *Task) ([]*ResolvedTas
 	return res, errs
 }
 
+func (p *Parser) resolveTask(task *Task, parentVars vars.Vars) *ResolvedTask {
+	return task.resolved(p.effecitveVarsForTask(task, parentVars))
+}
+
+func (p *Parser) effecitveVarsForTask(task *Task, parentVars vars.Vars) vars.Vars {
+	return vars.MergeVars(parentVars, task.inner.Vars, specialVarsForTask(task), p.extraVars)
+}
+
 func specialVarsForTask(task *Task) vars.Vars {
 	variables := task.play.specialVars()
 	if task.role != nil {
@@ -529,8 +565,7 @@ func specialVarsForTask(task *Task) vars.Vars {
 // Supports Ansible modules 'include_tasks' and 'import_tasks'.
 // See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/include_tasks_module.html
 func (p *Parser) resolveTasksInclude(parentVars vars.Vars, task *Task) ([]*ResolvedTask, error) {
-	effectiveVars := vars.MergeVars(parentVars, task.inner.Vars, specialVarsForTask(task))
-	resolvedTask := task.resolved(effectiveVars)
+	resolvedTask := p.resolveTask(task, parentVars)
 	moduleKeys := withBuiltinPrefix(ModuleIncludeTasks, ModuleImportTasks)
 	m, err := resolvedTask.ResolveModule(moduleKeys, true)
 	if err != nil {
@@ -577,8 +612,7 @@ func (p *Parser) resolveTasksInclude(parentVars vars.Vars, task *Task) ([]*Resol
 // Supports Ansible modules 'include_role' and 'import_role'.
 // See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/include_role_module.html
 func (p *Parser) resolveRoleInclude(parentVars vars.Vars, task *Task) ([]*ResolvedTask, error) {
-	effectiveVars := vars.MergeVars(parentVars, task.inner.Vars, specialVarsForTask(task))
-	resolvedTask := task.resolved(effectiveVars)
+	resolvedTask := p.resolveTask(task, parentVars)
 	moduleKeys := withBuiltinPrefix(ModuleIncludeRole, ModuleImportRole)
 	m, err := resolvedTask.ResolveModule(moduleKeys, true)
 	if err != nil {
