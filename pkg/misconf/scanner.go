@@ -78,6 +78,10 @@ type ScannerOption struct {
 	FilePatterns      []string
 	ConfigFileSchemas []*ConfigFileSchema
 
+	AnsiblePlaybooks   []string
+	AnsibleInventories []string
+	AnsibleExtraVars   map[string]any
+
 	SkipFiles []string
 	SkipDirs  []string
 
@@ -307,6 +311,8 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 		return addTFOpts(opts, opt)
 	case detection.FileTypeCloudFormation:
 		return addCFOpts(opts, opt)
+	case detection.FileTypeAnsible:
+		return addAnsibleOpts(opts, opt), nil
 	default:
 		return opts, nil
 	}
@@ -385,6 +391,14 @@ func addHelmOpts(opts []options.ScannerOption, scannerOption ScannerOption) []op
 	}
 
 	return opts
+}
+
+func addAnsibleOpts(opts []options.ScannerOption, scannerOpt ScannerOption) []options.ScannerOption {
+	return append(opts,
+		ansible.WithPlaybooks(scannerOpt.AnsiblePlaybooks),
+		ansible.WithInventories(scannerOpt.AnsibleInventories),
+		ansible.WithExtraVars(scannerOpt.AnsibleExtraVars),
+	)
 }
 
 func createConfigFS(paths []string) (fs.FS, error) {

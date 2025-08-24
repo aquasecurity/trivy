@@ -557,6 +557,7 @@ func TestParse_ResolveVariables(t *testing.T) {
 	tests := []struct {
 		name  string
 		files map[string]string
+		opts  []parser.Option
 	}{
 		{
 			name: "vars in task",
@@ -779,12 +780,59 @@ bucket: "from-role"
 `,
 			},
 		},
+		{
+			name: "with extra vars",
+			files: map[string]string{
+				"main.yaml": `---
+- name: test
+  vars:
+    bucket: from-play
+  hosts: webservers
+  tasks:
+    - name: create bucket
+      vars:
+        public_access: "true"
+      s3_bucket:
+        name: '{{ bucket }}'
+        public_access: '{{ public_access }}'
+`,
+			},
+			opts: []parser.Option{
+				parser.WithExtraVars(map[string]any{
+					"bucket": "test",
+				}),
+			},
+		},
+		{
+			name: "with host_vars",
+			files: map[string]string{
+				"main.yaml": `---
+- name: test
+  vars:
+    bucket: from-play
+  hosts: webservers
+  tasks:
+    - name: create bucket
+      vars:
+        public_access: "true"
+      s3_bucket:
+        name: '{{ bucket }}'
+        public_access: '{{ public_access }}'
+`,
+				"host_vars/webservers": ``,
+			},
+			opts: []parser.Option{
+				parser.WithExtraVars(map[string]any{
+					"bucket": "test",
+				}),
+			},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fsys := testutil.CreateFS(t, tt.files)
-			p := parser.New(fsys, ".")
+			p := parser.New(fsys, ".", tt.opts...)
 			project, err := p.Parse()
 			require.NoError(t, err)
 
