@@ -1048,8 +1048,8 @@ github.com/distribution/reference v0.6.0/go.mod h1:BbU0aIcezP1/5jX/8MP0YiH4SdvB5
 github.com/dlclark/regexp2 v1.4.0/go.mod h1:2pZnwuY/m+8K6iRw6wQdMtk+rH5tNGR1i55kozfMjCc=
 github.com/dlclark/regexp2 v1.11.0 h1:G/nrcoOa7ZXlpoa/91N3X7mM3r8eIlMBBJZvsz/mxKI=
 github.com/dlclark/regexp2 v1.11.0/go.mod h1:DHkYz0B9wPfa6wondMfaivmHpzrQ3v9q8cnmRbL6yW8=
-github.com/dmitriylewen/trivy-db v0.0.0-20250822060116-88297318fdb3 h1:u0c7d/I1B+jxJPXGheR7uYG9M7nVicnI9btFXvag3wI=
-github.com/dmitriylewen/trivy-db v0.0.0-20250822060116-88297318fdb3/go.mod h1:upAJqDQkN5FdIJbtJMpokncGNhYAPGkpoCbaGciWPt4=
+github.com/dmitriylewen/trivy-db v0.0.0-20250825104624-cdd12b3f7a97 h1:JqTdI26ZIEF9h4+0fTW29S3TsZZQFklwBZ+SsruQ21U=
+github.com/dmitriylewen/trivy-db v0.0.0-20250825104624-cdd12b3f7a97/go.mod h1:upAJqDQkN5FdIJbtJMpokncGNhYAPGkpoCbaGciWPt4=
 github.com/docker/cli v28.3.3+incompatible h1:fp9ZHAr1WWPGdIWBM1b3zLtgCF+83gRdVMTJsUeiyAo=
 github.com/docker/cli v28.3.3+incompatible/go.mod h1:JLrzqnKDaYBop7H2jaqPtU4hHvMKP+vjCwu2uszcLI8=
 github.com/docker/distribution v2.7.1+incompatible/go.mod h1:J2gT2udsDAN96Uj4KfcMRqY0/ypR+oyYUYmja8H+y+w=
