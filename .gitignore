@@ -18,6 +18,9 @@
 .idea
 .vscode
 
+# Claude Code local settings
+.claude/settings.local.json
+
 # Directory Cache Files
 .DS_Store
 thumbs.db
