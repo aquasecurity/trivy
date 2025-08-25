@@ -95,6 +95,8 @@ type Node struct {
 	rng      Range
 	metadata iacTypes.Metadata
 	val      NodeValue
+
+	unknown bool
 }
 
 func (n *Node) Metadata() iacTypes.Metadata {
@@ -238,6 +240,7 @@ func (n *Node) render(variables vars.Vars, visited set.Set[string]) (*Node, erro
 			rendered, err := evaluateTemplate(s, variables)
 			if err != nil {
 				// TODO: mark as unknown
+				n.unknown = true
 				return n, fmt.Errorf("node ref %q: %w", n.metadata.Reference(), err)
 			}
 
@@ -361,10 +364,14 @@ func (n *Node) StringValue(path string) iacTypes.StringValue {
 		return def
 	}
 
+	if n.unknown {
+		return iacTypes.StringUnresolvable(n.metadata)
+	}
+
 	nested := n.NodeAt(path)
 	val, ok := nested.AsString()
 	if !ok {
-		return def
+		return iacTypes.StringUnresolvable(n.metadata)
 	}
 	return iacTypes.String(val, n.metadata)
 }
@@ -375,14 +382,19 @@ func (n *Node) BoolValue(path string) iacTypes.BoolValue {
 		return def
 	}
 
+	if n.unknown {
+		return iacTypes.BoolUnresolvable(n.metadata)
+	}
+
 	nested := n.NodeAt(path)
 	val, ok := nested.AsBool()
 	if !ok {
-		return def
+		return iacTypes.BoolUnresolvable(n.metadata)
 	}
 
 	return iacTypes.Bool(val, iacTypes.Metadata{})
 }
+
 func (n *Node) AsBool() (bool, bool) {
 	if !n.IsBool() {
 		return false, false
