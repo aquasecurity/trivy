@@ -29,6 +29,7 @@ func TestParser_Parse(t *testing.T) {
 	tests := []struct {
 		name          string
 		dir           string
+		opts          []parser.Option
 		files         map[string]string
 		expectedTasks []string
 	}{
@@ -494,13 +495,56 @@ dependencies:
 				"task from common playbook",
 			},
 		},
+		{
+			name: "role from namespace.collection",
+			dir:  "project",
+			files: map[string]string{
+				"project/galaxy.yaml": `
+namespace: myns
+name: mycol
+`,
+				"project/playbook.yml": `
+- name: Play with collection role
+  hosts: all
+  roles:
+    - myns.mycol.myrole
+`,
+				"project/roles/myrole/tasks/main.yml": `
+- name: task from collection role
+  debug:
+    msg: hello from collection role
+`,
+			},
+			expectedTasks: []string{
+				"task from collection role",
+			},
+		},
+		{
+			name: "with playbook sources",
+			dir:  "project",
+			opts: []parser.Option{parser.WithPlaybooks("playbooks/playbook.yaml")},
+			files: map[string]string{
+				"project/playbooks/playbook.yaml": `---
+- hosts: localhost
+  roles:
+    - "../roles/test"
+`,
+				"project/roles/test/tasks/main.yaml": `---
+- name: Test task
+  debug:
+    msg: Test task
+`,
+			},
+			expectedTasks: []string{"Test task"},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fsys := testutil.CreateFS(t, tt.files)
 			dir := cmp.Or(tt.dir, ".")
-			project, err := parser.New(fsys, dir).Parse()
+			p := parser.New(fsys, dir, tt.opts...)
+			project, err := p.Parse()
 			require.NoError(t, err)
 
 			tasks := project.ListTasks()
