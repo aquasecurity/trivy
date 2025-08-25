@@ -142,13 +142,13 @@ func TestNode_Render(t *testing.T) {
 		{
 			name:    "undefined variable",
 			yamlSrc: `"{{ missing }}"`,
-			vars:    map[string]any{},
+			vars:    make(map[string]any),
 			wantErr: true,
 		},
 		{
 			name:    "empty template",
 			yamlSrc: `""`,
-			vars:    map[string]any{},
+			vars:    make(map[string]any),
 			want: `""
 `,
 			wantErr: false,

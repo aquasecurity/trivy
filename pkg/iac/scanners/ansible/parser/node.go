@@ -304,7 +304,7 @@ func (n *Node) IsMap() bool {
 
 func (n *Node) IsList() bool {
 	return safeOp(n, func(nv NodeValue) bool {
-		_, ok := n.val.(*Sequence)
+		_, ok := nv.(*Sequence)
 		return ok
 	})
 }
@@ -319,7 +319,7 @@ func (n *Node) IsString() bool {
 
 func (n *Node) ToList() []*Node {
 	return safeOp(n, func(nv NodeValue) []*Node {
-		val, ok := n.val.(*Sequence)
+		val, ok := nv.(*Sequence)
 		if !ok || val == nil {
 			return nil
 		}
@@ -330,7 +330,7 @@ func (n *Node) ToList() []*Node {
 
 func (n *Node) ToMap() map[string]*Node {
 	return safeOp(n, func(nv NodeValue) map[string]*Node {
-		val, ok := n.val.(*Mapping)
+		val, ok := nv.(*Mapping)
 		if !ok || val == nil {
 			return make(map[string]*Node)
 		}
@@ -417,17 +417,17 @@ func (n *Node) AsString() (string, bool) {
 
 func (n *Node) Value() any {
 	return safeOp(n, func(nv NodeValue) any {
-		scalar, ok := n.val.(*Scalar)
+		scalar, ok := nv.(*Scalar)
 		if ok {
 			return scalar.Val
 		}
-		return n.val
+		return nil
 	})
 }
 
 func checkScalarType[T any](n *Node) bool {
 	return safeOp(n, func(nv NodeValue) bool {
-		scalar, ok := n.val.(*Scalar)
+		scalar, ok := nv.(*Scalar)
 		if !ok || scalar.Val == nil {
 			return false
 		}
