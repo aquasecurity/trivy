@@ -2223,6 +2223,18 @@ func TestMarshaler_Licenses(t *testing.T) {
 		{
 			name: "multiple SPDX IDs",
 			licenses: []string{
+				"AFL 2.0 with Linux-syscall-note",
+				"GPL-3.0-only OR MIT",
+			},
+			want: &cdx.Licenses{
+				cdx.LicenseChoice{
+					Expression: "AFL-2.0 WITH Linux-syscall-note AND GPL-3.0-only OR MIT",
+				},
+			},
+		},
+		{
+			name: "multiple SPDX expressions",
+			licenses: []string{
 				"MIT",
 				"AFL 2.0",
 			},
