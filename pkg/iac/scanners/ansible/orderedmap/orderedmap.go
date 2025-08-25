@@ -14,10 +14,10 @@ type OrderedMap[K comparable, V any] struct {
 	data map[K]V
 }
 
-func New[K comparable, V any](cap int) *OrderedMap[K, V] {
+func New[K comparable, V any](capacity int) *OrderedMap[K, V] {
 	return &OrderedMap[K, V]{
-		keys: make([]K, 0, cap),
-		data: make(map[K]V, cap),
+		keys: make([]K, 0, capacity),
+		data: make(map[K]V, capacity),
 	}
 }
 

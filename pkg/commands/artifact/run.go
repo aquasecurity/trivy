@@ -788,7 +788,8 @@ func resolveAnsibleExtraVars(inputs []string) (map[string]any, error) {
 	for _, input := range inputs {
 		var vars map[string]any
 
-		if strings.HasPrefix(input, "@") {
+		switch {
+		case strings.HasPrefix(input, "@"):
 			data, err := os.ReadFile(input[1:])
 			if err != nil {
 				return nil, fmt.Errorf("read extra-vars file %s: %w", input[1:], err)
@@ -805,14 +806,14 @@ func resolveAnsibleExtraVars(inputs []string) (map[string]any, error) {
 					return nil, fmt.Errorf("parse extra-vars YAML file %s: %w", input[1:], err)
 				}
 			}
-		} else if strings.Contains(input, "=") {
+		case strings.Contains(input, "="):
 			kv := strings.SplitN(input, "=", 2)
 			var val string
 			if len(kv) == 2 {
 				val = kv[1]
 			}
 			vars = map[string]any{kv[0]: val}
-		} else {
+		default:
 			return nil, fmt.Errorf("invalid extra-vars input: %s", input)
 		}
 
