@@ -109,6 +109,19 @@ func TestScanner_Scan(t *testing.T) {
 			wantSeverity: "CRITICAL",
 		},
 		{
+			name: "license with exception",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryForbidden: {
+					"GPL-2.0-only WITH Classpath-exception-2.0",
+					expression.GPL30,
+					expression.Apache20,
+				},
+			},
+			licenseName:  "GPL-3.0-only OR GPL-2.0-only WITH Classpath-exception-2.0 AND Apache-2.0",
+			wantCategory: types.CategoryForbidden,
+			wantSeverity: "CRITICAL",
+		},
+		{
 			name: "compound unknown license",
 			categories: map[types.LicenseCategory][]string{
 				types.CategoryForbidden: {
