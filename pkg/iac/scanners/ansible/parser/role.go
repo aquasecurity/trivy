@@ -124,7 +124,7 @@ type RoleMeta struct {
 
 func (m *RoleMeta) updateMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) {
 	m.metadata = iacTypes.NewMetadata(
-		iacTypes.NewRange(path, m.rng.startLine, m.rng.endLine, "", fsys),
+		iacTypes.NewRange(path, m.rng.StartLine, m.rng.EndLine, "", fsys),
 		"role-metadata",
 	)
 	m.metadata.SetParentPtr(parent)

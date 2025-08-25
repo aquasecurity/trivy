@@ -119,7 +119,7 @@ func (n *Node) UnmarshalYAML(node *yaml.Node) error {
 		}
 		return nil
 	case yaml.MappingNode:
-		n.rng.startLine--
+		n.rng.StartLine--
 		childData, err := decodeMapNode(node)
 		if err != nil {
 			return err
@@ -127,7 +127,7 @@ func (n *Node) UnmarshalYAML(node *yaml.Node) error {
 		n.val = childData
 		return nil
 	case yaml.SequenceNode:
-		n.rng.startLine--
+		n.rng.StartLine--
 		childData, err := decodeSequenceNode(node)
 		if err != nil {
 			return err
@@ -188,7 +188,7 @@ func (n *Node) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadat
 	fsys, relPath := fileSrc.FSAndRelPath()
 	ref := strings.Join(nodePath, ".")
 	ref = cmp.Or(ref, ".")
-	rng := iacTypes.NewRange(relPath, n.rng.startLine, n.rng.endLine, "", fsys)
+	rng := iacTypes.NewRange(relPath, n.rng.StartLine, n.rng.EndLine, "", fsys)
 
 	n.metadata = iacTypes.NewMetadata(rng, ref)
 	n.metadata.SetParentPtr(parent)
