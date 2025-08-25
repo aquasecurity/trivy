@@ -38,8 +38,9 @@ func withBuiltinPrefix(actions ...string) []string {
 type AnsibleProject struct {
 	path string
 
-	cfg       AnsibleConfig
-	inventory *inventory.Inventory
+	cfg            AnsibleConfig
+	inventory      *inventory.Inventory
+	galaxyManifest *GalaxyManifest
 
 	tasks []*ResolvedTask
 }
@@ -51,6 +52,11 @@ func (p *AnsibleProject) Path() string {
 // TODO(nikita): some tasks do not contain metadata
 func (p *AnsibleProject) ListTasks() ResolvedTasks {
 	return p.tasks
+}
+
+type GalaxyManifest struct {
+	Namespace string `yaml:"namespace"`
+	Name      string `yaml:"name"`
 }
 
 type Option func(p *Parser)
@@ -81,6 +87,8 @@ type Parser struct {
 	inventories []string
 	playbooks   []string
 	extraVars   map[string]any
+
+	project *AnsibleProject
 
 	// resolvedTasks caches the fully expanded list of tasks for each playbook,
 	// keyed by the playbook's file path to avoid redundant parsing and resolution.
@@ -120,7 +128,8 @@ func ParseProject(fsys fs.FS, root string, opts ...Option) (*AnsibleProject, err
 
 func (p *Parser) Parse() (*AnsibleProject, error) {
 	p.logger.Debug("Parse Ansible project", log.FilePath(p.rootSrc.Path))
-	project, err := p.initProject()
+
+	err := p.initProject()
 	if err != nil {
 		return nil, err
 	}
@@ -130,25 +139,25 @@ func (p *Parser) Parse() (*AnsibleProject, error) {
 	})
 
 	if len(playbookSources) == 0 {
-		playbookSources, err = p.resolvePlaybooksPaths(project)
+		playbookSources, err = p.resolvePlaybooksPaths()
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	tasks, err := p.parsePlaybooks(project, playbookSources)
+	tasks, err := p.parsePlaybooks(playbookSources)
 	if err != nil {
 		return nil, err
 	}
 
-	project.tasks = tasks
-	return project, nil
+	p.project.tasks = tasks
+	return p.project, nil
 }
 
-func (p *Parser) initProject() (*AnsibleProject, error) {
+func (p *Parser) initProject() error {
 	cfg, err := p.readAnsibleConfig()
 	if err != nil {
-		return nil, xerrors.Errorf("read config: %w", err)
+		return xerrors.Errorf("read config: %w", err)
 	}
 
 	inv := inventory.LoadAuto(p.fsys, inventory.LoadOptions{
@@ -156,16 +165,28 @@ func (p *Parser) initProject() (*AnsibleProject, error) {
 		Sources:       p.inventories,
 	})
 
-	project := &AnsibleProject{
-		path:      p.rootSrc.Path,
-		cfg:       cfg,
-		inventory: inv,
+	p.project = &AnsibleProject{
+		path:           p.rootSrc.Path,
+		cfg:            cfg,
+		inventory:      inv,
+		galaxyManifest: p.findGalaxyManifest(),
 	}
-
-	return project, nil
+	return nil
 }
 
-func (p *Parser) parsePlaybooks(proj *AnsibleProject, sources []fsutils.FileSource) ([]*ResolvedTask, error) {
+func (p *Parser) findGalaxyManifest() *GalaxyManifest {
+	var manifest GalaxyManifest
+	if err := decodeYAMLFileWithExtension(p.rootSrc.Join("galaxy"), &manifest, yamlExtensions); err != nil {
+		return nil
+	}
+
+	p.logger.Debug("Found Galaxy manifest",
+		log.String("namespace", manifest.Namespace), log.String("name", manifest.Name))
+
+	return &manifest
+}
+
+func (p *Parser) parsePlaybooks(sources []fsutils.FileSource) ([]*ResolvedTask, error) {
 	playbooks := make(map[string]*Playbook)
 
 	for _, src := range sources {
@@ -190,7 +211,7 @@ func (p *Parser) parsePlaybooks(proj *AnsibleProject, sources []fsutils.FileSour
 	// Resolve tasks from entrypoint playbooks — those that are not imported/included by others.
 	var allTasks []*ResolvedTask
 	for _, playbookSrc := range entryPoints {
-		tasks, err := p.resolvePlaybook(proj, nil, nil, playbookSrc, playbooks)
+		tasks, err := p.resolvePlaybook(nil, nil, playbookSrc, playbooks)
 		if err != nil {
 			return nil, xerrors.Errorf("resolve playbook: %w", err)
 		}
@@ -238,7 +259,7 @@ func findEntryPoints(playbooks map[string]*Playbook) []fsutils.FileSource {
 
 // resolvePlaybook recursively expands tasks, roles, and included playbooks within the given playbook.
 func (p *Parser) resolvePlaybook(
-	proj *AnsibleProject, parent *iacTypes.Metadata, parentVars vars.Vars,
+	parent *iacTypes.Metadata, parentVars vars.Vars,
 	playbookSrc fsutils.FileSource, playbooks map[string]*Playbook,
 ) ([]*ResolvedTask, error) {
 	pb, exists := playbooks[playbookSrc.Path]
@@ -275,7 +296,7 @@ func (p *Parser) resolvePlaybook(
 		hosts := play.inner.Hosts
 
 		// TODO: iterate over hosts
-		hostVars := proj.inventory.ResolveVars(hosts, playbookInvVars)
+		hostVars := p.project.inventory.ResolveVars(hosts, playbookInvVars)
 		playVars := vars.MergeVars(hostVars, parentVars, play.inner.Vars)
 
 		for _, playTask := range play.listTasks() {
@@ -328,7 +349,7 @@ func (p *Parser) resolvePlaybook(
 			}
 
 			fullIncSrc := pb.resolveIncludedSrc(renderedPath)
-			includedTasks, err := p.resolvePlaybook(proj, &play.metadata, playVars, fullIncSrc, playbooks)
+			includedTasks, err := p.resolvePlaybook(&play.metadata, playVars, fullIncSrc, playbooks)
 			if err != nil && errors.Is(err, fs.ErrNotExist) {
 				p.logger.Debug("Failed to load included playbook",
 					log.FilePath(fullIncSrc.Path), log.Err(err))
@@ -462,23 +483,36 @@ func (p *Parser) loadRoleDependencies(r *Role) error {
 // TODO: support all possible locations of the role
 // https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html
 func (p *Parser) resolveRolePath(playbookDirSrc fsutils.FileSource, name string) (fsutils.FileSource, bool) {
-
 	isPath := filepath.IsAbs(name) || strings.HasPrefix(name, ".")
 	if isPath {
 		if !filepath.IsAbs(name) {
-			// If relative path, join with playbook directory
 			return playbookDirSrc.Join(name), true
 		}
 		return fsutils.NewFileSource(nil, name), true
 	}
 
+	roleName := name
+	baseSrc := playbookDirSrc
+
+	parts := strings.SplitN(roleName, ".", 3)
+	if len(parts) == 3 {
+		if m := p.project.galaxyManifest; m != nil &&
+			m.Namespace == parts[0] && m.Name == parts[1] {
+			roleName = parts[2]
+			baseSrc = p.rootSrc
+
+			// TODO: support resolving roles from namespace.collection
+			//       by searching in the collections/ansible_collections directory
+		}
+	}
+
 	roleSources := []fsutils.FileSource{
-		playbookDirSrc.Join("roles", name),
+		baseSrc.Join("roles", roleName),
 	}
 
 	if defaultRolesPath, exists := os.LookupEnv("DEFAULT_ROLES_PATH"); exists {
 		rolesSrc := fsutils.NewFileSource(nil, defaultRolesPath)
-		roleSources = append(roleSources, rolesSrc.Join(name))
+		roleSources = append(roleSources, rolesSrc.Join(roleName))
 	}
 
 	for _, roleSrc := range roleSources {
@@ -715,7 +749,7 @@ func (p *Parser) readAnsibleConfig() (AnsibleConfig, error) {
 	return LoadConfig(p.fsys, p.rootSrc.Path)
 }
 
-func (p *Parser) resolvePlaybooksPaths(_ *AnsibleProject) ([]fsutils.FileSource, error) {
+func (p *Parser) resolvePlaybooksPaths() ([]fsutils.FileSource, error) {
 	entries, err := p.rootSrc.ReadDir()
 	if err != nil {
 		return nil, err
