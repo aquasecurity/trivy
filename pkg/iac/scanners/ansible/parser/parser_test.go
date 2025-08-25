@@ -885,8 +885,8 @@ bucket: "from-role"
 			require.Len(t, modules, 1)
 
 			m := modules[0]
-			assert.Equal(t, "test", m.GetStringAttr("name").Value())
-			assert.Equal(t, "true", m.GetStringAttr("public_access").Value())
+			assert.Equal(t, "test", m.StringValue("name").Value())
+			assert.Equal(t, "true", m.StringValue("public_access").Value())
 		})
 	}
 }

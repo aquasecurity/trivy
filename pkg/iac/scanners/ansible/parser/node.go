@@ -96,6 +96,10 @@ type Node struct {
 	val      NodeValue
 }
 
+func (n *Node) Metadata() iacTypes.Metadata {
+	return n.metadata
+}
+
 func (n *Node) UnmarshalYAML(node *yaml.Node) error {
 	n.rng = rangeFromNode(node)
 
@@ -265,4 +269,148 @@ func (n *Node) MarshalYAML() (any, error) {
 		return nil, nil
 	}
 	return n.val.MarshalYAML()
+}
+
+func (n *Node) IsNil() bool {
+	return n == nil || n.val == nil
+}
+
+func (n *Node) IsMap() bool {
+	return safeOp(n, func(nv NodeValue) bool {
+		_, ok := nv.(*Mapping)
+		return ok
+	})
+}
+
+func (n *Node) IsList() bool {
+	return safeOp(n, func(nv NodeValue) bool {
+		_, ok := n.val.(*Sequence)
+		return ok
+	})
+}
+
+func (n *Node) IsBool() bool {
+	return checkScalarType[bool](n)
+}
+
+func (n *Node) IsString() bool {
+	return checkScalarType[string](n)
+}
+
+func (n *Node) ToList() []*Node {
+	return safeOp(n, func(nv NodeValue) []*Node {
+		val, ok := n.val.(*Sequence)
+		if !ok || val == nil {
+			return nil
+		}
+
+		return val.Items
+	})
+}
+
+func (n *Node) ToMap() map[string]*Node {
+	return safeOp(n, func(nv NodeValue) map[string]*Node {
+		val, ok := n.val.(*Mapping)
+		if !ok || val == nil {
+			return make(map[string]*Node)
+		}
+
+		return val.Fields.AsMap()
+	})
+}
+
+func (n *Node) NodeAt(path string) *Node {
+	if path == "" || !n.IsMap() {
+		return nil
+	}
+
+	parts := strings.SplitN(path, ".", 2)
+
+	attr, exists := n.ToMap()[parts[0]]
+	if !exists {
+		return nil
+	}
+
+	if len(parts) == 1 {
+		return attr
+	}
+
+	return attr.NodeAt(parts[1])
+}
+
+func (n *Node) StringValue(path string) iacTypes.StringValue {
+	def := iacTypes.StringDefault("", n.metadata)
+	if n.IsNil() {
+		return def
+	}
+
+	nested := n.NodeAt(path)
+	val, ok := nested.AsString()
+	if !ok {
+		return def
+	}
+	return iacTypes.String(val, n.metadata)
+}
+
+func (n *Node) BoolValue(path string) iacTypes.BoolValue {
+	def := iacTypes.BoolDefault(false, n.metadata)
+	if n.IsNil() {
+		return def
+	}
+
+	nested := n.NodeAt(path)
+	val, ok := nested.AsBool()
+	if !ok {
+		return def
+	}
+
+	return iacTypes.Bool(val, iacTypes.Metadata{})
+}
+func (n *Node) AsBool() (bool, bool) {
+	if !n.IsBool() {
+		return false, false
+	}
+
+	scalar, _ := n.val.(*Scalar)
+	val, ok := scalar.Val.(bool)
+	return val, ok
+}
+
+func (n *Node) AsString() (string, bool) {
+	if !n.IsString() {
+		return "", false
+	}
+
+	scalar, _ := n.val.(*Scalar)
+	val, ok := scalar.Val.(string)
+	return val, ok
+}
+
+func (n *Node) Value() any {
+	return safeOp(n, func(nv NodeValue) any {
+		scalar, ok := n.val.(*Scalar)
+		if ok {
+			return scalar.Val
+		}
+		return n.val
+	})
+}
+
+func checkScalarType[T any](n *Node) bool {
+	return safeOp(n, func(nv NodeValue) bool {
+		scalar, ok := n.val.(*Scalar)
+		if !ok || scalar.Val == nil {
+			return false
+		}
+		_, ok = scalar.Val.(T)
+		return ok
+	})
+}
+
+func safeOp[T any](n *Node, op func(NodeValue) T) T {
+	var zero T
+	if n.IsNil() || n.val == nil {
+		return zero
+	}
+	return op(n.val)
 }

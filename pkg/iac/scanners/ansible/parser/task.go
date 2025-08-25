@@ -187,14 +187,7 @@ func (t *ResolvedTask) ResolveModule(keys []string, strict bool) (Module, error)
 				log.String("source", t.Metadata.Range().String()),
 				log.Err(err))
 		}
-		switch n := rendered.val.(type) {
-		case *Mapping:
-			return Module{metadata: rendered.metadata, params: n.Fields.AsMap()}, nil
-		case *Scalar:
-			if v, ok := n.Val.(string); ok {
-				return Module{metadata: rendered.metadata, freeForm: v}, nil
-			}
-		}
+		return Module{Node: rendered}, nil
 	}
 	return Module{}, ErrModuleNotFound
 }
