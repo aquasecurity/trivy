@@ -2207,6 +2207,17 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
+			name:    "license normalization error",
+			license: "Copyright (c) 2000, 2025, Oracle and/or its affiliates. Under GPLv2 license as shown in the Description field.",
+			want: &cdx.Licenses{
+				cdx.LicenseChoice{
+					License: &cdx.License{
+						Name: "Copyright (c) 2000, 2025, Oracle and/or its affiliates. Under GPLv2 license as shown in the Description field.",
+					},
+				},
+			},
+		},
+		{
 			name:    "empty license",
 			license: "",
 			want:    nil,

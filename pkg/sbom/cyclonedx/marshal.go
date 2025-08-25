@@ -319,7 +319,9 @@ func (m *Marshaler) normalizeLicense(license string) cdx.LicenseChoice {
 	if err != nil {
 		// Not fail on the invalid license
 		m.logger.Warn("Unable to marshal SPDX licenses", log.String("license", license))
-		return cdx.LicenseChoice{}
+		return cdx.LicenseChoice{
+			License: &cdx.License{Name: license},
+		}
 	}
 
 	// The license is not a valid SPDX ID or SPDX expression
