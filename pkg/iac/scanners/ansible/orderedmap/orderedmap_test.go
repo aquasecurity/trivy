@@ -1,4 +1,4 @@
-package inventory_test
+package orderedmap_test
 
 import (
 	"testing"
@@ -7,14 +7,15 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/inventory"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/orderedmap"
 )
 
-func makeSampleMap() *inventory.OrderedMap[string, int] {
-	return inventory.NewOrderedMap(
-		[]string{"a", "b", "c"},
-		map[string]int{"a": 1, "b": 2, "c": 3},
-	)
+func makeSampleMap() *orderedmap.OrderedMap[string, int] {
+	m := orderedmap.New[string, int](3)
+	m.Set("a", 1)
+	m.Set("b", 2)
+	m.Set("c", 3)
+	return m
 }
 
 func TestOrderedMap_UnmarshalYAML(t *testing.T) {
@@ -23,7 +24,7 @@ a: 1
 b: 2
 c: 3
 `
-	var om inventory.OrderedMap[string, int]
+	var om orderedmap.OrderedMap[string, int]
 	err := yaml.Unmarshal([]byte(yamlData), &om)
 	require.NoError(t, err)
 
