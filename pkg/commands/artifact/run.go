@@ -808,7 +808,7 @@ func resolveAnsibleExtraVars(inputs []string) (map[string]any, error) {
 		} else if strings.Contains(input, "=") {
 			kv := strings.SplitN(input, "=", 2)
 			var val string
-			if len(kv) != 2 {
+			if len(kv) == 2 {
 				val = kv[1]
 			}
 			vars = map[string]any{kv[0]: val}
