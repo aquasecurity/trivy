@@ -116,7 +116,7 @@ var (
 		Name:       "render-cause",
 		ConfigName: "misconfiguration.render-cause",
 		Usage:      "specify configuration types for which the rendered causes will be shown in the table report",
-		Values:     xstrings.ToStringSlice([]types.ConfigType{types.Terraform}), // TODO: add Plan and JSON?
+		Values:     xstrings.ToStringSlice([]types.ConfigType{types.Terraform, types.Ansible}), // TODO: add Plan and JSON?
 		Default:    []string{},
 	}
 	RawConfigScanners = Flag[[]string]{

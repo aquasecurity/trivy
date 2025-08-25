@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/fs"
 
+	"gopkg.in/yaml.v3"
+
 	adapter "github.com/aquasecurity/trivy/pkg/iac/adapters/ansible"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
@@ -92,14 +94,12 @@ func (s *Scanner) scanProject(ctx context.Context, fsys fs.FS, project *parser.A
 	tasks := project.ListTasks()
 	state := adapter.Adapt(tasks)
 
-	var results scan.Results
-
 	rs, err := s.InitRegoScanner(fsys, s.opts)
 	if err != nil {
 		return nil, fmt.Errorf("init rego scanner: %w", err)
 	}
 
-	regoResults, err := rs.ScanInput(ctx, types.SourceCloud, rego.Input{
+	results, err := rs.ScanInput(ctx, types.SourceCloud, rego.Input{
 		Path:     project.Path(),
 		FS:       fsys,
 		Contents: state.ToRego(),
@@ -108,5 +108,40 @@ func (s *Scanner) scanProject(ctx context.Context, fsys fs.FS, project *parser.A
 		return nil, fmt.Errorf("rego scan: %w", err)
 	}
 
-	return append(results, regoResults...), nil
+	for i, res := range results {
+		if res.Status() != scan.StatusFailed {
+			continue
+		}
+
+		rendered, ok := renderCause(tasks, res.Range())
+		if ok {
+			res.WithRenderedCause(rendered)
+			results[i] = res
+		}
+	}
+
+	return results, nil
+}
+
+func renderCause(tasks parser.ResolvedTasks, causeRng types.Range) (scan.RenderedCause, bool) {
+	task := findTaskForCause(tasks, causeRng)
+	if task == nil {
+		return scan.RenderedCause{}, false
+	}
+
+	b, err := yaml.Marshal(task)
+	if err != nil {
+		return scan.RenderedCause{}, false
+	}
+	return scan.RenderedCause{Raw: string(b)}, true
+}
+
+func findTaskForCause(tasks parser.ResolvedTasks, causeRng types.Range) *parser.ResolvedTask {
+	for _, task := range tasks {
+		taskRng := task.Metadata.Range()
+		if taskRng.GetFilename() == causeRng.GetFilename() && taskRng.Includes(causeRng) {
+			return task
+		}
+	}
+	return nil
 }
