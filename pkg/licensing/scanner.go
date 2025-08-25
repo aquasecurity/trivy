@@ -49,6 +49,14 @@ func (s *Scanner) detectCategory(license expression.Expression) types.LicenseCat
 	case expression.SimpleExpr:
 		category = s.licenseToCategory(e)
 	case expression.CompoundExpr:
+		// Detect license category for `WITH` operator as a simple expression
+		if e.Conjunction() == expression.TokenWith {
+			category = s.licenseToCategory(expression.SimpleExpr{
+				License: e.String(),
+			})
+			break
+		}
+
 		left := s.detectCategory(e.Left())
 		right := s.detectCategory(e.Right())
 		if left == types.CategoryUnknown || right == types.CategoryUnknown {
