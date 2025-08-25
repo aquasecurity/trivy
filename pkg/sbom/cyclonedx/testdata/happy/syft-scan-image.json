@@ -1,0 +1,183 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:07c35d53-a0fb-442c-880a-79d4d97e98f9",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2025-08-22T08:33:06+02:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "author": "anchore",
+          "name": "syft",
+          "version": "[not provided]"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "357e479edca35aa8",
+      "type": "container",
+      "name": "docker.io/library/demo",
+      "version": "0.0.1-SNAPSHOT"
+    },
+    "properties": [
+      {
+        "name": "syft:image:labels:io.buildpacks.build.metadata",
+        "value": "{\"buildpacks\":[{\"id\":\"paketo-buildpacks/ca-certificates\",\"version\":\"3.10.3\",\"homepage\":\"https://github.com/paketo-buildpacks/ca-certificates\"},{\"id\":\"paketo-buildpacks/bellsoft-liberica\",\"version\":\"11.2.6\",\"homepage\":\"https://github.com/paketo-buildpacks/bellsoft-liberica\"},{\"id\":\"paketo-buildpacks/syft\",\"version\":\"2.18.1\",\"homepage\":\"https://github.com/paketo-buildpacks/syft\"},{\"id\":\"paketo-buildpacks/executable-jar\",\"version\":\"6.13.2\",\"homepage\":\"https://github.com/paketo-buildpacks/executable-jar\"},{\"id\":\"paketo-buildpacks/dist-zip\",\"version\":\"5.10.2\",\"homepage\":\"https://github.com/paketo-buildpacks/dist-zip\"},{\"id\":\"paketo-buildpacks/spring-boot\",\"version\":\"5.33.3\",\"homepage\":\"https://github.com/paketo-buildpacks/spring-boot\"}],\"launcher\":{\"version\":\"0.20.13\",\"source\":{\"git\":{\"repository\":\"github.com/buildpacks/lifecycle\",\"commit\":\"84bbd62a\"}}},\"processes\":[{\"type\":\"executable-jar\",\"command\":[\"java\"],\"args\":[\"org.springframework.boot.loader.launch.JarLauncher\"],\"direct\":true,\"buildpackID\":\"paketo-buildpacks/executable-jar\"},{\"type\":\"task\",\"command\":[\"java\"],\"args\":[\"org.springframework.boot.loader.launch.JarLauncher\"],\"direct\":true,\"buildpackID\":\"paketo-buildpacks/executable-jar\"},{\"type\":\"web\",\"command\":[\"java\"],\"args\":[\"org.springframework.boot.loader.launch.JarLauncher\"],\"direct\":true,\"buildpackID\":\"paketo-buildpacks/executable-jar\"}],\"buildpack-default-process-type\":\"web\"}"
+      },
+      {
+        "name": "syft:image:labels:io.buildpacks.lifecycle.metadata",
+        "value": "{\"app\":[{\"sha\":\"sha256:b16db0883e486a816eec35db03731a6338fdbf0ab3a9d8923d8b031524e650e1\"},{\"sha\":\"sha256:92b2ae71f144e493fd8c6172dfd184b430c316ddbda3a565cdfaa47fc667fbc0\"},{\"sha\":\"sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef\"},{\"sha\":\"sha256:612ed385935d517ad01b7f119b332bb0f3a44ada260b6f4deaaf3716824c2eec\"},{\"sha\":\"sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef\"}],\"sbom\":{\"sha\":\"sha256:81b16cee2b1e5504a04b6c7d940254d15879691d22214e92981a0fd7e2cf3681\"},\"buildpacks\":[{\"key\":\"paketo-buildpacks/ca-certificates\",\"version\":\"3.10.3\",\"layers\":{\"helper\":{\"sha\":\"sha256:f17d209e8ca507522827975f9eadaaf3739fccfa32967ae65158534634b11a69\",\"data\":{\"buildpackInfo\":{\"clear-env\":false,\"description\":\"A Cloud Native Buildpack that adds custom CA certificates to a build and a created image\",\"homepage\":\"https://github.com/paketo-buildpacks/ca-certificates\",\"id\":\"paketo-buildpacks/ca-certificates\",\"keywords\":[\"ca-certificates\",\"trust\",\"certificates\"],\"licenses\":[{\"type\":\"Apache-2.0\",\"uri\":\"https://github.com/paketo-buildpacks/ca-certificates/blob/main/LICENSE\"}],\"name\":\"Paketo Buildpack for CA Certificates\",\"sbom-formats\":[\"application/vnd.cyclonedx+json\",\"application/vnd.syft+json\"],\"version\":\"3.10.3\"},\"helperNames\":[\"ca-certificates-helper\"]},\"build\":false,\"launch\":true,\"cache\":false}}},{\"key\":\"paketo-buildpacks/bellsoft-liberica\",\"version\":\"11.2.6\",\"layers\":{\"helper\":{\"sha\":\"sha256:027b0ddd852941ac3aff8ed65374738297f5215919244b46558716e1ae0b7e22\",\"data\":{\"buildpackInfo\":{\"clear-env\":false,\"description\":\"A Cloud Native Buildpack that provides the Bellsoft Liberica implementations of JREs and JDKs\",\"homepage\":\"https://github.com/paketo-buildpacks/bellsoft-liberica\",\"id\":\"paketo-buildpacks/bellsoft-liberica\",\"keywords\":[\"java\",\"jvm\",\"jre\",\"jdk\"],\"licenses\":[{\"type\":\"Apache-2.0\",\"uri\":\"https://github.com/paketo-buildpacks/bellsoft-liberica/blob/main/LICENSE\"}],\"name\":\"Paketo Buildpack for BellSoft Liberica\",\"sbom-formats\":[\"application/vnd.syft+json\",\"application/vnd.cyclonedx+json\"],\"version\":\"11.2.6\"},\"helperNames\":[\"java-opts\",\"jvm-heap\",\"link-local-dns\",\"memory-calculator\",\"security-providers-configurer\",\"jmx\",\"jfr\",\"openssl-certificate-loader\",\"security-providers-classpath-9\",\"debug-9\",\"nmt\"]},\"build\":false,\"launch\":true,\"cache\":false},\"java-security-properties\":{\"sha\":\"sha256:bea0a3dc2651cac7c9c567a5cb4e7536107b357cb9113e8806f690f050500012\",\"data\":{\"clear-env\":false,\"description\":\"A Cloud Native Buildpack that provides the Bellsoft Liberica implementations of JREs and JDKs\",\"homepage\":\"https://github.com/paketo-buildpacks/bellsoft-liberica\",\"id\":\"paketo-buildpacks/bellsoft-liberica\",\"keywords\":[\"java\",\"jvm\",\"jre\",\"jdk\"],\"licenses\":[{\"type\":\"Apache-2.0\",\"uri\":\"https://github.com/paketo-buildpacks/bellsoft-liberica/blob/main/LICENSE\"}],\"name\":\"Paketo Buildpack for BellSoft Liberica\",\"sbom-formats\":[\"application/vnd.syft+json\",\"application/vnd.cyclonedx+json\"],\"version\":\"11.2.6\"},\"build\":false,\"launch\":true,\"cache\":false},\"jre\":{\"sha\":\"sha256:7f4d1070a6e96378ddcfd47af8426b8351e479a61a70a1adfd3c62c4d1854831\",\"data\":{\"cert-file\":\"6d84ab71cb726c0641b0af84303c316e3fa50db941dc8507d09045eb2fa5d238\",\"dependency\":{\"cpes\":[\"cpe:2.3:a:oracle:jre:21.0.8:*:*:*:*:*:*:*\"],\"deprecation_date\":\"0001-01-01T00:00:00Z\",\"id\":\"jre\",\"licenses\":[{\"type\":\"GPL-2.0 WITH Classpath-exception-2.0\",\"uri\":\"https://openjdk.java.net/legal/gplv2+ce.html\"}],\"name\":\"BellSoft Liberica JRE\",\"purl\":\"pkg:generic/bellsoft-jre@21.0.8?arch=amd64\",\"sha256\":\"40db0d81616324c50186b374c16af77fc34f4e37b88c746c465d82d39f2dd8b5\",\"stacks\":[\"*\"],\"uri\":\"https://github.com/bell-sw/Liberica/releases/download/21.0.8+12/bellsoft-jre21.0.8+12-linux-amd64.tar.gz\",\"version\":\"21.0.8\"}},\"build\":false,\"launch\":true,\"cache\":false}}},{\"key\":\"paketo-buildpacks/syft\",\"version\":\"2.18.1\",\"layers\":{}},{\"key\":\"paketo-buildpacks/executable-jar\",\"version\":\"6.13.2\",\"layers\":{\"classpath\":{\"sha\":\"sha256:417e5bfc3c82b9373cf6804206e071d2fc74560df867d0f39cb21ac3d15231b6\",\"data\":{\"classpath\":[\"/workspace\"],\"launch\":true},\"build\":true,\"launch\":true,\"cache\":false}}},{\"key\":\"paketo-buildpacks/dist-zip\",\"version\":\"5.10.2\",\"layers\":{}},{\"key\":\"paketo-buildpacks/spring-boot\",\"version\":\"5.33.3\",\"layers\":{\"helper\":{\"sha\":\"sha256:9654bbcea9eb450c5d5156e93176892ac89d3c4aa38a8e1e622b559c1226e041\",\"data\":{\"buildpackInfo\":{\"clear-env\":false,\"description\":\"A Cloud Native Buildpack that contributes Spring Boot dependency information and slices an application into multiple layers\",\"homepage\":\"https://github.com/paketo-buildpacks/spring-boot\",\"id\":\"paketo-buildpacks/spring-boot\",\"keywords\":[\"java\",\"spring\",\"spring-boot\"],\"licenses\":[{\"type\":\"Apache-2.0\",\"uri\":\"https://github.com/paketo-buildpacks/spring-boot/blob/main/LICENSE\"}],\"name\":\"Paketo Buildpack for Spring Boot\",\"sbom-formats\":[\"application/vnd.cyclonedx+json\",\"application/vnd.syft+json\"],\"version\":\"5.33.3\"},\"helperNames\":[\"spring-cloud-bindings\"]},\"build\":false,\"launch\":true,\"cache\":false},\"spring-cloud-bindings\":{\"sha\":\"sha256:f0e9078fd509b2493bcef1215b4de825d53f118ef0648b850edec03dc6e3cfd4\",\"data\":{\"cpes\":[\"cpe:2.3:a:vmware:spring_cloud_bindings:2.0.0:*:*:*:*:*:*:*\"],\"deprecation_date\":\"0001-01-01T00:00:00Z\",\"id\":\"spring-cloud-bindings\",\"licenses\":[{\"type\":\"Apache-2.0\",\"uri\":\"https://github.com/spring-cloud/spring-cloud-bindings/blob/main/LICENSE\"}],\"name\":\"Spring Cloud Bindings\",\"purl\":\"pkg:generic/springframework/spring-cloud-bindings@2.0.0\",\"sha256\":\"32e47c2139d6379836910f0d1cc253a019ac282f3aeea12237069f00046279ad\",\"stacks\":[\"io.buildpacks.stacks.bionic\",\"io.paketo.stacks.tiny\",\"*\"],\"uri\":\"https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-bindings/2.0.4/spring-cloud-bindings-2.0.4.jar\",\"version\":\"2.0.4\"},\"build\":false,\"launch\":true,\"cache\":true},\"web-application-type\":{\"sha\":\"sha256:366ce7d1a7f90f2e4ad08752f87510eee3ffca18736fa63c03823c8c4ebf2925\",\"data\":{\"files\":\"49e284862dc21b2ad6979bc3259dc398aa1b76a1a3398b832388f7048e022329\"},\"build\":false,\"launch\":true,\"cache\":false}}}],\"config\":{\"sha\":\"sha256:0adb48f436fe116b6be77d8b8a379ed9192e3fb763e51e8650f04bc402226530\"},\"launcher\":{\"sha\":\"sha256:5870c7bb240f870260738bf225ab9ee9d8fd3fa974bde81ec73c92f632bc0df7\"},\"process-types\":{\"sha\":\"sha256:1dc94a70dbaa2171fb086500a5d27797f779219b126b0a1eebb9180c2792e80e\"},\"runImage\":{\"topLayer\":\"sha256:60155be427e86c34c5f1ec94131534e0443ce3755c0bcf85db5d5bc331c19424\",\"reference\":\"eeef3f09acf6182b4eb875791bfde21dab822349ddc651135b788ed90c7c5974\",\"image\":\"docker.io/paketobuildpacks/ubuntu-noble-run-tiny:0.0.25\"},\"stack\":{\"runImage\":{\"image\":\"docker.io/paketobuildpacks/ubuntu-noble-run-tiny:0.0.25\"}}}"
+      },
+      {
+        "name": "syft:image:labels:io.buildpacks.project.metadata",
+        "value": "{}"
+      },
+      {
+        "name": "syft:image:labels:io.buildpacks.stack.description",
+        "value": "distroless-like noble"
+      },
+      {
+        "name": "syft:image:labels:io.buildpacks.stack.distro.name",
+        "value": "ubuntu"
+      },
+      {
+        "name": "syft:image:labels:io.buildpacks.stack.distro.version",
+        "value": "24.04"
+      },
+      {
+        "name": "syft:image:labels:io.buildpacks.stack.homepage",
+        "value": "https://github.com/paketo-buildpacks/noble-tiny-stack"
+      },
+      {
+        "name": "syft:image:labels:io.buildpacks.stack.id",
+        "value": "io.buildpacks.stacks.noble"
+      },
+      {
+        "name": "syft:image:labels:io.buildpacks.stack.maintainer",
+        "value": "Paketo Buildpacks"
+      },
+      {
+        "name": "syft:image:labels:io.buildpacks.stack.metadata",
+        "value": "{}"
+      },
+      {
+        "name": "syft:image:labels:io.buildpacks.stack.released",
+        "value": "2025-08-14T08:17:41Z"
+      },
+      {
+        "name": "syft:image:labels:org.opencontainers.image.title",
+        "value": "demo"
+      },
+      {
+        "name": "syft:image:labels:org.opencontainers.image.version",
+        "value": "0.0.1-SNAPSHOT"
+      },
+      {
+        "name": "syft:image:labels:org.springframework.boot.version",
+        "value": "3.5.4"
+      }
+    ]
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:maven/commons-io/commons-io@2.13.0?package-id=1f7c232ab1d04418",
+      "type": "library",
+      "group": "commons-io",
+      "name": "commons-io",
+      "version": "2.13.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "cpe": "cpe:2.3:a:apache:commons-io:2.13.0:*:*:*:*:*:*:*",
+      "purl": "pkg:maven/commons-io/commons-io@2.13.0",
+      "externalReferences": [
+        {
+          "url": "",
+          "hashes": [
+            {
+              "alg": "SHA-1",
+              "content": "8bb2bc9b4df17e2411533a0708a69f983bf5e83b"
+            }
+          ],
+          "type": "build-meta"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "java-archive-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "java"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "java-archive"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "java-archive"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:apache:commons_io:2.13.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:apache:commons:2.13.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:layerID",
+          "value": "sha256:b16db0883e486a816eec35db03731a6338fdbf0ab3a9d8923d8b031524e650e1"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/workspace/BOOT-INF/lib/commons-io-2.13.0.jar"
+        },
+        {
+          "name": "syft:metadata:-:artifactID",
+          "value": "commons-io"
+        },
+        {
+          "name": "syft:metadata:-:groupID",
+          "value": "commons-io"
+        },
+        {
+          "name": "syft:metadata:virtualPath",
+          "value": "/workspace/BOOT-INF/lib/commons-io-2.13.0.jar"
+        }
+      ]
+    },
+    {
+      "bom-ref": "36ece4cc0151e7e8",
+      "type": "file",
+      "name": "/workspace/BOOT-INF/lib/commons-io-2.13.0.jar",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "8bb2bc9b4df17e2411533a0708a69f983bf5e83b"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "671eaa39688dac2ffaa4645b3c9980ae2d0ea2471e4ae6a5da199cd15ae23666"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:deb/ubuntu/base-files@13ubuntu10.3?arch=amd64&distro=ubuntu-24.04&package-id=6e1a5e4d1a282379",
+      "dependsOn": [
+        "pkg:deb/ubuntu/libc6@2.39-0ubuntu8.5?arch=amd64&distro=ubuntu-24.04&package-id=e5ce6cffe73640d3&upstream=glibc"
+      ]
+    }
+  ]
+}
