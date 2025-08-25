@@ -608,7 +608,7 @@ func (p *Parser) resolveTasksInclude(parentVars vars.Vars, task *Task) ([]*Resol
 
 	var tasksFilePath string
 	if m.IsFreeForm() {
-		tasksFilePath = m.freeForm
+		tasksFilePath, _ = m.AsString()
 	} else {
 		tasksFilePath = getStringParam(m, "file")
 	}
@@ -716,15 +716,8 @@ func (p *Parser) resolveRoleInclude(parentVars vars.Vars, task *Task) ([]*Resolv
 }
 
 func getStringParam(m Module, paramKey string) string {
-	if f, exists := m.params[paramKey]; exists {
-		switch n := f.val.(type) {
-		case *Scalar:
-			if v, ok := n.Val.(string); ok {
-				return v
-			}
-		}
-	}
-	return ""
+	val, _ := m.NodeAt(paramKey).AsString()
+	return val
 }
 
 func decodeYAMLFileWithExtension(fileSrc fsutils.FileSource, dst any, extensions []string) error {

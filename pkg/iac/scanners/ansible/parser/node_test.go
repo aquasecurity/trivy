@@ -64,3 +64,34 @@ state:
 
 	assert.Equal(t, expected, node)
 }
+
+func TestNode_NodeAt(t *testing.T) {
+	tests := []struct {
+		name     string
+		src      string
+		path     string
+		expected any
+	}{
+		{
+			name:     "first level",
+			src:      `name: mys3bucket`,
+			path:     "name",
+			expected: "mys3bucket",
+		},
+		{
+			name: "happy",
+			src: `tags:
+  example: tag1`,
+			path:     "tags.example",
+			expected: "tag1",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var n *Node
+			require.NoError(t, yaml.Unmarshal([]byte(tt.src), n))
+			got := n.NodeAt(tt.path).Value()
+			assert.Equal(t, tt.expected, got)
+		})
+	}
+}

@@ -24,12 +24,12 @@ func (a *adapter) adaptBuckets() []s3.Bucket {
 func (a *adapter) adaptBucket(module parser.Module) s3.Bucket {
 	return s3.Bucket{
 		Metadata:          module.Metadata(),
-		Name:              module.GetStringAttr("name"),
+		Name:              module.StringValue("name"),
 		Versioning:        getVersioning(module),
 		Encryption:        getEncryption(module),
 		PublicAccessBlock: getPublicAccessBlock(module),
 		Logging:           a.getLogging(module),
-		ACL:               module.GetStringAttr("acl"),
+		ACL:               module.StringValue("acl"),
 		Website:           a.getWebsite(module),
 	}
 }
@@ -37,7 +37,7 @@ func (a *adapter) adaptBucket(module parser.Module) s3.Bucket {
 func getVersioning(module parser.Module) s3.Versioning {
 	return s3.Versioning{
 		Metadata:  module.Metadata(),
-		Enabled:   module.GetBoolAttr("versioning"),
+		Enabled:   module.BoolValue("versioning"),
 		MFADelete: iacTypes.BoolUnresolvable(module.Metadata()),
 	}
 }
@@ -45,14 +45,14 @@ func getVersioning(module parser.Module) s3.Versioning {
 func getEncryption(module parser.Module) s3.Encryption {
 	return s3.Encryption{
 		Metadata:  module.Metadata(),
-		Algorithm: module.GetStringAttr("encryption"),
-		KMSKeyId:  module.GetStringAttr("encryption_key_id"),
+		Algorithm: module.StringValue("encryption"),
+		KMSKeyId:  module.StringValue("encryption_key_id"),
 		Enabled:   iacTypes.Bool(false, module.Metadata()), // TODO: handle
 	}
 }
 
 func getPublicAccessBlock(module parser.Module) *s3.PublicAccessBlock {
-	publicAccess := module.GetAttr("public_access")
+	publicAccess := module.NodeAt("public_access")
 	if publicAccess.IsNil() {
 		return &s3.PublicAccessBlock{
 			Metadata: module.Metadata(),
@@ -60,10 +60,10 @@ func getPublicAccessBlock(module parser.Module) *s3.PublicAccessBlock {
 	}
 	return &s3.PublicAccessBlock{
 		Metadata:              publicAccess.Metadata(),
-		BlockPublicACLs:       publicAccess.GetBoolAttr("block_public_acls"),
-		BlockPublicPolicy:     publicAccess.GetBoolAttr("block_public_policy"),
-		IgnorePublicACLs:      publicAccess.GetBoolAttr("ignore_public_acls"),
-		RestrictPublicBuckets: publicAccess.GetBoolAttr("restrict_public_buckets"),
+		BlockPublicACLs:       publicAccess.BoolValue("block_public_acls"),
+		BlockPublicPolicy:     publicAccess.BoolValue("block_public_policy"),
+		IgnorePublicACLs:      publicAccess.BoolValue("ignore_public_acls"),
+		RestrictPublicBuckets: publicAccess.BoolValue("restrict_public_buckets"),
 	}
 }
 
