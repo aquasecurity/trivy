@@ -151,6 +151,176 @@ func Test_ReadSettings(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "happy path with user settings containing profile and repositories",
+			envs: map[string]string{
+				"HOME":           filepath.Join("testdata", "settings", "user-settings-with-profile-containing-repositories"),
+				"MAVEN_HOME":     "NOT_EXISTING_PATH",
+				"ACTIVE_PROFILE": "test-cicd",
+			},
+			wantSettings: settings{
+				LocalRepository: "",
+				Servers: []Server{
+					{
+						ID:       "mycompany-internal-releases",
+						Username: "mypassword",
+						Password: "mypassword",
+					},
+					{
+						ID:       "mycompany-internal-snapshots",
+						Username: "mypassword",
+						Password: "mypassword",
+					},
+				},
+				Profiles: []Profile{
+					{
+						ID: "mycompany",
+						Repositories: []repository{
+							{
+								ID:  "mycompany-internal-releases",
+								URL: "https://mycompany.example.com/repository/internal-releases",
+								Releases: repositoryPolicy{
+									Enabled: true,
+								},
+								Snapshots: repositoryPolicy{
+									Enabled: false,
+								},
+							},
+							{
+								ID:  "mycompany-internal-snapshots",
+								URL: "https://mycompany.example.com/repository/internal-snapshots",
+								Releases: repositoryPolicy{
+									Enabled: false,
+								},
+								Snapshots: repositoryPolicy{
+									Enabled: true,
+								},
+							},
+						},
+					},
+				},
+				ActiveProfiles: []string{"mycompany", "test-cicd"},
+				Mirrors: []Mirror{
+					{
+						ID:       "mycompany-maven-central-mirror",
+						Name:     "mycompany-maven-central-mirror",
+						URL:      "https://mycompany.example.com/repository/maven-central-mirror",
+						MirrorOf: "central",
+					},
+				},
+			},
+		},
+		{
+			name: "happy path with global and user settings containing profile and repositories",
+			envs: map[string]string{
+				"HOME":           filepath.Join("testdata", "settings", "user-settings-with-profile-containing-repositories"),
+				"MAVEN_HOME":     filepath.Join("testdata", "settings", "global-settings-with-profile-containing-repositories"),
+				"ACTIVE_PROFILE": "test-cicd",
+			},
+			wantSettings: settings{
+				LocalRepository: "",
+				Servers: []Server{
+					{
+						ID:       "mycompany-internal-releases",
+						Username: "mypassword",
+						Password: "mypassword",
+					},
+					{
+						ID:       "mycompany-internal-snapshots",
+						Username: "mypassword",
+						Password: "mypassword",
+					},
+					{
+						ID:       "mycompany-global-releases",
+						Username: "mypassword",
+						Password: "mypassword",
+					},
+				},
+				Profiles: []Profile{
+					{
+						ID: "mycompany",
+						Repositories: []repository{
+							{
+								ID:  "mycompany-internal-releases",
+								URL: "https://mycompany.example.com/repository/internal-releases",
+								Releases: repositoryPolicy{
+									Enabled: true,
+								},
+								Snapshots: repositoryPolicy{
+									Enabled: false,
+								},
+							},
+							{
+								ID:  "mycompany-internal-snapshots",
+								URL: "https://mycompany.example.com/repository/internal-snapshots",
+								Releases: repositoryPolicy{
+									Enabled: false,
+								},
+								Snapshots: repositoryPolicy{
+									Enabled: true,
+								},
+							},
+						},
+					},
+					{
+						ID: "test-cicd",
+						Repositories: []repository{
+							{
+								ID:  "mycompany-internal-releases",
+								URL: "https://mycompany.example.com/repository/internal-releases",
+								Releases: repositoryPolicy{
+									Enabled: true,
+								},
+								Snapshots: repositoryPolicy{
+									Enabled: false,
+								},
+							},
+							{
+								ID:  "mycompany-global-releases",
+								URL: "https://mycompany.example.com/repository/global-releases",
+								Releases: repositoryPolicy{
+									Enabled: true,
+								},
+								Snapshots: repositoryPolicy{
+									Enabled: false,
+								},
+							},
+						},
+					},
+					{
+						ID: "default",
+						Repositories: []repository{
+							{
+								ID:  "mycompany-default-releases",
+								URL: "https://mycompany.example.com/repository/default-releases",
+								Releases: repositoryPolicy{
+									Enabled: true,
+								},
+								Snapshots: repositoryPolicy{
+									Enabled: false,
+								},
+							},
+						},
+						Activation: activation{ActiveByDefault: true},
+					},
+				},
+				ActiveProfiles: []string{"mycompany", "test-cicd"},
+				Mirrors: []Mirror{
+					{
+						ID:       "mycompany-maven-central-mirror",
+						Name:     "mycompany-maven-central-mirror",
+						URL:      "https://mycompany.example.com/repository/maven-central-mirror",
+						MirrorOf: "central",
+					},
+					{
+						ID:       "google-maven-central",
+						Name:     "GCS Maven Central mirror EU",
+						URL:      "https://maven-central-eu.storage-download.googleapis.com/maven2/",
+						MirrorOf: "*,!mycompany-internal-releases,!mycompany-global-releases",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -162,4 +332,140 @@ func Test_ReadSettings(t *testing.T) {
 			require.Equal(t, tt.wantSettings, gotSettings)
 		})
 	}
+}
+
+func Test_getActiveProfiles(t *testing.T) {
+	s := settings{
+		Profiles: []Profile{
+			{
+				ID: "p1",
+				Repositories: []repository{
+					{ID: "r1"},
+					{ID: "r2"},
+				},
+			},
+			{
+				ID: "p2",
+				Repositories: []repository{
+					{ID: "r3"},
+				},
+				Activation: activation{ActiveByDefault: true},
+			},
+			{
+				ID: "p3",
+				Repositories: []repository{
+					{ID: "r4"}},
+			},
+			{
+				ID: "p1",
+				Repositories: []repository{
+					{ID: "r1"},
+					{ID: "r2"},
+					{ID: "r3"},
+				},
+			},
+		},
+		ActiveProfiles: []string{"p1"},
+	}
+	got := s.getActiveProfiles()
+	require.Len(t, got, 2)
+	require.Equal(t, "p1", got[0].ID)
+	require.Equal(t, "p2", got[1].ID)
+}
+
+func Test_findMirrorForRepository(t *testing.T) {
+	s := settings{
+		Mirrors: []Mirror{
+			{ID: "mirror-generic", MirrorOf: "*, !test"},
+			{ID: "mirror-central", MirrorOf: "central"},
+		},
+	}
+	require.Equal(t, "mirror-central", s.findMirrorForRepository("central").ID)
+	require.Equal(t, "mirror-generic", s.findMirrorForRepository("other").ID)
+	require.Nil(t, s.findMirrorForRepository("test"))
+}
+
+func Test_getEffectiveRepositories(t *testing.T) {
+	s := settings{
+		Profiles: []Profile{
+			{
+				ID: "p1",
+				Repositories: []repository{
+					{
+						ID:        "r1-releases",
+						URL:       "http://repo1",
+						Releases:  repositoryPolicy{Enabled: true},
+						Snapshots: repositoryPolicy{Enabled: false},
+					},
+					{
+						ID:        "r2-snapshots",
+						URL:       "http://repo2",
+						Releases:  repositoryPolicy{Enabled: false},
+						Snapshots: repositoryPolicy{Enabled: true},
+					},
+				},
+			},
+			{
+				ID: "p2",
+				Repositories: []repository{
+					{
+						ID:        "r3-releases",
+						URL:       "http://repo3",
+						Releases:  repositoryPolicy{Enabled: true},
+						Snapshots: repositoryPolicy{Enabled: false},
+					},
+					{
+						ID:        "r4-snapshots",
+						URL:       "http://repo4",
+						Releases:  repositoryPolicy{Enabled: false},
+						Snapshots: repositoryPolicy{Enabled: true},
+					},
+				},
+			},
+			{
+				ID: "p4",
+				Repositories: []repository{
+					{
+						ID:        "r5-releases",
+						URL:       "http://repo5",
+						Releases:  repositoryPolicy{Enabled: true},
+						Snapshots: repositoryPolicy{Enabled: false},
+					},
+					{
+						ID:        "r1-releases",
+						URL:       "http://repo1-duplicate",
+						Releases:  repositoryPolicy{Enabled: true},
+						Snapshots: repositoryPolicy{Enabled: false},
+					},
+				},
+				Activation: activation{ActiveByDefault: true},
+			},
+		},
+		ActiveProfiles: []string{"p1"},
+		Mirrors: []Mirror{
+			{
+				ID:       "mirror-r1-releases",
+				MirrorOf: "r1-releases",
+				URL:      "http://mirror1",
+			},
+		},
+	}
+
+	effective := s.getEffectiveRepositories()
+	require.Len(t, effective, 3)
+
+	require.Equal(t, "r1-releases", effective[0].ID)
+	require.Equal(t, "http://mirror1", effective[0].URL)
+	require.True(t, effective[0].Releases.Enabled)
+	require.True(t, effective[0].Snapshots.Enabled)
+
+	require.Equal(t, "r2-snapshots", effective[1].ID)
+	require.Equal(t, "http://repo2", effective[1].URL)
+	require.False(t, effective[1].Releases.Enabled)
+	require.True(t, effective[1].Snapshots.Enabled)
+
+	require.Equal(t, "r5-releases", effective[2].ID)
+	require.Equal(t, "http://repo5", effective[2].URL)
+	require.True(t, effective[2].Releases.Enabled)
+	require.False(t, effective[2].Snapshots.Enabled)
 }
