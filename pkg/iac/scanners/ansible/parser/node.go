@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/orderedmap"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 type NodeValue interface {
@@ -218,6 +219,10 @@ func (n *Node) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadat
 }
 
 func (n *Node) Render(variables vars.Vars) (*Node, error) {
+	return n.render(variables, set.New[string]())
+}
+
+func (n *Node) render(variables vars.Vars, visited set.Set[string]) (*Node, error) {
 	if n == nil {
 		return nil, nil
 	}
@@ -225,12 +230,24 @@ func (n *Node) Render(variables vars.Vars) (*Node, error) {
 	switch v := n.val.(type) {
 	case *Scalar:
 		if s, ok := v.Val.(string); ok {
+			if found := visited.Contains(s); found {
+				return n, fmt.Errorf("cyclic reference detected: %q", s)
+			}
+
+			visited.Append(s)
 			rendered, err := evaluateTemplate(s, variables)
 			if err != nil {
 				// TODO: mark as unknown
 				return n, fmt.Errorf("node ref %q: %w", n.metadata.Reference(), err)
 			}
-			return n.withValue(&Scalar{Val: rendered}), nil
+
+			newNode := n.withValue(&Scalar{Val: rendered})
+			if strings.Contains(rendered, "{{") {
+				return newNode.render(variables, visited)
+			}
+			visited.Remove(s)
+
+			return newNode, nil
 		}
 		return n, nil
 	case *Mapping:

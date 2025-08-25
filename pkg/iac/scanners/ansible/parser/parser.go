@@ -582,7 +582,7 @@ func (p *Parser) resolveTask(task *Task, parentVars vars.Vars) *ResolvedTask {
 }
 
 func (p *Parser) effecitveVarsForTask(task *Task, parentVars vars.Vars) vars.Vars {
-	return vars.MergeVars(parentVars, task.inner.Vars, specialVarsForTask(task), p.extraVars)
+	return vars.MergeVars(parentVars, task.inner.Vars, p.extraVars, specialVarsForTask(task))
 }
 
 func specialVarsForTask(task *Task) vars.Vars {

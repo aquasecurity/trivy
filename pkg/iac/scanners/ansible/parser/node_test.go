@@ -23,7 +23,7 @@ state:
   len: 200 
   foo: null
 `
-	expected := Node{
+	expected := &Node{
 		rng: Range{0, 11},
 		val: &Mapping{
 			Fields: func() *orderedmap.OrderedMap[string, *Node] {
@@ -58,11 +58,8 @@ state:
 		},
 	}
 
-	var node Node
-	err := yaml.Unmarshal([]byte(src), &node)
-	require.NoError(t, err)
-
-	assert.Equal(t, expected, node)
+	n := mustNodeFromYAML(t, src)
+	assert.Equal(t, expected, n)
 }
 
 func TestNode_NodeAt(t *testing.T) {
@@ -88,10 +85,125 @@ func TestNode_NodeAt(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var n *Node
-			require.NoError(t, yaml.Unmarshal([]byte(tt.src), n))
+			n := mustNodeFromYAML(t, tt.src)
 			got := n.NodeAt(tt.path).Value()
 			assert.Equal(t, tt.expected, got)
 		})
 	}
+}
+
+func TestNode_Render(t *testing.T) {
+	tests := []struct {
+		name    string
+		yamlSrc string
+		vars    map[string]any
+		want    string
+		wantErr bool
+	}{
+		{
+			name:    "simple interpolation",
+			yamlSrc: `"{{ b }} {{ c }}"`,
+			vars: map[string]any{
+				"b": "hello",
+				"c": "world",
+			},
+			want:    "hello world\n",
+			wantErr: false,
+		},
+		{
+			name:    "chained references",
+			yamlSrc: `"{{ b }}"`,
+			vars: map[string]any{
+				"b": "{{ c }}",
+				"c": "final",
+			},
+			want:    "final\n",
+			wantErr: false,
+		},
+		{
+			name:    "cyclic reference",
+			yamlSrc: `"{{ a }}"`,
+			vars: map[string]any{
+				"a": "{{ a }}",
+			},
+			wantErr: true,
+		},
+		{
+			name:    "shared variable",
+			yamlSrc: `"{{ x }} and {{ y }}"`,
+			vars: map[string]any{
+				"x":      "{{ shared }}",
+				"y":      "{{ shared }}",
+				"shared": "value",
+			},
+			want:    "value and value\n",
+			wantErr: false,
+		},
+		{
+			name:    "undefined variable",
+			yamlSrc: `"{{ missing }}"`,
+			vars:    map[string]any{},
+			wantErr: true,
+		},
+		{
+			name:    "empty template",
+			yamlSrc: `""`,
+			vars:    map[string]any{},
+			want: `""
+`,
+			wantErr: false,
+		},
+		{
+			name:    "mixed literal and template",
+			yamlSrc: `"start {{ a }} end"`,
+			vars: map[string]any{
+				"a": "{{ b }}",
+				"b": "middle",
+			},
+			want:    "start middle end\n",
+			wantErr: false,
+		},
+		{
+			name: "sequence and mapping",
+			yamlSrc: `
+list:
+  - "{{ x }}"
+  - "{{ y }}"
+dict:
+  key1: "{{ a }}"
+  key2: "{{ b }}"
+`,
+			vars: map[string]any{"x": "1", "y": "2", "a": "A", "b": "B"},
+			want: `list:
+    - "1"
+    - "2"
+dict:
+    key1: A
+    key2: B
+`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			n := mustNodeFromYAML(t, tt.yamlSrc)
+			got, err := n.Render(tt.vars)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+
+			marshaled, err := yaml.Marshal(got)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, string(marshaled))
+		})
+	}
+}
+
+func mustNodeFromYAML(t *testing.T, src string) *Node {
+	t.Helper()
+	var n Node
+	require.NoError(t, yaml.Unmarshal([]byte(src), &n))
+	return &n
 }
