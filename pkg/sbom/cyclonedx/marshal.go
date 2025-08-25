@@ -298,6 +298,7 @@ func (m *Marshaler) Licenses(licenses []string) *cdx.Licenses {
 	choices := lo.Map(licenses, func(license string, _ int) cdx.LicenseChoice {
 		return m.normalizeLicense(license)
 	})
+	choices = handleLicensesFields(choices)
 	return lo.ToPtr(cdx.Licenses(choices))
 }
 
@@ -345,6 +346,42 @@ func (m *Marshaler) normalizeLicense(license string) cdx.LicenseChoice {
 	}
 
 	return licenseChoice
+}
+
+// handleLicensesFields handles the case when both LicenseChoice.License and LicenseChoice.Expression are set.
+// The CycloneDX schema doesn't allow using both types in Licenses.
+// Therefore, we need to use the LicenseChoice.License.Name field for SPDX exceptions.
+func handleLicensesFields(choices []cdx.LicenseChoice) []cdx.LicenseChoice {
+	var hasLicense, hasExpr bool
+	for _, c := range choices {
+		if c.License != nil {
+			hasLicense = true
+		}
+		if c.Expression != "" {
+			hasExpr = true
+		}
+		if hasLicense && hasExpr {
+			break
+		}
+	}
+
+	// No need to handle if there is no license or no expression
+	if !hasLicense || !hasExpr {
+		return choices
+	}
+
+	for i := range choices {
+		exp := choices[i].Expression
+		// Use LicenseChoice.License.Name for SPDX expression
+		// because choices contains both LicenseChoice.License and LicenseChoice.Expression
+		if exp != "" {
+			choices[i].Expression = ""
+			choices[i].License = &cdx.License{
+				Name: exp,
+			}
+		}
+	}
+	return choices
 }
 
 func (*Marshaler) Properties(properties []core.Property) *[]cdx.Property {

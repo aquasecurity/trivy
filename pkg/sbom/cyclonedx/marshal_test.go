@@ -2129,13 +2129,15 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 
 func TestMarshaler_Licenses(t *testing.T) {
 	tests := []struct {
-		name    string
-		license string
-		want    *cdx.Licenses
+		name     string
+		licenses []string
+		want     *cdx.Licenses
 	}{
 		{
-			name:    "SPDX ID",
-			license: "MIT",
+			name: "SPDX ID",
+			licenses: []string{
+				"MIT",
+			},
 			want: &cdx.Licenses{
 				cdx.LicenseChoice{
 					License: &cdx.License{
@@ -2145,8 +2147,10 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
-			name:    "Unknown SPDX ID",
-			license: "no-spdx-id-license",
+			name: "Unknown SPDX ID",
+			licenses: []string{
+				"no-spdx-id-license",
+			},
 			want: &cdx.Licenses{
 				cdx.LicenseChoice{
 					License: &cdx.License{
@@ -2156,8 +2160,10 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
-			name:    "text license",
-			license: "text://text of license",
+			name: "text license",
+			licenses: []string{
+				"text://text of license",
+			},
 			want: &cdx.Licenses{
 				cdx.LicenseChoice{
 					License: &cdx.License{
@@ -2167,8 +2173,10 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
-			name:    "SPDX license with exception",
-			license: "AFL 2.0 with Linux-syscall-note",
+			name: "SPDX license with exception",
+			licenses: []string{
+				"AFL 2.0 with Linux-syscall-note",
+			},
 			want: &cdx.Licenses{
 				cdx.LicenseChoice{
 					Expression: "AFL-2.0 WITH Linux-syscall-note",
@@ -2176,8 +2184,10 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
-			name:    "SPDX license with wrong exception",
-			license: "GPL-2.0-with-autoconf-exception+",
+			name: "SPDX license with wrong exception",
+			licenses: []string{
+				"GPL-2.0-with-autoconf-exception+",
+			},
 			want: &cdx.Licenses{
 				cdx.LicenseChoice{
 					License: &cdx.License{
@@ -2187,8 +2197,10 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
-			name:    "SPDX expression",
-			license: "GPL-3.0-only OR AFL 2.0 with Linux-syscall-note AND GPL-3.0-only",
+			name: "SPDX expression",
+			licenses: []string{
+				"GPL-3.0-only OR AFL 2.0 with Linux-syscall-note AND GPL-3.0-only",
+			},
 			want: &cdx.Licenses{
 				cdx.LicenseChoice{
 					Expression: "GPL-3.0-only OR AFL-2.0 WITH Linux-syscall-note AND GPL-3.0-only",
@@ -2196,8 +2208,10 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
-			name:    "invalid SPDX expression",
-			license: "wrong-spdx-id OR GPL-3.0-only",
+			name: "invalid SPDX expression",
+			licenses: []string{
+				"wrong-spdx-id OR GPL-3.0-only",
+			},
 			want: &cdx.Licenses{
 				cdx.LicenseChoice{
 					License: &cdx.License{
@@ -2207,8 +2221,67 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
-			name:    "license normalization error",
-			license: "Copyright (c) 2000, 2025, Oracle and/or its affiliates. Under GPLv2 license as shown in the Description field.",
+			name: "multiple SPDX IDs",
+			licenses: []string{
+				"MIT",
+				"AFL 2.0",
+			},
+			want: &cdx.Licenses{
+				cdx.LicenseChoice{
+					License: &cdx.License{
+						ID: "MIT",
+					},
+				},
+				cdx.LicenseChoice{
+					License: &cdx.License{
+						ID: "AFL-2.0",
+					},
+				},
+			},
+		},
+		{
+			name: "SPDX ID + license name",
+			licenses: []string{
+				"MIT",
+				"license-name",
+			},
+			want: &cdx.Licenses{
+				cdx.LicenseChoice{
+					License: &cdx.License{
+						ID: "MIT",
+					},
+				},
+				cdx.LicenseChoice{
+					License: &cdx.License{
+						Name: "license-name",
+					},
+				},
+			},
+		},
+		{
+			name: "SPDX ID + SPDX exception",
+			licenses: []string{
+				"MIT",
+				"AFL 2.0 with Linux-Syscall-Note",
+			},
+			want: &cdx.Licenses{
+				cdx.LicenseChoice{
+					License: &cdx.License{
+						ID: "MIT",
+					},
+				},
+				cdx.LicenseChoice{
+					License: &cdx.License{
+						Name: "AFL-2.0 WITH Linux-syscall-note",
+					},
+				},
+			},
+		},
+		{
+			name: "license normalization error",
+			licenses: []string{
+				"Copyright (c) 2000, 2025, Oracle and/or its affiliates. Under GPLv2 license as shown in the Description field.",
+			},
 			want: &cdx.Licenses{
 				cdx.LicenseChoice{
 					License: &cdx.License{
@@ -2218,16 +2291,18 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
-			name:    "empty license",
-			license: "",
-			want:    nil,
+			name: "empty license",
+			licenses: []string{
+				"",
+			},
+			want: nil,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			marshaler := cyclonedx.NewMarshaler("dev")
-			got := marshaler.Licenses([]string{tt.license})
+			got := marshaler.Licenses(tt.licenses)
 			assert.Equal(t, tt.want, got)
 		})
 	}
