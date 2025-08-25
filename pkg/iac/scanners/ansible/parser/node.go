@@ -10,14 +10,90 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/orderedmap"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
+type NodeValue interface {
+	MarshalYAML() (any, error)
+
+	nodeValueMarker()
+}
+
+type Scalar struct {
+	Val any
+}
+
+func (s *Scalar) MarshalYAML() (any, error) {
+	if s.Val == nil {
+		return nil, nil
+	}
+	return s.Val, nil
+}
+
+type Mapping struct {
+	Fields *orderedmap.OrderedMap[string, *Node]
+}
+
+func (m *Mapping) MarshalYAML() (any, error) {
+	node := &yaml.Node{
+		Kind:    yaml.MappingNode,
+		Tag:     "!!map",
+		Content: []*yaml.Node{},
+	}
+	for key, child := range m.Fields.Iter() {
+		keyNode := &yaml.Node{
+			Kind:  yaml.ScalarNode,
+			Tag:   "!!str",
+			Value: key,
+		}
+		valYAML, err := child.MarshalYAML()
+		if err != nil {
+			return nil, err
+		}
+		valNode := &yaml.Node{}
+		if err := valNode.Encode(valYAML); err != nil {
+			return nil, err
+		}
+
+		node.Content = append(node.Content, keyNode, valNode)
+	}
+	return node, nil
+}
+
+type Sequence struct {
+	Items []*Node
+}
+
+func (s *Sequence) MarshalYAML() (any, error) {
+	node := &yaml.Node{
+		Kind:    yaml.SequenceNode,
+		Tag:     "!!seq",
+		Content: []*yaml.Node{},
+	}
+	for _, item := range s.Items {
+		itemYAML, err := item.MarshalYAML()
+		if err != nil {
+			return nil, err
+		}
+		itemNode := &yaml.Node{}
+		if err := itemNode.Encode(itemYAML); err != nil {
+			return nil, err
+		}
+		node.Content = append(node.Content, itemNode)
+	}
+	return node, nil
+}
+
+func (s *Scalar) nodeValueMarker()   {}
+func (m *Mapping) nodeValueMarker()  {}
+func (s *Sequence) nodeValueMarker() {}
+
 type Node struct {
 	rng      Range
 	metadata iacTypes.Metadata
-	val      any
+	val      NodeValue
 }
 
 func (n *Node) UnmarshalYAML(node *yaml.Node) error {
@@ -27,13 +103,19 @@ func (n *Node) UnmarshalYAML(node *yaml.Node) error {
 	case yaml.ScalarNode:
 		switch node.Tag {
 		case "!!int":
-			n.val, _ = strconv.Atoi(node.Value)
+			v, err := strconv.Atoi(node.Value)
+			if err == nil {
+				n.val = &Scalar{Val: v}
+			}
 		case "!!float":
 			// TODO: handle float properly
 		case "!!bool":
-			n.val, _ = strconv.ParseBool(node.Value)
+			v, err := strconv.ParseBool(node.Value)
+			if err == nil {
+				n.val = &Scalar{Val: v}
+			}
 		case "!!str", "!!string":
-			n.val = node.Value
+			n.val = &Scalar{Val: node.Value}
 		}
 		return nil
 	case yaml.MappingNode:
@@ -56,29 +138,35 @@ func (n *Node) UnmarshalYAML(node *yaml.Node) error {
 	return nil
 }
 
-func decodeMapNode(node *yaml.Node) (map[string]*Node, error) {
-	childData := make(map[string]*Node, len(node.Content)/2)
+func decodeMapNode(node *yaml.Node) (*Mapping, error) {
+	childMap := orderedmap.New[string, *Node](len(node.Content) / 2)
+
 	for i := 0; i < len(node.Content); i += 2 {
 		keyNode, valueNode := node.Content[i], node.Content[i+1]
+
 		childNode, err := decodeChildNode(valueNode)
 		if err != nil {
 			return nil, err
 		}
-		childData[keyNode.Value] = &childNode
+
+		childMap.Set(keyNode.Value, &childNode)
 	}
-	return childData, nil
+
+	return &Mapping{Fields: childMap}, nil
 }
 
-func decodeSequenceNode(node *yaml.Node) ([]*Node, error) {
-	childData := make([]*Node, 0, len(node.Content))
+func decodeSequenceNode(node *yaml.Node) (*Sequence, error) {
+	items := make([]*Node, 0, len(node.Content))
+
 	for _, elemNode := range node.Content {
 		childNode, err := decodeChildNode(elemNode)
 		if err != nil {
 			return nil, err
 		}
-		childData = append(childData, &childNode)
+		items = append(items, &childNode)
 	}
-	return childData, nil
+
+	return &Sequence{Items: items}, nil
 }
 
 func decodeChildNode(yNode *yaml.Node) (Node, error) {
@@ -106,16 +194,16 @@ func (n *Node) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadat
 	n.metadata.SetParentPtr(parent)
 
 	switch val := n.val.(type) {
-	case map[string]*Node:
-		for key, attr := range val {
+	case *Mapping:
+		for key, attr := range val.Fields.Iter() {
 			if attr == nil {
 				continue
 			}
 			childPath := append(nodePath, key)
 			attr.initMetadata(fileSrc, parent, childPath)
 		}
-	case []*Node:
-		for idx, attr := range val {
+	case *Sequence:
+		for idx, attr := range val.Items {
 			if attr == nil {
 				continue
 			}
@@ -131,40 +219,50 @@ func (n *Node) Render(variables vars.Vars) (*Node, error) {
 	}
 
 	switch v := n.val.(type) {
-	case string:
-		rendered, err := evaluateTemplate(v, variables)
-		if err != nil {
-			// TODO: mark as unknown
-			return n, fmt.Errorf("node ref %q: %w", n.metadata.Reference(), err)
+	case *Scalar:
+		if s, ok := v.Val.(string); ok {
+			rendered, err := evaluateTemplate(s, variables)
+			if err != nil {
+				// TODO: mark as unknown
+				return n, fmt.Errorf("node ref %q: %w", n.metadata.Reference(), err)
+			}
+			return n.withValue(&Scalar{Val: rendered}), nil
 		}
-		return n.withValue(rendered), nil
-	case map[string]*Node:
+		return n, nil
+	case *Mapping:
 		var errs error
-		renderedMap := make(map[string]*Node)
-		for key, val := range v {
+		fields := orderedmap.New[string, *Node](v.Fields.Len())
+		for key, val := range v.Fields.Iter() {
 			r, err := val.Render(variables)
 			if err != nil {
 				errs = multierror.Append(err)
 			}
-			renderedMap[key] = r
+			fields.Set(key, r)
 		}
-		return n.withValue(renderedMap), errs
-	case []*Node:
+		return n.withValue(&Mapping{Fields: fields}), errs
+	case *Sequence:
 		var errs error
-		renderedList := make([]*Node, 0, len(v))
-		for _, val := range v {
+		items := make([]*Node, 0, len(v.Items))
+		for _, val := range v.Items {
 			r, err := val.Render(variables)
 			if err != nil {
 				errs = multierror.Append(err)
 			}
-			renderedList = append(renderedList, r)
+			items = append(items, r)
 		}
-		return n.withValue(renderedList), errs
+		return n.withValue(&Sequence{Items: items}), errs
 	default:
 		return n, nil
 	}
 }
 
-func (n *Node) withValue(val any) *Node {
+func (n *Node) withValue(val NodeValue) *Node {
 	return &Node{val: val, rng: n.rng, metadata: n.metadata}
+}
+
+func (n *Node) MarshalYAML() (any, error) {
+	if n.val == nil {
+		return nil, nil
+	}
+	return n.val.MarshalYAML()
 }

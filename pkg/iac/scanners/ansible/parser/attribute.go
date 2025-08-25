@@ -9,7 +9,7 @@ import (
 // TODO move this to a separate package, as a similar structure is used in CloudFormation
 type Attribute struct {
 	metadata iacTypes.Metadata
-	val      any
+	val      NodeValue
 }
 
 func (a *Attribute) Metadata() iacTypes.Metadata {
@@ -24,7 +24,7 @@ func (a *Attribute) IsMap() bool {
 	if a.IsNil() {
 		return false
 	}
-	_, ok := a.val.(map[string]*Node)
+	_, ok := a.val.(*Mapping)
 	return ok
 }
 
@@ -32,7 +32,7 @@ func (a *Attribute) IsList() bool {
 	if a.IsNil() {
 		return false
 	}
-	_, ok := a.val.([]*Node)
+	_, ok := a.val.(*Sequence)
 	return ok
 }
 
@@ -40,7 +40,13 @@ func (a *Attribute) IsBool() bool {
 	if a.IsNil() {
 		return false
 	}
-	_, ok := a.val.(bool)
+
+	scalar, ok := a.val.(*Scalar)
+	if !ok || scalar.Val == nil {
+		return false
+	}
+
+	_, ok = scalar.Val.(bool)
 	return ok
 }
 
@@ -48,7 +54,13 @@ func (a *Attribute) IsString() bool {
 	if a.IsNil() {
 		return false
 	}
-	_, ok := a.val.(string)
+
+	scalar, ok := a.val.(*Scalar)
+	if !ok || scalar.Val == nil {
+		return false
+	}
+
+	_, ok = scalar.Val.(string)
 	return ok
 }
 
@@ -56,13 +68,13 @@ func (a *Attribute) ToList() []*Attribute {
 	if a.IsNil() {
 		return nil
 	}
-	val, ok := a.val.([]*Node)
+	val, ok := a.val.(*Sequence)
 	if !ok {
 		return nil
 	}
 
-	res := make([]*Attribute, 0, len(val))
-	for _, el := range val {
+	res := make([]*Attribute, 0, len(val.Items))
+	for _, el := range val.Items {
 		res = append(res, &Attribute{metadata: el.metadata, val: el.val})
 	}
 
@@ -73,13 +85,13 @@ func (a *Attribute) ToMap() map[string]*Attribute {
 	if a.IsNil() {
 		return make(map[string]*Attribute)
 	}
-	val, ok := a.val.(map[string]*Node)
+	val, ok := a.val.(*Mapping)
 	if !ok {
 		return nil
 	}
 
 	res := make(map[string]*Attribute)
-	for k, el := range val {
+	for k, el := range val.Fields.Iter() {
 		res[k] = &Attribute{metadata: el.metadata, val: el.val}
 	}
 
@@ -133,13 +145,13 @@ func (a *Attribute) GetBoolAttr(path string) iacTypes.BoolValue {
 
 	return iacTypes.Bool(*val, iacTypes.Metadata{})
 }
-
 func (a *Attribute) AsBool() *bool {
 	if !a.IsBool() {
 		return nil
 	}
 
-	val, ok := a.val.(bool)
+	scalar, _ := a.val.(*Scalar)
+	val, ok := scalar.Val.(bool)
 	if !ok {
 		return nil
 	}
@@ -151,7 +163,8 @@ func (a *Attribute) AsString() *string {
 		return nil
 	}
 
-	val, ok := a.val.(string)
+	scalar, _ := a.val.(*Scalar)
+	val, ok := scalar.Val.(string)
 	if !ok {
 		return nil
 	}
@@ -163,5 +176,9 @@ func (a *Attribute) Value() any {
 		return nil
 	}
 
+	scalar, ok := a.val.(*Scalar)
+	if ok {
+		return scalar.Val
+	}
 	return a.val
 }

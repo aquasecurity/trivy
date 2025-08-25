@@ -717,8 +717,11 @@ func (p *Parser) resolveRoleInclude(parentVars vars.Vars, task *Task) ([]*Resolv
 
 func getStringParam(m Module, paramKey string) string {
 	if f, exists := m.params[paramKey]; exists {
-		if s, ok := f.val.(string); ok {
-			return s
+		switch n := f.val.(type) {
+		case *Scalar:
+			if v, ok := n.Val.(string); ok {
+				return v
+			}
 		}
 	}
 	return ""

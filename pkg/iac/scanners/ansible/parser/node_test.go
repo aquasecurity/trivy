@@ -6,17 +6,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v3"
+
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/orderedmap"
 )
 
 func TestNode_UnmarshalYAML(t *testing.T) {
-	tests := []struct {
-		name     string
-		src      string
-		expected Node
-	}{
-		{
-			name: "happy",
-			src: `name: testname
+	src := `name: testname
 len: 100
 keys:
   - a
@@ -27,68 +22,45 @@ state:
   name: test
   len: 200 
   foo: null
-`,
-			expected: Node{
-				rng: Range{0, 11},
-				val: map[string]*Node{
-					"name": {
-						rng: Range{1, 1},
-						val: "testname",
-					},
-					"len": {
-						rng: Range{2, 2},
-						val: 100,
-					},
-					"keys": {
-						rng: Range{3, 7},
-						val: []*Node{
-							{
-								rng: Range{4, 4},
-								val: "a",
-							},
-							{
-								rng: Range{5, 5},
-								val: 101,
-							},
-							{
-								rng: Range{6, 6},
-								val: true,
-							},
-							{
-								rng: Range{7, 7},
-								val: nil,
-							},
+`
+	expected := Node{
+		rng: Range{0, 11},
+		val: &Mapping{
+			Fields: func() *orderedmap.OrderedMap[string, *Node] {
+				m := orderedmap.New[string, *Node](4)
+				m.Set("name", &Node{rng: Range{1, 1}, val: &Scalar{Val: "testname"}})
+				m.Set("len", &Node{rng: Range{2, 2}, val: &Scalar{Val: 100}})
+				m.Set("keys", &Node{
+					rng: Range{3, 7},
+					val: &Sequence{
+						Items: []*Node{
+							{rng: Range{4, 4}, val: &Scalar{Val: "a"}},
+							{rng: Range{5, 5}, val: &Scalar{Val: 101}},
+							{rng: Range{6, 6}, val: &Scalar{Val: true}},
+							{rng: Range{7, 7}, val: nil},
 						},
 					},
-					"state": {
-						rng: Range{8, 11},
-						val: map[string]*Node{
-							"name": {
-								rng: Range{9, 9},
-								val: "test",
-							},
-							"len": {
-								rng: Range{10, 10},
-								val: 200,
-							},
-							"foo": {
-								rng: Range{11, 11},
-								val: nil,
-							},
-						},
+				})
+				m.Set("state", &Node{
+					rng: Range{8, 11},
+					val: &Mapping{
+						Fields: func() *orderedmap.OrderedMap[string, *Node] {
+							sm := orderedmap.New[string, *Node](3)
+							sm.Set("name", &Node{rng: Range{9, 9}, val: &Scalar{Val: "test"}})
+							sm.Set("len", &Node{rng: Range{10, 10}, val: &Scalar{Val: 200}})
+							sm.Set("foo", &Node{rng: Range{11, 11}, val: nil})
+							return sm
+						}(),
 					},
-				},
-			},
+				})
+				return m
+			}(),
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			var node Node
-			err := yaml.Unmarshal([]byte(tt.src), &node)
-			require.NoError(t, err)
+	var node Node
+	err := yaml.Unmarshal([]byte(src), &node)
+	require.NoError(t, err)
 
-			assert.Equal(t, tt.expected, node)
-		})
-	}
+	assert.Equal(t, expected, node)
 }
