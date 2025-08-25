@@ -3,8 +3,21 @@ package parser
 import (
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/orderedmap"
 	"github.com/stretchr/testify/assert"
 )
+
+func scalar(val any) *Node {
+	return &Node{val: &Scalar{Val: val}}
+}
+
+func mapping(pairs map[string]*Node) *Mapping {
+	m := orderedmap.New[string, *Node](len(pairs))
+	for k, v := range pairs {
+		m.Set(k, v)
+	}
+	return &Mapping{Fields: m}
+}
 
 func TestAttribute_GetNestedAttr(t *testing.T) {
 	tests := []struct {
@@ -16,11 +29,9 @@ func TestAttribute_GetNestedAttr(t *testing.T) {
 		{
 			name: "first level",
 			attr: Attribute{
-				val: map[string]*Node{
-					"name": {
-						val: "mys3bucket",
-					},
-				},
+				val: mapping(map[string]*Node{
+					"name": scalar("mys3bucket"),
+				}),
 			},
 			path:     "name",
 			expected: "mys3bucket",
@@ -28,15 +39,13 @@ func TestAttribute_GetNestedAttr(t *testing.T) {
 		{
 			name: "happy",
 			attr: Attribute{
-				val: map[string]*Node{
+				val: mapping(map[string]*Node{
 					"tags": {
-						val: map[string]*Node{
-							"example": {
-								val: "tag1",
-							},
-						},
+						val: mapping(map[string]*Node{
+							"example": scalar("tag1"),
+						}),
 					},
-				},
+				}),
 			},
 			path:     "tags.example",
 			expected: "tag1",

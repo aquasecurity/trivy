@@ -50,32 +50,37 @@ func (m *Module) GetNestedAttr(path string) *Attribute {
 
 func (m *Module) GetBoolAttr(name string, defValue ...bool) iacTypes.BoolValue {
 	def := iacTypes.BoolDefault(firstOrDefault(defValue), m.metadata)
-	attr, exists := m.params[name]
+	attrNode, exists := m.params[name]
 	if !exists {
 		return def
 	}
 
-	boolNode, ok := attr.val.(bool)
-	if !ok {
-		return def
+	switch n := attrNode.val.(type) {
+	case *Scalar:
+		v, ok := n.Val.(bool)
+		if ok {
+			return iacTypes.Bool(v, m.metadata)
+		}
 	}
-
-	return iacTypes.Bool(boolNode, m.metadata)
+	return def
 }
 
 func (m *Module) GetStringAttr(name string, defValue ...string) iacTypes.StringValue {
 	def := iacTypes.StringDefault(firstOrDefault(defValue), m.metadata)
-	attr, exists := m.params[name]
+	attrNode, exists := m.params[name]
 	if !exists {
 		return def
 	}
 
-	strNode, ok := attr.val.(string)
-	if !ok {
-		return def
+	switch n := attrNode.val.(type) {
+	case *Scalar:
+		v, ok := n.Val.(string)
+		if ok {
+			return iacTypes.String(v, m.metadata)
+		}
 	}
 
-	return iacTypes.String(strNode, m.metadata)
+	return def
 }
 
 func firstOrDefault[T any](a []T) T {

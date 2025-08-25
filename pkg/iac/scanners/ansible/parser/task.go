@@ -8,6 +8,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/orderedmap"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -43,12 +44,13 @@ type RoleIncludeModule struct {
 //     name: nginx
 //     state: present
 type Task struct {
-	inner    taskInner
+	inner taskInner
+	raw   orderedmap.OrderedMap[string, *Node]
+
 	rng      Range
 	src      fsutils.FileSource
 	metadata iacTypes.Metadata
 
-	raw  map[string]*Node
 	role *Role
 	play *Play
 }
@@ -62,7 +64,7 @@ type taskInner struct {
 func (t *Task) UnmarshalYAML(node *yaml.Node) error {
 	t.rng = rangeFromNode(node)
 
-	var rawMap map[string]*Node
+	var rawMap orderedmap.OrderedMap[string, *Node]
 	if err := node.Decode(&rawMap); err != nil {
 		return err
 	}
@@ -88,7 +90,7 @@ func (t *Task) init(play *Play, fileSrc fsutils.FileSource, parent *iacTypes.Met
 		tt.init(play, fileSrc, parent)
 	}
 
-	for _, n := range t.raw {
+	for _, n := range t.raw.Iter() {
 		if n == nil {
 			continue
 		}
@@ -99,7 +101,7 @@ func (t *Task) init(play *Play, fileSrc fsutils.FileSource, parent *iacTypes.Met
 // hasModuleKey checks if the task has any of the given module keys in its raw map.
 func (t *Task) hasModuleKey(keys []string) bool {
 	for _, module := range keys {
-		if _, exists := t.raw[module]; exists {
+		if _, exists := t.raw.Get(module); exists {
 			return true
 		}
 	}
@@ -153,9 +155,10 @@ func (t ResolvedTasks) GetModules(keys ...string) []Module {
 // It holds only the essential data needed for execution and
 // ensures the original Task remains unmodified.
 type ResolvedTask struct {
-	Name     string
-	Fields   map[string]*Node
-	Vars     vars.Vars
+	Name   string
+	Fields orderedmap.OrderedMap[string, *Node]
+	Vars   vars.Vars
+
 	Metadata iacTypes.Metadata
 	Range    Range
 }
@@ -168,7 +171,7 @@ var ErrModuleNotFound = errors.New("module not found")
 // Returns an error if no module is found or if rendering fails.
 func (t *ResolvedTask) ResolveModule(keys []string, strict bool) (Module, error) {
 	for _, key := range keys {
-		f, exists := t.Fields[key]
+		f, exists := t.Fields.Get(key)
 		if !exists {
 			continue
 		}
@@ -183,12 +186,23 @@ func (t *ResolvedTask) ResolveModule(keys []string, strict bool) (Module, error)
 				log.String("source", t.Metadata.Range().String()),
 				log.Err(err))
 		}
-		switch v := rendered.val.(type) {
-		case map[string]*Node:
-			return Module{metadata: rendered.metadata, params: v}, nil
-		case string:
-			return Module{metadata: rendered.metadata, freeForm: v}, nil
+		switch n := rendered.val.(type) {
+		case *Mapping:
+			return Module{metadata: rendered.metadata, params: n.Fields.AsMap()}, nil
+		case *Scalar:
+			if v, ok := n.Val.(string); ok {
+				return Module{metadata: rendered.metadata, freeForm: v}, nil
+			}
 		}
 	}
 	return Module{}, ErrModuleNotFound
+}
+
+func (t *ResolvedTask) MarshalYAML() (any, error) {
+	out := make(map[string]any, t.Fields.Len())
+	for fieldName, field := range t.Fields.Iter() {
+		rendered, _ := field.Render(t.Vars)
+		out[fieldName] = rendered.val
+	}
+	return out, nil
 }
