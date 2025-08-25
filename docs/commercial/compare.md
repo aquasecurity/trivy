@@ -1,7 +1,7 @@
 # Aqua Security is the home of Trivy
 
 Trivy is proudly maintained by [Aqua Security](https://aquasec.com).
-If you liked Trivy, you will love Aqua which builds on top of Trivy to provide even more enhanced capabilities for a complete security management offering.  
+If you liked Trivy, you will love Aqua which builds on top of Trivy to provide even more enhanced capabilities for a complete security management offering.
 In this page you can find a high level comparison between Trivy Open Source and Aqua's commercial product.
 If you'd like to learn more or request a demo, [click here to contact us](./contact.md).
 
@@ -66,7 +66,7 @@ If you'd like to learn more or request a demo, [click here to contact us](./cont
 
 | Feature | Trivy OSS | Aqua |
 | --- | --- | --- |
-| Infrastructure as Code (IaC) | Many popular languages as detailed [here](https://trivy.dev/latest/docs/scanner/misconfiguration/policy/builtin/) | In addition, Build Pipeline configuration scanning |
+| Infrastructure as Code (IaC) | Many popular languages as detailed [here](https://trivy.dev/latest/docs/scanner/misconfiguration/check/builtin/) | In addition, Build Pipeline configuration scanning |
 | Checks customization | Create custom checks with Rego | Create custom checks in no-code interface <br> Customize existing checks with organizational preferences |
 | Cloud scanning | AWS (subset of services) | AWS, Azure, GCP, Alibaba Cloud, Oracle Cloud |
 | Compliance frameworks | CIS, NSA, vendor guides | More than 25 compliance programs |
