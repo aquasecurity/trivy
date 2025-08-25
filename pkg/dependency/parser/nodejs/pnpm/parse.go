@@ -159,7 +159,12 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 			}
 		}
 		if len(dependsOn) > 0 {
-			resolvedSnapshots[packageID(name, version)] = dependsOn
+			pkgId := packageID(name, version)
+			if existing, ok := resolvedSnapshots[pkgId]; ok {
+				resolvedSnapshots[pkgId] = append(existing, dependsOn...)
+			} else {
+				resolvedSnapshots[pkgId] = dependsOn
+			}
 		}
 
 	}
