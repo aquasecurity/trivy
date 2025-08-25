@@ -10,11 +10,13 @@
         ID: "seal"
         Name: "Seal Security Database"
         URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+        BaseID: "debian"
     - key: seal ubuntu 22.04
       value:
         ID: "seal"
         Name: "Seal Security Database"
         URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+        BaseID: "ubuntu"
     - key: ubuntu 22.04
       value:
         ID: "ubuntu"
@@ -25,6 +27,7 @@
         ID: "seal"
         Name: "Seal Security Database"
         URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+        BaseID: "alpine"
     - key: alpine 3.21
       value:
         ID: "alpine"
@@ -35,18 +38,22 @@
         ID: "seal"
         Name: "Seal Security Database"
         URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+        BaseID: "redhat"
     - key: seal centos 8
       value:
         ID: "seal"
         Name: "Seal Security Database"
         URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+        BaseID: "centos"
     - key: seal oracle-linux 8
       value:
         ID: "seal"
         Name: "Seal Security Database"
         URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+        BaseID: "oracle-linux"
     - key: seal cbl-mariner 2.0
       value:
         ID: "seal"
         Name: "Seal Security Database"
         URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+        BaseID: "cbl-mariner"
