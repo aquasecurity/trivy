@@ -124,7 +124,7 @@ func (s *Scanner) scanProject(ctx context.Context, fsys fs.FS, project *parser.A
 }
 
 func renderCause(tasks parser.ResolvedTasks, causeRng types.Range) (scan.RenderedCause, bool) {
-	task := findTaskForCause(tasks, causeRng)
+	task := fieldsForRange(tasks, causeRng)
 	if task == nil {
 		return scan.RenderedCause{}, false
 	}
@@ -136,11 +136,15 @@ func renderCause(tasks parser.ResolvedTasks, causeRng types.Range) (scan.Rendere
 	return scan.RenderedCause{Raw: string(b)}, true
 }
 
-func findTaskForCause(tasks parser.ResolvedTasks, causeRng types.Range) *parser.ResolvedTask {
+func fieldsForRange(tasks parser.ResolvedTasks, causeRng types.Range) map[string]*parser.Node {
 	for _, task := range tasks {
 		taskRng := task.Metadata.Range()
 		if taskRng.GetFilename() == causeRng.GetFilename() && taskRng.Includes(causeRng) {
-			return task
+			queryRange := parser.Range{
+				StartLine: causeRng.GetStartLine(),
+				EndLine:   causeRng.GetEndLine(),
+			}
+			return task.GetFieldsByRange(queryRange)
 		}
 	}
 	return nil

@@ -129,7 +129,7 @@ func (p *Play) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadat
 
 	p.src = fileSrc
 	p.metadata = iacTypes.NewMetadata(
-		iacTypes.NewRange(relPath, p.rng.startLine, p.rng.endLine, "", fsys),
+		iacTypes.NewRange(relPath, p.rng.StartLine, p.rng.EndLine, "", fsys),
 		"play",
 	)
 	p.metadata.SetParentPtr(parent)
@@ -198,7 +198,7 @@ func (r *RoleDefinition) UnmarshalYAML(node *yaml.Node) error {
 func (r *RoleDefinition) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadata) {
 	fsys, relPath := fileSrc.FSAndRelPath()
 	r.metadata = iacTypes.NewMetadata(
-		iacTypes.NewRange(relPath, r.rng.startLine, r.rng.endLine, "", fsys),
+		iacTypes.NewRange(relPath, r.rng.StartLine, r.rng.EndLine, "", fsys),
 		"role-def",
 	)
 	r.metadata.SetParentPtr(parent)
