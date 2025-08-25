@@ -118,6 +118,7 @@ nav:
               - Bitnami Images: docs/coverage/others/bitnami.md
               - Conda: docs/coverage/others/conda.md
               - Root.io Images: docs/coverage/others/rootio.md
+              - Seal Security: docs/coverage/others/seal.md
               - RPM Archives: docs/coverage/others/rpm.md
           - Kubernetes: docs/coverage/kubernetes.md
       - Configuration:
@@ -290,4 +291,3 @@ extra:
 plugins:
   - search
   - macros
-
