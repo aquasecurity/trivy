@@ -103,6 +103,10 @@ func (n *Node) Metadata() iacTypes.Metadata {
 	return n.metadata
 }
 
+func (n *Node) IsKnown() bool {
+	return !n.unknown
+}
+
 func (n *Node) UnmarshalYAML(node *yaml.Node) error {
 	n.rng = rangeFromNode(node)
 
@@ -197,7 +201,7 @@ func decodeChildNode(yNode *yaml.Node) (Node, error) {
 func (n *Node) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadata, nodePath []string) {
 	fsys, relPath := fileSrc.FSAndRelPath()
 	ref := cmp.Or(strings.Join(nodePath, "."), ".")
-	rng := iacTypes.NewRange(relPath, n.rng.Start, n.rng.EndLine, "", fsys)
+	rng := iacTypes.NewRange(relPath, n.rng.Start, n.rng.End, "", fsys)
 
 	n.metadata = iacTypes.NewMetadata(rng, ref)
 	n.metadata.SetParentPtr(parent)

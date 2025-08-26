@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 const (
@@ -87,7 +88,7 @@ func (t *Task) isBlock() bool {
 func (t *Task) init(play *Play, fileSrc fsutils.FileSource, parent *iacTypes.Metadata) {
 	fsys, relPath := fileSrc.FSAndRelPath()
 	ref := lo.Ternary(t.isBlock(), "tasks-block", "tasks")
-	rng := iacTypes.NewRange(relPath, t.rng.Start, t.rng.EndLine, "", fsys)
+	rng := iacTypes.NewRange(relPath, t.rng.Start, t.rng.End, "", fsys)
 	t.play = play
 	t.src = fileSrc
 	t.metadata = iacTypes.NewMetadata(rng, ref)
@@ -126,6 +127,9 @@ func (t *Task) isRoleInclude() bool {
 }
 
 func (t *Task) resolved(variables vars.Vars) *ResolvedTask {
+	if variables == nil {
+		variables = make(vars.Vars)
+	}
 	resolved := &ResolvedTask{
 		Name:     t.inner.Name,
 		Metadata: t.metadata,
@@ -155,6 +159,20 @@ func (t ResolvedTasks) GetModules(keys ...string) []Module {
 	}
 
 	return modules
+}
+
+func (t ResolvedTasks) FilterByState(exclude ...string) ResolvedTasks {
+	excludeSet := set.New(exclude...)
+	return lo.Filter(t, func(task *ResolvedTask, _ int) bool {
+		state, exists := task.Fields.Get("state")
+		if !exists || state == nil || !state.IsKnown() {
+			return true
+		}
+		if v, ok := state.AsString(); ok && excludeSet.Contains(v) {
+			return false
+		}
+		return true
+	})
 }
 
 // ResolvedTask represents an Ansible task with all variables resolved.
@@ -193,7 +211,7 @@ func (t *ResolvedTask) ResolveModule(keys []string, strict bool) (Module, error)
 				log.String("source", t.Metadata.Range().String()),
 				log.Err(err))
 		}
-		return Module{Node: rendered}, nil
+		return Module{Node: rendered, Name: key}, nil
 	}
 	return Module{}, ErrModuleNotFound
 }

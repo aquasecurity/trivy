@@ -42,7 +42,7 @@ type AnsibleProject struct {
 	inventory      *inventory.Inventory
 	galaxyManifest *GalaxyManifest
 
-	tasks []*ResolvedTask
+	tasks ResolvedTasks
 }
 
 func (p *AnsibleProject) Path() string {
@@ -92,7 +92,7 @@ type Parser struct {
 
 	// resolvedTasks caches the fully expanded list of tasks for each playbook,
 	// keyed by the playbook's file path to avoid redundant parsing and resolution.
-	resolvedTasks map[string][]*ResolvedTask
+	resolvedTasks map[string]ResolvedTasks
 
 	// roleCache stores loaded role data keyed by role name,
 	// enabling reuse of roles across multiple playbooks without repeated loading.
@@ -106,7 +106,7 @@ func New(fsys fs.FS, root string, opts ...Option) *Parser {
 		logger:    log.WithPrefix("ansible"),
 		extraVars: make(vars.Vars),
 
-		resolvedTasks: make(map[string][]*ResolvedTask),
+		resolvedTasks: make(map[string]ResolvedTasks),
 		roleCache:     make(map[string]*Role),
 	}
 
@@ -186,7 +186,7 @@ func (p *Parser) findGalaxyManifest() *GalaxyManifest {
 	return &manifest
 }
 
-func (p *Parser) parsePlaybooks(sources []fsutils.FileSource) ([]*ResolvedTask, error) {
+func (p *Parser) parsePlaybooks(sources []fsutils.FileSource) (ResolvedTasks, error) {
 	playbooks := make(map[string]*Playbook)
 
 	for _, src := range sources {
@@ -209,7 +209,7 @@ func (p *Parser) parsePlaybooks(sources []fsutils.FileSource) ([]*ResolvedTask, 
 	// Optionally, add a mode to bypass this filtering for full scans or debugging.
 
 	// Resolve tasks from entrypoint playbooks — those that are not imported/included by others.
-	var allTasks []*ResolvedTask
+	var allTasks ResolvedTasks
 	for _, playbookSrc := range entryPoints {
 		tasks, err := p.resolvePlaybook(nil, nil, playbookSrc, playbooks)
 		if err != nil {
@@ -261,7 +261,7 @@ func findEntryPoints(playbooks map[string]*Playbook) []fsutils.FileSource {
 func (p *Parser) resolvePlaybook(
 	parent *iacTypes.Metadata, parentVars vars.Vars,
 	playbookSrc fsutils.FileSource, playbooks map[string]*Playbook,
-) ([]*ResolvedTask, error) {
+) (ResolvedTasks, error) {
 	pb, exists := playbooks[playbookSrc.Path]
 	if !exists {
 		// Attempting to load a playbook outside the scan directory (may be an included playbook).
@@ -285,7 +285,7 @@ func (p *Parser) resolvePlaybook(
 	// See https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#organizing-host-and-group-variables
 	playbookInvVars := inventory.LoadVars(inventory.PlaybookVarsSources(playbookSrc.Dir()))
 
-	var tasks []*ResolvedTask
+	var tasks ResolvedTasks
 	for _, play := range pb.Plays {
 
 		// Initializing the metadata of the play and its nested elements
@@ -374,7 +374,7 @@ func (p *Parser) resolvePlaybook(
 
 func (p *Parser) resolveRoleDefinitionTasks(
 	roleDef *RoleDefinition, play *Play, playVars vars.Vars,
-) ([]*ResolvedTask, error) {
+) (ResolvedTasks, error) {
 	p.logger.Debug("Resolve role at play level",
 		log.String("name", roleDef.name()),
 		log.String("source", roleDef.metadata.Range().String()))
@@ -410,7 +410,7 @@ func (p *Parser) resolveRoleDefinitionTasks(
 		return nil, xerrors.Errorf("load role tasks: %w", err)
 	}
 
-	var tasks []*ResolvedTask
+	var tasks ResolvedTasks
 	for _, roleTask := range roleTasks {
 		childrenTasks, err := p.expandTask(roleScopeVars, roleTask)
 		if err != nil {
@@ -525,7 +525,7 @@ func (p *Parser) resolveRolePath(playbookDirSrc fsutils.FileSource, name string)
 }
 
 // expandTask dispatches task expansion based on task type (block, include, role).
-func (p *Parser) expandTask(parentVars vars.Vars, t *Task) ([]*ResolvedTask, error) {
+func (p *Parser) expandTask(parentVars vars.Vars, t *Task) (ResolvedTasks, error) {
 
 	// TODO: pass parentVars ?
 	effectiveVars := vars.MergeVars(parentVars, t.Variables())
@@ -544,7 +544,7 @@ func (p *Parser) expandTask(parentVars vars.Vars, t *Task) ([]*ResolvedTask, err
 	default:
 		resolvedTask := p.resolveTask(t, parentVars)
 		// TODO: check that the task is not absent
-		return []*ResolvedTask{resolvedTask}, nil
+		return ResolvedTasks{resolvedTask}, nil
 	}
 }
 
@@ -560,8 +560,8 @@ func wrapIfErr[T any](val T, msg string, err error) (T, error) {
 //
 // Blocks group multiple tasks under a single block in a playbook.
 // See https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_blocks.html
-func (p *Parser) expandBlockTasks(parentVars vars.Vars, t *Task) ([]*ResolvedTask, error) {
-	var res []*ResolvedTask
+func (p *Parser) expandBlockTasks(parentVars vars.Vars, t *Task) (ResolvedTasks, error) {
+	var res ResolvedTasks
 	var errs error
 	for _, task := range t.inner.Block {
 		children, err := p.expandTask(parentVars, task)
@@ -599,7 +599,7 @@ func specialVarsForTask(task *Task) vars.Vars {
 //
 // Supports Ansible modules 'include_tasks' and 'import_tasks'.
 // See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/include_tasks_module.html
-func (p *Parser) resolveTasksInclude(parentVars vars.Vars, task *Task) ([]*ResolvedTask, error) {
+func (p *Parser) resolveTasksInclude(parentVars vars.Vars, task *Task) (ResolvedTasks, error) {
 	resolvedTask := p.resolveTask(task, parentVars)
 	moduleKeys := withBuiltinPrefix(ModuleIncludeTasks, ModuleImportTasks)
 	m, err := resolvedTask.ResolveModule(moduleKeys, true)
@@ -624,7 +624,7 @@ func (p *Parser) resolveTasksInclude(parentVars vars.Vars, task *Task) ([]*Resol
 		return nil, xerrors.Errorf("load tasks from %q: %w", taskSrc.Path, err)
 	}
 
-	var allTasks []*ResolvedTask
+	var allTasks ResolvedTasks
 
 	var errs error
 	for _, loadedTask := range includedTasks {
@@ -646,7 +646,7 @@ func (p *Parser) resolveTasksInclude(parentVars vars.Vars, task *Task) ([]*Resol
 //
 // Supports Ansible modules 'include_role' and 'import_role'.
 // See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/include_role_module.html
-func (p *Parser) resolveRoleInclude(parentVars vars.Vars, task *Task) ([]*ResolvedTask, error) {
+func (p *Parser) resolveRoleInclude(parentVars vars.Vars, task *Task) (ResolvedTasks, error) {
 	resolvedTask := p.resolveTask(task, parentVars)
 	moduleKeys := withBuiltinPrefix(ModuleIncludeRole, ModuleImportRole)
 	m, err := resolvedTask.ResolveModule(moduleKeys, true)
@@ -690,7 +690,7 @@ func (p *Parser) resolveRoleInclude(parentVars vars.Vars, task *Task) ([]*Resolv
 		roleVariables,
 	)
 
-	var allTasks []*ResolvedTask
+	var allTasks ResolvedTasks
 
 	roleTasks, err := role.getTasks(module.TasksFrom)
 	if err != nil {
