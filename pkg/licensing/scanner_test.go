@@ -122,6 +122,17 @@ func TestScanner_Scan(t *testing.T) {
 			wantSeverity: "CRITICAL",
 		},
 		{
+			name: "with separator in lowercase",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryForbidden: {
+					"Similar to Apache License but with the acknowledgment clause removed.",
+				},
+			},
+			licenseName:  "Similar to Apache License but with the acknowledgment clause removed.",
+			wantCategory: types.CategoryForbidden,
+			wantSeverity: "CRITICAL",
+		},
+		{
 			name: "compound unknown license",
 			categories: map[types.LicenseCategory][]string{
 				types.CategoryForbidden: {
