@@ -196,8 +196,7 @@ func decodeChildNode(yNode *yaml.Node) (Node, error) {
 
 func (n *Node) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadata, nodePath []string) {
 	fsys, relPath := fileSrc.FSAndRelPath()
-	ref := strings.Join(nodePath, ".")
-	ref = cmp.Or(ref, ".")
+	ref := cmp.Or(strings.Join(nodePath, "."), ".")
 	rng := iacTypes.NewRange(relPath, n.rng.Start, n.rng.EndLine, "", fsys)
 
 	n.metadata = iacTypes.NewMetadata(rng, ref)
@@ -242,7 +241,6 @@ func (n *Node) render(variables vars.Vars, visited set.Set[string]) (*Node, erro
 			visited.Append(s)
 			rendered, err := evaluateTemplate(s, variables)
 			if err != nil {
-				// TODO: mark as unknown
 				n.unknown = true
 				return n, fmt.Errorf("node ref %q: %w", n.metadata.Reference(), err)
 			}
@@ -413,6 +411,13 @@ func (n *Node) AsBool() (bool, bool) {
 		return val, true
 	case string:
 		return parseAnsibleBool(val)
+	case int:
+		switch val {
+		case 0:
+			return false, true
+		case 1:
+			return true, true
+		}
 	}
 	return false, false
 }
