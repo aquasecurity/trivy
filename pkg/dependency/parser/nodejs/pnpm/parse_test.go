@@ -65,6 +65,12 @@ func TestParse(t *testing.T) {
 			want:     pnpmV9CyclicImport,
 			wantDeps: pnpmV9CyclicImportDeps,
 		},
+		{
+			name:     "v9 with same version and different peers for dependency",
+			file:     "testdata/pnpm-lock_v9_same-vers-diff-peers.yaml",
+			want:     pnpmV9SameVersDiffPeers,
+			wantDeps: pnpmV9SameVersDiffPeersDeps,
+		},
 	}
 
 	for _, tt := range tests {

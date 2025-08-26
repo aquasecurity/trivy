@@ -760,13 +760,13 @@ var (
 			Relationship: ftypes.RelationshipDirect,
 		},
 		{
-			ID:           "debug@4.3.4",
+			ID:           "debug@4.3.4(supports-color@8.1.1)",
 			Name:         "debug",
 			Version:      "4.3.4",
 			Relationship: ftypes.RelationshipIndirect,
 		},
 		{
-			ID:           "debug@4.3.5",
+			ID:           "debug@https://github.com/debug-js/debug/tarball/4.3.5",
 			Name:         "debug",
 			Version:      "4.3.5",
 			Relationship: ftypes.RelationshipDirect,
@@ -796,7 +796,7 @@ var (
 			Relationship: ftypes.RelationshipDirect,
 		},
 		{
-			ID:           "is-negative@2.0.1",
+			ID:           "is-negative@https://codeload.github.com/zkochan/is-negative/tar.gz/2fa0531ab04e300a24ef4fd7fb3a280eccb7ccc5",
 			Name:         "is-negative",
 			Version:      "2.0.1",
 			Relationship: ftypes.RelationshipDirect,
@@ -809,7 +809,7 @@ var (
 			Relationship: ftypes.RelationshipDirect,
 		},
 		{
-			ID:           "lodash@4.17.21",
+			ID:           "lodash@file:foo/bar/lodash.tgz",
 			Name:         "lodash",
 			Version:      "4.17.21",
 			Dev:          true,
@@ -834,7 +834,7 @@ var (
 			Relationship: ftypes.RelationshipDirect,
 		},
 		{
-			ID:           "package1",
+			ID:           "package1@file:package1",
 			Name:         "package1",
 			Relationship: ftypes.RelationshipDirect,
 		},
@@ -871,13 +871,13 @@ var (
 	}
 	pnpmV9Deps = []ftypes.Dependency{
 		{
-			ID: "debug@4.3.4",
+			ID: "debug@4.3.4(supports-color@8.1.1)",
 			DependsOn: []string{
 				"ms@2.0.0",
 			},
 		},
 		{
-			ID: "debug@4.3.5",
+			ID: "debug@https://github.com/debug-js/debug/tarball/4.3.5",
 			DependsOn: []string{
 				"ms@2.1.2",
 			},
@@ -885,7 +885,7 @@ var (
 		{
 			ID: "finalhandler@1.1.1",
 			DependsOn: []string{
-				"debug@4.3.4",
+				"debug@4.3.4(supports-color@8.1.1)",
 				"encodeurl@1.0.2",
 				"escape-html@1.0.3",
 				"on-finished@2.3.0",
@@ -901,7 +901,7 @@ var (
 			},
 		},
 		{
-			ID: "package1",
+			ID: "package1@file:package1",
 			DependsOn: []string{
 				"asynckit@0.4.0",
 			},
@@ -916,7 +916,7 @@ var (
 
 	pnpmV9CyclicImport = []ftypes.Package{
 		{
-			ID:           "update-browserslist-db@1.0.16",
+			ID:           "update-browserslist-db@1.0.16(browserslist@4.23.0)",
 			Name:         "update-browserslist-db",
 			Version:      "1.0.16",
 			Relationship: ftypes.RelationshipDirect,
@@ -965,15 +965,107 @@ var (
 				"caniuse-lite@1.0.30001627",
 				"electron-to-chromium@1.4.789",
 				"node-releases@2.0.14",
-				"update-browserslist-db@1.0.16",
+				"update-browserslist-db@1.0.16(browserslist@4.23.0)",
 			},
 		},
 		{
-			ID: "update-browserslist-db@1.0.16",
+			ID: "update-browserslist-db@1.0.16(browserslist@4.23.0)",
 			DependsOn: []string{
 				"browserslist@4.23.0",
 				"escalade@3.1.2",
 				"picocolors@1.0.1",
+			},
+		},
+	}
+
+	pnpmV9SameVersDiffPeers = []ftypes.Package{
+		{
+			ID:           "jest-config@30.0.3(@types/node@24.0.7)(babel-plugin-macros@3.1.0)",
+			Name:         "jest-config",
+			Version:      "30.0.3",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "jest-runner@27.5.1",
+			Name:         "jest-runner",
+			Version:      "27.5.1",
+			Dev:          true,
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "jest-pnp-resolver@1.2.3(jest-resolve@27.5.1)",
+			Name:         "jest-pnp-resolver",
+			Version:      "1.2.3",
+			Dev:          true,
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "jest-pnp-resolver@1.2.3(jest-resolve@30.0.2)",
+			Name:         "jest-pnp-resolver",
+			Version:      "1.2.3",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "jest-resolve@27.5.1",
+			Name:         "jest-resolve",
+			Version:      "27.5.1",
+			Dev:          true,
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "jest-resolve@30.0.2",
+			Name:         "jest-resolve",
+			Version:      "30.0.2",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "jest-runner@30.0.3",
+			Name:         "jest-runner",
+			Version:      "30.0.3",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+	}
+	pnpmV9SameVersDiffPeersDeps = []ftypes.Dependency{
+		{
+			ID: "jest-config@30.0.3(@types/node@24.0.7)(babel-plugin-macros@3.1.0)",
+			DependsOn: []string{
+				"jest-runner@30.0.3",
+			},
+		},
+		{
+			ID: "jest-pnp-resolver@1.2.3(jest-resolve@27.5.1)",
+			DependsOn: []string{
+				"jest-resolve@27.5.1",
+			},
+		},
+		{
+			ID: "jest-pnp-resolver@1.2.3(jest-resolve@30.0.2)",
+			DependsOn: []string{
+				"jest-resolve@30.0.2",
+			},
+		},
+		{
+			ID: "jest-resolve@27.5.1",
+			DependsOn: []string{
+				"jest-pnp-resolver@1.2.3(jest-resolve@27.5.1)",
+			},
+		},
+		{
+			ID: "jest-resolve@30.0.2",
+			DependsOn: []string{
+				"jest-pnp-resolver@1.2.3(jest-resolve@30.0.2)",
+			},
+		},
+		{
+			ID: "jest-runner@27.5.1",
+			DependsOn: []string{
+				"jest-pnp-resolver@1.2.3(jest-resolve@27.5.1)",
+			},
+		},
+		{
+			ID: "jest-runner@30.0.3",
+			DependsOn: []string{
+				"jest-pnp-resolver@1.2.3(jest-resolve@30.0.2)",
 			},
 		},
 	}
