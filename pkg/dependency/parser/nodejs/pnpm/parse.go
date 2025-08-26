@@ -18,44 +18,6 @@ import (
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-type PackageResolution struct {
-	Tarball string `yaml:"tarball,omitempty"`
-}
-
-type PackageInfo struct {
-	Resolution      PackageResolution `yaml:"resolution"`
-	Dependencies    map[string]string `yaml:"dependencies,omitempty"`
-	DevDependencies map[string]string `yaml:"devDependencies,omitempty"`
-	IsDev           bool              `yaml:"dev,omitempty"`
-	Name            string            `yaml:"name,omitempty"`
-	Version         string            `yaml:"version,omitempty"`
-}
-
-type LockFile struct {
-	LockfileVersion any                    `yaml:"lockfileVersion"`
-	Dependencies    map[string]any         `yaml:"dependencies,omitempty"`
-	DevDependencies map[string]any         `yaml:"devDependencies,omitempty"`
-	Packages        map[string]PackageInfo `yaml:"packages,omitempty"`
-
-	// V9
-	Importers map[string]Importer `yaml:"importers,omitempty"`
-	Snapshots map[string]Snapshot `yaml:"snapshots,omitempty"`
-}
-
-type Importer struct {
-	Dependencies    map[string]ImporterDepVersion `yaml:"dependencies,omitempty"`
-	DevDependencies map[string]ImporterDepVersion `yaml:"devDependencies,omitempty"`
-}
-
-type ImporterDepVersion struct {
-	Version string `yaml:"version,omitempty"`
-}
-
-type Snapshot struct {
-	Dependencies         map[string]string `yaml:"dependencies,omitempty"`
-	OptionalDependencies map[string]string `yaml:"optionalDependencies,omitempty"`
-}
-
 type Parser struct {
 	logger *log.Logger
 }
@@ -145,28 +107,25 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 	resolvedDeps := make(map[string]ftypes.Dependency)
 
 	// Check all snapshots and save with resolved versions
-	resolvedSnapshots := make(map[string][]string)
+	resolvedSnapshots := make(map[string][]snapshotPackage)
 	for depPath, snapshot := range lockFile.Snapshots {
 		name, version, _ := p.parseDepPath(depPath, lockVer)
 
 		var dependsOn []string
 		for depName, depVer := range lo.Assign(snapshot.OptionalDependencies, snapshot.Dependencies) {
-			depVer = p.trimPeerDeps(depVer, lockVer) // pnpm has already separated dep name. therefore, we only need to separate peer deps.
-			depVer = p.parseVersion(depPath, depVer, lockVer)
-			id := packageID(depName, depVer)
-			if _, ok := lockFile.Packages[id]; ok {
-				dependsOn = append(dependsOn, id)
+			normalizedDepVer := p.trimPeerDeps(depVer, lockVer) // pnpm has already separated dep name. therefore, we only need to separate peer deps.
+			normalizedDepVer = p.parseVersion(depPath, normalizedDepVer, lockVer)
+			// Save only dependencies which contain in Packages
+			if _, ok := lockFile.Packages[packageID(depName, normalizedDepVer)]; ok {
+				// Use original denName + depVer, because we will use depPath as package ID.
+				dependsOn = append(dependsOn, packageID(depName, depVer))
 			}
 		}
-		if len(dependsOn) > 0 {
-			pkgId := packageID(name, version)
-			if existing, ok := resolvedSnapshots[pkgId]; ok {
-				resolvedSnapshots[pkgId] = append(existing, dependsOn...)
-			} else {
-				resolvedSnapshots[pkgId] = dependsOn
-			}
-		}
-
+		pkgId := packageID(name, version)
+		resolvedSnapshots[pkgId] = append(resolvedSnapshots[pkgId], snapshotPackage{
+			id:        depPath,
+			dependsOn: dependsOn,
+		})
 	}
 
 	// Parse `Importers` to find all direct dependencies
@@ -201,9 +160,7 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 			dev = false // mark root direct deps to update `dev` field of their child deps.
 		}
 
-		id := packageID(name, parsedVer)
-		resolvedPkgs[id] = ftypes.Package{
-			ID:                 id,
+		pkg := ftypes.Package{
 			Name:               name,
 			Version:            parsedVer,
 			Relationship:       relationship,
@@ -212,11 +169,22 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 		}
 
 		// Save child deps
-		if dependsOn, ok := resolvedSnapshots[depPath]; ok {
-			sort.Strings(dependsOn)
-			resolvedDeps[id] = ftypes.Dependency{
-				ID:        id,
-				DependsOn: dependsOn, // Deps from dependsOn has been resolved when parsing snapshots
+		if snapshotPkgs, ok := resolvedSnapshots[depPath]; ok {
+			for _, snapshotPkg := range snapshotPkgs {
+				// There are cases when `Packages` contains one package,
+				// but `Snapshots` (and the .pnpm directory) contain multiple packages.
+				// e.g. when pnpm.lock contains dependencies with the same version but different peer deps.
+				// So we need to save a pkg for each snapshot package (to avoid duplicate IDs).
+				pkg.ID = snapshotPkg.id
+				resolvedPkgs[pkg.ID] = pkg
+
+				if len(snapshotPkg.dependsOn) > 0 {
+					sort.Strings(snapshotPkg.dependsOn)
+					resolvedDeps[pkg.ID] = ftypes.Dependency{
+						ID:        pkg.ID,
+						DependsOn: snapshotPkg.dependsOn, // Deps from dependsOn has been resolved when parsing snapshots
+					}
+				}
 			}
 		}
 	}
