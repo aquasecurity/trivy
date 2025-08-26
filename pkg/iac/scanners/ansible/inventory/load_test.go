@@ -76,19 +76,19 @@ foo: 10
 		{
 			hostName: "host1",
 			expected: vars.Vars{
-				"foo":    10, // external host_var from common
-				"bar":    2,  // external host_var override file group
-				"baz":    10, // file host
-				"common": 10, // external group_vars from common
+				"foo":    extHostVar(10), // external host_var from common
+				"bar":    extHostVar(2),  // external host_var override file group
+				"baz":    hostVar(10),    // file host
+				"common": hostVar(10),    // host var from common
 			},
 		},
 		{
 			hostName: "host2",
 			expected: vars.Vars{
-				"foo":    10,    // external host_var override external group
-				"bar":    15,    // file host
-				"baz":    20,    // external host_var override file host
-				"common": "yes", // from group_vars
+				"foo":    extHostVar(10),     // external host_var override external group
+				"bar":    hostVar(15),        // file host
+				"baz":    extHostVar(20),     // external host_var override file host
+				"common": extGroupVar("yes"), // from group_vars
 			},
 		},
 	}
@@ -144,14 +144,14 @@ group1:
 		{
 			hostName: "host1",
 			expected: vars.Vars{
-				"bar": 20, // from second file (group)
-				"baz": 5,  // from second file (host)
+				"bar": groupVar(20), // from second file (group)
+				"baz": hostVar(5),   // from second file (host)
 			},
 		},
 		{
 			hostName: "host2",
 			expected: vars.Vars{
-				"bar": 15, // from first file (host)
+				"bar": hostVar(15), // from first file (host)
 			},
 		},
 	}
@@ -168,7 +168,7 @@ func TestLoadAuto_EmptySources(t *testing.T) {
 	inv := inventory.LoadAuto(fstest.MapFS{}, inventory.LoadOptions{})
 
 	localhostVars := vars.Vars{
-		"foo": "test",
+		"foo": hostVar("test"),
 	}
 	got := inv.ResolveVars("localhost", inventory.LoadedVars{
 		inventory.ScopeHost: map[string]vars.Vars{
@@ -186,7 +186,7 @@ func TestLoadAuto_NonExistentSource(t *testing.T) {
 
 	inv := inventory.LoadAuto(fstest.MapFS{}, opts)
 	localhostVars := vars.Vars{
-		"foo": "test",
+		"foo": hostVar("test"),
 	}
 	got := inv.ResolveVars("localhost", inventory.LoadedVars{
 		inventory.ScopeHost: map[string]vars.Vars{

@@ -68,14 +68,14 @@ func (r *Role) getTasks(tasksFile string) ([]*Task, error) {
 }
 
 func (r *Role) fileVariables(from string) (vars.Vars, error) {
-	return r.loadVars("vars", from)
+	return r.loadVars("vars", vars.RoleVarsPriority, from)
 }
 
 func (r *Role) defaultVariables(from string) (vars.Vars, error) {
-	return r.loadVars("defaults", from)
+	return r.loadVars("defaults", vars.RoleDefaultsPriority, from)
 }
 
-func (r *Role) loadVars(scope, from string) (vars.Vars, error) {
+func (r *Role) loadVars(scope string, priority vars.VarPriority, from string) (vars.Vars, error) {
 	var variables vars.Vars
 
 	walkFn := func(fs fsutils.FileSource, de fs.DirEntry) error {
@@ -83,10 +83,11 @@ func (r *Role) loadVars(scope, from string) (vars.Vars, error) {
 			return nil
 		}
 
-		var fileVars vars.Vars
-		if err := decodeYAMLFileWithExtension(fs, &fileVars, vars.VarFilesExtensions); err != nil {
+		var plainFileVars vars.PlainVars
+		if err := decodeYAMLFileWithExtension(fs, &plainFileVars, vars.VarFilesExtensions); err != nil {
 			return xerrors.Errorf("load vars: %w", err)
 		}
+		fileVars := vars.NewVars(plainFileVars, priority)
 		variables = vars.MergeVars(variables, fileVars)
 		return nil
 	}
@@ -94,8 +95,10 @@ func (r *Role) loadVars(scope, from string) (vars.Vars, error) {
 	varsSrc := r.src.Join(scope, from)
 
 	// try load from file
-	if err := decodeYAMLFileWithExtension(varsSrc, &variables, vars.VarFilesExtensions); err == nil {
+	var plainFileVars vars.PlainVars
+	if err := decodeYAMLFileWithExtension(varsSrc, &plainFileVars, vars.VarFilesExtensions); err == nil {
 		log.WithPrefix("ansible").Debug("Loaded vars file", log.FilePath(varsSrc.Path))
+		variables = vars.NewVars(plainFileVars, priority)
 		return variables, nil
 	}
 
@@ -110,10 +113,11 @@ func (r *Role) loadVars(scope, from string) (vars.Vars, error) {
 
 // https://docs.ansible.com/ansible/latest/reference_appendices/special_variables.html
 func (r *Role) specialVars() vars.Vars {
-	return vars.Vars{
+	plainVars := vars.PlainVars{
 		"role_name": r.name,
 		"role_path": r.src,
 	}
+	return vars.NewVars(plainVars, vars.SpecialVarsPriority)
 }
 
 type RoleMeta struct {

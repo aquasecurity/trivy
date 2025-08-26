@@ -96,7 +96,7 @@ func evaluateTemplateUnsafe(input string, variables vars.Vars) (string, error) {
 
 	var buf bytes.Buffer
 
-	if err := tpl.Execute(&buf, exec.NewContext(variables)); err != nil {
+	if err := tpl.Execute(&buf, exec.NewContext(variables.ToPlain())); err != nil {
 		return "", xerrors.Errorf("execute template: %w", err)
 	}
 	return buf.String(), nil

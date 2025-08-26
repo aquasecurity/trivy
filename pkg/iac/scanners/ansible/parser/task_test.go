@@ -21,11 +21,12 @@ nested:
 	var task Task
 	require.NoError(t, yaml.Unmarshal([]byte(src), &task))
 
-	resolved := task.resolved(vars.Vars{
+	plainVars := vars.PlainVars{
 		"name": "test task",
 		"msg":  "hello",
 		"num":  42,
-	})
+	}
+	resolved := task.resolved(vars.NewVars(plainVars, 0))
 
 	data, err := yaml.Marshal(resolved)
 	require.NoError(t, err)

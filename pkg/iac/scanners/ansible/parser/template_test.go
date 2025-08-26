@@ -13,57 +13,58 @@ func TestEvaluateTemplate(t *testing.T) {
 	tests := []struct {
 		name      string
 		input     string
-		vars      vars.Vars
+		vars      vars.PlainVars
 		expected  string
 		expectErr bool
 	}{
 		{
 			name:     "simple variable",
 			input:    "Hello {{ name }}",
-			vars:     vars.Vars{"name": "World"},
+			vars:     vars.PlainVars{"name": "World"},
 			expected: "Hello World",
 		},
 		{
 			name:     "arithmetic",
 			input:    "{{ a + b }}",
-			vars:     vars.Vars{"a": 2, "b": 3},
+			vars:     vars.PlainVars{"a": 2, "b": 3},
 			expected: "5",
 		},
 		{
 			name:     "if else true",
 			input:    "{% if flag %}Yes{% else %}No{% endif %}",
-			vars:     vars.Vars{"flag": true},
+			vars:     vars.PlainVars{"flag": true},
 			expected: "Yes",
 		},
 		{
 			name:     "if else false",
 			input:    "{% if flag %}Yes{% else %}No{% endif %}",
-			vars:     vars.Vars{"flag": false},
+			vars:     vars.PlainVars{"flag": false},
 			expected: "No",
 		},
 		{
 			name:      "invalid template",
 			input:     "{{ foo ",
-			vars:      vars.Vars{},
+			vars:      vars.PlainVars{},
 			expectErr: true,
 		},
 		{
 			name:      "missing variable",
 			input:     "Hello {{ name }}",
-			vars:      vars.Vars{},
+			vars:      vars.PlainVars{},
 			expectErr: true,
 		},
 		{
 			name:     "multiple variables",
 			input:    "{{ greeting }}, {{ name }}!",
-			vars:     vars.Vars{"greeting": "Hi", "name": "Alice"},
+			vars:     vars.PlainVars{"greeting": "Hi", "name": "Alice"},
 			expected: "Hi, Alice!",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := evaluateTemplate(tt.input, tt.vars)
+			variables := vars.NewVars(tt.vars, 0)
+			got, err := evaluateTemplate(tt.input, variables)
 			if tt.expectErr {
 				require.Error(t, err)
 				return

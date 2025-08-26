@@ -73,9 +73,9 @@ func WithInventories(inventories ...string) Option {
 	}
 }
 
-func WithExtraVars(evars map[string]any) Option {
+func WithExtraVars(v map[string]any) Option {
 	return func(p *Parser) {
-		p.extraVars = evars
+		p.extraVars = vars.NewVars(v, vars.ExtraVarsPriority)
 	}
 }
 
@@ -86,7 +86,7 @@ type Parser struct {
 
 	inventories []string
 	playbooks   []string
-	extraVars   map[string]any
+	extraVars   vars.Vars
 
 	project *AnsibleProject
 
@@ -104,7 +104,7 @@ func New(fsys fs.FS, root string, opts ...Option) *Parser {
 		fsys:      fsys,
 		rootSrc:   fsutils.NewFileSource(fsys, root),
 		logger:    log.WithPrefix("ansible"),
-		extraVars: make(map[string]any),
+		extraVars: make(vars.Vars),
 
 		resolvedTasks: make(map[string][]*ResolvedTask),
 		roleCache:     make(map[string]*Role),
@@ -297,7 +297,7 @@ func (p *Parser) resolvePlaybook(
 
 		// TODO: iterate over hosts
 		hostVars := p.project.inventory.ResolveVars(hosts, playbookInvVars)
-		playVars := vars.MergeVars(hostVars, parentVars, play.inner.Vars)
+		playVars := vars.MergeVars(hostVars, parentVars, play.Variables())
 
 		for _, playTask := range play.listTasks() {
 			// TODO: pass parent metadata
@@ -527,7 +527,8 @@ func (p *Parser) resolveRolePath(playbookDirSrc fsutils.FileSource, name string)
 // expandTask dispatches task expansion based on task type (block, include, role).
 func (p *Parser) expandTask(parentVars vars.Vars, t *Task) ([]*ResolvedTask, error) {
 
-	effectiveVars := vars.MergeVars(parentVars, t.inner.Vars)
+	// TODO: pass parentVars ?
+	effectiveVars := vars.MergeVars(parentVars, t.Variables())
 
 	taskSource := t.metadata.Range().String()
 	switch {
@@ -582,7 +583,7 @@ func (p *Parser) resolveTask(task *Task, parentVars vars.Vars) *ResolvedTask {
 }
 
 func (p *Parser) effecitveVarsForTask(task *Task, parentVars vars.Vars) vars.Vars {
-	return vars.MergeVars(parentVars, task.inner.Vars, p.extraVars, specialVarsForTask(task))
+	return vars.MergeVars(parentVars, task.Variables(), p.extraVars, specialVarsForTask(task))
 }
 
 func specialVarsForTask(task *Task) vars.Vars {

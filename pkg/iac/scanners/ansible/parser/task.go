@@ -56,10 +56,17 @@ type Task struct {
 	play *Play
 }
 
+func (t *Task) Variables() vars.Vars {
+	if t.isBlock() {
+		return vars.NewVars(t.inner.Vars, vars.BlockVarsPriority)
+	}
+	return vars.NewVars(t.inner.Vars, vars.TaskVarsPriority)
+}
+
 type taskInner struct {
-	Name  string    `yaml:"name"`
-	Block []*Task   `yaml:"block"`
-	Vars  vars.Vars `yaml:"vars"`
+	Name  string         `yaml:"name"`
+	Block []*Task        `yaml:"block"`
+	Vars  vars.PlainVars `yaml:"vars"`
 }
 
 func (t *Task) UnmarshalYAML(node *yaml.Node) error {
