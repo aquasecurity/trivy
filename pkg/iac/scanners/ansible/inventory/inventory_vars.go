@@ -29,11 +29,11 @@ const (
 func (s VarScope) String() string {
 	switch s {
 	case ScopeGroupAll:
-		return "group_vars/all"
+		return "group_vars/all (external)"
 	case ScopeGroupSpecific:
-		return "group_vars/*"
+		return "group_vars/* (external)"
 	case ScopeHost:
-		return "host_vars"
+		return "host_vars (external)"
 	default:
 		return ""
 	}
@@ -53,24 +53,53 @@ func notAllGroup(path string) bool {
 
 func InventoryVarsSources(fileSrc fsutils.FileSource) []VarsSource {
 	return []VarsSource{
-		{FileSrc: fileSrc.Join("group_vars"), Scope: ScopeGroupAll, Match: isAllGroup},
-		{FileSrc: fileSrc.Join("group_vars"), Scope: ScopeGroupSpecific, Match: notAllGroup},
-		{FileSrc: fileSrc.Join("host_vars"), Scope: ScopeHost},
+		{
+			FileSrc:  fileSrc.Join("group_vars"),
+			Scope:    ScopeGroupAll,
+			Priority: vars.InvExtAllGroupPriority,
+			Match:    isAllGroup,
+		},
+		{
+			FileSrc:  fileSrc.Join("group_vars"),
+			Scope:    ScopeGroupSpecific,
+			Priority: vars.InvExtGroupPriority,
+			Match:    notAllGroup,
+		},
+		{
+			FileSrc:  fileSrc.Join("host_vars"),
+			Scope:    ScopeHost,
+			Priority: vars.InvExtHostPriority,
+		},
 	}
 }
 
 func PlaybookVarsSources(fileSrc fsutils.FileSource) []VarsSource {
 	return []VarsSource{
-		{FileSrc: fileSrc.Join("group_vars"), Scope: ScopeGroupAll, Match: isAllGroup},
-		{FileSrc: fileSrc.Join("group_vars"), Scope: ScopeGroupSpecific, Match: notAllGroup},
-		{FileSrc: fileSrc.Join("host_vars"), Scope: ScopeHost},
+		{
+			FileSrc:  fileSrc.Join("group_vars"),
+			Scope:    ScopeGroupAll,
+			Priority: vars.PbExtAllGroupPriority,
+			Match:    isAllGroup,
+		},
+		{
+			FileSrc:  fileSrc.Join("group_vars"),
+			Scope:    ScopeGroupSpecific,
+			Priority: vars.PbExtGroupPriority,
+			Match:    notAllGroup,
+		},
+		{
+			FileSrc:  fileSrc.Join("host_vars"),
+			Scope:    ScopeHost,
+			Priority: vars.PbExtHostPriority,
+		},
 	}
 }
 
 type VarsSource struct {
-	FileSrc fsutils.FileSource
-	Scope   VarScope // variables scope
-	Match   func(path string) bool
+	FileSrc  fsutils.FileSource
+	Scope    VarScope // variables scope
+	Priority vars.VarPriority
+	Match    func(path string) bool
 }
 
 // LoadedVars stores all loaded variables organized by scope and key (host or group).
@@ -152,7 +181,9 @@ func LoadSourceVars(src VarsSource) (map[string]vars.Vars, error) {
 			if e.IsDir() {
 				walkFn := func(fileSrc fsutils.FileSource, d fs.DirEntry) error {
 					if !d.IsDir() {
-						processFile(fileSrc, target, result)
+						plain := processFile(fileSrc)
+						v := vars.NewVars(plain, src.Priority)
+						result[target] = vars.MergeVars(result[target], v)
 					}
 					return nil
 				}
@@ -161,7 +192,9 @@ func LoadSourceVars(src VarsSource) (map[string]vars.Vars, error) {
 					continue
 				}
 			} else {
-				processFile(entrySrc, target, result)
+				plain := processFile(entrySrc)
+				v := vars.NewVars(plain, src.Priority)
+				result[target] = vars.MergeVars(result[target], v)
 			}
 
 		}
@@ -170,19 +203,19 @@ func LoadSourceVars(src VarsSource) (map[string]vars.Vars, error) {
 	return result, nil
 }
 
-func processFile(fileSrc fsutils.FileSource, target string, result map[string]vars.Vars) {
+func processFile(fileSrc fsutils.FileSource) vars.PlainVars {
 	if shouldSkipFile(fileSrc.Path) {
-		return
+		return nil
 	}
 
 	v, err := readVars(fileSrc)
 	if err != nil {
 		log.WithPrefix("ansible").Debug("Failed to read vars",
 			log.FilePath(fileSrc.Path), log.Err(err))
-		return
+		return nil
 	}
 
-	result[target] = vars.MergeVars(result[target], v)
+	return v
 }
 
 // listEntries returns directory entries sorted alphabetically,

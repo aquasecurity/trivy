@@ -8,6 +8,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/orderedmap"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 )
 
 func TestNode_UnmarshalYAML(t *testing.T) {
@@ -187,7 +188,7 @@ dict:
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := mustNodeFromYAML(t, tt.yamlSrc)
-			got, err := n.Render(tt.vars)
+			got, err := n.Render(vars.NewVars(tt.vars, 0))
 			if tt.wantErr {
 				require.Error(t, err)
 				return

@@ -62,6 +62,10 @@ type Play struct {
 	raw map[string]any
 }
 
+func (p *Play) Variables() vars.Vars {
+	return vars.NewVars(p.inner.Vars, vars.PlayVarsPriority)
+}
+
 type playInner struct {
 	Name            string            `yaml:"name"`
 	ImportPlaybook  string            `yaml:"import_playbook"`
@@ -70,7 +74,7 @@ type playInner struct {
 	PreTasks        []*Task           `yaml:"pre_tasks"`
 	Tasks           []*Task           `yaml:"tasks"`
 	PostTasks       []*Task           `yaml:"post_tasks"`
-	Vars            vars.Vars         `yaml:"vars"`
+	Vars            vars.PlainVars    `yaml:"vars"`
 	VarFiles        []string          `yaml:"var_files"`
 }
 
@@ -153,10 +157,11 @@ func (p *Play) listTasks() []*Task {
 
 // https://docs.ansible.com/ansible/latest/reference_appendices/special_variables.html
 func (p *Play) specialVars() vars.Vars {
-	return vars.Vars{
+	plainVars := vars.PlainVars{
 		"ansible_play_name": p.inner.Name,
 		"playbook_dir":      p.src.Dir(),
 	}
+	return vars.NewVars(plainVars, vars.SpecialVarsPriority)
 }
 
 // RoleDefinition represents a role reference within a play.

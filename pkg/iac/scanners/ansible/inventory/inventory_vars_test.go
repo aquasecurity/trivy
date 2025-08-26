@@ -41,29 +41,28 @@ all_var: allvalue
 
 	fsys := testutil.CreateFS(t, files)
 	rootSrc := fsutils.NewFileSource(fsys, ".")
-	sources := inventory.PlaybookVarsSources(rootSrc)
-	sources = append(sources, inventory.InventoryVarsSources(rootSrc.Join("inventory"))...)
+	sources := inventory.InventoryVarsSources(rootSrc)
 	got := inventory.LoadVars(sources)
 
 	expected := inventory.LoadedVars{
 		inventory.ScopeHost: map[string]vars.Vars{
 			"host1": {
-				"var1": "value1",
-				"var2": "value2",
+				"var1": extHostVar("value1"),
+				"var2": extHostVar("value2"),
 			},
 			"host2": {
-				"var1": "value1",
-				"var2": "value2",
+				"var1": extHostVar("value1"),
+				"var2": extHostVar("value2"),
 			},
 		},
 		inventory.ScopeGroupAll: map[string]vars.Vars{
 			"all": {
-				"all_var": "allvalue",
+				"all_var": extAllGroupVar("allvalue"),
 			},
 		},
 		inventory.ScopeGroupSpecific: map[string]vars.Vars{
 			"group1": {
-				"group_var1": "gvalue1_2",
+				"group_var1": extGroupVar("gvalue1_2"),
 			},
 		},
 	}

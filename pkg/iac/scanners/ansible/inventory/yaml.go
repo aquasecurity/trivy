@@ -10,9 +10,9 @@ import (
 )
 
 type rawGroup struct {
-	Hosts    map[string]vars.Vars                    `yaml:"hosts"`
+	Hosts    map[string]vars.PlainVars               `yaml:"hosts"`
 	Children orderedmap.OrderedMap[string, rawGroup] `yaml:"children"`
-	Vars     vars.Vars                               `yaml:"vars"`
+	Vars     vars.PlainVars                          `yaml:"vars"`
 }
 
 func ParseYAML(data []byte) (*Inventory, error) {
@@ -36,16 +36,18 @@ func ParseYAML(data []byte) (*Inventory, error) {
 // parseGroup recursively parses a rawGroup and adds it to Inventory
 func parseGroup(name string, rg rawGroup, inv *Inventory, parents []string) error {
 	// Add group
-	newGroup := newGroup(rg.Vars, set.New(parents...))
+	groupVars := vars.NewVars(rg.Vars, vars.InvFileGroupPriority)
+	newGroup := newGroup(groupVars, set.New(parents...))
 	inv.addGroup(name, newGroup)
 
 	// Add hosts
 	// A host can be in multiple groups, but Ansible processes only one instance of the host at runtime.
 	// Ansible merges the data from multiple groups.
-	for hostName, hostVars := range rg.Hosts {
+	for hostName, plainHostVars := range rg.Hosts {
 		groups := set.New(append(parents, name)...)
 		// TODO: support for host ranges, e.g. www[01:50:2].example.com
 		// https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#adding-ranges-of-hosts
+		hostVars := vars.NewVars(plainHostVars, vars.InvFileHostPriority)
 		inv.addHost(hostName, newHost(hostVars, groups))
 	}
 

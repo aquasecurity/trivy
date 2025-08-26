@@ -60,23 +60,26 @@ func ParseINI(data []byte) (*Inventory, error) {
 			}
 
 			hostName := fields[0]
-			hostVars := make(vars.Vars)
+			plainHostVars := make(vars.PlainVars)
 
 			for _, f := range fields[1:] {
 				kv := strings.SplitN(f, "=", 2)
 				if len(kv) == 2 {
-					hostVars[kv[0]] = kv[1]
+					plainHostVars[kv[0]] = kv[1]
 				}
 			}
 
+			hostVars := vars.NewVars(plainHostVars, vars.InvFileHostPriority)
 			inv.addHost(hostName, newHost(hostVars, set.New(currentGroup)))
 		case sectionVars:
 			kv := strings.SplitN(line, "=", 2)
+			key := strings.TrimSpace(kv[0])
 			var val string
 			if len(kv) == 2 {
 				val = strings.TrimSpace(kv[1])
 			}
-			groupVars := vars.Vars{strings.TrimSpace(kv[0]): val}
+			plainGroupVars := vars.PlainVars{key: val}
+			groupVars := vars.NewVars(plainGroupVars, vars.InvFileGroupPriority)
 			inv.addGroup(currentGroup, newGroup(groupVars, set.New[string]()))
 		case sectionChildren:
 			inv.addGroup(line, newGroup(make(vars.Vars), set.New(currentGroup)))

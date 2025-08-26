@@ -10,6 +10,26 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 )
 
+func groupVar(val any) vars.Variable {
+	return vars.NewVariable(val, vars.InvFileGroupPriority)
+}
+
+func hostVar(val any) vars.Variable {
+	return vars.NewVariable(val, vars.InvFileHostPriority)
+}
+
+func extAllGroupVar(val any) vars.Variable {
+	return vars.NewVariable(val, vars.InvExtAllGroupPriority)
+}
+
+func extGroupVar(val any) vars.Variable {
+	return vars.NewVariable(val, vars.InvExtGroupPriority)
+}
+
+func extHostVar(val any) vars.Variable {
+	return vars.NewVariable(val, vars.InvExtHostPriority)
+}
+
 func TestInventory_ResolveVars_YAML(t *testing.T) {
 	src := `
 all:
@@ -88,51 +108,51 @@ datacenter:
 		{
 			hostName: "leaf01",
 			expected: vars.Vars{
-				"location":     "dc1",         // from all
-				"tag":          "leafs1",      // from leafs1
-				"os":           "eos",         // from leafs1
-				"role":         "custom-leaf", // overridden at host
-				"environment":  "dev",         // from network1
-				"ansible_host": "192.0.2.100", // from host
+				"location":     groupVar("dc1"),
+				"tag":          hostVar("leafs1"),
+				"os":           groupVar("eos"),
+				"role":         hostVar("custom-leaf"),
+				"environment":  groupVar("dev"),
+				"ansible_host": hostVar("192.0.2.100"),
 			},
 		},
 		{
 			hostName: "leaf02",
 			expected: vars.Vars{
-				"location":     "dc1",
-				"os":           "eos",  // from leafs1
-				"role":         "leaf", // from leafs1
-				"environment":  "dev",  // from network1
-				"ansible_host": "192.0.2.110",
+				"location":     groupVar("dc1"),
+				"os":           groupVar("eos"),
+				"role":         groupVar("leaf"),
+				"environment":  groupVar("dev"),
+				"ansible_host": hostVar("192.0.2.110"),
 			},
 		},
 		{
 			hostName: "spine01",
 			expected: vars.Vars{
-				"location":     "dc1",
-				"os":           "linux", // from all
-				"role":         "spine", // from spines
-				"environment":  "dev",
-				"ansible_host": "192.0.2.120",
+				"location":     groupVar("dc1"),
+				"os":           groupVar("linux"),
+				"role":         groupVar("spine"),
+				"environment":  groupVar("dev"),
+				"ansible_host": hostVar("192.0.2.120"),
 			},
 		},
 		{
 			hostName: "spine02",
 			expected: vars.Vars{
-				"location":     "dc1",
-				"os":           "nxos", // overridden at host
-				"role":         "spine",
-				"environment":  "dev",
-				"ansible_host": "192.0.2.130",
+				"location":     groupVar("dc1"),
+				"os":           hostVar("nxos"),
+				"role":         groupVar("spine"),
+				"environment":  groupVar("dev"),
+				"ansible_host": hostVar("192.0.2.130"),
 			},
 		},
 		{
 			hostName: "webserver01",
 			expected: vars.Vars{
-				"location":     "dc1",
-				"os":           "linux",
-				"role":         "web",
-				"ansible_host": "192.0.2.140",
+				"location":     groupVar("dc1"),
+				"os":           groupVar("linux"),
+				"role":         groupVar("web"),
+				"ansible_host": hostVar("192.0.2.140"),
 			},
 		},
 	}
@@ -202,72 +222,72 @@ http_port=8081
 		{
 			hostName: "web1",
 			expected: vars.Vars{
-				"ansible_user": "global_user",      // all:vars
-				"timezone":     "Europe/Stockholm", // web:vars > app:vars > all:vars
-				"http_port":    "8080",             // override host
-				"ansible_host": "192.168.1.11",     // host variable
-				"app_env":      "production",       // app:vars
+				"ansible_user": groupVar("global_user"),
+				"timezone":     groupVar("Europe/Stockholm"),
+				"http_port":    hostVar("8080"),
+				"ansible_host": hostVar("192.168.1.11"),
+				"app_env":      groupVar("production"),
 			},
 		},
 		{
 			hostName: "web2",
 			expected: vars.Vars{
-				"ansible_user": "global_user",      // all:vars
-				"timezone":     "Europe/Stockholm", // app:vars > all:vars
-				"http_port":    "80",               // web:vars
-				"ansible_host": "192.168.1.12",     // host variable
-				"app_env":      "production",       // app:vars
+				"ansible_user": groupVar("global_user"),
+				"timezone":     groupVar("Europe/Stockholm"),
+				"http_port":    groupVar("80"),
+				"ansible_host": hostVar("192.168.1.12"),
+				"app_env":      groupVar("production"),
 			},
 		},
 		{
 			hostName: "db1",
 			expected: vars.Vars{
-				"ansible_user":   "\"db_admin\"",  // db:vars > all:vars
-				"timezone":       "Europe/Berlin", // app:vars > all:vars
-				"backup_enabled": "true",          // db:vars
-				"ansible_host":   "192.168.1.21",  // host variable
-				"app_env":        "production",    // app:vars
+				"ansible_user":   groupVar("\"db_admin\""),
+				"timezone":       groupVar("Europe/Berlin"),
+				"backup_enabled": groupVar("true"),
+				"ansible_host":   hostVar("192.168.1.21"),
+				"app_env":        groupVar("production"),
 			},
 		},
 		{
 			hostName: "db2",
 			expected: vars.Vars{
-				"ansible_user":   "\"db_admin\"",  // db:vars > all:vars
-				"timezone":       "Europe/Berlin", // app:vars > all:vars
-				"backup_enabled": "true",          // db:vars
-				"db_engine":      "postgres",      // host variable
-				"ansible_host":   "192.168.1.22",  // host variable
-				"app_env":        "production",    // app:vars
+				"ansible_user":   groupVar("\"db_admin\""),
+				"timezone":       groupVar("Europe/Berlin"),
+				"backup_enabled": groupVar("true"),
+				"db_engine":      hostVar("postgres"),
+				"ansible_host":   hostVar("192.168.1.22"),
+				"app_env":        groupVar("production"),
 			},
 		},
 		{
 			hostName: "test1",
 			expected: vars.Vars{
-				"ansible_user": "global_user", // all:vars
-				"timezone":     "UTC",         // all:vars
-				"http_port":    "8081",        // test:vars
-				"app_env":      "staging",     // test:vars
-				"ansible_host": "10.0.0.11",   // host variable
+				"ansible_user": groupVar("global_user"),
+				"timezone":     groupVar("UTC"),
+				"http_port":    groupVar("8081"),
+				"app_env":      groupVar("staging"),
+				"ansible_host": hostVar("10.0.0.11"),
 			},
 		},
 		{
 			hostName: "test2",
 			expected: vars.Vars{
-				"ansible_user": "test_user", // host override
-				"timezone":     "UTC",       // all:vars
-				"http_port":    "8081",      // test:vars
-				"app_env":      "staging",   // test:vars
-				"ansible_host": "10.0.0.12", // host variable
+				"ansible_user": hostVar("test_user"),
+				"timezone":     groupVar("UTC"),
+				"http_port":    groupVar("8081"),
+				"app_env":      groupVar("staging"),
+				"ansible_host": hostVar("10.0.0.12"),
 			},
 		},
 		{
 			hostName: "ungrouped1",
 			expected: vars.Vars{
-				"ansible_user": "global_user",         // all:vars
-				"timezone":     "UTC",                 // all:vars
-				"description":  "standalone;# \"host", // host variable
-				"ansible_host": "10.0.0.99",           // host variable
-				"http_port":    "8080",                // ungrouped:vars
+				"ansible_user": groupVar("global_user"),
+				"timezone":     groupVar("UTC"),
+				"description":  hostVar("standalone;# \"host"),
+				"ansible_host": hostVar("10.0.0.99"),
+				"http_port":    groupVar("8080"),
 			},
 		},
 	}
