@@ -11,6 +11,13 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 )
 
+func mustNodeFromYAML(t *testing.T, src string) *Node {
+	t.Helper()
+	var n Node
+	require.NoError(t, yaml.Unmarshal([]byte(src), &n))
+	return &n
+}
+
 func TestNode_UnmarshalYAML(t *testing.T) {
 	src := `name: testname
 len: 100
@@ -202,9 +209,88 @@ dict:
 	}
 }
 
-func mustNodeFromYAML(t *testing.T, src string) *Node {
-	t.Helper()
-	var n Node
-	require.NoError(t, yaml.Unmarshal([]byte(src), &n))
-	return &n
+func TestNode_Subtree(t *testing.T) {
+	src := `name: test
+len: 100
+state:
+    foo: bar
+    num: 42
+elems:
+    - foo: 1
+      baz: 2
+    - bar
+`
+	tests := []struct {
+		name     string
+		query    Range
+		expected string
+	}{
+		{
+			name:     "no cover",
+			query:    Range{0, 0},
+			expected: "null\n",
+		},
+		{
+			name:     "single top-level field",
+			query:    Range{1, 1},
+			expected: "name: test\n",
+		},
+		{
+			name:     "single nested field",
+			query:    Range{5, 5},
+			expected: "num: 42\n",
+		},
+		{
+			name:  "nested mapping",
+			query: Range{4, 5},
+			expected: `foo: bar
+num: 42
+`,
+		},
+		{
+			name:  "map with some fields",
+			query: Range{6, 7},
+			expected: `elems:
+    - foo: 1
+`,
+		},
+		{
+			name:  "single nested element",
+			query: Range{9, 9},
+			expected: `- bar
+`,
+		},
+		{
+			name:  "nested slice",
+			query: Range{7, 9},
+			expected: `- foo: 1
+  baz: 2
+- bar
+`,
+		},
+		{
+			name:  "nested slice elem",
+			query: Range{9, 9},
+			expected: `- bar
+`,
+		},
+		{
+			name:     "full range",
+			query:    Range{1, 9},
+			expected: src,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var node *Node
+			err := yaml.Unmarshal([]byte(src), &node)
+			require.NoError(t, err)
+
+			subtree := node.Subtree(tt.query)
+			marshaled, err := yaml.Marshal(subtree)
+			require.NoError(t, err)
+			assert.Equal(t, tt.expected, string(marshaled))
+		})
+	}
 }
