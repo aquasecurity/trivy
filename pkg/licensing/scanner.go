@@ -84,13 +84,16 @@ func (s *Scanner) detectCategory(license expression.Expression) types.LicenseCat
 // ScanTextLicense checks license names from `categories` as glob patterns and matches licenseText against those patterns.
 // If a match is found, it returns `unknown` category and severity.
 func (s *Scanner) ScanTextLicense(licenseText string) (types.LicenseCategory, string) {
+	// We converted all licenses from `categories` to uppercase, to make comparison case-insensitive
+	// So we need to convert the license text to uppercase as well
+	licenseText = strings.ToUpper(licenseText)
 	for cat, names := range s.categories {
 		for _, name := range names {
-			if !strings.HasPrefix(name, LicenseTextPrefix) {
+			n, ok := strings.CutPrefix(name, strings.ToUpper(LicenseTextPrefix))
+			if !ok {
 				continue
 			}
 
-			n := strings.TrimPrefix(name, LicenseTextPrefix)
 			match, err := regexp.MatchString(n, licenseText)
 			if err != nil {
 				log.WithPrefix("license").Debug("Failed to match license text", log.String("license_text", licenseText), log.Err(err))
