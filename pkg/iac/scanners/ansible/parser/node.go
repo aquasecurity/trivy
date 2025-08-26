@@ -399,13 +399,36 @@ func (n *Node) BoolValue(path string) iacTypes.BoolValue {
 }
 
 func (n *Node) AsBool() (bool, bool) {
-	if !n.IsBool() {
+	if n.IsNil() {
 		return false, false
 	}
 
-	scalar, _ := n.val.(*Scalar)
-	val, ok := scalar.Val.(bool)
-	return val, ok
+	scalar, ok := n.val.(*Scalar)
+	if !ok {
+		return false, false
+	}
+
+	switch val := scalar.Val.(type) {
+	case bool:
+		return val, true
+	case string:
+		return parseAnsibleBool(val)
+	}
+	return false, false
+}
+
+// parseAnsibleBool implements Ansible's string→bool conversion.
+func parseAnsibleBool(s string) (bool, bool) {
+	normalized := strings.ToLower(strings.TrimSpace(s))
+
+	switch normalized {
+	case "1", "t", "true", "y", "yes", "on":
+		return true, true
+	case "0", "f", "false", "n", "no", "off":
+		return false, true
+	default:
+		return false, false
+	}
 }
 
 func (n *Node) AsString() (string, bool) {
