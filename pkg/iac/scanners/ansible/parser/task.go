@@ -2,7 +2,6 @@ package parser
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -88,7 +87,7 @@ func (t *Task) isBlock() bool {
 func (t *Task) init(play *Play, fileSrc fsutils.FileSource, parent *iacTypes.Metadata) {
 	fsys, relPath := fileSrc.FSAndRelPath()
 	ref := lo.Ternary(t.isBlock(), "tasks-block", "tasks")
-	rng := iacTypes.NewRange(relPath, t.rng.StartLine, t.rng.EndLine, "", fsys)
+	rng := iacTypes.NewRange(relPath, t.rng.Start, t.rng.EndLine, "", fsys)
 	t.play = play
 	t.src = fileSrc
 	t.metadata = iacTypes.NewMetadata(rng, ref)
@@ -214,29 +213,10 @@ func (t *ResolvedTask) GetFieldsByRange(r Range) map[string]*Node {
 		if node == nil {
 			continue
 		}
-		t.collectByRange(node, r, out, key)
+		sub := node.Subtree(r)
+		if sub != nil {
+			out[key], _ = sub.Render(t.Vars)
+		}
 	}
 	return out
-}
-
-func (t *ResolvedTask) collectByRange(node *Node, r Range, out map[string]*Node, path string) {
-	if r.Covers(node.rng) {
-		out[path], _ = node.Render(t.Vars)
-		return
-	}
-
-	switch val := node.val.(type) {
-	case *Mapping:
-		for k, child := range val.Fields.Iter() {
-			if child != nil {
-				t.collectByRange(child, r, out, path+"."+k)
-			}
-		}
-	case *Sequence:
-		for idx, item := range val.Items {
-			if item != nil {
-				t.collectByRange(item, r, out, fmt.Sprintf("%s[%d]", path, idx))
-			}
-		}
-	}
 }

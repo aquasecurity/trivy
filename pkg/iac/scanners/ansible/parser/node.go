@@ -41,7 +41,7 @@ func (m *Mapping) MarshalYAML() (any, error) {
 	node := &yaml.Node{
 		Kind:    yaml.MappingNode,
 		Tag:     "!!map",
-		Content: []*yaml.Node{},
+		Content: nil,
 	}
 	for key, child := range m.Fields.Iter() {
 		keyNode := &yaml.Node{
@@ -71,7 +71,7 @@ func (s *Sequence) MarshalYAML() (any, error) {
 	node := &yaml.Node{
 		Kind:    yaml.SequenceNode,
 		Tag:     "!!seq",
-		Content: []*yaml.Node{},
+		Content: nil,
 	}
 	for _, item := range s.Items {
 		itemYAML, err := item.MarshalYAML()
@@ -126,7 +126,7 @@ func (n *Node) UnmarshalYAML(node *yaml.Node) error {
 		}
 		return nil
 	case yaml.MappingNode:
-		n.rng.StartLine--
+		n.rng.Start--
 		childData, err := decodeMapNode(node)
 		if err != nil {
 			return err
@@ -134,7 +134,7 @@ func (n *Node) UnmarshalYAML(node *yaml.Node) error {
 		n.val = childData
 		return nil
 	case yaml.SequenceNode:
-		n.rng.StartLine--
+		n.rng.Start--
 		childData, err := decodeSequenceNode(node)
 		if err != nil {
 			return err
@@ -170,6 +170,9 @@ func decodeSequenceNode(node *yaml.Node) (*Sequence, error) {
 		if err != nil {
 			return nil, err
 		}
+		if elemNode.Kind == yaml.MappingNode {
+			childNode.rng.Start++
+		}
 		items = append(items, &childNode)
 	}
 
@@ -195,7 +198,7 @@ func (n *Node) initMetadata(fileSrc fsutils.FileSource, parent *iacTypes.Metadat
 	fsys, relPath := fileSrc.FSAndRelPath()
 	ref := strings.Join(nodePath, ".")
 	ref = cmp.Or(ref, ".")
-	rng := iacTypes.NewRange(relPath, n.rng.StartLine, n.rng.EndLine, "", fsys)
+	rng := iacTypes.NewRange(relPath, n.rng.Start, n.rng.EndLine, "", fsys)
 
 	n.metadata = iacTypes.NewMetadata(rng, ref)
 	n.metadata.SetParentPtr(parent)
@@ -442,4 +445,68 @@ func safeOp[T any](n *Node, op func(NodeValue) T) T {
 		return zero
 	}
 	return op(n.val)
+}
+
+func (n *Node) Subtree(r Range) *Node {
+	sub, _ := n.subtree(r)
+	return sub
+}
+
+func (n *Node) subtree(r Range) (*Node, bool) {
+	if n == nil {
+		return nil, false
+	}
+
+	if r.Covers(n.rng) {
+		return n, false
+	}
+
+	switch val := n.val.(type) {
+	case *Mapping:
+		subFields := orderedmap.New[string, *Node](val.Fields.Len())
+		for k, child := range val.Fields.Iter() {
+			if child == nil {
+				continue
+			}
+			sub, partial := child.subtree(r)
+			if sub == nil {
+				continue
+			}
+
+			if partial && r.Start > child.rng.Start {
+				return sub, true
+			}
+			subFields.Set(k, sub)
+		}
+		if subFields.Len() > 0 {
+			return n.withValue(&Mapping{Fields: subFields}), true
+		}
+		return nil, false
+	case *Sequence:
+		items := make([]*Node, 0, len(val.Items))
+		for _, item := range val.Items {
+			if item == nil {
+				continue
+			}
+			sub, partial := item.subtree(r)
+			if sub == nil {
+				continue
+			}
+			if partial {
+				// Return a new sequence containing only the partially matched element.
+				return n.withValue(&Sequence{Items: []*Node{sub}}), true
+			}
+
+			items = append(items, sub)
+		}
+		if len(items) > 0 {
+			return n.withValue(&Sequence{Items: items}), true
+		}
+		return nil, false
+	default:
+		if r.Overlaps(n.rng) {
+			return n, false
+		}
+		return nil, false
+	}
 }
