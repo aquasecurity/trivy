@@ -91,7 +91,7 @@ func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Resu
 }
 
 func (s *Scanner) scanProject(ctx context.Context, fsys fs.FS, project *parser.AnsibleProject) (scan.Results, error) {
-	tasks := project.ListTasks()
+	tasks := project.ListTasks().FilterByState("absent")
 	state := adapter.Adapt(tasks)
 
 	rs, err := s.InitRegoScanner(fsys, s.opts)
@@ -141,8 +141,8 @@ func fieldsForRange(tasks parser.ResolvedTasks, causeRng types.Range) any {
 		taskRng := task.Metadata.Range()
 		if taskRng.GetFilename() == causeRng.GetFilename() && taskRng.Includes(causeRng) {
 			queryRange := parser.Range{
-				Start:   causeRng.GetStartLine(),
-				EndLine: causeRng.GetEndLine(),
+				Start: causeRng.GetStartLine(),
+				End:   causeRng.GetEndLine(),
 			}
 			return task.GetFieldsByRange(queryRange)
 		}

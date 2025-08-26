@@ -6,6 +6,8 @@ package parser
 // All the data and metadata for the module is stored in the embedded Node.
 type Module struct {
 	*Node
+
+	Name string
 }
 
 // IsFreeForm returns true if the module is a free-form Ansible module.
