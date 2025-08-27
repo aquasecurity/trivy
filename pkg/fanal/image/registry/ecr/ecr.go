@@ -15,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/intf"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
 type ecrAPI interface {
@@ -37,10 +38,15 @@ func getSession(domain, region string, option types.RegistryOptions) (aws.Config
 		return config.LoadDefaultConfig(
 			context.TODO(),
 			config.WithRegion(region),
+			config.WithHTTPClient(xhttp.Client()),
 			config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(option.AWSAccessKey, option.AWSSecretKey, option.AWSSessionToken)),
 		)
 	}
-	return config.LoadDefaultConfig(context.TODO(), config.WithRegion(region))
+	return config.LoadDefaultConfig(
+		context.TODO(),
+		config.WithRegion(region),
+		config.WithHTTPClient(xhttp.Client()),
+	)
 }
 
 func (e *ECR) CheckOptions(domain string, option types.RegistryOptions) (intf.RegistryClient, error) {

@@ -317,7 +317,7 @@ func (f *Flag[T]) Bind(cmd *cobra.Command) error {
 
 	// Bind CLI flags
 	flag := cmd.Flags().Lookup(f.Name)
-	if f == nil {
+	if flag == nil {
 		// Lookup local persistent flags
 		flag = cmd.PersistentFlags().Lookup(f.Name)
 	}
