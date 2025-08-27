@@ -276,6 +276,15 @@ func TestArtifact_Inspect(t *testing.T) {
 				BlobIDs: []string{
 					"sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c",
 				},
+				RepoMetadata: artifact.RepoMetadata{
+					RepoURL:   "https://github.com/aquasecurity/trivy-test-repo/",
+					Branch:    "main",
+					Tags:      []string{"v0.0.1"},
+					Commit:    "8a19b492a589955c3e70c6ad8efd1e4ec6ae0d35",
+					CommitMsg: "Update README.md",
+					Author:    "Teppei Fukuda <knqyf263@gmail.com>",
+					Committer: "GitHub <noreply@github.com>",
+				},
 			},
 			wantBlobInfo: &types.BlobInfo{
 				SchemaVersion: types.BlobJSONSchemaVersion,
