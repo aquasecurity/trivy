@@ -13,7 +13,6 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
-	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/inventory"
@@ -719,27 +718,6 @@ func (p *Parser) resolveRoleInclude(parentVars vars.Vars, task *Task) (ResolvedT
 func getStringParam(m Module, paramKey string) string {
 	val, _ := m.NodeAt(paramKey).AsString()
 	return val
-}
-
-func decodeYAMLFileWithExtension(fileSrc fsutils.FileSource, dst any, extensions []string) error {
-	for _, ext := range extensions {
-		f := fsutils.FileSource{FS: fileSrc.FS, Path: fileSrc.Path + ext}
-		if exists, _ := f.Exists(); exists {
-			return decodeYAMLFile(f, dst)
-		}
-	}
-	return fs.ErrNotExist
-}
-
-func decodeYAMLFile(f fsutils.FileSource, dst any) error {
-	data, err := f.ReadFile()
-	if err != nil {
-		return xerrors.Errorf("read file %s: %w", f.Path, err)
-	}
-	if err := yaml.Unmarshal(data, dst); err != nil {
-		return xerrors.Errorf("unmarshal YAML file %s: %w", f.Path, err)
-	}
-	return nil
 }
 
 func (p *Parser) readAnsibleConfig() (AnsibleConfig, error) {

@@ -14,12 +14,12 @@ import (
 func mustNodeFromYAML(t *testing.T, src string) *Node {
 	t.Helper()
 	var n Node
-	require.NoError(t, yaml.Unmarshal([]byte(src), &n))
+	require.NoError(t, decodeYAML([]byte(src), &n))
 	return &n
 }
 
 func TestNode_UnmarshalYAML(t *testing.T) {
-	src := `name: testname
+	src := `name: {{ testname }}
 len: 100
 keys:
   - a
@@ -36,7 +36,7 @@ state:
 		val: &Mapping{
 			Fields: func() *orderedmap.OrderedMap[string, *Node] {
 				m := orderedmap.New[string, *Node](4)
-				m.Set("name", &Node{rng: Range{1, 1}, val: &Scalar{Val: "testname"}})
+				m.Set("name", &Node{rng: Range{1, 1}, val: &Scalar{Val: "{{ testname }}"}})
 				m.Set("len", &Node{rng: Range{2, 2}, val: &Scalar{Val: 100}})
 				m.Set("keys", &Node{
 					rng: Range{3, 7},
@@ -283,10 +283,7 @@ num: 42
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var node *Node
-			err := yaml.Unmarshal([]byte(src), &node)
-			require.NoError(t, err)
-
+			node := mustNodeFromYAML(t, src)
 			subtree := node.Subtree(tt.query)
 			marshaled, err := yaml.Marshal(subtree)
 			require.NoError(t, err)

@@ -55,6 +55,19 @@ func TestParser_Parse(t *testing.T) {
 			expectedTasks: []string{"Pre-task", "Task", "Post-task"},
 		},
 		{
+			name: "task name with unquoted template",
+			files: map[string]string{
+				"playbook.yaml": `---
+- hosts: localhost
+  tasks:
+    - name: {{ Task }}
+      debug:
+        msg: test
+`,
+			},
+			expectedTasks: []string{"{{ Task }}"},
+		},
+		{
 			name: "tasks in role",
 			files: map[string]string{
 				"playbook.yaml": `---
