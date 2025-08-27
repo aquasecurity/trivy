@@ -146,7 +146,7 @@ func (c *Client) NeedsUpdate(ctx context.Context, cliVersion string, skip bool) 
 		return true, nil
 	}
 
-	return !c.isNewDB(ctx, meta), nil
+	return noRequiredFiles || !c.isNewDB(ctx, meta), nil
 }
 
 func (c *Client) validate(meta metadata.Metadata) error {
