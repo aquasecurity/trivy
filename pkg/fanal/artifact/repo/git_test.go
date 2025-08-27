@@ -5,12 +5,14 @@ package repo
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/gittest"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -167,6 +169,17 @@ func TestArtifact_Inspect(t *testing.T) {
 	ts := gittest.NewTestServer(t)
 	defer ts.Close()
 
+	remoteRepoWithCreds := strings.Replace(ts.URL, "http://", "http://user:token@", 1) + "/test-repo.git"
+	// Prepare a local repo copy whose .git/config contains credentials in the remote URL
+	localRepoWithCreds := t.TempDir()
+	testutil.CopyDir(t, "../../../../internal/gittest/testdata/test-repo", localRepoWithCreds)
+	cfgPath := filepath.Join(localRepoWithCreds, ".git", "config")
+	b, err := os.ReadFile(cfgPath)
+	require.NoError(t, err)
+	// Inject userinfo into the remote URL for origin/upstream
+	cfg := strings.ReplaceAll(string(b), "https://github.com/aquasecurity/trivy-test-repo/", "https://user:token@github.com/aquasecurity/trivy-test-repo/")
+	require.NoError(t, os.WriteFile(cfgPath, []byte(cfg), 0o644))
+
 	tests := []struct {
 		name         string
 		rawurl       string
@@ -198,6 +211,50 @@ func TestArtifact_Inspect(t *testing.T) {
 			wantBlobInfo: &types.BlobInfo{
 				SchemaVersion: types.BlobJSONSchemaVersion,
 			},
+		},
+		{
+			name:   "remote repo with userinfo in URL",
+			rawurl: remoteRepoWithCreds,
+			want: artifact.Reference{
+				Name: remoteRepoWithCreds,
+				Type: types.TypeRepository,
+				ID:   "sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c",
+				BlobIDs: []string{
+					"sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c",
+				},
+				RepoMetadata: artifact.RepoMetadata{
+					RepoURL:   ts.URL + "/test-repo.git",
+					Branch:    "main",
+					Tags:      []string{"v0.0.1"},
+					Commit:    "8a19b492a589955c3e70c6ad8efd1e4ec6ae0d35",
+					CommitMsg: "Update README.md",
+					Author:    "Teppei Fukuda <knqyf263@gmail.com>",
+					Committer: "GitHub <noreply@github.com>",
+				},
+			},
+			wantBlobInfo: &types.BlobInfo{SchemaVersion: types.BlobJSONSchemaVersion},
+		},
+		{
+			name:   "local repo with userinfo in remote URL",
+			rawurl: localRepoWithCreds,
+			want: artifact.Reference{
+				Name: localRepoWithCreds,
+				Type: types.TypeRepository,
+				ID:   "sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c",
+				BlobIDs: []string{
+					"sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c",
+				},
+				RepoMetadata: artifact.RepoMetadata{
+					RepoURL:   "https://github.com/aquasecurity/trivy-test-repo/",
+					Branch:    "main",
+					Tags:      []string{"v0.0.1"},
+					Commit:    "8a19b492a589955c3e70c6ad8efd1e4ec6ae0d35",
+					CommitMsg: "Update README.md",
+					Author:    "Teppei Fukuda <knqyf263@gmail.com>",
+					Committer: "GitHub <noreply@github.com>",
+				},
+			},
+			wantBlobInfo: &types.BlobInfo{SchemaVersion: types.BlobJSONSchemaVersion},
 		},
 		{
 			name:   "local repo",
