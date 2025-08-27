@@ -2555,7 +2555,7 @@ func Test_sanitizeRemoteURL(t *testing.T) {
 		},
 		{
 			name: "double scheme after userinfo",
-			in:   "https://gitlab-ci-token:glcbt-64_QwERTyuiOp-AsD2NgCJ7@https://example.com/gitrepo.git",
+			in:   "https://gitlab-ci-token:glcbt-64_QwERTyuiOp-AsD2NgCJ7@example.com/gitrepo.git",
 			want: "https://example.com/gitrepo.git",
 		},
 		{

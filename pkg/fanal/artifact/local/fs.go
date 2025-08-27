@@ -376,12 +376,5 @@ func sanitizeRemoteURL(gitUrl string) string {
 		gitUrl = u.String()
 	}
 
-	// There are cases when both gitUrl and host contain a schema prefix.
-	// After removing credentials, URL parsing may fail because of a duplicate schema.
-	// We should remove duplicate prefixes (e.g. "https://https://example.com/gitrepo.git")
-	schema, u, _ := strings.Cut(gitUrl, "://")
-	if _, hostUrl, hostWithSchema := strings.Cut(u, "://"); hostWithSchema {
-		u = hostUrl
-	}
-	return schema + "://" + u
+	return gitUrl
 }
