@@ -66,7 +66,7 @@ type innerResource struct {
 	Type       azure.Value `json:"type"`
 	Kind       azure.Value `json:"kind"`
 	Name       azure.Value `json:"name"`
-	Loc        azure.Value `json:"location"`
+	Location   azure.Value `json:"location"`
 	Tags       azure.Value `json:"tags"`
 	Sku        azure.Value `json:"sku"`
 	Properties azure.Value `json:"properties"`
