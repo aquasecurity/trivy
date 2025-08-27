@@ -8,6 +8,7 @@ import (
 func Adapt(modules terraform.Modules) authorization.Authorization {
 	return authorization.Authorization{
 		RoleDefinitions: adaptRoleDefinitions(modules),
+		RoleAssignments: adaptRoleAssignments(modules),
 	}
 }
 
@@ -38,5 +39,32 @@ func adaptRoleDefinition(resource *terraform.Block) authorization.RoleDefinition
 		Metadata:         resource.GetMetadata(),
 		Permissions:      permissionsVal,
 		AssignableScopes: assignableScopesAttr.AsStringValues(),
+	}
+}
+
+func adaptRoleAssignments(modules terraform.Modules) []authorization.RoleAssignment {
+	var roleAssignments []authorization.RoleAssignment
+	for _, module := range modules {
+		for _, resource := range module.GetResourcesByType("azurerm_role_assignment") {
+			roleAssignments = append(roleAssignments, adaptRoleAssignment(resource))
+		}
+	}
+	return roleAssignments
+}
+
+func adaptRoleAssignment(resource *terraform.Block) authorization.RoleAssignment {
+	scopeAttr := resource.GetAttribute("scope")
+	roleDefIdAttr := resource.GetAttribute("role_definition_id")
+	roleDefNameAttr := resource.GetAttribute("role_definition_name")
+	principalIdAttr := resource.GetAttribute("principal_id")
+	principalTypeAttr := resource.GetAttribute("principal_type")
+
+	return authorization.RoleAssignment{
+		Metadata:           resource.GetMetadata(),
+		Scope:              scopeAttr.AsStringValueOrDefault("", resource),
+		RoleDefinitionId:   roleDefIdAttr.AsStringValueOrDefault("", resource),
+		RoleDefinitionName: roleDefNameAttr.AsStringValueOrDefault("", resource),
+		PrincipalId:        principalIdAttr.AsStringValueOrDefault("", resource),
+		PrincipalType:      principalTypeAttr.AsStringValueOrDefault("", resource),
 	}
 }
