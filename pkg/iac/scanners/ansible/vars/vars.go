@@ -7,6 +7,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
+// VarPriority represents the priority level of a variable.
+// Higher values indicate higher precedence when merging variables.
 type VarPriority int
 
 const (
@@ -71,6 +73,7 @@ func (p VarPriority) Source() string {
 
 var VarFilesExtensions = []string{"", ".yml", ".yaml", ".json"}
 
+// Variable represents a variable with its value and priority.
 type Variable struct {
 	Value    any
 	Priority VarPriority
@@ -83,9 +86,10 @@ func NewVariable(val any, priority VarPriority) Variable {
 	}
 }
 
+// PlainVars is a simple map from variable names to their values.
 type PlainVars map[string]any
 
-// Vars represents a set of variables as a map from string keys to arbitrary values.
+// Vars represents a set of variables as a map from string keys to Variable.
 type Vars map[string]Variable
 
 // NewVars creates a Vars map from a plain map[string]any, assigning

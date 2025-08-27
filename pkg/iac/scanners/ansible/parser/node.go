@@ -125,7 +125,7 @@ func (n *Node) UnmarshalYAML(node *yaml.Node) error {
 			if err == nil {
 				n.val = &Scalar{Val: v}
 			}
-		case "!!str", "!!string":
+		case StrTag, "!!string":
 			n.val = &Scalar{Val: node.Value}
 		}
 		return nil
@@ -184,7 +184,7 @@ func decodeSequenceNode(node *yaml.Node) (*Sequence, error) {
 }
 
 func decodeChildNode(yNode *yaml.Node) (Node, error) {
-	if yNode.Kind == yaml.ScalarNode && yNode.Tag == "!!null" {
+	if yNode.Kind == yaml.ScalarNode && yNode.Tag == NullTag {
 		return Node{
 			rng: rangeFromNode(yNode),
 			val: nil,
