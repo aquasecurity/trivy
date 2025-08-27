@@ -12,7 +12,7 @@ import (
 type adaptFn[T any] func(fctx parser.FileContext) T
 
 func AdaptAndCompare[T any](t *testing.T, source string, expected any, fn adaptFn[T]) {
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"main.yaml": source,
 	})
 
