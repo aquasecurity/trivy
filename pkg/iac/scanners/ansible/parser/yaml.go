@@ -30,13 +30,13 @@ func decodeYAMLFile(f fsutils.FileSource, dst any) error {
 		return xerrors.Errorf("read file %s: %w", f.Path, err)
 	}
 
-	if err := decodeYAML(data, dst); err != nil {
+	if err := DecodeYAML(data, dst); err != nil {
 		return xerrors.Errorf("decode %s: %w", f.Path, err)
 	}
 	return nil
 }
 
-func decodeYAML(data []byte, dst any) error {
+func DecodeYAML(data []byte, dst any) error {
 	var root yaml.Node
 	if err := yaml.Unmarshal(data, &root); err != nil {
 		return err

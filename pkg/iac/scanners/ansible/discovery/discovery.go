@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"io/fs"
 	"path"
+	"slices"
 
 	"github.com/bmatcuk/doublestar/v4"
-	"gopkg.in/yaml.v3"
+
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/parser"
 )
 
 // FindProjects locates Ansible project roots within fsys starting from root.
@@ -43,7 +45,6 @@ func FindProjects(fsys fs.FS, root string) ([]string, error) {
 func isAnsibleProject(fsys fs.FS, dir string) bool {
 	anchors := []string{
 		"ansible.cfg",
-		"site.yml", "site.yaml",
 		"inventory", "group_vars", "host_vars", "roles", "playbooks",
 	}
 
@@ -53,13 +54,13 @@ func isAnsibleProject(fsys fs.FS, dir string) bool {
 		}
 	}
 
-	if entries, err := doublestar.Glob(fsys, "roles/**/{tasks,defaults,vars}"); err == nil && len(entries) > 0 {
+	if entries, err := doublestar.Glob(fsys, dir+"/roles/**/{tasks,defaults,vars}"); err == nil && len(entries) > 0 {
 		return true
 	}
 
-	if entries, err := doublestar.Glob(fsys, "*.{yml,yaml}"); err == nil && len(entries) > 0 {
+	if entries, err := doublestar.Glob(fsys, dir+"/*.{yml,yaml}"); err == nil && len(entries) > 0 {
 		for _, entry := range entries {
-			if isPlaybookFile(fsys, path.Join(dir, entry)) {
+			if isPlaybookFile(fsys, entry) {
 				return true
 			}
 		}
@@ -69,15 +70,19 @@ func isAnsibleProject(fsys fs.FS, dir string) bool {
 }
 
 func isPlaybookFile(fsys fs.FS, filePath string) bool {
-	f, err := fsys.Open(filePath)
+	data, err := fs.ReadFile(fsys, filePath)
 	if err != nil {
 		return false
 	}
-	defer f.Close()
 
-	// TODO: check content
-	var playbook any
-	return yaml.NewDecoder(f).Decode(&playbook) == nil
+	var plays []*parser.Play
+	if err := parser.DecodeYAML(data, &plays); err != nil {
+		return false
+	}
+
+	return slices.ContainsFunc(plays, func(play *parser.Play) bool {
+		return play.Hosts() != ""
+	})
 }
 
 func pathExists(fsys fs.FS, filePath string) bool {

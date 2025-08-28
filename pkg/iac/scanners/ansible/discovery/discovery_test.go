@@ -38,7 +38,10 @@ func TestFindProjects(t *testing.T) {
 		{
 			name: "project detected by playbook yaml",
 			fsys: fstest.MapFS{
-				"proj/site.yml": &fstest.MapFile{Data: []byte("- hosts: all\n  tasks:\n    - debug: msg=hello")},
+				"proj/main.yml": &fstest.MapFile{Data: []byte(`- hosts: all
+  tasks:
+    - debug: msg=hello
+  `)},
 			},
 			dir:      "proj",
 			expected: []string{"proj"},
@@ -46,8 +49,11 @@ func TestFindProjects(t *testing.T) {
 		{
 			name: "nested projects",
 			fsys: fstest.MapFS{
-				"proj1/ansible.cfg":                &fstest.MapFile{Data: []byte("[defaults]\n")},
-				"proj2/site.yaml":                  &fstest.MapFile{Data: []byte("- hosts: all\n  tasks: []")},
+				"proj1/ansible.cfg": &fstest.MapFile{Data: []byte("[defaults]\n")},
+				"proj2/main.yaml": &fstest.MapFile{Data: []byte(`- hosts: all
+  tasks:
+    - debug: msg=hello
+`)},
 				"proj1/roles/role1/tasks/main.yml": &fstest.MapFile{Data: []byte("- debug: msg=ok")},
 			},
 			dir:      ".",

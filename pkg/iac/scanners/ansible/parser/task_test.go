@@ -20,7 +20,7 @@ nested:
 `
 
 	var task Task
-	require.NoError(t, decodeYAML([]byte(src), &task))
+	require.NoError(t, DecodeYAML([]byte(src), &task))
 
 	plainVars := vars.PlainVars{
 		"name": "test task",
@@ -59,7 +59,7 @@ func TestResolvedTasks_GetModules(t *testing.T) {
     msg: "Hello"
 `
 	var tasks []*Task
-	require.NoError(t, decodeYAML([]byte(src), &tasks))
+	require.NoError(t, DecodeYAML([]byte(src), &tasks))
 
 	var resolved ResolvedTasks
 	for _, t := range tasks {
@@ -88,7 +88,7 @@ func TestResolvedTasks_FilterByState(t *testing.T) {
   # no state
 `
 	var tasks []*Task
-	require.NoError(t, decodeYAML([]byte(src), &tasks))
+	require.NoError(t, DecodeYAML([]byte(src), &tasks))
 
 	var resolved ResolvedTasks
 	for _, t := range tasks {
@@ -108,7 +108,7 @@ d: valueD
 `
 
 	var task *Task
-	require.NoError(t, decodeYAML([]byte(src), &task))
+	require.NoError(t, DecodeYAML([]byte(src), &task))
 
 	resolved := task.resolved(nil)
 	r := Range{Start: 2, End: 3}

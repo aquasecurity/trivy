@@ -62,6 +62,10 @@ type Play struct {
 	raw map[string]any
 }
 
+func (p *Play) Hosts() string {
+	return p.inner.Hosts
+}
+
 func (p *Play) Variables() vars.Vars {
 	return vars.NewVars(p.inner.Vars, vars.PlayVarsPriority)
 }
