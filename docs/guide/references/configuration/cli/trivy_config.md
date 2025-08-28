@@ -62,7 +62,7 @@ trivy config [flags] DIR
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string             registry token
       --rego-error-limit int              maximum number of compile errors allowed during Rego policy evaluation (default 10)
-      --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform)
+      --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform,ansible)
       --report string                     specify a compliance report format for the output (allowed values: all,summary) (default "all")
   -s, --severity strings                  severities of security issues to be displayed
                                           Allowed values:

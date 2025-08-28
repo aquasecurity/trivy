@@ -108,6 +108,7 @@ nav:
               - Julia: guide/coverage/language/julia.md
           - IaC:
               - Overview: guide/coverage/iac/index.md
+              - Ansible: guide/coverage/iac/ansible.md
               - Azure ARM Template: guide/coverage/iac/azure-arm.md
               - CloudFormation: guide/coverage/iac/cloudformation.md
               - Docker: guide/coverage/iac/docker.md
@@ -170,9 +171,9 @@ nav:
                   - Overview: guide/references/configuration/cli/trivy.md
                   - Clean: guide/references/configuration/cli/trivy_clean.md
                   - Cloud:
-                      - Cloud: guide/references/configuration/cli/trivy_cloud.md                      
-                      - Cloud Config: guide/references/configuration/cli/trivy_cloud_config.md 
-                      - Cloud Config Edit: guide/references/configuration/cli/trivy_cloud_config_edit.md 
+                      - Cloud: guide/references/configuration/cli/trivy_cloud.md
+                      - Cloud Config: guide/references/configuration/cli/trivy_cloud_config.md
+                      - Cloud Config Edit: guide/references/configuration/cli/trivy_cloud_config_edit.md
                       - Cloud Config List: guide/references/configuration/cli/trivy_cloud_config_list.md
                       - Cloud Config Set: guide/references/configuration/cli/trivy_cloud_config_set.md
                       - Cloud Config Unset: guide/references/configuration/cli/trivy_cloud_config_unset.md
