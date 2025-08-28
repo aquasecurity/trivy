@@ -11,7 +11,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/discovery"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
@@ -69,7 +68,7 @@ func (s *Scanner) Name() string {
 }
 
 func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Results, error) {
-	roots, err := discovery.FindProjects(fsys, dir)
+	roots, err := parser.FindProjects(fsys, dir)
 	if err != nil {
 		return nil, fmt.Errorf("find projects: %w", err)
 	}

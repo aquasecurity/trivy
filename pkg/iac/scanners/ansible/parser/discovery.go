@@ -1,4 +1,4 @@
-package discovery
+package parser
 
 import (
 	"fmt"
@@ -7,8 +7,6 @@ import (
 	"slices"
 
 	"github.com/bmatcuk/doublestar/v4"
-
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/parser"
 )
 
 // FindProjects locates Ansible project roots within fsys starting from root.
@@ -75,12 +73,12 @@ func isPlaybookFile(fsys fs.FS, filePath string) bool {
 		return false
 	}
 
-	var plays []*parser.Play
-	if err := parser.DecodeYAML(data, &plays); err != nil {
+	var plays []*Play
+	if err := decodeYAML(data, &plays); err != nil {
 		return false
 	}
 
-	return slices.ContainsFunc(plays, func(play *parser.Play) bool {
+	return slices.ContainsFunc(plays, func(play *Play) bool {
 		return play.Hosts() != ""
 	})
 }
