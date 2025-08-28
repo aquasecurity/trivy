@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/samber/lo"
@@ -572,6 +573,11 @@ name: mycol
 }
 
 func TestParser_AbsolutePath(t *testing.T) {
+	// The process cannot access the file because it is being used by another process.
+	if runtime.GOOS == "windows" {
+		t.Skip("TODO")
+	}
+
 	tmpDir := t.TempDir()
 
 	tasksFile, err := os.CreateTemp(tmpDir, "tasks-*.yml")
