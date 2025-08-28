@@ -14,7 +14,7 @@ import (
 func mustNodeFromYAML(t *testing.T, src string) *Node {
 	t.Helper()
 	var n Node
-	require.NoError(t, decodeYAML([]byte(src), &n))
+	require.NoError(t, DecodeYAML([]byte(src), &n))
 	return &n
 }
 
