@@ -13,4 +13,4 @@ Please use the "Private vulnerability reporting" feature in the GitHub repositor
 This policy is intended for vulnerabilities in **Trivy itself** (e.g., core functionality, scanning logic, or security features).  
 
 If you discover a vulnerability in a **dependency module** (e.g., a third-party library used by Trivy), please **do not report it here**.  
-Instead, open an issue in [GitHub Discussions](https://github.com/aquasecurity/trivy/discussions) so that the maintainers and community can evaluate and address it appropriately.
+Instead, open a ticket in [GitHub Discussions](https://github.com/aquasecurity/trivy/discussions) so that the maintainers and community can evaluate and address it appropriately.
