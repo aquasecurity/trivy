@@ -61,7 +61,7 @@ trivy config [flags] DIR
       --redis-key string                  redis key file location, if using redis as cache backend
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string             registry token
-      --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform)
+      --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform,ansible)
       --report string                     specify a compliance report format for the output (allowed values: all,summary) (default "all")
   -s, --severity strings                  severities of security issues to be displayed
                                           Allowed values:

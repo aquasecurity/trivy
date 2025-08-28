@@ -110,7 +110,7 @@ trivy filesystem [flags] PATH
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string             registry token
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
-      --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform)
+      --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform,ansible)
       --report string                     specify a compliance report format for the output (allowed values: all,summary) (default "all")
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (allowed values: oci,rekor)
       --scanners strings                  comma-separated list of what security issues to detect (allowed values: vuln,misconfig,secret,license) (default [vuln,secret])
