@@ -169,17 +169,6 @@ func TestArtifact_Inspect(t *testing.T) {
 	ts := gittest.NewTestServer(t)
 	defer ts.Close()
 
-	remoteRepoWithCreds := strings.Replace(ts.URL, "http://", "http://user:token@", 1) + "/test-repo.git"
-	// Prepare a local repo copy whose .git/config contains credentials in the remote URL
-	localRepoWithCreds := t.TempDir()
-	testutil.CopyDir(t, "../../../../internal/gittest/testdata/test-repo", localRepoWithCreds)
-	cfgPath := filepath.Join(localRepoWithCreds, ".git", "config")
-	b, err := os.ReadFile(cfgPath)
-	require.NoError(t, err)
-	// Inject userinfo into the remote URL for origin/upstream
-	cfg := strings.ReplaceAll(string(b), "https://github.com/aquasecurity/trivy-test-repo/", "https://user:token@github.com/aquasecurity/trivy-test-repo/")
-	require.NoError(t, os.WriteFile(cfgPath, []byte(cfg), 0o644))
-
 	tests := []struct {
 		name         string
 		rawurl       string
@@ -211,50 +200,6 @@ func TestArtifact_Inspect(t *testing.T) {
 			wantBlobInfo: &types.BlobInfo{
 				SchemaVersion: types.BlobJSONSchemaVersion,
 			},
-		},
-		{
-			name:   "remote repo with userinfo in URL",
-			rawurl: remoteRepoWithCreds,
-			want: artifact.Reference{
-				Name: remoteRepoWithCreds,
-				Type: types.TypeRepository,
-				ID:   "sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c",
-				BlobIDs: []string{
-					"sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c",
-				},
-				RepoMetadata: artifact.RepoMetadata{
-					RepoURL:   ts.URL + "/test-repo.git",
-					Branch:    "main",
-					Tags:      []string{"v0.0.1"},
-					Commit:    "8a19b492a589955c3e70c6ad8efd1e4ec6ae0d35",
-					CommitMsg: "Update README.md",
-					Author:    "Teppei Fukuda <knqyf263@gmail.com>",
-					Committer: "GitHub <noreply@github.com>",
-				},
-			},
-			wantBlobInfo: &types.BlobInfo{SchemaVersion: types.BlobJSONSchemaVersion},
-		},
-		{
-			name:   "local repo with userinfo in remote URL",
-			rawurl: localRepoWithCreds,
-			want: artifact.Reference{
-				Name: localRepoWithCreds,
-				Type: types.TypeRepository,
-				ID:   "sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c",
-				BlobIDs: []string{
-					"sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c",
-				},
-				RepoMetadata: artifact.RepoMetadata{
-					RepoURL:   "https://github.com/aquasecurity/trivy-test-repo/",
-					Branch:    "main",
-					Tags:      []string{"v0.0.1"},
-					Commit:    "8a19b492a589955c3e70c6ad8efd1e4ec6ae0d35",
-					CommitMsg: "Update README.md",
-					Author:    "Teppei Fukuda <knqyf263@gmail.com>",
-					Committer: "GitHub <noreply@github.com>",
-				},
-			},
-			wantBlobInfo: &types.BlobInfo{SchemaVersion: types.BlobJSONSchemaVersion},
 		},
 		{
 			name:   "local repo",
@@ -374,6 +319,53 @@ func TestArtifact_Inspect(t *testing.T) {
 			blobInfo, err := c.GetBlob(tt.want.BlobIDs[0])
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantBlobInfo, &blobInfo, "cache content mismatch")
+		})
+	}
+}
+
+// TestArtifact_InspectWithUserInfo tests that userinfo in the URL is correctly removed from the repo URL in the metadata.
+func TestArtifact_InspectWithUserInfo(t *testing.T) {
+	ts := gittest.NewTestServer(t)
+	defer ts.Close()
+
+	remoteRepoWithCreds := strings.Replace(ts.URL, "http://", "http://user:token@", 1) + "/test-repo.git"
+	// Prepare a local repo copy whose .git/config contains credentials in the remote URL
+	localRepoWithCreds := t.TempDir()
+	testutil.CopyDir(t, "../../../../internal/gittest/testdata/test-repo", localRepoWithCreds)
+	cfgPath := filepath.Join(localRepoWithCreds, ".git", "config")
+	b, err := os.ReadFile(cfgPath)
+	require.NoError(t, err)
+	// Inject userinfo into the remote URL for origin/upstream
+	cfg := strings.ReplaceAll(string(b), "https://github.com/aquasecurity/trivy-test-repo/", "https://user:token@github.com/aquasecurity/trivy-test-repo/")
+	require.NoError(t, os.WriteFile(cfgPath, []byte(cfg), 0o644))
+
+	tests := []struct {
+		name        string
+		rawurl      string
+		wantRepoURL string
+	}{
+		{
+			name:        "remote repo with userinfo in URL",
+			rawurl:      remoteRepoWithCreds,
+			wantRepoURL: ts.URL + "/test-repo.git",
+		},
+		{
+			name:        "local repo with userinfo in remote URL",
+			rawurl:      localRepoWithCreds,
+			wantRepoURL: "https://github.com/aquasecurity/trivy-test-repo/",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			art, cleanup, err := NewArtifact(tt.rawurl, cache.NewMemoryCache(), walker.NewFS(), artifact.Option{})
+			require.NoError(t, err)
+			defer cleanup()
+
+			ref, err := art.Inspect(t.Context())
+			require.NoError(t, err)
+
+			assert.Equal(t, tt.wantRepoURL, ref.RepoMetadata.RepoURL)
 		})
 	}
 }
