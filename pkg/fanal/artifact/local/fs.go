@@ -190,10 +190,11 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 			// Cache hit
 			a.logger.DebugContext(ctx, "Cache hit", log.String("key", cacheKey))
 			return artifact.Reference{
-				Name:    cmp.Or(a.artifactOption.Original, a.rootPath),
-				Type:    a.artifactOption.Type,
-				ID:      cacheKey,
-				BlobIDs: []string{cacheKey},
+				Name:         cmp.Or(a.artifactOption.Original, a.rootPath),
+				Type:         a.artifactOption.Type,
+				ID:           cacheKey,
+				BlobIDs:      []string{cacheKey},
+				RepoMetadata: a.repoMetadata,
 			}, nil
 		}
 	}

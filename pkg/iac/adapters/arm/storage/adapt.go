@@ -53,8 +53,8 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 
 		publicNetworkAccess := resource.Properties.GetMapValue("publicNetworkAccess")
 		account.PublicNetworkAccess = types.Bool(
-			publicNetworkAccess.AsStringValue("Enabled", publicNetworkAccess.Metadata).EqualTo("Enabled"),
-			publicNetworkAccess.Metadata,
+			publicNetworkAccess.AsStringValue("Enabled", publicNetworkAccess.GetMetadata()).EqualTo("Enabled"),
+			publicNetworkAccess.GetMetadata(),
 		)
 		accounts = append(accounts, account)
 	}
