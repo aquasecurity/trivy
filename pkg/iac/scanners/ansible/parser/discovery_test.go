@@ -1,4 +1,4 @@
-package discovery_test
+package parser_test
 
 import (
 	"io/fs"
@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/discovery"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/parser"
 )
 
 func TestFindProjects(t *testing.T) {
@@ -63,7 +63,7 @@ func TestFindProjects(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := discovery.FindProjects(tt.fsys, tt.dir)
+			got, err := parser.FindProjects(tt.fsys, tt.dir)
 			require.NoError(t, err)
 
 			assert.ElementsMatch(t, tt.expected, got)
