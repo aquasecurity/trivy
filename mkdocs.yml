@@ -43,7 +43,9 @@ nav:
   - Docs:
       - Overview: docs/index.md
       - Target:
-          - Container Image: docs/target/container_image.md
+          - Container Image: 
+              - Image Contents: docs/target/container_image.md
+              - Image Configuration: docs/target/container_image_config.md
           - Filesystem: docs/target/filesystem.md
           - Rootfs: docs/target/rootfs.md
           - Code Repository: docs/target/repository.md
