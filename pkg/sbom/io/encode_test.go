@@ -1515,6 +1515,199 @@ func TestEncoder_Encode(t *testing.T) {
 			},
 			wantErr: "failed to parse digest",
 		},
+		{
+			name: "cross-result dependencies",
+			report: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "multimodule-maven-project",
+				ArtifactType:  ftypes.TypeFilesystem,
+				Results: []types.Result{
+					{
+						Target: "module-a/pom.xml",
+						Type:   ftypes.Pom,
+						Class:  types.ClassLangPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:      "com.example:shared-lib:1.0.0",
+								Name:    "com.example:shared-lib",
+								Version: "1.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "shared-lib-uid",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "com.example",
+										Name:      "shared-lib",
+										Version:   "1.0.0",
+									},
+								},
+								Relationship: ftypes.RelationshipRoot,
+							},
+						},
+					},
+					{
+						Target: "module-b/pom.xml",
+						Type:   ftypes.Pom,
+						Class:  types.ClassLangPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:      "com.example:module-b:1.0.0",
+								Name:    "com.example:module-b",
+								Version: "1.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "module-b-uid",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "com.example",
+										Name:      "module-b",
+										Version:   "1.0.0",
+									},
+								},
+								Relationship: ftypes.RelationshipRoot,
+								DependsOn:    []string{"com.example:shared-lib:1.0.0"}, // References package from module-a
+							},
+						},
+					},
+				},
+			},
+			wantComponents: map[uuid.UUID]*core.Component{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					Type: core.TypeFilesystem,
+					Name: "multimodule-maven-project",
+					Root: true,
+					Properties: []core.Property{
+						{
+							Name:  core.PropertySchemaVersion,
+							Value: "2",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000001",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					Type: core.TypeApplication,
+					Name: "module-a/pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyClass,
+							Value: "lang-pkgs",
+						},
+						{
+							Name:  core.PropertyType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): {
+					Type:    core.TypeLibrary,
+					Group:   "com.example",
+					Name:    "shared-lib",
+					Version: "1.0.0",
+					SrcFile: "module-a/pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "com.example:shared-lib:1.0.0",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID:    "shared-lib-uid",
+						BOMRef: "pkg:maven/com.example/shared-lib@1.0.0",
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeMaven,
+							Namespace: "com.example",
+							Name:      "shared-lib",
+							Version:   "1.0.0",
+						},
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					Type: core.TypeApplication,
+					Name: "module-b/pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyClass,
+							Value: "lang-pkgs",
+						},
+						{
+							Name:  core.PropertyType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000004",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): {
+					Type:    core.TypeLibrary,
+					Group:   "com.example",
+					Name:    "module-b",
+					Version: "1.0.0",
+					SrcFile: "module-b/pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "com.example:module-b:1.0.0",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID:    "module-b-uid",
+						BOMRef: "pkg:maven/com.example/module-b@1.0.0",
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeMaven,
+							Namespace: "com.example",
+							Name:      "module-b",
+							Version:   "1.0.0",
+						},
+					},
+				},
+			},
+			wantRels: map[uuid.UUID][]core.Relationship{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"),
+						Type:       core.RelationshipContains,
+					},
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): nil,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				// This is the key assertion: module-b should have a dependency relationship
+				// to shared-lib even though shared-lib is defined in module-a's result
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+			},
+			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
+		},
 	}
 
 	for _, tt := range tests {
