@@ -119,7 +119,7 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "seal-zlib",
 					VulnerabilityID:  "CVE-2023-6992",
 					InstalledVersion: "1.2.8-r2",
-					FixedVersion:     "1.2.8-r2+sp999",
+					FixedVersion:     "1.2.8-r25341999",
 					DataSource: &dbTypes.DataSource{
 						ID:     "seal",
 						Name:   "Seal Security Database",

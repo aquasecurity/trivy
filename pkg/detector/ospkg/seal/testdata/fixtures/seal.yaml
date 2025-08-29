@@ -44,9 +44,9 @@
         - key: CVE-2023-6992
           value:
             VulnerableVersions:
-              - ">=1.2.8-r2, <1.2.8-r2+sp999"
+              - ">=1.2.8-r2, <1.2.8-r25341999"
             PatchedVersions:
-              - "1.2.8-r2+sp999"
+              - "1.2.8-r25341999"
 - bucket: seal redhat 9
   pairs:
     - bucket: seal-wget
