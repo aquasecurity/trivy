@@ -934,8 +934,8 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					},
 					Component: &cdx.Component{
 						Type:       cdx.ComponentTypeContainer,
-						BOMRef:     "3ff14136-e09f-4df9-80ea-000000000001",
-						PackageURL: "",
+						BOMRef:     "pkg:oci/centos?arch=arm64&repository_url=index.docker.io%2Flibrary%2Fcentos",
+						PackageURL: "pkg:oci/centos?arch=arm64&repository_url=index.docker.io%2Flibrary%2Fcentos",
 						Name:       "centos:latest",
 						Properties: &[]cdx.Property{
 							{
@@ -1115,14 +1115,6 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 				Dependencies: &[]cdx.Dependency{
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000001",
-						Dependencies: &[]string{
-							"3ff14136-e09f-4df9-80ea-000000000002",
-							"pkg:gem/actionpack@7.0.0",
-							"pkg:gem/actionpack@7.0.1",
-						},
-					},
-					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
 							"pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011&epoch=1",
@@ -1135,6 +1127,14 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					{
 						Ref:          "pkg:gem/actionpack@7.0.1",
 						Dependencies: lo.ToPtr([]string{}),
+					},
+					{
+						Ref: "pkg:oci/centos?arch=arm64&repository_url=index.docker.io%2Flibrary%2Fcentos",
+						Dependencies: &[]string{
+							"3ff14136-e09f-4df9-80ea-000000000002",
+							"pkg:gem/actionpack@7.0.0",
+							"pkg:gem/actionpack@7.0.1",
+						},
 					},
 					{
 						Ref: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011&epoch=1",
