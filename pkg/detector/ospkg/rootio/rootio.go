@@ -7,7 +7,6 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/rootio"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
@@ -41,6 +40,10 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 		comparer = version.NewDEBComparer()
 		vsg = rootio.NewVulnSrcGetter(vulnerability.Ubuntu)
 		versionTrimmer = version.Minor
+	case ftypes.Rocky:
+		comparer = version.NewRPMComparer()
+		vsg = rootio.NewVulnSrcGetter(vulnerability.Rocky)
+		versionTrimmer = version.Major
 	case ftypes.Alpine:
 		comparer = version.NewAPKComparer()
 		vsg = rootio.NewVulnSrcGetter(vulnerability.Alpine)
@@ -74,10 +77,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 			srcName = pkg.Name
 		}
 
-		advisories, err := s.vsg.Get(db.GetParams{
-			Release: osVer,
-			PkgName: srcName,
-		})
+		advisories, err := s.vsg.Get(osVer, srcName, pkg.Arch)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Root.io advisories: %w", err)
 		}
