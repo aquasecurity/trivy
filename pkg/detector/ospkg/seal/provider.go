@@ -1,9 +1,10 @@
 package seal
 
 import (
+	"slices"
+
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"slices"
 )
 
 // Provider creates a Root.io driver if Root.io packages are detected
