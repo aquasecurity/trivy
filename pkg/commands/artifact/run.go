@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"slices"
+	"strings"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
@@ -35,6 +36,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 // TargetKind represents what kind of artifact Trivy scans
@@ -578,9 +580,13 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 	if opts.Scanners.Enabled(types.SecretScanner) {
 		logger := log.WithPrefix(log.PrefixSecret)
 		logger.Info("Secret scanning is enabled")
-		logger.Info("If your scanning is slow, please try '--scanners vuln' to disable secret scanning")
+		if nonSecrets := lo.Without(opts.Scanners, types.SecretScanner, types.SBOMScanner); len(nonSecrets) > 0 {
+			logger.Info(fmt.Sprintf(
+				"If your scanning is slow, please try '--scanners %s' to disable secret scanning",
+				strings.Join(xstrings.ToStringSlice(nonSecrets), ",")))
+		}
 		// e.g. https://trivy.dev/latest/docs/scanner/secret/#recommendation
-		logger.Info(fmt.Sprintf("Please see also %s for faster secret detection", doc.URL("/docs/scanner/secret/", "recommendation")))
+		logger.Info(fmt.Sprintf("Please see %s for faster secret detection", doc.URL("/docs/scanner/secret/", "recommendation")))
 	} else {
 		opts.SecretConfigPath = ""
 	}
