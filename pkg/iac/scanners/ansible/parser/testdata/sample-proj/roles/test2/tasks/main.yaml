@@ -1,0 +1,3 @@
+- name: Role2 task
+  s3_bucket:
+    name: test2-bucket

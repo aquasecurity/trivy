@@ -132,7 +132,11 @@ require (
 	modernc.org/sqlite v1.38.2
 )
 
-require github.com/rogpeppe/go-internal v1.14.1
+require (
+	github.com/go-ini/ini v1.67.0
+	github.com/nikolalohinski/gonja/v2 v2.3.5
+	github.com/rogpeppe/go-internal v1.14.1
+)
 
 require (
 	buf.build/gen/go/bufbuild/bufplugin/protocolbuffers/go v1.36.6-20250121211742-6d880cc6cc8d.1 // indirect
@@ -250,7 +254,6 @@ require (
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
 	github.com/go-git/go-billy/v5 v5.6.2 // indirect
 	github.com/go-gorp/gorp/v3 v3.1.0 // indirect
-	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.0.5 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
