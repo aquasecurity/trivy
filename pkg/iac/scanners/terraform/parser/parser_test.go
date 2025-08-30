@@ -2854,3 +2854,26 @@ locals {
 	attr := bucket.GetAttribute("test")
 	require.Equal(t, "some_value", attr.Value().AsString())
 }
+
+func Test_UnknownModuleSource(t *testing.T) {
+	files := map[string]string{
+		`main.tf`: `
+module "test" {
+  source = "${foo}/modules/foo"
+}
+`,
+	}
+
+	fsys := testutil.CreateFS(t, files)
+	parser := New(fsys, "",
+		OptionWithSkipCachedModules(true),
+		OptionStopOnHCLError(true),
+	)
+	err := parser.ParseFS(t.Context(), ".")
+	require.NoError(t, err)
+
+	modules, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+
+	require.Len(t, modules, 1)
+}
