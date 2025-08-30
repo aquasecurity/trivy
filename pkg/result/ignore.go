@@ -192,9 +192,7 @@ func (c *IgnoreConfig) MatchLicense(licenseID, filePath string) *IgnoreFinding {
 
 		if e, ok := expr.(expression.CompoundExpr); ok && e.Conjunction() != expression.TokenWith {
 			// Check only license with `WITH` operator as single license
-			if e.Conjunction() != expression.TokenWith {
-				return e
-			}
+			return e
 		}
 
 		if !expr.IsSPDXExpression() || c.Licenses.Match(expr.String(), filePath, nil) == nil {
