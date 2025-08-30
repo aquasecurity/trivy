@@ -185,7 +185,7 @@ func TestFilter(t *testing.T) {
 			Confidence: 1,
 		}
 		license3 = types.DetectedLicense{
-			Name:       "MIT AND GPL-2.0-or-later",
+			Name:       "mit AND GPL-2.0-or-later",
 			Severity:   dbTypes.SeverityLow.String(),
 			FilePath:   "usr/share/gcc/python/libstdcxx/v6/__init__.py",
 			Category:   "restricted",
