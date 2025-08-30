@@ -8,6 +8,7 @@ import (
 func Adapt(deployment azure.Deployment) authorization.Authorization {
 	return authorization.Authorization{
 		RoleDefinitions: adaptRoleDefinitions(deployment),
+		RoleAssignments: adaptRoleAssignments(deployment),
 	}
 }
 
@@ -24,6 +25,23 @@ func adaptRoleDefinition(resource azure.Resource) authorization.RoleDefinition {
 		Metadata:         resource.Metadata,
 		Permissions:      adaptPermissions(resource),
 		AssignableScopes: resource.Properties.GetMapValue("assignableScopes").AsStringValuesList(""),
+	}
+}
+
+func adaptRoleAssignments(deployment azure.Deployment) (roleAssignments []authorization.RoleAssignment) {
+	for _, resource := range deployment.GetResourcesByType("Microsoft.Authorization/roleAssignments") {
+		roleAssignments = append(roleAssignments, adaptRoleAssignment(resource))
+	}
+	return roleAssignments
+}
+
+func adaptRoleAssignment(resource azure.Resource) authorization.RoleAssignment {
+	return authorization.RoleAssignment{
+		Metadata:         resource.Metadata,
+		Scope:            resource.Properties.GetMapValue("scope").AsStringValue("", resource.Metadata),
+		RoleDefinitionId: resource.Properties.GetMapValue("roleDefinitionId").AsStringValue("", resource.Metadata),
+		PrincipalId:      resource.Properties.GetMapValue("principalId").AsStringValue("", resource.Metadata),
+		PrincipalType:    resource.Properties.GetMapValue("principalType").AsStringValue("", resource.Metadata),
 	}
 }
 

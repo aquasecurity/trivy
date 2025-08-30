@@ -4572,6 +4572,13 @@
     "github.com.aquasecurity.trivy.pkg.iac.providers.azure.authorization.Authorization": {
       "type": "object",
       "properties": {
+        "roleassignments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.authorization.RoleAssignment"
+          }
+        },
         "roledefinitions": {
           "type": "array",
           "items": {
@@ -4594,6 +4601,35 @@
             "type": "object",
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
           }
+        }
+      }
+    },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.authorization.RoleAssignment": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "principalid": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "principaltype": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "roledefinitionid": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "roledefinitionname": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "scope": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         }
       }
     },
