@@ -245,6 +245,8 @@ func (pkgs Packages) Less(i, j int) bool {
 		return pkgs[i].Name < pkgs[j].Name
 	case pkgs[i].Version != pkgs[j].Version:
 		return pkgs[i].Version < pkgs[j].Version
+	case pkgs[i].ID != pkgs[j].ID:
+		return pkgs[i].ID < pkgs[j].ID
 	}
 	return pkgs[i].FilePath < pkgs[j].FilePath
 }
