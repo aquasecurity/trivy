@@ -60,8 +60,6 @@ Trivy reproduces Maven's repository selection and priority:
     - check release repositories from settings files (if exists)
     - check [maven central][maven-central]
 
-Applying mirror configurations for repositories, if specified in the settings file.
-
 !!! Note
     Trivy only takes information about packages. We don't take a list of vulnerabilities for packages from the `maven repository`.
     Information about data sources for Java you can see [here](../../scanner/vulnerability.md#langpkg-data-sources).

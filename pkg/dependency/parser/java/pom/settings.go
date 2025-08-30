@@ -2,11 +2,9 @@ package pom
 
 import (
 	"encoding/xml"
-	"fmt"
 	"os"
 	"path/filepath"
 	"slices"
-	"strings"
 
 	"github.com/samber/lo"
 	"golang.org/x/net/html/charset"
@@ -30,15 +28,6 @@ type Profile struct {
 
 func (p Profile) GetID() string { return p.ID }
 
-type Mirror struct {
-	ID       string `xml:"id"`
-	Name     string `xml:"name"`
-	URL      string `xml:"url"`
-	MirrorOf string `xml:"mirrorOf"`
-}
-
-func (m Mirror) GetID() string { return m.ID }
-
 type activation struct {
 	ActiveByDefault bool `xml:"activeByDefault"`
 }
@@ -48,7 +37,6 @@ type settings struct {
 	Servers         []Server  `xml:"servers>server"`
 	Profiles        []Profile `xml:"profiles>profile"`
 	ActiveProfiles  []string  `xml:"activeProfiles>activeProfile"`
-	Mirrors         []Mirror  `xml:"mirrors>mirror"`
 }
 
 func readSettings() settings {
@@ -93,13 +81,6 @@ func readSettings() settings {
 			if !containsByID(s.Profiles, profile.ID) {
 				logger.Debug("Adding profile from global settings", log.String("id", profile.ID))
 				s.Profiles = append(s.Profiles, profile)
-			}
-		}
-		// Merge mirrors
-		for _, mirror := range globalSettings.Mirrors {
-			if !containsByID(s.Mirrors, mirror.ID) {
-				logger.Debug("Adding mirror from global settings", log.String("id", mirror.ID))
-				s.Mirrors = append(s.Mirrors, mirror)
 			}
 		}
 		// Merge active profiles
@@ -149,12 +130,6 @@ func expandAllEnvPlaceholders(s *settings) {
 			s.Profiles[i].Repositories[j].URL = evaluateVariable(repo.URL, nil, nil)
 		}
 	}
-	for i, mirror := range s.Mirrors {
-		s.Mirrors[i].ID = evaluateVariable(mirror.ID, nil, nil)
-		s.Mirrors[i].Name = evaluateVariable(mirror.Name, nil, nil)
-		s.Mirrors[i].URL = evaluateVariable(mirror.URL, nil, nil)
-		s.Mirrors[i].MirrorOf = evaluateVariable(mirror.MirrorOf, nil, nil)
-	}
 	for i, activeProfile := range s.ActiveProfiles {
 		s.ActiveProfiles[i] = evaluateVariable(activeProfile, nil, nil)
 	}
@@ -193,77 +168,10 @@ func (s *settings) getRepositoriesForActiveProfiles() []repository {
 
 // getEffectiveRepositories returns a list of effective repositories.
 // Gets repositories for all active profiles.
-// Applying mirror settings for repositories if applicable.
 // Keeping only unique repositories in the result.
 // This is on settings.xml level, not considering repositories from pom.xml,
 // which need to be combined in a separate step.
 func (s *settings) getEffectiveRepositories() []repository {
 	repositories := s.getRepositoriesForActiveProfiles()
-	applyMirrorSettingsForRepositories(repositories, s)
 	return lo.Uniq(repositories)
-}
-
-// findMirrorForRepository returns the mirror configured for the given repository ID, if any.
-// Specific mirrors (matching the exact repository ID) take precedence over generic ones (mirrorOf="*").
-// Note: Patterns like "external:*" in mirrorOf are not currently supported.
-// See: https://maven.apache.org/guides/mini/guide-mirror-settings.html
-func (s *settings) findMirrorForRepository(repositoryID string) *Mirror {
-	logger := log.WithPrefix("pom")
-
-	var specificMirrors []Mirror
-	var genericMirrors []Mirror
-
-	for _, mirror := range s.Mirrors {
-		mirrorOfs := strings.Split(mirror.MirrorOf, ",")
-		for i := range mirrorOfs {
-			mirrorOfs[i] = strings.TrimSpace(mirrorOfs[i])
-		}
-
-		switch {
-		case slices.Contains(mirrorOfs, fmt.Sprintf("!%s", repositoryID)):
-			logMirrorDetection(logger, "Detected mirror that may **not** be used for repository", repositoryID, mirror, mirrorOfs)
-			continue
-		case slices.Contains(mirrorOfs, repositoryID):
-			logMirrorDetection(logger, "Detected specific mirror for repository", repositoryID, mirror, mirrorOfs)
-			specificMirrors = append(specificMirrors, mirror)
-		case slices.Contains(mirrorOfs, "*"):
-			logMirrorDetection(logger, "Detected generic mirror that may be used for repository", repositoryID, mirror, mirrorOfs)
-			genericMirrors = append(genericMirrors, mirror)
-		}
-	}
-
-	if mirror := selectMirrorAndLog(logger, "specific", repositoryID, specificMirrors); mirror != nil {
-		return mirror
-	}
-	if mirror := selectMirrorAndLog(logger, "generic", repositoryID, genericMirrors); mirror != nil {
-		return mirror
-	}
-
-	logger.Debug("No mirror found for repository", log.String("repositoryID", repositoryID))
-	return nil
-}
-
-// logMirrorDetection is a helper for logging mirror detection events, to reduce code duplication.
-func logMirrorDetection(logger *log.Logger, message, repositoryID string, mirror Mirror, mirrorOfs []string) {
-	logger.Debug(message,
-		log.String("repositoryID", repositoryID),
-		log.String("mirror.ID", mirror.ID),
-		log.Any("mirrorOfs", mirrorOfs))
-}
-
-// selectMirrorAndLog selects the first mirror from the provided slice, logging appropriately.
-func selectMirrorAndLog(logger *log.Logger, kind, repositoryID string, mirrors []Mirror) *Mirror {
-	if len(mirrors) == 0 {
-		return nil
-	}
-	if len(mirrors) > 1 {
-		logger.Debug(fmt.Sprintf("Multiple %s mirrors found for repository, selecting the first one", kind),
-			log.String("repositoryID", repositoryID),
-			log.String("selectedMirrorID", mirrors[0].ID),
-			log.Int("mirrorCount", len(mirrors)))
-	}
-	logger.Debug(fmt.Sprintf("Selecting %s mirror for repository", kind),
-		log.String("repositoryID", repositoryID),
-		log.String("mirror.ID", mirrors[0].ID))
-	return &mirrors[0]
 }

@@ -168,8 +168,6 @@ func (p *pom) repositories(settings settings) ([]string, []string) {
 
 // effectiveRepositories returns the effective repositories for the POM.
 // It combines the repositories defined in the pom.xml file with those defined in the settings.xml file.
-// The repositories from the pom.xml (and settings.xml as well) are updated with mirror settings,
-// if applicable mirrors exist in the settings.xml.
 // Does not include pluginRepositories!
 func (p *pom) effectiveRepositories(settings *settings) []repository {
 	logger := log.WithPrefix("pom")
@@ -202,10 +200,6 @@ func (p *pom) effectiveRepositories(settings *settings) []repository {
 			}
 		}
 
-		// Apply mirror settings for repositories defined in the pom.xml
-		applyMirrorSettingsForRepositories(repositories, settings)
-
-		// Combine repositories from settings.xml (for those mirrors have already been applied)
 		repositories = append(repositories, settings.getEffectiveRepositories()...)
 	}
 	return lo.UniqBy(repositories, func(r repository) string {

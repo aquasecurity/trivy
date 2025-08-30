@@ -2,8 +2,6 @@ package pom
 
 import (
 	"github.com/samber/lo"
-
-	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // Centralized the repository structure to be used across different parsers.
@@ -39,33 +37,4 @@ type Identifiable interface {
 func containsByID[T Identifiable](items []T, id string) bool {
 	_, ok := lo.Find(items, func(item T) bool { return item.GetID() == id })
 	return ok
-}
-
-// applyMirrorSettingsForRepositories updates the repositories to match applicable mirrors from the settings.
-func applyMirrorSettingsForRepositories(repositories []repository, s *settings) {
-	logger := log.WithPrefix("pom")
-	for i := range repositories {
-		mirrorForRepo := s.findMirrorForRepository(repositories[i].ID)
-		if mirrorForRepo != nil {
-			logger.Debug("Using mirror for repository",
-				log.String("repositoryID", repositories[i].ID), log.String("mirror.ID", mirrorForRepo.ID))
-			repositories[i].applyMirrorSettings(mirrorForRepo)
-		}
-	}
-}
-
-// applyMirrorSettingsForRepositories updates the repository settings based on the provided mirror.
-// Mirrors are always enabled for releases and for snapshots as well.
-func (r *repository) applyMirrorSettings(mirror *Mirror) {
-	if r == nil || mirror == nil {
-		return
-	}
-	logger := log.WithPrefix("pom")
-	if mirror.URL != "" {
-		logger.Debug("Overriding url for repository (and enabling both releases and snapshots)",
-			log.String("repository.URL", r.URL), log.String("mirror.URL", mirror.URL))
-		r.URL = mirror.URL
-		r.Releases.Enabled = true
-		r.Snapshots.Enabled = true
-	}
 }

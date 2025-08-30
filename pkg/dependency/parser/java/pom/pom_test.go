@@ -69,63 +69,6 @@ func Test_effectiveRepositories(t *testing.T) {
 			},
 		},
 		{
-			name: "pom with repository and profile containing repository - settings with active profile and mirror",
-			pom: &pom{
-				content: &pomXML{
-					Repositories: repositories{
-						Repository: []repository{
-							{
-								ID:        "r1-releases",
-								URL:       "http://repo1",
-								Releases:  repositoryPolicy{Enabled: true},
-								Snapshots: repositoryPolicy{Enabled: true},
-							},
-						},
-					},
-					Profiles: []Profile{
-						{
-							ID: "p1",
-							Repositories: []repository{
-								{
-									ID:        "r2-snapshots",
-									URL:       "http://repo2",
-									Releases:  repositoryPolicy{Enabled: false},
-									Snapshots: repositoryPolicy{Enabled: true},
-								},
-							},
-						},
-					},
-				},
-			},
-			settings: &settings{
-				ActiveProfiles: []string{"p1"},
-				Mirrors: []Mirror{
-					{ID: "mirror-r1-releases", MirrorOf: "r1-releases", URL: "http://mirror1"},
-				},
-			},
-			wantRepositories: []repository{
-				{
-					ID:       "central",
-					Name:     "Maven Central Repository",
-					URL:      "https://repo.maven.apache.org/maven2/",
-					Releases: repositoryPolicy{Enabled: true},
-				},
-				{
-					ID:       "r1-releases",
-					URL:      "http://mirror1",
-					Releases: repositoryPolicy{Enabled: true},
-					// When a mirror is applied, it enables both releases and snapshots
-					Snapshots: repositoryPolicy{Enabled: true},
-				},
-				{
-					ID:        "r2-snapshots",
-					URL:       "http://repo2",
-					Releases:  repositoryPolicy{Enabled: false},
-					Snapshots: repositoryPolicy{Enabled: true},
-				},
-			},
-		},
-		{
 			name: "pom without repositories - no settings",
 			pom: &pom{
 				content: &pomXML{},
@@ -137,69 +80,6 @@ func Test_effectiveRepositories(t *testing.T) {
 					Name:     "Maven Central Repository",
 					URL:      "https://repo.maven.apache.org/maven2/",
 					Releases: repositoryPolicy{Enabled: true},
-				},
-			},
-		},
-		{
-			name: "pom without repositories - settings with only central mirror",
-			pom: &pom{
-				content: &pomXML{},
-			},
-			settings: &settings{
-				ActiveProfiles: []string{"default"},
-				Mirrors: []Mirror{
-					{ID: "mirror-central", MirrorOf: "central", URL: "http://mirror1"},
-				},
-			},
-			wantRepositories: []repository{
-				{
-					ID:        "central",
-					Name:      "Maven Central Repository",
-					URL:       "http://mirror1",
-					Releases:  repositoryPolicy{Enabled: true},
-					Snapshots: repositoryPolicy{Enabled: true},
-				},
-			},
-		},
-		{
-			name: "pom without repositories - settings with only central mirror asterisk match",
-			pom: &pom{
-				content: &pomXML{},
-			},
-			settings: &settings{
-				ActiveProfiles: []string{"default"},
-				Mirrors: []Mirror{
-					{ID: "mirror-central", MirrorOf: "*", URL: "http://mirror2"},
-				},
-			},
-			wantRepositories: []repository{
-				{
-					ID:        "central",
-					Name:      "Maven Central Repository",
-					URL:       "http://mirror2",
-					Releases:  repositoryPolicy{Enabled: true},
-					Snapshots: repositoryPolicy{Enabled: true},
-				},
-			},
-		},
-		{
-			name: "pom without repositories - settings with only mirror but not for central",
-			pom: &pom{
-				content: &pomXML{},
-			},
-			settings: &settings{
-				ActiveProfiles: []string{"default"},
-				Mirrors: []Mirror{
-					{ID: "mirror-central", MirrorOf: "*,!central", URL: "http://mirror3"},
-				},
-			},
-			wantRepositories: []repository{
-				{
-					ID:        "central",
-					Name:      "Maven Central Repository",
-					URL:       "https://repo.maven.apache.org/maven2/",
-					Releases:  repositoryPolicy{Enabled: true},
-					Snapshots: repositoryPolicy{Enabled: false},
 				},
 			},
 		},
@@ -295,40 +175,6 @@ func Test_effectiveRepositories(t *testing.T) {
 				{
 					ID:       "settings-repo",
 					URL:      "http://from-settings",
-					Releases: repositoryPolicy{Enabled: true},
-				},
-			},
-		},
-		{
-			name: "pom with repository - settings with mirror for a different repository",
-			pom: &pom{
-				content: &pomXML{
-					Repositories: repositories{
-						Repository: []repository{
-							{
-								ID:       "real-repo",
-								URL:      "http://real",
-								Releases: repositoryPolicy{Enabled: true},
-							},
-						},
-					},
-				},
-			},
-			settings: &settings{
-				Mirrors: []Mirror{
-					{ID: "unused", MirrorOf: "nonexistent", URL: "http://mirror"},
-				},
-			},
-			wantRepositories: []repository{
-				{
-					ID:       "central",
-					Name:     "Maven Central Repository",
-					URL:      "https://repo.maven.apache.org/maven2/",
-					Releases: repositoryPolicy{Enabled: true},
-				},
-				{
-					ID:       "real-repo",
-					URL:      "http://real",
 					Releases: repositoryPolicy{Enabled: true},
 				},
 			},

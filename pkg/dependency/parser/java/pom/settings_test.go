@@ -200,14 +200,6 @@ func Test_ReadSettings(t *testing.T) {
 					},
 				},
 				ActiveProfiles: []string{"mycompany", "test-cicd"},
-				Mirrors: []Mirror{
-					{
-						ID:       "mycompany-maven-central-mirror",
-						Name:     "mycompany-maven-central-mirror",
-						URL:      "https://mycompany.example.com/repository/maven-central-mirror",
-						MirrorOf: "central",
-					},
-				},
 			},
 		},
 		{
@@ -305,20 +297,6 @@ func Test_ReadSettings(t *testing.T) {
 					},
 				},
 				ActiveProfiles: []string{"mycompany", "test-cicd"},
-				Mirrors: []Mirror{
-					{
-						ID:       "mycompany-maven-central-mirror",
-						Name:     "mycompany-maven-central-mirror",
-						URL:      "https://mycompany.example.com/repository/maven-central-mirror",
-						MirrorOf: "central",
-					},
-					{
-						ID:       "google-maven-central",
-						Name:     "GCS Maven Central mirror EU",
-						URL:      "https://maven-central-eu.storage-download.googleapis.com/maven2/",
-						MirrorOf: "*,!mycompany-internal-releases,!mycompany-global-releases",
-					},
-				},
 			},
 		},
 	}
@@ -371,18 +349,6 @@ func Test_getActiveProfiles(t *testing.T) {
 	require.Len(t, got, 2)
 	require.Equal(t, "p1", got[0].ID)
 	require.Equal(t, "p2", got[1].ID)
-}
-
-func Test_findMirrorForRepository(t *testing.T) {
-	s := settings{
-		Mirrors: []Mirror{
-			{ID: "mirror-generic", MirrorOf: "*, !test"},
-			{ID: "mirror-central", MirrorOf: "central"},
-		},
-	}
-	require.Equal(t, "mirror-central", s.findMirrorForRepository("central").ID)
-	require.Equal(t, "mirror-generic", s.findMirrorForRepository("other").ID)
-	require.Nil(t, s.findMirrorForRepository("test"))
 }
 
 func Test_getEffectiveRepositories(t *testing.T) {
@@ -442,22 +408,15 @@ func Test_getEffectiveRepositories(t *testing.T) {
 			},
 		},
 		ActiveProfiles: []string{"p1"},
-		Mirrors: []Mirror{
-			{
-				ID:       "mirror-r1-releases",
-				MirrorOf: "r1-releases",
-				URL:      "http://mirror1",
-			},
-		},
 	}
 
 	effective := s.getEffectiveRepositories()
-	require.Len(t, effective, 3)
+	require.Len(t, effective, 4)
 
 	require.Equal(t, "r1-releases", effective[0].ID)
-	require.Equal(t, "http://mirror1", effective[0].URL)
+	require.Equal(t, "http://repo1", effective[0].URL)
 	require.True(t, effective[0].Releases.Enabled)
-	require.True(t, effective[0].Snapshots.Enabled)
+	require.False(t, effective[0].Snapshots.Enabled)
 
 	require.Equal(t, "r2-snapshots", effective[1].ID)
 	require.Equal(t, "http://repo2", effective[1].URL)
