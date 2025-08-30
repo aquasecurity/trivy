@@ -5,12 +5,14 @@ package repo
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/gittest"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -326,6 +328,53 @@ func TestArtifact_Inspect(t *testing.T) {
 			blobInfo, err := c.GetBlob(tt.want.BlobIDs[0])
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantBlobInfo, &blobInfo, "cache content mismatch")
+		})
+	}
+}
+
+// TestArtifact_InspectWithUserInfo tests that userinfo in the URL is correctly removed from the repo URL in the metadata.
+func TestArtifact_InspectWithUserInfo(t *testing.T) {
+	ts := gittest.NewTestServer(t)
+	defer ts.Close()
+
+	remoteRepoWithCreds := strings.Replace(ts.URL, "http://", "http://user:token@", 1) + "/test-repo.git"
+	// Prepare a local repo copy whose .git/config contains credentials in the remote URL
+	localRepoWithCreds := t.TempDir()
+	testutil.CopyDir(t, "../../../../internal/gittest/testdata/test-repo", localRepoWithCreds)
+	cfgPath := filepath.Join(localRepoWithCreds, ".git", "config")
+	b, err := os.ReadFile(cfgPath)
+	require.NoError(t, err)
+	// Inject userinfo into the remote URL for origin/upstream
+	cfg := strings.ReplaceAll(string(b), "https://github.com/aquasecurity/trivy-test-repo/", "https://user:token@github.com/aquasecurity/trivy-test-repo/")
+	require.NoError(t, os.WriteFile(cfgPath, []byte(cfg), 0o644))
+
+	tests := []struct {
+		name        string
+		rawurl      string
+		wantRepoURL string
+	}{
+		{
+			name:        "remote repo with userinfo in URL",
+			rawurl:      remoteRepoWithCreds,
+			wantRepoURL: ts.URL + "/test-repo.git",
+		},
+		{
+			name:        "local repo with userinfo in remote URL",
+			rawurl:      localRepoWithCreds,
+			wantRepoURL: "https://github.com/aquasecurity/trivy-test-repo/",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			art, cleanup, err := NewArtifact(tt.rawurl, cache.NewMemoryCache(), walker.NewFS(), artifact.Option{})
+			require.NoError(t, err)
+			defer cleanup()
+
+			ref, err := art.Inspect(t.Context())
+			require.NoError(t, err)
+
+			assert.Equal(t, tt.wantRepoURL, ref.RepoMetadata.RepoURL)
 		})
 	}
 }
