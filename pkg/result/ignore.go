@@ -203,6 +203,7 @@ func (c *IgnoreConfig) MatchLicense(licenseID, filePath string) *IgnoreFinding {
 
 	_, err := expression.Normalize(licenseID, matchLicenses)
 	if err != nil {
+		log.WithPrefix("ignore").Debug("Unable to normalize license expression", log.String("license", licenseID), log.Err(err))
 		return nil
 	}
 
