@@ -27,10 +27,10 @@ import (
 )
 
 func setupGitRepository(t *testing.T, repo, dir string) *httptest.Server {
-	gs := gittest.NewServer(t, repo, dir)
+	gs := gittest.NewServer(t, repo, dir, gittest.Options{})
 
 	worktree := t.TempDir()
-	r := gittest.Clone(t, gs, repo, worktree)
+	r := gittest.Clone(t, gs, repo, worktree, gittest.Options{})
 
 	// git tag
 	gittest.SetTag(t, r, "v0.2.0")
