@@ -26,7 +26,7 @@
   "components": [
     {
       "bom-ref": "pkg:maven/commons-io/commons-io@2.13.0?package-id=6033c6b2f2d3cf10",
-      "type": "library",
+      "type": "file",
       "group": "commons-io",
       "name": "commons-io",
       "version": "2.13.0",

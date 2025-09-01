@@ -877,16 +877,11 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
-			name:      "invalid serial",
-			inputFile: "testdata/sad/invalid-serial.json",
-			wantErr:   "CycloneDX decode error",
-		},
-		{
-			name:      "happy path - third-party SBOM scan of FS",
-			inputFile: "testdata/happy/third-party-scan-fs.json",
+			name:      "happy path - third-party SBOM scan of `file` root component",
+			inputFile: "testdata/happy/third-party-scan-file-component.json",
 			want: types.SBOM{
 				Applications: []ftypes.Application{
-					ftypes.Application{
+					{
 						Type:     "jar",
 						FilePath: "",
 						Packages: ftypes.Packages{
@@ -937,6 +932,11 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					},
 				},
 			},
+		},
+		{
+			name:      "invalid serial",
+			inputFile: "testdata/sad/invalid-serial.json",
+			wantErr:   "CycloneDX decode error",
 		},
 	}
 
