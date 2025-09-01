@@ -3,16 +3,16 @@
 package repo
 
 import (
+	"net/url"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
+	"github.com/go-git/go-git/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/gittest"
-	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -24,7 +24,7 @@ import (
 )
 
 func TestNewArtifact(t *testing.T) {
-	ts := gittest.NewTestServer(t)
+	ts := gittest.NewTestServer(t, gittest.Options{})
 	defer ts.Close()
 
 	type args struct {
@@ -166,7 +166,7 @@ func TestNewArtifact(t *testing.T) {
 }
 
 func TestArtifact_Inspect(t *testing.T) {
-	ts := gittest.NewTestServer(t)
+	ts := gittest.NewTestServer(t, gittest.Options{})
 	defer ts.Close()
 
 	tests := []struct {
@@ -278,6 +278,15 @@ func TestArtifact_Inspect(t *testing.T) {
 				BlobIDs: []string{
 					"sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c",
 				},
+				RepoMetadata: artifact.RepoMetadata{
+					RepoURL:   "https://github.com/aquasecurity/trivy-test-repo/",
+					Branch:    "main",
+					Tags:      []string{"v0.0.1"},
+					Commit:    "8a19b492a589955c3e70c6ad8efd1e4ec6ae0d35",
+					CommitMsg: "Update README.md",
+					Author:    "Teppei Fukuda <knqyf263@gmail.com>",
+					Committer: "GitHub <noreply@github.com>",
+				},
 			},
 			wantBlobInfo: &types.BlobInfo{
 				SchemaVersion: types.BlobJSONSchemaVersion,
@@ -323,51 +332,176 @@ func TestArtifact_Inspect(t *testing.T) {
 	}
 }
 
-// TestArtifact_InspectWithUserInfo tests that userinfo in the URL is correctly removed from the repo URL in the metadata.
-func TestArtifact_InspectWithUserInfo(t *testing.T) {
-	ts := gittest.NewTestServer(t)
-	defer ts.Close()
+// setupAuthTestServer creates a test server with authentication and returns parsed URL with /test-repo.git path
+func setupAuthTestServer(t *testing.T, username, password string) *url.URL {
+	t.Helper()
+	ts := gittest.NewTestServer(t, gittest.Options{
+		Username: username,
+		Password: password,
+	})
+	t.Cleanup(ts.Close)
 
-	remoteRepoWithCreds := strings.Replace(ts.URL, "http://", "http://user:token@", 1) + "/test-repo.git"
-	// Prepare a local repo copy whose .git/config contains credentials in the remote URL
-	localRepoWithCreds := t.TempDir()
-	testutil.CopyDir(t, "../../../../internal/gittest/testdata/test-repo", localRepoWithCreds)
-	cfgPath := filepath.Join(localRepoWithCreds, ".git", "config")
-	b, err := os.ReadFile(cfgPath)
+	tsURL, err := url.Parse(ts.URL)
 	require.NoError(t, err)
-	// Inject userinfo into the remote URL for origin/upstream
-	cfg := strings.ReplaceAll(string(b), "https://github.com/aquasecurity/trivy-test-repo/", "https://user:token@github.com/aquasecurity/trivy-test-repo/")
-	require.NoError(t, os.WriteFile(cfgPath, []byte(cfg), 0o644))
+	tsURL.Path = "/test-repo.git"
 
-	tests := []struct {
-		name        string
-		rawurl      string
-		wantRepoURL string
-	}{
-		{
-			name:        "remote repo with userinfo in URL",
-			rawurl:      remoteRepoWithCreds,
-			wantRepoURL: ts.URL + "/test-repo.git",
-		},
-		{
-			name:        "local repo with userinfo in remote URL",
-			rawurl:      localRepoWithCreds,
-			wantRepoURL: "https://github.com/aquasecurity/trivy-test-repo/",
-		},
+	return tsURL
+}
+
+// testInspectArtifact is a helper function to inspect an artifact and assert the results
+func testInspectArtifact(t *testing.T, target, wantRepoURL, wantErr string) {
+	t.Helper()
+	art, cleanup, err := NewArtifact(target, cache.NewMemoryCache(), walker.NewFS(), artifact.Option{})
+	t.Cleanup(cleanup)
+
+	if wantErr != "" {
+		require.ErrorContains(t, err, wantErr)
+		return
 	}
+	require.NoError(t, err)
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			art, cleanup, err := NewArtifact(tt.rawurl, cache.NewMemoryCache(), walker.NewFS(), artifact.Option{})
-			require.NoError(t, err)
-			defer cleanup()
+	// Verify Inspect works
+	ref, err := art.Inspect(t.Context())
+	require.NoError(t, err)
 
-			ref, err := art.Inspect(t.Context())
-			require.NoError(t, err)
+	// Verify the RepoURL
+	assert.Equal(t, wantRepoURL, ref.RepoMetadata.RepoURL)
 
-			assert.Equal(t, tt.wantRepoURL, ref.RepoMetadata.RepoURL)
+	// Verify we have blob IDs (indicating successful scan)
+	assert.NotEmpty(t, ref.BlobIDs)
+}
+
+func TestArtifact_InspectWithAuth(t *testing.T) {
+	const (
+		testUsername = "testuser"
+		testPassword = "testpass"
+	)
+
+	// Test with environment variable authentication (GITHUB_TOKEN, GITLAB_TOKEN)
+	t.Run("environment variable authentication", func(t *testing.T) {
+		const testGitUsername = "fanal-aquasecurity-scan" // This is the username used by Trivy
+
+		// Setup test server with authentication
+		tsURL := setupAuthTestServer(t, testGitUsername, testPassword)
+
+		tests := []struct {
+			name        string
+			target      string
+			envVars     map[string]string
+			wantErr     string
+			wantRepoURL string
+		}{
+			{
+				name:   "success with GITHUB_TOKEN",
+				target: tsURL.String(),
+				envVars: map[string]string{
+					"GITHUB_TOKEN": testPassword,
+				},
+				wantRepoURL: tsURL.String(),
+			},
+			{
+				name:   "success with GITLAB_TOKEN",
+				target: tsURL.String(),
+				envVars: map[string]string{
+					"GITLAB_TOKEN": testPassword,
+				},
+				wantRepoURL: tsURL.String(),
+			},
+			{
+				name:    "failure without token",
+				target:  tsURL.String(),
+				wantErr: "authentication required",
+			},
+			{
+				name:   "failure with wrong token",
+				target: tsURL.String(),
+				envVars: map[string]string{
+					"GITHUB_TOKEN": "wrongpassword",
+				},
+				wantErr: "authentication required",
+			},
+		}
+
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				// Set test environment variables
+				for key, value := range tt.envVars {
+					t.Setenv(key, value)
+				}
+
+				// Test using helper function
+				testInspectArtifact(t, tt.target, tt.wantRepoURL, tt.wantErr)
+			})
+		}
+	})
+
+	// Test with URL-embedded authentication
+	t.Run("URL embedded authentication", func(t *testing.T) {
+		// Setup test server with authentication
+		tsURL := setupAuthTestServer(t, testUsername, testPassword)
+
+		// Helper function to generate target URL with credentials
+		makeTarget := func(username, password string) string {
+			u := *tsURL // Copy the URL
+			if username != "" && password != "" {
+				u.User = url.UserPassword(username, password)
+			}
+			return u.String()
+		}
+
+		tests := []struct {
+			name        string
+			target      string
+			wantRepoURL string
+			wantErr     string
+		}{
+			{
+				name:        "success with embedded credentials",
+				target:      makeTarget(testUsername, testPassword),
+				wantRepoURL: tsURL.String(),
+			},
+			{
+				name:    "failure with wrong password",
+				target:  makeTarget(testUsername, "wrongpass"),
+				wantErr: "authentication required",
+			},
+			{
+				name:    "failure without credentials",
+				target:  makeTarget("", ""),
+				wantErr: "authentication required",
+			},
+		}
+
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				// Test using helper function
+				testInspectArtifact(t, tt.target, tt.wantRepoURL, tt.wantErr)
+			})
+		}
+	})
+
+	// Test cloning with embedded credentials and then scanning the local directory
+	t.Run("clone with credentials then scan local", func(t *testing.T) {
+		// Setup test server with authentication
+		tsURL := setupAuthTestServer(t, testUsername, testPassword)
+
+		// Add credentials to URL
+		u := *tsURL // Copy the URL
+		u.User = url.UserPassword(testUsername, testPassword)
+		targetWithCreds := u.String()
+
+		// Clone the repository with URL-embedded credentials
+		cloneDir := filepath.Join(t.TempDir(), "cloned-repo")
+
+		// Use go-git directly to clone with URL-embedded credentials
+		_, err := git.PlainClone(cloneDir, false, &git.CloneOptions{
+			URL: targetWithCreds,
 		})
-	}
+		require.NoError(t, err)
+
+		// Scan and verify the local cloned directory
+		testInspectArtifact(t, cloneDir, tsURL.String(), "")
+	})
 }
 
 func Test_newURL(t *testing.T) {

@@ -57,6 +57,15 @@ module "this" {
 				"code/infra2",
 			},
 		},
+		{
+			name: "unknown module source",
+			files: map[string]string{
+				"main.tf": `module "test" {
+  source = "${path.module}/modules/foo"
+}`,
+			},
+			expected: []string{"."},
+		},
 	}
 
 	for _, tt := range tests {
