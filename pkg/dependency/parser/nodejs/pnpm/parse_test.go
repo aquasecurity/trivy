@@ -100,7 +100,7 @@ func TestParse(t *testing.T) {
 	}
 }
 
-func Test_parseDepPath(t *testing.T) {
+func Test_parsePnpmKey(t *testing.T) {
 	tests := []struct {
 		name        string
 		lockFileVer float64
@@ -235,7 +235,7 @@ func Test_parseDepPath(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p := NewParser()
-			gotName, gotVersion, gotRef := p.parseDepPath(tt.pkg, tt.lockFileVer)
+			gotName, gotVersion, gotRef := p.parsePnpmKey(tt.pkg, tt.lockFileVer)
 			require.Equal(t, tt.wantName, gotName)
 			require.Equal(t, tt.wantVersion, gotVersion)
 			require.Equal(t, tt.wantRef, gotRef)
