@@ -2278,14 +2278,7 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 			want: &cdx.Licenses{
 				cdx.LicenseChoice{
-					License: &cdx.License{
-						ID: "MIT",
-					},
-				},
-				cdx.LicenseChoice{
-					License: &cdx.License{
-						Name: "AFL-2.0 WITH Linux-syscall-note",
-					},
+					Expression: "MIT AND AFL-2.0 WITH Linux-syscall-note",
 				},
 			},
 		},

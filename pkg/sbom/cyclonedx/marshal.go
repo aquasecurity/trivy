@@ -295,20 +295,49 @@ func (m *Marshaler) Licenses(licenses []string) *cdx.Licenses {
 	if len(licenses) == 0 {
 		return nil
 	}
-	choices := lo.Map(licenses, func(license string, _ int) cdx.LicenseChoice {
-		return m.normalizeLicense(license)
-	})
-
-	return lo.ToPtr(NormalizeLicenses(choices))
+	return m.normalizeLicenses(licenses)
 }
 
-func (m *Marshaler) normalizeLicense(license string) cdx.LicenseChoice {
+func (m *Marshaler) normalizeLicenses(licenses []string) *cdx.Licenses {
+	expressions := lo.Map(licenses, func(license string, _ int) expression.Expression {
+		return m.normalizeLicense(license)
+	})
+	// Check if all licenses are valid SPDX expressions
+	allValidSPDX := lo.EveryBy(expressions, func(expr expression.Expression) bool {
+		return expr.IsSPDXExpression()
+	})
+
+	// Check if at least one is a CompoundExpr
+	hasCompoundExpr := lo.ContainsBy(expressions, func(expr expression.Expression) bool {
+		_, isCompound := expr.(expression.CompoundExpr)
+		return isCompound
+	})
+
+	// If all are valid SPDX AND at least one contains CompoundExpr, combine into single Expression
+	if allValidSPDX && hasCompoundExpr {
+		exprStrs := lo.Map(expressions, func(expr expression.Expression, _ int) string {
+			return expr.String()
+		})
+		return &cdx.Licenses{{Expression: strings.Join(exprStrs, " AND ")}}
+	}
+
+	// Otherwise use individual LicenseChoice entries with license.id or license.name
+	choices := lo.Map(expressions, func(expr expression.Expression, _ int) cdx.LicenseChoice {
+		if s, ok := expr.(expression.SimpleExpr); ok && s.IsSPDXExpression() {
+			// Use license.id for valid SPDX ID (e.g., "MIT", "Apache-2.0")
+			return cdx.LicenseChoice{License: &cdx.License{ID: s.String()}}
+		}
+		// Use license.name for everything else (invalid SPDX ID, SPDX expression, etc.)
+		return cdx.LicenseChoice{License: &cdx.License{Name: expr.String()}}
+	})
+	return lo.ToPtr(cdx.Licenses(choices))
+}
+
+func (m *Marshaler) normalizeLicense(license string) expression.Expression {
 	// Save text license as licenseChoice.license.name
 	if after, ok := strings.CutPrefix(license, licensing.LicenseTextPrefix); ok {
-		return cdx.LicenseChoice{
-			License: &cdx.License{
-				Name: after,
-			},
+		return expression.SimpleExpr{
+			License: after,
 		}
 	}
 
@@ -320,81 +349,10 @@ func (m *Marshaler) normalizeLicense(license string) cdx.LicenseChoice {
 	if err != nil {
 		// Not fail on the invalid license
 		m.logger.Warn("Unable to marshal SPDX licenses", log.String("license", license))
-		return cdx.LicenseChoice{
-			License: &cdx.License{Name: license},
-		}
+		return expression.SimpleExpr{License: license}
 	}
 
-	// The license is not a valid SPDX ID or SPDX expression
-	if !normalizedLicenses.IsSPDXExpression() {
-		// Use LicenseChoice.License.Name for invalid SPDX ID / SPDX expression
-		return cdx.LicenseChoice{
-			License: &cdx.License{Name: normalizedLicenses.String()},
-		}
-	}
-
-	// The license is a valid SPDX ID or SPDX expression
-	var licenseChoice cdx.LicenseChoice
-	switch normalizedLicenses.(type) {
-	case expression.SimpleExpr:
-		// Use LicenseChoice.License.ID for valid SPDX ID
-		licenseChoice.License = &cdx.License{ID: normalizedLicenses.String()}
-	case expression.CompoundExpr:
-		// Use LicenseChoice.Expression for valid SPDX expression (with any conjunction)
-		// e.g. "GPL-2.0 WITH Classpath-exception-2.0" or "GPL-2.0 AND MIT"
-		licenseChoice.Expression = normalizedLicenses.String()
-	}
-
-	return licenseChoice
-}
-
-// NormalizeLicenses fixes invalid CycloneDX schema cases:
-// - using both LicenseChoice.License and LicenseChoice.Expression in Licenses (convert Expression to License.Name)
-// - using more than one LicenseChoice with Expression (combine them with AND into one Expression)
-func NormalizeLicenses(choices []cdx.LicenseChoice) cdx.Licenses {
-	var licenses, expressions []cdx.LicenseChoice
-
-	for _, choice := range choices {
-		if choice.Expression != "" {
-			expressions = append(expressions, choice)
-		} else if choice.License != nil {
-			licenses = append(licenses, choice)
-		}
-	}
-
-	if len(licenses) == 0 && len(expressions) == 0 {
-		return nil
-	}
-
-	// If both License and Expression are used, convert Expression to License.Name
-	if len(expressions) > 0 && len(licenses) > 0 {
-		for _, c := range expressions {
-			licenses = append(licenses, cdx.LicenseChoice{
-				License: &cdx.License{Name: c.Expression},
-			})
-		}
-		return licenses
-	}
-
-	// Names/IDs only
-	if len(licenses) > 0 {
-		return licenses
-	}
-
-	// Merge multiple expressions into one expression with AND
-	if len(expressions) > 1 {
-		var b strings.Builder
-		for i, c := range expressions {
-			if i > 0 {
-				b.WriteString(" AND ")
-			}
-			b.WriteString(c.Expression)
-		}
-		return cdx.Licenses{{Expression: b.String()}}
-	}
-
-	// len(expressions) == 1
-	return expressions
+	return normalizedLicenses
 }
 
 func (*Marshaler) Properties(properties []core.Property) *[]cdx.Property {
