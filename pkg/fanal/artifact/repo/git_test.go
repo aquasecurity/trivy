@@ -458,7 +458,7 @@ func TestArtifact_InspectWithAuth(t *testing.T) {
 			{
 				name:        "success with embedded credentials",
 				target:      makeTarget(testUsername, testPassword),
-				wantRepoURL: makeTarget(testUsername, testPassword), // TODO: username/password should be stripped
+				wantRepoURL: tsURL.String(),
 			},
 			{
 				name:    "failure with wrong password",
@@ -486,8 +486,9 @@ func TestArtifact_InspectWithAuth(t *testing.T) {
 		tsURL := setupAuthTestServer(t, testUsername, testPassword)
 
 		// Add credentials to URL
-		tsURL.User = url.UserPassword(testUsername, testPassword)
-		targetWithCreds := tsURL.String()
+		u := *tsURL // Copy the URL
+		u.User = url.UserPassword(testUsername, testPassword)
+		targetWithCreds := u.String()
 
 		// Clone the repository with URL-embedded credentials
 		cloneDir := filepath.Join(t.TempDir(), "cloned-repo")
@@ -499,8 +500,7 @@ func TestArtifact_InspectWithAuth(t *testing.T) {
 		require.NoError(t, err)
 
 		// Scan and verify the local cloned directory
-		// TODO: The credentials in the URL should be stripped in the RepoURL
-		testInspectArtifact(t, cloneDir, targetWithCreds, "")
+		testInspectArtifact(t, cloneDir, tsURL.String(), "")
 	})
 }
 
