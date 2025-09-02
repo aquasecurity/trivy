@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/go-json-experiment/json"
-	"github.com/go-json-experiment/json/jsontext"
+	"encoding/json/v2"
+	"encoding/json/jsontext"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"

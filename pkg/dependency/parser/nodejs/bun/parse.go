@@ -6,8 +6,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/go-json-experiment/json"
-	"github.com/go-json-experiment/json/jsontext"
+	"encoding/json/v2"
+	"encoding/json/jsontext"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 

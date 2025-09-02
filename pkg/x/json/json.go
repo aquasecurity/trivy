@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/go-json-experiment/json"
-	"github.com/go-json-experiment/json/jsontext"
+	"encoding/json/v2"
+	"encoding/json/jsontext"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"

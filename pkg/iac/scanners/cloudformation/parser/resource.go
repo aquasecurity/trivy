@@ -4,8 +4,8 @@ import (
 	"io/fs"
 	"strings"
 
-	"github.com/go-json-experiment/json"
-	"github.com/go-json-experiment/json/jsontext"
+	"encoding/json/v2"
+	"encoding/json/jsontext"
 	"gopkg.in/yaml.v3"
 
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
