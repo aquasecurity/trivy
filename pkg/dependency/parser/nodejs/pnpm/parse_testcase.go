@@ -747,7 +747,7 @@ var (
 			Relationship: ftypes.RelationshipIndirect,
 		},
 		{
-			ID:           "asynckit@0.4.0",
+			ID:           "asynckit@https://github.com/alexindigo/asynckit/tarball/v0.4.0",
 			Name:         "asynckit",
 			Version:      "0.4.0",
 			Relationship: ftypes.RelationshipIndirect,
@@ -903,7 +903,7 @@ var (
 		{
 			ID: "package1@file:package1",
 			DependsOn: []string{
-				"asynckit@0.4.0",
+				"asynckit@https://github.com/alexindigo/asynckit/tarball/v0.4.0",
 			},
 		},
 		{

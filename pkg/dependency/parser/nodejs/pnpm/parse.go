@@ -174,7 +174,6 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 		var dependsOn []string // List of snapshot keys this package depends on
 		for depName, depVer := range lo.Assign(snapshot.OptionalDependencies, snapshot.Dependencies) {
 			normalizedDepVer := p.trimPeerDeps(depVer, lockVer)
-			normalizedDepVer = p.parseVersion(string(snapshotKey), normalizedDepVer, lockVer)
 			// Only include dependencies that are actually installed (exist in "packages" section).
 			if _, ok := lockFile.Packages[PackageKey(packageID(depName, normalizedDepVer))]; ok {
 				// Use the original name/version string (with peer deps) to build the snapshot key correctly.
