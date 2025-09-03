@@ -79,9 +79,10 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: authorization.Authorization{
 				RoleAssignments: []authorization.RoleAssignment{{
-					RoleDefinitionId: types.StringTest("/subscriptions/12345678-1234-1234-1234-123456789012/providers/Microsoft.Authorization/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635"),
-					PrincipalId:      types.StringTest("11111111-1111-1111-1111-111111111111"),
-					PrincipalType:    types.StringTest("User"),
+					RoleDefinitionId:   types.StringTest("/subscriptions/12345678-1234-1234-1234-123456789012/providers/Microsoft.Authorization/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635"),
+					RoleDefinitionName: types.String("", types.NewUnmanagedMetadata()),
+					PrincipalId:        types.StringTest("11111111-1111-1111-1111-111111111111"),
+					PrincipalType:      types.StringTest("User"),
 				}},
 			},
 		},
@@ -99,9 +100,10 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: authorization.Authorization{
 				RoleAssignments: []authorization.RoleAssignment{{
-					RoleDefinitionId: types.StringTest(""),
-					PrincipalId:      types.StringTest(""),
-					PrincipalType:    types.StringTest(""),
+					RoleDefinitionId:   types.StringTest(""),
+					RoleDefinitionName: types.String("", types.NewUnmanagedMetadata()),
+					PrincipalId:        types.StringTest(""),
+					PrincipalType:      types.StringTest(""),
 				}},
 			},
 		},

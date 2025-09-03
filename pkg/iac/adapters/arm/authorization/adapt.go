@@ -3,6 +3,7 @@ package authorization
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/authorization"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(deployment azure.Deployment) authorization.Authorization {
@@ -37,10 +38,11 @@ func adaptRoleAssignments(deployment azure.Deployment) (roleAssignments []author
 
 func adaptRoleAssignment(resource azure.Resource) authorization.RoleAssignment {
 	return authorization.RoleAssignment{
-		Metadata:         resource.Metadata,
-		RoleDefinitionId: resource.Properties.GetMapValue("roleDefinitionId").AsStringValue("", resource.Metadata),
-		PrincipalId:      resource.Properties.GetMapValue("principalId").AsStringValue("", resource.Metadata),
-		PrincipalType:    resource.Properties.GetMapValue("principalType").AsStringValue("", resource.Metadata),
+		Metadata:           resource.Metadata,
+		RoleDefinitionId:   resource.Properties.GetMapValue("roleDefinitionId").AsStringValue("", resource.Metadata),
+		RoleDefinitionName: iacTypes.String("", iacTypes.NewUnmanagedMetadata()),
+		PrincipalId:        resource.Properties.GetMapValue("principalId").AsStringValue("", resource.Metadata),
+		PrincipalType:      resource.Properties.GetMapValue("principalType").AsStringValue("", resource.Metadata),
 	}
 }
 
