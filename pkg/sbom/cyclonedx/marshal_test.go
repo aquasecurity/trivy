@@ -64,7 +64,9 @@ var (
 
 func TestMarshaler_MarshalReport(t *testing.T) {
 	testSBOM := core.NewBOM(core.Options{GenerateBOMRef: true})
-	testSBOM.AddComponent(&core.Component{
+
+	// Add root component
+	rootComponent := &core.Component{
 		Root: true,
 		Type: core.TypeApplication,
 		Name: "jackson-databind-2.13.4.1.jar",
@@ -77,7 +79,40 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				Value: "2",
 			},
 		},
-	})
+	}
+	testSBOM.AddComponent(rootComponent)
+
+	// Add the jackson-databind component that matches scan results
+	jacksonComponent := &core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "jackson-databind",
+		Group:   "com.fasterxml.jackson.core",
+		Version: "2.13.4.1",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "com.fasterxml.jackson.core",
+				Name:      "jackson-databind",
+				Version:   "2.13.4.1",
+			},
+		},
+		Properties: []core.Property{
+			{
+				Name:  core.PropertyPkgType,
+				Value: "jar",
+			},
+			{
+				Name:  core.PropertyFilePath,
+				Value: "jackson-databind-2.13.4.1.jar",
+			},
+		},
+	}
+	testSBOM.AddComponent(jacksonComponent)
+
+	// Establish relationships
+	testSBOM.AddRelationship(rootComponent, jacksonComponent, core.RelationshipContains)
+	testSBOM.AddRelationship(jacksonComponent, nil, core.RelationshipDependsOn)
 
 	tests := []struct {
 		name        string
@@ -1533,7 +1568,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  cdx.SpecVersion1_6,
 				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
-				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000002",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",

@@ -80,12 +80,20 @@ func (b *BOM) parseBOM(bom *cdx.BOM) error {
 		if !ok {
 			continue
 		}
-		for _, depRef := range lo.FromPtr(dep.Dependencies) {
-			dependency, ok := components[depRef]
-			if !ok {
-				continue
+
+		dependencies := lo.FromPtr(dep.Dependencies)
+		if len(dependencies) == 0 {
+			// Empty dependsOn array - create empty relationship to preserve this information
+			b.BOM.AddRelationship(ref, nil, core.RelationshipDependsOn)
+		} else {
+			// Process actual dependencies
+			for _, depRef := range dependencies {
+				dependency, ok := components[depRef]
+				if !ok {
+					continue
+				}
+				b.BOM.AddRelationship(ref, dependency, core.RelationshipDependsOn)
 			}
-			b.BOM.AddRelationship(ref, dependency, core.RelationshipDependsOn)
 		}
 	}
 
