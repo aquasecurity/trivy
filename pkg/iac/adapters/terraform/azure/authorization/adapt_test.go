@@ -135,7 +135,6 @@ func Test_adaptRoleAssignment(t *testing.T) {
 `,
 			expected: authorization.RoleAssignment{
 				Metadata:           iacTypes.NewTestMetadata(),
-				Scope:              iacTypes.String("/subscriptions/12345678-1234-1234-1234-123456789012", iacTypes.NewTestMetadata()),
 				RoleDefinitionId:   iacTypes.String("/subscriptions/12345678-1234-1234-1234-123456789012/providers/Microsoft.Authorization/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635", iacTypes.NewTestMetadata()),
 				RoleDefinitionName: iacTypes.String("Owner", iacTypes.NewTestMetadata()),
 				PrincipalId:        iacTypes.String("11111111-1111-1111-1111-111111111111", iacTypes.NewTestMetadata()),
@@ -153,7 +152,6 @@ func Test_adaptRoleAssignment(t *testing.T) {
 `,
 			expected: authorization.RoleAssignment{
 				Metadata:           iacTypes.NewTestMetadata(),
-				Scope:              iacTypes.StringUnresolvable(iacTypes.NewTestMetadata()),
 				RoleDefinitionId:   iacTypes.String("/subscriptions/12345678-1234-1234-1234-123456789012/providers/Microsoft.Authorization/roleDefinitions/reader", iacTypes.NewTestMetadata()),
 				RoleDefinitionName: iacTypes.String("", iacTypes.NewTestMetadata()),
 				PrincipalId:        iacTypes.String("33333333-3333-3333-3333-333333333333", iacTypes.NewTestMetadata()),

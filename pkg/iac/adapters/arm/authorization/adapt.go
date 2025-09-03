@@ -38,7 +38,6 @@ func adaptRoleAssignments(deployment azure.Deployment) (roleAssignments []author
 func adaptRoleAssignment(resource azure.Resource) authorization.RoleAssignment {
 	return authorization.RoleAssignment{
 		Metadata:         resource.Metadata,
-		Scope:            resource.Properties.GetMapValue("scope").AsStringValue("", resource.Metadata),
 		RoleDefinitionId: resource.Properties.GetMapValue("roleDefinitionId").AsStringValue("", resource.Metadata),
 		PrincipalId:      resource.Properties.GetMapValue("principalId").AsStringValue("", resource.Metadata),
 		PrincipalType:    resource.Properties.GetMapValue("principalType").AsStringValue("", resource.Metadata),

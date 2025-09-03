@@ -53,7 +53,6 @@ func adaptRoleAssignments(modules terraform.Modules) []authorization.RoleAssignm
 }
 
 func adaptRoleAssignment(resource *terraform.Block) authorization.RoleAssignment {
-	scopeAttr := resource.GetAttribute("scope")
 	roleDefIdAttr := resource.GetAttribute("role_definition_id")
 	roleDefNameAttr := resource.GetAttribute("role_definition_name")
 	principalIdAttr := resource.GetAttribute("principal_id")
@@ -61,7 +60,6 @@ func adaptRoleAssignment(resource *terraform.Block) authorization.RoleAssignment
 
 	return authorization.RoleAssignment{
 		Metadata:           resource.GetMetadata(),
-		Scope:              scopeAttr.AsStringValueOrDefault("", resource),
 		RoleDefinitionId:   roleDefIdAttr.AsStringValueOrDefault("", resource),
 		RoleDefinitionName: roleDefNameAttr.AsStringValueOrDefault("", resource),
 		PrincipalId:        principalIdAttr.AsStringValueOrDefault("", resource),

@@ -17,7 +17,6 @@ type RoleDefinition struct {
 
 type RoleAssignment struct {
 	Metadata           iacTypes.Metadata
-	Scope              iacTypes.StringValue
 	RoleDefinitionId   iacTypes.StringValue
 	RoleDefinitionName iacTypes.StringValue
 	PrincipalId        iacTypes.StringValue
