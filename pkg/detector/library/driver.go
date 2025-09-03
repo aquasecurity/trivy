@@ -102,10 +102,16 @@ type Driver struct {
 	ecosystem ecosystem.Type
 	comparer  compare.Comparer
 	dbc       db.Config
+	// Optional fields for custom implementations (e.g., rootio)
+	typeFunc                  func() string
+	detectVulnerabilitiesFunc func(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error)
 }
 
 // Type returns the driver ecosystem
 func (d *Driver) Type() string {
+	if d.typeFunc != nil {
+		return d.typeFunc()
+	}
 	return string(d.ecosystem)
 }
 
@@ -114,6 +120,9 @@ func (d *Driver) Type() string {
 // It allows us to add a new data source with the ecosystem prefix (e.g. pip::new-data-source)
 // and detect vulnerabilities without specifying a specific bucket name.
 func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
+	if d.detectVulnerabilitiesFunc != nil {
+		return d.detectVulnerabilitiesFunc(pkgID, pkgName, pkgVer)
+	}
 	// e.g. "pip::", "npm::"
 	prefix := fmt.Sprintf("%s::", d.ecosystem)
 	advisories, err := d.dbc.GetAdvisories(prefix, vulnerability.NormalizePkgName(d.ecosystem, pkgName))

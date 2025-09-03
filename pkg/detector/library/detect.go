@@ -10,11 +10,44 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// Provider is a function that creates a Driver based on library type and packages
+type Provider func(ftypes.LangType, []ftypes.Package) interface{}
+
+// providers are dynamically generated drivers based on package information
+var providers []Provider
+
+// RegisterProvider registers a provider for dynamic driver creation
+func RegisterProvider(p Provider) {
+	providers = append(providers, p)
+}
+
 // Detect scans language-specific packages and returns vulnerabilities.
 func Detect(ctx context.Context, libType ftypes.LangType, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	driver, ok := NewDriver(libType)
-	if !ok {
-		return nil, nil
+	// Try providers first
+	var driver Driver
+	for _, provider := range providers {
+		if d := provider(libType, pkgs); d != nil {
+			// Convert the interface to a Driver
+			if rootioDriver, ok := d.(interface {
+				Type() string
+				DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error)
+			}); ok {
+				driver = Driver{
+					typeFunc:                  rootioDriver.Type,
+					detectVulnerabilitiesFunc: rootioDriver.DetectVulnerabilities,
+				}
+				break
+			}
+		}
+	}
+
+	// Fall back to standard driver if no provider matched
+	if driver.Type() == "" {
+		var ok bool
+		driver, ok = NewDriver(libType)
+		if !ok {
+			return nil, nil
+		}
 	}
 
 	vulns, err := detect(ctx, driver, pkgs)

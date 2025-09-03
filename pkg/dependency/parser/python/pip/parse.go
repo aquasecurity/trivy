@@ -127,6 +127,10 @@ func isValidName(name string) bool {
 }
 
 func isValidVersion(ver string) bool {
+	// Handle rootio versions by stripping the .root.io suffix
+	if strings.HasSuffix(ver, ".root.io") {
+		ver = strings.TrimSuffix(ver, ".root.io")
+	}
 	_, err := version.Parse(ver)
 	return err == nil
 }
