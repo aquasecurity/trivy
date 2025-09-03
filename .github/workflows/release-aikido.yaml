@@ -36,6 +36,7 @@ jobs:
         run: |
           mv dist/build-linux_linux_amd64_v1/trivy dist/build-linux_linux_amd64_v1/trivy-${{ github.ref_name }}-linux-amd64
           mv dist/build-linux_linux_arm64/trivy dist/build-linux_linux_arm64/trivy-${{ github.ref_name }}-linux-arm64
+          mv dist/build-macos_darwin_amd64_v1/trivy dist/build-macos_darwin_amd64_v1/trivy-${{ github.ref_name }}-darwin-amd64
           mv dist/build-macos_darwin_arm64/trivy dist/build-macos_darwin_arm64/trivy-${{ github.ref_name }}-darwin-arm64
           mv dist/build-windows_windows_amd64_v1/trivy.exe dist/build-windows_windows_amd64_v1/trivy-${{ github.ref_name }}-windows-amd64.exe
 
@@ -45,6 +46,7 @@ jobs:
           path: |
             dist/build-linux_linux_amd64_v1/trivy-${{ github.ref_name }}-linux-amd64
             dist/build-linux_linux_arm64/trivy-${{ github.ref_name }}-linux-arm64
+            dist/build-macos_darwin_amd64_v1/trivy-${{ github.ref_name }}-darwin-amd64
             dist/build-macos_darwin_arm64/trivy-${{ github.ref_name }}-darwin-arm64
             dist/build-windows_windows_amd64_v1/trivy-${{ github.ref_name }}-windows-amd64.exe
             
@@ -54,5 +56,6 @@ jobs:
           files: |
             dist/build-linux_linux_amd64_v1/trivy-${{ github.ref_name }}-linux-amd64
             dist/build-linux_linux_arm64/trivy-${{ github.ref_name }}-linux-arm64
+            dist/build-macos_darwin_amd64_v1/trivy-${{ github.ref_name }}-darwin-amd64
             dist/build-macos_darwin_arm64/trivy-${{ github.ref_name }}-darwin-arm64
             dist/build-windows_windows_amd64_v1/trivy-${{ github.ref_name }}-windows-amd64.exe
