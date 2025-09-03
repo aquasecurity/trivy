@@ -90,23 +90,15 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.InfoContext(ctx, "Detecting vulnerabilities...", log.String("os_version", osVer), log.Int("pkg_num", len(pkgs)))
 
-	var originPkgs, sealPkgs []ftypes.Package
+	var vulns []types.DetectedVulnerability
+	var baseOSPkgs ftypes.Packages
 	for _, pkg := range pkgs {
-		if sealPkg(pkg) {
-			sealPkgs = append(sealPkgs, pkg)
-		} else {
-			originPkgs = append(originPkgs, pkg)
+		// Keep non-Seal packages to scan them with the base OS scanner later
+		if !sealPkg(pkg) {
+			baseOSPkgs = append(baseOSPkgs, pkg)
+			continue
 		}
-	}
 
-	// Detect vulns for original packages.
-	vulns, err := s.scanner.Detect(ctx, osVer, nil, originPkgs)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to detect vulnerabilities with base OS scanner: %w", err)
-	}
-
-	// Detect vulns for Seal packages.
-	for _, pkg := range sealPkgs {
 		srcName := pkg.SrcName
 		if srcName == "" {
 			srcName = pkg.Name
@@ -140,7 +132,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 			if adv.Severity != dbTypes.SeverityUnknown {
 				// Package-specific severity
-				vuln.SeveritySource = vulnerability.Debian
+				vuln.SeveritySource = adv.DataSource.BaseID
 				vuln.Vulnerability = dbTypes.Vulnerability{
 					Severity: adv.Severity.String(),
 				}
@@ -149,7 +141,14 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 			vulns = append(vulns, vuln)
 		}
 	}
-	return vulns, nil
+
+	// Detect vulns for baseOS packages.
+	baseOSVulns, err := s.scanner.Detect(ctx, osVer, nil, baseOSPkgs)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to detect vulnerabilities with base OS scanner: %w", err)
+	}
+
+	return append(baseOSVulns, vulns...), nil
 }
 
 func (s *Scanner) isVulnerable(ctx context.Context, installedVersion string, adv dbTypes.Advisory) bool {
