@@ -34,6 +34,7 @@ jobs:
         run: |
           mv dist/build-linux_linux_amd64_v1/trivy dist/build-linux_linux_amd64_v1/trivy-linux-amd64
           mv dist/build-linux_linux_arm64/trivy dist/build-linux_linux_arm64/trivy-linux-arm64
+          mv dist/build-macos_darwin_amd64_v1/trivy dist/build-macos_darwin_amd64/trivy-darwin-amd64
           mv dist/build-macos_darwin_arm64/trivy dist/build-macos_darwin_arm64/trivy-darwin-arm64
           mv dist/build-windows_windows_amd64_v1/trivy.exe dist/build-windows_windows_amd64_v1/trivy-windows-amd64.exe
     
@@ -45,5 +46,6 @@ jobs:
           path: |
             dist/build-linux_linux_amd64_v1/trivy-linux-amd64
             dist/build-linux_linux_arm64/trivy-linux-arm64
+            dist/build-macos_darwin_amd64_v1/trivy-darwin-amd64
             dist/build-macos_darwin_arm64/trivy-darwin-arm64
             dist/build-windows_windows_amd64_v1/trivy-windows-amd64.exe
