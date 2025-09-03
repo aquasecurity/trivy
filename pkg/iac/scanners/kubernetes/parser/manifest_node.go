@@ -2,13 +2,13 @@ package parser
 
 import (
 	"encoding/base64"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"reflect"
 	"strconv"
 	"time"
 
-	"encoding/json/v2"
-	"encoding/json/jsontext"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/log"

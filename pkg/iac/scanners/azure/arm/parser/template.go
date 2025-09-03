@@ -2,14 +2,13 @@ package parser
 
 import (
 	"bytes"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"io/fs"
 	"iter"
 	"strconv"
 	"strings"
-
-	"encoding/json/v2"
-	"encoding/json/jsontext"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"

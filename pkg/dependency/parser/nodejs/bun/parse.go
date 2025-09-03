@@ -1,13 +1,13 @@
 package bun
 
 import (
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"io"
 	"sort"
 	"strings"
 
-	"encoding/json/v2"
-	"encoding/json/jsontext"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 

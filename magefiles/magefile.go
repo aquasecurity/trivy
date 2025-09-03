@@ -28,7 +28,7 @@ var (
 	GOBIN  = filepath.Join(GOPATH, "bin")
 
 	ENV = map[string]string{
-		"CGO_ENABLED":   "0",
+		"CGO_ENABLED":  "0",
 		"GOEXPERIMENT": "jsonv2",
 	}
 )
@@ -345,7 +345,7 @@ func (l Lint) Run() error {
 	if err := sh.RunWithV(ENV, "golangci-lint", "run", "--build-tags=integration"); err != nil {
 		return err
 	}
-	return sh.RunV("modernize", "./...")
+	return sh.RunWithV(ENV, "modernize", "./...")
 }
 
 // Fix auto fixes linters
@@ -354,7 +354,7 @@ func (l Lint) Fix() error {
 	if err := sh.RunWithV(ENV, "golangci-lint", "run", "--fix", "--build-tags=integration"); err != nil {
 		return err
 	}
-	return sh.RunV("modernize", "-fix", "./...")
+	return sh.RunWithV(ENV, "modernize", "-fix", "./...")
 }
 
 // Fmt formats Go code

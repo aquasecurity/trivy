@@ -1,14 +1,14 @@
 package parser
 
 import (
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"io/fs"
 	"reflect"
 	"strconv"
 	"strings"
 
-	"encoding/json/v2"
-	"encoding/json/jsontext"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"

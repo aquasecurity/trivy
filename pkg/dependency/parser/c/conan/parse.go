@@ -1,11 +1,11 @@
 package conan
 
 import (
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"slices"
 	"strings"
 
-	"encoding/json/v2"
-	"encoding/json/jsontext"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 

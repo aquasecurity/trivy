@@ -1,11 +1,11 @@
 package parser
 
 import (
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"io/fs"
 	"strings"
 
-	"encoding/json/v2"
-	"encoding/json/jsontext"
 	"gopkg.in/yaml.v3"
 
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"

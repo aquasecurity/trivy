@@ -2,10 +2,10 @@ package json
 
 import (
 	"bytes"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"io"
 
-	"encoding/json/v2"
-	"encoding/json/jsontext"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"

@@ -1,10 +1,10 @@
 package json_test
 
 import (
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"testing"
 
-	"encoding/json/v2"
-	"encoding/json/jsontext"
 	"github.com/stretchr/testify/require"
 
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
