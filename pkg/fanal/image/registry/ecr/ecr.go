@@ -31,9 +31,10 @@ type ECRClient struct {
 }
 
 func getSession(domain, region string, option types.RegistryOptions) (aws.Config, error) {
-	// We should use BuildableClient to set custom Transport
-	// cf. https://docs.aws.amazon.com/sdk-for-go/v2/developer-guide/configure-http.html
-	// Because there are problem with connection to IMDS for default transport.
+	// Use BuildableClient to configure a custom Transport.
+	// See: https://docs.aws.amazon.com/sdk-for-go/v2/developer-guide/configure-http.html
+	// This is required because the xhttp.Client can cause issues when accessing IMDS.
+	// cf. https://github.com/aquasecurity/trivy/discussions/9429
 	client := awshttp.NewBuildableClient().WithTransportOptions(func(transport *http.Transport) {
 		transport.TLSClientConfig.InsecureSkipVerify = option.Insecure
 	})
