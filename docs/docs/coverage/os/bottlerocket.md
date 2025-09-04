@@ -9,6 +9,12 @@ Trivy supports the following scanners for OS packages.
 
 Please see [here](index.md#supported-os) for supported versions.
 
+The table below outlines the features offered by Trivy.
+
+|               Feature                | Supported |
+|:------------------------------------:|:---------:|
+|        End of life awareness         |     -     |
+
 ## SBOM
 Trivy detects packages that are listed in the [software inventory].
 

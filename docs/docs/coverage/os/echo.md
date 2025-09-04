@@ -13,6 +13,7 @@ The table below outlines the features offered by Trivy.
 |:------------------------------------:|:---------:|
 |    Unfixed vulnerabilities           |     ✓     |
 | [Dependency graph][dependency-graph] |     ✓     |
+|        End of life awareness         |     -     |
 
 ## SBOM
 Same as [Debian](debian.md#sbom).
