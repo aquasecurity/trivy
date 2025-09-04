@@ -1,14 +1,14 @@
 package azure
 
 import (
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"maps"
 	"slices"
 	"strings"
 	"time"
 
-	"github.com/go-json-experiment/json"
-	"github.com/go-json-experiment/json/jsontext"
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/iac/types"
