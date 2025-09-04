@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/azure"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/oracle"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/redhat"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/ubuntu"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
@@ -54,6 +55,10 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 		scanner = debian.NewScanner()
 		comparer = version.NewDEBComparer()
 		vsg = seal.NewVulnSrcGetter(vulnerability.Debian)
+	case ftypes.Oracle:
+		scanner = oracle.NewScanner()
+		comparer = version.NewRPMComparer()
+		vsg = seal.NewVulnSrcGetter(vulnerability.RedHat)
 	case ftypes.RedHat:
 		scanner = redhat.NewScanner()
 		comparer = version.NewRPMComparer()
@@ -64,6 +69,7 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 		vsg = seal.NewVulnSrcGetter(vulnerability.Debian)
 	default:
 		// Should never happen as it's validated in the provider
+		scanner = debian.NewScanner()
 		comparer = version.NewDEBComparer()
 		vsg = seal.NewVulnSrcGetter(vulnerability.Debian)
 	}
