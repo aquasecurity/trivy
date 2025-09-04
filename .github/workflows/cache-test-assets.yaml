@@ -94,3 +94,5 @@ jobs:
         with:
           version: v2.4
           args: --verbose
+        env:
+          GOEXPERIMENT: jsonv2
