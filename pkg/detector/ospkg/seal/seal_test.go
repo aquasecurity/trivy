@@ -91,7 +91,7 @@ func TestScanner_Detect(t *testing.T) {
 						ID:     "seal",
 						Name:   "Seal Security Database",
 						URL:    "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip",
-						BaseID: "ubuntu",
+						BaseID: "debian",
 					},
 				},
 			},
@@ -194,42 +194,7 @@ func TestScanner_Detect(t *testing.T) {
 						ID:     "seal",
 						Name:   "Seal Security Database",
 						URL:    "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip",
-						BaseID: "centos",
-					},
-				},
-			},
-		},
-		{
-			name:   "CBL-Mariner scanner",
-			baseOS: ftypes.CBLMariner,
-			fixtures: []string{
-				"testdata/fixtures/seal.yaml",
-				"testdata/fixtures/data-source.yaml",
-			},
-			args: args{
-				osVer: "2.0.2024.08",
-				pkgs: []ftypes.Package{
-					{
-						Name:       "seal-wget",
-						Version:    "1.12",
-						Release:    "10.el6",
-						SrcName:    "seal-wget",
-						SrcVersion: "1.12",
-						SrcRelease: "10.el6",
-					},
-				},
-			},
-			want: []types.DetectedVulnerability{
-				{
-					PkgName:          "seal-wget",
-					VulnerabilityID:  "CVE-2024-10524",
-					InstalledVersion: "1.12-10.el6",
-					FixedVersion:     "1.12-10.el6+sp999",
-					DataSource: &dbTypes.DataSource{
-						ID:     "seal",
-						Name:   "Seal Security Database",
-						URL:    "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip",
-						BaseID: "cbl-mariner",
+						BaseID: "redhat",
 					},
 				},
 			},

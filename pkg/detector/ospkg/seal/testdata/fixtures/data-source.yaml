@@ -5,55 +5,21 @@
         ID: "debian"
         Name: "Debian Security Tracker"
         URL: "https://salsa.debian.org/security-tracker-team/security-tracker"
-    - key: seal debian 12
+    - key: seal debian
       value:
         ID: "seal"
         Name: "Seal Security Database"
         URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
         BaseID: "debian"
-    - key: seal ubuntu 22.04
-      value:
-        ID: "seal"
-        Name: "Seal Security Database"
-        URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
-        BaseID: "ubuntu"
-    - key: ubuntu 22.04
-      value:
-        ID: "ubuntu"
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://launchpad.net/ubuntu-cve-tracker"
-    - key: seal alpine 3.21
+    - key: seal alpine
       value:
         ID: "seal"
         Name: "Seal Security Database"
         URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
         BaseID: "alpine"
-    - key: alpine 3.21
-      value:
-        ID: "alpine"
-        Name: "Alpine SecDB"
-        URL: "https://secdb.alpinelinux.org/"
-    - key: seal redhat 9
+    - key: seal redhat 6
       value:
         ID: "seal"
         Name: "Seal Security Database"
         URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
         BaseID: "redhat"
-    - key: seal centos 8
-      value:
-        ID: "seal"
-        Name: "Seal Security Database"
-        URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
-        BaseID: "centos"
-    - key: seal oracle-linux 8
-      value:
-        ID: "seal"
-        Name: "Seal Security Database"
-        URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
-        BaseID: "oracle-linux"
-    - key: seal cbl-mariner 2.0
-      value:
-        ID: "seal"
-        Name: "Seal Security Database"
-        URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
-        BaseID: "cbl-mariner"

@@ -1,4 +1,4 @@
-- bucket: seal alpine 3.20
+- bucket: seal alpine
   pairs:
     - bucket: seal-jq
       pairs:

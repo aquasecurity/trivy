@@ -45,11 +45,11 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 	case ftypes.CBLMariner:
 		scanner = azure.NewMarinerScanner()
 		comparer = version.NewRPMComparer()
-		vsg = seal.NewVulnSrcGetter(vulnerability.CBLMariner)
+		vsg = seal.NewVulnSrcGetter(vulnerability.RedHat)
 	case ftypes.CentOS:
 		scanner = redhat.NewScanner()
 		comparer = version.NewRPMComparer()
-		vsg = seal.NewVulnSrcGetter(vulnerability.CentOS)
+		vsg = seal.NewVulnSrcGetter(vulnerability.RedHat)
 	case ftypes.Debian:
 		scanner = debian.NewScanner()
 		comparer = version.NewDEBComparer()
@@ -61,7 +61,7 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 	case ftypes.Ubuntu:
 		scanner = ubuntu.NewScanner()
 		comparer = version.NewDEBComparer()
-		vsg = seal.NewVulnSrcGetter(vulnerability.Ubuntu)
+		vsg = seal.NewVulnSrcGetter(vulnerability.Debian)
 	default:
 		// Should never happen as it's validated in the provider
 		comparer = version.NewDEBComparer()
@@ -90,14 +90,16 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 		}
 
 		srcName := pkg.SrcName
+		srcRelease := pkg.SrcRelease
 		if srcName == "" {
 			srcName = pkg.Name
+			srcRelease = pkg.Release
 		}
 
 		advisories, err := s.vsg.Get(db.GetParams{
-			// Trim patch/minor part of osVer.
-			// e.g. "12.0.1" -> "12" (Debian), "24.04.1" -> "24.04" (Ubuntu), "3.17.2" -> "3.17" (Alpine)
-			//Release: s.versionTrimmer(osVer),
+			// Detect release version from pkg Release (`el` version for RPM-based distros, empty for other distros).
+			// cf. https://github.com/aquasecurity/vuln-list-update/pull/364#issuecomment-3244733993
+			Release: releaseVersion(srcRelease),
 			PkgName: srcName,
 		})
 		if err != nil {
@@ -186,4 +188,15 @@ func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ strin
 func sealPkg(pkg ftypes.Package) bool {
 	// Seal packages start with "seal-"
 	return strings.HasPrefix(strings.ToLower(pkg.Name), "seal-") || strings.HasPrefix(strings.ToLower(pkg.SrcName), "seal-")
+}
+
+func releaseVersion(release string) string {
+	// Seal takes RedHat version from `el` version of package.
+	// cf. https://github.com/aquasecurity/vuln-list-update/pull/364#issuecomment-3244733993
+	if !strings.Contains(release, "el") {
+		return ""
+	}
+	_, osVer, _ := strings.Cut(release, "el") // Remove `el` and text before.
+	osVer, _, _ = strings.Cut(osVer, "_")     // Remove `_.*` suffix (e.g. `9.el10_0.1`)
+	return osVer
 }
