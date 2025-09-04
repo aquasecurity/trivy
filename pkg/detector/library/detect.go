@@ -28,13 +28,13 @@ func Detect(ctx context.Context, libType ftypes.LangType, pkgs []ftypes.Package)
 	for _, provider := range providers {
 		if d := provider(libType, pkgs); d != nil {
 			// Convert the interface to a Driver
-			if rootioDriver, ok := d.(interface {
+			if dynamicDriver, ok := d.(interface {
 				Type() string
 				DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error)
 			}); ok {
 				driver = Driver{
-					typeFunc:                  rootioDriver.Type,
-					detectVulnerabilitiesFunc: rootioDriver.DetectVulnerabilities,
+					typeFunc:                  dynamicDriver.Type,
+					detectVulnerabilitiesFunc: dynamicDriver.DetectVulnerabilities,
 				}
 				break
 			}

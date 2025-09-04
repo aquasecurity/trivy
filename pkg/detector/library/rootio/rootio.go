@@ -73,8 +73,8 @@ func (s *Scanner) Type() string {
 // DetectVulnerabilities scans packages for vulnerabilities with Root.io-specific handling
 func (s *Scanner) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
 	// Strip .root.io suffix from version for comparison
-	baseVersion := strings.TrimSuffix(pkgVer, ".root.io")
-	
+	baseVersion := NormalizeVersion(pkgVer)
+
 	// Get advisories using standard ecosystem prefix
 	// This will look for buckets like "pip::", "npm::", etc.
 	// In the future, when trivy-db supports it, this could look for "pip::rootio"
@@ -90,10 +90,10 @@ func (s *Scanner) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.
 		if !s.comparer.IsVulnerable(baseVersion, adv) {
 			continue
 		}
-		
+
 		// For rootio packages, append .root.io to fixed versions if not present
 		fixedVersion := s.createRootIOFixedVersions(adv)
-		
+
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  adv.VulnerabilityID,
 			PkgID:            pkgID,
@@ -105,7 +105,7 @@ func (s *Scanner) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.
 		}
 		vulns = append(vulns, vuln)
 	}
-	
+
 	return vulns, nil
 }
 
@@ -115,9 +115,7 @@ func (s *Scanner) createRootIOFixedVersions(advisory dbTypes.Advisory) string {
 		// Add .root.io suffix to patched versions if not present
 		var fixedVersions []string
 		for _, v := range advisory.PatchedVersions {
-			if !strings.HasSuffix(v, ".root.io") {
-				v = v + ".root.io"
-			}
+			v = AddVersionSuffix(v)
 			fixedVersions = append(fixedVersions, v)
 		}
 		return strings.Join(lo.Uniq(fixedVersions), ", ")
@@ -132,9 +130,7 @@ func (s *Scanner) createRootIOFixedVersions(advisory dbTypes.Advisory) string {
 				s = strings.TrimPrefix(s, "<")
 				s = strings.TrimSpace(s)
 				// Add .root.io suffix to indicate this is a rootio fix
-				if !strings.HasSuffix(s, ".root.io") {
-					s = s + ".root.io"
-				}
+				s = AddVersionSuffix(s)
 				fixedVersions = append(fixedVersions, s)
 			}
 		}
