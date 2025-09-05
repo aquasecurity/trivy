@@ -204,5 +204,6 @@ func releaseVersion(release string) string {
 	}
 	_, osVer, _ := strings.Cut(release, "el") // Remove `el` and text before.
 	osVer, _, _ = strings.Cut(osVer, "_")     // Remove `_.*` suffix (e.g. `9.el10_0.1`)
+	osVer, _, _ = strings.Cut(osVer, "+")     // Remove `+.*` suffix (e.g. `3.el8+sp1`)
 	return osVer
 }
