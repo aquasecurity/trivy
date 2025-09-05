@@ -3,10 +3,12 @@ package ecr
 import (
 	"context"
 	"encoding/base64"
+	"net/http"
 	"regexp"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/ecr"
@@ -15,7 +17,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/intf"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
 type ecrAPI interface {
@@ -30,6 +31,13 @@ type ECRClient struct {
 }
 
 func getSession(domain, region string, option types.RegistryOptions) (aws.Config, error) {
+	// Use BuildableClient to configure a custom Transport.
+	// See: https://docs.aws.amazon.com/sdk-for-go/v2/developer-guide/configure-http.html
+	// This is required because the xhttp.Client can cause issues when accessing IMDS.
+	// cf. https://github.com/aquasecurity/trivy/discussions/9429
+	client := awshttp.NewBuildableClient().WithTransportOptions(func(transport *http.Transport) {
+		transport.TLSClientConfig.InsecureSkipVerify = option.Insecure
+	})
 	// create custom credential information if option is valid
 	if option.AWSSecretKey != "" && option.AWSAccessKey != "" && option.AWSRegion != "" {
 		if region != option.AWSRegion {
@@ -38,14 +46,14 @@ func getSession(domain, region string, option types.RegistryOptions) (aws.Config
 		return config.LoadDefaultConfig(
 			context.TODO(),
 			config.WithRegion(region),
-			config.WithHTTPClient(xhttp.Client()),
+			config.WithHTTPClient(client),
 			config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(option.AWSAccessKey, option.AWSSecretKey, option.AWSSessionToken)),
 		)
 	}
 	return config.LoadDefaultConfig(
 		context.TODO(),
 		config.WithRegion(region),
-		config.WithHTTPClient(xhttp.Client()),
+		config.WithHTTPClient(client),
 	)
 }
 
