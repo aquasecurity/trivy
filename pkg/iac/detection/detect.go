@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/xeipuuv/gojsonschema"
@@ -30,6 +31,7 @@ const (
 	FileTypeJSON                  FileType = "json"
 	FileTypeHelm                  FileType = "helm"
 	FileTypeAzureARM              FileType = "azure-arm"
+	FileTypeAnsible               FileType = "ansible"
 )
 
 var matchers = make(map[FileType]func(name string, r io.ReadSeeker) bool)
@@ -261,6 +263,12 @@ func init() {
 		}
 
 		return false
+	}
+
+	// TODO: improve detection
+	matchers[FileTypeAnsible] = func(name string, r io.ReadSeeker) bool {
+		return filepath.Base(name) == "ansible.cfg" ||
+			slices.Contains([]string{"", ".yml", ".yaml", ".json", ".ini"}, filepath.Ext(name))
 	}
 }
 
