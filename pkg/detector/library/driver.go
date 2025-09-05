@@ -98,13 +98,18 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 
 // Driver represents security advisories for each programming language
 type Driver struct {
-	ecosystem dbTypes.Ecosystem
-	comparer  compare.Comparer
-	dbc       db.Config
+	ecosystem                 dbTypes.Ecosystem
+	comparer                  compare.Comparer
+	dbc                       db.Config
+	typeFunc                  func() string
+	detectVulnerabilitiesFunc func(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error)
 }
 
 // Type returns the driver ecosystem
 func (d *Driver) Type() string {
+	if d.typeFunc != nil {
+		return d.typeFunc()
+	}
 	return string(d.ecosystem)
 }
 
@@ -113,6 +118,9 @@ func (d *Driver) Type() string {
 // It allows us to add a new data source with the ecosystem prefix (e.g. pip::new-data-source)
 // and detect vulnerabilities without specifying a specific bucket name.
 func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
+	if d.detectVulnerabilitiesFunc != nil {
+		return d.detectVulnerabilitiesFunc(pkgID, pkgName, pkgVer)
+	}
 	// e.g. "pip::", "npm::"
 	prefix := fmt.Sprintf("%s::", d.ecosystem)
 	advisories, err := d.dbc.GetAdvisories(prefix, vulnerability.NormalizePkgName(d.ecosystem, pkgName))
