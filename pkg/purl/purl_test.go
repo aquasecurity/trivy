@@ -375,7 +375,7 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
-			name: "container local",
+			name: "container without tags and digests",
 			typ:  purl.TypeOCI,
 			metadata: types.Metadata{
 				RepoTags:    []string{},
@@ -421,17 +421,74 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
-			name: "sad path",
+			name: "local image with tag only",
 			typ:  purl.TypeOCI,
 			metadata: types.Metadata{
 				RepoTags: []string{
-					"cblmariner2preview.azurecr.io/base/core:2.0.20220124-amd64",
+					"alpine:3.14",
 				},
-				RepoDigests: []string{
-					"sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				ImageConfig: v1.ConfigFile{
+					Architecture: "amd64",
 				},
 			},
-			wantErr: "failed to parse digest",
+			want: &purl.PackageURL{
+				Type:      packageurl.TypeOCI,
+				Namespace: "",
+				Name:      "alpine",
+				Version:   "",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "repository_url",
+						Value: "index.docker.io/library/alpine",
+					},
+					{
+						Key:   "tag",
+						Value: "3.14",
+					},
+					{
+						Key:   "arch",
+						Value: "amd64",
+					},
+				},
+			},
+		},
+		{
+			name: "local image with latest tag (not included)",
+			typ:  purl.TypeOCI,
+			metadata: types.Metadata{
+				RepoTags: []string{
+					"nginx:latest",
+				},
+				ImageConfig: v1.ConfigFile{
+					Architecture: "amd64",
+				},
+			},
+			want: &purl.PackageURL{
+				Type:      packageurl.TypeOCI,
+				Namespace: "",
+				Name:      "nginx",
+				Version:   "",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "repository_url",
+						Value: "index.docker.io/library/nginx",
+					},
+					{
+						Key:   "arch",
+						Value: "amd64",
+					},
+				},
+			},
+		},
+		{
+			name: "sad path - invalid reference",
+			typ:  purl.TypeOCI,
+			metadata: types.Metadata{
+				RepoDigests: []string{
+					"invalid:::digest///format",
+				},
+			},
+			wantErr: "failed to parse reference",
 		},
 		{
 			name: "julia project",
