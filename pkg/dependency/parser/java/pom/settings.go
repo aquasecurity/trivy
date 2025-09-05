@@ -4,8 +4,12 @@ import (
 	"encoding/xml"
 	"os"
 	"path/filepath"
+	"slices"
 
+	"github.com/samber/lo"
 	"golang.org/x/net/html/charset"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type Server struct {
@@ -14,28 +18,36 @@ type Server struct {
 	Password string `xml:"password"`
 }
 
-type settings struct {
-	LocalRepository string   `xml:"localRepository"`
-	Servers         []Server `xml:"servers>server"`
+func (s Server) GetID() string { return s.ID }
+
+type Profile struct {
+	ID           string       `xml:"id"`
+	Repositories []repository `xml:"repositories>repository"`
+	Activation   activation   `xml:"activation"`
 }
 
-// serverFound checks that servers already contain server.
-// Maven compares servers by ID only.
-func serverFound(servers []Server, id string) bool {
-	for _, server := range servers {
-		if server.ID == id {
-			return true
-		}
-	}
-	return false
+func (p Profile) GetID() string { return p.ID }
+
+type activation struct {
+	ActiveByDefault bool `xml:"activeByDefault"`
+}
+
+type settings struct {
+	LocalRepository string    `xml:"localRepository"`
+	Servers         []Server  `xml:"servers>server"`
+	Profiles        []Profile `xml:"profiles>profile"`
+	ActiveProfiles  []string  `xml:"activeProfiles>activeProfile"`
 }
 
 func readSettings() settings {
 	s := settings{}
 
+	logger := log.WithPrefix("pom")
+
 	userSettingsPath := filepath.Join(os.Getenv("HOME"), ".m2", "settings.xml")
 	userSettings, err := openSettings(userSettingsPath)
 	if err == nil {
+		logger.Debug("Using user settings file", log.String("userSettingsPath", userSettingsPath))
 		s = userSettings
 	}
 
@@ -47,15 +59,36 @@ func readSettings() settings {
 	globalSettingsPath := filepath.Join(mavenHome, "conf", "settings.xml")
 	globalSettings, err := openSettings(globalSettingsPath)
 	if err == nil {
+		logger.Debug("Using global settings file",
+			log.String("globalSettingsPath", globalSettingsPath))
+
 		// We need to merge global and user settings. User settings being dominant.
 		// https://maven.apache.org/settings.html#quick-overview
 		if s.LocalRepository == "" {
+			logger.Debug("Using local repository from global settings",
+				log.String("localRepository", globalSettings.LocalRepository))
 			s.LocalRepository = globalSettings.LocalRepository
 		}
 		// Maven checks user servers first, then global servers
 		for _, server := range globalSettings.Servers {
-			if !serverFound(s.Servers, server.ID) {
+			if !containsByID(s.Servers, server.ID) {
+				logger.Debug("Adding server from global settings", log.String("id", server.ID))
 				s.Servers = append(s.Servers, server)
+			}
+		}
+		// Merge profiles
+		for _, profile := range globalSettings.Profiles {
+			if !containsByID(s.Profiles, profile.ID) {
+				logger.Debug("Adding profile from global settings", log.String("id", profile.ID))
+				s.Profiles = append(s.Profiles, profile)
+			}
+		}
+		// Merge active profiles
+		for _, activeProfile := range globalSettings.ActiveProfiles {
+			if !slices.Contains(s.ActiveProfiles, activeProfile) {
+				logger.Debug("Adding active profile from global settings",
+					log.String("activeProfile", activeProfile))
+				s.ActiveProfiles = append(s.ActiveProfiles, activeProfile)
 			}
 		}
 	}
@@ -89,4 +122,56 @@ func expandAllEnvPlaceholders(s *settings) {
 		s.Servers[i].Username = evaluateVariable(server.Username, nil, nil)
 		s.Servers[i].Password = evaluateVariable(server.Password, nil, nil)
 	}
+	for i, profile := range s.Profiles {
+		s.Profiles[i].ID = evaluateVariable(profile.ID, nil, nil)
+		for j, repo := range profile.Repositories {
+			s.Profiles[i].Repositories[j].ID = evaluateVariable(repo.ID, nil, nil)
+			s.Profiles[i].Repositories[j].Name = evaluateVariable(repo.Name, nil, nil)
+			s.Profiles[i].Repositories[j].URL = evaluateVariable(repo.URL, nil, nil)
+		}
+	}
+	for i, activeProfile := range s.ActiveProfiles {
+		s.ActiveProfiles[i] = evaluateVariable(activeProfile, nil, nil)
+	}
+}
+
+// getActiveProfiles returns a list of active profiles from the settings.
+// It checks the activeProfiles as well as the activeByDefault in each profile.
+// Currently, the property (ActivationProperty), os (ActivationOS), file (ActivationFile) mechanisms are not supported.
+func (s *settings) getActiveProfiles() []Profile {
+	logger := log.WithPrefix("pom")
+	var profiles []Profile
+	for _, profile := range s.Profiles {
+		if slices.Contains(s.ActiveProfiles, profile.ID) {
+			logger.Debug("Profile is active by means of activeProfiles", log.String("id", profile.ID))
+			profiles = append(profiles, profile)
+		} else if profile.Activation.ActiveByDefault {
+			logger.Debug("Profile is active by default", log.String("id", profile.ID))
+			profiles = append(profiles, profile)
+		}
+	}
+	return lo.UniqBy(profiles, func(p Profile) string {
+		return p.ID
+	})
+}
+
+// getRepositoriesForActiveProfiles returns a list of repositories for all active profiles.
+// This is on settings.xml level, not considering repositories from pom.xml,
+// which need to be combined in a separate step.
+func (s *settings) getRepositoriesForActiveProfiles() []repository {
+	var repositories []repository
+	for _, activeProfile := range s.getActiveProfiles() {
+		repositories = append(repositories, activeProfile.Repositories...)
+	}
+	return repositories
+}
+
+// getEffectiveRepositories returns a list of effective repositories.
+// Gets repositories for all active profiles.
+// Keeping only unique repositories in the result.
+// This is on settings.xml level, not considering repositories from pom.xml,
+// which need to be combined in a separate step.
+func (s *settings) getEffectiveRepositories() []repository {
+	repositories := s.getRepositoriesForActiveProfiles()
+	return lo.Uniq(repositories)
 }
