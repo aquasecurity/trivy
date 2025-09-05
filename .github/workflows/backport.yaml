@@ -16,7 +16,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PERMISSION=$(gh api /repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission --jq '.permission')
+          PERMISSION=$(gh api /repos/$GITHUB_REPOSITORY/collaborators/$GITHUB_ACTOR/permission --jq '.permission')
           if [ "$PERMISSION" == "admin" ] || [ "$PERMISSION" == "write" ]; then
            echo "is_maintainer=true" >> $GITHUB_OUTPUT
           else
@@ -53,8 +53,9 @@ jobs:
           git config --global user.name "GitHub Actions"
 
       - name: Run backport script
-        run: ./misc/backport/backport.sh ${{ env.BRANCH_NAME }} ${{ github.event.issue.number }}
         env:
           # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
           # This allows the created PR to trigger tests and other workflows
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: ./misc/backport/backport.sh "$BRANCH_NAME" "$ISSUE_NUMBER"
