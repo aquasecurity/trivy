@@ -86,6 +86,8 @@ func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*Pac
 		}
 	case packageurlTypeBottlerocket:
 		qualifiers = append(qualifiers, packageurl.Qualifiers{packageurl.Qualifier{Key: "distro", Value: fmt.Sprintf("bottlerocket-%s", metadata.OS.Name)}}...)
+	case packageurl.TypeCoreos:
+		qualifiers = append(qualifiers, packageurl.Qualifiers{packageurl.Qualifier{Key: "distro", Value: fmt.Sprintf("coreos-%s", metadata.OS.Name)}}...)
 	case packageurl.TypeApk:
 		var qs packageurl.Qualifiers
 		name, namespace, qs = parseApk(name, metadata.OS)
@@ -491,6 +493,8 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypeRPM
 	case ftypes.Bottlerocket:
 		return packageurlTypeBottlerocket
+	case ftypes.CoreOS:
+		return packageurl.TypeCoreos
 	case TypeOCI:
 		return packageurl.TypeOCI
 	case ftypes.Julia:

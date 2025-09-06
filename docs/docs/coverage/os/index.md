@@ -28,11 +28,13 @@ Trivy supports operating systems for
 | [SUSE Linux Enterprise](suse.md)      | 11, 12, 15                          | zypper/rpm       |
 | [SUSE Linux Enterprise Micro](suse.md)| 5, 6                                | zypper/rpm       |
 | [Photon OS](photon.md)                | 1.0, 2.0, 3.0, 4.0                  | tndf/yum/rpm     |
+| [CoreOS Container Linux](coreos.md)   | All versions (EOL)                  | rpm              |
+| [Fedora CoreOS](fedora-coreos.md)     | All versions                        | rpm              |
 | [Echo](echo.md)                       | (n/a)                               | apt/dpkg         |
 | [Debian GNU/Linux](debian.md)         | 7, 8, 9, 10, 11, 12                 | apt/dpkg         |
 | [Ubuntu](ubuntu.md)                   | All versions supported by Canonical | apt/dpkg         |
 | [Bottlerocket](bottlerocket.md)       | 1.7.0 and upper                     | bottlerocket     |
-| [OSs with installed Conda](../others/conda.md)  | -                                   | conda            |
+| [OSs with installed Conda](../others/conda.md) | -                                   | conda            |
 
 ## Supported container images
 
@@ -45,6 +47,7 @@ Each page gives more details.
 
 [^1]: CentOS Stream is not supported 
 [^2]: https://github.com/GoogleContainerTools/distroless
+[^3]: CoreOS Container Linux reached end-of-life on May 26, 2020. Consider migrating to Fedora CoreOS.
 
 
 [sbom]: ../../supply-chain/sbom.md

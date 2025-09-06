@@ -90,6 +90,8 @@ nav:
               - Ubuntu: docs/coverage/os/ubuntu.md
               - Wolfi: docs/coverage/os/wolfi.md
               - Google Distroless (Images): docs/coverage/os/google-distroless.md
+              - CoreOS Container Linux: docs/coverage/os/coreos.md
+              - Fedora CoreOS: docs/coverage/os/fedora-coreos.md
           - Language:
               - Overview: docs/coverage/language/index.md
               - C/C++: docs/coverage/language/c.md
