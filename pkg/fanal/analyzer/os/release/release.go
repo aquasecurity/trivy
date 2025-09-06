@@ -26,6 +26,44 @@ var requiredFiles = []string{
 
 type osReleaseAnalyzer struct{}
 
+func getOSFamily(id string) types.OSType {
+	var family types.OSType
+	switch id {
+	case "alpine":
+		family = types.Alpine
+	case "bottlerocket":
+		family = types.Bottlerocket
+	case "opensuse-tumbleweed":
+		family = types.OpenSUSETumbleweed
+	case "opensuse-leap", "opensuse": // opensuse for leap:42, opensuse-leap for leap:15
+		family = types.OpenSUSELeap
+	case "sles":
+		family = types.SLES
+	// There are various rebrands of SLE Micro, there is also one brief (and reverted rebrand)
+	// for SLE Micro 6.0. which was called "SL Micro 6.0" until very short before release
+	// and there is a "SLE Micro for Rancher" rebrand, which is used by SUSEs K8S based offerings.
+	case "sle-micro", "sl-micro", "sle-micro-rancher":
+		family = types.SLEMicro
+	case "photon":
+		family = types.Photon
+	case "wolfi":
+		family = types.Wolfi
+	case "chainguard":
+		family = types.Chainguard
+	case "azurelinux":
+		family = types.Azure
+	case "mariner":
+		family = types.CBLMariner
+	case "echo":
+		family = types.Echo
+	case "minimos":
+		family = types.MinimOS
+	case "coreos":
+		family = types.CoreOS
+	}
+	return family
+}
+
 func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	var id, versionID string
 	scanner := bufio.NewScanner(input.Content)
@@ -47,38 +85,7 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 			continue
 		}
 
-		var family types.OSType
-		switch id {
-		case "alpine":
-			family = types.Alpine
-		case "bottlerocket":
-			family = types.Bottlerocket
-		case "opensuse-tumbleweed":
-			family = types.OpenSUSETumbleweed
-		case "opensuse-leap", "opensuse": // opensuse for leap:42, opensuse-leap for leap:15
-			family = types.OpenSUSELeap
-		case "sles":
-			family = types.SLES
-		// There are various rebrands of SLE Micro, there is also one brief (and reverted rebrand)
-		// for SLE Micro 6.0. which was called "SL Micro 6.0" until very short before release
-		// and there is a "SLE Micro for Rancher" rebrand, which is used by SUSEs K8S based offerings.
-		case "sle-micro", "sl-micro", "sle-micro-rancher":
-			family = types.SLEMicro
-		case "photon":
-			family = types.Photon
-		case "wolfi":
-			family = types.Wolfi
-		case "chainguard":
-			family = types.Chainguard
-		case "azurelinux":
-			family = types.Azure
-		case "mariner":
-			family = types.CBLMariner
-		case "echo":
-			family = types.Echo
-		case "minimos":
-			family = types.MinimOS
-		}
+		family := getOSFamily(id)
 
 		if family != "" && versionID != "" {
 			return &analyzer.AnalysisResult{
