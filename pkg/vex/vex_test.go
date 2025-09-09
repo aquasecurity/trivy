@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/aquasecurity/trivy/pkg/vex"
 )
 
@@ -155,6 +156,9 @@ func TestMain(m *testing.M) {
 func TestFilter(t *testing.T) {
 	// Set up the OCI registry
 	tr, d := setUpRegistry(t)
+
+	uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+	testCycloneDXSBOM := createCycloneDXBOMWithSpringComponent()
 
 	type args struct {
 		report *types.Report
@@ -329,10 +333,7 @@ func TestFilter(t *testing.T) {
 			args: args{
 				report: &types.Report{
 					ArtifactType: ftypes.TypeCycloneDX,
-					BOM: &core.BOM{
-						SerialNumber: "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
-						Version:      1,
-					},
+					BOM:          testCycloneDXSBOM,
 					Results: []types.Result{
 						springResult(types.Result{
 							Vulnerabilities: []types.DetectedVulnerability{vuln1},
@@ -350,10 +351,7 @@ func TestFilter(t *testing.T) {
 			},
 			want: &types.Report{
 				ArtifactType: ftypes.TypeCycloneDX,
-				BOM: &core.BOM{
-					SerialNumber: "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
-					Version:      1,
-				},
+				BOM:          testCycloneDXSBOM,
 				Results: []types.Result{
 					springResult(types.Result{
 						Vulnerabilities:  []types.DetectedVulnerability{},
@@ -615,6 +613,22 @@ func ociPURLString(ts *httptest.Server, d v1.Hash) string {
 		},
 	}
 	return p.String()
+}
+
+func createCycloneDXBOMWithSpringComponent() *core.BOM {
+	bom := core.NewBOM(core.Options{})
+	bom.SerialNumber = "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79"
+	bom.Version = 1
+	// Add the spring component to match vuln1's BOM-Ref
+	springComponent := &core.Component{
+		Type:          core.TypeLibrary,
+		Name:          springPackage.Identifier.PURL.Name,
+		Group:         springPackage.Identifier.PURL.Namespace,
+		Version:       springPackage.Version,
+		PkgIdentifier: springPackage.Identifier,
+	}
+	bom.AddComponent(springComponent)
+	return bom
 }
 
 func fsReport(results types.Results) *types.Report {

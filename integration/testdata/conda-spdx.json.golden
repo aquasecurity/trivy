@@ -3,7 +3,7 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "testdata/fixtures/repo/conda",
-  "documentNamespace": "http://trivy.dev/filesystem/testdata/fixtures/repo/conda-3ff14136-e09f-4df9-80ea-000000000004",
+  "documentNamespace": "http://trivy.dev/filesystem/testdata/fixtures/repo/conda-3ff14136-e09f-4df9-80ea-000000000005",
   "creationInfo": {
     "creators": [
       "Organization: aquasecurity",
@@ -14,7 +14,7 @@
   "packages": [
     {
       "name": "openssl",
-      "SPDXID": "SPDXRef-Package-22a178da112ac20a",
+      "SPDXID": "SPDXRef-Package-cb268df467bc826c",
       "versionInfo": "1.1.1q",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -43,7 +43,7 @@
     },
     {
       "name": "pip",
-      "SPDXID": "SPDXRef-Package-c22b9ee9a601ba6",
+      "SPDXID": "SPDXRef-Package-1378bb10fcebba63",
       "versionInfo": "22.2.2",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -118,22 +118,22 @@
     },
     {
       "spdxElementId": "SPDXRef-Filesystem-2e2426fd0f2580ef",
-      "relatedSpdxElement": "SPDXRef-Package-22a178da112ac20a",
+      "relatedSpdxElement": "SPDXRef-Package-1378bb10fcebba63",
       "relationshipType": "CONTAINS"
     },
     {
       "spdxElementId": "SPDXRef-Filesystem-2e2426fd0f2580ef",
-      "relatedSpdxElement": "SPDXRef-Package-c22b9ee9a601ba6",
+      "relatedSpdxElement": "SPDXRef-Package-cb268df467bc826c",
       "relationshipType": "CONTAINS"
     },
     {
-      "spdxElementId": "SPDXRef-Package-22a178da112ac20a",
-      "relatedSpdxElement": "SPDXRef-File-600e5e0110a84891",
-      "relationshipType": "CONTAINS"
-    },
-    {
-      "spdxElementId": "SPDXRef-Package-c22b9ee9a601ba6",
+      "spdxElementId": "SPDXRef-Package-1378bb10fcebba63",
       "relatedSpdxElement": "SPDXRef-File-7eb62e2a3edddc0a",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-cb268df467bc826c",
+      "relatedSpdxElement": "SPDXRef-File-600e5e0110a84891",
       "relationshipType": "CONTAINS"
     }
   ]
