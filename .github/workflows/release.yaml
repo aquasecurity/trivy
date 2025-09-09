@@ -125,5 +125,4 @@ jobs:
           gh workflow run release.yml \
             --repo aquasecurity/trivy-chocolatey \
             --ref main \
-            --field version=${{ github.ref_name }} \
-            --field artifact=trivy
+            --field version=${{ github.ref_name }}
