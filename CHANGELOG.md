@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.66.1](https://github.com/aquasecurity/trivy/compare/v0.66.0...v0.66.1) (2025-09-09)
+
+
+### Bug Fixes
+
+* **nodejs:** use snapshot string as `Package.ID` for pnpm packages ([#9330](https://github.com/aquasecurity/trivy/issues/9330)) ([4517e8c](https://github.com/aquasecurity/trivy/commit/4517e8c0ef5e942b8e2e498729257374634ffbf8))
+
 ## [0.66.0](https://github.com/aquasecurity/trivy/compare/v0.65.0...v0.66.0) (2025-09-02)
 
 
