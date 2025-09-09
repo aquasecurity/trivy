@@ -299,41 +299,44 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			publishedDate = timestamppb.New(*vuln.PublishedDate) // nolint: errcheck
 		}
 
-		var customAdvisoryData, customVulnData []byte
+		var customAdvisoryData, customVulnData *structpb.Value
+		var newCustomAdvisoryData, newCustomVulnData []byte
 		if vuln.Custom != nil {
 			jsonBytes, _ := json.Marshal(vuln.Custom) // nolint: errcheck
-			customAdvisoryData = jsonBytes
+			newCustomAdvisoryData = jsonBytes
 		}
 		if vuln.Vulnerability.Custom != nil {
 			jsonBytes, _ := json.Marshal(vuln.Vulnerability.Custom) // nolint: errcheck
-			customVulnData = jsonBytes
+			newCustomVulnData = jsonBytes
 		}
 
 		rpcVulns = append(rpcVulns, &common.Vulnerability{
-			VulnerabilityId:    vuln.VulnerabilityID,
-			VendorIds:          vuln.VendorIDs,
-			PkgId:              vuln.PkgID,
-			PkgName:            vuln.PkgName,
-			PkgPath:            vuln.PkgPath,
-			InstalledVersion:   vuln.InstalledVersion,
-			FixedVersion:       vuln.FixedVersion,
-			PkgIdentifier:      ConvertToRPCPkgIdentifier(vuln.PkgIdentifier),
-			Status:             int32(vuln.Status),
-			Title:              vuln.Title,
-			Description:        vuln.Description,
-			Severity:           common.Severity(severity),
-			VendorSeverity:     vendorSeverityMap,
-			References:         vuln.References,
-			Layer:              ConvertToRPCLayer(vuln.Layer),
-			Cvss:               cvssMap,
-			SeveritySource:     string(vuln.SeveritySource),
-			CweIds:             vuln.CweIDs,
-			PrimaryUrl:         vuln.PrimaryURL,
-			LastModifiedDate:   lastModifiedDate,
-			PublishedDate:      publishedDate,
-			CustomAdvisoryData: customAdvisoryData,
-			CustomVulnData:     customVulnData,
-			DataSource:         ConvertToRPCDataSource(vuln.DataSource),
+			VulnerabilityId:       vuln.VulnerabilityID,
+			VendorIds:             vuln.VendorIDs,
+			PkgId:                 vuln.PkgID,
+			PkgName:               vuln.PkgName,
+			PkgPath:               vuln.PkgPath,
+			InstalledVersion:      vuln.InstalledVersion,
+			FixedVersion:          vuln.FixedVersion,
+			PkgIdentifier:         ConvertToRPCPkgIdentifier(vuln.PkgIdentifier),
+			Status:                int32(vuln.Status),
+			Title:                 vuln.Title,
+			Description:           vuln.Description,
+			Severity:              common.Severity(severity),
+			VendorSeverity:        vendorSeverityMap,
+			References:            vuln.References,
+			Layer:                 ConvertToRPCLayer(vuln.Layer),
+			Cvss:                  cvssMap,
+			SeveritySource:        string(vuln.SeveritySource),
+			CweIds:                vuln.CweIDs,
+			PrimaryUrl:            vuln.PrimaryURL,
+			LastModifiedDate:      lastModifiedDate,
+			PublishedDate:         publishedDate,
+			CustomAdvisoryData:    customAdvisoryData,
+			CustomVulnData:        customVulnData,
+			NewCustomAdvisoryData: newCustomAdvisoryData,
+			NewCustomVulnData:     newCustomVulnData,
+			DataSource:            ConvertToRPCDataSource(vuln.DataSource),
 		})
 	}
 	return rpcVulns
@@ -600,6 +603,26 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			publishedDate = lo.ToPtr(vuln.PublishedDate.AsTime())
 		}
 
+		// Handle custom vulnerability data
+		var customVulnData interface{}
+		if len(vuln.NewCustomVulnData) > 0 {
+			// Use new bytes field
+			json.Unmarshal(vuln.NewCustomVulnData, &customVulnData)
+		} else if vuln.CustomVulnData != nil {
+			// Fallback to old field for backward compatibility
+			customVulnData = vuln.CustomVulnData.AsInterface()
+		}
+
+		// Handle custom advisory data
+		var customAdvisoryData interface{}
+		if len(vuln.NewCustomAdvisoryData) > 0 {
+			// Use new bytes field
+			json.Unmarshal(vuln.NewCustomAdvisoryData, &customAdvisoryData)
+		} else if vuln.CustomAdvisoryData != nil {
+			// Fallback to old field for backward compatibility
+			customAdvisoryData = vuln.CustomAdvisoryData.AsInterface()
+		}
+
 		vulns = append(vulns, types.DetectedVulnerability{
 			VulnerabilityID:  vuln.VulnerabilityId,
 			VendorIDs:        vuln.VendorIds,
@@ -619,13 +642,13 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				CweIDs:           vuln.CweIds,
 				LastModifiedDate: lastModifiedDate,
 				PublishedDate:    publishedDate,
-				Custom:           vuln.CustomVulnData,
+				Custom:           customVulnData,
 				VendorSeverity:   vendorSeverityMap,
 			},
 			Layer:          ConvertFromRPCLayer(vuln.Layer),
 			SeveritySource: dbTypes.SourceID(vuln.SeveritySource),
 			PrimaryURL:     vuln.PrimaryUrl,
-			Custom:         vuln.CustomAdvisoryData,
+			Custom:         customAdvisoryData,
 			DataSource:     ConvertFromRPCDataSource(vuln.DataSource),
 		})
 	}

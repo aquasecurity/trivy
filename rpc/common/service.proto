@@ -134,8 +134,10 @@ message Vulnerability {
   string primary_url = 14;
   google.protobuf.Timestamp published_date = 15;
   google.protobuf.Timestamp last_modified_date = 16;
-  bytes custom_advisory_data = 17;
-  bytes custom_vuln_data = 18;
+  google.protobuf.Value custom_advisory_data = 17;
+  google.protobuf.Value custom_vuln_data = 18;
+  bytes new_custom_advisory_data = 26;
+  bytes new_custom_vuln_data = 27;
   repeated string vendor_ids = 19;
   DataSource data_source = 20;
   map<string, Severity> vendor_severity = 21;
