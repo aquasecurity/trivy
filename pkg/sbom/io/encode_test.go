@@ -1513,7 +1513,7 @@ func TestEncoder_Encode(t *testing.T) {
 					},
 				},
 			},
-			wantErr: "failed to parse digest",
+			wantErr: "could not parse reference",
 		},
 	}
 

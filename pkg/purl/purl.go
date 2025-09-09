@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	cn "github.com/google/go-containerregistry/pkg/name"
-	version "github.com/knqyf263/go-rpm-version"
+	rpmver "github.com/knqyf263/go-rpm-version"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -29,7 +29,7 @@ const (
 	//       - gke (Azure)
 	//       - rke (Rancher)
 	//  - name: The k8s component name and is case sensitive.
-	//  - version: The combined version and release of a component.
+	//  - rpmver: The combined rpmver and release of a component.
 	//
 	//  Examples:
 	//    - pkg:k8s/upstream/k8s.io%2Fapiserver@1.24.1
@@ -66,7 +66,7 @@ func FromString(s string) (*PackageURL, error) {
 // nolint: gocyclo
 func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*PackageURL, error) {
 	qualifiers := parseQualifier(pkg)
-	pkg.Epoch = 0 // we moved Epoch to qualifiers so we don't need it in version
+	pkg.Epoch = 0 // we moved Epoch to qualifiers so we don't need it in rpmver
 
 	ptype := purlType(t)
 	name := pkg.Name
@@ -85,7 +85,12 @@ func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*Pac
 			namespace = string(metadata.OS.Family)
 		}
 	case packageurlTypeBottlerocket:
-		qualifiers = append(qualifiers, packageurl.Qualifiers{packageurl.Qualifier{Key: "distro", Value: fmt.Sprintf("bottlerocket-%s", metadata.OS.Name)}}...)
+		qualifiers = append(qualifiers, packageurl.Qualifiers{
+			packageurl.Qualifier{
+				Key:   "distro",
+				Value: fmt.Sprintf("bottlerocket-%s", metadata.OS.Name),
+			},
+		}...)
 	case packageurl.TypeApk:
 		var qs packageurl.Qualifiers
 		name, namespace, qs = parseApk(name, metadata.OS)
@@ -245,7 +250,7 @@ func (p *PackageURL) Package() *ftypes.Package {
 	}
 
 	if p.Type == packageurl.TypeRPM {
-		rpmVer := version.NewVersion(p.Version)
+		rpmVer := rpmver.NewVersion(p.Version)
 		pkg.Release = rpmVer.Release()
 		pkg.Version = rpmVer.Version()
 	}
@@ -254,7 +259,7 @@ func (p *PackageURL) Package() *ftypes.Package {
 }
 
 // Match returns true if the given PURL "target" satisfies the constraint PURL "p".
-// - If the constraint does not have a version, it will match any version in the target.
+// - If the constraint does not have a rpmver, it will match any rpmver in the target.
 // - If the constraint has qualifiers, the target must have the same set of qualifiers to match.
 func (p *PackageURL) Match(target *packageurl.PackageURL) bool {
 	if target == nil {
@@ -287,38 +292,89 @@ func (p *PackageURL) String() string {
 	return p.Unwrap().String()
 }
 
+// parseOCI generates PURL (Package URL) for OCI container images.
+//
+// The primary purpose of PURL is to identify and locate software packages.
+// For container images with RepoDigests (remote images that have been pushed to a registry),
+// we can generate a complete PURL with a digest as the version, providing a precise identifier.
+//
+// For local images without RepoDigests (only RepoTags), the situation is less clear since
+// they cannot be precisely located. However, based on discussions in the PURL specification
+// community, generating PURLs even for local images is acceptable and useful:
+// cf. https://github.com/package-url/purl-spec/issues/127
+//
+// Therefore, we generate PURLs for both remote images (with digests) and local images (without digests):
+// - Remote images: Include digest as version for precise identification
+// - Local images: Leave version empty, include tag as qualifier for reference
+//
+// This approach allows for consistent PURL generation while acknowledging that local images
+// have inherently less precise identification and location information.
+//
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#oci
 func parseOCI(metadata types.Metadata) (*packageurl.PackageURL, error) {
-	if len(metadata.RepoDigests) == 0 {
+	if len(metadata.RepoDigests) == 0 && len(metadata.RepoTags) == 0 {
 		return nil, nil
 	}
 
-	digest, err := cn.NewDigest(metadata.RepoDigests[0])
-	if err != nil {
-		return nil, xerrors.Errorf("failed to parse digest: %w", err)
+	var version string
+	var qualifiers packageurl.Qualifiers
+
+	// Determine which reference to use: RepoDigests take precedence over RepoTags
+	var refStr string
+	if len(metadata.RepoDigests) > 0 {
+		refStr = metadata.RepoDigests[0]
+	} else if len(metadata.RepoTags) > 0 {
+		refStr = metadata.RepoTags[0]
 	}
 
-	name := strings.ToLower(digest.RepositoryStr())
+	// Parse the reference using go-containerregistry
+	ref, err := cn.ParseReference(refStr)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to parse reference %s: %w", refStr, err)
+	}
+
+	// Extract name from the repository
+	repoStr := ref.Context().RepositoryStr()
+	name := strings.ToLower(repoStr)
 	index := strings.LastIndex(name, "/")
 	if index != -1 {
 		name = name[index+1:]
 	}
 
-	var qualifiers packageurl.Qualifiers
-	if repoURL := digest.Repository.Name(); repoURL != "" {
+	// Add repository_url qualifier
+	if repoURL := ref.Context().Name(); repoURL != "" {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "repository_url",
 			Value: repoURL,
 		})
 	}
+
+	// Handle different reference types
+	switch r := ref.(type) {
+	case cn.Digest:
+		// For digest references, use the digest as version
+		version = r.DigestStr()
+	case cn.Tag:
+		// For tag references, add tag as qualifier and leave version empty
+		tag := r.TagStr()
+		if tag != "" && tag != "latest" {
+			qualifiers = append(qualifiers, packageurl.Qualifier{
+				Key:   "tag",
+				Value: tag,
+			})
+		}
+		version = ""
+	}
+
+	// Add architecture qualifier if available
 	if arch := metadata.ImageConfig.Architecture; arch != "" {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "arch",
-			Value: metadata.ImageConfig.Architecture,
+			Value: arch,
 		})
 	}
 
-	return packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, ""), nil
+	return packageurl.NewPackageURL(packageurl.TypeOCI, "", name, version, qualifiers, ""), nil
 }
 
 // ref. https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#apk
