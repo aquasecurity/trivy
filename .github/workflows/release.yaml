@@ -115,3 +115,15 @@ jobs:
             --ref main \
             --field version=${{ github.ref_name }} \
             --field artifact=trivy
+
+      - name: Trigger version update and release workflow in trivy-chocolatey
+        env:
+          # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
+          # This allows triggering workflows in other repositories
+          GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+        run: |
+          gh workflow run release.yml \
+            --repo aquasecurity/trivy-chocolatey \
+            --ref main \
+            --field version=${{ github.ref_name }} \
+            --field artifact=trivy
