@@ -55,6 +55,20 @@ var (
 			},
 		},
 	}
+	baseFilesPackage = ftypes.Package{
+		ID:      "base-files@5.3",
+		Name:    "base-files",
+		Version: "5.3",
+		Identifier: ftypes.PkgIdentifier{
+			UID: "07",
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeDebian,
+				Namespace: "debian",
+				Name:      "base-files",
+				Version:   "5.3",
+			},
+		},
+	}
 	goModulePackage = ftypes.Package{
 		ID:           "github.com/aquasecurity/go-module@v1.0.0",
 		Name:         "github.com/aquasecurity/go-module",
@@ -542,6 +556,38 @@ repositories:
 			}, fmt.Sprintf("%s/debian@%s", strings.TrimPrefix(tr.URL, "http://"), d.String())),
 		},
 		{
+			name: "infinity loop for OS packages",
+			args: args{
+				// - oci:debian?tag=12
+				//     - pkg:deb/debian/bash@5.3
+				//        - pkg:deb/debian/base-files@5.3
+				//     - pkg:deb/debian/base-files@5.3
+				//        - pkg:deb/debian/bash@5.3
+				report: imageReport([]types.Result{
+					infinityLoopOSPackagesResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{
+							vuln3,
+						},
+					}),
+				}),
+				opts: vex.Options{
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/openvex-multiple.json",
+						},
+					},
+				},
+			},
+			want: imageReport([]types.Result{
+				infinityLoopOSPackagesResult(types.Result{
+					Vulnerabilities: []types.DetectedVulnerability{
+						vuln3,
+					},
+				}),
+			}),
+		},
+		{
 			name: "unknown format",
 			args: args{
 				report: &types.Report{},
@@ -640,6 +686,24 @@ func bashResult(result types.Result) types.Result {
 	return result
 }
 
+func infinityLoopOSPackagesResult(result types.Result) types.Result {
+	result.Type = ftypes.Debian
+	result.Class = types.ClassOSPkg
+
+	bashPkg := clonePackage(bashPackage)
+	baseFilesPkg := clonePackage(baseFilesPackage)
+
+	bashPkg.DependsOn = []string{baseFilesPkg.ID}
+	baseFilesPkg.DependsOn = []string{bashPkg.ID}
+
+	result.Packages = []ftypes.Package{
+		bashPkg,
+		baseFilesPkg,
+	}
+
+	return result
+}
+
 func goSinglePathResult(result types.Result) types.Result {
 	result.Type = ftypes.GoModule
 	result.Class = types.ClassLangPkg
@@ -665,11 +729,11 @@ func goMultiPathResult(result types.Result) types.Result {
 	result.Type = ftypes.GoModule
 	result.Class = types.ClassLangPkg
 
-	// - pkg:golang/github.com/aquasecurity/go-module@v2.0.0
-	//     - pkg:golang/github.com/aquasecurity/go-direct1@v3.0.0
+	// - pkg:golang/github.com/aquasecurity/go-module@v1.0.0
+	//     - pkg:golang/github.com/aquasecurity/go-direct1@v2.0.0
 	//         - pkg:golang/github.com/aquasecurity/go-transitive@v5.0.0
-	//     - pkg:golang/github.com/aquasecurity/go-direct2@v4.0.0
-	//         - pkg:golang/github.com/aquasecurity/go-transitive@v5.0.0
+	//     - pkg:golang/github.com/aquasecurity/go-direct2@v3.0.0
+	//         - pkg:golang/github.com/aquasecurity/go-transitive@v4.0.0
 	goModule := clonePackage(goModulePackage)
 	goDirect1 := clonePackage(goDirectPackage1)
 	goDirect2 := clonePackage(goDirectPackage2)
