@@ -603,21 +603,17 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			publishedDate = lo.ToPtr(vuln.PublishedDate.AsTime())
 		}
 
-		// Handle custom vulnerability data
 		var customVulnData any
 		if len(vuln.NewCustomVulnData) > 0 {
-			// Use new bytes field
-			json.Unmarshal(vuln.NewCustomVulnData, &customVulnData)
+			customVulnData = vuln.NewCustomVulnData
 		} else if vuln.CustomVulnData != nil {
 			// Fallback to old field for backward compatibility
 			customVulnData = vuln.CustomVulnData.AsInterface()
 		}
 
-		// Handle custom advisory data
 		var customAdvisoryData any
 		if len(vuln.NewCustomAdvisoryData) > 0 {
-			// Use new bytes field
-			json.Unmarshal(vuln.NewCustomAdvisoryData, &customAdvisoryData)
+			customAdvisoryData = vuln.NewCustomAdvisoryData
 		} else if vuln.CustomAdvisoryData != nil {
 			// Fallback to old field for backward compatibility
 			customAdvisoryData = vuln.CustomAdvisoryData.AsInterface()
