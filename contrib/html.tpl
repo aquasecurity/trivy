@@ -43,6 +43,13 @@
       table tr td:first-of-type {
         font-weight: bold;
       }
+      .source-file {
+        font-family: monospace;
+        background-color: #f5f5f5;
+        font-size: 0.9em;
+        word-break: break-all;
+        max-width: 200px;
+      }
       .links a,
       .links[data-more-links=on] a {
         display: block;
@@ -85,7 +92,7 @@
     <h1>{{- escapeXML ( index . 0 ).Target }} - Trivy Report - {{ now }}</h1>
     <table>
     {{- range . }}
-      <tr class="group-header"><th colspan="6">{{ .Type | toString | escapeXML }}</th></tr>
+      <tr class="group-header"><th colspan="6">{{ .Type | toString | escapeXML }} - {{ .Target | escapeXML }}</th></tr>
       {{- if (eq (len .Vulnerabilities) 0) }}
       <tr><th colspan="6">No Vulnerabilities found</th></tr>
       {{- else }}
