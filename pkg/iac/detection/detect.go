@@ -107,6 +107,11 @@ func init() {
 	}
 
 	matchers[FileTypeCloudFormation] = func(name string, r io.ReadSeeker) bool {
+		// Check if this is an Azure ARM template first
+		if IsType(name, r, FileTypeAzureARM) {
+			return false
+		}
+
 		sniff := struct {
 			Resources map[string]map[string]any `json:"Resources" yaml:"Resources"`
 		}{}
@@ -143,7 +148,7 @@ func init() {
 			Schema     string         `json:"$schema"`
 			Handler    string         `json:"handler"`
 			Parameters map[string]any `json:"parameters"`
-			Resources  []any          `json:"resources"`
+			Resources  any            `json:"resources"`
 		}{}
 
 		data, err := io.ReadAll(r)
@@ -166,7 +171,18 @@ func init() {
 			return false
 		}
 
-		return len(sniff.Parameters) > 0 || len(sniff.Resources) > 0
+		// Check if resources exist and is either an array or object
+		hasResources := false
+		if sniff.Resources != nil {
+			switch resources := sniff.Resources.(type) {
+			case []any:
+				hasResources = len(resources) > 0
+			case map[string]any:
+				hasResources = len(resources) > 0
+			}
+		}
+
+		return len(sniff.Parameters) > 0 || hasResources
 	}
 
 	matchers[FileTypeDockerfile] = func(name string, _ io.ReadSeeker) bool {

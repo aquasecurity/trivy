@@ -274,11 +274,19 @@ func (v Value) AsList() []Value {
 func (v Value) Raw() any {
 	switch v.Kind {
 	case KindArray:
-		// TODO: recursively build raw array
-		return nil
+		// Recursively build raw array
+		rawArray := make([]any, len(v.rArr))
+		for i, item := range v.rArr {
+			rawArray[i] = item.Raw()
+		}
+		return rawArray
 	case KindObject:
-		// TODO: recursively build raw object
-		return nil
+		// Recursively build raw object
+		rawObject := make(map[string]any)
+		for key, value := range v.rMap {
+			rawObject[key] = value.Raw()
+		}
+		return rawObject
 	default:
 		return v.rLit
 	}

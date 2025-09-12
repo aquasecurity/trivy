@@ -300,3 +300,106 @@ func Test_NestedResourceParsing(t *testing.T) {
 
 	assert.Equal(t, "queueServices/queues", queue.Type.AsString())
 }
+
+func TestParser_Parse_DictionaryResources(t *testing.T) {
+	// Test case for Bicep modules that generate dictionary-style resources
+	input := `{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.37.4.10188",
+      "templateHash": "9375790898027716067"
+    }
+  },
+  "resources": {
+    "myrg": {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2025-04-01",
+      "name": "myrg",
+      "location": "WestEurope"
+    },
+    "insecure": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('insecure-{0}', uniqueString('insecure', deployment().name))]",
+      "resourceGroup": "myrg",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.37.4.10188",
+              "templateHash": "1574586486505528430"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2022-09-01",
+              "name": "[format('insecurestorage{0}', uniqueString(resourceGroup().id))]",
+              "location": "[resourceGroup().location]",
+              "sku": {
+                "name": "Standard_LRS"
+              },
+              "kind": "StorageV2",
+              "properties": {
+                "allowBlobPublicAccess": true,
+                "minimumTlsVersion": "TLS1_0",
+                "supportsHttpsTrafficOnly": false,
+                "accessTier": "Hot"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "myrg"
+      ]
+    }
+  }
+}`
+
+	targetFS := memoryfs.New()
+	filename := "dictionary_resources.json"
+
+	require.NoError(t, targetFS.WriteFile(filename, []byte(input), 0o644))
+
+	p := New(targetFS)
+	got, err := p.ParseFS(t.Context(), ".")
+	require.NoError(t, err)
+	
+	require.Len(t, got, 1)
+
+	deployment := got[0]
+
+	// Should have 3 resources: myrg, insecure, and the nested storage account from insecure
+	require.Len(t, deployment.Resources, 3)
+
+	// Check that resources are properly parsed
+	resourceNames := make([]string, len(deployment.Resources))
+	for i, resource := range deployment.Resources {
+		resourceNames[i] = resource.Name.AsString()
+	}
+
+	// Should contain both resources from the dictionary
+	assert.Contains(t, resourceNames, "myrg")
+	assert.Contains(t, resourceNames, "[format('insecure-{0}', uniqueString('insecure', deployment().name))]")
+
+	// Check that the resource types are correct
+	resourceTypes := make([]string, len(deployment.Resources))
+	for i, resource := range deployment.Resources {
+		resourceTypes[i] = resource.Type.AsString()
+	}
+
+	assert.Contains(t, resourceTypes, "Microsoft.Resources/resourceGroups")
+	assert.Contains(t, resourceTypes, "Microsoft.Resources/deployments")
+}
