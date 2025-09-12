@@ -5,11 +5,43 @@
   "ArtifactType": "repository",
   "Results": [
     {
+      "Target": "",
+      "Class": "config",
+      "Type": "terraform",
+      "MisconfSummary": {
+        "Successes": 0,
+        "Failures": 1
+      },
+      "Misconfigurations": [
+        {
+          "Type": "Terraform Security Check",
+          "ID": "AZU-0012",
+          "Title": "The default action on Storage account network rules should be set to deny",
+          "Description": "The default_action for network rules should come into effect when no other rules are matched.\nThe default action should be set to Deny.\n",
+          "Message": "No network rules defined and default action allows access.",
+          "Namespace": "builtin.azure.storage.azure0012",
+          "Query": "data.builtin.azure.storage.azure0012.deny",
+          "Resolution": "Set network rules to deny",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/azu-0012",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/firewall/rule-processing",
+            "https://avd.aquasec.com/misconfig/azu-0012"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Provider": "Azure",
+            "Service": "storage"
+          }
+        }
+      ]
+    },
+    {
       "Target": ".",
       "Class": "config",
       "Type": "terraform",
       "MisconfSummary": {
-        "Successes": 52,
+        "Successes": 51,
         "Failures": 0
       }
     },
@@ -19,152 +51,9 @@
       "Type": "terraform",
       "MisconfSummary": {
         "Successes": 0,
-        "Failures": 4
+        "Failures": 3
       },
       "Misconfigurations": [
-        {
-          "Type": "Terraform Security Check",
-          "ID": "AWS-0088",
-          "Title": "Unencrypted S3 bucket.",
-          "Description": "S3 Buckets should be encrypted to protect the data that is stored within them if access is compromised.\n",
-          "Message": "Bucket does not have encryption enabled",
-          "Namespace": "builtin.aws.s3.aws0088",
-          "Query": "data.builtin.aws.s3.aws0088.deny",
-          "Resolution": "Configure bucket encryption",
-          "Severity": "HIGH",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/aws-0088",
-          "References": [
-            "https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-encryption.html",
-            "https://avd.aquasec.com/misconfig/aws-0088"
-          ],
-          "Status": "FAIL",
-          "CauseMetadata": {
-            "Resource": "module.this",
-            "Provider": "AWS",
-            "Service": "s3",
-            "StartLine": 25,
-            "EndLine": 36,
-            "Code": {
-              "Lines": [
-                {
-                  "Number": 25,
-                  "Content": "resource \"aws_s3_bucket\" \"this\" {",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"aws_s3_bucket\"\u001b[0m \u001b[38;5;37m\"this\"\u001b[0m {",
-                  "FirstCause": true,
-                  "LastCause": false
-                },
-                {
-                  "Number": 26,
-                  "Content": "  count = local.create_bucket \u0026\u0026 !var.is_directory_bucket ? 1 : 0",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "Highlighted": "  \u001b[38;5;245mcount\u001b[0m = local.create_bucket \u001b[38;5;245m\u0026\u0026\u001b[0m \u001b[38;5;245m!\u001b[0m\u001b[38;5;33mvar\u001b[0m.is_directory_bucket \u001b[38;5;245m?\u001b[0m \u001b[38;5;37m1\u001b[0m \u001b[38;5;245m:\u001b[0m \u001b[38;5;37m0",
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 27,
-                  "Content": "",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "Highlighted": "\u001b[0m",
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 28,
-                  "Content": "  region = var.region",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "Highlighted": "  \u001b[38;5;245mregion\u001b[0m = \u001b[38;5;33mvar\u001b[0m.region",
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 29,
-                  "Content": "",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 30,
-                  "Content": "  bucket        = var.bucket",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "Highlighted": "  \u001b[38;5;245mbucket\u001b[0m        = \u001b[38;5;33mvar\u001b[0m.bucket",
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 31,
-                  "Content": "  bucket_prefix = var.bucket_prefix",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "Highlighted": "  \u001b[38;5;245mbucket_prefix\u001b[0m = \u001b[38;5;33mvar\u001b[0m.bucket_prefix",
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 32,
-                  "Content": "",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 33,
-                  "Content": "  force_destroy       = var.force_destroy",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "Highlighted": "  \u001b[38;5;245mforce_destroy\u001b[0m       = \u001b[38;5;33mvar\u001b[0m.force_destroy",
-                  "FirstCause": false,
-                  "LastCause": true
-                },
-                {
-                  "Number": 34,
-                  "Content": "",
-                  "IsCause": false,
-                  "Annotation": "",
-                  "Truncated": true,
-                  "FirstCause": false,
-                  "LastCause": false
-                }
-              ]
-            },
-            "Occurrences": [
-              {
-                "Resource": "module.bucket",
-                "Filename": "modules/s3/main.tf",
-                "Location": {
-                  "StartLine": 5,
-                  "EndLine": 8
-                }
-              },
-              {
-                "Resource": "module.this",
-                "Filename": "main.tf",
-                "Location": {
-                  "StartLine": 1,
-                  "EndLine": 4
-                }
-              }
-            ]
-          }
-        },
         {
           "Type": "Terraform Security Check",
           "ID": "AWS-0089",

@@ -5,11 +5,43 @@
   "ArtifactType": "repository",
   "Results": [
     {
+      "Target": "",
+      "Class": "config",
+      "Type": "terraform",
+      "MisconfSummary": {
+        "Successes": 0,
+        "Failures": 1
+      },
+      "Misconfigurations": [
+        {
+          "Type": "Terraform Security Check",
+          "ID": "AZU-0012",
+          "Title": "The default action on Storage account network rules should be set to deny",
+          "Description": "The default_action for network rules should come into effect when no other rules are matched.\nThe default action should be set to Deny.\n",
+          "Message": "No network rules defined and default action allows access.",
+          "Namespace": "builtin.azure.storage.azure0012",
+          "Query": "data.builtin.azure.storage.azure0012.deny",
+          "Resolution": "Set network rules to deny",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/azu-0012",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/firewall/rule-processing",
+            "https://avd.aquasec.com/misconfig/azu-0012"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Provider": "Azure",
+            "Service": "storage"
+          }
+        }
+      ]
+    },
+    {
       "Target": ".",
       "Class": "config",
       "Type": "terraform",
       "MisconfSummary": {
-        "Successes": 63,
+        "Successes": 62,
         "Failures": 0
       }
     },
