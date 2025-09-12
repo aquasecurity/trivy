@@ -4,6 +4,7 @@ package integration
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -31,6 +32,7 @@ func TestK8s(t *testing.T) {
 			"--cache-dir",
 			cacheDir,
 			"k8s",
+			"--disable-node-collector",
 			"kind-kind-test",
 			"--report",
 			"summary",

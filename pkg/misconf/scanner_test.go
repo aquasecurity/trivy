@@ -142,7 +142,7 @@ func TestScanner_Scan(t *testing.T) {
 			},
 			wantFilePath:     "main.tf",
 			wantFileType:     types.TerraformPlanJSON,
-			misconfsExpected: 2,
+			misconfsExpected: 3,
 		},
 	}
 	for _, tt := range tests {
