@@ -19,10 +19,9 @@ func TestJsonScanner(t *testing.T) {
 		"/rules/rule.rego": `package builtin.json.lol
 
 __rego_metadata__ := {
-	"id": "ABC123",
-	"avd_id": "AVD-AB-0123",
+	"id": "ABC-0123",
 	"title": "title",
-	"short_code": "short",
+	"long_id": "long",
 	"severity": "CRITICAL",
 	"type": "JSON Check",
 	"description": "description",
@@ -55,9 +54,8 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 
 	assert.Equal(t, scan.Rule{
-		AVDID:          "AVD-AB-0123",
-		Aliases:        []string{"ABC123"},
-		ShortCode:      "short",
+		ID:             "ABC-0123",
+		LongID:         "long",
 		Summary:        "title",
 		Explanation:    "description",
 		Impact:         "",
@@ -88,10 +86,9 @@ x:
 		"/rules/rule.rego": `package builtin.yaml.lol
 
 __rego_metadata__ := {
-	"id": "ABC123",
-	"avd_id": "AVD-AB-0123",
+	"id": "ABC-0123",
 	"title": "title",
-	"short_code": "short",
+	"long_id": "long",
 	"severity": "CRITICAL",
 	"type": "YAML Check",
 	"description": "description",
@@ -124,9 +121,8 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 
 	assert.Equal(t, scan.Rule{
-		AVDID:          "AVD-AB-0123",
-		Aliases:        []string{"ABC123"},
-		ShortCode:      "short",
+		ID:             "ABC-0123",
+		LongID:         "long",
 		Summary:        "title",
 		Explanation:    "description",
 		Impact:         "",
@@ -156,10 +152,9 @@ z = ["a", "b", "c"]
 		"/rules/rule.rego": `package builtin.toml.lol
 
 __rego_metadata__ := {
-	"id": "ABC123",
-	"avd_id": "AVD-AB-0123",
+	"id": "ABC-0123",
 	"title": "title",
-	"short_code": "short",
+	"long_id": "long",
 	"severity": "CRITICAL",
 	"type": "TOML Check",
 	"description": "description",
@@ -192,9 +187,8 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 
 	assert.Equal(t, scan.Rule{
-		AVDID:          "AVD-AB-0123",
-		Aliases:        []string{"ABC123"},
-		ShortCode:      "short",
+		ID:             "ABC-0123",
+		LongID:         "long",
 		Summary:        "title",
 		Explanation:    "description",
 		Impact:         "",

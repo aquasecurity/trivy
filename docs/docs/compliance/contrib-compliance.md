@@ -51,7 +51,7 @@ Thus, we can use the information already present:
     name: Ensure that the kubelet service file ownership is set to root:root (Manual)
     description: Ensure that the kubelet service file ownership is set to root:root
     checks:
-      - id: AVD-KCV-0070
+      - id: KCV-0070
     severity: HIGH
 ```
 

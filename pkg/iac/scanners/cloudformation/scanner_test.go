@@ -27,10 +27,10 @@ Resources:
 		"/rules/rule.rego": `package builtin.dockerfile.DS006
 
 __rego_metadata__ := {
-	"id": "DS006",
-	"avd_id": "AVD-DS-0006",
+	"id": "DS-0006",
+	"aliases": ["DS006"],
 	"title": "COPY '--from' referring to the current image",
-	"short_code": "no-self-referencing-copy-from",
+	"long_id": "docker-no-self-referencing-copy-from",
 	"version": "v1.0.0",
 	"severity": "CRITICAL",
 	"type": "Dockerfile Security Check",
@@ -64,9 +64,9 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 
 	assert.Equal(t, scan.Rule{
-		AVDID:          "AVD-DS-0006",
+		ID:             "DS-0006",
 		Aliases:        []string{"DS006"},
-		ShortCode:      "no-self-referencing-copy-from",
+		LongID:         "docker-no-self-referencing-copy-from",
 		Summary:        "COPY '--from' referring to the current image",
 		Explanation:    "COPY '--from' should not mention the current FROM alias, since it is impossible to copy from itself.",
 		Impact:         "",
@@ -107,8 +107,7 @@ const bucketNameCheck = `# METADATA
 # schemas:
 # - input: schema["cloud"]
 # custom:
-#   id: AVD-AWS-001
-#   avd_id: AVD-AWS-001
+#   id: AWS-001
 #   provider: aws
 #   service: s3
 #   severity: LOW
@@ -155,7 +154,7 @@ Resources:
 			name: "rule before resource",
 			src: `---
 Resources:
-#trivy:ignore:AVD-AWS-001
+#trivy:ignore:AWS-001
   S3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
@@ -170,7 +169,7 @@ Resources:
   S3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-#trivy:ignore:AVD-AWS-001
+#trivy:ignore:AWS-001
       BucketName: test-bucket
 `,
 			ignored: 1,
@@ -182,7 +181,7 @@ Resources:
   S3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: test-bucket  #trivy:ignore:AVD-AWS-001
+      BucketName: test-bucket  #trivy:ignore:AWS-001
 `,
 			ignored: 1,
 		},
@@ -197,7 +196,7 @@ Resources:
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256 #trivy:ignore:AVD-AWS-001
+              SSEAlgorithm: AES256 #trivy:ignore:AWS-001
 `,
 			ignored: 1,
 		},

@@ -83,13 +83,13 @@ func Test_Registration(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			Reset()
 			rule := scan.Rule{
-				AVDID:      fmt.Sprintf("%d-%s", i, test.name),
+				ID:         fmt.Sprintf("%d-%s", i, test.name),
 				Frameworks: test.registeredFrameworks,
 			}
 			_ = Register(rule)
 			var found bool
 			for _, matchedRule := range GetFrameworkRules(test.inputFrameworks...) {
-				if matchedRule.GetRule().AVDID == rule.AVDID {
+				if matchedRule.GetRule().ID == rule.ID {
 					assert.False(t, found, "rule should not be returned more than once")
 					found = true
 				}
@@ -102,16 +102,16 @@ func Test_Registration(t *testing.T) {
 func Test_Deregistration(t *testing.T) {
 	Reset()
 	registrationA := Register(scan.Rule{
-		AVDID: "A",
+		ID: "A",
 	})
 	registrationB := Register(scan.Rule{
-		AVDID: "B",
+		ID: "B",
 	})
 	assert.Len(t, GetFrameworkRules(), 2)
 	Deregister(registrationA)
 	actual := GetFrameworkRules()
 	require.Len(t, actual, 1)
-	assert.Equal(t, "B", actual[0].GetRule().AVDID)
+	assert.Equal(t, "B", actual[0].GetRule().ID)
 	Deregister(registrationB)
 	assert.Empty(t, GetFrameworkRules())
 }
@@ -119,10 +119,10 @@ func Test_Deregistration(t *testing.T) {
 func Test_DeregistrationMultipleFrameworks(t *testing.T) {
 	Reset()
 	registrationA := Register(scan.Rule{
-		AVDID: "A",
+		ID: "A",
 	})
 	registrationB := Register(scan.Rule{
-		AVDID: "B",
+		ID: "B",
 		Frameworks: map[framework.Framework][]string{
 			"a":               nil,
 			"b":               nil,
@@ -134,7 +134,7 @@ func Test_DeregistrationMultipleFrameworks(t *testing.T) {
 	Deregister(registrationA)
 	actual := GetFrameworkRules()
 	require.Len(t, actual, 1)
-	assert.Equal(t, "B", actual[0].GetRule().AVDID)
+	assert.Equal(t, "B", actual[0].GetRule().ID)
 	Deregister(registrationB)
 	assert.Empty(t, GetFrameworkRules())
 }

@@ -23,7 +23,7 @@ import (
 // IgnoreFinding represents an item to be ignored.
 type IgnoreFinding struct {
 	// ID is the identifier of the vulnerability, misconfiguration, secret, or license.
-	// e.g. CVE-2019-8331, AVD-AWS-0175, etc.
+	// e.g. CVE-2019-8331, AWS-0175, etc.
 	// required: true
 	ID string `yaml:"id"`
 
@@ -160,17 +160,8 @@ func (c *IgnoreConfig) MatchVulnerability(vulnID, filePath, pkgPath string, pkg 
 	return nil
 }
 
-func (c *IgnoreConfig) MatchMisconfiguration(misconfID, avdID, filePath string) *IgnoreFinding {
-	ids := []string{
-		misconfID,
-		avdID,
-	}
-	for _, id := range ids {
-		if f := c.Misconfigurations.Match(id, filePath, nil); f != nil {
-			return f
-		}
-	}
-	return nil
+func (c *IgnoreConfig) MatchMisconfiguration(misconfID, filePath string) *IgnoreFinding {
+	return c.Misconfigurations.Match(misconfID, filePath, nil)
 }
 
 func (c *IgnoreConfig) MatchSecret(secretID, filePath string) *IgnoreFinding {

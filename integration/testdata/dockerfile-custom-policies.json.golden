@@ -3,18 +3,6 @@
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/custom-policy",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "Dockerfile",
@@ -27,8 +15,7 @@
       "Misconfigurations": [
         {
           "Type": "Dockerfile Security Check",
-          "ID": "AVD-BAR-0001",
-          "AVDID": "AVD-BAR-0001",
+          "ID": "BAR-0001",
           "Title": "Custom policy",
           "Description": "Custom policy for testing",
           "Message": "something bad: bar",
@@ -37,20 +24,14 @@
           "Resolution": "Custom policy for testing",
           "Severity": "LOW",
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Custom",
-            "Service": "custom",
-            "Code": {
-              "Lines": null
-            },
-            "RenderedCause": {}
+            "Service": "custom"
           }
         },
         {
           "Type": "Dockerfile Security Check",
-          "ID": "AVD-FOO-0001",
-          "AVDID": "AVD-FOO-0001",
+          "ID": "FOO-0001",
           "Title": "Custom policy",
           "Description": "Custom policy for testing",
           "Message": "something bad: foo",
@@ -59,14 +40,9 @@
           "Resolution": "Custom policy for testing",
           "Severity": "LOW",
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Custom",
-            "Service": "custom",
-            "Code": {
-              "Lines": null
-            },
-            "RenderedCause": {}
+            "Service": "custom"
           }
         }
       ]
