@@ -7,11 +7,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Azure/azure-sdk-for-go/profiles/preview/preview/containerregistry/runtime/containerregistry"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
+	"github.com/Azure/azure-sdk-for-go/sdk/containers/azcontainerregistry"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/intf"
@@ -70,11 +71,28 @@ func (r *RegistryClient) GetCredential(ctx context.Context) (string, string, err
 	return "00000000-0000-0000-0000-000000000000", *rt.RefreshToken, err
 }
 
-func refreshToken(ctx context.Context, accessToken, domain string) (containerregistry.RefreshToken, error) {
+func refreshToken(ctx context.Context, accessToken, domain string) (azcontainerregistry.ACRRefreshToken, error) {
 	tenantID := os.Getenv("AZURE_TENANT_ID")
 	if tenantID == "" {
-		return containerregistry.RefreshToken{}, errors.New("missing environment variable AZURE_TENANT_ID")
+		return azcontainerregistry.ACRRefreshToken{}, errors.New("missing environment variable AZURE_TENANT_ID")
 	}
-	repoClient := containerregistry.NewRefreshTokensClient(fmt.Sprintf("%s://%s", scheme, domain))
-	return repoClient.GetFromExchange(ctx, "access_token", domain, tenantID, "", accessToken)
+
+	client, err := azcontainerregistry.NewAuthenticationClient(fmt.Sprintf("%s://%s", scheme, domain), nil)
+	if err != nil {
+		return azcontainerregistry.ACRRefreshToken{}, xerrors.Errorf("create auth client: %w", err)
+	}
+
+	resp, err := client.ExchangeAADAccessTokenForACRRefreshToken(ctx,
+		azcontainerregistry.PostContentSchemaGrantTypeAccessToken,
+		domain,
+		&azcontainerregistry.AuthenticationClientExchangeAADAccessTokenForACRRefreshTokenOptions{
+			AccessToken: lo.ToPtr(accessToken),
+			Tenant:      lo.ToPtr(tenantID),
+		},
+	)
+	if err != nil {
+		return azcontainerregistry.ACRRefreshToken{}, xerrors.Errorf("exchange access token: %w", err)
+	}
+
+	return resp.ACRRefreshToken, nil
 }

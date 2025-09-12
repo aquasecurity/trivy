@@ -2,8 +2,10 @@ package cache
 
 import (
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/hashicorp/go-multierror"
 	bolt "go.etcd.io/bbolt"
@@ -11,6 +13,8 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
+
+const defaultFSCacheTimeout = 5 * time.Second
 
 var _ Cache = &FSCache{}
 
@@ -25,9 +29,15 @@ func NewFSCache(cacheDir string) (FSCache, error) {
 		return FSCache{}, xerrors.Errorf("failed to create cache dir: %w", err)
 	}
 
-	db, err := bolt.Open(filepath.Join(dir, "fanal.db"), 0o600, nil)
+	db, err := bolt.Open(filepath.Join(dir, "fanal.db"), 0o600, &bolt.Options{
+		Timeout: defaultFSCacheTimeout,
+	})
 	if err != nil {
-		return FSCache{}, xerrors.Errorf("unable to open DB: %w", err)
+		// Check if the error is due to timeout (database locked by another process)
+		if errors.Is(err, bolt.ErrTimeout) {
+			return FSCache{}, xerrors.Errorf("cache may be in use by another process: %w", err)
+		}
+		return FSCache{}, xerrors.Errorf("unable to open cache DB: %w", err)
 	}
 
 	err = db.Update(func(tx *bolt.Tx) error {

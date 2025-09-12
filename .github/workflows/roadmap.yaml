@@ -11,14 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # 'kind/feature' AND 'priority/backlog' labels -> 'Backlog' column
-      - uses: actions/add-to-project@v1.0.2 # add new issue to project
+      - uses: actions/add-to-project@244f685bbc3b7adfa8466e08b698b5577571133e # v1.0.2
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
           github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
           labeled: kind/feature, priority/backlog
           label-operator: AND
         id: add-backlog-issue
-      - uses: titoportas/update-project-fields@v0.1.0 # change Priority(column) of added issue
+      - uses: titoportas/update-project-fields@421a54430b3cdc9eefd8f14f9ce0142ab7678751 # v0.1.0
         if: ${{ steps.add-backlog-issue.outputs.itemId }}
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
@@ -28,14 +28,14 @@ jobs:
           field-values: Backlog
 
       # 'kind/feature' AND 'priority/important-longterm' labels -> 'Important (long-term)' column
-      - uses: actions/add-to-project@v1.0.2 # add new issue to project
+      - uses: actions/add-to-project@244f685bbc3b7adfa8466e08b698b5577571133e # v1.0.2
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
           github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
           labeled: kind/feature, priority/important-longterm
           label-operator: AND
         id: add-longterm-issue
-      - uses: titoportas/update-project-fields@v0.1.0 # change Priority(column) of added issue
+      - uses: titoportas/update-project-fields@421a54430b3cdc9eefd8f14f9ce0142ab7678751 # v0.1.0
         if: ${{ steps.add-longterm-issue.outputs.itemId }}
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
@@ -45,14 +45,14 @@ jobs:
           field-values: Important (long-term)
 
       # 'kind/feature' AND 'priority/important-soon' labels -> 'Important (soon)' column
-      - uses: actions/add-to-project@v1.0.2 # add new issue to project
+      - uses: actions/add-to-project@244f685bbc3b7adfa8466e08b698b5577571133e # v1.0.2
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
           github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
           labeled: kind/feature, priority/important-soon
           label-operator: AND
         id: add-soon-issue
-      - uses: titoportas/update-project-fields@v0.1.0 # change Priority(column) of added issue
+      - uses: titoportas/update-project-fields@421a54430b3cdc9eefd8f14f9ce0142ab7678751 # v0.1.0
         if: ${{ steps.add-soon-issue.outputs.itemId }}
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
@@ -62,14 +62,14 @@ jobs:
           field-values: Important (soon)
 
       # 'kind/feature' AND 'priority/critical-urgent' labels -> 'Urgent' column
-      - uses: actions/add-to-project@v1.0.2 # add new issue to project
+      - uses: actions/add-to-project@244f685bbc3b7adfa8466e08b698b5577571133e # v1.0.2
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
           github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
           labeled: kind/feature, priority/critical-urgent
           label-operator: AND
         id: add-urgent-issue
-      - uses: titoportas/update-project-fields@v0.1.0 # change Priority(column) of added issue
+      - uses: titoportas/update-project-fields@421a54430b3cdc9eefd8f14f9ce0142ab7678751 # v0.1.0
         if: ${{ steps.add-urgent-issue.outputs.itemId }}
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25

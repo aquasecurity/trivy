@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	handler.RegisterPostHandlerInit(types.SystemFileFilteringPostHandler, newSystemFileFilteringPostHandler)
+	handler.RegisterPostHandlerInit(types.SystemFileFilteringPostHandler, NewSystemFileFilteringPostHandler)
 }
 
 const version = 1
@@ -27,7 +27,7 @@ var defaultSystemFiles = []string{
 
 type systemFileFilteringPostHandler struct{}
 
-func newSystemFileFilteringPostHandler(artifact.Option) (handler.PostHandler, error) {
+func NewSystemFileFilteringPostHandler(artifact.Option) (handler.PostHandler, error) {
 	return systemFileFilteringPostHandler{}, nil
 }
 

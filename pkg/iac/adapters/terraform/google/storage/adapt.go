@@ -121,7 +121,7 @@ func (a *adapter) adaptBucketResource(resourceBlock *terraform.Block) storage.Bu
 
 	if logBlock := resourceBlock.GetBlock("logging"); logBlock.IsNotNil() {
 		bucket.Logging.Metadata = logBlock.GetMetadata()
-		bucket.Logging.LogBucket = logBlock.GetAttribute("target_bucket").AsStringValueOrDefault("", logBlock)
+		bucket.Logging.LogBucket = logBlock.GetAttribute("log_bucket").AsStringValueOrDefault("", logBlock)
 		bucket.Logging.LogObjectPrefix = logBlock.GetAttribute("log_object_prefix").AsStringValueOrDefault("", logBlock)
 	}
 

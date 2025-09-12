@@ -118,6 +118,11 @@ Nuances of table contents:
     - `-` means that the scanner didn't scan this target.
     - `0` means that the scanner scanned this target, but found no security issues.
 
+!!! Note
+    For the secret/license scanner, the Trivy report contains only findings.
+    Therefore, we can’t say for sure whether Trivy scanned at least one file or simply didn’t find any findings.
+    That’s why, for these scanners, the summary table uses “-” if no findings are found.
+
 <details>
 <summary>Report Summary</summary>
 

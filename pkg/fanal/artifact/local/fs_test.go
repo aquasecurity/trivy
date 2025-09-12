@@ -2503,3 +2503,60 @@ func TestArtifact_AnalysisStrategy(t *testing.T) {
 		})
 	}
 }
+
+func Test_sanitizeRemoteURL(t *testing.T) {
+	tests := []struct {
+		name string
+		in   string
+		want string
+	}{
+		{
+			name: "https with user:pass",
+			in:   "https://user:token@github.com/org/repo.git",
+			want: "https://github.com/org/repo.git",
+		},
+		{
+			name: "port in authority with userinfo",
+			in:   "https://user:pass@host:8443/repo.git",
+			want: "https://host:8443/repo.git",
+		},
+		{
+			name: "http with username only",
+			in:   "http://user@github.com/org/repo",
+			want: "http://github.com/org/repo",
+		},
+		{
+			name: "double scheme after userinfo",
+			in:   "https://gitlab-ci-token:glcbt-64_QwERTyuiOp-AsD2NgCJ7@example.com/gitrepo.git",
+			want: "https://example.com/gitrepo.git",
+		},
+		{
+			name: "ssh scheme with username",
+			in:   "ssh://git@github.com/org/repo.git",
+			want: "ssh://github.com/org/repo.git",
+		},
+		{
+			name: "scp-like ssh unchanged",
+			in:   "git@github.com:org/repo.git",
+			want: "git@github.com:org/repo.git",
+		},
+		{
+			name: "already clean https",
+			in:   "https://github.com/org/repo.git",
+			want: "https://github.com/org/repo.git",
+		},
+		{
+			name: "no scheme left as-is",
+			in:   "github.com/org/repo.git",
+			want: "github.com/org/repo.git",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got := sanitizeRemoteURL(tt.in)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}

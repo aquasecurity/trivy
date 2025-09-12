@@ -13,6 +13,7 @@ The table below outlines the features offered by Trivy.
 | :-----------------------------------: | :-------: |
 |    Detect unfixed vulnerabilities     |     -     |
 | [Dependency graph][dependency-graph] |     ✓     |
+|        End of life awareness         |     -     |
 
 ## SBOM
 Same as [Alpine Linux](alpine.md#sbom).
