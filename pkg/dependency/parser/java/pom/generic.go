@@ -26,7 +26,7 @@ type repository struct {
 }
 
 type repositoryPolicy struct {
-	Enabled bool `xml:"enabled"`
+	Enabled string `xml:"enabled"`
 	// Add more fields as needed:
 	// ChecksumPolicy string `xml:"checksumPolicy"`
 	// UpdatePolicy   string `xml:"updatePolicy"`
@@ -67,7 +67,7 @@ func (r *repository) applyMirrorSettings(mirror *Mirror) {
 			log.String("repository.URL", r.URL), log.String("mirror.URL", mirror.URL))
 		r.MirrorID = mirror.ID
 		r.URL = mirror.URL
-		r.Releases.Enabled = true
-		r.Snapshots.Enabled = true
+		r.Releases.Enabled = "true"
+		r.Snapshots.Enabled = "true"
 	}
 }

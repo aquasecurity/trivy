@@ -180,20 +180,20 @@ func Test_ReadSettings(t *testing.T) {
 								ID:  "mycompany-internal-releases",
 								URL: "https://mycompany.example.com/repository/internal-releases",
 								Releases: repositoryPolicy{
-									Enabled: true,
+									Enabled: "true",
 								},
 								Snapshots: repositoryPolicy{
-									Enabled: false,
+									Enabled: "false",
 								},
 							},
 							{
 								ID:  "mycompany-internal-snapshots",
 								URL: "https://mycompany.example.com/repository/internal-snapshots",
 								Releases: repositoryPolicy{
-									Enabled: false,
+									Enabled: "false",
 								},
 								Snapshots: repositoryPolicy{
-									Enabled: true,
+									Enabled: "true",
 								},
 							},
 						},
@@ -265,20 +265,20 @@ func Test_ReadSettings(t *testing.T) {
 								ID:  "mycompany-internal-releases",
 								URL: "https://mycompany.example.com/repository/internal-releases",
 								Releases: repositoryPolicy{
-									Enabled: true,
+									Enabled: "true",
 								},
 								Snapshots: repositoryPolicy{
-									Enabled: false,
+									Enabled: "false",
 								},
 							},
 							{
 								ID:  "mycompany-internal-snapshots",
 								URL: "https://mycompany.example.com/repository/internal-snapshots",
 								Releases: repositoryPolicy{
-									Enabled: false,
+									Enabled: "false",
 								},
 								Snapshots: repositoryPolicy{
-									Enabled: true,
+									Enabled: "true",
 								},
 							},
 						},
@@ -329,20 +329,20 @@ func Test_ReadSettings(t *testing.T) {
 								ID:  "mycompany-internal-releases",
 								URL: "https://mycompany.example.com/repository/internal-releases",
 								Releases: repositoryPolicy{
-									Enabled: true,
+									Enabled: "true",
 								},
 								Snapshots: repositoryPolicy{
-									Enabled: false,
+									Enabled: "false",
 								},
 							},
 							{
 								ID:  "mycompany-internal-snapshots",
 								URL: "https://mycompany.example.com/repository/internal-snapshots",
 								Releases: repositoryPolicy{
-									Enabled: false,
+									Enabled: "false",
 								},
 								Snapshots: repositoryPolicy{
-									Enabled: true,
+									Enabled: "true",
 								},
 							},
 						},
@@ -354,20 +354,20 @@ func Test_ReadSettings(t *testing.T) {
 								ID:  "mycompany-internal-releases",
 								URL: "https://mycompany.example.com/repository/internal-releases",
 								Releases: repositoryPolicy{
-									Enabled: true,
+									Enabled: "true",
 								},
 								Snapshots: repositoryPolicy{
-									Enabled: false,
+									Enabled: "false",
 								},
 							},
 							{
 								ID:  "mycompany-global-releases",
 								URL: "https://mycompany.example.com/repository/global-releases",
 								Releases: repositoryPolicy{
-									Enabled: true,
+									Enabled: "true",
 								},
 								Snapshots: repositoryPolicy{
-									Enabled: false,
+									Enabled: "false",
 								},
 							},
 						},
@@ -379,10 +379,10 @@ func Test_ReadSettings(t *testing.T) {
 								ID:  "mycompany-default-releases",
 								URL: "https://mycompany.example.com/repository/default-releases",
 								Releases: repositoryPolicy{
-									Enabled: true,
+									Enabled: "true",
 								},
 								Snapshots: repositoryPolicy{
-									Enabled: false,
+									Enabled: "false",
 								},
 							},
 						},
@@ -491,14 +491,14 @@ func Test_getEffectiveRepositories(t *testing.T) {
 					{
 						ID:        "r1-releases",
 						URL:       "http://repo1",
-						Releases:  repositoryPolicy{Enabled: true},
-						Snapshots: repositoryPolicy{Enabled: false},
+						Releases:  repositoryPolicy{Enabled: "true"},
+						Snapshots: repositoryPolicy{Enabled: "false"},
 					},
 					{
 						ID:        "r2-snapshots",
 						URL:       "http://repo2",
-						Releases:  repositoryPolicy{Enabled: false},
-						Snapshots: repositoryPolicy{Enabled: true},
+						Releases:  repositoryPolicy{Enabled: "false"},
+						Snapshots: repositoryPolicy{Enabled: "true"},
 					},
 				},
 			},
@@ -508,14 +508,14 @@ func Test_getEffectiveRepositories(t *testing.T) {
 					{
 						ID:        "r3-releases",
 						URL:       "http://repo3",
-						Releases:  repositoryPolicy{Enabled: true},
-						Snapshots: repositoryPolicy{Enabled: false},
+						Releases:  repositoryPolicy{Enabled: "true"},
+						Snapshots: repositoryPolicy{Enabled: "false"},
 					},
 					{
 						ID:        "r4-snapshots",
 						URL:       "http://repo4",
-						Releases:  repositoryPolicy{Enabled: false},
-						Snapshots: repositoryPolicy{Enabled: true},
+						Releases:  repositoryPolicy{Enabled: "false"},
+						Snapshots: repositoryPolicy{Enabled: "true"},
 					},
 				},
 			},
@@ -525,14 +525,14 @@ func Test_getEffectiveRepositories(t *testing.T) {
 					{
 						ID:        "r5-releases",
 						URL:       "http://repo5",
-						Releases:  repositoryPolicy{Enabled: true},
-						Snapshots: repositoryPolicy{Enabled: false},
+						Releases:  repositoryPolicy{Enabled: "true"},
+						Snapshots: repositoryPolicy{Enabled: "false"},
 					},
 					{
 						ID:        "r1-releases",
 						URL:       "http://repo1-duplicate",
-						Releases:  repositoryPolicy{Enabled: true},
-						Snapshots: repositoryPolicy{Enabled: false},
+						Releases:  repositoryPolicy{Enabled: "true"},
+						Snapshots: repositoryPolicy{Enabled: "false"},
 					},
 				},
 				Activation: activation{ActiveByDefault: true},
@@ -558,16 +558,16 @@ func Test_getEffectiveRepositories(t *testing.T) {
 
 	require.Equal(t, "r1-releases", effective[0].ID)
 	require.Equal(t, "http://mirror1", effective[0].URL)
-	require.True(t, effective[0].Releases.Enabled)
-	require.True(t, effective[0].Snapshots.Enabled)
+	require.True(t, getRepositoryPolicy(effective[0].Releases.Enabled, nil))
+	require.True(t, getRepositoryPolicy(effective[0].Snapshots.Enabled, nil))
 
 	require.Equal(t, "r2-snapshots", effective[1].ID)
 	require.Equal(t, "http://mirror-external", effective[1].URL)
-	require.True(t, effective[1].Releases.Enabled)
-	require.True(t, effective[1].Snapshots.Enabled)
+	require.True(t, getRepositoryPolicy(effective[1].Releases.Enabled, nil))
+	require.True(t, getRepositoryPolicy(effective[1].Snapshots.Enabled, nil))
 
 	require.Equal(t, "r5-releases", effective[2].ID)
 	require.Equal(t, "http://mirror-external", effective[2].URL)
-	require.True(t, effective[2].Releases.Enabled)
-	require.True(t, effective[2].Snapshots.Enabled)
+	require.True(t, getRepositoryPolicy(effective[2].Releases.Enabled, nil))
+	require.True(t, getRepositoryPolicy(effective[2].Snapshots.Enabled, nil))
 }

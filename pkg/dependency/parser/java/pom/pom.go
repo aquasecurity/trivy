@@ -6,6 +6,7 @@ import (
 	"io"
 	"reflect"
 	slicesGo "slices"
+	"strconv"
 	"strings"
 
 	"github.com/samber/lo"
@@ -123,13 +124,28 @@ func (p *pom) licenses() []string {
 	}))
 }
 
+func getRepositoryPolicy(enabledString string, props map[string]string) bool {
+	if enabledString == "" {
+		return false
+	}
+	result, err := strconv.ParseBool(enabledString)
+	if err != nil {
+		enabledString = evaluateVariable(enabledString, props, nil)
+		result, err = strconv.ParseBool(enabledString)
+		if err != nil {
+			return false
+		}
+	}
+	return result
+}
+
 func (p *pom) repositories(settings settings) ([]RemoteRepositoryConfig, []RemoteRepositoryConfig) {
 	logger := log.WithPrefix("pom")
 	var releaseRepos, snapshotRepos []RemoteRepositoryConfig
 	effectiveRepositories := p.effectiveRepositories(&settings)
 	for _, rep := range effectiveRepositories {
-		snapshot := rep.Snapshots.Enabled
-		release := rep.Releases.Enabled
+		snapshot := getRepositoryPolicy(rep.Snapshots.Enabled, p.content.Properties)
+		release := getRepositoryPolicy(rep.Releases.Enabled, p.content.Properties)
 		// Add only enabled repositories
 		if !release && !snapshot {
 			continue
@@ -181,7 +197,7 @@ func (p *pom) effectiveRepositories(settings *settings) []repository {
 		ID:       "central",
 		Name:     "Maven Central Repository",
 		URL:      centralURL,
-		Releases: repositoryPolicy{Enabled: true},
+		Releases: repositoryPolicy{Enabled: "true"},
 	}
 	repositories = append(repositories, central)
 
