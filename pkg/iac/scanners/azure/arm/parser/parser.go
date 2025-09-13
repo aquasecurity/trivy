@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/resolver"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -106,7 +107,26 @@ func (p *Parser) convertTemplate(template *Template) *azure.Deployment {
 	}
 
 	for _, resource := range template.Resources {
-		deployment.Resources = append(deployment.Resources, p.convertResource(resource))
+		convertedResource := p.convertResource(resource)
+		deployment.Resources = append(deployment.Resources, convertedResource)
+		
+		// If this is a Microsoft.Resources/deployments resource, also add its nested resources to the main deployment
+		if convertedResource.Type.AsString() == "Microsoft.Resources/deployments" {
+			nestedResources := p.extractNestedTemplateResources(Resource{
+				Metadata: &convertedResource.Metadata,
+				innerResource: innerResource{
+					APIVersion: convertedResource.APIVersion,
+					Type:       convertedResource.Type,
+					Kind:       convertedResource.Kind,
+					Name:       convertedResource.Name,
+					Location:   convertedResource.Location,
+					Properties: convertedResource.Properties,
+					Resources:  []Resource{},
+				},
+			})
+			// Add nested resources directly to the main deployment
+			deployment.Resources = append(deployment.Resources, nestedResources...)
+		}
 	}
 
 	return &deployment
@@ -118,6 +138,12 @@ func (p *Parser) convertResource(input Resource) azure.Resource {
 
 	for _, child := range input.Resources {
 		children = append(children, p.convertResource(child))
+	}
+
+	// Handle nested templates in Microsoft.Resources/deployments (Bicep modules)
+	if input.Type.AsString() == "Microsoft.Resources/deployments" {
+		nestedResources := p.extractNestedTemplateResources(input)
+		children = append(children, nestedResources...)
 	}
 
 	resource := azure.Resource{
@@ -132,4 +158,65 @@ func (p *Parser) convertResource(input Resource) azure.Resource {
 	}
 
 	return resource
+}
+
+func (p *Parser) extractNestedTemplateResources(input Resource) []azure.Resource {
+	var nestedResources []azure.Resource
+
+	// Extract the nested template from properties.template
+	if input.Properties.Raw() == nil {
+		return nestedResources
+	}
+
+	properties, ok := input.Properties.Raw().(map[string]any)
+	if !ok {
+		return nestedResources
+	}
+
+	template, ok := properties["template"]
+	if !ok {
+		return nestedResources
+	}
+
+	templateMap, ok := template.(map[string]any)
+	if !ok {
+		return nestedResources
+	}
+
+	// Extract resources from the nested template
+	resources, ok := templateMap["resources"]
+	if !ok {
+		return nestedResources
+	}
+
+	resourcesArray, ok := resources.([]any)
+	if !ok {
+		// Handle dictionary resources (Bicep modules)
+		if resourcesMap, ok := resources.(map[string]any); ok {
+			for name, resourceData := range resourcesMap {
+				if resourceMap, ok := resourceData.(map[string]any); ok {
+					resource := convertMapToResource(resourceMap, 0)
+					// Set the name from the dictionary key if not already set
+					if resource.Name.Raw() == nil {
+						resource.Name = azure.NewValue(name, types.NewMetadata(
+							types.NewRange("", 0, 0, "", nil),
+							"",
+						))
+					}
+					nestedResources = append(nestedResources, p.convertResource(resource))
+				}
+			}
+		}
+		return nestedResources
+	}
+
+	// Handle array resources (standard ARM templates)
+	for i, resourceData := range resourcesArray {
+		if resourceMap, ok := resourceData.(map[string]any); ok {
+			resource := convertMapToResource(resourceMap, i)
+			nestedResources = append(nestedResources, p.convertResource(resource))
+		}
+	}
+
+	return nestedResources
 }
