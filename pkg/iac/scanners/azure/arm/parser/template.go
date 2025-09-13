@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"io/fs"
-	"iter"
 	"strconv"
 	"strings"
+
+	"iter"
 
 	"github.com/go-json-experiment/json"
 	"github.com/go-json-experiment/json/jsontext"
@@ -226,13 +227,12 @@ func (c *metadataCollector) findClosestValidParent(path jsontext.Pointer) (jsont
 	}
 }
 
-func convertMapToResource(resourceMap map[string]any, index int) Resource {
+func convertMapToResource(resourceMap map[string]any, _ int) Resource {
 	// Create a basic resource with metadata
 	metadata := types.NewMetadata(
 		types.NewRange("", 0, 0, "", nil),
 		"",
 	)
-
 
 	resource := Resource{
 		Metadata: &metadata,
@@ -266,12 +266,12 @@ func convertToAzureValue(value any) azure.Value {
 	if value == nil {
 		return azure.Value{}
 	}
-	
+
 	metadata := types.NewMetadata(
 		types.NewRange("", 0, 0, "", nil),
 		"",
 	)
-	
+
 	return azure.NewValue(value, metadata)
 }
 
