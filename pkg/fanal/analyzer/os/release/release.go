@@ -49,6 +49,18 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 
 		var family types.OSType
 		switch id {
+		case "rhel":
+			family = types.RedHat
+		case "centos":
+			family = types.CentOS
+		case "rocky":
+			family = types.Rocky
+		case "almalinux":
+			family = types.Alma
+		case "ol":
+			family = types.Oracle
+		case "fedora":
+			family = types.Fedora
 		case "alpine":
 			family = types.Alpine
 		case "bottlerocket":
