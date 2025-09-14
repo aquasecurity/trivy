@@ -126,14 +126,15 @@ func (p *pom) licenses() []string {
 
 func getRepositoryPolicy(enabledString string, props map[string]string) bool {
 	if enabledString == "" {
-		return false
+		return true
 	}
+
 	result, err := strconv.ParseBool(enabledString)
 	if err != nil {
 		enabledString = evaluateVariable(enabledString, props, nil)
 		result, err = strconv.ParseBool(enabledString)
 		if err != nil {
-			return false
+			return true
 		}
 	}
 	return result
@@ -182,6 +183,8 @@ func (p *pom) repositories(settings settings) ([]RemoteRepositoryConfig, []Remot
 	return releaseRepos, snapshotRepos
 }
 
+var globalRepositories = []repository{}
+
 // effectiveRepositories returns the effective repositories for the POM.
 // It combines the repositories defined in the pom.xml file with those defined in the settings.xml file.
 // The repositories from the pom.xml (and settings.xml as well) are updated with mirror settings,
@@ -204,6 +207,9 @@ func (p *pom) effectiveRepositories(settings *settings) []repository {
 	// Add repositories defined in the pom.xml file
 	repositories = append(repositories, p.content.Repositories.Repository...)
 
+	// Reuse repositories identified in previous POMs
+	repositories = append(repositories, globalRepositories...)
+
 	if settings != nil {
 		// Add repositories defined for profiles in the pom.xml file
 		if len(p.content.Profiles) == 0 {
@@ -224,9 +230,14 @@ func (p *pom) effectiveRepositories(settings *settings) []repository {
 		// Combine repositories from settings.xml (for those mirrors have already been applied)
 		repositories = append(repositories, settings.getEffectiveRepositories()...)
 	}
-	return lo.UniqBy(repositories, func(r repository) string {
+	l := lo.UniqBy(repositories, func(r repository) string {
 		return r.ID
 	})
+	globalRepositories = append(globalRepositories, l...)
+	globalRepositories = lo.UniqBy(globalRepositories, func(r repository) string {
+		return r.ID
+	})
+	return l
 }
 
 type pomXML struct {
