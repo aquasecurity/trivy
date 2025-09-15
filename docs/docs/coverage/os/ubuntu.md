@@ -15,6 +15,7 @@ The following table provides an outline of the features Trivy offers.
 |:------------------------------------:|:---------:|
 |    Detect unfixed vulnerabilities    |     ✓     |
 | [Dependency graph][dependency-graph] |     ✓     |
+|        End of life awareness         |     ✓     |
 
 ## SBOM
 Same as [Debian](debian.md#sbom).

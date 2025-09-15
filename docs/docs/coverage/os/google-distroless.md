@@ -15,6 +15,7 @@ The table below outlines the features offered by Trivy.
 | :----------------------------------: | :-------: |
 |       Unfixed vulnerabilities        |     -     |
 | [Dependency graph][dependency-graph] |     ✓     |
+|        End of life awareness         |     -     |
 
 ## SBOM
 Trivy detects packages pre-installed in distroless images.

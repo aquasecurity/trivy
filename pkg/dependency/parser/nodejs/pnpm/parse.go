@@ -18,44 +18,6 @@ import (
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-type PackageResolution struct {
-	Tarball string `yaml:"tarball,omitempty"`
-}
-
-type PackageInfo struct {
-	Resolution      PackageResolution `yaml:"resolution"`
-	Dependencies    map[string]string `yaml:"dependencies,omitempty"`
-	DevDependencies map[string]string `yaml:"devDependencies,omitempty"`
-	IsDev           bool              `yaml:"dev,omitempty"`
-	Name            string            `yaml:"name,omitempty"`
-	Version         string            `yaml:"version,omitempty"`
-}
-
-type LockFile struct {
-	LockfileVersion any                    `yaml:"lockfileVersion"`
-	Dependencies    map[string]any         `yaml:"dependencies,omitempty"`
-	DevDependencies map[string]any         `yaml:"devDependencies,omitempty"`
-	Packages        map[string]PackageInfo `yaml:"packages,omitempty"`
-
-	// V9
-	Importers map[string]Importer `yaml:"importers,omitempty"`
-	Snapshots map[string]Snapshot `yaml:"snapshots,omitempty"`
-}
-
-type Importer struct {
-	Dependencies    map[string]ImporterDepVersion `yaml:"dependencies,omitempty"`
-	DevDependencies map[string]ImporterDepVersion `yaml:"devDependencies,omitempty"`
-}
-
-type ImporterDepVersion struct {
-	Version string `yaml:"version,omitempty"`
-}
-
-type Snapshot struct {
-	Dependencies         map[string]string `yaml:"dependencies,omitempty"`
-	OptionalDependencies map[string]string `yaml:"optionalDependencies,omitempty"`
-}
-
 type Parser struct {
 	logger *log.Logger
 }
@@ -96,7 +58,7 @@ func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]ftypes.Package, []
 
 	// Dependency path is a path to a dependency with a specific set of resolved subdependencies.
 	// cf. https://github.com/pnpm/spec/blob/ad27a225f81d9215becadfa540ef05fa4ad6dd60/dependency-path.md
-	for depPath, info := range lockFile.Packages {
+	for pkgKey, info := range lockFile.Packages {
 		if info.IsDev {
 			continue
 		}
@@ -109,9 +71,10 @@ func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]ftypes.Package, []
 		var ref string
 
 		if name == "" {
-			name, version, ref = p.parseDepPath(depPath, lockVer)
-			version = p.parseVersion(depPath, version, lockVer)
+			name, version, ref = p.parsePnpmKey(string(pkgKey), lockVer)
+			version = p.parseVersion(string(pkgKey), version, lockVer)
 		}
+		// Create Trivy's internal package ID
 		pkgID := packageID(name, version)
 
 		dependencies := make([]string, 0, len(info.Dependencies))
@@ -139,34 +102,19 @@ func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]ftypes.Package, []
 	return pkgs, deps
 }
 
+// parseV9 parses pnpm-lock.yaml version 9.x format and returns packages and their dependencies.
+// Version 9 introduced "snapshots" where each snapshot represents a package with its exact resolved dependencies.
 func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependency) {
 	lockVer := 9.0
-	resolvedPkgs := make(map[string]ftypes.Package)
-	resolvedDeps := make(map[string]ftypes.Dependency)
+	resolvedPkgs := make(map[SnapshotKey]ftypes.Package)
+	resolvedDeps := make(map[SnapshotKey]ftypes.Dependency)
 
-	// Check all snapshots and save with resolved versions
-	resolvedSnapshots := make(map[string][]string)
-	for depPath, snapshot := range lockFile.Snapshots {
-		name, version, _ := p.parseDepPath(depPath, lockVer)
-
-		var dependsOn []string
-		for depName, depVer := range lo.Assign(snapshot.OptionalDependencies, snapshot.Dependencies) {
-			depVer = p.trimPeerDeps(depVer, lockVer) // pnpm has already separated dep name. therefore, we only need to separate peer deps.
-			depVer = p.parseVersion(depPath, depVer, lockVer)
-			id := packageID(depName, depVer)
-			if _, ok := lockFile.Packages[id]; ok {
-				dependsOn = append(dependsOn, id)
-			}
-		}
-		if len(dependsOn) > 0 {
-			resolvedSnapshots[packageID(name, version)] = dependsOn
-		}
-
-	}
-
-	// Parse `Importers` to find all direct dependencies
-	devDeps := make(map[string]string)
-	deps := make(map[string]string)
+	// Step 1: Extract direct dependencies from the "importers" section.
+	// The "importers" section contains the dependencies defined in package.json files.
+	// We need to identify which packages are direct dependencies (vs transitive)
+	// and which are development dependencies (vs production dependencies).
+	devDeps := make(map[string]string) // name -> version for dev dependencies
+	deps := make(map[string]string)    // name -> version for production dependencies
 	for _, importer := range lockFile.Importers {
 		for n, v := range importer.DevDependencies {
 			devDeps[n] = v.Version
@@ -176,74 +124,109 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 		}
 	}
 
-	for depPath, pkgInfo := range lockFile.Packages {
-		name, ver, ref := p.parseDepPath(depPath, lockVer)
-		parsedVer := p.parseVersion(depPath, ver, lockVer)
+	// Step 2: Process each snapshot to create package entries.
+	// Each snapshot represents a unique package installation with specific peer dependencies.
+	// The snapshotKey is the key that uniquely identifies this package instance,
+	// including any peer dependency information (e.g., "package@1.0.0(peer@2.0.0)").
+	for snapshotKey, snapshot := range lockFile.Snapshots {
+		name, version, ref := p.parsePnpmKey(string(snapshotKey), lockVer)
+		// Clean and validate the version string (remove file: or http: prefixes if invalid)
+		parsedVer := p.parseVersion(string(snapshotKey), version, lockVer)
 
-		if pkgInfo.Version != "" {
+		// Try to get the exact version from the "packages" section if available.
+		// The "packages" section may contain more accurate version information
+		// for packages installed from non-standard sources (git, local files, etc.).
+		pkgKey := PackageKey(packageID(name, version))
+		if pkgInfo, ok := lockFile.Packages[pkgKey]; ok && pkgInfo.Version != "" {
 			parsedVer = pkgInfo.Version
 		}
 
-		// By default, pkg is dev pkg.
-		// We will update `Dev` field later.
+		// Step 3: Determine if this package is a direct or transitive dependency,
+		// and whether it's a development or production dependency.
+		// By default, assume it's a development dependency (will be corrected later if needed).
 		dev := true
-		relationship := ftypes.RelationshipIndirect
-		if v, ok := devDeps[name]; ok && p.trimPeerDeps(v, lockVer) == ver {
+		relationship := ftypes.RelationshipIndirect // Assume transitive by default
+
+		// Check if this package matches a direct dev dependency
+		if v, ok := devDeps[name]; ok && p.trimPeerDeps(v, lockVer) == version {
 			relationship = ftypes.RelationshipDirect
 		}
-		if v, ok := deps[name]; ok && p.trimPeerDeps(v, lockVer) == ver {
+		// Check if this package matches a direct production dependency
+		if v, ok := deps[name]; ok && p.trimPeerDeps(v, lockVer) == version {
 			relationship = ftypes.RelationshipDirect
-			dev = false // mark root direct deps to update `dev` field of their child deps.
+			dev = false // This is a production dependency, not a dev dependency
 		}
 
-		id := packageID(name, parsedVer)
-		resolvedPkgs[id] = ftypes.Package{
-			ID:                 id,
+		// Create the package entry with all extracted information.
+		pkg := ftypes.Package{
+			// ID is the full snapshotKey which uniquely identifies this package instance
+			// including any peer dependency context.
+			ID:                 string(snapshotKey),
 			Name:               name,
 			Version:            parsedVer,
 			Relationship:       relationship,
 			Dev:                dev,
 			ExternalReferences: toExternalRefs(ref),
 		}
+		resolvedPkgs[snapshotKey] = pkg
 
-		// Save child deps
-		if dependsOn, ok := resolvedSnapshots[depPath]; ok {
-			sort.Strings(dependsOn)
-			resolvedDeps[id] = ftypes.Dependency{
-				ID:        id,
-				DependsOn: dependsOn, // Deps from dependsOn has been resolved when parsing snapshots
+		// Step 4: Build the dependency graph by recording what this package depends on.
+		var dependsOn []string // List of snapshot keys this package depends on
+		for depName, depVer := range lo.Assign(snapshot.OptionalDependencies, snapshot.Dependencies) {
+			normalizedDepVer := p.trimPeerDeps(depVer, lockVer)
+			// Only include dependencies that are actually installed (exist in "packages" section).
+			if _, ok := lockFile.Packages[PackageKey(packageID(depName, normalizedDepVer))]; ok {
+				// Use the original name/version string (with peer deps) to build the snapshot key correctly.
+				dependsOn = append(dependsOn, packageID(depName, depVer))
+			}
+		}
+		if len(dependsOn) > 0 {
+			resolvedDeps[snapshotKey] = ftypes.Dependency{
+				ID:        string(snapshotKey),
+				DependsOn: dependsOn,
 			}
 		}
 	}
 
-	visited := set.New[string]()
-	// Overwrite the `Dev` field for dev deps and their child dependencies.
+	// Step 5: Propagate the "production" status to all transitive dependencies.
+	// If a package is a production dependency (Dev=false), all packages it depends on
+	// should also be marked as production dependencies, even if they were initially
+	// marked as dev dependencies. This ensures we correctly identify which packages
+	// are needed for production vs only for development.
+	visited := set.New[SnapshotKey]()
 	for _, pkg := range resolvedPkgs {
-		if !pkg.Dev {
-			p.markRootPkgs(pkg.ID, resolvedPkgs, resolvedDeps, visited)
+		if !pkg.Dev { // If this is a production dependency
+			// Recursively mark this package and all its dependencies as production
+			p.markRootPkgs(SnapshotKey(pkg.ID), resolvedPkgs, resolvedDeps, visited)
 		}
 	}
 
 	return lo.Values(resolvedPkgs), lo.Values(resolvedDeps)
 }
 
-// markRootPkgs sets `Dev` to false for non dev dependency.
-func (p *Parser) markRootPkgs(id string, pkgs map[string]ftypes.Package, deps map[string]ftypes.Dependency, visited set.Set[string]) {
+// markRootPkgs recursively marks a package and all its dependencies as production dependencies.
+// This is used to propagate the production status from direct production dependencies
+// to all their transitive dependencies, ensuring that any package required for production
+// is correctly identified, even if it's also listed as a dev dependency elsewhere.
+func (p *Parser) markRootPkgs(id SnapshotKey, pkgs map[SnapshotKey]ftypes.Package, deps map[SnapshotKey]ftypes.Dependency, visited set.Set[SnapshotKey]) {
+	// Avoid infinite recursion in case of circular dependencies
 	if visited.Contains(id) {
 		return
 	}
+	// Get the package; skip if not found
 	pkg, ok := pkgs[id]
 	if !ok {
 		return
 	}
 
+	// Mark this package as a production dependency
 	pkg.Dev = false
 	pkgs[id] = pkg
-	visited.Append(id)
+	visited.Append(id) // Track that we've processed this package
 
-	// Update child deps
+	// Recursively process all dependencies of this package
 	for _, depID := range deps[id].DependsOn {
-		p.markRootPkgs(depID, pkgs, deps, visited)
+		p.markRootPkgs(SnapshotKey(depID), pkgs, deps, visited)
 	}
 }
 
@@ -267,8 +250,14 @@ func (p *Parser) parseLockfileVersion(lockFile LockFile) float64 {
 	}
 }
 
-func (p *Parser) parseDepPath(depPath string, lockVer float64) (string, string, string) {
-	dPath, nonDefaultRegistry := p.trimRegistry(depPath, lockVer)
+// parsePnpmKey parses a pnpm package key (either PackageKey or SnapshotKey)
+// and extracts the package name, version, and optional registry reference.
+// The key format varies between pnpm versions:
+//   - v5:  "registry.npmjs.org/@babel/generator/7.21.9"
+//   - v6+: "@babel/generator@7.21.9"
+//   - v9+: "@babel/generator@7.21.9(peer@1.0.0)" (SnapshotKey with peers)
+func (p *Parser) parsePnpmKey(pnpmKey string, lockVer float64) (string, string, string) {
+	dPath, nonDefaultRegistry := p.trimRegistry(pnpmKey, lockVer)
 
 	var scope string
 	scope, dPath = p.separateScope(dPath)
@@ -283,10 +272,10 @@ func (p *Parser) parseDepPath(depPath string, lockVer float64) (string, string, 
 
 	ver := p.trimPeerDeps(dPath, lockVer)
 
-	return name, ver, lo.Ternary(nonDefaultRegistry, depPath, "")
+	return name, ver, lo.Ternary(nonDefaultRegistry, pnpmKey, "")
 }
 
-// trimRegistry trims registry (or `/` prefix) for depPath.
+// trimRegistry trims registry (or `/` prefix) from a pnpm key.
 // It returns true if non-default registry has been trimmed.
 // e.g.
 //   - "registry.npmjs.org/lodash/4.17.10" => "lodash/4.17.10", false
@@ -294,32 +283,32 @@ func (p *Parser) parseDepPath(depPath string, lockVer float64) (string, string, 
 //   - "private.npm.org/@babel/generator/7.21.9" => "@babel/generator/7.21.9", true
 //   - "/lodash/4.17.10" => "lodash/4.17.10", false
 //   - "/asap@2.0.6" => "asap@2.0.6", false
-func (p *Parser) trimRegistry(depPath string, lockVer float64) (string, bool) {
+func (p *Parser) trimRegistry(pnpmKey string, lockVer float64) (string, bool) {
 	var nonDefaultRegistry bool
 	// lock file v9 doesn't use registry prefix
 	if lockVer < 9 {
 		var registry string
-		registry, depPath, _ = strings.Cut(depPath, "/")
+		registry, pnpmKey, _ = strings.Cut(pnpmKey, "/")
 		if registry != "" && registry != "registry.npmjs.org" {
 			nonDefaultRegistry = true
 		}
 	}
-	return depPath, nonDefaultRegistry
+	return pnpmKey, nonDefaultRegistry
 }
 
-// separateScope separates the scope (if set) from the rest of the depPath.
+// separateScope separates the scope (if set) from the rest of the pnpm key.
 // e.g.
 //   - v5:  "@babel/generator/7.21.9" => {"babel", "generator/7.21.9"}
-//   - v6+: "@babel/helper-annotate-as-pure@7.18.6" => "{"babel", "helper-annotate-as-pure@7.18.6"}
-func (p *Parser) separateScope(depPath string) (string, string) {
+//   - v6+: "@babel/helper-annotate-as-pure@7.18.6" => {"babel", "helper-annotate-as-pure@7.18.6"}
+func (p *Parser) separateScope(pnpmKey string) (string, string) {
 	var scope string
-	if strings.HasPrefix(depPath, "@") {
-		scope, depPath, _ = strings.Cut(depPath, "/")
+	if strings.HasPrefix(pnpmKey, "@") {
+		scope, pnpmKey, _ = strings.Cut(pnpmKey, "/")
 	}
-	return scope, depPath
+	return scope, pnpmKey
 }
 
-// separateName separates pkg name and version.
+// separateName separates package name and version from a pnpm key.
 // e.g.
 //   - v5:  "generator/7.21.9" => {"generator", "7.21.9"}
 //   - v6+: "7.21.5(@babel/core@7.20.7)" => "7.21.5"
@@ -330,26 +319,26 @@ func (p *Parser) separateScope(depPath string) (string, string) {
 //
 // Also version can contain peer deps:
 //   - "debug@4.3.4(supports-color@8.1.1)"
-func (p *Parser) separateName(depPath string, lockVer float64) (string, string) {
+func (p *Parser) separateName(pnpmKey string, lockVer float64) (string, string) {
 	sep := "@"
 	if lockVer < 6 {
 		sep = "/"
 	}
-	name, version, _ := strings.Cut(depPath, sep)
+	name, version, _ := strings.Cut(pnpmKey, sep)
 	return name, version
 }
 
-// Trim peer deps
+// trimPeerDeps removes peer dependency suffixes from a version string.
 // e.g.
 //   - v5:  "7.21.5_@babel+core@7.21.8" => "7.21.5"
 //   - v6+: "7.21.5(@babel/core@7.20.7)" => "7.21.5"
-func (p *Parser) trimPeerDeps(depPath string, lockVer float64) string {
+func (p *Parser) trimPeerDeps(version string, lockVer float64) string {
 	sep := "("
 	if lockVer < 6 {
 		sep = "_"
 	}
-	version, _, _ := strings.Cut(depPath, sep)
-	return version
+	v, _, _ := strings.Cut(version, sep)
+	return v
 }
 
 // parseVersion parses version.
