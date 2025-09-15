@@ -6,6 +6,7 @@ import (
 	"io"
 	"reflect"
 	slicesGo "slices"
+	"strconv"
 	"strings"
 
 	"github.com/samber/lo"
@@ -123,13 +124,29 @@ func (p *pom) licenses() []string {
 	}))
 }
 
+func getRepositoryPolicy(enabledString string, props map[string]string) bool {
+	if enabledString == "" {
+		return true
+	}
+
+	result, err := strconv.ParseBool(enabledString)
+	if err != nil {
+		enabledString = evaluateVariable(enabledString, props, nil)
+		result, err = strconv.ParseBool(enabledString)
+		if err != nil {
+			return true
+		}
+	}
+	return result
+}
+
 func (p *pom) repositories(settings settings) ([]RemoteRepositoryConfig, []RemoteRepositoryConfig) {
 	logger := log.WithPrefix("pom")
 	var releaseRepos, snapshotRepos []RemoteRepositoryConfig
 	effectiveRepositories := p.effectiveRepositories(&settings)
 	for _, rep := range effectiveRepositories {
-		snapshot := rep.Snapshots.Enabled
-		release := rep.Releases.Enabled
+		snapshot := getRepositoryPolicy(rep.Snapshots.Enabled, p.content.Properties)
+		release := getRepositoryPolicy(rep.Releases.Enabled, p.content.Properties)
 		// Add only enabled repositories
 		if !release && !snapshot {
 			continue
@@ -166,6 +183,8 @@ func (p *pom) repositories(settings settings) ([]RemoteRepositoryConfig, []Remot
 	return releaseRepos, snapshotRepos
 }
 
+var globalRepositories = []repository{}
+
 // effectiveRepositories returns the effective repositories for the POM.
 // It combines the repositories defined in the pom.xml file with those defined in the settings.xml file.
 // The repositories from the pom.xml (and settings.xml as well) are updated with mirror settings,
@@ -181,12 +200,15 @@ func (p *pom) effectiveRepositories(settings *settings) []repository {
 		ID:       "central",
 		Name:     "Maven Central Repository",
 		URL:      centralURL,
-		Releases: repositoryPolicy{Enabled: true},
+		Releases: repositoryPolicy{Enabled: "true"},
 	}
 	repositories = append(repositories, central)
 
 	// Add repositories defined in the pom.xml file
 	repositories = append(repositories, p.content.Repositories.Repository...)
+
+	// Reuse repositories identified in previous POMs
+	repositories = append(repositories, globalRepositories...)
 
 	if settings != nil {
 		// Add repositories defined for profiles in the pom.xml file
@@ -208,9 +230,14 @@ func (p *pom) effectiveRepositories(settings *settings) []repository {
 		// Combine repositories from settings.xml (for those mirrors have already been applied)
 		repositories = append(repositories, settings.getEffectiveRepositories()...)
 	}
-	return lo.UniqBy(repositories, func(r repository) string {
+	repositories = lo.UniqBy(repositories, func(r repository) string {
 		return r.ID
 	})
+	globalRepositories = append(globalRepositories, repositories...)
+	globalRepositories = lo.UniqBy(globalRepositories, func(r repository) string {
+		return r.ID
+	})
+	return repositories
 }
 
 type pomXML struct {
