@@ -4,10 +4,10 @@ import (
 	"context"
 	"strings"
 
-	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/seal"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
