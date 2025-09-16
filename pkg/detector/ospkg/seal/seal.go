@@ -4,12 +4,12 @@ import (
 	"context"
 	"strings"
 
+	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/seal"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/azure"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
@@ -42,36 +42,36 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 	case ftypes.Alpine:
 		scanner = alpine.NewScanner()
 		comparer = version.NewAPKComparer()
-		vsg = seal.NewVulnSrcGetter(vulnerability.Alpine)
+		vsg = seal.NewVulnSrcGetter(ecosystem.Alpine)
 	case ftypes.CBLMariner:
 		scanner = azure.NewMarinerScanner()
 		comparer = version.NewRPMComparer()
-		vsg = seal.NewVulnSrcGetter(vulnerability.RedHat)
+		vsg = seal.NewVulnSrcGetter(ecosystem.RedHat)
 	case ftypes.CentOS:
 		scanner = redhat.NewScanner()
 		comparer = version.NewRPMComparer()
-		vsg = seal.NewVulnSrcGetter(vulnerability.RedHat)
+		vsg = seal.NewVulnSrcGetter(ecosystem.RedHat)
 	case ftypes.Debian:
 		scanner = debian.NewScanner()
 		comparer = version.NewDEBComparer()
-		vsg = seal.NewVulnSrcGetter(vulnerability.Debian)
+		vsg = seal.NewVulnSrcGetter(ecosystem.Debian)
 	case ftypes.Oracle:
 		scanner = oracle.NewScanner()
 		comparer = version.NewRPMComparer()
-		vsg = seal.NewVulnSrcGetter(vulnerability.RedHat)
+		vsg = seal.NewVulnSrcGetter(ecosystem.RedHat)
 	case ftypes.RedHat:
 		scanner = redhat.NewScanner()
 		comparer = version.NewRPMComparer()
-		vsg = seal.NewVulnSrcGetter(vulnerability.RedHat)
+		vsg = seal.NewVulnSrcGetter(ecosystem.RedHat)
 	case ftypes.Ubuntu:
 		scanner = ubuntu.NewScanner()
 		comparer = version.NewDEBComparer()
-		vsg = seal.NewVulnSrcGetter(vulnerability.Debian)
+		vsg = seal.NewVulnSrcGetter(ecosystem.Debian)
 	default:
 		// Should never happen as it's validated in the provider
 		scanner = debian.NewScanner()
 		comparer = version.NewDEBComparer()
-		vsg = seal.NewVulnSrcGetter(vulnerability.Debian)
+		vsg = seal.NewVulnSrcGetter(ecosystem.Debian)
 	}
 
 	return &Scanner{
