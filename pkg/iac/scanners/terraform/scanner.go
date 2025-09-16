@@ -225,9 +225,13 @@ func (s *Scanner) isRootModule(target fs.FS, dir string) bool {
 		s.logger.Error("Failed to read dir", log.FilePath(dir), log.Err(err))
 		return false
 	}
+	suffixes := []string{".tf", ".tf.json", ".tofu", ".tofu.json"}
+
 	for _, file := range files {
-		if strings.HasSuffix(file.Name(), ".tf") || strings.HasSuffix(file.Name(), ".tf.json") {
-			return true
+		for _, suf := range suffixes {
+			if strings.HasSuffix(file.Name(), suf) {
+				return true
+			}
 		}
 	}
 	return false
