@@ -20,6 +20,66 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 		wantErr   string
 	}{
 		{
+			name:      "Fedora",
+			inputFile: "testdata/fedora",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Fedora,
+					Name:   "42",
+				},
+			},
+		},
+		{
+			name:      "Red Hat Enterprise Linux",
+			inputFile: "testdata/rhel",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.RedHat,
+					Name:   "9.4",
+				},
+			},
+		},
+		{
+			name:      "CentOS",
+			inputFile: "testdata/centos",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.CentOS,
+					Name:   "7",
+				},
+			},
+		},
+		{
+			name:      "Rocky Linux",
+			inputFile: "testdata/rocky",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Rocky,
+					Name:   "9.3",
+				},
+			},
+		},
+		{
+			name:      "AlmaLinux",
+			inputFile: "testdata/alma",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Alma,
+					Name:   "9.4",
+				},
+			},
+		},
+		{
+			name:      "Oracle Linux",
+			inputFile: "testdata/oracle",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Oracle,
+					Name:   "8.10",
+				},
+			},
+		},
+		{
 			name:      "alpine",
 			inputFile: "testdata/alpine",
 			want: &analyzer.AnalysisResult{

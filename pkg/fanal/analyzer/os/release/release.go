@@ -27,7 +27,8 @@ var requiredFiles = []string{
 type osReleaseAnalyzer struct{}
 
 func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	var id, versionID string
+	var family types.OSType
+	var versionID string
 	scanner := bufio.NewScanner(input.Content)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -40,44 +41,12 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 
 		switch key {
 		case "ID":
-			id = strings.Trim(value, `"'`)
+			id := strings.Trim(value, `"'`)
+			family = idToOSFamily(id)
 		case "VERSION_ID":
 			versionID = strings.Trim(value, `"'`)
 		default:
 			continue
-		}
-
-		var family types.OSType
-		switch id {
-		case "alpine":
-			family = types.Alpine
-		case "bottlerocket":
-			family = types.Bottlerocket
-		case "opensuse-tumbleweed":
-			family = types.OpenSUSETumbleweed
-		case "opensuse-leap", "opensuse": // opensuse for leap:42, opensuse-leap for leap:15
-			family = types.OpenSUSELeap
-		case "sles":
-			family = types.SLES
-		// There are various rebrands of SLE Micro, there is also one brief (and reverted rebrand)
-		// for SLE Micro 6.0. which was called "SL Micro 6.0" until very short before release
-		// and there is a "SLE Micro for Rancher" rebrand, which is used by SUSEs K8S based offerings.
-		case "sle-micro", "sl-micro", "sle-micro-rancher":
-			family = types.SLEMicro
-		case "photon":
-			family = types.Photon
-		case "wolfi":
-			family = types.Wolfi
-		case "chainguard":
-			family = types.Chainguard
-		case "azurelinux":
-			family = types.Azure
-		case "mariner":
-			family = types.CBLMariner
-		case "echo":
-			family = types.Echo
-		case "minimos":
-			family = types.MinimOS
 		}
 
 		if family != "" && versionID != "" {
@@ -91,6 +60,54 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 	}
 
 	return nil, nil
+}
+
+func idToOSFamily(id string) types.OSType {
+	switch id {
+	case "rhel":
+		return types.RedHat
+	case "centos":
+		return types.CentOS
+	case "rocky":
+		return types.Rocky
+	case "almalinux":
+		return types.Alma
+	case "ol":
+		return types.Oracle
+	case "fedora":
+		return types.Fedora
+	case "alpine":
+		return types.Alpine
+	case "bottlerocket":
+		return types.Bottlerocket
+	case "opensuse-tumbleweed":
+		return types.OpenSUSETumbleweed
+	case "opensuse-leap", "opensuse": // opensuse for leap:42, opensuse-leap for leap:15
+		return types.OpenSUSELeap
+	case "sles":
+		return types.SLES
+	// There are various rebrands of SLE Micro, there is also one brief (and reverted rebrand)
+	// for SLE Micro 6.0. which was called "SL Micro 6.0" until very short before release
+	// and there is a "SLE Micro for Rancher" rebrand, which is used by SUSEs K8S based offerings.
+	case "sle-micro", "sl-micro", "sle-micro-rancher":
+		return types.SLEMicro
+	case "photon":
+		return types.Photon
+	case "wolfi":
+		return types.Wolfi
+	case "chainguard":
+		return types.Chainguard
+	case "azurelinux":
+		return types.Azure
+	case "mariner":
+		return types.CBLMariner
+	case "echo":
+		return types.Echo
+	case "minimos":
+		return types.MinimOS
+	}
+	// This OS is not supported for this analyzer.
+	return ""
 }
 
 func (a osReleaseAnalyzer) Required(filePath string, _ os.FileInfo) bool {

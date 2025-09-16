@@ -827,8 +827,8 @@ github.com/aquasecurity/tml v0.6.1 h1:y2ZlGSfrhnn7t4ZJ/0rotuH+v5Jgv6BDDO5jB6A9gw
 github.com/aquasecurity/tml v0.6.1/go.mod h1:OnYMWY5lvI9ejU7yH9LCberWaaTBW7hBFsITiIMY2yY=
 github.com/aquasecurity/trivy-checks v1.11.3-0.20250819221348-16d428d18256 h1:rxCq8FtYKVpSoI8LFBjbLXn/zcM10KZrfLSpDfOcy8E=
 github.com/aquasecurity/trivy-checks v1.11.3-0.20250819221348-16d428d18256/go.mod h1:j3t6Hf3mUdyyU4F5nvjAacGVJTR4Ne3V7gy4mL1u8us=
-github.com/aquasecurity/trivy-db v0.0.0-20250731052236-c7c831e2254d h1:Lc+p2CLARivVF48o7uRoFPaahNCvNFyBfeby0JqAMXo=
-github.com/aquasecurity/trivy-db v0.0.0-20250731052236-c7c831e2254d/go.mod h1:upAJqDQkN5FdIJbtJMpokncGNhYAPGkpoCbaGciWPt4=
+github.com/aquasecurity/trivy-db v0.0.0-20250912085155-990a6528209a h1:mcPk1ovUuUFnJwbRMRKtSIe3j0BQfJ33RQdB/kB5QZY=
+github.com/aquasecurity/trivy-db v0.0.0-20250912085155-990a6528209a/go.mod h1:upAJqDQkN5FdIJbtJMpokncGNhYAPGkpoCbaGciWPt4=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48 h1:JVgBIuIYbwG+ekC5lUHUpGJboPYiCcxiz06RCtz8neI=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48/go.mod h1:Ldya37FLi0e/5Cjq2T5Bty7cFkzUDwTcPeQua+2M8i8=
 github.com/aquasecurity/trivy-kubernetes v0.9.1 h1:bSErQcavKXDh7XMwbGX7Vy//jR5+xhe/bOgfn9G+9lQ=
@@ -1176,8 +1176,6 @@ github.com/go-jose/go-jose/v3 v3.0.3 h1:fFKWeig/irsp7XD2zBxvnmA/XaRWp5V3CBsZXJF7
 github.com/go-jose/go-jose/v3 v3.0.3/go.mod h1:5b+7YgP7ZICgJDBdfjZaIt+H/9L9T/YQrVfLAMboGkQ=
 github.com/go-jose/go-jose/v4 v4.0.5 h1:M6T8+mKZl/+fNNuFHvGIzDz7BTLQPIounk/b9dw3AaE=
 github.com/go-jose/go-jose/v4 v4.0.5/go.mod h1:s3P1lRrkT8igV8D9OjyL4WRyHvjB6a4JSllnOrmmBOA=
-github.com/go-json-experiment/json v0.0.0-20250223041408-d3c622f1b874 h1:F8d1AJ6M9UQCavhwmO6ZsrYLfG8zVFWfEfMS2MXPkSY=
-github.com/go-json-experiment/json v0.0.0-20250223041408-d3c622f1b874/go.mod h1:TiCD2a1pcmjd7YnhGH0f/zKNcCD06B029pHhzV23c2M=
 github.com/go-latex/latex v0.0.0-20210118124228-b3d85cf34e07/go.mod h1:CO1AlKB2CSIqUrmQPqA0gdRIlnLEY0gK5JGjh37zN5U=
 github.com/go-latex/latex v0.0.0-20210823091927-c0d11ff05a81/go.mod h1:SX0U8uGpxhq9o2S/CELCSUxEWWAuoCUcVCQWv7G2OCk=
 github.com/go-logr/logr v1.2.2/go.mod h1:jdQByPbusPIv2/zmleS9BjJVeZ6kBagPoEUsqbVz/1A=
