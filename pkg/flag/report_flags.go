@@ -25,6 +25,13 @@ import (
 //	dependency-tree: true
 //	severity: HIGH,CRITICAL
 var (
+	NoColorFlag = Flag[bool]{
+		Name:          "no-color",
+		ConfigName:    "no-color",
+		Default:       false,
+		Usage:         "disable colored output (also respects NO_COLOR environment variable)",
+		TelemetrySafe: true,
+	}
 	FormatFlag = Flag[string]{
 		Name:          "format",
 		ConfigName:    "format",
