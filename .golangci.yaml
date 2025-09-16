@@ -193,7 +193,7 @@ linters:
     warn-unused: true
 
 run:
-  go: '1.24'
+  go: '1.25'
   timeout: 30m
 
 formatters:

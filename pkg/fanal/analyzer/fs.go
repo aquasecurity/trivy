@@ -36,7 +36,7 @@ func NewCompositeFS() (*CompositeFS, error) {
 func (c *CompositeFS) CopyFileToTemp(opener Opener, _ os.FileInfo) (string, error) {
 	// Create a temporary file to which the file in the layer will be copied
 	// so that all the files will not be loaded into memory
-	f, err := xos.CreateTemp("", "analyzer-file-")
+	f, err := xos.CreateTemp(c.dir, "analyzer-file-")
 	if err != nil {
 		return "", xerrors.Errorf("create temp error: %w", err)
 	}

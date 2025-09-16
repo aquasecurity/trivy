@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.66.0](https://github.com/aquasecurity/trivy/compare/v0.65.0...v0.66.0) (2025-09-02)
+
+
+### Features
+
+* add timeout handling for cache database operations ([#9307](https://github.com/aquasecurity/trivy/issues/9307)) ([235c24e](https://github.com/aquasecurity/trivy/commit/235c24e71a546b6196f7264fced2d02d836e3f85))
+* **misconf:** added audit config attribute ([#9249](https://github.com/aquasecurity/trivy/issues/9249)) ([4d4a244](https://github.com/aquasecurity/trivy/commit/4d4a2444b692512aca137dcbd367ff224fe25597))
+* **secret:** implement streaming secret scanner with byte offset tracking ([#9264](https://github.com/aquasecurity/trivy/issues/9264)) ([5a5e097](https://github.com/aquasecurity/trivy/commit/5a5e0972c72e629ddf2915ef066d632d58b8d3b0))
+* **terraform:** use .terraform cache for remote modules in plan scanning ([#9277](https://github.com/aquasecurity/trivy/issues/9277)) ([298a994](https://github.com/aquasecurity/trivy/commit/298a9941f098d2701b9524a703b9f9b1b9451785))
+
+
+### Bug Fixes
+
+* **conda:** memory leak by adding closure method for `package.json` file ([#9349](https://github.com/aquasecurity/trivy/issues/9349)) ([03d039f](https://github.com/aquasecurity/trivy/commit/03d039f17d94cf668152e83d0cf9dabf3b27d3dd))
+* create temp file under composite fs dir ([#9387](https://github.com/aquasecurity/trivy/issues/9387)) ([ce22f54](https://github.com/aquasecurity/trivy/commit/ce22f54a39a1abac08fa3ad540697c668792bf50))
+* **cyclonedx:** handle multiple license types ([#9378](https://github.com/aquasecurity/trivy/issues/9378)) ([46ab76a](https://github.com/aquasecurity/trivy/commit/46ab76a5af828c98cf93fc988ed6a405b7b07392))
+* **fs:** avoid shadowing errors in file.glob ([#9286](https://github.com/aquasecurity/trivy/issues/9286)) ([b51c789](https://github.com/aquasecurity/trivy/commit/b51c789330141d634a9b14bd10994c997862940f))
+* **image:** use standardized HTTP client for ECR authentication ([#9322](https://github.com/aquasecurity/trivy/issues/9322)) ([84fbf86](https://github.com/aquasecurity/trivy/commit/84fbf8674dfc0f91d8795a50bafa6041cce83ba2))
+* **misconf:** ensure ignore rules respect subdirectory chart paths ([#9324](https://github.com/aquasecurity/trivy/issues/9324)) ([d3cd101](https://github.com/aquasecurity/trivy/commit/d3cd101266eb7bf9b8ffe5899765efa7bd1abe30))
+* **misconf:** ensure module source is known ([#9404](https://github.com/aquasecurity/trivy/issues/9404)) ([81d9425](https://github.com/aquasecurity/trivy/commit/81d94253c8bc816ad932f7e0c0b8907e1cd759bb))
+* **misconf:** preserve original paths of remote submodules from .terraform ([#9294](https://github.com/aquasecurity/trivy/issues/9294)) ([1319d8d](https://github.com/aquasecurity/trivy/commit/1319d8dc7f4796177876af18f0e13ba1f7086348))
+* **misconf:** use correct field log_bucket instead of target_bucket in gcp bucket ([#9296](https://github.com/aquasecurity/trivy/issues/9296)) ([04ad0c4](https://github.com/aquasecurity/trivy/commit/04ad0c4fc2926a92e9e9ec11bb8eae826ed95827))
+* persistent flag option typo ([#9374](https://github.com/aquasecurity/trivy/issues/9374)) ([6e99dd3](https://github.com/aquasecurity/trivy/commit/6e99dd304c7fad8213489039e7ca42909383b5ff))
+* **plugin:** don't remove plugins when updating index.yaml file ([#9358](https://github.com/aquasecurity/trivy/issues/9358)) ([5f067ac](https://github.com/aquasecurity/trivy/commit/5f067ac15e5c609283bef26a211746a279b6b5d0))
+* **python:** impove package name normalization  ([#9290](https://github.com/aquasecurity/trivy/issues/9290)) ([1473e88](https://github.com/aquasecurity/trivy/commit/1473e88b74ca269691de7827e045703612b90050))
+* **repo:** preserve RepoMetadata on FS cache hit ([#9389](https://github.com/aquasecurity/trivy/issues/9389)) ([4f2a44e](https://github.com/aquasecurity/trivy/commit/4f2a44ea45bed1e842bb2072077da67ec7e744ac))
+* **repo:** sanitize git repo URL before inserting into report metadata ([#9391](https://github.com/aquasecurity/trivy/issues/9391)) ([1ac9b1f](https://github.com/aquasecurity/trivy/commit/1ac9b1f07cea429cc122bf9721e8909c649549cf))
+* **sbom:** add support for `file` component type of `CycloneDX` ([#9372](https://github.com/aquasecurity/trivy/issues/9372)) ([aa7cf43](https://github.com/aquasecurity/trivy/commit/aa7cf4387c5e82c1f629ac14cd6a35b48fc95983))
+* suppress debug log for context cancellation errors ([#9298](https://github.com/aquasecurity/trivy/issues/9298)) ([2458d5e](https://github.com/aquasecurity/trivy/commit/2458d5e28a54da9adec0b36f6b1e6bd4f15a72ce))
+
 ## [0.65.0](https://github.com/aquasecurity/trivy/compare/v0.64.0...v0.65.0) (2025-07-30)
 
 

@@ -215,6 +215,8 @@ func (b *BOM) unmarshalType(t cdx.ComponentType) (core.ComponentType, error) {
 		ctype = core.TypeOS
 	case cdx.ComponentTypePlatform:
 		ctype = core.TypePlatform
+	case cdx.ComponentTypeFile:
+		ctype = core.TypeFilesystem
 	default:
 		return "", ErrUnsupportedType
 	}
