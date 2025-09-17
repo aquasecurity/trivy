@@ -1,9 +1,11 @@
 package seal
 
 import (
+	"cmp"
 	"context"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -47,7 +49,7 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 		scanner = azure.NewMarinerScanner()
 		comparer = version.NewRPMComparer()
 		vsg = seal.NewVulnSrcGetter(ecosystem.RedHat)
-	case ftypes.CentOS:
+	case ftypes.CentOS, ftypes.RedHat:
 		scanner = redhat.NewScanner()
 		comparer = version.NewRPMComparer()
 		vsg = seal.NewVulnSrcGetter(ecosystem.RedHat)
@@ -57,10 +59,6 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 		vsg = seal.NewVulnSrcGetter(ecosystem.Debian)
 	case ftypes.Oracle:
 		scanner = oracle.NewScanner()
-		comparer = version.NewRPMComparer()
-		vsg = seal.NewVulnSrcGetter(ecosystem.RedHat)
-	case ftypes.RedHat:
-		scanner = redhat.NewScanner()
 		comparer = version.NewRPMComparer()
 		vsg = seal.NewVulnSrcGetter(ecosystem.RedHat)
 	case ftypes.Ubuntu:
@@ -95,12 +93,8 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 			continue
 		}
 
-		srcName := pkg.SrcName
-		srcRelease := pkg.SrcRelease
-		if srcName == "" {
-			srcName = pkg.Name
-			srcRelease = pkg.Release
-		}
+		srcName := cmp.Or(pkg.SrcName, pkg.Name)
+		srcRelease := lo.Ternary(pkg.SrcName != "", pkg.SrcRelease, pkg.Release)
 
 		advisories, err := s.vsg.Get(db.GetParams{
 			// Detect release version from pkg Release (`el` version for RPM-based distros, empty for other distros).
