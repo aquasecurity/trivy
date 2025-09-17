@@ -506,9 +506,10 @@ func TestNewPackageURL(t *testing.T) {
 				Arch:    "x86_64",
 			},
 			want: &purl.PackageURL{
-				Type:    "coreos",
-				Name:    "glibc",
-				Version: "2.40",
+				Type:      "rpm",
+				Namespace: "coreos",
+				Name:      "glibc",
+				Version:   "2.40",
 				Qualifiers: packageurl.Qualifiers{
 					{
 						Key:   "arch",
@@ -839,9 +840,10 @@ func TestPackageURL_Package(t *testing.T) {
 		{
 			name: "coreos with epoch",
 			pkgURL: &purl.PackageURL{
-				Type:    "coreos",
-				Name:    "glibc",
-				Version: "2.40",
+				Type:      "rpm",
+				Namespace: "coreos",
+				Name:      "glibc",
+				Version:   "2.40",
 				Qualifiers: packageurl.Qualifiers{
 					{
 						Key:   "epoch",
@@ -860,9 +862,10 @@ func TestPackageURL_Package(t *testing.T) {
 				Epoch:   1,
 				Identifier: ftypes.PkgIdentifier{
 					PURL: &packageurl.PackageURL{
-						Type:    "coreos",
-						Name:    "glibc",
-						Version: "2.40",
+						Type:      "rpm",
+						Namespace: "coreos",
+						Name:      "glibc",
+						Version:   "2.40",
 						Qualifiers: packageurl.Qualifiers{
 							{
 								Key:   "epoch",
