@@ -58,6 +58,14 @@ func TestProvider(t *testing.T) {
 			},
 			want: true,
 		},
+		{
+			name:     "returns nil for unsupported OS family even with seal package",
+			osFamily: ftypes.Fedora,
+			pkgs: []ftypes.Package{
+				{Name: "seal-agent", Version: "1.0.0"},
+			},
+			want: false,
+		},
 	}
 
 	for _, tt := range tests {
