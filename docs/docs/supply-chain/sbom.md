@@ -185,6 +185,8 @@ Trivy supports the following packages.
 - [OS packages][os_packages]
 - [Language-specific packages][language_packages]
 
+Trivy has a specific logic for package detection.
+See the [package detection](../scanner/vulnerability.md#package-detection) section for more information.
 
 ### Formats
 #### CycloneDX
