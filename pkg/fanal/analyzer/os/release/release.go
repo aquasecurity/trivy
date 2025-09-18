@@ -17,53 +17,15 @@ func init() {
 
 const version = 1
 
-var requiredFiles = []string{
-	"etc/os-release",
-	"usr/lib/os-release",
-	"aarch64-bottlerocket-linux-gnu/sys-root/usr/lib/os-release",
-	"x86_64-bottlerocket-linux-gnu/sys-root/usr/lib/os-release",
-}
-
-type osReleaseAnalyzer struct{}
-
-func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	var family types.OSType
-	var versionID string
-	scanner := bufio.NewScanner(input.Content)
-	for scanner.Scan() {
-		line := scanner.Text()
-
-		ss := strings.SplitN(line, "=", 2)
-		if len(ss) != 2 {
-			continue
-		}
-		key, value := strings.TrimSpace(ss[0]), strings.TrimSpace(ss[1])
-
-		switch key {
-		case "ID":
-			id := strings.Trim(value, `"'`)
-			family = idToOSFamily(id)
-		case "VERSION_ID":
-			versionID = strings.Trim(value, `"'`)
-		default:
-			continue
-		}
-
-		if family != "" && versionID != "" {
-			return &analyzer.AnalysisResult{
-				OS: types.OS{
-					Family: family,
-					Name:   versionID,
-				},
-			}, nil
-		}
+var (
+	requiredFiles = []string{
+		"etc/os-release",
+		"usr/lib/os-release",
+		"aarch64-bottlerocket-linux-gnu/sys-root/usr/lib/os-release",
+		"x86_64-bottlerocket-linux-gnu/sys-root/usr/lib/os-release",
 	}
 
-	return nil, nil
-}
-
-func idToOSFamily(id string) types.OSType {
-	osFamilyMap := map[string]types.OSType{
+	idToOSFamilyMapping = map[string]types.OSType{
 		"rhel":                types.RedHat,
 		"centos":              types.CentOS,
 		"rocky":               types.Rocky,
@@ -91,12 +53,44 @@ func idToOSFamily(id string) types.OSType {
 		"minimos":           types.MinimOS,
 		"coreos":            types.CoreOS,
 	}
+)
 
-	if osType, exists := osFamilyMap[id]; exists {
-		return osType
+type osReleaseAnalyzer struct{}
+
+func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	var family types.OSType
+	var versionID string
+	scanner := bufio.NewScanner(input.Content)
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		ss := strings.SplitN(line, "=", 2)
+		if len(ss) != 2 {
+			continue
+		}
+		key, value := strings.TrimSpace(ss[0]), strings.TrimSpace(ss[1])
+
+		switch key {
+		case "ID":
+			id := strings.Trim(value, `"'`)
+			family = idToOSFamilyMapping[id]
+		case "VERSION_ID":
+			versionID = strings.Trim(value, `"'`)
+		default:
+			continue
+		}
+
+		if family != "" && versionID != "" {
+			return &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: family,
+					Name:   versionID,
+				},
+			}, nil
+		}
 	}
-	// This OS is not supported for this analyzer.
-	return ""
+
+	return nil, nil
 }
 
 func (a osReleaseAnalyzer) Required(filePath string, _ os.FileInfo) bool {
