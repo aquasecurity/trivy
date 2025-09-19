@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"slices"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -21,7 +20,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/convert"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	k8scommands "github.com/aquasecurity/trivy/pkg/k8s/commands"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -1215,7 +1213,6 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
-
 
 			return artifact.Run(cmd.Context(), options, artifact.TargetSBOM)
 		},
