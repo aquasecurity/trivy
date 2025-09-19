@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"slices"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -20,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/convert"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	k8scommands "github.com/aquasecurity/trivy/pkg/k8s/commands"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -1212,6 +1214,13 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			options, err := sbomFlags.ToOptions(args)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
+			}
+
+			// For SBOM-to-SBOM scanning (for example, to add vulnerabilities to the SBOM file), we should not modify the scanned file.
+			// cf. https://github.com/aquasecurity/trivy/pull/9439#issuecomment-3295533665
+			if slices.Contains(types.SupportedSBOMFormats, options.Format) &&
+				(!slices.Equal(options.PkgTypes, types.PkgTypes) || !slices.Equal(options.PkgRelationships, ftypes.Relationships)) {
+				log.Warnf("Trivy doesn't support '--pkg-types' and '--pkg-relationships' options for SBOM to SBOM scan. These options will be ignored.")
 			}
 
 			return artifact.Run(cmd.Context(), options, artifact.TargetSBOM)
