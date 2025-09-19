@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"reflect"
+	slicesGo "slices"
 	"strings"
 
 	"github.com/samber/lo"
@@ -122,33 +123,60 @@ func (p *pom) licenses() []string {
 	}))
 }
 
-func (p *pom) repositories(servers []Server) ([]string, []string) {
+// repositories returns release and snapshot repository URLs defined in the pom and its active profiles.
+func (p *pom) repositories(servers []Server, activeProfiles []string) ([]string, []string) {
 	logger := log.WithPrefix("pom")
 	var releaseRepos, snapshotRepos []string
-	for _, rep := range p.content.Repositories.Repository {
-		snapshot := rep.Snapshots.Enabled
-		release := rep.Releases.Enabled
-		// Add only enabled repositories
-		if !release && !snapshot {
-			continue
-		}
 
-		// Include the repositories defined in pom.xml
-		if repoURL := createURLForRepository(rep, servers); repoURL != nil {
-			if snapshot {
-				logger.Debug("Adding snapshot repository from pom",
-					log.String("id", rep.ID), log.String("url", rep.URL))
-				snapshotRepos = append(snapshotRepos, repoURL.String())
-			}
-			if release {
-				logger.Debug("Adding release repository from pom",
-					log.String("id", rep.ID), log.String("url", rep.URL))
-				releaseRepos = append(releaseRepos, repoURL.String())
+	// Include the repositories defined directly in the pom
+	for _, rep := range p.content.Repositories.Repository {
+		addRepository(logger, rep, servers, &releaseRepos, &snapshotRepos)
+	}
+
+	// Include the repositories defined in profiles of the pom
+	if len(p.content.Profiles) > 0 && len(p.content.Profiles) > 0 {
+		for _, profile := range p.content.Profiles {
+			if slicesGo.Contains(activeProfiles, profile.ID) {
+				logger.Debug("Profile is active", log.String("id", profile.ID))
+				for _, profRep := range profile.Repositories {
+					addRepository(logger, profRep, servers, &releaseRepos, &snapshotRepos)
+				}
 			}
 		}
 	}
 
 	return releaseRepos, snapshotRepos
+}
+
+// addRepo encapsulates the shared logic of validating/logging/appending repository URLs.
+// to prevent code duplication when adding repositories defined directly in the pom and in its active profiles.
+func addRepository(
+	logger *log.Logger,
+	rep repository,
+	servers []Server,
+	releaseRepos *[]string,
+	snapshotRepos *[]string,
+) {
+	snapshot := rep.Snapshots.Enabled
+	release := rep.Releases.Enabled
+
+	// Add only enabled repositories
+	if !release && !snapshot {
+		return
+	}
+
+	if repoURL := createURLForRepository(rep, servers); repoURL != nil {
+		if snapshot {
+			logger.Debug("Adding snapshot repository from pom",
+				log.String("id", rep.ID), log.String("url", rep.URL))
+			*snapshotRepos = append(*snapshotRepos, repoURL.String())
+		}
+		if release {
+			logger.Debug("Adding release repository from pom",
+				log.String("id", rep.ID), log.String("url", rep.URL))
+			*releaseRepos = append(*releaseRepos, repoURL.String())
+		}
+	}
 }
 
 type pomXML struct {
