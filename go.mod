@@ -1,6 +1,6 @@
 module github.com/aquasecurity/trivy
 
-go 1.24.4
+go 1.25
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.19.0
@@ -24,7 +24,7 @@ require (
 	github.com/aquasecurity/testdocker v0.0.0-20250616060700-ba6845ac6d17
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-checks v1.11.3-0.20250604022615-9a7efa7c9169
-	github.com/aquasecurity/trivy-db v0.0.0-20250731052236-c7c831e2254d
+	github.com/aquasecurity/trivy-db v0.0.0-20250912085155-990a6528209a
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
 	github.com/aquasecurity/trivy-kubernetes v0.9.1
 	github.com/aws/aws-sdk-go-v2 v1.38.3
@@ -47,7 +47,6 @@ require (
 	github.com/docker/go-units v0.5.0
 	github.com/fatih/color v1.18.0
 	github.com/go-git/go-git/v5 v5.16.2
-	github.com/go-json-experiment/json v0.0.0-20250223041408-d3c622f1b874 // Replace with encoding/json/v2 when proposal is accepted. Track https://github.com/golang/go/issues/71497
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/gocsaf/csaf/v3 v3.3.0
 	github.com/golang-jwt/jwt/v5 v5.3.0
