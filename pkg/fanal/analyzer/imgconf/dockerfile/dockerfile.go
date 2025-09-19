@@ -103,8 +103,10 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 		case strings.HasPrefix(h.CreatedBy, "HEALTHCHECK"):
 			// HEALTHCHECK instruction
 			createdBy = buildHealthcheckInstruction(cfg.Config.Healthcheck)
+		case strings.HasPrefix(h.CreatedBy, "ENV"):
+			createdBy = restoreEnvLine(h.CreatedBy)
 		default:
-			for _, prefix := range []string{"ARG", "ENV", "ENTRYPOINT"} {
+			for _, prefix := range []string{"ARG", "ENTRYPOINT"} {
 				if strings.HasPrefix(h.CreatedBy, prefix) {
 					createdBy = h.CreatedBy
 					break
@@ -157,6 +159,21 @@ var copyInRe = regexp.MustCompile(`\b((?:file|dir):\S+) in `)
 
 func normalizeCopyCreatedBy(input string) string {
 	return copyInRe.ReplaceAllString(input, `$1 `)
+}
+
+// restoreEnvLine normalizes a Dockerfile ENV instruction from image history.
+//
+// Legacy Dockerfiles may use ENV in the form: "ENV key val1 val2".
+// Docker stores this in image history as: "ENV key=val1 val2".
+// This can cause parsing errors, because extra tokens are treated as separate keys.
+// restoreEnvLine converts such lines into a valid "key=value" format
+// and wraps the value in quotes to preserve internal spaces and tabs.
+func restoreEnvLine(createdBy string) string {
+	parts := strings.SplitN(createdBy, "=", 2)
+	if len(parts) != 2 {
+		return createdBy
+	}
+	return fmt.Sprintf("%s=%q", parts[0], parts[1])
 }
 
 func (a *historyAnalyzer) Required(_ types.OS) bool {
