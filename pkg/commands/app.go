@@ -1216,12 +1216,6 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				return xerrors.Errorf("flag error: %w", err)
 			}
 
-			// For SBOM-to-SBOM scanning (for example, to add vulnerabilities to the SBOM file), we should not modify the scanned file.
-			// cf. https://github.com/aquasecurity/trivy/pull/9439#issuecomment-3295533665
-			if slices.Contains(types.SupportedSBOMFormats, options.Format) &&
-				(!slices.Equal(options.PkgTypes, types.PkgTypes) || !slices.Equal(options.PkgRelationships, ftypes.Relationships)) {
-				log.Warnf("Trivy doesn't support '--pkg-types' and '--pkg-relationships' options for SBOM to SBOM scan. These options will be ignored.")
-			}
 
 			return artifact.Run(cmd.Context(), options, artifact.TargetSBOM)
 		},
