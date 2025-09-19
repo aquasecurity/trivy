@@ -107,11 +107,6 @@ func init() {
 	}
 
 	matchers[FileTypeCloudFormation] = func(name string, r io.ReadSeeker) bool {
-		// Check if this is an Azure ARM template first
-		if IsType(name, r, FileTypeAzureARM) {
-			return false
-		}
-
 		sniff := struct {
 			Resources map[string]map[string]any `json:"Resources" yaml:"Resources"`
 		}{}
@@ -139,7 +134,6 @@ func init() {
 	}
 
 	matchers[FileTypeAzureARM] = func(name string, r io.ReadSeeker) bool {
-
 		if resetReader(r) == nil {
 			return false
 		}

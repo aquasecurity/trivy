@@ -4,10 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"io/fs"
+	"iter"
 	"strconv"
 	"strings"
-
-	"iter"
 
 	"github.com/go-json-experiment/json"
 	"github.com/go-json-experiment/json/jsontext"
