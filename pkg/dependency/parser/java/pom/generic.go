@@ -1,6 +1,9 @@
 package pom
 
 import (
+	"net/url"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/samber/lo"
 )
 
@@ -24,9 +27,30 @@ type repository struct {
 
 type repositoryPolicy struct {
 	Enabled bool `xml:"enabled"`
-	// Add more fields as needed:
-	// ChecksumPolicy string `xml:"checksumPolicy"`
-	// UpdatePolicy   string `xml:"updatePolicy"`
+}
+
+// createURLForRepository creates a URL object for the given repository.
+// If credentials are found in the provided servers list, they are embedded in the URL.
+func createURLForRepository(repository repository, servers []Server) *url.URL {
+	logger := log.WithPrefix("pom")
+	repoURL, err := url.Parse(repository.URL)
+	if err != nil {
+		logger.Warn("Unable to parse remote repository url", log.Err(err))
+		return nil
+	}
+
+	// Get the credentials from settings.xml based on matching server id
+	// with the repository id from pom.xml and use it for accessing the repository url
+	for _, server := range servers {
+
+		if repository.ID == server.ID && server.Username != "" && server.Password != "" {
+			logger.Debug("Setting credentials for repository",
+				log.String("id", repository.ID), log.String("url", repository.URL))
+			repoURL.User = url.UserPassword(server.Username, server.Password)
+			break
+		}
+	}
+	return repoURL
 }
 
 type Identifiable interface {

@@ -65,12 +65,14 @@ type Parser struct {
 	releaseRemoteRepos  []string
 	snapshotRemoteRepos []string
 	offline             bool
-	settings            settings
+	servers             []Server
 }
 
 func NewParser(filePath string, opts ...option) *Parser {
+	logger := log.WithPrefix("pom")
 	o := &options{
-		offline: false,
+		offline:            false,
+		releaseRemoteRepos: []string{centralURL}, // Maven doesn't use central repository for snapshot dependencies
 	}
 
 	for _, opt := range opts {
@@ -84,15 +86,34 @@ func NewParser(filePath string, opts ...option) *Parser {
 		localRepository = filepath.Join(homeDir, ".m2", "repository")
 	}
 
+	releaseRemoteRepos := o.releaseRemoteRepos
+	snapshotRemoteRepos := o.snapshotRemoteRepos
+
+	// Include the repositories defined in settings.xml
+	for _, repository := range s.getEffectiveRepositories() {
+		if repoURL := createURLForRepository(repository, s.Servers); repoURL != nil {
+			if repository.Snapshots.Enabled {
+				logger.Debug("Adding snapshot repository from settings",
+					log.String("id", repository.ID), log.String("url", repository.URL))
+				snapshotRemoteRepos = append(snapshotRemoteRepos, repoURL.String())
+			}
+			if repository.Releases.Enabled {
+				logger.Debug("Adding release repository from settings",
+					log.String("id", repository.ID), log.String("url", repository.URL))
+				releaseRemoteRepos = append(releaseRemoteRepos, repoURL.String())
+			}
+		}
+	}
+
 	return &Parser{
 		logger:              log.WithPrefix("pom"),
 		rootPath:            filepath.Clean(filePath),
 		cache:               newPOMCache(),
 		localRepository:     localRepository,
-		releaseRemoteRepos:  o.releaseRemoteRepos,
-		snapshotRemoteRepos: o.snapshotRemoteRepos,
+		releaseRemoteRepos:  releaseRemoteRepos,
+		snapshotRemoteRepos: snapshotRemoteRepos,
 		offline:             o.offline,
-		settings:            s,
+		servers:             s.Servers,
 	}
 }
 
@@ -353,7 +374,7 @@ func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 		opts.exclusions = set.New[string]()
 	}
 	// Update remoteRepositories
-	pomReleaseRemoteRepos, pomSnapshotRemoteRepos := pom.repositories(p.settings)
+	pomReleaseRemoteRepos, pomSnapshotRemoteRepos := pom.repositories(p.servers)
 	p.releaseRemoteRepos = lo.Uniq(append(pomReleaseRemoteRepos, p.releaseRemoteRepos...))
 	p.snapshotRemoteRepos = lo.Uniq(append(pomSnapshotRemoteRepos, p.snapshotRemoteRepos...))
 

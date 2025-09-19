@@ -4,9 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"net/url"
 	"reflect"
-	slicesGo "slices"
 	"strings"
 
 	"github.com/samber/lo"
@@ -124,11 +122,10 @@ func (p *pom) licenses() []string {
 	}))
 }
 
-func (p *pom) repositories(settings settings) ([]string, []string) {
+func (p *pom) repositories(servers []Server) ([]string, []string) {
 	logger := log.WithPrefix("pom")
 	var releaseRepos, snapshotRepos []string
-	effectiveRepositories := p.effectiveRepositories(&settings)
-	for _, rep := range effectiveRepositories {
+	for _, rep := range p.content.Repositories.Repository {
 		snapshot := rep.Snapshots.Enabled
 		release := rep.Releases.Enabled
 		// Add only enabled repositories
@@ -136,75 +133,22 @@ func (p *pom) repositories(settings settings) ([]string, []string) {
 			continue
 		}
 
-		repoURL, err := url.Parse(rep.URL)
-		if err != nil {
-			logger.Debug("Unable to parse remote repository url", log.Err(err))
-			continue
-		}
-
-		// Get the credentials from settings.xml based on matching server id
-		// with the repository id from pom.xml and use it for accessing the repository url
-		for _, server := range settings.Servers {
-			if rep.ID == server.ID && server.Username != "" && server.Password != "" {
-				repoURL.User = url.UserPassword(server.Username, server.Password)
-				break
+		// Include the repositories defined in pom.xml
+		if repoURL := createURLForRepository(rep, servers); repoURL != nil {
+			if snapshot {
+				logger.Debug("Adding snapshot repository from pom",
+					log.String("id", rep.ID), log.String("url", rep.URL))
+				snapshotRepos = append(snapshotRepos, repoURL.String())
 			}
-		}
-
-		if snapshot {
-			logger.Debug("Adding snapshot repository",
-				log.String("id", rep.ID), log.String("url", rep.URL))
-			snapshotRepos = append(snapshotRepos, repoURL.String())
-		}
-		if release {
-			logger.Debug("Adding release repository",
-				log.String("id", rep.ID), log.String("url", rep.URL))
-			releaseRepos = append(releaseRepos, repoURL.String())
+			if release {
+				logger.Debug("Adding release repository from pom",
+					log.String("id", rep.ID), log.String("url", rep.URL))
+				releaseRepos = append(releaseRepos, repoURL.String())
+			}
 		}
 	}
 
 	return releaseRepos, snapshotRepos
-}
-
-// effectiveRepositories returns the effective repositories for the POM.
-// It combines the repositories defined in the pom.xml file with those defined in the settings.xml file.
-// Does not include pluginRepositories!
-func (p *pom) effectiveRepositories(settings *settings) []repository {
-	logger := log.WithPrefix("pom")
-
-	var repositories []repository
-
-	// Always add the central repository
-	central := repository{
-		ID:       "central",
-		Name:     "Maven Central Repository",
-		URL:      centralURL,
-		Releases: repositoryPolicy{Enabled: true},
-	}
-	repositories = append(repositories, central)
-
-	// Add repositories defined in the pom.xml file
-	repositories = append(repositories, p.content.Repositories.Repository...)
-
-	if settings != nil {
-		// Add repositories defined for profiles in the pom.xml file
-		if len(p.content.Profiles) == 0 {
-			logger.Debug("POM doesn't have any profiles")
-		} else {
-			logger.Debug("POM has profiles")
-			for _, profile := range p.content.Profiles {
-				if slicesGo.Contains(settings.ActiveProfiles, profile.ID) {
-					logger.Debug("Using repositories from active profile", log.String("id", profile.ID))
-					repositories = append(repositories, profile.Repositories...)
-				}
-			}
-		}
-
-		repositories = append(repositories, settings.getEffectiveRepositories()...)
-	}
-	return lo.UniqBy(repositories, func(r repository) string {
-		return r.ID
-	})
 }
 
 type pomXML struct {
