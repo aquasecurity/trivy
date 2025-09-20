@@ -12,6 +12,7 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
@@ -686,11 +687,23 @@ func (p *Parser) loadPOMFromLocalRepository(paths []string) (*pom, error) {
 	return p.openPom(localPath)
 }
 
+var (
+	RemotePOMCache      = make(map[string]*pom)
+	RemotePOMCacheMutex sync.RWMutex
+)
+
 func (p *Parser) fetchPOMFromRemoteRepositories(paths []string, snapshot bool) (*pom, error) {
 	// Do not try fetching pom.xml from remote repositories in offline mode
 	if p.offline {
 		p.logger.Debug("Fetching the remote pom.xml is skipped")
 		return nil, xerrors.New("offline mode")
+	}
+
+	RemotePOMCacheMutex.RLock()
+	pom, ok := RemotePOMCache[strings.Join(paths, "/")]
+	RemotePOMCacheMutex.RUnlock()
+	if ok {
+		return pom, nil
 	}
 
 	remoteRepos := p.releaseRemoteRepos
@@ -718,6 +731,10 @@ func (p *Parser) fetchPOMFromRemoteRepositories(paths []string, snapshot bool) (
 		} else if fetched == nil {
 			continue
 		}
+
+		RemotePOMCacheMutex.Lock()
+		RemotePOMCache[strings.Join(paths, "/")] = fetched
+		RemotePOMCacheMutex.Unlock()
 		return fetched, nil
 	}
 	return nil, xerrors.Errorf("the POM was not found in remote remoteRepositories")
