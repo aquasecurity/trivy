@@ -71,8 +71,7 @@ type Parser struct {
 func NewParser(filePath string, opts ...option) *Parser {
 	logger := log.WithPrefix("pom")
 	o := &options{
-		offline:            false,
-		releaseRemoteRepos: []string{centralURL}, // Maven doesn't use central repository for snapshot dependencies
+		offline: false,
 	}
 
 	for _, opt := range opts {
@@ -86,10 +85,12 @@ func NewParser(filePath string, opts ...option) *Parser {
 		localRepository = filepath.Join(homeDir, ".m2", "repository")
 	}
 
-	releaseRemoteRepos := o.releaseRemoteRepos
-	snapshotRemoteRepos := o.snapshotRemoteRepos
+	// Try to mimic Maven's default behavior when it comes to giving precedence to ordering of remote repositories.
+	// - start with the repositories defined via options
+	releaseRemoteRepos := slices.Clone(o.releaseRemoteRepos)
+	snapshotRemoteRepos := slices.Clone(o.snapshotRemoteRepos)
 
-	// Include the repositories defined in settings.xml
+	// - then include the repositories defined in settings.xml
 	for _, repository := range s.getEffectiveRepositories() {
 		if repoURL := createURLForRepository(repository, s.Servers); repoURL != nil {
 			if repository.Snapshots.Enabled {
@@ -104,6 +105,9 @@ func NewParser(filePath string, opts ...option) *Parser {
 			}
 		}
 	}
+
+	// - finally append the central repository last (only for releases, as central is not used for snapshot artifacts)
+	releaseRemoteRepos = append(releaseRemoteRepos, centralURL)
 
 	return &Parser{
 		logger:              log.WithPrefix("pom"),
