@@ -184,18 +184,20 @@ func decodeAttestCycloneDXJSONFormat(r io.ReadSeeker) (Format, bool) {
 func Decode(ctx context.Context, f io.Reader, format Format) (types.SBOM, error) {
 	var (
 		v       any
-		bom     = core.NewBOM(core.Options{})
+		bom     *core.BOM
 		decoder interface{ Decode(any) error }
 	)
 
 	switch format {
 	case FormatCycloneDXJSON:
+		bom = core.NewBOM(core.Options{GenerateBOMRef: true})
 		v = &cyclonedx.BOM{BOM: bom}
 		decoder = json.NewDecoder(f)
 	case FormatAttestCycloneDXJSON:
 		// dsse envelope
 		//   => in-toto attestation
 		//     => CycloneDX JSON
+		bom = core.NewBOM(core.Options{GenerateBOMRef: true})
 		v = &attestation.Statement{
 			Predicate: &cyclonedx.BOM{BOM: bom},
 		}
@@ -205,6 +207,7 @@ func Decode(ctx context.Context, f io.Reader, format Format) (types.SBOM, error)
 		//   => in-toto attestation
 		//     => cosign predicate
 		//       => CycloneDX JSON
+		bom = core.NewBOM(core.Options{GenerateBOMRef: true})
 		v = &attestation.Statement{
 			Predicate: &attestation.CosignPredicate{
 				Data: &cyclonedx.BOM{BOM: bom},
@@ -212,9 +215,11 @@ func Decode(ctx context.Context, f io.Reader, format Format) (types.SBOM, error)
 		}
 		decoder = json.NewDecoder(f)
 	case FormatSPDXJSON:
+		bom = core.NewBOM(core.Options{})
 		v = &spdx.SPDX{BOM: bom}
 		decoder = json.NewDecoder(f)
 	case FormatSPDXTV:
+		bom = core.NewBOM(core.Options{})
 		v = &spdx.SPDX{BOM: bom}
 		decoder = spdx.NewTVDecoder(f)
 	default:

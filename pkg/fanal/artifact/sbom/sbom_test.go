@@ -368,6 +368,89 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
+			name:     "components with missing BOM-REF",
+			filePath: filepath.Join("testdata", "bom-missing-refs.json"),
+			wantBlobs: []cachetest.WantBlob{
+				{
+					ID: "sha256:512b9e999c9d7b4880c63ce55c2c74ea5c22b05cdbcb486097a16ec692c746a0",
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: types.BlobJSONSchemaVersion,
+						OS: types.OS{
+							Family: "alpine",
+							Name:   "3.16.0",
+						},
+						PackageInfos: []types.PackageInfo{
+							{
+								Packages: types.Packages{
+									{
+										ID:         "musl@1.2.3-r0",
+										Name:       "musl",
+										Version:    "1.2.3-r0",
+										SrcName:    "musl",
+										SrcVersion: "1.2.3-r0",
+										Licenses:   []string{"MIT"},
+										Layer: types.Layer{
+											DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
+										},
+										Identifier: types.PkgIdentifier{
+											PURL: &packageurl.PackageURL{
+												Type:      packageurl.TypeApk,
+												Namespace: "alpine",
+												Name:      "musl",
+												Version:   "1.2.3-r0",
+												Qualifiers: packageurl.Qualifiers{
+													{
+														Key:   "distro",
+														Value: "3.16.0",
+													},
+												},
+											},
+											// BOM-Ref should be auto-generated from PURL
+											BOMRef: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+										},
+									},
+								},
+							},
+						},
+						Applications: []types.Application{
+							{
+								Type:     "composer",
+								FilePath: "",
+								Packages: types.Packages{
+									{
+										ID:      "pear/log@1.13.1",
+										Name:    "pear/log",
+										Version: "1.13.1",
+										Layer: types.Layer{
+											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
+										},
+										Identifier: types.PkgIdentifier{
+											PURL: &packageurl.PackageURL{
+												Type:      packageurl.TypeComposer,
+												Namespace: "pear",
+												Name:      "log",
+												Version:   "1.13.1",
+											},
+											// BOM-Ref should be auto-generated from PURL
+											BOMRef: "pkg:composer/pear/log@1.13.1",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: artifact.Reference{
+				Name: filepath.Join("testdata", "bom-missing-refs.json"),
+				Type: types.TypeCycloneDX,
+				ID:   "sha256:512b9e999c9d7b4880c63ce55c2c74ea5c22b05cdbcb486097a16ec692c746a0",
+				BlobIDs: []string{
+					"sha256:512b9e999c9d7b4880c63ce55c2c74ea5c22b05cdbcb486097a16ec692c746a0",
+				},
+			},
+		},
+		{
 			name:     "sad path with no such directory",
 			filePath: filepath.Join("testdata", "unknown.json"),
 			wantErr: []string{

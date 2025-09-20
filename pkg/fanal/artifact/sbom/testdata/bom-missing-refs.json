@@ -1,0 +1,89 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2022-05-28T10:20:03.79527Z",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "dev"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "0f585d64-4815-4b72-92c5-97dae191fa4a",
+      "type": "container",
+      "name": "test-project",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "musl",
+      "version": "1.2.3-r0",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
+      "purl": "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3"
+        }
+      ]
+    },
+    {
+      "bom-ref": "60e9f57b-d4a6-4f71-ad14-0893ac609182",
+      "type": "operating-system",
+      "name": "alpine",
+      "version": "3.16.0",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "alpine"
+        },
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "os-pkgs"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "pear/log",
+      "version": "1.13.1",
+      "purl": "pkg:composer/pear/log@1.13.1",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "60e9f57b-d4a6-4f71-ad14-0893ac609182"
+    },
+    {
+      "ref": "0f585d64-4815-4b72-92c5-97dae191fa4a",
+      "dependsOn": [
+        "60e9f57b-d4a6-4f71-ad14-0893ac609182"
+      ]
+    }
+  ],
+  "vulnerabilities": []
+}
