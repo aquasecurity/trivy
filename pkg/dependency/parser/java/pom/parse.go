@@ -93,13 +93,13 @@ func NewParser(filePath string, opts ...option) *Parser {
 	// - then include the repositories defined in settings.xml
 	for _, repository := range s.getEffectiveRepositories() {
 		if repoURL := createURLForRepository(repository, s.Servers); repoURL != nil {
-			if repository.Snapshots.Enabled {
-				logger.Debug("Adding snapshot repository from settings",
+			if repository.Snapshots.IsEnabled() {
+				logger.Debug("Enabling snapshot repository from settings",
 					log.String("id", repository.ID), log.String("url", repository.URL))
 				snapshotRemoteRepos = append(snapshotRemoteRepos, repoURL.String())
 			}
-			if repository.Releases.Enabled {
-				logger.Debug("Adding release repository from settings",
+			if repository.Releases.IsEnabled() {
+				logger.Debug("Enabling release repository from settings",
 					log.String("id", repository.ID), log.String("url", repository.URL))
 				releaseRemoteRepos = append(releaseRemoteRepos, repoURL.String())
 			}
@@ -107,6 +107,8 @@ func NewParser(filePath string, opts ...option) *Parser {
 	}
 
 	// - finally append the central repository last (only for releases, as central is not used for snapshot artifacts)
+	logger.Debug("Enabling Maven Central repository", log.String("url", centralURL))
+
 	releaseRemoteRepos = append(releaseRemoteRepos, centralURL)
 
 	return &Parser{

@@ -141,6 +141,14 @@ func expandAllEnvPlaceholders(s *settings) {
 func (s *settings) getActiveProfiles() []Profile {
 	logger := log.WithPrefix("pom")
 	var profiles []Profile
+
+	if len(s.Profiles) == 0 {
+		logger.Debug("No profiles defined in settings")
+		return profiles
+	}
+
+	logger.Debug("Active profiles specified in settings", log.Any("activeProfiles", s.ActiveProfiles))
+
 	for _, profile := range s.Profiles {
 		if slices.Contains(s.ActiveProfiles, profile.ID) {
 			logger.Debug("Profile is active by means of activeProfiles", log.String("id", profile.ID))
@@ -159,9 +167,21 @@ func (s *settings) getActiveProfiles() []Profile {
 // This is on settings.xml level, not considering repositories from pom.xml,
 // which need to be combined in a separate step.
 func (s *settings) getRepositoriesForActiveProfiles() []repository {
+	logger := log.WithPrefix("pom")
 	var repositories []repository
 	for _, activeProfile := range s.getActiveProfiles() {
-		repositories = append(repositories, activeProfile.Repositories...)
+		for _, repo := range activeProfile.Repositories {
+			logger.Debug("Active profile has repository",
+				log.String("profileID", activeProfile.ID), log.String("repoID", repo.ID), log.String("url", repo.URL))
+
+			if !repo.Releases.IsEnabled() && !repo.Snapshots.IsEnabled() {
+				logger.Debug("Skipping repository as both releases and snapshots have been explicitly disabled",
+					log.String("id", repo.ID), log.String("url", repo.URL))
+				continue
+			}
+
+			repositories = append(repositories, repo)
+		}
 	}
 	return repositories
 }

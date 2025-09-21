@@ -18,9 +18,10 @@ func Test_pom_repositories(t *testing.T) {
 		{
 			name: "repo with releases enabled only",
 			pom: &pom{content: &pomXML{Repositories: repositories{Repository: []repository{{
-				ID:       "my-repo",
-				URL:      "http://myrepo",
-				Releases: repositoryPolicy{Enabled: true},
+				ID:        "my-repo",
+				URL:       "http://myrepo",
+				Releases:  repositoryPolicy{Enabled: boolPtr(true)},
+				Snapshots: repositoryPolicy{Enabled: boolPtr(false)},
 			}}}}},
 			servers:        nil,
 			activeProfiles: nil,
@@ -32,7 +33,8 @@ func Test_pom_repositories(t *testing.T) {
 			pom: &pom{content: &pomXML{Repositories: repositories{Repository: []repository{{
 				ID:        "snap-repo",
 				URL:       "http://snap",
-				Snapshots: repositoryPolicy{Enabled: true},
+				Releases:  repositoryPolicy{Enabled: boolPtr(false)},
+				Snapshots: repositoryPolicy{Enabled: boolPtr(true)},
 			}}}}},
 			servers:        nil,
 			activeProfiles: nil,
@@ -40,12 +42,24 @@ func Test_pom_repositories(t *testing.T) {
 			wantSnapshot:   []string{"http://snap"},
 		},
 		{
-			name: "disabled repo is ignored",
+			name: "repo with releases & snapshots omitted is included (default to enabled)",
+			pom: &pom{content: &pomXML{Repositories: repositories{Repository: []repository{{
+				ID:  "default-both",
+				URL: "http://both",
+				// No Releases/Snapshots blocks provided -> both should default to enabled
+			}}}}},
+			servers:        nil,
+			activeProfiles: nil,
+			wantRelease:    []string{"http://both"},
+			wantSnapshot:   []string{"http://both"},
+		},
+		{
+			name: "repos with releases & snapshots explicitly disabled repo is ignored",
 			pom: &pom{content: &pomXML{Repositories: repositories{Repository: []repository{{
 				ID:        "disabled",
 				URL:       "http://disabled",
-				Releases:  repositoryPolicy{Enabled: false},
-				Snapshots: repositoryPolicy{Enabled: false},
+				Releases:  repositoryPolicy{Enabled: boolPtr(false)},
+				Snapshots: repositoryPolicy{Enabled: boolPtr(false)},
 			}}}}},
 			servers:        nil,
 			activeProfiles: nil,
@@ -57,9 +71,10 @@ func Test_pom_repositories(t *testing.T) {
 			pom: &pom{content: &pomXML{Profiles: []Profile{{
 				ID: "p1",
 				Repositories: []repository{{
-					ID:       "p1-repo",
-					URL:      "http://from-profile",
-					Releases: repositoryPolicy{Enabled: true},
+					ID:        "p1-repo",
+					URL:       "http://from-profile",
+					Releases:  repositoryPolicy{Enabled: boolPtr(true)},
+					Snapshots: repositoryPolicy{Enabled: boolPtr(false)},
 				}},
 			}}}},
 			servers:        nil,
@@ -70,9 +85,10 @@ func Test_pom_repositories(t *testing.T) {
 		{
 			name: "repo with credentials from servers",
 			pom: &pom{content: &pomXML{Repositories: repositories{Repository: []repository{{
-				ID:       "secured-repo",
-				URL:      "https://repo.example.com/maven",
-				Releases: repositoryPolicy{Enabled: true},
+				ID:        "secured-repo",
+				URL:       "https://repo.example.com/maven",
+				Releases:  repositoryPolicy{Enabled: boolPtr(true)},
+				Snapshots: repositoryPolicy{Enabled: boolPtr(false)},
 			}}}}},
 			servers: []Server{{
 				ID:       "secured-repo",
@@ -88,9 +104,10 @@ func Test_pom_repositories(t *testing.T) {
 			pom: &pom{content: &pomXML{
 				Repositories: repositories{Repository: []repository{
 					{
-						ID:       "dup-release",
-						URL:      "https://repo.dup.local/release",
-						Releases: repositoryPolicy{Enabled: true},
+						ID:        "dup-release",
+						URL:       "https://repo.dup.local/release",
+						Releases:  repositoryPolicy{Enabled: boolPtr(true)},
+						Snapshots: repositoryPolicy{Enabled: boolPtr(false)},
 					},
 				}},
 				Profiles: []Profile{
@@ -98,9 +115,10 @@ func Test_pom_repositories(t *testing.T) {
 						ID: "dup",
 						Repositories: []repository{
 							{
-								ID:       "dup-release", // same id as in POM
-								URL:      "https://repo.dup.local/alt",
-								Releases: repositoryPolicy{Enabled: true},
+								ID:        "dup-release", // same id as in POM
+								URL:       "https://repo.dup.local/alt",
+								Releases:  repositoryPolicy{Enabled: boolPtr(true)},
+								Snapshots: repositoryPolicy{Enabled: boolPtr(false)},
 							},
 						},
 					},
@@ -119,19 +137,22 @@ func Test_pom_repositories(t *testing.T) {
 			pom: &pom{content: &pomXML{
 				Repositories: repositories{Repository: []repository{
 					{
-						ID:       "central",
-						URL:      "https://repo.maven.apache.org/maven2",
-						Releases: repositoryPolicy{Enabled: true},
+						ID:        "central",
+						URL:       "https://repo.maven.apache.org/maven2",
+						Releases:  repositoryPolicy{Enabled: boolPtr(true)},
+						Snapshots: repositoryPolicy{Enabled: boolPtr(false)},
 					},
 					{
-						ID:       "corp-release",
-						URL:      "https://repo.corp.local/releases",
-						Releases: repositoryPolicy{Enabled: true},
+						ID:        "corp-release",
+						URL:       "https://repo.corp.local/releases",
+						Releases:  repositoryPolicy{Enabled: boolPtr(true)},
+						Snapshots: repositoryPolicy{Enabled: boolPtr(false)},
 					},
 					{
 						ID:        "corp-snapshots",
 						URL:       "https://repo.corp.local/snapshots",
-						Snapshots: repositoryPolicy{Enabled: true},
+						Releases:  repositoryPolicy{Enabled: boolPtr(false)},
+						Snapshots: repositoryPolicy{Enabled: boolPtr(true)},
 					},
 				}},
 				Profiles: []Profile{
@@ -139,9 +160,10 @@ func Test_pom_repositories(t *testing.T) {
 						ID: "dev",
 						Repositories: []repository{
 							{
-								ID:       "dev-extra",
-								URL:      "https://repo.dev.local/maven",
-								Releases: repositoryPolicy{Enabled: true},
+								ID:        "dev-extra",
+								URL:       "https://repo.dev.local/maven",
+								Releases:  repositoryPolicy{Enabled: boolPtr(true)},
+								Snapshots: repositoryPolicy{Enabled: boolPtr(false)},
 							},
 						},
 					},
@@ -149,9 +171,10 @@ func Test_pom_repositories(t *testing.T) {
 						ID: "qa", // not active -> ignored
 						Repositories: []repository{
 							{
-								ID:       "qa-only",
-								URL:      "https://repo.qa.local/maven",
-								Releases: repositoryPolicy{Enabled: true},
+								ID:        "qa-only",
+								URL:       "https://repo.qa.local/maven",
+								Releases:  repositoryPolicy{Enabled: boolPtr(true)},
+								Snapshots: repositoryPolicy{Enabled: boolPtr(false)},
 							},
 						},
 					},
@@ -161,12 +184,30 @@ func Test_pom_repositories(t *testing.T) {
 							{
 								ID:        "feat-snap",
 								URL:       "https://repo.features.local/snap",
-								Snapshots: repositoryPolicy{Enabled: true},
+								Releases:  repositoryPolicy{Enabled: boolPtr(false)},
+								Snapshots: repositoryPolicy{Enabled: boolPtr(true)},
 							},
 							{
-								ID:       "noauth-release",
-								URL:      "https://repo.features.local/release",
-								Releases: repositoryPolicy{Enabled: true},
+								ID:        "noauth-release",
+								URL:       "https://repo.features.local/release",
+								Releases:  repositoryPolicy{Enabled: boolPtr(true)},
+								Snapshots: repositoryPolicy{Enabled: boolPtr(false)},
+							},
+						},
+					},
+					{
+						ID: "implicit",
+						Repositories: []repository{
+							{
+								ID:  "implicitly-enabled-both-omitted",
+								URL: "https://repo.features.local/implicit-both-omitted",
+								// No Releases/Snapshots blocks provided -> both should default to enabled
+							},
+							{
+								ID:        "implicitly-enabled-both-nil",
+								URL:       "https://repo.features.local/implicit-both-nil",
+								Releases:  repositoryPolicy{Enabled: nil},
+								Snapshots: repositoryPolicy{Enabled: nil},
 							},
 						},
 					},
@@ -179,16 +220,20 @@ func Test_pom_repositories(t *testing.T) {
 				{ID: "feat-snap", Username: "feat", Password: "snap"},
 				// intentionally no server for "noauth-release"
 			},
-			activeProfiles: []string{"dev", "features"},
+			activeProfiles: []string{"dev", "features", "implicit"},
 			wantRelease: []string{
 				"https://repo.maven.apache.org/maven2",
 				"https://svc:token@repo.corp.local/releases",
 				"https://svcdev:devpwd@repo.dev.local/maven",
 				"https://repo.features.local/release",
+				"https://repo.features.local/implicit-both-omitted",
+				"https://repo.features.local/implicit-both-nil",
 			},
 			wantSnapshot: []string{
 				"https://svc:token2@repo.corp.local/snapshots",
 				"https://feat:snap@repo.features.local/snap",
+				"https://repo.features.local/implicit-both-omitted",
+				"https://repo.features.local/implicit-both-nil",
 			},
 		},
 	}

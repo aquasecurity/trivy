@@ -157,22 +157,21 @@ func addRepository(
 	releaseRepos *[]string,
 	snapshotRepos *[]string,
 ) {
-	snapshot := rep.Snapshots.Enabled
-	release := rep.Releases.Enabled
-
 	// Add only enabled repositories
-	if !release && !snapshot {
+	if !rep.Releases.IsEnabled() && !rep.Snapshots.IsEnabled() {
+		logger.Debug("Skipping repository as both releases and snapshots have been explicitly disabled",
+			log.String("id", rep.ID), log.String("url", rep.URL))
 		return
 	}
 
 	if repoURL := createURLForRepository(rep, servers); repoURL != nil {
-		if snapshot {
-			logger.Debug("Adding snapshot repository from pom",
+		if rep.Snapshots.IsEnabled() {
+			logger.Debug("Enabling snapshot repository from pom",
 				log.String("id", rep.ID), log.String("url", rep.URL))
 			*snapshotRepos = append(*snapshotRepos, repoURL.String())
 		}
-		if release {
-			logger.Debug("Adding release repository from pom",
+		if rep.Releases.IsEnabled() {
+			logger.Debug("Enabling release repository from pom",
 				log.String("id", rep.ID), log.String("url", rep.URL))
 			*releaseRepos = append(*releaseRepos, repoURL.String())
 		}

@@ -18,6 +18,7 @@ type repositories struct {
 	Repository []repository `xml:"repository"`
 }
 
+// Use r.Releases.IsEnabled() / r.Snapshots.IsEnabled() for Maven-accurate defaults.
 type repository struct {
 	ID        string           `xml:"id"`
 	Name      string           `xml:"name"`
@@ -26,8 +27,20 @@ type repository struct {
 	Snapshots repositoryPolicy `xml:"snapshots"`
 }
 
+// repositoryPolicy mirrors Maven's repositoryPolicy defaults.
+// If <enabled> is omitted in XML, Maven treats it as true.
+// We use *bool to detect omission and surface Maven's default.
 type repositoryPolicy struct {
-	Enabled bool `xml:"enabled"`
+	Enabled *bool `xml:"enabled"`
+}
+
+// IsEnabled returns the effective enabled flag, applying Maven's default (true)
+// when <enabled> is not present in XML, or when the <releases>/<snapshots> block itself is omitted.
+func (p repositoryPolicy) IsEnabled() bool {
+	if p.Enabled == nil {
+		return true
+	}
+	return *p.Enabled
 }
 
 // createURLForRepository creates a URL object for the given repository.
