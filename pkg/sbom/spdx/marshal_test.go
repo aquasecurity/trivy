@@ -515,6 +515,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 							annotation(t, "SchemaVersion: 2"),
 							annotation(t, "Size: 1024"),
 						},
+						PackageExternalReferences: []*spdx.PackageExternalReference{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:oci/centos?arch=arm64&repository_url=index.docker.io%2Flibrary%2Fcentos",
+							},
+						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeContainer,
 					},
 					{
