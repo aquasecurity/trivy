@@ -134,7 +134,7 @@ func (p *pom) repositories(servers []Server, activeProfiles []string) ([]string,
 	}
 
 	// Include the repositories defined in profiles of the pom
-	if len(p.content.Profiles) > 0 && len(p.content.Profiles) > 0 {
+	if len(p.content.Profiles) > 0 && len(activeProfiles) > 0 {
 		for _, profile := range p.content.Profiles {
 			if slicesGo.Contains(activeProfiles, profile.ID) {
 				logger.Debug("Profile is active", log.String("id", profile.ID))
