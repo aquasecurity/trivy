@@ -3,8 +3,9 @@ package pom
 import (
 	"net/url"
 
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/samber/lo"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // Centralized the repository structure to be used across different parsers.
