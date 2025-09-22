@@ -17,43 +17,12 @@ func init() {
 
 const version = 1
 
-var (
-	requiredFiles = []string{
-		"etc/os-release",
-		"usr/lib/os-release",
-		"aarch64-bottlerocket-linux-gnu/sys-root/usr/lib/os-release",
-		"x86_64-bottlerocket-linux-gnu/sys-root/usr/lib/os-release",
-	}
-
-	idToOSFamilyMapping = map[string]types.OSType{
-		"rhel":                types.RedHat,
-		"centos":              types.CentOS,
-		"rocky":               types.Rocky,
-		"almalinux":           types.Alma,
-		"ol":                  types.Oracle,
-		"fedora":              types.Fedora,
-		"alpine":              types.Alpine,
-		"bottlerocket":        types.Bottlerocket,
-		"opensuse-tumbleweed": types.OpenSUSETumbleweed,
-		"opensuse-leap":       types.OpenSUSELeap,
-		"opensuse":            types.OpenSUSELeap, // opensuse for leap:42, opensuse-leap for leap:15
-		"sles":                types.SLES,
-		// There are various rebrands of SLE Micro, there is also one brief (and reverted rebrand)
-		// for SLE Micro 6.0. which was called "SL Micro 6.0" until very short before release
-		// and there is a "SLE Micro for Rancher" rebrand, which is used by SUSEs K8S based offerings.
-		"sle-micro":         types.SLEMicro,
-		"sl-micro":          types.SLEMicro,
-		"sle-micro-rancher": types.SLEMicro,
-		"photon":            types.Photon,
-		"wolfi":             types.Wolfi,
-		"chainguard":        types.Chainguard,
-		"azurelinux":        types.Azure,
-		"mariner":           types.CBLMariner,
-		"echo":              types.Echo,
-		"minimos":           types.MinimOS,
-		"coreos":            types.CoreOS,
-	}
-)
+var requiredFiles = []string{
+	"etc/os-release",
+	"usr/lib/os-release",
+	"aarch64-bottlerocket-linux-gnu/sys-root/usr/lib/os-release",
+	"x86_64-bottlerocket-linux-gnu/sys-root/usr/lib/os-release",
+}
 
 type osReleaseAnalyzer struct{}
 
@@ -73,7 +42,7 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 		switch key {
 		case "ID":
 			id := strings.Trim(value, `"'`)
-			family = idToOSFamilyMapping[id]
+			family = idToOSFamily(id)
 		case "VERSION_ID":
 			versionID = strings.Trim(value, `"'`)
 		default:
@@ -91,6 +60,57 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 	}
 
 	return nil, nil
+}
+
+//nolint:gocyclo
+func idToOSFamily(id string) types.OSType {
+	switch id {
+	case "rhel":
+		return types.RedHat
+	case "centos":
+		return types.CentOS
+	case "rocky":
+		return types.Rocky
+	case "almalinux":
+		return types.Alma
+	case "ol":
+		return types.Oracle
+	case "fedora":
+		return types.Fedora
+	case "alpine":
+		return types.Alpine
+	case "bottlerocket":
+		return types.Bottlerocket
+	case "opensuse-tumbleweed":
+		return types.OpenSUSETumbleweed
+	case "opensuse-leap", "opensuse": // opensuse for leap:42, opensuse-leap for leap:15
+		return types.OpenSUSELeap
+	case "sles":
+		return types.SLES
+	// There are various rebrands of SLE Micro, there is also one brief (and reverted rebrand)
+	// for SLE Micro 6.0. which was called "SL Micro 6.0" until very short before release
+	// and there is a "SLE Micro for Rancher" rebrand, which is used by SUSEs K8S based offerings.
+	case "sle-micro", "sl-micro", "sle-micro-rancher":
+		return types.SLEMicro
+	case "photon":
+		return types.Photon
+	case "wolfi":
+		return types.Wolfi
+	case "chainguard":
+		return types.Chainguard
+	case "azurelinux":
+		return types.Azure
+	case "mariner":
+		return types.CBLMariner
+	case "echo":
+		return types.Echo
+	case "minimos":
+		return types.MinimOS
+	case "coreos":
+		return types.CoreOS
+	}
+	// This OS is not supported for this analyzer.
+	return ""
 }
 
 func (a osReleaseAnalyzer) Required(filePath string, _ os.FileInfo) bool {
