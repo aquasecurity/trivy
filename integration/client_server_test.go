@@ -679,8 +679,8 @@ func setupClient(t *testing.T, c csArgs, addr, cacheDir string) []string {
 		osArgs = append(osArgs, "--format", "json")
 	}
 
-	if c.ListAllPackages {
-		osArgs = append(osArgs, "--list-all-pkgs")
+	if !c.ListAllPackages {
+		osArgs = append(osArgs, "--list-all-pkgs=false")
 	}
 
 	if c.IgnoreUnfixed {

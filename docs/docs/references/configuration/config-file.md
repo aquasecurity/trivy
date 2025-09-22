@@ -530,7 +530,7 @@ ignore-policy: ""
 ignorefile: ".trivyignore"
 
 # Same as '--list-all-pkgs'
-list-all-pkgs: false
+list-all-pkgs: true
 
 # Same as '--output'
 output: ""

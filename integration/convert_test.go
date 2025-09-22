@@ -66,8 +66,8 @@ func TestConvert(t *testing.T) {
 				osArgs = append(osArgs, "--show-suppressed")
 			}
 
-			if tt.args.listAllPkgs {
-				osArgs = append(osArgs, "--list-all-pkgs")
+			if !tt.args.listAllPkgs {
+				osArgs = append(osArgs, "--list-all-pkgs=false")
 			}
 
 			// Set up the output file
