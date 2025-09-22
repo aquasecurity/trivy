@@ -169,11 +169,11 @@ func normalizeCopyCreatedBy(input string) string {
 // restoreEnvLine converts such lines into a valid "key=value" format
 // and wraps the value in quotes to preserve internal spaces and tabs.
 func restoreEnvLine(createdBy string) string {
-	parts := strings.SplitN(createdBy, "=", 2)
-	if len(parts) != 2 {
+	k, v, ok := strings.Cut(createdBy, "=")
+	if !ok {
 		return createdBy
 	}
-	return fmt.Sprintf("%s=%q", parts[0], parts[1])
+	return fmt.Sprintf("%s=%q", k, v)
 }
 
 func (a *historyAnalyzer) Required(_ types.OS) bool {
