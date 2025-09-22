@@ -435,7 +435,7 @@ ENTRYPOINT ["/bin/sh" "-c" "echo test"]
 `,
 		},
 		{
-			name: "buildah backend or docker legacy builder (DOCKER_BUILDKIT=0)",
+			name: "remove backend-specific metadata suffixes",
 			input: &v1.ConfigFile{
 				History: []v1.History{
 					{
@@ -445,12 +445,16 @@ ENTRYPOINT ["/bin/sh" "-c" "echo test"]
 						CreatedBy: "/bin/sh -c #(nop) ADD file:24d346633efc860b5011cefa5c0af73006e74e5dfb3c5c0e9cb0e90a927931e1 in readme |inheritLabels=false",
 					},
 					{
+						CreatedBy: "/bin/sh -c #(nop) HEALTHCHECK NONE|unsetLabel=true|inheritLabels=false|force-mtime=10",
+					},
+					{
 						CreatedBy: `/bin/sh -c #(nop) ENTRYPOINT ["/bin/sh"]|inheritLabels=false`,
 					},
 				},
 			},
 			expected: `COPY dir:3a024d8085bc39741a0a094a8e287a00a760975c7c2e6b5dc6c7d3174b7d1ab6 ./files
 ADD file:24d346633efc860b5011cefa5c0af73006e74e5dfb3c5c0e9cb0e90a927931e1 readme
+HEALTHCHECK NONE
 ENTRYPOINT ["/bin/sh"]
 `,
 		},
