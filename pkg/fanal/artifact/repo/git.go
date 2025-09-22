@@ -7,7 +7,6 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
-	"github.com/google/wire"
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
@@ -19,15 +18,7 @@ import (
 	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
-var (
-	ArtifactSet = wire.NewSet(
-		walker.NewFS,
-		wire.Bind(new(Walker), new(*walker.FS)),
-		NewArtifact,
-	)
-
-	_ Walker = (*walker.FS)(nil)
-)
+var _ Walker = (*walker.FS)(nil)
 
 type Walker interface {
 	Walk(root string, opt walker.Option, fn walker.WalkFunc) error
