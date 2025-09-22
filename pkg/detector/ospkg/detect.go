@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/azure"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/bottlerocket"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/chainguard"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/coreos"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/echo"
@@ -55,6 +56,7 @@ var (
 		ftypes.Chainguard:         chainguard.NewScanner(),
 		ftypes.Echo:               echo.NewScanner(),
 		ftypes.MinimOS:            minimos.NewScanner(),
+		ftypes.CoreOS:             coreos.NewScanner(),
 	}
 
 	// providers dynamically generate drivers based on package information

@@ -26,6 +26,7 @@ const (
 	TypeSUSE       Type = "suse"
 	TypeUbuntu     Type = "ubuntu"
 	TypeUbuntuESM  Type = "ubuntu-esm"
+	TypeCoreOS     Type = "coreos"
 
 	// OS Package
 	TypeApk                   Type = "apk"
@@ -156,6 +157,7 @@ var (
 		TypeAlpine,
 		TypeAmazon,
 		TypeCBLMariner,
+		TypeCoreOS,
 		TypeDebian,
 		TypePhoton,
 		TypeCentOS,
