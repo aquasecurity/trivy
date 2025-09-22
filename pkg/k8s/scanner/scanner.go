@@ -96,6 +96,7 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 	if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) && !s.opts.SkipImages {
 		onItem := func(ctx context.Context, artifact *artifacts.Artifact) ([]report.Resource, error) {
 			opts := s.opts
+			opts.CacheBackend = "memory" // use in-memory cache for parallel scan
 			opts.Credentials = make([]ftypes.Credential, len(s.opts.Credentials))
 			copy(opts.Credentials, s.opts.Credentials)
 			// add image private registry credential auto detected from workload imagePullsecret / serviceAccount
