@@ -166,8 +166,9 @@ func normalizeCopyCreatedBy(input string) string {
 // Legacy Dockerfiles may use ENV in the form: "ENV key val1 val2".
 // Docker stores this in image history as: "ENV key=val1 val2".
 // This can cause parsing errors, because extra tokens are treated as separate keys.
-// restoreEnvLine converts such lines into a valid "key=value" format
+// restoreEnvLine converts such lines into a valid `ENV <key>="<value>"` format
 // and wraps the value in quotes to preserve internal spaces and tabs.
+// e.g. `ENV tags=latest v0.0.0` -> `ENV key="latest v0.0.0"`
 func restoreEnvLine(createdBy string) string {
 	k, v, ok := strings.Cut(createdBy, "=")
 	if !ok {
