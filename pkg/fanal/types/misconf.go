@@ -68,13 +68,13 @@ type Line struct {
 
 type PolicyMetadata struct {
 	ID                 string   `json:",omitempty"`
-	AVDID              string   `json:",omitempty"`
 	Type               string   `json:",omitempty"`
 	Title              string   `json:",omitempty"`
 	Description        string   `json:",omitempty"`
 	Severity           string   `json:",omitempty"`
 	RecommendedActions string   `json:",omitempty" mapstructure:"recommended_actions"`
 	References         []string `json:",omitempty"`
+	Aliases            []string `json:"-"`
 }
 
 type PolicyInputOption struct {
@@ -98,8 +98,6 @@ func (r MisconfResults) Less(i, j int) bool {
 	switch {
 	case r[i].Type != r[j].Type:
 		return r[i].Type < r[j].Type
-	case r[i].AVDID != r[j].AVDID:
-		return r[i].AVDID < r[j].AVDID
 	case r[i].ID != r[j].ID:
 		return r[i].ID < r[j].ID
 	case r[i].Severity != r[j].Severity:

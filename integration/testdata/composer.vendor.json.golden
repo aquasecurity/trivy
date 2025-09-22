@@ -3,18 +3,6 @@
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/composer-vendor",
   "ArtifactType": "filesystem",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "installed.json",
@@ -36,7 +24,6 @@
             "psr/http-message@1.1",
             "ralouphie/getallheaders@3.0.3"
           ],
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 3,
@@ -55,7 +42,6 @@
           "Licenses": [
             "MIT"
           ],
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 116,
@@ -74,7 +60,6 @@
           "Licenses": [
             "MIT"
           ],
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 172,
@@ -95,7 +80,6 @@
           "InstalledVersion": "1.8.3",
           "FixedVersion": "1.8.4",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-24775",
           "DataSource": {

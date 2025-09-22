@@ -27,7 +27,7 @@ func TestJSONWriter_Write(t *testing.T) {
 					{
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
-								AVDID:  "AVD-KSV012",
+								ID:     "KSV-0012",
 								Status: types.MisconfStatusFailure,
 							},
 						},
@@ -42,7 +42,7 @@ func TestJSONWriter_Write(t *testing.T) {
 					{
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
-								AVDID:  "AVD-KSV013",
+								ID:     "KSV-0013",
 								Status: types.MisconfStatusFailure,
 							},
 						},

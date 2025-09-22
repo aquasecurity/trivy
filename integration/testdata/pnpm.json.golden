@@ -3,18 +3,6 @@
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/pnpm",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "pnpm-lock.yaml",
@@ -32,8 +20,7 @@
           "Licenses": [
             "MIT"
           ],
-          "Relationship": "direct",
-          "Layer": {}
+          "Relationship": "direct"
         },
         {
           "ID": "lodash@4.17.4",
@@ -46,8 +33,7 @@
           "Licenses": [
             "MIT"
           ],
-          "Relationship": "direct",
-          "Layer": {}
+          "Relationship": "direct"
         }
       ],
       "Vulnerabilities": [
@@ -62,7 +48,6 @@
           "InstalledVersion": "3.3.9",
           "FixedVersion": "3.4.0",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11358",
           "DataSource": {
@@ -195,7 +180,6 @@
           "InstalledVersion": "4.17.4",
           "FixedVersion": "4.17.12",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-10744",
           "DataSource": {

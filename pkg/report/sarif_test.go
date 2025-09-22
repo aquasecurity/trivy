@@ -197,20 +197,20 @@ func TestReportWriter_Sarif(t *testing.T) {
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
 								Type:       "Kubernetes Security Check",
-								ID:         "KSV001",
+								ID:         "KSV-0001",
 								Title:      "Image tag ':latest' used",
 								Message:    "Message",
 								Severity:   "HIGH",
-								PrimaryURL: "https://avd.aquasec.com/appshield/ksv001",
+								PrimaryURL: "https://avd.aquasec.com/appshield/KSV-0001",
 								Status:     types.MisconfStatusFailure,
 							},
 							{
 								Type:       "Kubernetes Security Check",
-								ID:         "KSV002",
+								ID:         "KSV-0002",
 								Title:      "SYS_ADMIN capability added",
 								Message:    "Message",
 								Severity:   "CRITICAL",
-								PrimaryURL: "https://avd.aquasec.com/appshield/ksv002",
+								PrimaryURL: "https://avd.aquasec.com/appshield/KSV-0002",
 								Status:     types.MisconfStatusPassed,
 							},
 						},
@@ -230,14 +230,14 @@ func TestReportWriter_Sarif(t *testing.T) {
 								InformationURI: lo.ToPtr("https://github.com/aquasecurity/trivy"),
 								Rules: []*sarif.ReportingDescriptor{
 									{
-										ID:               "KSV001",
+										ID:               "KSV-0001",
 										Name:             lo.ToPtr("Misconfiguration"),
 										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("Image tag ':latest' used")},
 										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("")},
 										DefaultConfiguration: &sarif.ReportingConfiguration{
 											Level: "error",
 										},
-										HelpURI: lo.ToPtr("https://avd.aquasec.com/appshield/ksv001"),
+										HelpURI: lo.ToPtr("https://avd.aquasec.com/appshield/KSV-0001"),
 										Properties: map[string]any{
 											"tags": []any{
 												"misconfiguration",
@@ -248,19 +248,19 @@ func TestReportWriter_Sarif(t *testing.T) {
 											"security-severity": "8.0",
 										},
 										Help: &sarif.MultiformatMessageString{
-											Text:     lo.ToPtr("Misconfiguration KSV001\nType: Kubernetes Security Check\nSeverity: HIGH\nCheck: Image tag ':latest' used\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)\n"),
-											Markdown: lo.ToPtr("**Misconfiguration KSV001**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Kubernetes Security Check|HIGH|Image tag ':latest' used|Message|[KSV001](https://avd.aquasec.com/appshield/ksv001)|\n\n"),
+											Text:     lo.ToPtr("Misconfiguration KSV-0001\nType: Kubernetes Security Check\nSeverity: HIGH\nCheck: Image tag ':latest' used\nMessage: Message\nLink: [KSV-0001](https://avd.aquasec.com/appshield/KSV-0001)\n"),
+											Markdown: lo.ToPtr("**Misconfiguration KSV-0001**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Kubernetes Security Check|HIGH|Image tag ':latest' used|Message|[KSV-0001](https://avd.aquasec.com/appshield/KSV-0001)|\n\n"),
 										},
 									},
 									{
-										ID:               "KSV002",
+										ID:               "KSV-0002",
 										Name:             lo.ToPtr("Misconfiguration"),
 										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("SYS_ADMIN capability added")},
 										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("")},
 										DefaultConfiguration: &sarif.ReportingConfiguration{
 											Level: "error",
 										},
-										HelpURI: lo.ToPtr("https://avd.aquasec.com/appshield/ksv002"),
+										HelpURI: lo.ToPtr("https://avd.aquasec.com/appshield/KSV-0002"),
 										Properties: map[string]any{
 											"tags": []any{
 												"misconfiguration",
@@ -271,8 +271,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 											"security-severity": "9.5",
 										},
 										Help: &sarif.MultiformatMessageString{
-											Text:     lo.ToPtr("Misconfiguration KSV002\nType: Kubernetes Security Check\nSeverity: CRITICAL\nCheck: SYS_ADMIN capability added\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)\n"),
-											Markdown: lo.ToPtr("**Misconfiguration KSV002**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Kubernetes Security Check|CRITICAL|SYS_ADMIN capability added|Message|[KSV002](https://avd.aquasec.com/appshield/ksv002)|\n\n"),
+											Text:     lo.ToPtr("Misconfiguration KSV-0002\nType: Kubernetes Security Check\nSeverity: CRITICAL\nCheck: SYS_ADMIN capability added\nMessage: Message\nLink: [KSV-0002](https://avd.aquasec.com/appshield/KSV-0002)\n"),
+											Markdown: lo.ToPtr("**Misconfiguration KSV-0002**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Kubernetes Security Check|CRITICAL|SYS_ADMIN capability added|Message|[KSV-0002](https://avd.aquasec.com/appshield/KSV-0002)|\n\n"),
 										},
 									},
 								},
@@ -280,10 +280,10 @@ func TestReportWriter_Sarif(t *testing.T) {
 						},
 						Results: []*sarif.Result{
 							{
-								RuleID:    lo.ToPtr("KSV001"),
+								RuleID:    lo.ToPtr("KSV-0001"),
 								RuleIndex: lo.ToPtr[uint](0),
 								Level:     lo.ToPtr("error"),
-								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test 1\nType: \nVulnerability KSV001\nSeverity: HIGH\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)")},
+								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test 1\nType: \nVulnerability KSV-0001\nSeverity: HIGH\nMessage: Message\nLink: [KSV-0001](https://avd.aquasec.com/appshield/KSV-0001)")},
 								Locations: []*sarif.Location{
 									{
 										Message: &sarif.Message{Text: lo.ToPtr("library/test 1")},
@@ -303,10 +303,10 @@ func TestReportWriter_Sarif(t *testing.T) {
 								},
 							},
 							{
-								RuleID:    lo.ToPtr("KSV002"),
+								RuleID:    lo.ToPtr("KSV-0002"),
 								RuleIndex: lo.ToPtr[uint](1),
 								Level:     lo.ToPtr("error"),
-								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test 1\nType: \nVulnerability KSV002\nSeverity: CRITICAL\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)")},
+								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test 1\nType: \nVulnerability KSV-0002\nSeverity: CRITICAL\nMessage: Message\nLink: [KSV-0002](https://avd.aquasec.com/appshield/KSV-0002)")},
 								Locations: []*sarif.Location{
 									{
 										Message: &sarif.Message{Text: lo.ToPtr("library/test 1")},
@@ -557,18 +557,17 @@ func TestReportWriter_Sarif(t *testing.T) {
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
 								Type:        "Terraform Security Check",
-								ID:          "AVD-GCP-0007",
-								AVDID:       "AVD-GCP-0007",
+								ID:          "GCP-0007",
 								Title:       "Service accounts should not have roles assigned with excessive privileges",
 								Description: "Service accounts should have a minimal set of permissions assigned in order to do their job. They should never have excessive access as if compromised, an attacker can escalate privileges and take over the entire account.",
 								Message:     "Service account is granted a privileged role.",
 								Query:       "data..",
 								Resolution:  "Limit service account access to minimal required set",
 								Severity:    "HIGH",
-								PrimaryURL:  "https://avd.aquasec.com/misconfig/avd-gcp-0007",
+								PrimaryURL:  "https://avd.aquasec.com/misconfig/gcp-0007",
 								References: []string{
 									"https://cloud.google.com/iam/docs/understanding-roles",
-									"https://avd.aquasec.com/misconfig/avd-gcp-0007",
+									"https://avd.aquasec.com/misconfig/gcp-0007",
 								},
 								Status: "Fail",
 								CauseMetadata: ftypes.CauseMetadata{
@@ -595,18 +594,17 @@ func TestReportWriter_Sarif(t *testing.T) {
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
 								Type:        "Terraform Security Check",
-								ID:          "AVD-GCP-0007",
-								AVDID:       "AVD-GCP-0007",
+								ID:          "GCP-0007",
 								Title:       "Service accounts should not have roles assigned with excessive privileges",
 								Description: "Service accounts should have a minimal set of permissions assigned in order to do their job. They should never have excessive access as if compromised, an attacker can escalate privileges and take over the entire account.",
 								Message:     "Service account is granted a privileged role.",
 								Query:       "data..",
 								Resolution:  "Limit service account access to minimal required set",
 								Severity:    "HIGH",
-								PrimaryURL:  "https://avd.aquasec.com/misconfig/avd-gcp-0007",
+								PrimaryURL:  "https://avd.aquasec.com/misconfig/gcp-0007",
 								References: []string{
 									"https://cloud.google.com/iam/docs/understanding-roles",
-									"https://avd.aquasec.com/misconfig/avd-gcp-0007",
+									"https://avd.aquasec.com/misconfig/gcp-0007",
 								},
 								Status: "Fail",
 								CauseMetadata: ftypes.CauseMetadata{
@@ -641,17 +639,17 @@ func TestReportWriter_Sarif(t *testing.T) {
 								InformationURI: lo.ToPtr("https://github.com/aquasecurity/trivy"),
 								Rules: []*sarif.ReportingDescriptor{
 									{
-										ID:               "AVD-GCP-0007",
+										ID:               "GCP-0007",
 										Name:             lo.ToPtr("Misconfiguration"),
 										ShortDescription: sarif.NewMultiformatMessageString("Service accounts should not have roles assigned with excessive privileges"),
 										FullDescription:  sarif.NewMultiformatMessageString("Service accounts should have a minimal set of permissions assigned in order to do their job. They should never have excessive access as if compromised, an attacker can escalate privileges and take over the entire account."),
 										DefaultConfiguration: &sarif.ReportingConfiguration{
 											Level: "error",
 										},
-										HelpURI: lo.ToPtr("https://avd.aquasec.com/misconfig/avd-gcp-0007"),
+										HelpURI: lo.ToPtr("https://avd.aquasec.com/misconfig/gcp-0007"),
 										Help: &sarif.MultiformatMessageString{
-											Text:     lo.ToPtr("Misconfiguration AVD-GCP-0007\nType: Terraform Security Check\nSeverity: HIGH\nCheck: Service accounts should not have roles assigned with excessive privileges\nMessage: Service account is granted a privileged role.\nLink: [AVD-GCP-0007](https://avd.aquasec.com/misconfig/avd-gcp-0007)\nService accounts should have a minimal set of permissions assigned in order to do their job. They should never have excessive access as if compromised, an attacker can escalate privileges and take over the entire account."),
-											Markdown: lo.ToPtr("**Misconfiguration AVD-GCP-0007**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Terraform Security Check|HIGH|Service accounts should not have roles assigned with excessive privileges|Service account is granted a privileged role.|[AVD-GCP-0007](https://avd.aquasec.com/misconfig/avd-gcp-0007)|\n\nService accounts should have a minimal set of permissions assigned in order to do their job. They should never have excessive access as if compromised, an attacker can escalate privileges and take over the entire account."),
+											Text:     lo.ToPtr("Misconfiguration GCP-0007\nType: Terraform Security Check\nSeverity: HIGH\nCheck: Service accounts should not have roles assigned with excessive privileges\nMessage: Service account is granted a privileged role.\nLink: [GCP-0007](https://avd.aquasec.com/misconfig/gcp-0007)\nService accounts should have a minimal set of permissions assigned in order to do their job. They should never have excessive access as if compromised, an attacker can escalate privileges and take over the entire account."),
+											Markdown: lo.ToPtr("**Misconfiguration GCP-0007**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Terraform Security Check|HIGH|Service accounts should not have roles assigned with excessive privileges|Service account is granted a privileged role.|[GCP-0007](https://avd.aquasec.com/misconfig/gcp-0007)|\n\nService accounts should have a minimal set of permissions assigned in order to do their job. They should never have excessive access as if compromised, an attacker can escalate privileges and take over the entire account."),
 										},
 										Properties: sarif.Properties{
 											"tags": []any{
@@ -668,10 +666,10 @@ func TestReportWriter_Sarif(t *testing.T) {
 						),
 						Results: []*sarif.Result{
 							{
-								RuleID:    lo.ToPtr("AVD-GCP-0007"),
+								RuleID:    lo.ToPtr("GCP-0007"),
 								RuleIndex: lo.ToPtr(uint(0)),
 								Level:     lo.ToPtr("error"),
-								Message:   *sarif.NewTextMessage("Artifact: github.com/terraform-google-modules/terraform-google-kubernetes-engine?ref=c4809044b52b91505bfba5ef9f25526aa0361788/modules/workload-identity/main.tf\nType: terraform\nVulnerability AVD-GCP-0007\nSeverity: HIGH\nMessage: Service account is granted a privileged role.\nLink: [AVD-GCP-0007](https://avd.aquasec.com/misconfig/avd-gcp-0007)"),
+								Message:   *sarif.NewTextMessage("Artifact: github.com/terraform-google-modules/terraform-google-kubernetes-engine?ref=c4809044b52b91505bfba5ef9f25526aa0361788/modules/workload-identity/main.tf\nType: terraform\nVulnerability GCP-0007\nSeverity: HIGH\nMessage: Service account is granted a privileged role.\nLink: [GCP-0007](https://avd.aquasec.com/misconfig/gcp-0007)"),
 								Locations: []*sarif.Location{
 									{
 										PhysicalLocation: sarif.NewPhysicalLocation().
@@ -694,10 +692,10 @@ func TestReportWriter_Sarif(t *testing.T) {
 								},
 							},
 							{
-								RuleID:    lo.ToPtr("AVD-GCP-0007"),
+								RuleID:    lo.ToPtr("GCP-0007"),
 								RuleIndex: lo.ToPtr(uint(0)),
 								Level:     lo.ToPtr("error"),
-								Message:   *sarif.NewTextMessage("Artifact: github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf\nType: terraform\nVulnerability AVD-GCP-0007\nSeverity: HIGH\nMessage: Service account is granted a privileged role.\nLink: [AVD-GCP-0007](https://avd.aquasec.com/misconfig/avd-gcp-0007)"),
+								Message:   *sarif.NewTextMessage("Artifact: github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf\nType: terraform\nVulnerability GCP-0007\nSeverity: HIGH\nMessage: Service account is granted a privileged role.\nLink: [GCP-0007](https://avd.aquasec.com/misconfig/gcp-0007)"),
 								Locations: []*sarif.Location{
 									{
 										PhysicalLocation: sarif.NewPhysicalLocation().

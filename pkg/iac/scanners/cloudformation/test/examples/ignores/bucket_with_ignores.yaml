@@ -16,7 +16,7 @@ Resources:
         Ref: BucketName
       PublicAccessBlockConfiguration:
         BlockPublicAcls: false
-        BlockPublicPolicy: false # cfsec:ignore:AVD-AWS-0087
+        BlockPublicPolicy: false # cfsec:ignore:AWS-0087
         IgnorePublicAcls: true
         RestrictPublicBuckets: false
       BucketEncryption:
