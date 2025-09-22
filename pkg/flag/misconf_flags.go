@@ -116,7 +116,7 @@ var (
 		Name:       "render-cause",
 		ConfigName: "misconfiguration.render-cause",
 		Usage:      "specify configuration types for which the rendered causes will be shown in the table report",
-		Values:     xstrings.ToStringSlice([]types.ConfigType{types.Terraform}), // TODO: add Plan and JSON?
+		Values:     xstrings.ToStringSlice([]types.ConfigType{types.Terraform, types.Ansible}), // TODO: add Plan and JSON?
 		Default:    []string{},
 	}
 	RawConfigScanners = Flag[[]string]{
@@ -125,6 +125,21 @@ var (
 		Usage:      "specify the types of scanners that will also scan raw configurations. For example, scanners will scan a non-adapted configuration into a shared state",
 		Values:     xstrings.ToStringSlice([]types.ConfigType{types.Terraform}),
 		Default:    []string{},
+	}
+	AnsiblePlaybooks = Flag[[]string]{
+		Name:       "ansible-playbook",
+		ConfigName: "ansible.playbooks",
+		Usage:      "specify playbook file path(s) to scan",
+	}
+	AnsibleInventories = Flag[[]string]{
+		Name:       "ansible-inventory",
+		ConfigName: "ansible.inventories",
+		Usage:      "specify inventory host path or comma separated host list",
+	}
+	AnsibleExtraVars = Flag[[]string]{
+		Name:       "ansible-extra-vars",
+		ConfigName: "ansible.extra-vars",
+		Usage:      "set additional variables as key=value or @file (YAML/JSON)",
 	}
 )
 
@@ -148,6 +163,10 @@ type MisconfFlagGroup struct {
 	ConfigFileSchemas          *Flag[[]string]
 	RenderCause                *Flag[[]string]
 	RawConfigScanners          *Flag[[]string]
+
+	AnsiblePlaybooks   *Flag[[]string]
+	AnsibleInventories *Flag[[]string]
+	AnsibleExtraVars   *Flag[[]string]
 }
 
 type MisconfOptions struct {
@@ -169,6 +188,10 @@ type MisconfOptions struct {
 	ConfigFileSchemas       []string
 	RenderCause             []types.ConfigType
 	RawConfigScanners       []types.ConfigType
+
+	AnsiblePlaybooks   []string
+	AnsibleInventories []string
+	AnsibleExtraVars   []string
 }
 
 func NewMisconfFlagGroup() *MisconfFlagGroup {
@@ -190,6 +213,10 @@ func NewMisconfFlagGroup() *MisconfFlagGroup {
 		ConfigFileSchemas:          ConfigFileSchemasFlag.Clone(),
 		RenderCause:                RenderCauseFlag.Clone(),
 		RawConfigScanners:          RawConfigScanners.Clone(),
+
+		AnsiblePlaybooks:   AnsiblePlaybooks.Clone(),
+		AnsibleInventories: AnsibleInventories.Clone(),
+		AnsibleExtraVars:   AnsibleExtraVars.Clone(),
 	}
 }
 
@@ -215,6 +242,9 @@ func (f *MisconfFlagGroup) Flags() []Flagger {
 		f.ConfigFileSchemas,
 		f.RenderCause,
 		f.RawConfigScanners,
+		f.AnsiblePlaybooks,
+		f.AnsibleInventories,
+		f.AnsibleExtraVars,
 	}
 }
 
@@ -236,6 +266,9 @@ func (f *MisconfFlagGroup) ToOptions(opts *Options) error {
 		ConfigFileSchemas:       f.ConfigFileSchemas.Value(),
 		RenderCause:             xstrings.ToTSlice[types.ConfigType](f.RenderCause.Value()),
 		RawConfigScanners:       xstrings.ToTSlice[types.ConfigType](f.RawConfigScanners.Value()),
+		AnsiblePlaybooks:        f.AnsiblePlaybooks.Value(),
+		AnsibleInventories:      f.AnsibleInventories.Value(),
+		AnsibleExtraVars:        f.AnsibleExtraVars.Value(),
 	}
 	return nil
 }
