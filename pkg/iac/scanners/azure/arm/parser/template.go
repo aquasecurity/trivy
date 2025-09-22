@@ -2,6 +2,7 @@ package parser
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io/fs"
 	"iter"
@@ -30,7 +31,7 @@ type Template struct {
 	Parameters     map[string]Parameter   `json:"parameters"`
 	Variables      map[string]azure.Value `json:"variables"`
 	Functions      []Function             `json:"functions"`
-	Resources      []Resource             `json:"resources"`
+	Resources      Resources              `json:"resources"`
 	Outputs        map[string]azure.Value `json:"outputs"`
 }
 
@@ -70,7 +71,42 @@ type innerResource struct {
 	Tags       azure.Value `json:"tags"`
 	Sku        azure.Value `json:"sku"`
 	Properties azure.Value `json:"properties"`
-	Resources  []Resource  `json:"resources"`
+	Resources  Resources   `json:"resources"`
+}
+
+// Resources is a collection of Resource items that can be represented in ARM
+// templates either as an array or as a map (e.g., Bicep modules). This custom
+// unmarshaler normalizes both forms into a flat slice.
+type Resources []Resource
+
+func (r *Resources) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	switch dec.PeekKind() {
+	case '[':
+		var arr []Resource
+		if err := json.UnmarshalDecode(dec, &arr); err != nil {
+			return err
+		}
+		*r = arr
+	case '{':
+		var m map[string]Resource
+		if err := json.UnmarshalDecode(dec, &m); err != nil {
+			return err
+		}
+		res := make([]Resource, 0, len(m))
+		for _, v := range m {
+			res = append(res, v)
+		}
+		*r = res
+	case 'n':
+		// null
+		if err := json.UnmarshalDecode(dec, new(any)); err != nil {
+			return err
+		}
+		*r = nil
+	default:
+		return errors.New("unexpected JSON token for resources")
+	}
+	return nil
 }
 
 func ParseTemplate(fsys fs.FS, path string) (*Template, error) {
@@ -87,81 +123,6 @@ func ParseTemplate(fsys fs.FS, path string) (*Template, error) {
 		entries: make(map[jsontext.Pointer]*types.Metadata),
 	}
 
-	// First, check if resources is a dictionary or array
-	var rawTemplate struct {
-		Resources any `json:"resources"`
-	}
-
-	if err := json.UnmarshalRead(lr, &rawTemplate); err != nil {
-		return nil, fmt.Errorf("unmarshal template: %w", err)
-	}
-
-	// Reset the reader for full parsing
-	lr = xjson.NewLineReader(bytes.NewReader(xjson.ToRFC8259(data)))
-
-	// Check if resources is a dictionary (Bicep modules)
-	if resourcesMap, ok := rawTemplate.Resources.(map[string]any); ok && len(resourcesMap) > 0 {
-		// Handle dictionary resources (Bicep modules) - parse the full template manually
-		var rawFullTemplate struct {
-			Schema         azure.Value            `json:"$schema"`
-			ContentVersion azure.Value            `json:"contentVersion"`
-			APIProfile     azure.Value            `json:"apiProfile"`
-			Parameters     map[string]Parameter   `json:"parameters"`
-			Variables      map[string]azure.Value `json:"variables"`
-			Functions      []Function             `json:"functions"`
-			Resources      map[string]any         `json:"resources"`
-			Outputs        map[string]azure.Value `json:"outputs"`
-		}
-
-		if err := json.UnmarshalRead(lr, &rawFullTemplate, json.WithUnmarshalers(
-			xjson.UnmarshalerWithLocation[MetadataReceiver](lr, func() xjson.DecodeHook {
-				return xjson.DecodeHook{
-					After: mc.After,
-				}
-			}()),
-		)); err != nil {
-			return nil, fmt.Errorf("unmarshal template: %w", err)
-		}
-
-		// Convert dictionary resources to array
-		var resources []Resource
-		for name, resourceData := range rawFullTemplate.Resources {
-			if resourceMap, ok := resourceData.(map[string]any); ok {
-				resource := convertMapToResource(resourceMap, 0)
-				// Set the name from the dictionary key if not already set
-				if resource.Name.Raw() == nil {
-					resource.Name = azure.NewValue(name, types.NewMetadata(
-						types.NewRange(path, 0, 0, "", fsys),
-						"",
-					))
-				}
-				resources = append(resources, resource)
-			}
-		}
-
-		// Create the final template
-		rootMetadata := types.NewMetadata(
-			types.NewRange(path, 0, 0, "", fsys),
-			"",
-		).WithInternal(resolver.NewResolver())
-
-		template := Template{
-			Metadata:       &rootMetadata,
-			Schema:         rawFullTemplate.Schema,
-			ContentVersion: rawFullTemplate.ContentVersion,
-			APIProfile:     rawFullTemplate.APIProfile,
-			Parameters:     rawFullTemplate.Parameters,
-			Variables:      rawFullTemplate.Variables,
-			Functions:      rawFullTemplate.Functions,
-			Resources:      resources,
-			Outputs:        rawFullTemplate.Outputs,
-		}
-
-		mc.linkParentMetadata()
-		return &template, nil
-	}
-
-	// Handle array resources (standard ARM templates)
 	var template Template
 	if err := json.UnmarshalRead(lr, &template, json.WithUnmarshalers(
 		xjson.UnmarshalerWithLocation[MetadataReceiver](lr, func() xjson.DecodeHook {
@@ -226,53 +187,8 @@ func (c *metadataCollector) findClosestValidParent(path jsontext.Pointer) (jsont
 	}
 }
 
-func convertMapToResource(resourceMap map[string]any, _ int) Resource {
-	// Create a basic resource with metadata
-	metadata := types.NewMetadata(
-		types.NewRange("", 0, 0, "", nil),
-		"",
-	)
-
-	resource := Resource{
-		Metadata: &metadata,
-		innerResource: innerResource{
-			APIVersion: convertToAzureValue(resourceMap["apiVersion"]),
-			Type:       convertToAzureValue(resourceMap["type"]),
-			Kind:       convertToAzureValue(resourceMap["kind"]),
-			Name:       convertToAzureValue(resourceMap["name"]),
-			Location:   convertToAzureValue(resourceMap["location"]),
-			Tags:       convertToAzureValue(resourceMap["tags"]),
-			Sku:        convertToAzureValue(resourceMap["sku"]),
-			Properties: convertToAzureValue(resourceMap["properties"]),
-			Resources:  []Resource{}, // Will be populated if needed
-		},
-	}
-
-	// Handle nested resources if they exist
-	if nestedResources, ok := resourceMap["resources"].([]any); ok {
-		for i, nestedResourceData := range nestedResources {
-			if nestedResourceMap, ok := nestedResourceData.(map[string]any); ok {
-				nestedResource := convertMapToResource(nestedResourceMap, i)
-				resource.Resources = append(resource.Resources, nestedResource)
-			}
-		}
-	}
-
-	return resource
-}
-
-func convertToAzureValue(value any) azure.Value {
-	if value == nil {
-		return azure.Value{}
-	}
-
-	metadata := types.NewMetadata(
-		types.NewRange("", 0, 0, "", nil),
-		"",
-	)
-
-	return azure.NewValue(value, metadata)
-}
+// The following helpers were used by the old map-based resources handling and
+// are no longer needed as Resources.UnmarshalJSONFrom normalizes inputs.
 
 func buildNodeRef(seq iter.Seq[string]) string {
 	var sb strings.Builder
