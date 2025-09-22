@@ -482,3 +482,158 @@ Resources:
 
 	assert.True(t, res.GetProperty("PublicAccessBlockConfiguration.BlockPublicAcls").IsNil())
 }
+
+func Test_ExpandForEachYAML(t *testing.T) {
+	source := `AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::LanguageExtensions
+Parameters:
+  TopicNamesParam:
+    Type: CommaDelimitedList
+    Default: Success,Failure
+Mappings:
+  Success:
+    Properties:
+      DisplayName: success
+      FifoTopic: true
+  Failure:
+    Properties:
+      DisplayName: failure
+      FifoTopic: false
+Resources:
+  'Fn::ForEach::Topics':
+    - TopicName
+    - !Split [",", !Ref TopicNamesParam]
+    - 'SnsTopic${TopicName}':
+        Type: 'AWS::SNS::Topic'
+        Properties:
+          TopicName: !Sub '${TopicName}.fifo'
+          'Fn::ForEach::Properties':
+          - PropertyName
+          - [DisplayName, FifoTopic]
+          - '${PropertyName}':
+             'Fn::FindInMap':
+               - Ref: 'TopicName'
+               - Properties
+               - Ref: 'PropertyName'
+      'Fn::ForEach::Subscriptions':
+      - SubName
+      - ['Alpha', 'Beta']
+      - 'SnsSubscription${TopicName}${SubName}':
+          Type: 'AWS::SNS::Subscription'
+          Properties:
+            TopicArn: !Ref 'SnsTopic${TopicName}'
+            Protocol: email
+            Endpoint: !Sub '${SubName}@example.com'
+`
+
+	files, err := parseFile(t, source, "cf.yaml")
+	require.NoError(t, err)
+	file := files[0]
+
+	assert.Len(t, file.Resources, 6)
+
+	tests := []struct {
+		LogicalID string
+		Props     map[string]any
+	}{
+		// SnsTopic
+		{
+			"SnsTopicSuccess",
+			map[string]any{
+				"TopicName":   "Success.fifo",
+				"DisplayName": "success",
+				"FifoTopic":   true,
+			},
+		},
+		{
+			"SnsTopicFailure",
+			map[string]any{
+				"TopicName":   "Failure.fifo",
+				"DisplayName": "failure",
+				"FifoTopic":   false,
+			},
+		},
+		// SnsSubscription
+		{
+			"SnsSubscriptionSuccessAlpha",
+			map[string]any{
+				"TopicArn": "SnsTopicSuccess",
+				"Protocol": "email",
+				"Endpoint": "Alpha@example.com",
+			},
+		},
+		{
+			"SnsSubscriptionSuccessBeta",
+			map[string]any{
+				"TopicArn": "SnsTopicSuccess",
+				"Protocol": "email",
+				"Endpoint": "Beta@example.com",
+			},
+		},
+		{
+			"SnsSubscriptionFailureAlpha",
+			map[string]any{
+				"TopicArn": "SnsTopicFailure",
+				"Protocol": "email",
+				"Endpoint": "Alpha@example.com",
+			},
+		},
+		{
+			"SnsSubscriptionFailureBeta",
+			map[string]any{
+				"TopicArn": "SnsTopicFailure",
+				"Protocol": "email",
+				"Endpoint": "Beta@example.com",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.LogicalID, func(t *testing.T) {
+			res, ok := file.Resources[tt.LogicalID]
+			require.True(t, ok)
+			for propName, expected := range tt.Props {
+				prop := res.GetProperty(propName)
+				assert.Equal(t, expected, prop.RawValue())
+			}
+		})
+	}
+}
+
+func Test_ExpandForEachJSON(t *testing.T) {
+	source := `{
+		"AWSTemplateFormatVersion": "2010-09-09",
+		"Transform": "AWS::LanguageExtensions",
+		"Resources": {
+			"Fn::ForEach::Buckets": [
+				"Suffix",
+				["A", "B"],
+				{
+					"S3Bucket${Suffix}": {
+						"Type": "AWS::S3::Bucket",
+						"Properties": {
+							"BucketName": { "Fn::Sub": "bucket-${Suffix}" }
+						}
+					}
+				}
+			]
+		}
+	}`
+
+	files, err := parseFile(t, source, "cf.json")
+	require.NoError(t, err)
+	require.Len(t, files, 1)
+
+	file := files[0]
+	require.Len(t, file.Resources, 2)
+
+	b1, ok := file.Resources["S3BucketA"]
+	require.True(t, ok)
+	assert.Equal(t, "AWS::S3::Bucket", b1.Type())
+	assert.Equal(t, "bucket-A", b1.GetProperty("BucketName").AsString())
+
+	b2, ok := file.Resources["S3BucketB"]
+	require.True(t, ok)
+	assert.Equal(t, "AWS::S3::Bucket", b2.Type())
+	assert.Equal(t, "bucket-B", b2.GetProperty("BucketName").AsString())
+}

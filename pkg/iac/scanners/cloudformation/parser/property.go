@@ -33,10 +33,8 @@ type Property struct {
 	parentRange iacTypes.Range
 	logicalId   string
 	unresolved  bool
-}
 
-func (p *Property) Comment() string {
-	return p.comment
+	loopCtx *LoopContext
 }
 
 func (p *Property) setName(name string) {
@@ -52,22 +50,17 @@ func (p *Property) setName(name string) {
 }
 
 func (p *Property) setContext(ctx *FileContext) {
-	p.ctx = ctx
+	p.walk(func(prop *Property) bool {
+		prop.ctx = ctx
+		return true
+	})
+}
 
-	if p.IsMap() {
-		for _, subProp := range p.AsMap() {
-			if subProp == nil {
-				continue
-			}
-			subProp.setContext(ctx)
-		}
-	}
-
-	if p.IsList() {
-		for _, subProp := range p.AsList() {
-			subProp.setContext(ctx)
-		}
-	}
+func (p *Property) setLogicalResource(id string) {
+	p.walk(func(prop *Property) bool {
+		prop.logicalId = id
+		return !prop.isFunction()
+	})
 }
 
 func (p *Property) setFileAndParentRange(target fs.FS, filepath string, parentRange iacTypes.Range) {
@@ -80,16 +73,53 @@ func (p *Property) setFileAndParentRange(target fs.FS, filepath string, parentRa
 			if subProp == nil {
 				continue
 			}
-			subProp.setFileAndParentRange(target, filepath, parentRange)
+			subProp.setFileAndParentRange(target, filepath, p.rng)
 		}
 	case cftypes.List:
 		for _, subProp := range p.AsList() {
 			if subProp == nil {
 				continue
 			}
-			subProp.setFileAndParentRange(target, filepath, parentRange)
+			subProp.setFileAndParentRange(target, filepath, p.rng)
 		}
 	}
+}
+
+func (p *Property) clone() *Property {
+	if p == nil {
+		return nil
+	}
+
+	clone := &Property{
+		Location:    p.Location,
+		ctx:         p.ctx,
+		Type:        p.Type,
+		name:        p.name,
+		comment:     p.comment,
+		rng:         p.rng,
+		parentRange: p.parentRange,
+		logicalId:   p.logicalId,
+		unresolved:  p.unresolved,
+	}
+
+	switch v := p.Value.(type) {
+	case map[string]*Property:
+		m := make(map[string]*Property, len(v))
+		for k, el := range v {
+			m[k] = el.clone()
+		}
+		clone.Value = m
+	case []*Property:
+		slice := make([]*Property, len(v))
+		for i, el := range v {
+			slice[i] = el.clone()
+		}
+		clone.Value = slice
+	default:
+		clone.Value = v
+	}
+
+	return clone
 }
 
 func (p *Property) UnmarshalYAML(node *yaml.Node) error {
@@ -301,17 +331,10 @@ func (p *Property) GetProperty(path string) *Property {
 }
 
 func (p *Property) deriveResolved(propType cftypes.CfType, propValue any) *Property {
-	return &Property{
-		Location:    p.Location,
-		Value:       propValue,
-		Type:        propType,
-		ctx:         p.ctx,
-		name:        p.name,
-		comment:     p.comment,
-		rng:         p.rng,
-		parentRange: p.parentRange,
-		logicalId:   p.logicalId,
-	}
+	clone := p.clone()
+	clone.Type = propType
+	clone.Value = propValue
+	return clone
 }
 
 func (p *Property) ParentRange() iacTypes.Range {
@@ -361,29 +384,6 @@ func (p *Property) String() string {
 		r = strconv.Itoa(p.AsInt())
 	}
 	return r
-}
-
-func (p *Property) setLogicalResource(id string) {
-	p.logicalId = id
-
-	if p.isFunction() {
-		return
-	}
-
-	if p.IsMap() {
-		for _, subProp := range p.AsMap() {
-			if subProp == nil {
-				continue
-			}
-			subProp.setLogicalResource(id)
-		}
-	}
-
-	if p.IsList() {
-		for _, subProp := range p.AsList() {
-			subProp.setLogicalResource(id)
-		}
-	}
 }
 
 func (p *Property) GetJsonBytes(squashList ...bool) []byte {
@@ -457,4 +457,29 @@ func (p *Property) inferType() {
 		return
 	}
 	p.Type = typ
+}
+
+func (p *Property) walk(fn func(*Property) bool) {
+	if fn == nil {
+		return
+	}
+
+	if !fn(p) {
+		return
+	}
+
+	switch v := p.Value.(type) {
+	case map[string]*Property:
+		for _, child := range v {
+			if child != nil {
+				child.walk(fn)
+			}
+		}
+	case []*Property:
+		for _, child := range v {
+			if child != nil {
+				child.walk(fn)
+			}
+		}
+	}
 }

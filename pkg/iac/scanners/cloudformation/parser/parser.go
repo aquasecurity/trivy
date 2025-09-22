@@ -163,6 +163,10 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, filePath string) (fc
 		r.configureResource(name, fsys, filePath, fctx)
 	}
 
+	if err := fctx.expandTransforms(); err != nil {
+		return nil, err
+	}
+
 	return fctx, nil
 }
 

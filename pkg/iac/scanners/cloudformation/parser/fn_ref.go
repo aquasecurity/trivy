@@ -4,7 +4,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 )
 
-func ResolveReference(property *Property) (resolved *Property, success bool) {
+func ResolveReference(property *Property) (*Property, bool) {
 	if !property.isFunction() {
 		return property, true
 	}
@@ -19,16 +19,18 @@ func ResolveReference(property *Property) (resolved *Property, success bool) {
 		return property.deriveResolved(pseudo.t, pseudo.val), true
 	}
 
+	if property.loopCtx != nil {
+		v, found := property.loopCtx.Resolve(refValue)
+		if found {
+			return property.deriveResolved(v.Type, v.RawValue()), true
+		}
+	}
+
 	if property.ctx == nil {
 		return property, false
 	}
 
-	var param *Parameter
-	for k := range property.ctx.Parameters {
-		if k != refValue {
-			continue
-		}
-		param = property.ctx.Parameters[k]
+	if param, exists := property.ctx.Parameters[refValue]; exists {
 		resolvedType := param.Type()
 
 		switch param.Default().(type) {
@@ -40,16 +42,14 @@ func ResolveReference(property *Property) (resolved *Property, success bool) {
 			resolvedType = cftypes.Int
 		}
 
-		resolved = property.deriveResolved(resolvedType, param.Default())
+		resolved := property.deriveResolved(resolvedType, param.Default())
 		return resolved, true
 	}
 
-	for k := range property.ctx.Resources {
-		if k == refValue {
-			res := property.ctx.Resources[k]
-			resolved = property.deriveResolved(cftypes.String, res.ID())
-			break
-		}
+	if res, exists := property.ctx.Resources[refValue]; exists {
+		resolved := property.deriveResolved(cftypes.String, res.ID())
+		return resolved, true
 	}
-	return resolved, true
+
+	return nil, false
 }
