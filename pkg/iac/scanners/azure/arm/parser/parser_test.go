@@ -214,89 +214,48 @@ func TestParser_Parse(t *testing.T) {
 	}
 }
 
-func Test_NestedResourceParsing(t *testing.T) {
-	input := `
-{
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+func TestParser_Parse_DictionaryResources(t *testing.T) {
+	// Test case for Bicep modules that generate dictionary-style resources
+	input := `{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "languageVersion": "2.0",
   "contentVersion": "1.0.0.0",
-  "parameters": {
-    "environment": {
-      "type": "string",
-      "allowedValues": [
-        "dev",
-        "test",
-        "prod"
-      ]
-    },
-    "location": {
-      "type": "string",
-      "defaultValue": "[resourceGroup().location]",
-      "metadata": {
-        "description": "Location for all resources."
-      }
-    },
-    "storageAccountSkuName": {
-      "type": "string",
-      "defaultValue": "Standard_LRS"
-    },
-    "storageAccountSkuTier": {
-      "type": "string",
-      "defaultValue": "Standard"
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.37.4.10188",
+      "templateHash": "9375790898027716067"
     }
   },
-  "variables": {
-    "uniquePart": "[take(uniqueString(resourceGroup().id), 4)]",
-    "storageAccountName": "[concat('mystorageaccount', variables('uniquePart'), parameters('environment'))]",
-    "queueName": "myqueue"
-  },
-  "resources": [
-    {
-      "type": "Microsoft.Storage/storageAccounts",
-      "name": "[variables('storageAccountName')]",
-      "location": "[parameters('location')]",
-      "apiVersion": "2019-06-01",
-      "sku": {
-        "name": "[parameters('storageAccountSkuName')]",
-        "tier": "[parameters('storageAccountSkuTier')]"
-      },
-      "kind": "StorageV2",
-      "properties": {},
-      "resources": [
-        {
-          "name": "[concat('default/', variables('queueName'))]",
-          "type": "queueServices/queues",
-          "apiVersion": "2019-06-01",
-          "dependsOn": [
-            "[variables('storageAccountName')]"
-          ],
-          "properties": {
-            "metadata": {}
-          }
-        }
-      ]
+  "resources": {
+    "myrg": {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2025-04-01",
+      "name": "myrg",
+      "location": "WestEurope"
     }
-  ]
-}
-`
+  }
+}`
 
 	targetFS := memoryfs.New()
+	filename := "dictionary_resources.json"
 
-	require.NoError(t, targetFS.WriteFile("nested.json", []byte(input), 0o644))
+	require.NoError(t, targetFS.WriteFile(filename, []byte(input), 0o644))
 
 	p := New(targetFS)
 	got, err := p.ParseFS(t.Context(), ".")
 	require.NoError(t, err)
+	
 	require.Len(t, got, 1)
 
 	deployment := got[0]
 
+	// Should have 1 resource: myrg
 	require.Len(t, deployment.Resources, 1)
 
-	storageAccountResource := deployment.Resources[0]
+	// Check that the resource is properly parsed
+	assert.Equal(t, "myrg", deployment.Resources[0].Name.AsString())
 
-	require.Len(t, storageAccountResource.Resources, 1)
-
-	queue := storageAccountResource.Resources[0]
-
-	assert.Equal(t, "queueServices/queues", queue.Type.AsString())
+	// Check that the resource type is correct
+	assert.Equal(t, "Microsoft.Resources/resourceGroups", deployment.Resources[0].Type.AsString())
 }

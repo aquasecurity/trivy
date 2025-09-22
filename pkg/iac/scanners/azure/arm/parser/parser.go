@@ -106,14 +106,14 @@ func (p *Parser) convertTemplate(template *Template) *azure.Deployment {
 	}
 
 	for _, resource := range template.Resources {
-		deployment.Resources = append(deployment.Resources, p.convertResource(resource))
+		convertedResource := p.convertResource(resource)
+		deployment.Resources = append(deployment.Resources, convertedResource)
 	}
 
 	return &deployment
 }
 
 func (p *Parser) convertResource(input Resource) azure.Resource {
-
 	var children []azure.Resource
 
 	for _, child := range input.Resources {
@@ -133,3 +133,5 @@ func (p *Parser) convertResource(input Resource) azure.Resource {
 
 	return resource
 }
+
+
