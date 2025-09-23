@@ -178,6 +178,7 @@ func TestSBOM(t *testing.T) {
 				tt.args.format,
 				"--scanners",
 				scanners,
+				"--list-all-pkgs=false",
 			}
 
 			// Set up the output file
