@@ -1,6 +1,7 @@
 package mapfs
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -98,7 +99,7 @@ func (m *FS) FilterFunc(fn func(path string, d fs.DirEntry) (bool, error)) (*FS,
 			return xerrors.Errorf("unable to get %s: %w", path, err)
 		}
 		// Virtual file
-		if f.underlyingPath == "" {
+		if f.isVirtual() {
 			return newFS.WriteVirtualFile(path, f.data, f.stat.mode)
 		}
 		return newFS.WriteFile(path, f.underlyingPath)
@@ -197,6 +198,9 @@ func (m *FS) Open(name string) (fs.File, error) {
 
 // WriteFile creates a mapping between path and underlyingPath.
 func (m *FS) WriteFile(path, underlyingPath string) error {
+	if underlyingPath == "" {
+		return errors.New("underlying path must not be empty")
+	}
 	return m.root.WriteFile(cleanPath(path), underlyingPath)
 }
 
