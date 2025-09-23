@@ -112,12 +112,6 @@ func (Tool) Install() error {
 	return sh.Run("go", "install", "tool")
 }
 
-// Wire generates the wire_gen.go file for each package
-func Wire() error {
-	mg.Deps(Tool{}.Install) // Install wire
-	return sh.RunV("go", "tool", "wire", "gen", "./pkg/commands/...", "./pkg/rpc/...", "./pkg/k8s/...")
-}
-
 type Protoc mg.Namespace
 
 // Generate parses PROTO_FILES and generates the Go code for client/server mode

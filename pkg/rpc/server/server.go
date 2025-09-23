@@ -3,29 +3,26 @@ package server
 import (
 	"context"
 
-	"github.com/google/wire"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
 	"github.com/aquasecurity/trivy/pkg/scan/local"
+	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
-)
-
-// ScanSuperSet binds the dependencies for the server implementation.
-var ScanSuperSet = wire.NewSet(
-	local.SuperSet,
-	wire.Bind(new(scan.Backend), new(local.Service)),
-	NewScanServer,
 )
 
 // ScanServer implements the scanner service.
@@ -37,6 +34,17 @@ type ScanServer struct {
 // NewScanServer creates a new ScanServer instance with the specified backend implementation.
 func NewScanServer(s scan.Backend) *ScanServer {
 	return &ScanServer{local: s}
+}
+
+// initializeScanServer creates a new RPC scan server with the provided cache.
+func initializeScanServer(localArtifactCache cache.LocalArtifactCache) *ScanServer {
+	applier := applier.NewApplier(localArtifactCache)
+	osScanner := ospkg.NewScanner()
+	langScanner := langpkg.NewScanner()
+	vulnClient := vulnerability.NewClient(db.Config{})
+
+	localService := local.NewService(applier, osScanner, langScanner, vulnClient)
+	return NewScanServer(localService)
 }
 
 // Log and return an error
