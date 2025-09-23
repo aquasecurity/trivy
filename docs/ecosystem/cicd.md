@@ -12,49 +12,48 @@ Trivy has a "Azure Devops Pipelines Task" for Trivy, that lets you easily introd
 
 ### trivy-action (Official)
 
-GitHub Action for integrating Trivy into your GitHub pipeline
-
+GitHub Action for integrating Trivy into your GitHub pipeline  
+🔗 Example workflows for scanning filesystems, images, and repositories are available in the [Trivy Action README](https://github.com/aquasecurity/trivy-action#usage).  
 👉 Get it at: <https://github.com/aquasecurity/trivy-action>
 
 ### trivy-action (Community)
 
-GitHub Action to scan vulnerability using Trivy. If vulnerabilities are found by Trivy, it creates a GitHub Issue.
-
+GitHub Action to scan vulnerability using Trivy. If vulnerabilities are found by Trivy, it creates a GitHub Issue.  
+🔗 Setup and usage examples can be found on the [GitHub Marketplace page](https://github.com/marketplace/actions/trivy-action).  
 👉 Get it at: <https://github.com/marketplace/actions/trivy-action>
 
 ### trivy-github-issues (Community)
 
-In this action, Trivy scans the dependency files such as package-lock.json and go.sum in your repository, then create GitHub issues according to the result.
-
+In this action, Trivy scans the dependency files such as package-lock.json and go.sum in your repository, then create GitHub issues according to the result.  
+🔗 Configuration details and usage can be seen on the [Marketplace listing](https://github.com/marketplace/actions/trivy-github-issues).  
 👉 Get it at: <https://github.com/marketplace/actions/trivy-github-issues>
 
 ## Buildkite Plugin (Community)
 
-The trivy buildkite plugin provides a convenient mechanism for running the open-source trivy static analysis tool on your project. 
-
+The trivy buildkite plugin provides a convenient mechanism for running the open-source trivy static analysis tool on your project.  
+🔗 Example pipeline snippets are available in the [plugin repository](https://github.com/equinixmetal-buildkite/trivy-buildkite-plugin).  
 👉 Get it at: https://github.com/equinixmetal-buildkite/trivy-buildkite-plugin
 
 ## Dagger (Community)
 [Dagger](https://dagger.io/) is CI/CD as code that runs anywhere.
 
-The Dagger module for Trivy provides functions for scanning container images from registries as well as Dagger Container objects from any Dagger SDK (e.g. Go, Python, Node.js, etc).
-
+The Dagger module for Trivy provides functions for scanning container images from registries as well as Dagger Container objects from any Dagger SDK (e.g. Go, Python, Node.js, etc).  
+🔗 Example usage and setup instructions can be found on the [Daggerverse module page](https://daggerverse.dev/mod/github.com/jpadams/daggerverse/trivy).  
 👉 Get it at: <https://daggerverse.dev/mod/github.com/jpadams/daggerverse/trivy>
-
 
 ## Semaphore (Community)
 [Semaphore](https://semaphore.io/) is a CI/CD service.
 
-You can use Trivy in Semaphore for scanning code, containers, infrastructure, and Kubernetes in Semaphore workflow.
-
+You can use Trivy in Semaphore for scanning code, containers, infrastructure, and Kubernetes in Semaphore workflow.  
+🔗 Official recipe and usage guide is available in the [Semaphore Docs](https://docs.semaphore.io/using-semaphore/recipes/trivy).  
 👉 Get it at: <https://docs.semaphore.io/using-semaphore/recipes/trivy>
 
 ## CircleCI (Community)
 [CircleCI](https://circleci.com/) is a CI/CD service.
 
-You can use the Trivy Orb for Circle CI to introduce security scanning into your workflow.
-
-👉 Get it at: <https://circleci.com/developer/orbs/orb/fifteen5/trivy-orb>
+You can use the Trivy Orb for Circle CI to introduce security scanning into your workflow.  
+🔗 Configuration examples and reference available in the [Orb documentation](https://circleci.com/developer/orbs/orb/fifteen5/trivy-orb).  
+👉 Get it at: <https://circleci.com/developer/orbs/orb/fifteen5/trivy-orb>  
 Source: <https://github.com/15five/trivy-orb>
 
 ## Woodpecker CI (Community)

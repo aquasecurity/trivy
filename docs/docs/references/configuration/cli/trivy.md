@@ -24,6 +24,9 @@ trivy [global flags] command [flags] target
 
   # Run in server mode
   $ trivy server
+  # Scan an image and only show HIGH or CRITICAL vulnerabilities
+  $ trivy image --severity HIGH,CRITICAL alpine:3.19
+
 ```
 
 ### Options
