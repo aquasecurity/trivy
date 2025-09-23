@@ -1,0 +1,28 @@
+{
+   "annotations": {
+      "dev.sigstore.bundle.content": "dsse-envelope",
+      "dev.sigstore.bundle.predicateType": "https://cyclonedx.org/bom",
+      "org.opencontainers.image.created": "2025-09-20T18:06:32Z"
+   },
+   "artifactType": "application/vnd.dev.sigstore.bundle.v0.3+json",
+   "config": {
+      "artifactType": "application/vnd.dev.sigstore.bundle.v0.3+json",
+      "digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mediaType": "application/vnd.oci.empty.v1+json",
+      "size": 2
+   },
+   "layers": [
+      {
+         "digest": "sha256:92390b7d2d7b16c84725e9b77573fbd449a8f733113776ad78f983abb3173db3",
+         "mediaType": "application/vnd.dev.sigstore.bundle.v0.3+json",
+         "size": 8770
+      }
+   ],
+   "mediaType": "application/vnd.oci.image.manifest.v1+json",
+   "schemaVersion": 2,
+   "subject": {
+      "digest": "sha256:ea9c657ca44371fadd027510f2a1a68b799003294bf6a4827827971cc4390ad4",
+      "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+      "size": 1152
+   }
+}

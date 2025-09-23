@@ -2,6 +2,7 @@ package image
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -105,7 +106,20 @@ func (a Artifact) parseReferrer(ctx context.Context, repo string, desc v1.Descri
 		return artifact.Reference{}, xerrors.Errorf("SBOM download error: %w", err)
 	}
 
-	res, err := a.inspectSBOMFile(ctx, filepath.Join(tmpDir, fileName))
+	filePath := filepath.Join(tmpDir, fileName)
+
+	// Handle Sigstore bundles differently - extract DSSE payload
+	if desc.ArtifactType == oci.SigstoreBundleArtifactType {
+		dsseFilePath, err := a.extractDSSEFromSigstoreBundle(filePath)
+		if err != nil {
+			return artifact.Reference{}, xerrors.Errorf("failed to extract DSSE from Sigstore bundle: %w", err)
+		}
+		defer os.Remove(dsseFilePath)
+		filePath = dsseFilePath
+		fmt.Printf("DEBUG: Extracted DSSE to file: %s\n", dsseFilePath)
+	}
+
+	res, err := a.inspectSBOMFile(ctx, filePath)
 	if err != nil {
 		return res, xerrors.Errorf("SBOM error: %w", err)
 	}
@@ -114,6 +128,45 @@ func (a Artifact) parseReferrer(ctx context.Context, repo string, desc v1.Descri
 	a.logger.Info("Found SBOM in the OCI referrers", log.String("type", string(res.Type)))
 
 	return res, nil
+}
+
+// SigstoreBundle represents the structure of a Sigstore bundle in accordance with https://github.com/sigstore/cosign/blob/main/specs/BUNDLE_SPEC.md
+type SigstoreBundle struct {
+	DSSEEnvelope json.RawMessage `json:"dsseEnvelope"`
+	MediaType    string          `json:"mediaType"`
+}
+
+func (a Artifact) extractDSSEFromSigstoreBundle(bundlePath string) (string, error) {
+	// Read the Sigstore bundle file
+	bundleData, err := os.ReadFile(bundlePath)
+	if err != nil {
+		return "", xerrors.Errorf("failed to read Sigstore bundle: %w", err)
+	}
+
+	// Parse the Sigstore bundle
+	var bundle SigstoreBundle
+	if err := json.Unmarshal(bundleData, &bundle); err != nil {
+		return "", xerrors.Errorf("failed to parse Sigstore bundle: %w", err)
+	}
+
+	// Create a temporary file for the DSSE envelope
+	tmpFile, err := xos.CreateTemp("", "sigstore-dsse-")
+	if err != nil {
+		return "", xerrors.Errorf("failed to create temp file: %w", err)
+	}
+
+	// Write the DSSE envelope directly to the file
+	if _, err = tmpFile.Write(bundle.DSSEEnvelope); err != nil {
+		tmpFile.Close()
+		os.Remove(tmpFile.Name())
+		return "", xerrors.Errorf("failed to write DSSE envelope: %w", err)
+	}
+	if err = tmpFile.Close(); err != nil {
+		os.Remove(tmpFile.Name())
+		return "", xerrors.Errorf("failed to close temp file: %w", err)
+	}
+
+	return tmpFile.Name(), nil
 }
 
 func (a Artifact) inspectRekorSBOMAttestation(ctx context.Context) (artifact.Reference, error) {
