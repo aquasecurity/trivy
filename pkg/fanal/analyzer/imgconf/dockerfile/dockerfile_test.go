@@ -430,7 +430,7 @@ func Test_ImageConfigToDockerfile(t *testing.T) {
 				},
 			},
 			expected: `ARG TAG=latest
-ENV TAG=latest
+ENV TAG="latest"
 ENTRYPOINT ["/bin/sh" "-c" "echo test"]
 `,
 		},
@@ -457,6 +457,17 @@ ADD file:24d346633efc860b5011cefa5c0af73006e74e5dfb3c5c0e9cb0e90a927931e1 readme
 HEALTHCHECK NONE
 ENTRYPOINT ["/bin/sh"]
 `,
+		},
+		{
+			name: "legacy env format",
+			input: &v1.ConfigFile{
+				History: []v1.History{
+					{
+						CreatedBy: "ENV TEST=foo bar",
+					},
+				},
+			},
+			expected: "ENV TEST=\"foo bar\"\n",
 		},
 	}
 
