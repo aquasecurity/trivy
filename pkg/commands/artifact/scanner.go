@@ -239,10 +239,10 @@ func vmRemoteScanService(ctx context.Context, conf ScannerConfig) (scan.Service,
 //
 // Dependency injection graph (all manually wired):
 //
-//	Cache → Artifact → Applier → LocalService → ScanService
-//	                 ↘ OS Scanner ↗
-//	                 ↘ Lang Scanner ↗
-//	                 ↘ Vuln Client ↗
+//	Cache → Applier → LocalService → Artifact → ScanService
+//	      ↘ OS Scanner ↗
+//	      ↘ Lang Scanner ↗
+//	      ↘ Vuln Client ↗
 func createLocalService(conf ScannerConfig, newArtifact newArtifactFunc) (scan.Service, func(), error) {
 	c, cleanupCache, err := cache.New(conf.CacheOptions)
 	if err != nil {
