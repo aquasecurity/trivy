@@ -415,6 +415,7 @@ func TestTar(t *testing.T) {
 				"--format",
 				string(tt.args.Format),
 				"--skip-db-update",
+				"--list-all-pkgs=false",
 			}
 
 			if tt.args.IgnoreUnfixed {
