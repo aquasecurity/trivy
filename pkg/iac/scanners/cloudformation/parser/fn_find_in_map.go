@@ -11,6 +11,8 @@ func ResolveFindInMap(property *Property) (resolved *Property, success bool) {
 
 	refValue := property.AsMap()["Fn::FindInMap"].AsList()
 
+	// TODO: support for default value
+	// https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference-findinmap-enhancements.html
 	if len(refValue) != 3 {
 		return abortIntrinsic(property, "Fn::FindInMap should have exactly 3 values, returning original Property")
 	}
