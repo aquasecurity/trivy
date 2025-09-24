@@ -60,6 +60,7 @@ var (
 	ListAllPkgsFlag = Flag[bool]{
 		Name:          "list-all-pkgs",
 		ConfigName:    "list-all-pkgs",
+		Default:       true,
 		Usage:         "output all packages in the JSON report regardless of vulnerability",
 		TelemetrySafe: true,
 	}
@@ -228,8 +229,9 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 	}
 
 	// "--list-all-pkgs" option is unavailable with other than "--format json".
-	// If user specifies "--list-all-pkgs" with "--format table" or other formats, we should warn it.
-	if listAllPkgs && format != types.FormatJSON {
+	// If user explicitly specifies "--list-all-pkgs" with "--format table" or other formats, we should warn it.
+	// We check if the flag was explicitly set by the user to avoid warning when using the default value.
+	if f.ListAllPkgs.IsSet() && listAllPkgs && format != types.FormatJSON {
 		log.Warn(`"--list-all-pkgs" is only valid for the JSON format, for other formats a list of packages is automatically included.`)
 	}
 

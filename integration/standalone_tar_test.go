@@ -415,6 +415,7 @@ func TestTar(t *testing.T) {
 				"--format",
 				string(tt.args.Format),
 				"--skip-db-update",
+				"--list-all-pkgs=false",
 			}
 
 			if tt.args.IgnoreUnfixed {
@@ -518,6 +519,7 @@ func TestTarWithEnv(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Setenv("TRIVY_FORMAT", tt.testArgs.Format)
+			t.Setenv("TRIVY_LIST_ALL_PKGS", "false")
 			t.Setenv("TRIVY_CACHE_DIR", cacheDir)
 			t.Setenv("TRIVY_QUIET", "true")
 			t.Setenv("TRIVY_SKIP_UPDATE", "true")
@@ -554,6 +556,7 @@ func TestTarWithConfigFile(t *testing.T) {
 			input: "testdata/fixtures/images/alpine-39.tar.gz",
 			configFile: `quiet: true
 format: json
+list-all-pkgs: false
 severity:
  - HIGH
  - CRITICAL
@@ -570,6 +573,7 @@ cache:
 			input: "testdata/fixtures/images/debian-buster.tar.gz",
 			configFile: `quiet: true
 format: json
+list-all-pkgs: false
 vulnerability:
  ignore-unfixed: true
 cache:
