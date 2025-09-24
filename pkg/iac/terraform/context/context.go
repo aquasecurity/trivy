@@ -142,5 +142,10 @@ func mergeObjects(a, b cty.Value) cty.Value {
 }
 
 func isNotEmptyObject(val cty.Value) bool {
-	return !val.IsNull() && val.IsKnown() && val.Type().IsObjectType() && val.LengthInt() > 0
+	if val.IsNull() || !val.IsKnown() || !val.Type().IsObjectType() {
+		return false
+	}
+
+	unmarked, _ := val.Unmark()
+	return unmarked.LengthInt() > 0
 }
