@@ -8128,7 +8128,7 @@ You're not viewing the latest version of the documentation.
 </code></pre></div>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>  # report conversion
-  $ trivy image --format json --output result.json --list-all-pkgs debian:11
+  $ trivy image --format json --output result.json debian:11
   $ trivy convert --format cyclonedx --output result.cdx result.json
 </code></pre></div>
 <h3 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h3>
@@ -8151,7 +8151,7 @@ You're not viewing the latest version of the documentation.
   -h, --help                       help for convert
       --ignore-policy string       specify the Rego file path to evaluate each vulnerability
       --ignorefile string          specify .trivyignore file (default &quot;.trivyignore&quot;)
-      --list-all-pkgs              output all packages in the JSON report regardless of vulnerability
+      --list-all-pkgs              output all packages in the JSON report regardless of vulnerability (default true)
   -o, --output string              output file name
       --output-plugin-arg string   [EXPERIMENTAL] output plugin arguments
       --report string              specify a report format for the output (allowed values: all,summary) (default &quot;all&quot;)
