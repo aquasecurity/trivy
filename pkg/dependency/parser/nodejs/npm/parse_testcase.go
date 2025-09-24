@@ -1442,6 +1442,45 @@ var (
 			DependsOn: []string{"debug@2.6.9"},
 		},
 	}
+
+	npmV3WithWorkspaceAsObjectPkgs = []ftypes.Package{
+		{
+			ID:           "testapp@1.0.0",
+			Name:         "testapp",
+			Version:      "1.0.0",
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "testapp",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 26,
+					EndLine:   31,
+				},
+			},
+		},
+		{
+			ID:           "lodash@4.17.21",
+			Name:         "lodash",
+			Version:      "4.17.21",
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 16,
+					EndLine:   21,
+				},
+			},
+		},
+	}
 	// docker run --name node --rm -it node@sha256:51dd437f31812df71108b81385e2945071ec813d5815fa3403855669c8f3432b sh
 	// mkdir node_v3_with_peer && cd node_v3_with_peer
 	// npm init --force

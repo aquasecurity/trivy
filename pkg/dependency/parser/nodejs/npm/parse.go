@@ -12,6 +12,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -46,7 +47,7 @@ type Package struct {
 	Resolved             string            `json:"resolved"`
 	Dev                  bool              `json:"dev"`
 	Link                 bool              `json:"link"`
-	Workspaces           []string          `json:"workspaces"`
+	Workspaces           any               `json:"workspaces"`
 	xjson.Location
 }
 
@@ -206,7 +207,7 @@ func (p *Parser) resolveLinks(packages map[string]Package) {
 		rootPkg.Dependencies = make(map[string]string)
 	}
 
-	workspaces := rootPkg.Workspaces
+	workspaces := packagejson.ParseWorkspaces(rootPkg.Workspaces)
 	// Changing the map during the map iteration causes unexpected behavior,
 	// so we need to iterate over the cloned `packages` map, but change the original `packages` map.
 	for pkgPath, pkg := range maps.Clone(packages) {

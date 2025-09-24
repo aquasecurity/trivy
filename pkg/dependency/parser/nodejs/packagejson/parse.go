@@ -65,7 +65,7 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 		Dependencies:         pkgJSON.Dependencies,
 		OptionalDependencies: pkgJSON.OptionalDependencies,
 		DevDependencies:      pkgJSON.DevDependencies,
-		Workspaces:           parseWorkspaces(pkgJSON.Workspaces),
+		Workspaces:           ParseWorkspaces(pkgJSON.Workspaces),
 	}, nil
 }
 
@@ -86,14 +86,18 @@ func parseLicense(val any) []string {
 	return nil
 }
 
-// parseWorkspaces returns slice of workspaces
-func parseWorkspaces(val any) []string {
+// ParseWorkspaces returns slice of workspaces
+// `workspaces` field supports 2 types -
+// string array and map with `packages` key only
+// cf. https://github.com/npm/map-workspaces#usage
+func ParseWorkspaces(val any) []string {
 	// Workspaces support 2 types - https://github.com/SchemaStore/schemastore/blob/d9516961f8a5b0e65a457808070147b5a866f60b/src/schemas/json/package.json#L777
 	switch ws := val.(type) {
 	// Workspace as object (map[string][]string)
 	// e.g. "workspaces": {"packages": ["packages/*", "plugins/*"]},
 	case map[string]any:
-		// Take only workspaces for `packages` - https://classic.yarnpkg.com/blog/2018/02/15/nohoist/
+		// Take only workspaces for `packages`:
+		// cf . https://github.com/npm/map-workspaces#usage
 		if pkgsWorkspaces, ok := ws["packages"]; ok {
 			return lo.Map(pkgsWorkspaces.([]any), func(workspace any, _ int) string {
 				return workspace.(string)
