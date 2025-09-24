@@ -4,7 +4,7 @@
 
     <groupId>com.example</groupId>
     <artifactId>top-parent</artifactId>
-    <version>1.0.0</version>
+    <version>5.0.3</version>
 
     <packaging>pom</packaging>
     <name>top-parent</name>
