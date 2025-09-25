@@ -3,58 +3,12 @@ package parser
 import (
 	"testing"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func Test_resolve_find_in_map_value(t *testing.T) {
-
-	source := `---
-Parameters:
-  Environment: 
-    Type: String
-    Default: production
-Mappings:
-  CacheNodeTypes:
-    production:
-      NodeType: cache.t2.large
-    test:
-      NodeType: cache.t2.small
-    dev:
-      NodeType: cache.t2.micro
-Resources:
-    ElasticacheSecurityGroup:
-      Type: 'AWS::EC2::SecurityGroup'
-      Properties:
-        GroupDescription: Elasticache Security Group
-        SecurityGroupIngress:
-          - IpProtocol: tcp
-            FromPort: 11211
-            ToPort: 11211
-            SourceSecurityGroupName: !Ref InstanceSecurityGroup
-    ElasticacheCluster:
-      Type: 'AWS::ElastiCache::CacheCluster'
-      Properties:    
-        Engine: memcached
-        CacheNodeType: !FindInMap [ CacheNodeTypes, production, NodeType ]
-        NumCacheNodes: '1'
-        VpcSecurityGroupIds:
-          - !GetAtt 
-            - ElasticacheSecurityGroup
-            - GroupId
-`
-	ctx := createTestFileContext(t, source)
-	require.NotNil(t, ctx)
-
-	testRes := ctx.GetResourceByLogicalID("ElasticacheCluster")
-	assert.NotNil(t, testRes)
-
-	nodeTypeProp := testRes.GetStringProperty("CacheNodeType", "")
-	assert.Equal(t, "cache.t2.large", nodeTypeProp.Value())
-}
-
-func Test_resolve_find_in_map_with_nested_intrinsic_value(t *testing.T) {
-
+func Test_FindInMap(t *testing.T) {
 	source := `---
 Parameters:
   Environment: 
@@ -64,39 +18,56 @@ Mappings:
   CacheNodeTypes:
     production:
       NodeType: cache.t2.large
+      CacheSecurityGroupNames: [ "sg-1", "sg-2" ]
     test:
       NodeType: cache.t2.small
+      CacheSecurityGroupNames: [ "sg-3" ]
     dev:
       NodeType: cache.t2.micro
+      CacheSecurityGroupNames: [ "sg-4" ]
 Resources:
-    ElasticacheSecurityGroup:
-      Type: 'AWS::EC2::SecurityGroup'
-      Properties:
-        GroupDescription: Elasticache Security Group
-        SecurityGroupIngress:
-          - IpProtocol: tcp
-            FromPort: 11211
-            ToPort: 11211
-            SourceSecurityGroupName: !Ref InstanceSecurityGroup
-    ElasticacheCluster:
-      Type: 'AWS::ElastiCache::CacheCluster'
-      Properties:    
-        Engine: memcached
-        CacheNodeType: !FindInMap [ CacheNodeTypes, !Ref Environment, NodeType ]
-        NumCacheNodes: '1'
-        VpcSecurityGroupIds:
-          - !GetAtt 
-            - ElasticacheSecurityGroup
-            - GroupId
+  ElasticacheCluster:
+    Type: 'AWS::ElastiCache::CacheCluster'
+    Properties:    
+      Engine: memcached
+      CacheNodeType: !FindInMap [ CacheNodeTypes, !Ref Environment, NodeType ]
+      NumCacheNodes: '1'
+
+  ElasticacheClusterWithDefault:
+    Type: 'AWS::ElastiCache::CacheCluster'
+    Properties:
+      Engine: memcached
+      CacheNodeType: !FindInMap [ CacheNodeTypes, staging, NodeType, DefaultValue: cache.t2.medium ]
+      NumCacheNodes: '1'
+
+  ElasticacheClusterList:
+    Type: 'AWS::ElastiCache::CacheCluster'
+    Properties:
+      Engine: memcached
+      CacheSecurityGroupNames: !FindInMap [ CacheNodeTypes, production, CacheSecurityGroupNames ]
+      NumCacheNodes: '1'
 `
+
 	ctx := createTestFileContext(t, source)
 	require.NotNil(t, ctx)
 
-	testRes := ctx.GetResourceByLogicalID("ElasticacheCluster")
-	assert.NotNil(t, testRes)
-
-	nodeTypeProp := testRes.GetStringProperty("CacheNodeType", "")
+	cluster := ctx.GetResourceByLogicalID("ElasticacheCluster")
+	require.NotNil(t, cluster)
+	nodeTypeProp := cluster.GetStringProperty("CacheNodeType", "")
 	assert.Equal(t, "cache.t2.micro", nodeTypeProp.Value())
+
+	clusterDefault := ctx.GetResourceByLogicalID("ElasticacheClusterWithDefault")
+	require.NotNil(t, clusterDefault)
+	nodeTypePropDefault := clusterDefault.GetStringProperty("CacheNodeType", "")
+	assert.Equal(t, "cache.t2.medium", nodeTypePropDefault.Value())
+
+	clusterList := ctx.GetResourceByLogicalID("ElasticacheClusterList")
+	require.NotNil(t, clusterList)
+	sgNamesProp := clusterList.GetProperty("CacheSecurityGroupNames").AsList()
+	groupNames := lo.Map(sgNamesProp, func(prop *Property, _ int) any {
+		return prop.AsString()
+	})
+	assert.ElementsMatch(t, []any{"sg-1", "sg-2"}, groupNames)
 }
 
 func Test_InferType(t *testing.T) {
