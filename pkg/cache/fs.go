@@ -9,6 +9,7 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 	bolt "go.etcd.io/bbolt"
+	bberrors "go.etcd.io/bbolt/errors"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -34,7 +35,7 @@ func NewFSCache(cacheDir string) (FSCache, error) {
 	})
 	if err != nil {
 		// Check if the error is due to timeout (database locked by another process)
-		if errors.Is(err, bolt.ErrTimeout) {
+		if errors.Is(err, bberrors.ErrTimeout) {
 			return FSCache{}, xerrors.Errorf("cache may be in use by another process: %w", err)
 		}
 		return FSCache{}, xerrors.Errorf("unable to open cache DB: %w", err)
