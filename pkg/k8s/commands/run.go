@@ -8,18 +8,32 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
+	tdb "github.com/aquasecurity/trivy-db/pkg/db"
 	k8sArtifacts "github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
+	"github.com/aquasecurity/trivy/pkg/fanal/applier"
+	image2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
+	local2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
+	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	k8sRep "github.com/aquasecurity/trivy/pkg/k8s"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/k8s/scanner"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/rpc/client"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
+	scanlocal "github.com/aquasecurity/trivy/pkg/scan/local"
+	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
+	"os"
 )
 
 // Run runs a k8s scan
@@ -62,7 +76,17 @@ func newRunner(flagOpts flag.Options, cluster string) *runner {
 }
 
 func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) error {
-	runner, err := cmd.NewRunner(ctx, r.flagOpts, cmd.TargetK8s)
+	// Create a shared local cache (e.g. fanal.db) reused across all image scans
+	sharedCache, sharedCleanup, err := cache.New(r.flagOpts.CacheOpts())
+	if err != nil {
+		return xerrors.Errorf("init shared cache error: %w", err)
+	}
+	defer func() { _ = sharedCache.Close() }()
+
+	// Inject initializer that reuses the shared cache for standalone image scans
+	initWithShared := withK8sSharedCacheInitializer(sharedCache)
+
+	runner, err := cmd.NewRunner(ctx, r.flagOpts, cmd.TargetK8s, cmd.WithInitializeService(initWithShared))
 	if err != nil {
 		if errors.Is(err, cmd.SkipScan) {
 			return nil
@@ -73,6 +97,8 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 		if err := runner.Close(ctx); err != nil {
 			log.ErrorContext(ctx, "failed to close runner: %s", err)
 		}
+		// Ensure we cleanup the shared cache at the very end
+		sharedCleanup()
 	}()
 
 	s := scanner.NewScanner(r.cluster, runner, r.flagOpts)
@@ -126,6 +152,105 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 	}
 
 	return operation.Exit(r.flagOpts, rpt.Failed(), types.Metadata{})
+}
+
+// withK8sSharedCacheInitializer returns a custom initializer that reuses the provided
+// cache for standalone image scans. For filesystem scans, it respects the backend
+// passed via conf.CacheOptions (e.g., memory set by scanMisconfigs). For client/server
+// mode, it uses the remote cache as usual.
+func withK8sSharedCacheInitializer(shared cache.Cache) cmd.InitializeScanService {
+	return func(ctx context.Context, conf cmd.ScannerConfig) (scan.Service, func(), error) {
+		// Client/server mode -> use remote service and remote cache
+		if conf.ServerOption.RemoteURL != "" {
+			service := client.NewService(conf.ServerOption)
+
+			// Determine if target is filesystem or image by checking local path existence
+			if isFilesystemTarget(conf.Target) {
+				remoteCache := cache.NewRemoteCache(ctx, conf.RemoteCacheOptions)
+				fs := walker.NewFS()
+				artifact, err := local2.NewArtifact(conf.Target, remoteCache, fs, conf.ArtifactOption)
+				if err != nil {
+					return scan.Service{}, func() {}, xerrors.Errorf("init remote fs artifact: %w", err)
+				}
+				return scan.NewService(service, artifact), func() {}, nil
+			}
+
+			// Image in client/server mode
+			img, imgCleanup, err := image.NewContainerImage(ctx, conf.Target, conf.ArtifactOption.ImageOption)
+			if err != nil {
+				return scan.Service{}, func() {}, xerrors.Errorf("init remote image: %w", err)
+			}
+			remoteCache := cache.NewRemoteCache(ctx, conf.RemoteCacheOptions)
+			artifact, err := image2.NewArtifact(img, remoteCache, conf.ArtifactOption)
+			if err != nil {
+				imgCleanup()
+				return scan.Service{}, func() {}, xerrors.Errorf("init remote image artifact: %w", err)
+			}
+			return scan.NewService(service, artifact), func() { imgCleanup() }, nil
+		}
+
+		// Standalone mode -> build local service with cache
+		// Respect explicit memory backend if requested in conf.CacheOptions
+		useShared := conf.CacheOptions.Backend == "" || conf.CacheOptions.Backend == "fs"
+		var cacheToUse cache.Cache
+		var memCleanup func()
+		if useShared {
+			cacheToUse = shared
+			memCleanup = func() {}
+		} else {
+			// e.g. memory backend set by scanMisconfigs
+			c, cleanup, err := cache.New(conf.CacheOptions)
+			if err != nil {
+				return scan.Service{}, func() {}, xerrors.Errorf("init local cache: %w", err)
+			}
+			cacheToUse = c
+			memCleanup = cleanup
+		}
+
+		// Common local components
+		ap := applier.NewApplier(cacheToUse)
+		oScanner := ospkg.NewScanner()
+		lScanner := langpkg.NewScanner()
+		vClient := vulnerability.NewClient(tdb.Config{})
+		localSvc := scanlocal.NewService(ap, oScanner, lScanner, vClient)
+
+		if isFilesystemTarget(conf.Target) {
+			fs := walker.NewFS()
+			artifact, err := local2.NewArtifact(conf.Target, cacheToUse, fs, conf.ArtifactOption)
+			if err != nil {
+				memCleanup()
+				return scan.Service{}, func() {}, xerrors.Errorf("init fs artifact: %w", err)
+			}
+			return scan.NewService(localSvc, artifact), func() { memCleanup() }, nil
+		}
+
+		// Image in standalone mode
+		img, imgCleanup, err := image.NewContainerImage(ctx, conf.Target, conf.ArtifactOption.ImageOption)
+		if err != nil {
+			memCleanup()
+			return scan.Service{}, func() {}, xerrors.Errorf("init image: %w", err)
+		}
+		artifact, err := image2.NewArtifact(img, cacheToUse, conf.ArtifactOption)
+		if err != nil {
+			imgCleanup()
+			memCleanup()
+			return scan.Service{}, func() {}, xerrors.Errorf("init image artifact: %w", err)
+		}
+		return scan.NewService(localSvc, artifact), func() {
+			imgCleanup()
+			memCleanup()
+		}, nil
+	}
+}
+
+func isFilesystemTarget(target string) bool {
+	if target == "" {
+		return false
+	}
+	if st, err := os.Stat(target); err == nil && (st.Mode().IsDir() || st.Mode().IsRegular()) {
+		return true
+	}
+	return false
 }
 
 // Full-cluster scanning with '--format table' without explicit '--report all' is not allowed so that it won't mess up user's terminal.
