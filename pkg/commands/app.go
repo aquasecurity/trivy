@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/auth"
 	"github.com/aquasecurity/trivy/pkg/commands/clean"
+	"github.com/aquasecurity/trivy/pkg/commands/cloud"
 	"github.com/aquasecurity/trivy/pkg/commands/convert"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -81,6 +82,10 @@ func NewApp() *cobra.Command {
 			ID:    groupUtility,
 			Title: "Utility Commands",
 		},
+		&cobra.Group{
+			ID:    cloud.GroupCloud,
+			Title: "Trivy Cloud Commands",
+		},
 	)
 	rootCmd.SetCompletionCommandGroupID(groupUtility)
 	rootCmd.SetHelpCommandGroupID(groupUtility)
@@ -102,6 +107,9 @@ func NewApp() *cobra.Command {
 		NewCleanCommand(globalFlags),
 		NewRegistryCommand(globalFlags),
 		NewVEXCommand(globalFlags),
+		NewLoginCommand(globalFlags),
+		NewLogoutCommand(),
+		NewCloudCommand(),
 	)
 
 	if plugins := loadPluginCommands(); len(plugins) > 0 {
@@ -209,7 +217,7 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			// Initialize logger
 			log.InitLogger(opts.Debug, opts.Quiet)
 
-			return nil
+			return cloud.CheckTrivyCloudStatus(cmd)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			flags := flag.Flags{globalFlags}
@@ -1412,6 +1420,102 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 	cmd.AddCommand(repoCmd)
 	return cmd
+}
+
+func NewLoginCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	loginFlags := &flag.Flags{
+		globalFlags,
+		flag.NewCloudFlagGroup(),
+	}
+
+	loginCmd := &cobra.Command{
+		Use:     "login [flags]",
+		Short:   "Log in to the Trivy Cloud platform",
+		Long:    "Log in to the Trivy Cloud platform to enable scanning of images and repositories in the cloud using the token retrieved from the Trivy Cloud platform",
+		GroupID: cloud.GroupCloud,
+		Args:    cobra.NoArgs,
+		Example: `  # Log in to the Trivy Cloud platform
+  $ trivy login --token <token>`,
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
+			if err := loginFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := loginFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			cloudOptions, err := loginFlags.ToOptions(args)
+			if err != nil {
+				return xerrors.Errorf("flag error: %w", err)
+			}
+			return cloud.Login(cmd.Context(), cloudOptions)
+		},
+	}
+
+	loginFlags.AddFlags(loginCmd)
+	loginCmd.SetFlagErrorFunc(flagErrorFunc)
+
+	return loginCmd
+}
+
+func NewLogoutCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "logout",
+		Short:   "Log out of Trivy Cloud platform",
+		GroupID: cloud.GroupCloud,
+		Args:    cobra.NoArgs,
+		RunE: func(_ *cobra.Command, _ []string) error {
+			return cloud.Logout()
+		},
+	}
+
+	return cmd
+}
+
+func NewCloudCommand() *cobra.Command {
+	cloudCmd := &cobra.Command{
+		Use:     "cloud [flags]",
+		Short:   "Manage Trivy Cloud platform",
+		GroupID: cloud.GroupCloud,
+	}
+
+	cloudCmd.AddCommand(
+		&cobra.Command{
+			Use:   "enable-server-scanning",
+			Short: "Enable server scanning for Trivy Cloud platform",
+			Long:  "Use the Trivy Cloud platform for server side image scanning",
+			RunE: func(_ *cobra.Command, _ []string) error {
+				return cloud.SetServerScanning(true)
+			},
+		},
+		&cobra.Command{
+			Use:   "disable-server-scanning",
+			Short: "Disable server scanning for Trivy Cloud platform",
+			Long:  "Disable the use of the Trivy Cloud platform for server side image scanning",
+			RunE: func(_ *cobra.Command, _ []string) error {
+				return cloud.SetServerScanning(false)
+			},
+		},
+		&cobra.Command{
+			Use:   "enable-results-upload",
+			Short: "Enable results upload for Trivy Cloud platform",
+			Long:  "Enable the upload of scan results to the Trivy Cloud platform",
+			RunE: func(_ *cobra.Command, _ []string) error {
+				return cloud.SetResultsUpload(true)
+			},
+		},
+		&cobra.Command{
+			Use:   "disable-results-upload",
+			Short: "Disable results upload for Trivy Cloud platform",
+			Long:  "Disable the upload of scan results to the Trivy Cloud platform",
+			RunE: func(_ *cobra.Command, _ []string) error {
+				return cloud.SetResultsUpload(false)
+			},
+		},
+	)
+	return cloudCmd
 }
 
 func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
