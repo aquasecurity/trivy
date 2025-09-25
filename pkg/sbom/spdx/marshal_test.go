@@ -1448,6 +1448,139 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "happy path for SHA-512 hash support",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "test:latest",
+				ArtifactType:  ftypes.TypeContainerImage,
+				Metadata: types.Metadata{
+					Size: 1024,
+					OS: &ftypes.OS{
+						Family: ftypes.Alpine,
+						Name:   "3.16.0",
+					},
+					ImageID:     "sha256:c9b1b39a6b6e8f7c8e3b4c7d8a1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9",
+					RepoTags:    []string{"test:latest"},
+					DiffIDs:     []string{"sha256:e0f7b8c9d0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7"},
+					RepoDigests: []string{"test@sha256:b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2"},
+				},
+				Results: types.Results{
+					{
+						Target: "test:latest (alpine 3.16.0)",
+						Class:  types.ClassOSPkg,
+						Type:   ftypes.Alpine,
+						Packages: []ftypes.Package{
+							{
+								Name:    "test-package",
+								Version: "1.0.0",
+								Release: "r1",
+								Arch:    "x86_64",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "TEST12345678",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeApk,
+										Namespace: "alpine",
+										Name:      "test-package",
+										Version:   "1.0.0-r1",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "x86_64",
+											},
+											{
+												Key:   "distro",
+												Value: "alpine-3.16.0",
+											},
+										},
+									},
+								},
+								Layer: ftypes.Layer{
+									DiffID: "sha256:e0f7b8c9d0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7",
+								},
+								FilePath: "lib/apk/db/installed",
+								Digest:   "sha512:a2e0d5c8b94f6c9d7e1a3b2c5d8e7f4a1b6c9d0e3f7a8b5c2d9e6f1a4b7c0d3e8f5a2b9c6d1e4f8a5b2c7d0e3f6a9b8c1d4e7f2a5b6c9d0e3f8a1b4c7d2e5f9",
+							},
+						},
+					},
+				},
+			},
+			wantSBOM: &spdx.Document{
+				SPDXVersion:       spdx.Version,
+				DataLicense:       spdx.DataLicense,
+				SPDXIdentifier:    "DOCUMENT",
+				DocumentName:      "test:latest",
+				DocumentNamespace: "http://trivy.dev/container-image-type/test%3Alatest-3ff14136-e09f-4df9-80ea-000000000000",
+				CreationInfo: &spdx.CreationInfo{
+					Creators: []common.Creator{
+						{Creator: "aquasecurity", CreatorType: "Organization"},
+						{Creator: "trivy-0.56.2", CreatorType: "Tool"},
+					},
+					Created: "2021-08-25T12:20:30Z",
+				},
+				Packages: []*spdx.Package{
+					{
+						PackageName:           "test:latest",
+						PackageSPDXIdentifier: "ContainerImage-b15e0e4ae3cac96a",
+						PackageDownloadLocation: "NONE",
+						PrimaryPackagePurpose:   tspdx.PackagePurposeContainer,
+						PackageExternalReferences: []*spdx.PackageExternalReference{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:oci/test%40sha256%3Ab1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2?repository_url=index.docker.io%2Flibrary%2Ftest&tag=latest",
+							},
+						},
+					},
+					{
+						PackageName:             "alpine",
+						PackageSPDXIdentifier:   "OperatingSystem-7c9ec5e9b9f4dfae",
+						PackageDownloadLocation: "NONE",
+						PrimaryPackagePurpose:   tspdx.PackagePurposeOS,
+						PackageSupplier:         &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+					},
+					{
+						PackageName:             "test-package",
+						PackageSPDXIdentifier:   "Package-a157aa5e3f8a5b3c",
+						PackageVersion:          "1.0.0-r1",
+						PackageDownloadLocation: "NONE",
+						PackageExternalReferences: []*spdx.PackageExternalReference{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:apk/alpine/test-package@1.0.0-r1?arch=x86_64&distro=alpine-3.16.0",
+							},
+						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						PackageSourceInfo:     "package found in: lib/apk/db/installed",
+						PackageChecksums: []common.Checksum{
+							{
+								Algorithm: spdx.SHA512,
+								Value:     "a2e0d5c8b94f6c9d7e1a3b2c5d8e7f4a1b6c9d0e3f7a8b5c2d9e6f1a4b7c0d3e8f5a2b9c6d1e4f8a5b2c7d0e3f6a9b8c1d4e7f2a5b6c9d0e3f8a1b4c7d2e5f9",
+							},
+						},
+					},
+				},
+				Relationships: []*spdx.Relationship{
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
+						RefB:         spdx.DocElementID{ElementRefID: "ContainerImage-b15e0e4ae3cac96a"},
+						Relationship: "DESCRIBES",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "ContainerImage-b15e0e4ae3cac96a"},
+						RefB:         spdx.DocElementID{ElementRefID: "OperatingSystem-7c9ec5e9b9f4dfae"},
+						Relationship: "CONTAINS",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "ContainerImage-b15e0e4ae3cac96a"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-a157aa5e3f8a5b3c"},
+						Relationship: "CONTAINS",
+					},
+				},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
