@@ -80,7 +80,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.filePath)
 			require.NoError(t, err)
 
-			got, _, err := NewParser(tt.useMinVersion).Parse(f)
+			got, _, err := NewParser(tt.useMinVersion).Parse(t.Context(), f)
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.want, got)

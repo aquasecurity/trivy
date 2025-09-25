@@ -1,6 +1,7 @@
 package julia
 
 import (
+	"context"
 	"io"
 	"sort"
 
@@ -31,7 +32,7 @@ func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var oldDeps map[string][]primitiveDependency
 	var primMan primitiveManifest
 	var manMetadata toml.MetaData

@@ -63,8 +63,8 @@ type parserWithPatterns struct {
 	patterns map[string][]string
 }
 
-func (p *parserWithPatterns) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
-	pkgs, deps, patterns, err := yarn.NewParser().Parse(r)
+func (p *parserWithPatterns) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
+	pkgs, deps, patterns, err := yarn.NewParser().Parse(ctx, r)
 	p.patterns = patterns
 	return pkgs, deps, err
 }

@@ -95,7 +95,7 @@ func TestParser_Parse(t *testing.T) {
 			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
 
-			gotPkgs, _, err := parser.Parse(f)
+			gotPkgs, _, err := parser.Parse(t.Context(), f)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, gotPkgs)
 		})

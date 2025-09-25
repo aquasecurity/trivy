@@ -1,6 +1,7 @@
 package pom
 
 import (
+	"context"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -97,7 +98,7 @@ func NewParser(filePath string, opts ...option) *Parser {
 	}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	content, err := parsePom(r, true)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to parse POM: %w", err)

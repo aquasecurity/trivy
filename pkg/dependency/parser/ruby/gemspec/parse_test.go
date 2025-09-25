@@ -81,7 +81,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
 
-			got, _, err := gemspec.NewParser().Parse(f)
+			got, _, err := gemspec.NewParser().Parse(t.Context(), f)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return

@@ -75,7 +75,7 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			got, gotDeps, err := binary.NewParser().Parse(f)
+			got, gotDeps, err := binary.NewParser().Parse(t.Context(), f)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return

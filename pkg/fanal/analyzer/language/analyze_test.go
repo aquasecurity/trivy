@@ -1,6 +1,7 @@
 package language_test
 
 import (
+	"context"
 	"io"
 	"strings"
 	"testing"
@@ -19,7 +20,7 @@ type mockParser struct {
 	t *testing.T
 }
 
-func (p *mockParser) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
+func (p *mockParser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
 	b, err := io.ReadAll(r)
 	require.NoError(p.t, err)
 

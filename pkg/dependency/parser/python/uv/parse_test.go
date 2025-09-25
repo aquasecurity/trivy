@@ -43,7 +43,7 @@ func TestParser_Parse(t *testing.T) {
 			defer f.Close()
 
 			p := NewParser()
-			gotPkgs, gotDeps, err := p.Parse(f)
+			gotPkgs, gotDeps, err := p.Parse(t.Context(), f)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return

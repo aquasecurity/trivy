@@ -2,6 +2,7 @@ package mix
 
 import (
 	"bufio"
+	"context"
 	"strings"
 	"unicode"
 
@@ -23,7 +24,7 @@ func NewParser() *Parser {
 	}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var pkgs []ftypes.Package
 	scanner := bufio.NewScanner(r)
 	var lineNumber int // It is used to save dependency location

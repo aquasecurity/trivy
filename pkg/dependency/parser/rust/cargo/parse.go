@@ -1,6 +1,7 @@
 package cargo
 
 import (
+	"context"
 	"io"
 	"sort"
 	"strings"
@@ -35,7 +36,7 @@ func NewParser() *Parser {
 	}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockfile Lockfile
 	decoder := toml.NewDecoder(r)
 	if _, err := decoder.Decode(&lockfile); err != nil {

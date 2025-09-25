@@ -56,7 +56,7 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			got, _, err := meta.NewParser().Parse(f)
+			got, _, err := meta.NewParser().Parse(t.Context(), f)
 
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)

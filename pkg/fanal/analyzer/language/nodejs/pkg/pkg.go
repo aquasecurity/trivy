@@ -23,7 +23,7 @@ const (
 
 type parser struct{}
 
-func (*parser) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
+func (*parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
 	p := packagejson.NewParser()
 	pkg, err := p.Parse(r)
 	if err != nil {

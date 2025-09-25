@@ -1,6 +1,7 @@
 package language
 
 import (
+	"context"
 	"io"
 
 	"golang.org/x/xerrors"
@@ -15,7 +16,7 @@ import (
 
 type Parser interface {
 	// Parse parses the dependency file
-	Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error)
+	Parse(_ context.Context, r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error)
 }
 
 // Analyze returns an analysis result of the lock file
@@ -52,7 +53,7 @@ func Parse(fileType types.LangType, filePath string, r io.Reader, parser Parser)
 	if err != nil {
 		return nil, xerrors.Errorf("reader error: %w", err)
 	}
-	parsedPkgs, parsedDependencies, err := parser.Parse(rr)
+	parsedPkgs, parsedDependencies, err := parser.Parse(context.TODO(), rr)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}
@@ -64,7 +65,7 @@ func Parse(fileType types.LangType, filePath string, r io.Reader, parser Parser)
 
 // ParsePackage returns a parsed result of the package file
 func ParsePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*types.Application, error) {
-	parsedPkgs, parsedDependencies, err := parser.Parse(r)
+	parsedPkgs, parsedDependencies, err := parser.Parse(context.TODO(), r)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}

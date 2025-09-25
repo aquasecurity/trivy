@@ -2,6 +2,7 @@ package bundler
 
 import (
 	"bufio"
+	"context"
 	"sort"
 	"strings"
 
@@ -19,7 +20,7 @@ func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	pkgs := make(map[string]ftypes.Package)
 	var dependsOn, directDeps []string
 	var deps []ftypes.Dependency
