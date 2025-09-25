@@ -22,8 +22,8 @@ const (
 // composerVendorAnalyzer analyzes 'installed.json'
 type composerVendorAnalyzer struct{}
 
-func (a composerVendorAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	return language.Analyze(types.ComposerVendor, input.FilePath, input.Content, composer.NewParser())
+func (a composerVendorAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	return language.Analyze(ctx, types.ComposerVendor, input.FilePath, input.Content, composer.NewParser())
 }
 
 func (a composerVendorAnalyzer) Required(filePath string, _ os.FileInfo) bool {

@@ -35,7 +35,7 @@ func NewUvAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	}, nil
 }
 
-func (a *uvAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a *uvAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 	required := func(_ string, _ fs.DirEntry) bool {
 		// Parse all required files: `uv.lock` (from a.Required func) + input.FilePatterns.Match()
@@ -44,7 +44,7 @@ func (a *uvAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisI
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
 		// Parse uv.lock
-		app, err := language.Parse(types.Uv, path, r, a.lockParser)
+		app, err := language.Parse(ctx, types.Uv, path, r, a.lockParser)
 		if err != nil {
 			a.logger.Warn("Failed to parse uv lockfile", log.Err(err))
 			return nil

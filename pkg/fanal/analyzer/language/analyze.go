@@ -20,8 +20,8 @@ type Parser interface {
 }
 
 // Analyze returns an analysis result of the lock file
-func Analyze(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser) (*analyzer.AnalysisResult, error) {
-	app, err := Parse(fileType, filePath, r, parser)
+func Analyze(ctx context.Context, fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser) (*analyzer.AnalysisResult, error) {
+	app, err := Parse(ctx, fileType, filePath, r, parser)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}
@@ -34,8 +34,8 @@ func Analyze(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parse
 }
 
 // AnalyzePackage returns an analysis result of the package file other than lock files
-func AnalyzePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*analyzer.AnalysisResult, error) {
-	app, err := ParsePackage(fileType, filePath, r, parser, checksum)
+func AnalyzePackage(ctx context.Context, fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*analyzer.AnalysisResult, error) {
+	app, err := ParsePackage(ctx, fileType, filePath, r, parser, checksum)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}
@@ -48,12 +48,12 @@ func AnalyzePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt
 }
 
 // Parse returns a parsed result of the lock file
-func Parse(fileType types.LangType, filePath string, r io.Reader, parser Parser) (*types.Application, error) {
+func Parse(ctx context.Context, fileType types.LangType, filePath string, r io.Reader, parser Parser) (*types.Application, error) {
 	rr, err := xio.NewReadSeekerAt(r)
 	if err != nil {
 		return nil, xerrors.Errorf("reader error: %w", err)
 	}
-	parsedPkgs, parsedDependencies, err := parser.Parse(context.TODO(), rr)
+	parsedPkgs, parsedDependencies, err := parser.Parse(ctx, rr)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}
@@ -64,8 +64,8 @@ func Parse(fileType types.LangType, filePath string, r io.Reader, parser Parser)
 }
 
 // ParsePackage returns a parsed result of the package file
-func ParsePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*types.Application, error) {
-	parsedPkgs, parsedDependencies, err := parser.Parse(context.TODO(), r)
+func ParsePackage(ctx context.Context, fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*types.Application, error) {
+	parsedPkgs, parsedDependencies, err := parser.Parse(ctx, r)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}

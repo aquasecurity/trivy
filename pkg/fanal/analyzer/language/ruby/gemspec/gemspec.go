@@ -22,8 +22,8 @@ var fileRegex = regexp.MustCompile(`.*/specifications/.+\.gemspec`)
 
 type gemspecLibraryAnalyzer struct{}
 
-func (a gemspecLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	return language.AnalyzePackage(types.GemSpec, input.FilePath, input.Content,
+func (a gemspecLibraryAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	return language.AnalyzePackage(ctx, types.GemSpec, input.FilePath, input.Content,
 		gemspec.NewParser(), input.Options.FileChecksum)
 }
 

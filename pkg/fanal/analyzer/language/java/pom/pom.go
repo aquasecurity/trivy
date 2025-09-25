@@ -23,10 +23,10 @@ const version = 1
 // pomAnalyzer analyzes pom.xml
 type pomAnalyzer struct{}
 
-func (a pomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a pomAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	filePath := filepath.Join(input.Dir, input.FilePath)
 	p := pom.NewParser(filePath, pom.WithOffline(input.Options.Offline))
-	res, err := language.Analyze(types.Pom, input.FilePath, input.Content, p)
+	res, err := language.Analyze(ctx, types.Pom, input.FilePath, input.Content, p)
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
 	}

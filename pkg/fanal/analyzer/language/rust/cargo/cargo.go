@@ -56,7 +56,7 @@ func newCargoAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error)
 	}, nil
 }
 
-func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a cargoAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
 	required := func(path string, _ fs.DirEntry) bool {
@@ -65,7 +65,7 @@ func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, _ fs.DirEntry, r io.Reader) error {
 		// Parse Cargo.lock
-		app, err := a.parseCargoLock(filePath, r)
+		app, err := a.parseCargoLock(ctx, filePath, r)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
@@ -104,8 +104,8 @@ func (a cargoAnalyzer) Version() int {
 	return version
 }
 
-func (a cargoAnalyzer) parseCargoLock(filePath string, r io.Reader) (*types.Application, error) {
-	return language.Parse(types.Cargo, filePath, r, a.lockParser)
+func (a cargoAnalyzer) parseCargoLock(ctx context.Context, filePath string, r io.Reader) (*types.Application, error) {
+	return language.Parse(ctx, types.Cargo, filePath, r, a.lockParser)
 }
 
 func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.Application) error {

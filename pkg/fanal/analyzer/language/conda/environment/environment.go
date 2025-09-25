@@ -58,8 +58,8 @@ func (*parser) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]types.Package, 
 
 type environmentAnalyzer struct{}
 
-func (a environmentAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	res, err := language.Analyze(types.CondaEnv, input.FilePath, input.Content, &parser{})
+func (a environmentAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	res, err := language.Analyze(ctx, types.CondaEnv, input.FilePath, input.Content, &parser{})
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse environment.yaml: %w", err)
 	}

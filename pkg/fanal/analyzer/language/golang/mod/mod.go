@@ -75,7 +75,7 @@ func (a *gomodAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnal
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, _ io.Reader) error {
 		// Parse go.mod
-		gomod, err := parse(input.FS, path, a.modParser)
+		gomod, err := parse(ctx, input.FS, path, a.modParser)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if gomod == nil {
@@ -85,7 +85,7 @@ func (a *gomodAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnal
 		if lessThanGo117(gomod) {
 			// e.g. /app/go.mod => /app/go.sum
 			sumPath := filepath.Join(filepath.Dir(path), types.GoSum)
-			gosum, err := parse(input.FS, sumPath, a.sumParser)
+			gosum, err := parse(ctx, input.FS, sumPath, a.sumParser)
 			if err != nil && !errors.Is(err, fs.ErrNotExist) {
 				return xerrors.Errorf("parse error: %w", err)
 			}
@@ -285,7 +285,7 @@ func (a *gomodAnalyzer) addOrphanIndirectDepsUnderRoot(apps []types.Application)
 	}
 }
 
-func parse(fsys fs.FS, path string, parser language.Parser) (*types.Application, error) {
+func parse(ctx context.Context, fsys fs.FS, path string, parser language.Parser) (*types.Application, error) {
 	f, err := fsys.Open(path)
 	if err != nil {
 		return nil, xerrors.Errorf("file open error: %w", err)
@@ -298,7 +298,7 @@ func parse(fsys fs.FS, path string, parser language.Parser) (*types.Application,
 	}
 
 	// Parse go.mod or go.sum
-	return language.Parse(types.GoModule, path, file, parser)
+	return language.Parse(ctx, types.GoModule, path, file, parser)
 }
 
 func lessThanGo117(gomod *types.Application) bool {

@@ -69,7 +69,7 @@ func (p *parserWithPatterns) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]t
 	return pkgs, deps, err
 }
 
-func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a yarnAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
 	required := func(path string, _ fs.DirEntry) bool {
@@ -79,7 +79,7 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, _ fs.DirEntry, r io.Reader) error {
 		parser := &parserWithPatterns{}
 		// Parse yarn.lock
-		app, err := language.Parse(types.Yarn, filePath, r, parser)
+		app, err := language.Parse(ctx, types.Yarn, filePath, r, parser)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {

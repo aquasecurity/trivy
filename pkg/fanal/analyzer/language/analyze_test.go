@@ -96,7 +96,7 @@ func TestAnalyze(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mp := &mockParser{t: t}
 
-			got, err := language.Analyze(tt.args.fileType, tt.args.filePath, tt.args.content, mp)
+			got, err := language.Analyze(context.Background(), tt.args.fileType, tt.args.filePath, tt.args.content, mp)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
