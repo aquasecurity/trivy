@@ -1520,8 +1520,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Packages: []*spdx.Package{
 					{
-						PackageName:           "test:latest",
-						PackageSPDXIdentifier: "ContainerImage-b15e0e4ae3cac96a",
+						PackageName:             "test:latest",
+						PackageSPDXIdentifier:   "ContainerImage-b15e0e4ae3cac96a",
 						PackageDownloadLocation: "NONE",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeContainer,
 						PackageExternalReferences: []*spdx.PackageExternalReference{

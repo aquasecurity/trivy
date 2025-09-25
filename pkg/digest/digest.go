@@ -3,6 +3,7 @@ package digest
 import (
 	"crypto/sha1" // nolint
 	"crypto/sha256"
+	"crypto/sha512"
 	"fmt"
 	"hash"
 	"io"
@@ -79,4 +80,15 @@ func CalcSHA256(r io.ReadSeeker) (Digest, error) {
 	}
 
 	return NewDigest(SHA256, h), nil
+}
+
+func CalcSHA512(r io.ReadSeeker) (Digest, error) {
+	defer r.Seek(0, io.SeekStart)
+
+	h := sha512.New()
+	if _, err := io.Copy(h, r); err != nil {
+		return "", xerrors.Errorf("unable to calculate sha512 digest: %w", err)
+	}
+
+	return NewDigest(SHA512, h), nil
 }
