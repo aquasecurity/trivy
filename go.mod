@@ -70,7 +70,6 @@ require (
 	github.com/knqyf263/go-rpmdb v0.1.1
 	github.com/knqyf263/nested v0.0.1
 	github.com/kylelemons/godebug v1.1.0
-	github.com/liamg/memoryfs v1.6.0
 	github.com/magefile/mage v1.15.0
 	github.com/masahiro331/go-disk v0.0.0-20240625071113-56c933208fee
 	github.com/masahiro331/go-ebs-file v0.0.0-20240917043618-e6d2bea5c32e

@@ -226,7 +226,7 @@ Resources:
 }
 
 func TestParse_WithParameters(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"main.yaml": `AWSTemplateFormatVersion: 2010-09-09
 Parameters:
   KmsMasterKeyId:
@@ -259,7 +259,7 @@ Resources:
 }
 
 func TestParse_WithParameterFiles(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"main.yaml": `AWSTemplateFormatVersion: 2010-09-09
 Parameters:
   KmsMasterKeyId:
@@ -296,7 +296,7 @@ Resources:
 }
 
 func TestParse_WithConfigFS(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"queue.yaml": `AWSTemplateFormatVersion: 2010-09-09
 Parameters:
   KmsMasterKeyId:
@@ -321,7 +321,7 @@ Resources:
 `,
 	})
 
-	configFS := testutil.CreateFS(t, map[string]string{
+	configFS := testutil.CreateFS(map[string]string{
 		"/workdir/parameters/queue.json": `[
       {
            "ParameterKey": "KmsMasterKeyId",
@@ -338,7 +338,7 @@ Resources:
 	})
 
 	p := New(
-		WithParameterFiles("/workdir/parameters/queue.json", "/workdir/parameters/s3.json"),
+		WithParameterFiles("workdir/parameters/queue.json", "workdir/parameters/s3.json"),
 		WithConfigsFS(configFS),
 	)
 
@@ -391,7 +391,7 @@ func TestJsonWithNumbers(t *testing.T) {
 }
 `
 
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"main.json": src,
 	})
 
@@ -425,7 +425,7 @@ Conditions:
   SubscribeEmail: !Not [!Equals [ !Ref Email, ""]]
 `
 
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"main.yaml": src,
 	})
 
@@ -442,7 +442,7 @@ Resources:
     Properties:
       BucketName:`
 
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"main.yaml": src,
 	})
 
@@ -468,7 +468,7 @@ Resources:
       PublicAccessBlockConfiguration:
         BlockPublicAcls: null`
 
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"main.yaml": src,
 	})
 

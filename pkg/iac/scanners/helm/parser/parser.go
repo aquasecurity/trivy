@@ -13,7 +13,6 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/liamg/memoryfs"
 	"gopkg.in/yaml.v3"
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/chart"
@@ -24,6 +23,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
 var manifestNameRegex = regexp.MustCompile("# Source: [^/]+/(.+)")
@@ -101,7 +101,7 @@ func (p *Parser) parseFS(ctx context.Context, fsys fs.FS, target string) error {
 		}
 
 		if detection.IsArchive(filePath) && !isDependencyChartArchive(fsys, filePath) {
-			memFS := memoryfs.New()
+			memFS := mapfs.New()
 			if err := p.unpackArchive(fsys, memFS, filePath); errors.Is(err, errSkipFS) {
 				// an unpacked Chart already exists
 				return nil

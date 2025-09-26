@@ -3,13 +3,11 @@ package helm
 import (
 	"context"
 	"fmt"
-	"io"
 	"io/fs"
 	"path"
 	"path/filepath"
 	"strings"
 
-	"github.com/liamg/memoryfs"
 	"helm.sh/helm/v3/pkg/chartutil"
 
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
@@ -22,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)
@@ -129,29 +128,27 @@ func (s *Scanner) getScanResults(ctx context.Context, path string, target fs.FS)
 		if err != nil {
 			return nil, fmt.Errorf("unmarshal yaml: %w", err)
 		}
+
+		manifestFS := mapfs.New()
+		if err := manifestFS.MkdirAll(filepath.Dir(file.TemplateFilePath), fs.ModePerm); err != nil {
+			return nil, err
+		}
+		if err := manifestFS.WriteVirtualFile(file.TemplateFilePath, []byte(file.ManifestContent), fs.ModePerm); err != nil {
+			return nil, err
+		}
+
 		for _, manifest := range manifests {
 			fileResults, err := rs.ScanInput(ctx, types.SourceKubernetes, rego.Input{
 				Path:     file.TemplateFilePath,
 				Contents: manifest,
-				FS:       target,
+				FS:       manifestFS,
 			})
 			if err != nil {
 				return nil, fmt.Errorf("scanning error: %w", err)
 			}
 
-			if len(fileResults) > 0 {
-				renderedFS := memoryfs.New()
-				if err := renderedFS.MkdirAll(filepath.Dir(file.TemplateFilePath), fs.ModePerm); err != nil {
-					return nil, err
-				}
-				if err := renderedFS.WriteLazyFile(file.TemplateFilePath, func() (io.Reader, error) {
-					return strings.NewReader(file.ManifestContent), nil
-				}, fs.ModePerm); err != nil {
-					return nil, err
-				}
-				fileResults.SetSourceAndFilesystem(helmParser.ChartSource, renderedFS, detection.IsArchive(helmParser.ChartSource))
-				fileResults.Ignore(ignoreRules, nil)
-			}
+			fileResults.SetSourceAndFilesystem(helmParser.ChartSource, manifestFS, detection.IsArchive(helmParser.ChartSource))
+			fileResults.Ignore(ignoreRules, nil)
 
 			results = append(results, fileResults...)
 		}

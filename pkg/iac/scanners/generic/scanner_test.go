@@ -14,7 +14,7 @@ import (
 )
 
 func TestJsonScanner(t *testing.T) {
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"/code/data.json": `{ "x": { "y": 123, "z": ["a", "b", "c"]}}`,
 		"/rules/rule.rego": `package builtin.json.lol
 
@@ -76,7 +76,7 @@ deny[res] {
 }
 
 func TestYamlScanner(t *testing.T) {
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"/code/data.yaml": `---
 x:
   y: 123
@@ -147,7 +147,7 @@ deny[res] {
 }
 
 func TestTomlParser(t *testing.T) {
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"/code/code.toml": `
 [x]
 y = 123
