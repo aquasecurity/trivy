@@ -12,6 +12,7 @@ import (
 	"sync"
 
 	"github.com/samber/lo"
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
@@ -413,7 +414,7 @@ func (ag AnalyzerGroup) AnalyzerVersions() Versions {
 // AnalyzeFile determines which files are required by the analyzers based on the file name and attributes,
 // and passes only those files to the analyzer for analysis.
 // This function may be called concurrently and must be thread-safe.
-func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, limit *semaphore.Weighted, result *AnalysisResult,
+func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, eg *errgroup.Group, limit *semaphore.Weighted, result *AnalysisResult,
 	dir, filePath string, info os.FileInfo, opener Opener, disabled []Type, opts AnalysisOptions) error {
 	if info.IsDir() {
 		return nil
@@ -442,26 +443,32 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 		if err = limit.Acquire(ctx, 1); err != nil {
 			return xerrors.Errorf("semaphore acquire: %w", err)
 		}
-		wg.Add(1)
 
-		go func(a analyzer, rc xio.ReadSeekCloserAt) {
+		eg.Go(func() error {
 			defer limit.Release(1)
-			defer wg.Done()
 			defer rc.Close()
 
-			ret, err := a.Analyze(ctx, AnalysisInput{
+			ret, analyzeErr := a.Analyze(ctx, AnalysisInput{
 				Dir:      dir,
 				FilePath: filePath,
 				Info:     info,
 				Content:  rc,
 				Options:  opts,
 			})
-			if err != nil && !errors.Is(err, fos.AnalyzeOSError) {
-				ag.logger.Debug("Analysis error", log.Err(err))
-				return
+			if analyzeErr != nil {
+				switch {
+				case errors.Is(analyzeErr, fos.AnalyzeOSError):
+					// The OS could not be detected.
+				case errors.Is(analyzeErr, context.DeadlineExceeded):
+					return xerrors.Errorf("analyzer timed out: %w", analyzeErr)
+				default:
+					ag.logger.Debug("Analysis error", log.Err(err))
+					return nil
+				}
 			}
 			result.Merge(ret)
-		}(a, rc)
+			return nil
+		})
 	}
 
 	return nil
