@@ -3,6 +3,7 @@ package pom
 import (
 	"context"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -190,7 +191,10 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 
 		if art.Relationship == ftypes.RelationshipRoot || art.Relationship == ftypes.RelationshipWorkspace {
 			// Managed dependencies in the root POM affect transitive dependencies
-			rootDepManagement = p.resolveDepManagement(ctx, result.properties, result.dependencyManagement)
+			rootDepManagement, err = p.resolveDepManagement(ctx, result.properties, result.dependencyManagement)
+			if err != nil {
+				return nil, nil, xerrors.Errorf("unable to resolve dep management: %w", err)
+			}
 
 			// mark its dependencies as "direct"
 			result.dependencies = lo.Map(result.dependencies, func(dep artifact, _ int) artifact {
@@ -319,6 +323,9 @@ func (p *Parser) resolve(ctx context.Context, art artifact, rootDepManagement []
 		log.String("artifact_id", art.ArtifactID), log.String("version", art.Version.String()))
 	pomContent, err := p.tryRepository(ctx, art.GroupID, art.ArtifactID, art.Version.String())
 	if err != nil {
+		if shouldReturnError(err) {
+			return analysisResult{}, err
+		}
 		p.logger.Debug("Repository error", log.Err(err))
 	}
 	result, err := p.analyze(ctx, pomContent, analysisOptions{
@@ -367,7 +374,10 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 	// Resolve dependencies
 	props := pom.properties()
 	depManagement := pom.content.DependencyManagement.Dependencies.Dependency
-	deps := p.parseDependencies(ctx, pom.content.Dependencies.Dependency, props, depManagement, opts)
+	deps, err := p.parseDependencies(ctx, pom.content.Dependencies.Dependency, props, depManagement, opts)
+	if err != nil {
+		return analysisResult{}, xerrors.Errorf("unable to parse dependencies: %w", err)
+	}
 	deps = p.filterDependencies(deps, opts.exclusions)
 
 	return analysisResult{
@@ -431,14 +441,18 @@ func (p *Parser) mergeDependencyManagements(depManagements ...[]pomDependency) [
 
 func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, props map[string]string, depManagement []pomDependency,
 	opts analysisOptions,
-) []artifact {
+) ([]artifact, error) {
 	// Imported POMs often have no dependencies, so dependencyManagement resolution can be skipped.
 	if len(deps) == 0 {
-		return nil
+		return nil, nil
 	}
 
+	var err error
 	// Resolve dependencyManagement
-	depManagement = p.resolveDepManagement(ctx, props, depManagement)
+	depManagement, err = p.resolveDepManagement(ctx, props, depManagement)
+	if err != nil {
+		return nil, xerrors.Errorf("unable to resolve dep management: %w", err)
+	}
 
 	rootDepManagement := opts.depManagement
 	var dependencies []artifact
@@ -452,10 +466,10 @@ func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, pr
 
 		dependencies = append(dependencies, d.ToArtifact(opts))
 	}
-	return dependencies
+	return dependencies, nil
 }
 
-func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]string, depManagement []pomDependency) []pomDependency {
+func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]string, depManagement []pomDependency) ([]pomDependency, error) {
 	var newDepManagement, imports []pomDependency
 	for _, dep := range depManagement {
 		// cf. https://howtodoinjava.com/maven/maven-dependency-scopes/#import
@@ -473,20 +487,26 @@ func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]stri
 		art := newArtifact(imp.GroupID, imp.ArtifactID, imp.Version, nil, props)
 		result, err := p.resolve(ctx, art, nil)
 		if err != nil {
+			if shouldReturnError(err) {
+				return nil, err
+			}
 			continue
 		}
 
 		// We need to recursively check all nested depManagements,
 		// so that we don't miss dependencies on nested depManagements with `Import` scope.
 		newProps := utils.MergeMaps(props, result.properties)
-		result.dependencyManagement = p.resolveDepManagement(ctx, newProps, result.dependencyManagement)
+		result.dependencyManagement, err = p.resolveDepManagement(ctx, newProps, result.dependencyManagement)
+		if err != nil {
+			return nil, err
+		}
 		for k, dd := range result.dependencyManagement {
 			// Evaluate variables and overwrite dependencyManagement
 			result.dependencyManagement[k] = dd.Resolve(newProps, nil, nil)
 		}
 		newDepManagement = p.mergeDependencyManagements(newDepManagement, result.dependencyManagement)
 	}
-	return newDepManagement
+	return newDepManagement, nil
 }
 
 func (p *Parser) mergeProperties(child, parent properties) properties {
@@ -535,6 +555,9 @@ func (p *Parser) parseParent(ctx context.Context, currentPath string, parent pom
 
 	parentPOM, err := p.retrieveParent(ctx, currentPath, parent.RelativePath, target)
 	if err != nil {
+		if shouldReturnError(err) {
+			return nil, err
+		}
 		logger.Debug("Parent POM not found", log.Err(err))
 		return &pom{content: &pomXML{}}, nil
 	}
@@ -662,6 +685,9 @@ func (p *Parser) tryRepository(ctx context.Context, groupID, artifactID, version
 	loaded, err = p.fetchPOMFromRemoteRepositories(ctx, paths, isSnapshot(version))
 	if err == nil {
 		return loaded, nil
+		// We should return error if it's not "not found" error
+	} else if shouldReturnError(err) {
+		return nil, err
 	}
 
 	return nil, xerrors.Errorf("%s:%s:%s was not found in local/remote repositories", groupID, artifactID, version)
@@ -747,8 +773,10 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repo str
 	client := xhttp.Client()
 	resp, err := client.Do(req)
 	if err != nil {
+		if shouldReturnError(err) {
+			return "", err
+		}
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
-		return "", nil
 	} else if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Int("statusCode", resp.StatusCode))
 		return "", nil
@@ -781,8 +809,10 @@ func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repo string, 
 	client := xhttp.Client()
 	resp, err := client.Do(req)
 	if err != nil {
+		if shouldReturnError(err) {
+			return nil, err
+		}
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
-		return nil, nil
 	} else if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Int("statusCode", resp.StatusCode))
 		return nil, nil
@@ -841,4 +871,11 @@ func isDirectory(path string) (bool, error) {
 		return false, err
 	}
 	return fileInfo.IsDir(), err
+}
+
+func shouldReturnError(err error) bool {
+	if err == nil {
+		return false
+	}
+	return errors.Is(err, context.DeadlineExceeded)
 }
