@@ -6,12 +6,21 @@ import (
 
 type Authorization struct {
 	RoleDefinitions []RoleDefinition
+	RoleAssignments []RoleAssignment
 }
 
 type RoleDefinition struct {
 	Metadata         iacTypes.Metadata
 	Permissions      []Permission
 	AssignableScopes []iacTypes.StringValue
+}
+
+type RoleAssignment struct {
+	Metadata           iacTypes.Metadata
+	RoleDefinitionId   iacTypes.StringValue
+	RoleDefinitionName iacTypes.StringValue
+	PrincipalId        iacTypes.StringValue
+	PrincipalType      iacTypes.StringValue
 }
 
 type Permission struct {
