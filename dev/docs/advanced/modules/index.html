@@ -8356,8 +8356,8 @@ This command takes an url. It will download the module and install it in the mod
 Trivy will now search XDG_DATA_HOME for the location of the Trivy modules cache.
 The preference order is as follows:</p>
 <ul>
-<li>XDG_DATA_HOME if set and .trivy/plugins exists within the XDG_DATA_HOME dir</li>
-<li>$HOME/.trivy/plugins</li>
+<li>XDG_DATA_HOME if set and .trivy/modules exists within the XDG_DATA_HOME dir</li>
+<li>$HOME/.trivy/modules</li>
 </ul>
 <p>For example, to download the WebAssembly module, you can execute the following command:</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>module<span class="w"> </span>install<span class="w"> </span>ghcr.io/aquasecurity/trivy-module-spring4shell
@@ -8426,6 +8426,10 @@ See <a href="#examples">examples</a> for the detail.</p>
 <code>Name()</code> returns your module name.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nx">main</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;github.com/aquasecurity/trivy/pkg/module/wasm&quot;</span>
+<span class="p">)</span>
+
 <span class="kd">const</span><span class="w"> </span><span class="p">(</span>
 <span class="w">    </span><span class="nx">version</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">1</span>
 <span class="w">    </span><span class="nx">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;wordpress-module&quot;</span>
@@ -8433,6 +8437,10 @@ See <a href="#examples">examples</a> for the detail.</p>
 
 <span class="c1">// main is required for Go to compile the Wasm module</span>
 <span class="kd">func</span><span class="w"> </span><span class="nx">main</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w">  </span>
+
+<span class="kd">func</span><span class="w"> </span><span class="nx">init</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">wasm</span><span class="p">.</span><span class="nx">RegisterModule</span><span class="p">(</span><span class="nx">WordpressModule</span><span class="p">{})</span>
+<span class="p">}</span>
 
 <span class="kd">type</span><span class="w"> </span><span class="nx">WordpressModule</span><span class="w"> </span><span class="kd">struct</span><span class="p">{</span>
 <span class="w">    </span><span class="c1">// Cannot define fields as modules can&#39;t keep state.</span>
