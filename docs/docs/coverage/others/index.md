@@ -16,6 +16,7 @@ Trivy supports them for
 | [Conda](conda.md)              | `<conda-root>/envs/<env>/conda-meta/<package>.json` |     ✅     |     ✅      |       -        |       -        |
 |                                | `environment.yml`                                   |     -     |     -      |       ✅        |       ✅        |
 | [Root.io images](rootio.md)    | -                                                   |     ✅     |     ✅      |       -        |       -        |
+| [Seal Security](seal.md)       | -                                                   |     ✅     |     ✅      |       -        |       -        |
 | [RPM Archives](rpm.md)         | `*.rpm`                                             |   ✅[^5]   |   ✅[^5]    |     ✅[^5]      |     ✅[^5]      |
 
 [sbom]: ../../supply-chain/sbom.md
