@@ -20,6 +20,20 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
+
+	// Shared scan service wiring for custom initializer
+	trivydb "github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/applier"
+	artimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
+	artlocal "github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
+	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
+	localscan "github.com/aquasecurity/trivy/pkg/scan/local"
+	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
 // Run runs a k8s scan
@@ -62,7 +76,95 @@ func newRunner(flagOpts flag.Options, cluster string) *runner {
 }
 
 func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) error {
-	runner, err := cmd.NewRunner(ctx, r.flagOpts, cmd.TargetK8s)
+	// Build a shared FS cache for image scans to avoid BoltDB conflicts
+	cacheOpts := r.flagOpts.CacheOpts()
+
+	var sharedCache cache.Cache
+	var sharedCacheCleanup func()
+
+	if cache.NewType(cacheOpts.Backend) == cache.TypeFS {
+		var err error
+		sharedCache, sharedCacheCleanup, err = cache.New(cacheOpts)
+		if err != nil {
+			return xerrors.Errorf("init shared cache error: %w", err)
+		}
+		// Ensure shared cache is closed after all scans
+		defer func() {
+			if sharedCacheCleanup != nil {
+				sharedCacheCleanup()
+			}
+		}()
+	}
+
+	// Custom initializer that reuses the shared FS cache for image scans
+	initWithSharedCache := func(initCtx context.Context, conf cmd.ScannerConfig) (scan.Service, func(), error) {
+		// If memory backend is requested (e.g., for k8s misconfig), use a fresh in-memory cache
+		if cache.NewType(conf.CacheOptions.Backend) == cache.TypeMemory {
+			mem := cache.NewMemoryCache()
+
+			app := applier.NewApplier(mem)
+			osScanner := ospkg.NewScanner()
+			langScanner := langpkg.NewScanner()
+			vulnClient := vulnerability.NewClient(trivydb.Config{})
+			svc := localscan.NewService(app, osScanner, langScanner, vulnClient)
+
+			fs := walker.NewFS()
+			art, err := artlocal.NewArtifact(conf.Target, mem, fs, conf.ArtifactOption)
+			if err != nil {
+				_ = mem.Close()
+				return scan.Service{}, nil, xerrors.Errorf("unable to initialize filesystem artifact: %w", err)
+			}
+			return scan.NewService(svc, art), func() { _ = mem.Close() }, nil
+		}
+
+		// Default path: image scan with a shared FS cache
+		if sharedCache == nil {
+			// Fallback: create a one-off cache if not initialized
+			tmpCache, tmpCleanup, err := cache.New(conf.CacheOptions)
+			if err != nil {
+				return scan.Service{}, nil, xerrors.Errorf("unable to initialize cache: %w", err)
+			}
+			app := applier.NewApplier(tmpCache)
+			osScanner := ospkg.NewScanner()
+			langScanner := langpkg.NewScanner()
+			vulnClient := vulnerability.NewClient(trivydb.Config{})
+			svc := localscan.NewService(app, osScanner, langScanner, vulnClient)
+
+			img, cleanupImage, err := image.NewContainerImage(initCtx, conf.Target, conf.ArtifactOption.ImageOption)
+			if err != nil {
+				tmpCleanup()
+				return scan.Service{}, nil, xerrors.Errorf("unable to initialize container image: %w", err)
+			}
+			art, err := artimage.NewArtifact(img, tmpCache, conf.ArtifactOption)
+			if err != nil {
+				cleanupImage()
+				tmpCleanup()
+				return scan.Service{}, nil, xerrors.Errorf("unable to initialize artifact: %w", err)
+			}
+			return scan.NewService(svc, art), func() { cleanupImage(); tmpCleanup() }, nil
+		}
+
+		// Use the shared FS cache
+		app := applier.NewApplier(sharedCache)
+		osScanner := ospkg.NewScanner()
+		langScanner := langpkg.NewScanner()
+		vulnClient := vulnerability.NewClient(trivydb.Config{})
+		svc := localscan.NewService(app, osScanner, langScanner, vulnClient)
+
+		img, cleanupImage, err := image.NewContainerImage(initCtx, conf.Target, conf.ArtifactOption.ImageOption)
+		if err != nil {
+			return scan.Service{}, nil, xerrors.Errorf("unable to initialize container image: %w", err)
+		}
+		art, err := artimage.NewArtifact(img, sharedCache, conf.ArtifactOption)
+		if err != nil {
+			cleanupImage()
+			return scan.Service{}, nil, xerrors.Errorf("unable to initialize artifact: %w", err)
+		}
+		// Do not close the shared cache here; only close the image
+		return scan.NewService(svc, art), func() { cleanupImage() }, nil
+	}
+
+	runner, err := cmd.NewRunner(ctx, r.flagOpts, cmd.TargetK8s, cmd.WithInitializeService(initWithSharedCache))
 	if err != nil {
 		if errors.Is(err, cmd.SkipScan) {
 			return nil
