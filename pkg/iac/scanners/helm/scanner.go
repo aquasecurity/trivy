@@ -1,7 +1,6 @@
 package helm
 
 import (
-	"cmp"
 	"context"
 	"fmt"
 	"io/fs"
@@ -130,8 +129,15 @@ func (s *Scanner) getScanResults(ctx context.Context, path string, target fs.FS)
 			return nil, fmt.Errorf("unmarshal yaml: %w", err)
 		}
 
+		manifestFS := mapfs.New()
+		if err := manifestFS.MkdirAll(filepath.Dir(file.TemplateFilePath), fs.ModePerm); err != nil {
+			return nil, err
+		}
+		if err := manifestFS.WriteVirtualFile(file.TemplateFilePath, []byte(file.ManifestContent), fs.ModePerm); err != nil {
+			return nil, err
+		}
+
 		for _, manifest := range manifests {
-			manifestFS := cmp.Or(helmParser.GetManifestFilesystem(file.TemplateFilePath), target)
 			fileResults, err := rs.ScanInput(ctx, types.SourceKubernetes, rego.Input{
 				Path:     file.TemplateFilePath,
 				Contents: manifest,
@@ -141,17 +147,8 @@ func (s *Scanner) getScanResults(ctx context.Context, path string, target fs.FS)
 				return nil, fmt.Errorf("scanning error: %w", err)
 			}
 
-			if len(fileResults) > 0 {
-				renderedFS := mapfs.New()
-				if err := renderedFS.MkdirAll(filepath.Dir(file.TemplateFilePath), fs.ModePerm); err != nil {
-					return nil, err
-				}
-				if err := renderedFS.WriteVirtualFile(file.TemplateFilePath, []byte(file.ManifestContent), fs.ModePerm); err != nil {
-					return nil, err
-				}
-				fileResults.SetSourceAndFilesystem(helmParser.ChartSource, renderedFS, detection.IsArchive(helmParser.ChartSource))
-				fileResults.Ignore(ignoreRules, nil)
-			}
+			fileResults.SetSourceAndFilesystem(helmParser.ChartSource, manifestFS, detection.IsArchive(helmParser.ChartSource))
+			fileResults.Ignore(ignoreRules, nil)
 
 			results = append(results, fileResults...)
 		}

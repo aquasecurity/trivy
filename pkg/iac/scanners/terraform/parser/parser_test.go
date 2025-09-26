@@ -2898,7 +2898,7 @@ func Test_MarkedValues(t *testing.T) {
 				`main.tf`: tt.src,
 			}
 
-			fsys := testutil.CreateFS(t, files)
+			fsys := testutil.CreateFS(files)
 			parser := New(fsys, "",
 				OptionWithSkipCachedModules(true),
 				OptionStopOnHCLError(true),
