@@ -1,6 +1,7 @@
 package helm
 
 import (
+	"cmp"
 	"context"
 	"fmt"
 	"io/fs"
@@ -128,11 +129,13 @@ func (s *Scanner) getScanResults(ctx context.Context, path string, target fs.FS)
 		if err != nil {
 			return nil, fmt.Errorf("unmarshal yaml: %w", err)
 		}
+
 		for _, manifest := range manifests {
+			manifestFS := cmp.Or(helmParser.GetManifestFilesystem(file.TemplateFilePath), target)
 			fileResults, err := rs.ScanInput(ctx, types.SourceKubernetes, rego.Input{
 				Path:     file.TemplateFilePath,
 				Contents: manifest,
-				FS:       target,
+				FS:       manifestFS,
 			})
 			if err != nil {
 				return nil, fmt.Errorf("scanning error: %w", err)
