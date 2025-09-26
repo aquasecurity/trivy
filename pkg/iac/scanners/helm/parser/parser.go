@@ -281,7 +281,3 @@ func getManifestPath(manifest string) string {
 	}
 	return manifestFilePathParts[0]
 }
-
-func (p *Parser) GetManifestFilesystem(filePath string) fs.FS {
-	return p.filepaths[path.Join(p.rootPath, filePath)]
-}
