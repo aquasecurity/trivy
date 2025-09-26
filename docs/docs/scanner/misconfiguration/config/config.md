@@ -132,9 +132,16 @@ It is also possible to specify multiple input schemas with `--config-file-schema
 
 ### Filtering resources by inline comments
 
-Trivy supports ignoring misconfigured resources by inline comments for Terraform, CloudFormation and Helm configuration files only.
+Trivy supports ignoring misconfigured resources by inline comments for Terraform, CloudFormation, Helm and Dockerfile configuration files only.
 
 In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned). The format for these comments is `trivy:ignore:<rule>` immediately following the format-specific line-comment [token](https://developer.hashicorp.com/terraform/language/syntax/configuration#comments).
+
+
+!!!note
+    Inline ignore rules only work for checks associated with an existing resource.
+    Checks triggered by the absence of a resource (e.g., **AVD-DS-0002** when a Dockerfile lacks a `USER` instruction) cannot be ignored inline.  
+    Use a [.trivyignore.yaml](../../../configuration/filtering.md#trivyignoreyaml) file to ignore such checks.
+
 
 The ignore rule must contain one of the possible check IDs that can be found in its metadata: ID, short code or alias. The `id` from the metadata is not case-sensitive, so you can specify, for example, `AVD-AWS-0089` or `avd-aws-0089`.
 
