@@ -1,6 +1,7 @@
 package packagesprops
 
 import (
+	"context"
 	"encoding/xml"
 	"strings"
 
@@ -67,7 +68,7 @@ func isVariable(s string) bool {
 	return strings.HasPrefix(s, "$(") && strings.HasSuffix(s, ")")
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var configData project
 	if err := xml.NewDecoder(r).Decode(&configData); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode '*.packages.props' file: %w", err)

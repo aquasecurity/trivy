@@ -51,7 +51,7 @@ func newPipLibraryAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer
 	}, nil
 }
 
-func (a pipLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a pipLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
 	sitePackagesDir, err := a.pythonSitePackagesDir()
@@ -67,7 +67,7 @@ func (a pipLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 	useMinVersion := a.detectionPriority == types.PriorityComprehensive
 
 	if err = fsutils.WalkDir(input.FS, ".", required, func(pathPath string, _ fs.DirEntry, r io.Reader) error {
-		app, err := language.Parse(types.Pip, pathPath, r, pip.NewParser(useMinVersion))
+		app, err := language.Parse(ctx, types.Pip, pathPath, r, pip.NewParser(useMinVersion))
 		if err != nil {
 			return xerrors.Errorf("unable to parse requirements.txt: %w", err)
 		}
@@ -79,7 +79,7 @@ func (a pipLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		// Fill licenses
 		if sitePackagesDir != "" {
 			for i := range app.Packages {
-				app.Packages[i].Licenses = a.pkgLicense(app.Packages[i].Name, app.Packages[i].Version, sitePackagesDir)
+				app.Packages[i].Licenses = a.pkgLicense(ctx, app.Packages[i].Name, app.Packages[i].Version, sitePackagesDir)
 			}
 		}
 
@@ -108,14 +108,14 @@ func (a pipLibraryAnalyzer) Version() int {
 }
 
 // pkgLicense parses `METADATA` pkg file to look for licenses
-func (a pipLibraryAnalyzer) pkgLicense(pkgName, pkgVer, spDir string) []string {
+func (a pipLibraryAnalyzer) pkgLicense(ctx context.Context, pkgName, pkgVer, spDir string) []string {
 	metadataFile := a.metadataFile(pkgName, pkgVer, spDir)
 	if metadataFile == nil {
 		return nil
 	}
 	defer metadataFile.Close()
 
-	metadataPkg, _, err := a.metadataParser.Parse(metadataFile)
+	metadataPkg, _, err := a.metadataParser.Parse(ctx, metadataFile)
 	if err != nil {
 		a.logger.Warn("Unable to parse METADATA file", log.FilePath(metadataFile.Name()), log.Err(err))
 		return nil

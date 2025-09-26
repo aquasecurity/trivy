@@ -91,7 +91,7 @@ func TestParser_Parse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			gotPkgs, _, err := pub.NewParser(tt.useMinVersion).Parse(f)
+			gotPkgs, _, err := pub.NewParser(tt.useMinVersion).Parse(t.Context(), f)
 			if !tt.wantErr(t, err, fmt.Sprintf("Parse(%v)", tt.inputFile)) {
 				return
 			}

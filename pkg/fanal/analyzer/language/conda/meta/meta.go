@@ -22,9 +22,9 @@ var fileRegex = regexp.MustCompile(`.*/envs/.+/conda-meta/.+-.+-.+\.json`)
 
 type metaAnalyzer struct{}
 
-func (a metaAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a metaAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	p := meta.NewParser()
-	return language.AnalyzePackage(types.CondaPkg, input.FilePath, input.Content, p, input.Options.FileChecksum)
+	return language.AnalyzePackage(ctx, types.CondaPkg, input.FilePath, input.Content, p, input.Options.FileChecksum)
 }
 func (a metaAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return fileRegex.MatchString(filepath.ToSlash(filePath))

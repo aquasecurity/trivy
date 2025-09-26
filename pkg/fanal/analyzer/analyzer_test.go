@@ -9,6 +9,7 @@ import (
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
@@ -514,7 +515,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var wg sync.WaitGroup
+			eg, ctx := errgroup.WithContext(t.Context())
 			limit := semaphore.NewWeighted(3)
 
 			got := new(analyzer.AnalysisResult)
@@ -531,8 +532,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 			info, err := os.Stat(tt.args.testFilePath)
 			require.NoError(t, err)
 
-			ctx := t.Context()
-			err = a.AnalyzeFile(ctx, &wg, limit, got, "", tt.args.filePath, info,
+			err = a.AnalyzeFile(ctx, eg, limit, got, "", tt.args.filePath, info,
 				func() (xio.ReadSeekCloserAt, error) {
 					switch tt.args.testFilePath {
 					case "testdata/error":
@@ -548,7 +548,9 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 				nil, analyzer.AnalysisOptions{},
 			)
 
-			wg.Wait()
+			egErr := eg.Wait()
+			require.NoError(t, egErr)
+
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -724,8 +726,10 @@ func TestAnalyzerGroup_StaticPaths(t *testing.T) {
 		wantAllStatic     bool
 	}{
 		{
-			name:              "all analyzers including post-analyzers implement StaticPathAnalyzer",
-			disabledAnalyzers: []analyzer.Type{analyzer.TypeApkCommand, analyzer.TypeJar, analyzer.TypePoetry, analyzer.TypeBundler},
+			name: "all analyzers including post-analyzers implement StaticPathAnalyzer",
+			disabledAnalyzers: []analyzer.Type{
+				analyzer.TypeApkCommand, analyzer.TypeJar, analyzer.TypePoetry, analyzer.TypeBundler,
+			},
 			want: []string{
 				"etc/apk/repositories",
 				"etc/lsb-release",
@@ -743,8 +747,10 @@ func TestAnalyzerGroup_StaticPaths(t *testing.T) {
 			wantAllStatic: true,
 		},
 		{
-			name:              "all analyzers implement StaticPathAnalyzer, but there is file pattern",
-			disabledAnalyzers: []analyzer.Type{analyzer.TypeApkCommand, analyzer.TypeJar, analyzer.TypePoetry, analyzer.TypeBundler},
+			name: "all analyzers implement StaticPathAnalyzer, but there is file pattern",
+			disabledAnalyzers: []analyzer.Type{
+				analyzer.TypeApkCommand, analyzer.TypeJar, analyzer.TypePoetry, analyzer.TypeBundler,
+			},
 			filePatterns: []string{
 				"alpine:etc/alpine-release-custom",
 			},

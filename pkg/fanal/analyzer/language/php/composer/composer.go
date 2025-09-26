@@ -43,7 +43,7 @@ func newComposerAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, err
 	}, nil
 }
 
-func (a composerAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a composerAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
 	required := func(path string, _ fs.DirEntry) bool {
@@ -52,7 +52,7 @@ func (a composerAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnal
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
 		// Parse composer.lock
-		app, err := a.parseComposerLock(path, r)
+		app, err := a.parseComposerLock(ctx, path, r)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
@@ -99,8 +99,8 @@ func (a composerAnalyzer) Version() int {
 	return composerAnalyzerVersion
 }
 
-func (a composerAnalyzer) parseComposerLock(path string, r io.Reader) (*types.Application, error) {
-	return language.Parse(types.Composer, path, r, a.lockParser)
+func (a composerAnalyzer) parseComposerLock(ctx context.Context, path string, r io.Reader) (*types.Application, error) {
+	return language.Parse(ctx, types.Composer, path, r, a.lockParser)
 }
 
 func (a composerAnalyzer) mergeComposerJson(fsys fs.FS, dir string, app *types.Application) error {

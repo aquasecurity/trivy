@@ -1,6 +1,7 @@
 package uv
 
 import (
+	"context"
 	"sort"
 
 	"github.com/BurntSushi/toml"
@@ -118,7 +119,7 @@ func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lock Lock
 	if _, err := toml.NewDecoder(r).Decode(&lock); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode uv lock file: %w", err)

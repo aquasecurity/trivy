@@ -52,7 +52,7 @@ func newNugetLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer,
 	}, nil
 }
 
-func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a *nugetLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 	foundLicenses := make(map[string][]string)
 	if a.licenseParser.packagesDir == "" {
@@ -73,7 +73,7 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 			parser = a.configParser
 		}
 
-		app, err := language.Parse(types.NuGet, path, r, parser)
+		app, err := language.Parse(ctx, types.NuGet, path, r, parser)
 		if err != nil {
 			return xerrors.Errorf("NuGet parse error: %w", err)
 		}

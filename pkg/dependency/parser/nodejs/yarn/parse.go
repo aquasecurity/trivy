@@ -3,6 +3,7 @@ package yarn
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"io"
 	"regexp"
 	"sort"
@@ -269,7 +270,7 @@ func parseDependency(line string) (string, error) {
 	return packageID(name, version), nil
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, map[string][]string, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, map[string][]string, error) {
 	lineNumber := 1
 	var pkgs ftypes.Packages
 

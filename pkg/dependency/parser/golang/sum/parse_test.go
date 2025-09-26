@@ -41,7 +41,7 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			got, _, err := NewParser().Parse(f)
+			got, _, err := NewParser().Parse(t.Context(), f)
 			require.NoError(t, err)
 
 			for i := range got {

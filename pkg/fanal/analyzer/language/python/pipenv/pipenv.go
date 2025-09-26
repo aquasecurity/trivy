@@ -24,8 +24,8 @@ var requiredFiles = []string{types.PipfileLock}
 
 type pipenvLibraryAnalyzer struct{}
 
-func (a pipenvLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	res, err := language.Analyze(types.Pipenv, input.FilePath, input.Content, pipenv.NewParser())
+func (a pipenvLibraryAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	res, err := language.Analyze(ctx, types.Pipenv, input.FilePath, input.Content, pipenv.NewParser())
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse Pipfile.lock: %w", err)
 	}
