@@ -1257,3 +1257,22 @@ deny contains res if {
 
 	assert.Len(t, failed, 1)
 }
+
+func Test_ScanTofuFiles(t *testing.T) {
+	fsys := testutil.CreateFS(t, map[string]string{
+		"code/main.tofu":   `resource "aws_s3_bucket" "this" {}`,
+		"rules/check.rego": emptyBucketCheck,
+	})
+
+	scanner := New(
+		rego.WithPolicyNamespaces("user"),
+		rego.WithPolicyDirs("rules"),
+		rego.WithPolicyFilesystem(fsys),
+	)
+
+	results, err := scanner.ScanFS(t.Context(), fsys, "code")
+	require.NoError(t, err)
+
+	assert.Len(t, results, 1)
+	assert.Len(t, results.GetFailed(), 1)
+}
