@@ -82,7 +82,7 @@
           "PkgName": "openssl-libs",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026distro=centos-7.6.1810\u0026epoch=1",
-            "UID": "20f09cdcea6545a2"
+            "UID": "cac1722c9e5ed085"
           },
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",
@@ -91,8 +91,14 @@
             "Digest": "sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b",
             "DiffID": "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
           },
-          "SeveritySource": "redhat",
+          "SeveritySource": "redhat-oval",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1559",
+          "DataSource": {
+            "ID": "redhat-oval",
+            "Name": "Red Hat OVAL v2",
+            "URL": "https://www.redhat.com/security/data/oval/v2/"
+          },
+          "Custom": null,
           "Title": "openssl: 0-byte record padding oracle",
           "Description": "If an application encounters a fatal protocol error and then calls SSL_shutdown() twice (once to send a close_notify, and once to receive one) then OpenSSL can respond differently to the calling application if a 0 byte record is received with invalid padding compared to if a 0 byte record is received with an invalid MAC. If the application then behaves differently based on that in a way that is detectable to the remote peer, then this amounts to a padding oracle that could be used to decrypt data. In order for this to be exploitable \"non-stitched\" ciphersuites must be in use. Stitched ciphersuites are optimised implementations of certain commonly used ciphersuites. Also the application must call SSL_shutdown() twice even if a protocol error has occurred (applications should not do this but some do anyway). Fixed in OpenSSL 1.0.2r (Affected 1.0.2-1.0.2q).",
           "Severity": "MEDIUM",
@@ -105,6 +111,7 @@
             "nvd": 2,
             "oracle-oval": 2,
             "redhat": 2,
+            "redhat-oval": 2,
             "ubuntu": 2
           },
           "CVSS": {
@@ -176,7 +183,7 @@
           "PkgName": "openssl-libs",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026distro=centos-7.6.1810\u0026epoch=1",
-            "UID": "20f09cdcea6545a2"
+            "UID": "cac1722c9e5ed085"
           },
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",
@@ -185,8 +192,14 @@
             "Digest": "sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b",
             "DiffID": "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
           },
-          "SeveritySource": "redhat",
+          "SeveritySource": "redhat-oval",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-0734",
+          "DataSource": {
+            "ID": "redhat-oval",
+            "Name": "Red Hat OVAL v2",
+            "URL": "https://www.redhat.com/security/data/oval/v2/"
+          },
+          "Custom": null,
           "Title": "openssl: timing side channel attack in the DSA signature algorithm",
           "Description": "The OpenSSL DSA signature algorithm has been shown to be vulnerable to a timing side channel attack. An attacker could use variations in the signing algorithm to recover the private key. Fixed in OpenSSL 1.1.1a (Affected 1.1.1). Fixed in OpenSSL 1.1.0j (Affected 1.1.0-1.1.0i). Fixed in OpenSSL 1.0.2q (Affected 1.0.2-1.0.2p).",
           "Severity": "LOW",
@@ -201,6 +214,7 @@
             "oracle-oval": 1,
             "photon": 2,
             "redhat": 1,
+            "redhat-oval": 1,
             "ubuntu": 1
           },
           "CVSS": {
