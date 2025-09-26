@@ -219,6 +219,19 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				"The local DB has an old schema version which is not supported by the current version of Trivy CLI. DB needs to be updated.",
 			},
 		},
+		{
+			name:         "trivy.db is missing but metadata with recent DownloadedAt",
+			dbFileExists: false,
+			metadata: metadata.Metadata{
+				Version:      db.SchemaVersion,
+				NextUpdate:   timeNextUpdateDay1,
+				DownloadedAt: time.Date(2019, 9, 30, 23, 30, 0, 0, time.UTC),
+			},
+			want: true,
+			wantLogs: []string{
+				"There is no db file",
+			},
+		},
 	}
 
 	for _, tt := range tests {
