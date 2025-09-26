@@ -1,0 +1,17 @@
+{
+    "manifests": [
+        {
+            "annotations": {
+                "dev.sigstore.bundle.content": "dsse-envelope",
+                "dev.sigstore.bundle.predicateType": "https://cyclonedx.org/bom",
+                "org.opencontainers.image.created": "2025-09-23T15:33:31Z"
+            },
+            "artifactType": "application/vnd.dev.sigstore.bundle.v0.3+json",
+            "digest": "sha256:3efec4938089b060058525552ba8bf1888beddf29616e4243b4262792ed3fd2f",
+            "mediaType": "application/vnd.oci.image.manifest.v1+json",
+            "size": 878
+        }
+    ],
+    "mediaType": "application/vnd.oci.image.index.v1+json",
+    "schemaVersion": 2
+}
