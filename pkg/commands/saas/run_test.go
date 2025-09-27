@@ -4,20 +4,17 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/zalando/go-keyring"
 
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/saas"
 )
 
 func TestLogout(t *testing.T) {
-	if os.Getenv("GITHUB_ACTIONS") == "true" || os.Getenv("CI") == "true" {
-		t.Skip("Skipping test in CI environment - keychain not available")
-	}
 	tests := []struct {
 		name             string
 		createConfigFile bool
@@ -32,16 +29,18 @@ func TestLogout(t *testing.T) {
 		},
 	}
 
+	keyring.MockInit()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+
+			defer keyring.DeleteAll(saas.ServiceName)
 			defer saas.Clear()
 			saas.Clear()
 
 			if tt.createConfigFile {
 				config := &saas.CloudConfig{
-					ServerUrl:     "https://example.com",
-					ApiUrl:        "https://api.example.com",
-					DisableUpload: false,
+					ServerUrl: "https://example.com",
+					ApiUrl:    "https://api.example.com",
 				}
 				err := config.Save()
 				require.NoError(t, err)
@@ -54,10 +53,6 @@ func TestLogout(t *testing.T) {
 }
 
 func TestLogin(t *testing.T) {
-	if os.Getenv("GITHUB_ACTIONS") == "true" || os.Getenv("CI") == "true" {
-		t.Skip("Skipping test in CI environment - keychain not available")
-	}
-
 	tests := []struct {
 		name           string
 		token          string
@@ -83,19 +78,22 @@ func TestLogin(t *testing.T) {
 			token:          "valid-token-123",
 			serverResponse: http.StatusUnauthorized,
 			wantErr:        true,
-			errorContains:  "failed to login to SaaS: received status code 401",
+			errorContains:  "failed to verify token: received status code 401",
 		},
 		{
 			name:           "login fails with server internal error",
 			token:          "valid-token-123",
 			serverResponse: http.StatusInternalServerError,
 			wantErr:        true,
-			errorContains:  "failed to login to SaaS: received status code 500",
+			errorContains:  "failed to verify token: received status code 500",
 		},
 	}
 
+	keyring.MockInit()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			defer keyring.DeleteAll(saas.ServiceName)
+
 			defer saas.Clear()
 			saas.Clear()
 
