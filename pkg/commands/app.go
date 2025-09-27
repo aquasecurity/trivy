@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/auth"
 	"github.com/aquasecurity/trivy/pkg/commands/clean"
 	"github.com/aquasecurity/trivy/pkg/commands/convert"
+	"github.com/aquasecurity/trivy/pkg/commands/saas"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -61,6 +62,7 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 	groupManagement = "management"
 	groupUtility    = "utility"
 	groupPlugin     = "plugin"
+	groupSaas       = "saas"
 )
 
 // NewApp is the factory method to return Trivy CLI
@@ -80,6 +82,10 @@ func NewApp() *cobra.Command {
 		&cobra.Group{
 			ID:    groupUtility,
 			Title: "Utility Commands",
+		},
+		&cobra.Group{
+			ID:    groupSaas,
+			Title: "SaaS Commands",
 		},
 	)
 	rootCmd.SetCompletionCommandGroupID(groupUtility)
@@ -102,6 +108,8 @@ func NewApp() *cobra.Command {
 		NewCleanCommand(globalFlags),
 		NewRegistryCommand(globalFlags),
 		NewVEXCommand(globalFlags),
+		NewLoginCommand(globalFlags),
+		NewLogoutCommand(),
 	)
 
 	if plugins := loadPluginCommands(); len(plugins) > 0 {
@@ -209,7 +217,7 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			// Initialize logger
 			log.InitLogger(opts.Debug, opts.Quiet)
 
-			return nil
+			return saas.CheckTrivyCloudStatus(cmd)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			flags := flag.Flags{globalFlags}
@@ -1411,6 +1419,58 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	)
 
 	cmd.AddCommand(repoCmd)
+	return cmd
+}
+
+func NewLoginCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	loginFlags := &flag.Flags{
+		globalFlags,
+		flag.NewSaasFlagGroup(),
+	}
+
+	loginCmd := &cobra.Command{
+		Use:     "login [flags]",
+		Short:   "Log in to the Trivy Cloud platform",
+		Long:    "Log in to the Trivy Cloud platform to enable scanning of images and repositories in the cloud using the token retrieved from the Trivy Cloud platform",
+		GroupID: groupSaas,
+		Args:    cobra.NoArgs,
+		Example: `  # Log in to the Trivy Cloud platform
+  $ trivy login --token <token>`,
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
+			if err := loginFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := loginFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			saasOptions, err := loginFlags.ToOptions(args)
+			if err != nil {
+				return xerrors.Errorf("flag error: %w", err)
+			}
+			return saas.Login(cmd.Context(), saasOptions)
+		},
+	}
+
+	loginFlags.AddFlags(loginCmd)
+	loginCmd.SetFlagErrorFunc(flagErrorFunc)
+
+	return loginCmd
+}
+
+func NewLogoutCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "logout",
+		Short:   "Log out of Trivy Cloud platform",
+		GroupID: groupSaas,
+		Args:    cobra.NoArgs,
+		RunE: func(_ *cobra.Command, _ []string) error {
+			return saas.Logout()
+		},
+	}
+
 	return cmd
 }
 
