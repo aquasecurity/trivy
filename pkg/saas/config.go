@@ -29,12 +29,6 @@ type CloudConfig struct {
 	ApiUrl     string `yaml:"api_url"`
 }
 
-type configData struct {
-	ServerUrl     string `yaml:"server_url"`
-	ApiUrl        string `yaml:"api_url"`
-	DisableUpload bool   `yaml:"disable_upload"`
-}
-
 func getConfigPath() string {
 	configFileName := fmt.Sprintf("%s.yaml", ServiceName)
 	return filepath.Join(fsutils.TrivyHomeDir(), configFileName)
@@ -53,12 +47,8 @@ func (c *CloudConfig) Save() error {
 	if err := os.MkdirAll(filepath.Dir(configPath), 0o700); err != nil {
 		return err
 	}
-	data := configData{
-		ServerUrl: c.ServerUrl,
-		ApiUrl:    c.ApiUrl,
-	}
 
-	configYaml, err := yaml.Marshal(data)
+	configYaml, err := yaml.Marshal(c)
 	if err != nil {
 		return err
 	}
@@ -128,7 +118,7 @@ func (c *CloudConfig) Verify(ctx context.Context) error {
 	logger := log.WithPrefix("trivy-cloud")
 	logger.Debug("Verifying SaaS token")
 
-	client := xhttp.ClientWithContext(ctx)
+	client := xhttp.Client()
 	url := fmt.Sprintf("%s/verify", c.ServerUrl)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, http.NoBody)
 	if err != nil {
