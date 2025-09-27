@@ -36,6 +36,15 @@ func TestProvider(t *testing.T) {
 			want: true,
 		},
 		{
+			name:     "Rocky with .root.io package",
+			osFamily: ftypes.Rocky,
+			pkgs: []ftypes.Package{
+				{Name: "libc6", Version: "2.31-0rocky9.9.root.io"},
+				{Name: "bash", Version: "5.1-60rocky1"},
+			},
+			want: true,
+		},
+		{
 			name:     "Alpine with Root.io pattern package",
 			osFamily: ftypes.Alpine,
 			pkgs: []ftypes.Package{
@@ -68,6 +77,15 @@ func TestProvider(t *testing.T) {
 			pkgs: []ftypes.Package{
 				{Name: "musl", Version: "1.2.3-r0"},
 				{Name: "busybox", Version: "1.35.0-r17"},
+			},
+			want: false,
+		},
+		{
+			name:     "Rocky without .root.io package",
+			osFamily: ftypes.Rocky,
+			pkgs: []ftypes.Package{
+				{Name: "libc6", Version: "2.31-0rocky9.9"},
+				{Name: "bash", Version: "5.1-60rocky1"},
 			},
 			want: false,
 		},
