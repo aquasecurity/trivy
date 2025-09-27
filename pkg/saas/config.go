@@ -23,17 +23,10 @@ const (
 )
 
 type CloudConfig struct {
-	Token         string `yaml:"-"`
-	IsLoggedIn    bool   `yaml:"-"`
-	ServerUrl     string `yaml:"server_url"`
-	ApiUrl        string `yaml:"api_url"`
-	DisableUpload bool   `yaml:"disable_upload"`
-}
-
-type configData struct {
-	ServerUrl     string `yaml:"server_url"`
-	ApiUrl        string `yaml:"api_url"`
-	DisableUpload bool   `yaml:"disable_upload"`
+	Token      string `yaml:"-"`
+	IsLoggedIn bool   `yaml:"-"`
+	ServerUrl  string `yaml:"server_url"`
+	ApiUrl     string `yaml:"api_url"`
 }
 
 func getConfigPath() string {
@@ -42,32 +35,25 @@ func getConfigPath() string {
 }
 
 func (c *CloudConfig) Save() error {
-	if c.Token != "" {
-		if err := keyring.Set(ServiceName, TokenKey, c.Token); err != nil {
-			return err
-		}
-	}
-	if c.ServerUrl != "" || c.ApiUrl != "" || c.DisableUpload {
-		configPath := getConfigPath()
-
-		if err := os.MkdirAll(filepath.Dir(configPath), 0o700); err != nil {
-			return err
-		}
-		data := configData{
-			ServerUrl:     c.ServerUrl,
-			ApiUrl:        c.ApiUrl,
-			DisableUpload: c.DisableUpload,
-		}
-
-		configYaml, err := yaml.Marshal(data)
-		if err != nil {
-			return err
-		}
-
-		return os.WriteFile(configPath, configYaml, 0o600)
+	if c.Token == "" && c.ServerUrl == "" && c.ApiUrl == "" {
+		return xerrors.New("no config to save, required fields are token, server url, and api url")
 	}
 
-	return nil
+	if err := keyring.Set(ServiceName, TokenKey, c.Token); err != nil {
+		return err
+	}
+
+	configPath := getConfigPath()
+	if err := os.MkdirAll(filepath.Dir(configPath), 0o700); err != nil {
+		return err
+	}
+
+	configYaml, err := yaml.Marshal(c)
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(configPath, configYaml, 0o600)
 }
 
 func Clear() error {
@@ -79,7 +65,7 @@ func Clear() error {
 
 	configPath := getConfigPath()
 	if err := os.Remove(configPath); err != nil {
-		if !os.IsNotExist(err) {
+		if !errors.Is(err, os.ErrNotExist) {
 			return err
 		}
 	}
@@ -87,10 +73,23 @@ func Clear() error {
 	return nil
 }
 
+// Load loads the SaaS config from the config file and the keychain
+// If the config file does not exist, it returns nil as a silent failure
 func Load() (*CloudConfig, error) {
 	logger := log.WithPrefix("trivy-cloud")
 	var config CloudConfig
-	var hasToken, hasConfig bool
+	configPath := getConfigPath()
+	yamlData, err := os.ReadFile(configPath)
+	if err != nil {
+		if !errors.Is(err, os.ErrNotExist) {
+			return nil, err
+		}
+		logger.Debug("No cloud config file found")
+		return nil, nil
+	}
+	if err := yaml.Unmarshal(yamlData, &config); err != nil {
+		return nil, err
+	}
 
 	token, err := keyring.Get(ServiceName, TokenKey)
 	if err != nil {
@@ -102,28 +101,6 @@ func Load() (*CloudConfig, error) {
 	}
 
 	config.Token = token
-	configPath := getConfigPath()
-	yamlData, err := os.ReadFile(configPath)
-	if err != nil {
-		if !os.IsNotExist(err) {
-			return nil, err
-		}
-	} else {
-		var data configData
-		if err := yaml.Unmarshal(yamlData, &data); err != nil {
-			return nil, err
-		}
-
-		config.ServerUrl = data.ServerUrl
-		config.ApiUrl = data.ApiUrl
-		config.DisableUpload = data.DisableUpload
-		hasConfig = true
-	}
-
-	if !hasToken && !hasConfig {
-		return nil, errors.New("no configuration found")
-	}
-
 	return &config, nil
 }
 
@@ -141,7 +118,7 @@ func (c *CloudConfig) Verify(ctx context.Context) error {
 	logger := log.WithPrefix("trivy-cloud")
 	logger.Debug("Verifying SaaS token")
 
-	client := xhttp.ClientWithContext(ctx)
+	client := xhttp.Client()
 	url := fmt.Sprintf("%s/verify", c.ServerUrl)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, http.NoBody)
 	if err != nil {
@@ -154,7 +131,6 @@ func (c *CloudConfig) Verify(ctx context.Context) error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		logger.Error("Failed to verify token", log.Err(err), log.Int("status_code", resp.StatusCode))
 		return xerrors.Errorf("failed to verify token: received status code %d", resp.StatusCode)
 	}
 

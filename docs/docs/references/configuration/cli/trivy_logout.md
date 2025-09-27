@@ -1,6 +1,6 @@
 ## trivy logout
 
-Log out of a registry
+Log out of Trivy Cloud platform
 
 ```
 trivy logout [flags]

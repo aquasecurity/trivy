@@ -62,6 +62,7 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 	groupManagement = "management"
 	groupUtility    = "utility"
 	groupPlugin     = "plugin"
+	groupSaas       = "saas"
 )
 
 // NewApp is the factory method to return Trivy CLI
@@ -81,6 +82,10 @@ func NewApp() *cobra.Command {
 		&cobra.Group{
 			ID:    groupUtility,
 			Title: "Utility Commands",
+		},
+		&cobra.Group{
+			ID:    groupSaas,
+			Title: "SaaS Commands",
 		},
 	)
 	rootCmd.SetCompletionCommandGroupID(groupUtility)
@@ -1427,7 +1432,7 @@ func NewLoginCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Use:     "login [flags]",
 		Short:   "Log in to the Trivy Cloud platform",
 		Long:    "Log in to the Trivy Cloud platform to enable scanning of images and repositories in the cloud using the token retrieved from the Trivy Cloud platform",
-		GroupID: groupUtility,
+		GroupID: groupSaas,
 		Args:    cobra.NoArgs,
 		Example: `  # Log in to the Trivy Cloud platform
   $ trivy login --token <token>`,
@@ -1457,9 +1462,9 @@ func NewLoginCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewLogoutCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "logout [flags]",
-		Short:   "Log out of a registry",
-		GroupID: groupUtility,
+		Use:     "logout",
+		Short:   "Log out of Trivy Cloud platform",
+		GroupID: groupSaas,
 		Args:    cobra.NoArgs,
 		RunE: func(_ *cobra.Command, _ []string) error {
 			return saas.Logout()
