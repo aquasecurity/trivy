@@ -50,7 +50,7 @@ trivy [global flags] command [flags] target
 * [trivy image](trivy_image.md)	 - Scan a container image
 * [trivy kubernetes](trivy_kubernetes.md)	 - [EXPERIMENTAL] Scan kubernetes cluster
 * [trivy login](trivy_login.md)	 - Log in to the Trivy Cloud platform
-* [trivy logout](trivy_logout.md)	 - Log out of a registry
+* [trivy logout](trivy_logout.md)	 - Log out of Trivy Cloud platform
 * [trivy module](trivy_module.md)	 - Manage modules
 * [trivy plugin](trivy_plugin.md)	 - Manage plugins
 * [trivy registry](trivy_registry.md)	 - Manage registry authentication

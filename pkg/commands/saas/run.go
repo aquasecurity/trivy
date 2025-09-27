@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -13,8 +12,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/saas"
-	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
+
+const saasGroupID = "saas"
 
 // Login performs a login to the Trivy Cloud Server service using the provided credentials.
 func Login(ctx context.Context, opts flag.Options) error {
@@ -23,21 +23,11 @@ func Login(ctx context.Context, opts flag.Options) error {
 	if creds.Token == "" {
 		return errors.New("token is required for SaaS login")
 	}
-
-	url := fmt.Sprintf("%s/verify", opts.SaasOptions.SaasTrivyServerUrl)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, http.NoBody)
-	if err != nil {
-		return xerrors.Errorf("failed to create login request: %w", err)
+	if opts.SaasOptions.SaasTrivyServerUrl == "" {
+		return errors.New("trivy server url is required for SaaS login")
 	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", creds.Token))
-	client := xhttp.ClientWithContext(ctx)
-	resp, err := client.Do(req)
-	if err != nil {
-		return xerrors.Errorf("failed to login to SaaS: %w", err)
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return xerrors.Errorf("failed to login to SaaS: received status code %d", resp.StatusCode)
+	if opts.SaasOptions.SaasApiUrl == "" {
+		return errors.New("api url is required for SaaS login")
 	}
 
 	cloudConfig := saas.CloudConfig{
@@ -73,7 +63,7 @@ func Logout() error {
 // CheckTrivyCloudStatus checks if the SaaS configuration file exists and verifies the token.
 // If the token is valid, it sets the environment variables TRIVY_SERVER and TRIVY_TOKEN.
 func CheckTrivyCloudStatus(cmd *cobra.Command) error {
-	if cmd.Use == "login" || cmd.Use == "logout" {
+	if cmd.GroupID == saasGroupID {
 		return nil
 	}
 

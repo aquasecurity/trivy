@@ -20,10 +20,10 @@ trivy login [flags]
 ### Options
 
 ```
-      --api-url string            API URL for Trivy Cloud platform (default "https://api.trivy.cloud")
+      --api-url string            API URL for Trivy Cloud platform (default "https://app.trivy.dev")
   -h, --help                      help for login
       --token string              Token used to athenticate with Trivy Cloud platform
-      --trivy-server-url string   Trivy Server URL for Trivy Cloud platform (default "https://scan.trivy.cloud")
+      --trivy-server-url string   Trivy Server URL for Trivy Cloud platform (default "https://scan.trivy.dev")
 ```
 
 ### Options inherited from parent commands
