@@ -2,15 +2,15 @@
   "vulnerabilities": {
     "CRITICAL": 0,
     "HIGH": 0,
-    "LOW": 2,
-    "MEDIUM": 5,
+    "LOW": 4,
+    "MEDIUM": 10,
     "UNKNOWN": 0
   },
   "misconfigurations": {
-    "CRITICAL": 26,
-    "HIGH": 47,
-    "LOW": 84,
-    "MEDIUM": 93,
+    "CRITICAL": 28,
+    "HIGH": 50,
+    "LOW": 94,
+    "MEDIUM": 98,
     "UNKNOWN": 0
   }
 }
