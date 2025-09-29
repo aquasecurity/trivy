@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 
@@ -119,7 +120,10 @@ func (c *CloudConfig) Verify(ctx context.Context) error {
 	logger.Debug("Verifying SaaS token")
 
 	client := xhttp.Client()
-	url := fmt.Sprintf("%s/verify", c.ServerUrl)
+	url, err := url.JoinPath(c.ServerUrl, "verify")
+	if err != nil {
+		return xerrors.Errorf("failed to join server URL and verify path: %w", err)
+	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, http.NoBody)
 	if err != nil {
 		return xerrors.Errorf("failed to create verification request: %w", err)

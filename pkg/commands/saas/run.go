@@ -2,7 +2,6 @@ package saas
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 
@@ -14,26 +13,26 @@ import (
 	"github.com/aquasecurity/trivy/pkg/saas"
 )
 
-const saasGroupID = "saas"
+const GroupSaas = "saas"
 
 // Login performs a login to the Trivy Cloud Server service using the provided credentials.
 func Login(ctx context.Context, opts flag.Options) error {
 	logger := log.WithPrefix("trivy-cloud")
-	creds := opts.SaasOptions.SaasCredentials
+	creds := opts.SaasOptions.LoginCredentials
 	if creds.Token == "" {
-		return errors.New("token is required for SaaS login")
+		return xerrors.New("token is required for SaaS login")
 	}
-	if opts.SaasOptions.SaasTrivyServerUrl == "" {
-		return errors.New("trivy server url is required for SaaS login")
+	if opts.SaasOptions.TrivyServerUrl == "" {
+		return xerrors.New("trivy server url is required for SaaS login")
 	}
-	if opts.SaasOptions.SaasApiUrl == "" {
-		return errors.New("api url is required for SaaS login")
+	if opts.SaasOptions.ApiUrl == "" {
+		return xerrors.New("api url is required for SaaS login")
 	}
 
 	cloudConfig := saas.CloudConfig{
 		Token:     creds.Token,
-		ServerUrl: opts.SaasOptions.SaasTrivyServerUrl,
-		ApiUrl:    opts.SaasOptions.SaasApiUrl,
+		ServerUrl: opts.SaasOptions.TrivyServerUrl,
+		ApiUrl:    opts.SaasOptions.ApiUrl,
 	}
 
 	if err := cloudConfig.Verify(ctx); err != nil {
@@ -63,7 +62,7 @@ func Logout() error {
 // CheckTrivyCloudStatus checks if the SaaS configuration file exists and verifies the token.
 // If the token is valid, it sets the environment variables TRIVY_SERVER and TRIVY_TOKEN.
 func CheckTrivyCloudStatus(cmd *cobra.Command) error {
-	if cmd.GroupID == saasGroupID {
+	if cmd.GroupID == GroupSaas {
 		return nil
 	}
 
