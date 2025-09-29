@@ -60,15 +60,40 @@ func TestK8s(t *testing.T) {
 			return resource.Results
 		})
 
-		// Has vulnerabilities
-		assert.True(t, lo.SomeBy(results, func(r types.Result) bool {
-			return len(r.Vulnerabilities) > 0
-		}))
+		// Aggregate severity counts and compare with fixture
+		gotCounts := newK8sSeverityCounts()
+		for _, r := range results {
+			for _, v := range r.Vulnerabilities {
+				gotCounts.Vulnerabilities[v.Severity]++
+			}
+			for _, m := range r.Misconfigurations {
+				if m.Status == types.MisconfStatusFailure {
+					gotCounts.Misconfigurations[m.Severity]++
+				}
+			}
+		}
 
-		// Has misconfigurations
-		assert.True(t, lo.SomeBy(results, func(r types.Result) bool {
-			return len(r.Misconfigurations) > 0
-		}))
+		fixture := filepath.Join("testdata", "fixtures", "k8s", "summary-severity.json.golden")
+		if *update {
+			// Update fixture with current counts
+			f, err := os.Create(fixture)
+			require.NoError(t, err)
+			defer f.Close()
+			enc := json.NewEncoder(f)
+			enc.SetIndent("", "  ")
+			require.NoError(t, enc.Encode(gotCounts))
+			t.Logf("updated fixture: %s", fixture)
+			return
+		}
+
+		// Read expected counts from fixture and compare
+		ef, err := os.Open(fixture)
+		require.NoError(t, err)
+		defer ef.Close()
+
+		var wantCounts k8sSeverityCounts
+		require.NoError(t, json.NewDecoder(ef).Decode(&wantCounts))
+		assert.Equal(t, wantCounts, gotCounts)
 	})
 	t.Run("kbom cycloneDx", func(t *testing.T) {
 		// Set up the output file
@@ -156,4 +181,30 @@ func TestK8s(t *testing.T) {
 		}))
 
 	})
+}
+
+// k8sSeverityCounts represents expected severity counts for the consolidated report.
+type k8sSeverityCounts struct {
+	Vulnerabilities   map[string]int `json:"vulnerabilities"`
+	Misconfigurations map[string]int `json:"misconfigurations"`
+}
+
+func newK8sSeverityCounts() k8sSeverityCounts {
+	// Initialize with all known severities to stabilize fixture order/diff
+	return k8sSeverityCounts{
+		Vulnerabilities: map[string]int{
+			"CRITICAL": 0,
+			"HIGH":     0,
+			"MEDIUM":   0,
+			"LOW":      0,
+			"UNKNOWN":  0,
+		},
+		Misconfigurations: map[string]int{
+			"CRITICAL": 0,
+			"HIGH":     0,
+			"MEDIUM":   0,
+			"LOW":      0,
+			"UNKNOWN":  0,
+		},
+	}
 }

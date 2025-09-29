@@ -1,0 +1,16 @@
+{
+  "vulnerabilities": {
+    "CRITICAL": 1,
+    "HIGH": 2,
+    "LOW": 8,
+    "MEDIUM": 2,
+    "UNKNOWN": 4
+  },
+  "misconfigurations": {
+    "CRITICAL": 24,
+    "HIGH": 37,
+    "LOW": 73,
+    "MEDIUM": 91,
+    "UNKNOWN": 0
+  }
+}
