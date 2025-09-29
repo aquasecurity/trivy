@@ -122,7 +122,7 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 		}
 		workers := s.opts.Parallel
 		if s.opts.CacheBackend == string(cache.TypeFS) {
-			// To avoid lock contention, we limit the number of workers to 1 when using FS cache.
+			// To avoid lock contention in bbolt, we limit the number of workers to 1 when using FS cache.
 			workers = 1
 		}
 

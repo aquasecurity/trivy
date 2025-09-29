@@ -76,6 +76,8 @@ func TestK8s(t *testing.T) {
 		fixture := filepath.Join("testdata", "fixtures", "k8s", "summary-severity.json.golden")
 		if *update {
 			// Update fixture with current counts
+			// Note: mage test:k8s command creates additional k8s artifacts,
+			// so the counts should be updated with these items.
 			f, err := os.Create(fixture)
 			require.NoError(t, err)
 			defer f.Close()
