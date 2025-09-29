@@ -367,22 +367,6 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
 	defer cancel()
 
-	defer func() {
-		if errors.Is(err, context.DeadlineExceeded) {
-			// e.g. https://trivy.dev/latest/docs/configuration/
-			log.WarnContext(ctx, fmt.Sprintf("Provide a higher timeout value, see %s", doc.URL("/docs/configuration/", "")))
-		}
-	}()
-
-	if opts.ServerAddr != "" && opts.Scanners.AnyEnabled(types.MisconfigScanner, types.SecretScanner) {
-		log.WarnContext(ctx,
-			fmt.Sprintf(
-				"Trivy runs in client/server mode, but misconfiguration and license scanning will be done on the client side, see %s",
-				doc.URL("/docs/references/modes/client-server", ""),
-			),
-		)
-	}
-
 	if opts.GenerateDefaultConfig {
 		log.Info("Writing the default config to trivy-default.yaml...")
 
@@ -423,6 +407,9 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 }
 
 func run(ctx context.Context, opts flag.Options, targetKind TargetKind) (types.Report, error) {
+	// Perform validation checks
+	checkOptions(ctx, opts, targetKind)
+
 	r, err := NewRunner(ctx, opts, targetKind)
 	if err != nil {
 		if errors.Is(err, SkipScan) {
@@ -464,6 +451,27 @@ func run(ctx context.Context, opts flag.Options, targetKind TargetKind) (types.R
 	}
 
 	return report, nil
+}
+
+// checkOptions performs various checks on scan options and shows warnings
+func checkOptions(ctx context.Context, opts flag.Options, targetKind TargetKind) {
+	// Check client/server mode with misconfiguration and secret scanning
+	if opts.ServerAddr != "" && opts.Scanners.AnyEnabled(types.MisconfigScanner, types.SecretScanner) {
+		log.WarnContext(ctx,
+			fmt.Sprintf(
+				"Trivy runs in client/server mode, but misconfiguration and license scanning will be done on the client side, see %s",
+				doc.URL("/docs/references/modes/client-server", ""),
+			),
+		)
+	}
+
+	// Check SBOM to SBOM scanning with package filtering flags
+	// For SBOM-to-SBOM scanning (for example, to add vulnerabilities to the SBOM file), we should not modify the scanned file.
+	// cf. https://github.com/aquasecurity/trivy/pull/9439#issuecomment-3295533665
+	if targetKind == TargetSBOM && slices.Contains(types.SupportedSBOMFormats, opts.Format) &&
+		(!slices.Equal(opts.PkgTypes, types.PkgTypes) || !slices.Equal(opts.PkgRelationships, ftypes.Relationships)) {
+		log.Warn("'--pkg-types' and '--pkg-relationships' options will be ignored when scanning SBOM and outputting SBOM format.")
+	}
 }
 
 func disabledAnalyzers(opts flag.Options) []analyzer.Type {

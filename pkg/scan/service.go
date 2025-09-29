@@ -3,132 +3,14 @@ package scan
 import (
 	"context"
 
-	"github.com/google/wire"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
-	flocal "github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact/repo"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
-	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
-	"github.com/aquasecurity/trivy/pkg/rpc/client"
-	"github.com/aquasecurity/trivy/pkg/scan/local"
 	"github.com/aquasecurity/trivy/pkg/types"
-)
-
-///////////////
-// Standalone
-///////////////
-
-// StandaloneSuperSet is used in the standalone mode
-var StandaloneSuperSet = wire.NewSet(
-	// Cache
-	cache.New,
-	wire.Bind(new(cache.ArtifactCache), new(cache.Cache)),
-	wire.Bind(new(cache.LocalArtifactCache), new(cache.Cache)),
-
-	local.SuperSet,
-	wire.Bind(new(Backend), new(local.Service)),
-	NewService,
-)
-
-// StandaloneDockerSet binds docker dependencies
-var StandaloneDockerSet = wire.NewSet(
-	image.NewContainerImage,
-	aimage.NewArtifact,
-	StandaloneSuperSet,
-)
-
-// StandaloneArchiveSet binds archive scan dependencies
-var StandaloneArchiveSet = wire.NewSet(
-	image.NewArchiveImage,
-	aimage.NewArtifact,
-	StandaloneSuperSet,
-)
-
-// StandaloneFilesystemSet binds filesystem dependencies
-var StandaloneFilesystemSet = wire.NewSet(
-	flocal.ArtifactSet,
-	StandaloneSuperSet,
-)
-
-// StandaloneRepositorySet binds repository dependencies
-var StandaloneRepositorySet = wire.NewSet(
-	repo.ArtifactSet,
-	StandaloneSuperSet,
-)
-
-// StandaloneSBOMSet binds sbom dependencies
-var StandaloneSBOMSet = wire.NewSet(
-	sbom.NewArtifact,
-	StandaloneSuperSet,
-)
-
-// StandaloneVMSet binds vm dependencies
-var StandaloneVMSet = wire.NewSet(
-	vm.ArtifactSet,
-	StandaloneSuperSet,
-)
-
-/////////////////
-// Client/Server
-/////////////////
-
-// RemoteSuperSet is used in the client mode
-var RemoteSuperSet = wire.NewSet(
-	// Cache
-	cache.NewRemoteCache,
-	wire.Bind(new(cache.ArtifactCache), new(*cache.RemoteCache)), // No need for LocalArtifactCache
-
-	client.NewService,
-	wire.Value([]client.Option(nil)),
-	wire.Bind(new(Backend), new(client.Service)),
-	NewService,
-)
-
-// RemoteFilesystemSet binds filesystem dependencies for client/server mode
-var RemoteFilesystemSet = wire.NewSet(
-	flocal.ArtifactSet,
-	RemoteSuperSet,
-)
-
-// RemoteRepositorySet binds repository dependencies for client/server mode
-var RemoteRepositorySet = wire.NewSet(
-	repo.ArtifactSet,
-	RemoteSuperSet,
-)
-
-// RemoteSBOMSet binds sbom dependencies for client/server mode
-var RemoteSBOMSet = wire.NewSet(
-	sbom.NewArtifact,
-	RemoteSuperSet,
-)
-
-// RemoteVMSet binds vm dependencies for client/server mode
-var RemoteVMSet = wire.NewSet(
-	vm.ArtifactSet,
-	RemoteSuperSet,
-)
-
-// RemoteDockerSet binds remote docker dependencies
-var RemoteDockerSet = wire.NewSet(
-	aimage.NewArtifact,
-	image.NewContainerImage,
-	RemoteSuperSet,
-)
-
-// RemoteArchiveSet binds remote archive dependencies
-var RemoteArchiveSet = wire.NewSet(
-	aimage.NewArtifact,
-	image.NewArchiveImage,
-	RemoteSuperSet,
 )
 
 // Service is the main service that coordinates security scanning operations.

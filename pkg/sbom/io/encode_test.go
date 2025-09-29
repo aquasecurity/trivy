@@ -1000,44 +1000,20 @@ func TestEncoder_Encode(t *testing.T) {
 				SchemaVersion: 2,
 				ArtifactName:  "report.cdx.json",
 				ArtifactType:  ftypes.TypeCycloneDX,
-				Results: []types.Result{
-					{
-						Target: "Java",
-						Type:   ftypes.Jar,
-						Class:  types.ClassLangPkg,
-						Packages: []ftypes.Package{
-							{
-								ID:      "org.apache.logging.log4j:log4j-core:2.23.1",
-								Name:    "org.apache.logging.log4j:log4j-core",
-								Version: "2.23.1",
-								Identifier: ftypes.PkgIdentifier{
-									UID: "6C0AE96901617503",
-									PURL: &packageurl.PackageURL{
-										Type:      packageurl.TypeMaven,
-										Namespace: "org.apache.logging.log4j",
-										Name:      "log4j-core",
-										Version:   "2.23.1",
-									},
-								},
-								FilePath: "log4j-core-2.23.1.jar",
-							},
-						},
-					},
-				},
-				BOM: newTestBOM(t),
+				BOM:           newTestBOM(t),
 			},
 			wantComponents: map[uuid.UUID]*core.Component{
 				uuid.MustParse("2ff14136-e09f-4df9-80ea-000000000001"): appComponent,
-				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): libComponent,
+				uuid.MustParse("2ff14136-e09f-4df9-80ea-000000000002"): libComponent,
 			},
 			wantRels: map[uuid.UUID][]core.Relationship{
 				uuid.MustParse("2ff14136-e09f-4df9-80ea-000000000001"): {
 					{
-						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"),
+						Dependency: uuid.MustParse("2ff14136-e09f-4df9-80ea-000000000002"),
 						Type:       core.RelationshipContains,
 					},
 				},
-				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): nil,
+				uuid.MustParse("2ff14136-e09f-4df9-80ea-000000000002"): nil,
 			},
 			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},
@@ -1047,44 +1023,13 @@ func TestEncoder_Encode(t *testing.T) {
 				SchemaVersion: 2,
 				ArtifactName:  "report.cdx.json",
 				ArtifactType:  ftypes.TypeCycloneDX,
-				Results: []types.Result{
-					{
-						Target: "Java",
-						Type:   ftypes.Jar,
-						Class:  types.ClassLangPkg,
-						Packages: []ftypes.Package{
-							{
-								ID:      "org.apache.logging.log4j:log4j-core:2.23.1",
-								Name:    "org.apache.logging.log4j:log4j-core",
-								Version: "2.23.1",
-								Identifier: ftypes.PkgIdentifier{
-									UID: "6C0AE96901617503",
-									PURL: &packageurl.PackageURL{
-										Type:      packageurl.TypeMaven,
-										Namespace: "org.apache.logging.log4j",
-										Name:      "log4j-core",
-										Version:   "2.23.1",
-									},
-								},
-								FilePath: "log4j-core-2.23.1.jar",
-							},
-						},
-					},
-				},
-				BOM: newTestBOM2(t),
+				BOM:           newTestBOM2(t),
 			},
 			wantComponents: map[uuid.UUID]*core.Component{
-				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): fsComponent,
-				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): libComponent,
+				uuid.MustParse("2ff14136-e09f-4df9-80ea-000000000001"): libComponent,
 			},
 			wantRels: map[uuid.UUID][]core.Relationship{
-				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
-					{
-						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"),
-						Type:       core.RelationshipContains,
-					},
-				},
-				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): nil,
+				uuid.MustParse("2ff14136-e09f-4df9-80ea-000000000001"): nil,
 			},
 			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},
@@ -1600,7 +1545,17 @@ var (
 func newTestBOM(t *testing.T) *core.BOM {
 	uuid.SetFakeUUID(t, "2ff14136-e09f-4df9-80ea-%012d")
 	bom := core.NewBOM(core.Options{})
-	bom.AddComponent(appComponent)
+
+	// Copy components to avoid UUID conflicts between tests
+	appComp := appComponent.Clone()
+	libComp := libComponent.Clone()
+
+	bom.AddComponent(appComp)
+	bom.AddComponent(libComp)
+	// Add Contains relationship between appComponent and libComponent
+	bom.AddRelationship(appComp, libComp, core.RelationshipContains)
+	// Add empty relationship for libComponent to preserve structure for SBOM rescanning
+	bom.AddRelationship(libComp, nil, core.RelationshipDependsOn)
 	return bom
 }
 
@@ -1608,6 +1563,12 @@ func newTestBOM(t *testing.T) *core.BOM {
 func newTestBOM2(t *testing.T) *core.BOM {
 	uuid.SetFakeUUID(t, "2ff14136-e09f-4df9-80ea-%012d")
 	bom := core.NewBOM(core.Options{})
-	bom.AddComponent(libComponent)
+
+	// Copy component to avoid UUID conflicts between tests
+	libComp := libComponent.Clone()
+
+	bom.AddComponent(libComp)
+	// Add empty relationship for libComponent to preserve structure for SBOM rescanning
+	bom.AddRelationship(libComp, nil, core.RelationshipDependsOn)
 	return bom
 }

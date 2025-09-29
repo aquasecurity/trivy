@@ -240,6 +240,16 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "CoreOS",
+			inputFile: "testdata/coreos",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.CoreOS,
+					Name:   "3.15.4",
+				},
+			},
+		},
+		{
 			name:      "Unknown OS",
 			inputFile: "testdata/unknown",
 			want:      nil,

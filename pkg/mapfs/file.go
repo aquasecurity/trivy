@@ -28,7 +28,7 @@ type file struct {
 }
 
 func (f *file) isVirtual() bool {
-	return len(f.data) != 0 || f.stat.IsDir()
+	return f.underlyingPath == ""
 }
 
 func (f *file) Open(name string) (fs.File, error) {
@@ -59,7 +59,7 @@ func (f *file) open() (fs.File, error) {
 			fileStat: f.stat,
 			entry:    entries,
 		}, nil
-	case len(f.data) != 0: // Virtual file
+	case f.isVirtual(): // Virtual file
 		return &openMapFile{
 			path:   f.stat.name,
 			file:   f,

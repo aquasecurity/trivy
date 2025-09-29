@@ -247,6 +247,7 @@ func TestDockerEngine(t *testing.T) {
 				"image",
 				"--skip-update",
 				"--format=json",
+				"--list-all-pkgs=false",
 			}
 
 			if tt.ignoreUnfixed {

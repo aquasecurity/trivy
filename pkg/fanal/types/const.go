@@ -29,6 +29,7 @@ const (
 	CBLMariner         OSType = "cbl-mariner"
 	CentOS             OSType = "centos"
 	Chainguard         OSType = "chainguard"
+	CoreOS             OSType = "coreos"
 	Debian             OSType = "debian"
 	Echo               OSType = "echo"
 	Fedora             OSType = "fedora"
@@ -114,6 +115,7 @@ var (
 		CBLMariner,
 		CentOS,
 		Chainguard,
+		CoreOS,
 		Debian,
 		Echo,
 		Fedora,

@@ -2877,3 +2877,39 @@ module "test" {
 
 	require.Len(t, modules, 1)
 }
+
+func Test_MarkedValues(t *testing.T) {
+
+	tests := []struct {
+		name string
+		src  string
+	}{
+		{
+			name: "marked object",
+			src: `resource "foo" "bar" {
+  test = sensitive({})
+}`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			files := map[string]string{
+				`main.tf`: tt.src,
+			}
+
+			fsys := testutil.CreateFS(t, files)
+			parser := New(fsys, "",
+				OptionWithSkipCachedModules(true),
+				OptionStopOnHCLError(true),
+			)
+			err := parser.ParseFS(t.Context(), ".")
+			require.NoError(t, err)
+
+			modules, err := parser.EvaluateAll(t.Context())
+			require.NoError(t, err)
+
+			require.Len(t, modules, 1)
+		})
+	}
+}

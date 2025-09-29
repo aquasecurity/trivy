@@ -62,6 +62,7 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 	return nil, nil
 }
 
+//nolint:gocyclo
 func idToOSFamily(id string) types.OSType {
 	switch id {
 	case "rhel":
@@ -105,6 +106,8 @@ func idToOSFamily(id string) types.OSType {
 		return types.Echo
 	case "minimos":
 		return types.MinimOS
+	case "coreos":
+		return types.CoreOS
 	}
 	// This OS is not supported for this analyzer.
 	return ""

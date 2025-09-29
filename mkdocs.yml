@@ -79,6 +79,7 @@ nav:
               - Bottlerocket: docs/coverage/os/bottlerocket.md
               - CentOS: docs/coverage/os/centos.md
               - Chainguard: docs/coverage/os/chainguard.md
+              - CoreOS: docs/coverage/os/coreos.md
               - Debian: docs/coverage/os/debian.md
               - Echo: docs/coverage/os/echo.md
               - MinimOS: docs/coverage/os/minimos.md

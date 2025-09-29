@@ -41,6 +41,7 @@ func TestModule(t *testing.T) {
 				"--ignore-unfixed",
 				"--format",
 				"json",
+				"--list-all-pkgs=false",
 				"--skip-db-update",
 				"--offline-scan",
 				"--quiet",

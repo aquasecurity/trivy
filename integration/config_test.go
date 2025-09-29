@@ -154,6 +154,7 @@ severity:
 			osArgs := []string{
 				"--format",
 				"json",
+				"--list-all-pkgs=false",
 				"--cache-dir",
 				cacheDir,
 				"--skip-db-update",
@@ -180,6 +181,7 @@ severity:
 
 			t.Setenv("TRIVY_OUTPUT", outputFile)
 			t.Setenv("TRIVY_FORMAT", "json")
+			t.Setenv("TRIVY_LIST_ALL_PKGS", "false")
 			t.Setenv("TRIVY_CACHE_DIR", cacheDir)
 			t.Setenv("TRIVY_SKIP_DB_UPDATE", "true")
 			t.Setenv("TRIVY_SKIP_POLICY_UPDATE", "true")
@@ -204,6 +206,7 @@ severity:
 			configFile := tt.args.configFile
 			configFile += fmt.Sprintf(`
 format: json
+list-all-pkgs: false
 output: %s
 cache:
   dir: %s
