@@ -29,7 +29,7 @@
               - ">=1.2.8-r2, <1.2.8-r25341999"
             PatchedVersions:
               - "1.2.8-r25341999"
-- bucket: seal redhat 6
+- bucket: seal Red Hat 6
   pairs:
     - bucket: seal-wget
       pairs:
