@@ -235,7 +235,7 @@ func (m *Decoder) decodePackage(ctx context.Context, c *core.Component) (*ftypes
 			pkg.FilePath = f.Path
 		}
 		// An empty path represents a package digest
-		if f.Path == "" && len(f.Digests) > 0 {
+		if len(f.Digests) > 0 {
 			pkg.Digest = f.Digests[0]
 		}
 	}

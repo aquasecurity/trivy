@@ -14,14 +14,16 @@ import (
 	"github.com/spdx/tools-golang/tagvalue"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
 type SPDX struct {
 	*core.BOM
 
-	trivySBOM    bool
-	pkgFilePaths map[common.ElementID]string
+	trivySBOM bool
+	pkgFiles  map[common.ElementID]core.File
 }
 
 func NewTVDecoder(r io.Reader) *TVDecoder {
@@ -68,8 +70,8 @@ func (s *SPDX) UnmarshalJSON(b []byte) error {
 func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 	s.trivySBOM = s.isTrivySBOM(spdxDocument)
 
-	if s.pkgFilePaths == nil {
-		s.pkgFilePaths = make(map[common.ElementID]string)
+	if s.pkgFiles == nil {
+		s.pkgFiles = make(map[common.ElementID]core.File)
 	}
 
 	// Parse files and find file paths for packages
@@ -125,7 +127,10 @@ func (s *SPDX) parseFiles(spdxDocument *spdx.Document) {
 			if ok {
 				// Save filePaths for packages
 				// Insert filepath will be later
-				s.pkgFilePaths[rel.RefA.ElementRefID] = file.FileName
+				s.pkgFiles[rel.RefA.ElementRefID] = core.File{
+					Path:    file.FileName,
+					Digests: s.unmarshalChecksums(file.Checksums),
+				}
 			}
 			continue
 		}
@@ -184,15 +189,24 @@ func (s *SPDX) parsePackage(spdxPkg spdx.Package) (*core.Component, error) {
 	}
 
 	// Files
-	// TODO: handle checksums as well
-	if path, ok := s.pkgFilePaths[spdxPkg.PackageSPDXIdentifier]; ok {
-		component.Files = []core.File{
-			{Path: path},
-		}
+	var file core.File
+	// Take filePath + digest from Files components
+	if f, ok := s.pkgFiles[spdxPkg.PackageSPDXIdentifier]; ok {
+		file = f
+		// Take filePath + digest from Package.Files (old format)
 	} else if len(spdxPkg.Files) > 0 {
-		component.Files = []core.File{
-			{Path: spdxPkg.Files[0].FileName}, // Take the first file name
+		spdxFile := spdxPkg.Files[0] // Take the first file name
+		file = core.File{
+			Path:    spdxFile.FileName,
+			Digests: s.unmarshalChecksums(spdxFile.Checksums),
 		}
+		// Take digest from Package.Checksums
+	} else if len(spdxPkg.PackageChecksums) > 0 {
+		file.Digests = s.unmarshalChecksums(spdxPkg.PackageChecksums)
+	}
+
+	if !file.IsEmpty() {
+		component.Files = append(component.Files, file)
 	}
 
 	// Trivy stores properties in Annotations
@@ -230,6 +244,31 @@ func (s *SPDX) parsePackage(spdxPkg spdx.Package) (*core.Component, error) {
 	}
 
 	return component, nil
+}
+
+func (s *SPDX) unmarshalChecksums(checksums []spdx.Checksum) []digest.Digest {
+	if checksums == nil {
+		return nil
+	}
+	var digests []digest.Digest
+	for _, h := range checksums {
+		var alg digest.Algorithm
+		switch h.Algorithm {
+		case common.SHA1:
+			alg = digest.SHA1
+		case common.SHA256:
+			alg = digest.SHA256
+		case common.SHA512:
+			alg = digest.SHA512
+		case common.MD5:
+			alg = digest.MD5
+		default:
+			log.Warn("Unsupported hash algorithm", log.String("algorithm", string(h.Algorithm)))
+			continue
+		}
+		digests = append(digests, digest.NewDigestFromString(alg, h.Value))
+	}
+	return digests
 }
 
 func (s *SPDX) parseType(pkg spdx.Package) core.ComponentType {
