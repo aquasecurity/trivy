@@ -112,11 +112,11 @@ func TestLogin(t *testing.T) {
 
 			opts := flag.Options{
 				SaasOptions: flag.SaasOptions{
-					SaasCredentials: flag.SaasCredentials{
+					LoginCredentials: flag.SaasLoginCredentials{
 						Token: tt.token,
 					},
-					SaasApiUrl:         server.URL + "/api",
-					SaasTrivyServerUrl: server.URL,
+					ApiUrl:         server.URL + "/api",
+					TrivyServerUrl: server.URL,
 				},
 			}
 

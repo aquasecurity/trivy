@@ -50,24 +50,24 @@ func (f *SaasFlagGroup) Flags() []Flagger {
 
 // SaasCredentials is the credentials used to authenticate with Trivy Cloud platform
 // In the future this would likely have more information stored for refresh tokens, etc
-type SaasCredentials struct {
+type SaasLoginCredentials struct {
 	Token string
 }
 
 type SaasOptions struct {
-	SaasCredentials    SaasCredentials
-	SaasApiUrl         string
-	SaasTrivyServerUrl string
+	LoginCredentials SaasLoginCredentials
+	ApiUrl           string
+	TrivyServerUrl   string
 }
 
 // ToOptions converts the flags to options
 func (f *SaasFlagGroup) ToOptions(opts *Options) error {
 	opts.SaasOptions = SaasOptions{
-		SaasCredentials: SaasCredentials{
+		LoginCredentials: SaasLoginCredentials{
 			Token: f.SaasToken.Value(),
 		},
-		SaasApiUrl:         f.SaasApiUrl.Value(),
-		SaasTrivyServerUrl: f.SaasTrivyServerUrl.Value(),
+		ApiUrl:         f.SaasApiUrl.Value(),
+		TrivyServerUrl: f.SaasTrivyServerUrl.Value(),
 	}
 	return nil
 }
