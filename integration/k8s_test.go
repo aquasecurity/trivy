@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"sort"
 	"testing"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
@@ -28,19 +29,15 @@ func TestK8s(t *testing.T) {
 		outputFile := filepath.Join(t.TempDir(), "output.json")
 
 		osArgs := []string{
-			"--cache-dir",
-			cacheDir,
+			"--cache-dir", cacheDir,
 			"k8s",
 			"kind-kind-test",
-			"--report",
-			"summary",
+			"--report", "summary",
 			"-q",
-			"--timeout",
-			"5m0s",
-			"--format",
-			"json",
-			"--output",
-			outputFile,
+			"--timeout", "5m0s",
+			"--format", "json",
+			"--check-namespaces", "user",
+			"--output", outputFile,
 		}
 
 		// Run Trivy
@@ -60,42 +57,47 @@ func TestK8s(t *testing.T) {
 			return resource.Results
 		})
 
-		// Aggregate severity counts and compare with fixture
-		gotCounts := newK8sSeverityCounts()
+		// Collect IDs (CVEs for vulns, IDs for failed misconfigs), allowing duplicates.
+		ids := k8sFindingIDs{}
 		for _, r := range results {
 			for _, v := range r.Vulnerabilities {
-				gotCounts.Vulnerabilities[v.Severity]++
+				if v.VulnerabilityID != "" {
+					ids.Vulnerabilities = append(ids.Vulnerabilities, v.VulnerabilityID)
+				}
 			}
 			for _, m := range r.Misconfigurations {
-				if m.Status == types.MisconfStatusFailure {
-					gotCounts.Misconfigurations[m.Severity]++
+				if m.Status == types.MisconfStatusFailure && m.ID != "" {
+					ids.Misconfigurations = append(ids.Misconfigurations, m.ID)
 				}
 			}
 		}
 
-		fixture := filepath.Join("testdata", "fixtures", "k8s", "summary-severity.json.golden")
+		// Sort for deterministic golden files
+		sort.Strings(ids.Vulnerabilities)
+		sort.Strings(ids.Misconfigurations)
+
+		fixture := filepath.Join("testdata", "fixtures", "k8s", "summary-ids.json.golden")
 		if *update {
-			// Update fixture with current counts
-			// Note: mage test:k8s command creates additional k8s artifacts,
-			// so the counts should be updated with these items.
+			// Update fixture with current IDs (duplicates kept, sorted)
+			// Note: mage test:k8s may create additional k8s artifacts.
 			f, err := os.Create(fixture)
 			require.NoError(t, err)
 			defer f.Close()
 			enc := json.NewEncoder(f)
 			enc.SetIndent("", "  ")
-			require.NoError(t, enc.Encode(gotCounts))
+			require.NoError(t, enc.Encode(ids))
 			t.Logf("updated fixture: %s", fixture)
 			return
 		}
 
-		// Read expected counts from fixture and compare
+		// Read expected IDs from fixture and compare
 		ef, err := os.Open(fixture)
 		require.NoError(t, err)
 		defer ef.Close()
 
-		var wantCounts k8sSeverityCounts
-		require.NoError(t, json.NewDecoder(ef).Decode(&wantCounts))
-		assert.Equal(t, wantCounts, gotCounts)
+		var want k8sFindingIDs
+		require.NoError(t, json.NewDecoder(ef).Decode(&want))
+		assert.Equal(t, want, ids)
 	})
 	t.Run("kbom cycloneDx", func(t *testing.T) {
 		// Set up the output file
@@ -185,28 +187,8 @@ func TestK8s(t *testing.T) {
 	})
 }
 
-// k8sSeverityCounts represents expected severity counts for the consolidated report.
-type k8sSeverityCounts struct {
-	Vulnerabilities   map[string]int `json:"vulnerabilities"`
-	Misconfigurations map[string]int `json:"misconfigurations"`
-}
-
-func newK8sSeverityCounts() k8sSeverityCounts {
-	// Initialize with all known severities to stabilize fixture order/diff
-	return k8sSeverityCounts{
-		Vulnerabilities: map[string]int{
-			"CRITICAL": 0,
-			"HIGH":     0,
-			"MEDIUM":   0,
-			"LOW":      0,
-			"UNKNOWN":  0,
-		},
-		Misconfigurations: map[string]int{
-			"CRITICAL": 0,
-			"HIGH":     0,
-			"MEDIUM":   0,
-			"LOW":      0,
-			"UNKNOWN":  0,
-		},
-	}
+// k8sFindingIDs is the structure saved into the golden file.
+type k8sFindingIDs struct {
+	Vulnerabilities   []string `json:"vulnerabilities"`
+	Misconfigurations []string `json:"misconfigurations"`
 }
