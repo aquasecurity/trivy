@@ -515,4 +515,4 @@ tool (
 )
 
 // TODO remove this aftrer merge https://github.com/aquasecurity/trivy-db/pull/566
-replace github.com/aquasecurity/trivy-db => github.com/dmitriylewen/trivy-db v0.0.0-20250916065942-a7c3e715f4f7
+replace github.com/aquasecurity/trivy-db => github.com/dmitriylewen/trivy-db v0.0.0-20250929064133-e93927ed6882
