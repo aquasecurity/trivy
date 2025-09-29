@@ -106,7 +106,6 @@ func TestK8s(t *testing.T) {
 			return len(*r.Dependencies) > 0
 		}))
 	})
-
 	t.Run("limited user test", func(t *testing.T) {
 		// Set up the output file
 		outputFile := filepath.Join(t.TempDir(), "output.json")
