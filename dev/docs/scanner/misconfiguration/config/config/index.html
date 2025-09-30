@@ -8486,8 +8486,14 @@ Ensure<span class="w"> </span>that<span class="w"> </span>Serverless<span class=
 </div>
 <p>It is also possible to specify multiple input schemas with <code>--config-file-schema</code> flag as it can accept a comma separated list of file paths or a directory as input. In the case of multiple schemas being specified, all of them will be evaluated against all the input files.</p>
 <h3 id="filtering-resources-by-inline-comments">Filtering resources by inline comments<a class="headerlink" href="#filtering-resources-by-inline-comments" title="Permanent link">&para;</a></h3>
-<p>Trivy supports ignoring misconfigured resources by inline comments for Terraform, CloudFormation and Helm configuration files only.</p>
+<p>Trivy supports ignoring misconfigured resources by inline comments for Terraform, CloudFormation, Helm and Dockerfile configuration files only.</p>
 <p>In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to <code>.trivyignore</code>, which has a directory-wide scope on all of the files scanned). The format for these comments is <code>trivy:ignore:&lt;rule&gt;</code> immediately following the format-specific line-comment <a href="https://developer.hashicorp.com/terraform/language/syntax/configuration#comments">token</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Inline ignore rules only work for checks associated with an existing resource.
+Checks triggered by the absence of a resource (e.g., <strong>AVD-DS-0002</strong> when a Dockerfile lacks a <code>USER</code> instruction) cannot be ignored inline.<br />
+Use a <a href="../../../../configuration/filtering/#trivyignoreyaml">.trivyignore.yaml</a> file to ignore such checks.</p>
+</div>
 <p>The ignore rule must contain one of the possible check IDs that can be found in its metadata: ID, short code or alias. The <code>id</code> from the metadata is not case-sensitive, so you can specify, for example, <code>AVD-AWS-0089</code> or <code>avd-aws-0089</code>.</p>
 <p>For example, to ignore a misconfiguration ID <code>AVD-GCP-0051</code> in a Terraform HCL file:</p>
 <div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:AVD-GCP-0051</span>
