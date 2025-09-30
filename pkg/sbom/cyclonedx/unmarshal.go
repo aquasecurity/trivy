@@ -80,12 +80,20 @@ func (b *BOM) parseBOM(bom *cdx.BOM) error {
 		if !ok {
 			continue
 		}
-		for _, depRef := range lo.FromPtr(dep.Dependencies) {
-			dependency, ok := components[depRef]
-			if !ok {
-				continue
+
+		dependencies := lo.FromPtr(dep.Dependencies)
+		if len(dependencies) == 0 {
+			// Empty dependsOn array - create empty relationship to preserve this information
+			b.BOM.AddRelationship(ref, nil, core.RelationshipDependsOn)
+		} else {
+			// Process actual dependencies
+			for _, depRef := range dependencies {
+				dependency, ok := components[depRef]
+				if !ok {
+					continue
+				}
+				b.BOM.AddRelationship(ref, dependency, core.RelationshipDependsOn)
 			}
-			b.BOM.AddRelationship(ref, dependency, core.RelationshipDependsOn)
 		}
 	}
 
@@ -281,10 +289,21 @@ func (b *BOM) unmarshalSupplier(supplier *cdx.OrganizationalEntity) string {
 func (b *BOM) unmarshalProperties(properties *[]cdx.Property) []core.Property {
 	var props []core.Property
 	for _, p := range lo.FromPtr(properties) {
-		props = append(props, core.Property{
-			Name:  strings.TrimPrefix(p.Name, Namespace),
+		prop := core.Property{
 			Value: p.Value,
-		})
+		}
+
+		// If the property has the Trivy namespace prefix, it's a Trivy property
+		if name, found := strings.CutPrefix(p.Name, Namespace); found {
+			prop.Name = name
+			prop.External = false // Trivy property (default)
+		} else {
+			// External property - preserve the original name and mark as external
+			prop.Name = p.Name
+			prop.External = true
+		}
+
+		props = append(props, prop)
 	}
 	return props
 }

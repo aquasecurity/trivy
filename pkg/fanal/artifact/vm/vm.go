@@ -7,7 +7,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
@@ -31,15 +30,7 @@ const (
 	TypeFile Type = "file"
 )
 
-var (
-	ArtifactSet = wire.NewSet(
-		walker.NewVM,
-		wire.Bind(new(Walker), new(*walker.VM)),
-		NewArtifact,
-	)
-
-	_ Walker = (*walker.VM)(nil)
-)
+var _ Walker = (*walker.VM)(nil)
 
 type Walker interface {
 	Walk(*io.SectionReader, string, walker.Option, walker.WalkFunc) error

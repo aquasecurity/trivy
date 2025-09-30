@@ -271,6 +271,7 @@ func scan(t *testing.T, imageRef name.Reference, baseDir string, opt registryOpt
 		"image",
 		"--format",
 		"json",
+		"--list-all-pkgs=false",
 		"--image-src",
 		"remote",
 		"--skip-db-update",

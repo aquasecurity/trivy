@@ -78,6 +78,7 @@ func TestVM(t *testing.T) {
 				"--skip-db-update",
 				"--format",
 				tt.args.format,
+				"--list-all-pkgs=false",
 			}
 
 			// Decompress the gzipped image file

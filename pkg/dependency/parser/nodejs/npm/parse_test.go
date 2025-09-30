@@ -42,6 +42,12 @@ func TestParse(t *testing.T) {
 			wantDeps: npmV3WithWorkspaceDeps,
 		},
 		{
+			name:     "lock version v3 with workspace as object",
+			file:     "testdata/package-lock_v3_with_workspace_as_object.json",
+			want:     npmV3WithWorkspaceAsObjectPkgs,
+			wantDeps: nil,
+		},
+		{
 			name:     "lock version v3 with peer dependencies",
 			file:     "testdata/package-lock_v3_with_peer.json",
 			want:     npmV3WithPeerDependenciesPkgs,

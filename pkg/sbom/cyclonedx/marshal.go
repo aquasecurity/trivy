@@ -1,6 +1,7 @@
 package cyclonedx
 
 import (
+	"cmp"
 	"context"
 	"fmt"
 	"net/url"
@@ -358,13 +359,13 @@ func (m *Marshaler) normalizeLicense(license string) expression.Expression {
 func (*Marshaler) Properties(properties []core.Property) *[]cdx.Property {
 	cdxProps := make([]cdx.Property, 0, len(properties))
 	for _, property := range properties {
-		namespace := Namespace
-		if property.Namespace != "" {
-			namespace = property.Namespace
-		}
+		namespace := cmp.Or(property.Namespace, Namespace)
+
+		// External property preserves original name, Trivy property gets namespace prefix
+		name := lo.Ternary(property.External, property.Name, namespace+property.Name)
 
 		cdxProps = append(cdxProps, cdx.Property{
-			Name:  namespace + property.Name,
+			Name:  name,
 			Value: property.Value,
 		})
 	}

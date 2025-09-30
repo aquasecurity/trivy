@@ -15,7 +15,6 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/google/wire"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -34,15 +33,7 @@ import (
 
 const artifactVersion = 0
 
-var (
-	ArtifactSet = wire.NewSet(
-		walker.NewFS,
-		wire.Bind(new(Walker), new(*walker.FS)),
-		NewArtifact,
-	)
-
-	_ Walker = (*walker.FS)(nil)
-)
+var _ Walker = (*walker.FS)(nil)
 
 type Walker interface {
 	Walk(root string, opt walker.Option, fn walker.WalkFunc) error

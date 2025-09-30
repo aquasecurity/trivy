@@ -494,11 +494,11 @@ Mappings:
   Success:
     Properties:
       DisplayName: success
-      FifoTopic: true
+      FifoTopic: "true"
   Failure:
     Properties:
       DisplayName: failure
-      FifoTopic: false
+      FifoTopic: "false"
 Resources:
   'Fn::ForEach::Topics':
     - TopicName
@@ -542,7 +542,7 @@ Resources:
 			map[string]any{
 				"TopicName":   "Success.fifo",
 				"DisplayName": "success",
-				"FifoTopic":   true,
+				"FifoTopic":   "true",
 			},
 		},
 		{
@@ -550,7 +550,7 @@ Resources:
 			map[string]any{
 				"TopicName":   "Failure.fifo",
 				"DisplayName": "failure",
-				"FifoTopic":   false,
+				"FifoTopic":   "false",
 			},
 		},
 		// SnsSubscription
