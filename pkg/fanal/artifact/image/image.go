@@ -367,8 +367,11 @@ func (a Artifact) inspectLayer(ctx context.Context, layer types.Layer, disabled 
 	// Count the bytes read from the layer
 	cr := xio.NewCountingReader(rc)
 
+	// `errgroup` cancels the context after Wait returns, so it can’t be use later.
+	// We need a separate context specifically for Analyze.
+	eg, egCtx := errgroup.WithContext(ctx)
+
 	// Prepare variables
-	eg, ctx := errgroup.WithContext(ctx)
 	opts := analyzer.AnalysisOptions{
 		Offline:      a.artifactOption.Offline,
 		FileChecksum: a.artifactOption.FileChecksum,
@@ -385,7 +388,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layer types.Layer, disabled 
 
 	// Walk a tar layer
 	opqDirs, whFiles, err := a.walker.Walk(cr, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-		if err = a.analyzer.AnalyzeFile(ctx, eg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
+		if err = a.analyzer.AnalyzeFile(egCtx, eg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
 

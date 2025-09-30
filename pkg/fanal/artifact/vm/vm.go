@@ -83,7 +83,9 @@ type Storage struct {
 }
 
 func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobInfo, error) {
-	eg, ctx := errgroup.WithContext(ctx)
+	// `errgroup` cancels the context after Wait returns, so it can’t be use later.
+	// We need a separate context specifically for Analyze.
+	eg, egCtx := errgroup.WithContext(ctx)
 	limit := semaphore.New(a.artifactOption.Parallel)
 	result := analyzer.NewAnalysisResult()
 
@@ -102,7 +104,7 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
 	err = a.walker.Walk(r, "/", a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		path := strings.TrimPrefix(filePath, "/")
-		if err := a.analyzer.AnalyzeFile(ctx, eg, limit, result, "/", path, info, opener, nil, opts); err != nil {
+		if err = a.analyzer.AnalyzeFile(egCtx, eg, limit, result, "/", path, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", path, err)
 		}
 

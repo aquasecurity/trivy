@@ -191,7 +191,9 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 		}
 	}
 
-	eg, ctx := errgroup.WithContext(ctx)
+	// `errgroup` cancels the context after Wait returns, so it can’t be use later.
+	// We need a separate context specifically for Analyze.
+	eg, egCtx := errgroup.WithContext(ctx)
 	result := analyzer.NewAnalysisResult()
 	limit := semaphore.New(a.artifactOption.Parallel)
 	opts := analyzer.AnalysisOptions{
@@ -211,12 +213,12 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	if paths, canUseStaticPaths := a.analyzer.StaticPaths(a.artifactOption.DisabledAnalyzers); canUseStaticPaths {
 		// Analyze files in static paths
 		a.logger.Debug("Analyzing files in static paths")
-		if err = a.analyzeWithStaticPaths(ctx, eg, limit, result, composite, opts, paths); err != nil {
+		if err = a.analyzeWithStaticPaths(egCtx, eg, limit, result, composite, opts, paths); err != nil {
 			return artifact.Reference{}, xerrors.Errorf("analyze with static paths: %w", err)
 		}
 	} else {
 		// Analyze files by traversing the root directory
-		if err = a.analyzeWithRootDir(ctx, eg, limit, result, composite, opts); err != nil {
+		if err = a.analyzeWithRootDir(egCtx, eg, limit, result, composite, opts); err != nil {
 			return artifact.Reference{}, xerrors.Errorf("analyze with traversal: %w", err)
 		}
 	}
