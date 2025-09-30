@@ -192,7 +192,7 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 		if art.Relationship == ftypes.RelationshipRoot || art.Relationship == ftypes.RelationshipWorkspace {
 			// Managed dependencies in the root POM affect transitive dependencies
 			rootDepManagement, err = p.resolveDepManagement(ctx, result.properties, result.dependencyManagement)
-			if err != nil {
+			if shouldReturnError(err) {
 				return nil, nil, xerrors.Errorf("unable to resolve dep management: %w", err)
 			}
 
@@ -375,7 +375,7 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 	props := pom.properties()
 	depManagement := pom.content.DependencyManagement.Dependencies.Dependency
 	deps, err := p.parseDependencies(ctx, pom.content.Dependencies.Dependency, props, depManagement, opts)
-	if err != nil {
+	if shouldReturnError(err) {
 		return analysisResult{}, xerrors.Errorf("unable to parse dependencies: %w", err)
 	}
 	deps = p.filterDependencies(deps, opts.exclusions)
@@ -450,7 +450,7 @@ func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, pr
 	var err error
 	// Resolve dependencyManagement
 	depManagement, err = p.resolveDepManagement(ctx, props, depManagement)
-	if err != nil {
+	if shouldReturnError(err) {
 		return nil, xerrors.Errorf("unable to resolve dep management: %w", err)
 	}
 
@@ -497,7 +497,7 @@ func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]stri
 		// so that we don't miss dependencies on nested depManagements with `Import` scope.
 		newProps := utils.MergeMaps(props, result.properties)
 		result.dependencyManagement, err = p.resolveDepManagement(ctx, newProps, result.dependencyManagement)
-		if err != nil {
+		if shouldReturnError(err) {
 			return nil, err
 		}
 		for k, dd := range result.dependencyManagement {
@@ -777,6 +777,7 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repo str
 			return "", err
 		}
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
+		return "", nil
 	} else if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Int("statusCode", resp.StatusCode))
 		return "", nil
@@ -813,6 +814,7 @@ func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repo string, 
 			return nil, err
 		}
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
+		return nil, nil
 	} else if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Int("statusCode", resp.StatusCode))
 		return nil, nil
