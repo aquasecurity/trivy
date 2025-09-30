@@ -10,7 +10,7 @@ var (
 	SaasApiUrlFlag = Flag[string]{
 		Name:       "api-url",
 		ConfigName: "saas.api_url",
-		Default:    "https://app.trivy.dev",
+		Default:    "https://api.trivy.dev",
 		Usage:      "API URL for Trivy Cloud platform",
 	}
 
