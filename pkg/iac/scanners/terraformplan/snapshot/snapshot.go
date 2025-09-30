@@ -12,11 +12,11 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/liamg/memoryfs"
 	"github.com/zclconf/go-cty/cty"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 	iox "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -190,7 +190,7 @@ func (s *snapshot) getOrCreateModuleSnapshot(key string) *snapshotModule {
 }
 
 func (s *snapshot) toFS() (fs.FS, error) {
-	fsys := memoryfs.New()
+	fsys := mapfs.New()
 
 	if err := s.writeManifest(fsys); err != nil {
 		log.WithPrefix(log.PrefixMisconfiguration).Error("Failed to write manifest file", log.Err(err))
@@ -205,7 +205,7 @@ func (s *snapshot) toFS() (fs.FS, error) {
 			if module.dir != "" {
 				filePath = path.Join(module.dir, filename)
 			}
-			if err := fsys.WriteFile(filePath, file, fs.ModePerm); err != nil {
+			if err := fsys.WriteVirtualFile(filePath, file, fs.ModePerm); err != nil {
 				return nil, fmt.Errorf("failed to add file: %w", err)
 			}
 		}
@@ -213,7 +213,7 @@ func (s *snapshot) toFS() (fs.FS, error) {
 	return fsys, nil
 }
 
-func (s *snapshot) writeManifest(fsys *memoryfs.FS) error {
+func (s *snapshot) writeManifest(fsys *mapfs.FS) error {
 	if err := fsys.MkdirAll(path.Dir(parser.ManifestSnapshotFile), fs.ModePerm); err != nil {
 		return fmt.Errorf("create manifest directory: %w", err)
 	}
@@ -223,7 +223,7 @@ func (s *snapshot) writeManifest(fsys *memoryfs.FS) error {
 		return fmt.Errorf("marshal manifest snapshot: %w", err)
 	}
 
-	if err := fsys.WriteFile(parser.ManifestSnapshotFile, b, fs.ModePerm); err != nil {
+	if err := fsys.WriteVirtualFile(parser.ManifestSnapshotFile, b, fs.ModePerm); err != nil {
 		return fmt.Errorf("write manifest snapshot: %w", err)
 	}
 	return nil

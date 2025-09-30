@@ -15,7 +15,7 @@ import (
 
 func Test_BasicScan(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"/code/main.yaml": `---
 Resources:
   S3Bucket:
@@ -205,7 +205,7 @@ Resources:
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fsys := testutil.CreateFS(t, map[string]string{
+			fsys := testutil.CreateFS(map[string]string{
 				"/code/main.yaml": tt.src,
 			})
 

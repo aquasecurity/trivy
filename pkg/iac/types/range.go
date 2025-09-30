@@ -8,41 +8,27 @@ import (
 )
 
 func NewRange(filename string, startLine, endLine int, sourcePrefix string, srcFS fs.FS) Range {
-	r := Range{
-		filename:     filename,
-		startLine:    startLine,
-		endLine:      endLine,
-		fs:           srcFS,
-		fsKey:        CreateFSKey(srcFS),
-		sourcePrefix: sourcePrefix,
-	}
-	return r
+	return newRange(filename, startLine, endLine, sourcePrefix, CreateFSKey(srcFS), srcFS, false)
 }
 
-func NewRangeWithLogicalSource(filename string, startLine int, endLine int, sourcePrefix string,
-	srcFS fs.FS) Range {
-	r := Range{
-		filename:        filename,
-		startLine:       startLine,
-		endLine:         endLine,
-		fs:              srcFS,
-		fsKey:           CreateFSKey(srcFS),
-		sourcePrefix:    sourcePrefix,
-		isLogicalSource: true,
-	}
-	return r
+func NewRangeWithLogicalSource(filename string, startLine, endLine int, sourcePrefix string, srcFS fs.FS) Range {
+	return newRange(filename, startLine, endLine, sourcePrefix, CreateFSKey(srcFS), srcFS, true)
 }
 
 func NewRangeWithFSKey(filename string, startLine, endLine int, sourcePrefix, fsKey string, fsys fs.FS) Range {
-	r := Range{
-		filename:     filename,
-		startLine:    startLine,
-		endLine:      endLine,
-		fs:           fsys,
-		fsKey:        fsKey,
-		sourcePrefix: sourcePrefix,
+	return newRange(filename, startLine, endLine, sourcePrefix, fsKey, fsys, false)
+}
+
+func newRange(filename string, startLine, endLine int, sourcePrefix, fsKey string, fsys fs.FS, isLogical bool) Range {
+	return Range{
+		filename:        filename,
+		startLine:       startLine,
+		endLine:         endLine,
+		fs:              fsys,
+		fsKey:           fsKey,
+		sourcePrefix:    sourcePrefix,
+		isLogicalSource: isLogical,
 	}
-	return r
 }
 
 type Range struct {
