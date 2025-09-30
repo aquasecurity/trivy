@@ -35,11 +35,18 @@ type ImageFile struct {
 	reader   *io.SectionReader
 }
 
-func newFile(filePath string, storage Storage) (*ImageFile, error) {
+func newFile(filePath string, storage Storage) (imgFile *ImageFile, err error) {
 	f, err := os.Open(filePath)
 	if err != nil {
 		return nil, xerrors.Errorf("file open error: %w", err)
 	}
+
+	// Close file on error
+	defer func() {
+		if err != nil && f != nil {
+			f.Close()
+		}
+	}()
 
 	c, err := lru.New[string, []byte](storageFILECacheSize)
 	if err != nil {

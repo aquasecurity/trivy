@@ -367,13 +367,6 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
 	defer cancel()
 
-	defer func() {
-		if errors.Is(err, context.DeadlineExceeded) {
-			// e.g. https://trivy.dev/latest/docs/configuration/
-			log.WarnContext(ctx, fmt.Sprintf("Provide a higher timeout value, see %s", doc.URL("/docs/configuration/", "")))
-		}
-	}()
-
 	if opts.GenerateDefaultConfig {
 		log.Info("Writing the default config to trivy-default.yaml...")
 

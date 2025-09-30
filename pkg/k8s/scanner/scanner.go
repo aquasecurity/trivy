@@ -120,8 +120,13 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 			resources = append(resources, result...)
 			return nil
 		}
+		workers := s.opts.Parallel
+		if s.opts.CacheBackend == string(cache.TypeFS) {
+			// To avoid lock contention in bbolt, we limit the number of workers to 1 when using FS cache.
+			workers = 1
+		}
 
-		p := parallel.NewPipeline(s.opts.Parallel, !s.opts.Quiet, resourceArtifacts, onItem, onResult)
+		p := parallel.NewPipeline(workers, !s.opts.Quiet, resourceArtifacts, onItem, onResult)
 		if err := p.Do(ctx); err != nil {
 			return report.Report{}, err
 		}
