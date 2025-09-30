@@ -1259,7 +1259,7 @@ deny contains res if {
 }
 
 func Test_ScanTofuFiles(t *testing.T) {
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"code/main.tofu":   `resource "aws_s3_bucket" "this" {}`,
 		"rules/check.rego": emptyBucketCheck,
 	})
