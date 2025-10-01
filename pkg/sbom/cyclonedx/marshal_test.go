@@ -62,11 +62,9 @@ var (
 	}
 )
 
-func TestMarshaler_MarshalReport(t *testing.T) {
-	testSBOM := core.NewBOM(core.Options{GenerateBOMRef: true})
-
+var (
 	// Add root component
-	rootComponent := &core.Component{
+	rootComponent = &core.Component{
 		Root: true,
 		Type: core.TypeApplication,
 		Name: "jackson-databind-2.13.4.1.jar",
@@ -80,10 +78,8 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			},
 		},
 	}
-	testSBOM.AddComponent(rootComponent)
 
-	// Add the jackson-databind component that matches scan results
-	jacksonComponent := &core.Component{
+	jacksonComponent = &core.Component{
 		Type:    core.TypeLibrary,
 		Name:    "jackson-databind",
 		Group:   "com.fasterxml.jackson.core",
@@ -108,11 +104,35 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			},
 		},
 	}
-	testSBOM.AddComponent(jacksonComponent)
+)
+
+func testSBOM() *core.BOM {
+	sbom := core.NewBOM(core.Options{GenerateBOMRef: true})
+
+	// Add root component
+	sbom.AddComponent(rootComponent)
+
+	// Add the jackson-databind component that matches scan results
+	sbom.AddComponent(jacksonComponent)
 
 	// Establish relationships
-	testSBOM.AddRelationship(rootComponent, jacksonComponent, core.RelationshipContains)
-	testSBOM.AddRelationship(jacksonComponent, nil, core.RelationshipDependsOn)
+	sbom.AddRelationship(rootComponent, jacksonComponent, core.RelationshipContains)
+	sbom.AddRelationship(jacksonComponent, nil, core.RelationshipDependsOn)
+	return sbom
+}
+
+func testSBOMWithoutRoot() *core.BOM {
+	sbom := core.NewBOM(core.Options{GenerateBOMRef: true})
+
+	// Add the jackson-databind component that matches scan results
+	sbom.AddComponent(jacksonComponent)
+
+	// Establish relationships
+	sbom.AddRelationship(jacksonComponent, nil, core.RelationshipDependsOn)
+	return sbom
+}
+
+func TestMarshaler_MarshalReport(t *testing.T) {
 
 	tests := []struct {
 		name        string
@@ -1561,7 +1581,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						},
 					},
 				},
-				BOM: testSBOM,
+				BOM: testSBOM(),
 			},
 			want: &cdx.BOM{
 				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
@@ -2142,6 +2162,67 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				Dependencies: &[]cdx.Dependency{
 					{
 						Ref:          "3ff14136-e09f-4df9-80ea-000000000001",
+						Dependencies: lo.ToPtr([]string{}),
+					},
+				},
+			},
+		},
+		{
+			name: "happy path. Root component doesn't exist",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "empty/path",
+				ArtifactType:  ftypes.TypeFilesystem,
+				Results:       types.Results{},
+				BOM:           testSBOMWithoutRoot(),
+			},
+			want: &cdx.BOM{
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
+				BOMFormat:    "CycloneDX",
+				SpecVersion:  cdx.SpecVersion1_6,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+				Version:      1,
+				Metadata: &cdx.Metadata{
+					Timestamp: "2021-08-25T12:20:30+00:00",
+					Tools: &cdx.ToolsChoice{
+						Components: &[]cdx.Component{
+							{
+								Type:    cdx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+								Manufacturer: &cdx.OrganizationalEntity{
+									Name: "Aqua Security Software Ltd.",
+								},
+							},
+						},
+					},
+				},
+				Components: &[]cdx.Component{
+					{
+						BOMRef:     "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+						Type:       cdx.ComponentTypeLibrary,
+						Group:      "com.fasterxml.jackson.core",
+						Name:       "jackson-databind",
+						Version:    "2.13.4.1",
+						PackageURL: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:FilePath",
+								Value: "jackson-databind-2.13.4.1.jar",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "jar",
+							},
+						},
+					},
+				},
+				Vulnerabilities: &[]cdx.Vulnerability{},
+				Dependencies: &[]cdx.Dependency{
+					{
+						Ref:          "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 				},
