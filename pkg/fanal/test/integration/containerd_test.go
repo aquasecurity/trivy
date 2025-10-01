@@ -712,7 +712,7 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			require.Equal(t, tt.wantMetadata, ref.ImageMetadata)
 
 			a := applier.NewApplier(c)
-			got, err := a.ApplyLayers(ref.ID, ref.BlobIDs)
+			got, err := a.ApplyLayers(ctx, ref.ID, ref.BlobIDs)
 			require.NoError(t, err)
 
 			tag := strings.Split(tt.imageName, ":")[1]
@@ -841,7 +841,7 @@ func TestContainerd_PullImage(t *testing.T) {
 			require.Equal(t, tt.wantMetadata, ref.ImageMetadata)
 
 			a := applier.NewApplier(c)
-			got, err := a.ApplyLayers(ref.ID, ref.BlobIDs)
+			got, err := a.ApplyLayers(ctx, ref.ID, ref.BlobIDs)
 			require.NoError(t, err)
 
 			// Parse a golden file
