@@ -1,6 +1,7 @@
 package cache_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -34,10 +35,10 @@ func TestMemoryCache_PutArtifact(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := cache.NewMemoryCache()
 
-			err := c.PutArtifact(tt.artifactID, tt.artifactInfo)
+			err := c.PutArtifact(context.Background(), tt.artifactID, tt.artifactInfo)
 			require.NoError(t, err)
 
-			got, err := c.GetArtifact(tt.artifactID)
+			got, err := c.GetArtifact(context.Background(), tt.artifactID)
 			require.NoError(t, err)
 			assert.Equal(t, tt.artifactInfo, got)
 		})
@@ -82,10 +83,10 @@ func TestMemoryCache_PutBlob(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := cache.NewMemoryCache()
 
-			err := c.PutBlob(tt.blobID, tt.blobInfo)
+			err := c.PutBlob(context.Background(), tt.blobID, tt.blobInfo)
 			require.NoError(t, err)
 
-			got, err := c.GetBlob(tt.blobID)
+			got, err := c.GetBlob(context.Background(), tt.blobID)
 			require.NoError(t, err)
 			assert.Equal(t, tt.blobInfo, got)
 		})
@@ -123,11 +124,11 @@ func TestMemoryCache_GetArtifact(t *testing.T) {
 			c := cache.NewMemoryCache()
 
 			if !tt.wantErr {
-				err := c.PutArtifact(tt.artifactID, tt.artifactInfo)
+				err := c.PutArtifact(context.Background(), tt.artifactID, tt.artifactInfo)
 				require.NoError(t, err)
 			}
 
-			got, err := c.GetArtifact(tt.artifactID)
+			got, err := c.GetArtifact(context.Background(), tt.artifactID)
 			if tt.wantErr {
 				require.ErrorContains(t, err, "not found in memory cache")
 				return
@@ -171,11 +172,11 @@ func TestMemoryCache_GetBlob(t *testing.T) {
 			c := cache.NewMemoryCache()
 
 			if !tt.wantErr {
-				err := c.PutBlob(tt.blobID, tt.blobInfo)
+				err := c.PutBlob(context.Background(), tt.blobID, tt.blobInfo)
 				require.NoError(t, err)
 			}
 
-			got, err := c.GetBlob(tt.blobID)
+			got, err := c.GetBlob(context.Background(), tt.blobID)
 			if tt.wantErr {
 				require.ErrorContains(t, err, "not found in memory cache")
 				return
@@ -260,16 +261,16 @@ func TestMemoryCache_MissingBlobs(t *testing.T) {
 			c := cache.NewMemoryCache()
 
 			if tt.putArtifact {
-				err := c.PutArtifact(tt.artifactID, types.ArtifactInfo{})
+				err := c.PutArtifact(context.Background(), tt.artifactID, types.ArtifactInfo{})
 				require.NoError(t, err)
 			}
 
 			for _, blobID := range tt.putBlobs {
-				err := c.PutBlob(blobID, types.BlobInfo{})
+				err := c.PutBlob(context.Background(), blobID, types.BlobInfo{})
 				require.NoError(t, err)
 			}
 
-			gotMissingArtifact, gotMissingBlobIDs, err := c.MissingBlobs(tt.artifactID, tt.blobIDs)
+			gotMissingArtifact, gotMissingBlobIDs, err := c.MissingBlobs(context.Background(), tt.artifactID, tt.blobIDs)
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantMissingArtifact, gotMissingArtifact)
 			assert.Equal(t, tt.wantMissingBlobIDs, gotMissingBlobIDs)
@@ -304,16 +305,16 @@ func TestMemoryCache_DeleteBlobs(t *testing.T) {
 
 			// Put some blobs in the cache
 			for _, blobID := range tt.blobIDs {
-				err := c.PutBlob(blobID, types.BlobInfo{})
+				err := c.PutBlob(context.Background(), blobID, types.BlobInfo{})
 				require.NoError(t, err)
 			}
 
-			err := c.DeleteBlobs(tt.blobIDs)
+			err := c.DeleteBlobs(context.Background(), tt.blobIDs)
 			require.NoError(t, err)
 
 			// Check that the blobs are no longer in the cache
 			for _, blobID := range tt.blobIDs {
-				_, err := c.GetBlob(blobID)
+				_, err := c.GetBlob(context.Background(), blobID)
 				require.ErrorContains(t, err, "not found in memory cache")
 			}
 		})
@@ -337,19 +338,19 @@ func TestMemoryCache_Clear(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := cache.NewMemoryCache()
 
-			err := c.PutArtifact(tt.artifactID, types.ArtifactInfo{})
+			err := c.PutArtifact(context.Background(), tt.artifactID, types.ArtifactInfo{})
 			require.NoError(t, err)
 
-			err = c.PutBlob(tt.blobID, types.BlobInfo{})
+			err = c.PutBlob(context.Background(), tt.blobID, types.BlobInfo{})
 			require.NoError(t, err)
 
-			err = c.Clear()
+			err = c.Clear(context.Background())
 			require.NoError(t, err)
 
-			_, err = c.GetArtifact(tt.artifactID)
+			_, err = c.GetArtifact(context.Background(), tt.artifactID)
 			require.ErrorContains(t, err, "not found in memory cache")
 
-			_, err = c.GetBlob(tt.blobID)
+			_, err = c.GetBlob(context.Background(), tt.blobID)
 			require.ErrorContains(t, err, "not found in memory cache")
 		})
 	}
@@ -372,19 +373,19 @@ func TestMemoryCache_Close(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := cache.NewMemoryCache()
 
-			err := c.PutArtifact(tt.artifactID, types.ArtifactInfo{})
+			err := c.PutArtifact(context.Background(), tt.artifactID, types.ArtifactInfo{})
 			require.NoError(t, err)
 
-			err = c.PutBlob(tt.blobID, types.BlobInfo{})
+			err = c.PutBlob(context.Background(), tt.blobID, types.BlobInfo{})
 			require.NoError(t, err)
 
 			err = c.Close()
 			require.NoError(t, err)
 
-			_, err = c.GetArtifact(tt.artifactID)
+			_, err = c.GetArtifact(context.Background(), tt.artifactID)
 			require.ErrorContains(t, err, "not found in memory cache")
 
-			_, err = c.GetBlob(tt.blobID)
+			_, err = c.GetBlob(context.Background(), tt.blobID)
 			require.ErrorContains(t, err, "not found in memory cache")
 		})
 	}

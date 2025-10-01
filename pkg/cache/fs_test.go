@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -100,11 +101,11 @@ func TestFSCache_GetBlob(t *testing.T) {
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
 			defer func() {
-				_ = fs.Clear()
+				_ = fs.Clear(context.Background())
 				_ = fs.Close()
 			}()
 
-			got, err := fs.GetBlob(tt.args.layerID)
+			got, err := fs.GetBlob(context.Background(), tt.args.layerID)
 			assert.Equal(t, tt.wantErr, err != nil, err)
 			assert.Equal(t, tt.want, got)
 		})
@@ -276,7 +277,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
 			defer func() {
-				_ = fs.Clear()
+				_ = fs.Clear(context.Background())
 				_ = fs.Close()
 			}()
 
@@ -284,7 +285,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 				require.NoError(t, fs.Close())
 			}
 
-			err = fs.PutBlob(tt.args.diffID, tt.args.layerInfo)
+			err = fs.PutBlob(context.Background(), tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
@@ -356,11 +357,11 @@ func TestFSCache_PutArtifact(t *testing.T) {
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
 			defer func() {
-				_ = fs.Clear()
+				_ = fs.Clear(context.Background())
 				_ = fs.Close()
 			}()
 
-			err = fs.PutArtifact(tt.args.imageID, tt.args.imageConfig)
+			err = fs.PutArtifact(context.Background(), tt.args.imageID, tt.args.imageConfig)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
@@ -475,11 +476,11 @@ func TestFSCache_MissingBlobs(t *testing.T) {
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
 			defer func() {
-				_ = fs.Clear()
+				_ = fs.Clear(context.Background())
 				_ = fs.Close()
 			}()
 
-			gotMissingImage, gotMissingLayerIDs, err := fs.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
+			gotMissingImage, gotMissingLayerIDs, err := fs.MissingBlobs(context.Background(), tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr, tt.name)
 				return

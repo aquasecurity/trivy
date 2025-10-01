@@ -1,6 +1,7 @@
 package image_test
 
 import (
+	"context"
 	"math/rand"
 	"testing"
 	"time"
@@ -493,7 +494,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutArtifact("sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b", types.ArtifactInfo{
+				require.NoError(t, c.PutArtifact(context.Background(), "sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b", types.ArtifactInfo{
 					SchemaVersion: types.ArtifactJSONSchemaVersion,
 				}))
 				return c
@@ -1854,7 +1855,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutArtifact("sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b", types.ArtifactInfo{
+				require.NoError(t, c.PutArtifact(context.Background(), "sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b", types.ArtifactInfo{
 					SchemaVersion: types.ArtifactJSONSchemaVersion,
 				}))
 				return c

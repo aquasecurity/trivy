@@ -1,6 +1,7 @@
 package cache_test
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"testing"
@@ -69,7 +70,7 @@ func TestRedisCache_PutArtifact(t *testing.T) {
 			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
 			require.NoError(t, err)
 
-			err = c.PutArtifact(tt.args.artifactID, tt.args.artifactConfig)
+			err = c.PutArtifact(context.Background(), tt.args.artifactID, tt.args.artifactConfig)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -155,7 +156,7 @@ func TestRedisCache_PutBlob(t *testing.T) {
 			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
 			require.NoError(t, err)
 
-			err = c.PutBlob(tt.args.blobID, tt.args.blobConfig)
+			err = c.PutBlob(context.Background(), tt.args.blobID, tt.args.blobConfig)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -237,7 +238,7 @@ func TestRedisCache_GetArtifact(t *testing.T) {
 			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
 			require.NoError(t, err)
 
-			got, err := c.GetArtifact(tt.artifactID)
+			got, err := c.GetArtifact(context.Background(), tt.artifactID)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -327,7 +328,7 @@ func TestRedisCache_GetBlob(t *testing.T) {
 			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
 			require.NoError(t, err)
 
-			got, err := c.GetBlob(tt.blobID)
+			got, err := c.GetBlob(context.Background(), tt.blobID)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -436,7 +437,7 @@ func TestRedisCache_MissingBlobs(t *testing.T) {
 			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
 			require.NoError(t, err)
 
-			missingArtifact, missingBlobIDs, err := c.MissingBlobs(tt.args.artifactID, tt.args.blobIDs)
+			missingArtifact, missingBlobIDs, err := c.MissingBlobs(context.Background(), tt.args.artifactID, tt.args.blobIDs)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -481,7 +482,7 @@ func TestRedisCache_Clear(t *testing.T) {
 		c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", s.Addr()), "", "", "", false, 0)
 		require.NoError(t, err)
 
-		require.NoError(t, c.Clear())
+		require.NoError(t, c.Clear(context.Background()))
 		for i := range 200 {
 			assert.False(t, s.Exists(fmt.Sprintf("fanal::key%d", i)))
 		}
@@ -535,7 +536,7 @@ func TestRedisCache_DeleteBlobs(t *testing.T) {
 
 			s.Set(tt.wantKey, "any string")
 
-			err = c.DeleteBlobs(tt.args.blobIDs)
+			err = c.DeleteBlobs(context.Background(), tt.args.blobIDs)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return

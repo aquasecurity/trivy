@@ -1,6 +1,8 @@
 package cache
 
 import (
+	"context"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -21,29 +23,29 @@ type Cache interface {
 // ArtifactCache uses local or remote cache
 type ArtifactCache interface {
 	// MissingBlobs returns missing blob IDs such as layer IDs in cache
-	MissingBlobs(artifactID string, blobIDs []string) (missingArtifact bool, missingBlobIDs []string, err error)
+	MissingBlobs(ctx context.Context, artifactID string, blobIDs []string) (missingArtifact bool, missingBlobIDs []string, err error)
 
 	// PutArtifact stores artifact information such as image metadata in cache
-	PutArtifact(artifactID string, artifactInfo types.ArtifactInfo) (err error)
+	PutArtifact(ctx context.Context, artifactID string, artifactInfo types.ArtifactInfo) (err error)
 
 	// PutBlob stores blob information such as layer information in local cache
-	PutBlob(blobID string, blobInfo types.BlobInfo) (err error)
+	PutBlob(ctx context.Context, blobID string, blobInfo types.BlobInfo) (err error)
 
 	// DeleteBlobs removes blobs by IDs
-	DeleteBlobs(blobIDs []string) error
+	DeleteBlobs(ctx context.Context, blobIDs []string) error
 }
 
 // LocalArtifactCache always uses local cache
 type LocalArtifactCache interface {
 	// GetArtifact gets artifact information such as image metadata from local cache
-	GetArtifact(artifactID string) (artifactInfo types.ArtifactInfo, err error)
+	GetArtifact(ctx context.Context, artifactID string) (artifactInfo types.ArtifactInfo, err error)
 
 	// GetBlob gets blob information such as layer data from local cache
-	GetBlob(blobID string) (blobInfo types.BlobInfo, err error)
+	GetBlob(ctx context.Context, blobID string) (blobInfo types.BlobInfo, err error)
 
 	// Close closes the local database
 	Close() (err error)
 
 	// Clear deletes the local database
-	Clear() (err error)
+	Clear(ctx context.Context) (err error)
 }

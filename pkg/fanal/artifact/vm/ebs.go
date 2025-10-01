@@ -68,7 +68,7 @@ func (a *EBS) Inspect(ctx context.Context) (artifact.Reference, error) {
 		return artifact.Reference{}, xerrors.Errorf("inspection error: %w", err)
 	}
 
-	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
+	if err = a.cache.PutBlob(ctx, cacheKey, blobInfo); err != nil {
 		return artifact.Reference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 
@@ -110,7 +110,7 @@ func (a *EBS) calcCacheKey(key string) (string, error) {
 }
 
 func (a *EBS) hasCache(cacheKey string) bool {
-	_, missingCacheKeys, err := a.cache.MissingBlobs(cacheKey, []string{cacheKey})
+	_, missingCacheKeys, err := a.cache.MissingBlobs(context.TODO(), cacheKey, []string{cacheKey})
 	if err != nil {
 		a.logger.Debug("Unable to query missing cache", log.Err(err))
 		return false

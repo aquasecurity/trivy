@@ -678,7 +678,7 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			require.NoError(t, err)
 
 			defer func() {
-				c.Clear()
+				c.Clear(context.Background())
 				c.Close()
 			}()
 
@@ -813,7 +813,7 @@ func TestContainerd_PullImage(t *testing.T) {
 			require.NoError(t, err)
 
 			defer func() {
-				c.Clear()
+				c.Clear(context.Background())
 				c.Close()
 			}()
 
