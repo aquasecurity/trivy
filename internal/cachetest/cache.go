@@ -86,7 +86,7 @@ func NewCache(t *testing.T, setUpCache func(t *testing.T) cache.Cache) cache.Cac
 }
 
 func AssertArtifact(t *testing.T, c cache.Cache, wantArtifact WantArtifact) {
-	gotArtifact, err := c.GetArtifact(context.Background(), wantArtifact.ID)
+	gotArtifact, err := c.GetArtifact(t.Context(), wantArtifact.ID)
 	require.NoError(t, err, "artifact not found")
 	assert.Equal(t, wantArtifact.ArtifactInfo, gotArtifact, wantArtifact.ID)
 }
@@ -101,7 +101,7 @@ func AssertBlobs(t *testing.T, c cache.Cache, wantBlobs []WantBlob) {
 	}
 
 	for _, want := range wantBlobs {
-		got, err := c.GetBlob(context.Background(), want.ID)
+		got, err := c.GetBlob(t.Context(), want.ID)
 		require.NoError(t, err, "blob not found")
 
 		for i := range got.Misconfigurations {

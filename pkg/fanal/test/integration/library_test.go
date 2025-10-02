@@ -177,7 +177,7 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			}
 
 			// clear Cache
-			require.NoError(t, c.Clear(context.Background()), tt.name)
+			require.NoError(t, c.Clear(t.Context()), tt.name)
 		})
 	}
 }
@@ -208,7 +208,7 @@ func TestFanal_Library_TarMode(t *testing.T) {
 			runChecks(t, ctx, ar, applier, tt)
 
 			// clear Cache
-			require.NoError(t, c.Clear(context.Background()), tt.name)
+			require.NoError(t, c.Close())
 		})
 	}
 }

@@ -1,7 +1,6 @@
 package local
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -183,7 +182,7 @@ func TestScanner_Scan(t *testing.T) {
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutBlob(context.Background(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
 					Size:          1000,
 					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
@@ -304,7 +303,7 @@ func TestScanner_Scan(t *testing.T) {
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutBlob(context.Background(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
 					Size:          1000,
 					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
@@ -387,7 +386,7 @@ func TestScanner_Scan(t *testing.T) {
 			},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutBlob(context.Background(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
 					Size:          1000,
 					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
@@ -480,7 +479,7 @@ func TestScanner_Scan(t *testing.T) {
 			},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutBlob(context.Background(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
 					Size:          1000,
 					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
@@ -594,7 +593,7 @@ func TestScanner_Scan(t *testing.T) {
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutBlob(context.Background(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
 					Size:          1000,
 					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
@@ -684,7 +683,7 @@ func TestScanner_Scan(t *testing.T) {
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutBlob(context.Background(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
 					Applications: []ftypes.Application{
 						{
@@ -796,7 +795,7 @@ func TestScanner_Scan(t *testing.T) {
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutBlob(context.Background(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
 					Size:          1000,
 					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
@@ -887,7 +886,7 @@ func TestScanner_Scan(t *testing.T) {
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutBlob(context.Background(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
 					Size:          1000,
 					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
@@ -969,7 +968,7 @@ func TestScanner_Scan(t *testing.T) {
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutBlob(context.Background(), "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116", ftypes.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
 					OS:            ftypes.OS{},
 				}))
@@ -998,7 +997,7 @@ func TestScanner_Scan(t *testing.T) {
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutBlob(context.Background(), "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33", ftypes.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
 					Size:          1000,
 					DiffID:        "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
@@ -1099,7 +1098,7 @@ func TestScanner_Scan(t *testing.T) {
 			setUpHook: true,
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutBlob(context.Background(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
 					Size:          1000,
 					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
@@ -1174,7 +1173,7 @@ func TestScanner_Scan(t *testing.T) {
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutBlob(context.Background(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
 					Size:          1000,
 					DiffID:        "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
@@ -1326,7 +1325,7 @@ func TestScanner_Scan(t *testing.T) {
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutBlob(context.Background(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: 0,
 				}))
 				return c
@@ -1347,7 +1346,7 @@ func TestScanner_Scan(t *testing.T) {
 			fixtures: []string{"testdata/fixtures/sad.yaml"},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutBlob(context.Background(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
 					Size:          1000,
 					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
@@ -1387,7 +1386,7 @@ func TestScanner_Scan(t *testing.T) {
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutBlob(context.Background(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
 					Size:          1000,
 					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
