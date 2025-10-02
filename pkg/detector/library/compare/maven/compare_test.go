@@ -106,6 +106,28 @@ func TestComparer_IsVulnerable(t *testing.T) {
 			},
 			want: false,
 		},
+		{
+			name: "version with fork suffix not vulnerable",
+			args: args{
+				currentVersion: "10.14.3.0-magnolia",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=10.1.1.0 <10.14.3", ">=10.15.0.0 <10.15.2.1", ">=10.16.0.0 <10.16.1.2", ">=10.17.0.s0 <10.17.1.0"},
+					PatchedVersions:    []string{"10.14.3", "10.15.2.1", "10.16.1.2", "10.17.1.0"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "version with fork suffix vulnerable",
+			args: args{
+				currentVersion: "10.14.2.0-magnolia",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=10.1.1.0 <10.14.3", ">=10.15.0.0 <10.15.2.1", ">=10.16.0.0 <10.16.1.2", ">=10.17.0.s0 <10.17.1.0"},
+					PatchedVersions:    []string{"10.14.3", "10.15.2.1", "10.16.1.2", "10.17.1.0"},
+				},
+			},
+			want: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
