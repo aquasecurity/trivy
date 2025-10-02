@@ -1,6 +1,7 @@
 package expression
 
 import (
+	_ "embed"
 	"encoding/json"
 	"strings"
 	"sync"
@@ -9,8 +10,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
-
-	_ "embed"
 )
 
 // Canonical names of the licenses.
@@ -375,34 +374,24 @@ var (
 
 var spdxLicenses = set.New[string]()
 
+//go:embed licenses.json
+var licenses []byte
+
 var initSpdxLicenses = sync.OnceFunc(func() {
 	if spdxLicenses.Size() > 0 {
 		return
 	}
 
-	licenseSlices := [][]string{
-		ForbiddenLicenses,
-		RestrictedLicenses,
-		ReciprocalLicenses,
-		NoticeLicenses,
-		PermissiveLicenses,
-		UnencumberedLicenses,
+	var lics []string
+	if err := json.Unmarshal(licenses, &lics); err != nil {
+		log.WithPrefix(log.PrefixSPDX).Warn("Unable to parse SPDX license file", log.Err(err))
+		return
 	}
 
-	for _, licenseSlice := range licenseSlices {
-		spdxLicenses.Append(licenseSlice...)
-	}
-
-	// Save GNU licenses with "-or-later" and `"-only" suffixes
-	for _, l := range GnuLicenses {
-		license := SimpleExpr{
-			License: l,
-		}
-		spdxLicenses.Append(license.String())
-
-		license.HasPlus = true
-		spdxLicenses.Append(license.String())
-	}
+	// SPDX license list is case-insensitive. Store in upper case for simplicity.
+	spdxLicenses.Append(lo.Map(lics, func(l string, _ int) string {
+		return strings.ToUpper(l)
+	})...)
 })
 
 //go:embed exceptions.json
@@ -429,7 +418,7 @@ var initSpdxExceptions = sync.OnceFunc(func() {
 func ValidateSPDXLicense(license string) bool {
 	initSpdxLicenses()
 
-	return spdxLicenses.Contains(license)
+	return spdxLicenses.Contains(strings.ToUpper(license))
 }
 
 // ValidateSPDXException returns true if SPDX exception list contain exceptionID
