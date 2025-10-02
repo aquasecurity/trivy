@@ -23,12 +23,16 @@
           "type": "string",
           "description": "Path to the current module. For remote modules, this is the path relative to the module's code directory."
         },
+        "parent_path": {
+          "type": "string",
+          "description": "Path to the parent module if this module is nested."
+        },
         "blocks": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/Block"
           },
-          "description": "List of blocks (e.g., resource, data, variable) within the module."
+          "description": "List of top-level blocks (e.g., resource, data, variable) within the module."
         }
       }
     },
@@ -36,17 +40,16 @@
       "type": "object",
       "properties": {
         "__defsec_metadata": {
-          "type": "object",
           "$ref": "#/$defs/Metadata",
-          "description": "Metadata related to the block."
+          "description": "Metadata related to the block. For internal use only."
         },
         "kind": {
           "type": "string",
-          "description": "Kind of the block (e.g., resource, data, module)."
+          "description": "Kind of the block (e.g., resource, data, module, variable). Only present for top-level blocks."
         },
         "type": {
           "type": "string",
-          "description": "Type of the block (e.g., aws_s3_bucket for a resource). For blocks that can only have 1 label (such as module or variable) this attribute will be empty."
+          "description": "Type of the block (e.g., aws_s3_bucket). Only present for top-level blocks."
         },
         "name": {
           "type": "string",
@@ -60,16 +63,50 @@
             }
           },
           "description": "Key-value attributes associated with the block."
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ChildBlock"
+          },
+          "description": "Child blocks nested inside this block. Supports multiple blocks with the same name."
         }
-      }
+      },
+      "required": ["name", "attributes", "children", "__defsec_metadata"]
+    },
+    "ChildBlock": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "$ref": "#/$defs/Metadata",
+          "description": "Metadata related to the child block. For internal use only."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the child block defined by the user."
+        },
+        "attributes": {
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "$ref": "#/$defs/Attribute"
+            }
+          },
+          "description": "Key-value attributes associated with the child block."
+        },
+        "children": {
+          "type": "array",
+          "description": "Nested child blocks. Conceptually the same as ChildBlock, but type is set to any to avoid recursion issues in Rego."
+        }
+      },
+      "required": ["name", "__defsec_metadata"]
     },
     "Attribute": {
       "type": "object",
       "properties": {
         "__defsec_metadata": {
-          "type": "object",
           "$ref": "#/$defs/Metadata",
-          "description": "Metadata related to the attribute."
+          "description": "Metadata related to the attribute. For internal use only."
         },
         "name": {
           "type": "string",
@@ -90,7 +127,8 @@
             { "type": "array" }
           ]
         }
-      }
+      },
+      "required": ["name", "known", "value"]
     },
     "Metadata": {
       "type": "object",

@@ -7,6 +7,7 @@ import (
 	"testing"
 	"testing/fstest"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -1227,18 +1228,54 @@ package user.bucket001
 
 import rego.v1
 
+resources_to_check := { block |
+    some block in input.modules[_].blocks
+    block.kind == "resource"
+    block.type == "aws_s3_bucket"
+}
+
 deny contains res if {
-	some block in input.modules[_].blocks
-	block.kind == "resource"
-	block.type == "aws_s3_bucket"
-	name := block.attributes["bucket"]
-	name.value == "evil"
-	res := result.new("Buckets should not be evil", name)
-}`
+    some resource in resources_to_check
+    bucketAttr := resource.attributes.bucket
+    bucketAttr.value == "evil"
+    res := result.new("Buckets should not be evil", bucketAttr)
+}
+
+deny contains res if {
+    some resource in resources_to_check
+    some child in resource.children
+    child.name == "lifecycle_rule"
+    child.attributes.enabled.value != true
+    res := result.new("Lifecycle rule is not enabled", child)
+}
+
+deny contains res if {
+    some resource in resources_to_check
+    some lifecycle in resource.children
+    lifecycle.name == "lifecycle_rule"
+
+    some expiration in lifecycle.children
+    expiration.name == "expiration"
+
+    days := expiration.attributes.days
+    days.value > 365
+    res := result.new(
+        "S3 lifecycle_rule expiration period is too long",
+        days,
+    )
+}
+`
 
 	fsys := fstest.MapFS{
 		"main.tf": &fstest.MapFile{Data: []byte(`resource "aws_s3_bucket" "test" {
-  bucket = "evil"		
+  bucket = "evil"
+  lifecycle_rule {
+    enabled = false
+
+    expiration {
+      days = 400
+    }
+  }
 }`)},
 	}
 
@@ -1253,7 +1290,15 @@ deny contains res if {
 	results, err := scanner.ScanFS(t.Context(), fsys, ".")
 	require.NoError(t, err)
 
-	failed := results.GetFailed()
+	messages := lo.Map(results.GetFailed(), func(r scan.Result, _ int) string {
+		return r.Description()
+	})
 
-	assert.Len(t, failed, 1)
+	expected := []string{
+		"Buckets should not be evil",
+		"Lifecycle rule is not enabled",
+		"S3 lifecycle_rule expiration period is too long",
+	}
+
+	assert.ElementsMatch(t, expected, messages)
 }

@@ -24,18 +24,16 @@ type TerraformConfigExport struct {
 }
 
 type ModuleExport struct {
-	RootPath   string        `json:"root_path"`
-	ModulePath string        `json:"module_path"`
-	ParentPath string        `json:"parent_path"`
-	Blocks     []BlockExport `json:"blocks"`
+	RootPath   string                `json:"root_path"`
+	ModulePath string                `json:"module_path"`
+	ParentPath string                `json:"parent_path"`
+	Blocks     []TopLevelBlockExport `json:"blocks"`
 }
 
-type BlockExport struct {
-	Metadata   any                        `json:"__defsec_metadata"`
-	Kind       string                     `json:"kind"`
-	Type       string                     `json:"type"`
-	Name       string                     `json:"name"`
-	Attributes map[string]AttributeExport `json:"attributes"`
+type TopLevelBlockExport struct {
+	Kind string `json:"kind"`
+	Type string `json:"type"`
+	BlockExport
 }
 
 type AttributeExport struct {
@@ -43,6 +41,13 @@ type AttributeExport struct {
 	Name     string          `json:"name"`
 	Value    json.RawMessage `json:"value"`
 	Known    bool            `json:"known"`
+}
+
+type BlockExport struct {
+	Metadata   any                        `json:"__defsec_metadata"`
+	Name       string                     `json:"name"`
+	Attributes map[string]AttributeExport `json:"attributes"`
+	Children   []BlockExport              `json:"children"`
 }
 
 func (c *Module) ToModuleExport() ModuleExport {
@@ -54,31 +59,36 @@ func (c *Module) ToModuleExport() ModuleExport {
 		RootPath:   c.RootPath(),
 		ModulePath: c.ModulePath(),
 		ParentPath: parentPath,
-		Blocks: lo.Map(c.blocks, func(b *Block, _ int) BlockExport {
-			return b.ToBlockExport()
+		Blocks: lo.Map(c.blocks, func(b *Block, _ int) TopLevelBlockExport {
+			return b.ToTopLevelBlockExport()
 		}),
 	}
 }
 
+func (b *Block) ToTopLevelBlockExport() TopLevelBlockExport {
+	return TopLevelBlockExport{
+		Kind:        b.Type(),
+		Type:        b.TypeLabel(),
+		BlockExport: b.ToBlockExport(),
+	}
+}
+
 func (b *Block) ToBlockExport() BlockExport {
-	typeLabel := b.TypeLabel()
 	nameLabel := b.NameLabel()
 
-	if len(b.Labels()) == 1 {
-		nameLabel = typeLabel
-		typeLabel = ""
+	if len(b.Labels()) == 0 {
+		nameLabel = b.Type()
 	}
 
 	return BlockExport{
-		Metadata: b.metadata.ToRego(),
-		Kind:     b.Type(),
-		Type:     typeLabel,
 		Name:     nameLabel,
-		Attributes: lo.SliceToMap(
-			b.attributes, func(a *Attribute) (string, AttributeExport) {
-				return a.Name(), a.ToAttributeExport()
-			},
-		),
+		Metadata: b.metadata.ToRego(),
+		Attributes: lo.SliceToMap(b.attributes, func(a *Attribute) (string, AttributeExport) {
+			return a.Name(), a.ToAttributeExport()
+		}),
+		Children: lo.FilterMap(b.childBlocks, func(b *Block, _ int) (BlockExport, bool) {
+			return b.ToBlockExport(), len(b.Labels()) == 0
+		}),
 	}
 }
 
