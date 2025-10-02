@@ -127,8 +127,12 @@ func mergeVars(src cty.Value, parts []string, value cty.Value) cty.Value {
 func mergeObjects(a, b cty.Value) cty.Value {
 	output := make(map[string]cty.Value)
 
-	maps.Copy(output, a.AsValueMap())
-	b.ForEachElement(func(key, val cty.Value) (stop bool) {
+	aUnmarked, _ := a.Unmark()
+	aMap := aUnmarked.AsValueMap()
+	maps.Copy(output, aMap)
+
+	bUnmarked, _ := b.Unmark()
+	bUnmarked.ForEachElement(func(key, val cty.Value) (stop bool) {
 		k := key.AsString()
 		old := output[k]
 		if old.IsKnown() && isNotEmptyObject(old) && isNotEmptyObject(val) {
