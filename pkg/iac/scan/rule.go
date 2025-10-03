@@ -66,7 +66,7 @@ func (r Rule) IsDeprecated() bool {
 }
 
 func (r Rule) HasID(id string) bool {
-	if r.AVDID == id || r.LongID() == id {
+	if r.ID == id || r.AVDID == id || r.LongID() == id {
 		return true
 	}
 	return slices.Contains(r.Aliases, id)
