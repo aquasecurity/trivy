@@ -46,6 +46,11 @@
                 <artifactId>example-api6</artifactId>
                 <version>1.7.30</version>
             </dependency>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>example-api7</artifactId>
+                <version>1.7.30</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
