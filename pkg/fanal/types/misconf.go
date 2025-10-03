@@ -67,7 +67,8 @@ type Line struct {
 }
 
 type PolicyMetadata struct {
-	ID                 string   `json:",omitempty"`
+	ID string `json:",omitempty"`
+	// Deprecated: Use the ID field instead.
 	AVDID              string   `json:",omitempty"`
 	Type               string   `json:",omitempty"`
 	Title              string   `json:",omitempty"`
