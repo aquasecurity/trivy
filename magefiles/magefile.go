@@ -506,7 +506,7 @@ func (Helm) UpdateVersion() error {
 
 type SPDX mg.Namespace
 
-// UpdateLicenseExceptions updates 'exception.json' with SPDX license exceptions
-func (SPDX) UpdateLicenseExceptions() error {
+// UpdateLicenseEntries updates both SPDX license IDs and exceptions
+func (SPDX) UpdateLicenseEntries() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_spdx", "./magefiles/spdx.go")
 }
