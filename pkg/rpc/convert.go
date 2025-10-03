@@ -1,7 +1,8 @@
 package rpc
 
 import (
-	"encoding/json"
+	jsonv2 "encoding/json/v2"
+	"strings"
 	"time"
 
 	"github.com/package-url/packageurl-go"
@@ -299,14 +300,17 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			publishedDate = timestamppb.New(*vuln.PublishedDate) // nolint: errcheck
 		}
 
-		var customAdvisoryData, customVulnData []byte
+		var customAdvisoryData, customVulnData *structpb.Value
+		var builder strings.Builder
 		if vuln.Custom != nil {
-			jsonBytes, _ := json.Marshal(vuln.Custom) // nolint: errcheck
-			customAdvisoryData = jsonBytes
+			builder.Reset()
+			_ = jsonv2.MarshalWrite(&builder, vuln.Custom) // nolint: errcheck
+			customAdvisoryData = structpb.NewStringValue(builder.String())
 		}
 		if vuln.Vulnerability.Custom != nil {
-			jsonBytes, _ := json.Marshal(vuln.Vulnerability.Custom) // nolint: errcheck
-			customVulnData = jsonBytes
+			builder.Reset()
+			_ = jsonv2.MarshalWrite(&builder, vuln.Vulnerability.Custom) // nolint: errcheck
+			customVulnData = structpb.NewStringValue(builder.String())
 		}
 
 		rpcVulns = append(rpcVulns, &common.Vulnerability{
@@ -600,6 +604,15 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			publishedDate = lo.ToPtr(vuln.PublishedDate.AsTime())
 		}
 
+		// Handle custom data conversion from protobuf.Value
+		var customVulnData, customAdvisoryData any
+		if vuln.CustomVulnData != nil {
+			customVulnData = vuln.CustomVulnData.AsInterface()
+		}
+		if vuln.CustomAdvisoryData != nil {
+			customAdvisoryData = vuln.CustomAdvisoryData.AsInterface()
+		}
+
 		vulns = append(vulns, types.DetectedVulnerability{
 			VulnerabilityID:  vuln.VulnerabilityId,
 			VendorIDs:        vuln.VendorIds,
@@ -619,13 +632,13 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				CweIDs:           vuln.CweIds,
 				LastModifiedDate: lastModifiedDate,
 				PublishedDate:    publishedDate,
-				Custom:           vuln.CustomVulnData,
+				Custom:           customVulnData,
 				VendorSeverity:   vendorSeverityMap,
 			},
 			Layer:          ConvertFromRPCLayer(vuln.Layer),
 			SeveritySource: dbTypes.SourceID(vuln.SeveritySource),
 			PrimaryURL:     vuln.PrimaryUrl,
-			Custom:         vuln.CustomAdvisoryData,
+			Custom:         customAdvisoryData,
 			DataSource:     ConvertFromRPCDataSource(vuln.DataSource),
 		})
 	}

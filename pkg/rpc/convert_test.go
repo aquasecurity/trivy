@@ -1,10 +1,13 @@
 package rpc
 
 import (
+	jsonv2 "encoding/json/v2"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -273,6 +276,14 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 func TestConvertToRpcVulns(t *testing.T) {
 	fixedPublishedDate := time.Unix(1257894000, 0)
 	fixedLastModifiedDate := time.Unix(1257894010, 0)
+	type customStruct struct {
+		Field  string
+		Number int
+	}
+	customData := customStruct{Field: "value", Number: 1}
+	customJSONBytes, err := jsonv2.Marshal(customData)
+	require.NoError(t, err)
+	customJSON := string(customJSONBytes)
 
 	type args struct {
 		vulns []types.DetectedVulnerability
@@ -295,6 +306,7 @@ func TestConvertToRpcVulns(t *testing.T) {
 							Title:       "DoS",
 							Description: "Denial of Service",
 							Severity:    "MEDIUM",
+							Custom:      customData,
 							VendorSeverity: dbTypes.VendorSeverity{
 								vulnerability.RedHat: dbTypes.SeverityMedium,
 							},
@@ -327,6 +339,7 @@ func TestConvertToRpcVulns(t *testing.T) {
 							Name: "GitHub Security Advisory Maven",
 							URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
 						},
+						Custom: customData,
 					},
 				},
 			},
@@ -363,9 +376,11 @@ func TestConvertToRpcVulns(t *testing.T) {
 						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 						DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 					},
-					PrimaryUrl:       "https://avd.aquasec.com/nvd/CVE-2019-0001",
-					PublishedDate:    timestamppb.New(fixedPublishedDate),
-					LastModifiedDate: timestamppb.New(fixedLastModifiedDate),
+					CustomVulnData:     structpb.NewStringValue(customJSON),
+					CustomAdvisoryData: structpb.NewStringValue(customJSON),
+					PrimaryUrl:         "https://avd.aquasec.com/nvd/CVE-2019-0001",
+					PublishedDate:      timestamppb.New(fixedPublishedDate),
+					LastModifiedDate:   timestamppb.New(fixedLastModifiedDate),
 					DataSource: &common.DataSource{
 						Name: "GitHub Security Advisory Maven",
 						Url:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
@@ -434,6 +449,7 @@ func TestConvertToRpcVulns(t *testing.T) {
 func TestConvertFromRPCResults(t *testing.T) {
 	fixedPublishedDate := time.Date(2009, 11, 10, 23, 0, 0, 0, time.UTC)
 	fixedLastModifiedDate := time.Date(2009, 11, 10, 23, 0, 10, 0, time.UTC)
+	customJSON := `{"Field":"value","Number":1}`
 
 	type args struct {
 		rpcResults []*scanner.Result
@@ -480,9 +496,11 @@ func TestConvertFromRPCResults(t *testing.T) {
 									Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 									DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 								},
-								PrimaryUrl:       "https://avd.aquasec.com/nvd/CVE-2019-0001",
-								PublishedDate:    timestamppb.New(fixedPublishedDate),
-								LastModifiedDate: timestamppb.New(fixedLastModifiedDate),
+								CustomVulnData:     structpb.NewStringValue(customJSON),
+								CustomAdvisoryData: structpb.NewStringValue(customJSON),
+								PrimaryUrl:         "https://avd.aquasec.com/nvd/CVE-2019-0001",
+								PublishedDate:      timestamppb.New(fixedPublishedDate),
+								LastModifiedDate:   timestamppb.New(fixedLastModifiedDate),
 								DataSource: &common.DataSource{
 									Name: "GitHub Security Advisory Maven",
 									Url:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
@@ -530,13 +548,13 @@ func TestConvertFromRPCResults(t *testing.T) {
 								References:       []string{"http://example.com"},
 								PublishedDate:    &fixedPublishedDate,
 								LastModifiedDate: &fixedLastModifiedDate,
-								Custom:           []uint8(nil),
+								Custom:           customJSON,
 							},
 							DataSource: &dbTypes.DataSource{
 								Name: "GitHub Security Advisory Maven",
 								URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
 							},
-							Custom: []uint8(nil),
+							Custom: customJSON,
 						},
 					},
 				},
@@ -618,9 +636,9 @@ func TestConvertFromRPCResults(t *testing.T) {
 									},
 								},
 								References: []string{"http://example.com"},
-								Custom:     []uint8(nil),
+								Custom:     any(nil),
 							},
-							Custom: []uint8(nil),
+							Custom: any(nil),
 						},
 					},
 				},
