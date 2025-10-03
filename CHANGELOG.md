@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.67.1](https://github.com/aquasecurity/trivy/compare/v0.67.0...v0.67.1) (2025-10-03)
+
+
+### Bug Fixes
+
+* validate backport branch name ([#9548](https://github.com/aquasecurity/trivy/issues/9548)) ([f0fd432](https://github.com/aquasecurity/trivy/commit/f0fd432a7aeced7cca1acab5a52d72cd960e7171))
+
 ## [0.67.0](https://github.com/aquasecurity/trivy/compare/v0.66.0...v0.67.0) (2025-09-30)
 
 
