@@ -137,7 +137,7 @@ func filterMisconfigurations(result *types.Result, severities []string, includeN
 		}
 
 		// Count successes and failures
-		summarize(misconf.Status, result.MisconfSummary)
+		updateMisconfSummary(misconf.Status, result.MisconfSummary)
 
 		if misconf.Status != types.MisconfStatusFailure && !includeNonFailures {
 			continue
@@ -204,7 +204,7 @@ func filterLicenses(result *types.Result, severities, ignoreLicenseNames []strin
 	result.Licenses = filtered
 }
 
-func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {
+func updateMisconfSummary(status types.MisconfStatus, summary *types.MisconfSummary) {
 	switch status {
 	case types.MisconfStatusFailure:
 		summary.Failures++
@@ -304,8 +304,18 @@ func applyPolicy(ctx context.Context, result *types.Result, policyFile string) e
 	return nil
 }
 
-func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input any) (bool, error) {
-	results, err := query.Eval(ctx, rego.EvalInput(input))
+func evaluate[T types.Finding](ctx context.Context, query rego.PreparedEvalQuery, finding T) (bool, error) {
+	type regoInput struct {
+		Data T      `json:",inline"`
+		Type string `json:"Type"`
+	}
+
+	ri := regoInput{
+		Data: finding,
+		Type: string(finding.FindingType()),
+	}
+
+	results, err := query.Eval(ctx, rego.EvalInput(ri))
 	if err != nil {
 		return false, xerrors.Errorf("unable to evaluate the policy: %w", err)
 	} else if len(results) == 0 {
