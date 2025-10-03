@@ -4,8 +4,8 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"net/url"
 	"reflect"
+	slicesGo "slices"
 	"strings"
 
 	"github.com/samber/lo"
@@ -123,42 +123,59 @@ func (p *pom) licenses() []string {
 	}))
 }
 
-func (p *pom) repositories(servers []Server) ([]string, []string) {
+// repositories returns release and snapshot repository URLs defined in the pom and its active profiles.
+func (p *pom) repositories(servers []Server, activeProfiles []string) ([]string, []string) {
 	logger := log.WithPrefix("pom")
 	var releaseRepos, snapshotRepos []string
+
+	// Include the repositories defined directly in the pom
 	for _, rep := range p.content.Repositories.Repository {
-		snapshot := rep.Snapshots.Enabled == "true"
-		release := rep.Releases.Enabled == "true"
-		// Add only enabled repositories
-		if !release && !snapshot {
-			continue
-		}
+		addRepository(logger, rep, servers, &releaseRepos, &snapshotRepos)
+	}
 
-		repoURL, err := url.Parse(rep.URL)
-		if err != nil {
-			logger.Debug("Unable to parse remote repository url", log.Err(err))
-			continue
-		}
-
-		// Get the credentials from settings.xml based on matching server id
-		// with the repository id from pom.xml and use it for accessing the repository url
-		for _, server := range servers {
-			if rep.ID == server.ID && server.Username != "" && server.Password != "" {
-				repoURL.User = url.UserPassword(server.Username, server.Password)
-				break
+	// Include the repositories defined in profiles of the pom
+	if len(p.content.Profiles) > 0 && len(activeProfiles) > 0 {
+		for _, profile := range p.content.Profiles {
+			if slicesGo.Contains(activeProfiles, profile.ID) {
+				logger.Debug("Profile is active", log.String("id", profile.ID))
+				for _, profRep := range profile.Repositories {
+					addRepository(logger, profRep, servers, &releaseRepos, &snapshotRepos)
+				}
 			}
-		}
-
-		logger.Debug("Adding repository", log.String("id", rep.ID), log.String("url", rep.URL))
-		if snapshot {
-			snapshotRepos = append(snapshotRepos, repoURL.String())
-		}
-		if release {
-			releaseRepos = append(releaseRepos, repoURL.String())
 		}
 	}
 
 	return releaseRepos, snapshotRepos
+}
+
+// addRepo encapsulates the shared logic of validating/logging/appending repository URLs.
+// to prevent code duplication when adding repositories defined directly in the pom and in its active profiles.
+func addRepository(
+	logger *log.Logger,
+	rep repository,
+	servers []Server,
+	releaseRepos *[]string,
+	snapshotRepos *[]string,
+) {
+	// Add only enabled repositories
+	if !rep.Releases.IsEnabled() && !rep.Snapshots.IsEnabled() {
+		logger.Debug("Skipping repository as both releases and snapshots have been explicitly disabled",
+			log.String("id", rep.ID), log.String("url", rep.URL))
+		return
+	}
+
+	if repoURL := createURLForRepository(rep, servers); repoURL != nil {
+		if rep.Snapshots.IsEnabled() {
+			logger.Debug("Enabling snapshot repository from pom",
+				log.String("id", rep.ID), log.String("url", rep.URL))
+			*snapshotRepos = append(*snapshotRepos, repoURL.String())
+		}
+		if rep.Releases.IsEnabled() {
+			logger.Debug("Enabling release repository from pom",
+				log.String("id", rep.ID), log.String("url", rep.URL))
+			*releaseRepos = append(*releaseRepos, repoURL.String())
+		}
+	}
 }
 
 type pomXML struct {
@@ -177,7 +194,8 @@ type pomXML struct {
 		Dependencies pomDependencies `xml:"dependencies"`
 	} `xml:"dependencyManagement"`
 	Dependencies pomDependencies `xml:"dependencies"`
-	Repositories pomRepositories `xml:"repositories"`
+	Repositories repositories    `xml:"repositories"`
+	Profiles     []Profile       `xml:"profiles>profile"`
 }
 
 type pomParent struct {
@@ -373,24 +391,4 @@ func findDep(name string, depManagement []pomDependency) (pomDependency, bool) {
 	return lo.Find(depManagement, func(item pomDependency) bool {
 		return item.Name() == name
 	})
-}
-
-type pomRepositories struct {
-	Text       string          `xml:",chardata"`
-	Repository []pomRepository `xml:"repository"`
-}
-
-type pomRepository struct {
-	Text     string `xml:",chardata"`
-	ID       string `xml:"id"`
-	Name     string `xml:"name"`
-	URL      string `xml:"url"`
-	Releases struct {
-		Text    string `xml:",chardata"`
-		Enabled string `xml:"enabled"`
-	} `xml:"releases"`
-	Snapshots struct {
-		Text    string `xml:",chardata"`
-		Enabled string `xml:"enabled"`
-	} `xml:"snapshots"`
 }
