@@ -272,6 +272,7 @@ func (sm *StaticMetadata) ToRule() scan.Rule {
 
 	return scan.Rule{
 		Deprecated:          sm.Deprecated,
+		ID:                  sm.ID,
 		AVDID:               sm.AVDID,
 		Aliases:             append(sm.Aliases, sm.ID),
 		ShortCode:           sm.ShortCode,
