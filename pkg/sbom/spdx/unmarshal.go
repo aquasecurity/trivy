@@ -173,7 +173,7 @@ func (s *SPDX) parsePackage(spdxPkg spdx.Package) (*core.Component, error) {
 	}
 
 	// License
-	if spdxPkg.PackageLicenseDeclared != "NONE" {
+	if spdxPkg.PackageLicenseDeclared != noneField && spdxPkg.PackageLicenseDeclared != noAssertionField {
 		component.Licenses = strings.Split(spdxPkg.PackageLicenseDeclared, ",")
 	}
 
