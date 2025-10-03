@@ -2138,6 +2138,68 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
+		// `mvn` doesn’t override the `test` scope from the parent/upper dependencyManagement section
+		// and even excludes these dependencies from the dependency tree.
+		// Other scopes are inherited from the parent POM’s dependencyManagement.
+		// [INFO] --- dependency:3.7.0:tree (default-cli) @ dont-overwrite-test-scope-from-upper-depmanagement ---
+		// [INFO] com.example:dont-overwrite-test-scope-from-upper-depmanagement:jar:1.0.0
+		// [INFO] \- org.example:example-dependency:jar:4.0.0:compile
+		// [INFO]    +- org.example:example-api4:jar:4.0.0:compile
+		// [INFO]    +- org.example:example-api5:jar:4.0.0:test
+		// [INFO]    \- org.example:example-api6:jar:4.0.0:runtime
+		// [INFO] ------------------------------------------------------------------------
+		{
+			name:      "don't overwrite test scope from upper depManagement",
+			inputFile: filepath.Join("testdata", "dont-overwrite-test-scope-from-upper-depmanagement", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:dont-overwrite-test-scope-from-upper-depmanagement:1.0.0",
+					Name:         "com.example:dont-overwrite-test-scope-from-upper-depmanagement",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "org.example:example-dependency:4.0.0",
+					Name:         "org.example:example-dependency",
+					Version:      "4.0.0",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 19,
+							EndLine:   23,
+						},
+					},
+				},
+				{
+					ID:           "org.example:example-api4:4.0.0",
+					Name:         "org.example:example-api4",
+					Version:      "4.0.0",
+					Relationship: ftypes.RelationshipIndirect,
+				},
+				{
+					ID:           "org.example:example-api6:4.0.0",
+					Name:         "org.example:example-api6",
+					Version:      "4.0.0",
+					Relationship: ftypes.RelationshipIndirect,
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:dont-overwrite-test-scope-from-upper-depmanagement:1.0.0",
+					DependsOn: []string{
+						"org.example:example-dependency:4.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-dependency:4.0.0",
+					DependsOn: []string{
+						"org.example:example-api4:4.0.0",
+						"org.example:example-api6:4.0.0",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
