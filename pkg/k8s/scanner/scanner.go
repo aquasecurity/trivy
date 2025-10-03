@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	ms "github.com/mitchellh/mapstructure"
+	ms "github.com/go-viper/mapstructure/v2"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
