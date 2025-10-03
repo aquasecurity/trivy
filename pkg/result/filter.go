@@ -304,8 +304,18 @@ func applyPolicy(ctx context.Context, result *types.Result, policyFile string) e
 	return nil
 }
 
-func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input any) (bool, error) {
-	results, err := query.Eval(ctx, rego.EvalInput(input))
+func evaluate[T types.Finding](ctx context.Context, query rego.PreparedEvalQuery, finding T) (bool, error) {
+	type regoInput struct {
+		Data T      `json:",inline"`
+		Type string `json:"type"`
+	}
+
+	ri := regoInput{
+		Data: finding,
+		Type: string(finding.FindingType()),
+	}
+
+	results, err := query.Eval(ctx, rego.EvalInput(ri))
 	if err != nil {
 		return false, xerrors.Errorf("unable to evaluate the policy: %w", err)
 	} else if len(results) == 0 {

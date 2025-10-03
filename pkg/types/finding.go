@@ -25,8 +25,8 @@ const (
 
 // Finding represents one of the findings that Trivy can detect,
 // such as vulnerabilities, misconfigurations, secrets, and licenses.
-type finding interface {
-	findingType() FindingType
+type Finding interface {
+	FindingType() FindingType
 }
 
 // ModifiedFinding represents a security finding that has been modified by an external source,
@@ -39,12 +39,12 @@ type ModifiedFinding struct {
 	Status    FindingStatus
 	Statement string
 	Source    string
-	Finding   finding // one of findings
+	Finding   Finding // one of findings
 }
 
-func NewModifiedFinding(f finding, status FindingStatus, statement, source string) ModifiedFinding {
+func NewModifiedFinding(f Finding, status FindingStatus, statement, source string) ModifiedFinding {
 	return ModifiedFinding{
-		Type:      f.findingType(),
+		Type:      f.FindingType(),
 		Status:    status,
 		Statement: statement,
 		Source:    source,
@@ -87,7 +87,7 @@ func (m *ModifiedFinding) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func unmarshalFinding[T finding](data []byte) (T, error) {
+func unmarshalFinding[T Finding](data []byte) (T, error) {
 	var f T
 	err := json.Unmarshal(data, &f)
 	return f, err
