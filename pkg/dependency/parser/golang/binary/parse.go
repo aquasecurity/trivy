@@ -1,6 +1,7 @@
 package binary
 
 import (
+	"context"
 	"debug/buildinfo"
 	"fmt"
 	"runtime/debug"
@@ -50,7 +51,7 @@ func NewParser() *Parser {
 }
 
 // Parse scans file to try to report the Go and module versions.
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	info, err := buildinfo.Read(r)
 	if err != nil {
 		return nil, nil, convertError(err)

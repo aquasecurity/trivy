@@ -2,6 +2,8 @@
 package binary
 
 import (
+	"context"
+
 	rustaudit "github.com/rust-secure-code/go-rustaudit"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -37,7 +39,7 @@ func NewParser() *Parser {
 
 // Parse scans files to try to report Rust crates and version injected into Rust binaries
 // via https://github.com/rust-secure-code/cargo-auditable
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	info, err := rustaudit.GetDependencyInfo(r)
 	if err != nil {
 		return nil, nil, convertError(err)

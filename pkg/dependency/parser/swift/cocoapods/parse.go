@@ -1,6 +1,7 @@
 package cocoapods
 
 import (
+	"context"
 	"sort"
 	"strings"
 
@@ -29,7 +30,7 @@ type lockFile struct {
 	Pods []any `yaml:"PODS"` // pod can be string or map[string]interface{}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	lock := &lockFile{}
 	decoder := yaml.NewDecoder(r)
 	if err := decoder.Decode(&lock); err != nil {

@@ -1,6 +1,7 @@
 package mod
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"regexp"
@@ -69,7 +70,7 @@ func resolveVCSUrl(modulePath string) string {
 }
 
 // Parse parses a go.mod file
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	pkgs := make(map[string]ftypes.Package)
 
 	goModData, err := io.ReadAll(r)

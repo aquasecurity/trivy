@@ -22,9 +22,9 @@ const version = 1
 
 type gobinaryLibraryAnalyzer struct{}
 
-func (a gobinaryLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a gobinaryLibraryAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	p := binary.NewParser()
-	res, err := language.Analyze(types.GoBinary, input.FilePath, input.Content, p)
+	res, err := language.Analyze(ctx, types.GoBinary, input.FilePath, input.Content, p)
 	if errors.Is(err, binary.ErrUnrecognizedExe) || errors.Is(err, binary.ErrNonGoBinary) {
 		return nil, nil
 	} else if err != nil {

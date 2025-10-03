@@ -44,7 +44,7 @@ func newPubSpecLockAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyze
 	}, nil
 }
 
-func (a pubSpecLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a pubSpecLockAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
 	// get all DependsOn from cache dir
@@ -60,7 +60,7 @@ func (a pubSpecLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostA
 	}
 
 	err = fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
-		app, err := language.Parse(types.Pub, path, r, a.parser)
+		app, err := language.Parse(ctx, types.Pub, path, r, a.parser)
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", path, err)
 		}

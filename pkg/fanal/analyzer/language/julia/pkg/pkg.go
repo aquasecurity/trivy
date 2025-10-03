@@ -50,7 +50,7 @@ func newJuliaAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error)
 	}, nil
 }
 
-func (a juliaAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a juliaAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
 	required := func(path string, _ fs.DirEntry) bool {
@@ -59,7 +59,7 @@ func (a juliaAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
 		// Parse Manifest.toml
-		app, err := a.parseJuliaManifest(path, r)
+		app, err := a.parseJuliaManifest(ctx, path, r)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
@@ -98,8 +98,8 @@ func (a juliaAnalyzer) Version() int {
 	return version
 }
 
-func (a juliaAnalyzer) parseJuliaManifest(path string, r io.Reader) (*types.Application, error) {
-	return language.Parse(types.Julia, path, r, a.lockParser)
+func (a juliaAnalyzer) parseJuliaManifest(ctx context.Context, path string, r io.Reader) (*types.Application, error) {
+	return language.Parse(ctx, types.Julia, path, r, a.lockParser)
 }
 
 func (a juliaAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.Application) error {

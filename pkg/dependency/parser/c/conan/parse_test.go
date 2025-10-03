@@ -152,7 +152,7 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			gotPkgs, gotDeps, err := conan.NewParser().Parse(f)
+			gotPkgs, gotDeps, err := conan.NewParser().Parse(t.Context(), f)
 			require.NoError(t, err)
 
 			sort.Sort(ftypes.Packages(gotPkgs))

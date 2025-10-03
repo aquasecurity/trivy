@@ -1,6 +1,7 @@
 package meta
 
 import (
+	"context"
 	"encoding/json"
 
 	"golang.org/x/xerrors"
@@ -25,7 +26,7 @@ func NewParser() *Parser {
 // Parse parses Anaconda (a.k.a. conda) environment metadata.
 // e.g. <conda-root>/envs/<env>/conda-meta/<package>.json
 // For details see https://conda.io/projects/conda/en/latest/user-guide/concepts/environments.html
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var data packageJSON
 	err := json.NewDecoder(r).Decode(&data)
 	if err != nil {
