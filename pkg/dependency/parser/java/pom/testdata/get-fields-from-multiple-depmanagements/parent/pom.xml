@@ -37,7 +37,6 @@
             <dependency>
                 <groupId>org.example</groupId>
                 <artifactId>example-api6</artifactId>
-                <version>4.0.0</version>
                 <scope>runtime</scope>
             </dependency>
         </dependencies>

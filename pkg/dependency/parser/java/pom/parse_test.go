@@ -2138,24 +2138,23 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
-		// `mvn` doesn’t override the `test` scope from the parent/upper dependencyManagement section
-		// and even excludes these dependencies from the dependency tree.
-		// Other scopes are inherited from the parent POM’s dependencyManagement.
-		// [INFO] --- dependency:3.7.0:tree (default-cli) @ dont-overwrite-test-scope-from-upper-depmanagement ---
-		// [INFO] com.example:dont-overwrite-test-scope-from-upper-depmanagement:jar:1.0.0
+		// `mvn` can take values from multiple dependencyManagement sections (from both the root and parent POMs).
+		// However, it does not override the `test` scope defined in the parent POM.
+		// [INFO] --- dependency:3.7.0:tree (default-cli) @ get-fields-from-multiple-depmanagements ---
+		// [INFO] com.example:get-fields-from-multiple-depmanagements:jar:1.0.0
 		// [INFO] \- org.example:example-dependency:jar:4.0.0:compile
 		// [INFO]    +- org.example:example-api4:jar:4.0.0:compile
 		// [INFO]    +- org.example:example-api5:jar:4.0.0:test
-		// [INFO]    \- org.example:example-api6:jar:4.0.0:runtime
+		// [INFO]    \- org.example:example-api6:jar:1.7.30:runtime
 		// [INFO] ------------------------------------------------------------------------
 		{
 			name:      "don't overwrite test scope from upper depManagement",
-			inputFile: filepath.Join("testdata", "dont-overwrite-test-scope-from-upper-depmanagement", "pom.xml"),
+			inputFile: filepath.Join("testdata", "get-fields-from-multiple-depmanagements", "pom.xml"),
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:dont-overwrite-test-scope-from-upper-depmanagement:1.0.0",
-					Name:         "com.example:dont-overwrite-test-scope-from-upper-depmanagement",
+					ID:           "com.example:get-fields-from-multiple-depmanagements:1.0.0",
+					Name:         "com.example:get-fields-from-multiple-depmanagements",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
@@ -2166,8 +2165,8 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: ftypes.RelationshipDirect,
 					Locations: ftypes.Locations{
 						{
-							StartLine: 19,
-							EndLine:   23,
+							StartLine: 30,
+							EndLine:   34,
 						},
 					},
 				},
@@ -2178,15 +2177,15 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: ftypes.RelationshipIndirect,
 				},
 				{
-					ID:           "org.example:example-api6:4.0.0",
+					ID:           "org.example:example-api6:1.7.30",
 					Name:         "org.example:example-api6",
-					Version:      "4.0.0",
+					Version:      "1.7.30",
 					Relationship: ftypes.RelationshipIndirect,
 				},
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:dont-overwrite-test-scope-from-upper-depmanagement:1.0.0",
+					ID: "com.example:get-fields-from-multiple-depmanagements:1.0.0",
 					DependsOn: []string{
 						"org.example:example-dependency:4.0.0",
 					},
@@ -2195,7 +2194,7 @@ func TestPom_Parse(t *testing.T) {
 					ID: "org.example:example-dependency:4.0.0",
 					DependsOn: []string{
 						"org.example:example-api4:4.0.0",
-						"org.example:example-api6:4.0.0",
+						"org.example:example-api6:1.7.30",
 					},
 				},
 			},

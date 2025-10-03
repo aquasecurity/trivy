@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
-    <artifactId>dont-overwrite-test-scope-from-upper-depmanagement</artifactId>
+    <artifactId>get-fields-from-multiple-depmanagements</artifactId>
     <version>1.0.0</version>
 
     <parent>
