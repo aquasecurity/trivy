@@ -9,6 +9,7 @@ import (
 // so JSON tags may be removed if unused.
 type FlatResult struct {
 	// TODO: The following fields are currently unused:
+	// nolint: gocritic
 	// Deprecated, RuleID, LongID, RuleSummary, Impact, RangeAnnotation
 	Deprecated      bool               `json:"deprecated,omitempty"`
 	RuleID          string             `json:"rule_id"`
