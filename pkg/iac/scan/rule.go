@@ -37,8 +37,9 @@ type TerraformCustomCheck struct {
 }
 
 type Rule struct {
-	Deprecated          bool                             `json:"deprecated"`
-	ID                  string                           `json:"id"`
+	ID         string `json:"id"`
+	Deprecated bool   `json:"deprecated"`
+	// Deprecated: Use the ID field instead.
 	AVDID               string                           `json:"avd_id"`
 	Aliases             []string                         `json:"aliases"`
 	ShortCode           string                           `json:"short_code"`
