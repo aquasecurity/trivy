@@ -36,7 +36,7 @@ func (s *Scanner) Detect(ctx context.Context, _ string, _ *ftypes.Repository, pk
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get echo advisories: %w", err)
 		}
-		formattedInstalledVersion := utils.FormatVersion(pkg)
+		formattedInstalledVersion := utils.FormatSrcVersion(pkg)
 		installedVersion, err := version.NewVersion(formattedInstalledVersion)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse installed version: %w", err)

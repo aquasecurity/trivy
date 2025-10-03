@@ -152,6 +152,7 @@ func TestScanner_Detect(t *testing.T) {
 						SrcName:    "nginx",
 						SrcVersion: "1.14.2",
 						Release:    "1ubuntu1",
+						SrcRelease: "1ubuntu1",
 						Layer: ftypes.Layer{
 							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 						},
@@ -163,6 +164,7 @@ func TestScanner_Detect(t *testing.T) {
 						Version:    "2.4.24",
 						SrcVersion: "2.4.24",
 						Release:    "2",
+						SrcRelease: "2",
 						Layer: ftypes.Layer{
 							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 						},
@@ -226,7 +228,7 @@ func TestScanner_Detect(t *testing.T) {
 			name: "happy path - no matching packages",
 			args: args{
 				pkgs: []ftypes.Package{
-					{ID: "echo", Version: "1.0.0"},
+					{ID: "echo", Version: "1.0.0", SrcVersion: "1.0.0", SrcName: "echo"},
 				},
 			},
 			want: nil,
@@ -239,7 +241,7 @@ func TestScanner_Detect(t *testing.T) {
 			},
 			args: args{
 				pkgs: []ftypes.Package{
-					{SrcName: "apache2", Version: "1.0.0"},
+					{SrcName: "apache2", Version: "1.0.0", SrcVersion: "1.0.0"},
 				},
 			},
 			wantErr: "failed to get echo advisories",
