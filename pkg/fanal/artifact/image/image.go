@@ -130,7 +130,7 @@ func (a Artifact) Inspect(ctx context.Context) (ref artifact.Reference, err erro
 	// Parse histories and extract a list of "created_by"
 	layerKeyMap := a.consolidateCreatedBy(diffIDs, layerKeys, configFile)
 
-	missingImage, missingLayers, err := a.cache.MissingBlobs(imageKey, layerKeys)
+	missingImage, missingLayers, err := a.cache.MissingBlobs(ctx, imageKey, layerKeys)
 	if err != nil {
 		return artifact.Reference{}, xerrors.Errorf("unable to get missing layers: %w", err)
 	}
@@ -332,7 +332,7 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 		if err != nil {
 			return nil, xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
 		}
-		if err = a.cache.PutBlob(layerKey, layerInfo); err != nil {
+		if err = a.cache.PutBlob(ctx, layerKey, layerInfo); err != nil {
 			return nil, xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
 		}
 		if lo.IsNotEmpty(layerInfo.OS) {
@@ -518,7 +518,7 @@ func (a Artifact) inspectConfig(ctx context.Context, imageID string, osFound typ
 		HistoryPackages:  result.HistoryPackages,
 	}
 
-	if err := a.cache.PutArtifact(imageID, info); err != nil {
+	if err := a.cache.PutArtifact(ctx, imageID, info); err != nil {
 		return xerrors.Errorf("failed to put image info into the cache: %w", err)
 	}
 
