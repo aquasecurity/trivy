@@ -311,6 +311,100 @@ Tests: 20 (SUCCESSES: 18, FAILURES: 2)
 Failures: 2 (MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 ```
 
+## Scan raw configurations
+IaC configurations from cloud providers such as Terraform, CloudFormation, and ARM are converted into a unified structure that is exported to Rego. Checks are developed only for the unified structure, not for each configuration type with its own structure. This avoids duplication and simplifies maintenance. Using the unified structure has a limitation: it is not possible to create checks for resources or attributes that are not exported.
+
+The `--raw-config-scanners` flag allows scanning the raw configuration — that is, evaluated but not converted into the unified structure. Currently, only `terraform` is supported.
+
+!!! note
+    The raw configuration scanner does not work on its own. To use `--raw-config-scanners`, you must also specify the corresponding `--misconfig-scanners`. The report will include results from both scanners.
+
+For more information on custom checks and exported data schemas, see [here](../misconfiguration/custom/index.md).
+
+Example check:
+```rego
+# METADATA
+# title: AWS required resource tags
+# description: Ensure required tags are set on AWS resources
+# scope: package
+# schemas:
+#   - input: schema["terraform-raw"]
+# custom:
+#   id:  USR-TFRAW-0001
+#   severity: CRITICAL
+#   short_code: required-aws-resource-tags
+#   recommended_actions: Add the required tags to AWS resources.
+#   input:
+#     selector:
+#     - type: terraform-raw
+package user.terraform.required_aws_tags
+
+import rego.v1
+
+resource_types_to_check := {"aws_s3_bucket"}
+
+resources_to_check := {block |
+	some module in input.modules
+	some block in module.blocks
+	block.kind == "resource"
+	block.type in resource_types_to_check
+}
+
+required_tags := {"Access", "Owner"}
+
+deny contains res if {
+	some block in resources_to_check
+	not block.attributes.tags
+	res := result.new(
+		sprintf("The resource %q does not contain the following required tags: %v", [block.type, required_tags]),
+		block,
+	)
+}
+
+deny contains res if {
+	some block in resources_to_check
+	tags_attr := block.attributes.tags
+	tags := object.keys(tags_attr.value)
+	missing_tags := required_tags - tags
+	count(missing_tags) > 0
+	res := result.new(
+		sprintf("The resource %q does not contain the following required tags: %v", [block.type, missing_tags]),
+		tags_attr,
+	)
+}
+```
+
+Running Trivy:
+```bash
+trivy conf main.tf \
+  --check-namespaces user \
+  --config-check examples/terraform-raw/required-aws-tags.rego \
+  --misconfig-scanners terraform --raw-config-scanners terraform
+```
+
+Example output:
+```bash
+main.tf (terraform)
+
+Tests: 10 (SUCCESSES: 0, FAILURES: 10)
+Failures: 10 (UNKNOWN: 0, LOW: 2, MEDIUM: 1, HIGH: 6, CRITICAL: 1)
+
+ (CRITICAL): The resource "aws_s3_bucket" does not contain the following required tags: {"Access"}
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Ensure required tags are set on AWS resources
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ main.tf:3-5
+   via main.tf:1-6 (aws_s3_bucket.this)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   1   resource "aws_s3_bucket" "this" {
+   2     bucket = "test"
+   3 ┌   tags = {
+   4 │     Owner: "user"
+   5 └   }
+   6   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+```
+
 ## External connectivity
 Trivy needs to connect to the internet to download the checks bundle. If you are running Trivy in an air-gapped environment, or an tightly controlled network, please refer to the [Advanced Network Scenarios document](../../advanced/air-gap.md).
 
