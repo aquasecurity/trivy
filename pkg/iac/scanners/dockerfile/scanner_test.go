@@ -237,6 +237,7 @@ USER root
 	assert.Equal(
 		t,
 		scan.Rule{
+			ID:             "DS006",
 			AVDID:          "AVD-DS-0006",
 			Aliases:        []string{"DS006"},
 			ShortCode:      "no-self-referencing-copy-from",
@@ -586,6 +587,7 @@ COPY --from=dep /binary /`
 				assert.Equal(
 					t,
 					scan.Rule{
+						ID:             "DS006",
 						AVDID:          "AVD-DS-0006",
 						Aliases:        []string{"DS006"},
 						ShortCode:      "no-self-referencing-copy-from",
