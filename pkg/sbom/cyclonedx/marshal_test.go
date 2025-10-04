@@ -1,6 +1,7 @@
 package cyclonedx_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -2162,6 +2163,35 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 	}
 }
 
+
+func TestMarshaler_MarshalComponent_NilComponent(t *testing.T) {
+	t.Run("nil component returns nil without panic", func(t *testing.T) {
+		marshaler := cyclonedx.NewMarshaler("test-version")
+		
+		// This should not panic
+		result, err := marshaler.MarshalComponent(nil)
+		
+		assert.NoError(t, err)
+		assert.Nil(t, result)
+	})
+}
+
+func TestMarshaler_MarshalRoot_NilRoot(t *testing.T) {
+	t.Run("BOM with no root component", func(t *testing.T) {
+		// Create a BOM without a root component
+		bom := core.NewBOM(core.Options{GenerateBOMRef: true})
+		
+		marshaler := cyclonedx.NewMarshaler("test-version")
+		ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+		
+		// Marshal should not panic even without root
+		result, err := marshaler.Marshal(ctx, bom)
+		
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Nil(t, result.Metadata.Component)
+	})
+}
 func TestMarshaler_Licenses(t *testing.T) {
 	tests := []struct {
 		name     string
