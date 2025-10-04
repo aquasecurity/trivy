@@ -243,27 +243,7 @@ func (d pomDependency) Resolve(props map[string]string, depManagement, rootDepMa
 		EndLine:    d.EndLine,
 	}
 
-	// If this dependency is managed in the root POM,
-	// we need to overwrite fields according to the managed dependency.
-	if managed, found := findDep(dep.Name(), rootDepManagement); found { // dependencyManagement from the root POM
-		if managed.Version != "" {
-			dep.Version = evaluateVariable(managed.Version, props, nil)
-		}
-
-		if managed.Scope != "" {
-			dep.Scope = evaluateVariable(managed.Scope, props, nil)
-		}
-
-		if managed.Optional {
-			dep.Optional = managed.Optional
-		}
-		if len(managed.Exclusions.Exclusion) != 0 {
-			dep.Exclusions = managed.Exclusions
-		}
-		return dep
-	}
-
-	// Inherit version, scope and optional from dependencyManagement if empty
+	// First, inherit version, scope and optional from parent dependencyManagement if empty
 	if managed, found := findDep(dep.Name(), depManagement); found { // dependencyManagement from parent
 		if dep.Version == "" {
 			dep.Version = evaluateVariable(managed.Version, props, nil)
@@ -278,6 +258,28 @@ func (d pomDependency) Resolve(props map[string]string, depManagement, rootDepMa
 		// `mvn` always merges exceptions for pom and parent
 		dep.Exclusions.Exclusion = append(dep.Exclusions.Exclusion, managed.Exclusions.Exclusion...)
 	}
+
+	// Then, if this dependency is managed in the root POM,
+	// we need to overwrite fields according to the managed dependency.
+	// Exception: we must not overwrite the test scope.
+	if managed, found := findDep(dep.Name(), rootDepManagement); found { // dependencyManagement from the root POM
+		if managed.Version != "" {
+			dep.Version = evaluateVariable(managed.Version, props, nil)
+		}
+
+		// Don't overwrite test scope from root dependencyManagement
+		if managed.Scope != "" && dep.Scope != "test" {
+			dep.Scope = evaluateVariable(managed.Scope, props, nil)
+		}
+
+		if managed.Optional {
+			dep.Optional = managed.Optional
+		}
+		if len(managed.Exclusions.Exclusion) != 0 {
+			dep.Exclusions = managed.Exclusions
+		}
+	}
+
 	return dep
 }
 
