@@ -14,6 +14,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
+	cloudauth "github.com/aquasecurity/trivy/pkg/cloud/auth"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/auth"
 	"github.com/aquasecurity/trivy/pkg/commands/clean"
@@ -100,6 +101,7 @@ func NewApp() *cobra.Command {
 		NewVersionCommand(globalFlags),
 		NewVMCommand(globalFlags),
 		NewCleanCommand(globalFlags),
+		NewCloudCommand(globalFlags),
 		NewRegistryCommand(globalFlags),
 		NewVEXCommand(globalFlags),
 	)
@@ -1321,6 +1323,79 @@ func NewRegistryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	loginFlags.AddFlags(loginCmd)
 	cmd.AddCommand(loginCmd, logoutCmd)
 
+	cmd.SetFlagErrorFunc(flagErrorFunc)
+
+	return cmd
+}
+
+func NewCloudCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:           "cloud [flags]",
+		GroupID:       groupUtility,
+		Short:         "Manage Trivy Cloud authentication",
+		SilenceErrors: true,
+		SilenceUsage:  true,
+	}
+
+	// Login command
+	loginFlags := &flag.Flags{
+		globalFlags,
+	}
+
+	var token string
+	loginCmd := &cobra.Command{
+		Use:           "login",
+		Short:         "Log in to Trivy Cloud",
+		SilenceErrors: true,
+		SilenceUsage:  true,
+		Example: `  # Log in to Trivy Cloud with a token
+  $ trivy cloud login --token YOUR_TOKEN`,
+		Args: cobra.NoArgs,
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
+			if err := loginFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			loginOpts, err := loginFlags.ToOptions(args)
+			if err != nil {
+				return xerrors.Errorf("flag error: %w", err)
+			}
+			return cloudauth.Login(cmd.Context(), token, loginOpts.CacheDir)
+		},
+	}
+	loginCmd.Flags().StringVar(&token, "token", "", "Trivy Cloud authentication token")
+	loginCmd.MarkFlagRequired("token")
+
+	// Logout command
+	logoutFlags := &flag.Flags{
+		globalFlags,
+	}
+	logoutCmd := &cobra.Command{
+		Use:           "logout",
+		Short:         "Log out of Trivy Cloud",
+		SilenceErrors: true,
+		SilenceUsage:  true,
+		Example: `  # Log out of Trivy Cloud
+  $ trivy cloud logout`,
+		Args: cobra.NoArgs,
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
+			if err := logoutFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			logoutOpts, err := logoutFlags.ToOptions(args)
+			if err != nil {
+				return xerrors.Errorf("flag error: %w", err)
+			}
+			return cloudauth.Logout(cmd.Context(), logoutOpts.CacheDir)
+		},
+	}
+
+	cmd.AddCommand(loginCmd, logoutCmd)
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 
 	return cmd
