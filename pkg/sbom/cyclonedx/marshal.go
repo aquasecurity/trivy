@@ -111,6 +111,11 @@ func (m *Marshaler) MarshalRoot() (*cdx.Component, error) {
 }
 
 func (m *Marshaler) MarshalComponent(component *core.Component) (*cdx.Component, error) {
+	// Handle nil component gracefully (can happen when SBOM has no metadata component)
+	if component == nil {
+		return nil, nil
+	}
+
 	componentType, err := m.componentType(component.Type)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get cdx component type: %w", err)
