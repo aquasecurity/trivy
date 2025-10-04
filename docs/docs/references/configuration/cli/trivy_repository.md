@@ -72,6 +72,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
                                             - fix_deferred
                                             - end_of_life
       --ignore-unfixed                    display only fixed vulnerabilities
+      --ignore-unlikely-affected          ignore vulnerabilities in packages unlikely to affect the artifact (kernel, documentation, etc.)
       --ignored-licenses strings          specify a list of license to ignore
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --include-deprecated-checks         include deprecated checks
