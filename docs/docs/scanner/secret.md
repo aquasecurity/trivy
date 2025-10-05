@@ -1,6 +1,6 @@
 # Secret Scanning
 
-Trivy scans any container image, filesystem and git repository to detect exposed secrets like passwords, api keys, and tokens.
+Trivy scans any container image, filesystem, and git repository to detect exposed secrets like passwords, API keys, and tokens.
 Secret scanning is enabled by default.
 
 Trivy will scan every plaintext file, according to builtin rules or configuration. Also, Trivy can detect secrets in compiled Python files (`.pyc`).
@@ -233,7 +233,7 @@ disable-allow-rules:
 
 ## Recommendation
 We would recommend specifying `--skip-dirs` for faster secret scanning.
-In container image scanning, Trivy walks the file tree rooted  `/` and scans all the files other than [built-in allowed paths][builtin-allow].
+In container image scanning, Trivy walks the file tree rooted at `/` and scans all the files other than [built-in allowed paths][builtin-allow].
 It will take a while if your image contains a lot of files even though Trivy tries to avoid scanning layers from a base image.
 If you want to make scanning faster, `--skip-dirs` and `--skip-files` helps so that Trivy will skip scanning those files and directories.
 You can see more options [here](../configuration/others.md).

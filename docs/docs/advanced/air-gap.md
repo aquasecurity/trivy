@@ -1,7 +1,7 @@
 # Connectivity and Network considerations
 
-Trivy requires internet connectivity in order to function normally. If your organizations blocks or restricts network traffic, that could prevent Trivy from working correctly.
-This document explains Trivy's network connectivity requirements, and how to configure Trivy to work in restricted networks environments, including completely air-gapped environments.
+Trivy requires internet connectivity in order to function normally. If your organization blocks or restricts network traffic, that could prevent Trivy from working correctly.
+This document explains Trivy's network connectivity requirements, and how to configure Trivy to work in restricted network environments, including completely air-gapped environments.
 
 The following table lists all external resources that are required by Trivy:
 
@@ -47,7 +47,7 @@ Checks Bundle is embedded in the Trivy binary (at build time), and will be used 
 
 ### Connectivity Requirements
 
-VEX Hub is hosted as at <https://github.com/aquasecurity/vexhub>.
+VEX Hub is hosted at <https://github.com/aquasecurity/vexhub>.
 
 Trivy is fetching VEX Hub GitHub Repository directly using simple HTTPS requests.
 
@@ -64,7 +64,7 @@ You can host a copy of VEX Hub on your own internal server. Please refer to the 
 
 ## Maven Central / Remote Repositories
 
-Trivy might call out to Maven central or other remote repositories to fetch in order to correctly identify Java packages during a vulnerability scan.
+Trivy might call out to Maven Central or other remote repositories in order to correctly identify Java packages during a vulnerability scan.
 
 ### Connectivity requirements
 
