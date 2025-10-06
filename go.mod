@@ -153,7 +153,7 @@ require (
 	cloud.google.com/go/storage v1.55.0 // indirect
 	connectrpc.com/connect v1.18.1 // indirect
 	connectrpc.com/otelconnect v0.7.2 // indirect
-	dario.cat/mergo v1.0.1 // indirect
+	dario.cat/mergo v1.0.2 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.11.2 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20250102033503-faa5f7b0171c // indirect
 	github.com/AzureAD/microsoft-authentication-library-for-go v1.5.0 // indirect
@@ -313,6 +313,7 @@ require (
 	github.com/jdx/go-netrc v1.0.0 // indirect
 	github.com/jedisct1/go-minisign v0.0.0-20230811132847-661be99b8267 // indirect
 	github.com/jmoiron/sqlx v1.4.0 // indirect
+	github.com/joelanford/go-apidiff v0.8.3 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
@@ -506,6 +507,7 @@ require (
 
 tool (
 	github.com/bufbuild/buf/cmd/buf
+	github.com/joelanford/go-apidiff
 	github.com/knqyf263/labeler
 	github.com/magefile/mage
 	github.com/twitchtv/twirp/protoc-gen-twirp

@@ -1,0 +1,130 @@
+name: API Diff Check
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - 'pkg/**/*.go'
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  apidiff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Set up Go
+        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      # Ensure the base commit exists locally when checkout uses depth=1 (default).
+      - name: Fetch base commit
+        run: |
+          BASE_REF="${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}"
+          if [ -n "$BASE_REF" ]; then
+            git fetch --depth=1 origin "$BASE_REF"
+          fi
+
+      # Use the go-apidiff version pinned in go.mod so workflow and local builds agree.
+      - name: Resolve go-apidiff version
+        id: apidiff-version
+        run: |
+          VERSION=$(go list -m -f '{{.Version}}' github.com/joelanford/go-apidiff)
+          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
+        env:
+          GOEXPERIMENT: jsonv2
+
+      - name: Run go-apidiff
+        id: apidiff
+        continue-on-error: true
+        uses: joelanford/go-apidiff@60c4206be8f84348ebda2a3e0c3ac9cb54b8f685
+        with:
+          version: ${{ steps.apidiff-version.outputs.version }}
+
+      - name: Add apidiff label
+        if: ${{ steps.apidiff.outputs.semver-type == 'major' }}
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            const label = 'apidiff';
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: [label],
+            });
+
+      - name: Comment API diff
+        if: ${{ steps.apidiff.outputs.semver-type == 'major' }}
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        env:
+          APIDIFF_OUTPUT: ${{ steps.apidiff.outputs.output }}
+          SEMVER_TYPE: ${{ steps.apidiff.outputs.semver-type }}
+        with:
+          script: |
+            const header = '## 📊 API Changes Detected';
+            const diff = process.env.APIDIFF_OUTPUT.trim();
+            const semver = process.env.SEMVER_TYPE || 'unknown';
+            const body = [
+              header,
+              '',
+              `Semver impact: \`${semver}\``,
+              '',
+              '```',
+              diff,
+              '```',
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.startsWith(header),
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      # Attempt to request the premium reviewers; surface any failure so we notice configuration issues.
+      - name: Request trivy-premium review
+        if: ${{ steps.apidiff.outputs.semver-type == 'major' }}
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          github-token: ${{ secrets.ORG_GITHUB_TOKEN }}
+          script: |
+            try {
+              await github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+                team_reviewers: ['trivy-premium'],
+              });
+              console.log('Requested review from aquasecurity/trivy-premium team');
+            } catch (error) {
+              core.error(`Failed to request trivy-premium reviewers: ${error.message}`);
+              throw error;
+            }
