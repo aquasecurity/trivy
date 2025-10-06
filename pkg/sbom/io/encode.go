@@ -269,15 +269,13 @@ func (e *Encoder) reuseExistingBOM(report types.Report) (*core.BOM, error) {
 	// Create a lookup map from BOM-Ref to component for efficient vulnerability assignment
 	// BOM-Ref is used as the key because it's the standard identifier in CycloneDX format
 	// and is guaranteed to be present in components from CycloneDX SBOMs
-	components := lo.MapKeys(report.BOM.Components(), func(v *core.Component, _ uuid.UUID) string {
-		return v.PkgIdentifier.BOMRef
-	})
+	components := report.BOM.Components()
 
 	for _, result := range report.Results {
 		// Group newly detected vulnerabilities by their component's BOM-Ref
-		vulns := make(map[string][]core.Vulnerability)
+		vulns := make(map[uuid.UUID][]core.Vulnerability)
 		for _, vuln := range result.Vulnerabilities {
-			vulns[vuln.PkgIdentifier.BOMRef] = append(vulns[vuln.PkgIdentifier.BOMRef], e.vulnerability(vuln))
+			vulns[vuln.PkgIdentifier.BOMID] = append(vulns[vuln.PkgIdentifier.BOMID], e.vulnerability(vuln))
 		}
 
 		// Associate vulnerabilities with their corresponding components in the SBOM
@@ -287,7 +285,7 @@ func (e *Encoder) reuseExistingBOM(report types.Report) (*core.BOM, error) {
 				// This should never happen in proper SBOM rescanning because vulnerabilities
 				// should only be detected for components that exist in the original SBOM
 				log.Warn("Skipping vulnerabilities for component not found in SBOM",
-					log.String("bom-ref", bomRef),
+					//log.String("bom-ref", bomRef), TODO create new log!!!
 					log.Int("vulnerabilities", len(componentVulns)))
 				continue
 			}
