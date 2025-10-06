@@ -8,7 +8,7 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/containers/azcontainerregistry v0.2.3
 	github.com/BurntSushi/toml v1.5.0
 	github.com/CycloneDX/cyclonedx-go v0.9.3
-	github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible
+	github.com/GoogleCloudPlatform/docker-credential-gcr/v2 v2.1.30
 	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/alecthomas/chroma v0.10.0
@@ -421,6 +421,7 @@ require (
 	github.com/tklauser/numcpus v0.7.0 // indirect
 	github.com/tonglil/versioning v0.0.0-20170205083536-8b2a4334bd1d // indirect
 	github.com/tonistiigi/go-csvvalue v0.0.0-20240814133006-030d3b2625d0 // indirect
+	github.com/toqueteos/webbrowser v1.2.0 // indirect
 	github.com/transparency-dev/merkle v0.0.2 // indirect
 	github.com/ulikunitz/xz v0.5.15 // indirect
 	github.com/valyala/fastjson v1.6.4 // indirect
