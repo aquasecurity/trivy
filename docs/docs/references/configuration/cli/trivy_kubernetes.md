@@ -82,6 +82,7 @@ trivy kubernetes [flags] [CONTEXT]
                                             - fix_deferred
                                             - end_of_life
       --ignore-unfixed                    display only fixed vulnerabilities
+      --ignore-unlikely-affected          ignore vulnerabilities in packages unlikely to affect the artifact (kernel, documentation, etc.)
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --image-src strings                 image source(s) to use, in priority order (allowed values: docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
       --include-deprecated-checks         include deprecated checks
