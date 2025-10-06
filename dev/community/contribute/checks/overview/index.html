@@ -8296,37 +8296,37 @@ You're not viewing the latest version of the documentation.
 <p>If anything is unclear, please <a href="https://github.com/aquasecurity/trivy/discussions/new">start a discussion</a> and we will do our best to help.</p>
 <h2 id="check-structure">Check structure<a class="headerlink" href="#check-structure" title="Permanent link">&para;</a></h2>
 <p>Checks are written in Rego and follow a particular structure in Trivy. Below is an example check for AWS:</p>
-<div class="highlight"><pre><span></span><code># METADATA
-# title: &quot;RDS IAM Database Authentication Disabled&quot;
-# description: &quot;Ensure IAM Database Authentication is enabled for RDS database instances to manage database access&quot;
-# scope: package
-# schemas:
-# - input: schema[&quot;aws&quot;]
-# related_resources:
-# - https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html
-# custom:
-#   id: AVD-AWS-0176
-#   avd_id: AVD-AWS-0176
-#   provider: aws
-#   service: rds
-#   severity: MEDIUM
-#   short_code: enable-iam-auth
-#   recommended_action: &quot;Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.&quot;
-#   input:
-#     selector:
-#     - type: cloud
-#       subtypes:
-#         - service: rds
-#           provider: aws
+<div class="highlight"><pre><span></span><code><span class="c1"># METADATA</span>
+<span class="c1"># title: &quot;RDS IAM Database Authentication Disabled&quot;</span>
+<span class="c1"># description: &quot;Ensure IAM Database Authentication is enabled for RDS database instances to manage database access&quot;</span>
+<span class="c1"># scope: package</span>
+<span class="c1"># schemas:</span>
+<span class="c1"># - input: schema[&quot;aws&quot;]</span>
+<span class="c1"># related_resources:</span>
+<span class="c1"># - https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html</span>
+<span class="c1"># custom:</span>
+<span class="c1">#   id: AVD-AWS-0176</span>
+<span class="c1">#   avd_id: AVD-AWS-0176</span>
+<span class="c1">#   provider: aws</span>
+<span class="c1">#   service: rds</span>
+<span class="c1">#   severity: MEDIUM</span>
+<span class="c1">#   short_code: enable-iam-auth</span>
+<span class="c1">#   recommended_action: &quot;Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.&quot;</span>
+<span class="c1">#   input:</span>
+<span class="c1">#     selector:</span>
+<span class="c1">#     - type: cloud</span>
+<span class="c1">#       subtypes:</span>
+<span class="c1">#         - service: rds</span>
+<span class="c1">#           provider: aws</span>
 
-package builtin.aws.rds.aws0176
+<span class="k">package</span><span class="w"> </span><span class="n">builtin</span><span class="p">.</span><span class="n">aws</span><span class="p">.</span><span class="n">rds</span><span class="p">.</span><span class="n">aws0176</span>
 
-deny[res] {
-    instance := input.aws.rds.instances[_]
-    instance.engine.value == [&quot;postgres&quot;, &quot;mysql&quot;][_]
-    not instance.iamauthenabled.value
-    res := result.new(&quot;Instance does not have IAM Authentication enabled&quot;, instance.iamauthenabled)
-}
+<span class="n">deny</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">instance</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">input</span><span class="p">.</span><span class="n">aws</span><span class="p">.</span><span class="n">rds</span><span class="p">.</span><span class="n">instances</span><span class="p">[</span><span class="n">_</span><span class="p">]</span>
+<span class="w">    </span><span class="n">instance</span><span class="p">.</span><span class="n">engine</span><span class="p">.</span><span class="n">value</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;postgres&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;mysql&quot;</span><span class="p">][</span><span class="n">_</span><span class="p">]</span>
+<span class="w">    </span><span class="k">not</span><span class="w"> </span><span class="n">instance</span><span class="p">.</span><span class="n">iamauthenabled</span><span class="p">.</span><span class="n">value</span>
+<span class="w">    </span><span class="n">res</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;Instance does not have IAM Authentication enabled&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">instance</span><span class="p">.</span><span class="n">iamauthenabled</span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></div>
 <h2 id="verify-the-provider-and-service-exists">Verify the provider and service exists<a class="headerlink" href="#verify-the-provider-and-service-exists" title="Permanent link">&para;</a></h2>
 <p>Every check for a cloud service references a cloud provider. The list of providers are found in the <a href="https://github.com/aquasecurity/trivy/tree/main/pkg/iac/providers">Trivy</a> repository. </p>
@@ -8360,12 +8360,12 @@ deny[res] {
 <p>Note that while the Metadata is optional in your own custom checks for Trivy, if you are contributing your check to the Trivy builtin checks, the Metadata section will be required.</p>
 <h2 id="writing-rego-rules">Writing Rego Rules<a class="headerlink" href="#writing-rego-rules" title="Permanent link">&para;</a></h2>
 <p>Rules are defined using <em>OPA Rego</em>. You can find a number of examples in the <code>checks</code> directory (<a href="https://github.com/aquasecurity/trivy-checks/tree/main/checks">Link</a>). The <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">OPA documentation</a> is a great place to start learning Rego. You can also check out the <a href="https://play.openpolicyagent.org/">Rego Playground</a> to experiment with Rego, and <a href="https://slack.openpolicyagent.org/">join the OPA Slack</a>.</p>
-<div class="highlight"><pre><span></span><code>deny[res] {
-    instance := input.aws.rds.instances[_]
-    instance.engine.value == [&quot;postgres&quot;, &quot;mysql&quot;][_]
-    not instance.iamauthenabled.value
-    res := result.new(&quot;Instance does not have IAM Authentication enabled&quot;, instance.iamauthenabled)
-}
+<div class="highlight"><pre><span></span><code><span class="n">deny</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">instance</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">input</span><span class="p">.</span><span class="n">aws</span><span class="p">.</span><span class="n">rds</span><span class="p">.</span><span class="n">instances</span><span class="p">[</span><span class="n">_</span><span class="p">]</span>
+<span class="w">    </span><span class="n">instance</span><span class="p">.</span><span class="n">engine</span><span class="p">.</span><span class="n">value</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;postgres&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;mysql&quot;</span><span class="p">][</span><span class="n">_</span><span class="p">]</span>
+<span class="w">    </span><span class="k">not</span><span class="w"> </span><span class="n">instance</span><span class="p">.</span><span class="n">iamauthenabled</span><span class="p">.</span><span class="n">value</span>
+<span class="w">    </span><span class="n">res</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;Instance does not have IAM Authentication enabled&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">instance</span><span class="p">.</span><span class="n">iamauthenabled</span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>The rule should return a result, which can be created using <code>result.new</code>. This function does not need to be imported, it is defined internally and provided at runtime. The first argument is the message to display and the second argument is the resource that the issue was detected on.</p>
 <p>It is possible to pass any rego variable that references a field of the input document.</p>

@@ -8449,24 +8449,24 @@ Once you finish writing custom checks, you can pass the check files or the direc
 <p>A single package must contain only one policy.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code># METADATA
-# title: Deployment not allowed
-# description: Deployments are not allowed because of some reasons.
-# schemas:
-#   - input: schema[&quot;kubernetes&quot;]
-# custom:
-#   id: ID001
-#   severity: LOW
-#   input:
-#     selector: 
-#     - type: kubernetes
-package user.kubernetes.ID001
+<div class="highlight"><pre><span></span><code><span class="c1"># METADATA</span>
+<span class="c1"># title: Deployment not allowed</span>
+<span class="c1"># description: Deployments are not allowed because of some reasons.</span>
+<span class="c1"># schemas:</span>
+<span class="c1">#   - input: schema[&quot;kubernetes&quot;]</span>
+<span class="c1"># custom:</span>
+<span class="c1">#   id: ID001</span>
+<span class="c1">#   severity: LOW</span>
+<span class="c1">#   input:</span>
+<span class="c1">#     selector: </span>
+<span class="c1">#     - type: kubernetes</span>
+<span class="k">package</span><span class="w"> </span><span class="n">user</span><span class="p">.</span><span class="n">kubernetes</span><span class="p">.</span><span class="n">ID001</span>
 
-deny[res] {
-    input.kind == &quot;Deployment&quot;
-    msg := sprintf(&quot;Found deployment &#39;%s&#39; but deployments are not allowed&quot;, [input.metadata.name])
-    res := result.new(msg, input.kind)
-}
+<span class="n">deny</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nb">input</span><span class="p">.</span><span class="n">kind</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;Deployment&quot;</span>
+<span class="w">    </span><span class="n">msg</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">sprintf</span><span class="p">(</span><span class="s2">&quot;Found deployment &#39;%s&#39; but deployments are not allowed&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nb">input</span><span class="p">.</span><span class="n">metadata</span><span class="p">.</span><span class="n">name</span><span class="p">])</span>
+<span class="w">    </span><span class="n">res</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span><span class="w"> </span><span class="nb">input</span><span class="p">.</span><span class="n">kind</span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></div>
 </div>
 <p>In this example, ID001 "Deployment not allowed" is defined under <code>user.kubernetes.ID001</code>.
@@ -8515,7 +8515,7 @@ If you add a new custom policy, it must be defined under a new package like <cod
 <p>A package name must be unique per policy.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code>package user.kubernetes.ID001
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="n">user</span><span class="p">.</span><span class="n">kubernetes</span><span class="p">.</span><span class="n">ID001</span>
 </code></pre></div>
 </div>
 <p>By default, only <code>builtin.*</code> packages will be evaluated.
@@ -8529,15 +8529,15 @@ Any package prefixes such as <code>main</code> and <code>user</code> are allowed
 <p>Trivy supports extra fields in the <code>custom</code> section as described below.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code># METADATA
-# title: Deployment not allowed
-# description: Deployments are not allowed because of some reasons.
-# custom:
-#   id: ID001
-#   severity: LOW
-#   input:
-#     selector:
-#     - type: kubernetes
+<div class="highlight"><pre><span></span><code><span class="c1"># METADATA</span>
+<span class="c1"># title: Deployment not allowed</span>
+<span class="c1"># description: Deployments are not allowed because of some reasons.</span>
+<span class="c1"># custom:</span>
+<span class="c1">#   id: ID001</span>
+<span class="c1">#   severity: LOW</span>
+<span class="c1">#   input:</span>
+<span class="c1">#     selector:</span>
+<span class="c1">#     - type: kubernetes</span>
 </code></pre></div>
 </div>
 <p>If you are creating checks for your Trivy misconfiguration scans, some fields are optional as referenced in the table below. The <code>schemas</code> field should be used to enable policy validation using a built-in schema. It is recommended to use this to ensure your checks are 
@@ -8658,12 +8658,12 @@ Deployments<span class="w"> </span>are<span class="w"> </span>not<span class="w"
 <p>You can specify input format via the <code>custom.input</code> annotation.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code># METADATA
-# custom:
-#   input:
-#     combine: false
-#     selector:
-#     - type: kubernetes
+<div class="highlight"><pre><span></span><code><span class="c1"># METADATA</span>
+<span class="c1"># custom:</span>
+<span class="c1">#   input:</span>
+<span class="c1">#     combine: false</span>
+<span class="c1">#     selector:</span>
+<span class="c1">#     - type: kubernetes</span>
 </code></pre></div>
 </div>
 <dl>

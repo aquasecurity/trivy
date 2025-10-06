@@ -8068,9 +8068,9 @@ Instead of hardcoding this information inside your check, you can maintain the l
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;23/tcp&quot;</span>
 </code></pre></div>
 <p>Example usage in a Rego check:</p>
-<div class="highlight"><pre><span></span><code>import data.services
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="k">data</span><span class="p">.</span><span class="n">services</span>
 
-ports := services.ports
+<span class="n">ports</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">services</span><span class="p">.</span><span class="n">ports</span>
 </code></pre></div>
 <p>Example loading the data file:</p>
 <div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--config-check<span class="w"> </span>./checks<span class="w"> </span>--config-data<span class="w"> </span>./data<span class="w"> </span>--namespaces<span class="w"> </span>user<span class="w"> </span>./configs
