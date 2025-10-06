@@ -55,6 +55,7 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 
 	assert.Equal(t, scan.Rule{
+		ID:             "ABC123",
 		AVDID:          "AVD-AB-0123",
 		Aliases:        []string{"ABC123"},
 		ShortCode:      "short",
@@ -124,6 +125,7 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 
 	assert.Equal(t, scan.Rule{
+		ID:             "ABC123",
 		AVDID:          "AVD-AB-0123",
 		Aliases:        []string{"ABC123"},
 		ShortCode:      "short",
@@ -192,6 +194,7 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 
 	assert.Equal(t, scan.Rule{
+		ID:             "ABC123",
 		AVDID:          "AVD-AB-0123",
 		Aliases:        []string{"ABC123"},
 		ShortCode:      "short",
