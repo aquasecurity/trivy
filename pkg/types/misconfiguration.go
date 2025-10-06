@@ -38,4 +38,4 @@ const (
 	MisconfStatusException MisconfStatus = "EXCEPTION"
 )
 
-func (DetectedMisconfiguration) findingType() FindingType { return FindingTypeMisconfiguration }
+func (DetectedMisconfiguration) FindingType() FindingType { return FindingTypeMisconfiguration }
