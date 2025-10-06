@@ -55,8 +55,6 @@ cuelabs.dev/go/oci/ociregistry v0.0.0-20240314152124-224736b49f2e h1:GwCVItFUPxw
 cuelabs.dev/go/oci/ociregistry v0.0.0-20240314152124-224736b49f2e/go.mod h1:ApHceQLLwcOkCEXM1+DyCXTHEJhNGDpJ2kmV6axsx24=
 cuelang.org/go v0.8.1 h1:VFYsxIFSPY5KgSaH1jQ2GxHOrbu6Ga3kEI70yCZwnOg=
 cuelang.org/go v0.8.1/go.mod h1:CoDbYolfMms4BhWUlhD+t5ORnihR7wvjcfgyO9lL5FI=
-dario.cat/mergo v1.0.1 h1:Ra4+bf83h2ztPIQYNP99R6m+Y7KfnARDfID+a+vLl4s=
-dario.cat/mergo v1.0.1/go.mod h1:uNxQE+84aUszobStD9th8a29P2fMDhsBdgRYvZOxGmk=
 dario.cat/mergo v1.0.2 h1:85+piFYR1tMbRrLcDwR18y4UKJ3aH1Tbzi24VRW1TK8=
 dario.cat/mergo v1.0.2/go.mod h1:E/hbnu0NxMFBjpMIE34DRGLWqDy0g5FuKDhCb31ngxA=
 filippo.io/edwards25519 v1.1.0 h1:FNf4tywRC1HmFuKW5xopWpigGjJKiJSV0Cqo0cJWDaA=
