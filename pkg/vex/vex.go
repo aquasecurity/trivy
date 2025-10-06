@@ -1,6 +1,7 @@
 package vex
 
 import (
+	"cmp"
 	"context"
 	"errors"
 
@@ -145,12 +146,23 @@ func (c *Client) NotAffected(vuln types.DetectedVulnerability, product, subCompo
 }
 
 func filterVulnerabilities(result *types.Result, bom *core.BOM, fn NotAffected) {
+	// We use one of two possible options as a key in the map for components:
+	// 1. UID - Used for all components, except when reusing a scanned SBOM file.
+	// 2. BOMID - UUID of the decoded `core BOM` component.
+	//
+	// Key selection rules:
+	// - In "sbom" mode (`trivy sbom ...`):
+	//     * Components always contain only BOMID.
+	//     * Vulnerabilities contain both BOMID and UID.
+	// - In all other modes:
+	//     * Both components and vulnerabilities contain only UID.
+
 	components := lo.MapEntries(bom.Components(), func(_ uuid.UUID, component *core.Component) (string, *core.Component) {
-		return component.PkgIdentifier.UID, component
+		return cmp.Or(component.ID().String(), component.PkgIdentifier.UID), component
 	})
 
 	result.Vulnerabilities = lo.Filter(result.Vulnerabilities, func(vuln types.DetectedVulnerability, _ int) bool {
-		c, ok := components[vuln.PkgIdentifier.UID]
+		c, ok := components[cmp.Or(vuln.PkgIdentifier.BOMID.String(), vuln.PkgIdentifier.UID)]
 		if !ok {
 			log.Error("Component not found", log.String("uid", vuln.PkgIdentifier.UID))
 			return true // Should never reach here
