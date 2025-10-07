@@ -34,21 +34,15 @@ jobs:
             git fetch --depth=1 origin "$BASE_REF"
           fi
 
-      # Use the go-apidiff version pinned in go.mod so workflow and local builds agree.
-      - name: Resolve go-apidiff version
-        id: apidiff-version
-        run: |
-          VERSION=$(go list -m -f '{{.Version}}' github.com/joelanford/go-apidiff)
-          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
-        env:
-          GOEXPERIMENT: jsonv2
-
+      # NOTE: go-apidiff is not managed in go.mod because installing it via `go get -tool`
+      # would cause `mage tool:install` to attempt building it on Windows, which currently
+      # fails due to platform-specific issues.
       - name: Run go-apidiff
         id: apidiff
         continue-on-error: true
         uses: joelanford/go-apidiff@60c4206be8f84348ebda2a3e0c3ac9cb54b8f685 # v0.8.3
         with:
-          version: ${{ steps.apidiff-version.outputs.version }}
+          version: v0.8.3
 
       - name: Add apidiff label
         if: ${{ steps.apidiff.outputs.semver-type == 'major' }}

@@ -313,7 +313,6 @@ require (
 	github.com/jdx/go-netrc v1.0.0 // indirect
 	github.com/jedisct1/go-minisign v0.0.0-20230811132847-661be99b8267 // indirect
 	github.com/jmoiron/sqlx v1.4.0 // indirect
-	github.com/joelanford/go-apidiff v0.8.3 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
@@ -507,7 +506,6 @@ require (
 
 tool (
 	github.com/bufbuild/buf/cmd/buf
-	github.com/joelanford/go-apidiff
 	github.com/knqyf263/labeler
 	github.com/magefile/mage
 	github.com/twitchtv/twirp/protoc-gen-twirp
