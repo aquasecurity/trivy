@@ -480,6 +480,19 @@ ignore {
 trivy image --ignore-policy examples/ignore-policies/basic.rego centos:7
 ```
 
+To filter findings of a specific type based on a field that may exist in multiple structures (for example, `PkgName` in both `DetectedVulnerability` and `DetectedLicense`), you can use the `Type` field. This field is automatically added when exporting findings to Rego and indicates the kind of finding. Possible values are: `vulnerability`, `misconfiguration`, `secret`, and `license`.
+
+For example, the following policy ignores vulnerabilities with a specific package name without affecting other finding types:
+
+```rego
+package trivy
+
+ignore {
+  input.Type == "vulnerability"
+  input.PkgName == "foo"
+}
+```
+
 For more advanced use cases, there is a built-in Rego library with helper functions that you can import into your policy using: `import data.lib.trivy`.
 More info about the helper functions are in the library [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go).
 

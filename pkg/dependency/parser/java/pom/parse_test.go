@@ -2138,6 +2138,67 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
+		// `mvn` can take values from multiple dependencyManagement sections (from both the root and parent POMs).
+		// However, it does not override the `test` scope defined in the parent POM.
+		// [INFO] --- dependency:3.7.0:tree (default-cli) @ get-fields-from-multiple-depmanagements ---
+		// [INFO] com.example:get-fields-from-multiple-depmanagements:jar:1.0.0
+		// [INFO] \- org.example:example-dependency:jar:4.0.0:compile
+		// [INFO]    +- org.example:example-api4:jar:4.0.0:compile
+		// [INFO]    +- org.example:example-api5:jar:4.0.0:test
+		// [INFO]    \- org.example:example-api6:jar:1.7.30:runtime
+		// [INFO] ------------------------------------------------------------------------
+		{
+			name:      "don't overwrite test scope from upper depManagement",
+			inputFile: filepath.Join("testdata", "get-fields-from-multiple-depmanagements", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:get-fields-from-multiple-depmanagements:1.0.0",
+					Name:         "com.example:get-fields-from-multiple-depmanagements",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "org.example:example-dependency:4.0.0",
+					Name:         "org.example:example-dependency",
+					Version:      "4.0.0",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 30,
+							EndLine:   34,
+						},
+					},
+				},
+				{
+					ID:           "org.example:example-api4:4.0.0",
+					Name:         "org.example:example-api4",
+					Version:      "4.0.0",
+					Relationship: ftypes.RelationshipIndirect,
+				},
+				{
+					ID:           "org.example:example-api6:1.7.30",
+					Name:         "org.example:example-api6",
+					Version:      "1.7.30",
+					Relationship: ftypes.RelationshipIndirect,
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:get-fields-from-multiple-depmanagements:1.0.0",
+					DependsOn: []string{
+						"org.example:example-dependency:4.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-dependency:4.0.0",
+					DependsOn: []string{
+						"org.example:example-api4:4.0.0",
+						"org.example:example-api6:1.7.30",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
