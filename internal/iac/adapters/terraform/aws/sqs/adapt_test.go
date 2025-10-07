@@ -7,10 +7,10 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/iamgo"
+	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/iam"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/sqs"
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sqs"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

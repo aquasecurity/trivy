@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/adaptertest"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/keyvault"
+	"github.com/aquasecurity/trivy/internal/iac/adapters/arm/adaptertest"
+	"github.com/aquasecurity/trivy/internal/iac/providers/azure/keyvault"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

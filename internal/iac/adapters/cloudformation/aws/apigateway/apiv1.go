@@ -1,8 +1,8 @@
 package apigateway
 
 import (
-	v1 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v1"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	v1 "github.com/aquasecurity/trivy/internal/iac/providers/aws/apigateway/v1"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
 )
 
 func adaptAPIsV1(fctx parser.FileContext) []v1.API {

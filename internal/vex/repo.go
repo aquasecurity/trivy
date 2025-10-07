@@ -11,10 +11,10 @@ import (
 	"github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/internal/vex/repo"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/vex/repo"
 	xsync "github.com/aquasecurity/trivy/pkg/x/sync"
 )
 

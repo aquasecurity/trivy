@@ -3,8 +3,8 @@ package msk
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/msk"
+	"github.com/aquasecurity/trivy/internal/iac/adapters/cloudformation/testutil"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/msk"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

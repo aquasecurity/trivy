@@ -3,9 +3,9 @@ package apigateway
 import (
 	"testing"
 
+	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/tftestutil"
+	v1 "github.com/aquasecurity/trivy/internal/iac/providers/aws/apigateway/v1"
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	v1 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v1"
 )
 
 func Test_adaptDomainNamesV1(t *testing.T) {

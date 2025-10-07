@@ -10,8 +10,8 @@ import (
 	"github.com/open-policy-agent/opa/v1/loader"
 	"github.com/open-policy-agent/opa/v1/storage"
 
+	"github.com/aquasecurity/trivy/internal/set"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 // initialize a store populated with OPA data files found in dataPaths

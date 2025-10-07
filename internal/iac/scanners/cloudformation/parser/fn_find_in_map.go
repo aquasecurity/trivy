@@ -3,7 +3,7 @@ package parser
 import (
 	"fmt"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/cftypes"
 )
 
 func ResolveFindInMap(property *Property) (*Property, bool) {

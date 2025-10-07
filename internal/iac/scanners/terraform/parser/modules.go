@@ -9,7 +9,7 @@ import (
 	"github.com/samber/lo"
 	"github.com/zclconf/go-cty/cty"
 
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 
 // FindRootModules takes a list of module paths and identifies the root local modules.

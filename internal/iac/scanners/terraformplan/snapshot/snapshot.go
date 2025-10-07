@@ -14,9 +14,9 @@ import (
 
 	"github.com/zclconf/go-cty/cty"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/terraform/parser"
+	"github.com/aquasecurity/trivy/internal/mapfs"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/mapfs"
 	iox "github.com/aquasecurity/trivy/pkg/x/io"
 )
 

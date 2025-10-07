@@ -5,8 +5,8 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes/parser"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/cftypes"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/kubernetes/parser"
 )
 
 func setPropertyValueFromYaml(node *yaml.Node, propertyData *Property) error {

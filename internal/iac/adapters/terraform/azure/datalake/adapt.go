@@ -1,8 +1,8 @@
 package datalake
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/datalake"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/internal/iac/providers/azure/datalake"
+	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/trivy/pkg/set"
+	"github.com/aquasecurity/trivy/internal/set"
 )
 
 func Test_New(t *testing.T) {

@@ -11,9 +11,9 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/aquasecurity/trivy/pkg/iac/detection"
+	"github.com/aquasecurity/trivy/internal/iac/detection"
+	"github.com/aquasecurity/trivy/internal/mapfs"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
 var errSkipFS = errors.New("skip parse FS")

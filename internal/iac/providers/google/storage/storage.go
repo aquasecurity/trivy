@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/google/iam"
+	"github.com/aquasecurity/trivy/internal/iac/providers/google/iam"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

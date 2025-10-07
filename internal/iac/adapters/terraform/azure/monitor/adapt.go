@@ -1,8 +1,8 @@
 package monitor
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/monitor"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/internal/iac/providers/azure/monitor"
+	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

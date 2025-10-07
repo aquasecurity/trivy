@@ -9,7 +9,7 @@ import (
 	"github.com/zclconf/go-cty/cty/function"
 	"github.com/zclconf/go-cty/cty/function/stdlib"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/funcs"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/terraform/parser/funcs"
 )
 
 // Functions returns the set of functions that should be used to when evaluating

@@ -11,9 +11,9 @@ import (
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
+	"github.com/aquasecurity/trivy/internal/oci"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/oci"
 )
 
 const (

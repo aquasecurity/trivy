@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	azure2 "github.com/aquasecurity/trivy/internal/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

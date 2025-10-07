@@ -6,9 +6,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/internal/iac/providers/azure/monitor"
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/monitor"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

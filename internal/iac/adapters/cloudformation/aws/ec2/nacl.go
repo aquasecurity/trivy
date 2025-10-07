@@ -3,9 +3,9 @@ package ec2
 import (
 	"strconv"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/ec2"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/cftypes"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

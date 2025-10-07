@@ -1,8 +1,8 @@
 package apigateway
 
 import (
-	v2 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v2"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	v2 "github.com/aquasecurity/trivy/internal/iac/providers/aws/apigateway/v2"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

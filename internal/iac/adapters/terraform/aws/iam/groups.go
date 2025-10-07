@@ -1,8 +1,8 @@
 package iam
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/iam"
+	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 
 func adaptGroups(modules terraform.Modules) []iam.Group {

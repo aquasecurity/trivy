@@ -3,8 +3,8 @@ package storage
 import (
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/storage"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/internal/iac/providers/azure/storage"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )

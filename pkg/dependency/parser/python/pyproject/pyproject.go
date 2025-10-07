@@ -8,8 +8,8 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/internal/set"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python"
-	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 type PyProject struct {

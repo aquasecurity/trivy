@@ -1,8 +1,8 @@
 package resolver
 
 import (
-	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/expressions"
+	azure2 "github.com/aquasecurity/trivy/internal/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/azure/expressions"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

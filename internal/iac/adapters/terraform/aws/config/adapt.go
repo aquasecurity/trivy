@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/config"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/config"
+	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

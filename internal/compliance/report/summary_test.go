@@ -6,7 +6,7 @@ import (
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/trivy/pkg/compliance/report"
+	"github.com/aquasecurity/trivy/internal/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 

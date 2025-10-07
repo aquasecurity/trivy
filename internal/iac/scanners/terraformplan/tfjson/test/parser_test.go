@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson/parser"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/terraformplan/tfjson/parser"
 )
 
 func Test_Parse_Plan_File(t *testing.T) {

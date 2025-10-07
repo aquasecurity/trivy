@@ -3,8 +3,8 @@ package synapse
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/adaptertest"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/synapse"
+	"github.com/aquasecurity/trivy/internal/iac/adapters/arm/adaptertest"
+	"github.com/aquasecurity/trivy/internal/iac/providers/azure/synapse"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

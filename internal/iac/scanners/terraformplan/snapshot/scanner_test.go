@@ -10,9 +10,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	tfscanner "github.com/aquasecurity/trivy/internal/iac/scanners/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	tfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
 )
 
 func Test_ScanFS(t *testing.T) {

@@ -1,7 +1,7 @@
 package helm
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm/parser"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/helm/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 

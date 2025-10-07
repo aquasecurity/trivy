@@ -3,8 +3,8 @@ package mq
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/mq"
+	"github.com/aquasecurity/trivy/internal/iac/adapters/cloudformation/testutil"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/mq"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

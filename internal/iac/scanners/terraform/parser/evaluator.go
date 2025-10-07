@@ -14,9 +14,9 @@ import (
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/convert"
 
-	"github.com/aquasecurity/trivy/pkg/iac/ignore"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
+	"github.com/aquasecurity/trivy/internal/iac/ignore"
+	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	tfcontext "github.com/aquasecurity/trivy/internal/iac/terraform/context"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )

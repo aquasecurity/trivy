@@ -3,8 +3,8 @@ package datafactory
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/adaptertest"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/datafactory"
+	"github.com/aquasecurity/trivy/internal/iac/adapters/arm/adaptertest"
+	"github.com/aquasecurity/trivy/internal/iac/providers/azure/datafactory"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

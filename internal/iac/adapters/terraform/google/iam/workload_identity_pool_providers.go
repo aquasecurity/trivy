@@ -1,7 +1,7 @@
 package iam
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/google/iam"
+	"github.com/aquasecurity/trivy/internal/iac/providers/google/iam"
 )
 
 // See https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/iam_workload_identity_pool_provider

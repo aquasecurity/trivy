@@ -3,10 +3,10 @@ package ec2
 import (
 	"github.com/samber/lo"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/ec2"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/internal/set"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 func getVPCs(fctx parser.FileContext) []ec2.VPC {

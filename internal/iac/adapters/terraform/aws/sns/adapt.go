@@ -1,8 +1,8 @@
 package sns
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sns"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/sns"
+	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

@@ -14,7 +14,7 @@ import (
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/gocty"
 
-	"github.com/aquasecurity/trivy/pkg/iac/terraform/context"
+	"github.com/aquasecurity/trivy/internal/iac/terraform/context"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

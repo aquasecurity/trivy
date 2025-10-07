@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"io/fs"
 
-	adapter "github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation"
+	adapter "github.com/aquasecurity/trivy/internal/iac/adapters/cloudformation"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"

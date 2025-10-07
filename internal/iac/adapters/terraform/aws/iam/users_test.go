@@ -3,9 +3,9 @@ package iam
 import (
 	"testing"
 
+	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

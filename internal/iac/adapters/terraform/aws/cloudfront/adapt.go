@@ -1,8 +1,8 @@
 package cloudfront
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudfront"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/cloudfront"
+	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

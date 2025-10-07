@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/trivy/pkg/licensing"
-	"github.com/aquasecurity/trivy/pkg/licensing/expression"
+	"github.com/aquasecurity/trivy/internal/licensing"
+	"github.com/aquasecurity/trivy/internal/licensing/expression"
 )
 
 func TestNormalize(t *testing.T) {

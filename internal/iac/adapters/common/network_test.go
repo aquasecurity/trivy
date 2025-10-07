@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
+	"github.com/aquasecurity/trivy/internal/iac/adapters/common"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

@@ -3,10 +3,10 @@ package compute
 import (
 	"testing"
 
+	"github.com/aquasecurity/trivy/internal/iac/adapters/common"
+	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/internal/iac/providers/google/compute"
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/google/compute"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

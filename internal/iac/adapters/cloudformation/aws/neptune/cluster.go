@@ -1,8 +1,8 @@
 package neptune
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/neptune"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/neptune"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

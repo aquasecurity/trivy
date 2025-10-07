@@ -6,10 +6,10 @@ import (
 	"io"
 	"io/fs"
 
+	"github.com/aquasecurity/trivy/internal/iac/scanners/terraform"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/terraformplan/tfjson/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson/parser"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 

@@ -8,7 +8,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/mapfs"
+	"github.com/aquasecurity/trivy/internal/mapfs"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 

@@ -7,10 +7,10 @@ import (
 	"io"
 	"io/fs"
 
+	tfscanner "github.com/aquasecurity/trivy/internal/iac/scanners/terraform"
+	tfparser "github.com/aquasecurity/trivy/internal/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-	tfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
-	tfparser "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 )
 
 type Scanner struct {

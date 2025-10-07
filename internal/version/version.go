@@ -7,10 +7,10 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	javadb "github.com/aquasecurity/trivy-java-db/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/internal/db"
+	"github.com/aquasecurity/trivy/internal/policy"
+	"github.com/aquasecurity/trivy/internal/version/app"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/policy"
-	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
 type VersionInfo struct {

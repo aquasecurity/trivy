@@ -5,9 +5,9 @@ import (
 
 	"github.com/samber/lo"
 
+	"github.com/aquasecurity/trivy/internal/policy"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/policy"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 

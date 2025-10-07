@@ -1,8 +1,8 @@
 package efs
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/efs"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/efs"
+	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 
 func Adapt(modules terraform.Modules) efs.EFS {

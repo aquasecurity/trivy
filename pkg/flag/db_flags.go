@@ -6,8 +6,8 @@ import (
 	"github.com/google/go-containerregistry/pkg/name"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/javadb"
+	"github.com/aquasecurity/trivy/internal/db"
+	"github.com/aquasecurity/trivy/internal/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 

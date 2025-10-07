@@ -7,8 +7,8 @@ import (
 
 	bberrors "go.etcd.io/bbolt/errors"
 
+	"github.com/aquasecurity/trivy/internal/version/doc"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
 const (

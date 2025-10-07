@@ -7,10 +7,10 @@ import (
 
 	"github.com/samber/lo"
 
+	"github.com/aquasecurity/trivy/internal/set"
+	"github.com/aquasecurity/trivy/internal/version/doc"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/set"
-	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
 var (

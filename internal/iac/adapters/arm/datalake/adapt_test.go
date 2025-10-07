@@ -3,8 +3,8 @@ package datalake
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/adaptertest"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/datalake"
+	"github.com/aquasecurity/trivy/internal/iac/adapters/arm/adaptertest"
+	"github.com/aquasecurity/trivy/internal/iac/providers/azure/datalake"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

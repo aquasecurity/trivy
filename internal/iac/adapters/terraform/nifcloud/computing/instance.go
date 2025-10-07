@@ -1,8 +1,8 @@
 package computing
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/computing"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/internal/iac/providers/nifcloud/computing"
+	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 
 func adaptInstances(modules terraform.Modules) []computing.Instance {

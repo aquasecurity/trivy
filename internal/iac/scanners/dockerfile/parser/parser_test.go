@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/dockerfile"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/dockerfile/parser"
+	"github.com/aquasecurity/trivy/internal/iac/providers/dockerfile"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/dockerfile/parser"
 )
 
 func Test_Parser(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	expr "github.com/aquasecurity/trivy/pkg/licensing/expression"
+	expr "github.com/aquasecurity/trivy/internal/licensing/expression"
 )
 
 func licence(name string, hasPlus bool) expr.SimpleExpr {

@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/cftypes"
 )
 
 func ResolveLength(property *Property) (*Property, bool) {

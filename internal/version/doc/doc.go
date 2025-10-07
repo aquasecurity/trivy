@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/aquasecurity/go-version/pkg/semver"
-	"github.com/aquasecurity/trivy/pkg/version/app"
+	"github.com/aquasecurity/trivy/internal/version/app"
 )
 
 const devVersion = "dev"

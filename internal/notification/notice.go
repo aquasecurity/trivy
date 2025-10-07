@@ -15,9 +15,9 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/go-version/pkg/semver"
+	"github.com/aquasecurity/trivy/internal/version/app"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/version/app"
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 

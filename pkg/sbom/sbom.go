@@ -11,7 +11,7 @@ import (
 	"github.com/in-toto/in-toto-golang/in_toto"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/attestation"
+	"github.com/aquasecurity/trivy/internal/attestation"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"

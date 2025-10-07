@@ -1,8 +1,8 @@
 package rdb
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/rdb"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/internal/iac/providers/nifcloud/rdb"
+	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 
 func Adapt(modules terraform.Modules) rdb.RDB {

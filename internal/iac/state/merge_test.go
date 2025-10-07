@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/rds"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/ec2"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/rds"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

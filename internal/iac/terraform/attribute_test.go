@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/hcl/v2/json"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/iac/terraform/context"
+	"github.com/aquasecurity/trivy/internal/iac/terraform/context"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

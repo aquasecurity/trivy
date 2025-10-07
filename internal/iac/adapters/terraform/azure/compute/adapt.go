@@ -3,8 +3,8 @@ package compute
 import (
 	"encoding/base64"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/compute"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/internal/iac/providers/azure/compute"
+	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

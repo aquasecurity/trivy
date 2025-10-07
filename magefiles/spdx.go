@@ -12,7 +12,7 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/downloader"
+	"github.com/aquasecurity/trivy/internal/downloader"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 

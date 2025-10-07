@@ -12,7 +12,7 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy/pkg/iac/ignore"
+	"github.com/aquasecurity/trivy/internal/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )

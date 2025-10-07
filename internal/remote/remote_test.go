@@ -18,9 +18,9 @@ import (
 	"github.com/aquasecurity/testdocker/auth"
 	"github.com/aquasecurity/testdocker/registry"
 	"github.com/aquasecurity/testdocker/tarfile"
+	"github.com/aquasecurity/trivy/internal/set"
+	"github.com/aquasecurity/trivy/internal/version/app"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/set"
-	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
 func setupPrivateRegistry(t *testing.T) *httptest.Server {

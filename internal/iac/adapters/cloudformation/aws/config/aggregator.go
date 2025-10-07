@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/config"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/config"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

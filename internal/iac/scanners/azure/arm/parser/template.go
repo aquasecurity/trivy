@@ -10,9 +10,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/aquasecurity/trivy/internal/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/azure/resolver"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/resolver"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )

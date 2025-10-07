@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
-	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
+	cr "github.com/aquasecurity/trivy/internal/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/extension"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"

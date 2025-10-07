@@ -3,9 +3,9 @@ package computing
 import (
 	"testing"
 
+	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/internal/iac/providers/nifcloud/computing"
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/computing"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

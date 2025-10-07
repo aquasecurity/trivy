@@ -3,9 +3,9 @@ package rdb
 import (
 	"testing"
 
+	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/internal/iac/providers/nifcloud/rdb"
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/rdb"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

@@ -3,7 +3,7 @@ package parser
 import (
 	"github.com/samber/lo"
 
-	"github.com/aquasecurity/trivy/pkg/iac/ignore"
+	"github.com/aquasecurity/trivy/internal/iac/ignore"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

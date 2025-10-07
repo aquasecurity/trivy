@@ -3,8 +3,8 @@ package codebuild
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/codebuild"
+	"github.com/aquasecurity/trivy/internal/iac/adapters/cloudformation/testutil"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/codebuild"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

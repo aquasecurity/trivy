@@ -3,8 +3,8 @@ package iam
 import (
 	"github.com/google/uuid"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/google/iam"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/internal/iac/providers/google/iam"
+	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

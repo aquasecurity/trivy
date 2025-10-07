@@ -3,16 +3,16 @@ package state
 import (
 	"reflect"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/cloudstack"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/digitalocean"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/github"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/google"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/kubernetes"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/openstack"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/oracle"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws"
+	"github.com/aquasecurity/trivy/internal/iac/providers/azure"
+	"github.com/aquasecurity/trivy/internal/iac/providers/cloudstack"
+	"github.com/aquasecurity/trivy/internal/iac/providers/digitalocean"
+	"github.com/aquasecurity/trivy/internal/iac/providers/github"
+	"github.com/aquasecurity/trivy/internal/iac/providers/google"
+	"github.com/aquasecurity/trivy/internal/iac/providers/kubernetes"
+	"github.com/aquasecurity/trivy/internal/iac/providers/nifcloud"
+	"github.com/aquasecurity/trivy/internal/iac/providers/openstack"
+	"github.com/aquasecurity/trivy/internal/iac/providers/oracle"
 	"github.com/aquasecurity/trivy/pkg/iac/rego/convert"
 )
 

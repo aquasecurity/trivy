@@ -10,7 +10,7 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/snapshot"
+	"github.com/aquasecurity/trivy/internal/iac/scanners/terraformplan/snapshot"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )

@@ -3,8 +3,8 @@ package workspaces
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/workspaces"
+	"github.com/aquasecurity/trivy/internal/iac/adapters/cloudformation/testutil"
+	"github.com/aquasecurity/trivy/internal/iac/providers/aws/workspaces"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
