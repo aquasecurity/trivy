@@ -8477,7 +8477,7 @@ If you add a new custom policy, it must be defined under a new package like <cod
 <dd>
 <ul>
 <li>SHOULD be defined for clarity since these values will be displayed in the scan results</li>
-<li><code>custom.input</code> SHOULD be set to indicate the input type the policy should be applied to. See <a href="https://github.com/aquasecurity/trivy/blob/9361cdb7e28fd304d6fd2a1091feac64a6786672/pkg/iac/types/sources.go#L4">list of available types</a></li>
+<li><code>custom.input</code> SHOULD be set to indicate the input type the policy should be applied to. See <a href="https://github.com/aquasecurity/trivy/blob/e4af279b29ed5b77ed1d62e31b232b1f9b92ef4f/pkg/iac/types/sources.go#L5-L17">list of available types</a></li>
 </ul>
 </dd>
 <dt><code>package</code> (required)</dt>
@@ -8569,7 +8569,7 @@ correct and do not reference incorrect properties/values.</p>
 </tr>
 <tr>
 <td>schemas.input</td>
-<td><code>schema["kubernetes"]</code>, <code>schema["dockerfile"]</code>, <code>schema["cloud"]</code></td>
+<td><code>schema["kubernetes"]</code>, <code>schema["dockerfile"]</code>, <code>schema["cloud"]</code>, <code>schema["terraform-raw"]</code></td>
 <td style="text-align: center;">(applied to all input types)</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">-</td>
@@ -8604,7 +8604,7 @@ correct and do not reference incorrect properties/values.</p>
 </tr>
 <tr>
 <td>custom.input.selector.type</td>
-<td>Any item(s) in <a href="https://github.com/aquasecurity/trivy/blob/9361cdb7e28fd304d6fd2a1091feac64a6786672/pkg/iac/types/sources.go#L4">this list</a></td>
+<td>Any item(s) in <a href="https://github.com/aquasecurity/trivy/blob/e4af279b29ed5b77ed1d62e31b232b1f9b92ef4f/pkg/iac/types/sources.go#L5-L17">this list</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">✅</td>

@@ -8852,9 +8852,18 @@ The <code>input</code> for the evaluation is each <a href="https://github.com/aq
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>image<span class="w"> </span>--ignore-policy<span class="w"> </span>examples/ignore-policies/basic.rego<span class="w"> </span>centos:7
 </code></pre></div>
+<p>To filter findings of a specific type based on a field that may exist in multiple structures (for example, <code>PkgName</code> in both <code>DetectedVulnerability</code> and <code>DetectedLicense</code>), you can use the <code>Type</code> field. This field is automatically added when exporting findings to Rego and indicates the kind of finding. Possible values are: <code>vulnerability</code>, <code>misconfiguration</code>, <code>secret</code>, and <code>license</code>.</p>
+<p>For example, the following policy ignores vulnerabilities with a specific package name without affecting other finding types:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="n">trivy</span>
+
+<span class="n">ignore</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nb">input</span><span class="p">.</span><span class="n">Type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;vulnerability&quot;</span>
+<span class="w">  </span><span class="nb">input</span><span class="p">.</span><span class="n">PkgName</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;foo&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>For more advanced use cases, there is a built-in Rego library with helper functions that you can import into your policy using: <code>import data.lib.trivy</code>.
-More info about the helper functions are in the library <a href="https://github.com/aquasecurity/trivy/tree/v0.67.0-9-g4bef18348/pkg/result/module.go">here</a>.</p>
-<p>You can create a whitelist of checks using Rego, see the detailed <a href="https://github.com/aquasecurity/trivy/tree/v0.67.0-9-g4bef18348/examples/ignore-policies/whitelist.rego">example</a>. Additional examples are available <a href="https://github.com/aquasecurity/trivy/tree/v0.67.0-9-g4bef18348/examples/ignore-policies">here</a>.</p>
+More info about the helper functions are in the library <a href="https://github.com/aquasecurity/trivy/tree/v0.67.0-11-g36712514c/pkg/result/module.go">here</a>.</p>
+<p>You can create a whitelist of checks using Rego, see the detailed <a href="https://github.com/aquasecurity/trivy/tree/v0.67.0-11-g36712514c/examples/ignore-policies/whitelist.rego">example</a>. Additional examples are available <a href="https://github.com/aquasecurity/trivy/tree/v0.67.0-11-g36712514c/examples/ignore-policies">here</a>.</p>
 <h3 id="by-vulnerability-exploitability-exchange-vex">By Vulnerability Exploitability Exchange (VEX)<a class="headerlink" href="#by-vulnerability-exploitability-exchange-vex" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

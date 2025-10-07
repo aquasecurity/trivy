@@ -2108,6 +2108,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#scan-raw-configurations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scan raw configurations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#external-connectivity" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8071,6 +8082,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#scan-raw-configurations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scan raw configurations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#external-connectivity" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8410,6 +8432,92 @@ mysql-8.8.26.tar:templates/primary/statefulset.yaml<span class="w"> </span><span
 Tests:<span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="o">(</span>SUCCESSES:<span class="w"> </span><span class="m">18</span>,<span class="w"> </span>FAILURES:<span class="w"> </span><span class="m">2</span><span class="o">)</span>
 Failures:<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="o">(</span>MEDIUM:<span class="w"> </span><span class="m">2</span>,<span class="w"> </span>HIGH:<span class="w"> </span><span class="m">0</span>,<span class="w"> </span>CRITICAL:<span class="w"> </span><span class="m">0</span><span class="o">)</span>
 </code></pre></div>
+<h2 id="scan-raw-configurations">Scan raw configurations<a class="headerlink" href="#scan-raw-configurations" title="Permanent link">&para;</a></h2>
+<p>IaC configurations from cloud providers such as Terraform, CloudFormation, and ARM are converted into a unified structure that is exported to Rego. Checks are developed only for the unified structure, not for each configuration type with its own structure. This avoids duplication and simplifies maintenance. Using the unified structure has a limitation: it is not possible to create checks for resources or attributes that are not exported.</p>
+<p>The <code>--raw-config-scanners</code> flag allows scanning the raw configuration — that is, evaluated but not converted into the unified structure. Currently, only <code>terraform</code> is supported.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The raw configuration scanner does not work on its own. To use <code>--raw-config-scanners</code>, you must also specify the corresponding <code>--misconfig-scanners</code>. The report will include results from both scanners.</p>
+</div>
+<p>For more information on custom checks and exported data schemas, see <a href="custom/">here</a>.</p>
+<p>Example check:
+<div class="highlight"><pre><span></span><code><span class="c1"># METADATA</span>
+<span class="c1"># title: AWS required resource tags</span>
+<span class="c1"># description: Ensure required tags are set on AWS resources</span>
+<span class="c1"># scope: package</span>
+<span class="c1"># schemas:</span>
+<span class="c1">#   - input: schema[&quot;terraform-raw&quot;]</span>
+<span class="c1"># custom:</span>
+<span class="c1">#   id:  USR-TFRAW-0001</span>
+<span class="c1">#   severity: CRITICAL</span>
+<span class="c1">#   short_code: required-aws-resource-tags</span>
+<span class="c1">#   recommended_actions: Add the required tags to AWS resources.</span>
+<span class="c1">#   input:</span>
+<span class="c1">#     selector:</span>
+<span class="c1">#     - type: terraform-raw</span>
+<span class="k">package</span><span class="w"> </span><span class="n">user</span><span class="p">.</span><span class="n">terraform</span><span class="p">.</span><span class="n">required_aws_tags</span>
+
+<span class="k">import</span><span class="w"> </span><span class="n">rego</span><span class="p">.</span><span class="n">v1</span>
+
+<span class="n">resource_types_to_check</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;aws_s3_bucket&quot;</span><span class="p">}</span>
+
+<span class="n">resources_to_check</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">{</span><span class="n">block</span><span class="w"> </span><span class="o">|</span>
+<span class="w">    </span><span class="k">some</span><span class="w"> </span><span class="n">module</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nb">input</span><span class="p">.</span><span class="n">modules</span>
+<span class="w">    </span><span class="k">some</span><span class="w"> </span><span class="n">block</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">module</span><span class="p">.</span><span class="n">blocks</span>
+<span class="w">    </span><span class="n">block</span><span class="p">.</span><span class="n">kind</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;resource&quot;</span>
+<span class="w">    </span><span class="n">block</span><span class="p">.</span><span class="n">type</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">resource_types_to_check</span>
+<span class="p">}</span>
+
+<span class="n">required_tags</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;Access&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Owner&quot;</span><span class="p">}</span>
+
+<span class="n">deny</span><span class="w"> </span><span class="k">contains</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">some</span><span class="w"> </span><span class="n">block</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">resources_to_check</span>
+<span class="w">    </span><span class="k">not</span><span class="w"> </span><span class="n">block</span><span class="p">.</span><span class="n">attributes</span><span class="p">.</span><span class="n">tags</span>
+<span class="w">    </span><span class="n">res</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">new</span><span class="p">(</span>
+<span class="w">        </span><span class="n">sprintf</span><span class="p">(</span><span class="s2">&quot;The resource %q does not contain the following required tags: %v&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">block</span><span class="p">.</span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="n">required_tags</span><span class="p">]),</span>
+<span class="w">        </span><span class="n">block</span><span class="p">,</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="n">deny</span><span class="w"> </span><span class="k">contains</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">some</span><span class="w"> </span><span class="n">block</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">resources_to_check</span>
+<span class="w">    </span><span class="n">tags_attr</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">block</span><span class="p">.</span><span class="n">attributes</span><span class="p">.</span><span class="n">tags</span>
+<span class="w">    </span><span class="n">tags</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">object</span><span class="p">.</span><span class="n">keys</span><span class="p">(</span><span class="n">tags_attr</span><span class="p">.</span><span class="n">value</span><span class="p">)</span>
+<span class="w">    </span><span class="n">missing_tags</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">required_tags</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">tags</span>
+<span class="w">    </span><span class="n">count</span><span class="p">(</span><span class="n">missing_tags</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0</span>
+<span class="w">    </span><span class="n">res</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">new</span><span class="p">(</span>
+<span class="w">        </span><span class="n">sprintf</span><span class="p">(</span><span class="s2">&quot;The resource %q does not contain the following required tags: %v&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">block</span><span class="p">.</span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="n">missing_tags</span><span class="p">]),</span>
+<span class="w">        </span><span class="n">tags_attr</span><span class="p">,</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p>Running Trivy:
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>conf<span class="w"> </span>main.tf<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--check-namespaces<span class="w"> </span>user<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--config-check<span class="w"> </span>examples/terraform-raw/required-aws-tags.rego<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--misconfig-scanners<span class="w"> </span>terraform<span class="w"> </span>--raw-config-scanners<span class="w"> </span>terraform
+</code></pre></div></p>
+<p>Example output:
+<div class="highlight"><pre><span></span><code>main.tf<span class="w"> </span><span class="o">(</span>terraform<span class="o">)</span>
+
+Tests:<span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">(</span>SUCCESSES:<span class="w"> </span><span class="m">0</span>,<span class="w"> </span>FAILURES:<span class="w"> </span><span class="m">10</span><span class="o">)</span>
+Failures:<span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">(</span>UNKNOWN:<span class="w"> </span><span class="m">0</span>,<span class="w"> </span>LOW:<span class="w"> </span><span class="m">2</span>,<span class="w"> </span>MEDIUM:<span class="w"> </span><span class="m">1</span>,<span class="w"> </span>HIGH:<span class="w"> </span><span class="m">6</span>,<span class="w"> </span>CRITICAL:<span class="w"> </span><span class="m">1</span><span class="o">)</span>
+
+<span class="w"> </span><span class="o">(</span>CRITICAL<span class="o">)</span>:<span class="w"> </span>The<span class="w"> </span>resource<span class="w"> </span><span class="s2">&quot;aws_s3_bucket&quot;</span><span class="w"> </span>does<span class="w"> </span>not<span class="w"> </span>contain<span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>required<span class="w"> </span>tags:<span class="w"> </span><span class="o">{</span><span class="s2">&quot;Access&quot;</span><span class="o">}</span>
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Ensure<span class="w"> </span>required<span class="w"> </span>tags<span class="w"> </span>are<span class="w"> </span><span class="nb">set</span><span class="w"> </span>on<span class="w"> </span>AWS<span class="w"> </span>resources
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<span class="w"> </span>main.tf:3-5
+<span class="w">   </span>via<span class="w"> </span>main.tf:1-6<span class="w"> </span><span class="o">(</span>aws_s3_bucket.this<span class="o">)</span>
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<span class="w">   </span><span class="m">1</span><span class="w">   </span>resource<span class="w"> </span><span class="s2">&quot;aws_s3_bucket&quot;</span><span class="w"> </span><span class="s2">&quot;this&quot;</span><span class="w"> </span><span class="o">{</span>
+<span class="w">   </span><span class="m">2</span><span class="w">     </span><span class="nv">bucket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test&quot;</span>
+<span class="w">   </span><span class="m">3</span><span class="w"> </span>┌<span class="w">   </span><span class="nv">tags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span>
+<span class="w">   </span><span class="m">4</span><span class="w"> </span>│<span class="w">     </span>Owner:<span class="w"> </span><span class="s2">&quot;user&quot;</span>
+<span class="w">   </span><span class="m">5</span><span class="w"> </span>└<span class="w">   </span><span class="o">}</span>
+<span class="w">   </span><span class="m">6</span><span class="w">   </span><span class="o">}</span>
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+</code></pre></div></p>
 <h2 id="external-connectivity">External connectivity<a class="headerlink" href="#external-connectivity" title="Permanent link">&para;</a></h2>
 <p>Trivy needs to connect to the internet to download the checks bundle. If you are running Trivy in an air-gapped environment, or an tightly controlled network, please refer to the <a href="../../advanced/air-gap/">Advanced Network Scenarios document</a>.</p>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
