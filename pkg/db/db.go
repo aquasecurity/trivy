@@ -233,13 +233,3 @@ func (c *Client) downloadDB(ctx context.Context, opt types.RegistryOptions, dst 
 	}
 	return nil
 }
-
-func (c *Client) ShowInfo() error {
-	meta, err := c.metadata.Get()
-	if err != nil {
-		return xerrors.Errorf("something wrong with DB: %w", err)
-	}
-	log.Debug("DB info", log.Int("schema", meta.Version), log.Time("updated_at", meta.UpdatedAt),
-		log.Time("next_update", meta.NextUpdate), log.Time("downloaded_at", meta.DownloadedAt))
-	return nil
-}

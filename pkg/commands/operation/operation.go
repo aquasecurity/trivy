@@ -42,10 +42,6 @@ func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepositories
 		}
 	}
 
-	// for debug
-	if err = client.ShowInfo(); err != nil {
-		return xerrors.Errorf("failed to show database info: %w", err)
-	}
 	return nil
 }
 
