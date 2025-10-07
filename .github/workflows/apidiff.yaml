@@ -1,7 +1,10 @@
 name: API Diff Check
 
 on:
-  pull_request:
+  # SECURITY: Using pull_request_target to support fork PRs with write permissions.
+  # PR code is checked out but only for static analysis - it is never executed.
+  # If modifying this workflow, ensure PR code is never executed and user inputs are not used unsafely.
+  pull_request_target:
     types: [opened, synchronize]
     paths:
       - 'pkg/**/*.go'
@@ -17,8 +20,11 @@ jobs:
     runs-on: ubuntu-24.04
     name: API Diff Check
     steps:
+      # Checkout PR code for static analysis only
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set up Go
         uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
