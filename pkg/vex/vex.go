@@ -75,7 +75,7 @@ func Filter(ctx context.Context, report *types.Report, opts Options) error {
 	}
 
 	// NOTE: This method call has a side effect on the report
-	bom, err := sbomio.NewEncoder(core.Options{Parents: true}).Encode(*report)
+	bom, err := sbomio.NewEncoder(sbomio.WithParents(), sbomio.ForceRegenerate()).Encode(*report)
 	if err != nil {
 		return xerrors.Errorf("unable to encode the SBOM: %w", err)
 	}
