@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/tftestutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/dynamodb"
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/dynamodb"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

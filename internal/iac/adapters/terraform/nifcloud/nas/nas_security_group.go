@@ -1,8 +1,8 @@
 package nas
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/nas"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/nas"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

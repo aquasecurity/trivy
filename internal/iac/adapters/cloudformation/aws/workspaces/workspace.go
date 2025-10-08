@@ -1,8 +1,8 @@
 package workspaces
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/workspaces"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/workspaces"
 )
 
 func getWorkSpaces(ctx parser.FileContext) (workSpaces []workspaces.WorkSpace) {

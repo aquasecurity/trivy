@@ -1,8 +1,8 @@
 package cloudtrail
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudtrail"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudtrail"
 )
 
 func Adapt(modules terraform.Modules) cloudtrail.CloudTrail {

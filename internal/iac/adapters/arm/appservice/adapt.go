@@ -1,8 +1,8 @@
 package appservice
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/appservice"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/appservice"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

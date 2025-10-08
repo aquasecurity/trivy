@@ -8,9 +8,9 @@ import (
 
 	"github.com/aquasecurity/iamgo"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sqs"
-	"github.com/aquasecurity/trivy/internal/testutil"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

@@ -1,8 +1,8 @@
 package datalake
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/datalake"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/datalake"
 )
 
 func Adapt(deployment azure.Deployment) datalake.DataLake {

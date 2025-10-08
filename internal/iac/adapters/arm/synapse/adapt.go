@@ -1,8 +1,8 @@
 package synapse
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/synapse"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/synapse"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

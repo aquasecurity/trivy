@@ -1,8 +1,8 @@
 package eks
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/eks"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/eks"
 )
 
 // Adapt adapts an EKS instance

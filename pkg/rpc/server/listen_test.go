@@ -17,10 +17,10 @@ import (
 	"github.com/aquasecurity/trivy/internal/clock"
 	"github.com/aquasecurity/trivy/internal/db"
 	"github.com/aquasecurity/trivy/internal/dbtest"
-	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/internal/version"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 )
 

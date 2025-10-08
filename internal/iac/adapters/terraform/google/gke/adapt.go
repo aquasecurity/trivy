@@ -4,8 +4,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/zclconf/go-cty/cty"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/google/gke"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google/gke"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

@@ -5,8 +5,8 @@ import (
 
 	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

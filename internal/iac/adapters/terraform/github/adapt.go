@@ -4,8 +4,8 @@ import (
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/github/branch_protections"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/github/repositories"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/github/secrets"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/github"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/github"
 )
 
 func Adapt(modules terraform.Modules) github.GitHub {

@@ -3,8 +3,8 @@ package iam
 import (
 	"github.com/samber/lo"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/google/iam"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google/iam"
 )
 
 func Adapt(modules terraform.Modules) iam.IAM {

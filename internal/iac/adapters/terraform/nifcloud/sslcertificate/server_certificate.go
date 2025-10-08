@@ -4,8 +4,8 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/sslcertificate"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/sslcertificate"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

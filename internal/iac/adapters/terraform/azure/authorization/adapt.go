@@ -1,8 +1,8 @@
 package authorization
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/authorization"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/authorization"
 )
 
 func Adapt(modules terraform.Modules) authorization.Authorization {

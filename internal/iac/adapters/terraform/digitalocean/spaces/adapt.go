@@ -3,8 +3,8 @@ package spaces
 import (
 	"github.com/google/uuid"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/digitalocean/spaces"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/digitalocean/spaces"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

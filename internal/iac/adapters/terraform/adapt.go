@@ -11,8 +11,8 @@ import (
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/nifcloud"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/openstack"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/oracle"
-	"github.com/aquasecurity/trivy/pkg/iac/state"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/state"
 )
 
 func Adapt(modules terraform.Modules) *state.State {

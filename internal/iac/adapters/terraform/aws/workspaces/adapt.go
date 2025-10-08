@@ -1,8 +1,8 @@
 package workspaces
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/workspaces"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/workspaces"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

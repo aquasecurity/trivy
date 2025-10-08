@@ -16,8 +16,8 @@ import (
 	"github.com/aquasecurity/trivy/internal/iac/adapters/arm/securitycenter"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/arm/storage"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/arm/synapse"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure"
 	scanner "github.com/aquasecurity/trivy/internal/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/state"
 )
 

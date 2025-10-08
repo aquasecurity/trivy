@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/tftestutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/nas"
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/nas"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

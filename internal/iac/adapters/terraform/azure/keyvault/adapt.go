@@ -3,8 +3,8 @@ package keyvault
 import (
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/keyvault"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/keyvault"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

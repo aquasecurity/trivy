@@ -5,9 +5,9 @@ import (
 
 	"github.com/aquasecurity/iamgo"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/aws/iam"
+	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	iamp "github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sqs"
-	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

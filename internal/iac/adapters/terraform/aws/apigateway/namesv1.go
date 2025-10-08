@@ -1,8 +1,8 @@
 package apigateway
 
 import (
-	v1 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v1"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	v1 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v1"
 )
 
 func adaptDomainNamesV1(modules terraform.Modules) []v1.DomainName {

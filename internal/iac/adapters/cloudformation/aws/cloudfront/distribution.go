@@ -1,8 +1,8 @@
 package cloudfront
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudfront"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudfront"
 )
 
 func getDistributions(ctx parser.FileContext) (distributions []cloudfront.Distribution) {

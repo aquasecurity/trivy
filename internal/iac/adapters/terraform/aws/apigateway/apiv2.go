@@ -1,8 +1,8 @@
 package apigateway
 
 import (
-	v2 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v2"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	v2 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v2"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

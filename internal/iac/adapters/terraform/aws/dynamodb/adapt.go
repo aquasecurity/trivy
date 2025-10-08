@@ -1,8 +1,8 @@
 package dynamodb
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/dynamodb"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/dynamodb"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

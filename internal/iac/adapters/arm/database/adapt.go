@@ -1,8 +1,8 @@
 package database
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/database"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/database"
 )
 
 func Adapt(deployment azure.Deployment) database.Database {

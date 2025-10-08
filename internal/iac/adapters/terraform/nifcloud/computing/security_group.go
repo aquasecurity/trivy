@@ -1,8 +1,8 @@
 package computing
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/computing"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/computing"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

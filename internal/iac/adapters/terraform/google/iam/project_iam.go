@@ -5,8 +5,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/google/iam"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google/iam"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

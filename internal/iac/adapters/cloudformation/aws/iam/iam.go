@@ -1,8 +1,8 @@
 package iam
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

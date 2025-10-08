@@ -3,8 +3,8 @@ package dynamodb
 import (
 	"github.com/samber/lo"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/dynamodb"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/dynamodb"
 )
 
 func getTables(fctx parser.FileContext) []dynamodb.Table {

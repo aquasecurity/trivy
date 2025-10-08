@@ -1,8 +1,8 @@
 package elb
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/elb"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/elb"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

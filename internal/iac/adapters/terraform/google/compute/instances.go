@@ -3,8 +3,8 @@ package compute
 import (
 	"github.com/zclconf/go-cty/cty"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/google/compute"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google/compute"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

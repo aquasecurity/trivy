@@ -1,8 +1,8 @@
 package cloudtrail
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudtrail"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudtrail"
 )
 
 // Adapt adapts a CloudTrail instance

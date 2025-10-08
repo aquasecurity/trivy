@@ -1,8 +1,8 @@
 package bigquery
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/google/bigquery"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google/bigquery"
 )
 
 func Adapt(modules terraform.Modules) bigquery.BigQuery {

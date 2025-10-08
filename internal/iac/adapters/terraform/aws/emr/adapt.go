@@ -1,8 +1,8 @@
 package emr
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/emr"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/emr"
 )
 
 func Adapt(modules terraform.Modules) emr.EMR {

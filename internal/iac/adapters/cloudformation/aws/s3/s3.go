@@ -1,8 +1,8 @@
 package s3
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
 )
 
 // Adapt adapts an S3 instance

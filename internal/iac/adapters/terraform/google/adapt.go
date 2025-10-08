@@ -9,8 +9,8 @@ import (
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/google/kms"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/google/sql"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/google/storage"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/google"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google"
 )
 
 func Adapt(modules terraform.Modules) google.Google {

@@ -3,8 +3,8 @@ package ec2
 import (
 	"encoding/base64"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

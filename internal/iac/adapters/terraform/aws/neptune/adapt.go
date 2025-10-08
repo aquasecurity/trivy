@@ -1,8 +1,8 @@
 package neptune
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/neptune"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/neptune"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

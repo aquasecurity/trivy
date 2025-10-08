@@ -8,10 +8,10 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway"
 	v1 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v1"
 	v2 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v2"
-	"github.com/aquasecurity/trivy/internal/testutil"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
