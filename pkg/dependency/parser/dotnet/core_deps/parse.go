@@ -32,6 +32,7 @@ type RuntimeTarget struct {
 type Runtime struct {
 	AssemblyVersion string `json:"assemblyVersion"`
 	FileVersion     string `json:"fileVersion"`
+	xjson.Location
 }
 
 type TargetLib struct {
@@ -67,6 +68,18 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	var pkgs ftypes.Packages
+	for dllName, lib := range depsFile.Targets[depsFile.RuntimeTarget.Name][runtimePack].Runtime {
+		packageName := strings.TrimSuffix(dllName, ".dll")
+		// Add the package if it is packaged for this runtime
+		p.logger.Debug("Adding packaged dependency", "name", packageName+"/"+lib.FileVersion)
+		pkgs = append(pkgs, ftypes.Package{
+			ID:        dependency.ID(ftypes.DotNetCore, packageName, lib.FileVersion),
+			Name:      packageName,
+			Version:   lib.FileVersion,
+			Locations: []ftypes.Location{ftypes.Location(lib.Location)},
+		})
+	}
+
 	for nameVer, lib := range depsFile.Libraries {
 		if !strings.EqualFold(lib.Type, "package") {
 			continue
@@ -85,16 +98,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			p.once.Do(func() {
 				p.logger.Debug("Unable to find `Target` for Runtime Target Name. All dependencies from `libraries` section will be included in the report", log.String("Runtime Target Name", depsFile.RuntimeTarget.Name))
 			})
-		} else if runtimePackage, ok := depsFile.Targets[depsFile.RuntimeTarget.Name][runtimePack].Runtime[split[0]+".dll"]; ok {
-			// Add the package if it is packaged for this runtime
-			p.logger.Debug("Adding packaged dependency", "name", split[0]+"/"+runtimePackage.FileVersion)
-			pkgs = append(pkgs, ftypes.Package{
-				ID:        dependency.ID(ftypes.DotNetCore, split[0], runtimePackage.FileVersion),
-				Name:      split[0],
-				Version:   runtimePackage.FileVersion,
-				Locations: []ftypes.Location{ftypes.Location(lib.Location)},
-			})
-			continue
 		} else if !p.isRuntimeLibrary(targetLibs, nameVer) {
 			// Skip non-runtime libraries
 			// cf. https://github.com/aquasecurity/trivy/pull/7039#discussion_r1674566823
@@ -128,5 +131,5 @@ func (p *Parser) isRuntimeLibrary(targetLibs map[string]TargetLib, library strin
 		return true
 	}
 	// Check that `runtime`, `runtimeTarget` and `native` sections are not empty
-	return len(lib.Runtime) != 0 && lib.RuntimeTargets != nil && lib.Native != nil
+	return !(len(lib.Runtime) == 0 && lib.RuntimeTargets == nil && lib.Native == nil)
 }
