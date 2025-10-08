@@ -82,6 +82,8 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 
 	// Check if the directory is a git repository and extract metadata
 	if art.isClean, art.repoMetadata, err = extractGitInfo(art.rootPath); err == nil {
+		// If git info is detected, change artifact type to repository
+		art.artifactOption.Type = types.TypeRepository
 		if art.isClean {
 			art.logger.Debug("Using the latest commit hash for calculating cache key",
 				log.String("commit_hash", art.repoMetadata.Commit))
