@@ -1466,8 +1466,7 @@ func TestEncoder_Encode(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
-			opts := core.Options{GenerateBOMRef: true}
-			got, err := sbomio.NewEncoder(opts).Encode(tt.report)
+			got, err := sbomio.NewEncoder(sbomio.WithBOMRef()).Encode(tt.report)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return

@@ -19,21 +19,49 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-type Encoder struct {
-	bom  *core.BOM
-	opts core.Options
+type EncoderOption func(*Encoder)
+
+// WithBOMRef enables BOM-Ref generation for CycloneDX components
+func WithBOMRef() EncoderOption {
+	return func(e *Encoder) {
+		e.bomOpts.GenerateBOMRef = true
+	}
 }
 
-func NewEncoder(opts core.Options) *Encoder {
-	return &Encoder{opts: opts}
+// WithParents enables holding parent maps in the BOM structure
+func WithParents() EncoderOption {
+	return func(e *Encoder) {
+		e.bomOpts.Parents = true
+	}
+}
+
+// ForceRegenerate forces regeneration of BOM instead of reusing existing one
+func ForceRegenerate() EncoderOption {
+	return func(e *Encoder) {
+		e.forceRegenerate = true
+	}
+}
+
+type Encoder struct {
+	bom             *core.BOM
+	bomOpts         core.Options
+	forceRegenerate bool
+}
+
+func NewEncoder(opts ...EncoderOption) *Encoder {
+	e := &Encoder{}
+	for _, opt := range opts {
+		opt(e)
+	}
+	return e
 }
 
 func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
-	// When report.BOM is not nil, reuse the existing BOM structure.
+	// When report.BOM is not nil, reuse the existing BOM structure unless ForceRegenerate is set.
 	// This happens in two scenarios:
 	// 1. SBOM scanning: When scanning an existing SBOM file to refresh vulnerabilities
 	// 2. Library usage: When using Trivy as a library with a custom BOM in the report
-	if report.BOM != nil {
+	if report.BOM != nil && !e.forceRegenerate {
 		return e.reuseExistingBOM(report)
 	}
 	// Metadata component
@@ -42,7 +70,7 @@ func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
 		return nil, xerrors.Errorf("failed to create root component: %w", err)
 	}
 
-	e.bom = core.NewBOM(e.opts)
+	e.bom = core.NewBOM(e.bomOpts)
 	if report.BOM != nil {
 		e.bom.SerialNumber = report.BOM.SerialNumber
 		e.bom.Version = report.BOM.Version

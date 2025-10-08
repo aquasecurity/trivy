@@ -115,7 +115,7 @@ func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
 
 func (m *Marshaler) MarshalReport(ctx context.Context, report types.Report) (*spdx.Document, error) {
 	// Convert into an intermediate representation
-	bom, err := sbomio.NewEncoder(core.Options{}).Encode(report)
+	bom, err := sbomio.NewEncoder().Encode(report)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to marshal report: %w", err)
 	}
