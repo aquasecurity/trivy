@@ -105,8 +105,8 @@ func TestParse(t *testing.T) {
 					Version: "16.3.0",
 					Locations: []ftypes.Location{
 						{
-							StartLine: 767,
-							EndLine:   773,
+							StartLine: 48,
+							EndLine:   54,
 						},
 					},
 				},
