@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
@@ -26,38 +26,37 @@ type DBInterface interface {
 }
 
 // Scanner implements the Root.io scanner for language packages
-// It uses the standard advisory fetching but with rootio-specific logic
 type Scanner struct {
-	ecosystem dbTypes.Ecosystem
+	ecosystem ecosystem.Type
 	comparer  compare.Comparer
 	dbc       DBInterface
 	logger    *log.Logger
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner(ecosystem dbTypes.Ecosystem, comparer compare.Comparer) *Scanner {
+func NewScanner(eco ecosystem.Type, comparer compare.Comparer) *Scanner {
 	return &Scanner{
-		ecosystem: ecosystem,
+		ecosystem: eco,
 		comparer:  comparer,
 		dbc:       db.Config{},
-		logger:    log.WithPrefix("rootio-" + string(ecosystem)),
+		logger:    log.WithPrefix("rootio-" + string(eco)),
 	}
 }
 
 // getComparerForEcosystem returns the appropriate comparer for each ecosystem
-func getComparerForEcosystem(ecosystem dbTypes.Ecosystem) compare.Comparer {
-	switch ecosystem {
-	case vulnerability.RubyGems:
+func getComparerForEcosystem(eco ecosystem.Type) compare.Comparer {
+	switch eco {
+	case ecosystem.RubyGems:
 		return rubygems.Comparer{}
-	case vulnerability.Pip:
+	case ecosystem.Pip:
 		return pep440.Comparer{}
-	case vulnerability.Npm:
+	case ecosystem.Npm:
 		return npm.Comparer{}
-	case vulnerability.Maven:
+	case ecosystem.Maven:
 		return maven.Comparer{}
-	case vulnerability.Bitnami:
+	case ecosystem.Bitnami:
 		return bitnami.Comparer{}
-	case vulnerability.Cocoapods:
+	case ecosystem.Cocoapods:
 		return rubygems.Comparer{} // CocoaPods uses RubyGems version specifiers
 	default:
 		// Default to generic semver comparison
@@ -72,12 +71,7 @@ func (s *Scanner) Type() string {
 
 // DetectVulnerabilities scans packages for vulnerabilities with Root.io-specific handling
 func (s *Scanner) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
-	// Strip .root.io suffix from version for comparison
-	baseVersion := NormalizeVersion(pkgVer)
-
 	// Get advisories using standard ecosystem prefix
-	// This will look for buckets like "pip::", "npm::", etc.
-	// In the future, when trivy-db supports it, this could look for "pip::rootio"
 	prefix := fmt.Sprintf("%s::", s.ecosystem)
 	advisories, err := s.dbc.GetAdvisories(prefix, vulnerability.NormalizePkgName(s.ecosystem, pkgName))
 	if err != nil {
@@ -86,13 +80,12 @@ func (s *Scanner) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.
 
 	var vulns []types.DetectedVulnerability
 	for _, adv := range advisories {
-		// Check if the base version (without .root.io) is vulnerable
-		if !s.comparer.IsVulnerable(baseVersion, adv) {
+		// Check if the version is vulnerable using the normalized version
+		if !s.comparer.IsVulnerable(pkgVer, adv) {
 			continue
 		}
 
-		// For rootio packages, append .root.io to fixed versions if not present
-		fixedVersion := s.createRootIOFixedVersions(adv)
+		fixedVersion := strings.Join(adv.PatchedVersions, ", ")
 
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  adv.VulnerabilityID,
@@ -107,33 +100,4 @@ func (s *Scanner) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.
 	}
 
 	return vulns, nil
-}
-
-// createRootIOFixedVersions creates fixed versions with .root.io suffix
-func (s *Scanner) createRootIOFixedVersions(advisory dbTypes.Advisory) string {
-	if len(advisory.PatchedVersions) != 0 {
-		// Add .root.io suffix to patched versions if not present
-		var fixedVersions []string
-		for _, v := range advisory.PatchedVersions {
-			v = AddVersionSuffix(v)
-			fixedVersions = append(fixedVersions, v)
-		}
-		return strings.Join(lo.Uniq(fixedVersions), ", ")
-	}
-
-	// Extract fixed versions from vulnerable version constraints
-	var fixedVersions []string
-	for _, version := range advisory.VulnerableVersions {
-		for s := range strings.SplitSeq(version, ",") {
-			s = strings.TrimSpace(s)
-			if !strings.HasPrefix(s, "<=") && strings.HasPrefix(s, "<") {
-				s = strings.TrimPrefix(s, "<")
-				s = strings.TrimSpace(s)
-				// Add .root.io suffix to indicate this is a rootio fix
-				s = AddVersionSuffix(s)
-				fixedVersions = append(fixedVersions, s)
-			}
-		}
-	}
-	return strings.Join(lo.Uniq(fixedVersions), ", ")
 }

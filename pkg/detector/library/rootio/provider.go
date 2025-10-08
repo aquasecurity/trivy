@@ -3,15 +3,13 @@ package rootio
 import (
 	"regexp"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var (
-	// rootIOPattern matches generic Root.io version pattern: .root.io
-	rootIOPattern = regexp.MustCompile(`\.root\.io`)
+	rootIOPattern = regexp.MustCompile(`root\.io`)
 )
 
 // DriverInterface defines the interface that library.Driver must satisfy
@@ -23,48 +21,48 @@ type DriverInterface interface {
 // Provider creates a Root.io driver if Root.io packages are detected
 // It returns nil if conditions are not met, which will be interpreted as an empty driver
 func Provider(libType ftypes.LangType, pkgs []ftypes.Package) interface{} {
-	ecosystem, ok := getEcosystem(libType)
+	eco, ok := getEcosystem(libType)
 	if !ok || !isRootIOEnvironment(pkgs) {
 		return nil
 	}
 
-	comparer := getComparerForEcosystem(ecosystem)
-	return NewScanner(ecosystem, comparer)
+	comparer := getComparerForEcosystem(eco)
+	return NewScanner(eco, comparer)
 }
 
 // getEcosystem maps language type to ecosystem
-func getEcosystem(libType ftypes.LangType) (dbTypes.Ecosystem, bool) {
+func getEcosystem(libType ftypes.LangType) (ecosystem.Type, bool) {
 	switch libType {
 	case ftypes.Bundler, ftypes.GemSpec:
-		return vulnerability.RubyGems, true
+		return ecosystem.RubyGems, true
 	case ftypes.RustBinary, ftypes.Cargo:
-		return vulnerability.Cargo, true
+		return ecosystem.Cargo, true
 	case ftypes.Composer, ftypes.ComposerVendor:
-		return vulnerability.Composer, true
+		return ecosystem.Composer, true
 	case ftypes.GoBinary, ftypes.GoModule:
-		return vulnerability.Go, true
+		return ecosystem.Go, true
 	case ftypes.Jar, ftypes.Pom, ftypes.Gradle, ftypes.Sbt:
-		return vulnerability.Maven, true
+		return ecosystem.Maven, true
 	case ftypes.Npm, ftypes.Yarn, ftypes.Pnpm, ftypes.Bun, ftypes.NodePkg, ftypes.JavaScript:
-		return vulnerability.Npm, true
+		return ecosystem.Npm, true
 	case ftypes.NuGet, ftypes.DotNetCore, ftypes.PackagesProps:
-		return vulnerability.NuGet, true
+		return ecosystem.NuGet, true
 	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg, ftypes.Uv:
-		return vulnerability.Pip, true
+		return ecosystem.Pip, true
 	case ftypes.Pub:
-		return vulnerability.Pub, true
+		return ecosystem.Pub, true
 	case ftypes.Hex:
-		return vulnerability.Erlang, true
+		return ecosystem.Erlang, true
 	case ftypes.Conan:
-		return vulnerability.Conan, true
+		return ecosystem.Conan, true
 	case ftypes.Swift:
-		return vulnerability.Swift, true
+		return ecosystem.Swift, true
 	case ftypes.Cocoapods:
-		return vulnerability.Cocoapods, true
+		return ecosystem.Cocoapods, true
 	case ftypes.Bitnami:
-		return vulnerability.Bitnami, true
+		return ecosystem.Bitnami, true
 	case ftypes.K8sUpstream:
-		return vulnerability.Kubernetes, true
+		return ecosystem.Kubernetes, true
 	default:
 		return "", false
 	}
