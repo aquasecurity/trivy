@@ -847,6 +847,7 @@ func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 		CreatedBy:         req.BlobInfo.CreatedBy,
 		OpaqueDirs:        req.BlobInfo.OpaqueDirs,
 		WhiteoutFiles:     req.BlobInfo.WhiteoutFiles,
+		BuildInfo:         ConvertFromRPCBuildInfo(req.BlobInfo.BuildInfo),
 	}
 }
 
@@ -868,6 +869,18 @@ func ConvertToRPCRepository(repo *ftypes.Repository) *common.Repository {
 	return &common.Repository{
 		Family:  string(repo.Family),
 		Release: repo.Release,
+	}
+}
+
+// ConvertFromRPCBuildInfo converts *common.BuildInfo to *ftypes.BuildInfo
+func ConvertFromRPCBuildInfo(buildInfo *common.BuildInfo) *ftypes.BuildInfo {
+	if buildInfo == nil {
+		return nil
+	}
+	return &ftypes.BuildInfo{
+		ContentSets: buildInfo.ContentSets,
+		Nvr:         buildInfo.Nvr,
+		Arch:        buildInfo.Arch,
 	}
 }
 
@@ -960,7 +973,20 @@ func ConvertToRPCPutBlobRequest(diffID string, blobInfo ftypes.BlobInfo) *cache.
 			CreatedBy:         blobInfo.CreatedBy,
 			OpaqueDirs:        blobInfo.OpaqueDirs,
 			WhiteoutFiles:     blobInfo.WhiteoutFiles,
+			BuildInfo:         ConvertToRPCBuildInfo(blobInfo.BuildInfo),
 		},
+	}
+}
+
+// ConvertToRPCBuildInfo converts *ftypes.BuildInfo to *common.BuildInfo
+func ConvertToRPCBuildInfo(buildInfo *ftypes.BuildInfo) *common.BuildInfo {
+	if buildInfo == nil {
+		return nil
+	}
+	return &common.BuildInfo{
+		ContentSets: buildInfo.ContentSets,
+		Nvr:         buildInfo.Nvr,
+		Arch:        buildInfo.Arch,
 	}
 }
 
