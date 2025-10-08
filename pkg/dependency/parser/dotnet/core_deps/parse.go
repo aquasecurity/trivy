@@ -131,5 +131,5 @@ func (p *Parser) isRuntimeLibrary(targetLibs map[string]TargetLib, library strin
 		return true
 	}
 	// Check that `runtime`, `runtimeTarget` and `native` sections are not empty
-	return !(len(lib.Runtime) == 0 && lib.RuntimeTargets == nil && lib.Native == nil)
+	return len(lib.Runtime) != 0 || lib.RuntimeTargets != nil || lib.Native != nil
 }
