@@ -149,7 +149,7 @@ func (Protoc) Breaking() error {
 // Yacc generates parser
 func Yacc() error {
 	mg.Deps(Tool{}.Install) // Install yacc
-	return sh.Run("go", "generate", "./pkg/licensing/expression/...")
+	return sh.Run("go", "generate", "./internal/licensing/expression/...")
 }
 
 type Test mg.Namespace

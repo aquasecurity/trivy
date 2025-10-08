@@ -373,7 +373,7 @@ func TestUserAgents(t *testing.T) {
 }
 
 func localImage(t *testing.T) v1.Image {
-	img, err := tarfile.ImageFromPath("../fanal/test/testdata/alpine-310.tar.gz")
+	img, err := tarfile.ImageFromPath("../../pkg/fanal/test/testdata/alpine-310.tar.gz")
 	require.NoError(t, err)
 	return img
 }

@@ -50,7 +50,7 @@ func fixtureTerraformPlanSnapshots(ctx context.Context) error {
 
 	dirs := []string{
 		"pkg/fanal/artifact/local/testdata/misconfig/terraformplan/snapshots",
-		"pkg/iac/scanners/terraformplan/snapshot/testdata",
+		"internal/iac/scanners/terraformplan/snapshot/testdata",
 	}
 
 	var workingDirs []string

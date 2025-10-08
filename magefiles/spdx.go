@@ -18,7 +18,7 @@ import (
 
 const (
 	exceptionFileName = "exceptions.json"
-	exceptionDir      = "./pkg/licensing/expression"
+	exceptionDir      = "./internal/licensing/expression"
 	exceptionURL      = "https://spdx.org/licenses/exceptions.json"
 )
 
