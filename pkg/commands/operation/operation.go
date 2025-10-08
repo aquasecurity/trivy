@@ -9,7 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/internal/db"
-	"github.com/aquasecurity/trivy/internal/policy"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/internal/vex"
 	"github.com/aquasecurity/trivy/internal/vex/repo"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"

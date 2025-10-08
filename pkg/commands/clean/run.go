@@ -7,7 +7,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/db"
 	"github.com/aquasecurity/trivy/internal/javadb"
-	"github.com/aquasecurity/trivy/internal/policy"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/internal/vex/repo"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/flag"

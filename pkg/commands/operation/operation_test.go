@@ -20,7 +20,7 @@ import (
 	fake "k8s.io/utils/clock/testing"
 
 	"github.com/aquasecurity/trivy/internal/oci"
-	"github.com/aquasecurity/trivy/internal/policy"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 

@@ -9,7 +9,7 @@ import (
 	k8sArtifacts "github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/trivyk8s"
-	"github.com/aquasecurity/trivy/internal/policy"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
