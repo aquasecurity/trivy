@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/aquasecurity/trivy/internal/iac/ignore"
-	"github.com/aquasecurity/trivy/internal/iac/severity"
+	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
