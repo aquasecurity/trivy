@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/internal/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )

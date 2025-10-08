@@ -9,11 +9,11 @@ import (
 	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/internal/clock"
+	"github.com/aquasecurity/trivy/internal/vex"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/vex"
 )
 
 func TestFilter(t *testing.T) {

@@ -33,7 +33,7 @@ func errorsJoin(m dsl.Matcher) {
 
 func mapSet(m dsl.Matcher) {
 	m.Match(`map[$x]struct{}`).
-		Report("use github.com/aquasecurity/trivy/pkg/set.Set instead of map.")
+		Report("use github.com/aquasecurity/trivy/internal/set.Set instead of map.")
 }
 
 // Enforce usage of x/os package for temporary file operations

@@ -51,7 +51,7 @@ func buildLdflags() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("-s -w -X=github.com/aquasecurity/trivy/pkg/version/app.ver=%s", ver), nil
+	return fmt.Sprintf("-s -w -X=github.com/aquasecurity/trivy/internal/version/app.ver=%s", ver), nil
 }
 
 type Tool mg.Namespace
@@ -149,7 +149,7 @@ func (Protoc) Breaking() error {
 // Yacc generates parser
 func Yacc() error {
 	mg.Deps(Tool{}.Install) // Install yacc
-	return sh.Run("go", "generate", "./pkg/licensing/expression/...")
+	return sh.Run("go", "generate", "./internal/licensing/expression/...")
 }
 
 type Test mg.Namespace

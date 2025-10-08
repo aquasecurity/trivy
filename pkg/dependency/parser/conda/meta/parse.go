@@ -5,8 +5,8 @@ import (
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/internal/licensing"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/licensing"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 

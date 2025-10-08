@@ -9,12 +9,12 @@ import (
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/internal/javadb"
+	"github.com/aquasecurity/trivy/internal/parallel"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/javadb"
-	"github.com/aquasecurity/trivy/pkg/parallel"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 

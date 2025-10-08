@@ -17,15 +17,15 @@ import (
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/clock"
-	"github.com/aquasecurity/trivy/pkg/digest"
-	"github.com/aquasecurity/trivy/pkg/licensing"
-	"github.com/aquasecurity/trivy/pkg/licensing/expression"
+	"github.com/aquasecurity/trivy/internal/clock"
+	"github.com/aquasecurity/trivy/internal/digest"
+	"github.com/aquasecurity/trivy/internal/licensing"
+	"github.com/aquasecurity/trivy/internal/licensing/expression"
+	"github.com/aquasecurity/trivy/internal/uuid"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 const (

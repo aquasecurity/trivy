@@ -8,8 +8,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/trivy/pkg/mapfs"
-	"github.com/aquasecurity/trivy/pkg/set"
+	"github.com/aquasecurity/trivy/internal/mapfs"
+	"github.com/aquasecurity/trivy/internal/set"
 )
 
 func Test_FSKey(t *testing.T) {

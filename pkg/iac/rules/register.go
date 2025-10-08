@@ -6,11 +6,11 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy-checks/pkg/specs"
+	"github.com/aquasecurity/trivy/internal/set"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	dftypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	ruleTypes "github.com/aquasecurity/trivy/pkg/iac/types/rules"
-	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 type registry struct {

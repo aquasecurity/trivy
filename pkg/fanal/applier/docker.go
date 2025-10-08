@@ -10,10 +10,10 @@ import (
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 
+	"github.com/aquasecurity/trivy/internal/purl"
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/scan/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"

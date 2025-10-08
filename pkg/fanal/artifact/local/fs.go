@@ -18,17 +18,17 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/internal/digest"
+	"github.com/aquasecurity/trivy/internal/semaphore"
+	"github.com/aquasecurity/trivy/internal/uuid"
 	"github.com/aquasecurity/trivy/pkg/cache"
-	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/semaphore"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
-	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 const artifactVersion = 0

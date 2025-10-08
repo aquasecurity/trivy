@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/version/app"
+	"github.com/aquasecurity/trivy/internal/version/app"
 )
 
 var (

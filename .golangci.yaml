@@ -61,7 +61,7 @@ linters:
               reason: "`aquasecurity/go-version` is designed for our use-cases"
           - github.com/liamg/memoryfs:
               recommendations:
-                - github.com/aquasecurity/trivy/pkg/mapfs
+                - github.com/aquasecurity/trivy/internal/mapfs
     gosec:
       excludes:
         - G101
@@ -162,7 +162,7 @@ linters:
   exclusions:
     generated: lax
     paths:
-      - "pkg/iac/scanners/terraform/parser/funcs" # copies of Terraform functions
+      - "internal/iac/scanners/terraform/parser/funcs" # copies of Terraform functions
     rules:
       - path: ".*_test.go$"
         linters:

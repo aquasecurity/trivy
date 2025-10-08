@@ -13,13 +13,13 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	sbomatt "github.com/aquasecurity/trivy/pkg/attestation/sbom"
+	sbomatt "github.com/aquasecurity/trivy/internal/attestation/sbom"
+	"github.com/aquasecurity/trivy/internal/oci"
+	"github.com/aquasecurity/trivy/internal/remote"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/oci"
-	"github.com/aquasecurity/trivy/pkg/remote"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )

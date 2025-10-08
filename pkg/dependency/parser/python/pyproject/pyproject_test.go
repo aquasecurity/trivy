@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/set"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/pyproject"
-	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 func TestParser_Parse(t *testing.T) {

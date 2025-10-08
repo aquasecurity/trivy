@@ -12,13 +12,13 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/downloader"
+	"github.com/aquasecurity/trivy/internal/downloader"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const (
 	exceptionFileName = "exceptions.json"
-	exceptionDir      = "./pkg/licensing/expression"
+	exceptionDir      = "./internal/licensing/expression"
 	exceptionURL      = "https://spdx.org/licenses/exceptions.json"
 )
 

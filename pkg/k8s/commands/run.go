@@ -11,7 +11,7 @@ import (
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
-	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
+	"github.com/aquasecurity/trivy/pkg/compliance"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	k8sRep "github.com/aquasecurity/trivy/pkg/k8s"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
@@ -94,11 +94,11 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 		for _, rss := range rpt.Resources {
 			scanResults = append(scanResults, rss.Results)
 		}
-		complianceReport, err := cr.BuildComplianceReport(scanResults, r.flagOpts.Compliance)
+		complianceReport, err := compliance.BuildReport(scanResults, r.flagOpts.Compliance)
 		if err != nil {
 			return xerrors.Errorf("compliance report build error: %w", err)
 		}
-		return cr.Write(ctx, complianceReport, cr.Option{
+		return compliance.Write(ctx, complianceReport, compliance.Option{
 			Format: r.flagOpts.Format,
 			Report: r.flagOpts.ReportFormat,
 			Output: output,

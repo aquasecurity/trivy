@@ -10,7 +10,7 @@ import (
 	"github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/internal/clock"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
