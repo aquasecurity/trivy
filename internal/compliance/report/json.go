@@ -6,6 +6,13 @@ import (
 	"io"
 
 	"golang.org/x/xerrors"
+
+	compliance "github.com/aquasecurity/trivy/pkg/compliance/types"
+)
+
+const (
+	allReport     = "all"
+	summaryReport = "summary"
 )
 
 type JSONWriter struct {
@@ -14,7 +21,7 @@ type JSONWriter struct {
 }
 
 // Write writes the results in JSON format
-func (jw JSONWriter) Write(report *ComplianceReport) error {
+func (jw JSONWriter) Write(report *compliance.Report) error {
 	var output []byte
 	var err error
 

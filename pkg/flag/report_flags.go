@@ -12,6 +12,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/internal/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/cache"
+	compliance "github.com/aquasecurity/trivy/pkg/compliance/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -160,7 +161,7 @@ type ReportOptions struct {
 	Output           string
 	OutputPluginArgs []string
 	Severities       []dbTypes.Severity
-	Compliance       spec.ComplianceSpec
+	Compliance       compliance.Spec
 	ShowSuppressed   bool
 	TableModes       []types.TableMode
 }
@@ -287,14 +288,14 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 	return nil
 }
 
-func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
-	if compliance != "" && !slices.Contains(types.SupportedCompliances, compliance) && !strings.HasPrefix(compliance, "@") {
-		return spec.ComplianceSpec{}, xerrors.Errorf("unknown compliance : %v", compliance)
+func loadComplianceTypes(c string) (compliance.Spec, error) {
+	if c != "" && !slices.Contains(types.SupportedCompliances, c) && !strings.HasPrefix(c, "@") {
+		return compliance.Spec{}, xerrors.Errorf("unknown compliance : %v", c)
 	}
 
-	cs, err := spec.GetComplianceSpec(compliance, cache.DefaultDir())
+	cs, err := spec.GetComplianceSpec(c, cache.DefaultDir())
 	if err != nil {
-		return spec.ComplianceSpec{}, xerrors.Errorf("spec loading from file system error: %w", err)
+		return compliance.Spec{}, xerrors.Errorf("spec loading from file system error: %w", err)
 	}
 
 	return cs, nil

@@ -9,13 +9,12 @@ import (
 
 	k8sArtifacts "github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
-	report2 "github.com/aquasecurity/trivy/internal/compliance/report"
 	k8sRep "github.com/aquasecurity/trivy/internal/k8s"
 	"github.com/aquasecurity/trivy/internal/k8s/report"
 	"github.com/aquasecurity/trivy/internal/k8s/scanner"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
-	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
+	"github.com/aquasecurity/trivy/pkg/compliance"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -95,11 +94,11 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 		for _, rss := range rpt.Resources {
 			scanResults = append(scanResults, rss.Results)
 		}
-		complianceReport, err := report2.BuildComplianceReport(scanResults, r.flagOpts.Compliance)
+		complianceReport, err := compliance.BuildReport(scanResults, r.flagOpts.Compliance)
 		if err != nil {
 			return xerrors.Errorf("compliance report build error: %w", err)
 		}
-		return report2.Write(ctx, complianceReport, cr.Option{
+		return compliance.Write(ctx, complianceReport, compliance.Option{
 			Format: r.flagOpts.Format,
 			Report: r.flagOpts.ReportFormat,
 			Output: output,

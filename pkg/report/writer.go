@@ -8,8 +8,7 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
-	report2 "github.com/aquasecurity/trivy/internal/compliance/report"
-	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
+	"github.com/aquasecurity/trivy/pkg/compliance"
 	"github.com/aquasecurity/trivy/pkg/extension"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -122,11 +121,11 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 }
 
 func complianceWrite(ctx context.Context, report types.Report, opt flag.Options, output io.Writer) error {
-	complianceReport, err := report2.BuildComplianceReport([]types.Results{report.Results}, opt.Compliance)
+	complianceReport, err := compliance.BuildReport([]types.Results{report.Results}, opt.Compliance)
 	if err != nil {
 		return xerrors.Errorf("compliance report build error: %w", err)
 	}
-	return report2.Write(ctx, complianceReport, cr.Option{
+	return compliance.Write(ctx, complianceReport, compliance.Option{
 		Format:     opt.Format,
 		Report:     opt.ReportFormat,
 		Output:     output,

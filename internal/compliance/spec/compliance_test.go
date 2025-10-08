@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/compliance/spec"
+	compliance "github.com/aquasecurity/trivy/pkg/compliance/types"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -122,7 +123,7 @@ func TestComplianceSpec_Scanners(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cs := &spec.ComplianceSpec{
+			cs := &compliance.Spec{
 				Spec: tt.spec,
 			}
 			got, err := cs.Scanners()
@@ -231,7 +232,7 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cs := &spec.ComplianceSpec{
+			cs := &compliance.Spec{
 				Spec: tt.spec,
 			}
 			got := cs.CheckIDs()
@@ -245,7 +246,7 @@ func TestComplianceSpec_LoadFromDiskBundle(t *testing.T) {
 	t.Run("load user specified spec from disk", func(t *testing.T) {
 		cs, err := spec.GetComplianceSpec(filepath.Join("@testdata", "testcache", "policy", "content", "specs", "compliance", "testspec.yaml"), filepath.Join("testdata", "testcache"))
 		require.NoError(t, err)
-		assert.Equal(t, spec.ComplianceSpec{
+		assert.Equal(t, compliance.Spec{
 			Spec: iacTypes.Spec{
 				ID:          "test-spec-1.2",
 				Title:       "Test Spec",

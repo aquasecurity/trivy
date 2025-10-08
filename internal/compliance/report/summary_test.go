@@ -6,8 +6,8 @@ import (
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 
-	report2 "github.com/aquasecurity/trivy/internal/compliance/report"
-	"github.com/aquasecurity/trivy/pkg/compliance/report"
+	"github.com/aquasecurity/trivy/internal/compliance/report"
+	compliance "github.com/aquasecurity/trivy/pkg/compliance/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -15,17 +15,17 @@ func TestBuildSummary(t *testing.T) {
 	tests := []struct {
 		name       string
 		reportType string
-		input      *report.ComplianceReport
-		want       *report.SummaryReport
+		input      *compliance.Report
+		want       *compliance.SummaryReport
 	}{
 		{
 			name:       "build report summary config only",
 			reportType: "summary",
-			input: &report.ComplianceReport{
+			input: &compliance.Report{
 				ID:               "1234",
 				Title:            "NSA",
 				RelatedResources: []string{"https://example.com"},
-				Results: []*report.ControlCheckResult{
+				Results: []*compliance.ControlCheckResult{
 					{
 						ID:       "1.0",
 						Name:     "Non-root containers",
@@ -58,11 +58,11 @@ func TestBuildSummary(t *testing.T) {
 					},
 				},
 			},
-			want: &report.SummaryReport{
+			want: &compliance.SummaryReport{
 				SchemaVersion: 0,
 				ID:            "1234",
 				Title:         "NSA",
-				SummaryControls: []report.ControlCheckSummary{
+				SummaryControls: []compliance.ControlCheckSummary{
 					{
 						ID:        "1.0",
 						Name:      "Non-root containers",
@@ -81,11 +81,11 @@ func TestBuildSummary(t *testing.T) {
 		{
 			name:       "build full json output report",
 			reportType: "all",
-			input: &report.ComplianceReport{
+			input: &compliance.Report{
 				ID:               "1234",
 				Title:            "NSA",
 				RelatedResources: []string{"https://example.com"},
-				Results: []*report.ControlCheckResult{
+				Results: []*compliance.ControlCheckResult{
 					{
 						ID:       "1.0",
 						Name:     "Non-root containers",
@@ -131,11 +131,11 @@ func TestBuildSummary(t *testing.T) {
 					},
 				},
 			},
-			want: &report.SummaryReport{
+			want: &compliance.SummaryReport{
 				SchemaVersion: 0,
 				ID:            "1234",
 				Title:         "NSA",
-				SummaryControls: []report.ControlCheckSummary{
+				SummaryControls: []compliance.ControlCheckSummary{
 					{
 						ID:        "1.0",
 						Name:      "Non-root containers",
@@ -161,7 +161,7 @@ func TestBuildSummary(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := report2.BuildSummary(tt.input)
+			got := report.BuildSummary(tt.input)
 			assert.Equal(t, tt.want, got)
 		})
 	}

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/internal/compliance/spec"
+	compliance "github.com/aquasecurity/trivy/pkg/compliance/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -141,7 +141,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				severities: dbTypes.SeverityLow.String(),
 			},
 			want: flag.ReportOptions{
-				Compliance: spec.ComplianceSpec{
+				Compliance: compliance.Spec{
 					Spec: iacTypes.Spec{
 						ID:          "0001",
 						Title:       "my-custom-spec",

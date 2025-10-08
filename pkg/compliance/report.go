@@ -4,8 +4,9 @@ import (
 	"io"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/internal/compliance/report"
 	"github.com/aquasecurity/trivy/internal/compliance/spec"
-	ctypes "github.com/aquasecurity/trivy/pkg/compliance/types"
+	compliance "github.com/aquasecurity/trivy/pkg/compliance/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -17,10 +18,14 @@ type Option struct {
 	ColumnHeading []string
 }
 
-func BuildReport(scanResults []types.Results, cs spec.ComplianceSpec) (*ctypes.ComplianceReport, error) {
+func BuildReport(scanResults []types.Results, cs compliance.Spec) (*compliance.Report, error) {
 	// aggregate checks by ID
 	aggregateChecksByID := spec.AggregateAllChecksBySpecID(scanResults, cs)
 
 	// build compliance report results
-	return buildComplianceReportResults(aggregateChecksByID, cs.Spec), nil
+	return report.BuildComplianceReportResults(aggregateChecksByID, cs.Spec), nil
+}
+
+func BuildSummary(cr *compliance.Report) *compliance.SummaryReport {
+	return report.BuildSummary(cr)
 }

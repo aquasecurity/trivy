@@ -7,6 +7,7 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	compliance "github.com/aquasecurity/trivy/pkg/compliance/types"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -26,7 +27,7 @@ const (
 	IssuesColumn      = "Issues"
 )
 
-func (tw TableWriter) Write(ctx context.Context, report *ComplianceReport) error {
+func (tw TableWriter) Write(ctx context.Context, report *compliance.Report) error {
 	switch tw.Report {
 	case allReport:
 		t := pkgReport.NewWriter(pkgReport.Options{

@@ -9,17 +9,17 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	report2 "github.com/aquasecurity/trivy/internal/compliance/report"
-	"github.com/aquasecurity/trivy/pkg/compliance/report"
+	"github.com/aquasecurity/trivy/internal/compliance/report"
+	compliance "github.com/aquasecurity/trivy/pkg/compliance/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestJSONWriter_Write(t *testing.T) {
-	input := &report.ComplianceReport{
+	input := &compliance.Report{
 		ID:               "1234",
 		Title:            "NSA",
 		RelatedResources: []string{"https://example.com"},
-		Results: []*report.ControlCheckResult{
+		Results: []*compliance.ControlCheckResult{
 			{
 				ID:       "1.0",
 				Name:     "Non-root containers",
@@ -56,7 +56,7 @@ func TestJSONWriter_Write(t *testing.T) {
 	tests := []struct {
 		name       string
 		reportType string
-		input      *report.ComplianceReport
+		input      *compliance.Report
 		want       string
 	}{
 		{
@@ -76,7 +76,7 @@ func TestJSONWriter_Write(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := new(bytes.Buffer)
-			tr := report2.JSONWriter{
+			tr := report.JSONWriter{
 				Report: tt.reportType,
 				Output: buf,
 			}

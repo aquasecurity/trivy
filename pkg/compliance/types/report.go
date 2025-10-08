@@ -5,14 +5,18 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// ComplianceReport represents a kubernetes scan report
-type ComplianceReport struct {
+// Report represents a kubernetes scan report
+type Report struct {
 	ID               string
 	Title            string
 	Description      string
 	Version          string
 	RelatedResources []string
 	Results          []*ControlCheckResult
+}
+
+func (r Report) Empty() bool {
+	return len(r.Results) == 0
 }
 
 type ControlCheckResult struct {

@@ -10,12 +10,13 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/table"
+	compliance "github.com/aquasecurity/trivy/pkg/compliance/types"
 )
 
-func BuildSummary(cr *ComplianceReport) *SummaryReport {
-	var ccma []ControlCheckSummary
+func BuildSummary(cr *compliance.Report) *compliance.SummaryReport {
+	var ccma []compliance.ControlCheckSummary
 	for _, control := range cr.Results {
-		ccm := ControlCheckSummary{
+		ccm := compliance.ControlCheckSummary{
 			ID:       control.ID,
 			Name:     control.Name,
 			Severity: control.Severity,
@@ -25,7 +26,7 @@ func BuildSummary(cr *ComplianceReport) *SummaryReport {
 		}
 		ccma = append(ccma, ccm)
 	}
-	return &SummaryReport{
+	return &compliance.SummaryReport{
 		ID:              cr.ID,
 		Title:           cr.Title,
 		SummaryControls: ccma,
@@ -43,7 +44,7 @@ func NewSummaryWriter(output io.Writer) SummaryWriter {
 }
 
 // Write writes the results in a summarized table format
-func (s SummaryWriter) Write(report *ComplianceReport) error {
+func (s SummaryWriter) Write(report *compliance.Report) error {
 	if _, err := fmt.Fprintln(s.Output); err != nil {
 		return xerrors.Errorf("failed to write summary report: %w", err)
 	}
@@ -76,7 +77,7 @@ func (s SummaryWriter) columns() []string {
 	}
 }
 
-func (s SummaryWriter) generateSummary(summaryControls ControlCheckSummary) []string {
+func (s SummaryWriter) generateSummary(summaryControls compliance.ControlCheckSummary) []string {
 	// "-" means manual checks
 	numOfIssues := "-"
 	status := "-"

@@ -3,6 +3,7 @@ package spec
 import (
 	"slices"
 
+	compliance "github.com/aquasecurity/trivy/pkg/compliance/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -54,7 +55,7 @@ func misconfigSummary(misconfig types.DetectedMisconfiguration) *types.MisconfSu
 }
 
 // AggregateAllChecksBySpecID aggregates all scan results and map it to spec ids
-func AggregateAllChecksBySpecID(multiResults []types.Results, cs ComplianceSpec) map[string]types.Results {
+func AggregateAllChecksBySpecID(multiResults []types.Results, cs compliance.Spec) map[string]types.Results {
 	checkIDs := cs.CheckIDs()
 	complianceArr := make(map[string]types.Results, 0)
 	for _, resResult := range multiResults {

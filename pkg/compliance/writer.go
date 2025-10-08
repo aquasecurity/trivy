@@ -1,34 +1,32 @@
 package compliance
 
 import (
+	"context"
+
 	"golang.org/x/xerrors"
 
+	creport "github.com/aquasecurity/trivy/internal/compliance/report"
 	ctypes "github.com/aquasecurity/trivy/pkg/compliance/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-const (
-	allReport     = "all"
-	summaryReport = "summary"
-)
-
 // Writer defines the result write operation
 type Writer interface {
-	Write(ctypes.ComplianceReport) error
+	Write(ctypes.Report) error
 }
 
 // Write writes the results in the given format
-func Write(ctx context.Context, report *ctypes.ComplianceReport, option Option) error {
+func Write(ctx context.Context, report *ctypes.Report, option Option) error {
 	switch option.Format {
 	case types.FormatJSON:
-		jwriter := JSONWriter{
+		jwriter := creport.JSONWriter{
 			Output: option.Output,
 			Report: option.Report,
 		}
 		return jwriter.Write(report)
 	case types.FormatTable:
-		if !report.empty() {
-			complianceWriter := &TableWriter{
+		if !report.Empty() {
+			complianceWriter := &creport.TableWriter{
 				Output:     option.Output,
 				Report:     option.Report,
 				Severities: option.Severities,

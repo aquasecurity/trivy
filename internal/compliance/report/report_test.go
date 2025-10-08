@@ -8,9 +8,8 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	report2 "github.com/aquasecurity/trivy/internal/compliance/report"
-	"github.com/aquasecurity/trivy/internal/compliance/spec"
-	"github.com/aquasecurity/trivy/pkg/compliance/report"
+	cm "github.com/aquasecurity/trivy/pkg/compliance"
+	compliance "github.com/aquasecurity/trivy/pkg/compliance/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -19,12 +18,12 @@ import (
 func TestBuildComplianceReport(t *testing.T) {
 	type args struct {
 		scanResults []types.Results
-		cs          spec.ComplianceSpec
+		cs          compliance.Spec
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    *report.ComplianceReport
+		want    *compliance.Report
 		wantErr assert.ErrorAssertionFunc
 	}{
 		{
@@ -97,7 +96,7 @@ func TestBuildComplianceReport(t *testing.T) {
 						},
 					},
 				},
-				cs: spec.ComplianceSpec{
+				cs: compliance.Spec{
 					Spec: iacTypes.Spec{
 						ID:          "1234",
 						Title:       "NSA",
@@ -138,7 +137,7 @@ func TestBuildComplianceReport(t *testing.T) {
 					},
 				},
 			},
-			want: &report.ComplianceReport{
+			want: &compliance.Report{
 				ID:          "1234",
 				Title:       "NSA",
 				Description: "National Security Agency - Kubernetes Hardening Guidance",
@@ -146,7 +145,7 @@ func TestBuildComplianceReport(t *testing.T) {
 				RelatedResources: []string{
 					"https://example.com",
 				},
-				Results: []*report.ControlCheckResult{
+				Results: []*compliance.ControlCheckResult{
 					{
 						ID:          "1.0",
 						Name:        "Non-root containers",
@@ -232,7 +231,7 @@ func TestBuildComplianceReport(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := report2.BuildComplianceReport(tt.args.scanResults, tt.args.cs)
+			got, err := cm.BuildReport(tt.args.scanResults, tt.args.cs)
 			if !tt.wantErr(t, err, fmt.Sprintf("BuildComplianceReport(%v, %v)", tt.args.scanResults, tt.args.cs)) {
 				return
 			}
