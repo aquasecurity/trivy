@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/tftestutil"
-	"github.com/aquasecurity/trivy/internal/iac/providers/nifcloud/sslcertificate"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/sslcertificate"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )

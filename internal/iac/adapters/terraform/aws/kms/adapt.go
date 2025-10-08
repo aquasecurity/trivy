@@ -1,7 +1,7 @@
 package kms
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/kms"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/kms"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 

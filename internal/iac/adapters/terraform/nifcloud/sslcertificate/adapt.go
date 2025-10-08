@@ -1,7 +1,7 @@
 package sslcertificate
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/nifcloud/sslcertificate"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/sslcertificate"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 

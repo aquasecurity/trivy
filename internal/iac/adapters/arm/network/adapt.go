@@ -2,7 +2,7 @@ package network
 
 import (
 	"github.com/aquasecurity/trivy/internal/iac/adapters/common"
-	"github.com/aquasecurity/trivy/internal/iac/providers/azure/network"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/azure"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )

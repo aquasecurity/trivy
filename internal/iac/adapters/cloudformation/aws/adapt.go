@@ -32,7 +32,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/iac/adapters/cloudformation/aws/sqs"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/cloudformation/aws/ssm"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/cloudformation/aws/workspaces"
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
 )
 

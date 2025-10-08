@@ -3,7 +3,7 @@ package dynamodb
 import (
 	"github.com/samber/lo"
 
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/dynamodb"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/dynamodb"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
 )
 

@@ -7,7 +7,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/nifcloud/network"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/nifcloud/rdb"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/nifcloud/sslcertificate"
-	"github.com/aquasecurity/trivy/internal/iac/providers/nifcloud"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 

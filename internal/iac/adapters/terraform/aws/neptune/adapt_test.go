@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/tftestutil"
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/neptune"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/neptune"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )

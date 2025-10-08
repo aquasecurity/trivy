@@ -3,7 +3,7 @@ package kms
 import (
 	"strconv"
 
-	"github.com/aquasecurity/trivy/internal/iac/providers/google/kms"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google/kms"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )

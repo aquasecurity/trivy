@@ -8,8 +8,9 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/internal/compliance/report"
+	report2 "github.com/aquasecurity/trivy/internal/compliance/report"
 	"github.com/aquasecurity/trivy/internal/compliance/spec"
+	"github.com/aquasecurity/trivy/pkg/compliance/report"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -231,7 +232,7 @@ func TestBuildComplianceReport(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := report.BuildComplianceReport(tt.args.scanResults, tt.args.cs)
+			got, err := report2.BuildComplianceReport(tt.args.scanResults, tt.args.cs)
 			if !tt.wantErr(t, err, fmt.Sprintf("BuildComplianceReport(%v, %v)", tt.args.scanResults, tt.args.cs)) {
 				return
 			}

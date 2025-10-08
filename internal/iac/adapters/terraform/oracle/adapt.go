@@ -1,7 +1,7 @@
 package oracle
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/oracle"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/oracle"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 

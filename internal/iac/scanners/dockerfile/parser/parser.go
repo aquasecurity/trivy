@@ -9,7 +9,7 @@ import (
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
 
-	"github.com/aquasecurity/trivy/internal/iac/providers/dockerfile"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/dockerfile"
 )
 
 func Parse(_ context.Context, r io.Reader, path string) (any, error) {

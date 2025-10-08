@@ -1,7 +1,7 @@
 package rdb
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/nifcloud/rdb"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/rdb"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )

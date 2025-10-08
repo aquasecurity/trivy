@@ -1,7 +1,7 @@
 package provider
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )

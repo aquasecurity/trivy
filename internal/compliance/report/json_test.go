@@ -9,7 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/internal/compliance/report"
+	report2 "github.com/aquasecurity/trivy/internal/compliance/report"
+	"github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -75,7 +76,7 @@ func TestJSONWriter_Write(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := new(bytes.Buffer)
-			tr := report.JSONWriter{
+			tr := report2.JSONWriter{
 				Report: tt.reportType,
 				Output: buf,
 			}

@@ -2,7 +2,7 @@ package s3
 
 import (
 	iamAdapter "github.com/aquasecurity/trivy/internal/iac/adapters/terraform/aws/iam"
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

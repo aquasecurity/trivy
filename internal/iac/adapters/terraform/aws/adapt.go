@@ -34,7 +34,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/aws/sqs"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/aws/ssm"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/aws/workspaces"
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 

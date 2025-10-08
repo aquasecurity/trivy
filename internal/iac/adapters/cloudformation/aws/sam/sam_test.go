@@ -5,8 +5,8 @@ import (
 
 	"github.com/aquasecurity/iamgo"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/cloudformation/testutil"
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/iam"
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/sam"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sam"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

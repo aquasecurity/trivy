@@ -1,7 +1,7 @@
 package securitycenter
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/azure/securitycenter"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/securitycenter"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 

@@ -3,7 +3,7 @@ package sql
 import (
 	"strconv"
 
-	"github.com/aquasecurity/trivy/internal/iac/providers/google/sql"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google/sql"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )

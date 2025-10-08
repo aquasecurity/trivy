@@ -1,7 +1,7 @@
 package scan
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers"
+	"github.com/aquasecurity/trivy/pkg/iac/providers"
 	"github.com/aquasecurity/trivy/internal/iac/severity"
 )
 

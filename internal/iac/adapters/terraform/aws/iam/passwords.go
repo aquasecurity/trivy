@@ -3,7 +3,7 @@ package iam
 import (
 	"math"
 
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )

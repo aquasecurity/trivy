@@ -2,7 +2,7 @@ package storage
 
 import (
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/google/iam"
-	iamTypes "github.com/aquasecurity/trivy/internal/iac/providers/google/iam"
+	iamTypes "github.com/aquasecurity/trivy/pkg/iac/providers/google/iam"
 )
 
 type parentedBinding struct {

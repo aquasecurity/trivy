@@ -1,7 +1,7 @@
 package msk
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/msk"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/msk"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )

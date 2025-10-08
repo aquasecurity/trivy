@@ -1,7 +1,7 @@
 package lambda
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/lambda"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/lambda"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )

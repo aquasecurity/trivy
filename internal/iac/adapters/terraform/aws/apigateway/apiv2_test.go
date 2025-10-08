@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/tftestutil"
-	v2 "github.com/aquasecurity/trivy/internal/iac/providers/aws/apigateway/v2"
+	v2 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v2"
 	"github.com/aquasecurity/trivy/internal/testutil"
 )
 

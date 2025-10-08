@@ -1,7 +1,7 @@
 package elasticache
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/elasticache"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/elasticache"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
 )
 

@@ -245,26 +245,28 @@ func TestComplianceSpec_LoadFromDiskBundle(t *testing.T) {
 	t.Run("load user specified spec from disk", func(t *testing.T) {
 		cs, err := spec.GetComplianceSpec(filepath.Join("@testdata", "testcache", "policy", "content", "specs", "compliance", "testspec.yaml"), filepath.Join("testdata", "testcache"))
 		require.NoError(t, err)
-		assert.Equal(t, spec.ComplianceSpec{Spec: iacTypes.Spec{
-			ID:          "test-spec-1.2",
-			Title:       "Test Spec",
-			Description: "This is a test spec",
-			RelatedResources: []string{
-				"https://www.google.ca",
-			},
-			Version: "1.2",
-			Controls: []iacTypes.Control{
-				{
-					Name:        "moar-testing",
-					Description: "Test needs foo bar baz",
-					ID:          "1.1",
-					Checks: []iacTypes.SpecCheck{
-						{ID: "AVD-TEST-1234"},
+		assert.Equal(t, spec.ComplianceSpec{
+			Spec: iacTypes.Spec{
+				ID:          "test-spec-1.2",
+				Title:       "Test Spec",
+				Description: "This is a test spec",
+				RelatedResources: []string{
+					"https://www.google.ca",
+				},
+				Version: "1.2",
+				Controls: []iacTypes.Control{
+					{
+						Name:        "moar-testing",
+						Description: "Test needs foo bar baz",
+						ID:          "1.1",
+						Checks: []iacTypes.SpecCheck{
+							{ID: "AVD-TEST-1234"},
+						},
+						Severity: "LOW",
 					},
-					Severity: "LOW",
 				},
 			},
-		}}, cs)
+		}, cs)
 	})
 
 	t.Run("load user specified spec from disk fails", func(t *testing.T) {

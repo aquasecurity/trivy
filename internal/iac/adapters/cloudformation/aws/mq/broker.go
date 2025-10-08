@@ -1,7 +1,7 @@
 package mq
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/mq"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/mq"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )

@@ -1,7 +1,7 @@
 package container
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/azure/container"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/container"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/azure"
 )
 

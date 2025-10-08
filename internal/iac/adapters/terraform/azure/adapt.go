@@ -14,7 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/azure/securitycenter"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/azure/storage"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/azure/synapse"
-	"github.com/aquasecurity/trivy/internal/iac/providers/azure"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 

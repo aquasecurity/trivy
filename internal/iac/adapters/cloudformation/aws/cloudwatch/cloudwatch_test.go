@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/trivy/internal/iac/adapters/cloudformation/testutil"
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/cloudwatch"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudwatch"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

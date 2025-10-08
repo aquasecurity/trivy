@@ -11,7 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/nifcloud"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/openstack"
 	"github.com/aquasecurity/trivy/internal/iac/adapters/terraform/oracle"
-	"github.com/aquasecurity/trivy/internal/iac/state"
+	"github.com/aquasecurity/trivy/pkg/iac/state"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 

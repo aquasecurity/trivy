@@ -1,7 +1,7 @@
 package rds
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/rds"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/rds"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )

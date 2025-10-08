@@ -1,7 +1,7 @@
 package s3
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/s3"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
 )
 

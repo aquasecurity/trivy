@@ -1,7 +1,7 @@
 package redshift
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/redshift"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/redshift"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )

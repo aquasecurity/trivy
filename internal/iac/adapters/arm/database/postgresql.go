@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aquasecurity/trivy/internal/iac/providers/azure/database"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/database"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/azure"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )

@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/aquasecurity/iamgo"
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/ecr"
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ecr"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )

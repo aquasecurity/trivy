@@ -1,7 +1,7 @@
 package bigquery
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/google/bigquery"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google/bigquery"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 

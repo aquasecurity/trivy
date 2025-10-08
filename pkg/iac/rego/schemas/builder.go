@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/aquasecurity/trivy/internal/iac/state"
+	"github.com/aquasecurity/trivy/pkg/iac/state"
 	"github.com/aquasecurity/trivy/pkg/iac/rego/convert"
 )
 

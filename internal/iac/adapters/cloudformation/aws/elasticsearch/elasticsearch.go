@@ -1,7 +1,7 @@
 package elasticsearch
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/elasticsearch"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/elasticsearch"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
 )
 

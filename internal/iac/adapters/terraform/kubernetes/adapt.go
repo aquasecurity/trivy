@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/aquasecurity/trivy/internal/iac/providers/kubernetes"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/kubernetes"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 

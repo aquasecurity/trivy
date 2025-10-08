@@ -1,7 +1,7 @@
 package dns
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/nifcloud/dns"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/dns"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 

@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/trivy/internal/iac/adapters/arm/adaptertest"
-	"github.com/aquasecurity/trivy/internal/iac/providers/azure/authorization"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/authorization"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 

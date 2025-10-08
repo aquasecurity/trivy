@@ -1,7 +1,7 @@
 package athena
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/athena"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/athena"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
 )
 

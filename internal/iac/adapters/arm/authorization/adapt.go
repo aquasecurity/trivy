@@ -1,7 +1,7 @@
 package authorization
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/azure/authorization"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/authorization"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/azure"
 )
 

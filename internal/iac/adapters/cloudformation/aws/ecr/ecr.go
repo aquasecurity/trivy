@@ -1,7 +1,7 @@
 package ecr
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/aws/ecr"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ecr"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
 )
 

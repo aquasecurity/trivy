@@ -1,7 +1,7 @@
 package openstack
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/openstack"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/openstack"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 

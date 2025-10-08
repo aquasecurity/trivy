@@ -1,7 +1,7 @@
 package dns
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/google/dns"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google/dns"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )

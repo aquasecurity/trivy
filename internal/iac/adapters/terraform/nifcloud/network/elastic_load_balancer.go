@@ -1,7 +1,7 @@
 package network
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/nifcloud/network"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/network"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 

@@ -1,7 +1,7 @@
 package compute
 
 import (
-	"github.com/aquasecurity/trivy/internal/iac/providers/digitalocean/compute"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/digitalocean/compute"
 	"github.com/aquasecurity/trivy/internal/iac/terraform"
 )
 
