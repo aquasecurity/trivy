@@ -665,13 +665,18 @@ func createCycloneDXBOMWithSpringComponent() *core.BOM {
 	bom := core.NewBOM(core.Options{})
 	bom.SerialNumber = "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79"
 	bom.Version = 1
+	pkgIdentifier := ftypes.PkgIdentifier{
+		// Components got from scanned SBOM files don't have UID
+		BOMRef: springPackage.Identifier.BOMRef,
+		PURL:   springPackage.Identifier.PURL,
+	}
 	// Add the spring component to match vuln1's BOM-Ref
 	springComponent := &core.Component{
 		Type:          core.TypeLibrary,
 		Name:          springPackage.Identifier.PURL.Name,
 		Group:         springPackage.Identifier.PURL.Namespace,
 		Version:       springPackage.Version,
-		PkgIdentifier: springPackage.Identifier,
+		PkgIdentifier: pkgIdentifier,
 	}
 	bom.AddComponent(springComponent)
 	return bom
