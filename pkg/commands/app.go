@@ -13,7 +13,7 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
-	k8scommands "github.com/aquasecurity/trivy/internal/k8s/commands"
+	k8scommands "github.com/aquasecurity/trivy/pkg/k8s/commands"
 	"github.com/aquasecurity/trivy/internal/version"
 	"github.com/aquasecurity/trivy/internal/version/app"
 	vexrepo "github.com/aquasecurity/trivy/internal/vex/repo"

@@ -9,9 +9,9 @@ import (
 
 	k8sArtifacts "github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
-	k8sRep "github.com/aquasecurity/trivy/internal/k8s"
-	"github.com/aquasecurity/trivy/internal/k8s/report"
-	"github.com/aquasecurity/trivy/internal/k8s/scanner"
+	k8sRep "github.com/aquasecurity/trivy/pkg/k8s"
+	"github.com/aquasecurity/trivy/pkg/k8s/report"
+	"github.com/aquasecurity/trivy/pkg/k8s/scanner"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/compliance"
