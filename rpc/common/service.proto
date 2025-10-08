@@ -69,6 +69,12 @@ message Location {
   int32 end_line = 2;
 }
 
+message BuildInfo {
+  repeated string content_sets = 1;
+  string nvr = 2;
+  string arch = 3;
+}
+
 message Misconfiguration {
   string file_type = 1;
   string file_path = 2;
