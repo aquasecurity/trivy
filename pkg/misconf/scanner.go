@@ -22,7 +22,7 @@ import (
 	cfparser "github.com/aquasecurity/trivy/internal/iac/scanners/cloudformation/parser"
 	dfscanner "github.com/aquasecurity/trivy/internal/iac/scanners/dockerfile"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/helm"
-	k8sscanner "github.com/aquasecurity/trivy/internal/iac/scanners/kubernetes"
+	k8sscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes"
 	"github.com/aquasecurity/trivy/internal/iac/scanners/terraform"
 	tfprawscanner "github.com/aquasecurity/trivy/internal/iac/scanners/terraformplan/snapshot"
 	tfpjsonscanner "github.com/aquasecurity/trivy/internal/iac/scanners/terraformplan/tfjson"

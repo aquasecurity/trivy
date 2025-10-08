@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy/internal/iac/scanners/kubernetes/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes/parser"
 )
 
 func TestJsonManifestToRego(t *testing.T) {

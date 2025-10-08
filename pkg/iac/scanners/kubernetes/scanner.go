@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 
-	"github.com/aquasecurity/trivy/internal/iac/scanners/kubernetes/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/generic"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
