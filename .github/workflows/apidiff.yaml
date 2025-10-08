@@ -22,8 +22,9 @@ jobs:
     steps:
       # Check if PR has conflicts. When conflicts exist, the merge commit becomes
       # frozen at an old state and apidiff cannot run correctly.
+      # Note: mergeable can be true/false/null (when status is being computed)
       - name: Check for merge conflicts
-        if: ${{ github.event.pull_request.mergeable == false }}
+        if: ${{ github.event.pull_request.mergeable != true }}
         run: |
           echo "::error::This PR has merge conflicts. Please resolve conflicts before running apidiff."
           exit 1
