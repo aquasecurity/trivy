@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 	"text/template"
+
+	"github.com/samber/lo"
 )
 
 type PlanReference struct {
@@ -15,10 +17,11 @@ type PlanBlock struct {
 	Type       string
 	Name       string
 	BlockType  string
-	Blocks     map[string]map[string]any
+	Blocks     []PlanBlock
 	Attributes map[string]any
 }
 
+// TODO: unused
 func NewPlanBlock(blockType, resourceType, resourceName string) *PlanBlock {
 	if blockType == "managed" {
 		blockType = "resource"
@@ -28,32 +31,26 @@ func NewPlanBlock(blockType, resourceType, resourceName string) *PlanBlock {
 		Type:       resourceType,
 		Name:       resourceName,
 		BlockType:  blockType,
-		Blocks:     make(map[string]map[string]any),
+		Blocks:     []PlanBlock{},
 		Attributes: make(map[string]any),
 	}
 }
 
 func (rb *PlanBlock) HasAttribute(attribute string) bool {
-	for k := range rb.Attributes {
-		if k == attribute {
-			return true
-		}
-	}
-	return false
+	_, exists := rb.Attributes[attribute]
+	return exists
 }
 
 func (rb *PlanBlock) ToHCL() string {
+	tmpl := template.New("resource").Funcs(template.FuncMap{
+		"RenderValue": renderTemplateValue,
+	})
 
-	resourceTmpl, err := template.New("resource").Funcs(template.FuncMap{
-		"RenderValue":     renderTemplateValue,
-		"RenderPrimitive": renderPrimitive,
-	}).Parse(resourceTemplate)
-	if err != nil {
-		panic(err)
-	}
+	tmpl = lo.Must(tmpl.Parse(resourceTemplate))
+	tmpl = lo.Must(tmpl.Parse(blocksTemplate))
 
 	var res bytes.Buffer
-	if err := resourceTmpl.Execute(&res, map[string]any{
+	if err := tmpl.Execute(&res, map[string]any{
 		"BlockType":  rb.BlockType,
 		"Type":       rb.Type,
 		"Name":       rb.Name,
@@ -66,11 +63,28 @@ func (rb *PlanBlock) ToHCL() string {
 }
 
 var resourceTemplate = `{{ .BlockType }} "{{ .Type }}" "{{ .Name }}" {
-	{{ range $name, $value := .Attributes }}{{ if $value }}{{ $name }} {{ RenderValue $value }}
-	{{end}}{{ end }}{{  range $name, $block := .Blocks }}{{ $name }} {
-	{{ range $name, $value := $block }}{{ if $value }}{{ $name }} {{ RenderValue $value }}
-	{{end}}{{ end }}}
-{{end}}}`
+{{- range $name, $value := .Attributes }}
+  {{- if $value }}
+  {{ $name }} {{ RenderValue $value }}
+  {{- end }}
+{{- end }}
+
+{{- template "renderBlocks" .Blocks }}
+}`
+
+var blocksTemplate = `{{ define "renderBlocks" }}
+{{- range . }}
+{{ .Name }} {
+{{- range $name, $value := .Attributes }}
+  {{- if $value }}
+  {{ $name }} {{ RenderValue $value }}
+  {{- end }}
+{{- end }}
+
+{{- template "renderBlocks" .Blocks }}
+}
+{{- end }}
+{{- end }}`
 
 func renderTemplateValue(val any) string {
 	switch t := val.(type) {
