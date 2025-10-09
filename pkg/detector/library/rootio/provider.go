@@ -12,22 +12,19 @@ var (
 	rootIOPattern = regexp.MustCompile(`root\.io`)
 )
 
-// DriverInterface defines the interface that library.Driver must satisfy
-type DriverInterface interface {
-	Type() string
-	DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error)
-}
-
-// Provider creates a Root.io driver if Root.io packages are detected
-// It returns nil if conditions are not met, which will be interpreted as an empty driver
-func Provider(libType ftypes.LangType, pkgs []ftypes.Package) interface{} {
+// Provider creates Root.io driver functions if Root.io packages are detected
+// It returns nil functions if conditions are not met
+func Provider(libType ftypes.LangType, pkgs []ftypes.Package) (func() string, func(string, string, string) ([]types.DetectedVulnerability, error)) {
 	eco, ok := getEcosystem(libType)
 	if !ok || !isRootIOEnvironment(pkgs) {
-		return nil
+		return nil, nil
 	}
 
 	comparer := getComparerForEcosystem(eco)
-	return NewScanner(eco, comparer)
+	scanner := NewScanner(eco, comparer)
+	
+	// Return the scanner's methods as functions
+	return scanner.Type, scanner.DetectVulnerabilities
 }
 
 // getEcosystem maps language type to ecosystem

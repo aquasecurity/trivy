@@ -107,6 +107,14 @@ type Driver struct {
 	detectVulnerabilitiesFunc func(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error)
 }
 
+// NewCustomDriver creates a Driver with custom type and detect functions
+func NewCustomDriver(typeFunc func() string, detectFunc func(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error)) Driver {
+	return Driver{
+		typeFunc:                  typeFunc,
+		detectVulnerabilitiesFunc: detectFunc,
+	}
+}
+
 // Type returns the driver ecosystem
 func (d *Driver) Type() string {
 	if d.typeFunc != nil {

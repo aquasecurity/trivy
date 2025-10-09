@@ -64,16 +64,14 @@ func TestProvider(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := Provider(tt.libType, tt.pkgs)
+			typeFunc, detectFunc := Provider(tt.libType, tt.pkgs)
 			if tt.wantType == "" {
-				assert.Nil(t, result)
+				assert.Nil(t, typeFunc)
+				assert.Nil(t, detectFunc)
 			} else {
-				assert.NotNil(t, result)
-				if driver, ok := result.(*Scanner); ok {
-					assert.Equal(t, tt.wantType, driver.Type())
-				} else {
-					t.Errorf("Expected *Scanner type, got %T", result)
-				}
+				assert.NotNil(t, typeFunc)
+				assert.NotNil(t, detectFunc)
+				assert.Equal(t, tt.wantType, typeFunc())
 			}
 		})
 	}
