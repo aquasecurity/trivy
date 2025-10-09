@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.67.1](https://github.com/aquasecurity/trivy/compare/v0.67.0...v0.67.1) (2025-10-09)
+
+
+### Bug Fixes
+
+* add `buildInfo` for `BlobInfo` in `rpc` package [backport: release/v0.67] ([#9615](https://github.com/aquasecurity/trivy/issues/9615)) ([542eee7](https://github.com/aquasecurity/trivy/commit/542eee7c387de4ef885ee7364b0264c0fd614587))
+* restore compatibility for google.protobuf.Value [backport: release/v0.67] ([#9631](https://github.com/aquasecurity/trivy/issues/9631)) ([1a84093](https://github.com/aquasecurity/trivy/commit/1a840935bbd93b26bdbe3994d68487ca134fc407))
+* using SrcVersion instead of Version for echo detector [backport: release/v0.67] ([#9629](https://github.com/aquasecurity/trivy/issues/9629)) ([3bc1490](https://github.com/aquasecurity/trivy/commit/3bc1490c8ca941989e219b9fccacff0f72df950c))
+* **vex:** don't use reused BOM [backport: release/v0.67] ([#9612](https://github.com/aquasecurity/trivy/issues/9612)) ([f65dd05](https://github.com/aquasecurity/trivy/commit/f65dd053096795e7beb88c92340430ee8d89c3e8))
+
 ## [0.67.0](https://github.com/aquasecurity/trivy/compare/v0.66.0...v0.67.0) (2025-09-30)
 
 
