@@ -1262,8 +1262,8 @@ type Vulnerability struct {
 	PrimaryUrl         string                 `protobuf:"bytes,14,opt,name=primary_url,json=primaryUrl,proto3" json:"primary_url,omitempty"`
 	PublishedDate      *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=published_date,json=publishedDate,proto3" json:"published_date,omitempty"`
 	LastModifiedDate   *timestamppb.Timestamp `protobuf:"bytes,16,opt,name=last_modified_date,json=lastModifiedDate,proto3" json:"last_modified_date,omitempty"`
-	CustomAdvisoryData []byte                 `protobuf:"bytes,17,opt,name=custom_advisory_data,json=customAdvisoryData,proto3" json:"custom_advisory_data,omitempty"`
-	CustomVulnData     []byte                 `protobuf:"bytes,18,opt,name=custom_vuln_data,json=customVulnData,proto3" json:"custom_vuln_data,omitempty"`
+	CustomAdvisoryData *structpb.Value        `protobuf:"bytes,17,opt,name=custom_advisory_data,json=customAdvisoryData,proto3" json:"custom_advisory_data,omitempty"`
+	CustomVulnData     *structpb.Value        `protobuf:"bytes,18,opt,name=custom_vuln_data,json=customVulnData,proto3" json:"custom_vuln_data,omitempty"`
 	VendorIds          []string               `protobuf:"bytes,19,rep,name=vendor_ids,json=vendorIds,proto3" json:"vendor_ids,omitempty"`
 	DataSource         *DataSource            `protobuf:"bytes,20,opt,name=data_source,json=dataSource,proto3" json:"data_source,omitempty"`
 	VendorSeverity     map[string]Severity    `protobuf:"bytes,21,rep,name=vendor_severity,json=vendorSeverity,proto3" json:"vendor_severity,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3,enum=trivy.common.Severity"`
@@ -1416,14 +1416,14 @@ func (x *Vulnerability) GetLastModifiedDate() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *Vulnerability) GetCustomAdvisoryData() []byte {
+func (x *Vulnerability) GetCustomAdvisoryData() *structpb.Value {
 	if x != nil {
 		return x.CustomAdvisoryData
 	}
 	return nil
 }
 
-func (x *Vulnerability) GetCustomVulnData() []byte {
+func (x *Vulnerability) GetCustomVulnData() *structpb.Value {
 	if x != nil {
 		return x.CustomVulnData
 	}
@@ -2736,7 +2736,7 @@ var file_rpc_common_service_proto_rawDesc = []byte{
 	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x15, 0x0a, 0x06, 0x61, 0x76, 0x64, 0x5f, 0x69,
 	0x64, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x61, 0x76, 0x64, 0x49, 0x64, 0x12, 0x14,
 	0x0a, 0x05, 0x71, 0x75, 0x65, 0x72, 0x79, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x71,
-	0x75, 0x65, 0x72, 0x79, 0x22, 0xcf, 0x09, 0x0a, 0x0d, 0x56, 0x75, 0x6c, 0x6e, 0x65, 0x72, 0x61,
+	0x75, 0x65, 0x72, 0x79, 0x22, 0xff, 0x09, 0x0a, 0x0d, 0x56, 0x75, 0x6c, 0x6e, 0x65, 0x72, 0x61,
 	0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x12, 0x29, 0x0a, 0x10, 0x76, 0x75, 0x6c, 0x6e, 0x65, 0x72,
 	0x61, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x0f, 0x76, 0x75, 0x6c, 0x6e, 0x65, 0x72, 0x61, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x49,
@@ -2781,11 +2781,14 @@ var file_rpc_common_service_proto_rawDesc = []byte{
 	0x18, 0x10, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
 	0x6d, 0x70, 0x52, 0x10, 0x6c, 0x61, 0x73, 0x74, 0x4d, 0x6f, 0x64, 0x69, 0x66, 0x69, 0x65, 0x64,
-	0x44, 0x61, 0x74, 0x65, 0x12, 0x30, 0x0a, 0x14, 0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x5f, 0x61,
+	0x44, 0x61, 0x74, 0x65, 0x12, 0x48, 0x0a, 0x14, 0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x5f, 0x61,
 	0x64, 0x76, 0x69, 0x73, 0x6f, 0x72, 0x79, 0x5f, 0x64, 0x61, 0x74, 0x61, 0x18, 0x11, 0x20, 0x01,
-	0x28, 0x0c, 0x52, 0x12, 0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x41, 0x64, 0x76, 0x69, 0x73, 0x6f,
-	0x72, 0x79, 0x44, 0x61, 0x74, 0x61, 0x12, 0x28, 0x0a, 0x10, 0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d,
-	0x5f, 0x76, 0x75, 0x6c, 0x6e, 0x5f, 0x64, 0x61, 0x74, 0x61, 0x18, 0x12, 0x20, 0x01, 0x28, 0x0c,
+	0x28, 0x0b, 0x32, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x52, 0x12, 0x63, 0x75, 0x73, 0x74,
+	0x6f, 0x6d, 0x41, 0x64, 0x76, 0x69, 0x73, 0x6f, 0x72, 0x79, 0x44, 0x61, 0x74, 0x61, 0x12, 0x40,
+	0x0a, 0x10, 0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x5f, 0x76, 0x75, 0x6c, 0x6e, 0x5f, 0x64, 0x61,
+	0x74, 0x61, 0x18, 0x12, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x56, 0x61, 0x6c, 0x75, 0x65,
 	0x52, 0x0e, 0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x56, 0x75, 0x6c, 0x6e, 0x44, 0x61, 0x74, 0x61,
 	0x12, 0x1d, 0x0a, 0x0a, 0x76, 0x65, 0x6e, 0x64, 0x6f, 0x72, 0x5f, 0x69, 0x64, 0x73, 0x18, 0x13,
 	0x20, 0x03, 0x28, 0x09, 0x52, 0x09, 0x76, 0x65, 0x6e, 0x64, 0x6f, 0x72, 0x49, 0x64, 0x73, 0x12,
@@ -3049,29 +3052,31 @@ var file_rpc_common_service_proto_depIdxs = []int32{
 	31, // 16: trivy.common.Vulnerability.cvss:type_name -> trivy.common.Vulnerability.CvssEntry
 	33, // 17: trivy.common.Vulnerability.published_date:type_name -> google.protobuf.Timestamp
 	33, // 18: trivy.common.Vulnerability.last_modified_date:type_name -> google.protobuf.Timestamp
-	16, // 19: trivy.common.Vulnerability.data_source:type_name -> trivy.common.DataSource
-	32, // 20: trivy.common.Vulnerability.vendor_severity:type_name -> trivy.common.Vulnerability.VendorSeverityEntry
-	22, // 21: trivy.common.CauseMetadata.code:type_name -> trivy.common.Code
-	23, // 22: trivy.common.CauseMetadata.rendered_cause:type_name -> trivy.common.RenderedCause
-	17, // 23: trivy.common.CustomResource.layer:type_name -> trivy.common.Layer
-	34, // 24: trivy.common.CustomResource.data:type_name -> google.protobuf.Value
-	21, // 25: trivy.common.Code.lines:type_name -> trivy.common.Line
-	22, // 26: trivy.common.SecretFinding.code:type_name -> trivy.common.Code
-	17, // 27: trivy.common.SecretFinding.layer:type_name -> trivy.common.Layer
-	24, // 28: trivy.common.Secret.findings:type_name -> trivy.common.SecretFinding
-	0,  // 29: trivy.common.DetectedLicense.severity:type_name -> trivy.common.Severity
-	1,  // 30: trivy.common.DetectedLicense.category:type_name -> trivy.common.LicenseCategory.Enum
-	2,  // 31: trivy.common.LicenseFile.license_type:type_name -> trivy.common.LicenseType.Enum
-	28, // 32: trivy.common.LicenseFile.fingings:type_name -> trivy.common.LicenseFinding
-	17, // 33: trivy.common.LicenseFile.layer:type_name -> trivy.common.Layer
-	1,  // 34: trivy.common.LicenseFinding.category:type_name -> trivy.common.LicenseCategory.Enum
-	19, // 35: trivy.common.Vulnerability.CvssEntry.value:type_name -> trivy.common.CVSS
-	0,  // 36: trivy.common.Vulnerability.VendorSeverityEntry.value:type_name -> trivy.common.Severity
-	37, // [37:37] is the sub-list for method output_type
-	37, // [37:37] is the sub-list for method input_type
-	37, // [37:37] is the sub-list for extension type_name
-	37, // [37:37] is the sub-list for extension extendee
-	0,  // [0:37] is the sub-list for field type_name
+	34, // 19: trivy.common.Vulnerability.custom_advisory_data:type_name -> google.protobuf.Value
+	34, // 20: trivy.common.Vulnerability.custom_vuln_data:type_name -> google.protobuf.Value
+	16, // 21: trivy.common.Vulnerability.data_source:type_name -> trivy.common.DataSource
+	32, // 22: trivy.common.Vulnerability.vendor_severity:type_name -> trivy.common.Vulnerability.VendorSeverityEntry
+	22, // 23: trivy.common.CauseMetadata.code:type_name -> trivy.common.Code
+	23, // 24: trivy.common.CauseMetadata.rendered_cause:type_name -> trivy.common.RenderedCause
+	17, // 25: trivy.common.CustomResource.layer:type_name -> trivy.common.Layer
+	34, // 26: trivy.common.CustomResource.data:type_name -> google.protobuf.Value
+	21, // 27: trivy.common.Code.lines:type_name -> trivy.common.Line
+	22, // 28: trivy.common.SecretFinding.code:type_name -> trivy.common.Code
+	17, // 29: trivy.common.SecretFinding.layer:type_name -> trivy.common.Layer
+	24, // 30: trivy.common.Secret.findings:type_name -> trivy.common.SecretFinding
+	0,  // 31: trivy.common.DetectedLicense.severity:type_name -> trivy.common.Severity
+	1,  // 32: trivy.common.DetectedLicense.category:type_name -> trivy.common.LicenseCategory.Enum
+	2,  // 33: trivy.common.LicenseFile.license_type:type_name -> trivy.common.LicenseType.Enum
+	28, // 34: trivy.common.LicenseFile.fingings:type_name -> trivy.common.LicenseFinding
+	17, // 35: trivy.common.LicenseFile.layer:type_name -> trivy.common.Layer
+	1,  // 36: trivy.common.LicenseFinding.category:type_name -> trivy.common.LicenseCategory.Enum
+	19, // 37: trivy.common.Vulnerability.CvssEntry.value:type_name -> trivy.common.CVSS
+	0,  // 38: trivy.common.Vulnerability.VendorSeverityEntry.value:type_name -> trivy.common.Severity
+	39, // [39:39] is the sub-list for method output_type
+	39, // [39:39] is the sub-list for method input_type
+	39, // [39:39] is the sub-list for extension type_name
+	39, // [39:39] is the sub-list for extension extendee
+	0,  // [0:39] is the sub-list for field type_name
 }
 
 func init() { file_rpc_common_service_proto_init() }
