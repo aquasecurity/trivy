@@ -43,7 +43,9 @@ func (p *Parser) splitLine(line string) []string {
 	}
 	for _, sep := range separators {
 		if result := strings.Split(line, sep); len(result) == 2 {
-			// Trim the end-of-range suffix. ">=2.31.0,<3" becomes ">=2.31.0"
+			// Trim the end-of-range suffix. For example, ">=2.31.0,<3" becomes ">=2.31.0".
+			// In version ranges, only `,` can be used as a separator:
+			// "The comma (“,”) is equivalent to a logical AND operator" (see PEP 440).
 			version := strings.Split(result[1], ",")[0]
 			return []string{result[0], version}
 		}
