@@ -33,6 +33,7 @@ func TestK8s(t *testing.T) {
 			"k8s",
 			"kind-kind-test",
 			"--report", "summary",
+			"--checks-bundle-repository", "mirror.gcr.io/aquasec/trivy-checks:1.11.2",
 			"-q",
 			"--timeout", "5m0s",
 			"--format", "json",
