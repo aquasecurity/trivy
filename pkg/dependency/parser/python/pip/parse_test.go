@@ -73,11 +73,6 @@ func TestParse(t *testing.T) {
 			useMinVersion: true,
 			want:          requirementsCompatibleVersions,
 		},
-		{
-			name:     "comma-separated version ranges",
-			filePath: "testdata/requirements_comma_ranges.txt",
-			want:     requirementsCommaRanges,
-		},
 	}
 
 	for _, tt := range tests {

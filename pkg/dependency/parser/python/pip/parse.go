@@ -48,7 +48,6 @@ func (p *Parser) splitLine(line string) []string {
 			// "The comma (“,”) is equivalent to a logical AND operator" (see PEP 440).
 			result[1], _, _ = strings.Cut(result[1], ",")
 			return result
-			return []string{result[0], version}
 		}
 	}
 	return nil
