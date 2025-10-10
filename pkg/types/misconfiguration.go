@@ -4,8 +4,9 @@ import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 // DetectedMisconfiguration holds detected misconfigurations
 type DetectedMisconfiguration struct {
-	Type          string               `json:",omitempty"`
-	ID            string               `json:",omitempty"`
+	Type string `json:",omitempty"`
+	ID   string `json:",omitempty"`
+	// Deprecated: Use the ID field instead.
 	AVDID         string               `json:",omitempty"`
 	Title         string               `json:",omitempty"`
 	Description   string               `json:",omitempty"`

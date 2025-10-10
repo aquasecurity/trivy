@@ -27,7 +27,6 @@ const DS006PolicyWithDockerfileSchema = `# METADATA
 # - https://docs.docker.com/develop/develop-images/multistage-build/
 # custom:
 #   id: DS006
-#   avd_id: AVD-DS-0006
 #   severity: CRITICAL
 #   short_code: no-self-referencing-copy-from
 #   recommended_action: "Change the '--from' so that it will not refer to itself"
@@ -83,7 +82,6 @@ const DS006PolicyWithMyFancyDockerfileSchema = `# METADATA
 # - https://docs.docker.com/develop/develop-images/multistage-build/
 # custom:
 #   id: DS006
-#   avd_id: AVD-DS-0006
 #   severity: CRITICAL
 #   short_code: no-self-referencing-copy-from
 #   recommended_action: "Change the '--from' so that it will not refer to itself"
@@ -139,7 +137,6 @@ const DS006PolicyWithOldSchemaSelector = `# METADATA
 # - https://docs.docker.com/develop/develop-images/multistage-build/
 # custom:
 #   id: DS006
-#   avd_id: AVD-DS-0006
 #   severity: CRITICAL
 #   short_code: no-self-referencing-copy-from
 #   recommended_action: "Change the '--from' so that it will not refer to itself"
@@ -188,7 +185,6 @@ const DS006LegacyWithOldStyleMetadata = `package builtin.dockerfile.DS006
 
 __rego_metadata__ := {
 	"id": "DS006",
-	"avd_id": "AVD-DS-0006",
 	"title": "COPY '--from' referring to the current image",
 	"short_code": "no-self-referencing-copy-from",
 	"version": "v1.0.0",
@@ -238,7 +234,6 @@ USER root
 		t,
 		scan.Rule{
 			ID:             "DS006",
-			AVDID:          "AVD-DS-0006",
 			Aliases:        []string{"DS006"},
 			ShortCode:      "no-self-referencing-copy-from",
 			Summary:        "COPY '--from' referring to the current image",
@@ -588,7 +583,6 @@ COPY --from=dep /binary /`
 					t,
 					scan.Rule{
 						ID:             "DS006",
-						AVDID:          "AVD-DS-0006",
 						Aliases:        []string{"DS006"},
 						ShortCode:      "no-self-referencing-copy-from",
 						Summary:        "COPY '--from' referring to the current image",
@@ -660,7 +654,7 @@ MAINTAINER moby@example.com`,
 # schemas:
 # - input: schema["dockerfile"]
 # custom:
-#   avd_id: USER-TEST-0001
+#   id: USER-TEST-0001
 #   short_code: maintainer-deprecated
 #   input:
 #     selector:
