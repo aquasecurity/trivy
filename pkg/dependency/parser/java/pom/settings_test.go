@@ -1,11 +1,14 @@
 package pom
 
 import (
+	"encoding/xml"
 	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
+
+func boolPtr(v bool) *bool { return &v }
 
 func Test_ReadSettings(t *testing.T) {
 	tests := []struct {
@@ -151,6 +154,154 @@ func Test_ReadSettings(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "happy path with user settings containing profile and repositories",
+			envs: map[string]string{
+				"HOME":           filepath.Join("testdata", "settings", "user-settings-with-profile-containing-repositories"),
+				"MAVEN_HOME":     "NOT_EXISTING_PATH",
+				"ACTIVE_PROFILE": "test-cicd",
+			},
+			wantSettings: settings{
+				LocalRepository: "",
+				Servers: []Server{
+					{
+						ID:       "mycompany-internal-releases",
+						Username: "mypassword",
+						Password: "mypassword",
+					},
+					{
+						ID:       "mycompany-internal-snapshots",
+						Username: "mypassword",
+						Password: "mypassword",
+					},
+				},
+				Profiles: []Profile{
+					{
+						ID: "mycompany",
+						Repositories: []repository{
+							{
+								ID:  "mycompany-internal-releases",
+								URL: "https://mycompany.example.com/repository/internal-releases",
+								Releases: repositoryPolicy{
+									Enabled: boolPtr(true),
+								},
+								Snapshots: repositoryPolicy{
+									Enabled: boolPtr(false),
+								},
+							},
+							{
+								ID:  "mycompany-internal-snapshots",
+								URL: "https://mycompany.example.com/repository/internal-snapshots",
+								Releases: repositoryPolicy{
+									Enabled: boolPtr(false),
+								},
+								Snapshots: repositoryPolicy{
+									Enabled: boolPtr(true),
+								},
+							},
+						},
+					},
+				},
+				ActiveProfiles: []string{"mycompany", "test-cicd"},
+			},
+		},
+		{
+			name: "happy path with global and user settings containing profile and repositories",
+			envs: map[string]string{
+				"HOME":           filepath.Join("testdata", "settings", "user-settings-with-profile-containing-repositories"),
+				"MAVEN_HOME":     filepath.Join("testdata", "settings", "global-settings-with-profile-containing-repositories"),
+				"ACTIVE_PROFILE": "test-cicd",
+			},
+			wantSettings: settings{
+				LocalRepository: "",
+				Servers: []Server{
+					{
+						ID:       "mycompany-internal-releases",
+						Username: "mypassword",
+						Password: "mypassword",
+					},
+					{
+						ID:       "mycompany-internal-snapshots",
+						Username: "mypassword",
+						Password: "mypassword",
+					},
+					{
+						ID:       "mycompany-global-releases",
+						Username: "mypassword",
+						Password: "mypassword",
+					},
+				},
+				Profiles: []Profile{
+					{
+						ID: "mycompany",
+						Repositories: []repository{
+							{
+								ID:  "mycompany-internal-releases",
+								URL: "https://mycompany.example.com/repository/internal-releases",
+								Releases: repositoryPolicy{
+									Enabled: boolPtr(true),
+								},
+								Snapshots: repositoryPolicy{
+									Enabled: boolPtr(false),
+								},
+							},
+							{
+								ID:  "mycompany-internal-snapshots",
+								URL: "https://mycompany.example.com/repository/internal-snapshots",
+								Releases: repositoryPolicy{
+									Enabled: boolPtr(false),
+								},
+								Snapshots: repositoryPolicy{
+									Enabled: boolPtr(true),
+								},
+							},
+						},
+					},
+					{
+						ID: "test-cicd",
+						Repositories: []repository{
+							{
+								ID:  "mycompany-internal-releases",
+								URL: "https://mycompany.example.com/repository/internal-releases",
+								Releases: repositoryPolicy{
+									Enabled: boolPtr(true),
+								},
+								Snapshots: repositoryPolicy{
+									Enabled: boolPtr(false),
+								},
+							},
+							{
+								ID:  "mycompany-global-releases",
+								URL: "https://mycompany.example.com/repository/global-releases",
+								Releases: repositoryPolicy{
+									Enabled: boolPtr(true),
+								},
+								Snapshots: repositoryPolicy{
+									Enabled: boolPtr(false),
+								},
+							},
+						},
+					},
+					{
+						ID: "default",
+						Repositories: []repository{
+							{
+								ID:  "mycompany-default-releases",
+								URL: "https://mycompany.example.com/repository/default-releases",
+								Releases: repositoryPolicy{
+									Enabled: boolPtr(true),
+								},
+								Snapshots: repositoryPolicy{
+									Enabled: boolPtr(false),
+								},
+							},
+						},
+						Activation: activation{ActiveByDefault: true},
+					},
+				},
+				ActiveProfiles: []string{"mycompany", "test-cicd"},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -162,4 +313,181 @@ func Test_ReadSettings(t *testing.T) {
 			require.Equal(t, tt.wantSettings, gotSettings)
 		})
 	}
+}
+
+func Test_getActiveProfiles(t *testing.T) {
+	s := settings{
+		Profiles: []Profile{
+			{
+				ID: "p1",
+				Repositories: []repository{
+					{ID: "r1"},
+					{ID: "r2"},
+				},
+			},
+			{
+				ID: "p2",
+				Repositories: []repository{
+					{ID: "r3"},
+				},
+				Activation: activation{ActiveByDefault: true},
+			},
+			{
+				ID: "p3",
+				Repositories: []repository{
+					{ID: "r4"}},
+			},
+			{
+				ID: "p1",
+				Repositories: []repository{
+					{ID: "r1"},
+					{ID: "r2"},
+					{ID: "r3"},
+				},
+			},
+		},
+		ActiveProfiles: []string{"p1"},
+	}
+	got := s.getActiveProfiles()
+	require.Len(t, got, 2)
+	require.Equal(t, "p1", got[0].ID)
+	require.Equal(t, "p2", got[1].ID)
+}
+
+func Test_getEffectiveRepositories(t *testing.T) {
+	s := settings{
+		Profiles: []Profile{
+			{
+				ID: "p1",
+				Repositories: []repository{
+					{
+						ID:        "r1-releases",
+						URL:       "http://repo1",
+						Releases:  repositoryPolicy{Enabled: boolPtr(true)},
+						Snapshots: repositoryPolicy{Enabled: boolPtr(false)},
+					},
+					{
+						ID:        "r2-snapshots",
+						URL:       "http://repo2",
+						Releases:  repositoryPolicy{Enabled: boolPtr(false)},
+						Snapshots: repositoryPolicy{Enabled: boolPtr(true)},
+					},
+				},
+			},
+			{
+				ID: "p2",
+				Repositories: []repository{
+					{
+						ID:        "r3-releases",
+						URL:       "http://repo3",
+						Releases:  repositoryPolicy{Enabled: boolPtr(true)},
+						Snapshots: repositoryPolicy{Enabled: boolPtr(false)},
+					},
+					{
+						ID:        "r4-snapshots",
+						URL:       "http://repo4",
+						Releases:  repositoryPolicy{Enabled: boolPtr(false)},
+						Snapshots: repositoryPolicy{Enabled: boolPtr(true)},
+					},
+				},
+			},
+			{
+				ID: "p4",
+				Repositories: []repository{
+					{
+						ID:        "r5-releases",
+						URL:       "http://repo5",
+						Releases:  repositoryPolicy{Enabled: boolPtr(true)},
+						Snapshots: repositoryPolicy{Enabled: boolPtr(false)},
+					},
+					{
+						ID:        "r1-releases",
+						URL:       "http://repo1-duplicate",
+						Releases:  repositoryPolicy{Enabled: boolPtr(true)},
+						Snapshots: repositoryPolicy{Enabled: boolPtr(false)},
+					},
+					{
+						ID:  "r6-defaults",
+						URL: "http://repo6",
+					},
+				},
+				Activation: activation{ActiveByDefault: true},
+			},
+		},
+		ActiveProfiles: []string{"p1"},
+	}
+
+	effective := s.getEffectiveRepositories()
+	require.Len(t, effective, 5)
+
+	require.Equal(t, "r1-releases", effective[0].ID)
+	require.Equal(t, "http://repo1", effective[0].URL)
+	require.True(t, effective[0].Releases.IsEnabled())
+	require.False(t, effective[0].Snapshots.IsEnabled())
+
+	require.Equal(t, "r2-snapshots", effective[1].ID)
+	require.Equal(t, "http://repo2", effective[1].URL)
+	require.False(t, effective[1].Releases.IsEnabled())
+	require.True(t, effective[1].Snapshots.IsEnabled())
+
+	require.Equal(t, "r5-releases", effective[2].ID)
+	require.Equal(t, "http://repo5", effective[2].URL)
+	require.True(t, effective[2].Releases.IsEnabled())
+	require.False(t, effective[2].Snapshots.IsEnabled())
+
+	var found bool
+	for _, repo := range effective {
+		if repo.ID == "r6-defaults" {
+			found = true
+			require.True(t, repo.Releases.IsEnabled(), "releases should default to enabled when block is missing")
+			require.True(t, repo.Snapshots.IsEnabled(), "snapshots should default to enabled when block is missing")
+			break
+		}
+	}
+	require.True(t, found, "r6-defaults should be present in effective repositories")
+}
+
+func Test_parse_XML_repositoryPolicy_DefaultEnabledWhenOmitted(t *testing.T) {
+	t.Run("blocks omitted entirely", func(t *testing.T) {
+		xmlData := []byte(`
+			<repository>
+				<id>r</id>
+				<url>http://example</url>
+			</repository>`)
+		var r repository
+		err := xml.Unmarshal(xmlData, &r)
+		require.NoError(t, err)
+		require.True(t, r.Releases.IsEnabled(), "releases should default to enabled when block is missing")
+		require.True(t, r.Snapshots.IsEnabled(), "snapshots should default to enabled when block is missing")
+	})
+
+	t.Run("blocks present but <enabled> omitted", func(t *testing.T) {
+		xmlData := []byte(`
+			<repository>
+				<id>r</id>
+				<url>http://example</url>
+				<releases></releases>
+				<snapshots></snapshots>
+			</repository>`)
+		var r repository
+		err := xml.Unmarshal(xmlData, &r)
+		require.NoError(t, err)
+		require.True(t, r.Releases.IsEnabled(), "releases should default to enabled when <enabled> is omitted")
+		require.True(t, r.Snapshots.IsEnabled(), "snapshots should default to enabled when <enabled> is omitted")
+	})
+
+	t.Run("<enabled>false</enabled> overrides default", func(t *testing.T) {
+		xmlData := []byte(`
+			<repository>
+				<id>r</id>
+				<url>http://example</url>
+				<releases><enabled>false</enabled></releases>
+				<snapshots></snapshots>
+			</repository>`)
+		var r repository
+		err := xml.Unmarshal(xmlData, &r)
+		require.NoError(t, err)
+		require.False(t, r.Releases.IsEnabled(), "explicit false must be respected")
+		require.True(t, r.Snapshots.IsEnabled(), "snapshots still default to enabled")
+	})
 }
