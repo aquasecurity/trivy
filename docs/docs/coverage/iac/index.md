@@ -1,7 +1,6 @@
 # Infrastructure as Code
 
-## Scanner
-Trivy scans Infrastructure as Code (IaC) files for 
+Trivy scans Infrastructure as Code (IaC) files with the following scanners: 
 
 - [Misconfigurations][misconf]
 - [Secrets][secret]
