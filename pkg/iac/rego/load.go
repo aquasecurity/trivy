@@ -207,7 +207,7 @@ func (s *Scanner) findMatchedEmbeddedCheck(badPolicy *ast.Module) *ast.Module {
 			continue
 		}
 		if (badPolicyMeta.AVDID != "" && badPolicyMeta.AVDID == meta.AVDID) ||
-			(badPolicyMeta.ID != "" && badPolicyMeta.ID == meta.ID) {
+			(badPolicyMeta.ID != "" && badPolicyMeta.ID != "N/A" && badPolicyMeta.ID == meta.ID) {
 			return embeddedCheck
 		}
 	}

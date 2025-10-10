@@ -152,6 +152,24 @@ deny {
 			},
 		},
 		{
+			name: "match by check AVDID",
+			files: map[string]*fstest.MapFile{
+				"policies/my-check2.rego": {
+					Data: []byte(`# METADATA
+# schemas:
+# - input: schema["fooschema"]
+# custom:
+#   avd_id: avd-test-001
+package builtin.test2
+
+deny {
+	input.evil == "foo bar"
+}`,
+					),
+				},
+			},
+		},
+		{
 			name: "bad embedded check",
 			files: map[string]*fstest.MapFile{
 				"policies/my-check2.rego": {
