@@ -12,12 +12,12 @@ Compliance report is currently supported in the following targets (trivy sub-com
 - `trivy image`
 - `trivy k8s`
 
-Add the `--compliance` flag to the command line, and set it's value to desired report.
+Add the `--compliance` flag to the command line, and set its value to the desired report.
 For example: `trivy k8s cluster --compliance k8s-nsa` (see below for built-in and custom reports)
 
 ### Options
 
-The following flags are compatible with `--compliance` flag and allows customizing it's output:
+The following flags are compatible with the `--compliance` flag and allow customizing its output:
 
 | flag               | effect                                                                               |
 |--------------------|--------------------------------------------------------------------------------------|
@@ -28,8 +28,8 @@ The following flags are compatible with `--compliance` flag and allows customizi
 
 ## Built-in compliance
 
-Trivy has a number of built-in compliance reports that you can asses right out of the box.
-to specify a built-in compliance report, select it by ID like `trivy --compliance <compliance_id>`.
+Trivy has a number of built-in compliance reports that you can assess right out of the box.
+To specify a built-in compliance report, select it by ID like `trivy --compliance <compliance_id>`.
 
 For the list of built-in compliance reports, please see the relevant section:
 
@@ -264,7 +264,7 @@ You can create your own custom compliance report. A compliance report is a simpl
 
 ```yaml
 spec:
-  id: "k8s-myreport" # report unique identifier. this should not container spaces.
+  id: "k8s-myreport" # report unique identifier. this should not contain spaces.
   title: "My custom Kubernetes report" # report title. Any one-line title.
   description: "Describe your report" # description of the report. Any text.
   relatedResources :

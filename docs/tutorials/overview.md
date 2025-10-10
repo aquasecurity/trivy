@@ -6,8 +6,8 @@ In this section you can find step-by-step guides that help you accomplish specif
 
 ## Adding tutorials
 
-You are welcome to create tutorials and showcase them here. Tutorials can be either included in here as full articles, or included as external links under [external community resources][community-resources]. 
-Before sending PR, please first create an issue (of kind "Documentation") and describe the suggestion, if it's external link or article, and what category it's under.
+You are welcome to create tutorials and showcase them here. Tutorials can be either included in here as full articles, or included as external links under [external community resources][community-resources].
+Before sending a PR, please first create an issue (of kind "Documentation") and describe the suggestion, whether it's an external link or article, and what category it's under.
 
 Guidelines:
 
