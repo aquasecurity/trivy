@@ -105,7 +105,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.file)
 			require.NoError(t, err)
 
-			gotPkgs, gotDeps, err := NewParser(tt.replace, tt.useMinVersion).Parse(f)
+			gotPkgs, gotDeps, err := NewParser(tt.replace, tt.useMinVersion).Parse(t.Context(), f)
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.wantPkgs, gotPkgs)

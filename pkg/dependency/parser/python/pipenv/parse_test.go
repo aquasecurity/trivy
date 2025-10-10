@@ -36,7 +36,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(v.file)
 			require.NoError(t, err)
 
-			got, _, err := NewParser().Parse(f)
+			got, _, err := NewParser().Parse(t.Context(), f)
 			require.NoError(t, err)
 
 			sort.Sort(ftypes.Packages(got))

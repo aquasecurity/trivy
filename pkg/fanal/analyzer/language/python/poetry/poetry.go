@@ -41,7 +41,7 @@ func newPoetryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error
 	}, nil
 }
 
-func (a poetryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a poetryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
 	required := func(path string, _ fs.DirEntry) bool {
@@ -50,7 +50,7 @@ func (a poetryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
 		// Parse poetry.lock
-		app, err := a.parsePoetryLock(path, r)
+		app, err := a.parsePoetryLock(ctx, path, r)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
@@ -88,8 +88,8 @@ func (a poetryAnalyzer) Version() int {
 	return version
 }
 
-func (a poetryAnalyzer) parsePoetryLock(path string, r io.Reader) (*types.Application, error) {
-	return language.Parse(types.Poetry, path, r, a.lockParser)
+func (a poetryAnalyzer) parsePoetryLock(ctx context.Context, path string, r io.Reader) (*types.Application, error) {
+	return language.Parse(ctx, types.Poetry, path, r, a.lockParser)
 }
 
 func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Application) error {

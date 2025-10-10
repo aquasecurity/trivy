@@ -2,6 +2,7 @@ package lockfile
 
 import (
 	"bufio"
+	"context"
 	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -16,7 +17,7 @@ func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var pkgs []ftypes.Package
 	scanner := bufio.NewScanner(r)
 	var lineNum int

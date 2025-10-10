@@ -43,7 +43,7 @@ func newConanLockAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, er
 	}, nil
 }
 
-func (a conanLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a conanLockAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	required := func(_ string, _ fs.DirEntry) bool {
 		// Parse all required files: `conan.lock` (from a.Required func) + input.FilePatterns.Match()
 		return true
@@ -56,7 +56,7 @@ func (a conanLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 
 	var apps []types.Application
 	if err = fsutils.WalkDir(input.FS, ".", required, func(filePath string, _ fs.DirEntry, r io.Reader) error {
-		app, err := language.Parse(types.Conan, filePath, r, a.parser)
+		app, err := language.Parse(ctx, types.Conan, filePath, r, a.parser)
 		if err != nil {
 			return xerrors.Errorf("%s parse error: %w", filePath, err)
 		}

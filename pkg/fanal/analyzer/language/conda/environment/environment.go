@@ -28,7 +28,7 @@ const version = 2
 
 type parser struct{}
 
-func (*parser) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
+func (*parser) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
 	p := environment.NewParser()
 	pkgs, err := p.Parse(r)
 	if err != nil {
@@ -39,7 +39,7 @@ func (*parser) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, e
 	for i, pkg := range pkgs.Packages {
 		// Skip packages without a version, because in this case we will not be able to get the correct file name.
 		if pkg.Version != "" {
-			licenses, err := findLicenseFromEnvDir(pkg, pkgs.Prefix)
+			licenses, err := findLicenseFromEnvDir(ctx, pkg, pkgs.Prefix)
 			if err != nil {
 				// Show log once per file
 				once.Do(func() {
@@ -58,8 +58,8 @@ func (*parser) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, e
 
 type environmentAnalyzer struct{}
 
-func (a environmentAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	res, err := language.Analyze(types.CondaEnv, input.FilePath, input.Content, &parser{})
+func (a environmentAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	res, err := language.Analyze(ctx, types.CondaEnv, input.FilePath, input.Content, &parser{})
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse environment.yaml: %w", err)
 	}
@@ -70,7 +70,7 @@ func (a environmentAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	return res, nil
 }
 
-func findLicenseFromEnvDir(pkg types.Package, prefix string) ([]string, error) {
+func findLicenseFromEnvDir(ctx context.Context, pkg types.Package, prefix string) ([]string, error) {
 	if prefix == "" {
 		return nil, xerrors.Errorf("`prefix` field doesn't exist")
 	}
@@ -90,7 +90,7 @@ func findLicenseFromEnvDir(pkg types.Package, prefix string) ([]string, error) {
 			return nil, xerrors.Errorf("incorrect packageJSON file pattern: %w", err)
 		}
 		if matched {
-			return licenseFromPackageJson(condaMetaDir, entry.Name())
+			return licenseFromPackageJson(ctx, condaMetaDir, entry.Name())
 		}
 	}
 	return nil, xerrors.Errorf("meta file didn't find")
@@ -108,7 +108,7 @@ func (a environmentAnalyzer) Version() int {
 	return version
 }
 
-func licenseFromPackageJson(condaMetaDir, fileName string) ([]string, error) {
+func licenseFromPackageJson(ctx context.Context, condaMetaDir, fileName string) ([]string, error) {
 	file, err := os.Open(filepath.Join(condaMetaDir, fileName))
 	if err != nil {
 		return nil, xerrors.Errorf("unable to open packageJSON file: %w", err)
@@ -116,7 +116,7 @@ func licenseFromPackageJson(condaMetaDir, fileName string) ([]string, error) {
 
 	defer file.Close()
 
-	packageJson, _, err := meta.NewParser().Parse(file)
+	packageJson, _, err := meta.NewParser().Parse(ctx, file)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse packageJSON file: %w", err)
 	}

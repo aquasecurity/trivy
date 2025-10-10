@@ -22,8 +22,8 @@ const version = 1
 
 type rustBinaryLibraryAnalyzer struct{}
 
-func (a rustBinaryLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	res, err := language.Analyze(types.RustBinary, input.FilePath, input.Content, binary.NewParser())
+func (a rustBinaryLibraryAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	res, err := language.Analyze(ctx, types.RustBinary, input.FilePath, input.Content, binary.NewParser())
 	if errors.Is(err, binary.ErrUnrecognizedExe) || errors.Is(err, binary.ErrNonRustBinary) {
 		return nil, nil
 	} else if err != nil {
