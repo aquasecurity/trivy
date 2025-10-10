@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.68.0](https://github.com/aquasecurity/trivy/compare/v0.67.0...v0.68.0) (2025-10-10)
+
+
+### Features
+
+* allow ignoring findings by type in Rego ([#9578](https://github.com/aquasecurity/trivy/issues/9578)) ([c638fc6](https://github.com/aquasecurity/trivy/commit/c638fc646c3c0d56ea50c830a31609badb477c5e))
+* **fs:** change artifact type to repository when git info is detected ([#9613](https://github.com/aquasecurity/trivy/issues/9613)) ([cff91ac](https://github.com/aquasecurity/trivy/commit/cff91acdef91fbce22306a72000c43a26ac8d79b))
+
+
+### Bug Fixes
+
+* add `buildInfo` for `BlobInfo` in `rpc` package ([#9608](https://github.com/aquasecurity/trivy/issues/9608)) ([6def66e](https://github.com/aquasecurity/trivy/commit/6def66e002427eadcc6dbabe56b01c37c1eae075))
+* **java:** update order for resolving package fields from multiple demManagement ([#9575](https://github.com/aquasecurity/trivy/issues/9575)) ([e286c5e](https://github.com/aquasecurity/trivy/commit/e286c5e207b6d8a1ef01f3f634f874e2e3d4c0f0))
+* **license:** don't normalize `unlicensed` licenses into `unlicense` ([#9611](https://github.com/aquasecurity/trivy/issues/9611)) ([09162e5](https://github.com/aquasecurity/trivy/commit/09162e52ecf2a3e7a65dcf4ab2c2ea43ee6f5437))
+* restore compatibility for google.protobuf.Value ([#9559](https://github.com/aquasecurity/trivy/issues/9559)) ([aeeb2a1](https://github.com/aquasecurity/trivy/commit/aeeb2a1f842b56147996b600bd34db2cf05cd28e))
+* Use `fetch-level: 1` to check out trivy-repo in the release workflow ([#9636](https://github.com/aquasecurity/trivy/issues/9636)) ([6e53686](https://github.com/aquasecurity/trivy/commit/6e53686526ef21e8a347fc07daa2f628e24eb9e5))
+* using SrcVersion instead of Version for echo detector ([#9552](https://github.com/aquasecurity/trivy/issues/9552)) ([66479f0](https://github.com/aquasecurity/trivy/commit/66479f050dc1f0faa314c5a4b9159f38bb1f146b))
+* validate backport branch name ([#9548](https://github.com/aquasecurity/trivy/issues/9548)) ([f0fd432](https://github.com/aquasecurity/trivy/commit/f0fd432a7aeced7cca1acab5a52d72cd960e7171))
+* **vex:** don't use reused BOM ([#9604](https://github.com/aquasecurity/trivy/issues/9604)) ([7422cc7](https://github.com/aquasecurity/trivy/commit/7422cc7168ab917ec96b75de784be72e9b6bdb2e))
+
 ## [0.67.0](https://github.com/aquasecurity/trivy/compare/v0.66.0...v0.67.0) (2025-09-30)
 
 
