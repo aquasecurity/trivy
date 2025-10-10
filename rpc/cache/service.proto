@@ -46,6 +46,7 @@ message BlobInfo {
   repeated common.LicenseFile licenses = 13;
   int64 size = 14;
   string created_by = 15;
+  common.BuildInfo build_info = 16;
 }
 
 message PutBlobRequest {
