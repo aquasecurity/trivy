@@ -170,35 +170,11 @@ func decodeAttribute(schema *SchemaNode, rawAttr any) any {
 		return rawAttr
 	}
 
-	return rawAttr
-	// TODO: For attributes of type object or map, the schema does not include field names and looks like:
+	// For attributes of type object or map, the schema does not include field names and looks like:
 	// "list_attr": { "references": ["local.foo"] },
-	// Therefore, we cannot determine which specific fields are unknown.
-	// return resolveAttribute(rawAttr, schema.Value)
-}
-
-func resolveAttribute(known, config any) any {
-	switch v := known.(type) {
-	case []any:
-		return v
-	case map[string]any:
-		cm, ok := config.(map[string]any)
-		if !ok {
-			return v
-		}
-
-		result := make(map[string]any)
-		for k, cv := range cm {
-			if vv, exists := result[k]; exists {
-				result[k] = resolveAttribute(vv, cv)
-			} else {
-				result[k] = cv
-			}
-		}
-		return result
-	default:
-		return known
-	}
+	// Therefore, we cannot determine which specific fields are unknown
+	// and we can ignore references from expressions.
+	return rawAttr
 }
 
 func unpackConfigurationValue(val any, r Resource) (any, bool) {
