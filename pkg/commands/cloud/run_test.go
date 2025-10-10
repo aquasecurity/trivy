@@ -29,6 +29,9 @@ func TestLogout(t *testing.T) {
 		},
 	}
 
+	tempDir := t.TempDir()
+	t.Setenv("XDG_DATA_HOME", tempDir)
+
 	keyring.MockInit()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -89,6 +92,9 @@ func TestLogin(t *testing.T) {
 		},
 	}
 
+	tempDir := t.TempDir()
+	t.Setenv("XDG_DATA_HOME", tempDir)
+
 	keyring.MockInit()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -138,6 +144,74 @@ func TestLogin(t *testing.T) {
 			require.Equal(t, tt.token, config.Token)
 			require.Equal(t, server.URL, config.ServerUrl)
 			require.Equal(t, server.URL+"/api", config.ApiUrl)
+		})
+	}
+}
+
+func TestSetServerScanning(t *testing.T) {
+	tests := []struct {
+		name    string
+		enabled bool
+	}{
+		{
+			name:    "enable server scanning",
+			enabled: true,
+		},
+		{
+			name:    "disable server scanning",
+			enabled: false,
+		},
+	}
+
+	tempDir := t.TempDir()
+	t.Setenv("XDG_DATA_HOME", tempDir)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer keyring.DeleteAll(cloud.ServiceName)
+			defer cloud.Clear()
+			cloud.Clear()
+
+			err := SetServerScanning(tt.enabled)
+			require.NoError(t, err)
+
+			config, err := cloud.Load()
+			require.NoError(t, err)
+			assert.Equal(t, tt.enabled, config.ServerScanning)
+		})
+	}
+}
+
+func TestSetResultsUpload(t *testing.T) {
+	tests := []struct {
+		name    string
+		enabled bool
+	}{
+		{
+			name:    "enable results upload",
+			enabled: true,
+		},
+		{
+			name:    "disable results upload",
+			enabled: false,
+		},
+	}
+
+	tempDir := t.TempDir()
+	t.Setenv("XDG_DATA_HOME", tempDir)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer keyring.DeleteAll(cloud.ServiceName)
+			defer cloud.Clear()
+			cloud.Clear()
+
+			err := SetResultsUpload(tt.enabled)
+			require.NoError(t, err)
+
+			config, err := cloud.Load()
+			require.NoError(t, err)
+			assert.Equal(t, tt.enabled, config.UploadResults)
 		})
 	}
 }

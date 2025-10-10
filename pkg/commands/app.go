@@ -1481,35 +1481,45 @@ func NewCloudCommand() *cobra.Command {
 		GroupID: cloud.GroupCloud,
 	}
 
+	// add the group the sub commands so they don't check the login status
+	cloudCmd.AddGroup(&cobra.Group{
+		ID:    cloud.GroupCloud,
+		Title: "Trivy Cloud Commands",
+	})
+
 	cloudCmd.AddCommand(
 		&cobra.Command{
-			Use:   "enable-server-scanning",
-			Short: "Enable server scanning for Trivy Cloud platform",
-			Long:  "Use the Trivy Cloud platform for server side image scanning",
+			Use:     "enable-server-scanning",
+			Short:   "Enable server scanning for Trivy Cloud platform",
+			Long:    "Use the Trivy Cloud platform for server side image scanning",
+			GroupID: cloud.GroupCloud,
 			RunE: func(_ *cobra.Command, _ []string) error {
 				return cloud.SetServerScanning(true)
 			},
 		},
 		&cobra.Command{
-			Use:   "disable-server-scanning",
-			Short: "Disable server scanning for Trivy Cloud platform",
-			Long:  "Disable the use of the Trivy Cloud platform for server side image scanning",
+			Use:     "disable-server-scanning",
+			Short:   "Disable server scanning for Trivy Cloud platform",
+			Long:    "Disable the use of the Trivy Cloud platform for server side image scanning",
+			GroupID: cloud.GroupCloud,
 			RunE: func(_ *cobra.Command, _ []string) error {
 				return cloud.SetServerScanning(false)
 			},
 		},
 		&cobra.Command{
-			Use:   "enable-results-upload",
-			Short: "Enable results upload for Trivy Cloud platform",
-			Long:  "Enable the upload of scan results to the Trivy Cloud platform",
+			Use:     "enable-results-upload",
+			Short:   "Enable results upload for Trivy Cloud platform",
+			Long:    "Enable the upload of scan results to the Trivy Cloud platform",
+			GroupID: cloud.GroupCloud,
 			RunE: func(_ *cobra.Command, _ []string) error {
 				return cloud.SetResultsUpload(true)
 			},
 		},
 		&cobra.Command{
-			Use:   "disable-results-upload",
-			Short: "Disable results upload for Trivy Cloud platform",
-			Long:  "Disable the upload of scan results to the Trivy Cloud platform",
+			Use:     "disable-results-upload",
+			Short:   "Disable results upload for Trivy Cloud platform",
+			Long:    "Disable the upload of scan results to the Trivy Cloud platform",
+			GroupID: cloud.GroupCloud,
 			RunE: func(_ *cobra.Command, _ []string) error {
 				return cloud.SetResultsUpload(false)
 			},

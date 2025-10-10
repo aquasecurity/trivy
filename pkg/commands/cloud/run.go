@@ -30,11 +30,14 @@ func Login(ctx context.Context, opts flag.Options) error {
 		return xerrors.New("api url is required for Trivy Cloud login")
 	}
 
-	cloudConfig := cloud.CloudConfig{
-		Token:     creds.Token,
-		ServerUrl: opts.CloudOptions.TrivyServerUrl,
-		ApiUrl:    opts.CloudOptions.ApiUrl,
+	// load the existing config or get the default
+	cloudConfig, err := cloud.Load()
+	if err != nil {
+		return xerrors.Errorf("failed to load Trivy Cloud config: %w", err)
 	}
+	cloudConfig.Token = creds.Token
+	cloudConfig.ServerUrl = opts.CloudOptions.TrivyServerUrl
+	cloudConfig.ApiUrl = opts.CloudOptions.ApiUrl
 
 	if err := cloudConfig.Verify(ctx); err != nil {
 		return xerrors.Errorf("failed to verify Trivy Cloud config: %w", err)
@@ -76,12 +79,14 @@ func CheckTrivyCloudStatus(cmd *cobra.Command) error {
 	if cloudConfig != nil && cloudConfig.Verify(cmd.Context()) == nil {
 		logger.Info("Trivy cloud is logged in")
 		if cloudConfig.ServerScanning {
+			logger.Info("Trivy Cloud server scanning is enabled")
 			os.Setenv("TRIVY_SERVER", cloudConfig.ServerUrl)
 			os.Setenv("TRIVY_TOKEN_HEADER", "Authorization")
 			os.Setenv("TRIVY_TOKEN", fmt.Sprintf("Bearer %s", cloudConfig.Token))
 		}
 
 		if cloudConfig.UploadResults {
+			logger.Info("Trivy Cloud results upload is enabled")
 			// add hook to upload the results to SaaS
 			resultHook := cloud.NewResultsHook(cloudConfig)
 			extension.RegisterHook(resultHook)
@@ -98,7 +103,16 @@ func SetServerScanning(enabled bool) error {
 	}
 
 	cloudConfig.ServerScanning = enabled
-	return cloudConfig.Save()
+	if err := cloudConfig.Save(); err != nil {
+		return xerrors.Errorf("failed to save Trivy Cloud config file: %w", err)
+	}
+	logger := log.WithPrefix("trivy-cloud")
+	if enabled {
+		logger.Info("Trivy Cloud server scanning is enabled")
+	} else {
+		logger.Info("Trivy Cloud server scanning is disabled")
+	}
+	return nil
 }
 
 func SetResultsUpload(enabled bool) error {
@@ -108,5 +122,14 @@ func SetResultsUpload(enabled bool) error {
 	}
 
 	cloudConfig.UploadResults = enabled
-	return cloudConfig.Save()
+	if err := cloudConfig.Save(); err != nil {
+		return xerrors.Errorf("failed to save Trivy Cloud config file: %w", err)
+	}
+	logger := log.WithPrefix("trivy-cloud")
+	if enabled {
+		logger.Info("Trivy Cloud results upload is enabled")
+	} else {
+		logger.Info("Trivy Cloud results upload is disabled")
+	}
+	return nil
 }

@@ -24,17 +24,16 @@ const (
 )
 
 type CloudConfig struct {
-	Token          string `yaml:"-"`
-	IsLoggedIn     bool   `yaml:"-"`
 	ServerUrl      string `yaml:"server_url"`
 	ApiUrl         string `yaml:"api_url"`
 	ServerScanning bool   `yaml:"server_scanning"`
 	UploadResults  bool   `yaml:"results_upload"`
+
+	IsLoggedIn bool   `yaml:"-"`
+	Token      string `yaml:"-"`
 }
 
-// defaultCloudConfig is the default configuration for Trivy Cloud
-// if the config file does not exist, this will be used
-var defaultCloudConfig = CloudConfig{
+var defaultCloudConfig = &CloudConfig{
 	ServerScanning: true,
 	UploadResults:  true,
 	ServerUrl:      "https://scan.trivy.dev",
@@ -97,7 +96,7 @@ func Load() (*CloudConfig, error) {
 			return nil, err
 		}
 		logger.Debug("No cloud config file found")
-		return &defaultCloudConfig, nil
+		return defaultCloudConfig, nil
 	}
 	if err := yaml.Unmarshal(yamlData, &config); err != nil {
 		return nil, err
@@ -109,7 +108,7 @@ func Load() (*CloudConfig, error) {
 			return nil, err
 		}
 		logger.Debug("No token found in keychain")
-		return nil, nil
+		return defaultCloudConfig, nil
 	}
 
 	config.Token = token

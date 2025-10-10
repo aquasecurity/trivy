@@ -40,6 +40,8 @@ func TestSave(t *testing.T) {
 			wantErr: false,
 		},
 	}
+	tempDir := t.TempDir()
+	t.Setenv("XDG_DATA_HOME", tempDir)
 
 	keyring.MockInit()
 	for _, tt := range tests {
@@ -86,6 +88,10 @@ func TestClear(t *testing.T) {
 			wantErr:      false,
 		},
 	}
+
+	tempDir := t.TempDir()
+	t.Setenv("XDG_DATA_HOME", tempDir)
+
 	keyring.MockInit()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -132,6 +138,10 @@ func TestLoad(t *testing.T) {
 			expectDefault: true,
 		},
 	}
+
+	tempDir := t.TempDir()
+	t.Setenv("XDG_DATA_HOME", tempDir)
+
 	keyring.MockInit()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -151,7 +161,7 @@ func TestLoad(t *testing.T) {
 
 			config, err := Load()
 			if tt.expectDefault {
-				assert.Equal(t, &defaultCloudConfig, config)
+				assert.Equal(t, defaultCloudConfig, config)
 				return
 			}
 			require.NotNil(t, config)
@@ -183,6 +193,9 @@ func TestVerify(t *testing.T) {
 			wantErr: true,
 		},
 	}
+	tempDir := t.TempDir()
+	t.Setenv("XDG_DATA_HOME", tempDir)
+
 	keyring.MockInit()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
