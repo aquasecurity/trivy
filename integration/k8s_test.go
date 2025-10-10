@@ -28,12 +28,14 @@ func TestK8s(t *testing.T) {
 		// Set up the output file
 		outputFile := filepath.Join(t.TempDir(), "output.json")
 
+		// it uses a fixed version of trivy-checks bundle - v1.11.2
+		// its hash is sha256:f3ea8227f838a985f0c884909e9d226362f5fc5ab6021310a179fbb24c5b57fd
 		osArgs := []string{
 			"--cache-dir", cacheDir,
 			"k8s",
 			"kind-kind-test",
 			"--report", "summary",
-			"--checks-bundle-repository", "mirror.gcr.io/aquasec/trivy-checks:1.11.2",
+			"--checks-bundle-repository", "mirror.gcr.io/aquasec/trivy-checks:1.11.2@sha256:f3ea8227f838a985f0c884909e9d226362f5fc5ab6021310a179fbb24c5b57fd",
 			"-q",
 			"--timeout", "5m0s",
 			"--format", "json",
