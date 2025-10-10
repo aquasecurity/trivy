@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.67.2](https://github.com/aquasecurity/trivy/compare/v0.67.1...v0.67.2) (2025-10-10)
+
+
+### Bug Fixes
+
+* Use `fetch-level: 1` to check out trivy-repo in the release workflow [backport: release/v0.67] ([#9638](https://github.com/aquasecurity/trivy/issues/9638)) ([f3ee80c](https://github.com/aquasecurity/trivy/commit/f3ee80c8e0a92a7d61f2fee21bfb9a44d95067da))
+
 ## [0.67.1](https://github.com/aquasecurity/trivy/compare/v0.67.0...v0.67.1) (2025-10-09)
 
 
