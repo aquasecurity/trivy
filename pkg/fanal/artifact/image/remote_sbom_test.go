@@ -318,3 +318,133 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 		})
 	}
 }
+
+func TestArtifact_inspectOCIReferrerSBOMSigstoreBundle(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/v2":
+			_, err := w.Write([]byte("ok"))
+			assert.NoError(t, err)
+		case "/v2/test/image/referrers/sha256:782143e39f1e7a04e3f6da2d88b1c057e5657363c4f90679f3e8a071b7619e02":
+			w.Header().Set("Content-Type", string(typesv1.OCIImageIndex))
+			http.ServeFile(w, r, "testdata/sigstore-index.json")
+		case "/v2/test/image/manifests/sha256:3efec4938089b060058525552ba8bf1888beddf29616e4243b4262792ed3fd2f":
+			http.ServeFile(w, r, "testdata/bundle-manifest.json")
+		case "/v2/test/image/blobs/sha256:92390b7d2d7b16c84725e9b77573fbd449a8f733113776ad78f983abb3173db3":
+			http.ServeFile(w, r, "testdata/sigstore-bundle.json")
+		}
+	}))
+	defer ts.Close()
+
+	u, err := url.Parse(ts.URL)
+	require.NoError(t, err)
+	registry := u.Host
+
+	type fields struct {
+		imageName   string
+		repoDigests []string
+	}
+
+	tests := []struct {
+		name        string
+		fields      fields
+		artifactOpt artifact.Option
+		wantBlobs   []cachetest.WantBlob
+		want        artifact.Reference
+		wantErr     string
+	}{
+		{
+			name: "happy path",
+			fields: fields{
+				imageName: registry + "/test/image:10",
+				repoDigests: []string{
+					registry + "/test/image@sha256:782143e39f1e7a04e3f6da2d88b1c057e5657363c4f90679f3e8a071b7619e02",
+				},
+			},
+			artifactOpt: artifact.Option{
+				SBOMSources: []string{"oci"},
+			},
+			wantBlobs: []cachetest.WantBlob{
+				{
+					ID: "sha256:2171d8ccf798e94d09aca9c6abf15d28abd3236def1caa4a394b6f0a69c4266d",
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: types.BlobJSONSchemaVersion,
+						Applications: []types.Application{
+							{
+								Type: types.GoBinary,
+								Packages: types.Packages{
+									{
+										ID:      "github.com/opencontainers/go-digest@v1.0.0",
+										Name:    "github.com/opencontainers/go-digest",
+										Version: "v1.0.0",
+										Identifier: types.PkgIdentifier{
+											PURL: &packageurl.PackageURL{
+												Type:      packageurl.TypeGolang,
+												Namespace: "github.com/opencontainers",
+												Name:      "go-digest",
+												Version:   "v1.0.0",
+											},
+											BOMRef: "pkg:golang/github.com/opencontainers/go-digest@v1.0.0",
+										},
+									},
+									{
+										ID:      "golang.org/x/sync@v0.1.0",
+										Name:    "golang.org/x/sync",
+										Version: "v0.1.0",
+										Identifier: types.PkgIdentifier{
+											PURL: &packageurl.PackageURL{
+												Type:      packageurl.TypeGolang,
+												Namespace: "golang.org/x",
+												Name:      "sync",
+												Version:   "v0.1.0",
+											},
+											BOMRef: "pkg:golang/golang.org/x/sync@v0.1.0",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: artifact.Reference{
+				Name: registry + "/test/image:10",
+				Type: types.TypeCycloneDX,
+				ID:   "sha256:2171d8ccf798e94d09aca9c6abf15d28abd3236def1caa4a394b6f0a69c4266d",
+				BlobIDs: []string{
+					"sha256:2171d8ccf798e94d09aca9c6abf15d28abd3236def1caa4a394b6f0a69c4266d",
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := cachetest.NewCache(t, nil)
+
+			fi := &fakei.FakeImage{}
+			fi.ConfigFileReturns(&v1.ConfigFile{}, nil)
+
+			img := &fakeImage{
+				name:        tt.fields.imageName,
+				repoDigests: tt.fields.repoDigests,
+				Image:       fi,
+			}
+			a, err := image2.NewArtifact(img, c, tt.artifactOpt)
+			require.NoError(t, err)
+
+			got, err := a.Inspect(t.Context())
+			if tt.wantErr != "" {
+				assert.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			defer a.Clean(got)
+
+			require.NoError(t, err, tt.name)
+			got.BOM = nil
+			assert.Equal(t, tt.want, got)
+
+			cachetest.AssertBlobs(t, c, tt.wantBlobs)
+		})
+	}
+}
