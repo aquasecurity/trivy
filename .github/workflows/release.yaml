@@ -39,7 +39,6 @@ jobs:
         with:
           repository: ${{ github.repository_owner }}/trivy-repo
           path: trivy-repo
-          fetch-depth: 0
           token: ${{ secrets.ORG_REPO_TOKEN }}
 
       - name: Setup git settings
