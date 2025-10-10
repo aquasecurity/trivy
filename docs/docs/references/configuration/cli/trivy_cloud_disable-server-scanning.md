@@ -31,5 +31,5 @@ trivy cloud disable-server-scanning [flags]
 
 ### SEE ALSO
 
-* [trivy cloud](trivy_cloud.md)	 - Manage Trivy Cloud platform
+* [trivy cloud](trivy_cloud.md)	 - Control Trivy Cloud platform integration settings
 

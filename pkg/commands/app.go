@@ -1477,7 +1477,7 @@ func NewLogoutCommand() *cobra.Command {
 func NewCloudCommand() *cobra.Command {
 	cloudCmd := &cobra.Command{
 		Use:     "cloud [flags]",
-		Short:   "Manage Trivy Cloud platform",
+		Short:   "Control Trivy Cloud platform integration settings",
 		GroupID: cloud.GroupCloud,
 	}
 
@@ -1522,6 +1522,15 @@ func NewCloudCommand() *cobra.Command {
 			GroupID: cloud.GroupCloud,
 			RunE: func(_ *cobra.Command, _ []string) error {
 				return cloud.SetResultsUpload(false)
+			},
+		},
+		&cobra.Command{
+			Use:     "show-config",
+			Short:   "Show the Trivy Cloud platform configuration",
+			Long:    "Show the Trivy Cloud platform configuration",
+			GroupID: cloud.GroupCloud,
+			RunE: func(_ *cobra.Command, _ []string) error {
+				return cloud.ShowConfig()
 			},
 		},
 	)

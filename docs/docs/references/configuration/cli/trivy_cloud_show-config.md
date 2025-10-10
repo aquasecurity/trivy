@@ -1,19 +1,19 @@
-## trivy cloud disable-results-upload
+## trivy cloud show-config
 
-Disable results upload for Trivy Cloud platform
+Show the Trivy Cloud platform configuration
 
 ### Synopsis
 
-Disable the upload of scan results to the Trivy Cloud platform
+Show the Trivy Cloud platform configuration
 
 ```
-trivy cloud disable-results-upload [flags]
+trivy cloud show-config [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for disable-results-upload
+  -h, --help   help for show-config
 ```
 
 ### Options inherited from parent commands

@@ -19,29 +19,29 @@ var (
 	presignedUploadUrl = "/trivy-reports/upload-url"
 )
 
-type SaasResultsHook struct {
-	name    string
-	saasCfg *CloudConfig
+type CloudPlatformResultsHook struct {
+	name        string
+	cloudConfig *CloudConfig
 }
 
-func NewResultsHook(saasCfg *CloudConfig) *SaasResultsHook {
-	return &SaasResultsHook{
-		name:    "SaaS Results Hook",
-		saasCfg: saasCfg,
+func NewResultsHook(cloudCfg *CloudConfig) *CloudPlatformResultsHook {
+	return &CloudPlatformResultsHook{
+		name:        "Trivy Cloud Results Hook",
+		cloudConfig: cloudCfg,
 	}
 }
 
-func (h *SaasResultsHook) Name() string {
+func (h *CloudPlatformResultsHook) Name() string {
 	return h.name
 }
 
 // PreReport is not going go to be called so we return nil
-func (h *SaasResultsHook) PreReport(_ context.Context, _ *types.Report, _ flag.Options) error {
+func (h *CloudPlatformResultsHook) PreReport(_ context.Context, _ *types.Report, _ flag.Options) error {
 	return nil
 }
 
-func (h *SaasResultsHook) PostReport(ctx context.Context, report *types.Report, _ flag.Options) error {
-	logger := log.WithPrefix("saas-results")
+func (h *CloudPlatformResultsHook) PostReport(ctx context.Context, report *types.Report, _ flag.Options) error {
+	logger := log.WithPrefix("trivy-cloud")
 	logger.Debug("PostReport called with report")
 
 	client := xhttp.ClientWithContext(ctx)
@@ -53,8 +53,8 @@ func (h *SaasResultsHook) PostReport(ctx context.Context, report *types.Report, 
 	return h.uploadResults(client, jsonReport)
 }
 
-func (h *SaasResultsHook) uploadResults(client *http.Client, jsonReport []byte) error {
-	logger := log.WithPrefix("saas-results")
+func (h *CloudPlatformResultsHook) uploadResults(client *http.Client, jsonReport []byte) error {
+	logger := log.WithPrefix("trivy-cloud")
 
 	uploadUrl, err := h.getPresignedUploadUrl(client)
 	if err != nil {
@@ -82,10 +82,10 @@ func (h *SaasResultsHook) uploadResults(client *http.Client, jsonReport []byte) 
 	return nil
 }
 
-func (h *SaasResultsHook) getPresignedUploadUrl(client *http.Client) (string, error) {
-	logger := log.WithPrefix("saas-results")
+func (h *CloudPlatformResultsHook) getPresignedUploadUrl(client *http.Client) (string, error) {
+	logger := log.WithPrefix("trivy-cloud")
 
-	uploadUrl := h.saasCfg.ApiUrl + presignedUploadUrl
+	uploadUrl := h.cloudConfig.ApiUrl + presignedUploadUrl
 	logger.Debug("Requesting result upload URL", log.String("uploadUrl", uploadUrl))
 
 	req, err := http.NewRequest(http.MethodGet, uploadUrl, http.NoBody)
@@ -93,7 +93,7 @@ func (h *SaasResultsHook) getPresignedUploadUrl(client *http.Client) (string, er
 		return "", fmt.Errorf("failed to create request: %w", err)
 	}
 
-	req.Header.Set("Authorization", "Bearer "+h.saasCfg.Token)
+	req.Header.Set("Authorization", "Bearer "+h.cloudConfig.Token)
 	resp, err := client.Do(req)
 	if err != nil {
 		return "", fmt.Errorf("failed to get upload URL: %w", err)

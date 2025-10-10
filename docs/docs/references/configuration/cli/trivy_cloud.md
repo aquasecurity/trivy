@@ -1,6 +1,6 @@
 ## trivy cloud
 
-Manage Trivy Cloud platform
+Control Trivy Cloud platform integration settings
 
 ### Options
 
@@ -28,4 +28,5 @@ Manage Trivy Cloud platform
 * [trivy cloud disable-server-scanning](trivy_cloud_disable-server-scanning.md)	 - Disable server scanning for Trivy Cloud platform
 * [trivy cloud enable-results-upload](trivy_cloud_enable-results-upload.md)	 - Enable results upload for Trivy Cloud platform
 * [trivy cloud enable-server-scanning](trivy_cloud_enable-server-scanning.md)	 - Enable server scanning for Trivy Cloud platform
+* [trivy cloud show-config](trivy_cloud_show-config.md)	 - Show the Trivy Cloud platform configuration
 

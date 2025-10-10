@@ -85,7 +85,7 @@ func Clear() error {
 }
 
 // Load loads the Trivy Cloud config from the config file and the keychain
-// If the config file does not exist, it returns nil as a silent failure
+// If the config file does not exist the default config is returned
 func Load() (*CloudConfig, error) {
 	logger := log.WithPrefix("trivy-cloud")
 	var config CloudConfig
@@ -148,7 +148,6 @@ func (c *CloudConfig) Verify(ctx context.Context) error {
 		return xerrors.Errorf("failed to verify token: received status code %d", resp.StatusCode)
 	}
 
-	setGlobalCloudConfig(c)
 	logger.Debug("Trivy Cloud token verified successfully")
 	return nil
 

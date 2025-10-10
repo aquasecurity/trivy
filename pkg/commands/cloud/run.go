@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"golang.org/x/xerrors"
 
@@ -87,7 +88,7 @@ func CheckTrivyCloudStatus(cmd *cobra.Command) error {
 
 		if cloudConfig.UploadResults {
 			logger.Info("Trivy Cloud results upload is enabled")
-			// add hook to upload the results to SaaS
+			// add hook to upload the results to Trivy Cloud
 			resultHook := cloud.NewResultsHook(cloudConfig)
 			extension.RegisterHook(resultHook)
 		}
@@ -131,5 +132,29 @@ func SetResultsUpload(enabled bool) error {
 	} else {
 		logger.Info("Trivy Cloud results upload is disabled")
 	}
+	return nil
+}
+
+func ShowConfig() error {
+	cloudConfig, err := cloud.Load()
+	if err != nil {
+		return xerrors.Errorf("failed to load Trivy Cloud config file: %w", err)
+	}
+
+	var loggedIn bool
+	if cloudConfig.Verify(context.Background()) == nil {
+		loggedIn = true
+	} else {
+		loggedIn = false
+	}
+
+	fmt.Println()
+	fmt.Println("Trivy Cloud Configuration")
+	fmt.Println("-------------------------")
+	fmt.Printf("Logged In:        %s\n", lo.Ternary(loggedIn, "Yes", "No"))
+	fmt.Printf("Trivy Server URL: %s\n", cloudConfig.ServerUrl)
+	fmt.Printf("API URL:          %s\n", cloudConfig.ApiUrl)
+	fmt.Printf("Server Scanning:  %s\n", lo.Ternary(cloudConfig.ServerScanning, "Enabled", "Disabled"))
+	fmt.Printf("Results Upload:   %s\n", lo.Ternary(cloudConfig.UploadResults, "Enabled", "Disabled"))
 	return nil
 }
