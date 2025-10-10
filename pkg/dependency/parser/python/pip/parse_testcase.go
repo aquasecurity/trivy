@@ -301,4 +301,17 @@ var (
 			},
 		},
 	}
+
+	requirementsCommaRanges = []ftypes.Package{
+		{
+			Name:    "requests",
+			Version: "2.31.0",
+			Locations: []ftypes.Location{
+				{
+					StartLine: 1,
+					EndLine:   1,
+				},
+			},
+		},
+	}
 )

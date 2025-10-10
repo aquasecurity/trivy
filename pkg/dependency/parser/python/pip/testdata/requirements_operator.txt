@@ -5,3 +5,4 @@ Django == 2.3.4
 SomeProject ==5.4 ; python_version < '3.8'
 numpyNew; sys_platform == 'win32'
 numpy >= 3.4.1; sys_platform == 'win32'
+requests>=2.31.0,<3        # Minimum version 2.31.0. Trim the end-of-range suffix.
