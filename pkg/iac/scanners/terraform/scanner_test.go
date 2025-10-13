@@ -18,7 +18,7 @@ import (
 
 func Test_OptionWithPolicyDirs(t *testing.T) {
 
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"/code/main.tf":    `resource "aws_s3_bucket" "my-bucket" {}`,
 		"/rules/test.rego": emptyBucketCheck,
 	})
@@ -113,7 +113,7 @@ func Test_OptionWithPolicyNamespaces(t *testing.T) {
 
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 
-			fs := testutil.CreateFS(t, map[string]string{
+			fs := testutil.CreateFS(map[string]string{
 				"/code/main.tf": `
 resource "aws_s3_bucket" "my-bucket" {
 	bucket = "evil"
@@ -161,7 +161,7 @@ cause := bucket.name
 }
 
 func Test_IAMPolicyRego(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"/code/main.tf": `
 resource "aws_sqs_queue_policy" "bad_example" {
    queue_url = aws_sqs_queue.q.id
@@ -229,7 +229,7 @@ deny[res] {
 }
 
 func Test_ContainerDefinitionRego(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"/code/main.tf": `
 resource "aws_ecs_task_definition" "test" {
   family                = "test"
@@ -349,7 +349,7 @@ resource "aws_s3_bucket_public_access_block" "foo" {
 
 `
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/main.tf": code,
 	})
 
@@ -412,7 +412,7 @@ resource "aws_s3_bucket_public_access_block" "testB" {
 
 `
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/main.tf": code,
 	})
 
@@ -431,7 +431,7 @@ resource "aws_s3_bucket_public_access_block" "testB" {
 // PoC for replacing Go with Rego: AVD-AWS-0001
 func Test_RegoRules(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"/code/main.tf": `
 resource "aws_apigatewayv2_stage" "bad_example" {
   api_id = aws_apigatewayv2_api.example.id
@@ -525,7 +525,7 @@ deny[res] {
 }
 
 func Test_OptionWithConfigsFileSystem(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/main.tf": `
 variable "bucket_name" {
   type = string
@@ -537,7 +537,7 @@ resource "aws_s3_bucket" "main" {
 		"rules/bucket_name.rego": emptyBucketCheck,
 	})
 
-	configsFS := testutil.CreateFS(t, map[string]string{
+	configsFS := testutil.CreateFS(map[string]string{
 		"main.tfvars": `
 bucket_name = "test"
 `,
@@ -562,7 +562,7 @@ bucket_name = "test"
 }
 
 func Test_OptionWithConfigsFileSystem_ConfigInCode(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/main.tf": `
 variable "bucket_name" {
   type = string
@@ -596,7 +596,7 @@ bucket_name = "test"
 }
 
 func Test_DoNotScanNonRootModules(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"/code/app1/main.tf": `
 module "s3" {
   source      = "./modules/s3"
@@ -670,7 +670,7 @@ deny[res] {
 }
 
 func Test_RoleRefToOutput(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/main.tf": `
 module "this" {
   source = "./modules/iam"
@@ -738,7 +738,7 @@ deny[res] {
 }
 
 func Test_RegoRefToAwsProviderAttributes(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/providers.tf": `
 provider "aws" {
   region  = "us-east-2"
@@ -811,7 +811,7 @@ deny[res] {
 }
 
 func TestScanModuleWithCount(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/main.tf": `
 module "this" {
   count = 0
@@ -877,7 +877,7 @@ deny[res] {
 }
 
 func TestSkipDir(t *testing.T) {
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"deployments/main.tf": `
 module "use_bad_configuration" {
   source = "../modules"
@@ -1256,4 +1256,23 @@ deny contains res if {
 	failed := results.GetFailed()
 
 	assert.Len(t, failed, 1)
+}
+
+func Test_ScanTofuFiles(t *testing.T) {
+	fsys := testutil.CreateFS(map[string]string{
+		"code/main.tofu":   `resource "aws_s3_bucket" "this" {}`,
+		"rules/check.rego": emptyBucketCheck,
+	})
+
+	scanner := New(
+		rego.WithPolicyNamespaces("user"),
+		rego.WithPolicyDirs("rules"),
+		rego.WithPolicyFilesystem(fsys),
+	)
+
+	results, err := scanner.ScanFS(t.Context(), fsys, "code")
+	require.NoError(t, err)
+
+	assert.Len(t, results, 1)
+	assert.Len(t, results.GetFailed(), 1)
 }

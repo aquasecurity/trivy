@@ -10,7 +10,7 @@ trivy convert [flags] RESULT_JSON
 
 ```
   # report conversion
-  $ trivy image --format json --output result.json --list-all-pkgs debian:11
+  $ trivy image --format json --output result.json debian:11
   $ trivy convert --format cyclonedx --output result.cdx result.json
 
 ```
@@ -37,7 +37,7 @@ trivy convert [flags] RESULT_JSON
   -h, --help                       help for convert
       --ignore-policy string       specify the Rego file path to evaluate each vulnerability
       --ignorefile string          specify .trivyignore file (default ".trivyignore")
-      --list-all-pkgs              output all packages in the JSON report regardless of vulnerability
+      --list-all-pkgs              output all packages in the JSON report regardless of vulnerability (default true)
   -o, --output string              output file name
       --output-plugin-arg string   [EXPERIMENTAL] output plugin arguments
       --report string              specify a report format for the output (allowed values: all,summary) (default "all")

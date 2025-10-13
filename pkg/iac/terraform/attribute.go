@@ -391,12 +391,10 @@ func (a *Attribute) valueToStrings(value cty.Value) (results []iacTypes.StringVa
 			results = []iacTypes.StringValue{iacTypes.StringUnresolvable(a.metadata)}
 		}
 	}()
-	if value.IsNull() {
+	if value.IsNull() || !value.IsKnown() {
 		return []iacTypes.StringValue{iacTypes.StringUnresolvable(a.metadata)}
 	}
-	if !value.IsKnown() {
-		return []iacTypes.StringValue{iacTypes.StringUnresolvable(a.metadata)}
-	}
+
 	if value.Type().IsListType() || value.Type().IsTupleType() || value.Type().IsSetType() {
 		for _, val := range value.AsValueSlice() {
 			results = append(results, a.valueToString(val))
@@ -828,7 +826,9 @@ func safeOp[T any](a *Attribute, fn func(cty.Value) T) T {
 		return res
 	}
 
-	return fn(val)
+	unmarked, _ := val.UnmarkDeep()
+
+	return fn(unmarked)
 }
 
 // RewriteExpr applies the given function `transform` to the expression of the attribute,

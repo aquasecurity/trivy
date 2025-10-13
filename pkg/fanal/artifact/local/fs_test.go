@@ -218,6 +218,38 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "git repository: artifact type is changed to repository",
+			fields: fields{
+				dir: "../../../../internal/gittest/testdata/test-repo",
+			},
+			wantBlobs: []cachetest.WantBlob{
+				{
+					// Cache key is based on commit hash (8a19b492a589955c3e70c6ad8efd1e4ec6ae0d35)
+					ID: "sha256:c7173e152a268c038257b877794285986c52ac569de7e516b2963f557f4e26ee",
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: types.BlobJSONSchemaVersion,
+					},
+				},
+			},
+			want: artifact.Reference{
+				Name: "../../../../internal/gittest/testdata/test-repo",
+				Type: types.TypeRepository,
+				ID:   "sha256:c7173e152a268c038257b877794285986c52ac569de7e516b2963f557f4e26ee",
+				BlobIDs: []string{
+					"sha256:c7173e152a268c038257b877794285986c52ac569de7e516b2963f557f4e26ee",
+				},
+				RepoMetadata: artifact.RepoMetadata{
+					RepoURL:   "https://github.com/aquasecurity/trivy-test-repo/",
+					Branch:    "main",
+					Tags:      []string{"v0.0.1"},
+					Commit:    "8a19b492a589955c3e70c6ad8efd1e4ec6ae0d35",
+					CommitMsg: "Update README.md",
+					Author:    "Teppei Fukuda <knqyf263@gmail.com>",
+					Committer: "GitHub <noreply@github.com>",
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

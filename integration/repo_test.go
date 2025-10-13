@@ -626,8 +626,8 @@ func buildArgs(t *testing.T, cacheDir, command string, format types.Format, test
 			"--vuln-severity-source", strings.Join(testArgs.vulnSeveritySources, ","),
 		)
 	}
-	if testArgs.listAllPkgs {
-		osArgs = append(osArgs, "--list-all-pkgs")
+	if !testArgs.listAllPkgs {
+		osArgs = append(osArgs, "--list-all-pkgs=false")
 	}
 	if testArgs.includeDevDeps {
 		osArgs = append(osArgs, "--include-dev-deps")

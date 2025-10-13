@@ -53,7 +53,7 @@ func NewService(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner la
 // Scan scans the artifact and return results.
 func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobKeys []string, options types.ScanOptions) (
 	types.ScanResponse, error) {
-	detail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
+	detail, err := s.applier.ApplyLayers(ctx, artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
 		log.Debug("OS is not detected.")

@@ -227,7 +227,7 @@ func (t Test) Integration() error {
 // K8s runs k8s integration tests
 func (t Test) K8s() error {
 	mg.Deps(Tool{}.Install) // Install kind
-	err := sh.RunWithV(ENV, "kind", "create", "cluster", "--name", "kind-test")
+	err := sh.RunWithV(ENV, "kind", "create", "cluster", "--name", "kind-test", "--image", "kindest/node:v1.27.1@sha256:b7d12ed662b873bd8510879c1846e87c7e676a79fefc93e17b2a52989d3ff42b")
 	if err != nil {
 		return err
 	}

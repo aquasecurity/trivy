@@ -364,7 +364,7 @@ resource "aws_s3_bucket" "test" {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fsys := testutil.CreateFS(t, tt.files)
+			fsys := testutil.CreateFS(tt.files)
 			results, err := scanFS(fsys, "project",
 				rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 				rego.WithPolicyNamespaces("user"),

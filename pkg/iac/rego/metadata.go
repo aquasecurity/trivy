@@ -8,7 +8,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/mitchellh/mapstructure"
+	"github.com/go-viper/mapstructure/v2"
 	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/samber/lo"
@@ -272,6 +272,7 @@ func (sm *StaticMetadata) ToRule() scan.Rule {
 
 	return scan.Rule{
 		Deprecated:          sm.Deprecated,
+		ID:                  sm.ID,
 		AVDID:               sm.AVDID,
 		Aliases:             append(sm.Aliases, sm.ID),
 		ShortCode:           sm.ShortCode,

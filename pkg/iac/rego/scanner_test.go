@@ -3,38 +3,25 @@ package rego_test
 import (
 	"bytes"
 	"fmt"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 	"testing/fstest"
 
-	"github.com/liamg/memoryfs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func CreateFS(t *testing.T, files map[string]string) fs.FS {
-	memfs := memoryfs.New()
-	for name, content := range files {
-		name := strings.TrimPrefix(name, "/")
-		err := memfs.MkdirAll(filepath.Dir(name), 0o700)
-		require.NoError(t, err)
-		err = memfs.WriteFile(name, []byte(content), 0o644)
-		require.NoError(t, err)
-	}
-	return memfs
-}
-
 func Test_RegoScanning_Deny(t *testing.T) {
 
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `
 # METADATA
 # title: Custom policy
@@ -128,7 +115,7 @@ deny {
 }
 
 func Test_RegoScanning_Allow(t *testing.T) {
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `# METADATA
 # title: Custom policy
 # description: Custom policy for testing
@@ -176,7 +163,7 @@ func Test_RegoScanning_WithRuntimeValues(t *testing.T) {
 
 	t.Setenv("DEFSEC_RUNTIME_VAL", "AOK")
 
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `# METADATA
 # title: Custom policy
 # description: Custom policy for testing
@@ -220,7 +207,7 @@ deny_evil {
 }
 
 func Test_RegoScanning_WithDenyMessage(t *testing.T) {
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `# METADATA
 # title: Custom policy
 # description: Custom policy for testing
@@ -267,7 +254,7 @@ deny[msg] {
 }
 
 func Test_RegoScanning_WithDenyMetadata_ImpliedPath(t *testing.T) {
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `
 # METADATA
 # title: Custom policy
@@ -322,7 +309,7 @@ deny[res] {
 }
 
 func Test_RegoScanning_WithDenyMetadata_PersistedPath(t *testing.T) {
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `
 # METADATA
 # title: Custom policy
@@ -378,7 +365,7 @@ deny[res] {
 }
 
 func Test_RegoScanning_WithStaticMetadata(t *testing.T) {
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `
 package defsec.test
 
@@ -439,7 +426,7 @@ deny[res] {
 }
 
 func Test_RegoScanning_WithMatchingInputSelector(t *testing.T) {
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `# METADATA
 # title: Custom policy
 # description: Custom policy for testing
@@ -487,7 +474,7 @@ deny {
 }
 
 func Test_RegoScanning_WithNonMatchingInputSelector(t *testing.T) {
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `
 package defsec.test
 
@@ -521,7 +508,7 @@ deny {
 
 func Test_RegoScanning_NoTracingByDefault(t *testing.T) {
 
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `# METADATA
 # title: Custom policy
 # description: Custom policy for testing
@@ -567,7 +554,7 @@ deny {
 
 func Test_RegoScanning_GlobalTracingEnabled(t *testing.T) {
 
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `# METADATA
 # title: Custom policy
 # description: Custom policy for testing
@@ -617,7 +604,7 @@ deny {
 
 func Test_RegoScanning_PerResultTracingEnabled(t *testing.T) {
 
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `# METADATA
 # title: Custom policy
 # description: Custom policy for testing
@@ -663,7 +650,7 @@ deny {
 
 func Test_dynamicMetadata(t *testing.T) {
 
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `
 package defsec.test
 
@@ -695,7 +682,7 @@ deny {
 
 func Test_staticMetadata(t *testing.T) {
 
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `
 package defsec.test
 
@@ -727,7 +714,7 @@ deny {
 
 func Test_annotationMetadata(t *testing.T) {
 
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `# METADATA
 # title: i am a title
 # description: i am a description
@@ -782,7 +769,7 @@ deny {
 
 func Test_RegoScanning_WithInvalidInputSchema(t *testing.T) {
 
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `# METADATA
 # schemas:
 # - input: schema["input"]
@@ -802,7 +789,7 @@ deny {
 
 func Test_RegoScanning_WithValidInputSchema(t *testing.T) {
 
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `# METADATA
 # schemas:
 # - input: schema["input"]
@@ -821,7 +808,7 @@ deny {
 }
 
 func Test_RegoScanning_WithFilepathToSchema(t *testing.T) {
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `# METADATA
 # schemas:
 # - input: schema["dockerfile"]
@@ -846,7 +833,7 @@ deny {
 }
 
 func Test_RegoScanning_CustomData(t *testing.T) {
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `# METADATA
 # title: Custom policy
 # description: Custom policy for testing
@@ -871,7 +858,7 @@ deny {
 `,
 	})
 
-	dataFS := CreateFS(t, map[string]string{
+	dataFS := testutil.CreateFS(map[string]string{
 		"data/data.json": `{
 	"settings": {
 		"DS123":{
@@ -899,7 +886,7 @@ deny {
 }
 
 func Test_RegoScanning_InvalidFS(t *testing.T) {
-	srcFS := CreateFS(t, map[string]string{
+	srcFS := testutil.CreateFS(map[string]string{
 		"policies/test.rego": `# METADATA
 # title: Custom policy
 # description: Custom policy for testing
@@ -924,7 +911,7 @@ deny {
 `,
 	})
 
-	dataFS := CreateFS(t, map[string]string{
+	dataFS := testutil.CreateFS(map[string]string{
 		"data/data.json": `{
 	"settings": {
 		"DS123":{

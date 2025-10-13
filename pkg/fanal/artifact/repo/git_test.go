@@ -268,7 +268,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				}
 				// Store the blob info in the cache to test cache hit
 				cacheKey := "sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c"
-				err := c.PutBlob(cacheKey, blobInfo)
+				err := c.PutBlob(t.Context(), cacheKey, blobInfo)
 				require.NoError(t, err)
 			},
 			want: artifact.Reference{
@@ -325,7 +325,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			assert.Equal(t, tt.want, ref)
 
 			// Verify cache contents after inspection
-			blobInfo, err := c.GetBlob(tt.want.BlobIDs[0])
+			blobInfo, err := c.GetBlob(t.Context(), tt.want.BlobIDs[0])
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantBlobInfo, &blobInfo, "cache content mismatch")
 		})

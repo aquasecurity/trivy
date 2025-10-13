@@ -106,7 +106,7 @@ deny[cause] {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			b, _ := os.ReadFile(tc.inputFile)
-			fs := testutil.CreateFS(t, map[string]string{
+			fs := testutil.CreateFS(map[string]string{
 				"/code/main.tfplan.json": string(b),
 				"/rules/test.rego":       tc.check,
 			})

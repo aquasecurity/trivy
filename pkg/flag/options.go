@@ -579,10 +579,23 @@ func (o *Options) GetUsedFlags() []Flagger {
 	return o.usedFlags
 }
 
-func (o *Options) outputPluginWriter(ctx context.Context) (io.Writer, func() error, error) {
+func (o *Options) outputPluginWriter(ctx context.Context) (writer io.Writer, cleanup func() error, err error) {
 	pluginName := strings.TrimPrefix(o.Output, "plugin=")
 
 	pr, pw := io.Pipe()
+
+	// Close pipes on error
+	defer func() {
+		if err != nil {
+			if pr != nil {
+				pr.Close()
+			}
+			if pw != nil {
+				pw.Close()
+			}
+		}
+	}()
+
 	wait, err := plugin.Start(ctx, pluginName, plugin.Options{
 		Args:  o.OutputPluginArgs,
 		Stdin: pr,
@@ -591,7 +604,7 @@ func (o *Options) outputPluginWriter(ctx context.Context) (io.Writer, func() err
 		return nil, nil, xerrors.Errorf("plugin start: %w", err)
 	}
 
-	cleanup := func() error {
+	cleanup = func() error {
 		if err = pw.Close(); err != nil {
 			return xerrors.Errorf("failed to close pipe: %w", err)
 		}

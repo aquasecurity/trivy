@@ -15,7 +15,7 @@ import (
 
 func Test_BasicScan(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"/code/main.yaml": `---
 Resources:
   S3Bucket:
@@ -64,6 +64,7 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 
 	assert.Equal(t, scan.Rule{
+		ID:             "DS006",
 		AVDID:          "AVD-DS-0006",
 		Aliases:        []string{"DS006"},
 		ShortCode:      "no-self-referencing-copy-from",
@@ -205,7 +206,7 @@ Resources:
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fsys := testutil.CreateFS(t, map[string]string{
+			fsys := testutil.CreateFS(map[string]string{
 				"/code/main.yaml": tt.src,
 			})
 

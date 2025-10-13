@@ -177,7 +177,7 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			}
 
 			// clear Cache
-			require.NoError(t, c.Clear(), tt.name)
+			require.NoError(t, c.Clear(t.Context()), tt.name)
 		})
 	}
 }
@@ -208,7 +208,7 @@ func TestFanal_Library_TarMode(t *testing.T) {
 			runChecks(t, ctx, ar, applier, tt)
 
 			// clear Cache
-			require.NoError(t, c.Clear(), tt.name)
+			require.NoError(t, c.Close())
 		})
 	}
 }
@@ -216,7 +216,7 @@ func TestFanal_Library_TarMode(t *testing.T) {
 func runChecks(t *testing.T, ctx context.Context, ar artifact.Artifact, applier applier.Applier, tc testCase) {
 	imageInfo, err := ar.Inspect(ctx)
 	require.NoError(t, err, tc.name)
-	imageDetail, err := applier.ApplyLayers(imageInfo.ID, imageInfo.BlobIDs)
+	imageDetail, err := applier.ApplyLayers(ctx, imageInfo.ID, imageInfo.BlobIDs)
 	require.NoError(t, err, tc.name)
 	commonChecks(t, imageDetail, tc)
 }

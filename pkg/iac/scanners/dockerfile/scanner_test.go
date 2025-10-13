@@ -214,7 +214,7 @@ deny[res] {
 }`
 
 func Test_BasicScanLegacyRegoMetadata(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"/code/Dockerfile": `FROM ubuntu
 USER root
 `,
@@ -237,6 +237,7 @@ USER root
 	assert.Equal(
 		t,
 		scan.Rule{
+			ID:             "DS006",
 			AVDID:          "AVD-DS-0006",
 			Aliases:        []string{"DS006"},
 			ShortCode:      "no-self-referencing-copy-from",
@@ -559,7 +560,7 @@ res := true
 COPY --from=dep /binary /`
 			fsysMap["/rules/rule.rego"] = tc.inputRegoPolicy
 			fsysMap["/rules/schemas/myfancydockerfile.json"] = string(schemas.Dockerfile) // just use the same for testing
-			fsys := testutil.CreateFS(t, fsysMap)
+			fsys := testutil.CreateFS(fsysMap)
 
 			var traceBuf bytes.Buffer
 
@@ -586,6 +587,7 @@ COPY --from=dep /binary /`
 				assert.Equal(
 					t,
 					scan.Rule{
+						ID:             "DS006",
 						AVDID:          "AVD-DS-0006",
 						Aliases:        []string{"DS006"},
 						ShortCode:      "no-self-referencing-copy-from",

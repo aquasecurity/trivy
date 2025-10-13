@@ -243,25 +243,14 @@ func (d pomDependency) Resolve(props map[string]string, depManagement, rootDepMa
 		EndLine:    d.EndLine,
 	}
 
-	// If this dependency is managed in the root POM,
-	// we need to overwrite fields according to the managed dependency.
-	if managed, found := findDep(dep.Name(), rootDepManagement); found { // dependencyManagement from the root POM
-		if managed.Version != "" {
-			dep.Version = evaluateVariable(managed.Version, props, nil)
-		}
-
-		if managed.Scope != "" {
-			dep.Scope = evaluateVariable(managed.Scope, props, nil)
-		}
-
-		if managed.Optional {
-			dep.Optional = managed.Optional
-		}
-		if len(managed.Exclusions.Exclusion) != 0 {
-			dep.Exclusions = managed.Exclusions
-		}
-		return dep
-	}
+	// Field resolution order:
+	// 1. Fill empty fields with values from dependencyManagement.
+	// 2. Overwrite non-empty fields with values from the root dependencyManagement.
+	//    2.1. Exception: if a dependency has the `test` scope (either defined explicitly
+	//         or inherited from dependencyManagement), we must NOT overwrite it
+	//         with the value from the root dependencyManagement.
+	//
+	// See the test "don't overwrite test scope from upper depManagement" for details.
 
 	// Inherit version, scope and optional from dependencyManagement if empty
 	if managed, found := findDep(dep.Name(), depManagement); found { // dependencyManagement from parent
@@ -277,6 +266,26 @@ func (d pomDependency) Resolve(props map[string]string, depManagement, rootDepMa
 		}
 		// `mvn` always merges exceptions for pom and parent
 		dep.Exclusions.Exclusion = append(dep.Exclusions.Exclusion, managed.Exclusions.Exclusion...)
+	}
+
+	// If this dependency is managed in the root POM,
+	// we need to overwrite fields according to the managed dependency.
+	if managed, found := findDep(dep.Name(), rootDepManagement); found { // dependencyManagement from the root POM
+		if managed.Version != "" {
+			dep.Version = evaluateVariable(managed.Version, props, nil)
+		}
+
+		if managed.Scope != "" && dep.Scope != "test" {
+			dep.Scope = evaluateVariable(managed.Scope, props, nil)
+		}
+
+		if managed.Optional {
+			dep.Optional = managed.Optional
+		}
+		if len(managed.Exclusions.Exclusion) != 0 {
+			dep.Exclusions = managed.Exclusions
+		}
+		return dep
 	}
 	return dep
 }

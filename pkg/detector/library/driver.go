@@ -8,6 +8,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
@@ -23,63 +24,63 @@ import (
 
 // NewDriver returns a driver according to the library type
 func NewDriver(libType ftypes.LangType) (Driver, bool) {
-	var ecosystem dbTypes.Ecosystem
+	var eco ecosystem.Type
 	var comparer compare.Comparer
 
 	switch libType {
 	case ftypes.Bundler, ftypes.GemSpec:
-		ecosystem = vulnerability.RubyGems
+		eco = ecosystem.RubyGems
 		comparer = rubygems.Comparer{}
 	case ftypes.RustBinary, ftypes.Cargo:
-		ecosystem = vulnerability.Cargo
+		eco = ecosystem.Cargo
 		comparer = compare.GenericComparer{}
 	case ftypes.Composer, ftypes.ComposerVendor:
-		ecosystem = vulnerability.Composer
+		eco = ecosystem.Composer
 		comparer = compare.GenericComparer{}
 	case ftypes.GoBinary, ftypes.GoModule:
-		ecosystem = vulnerability.Go
+		eco = ecosystem.Go
 		comparer = compare.GenericComparer{}
 	case ftypes.Jar, ftypes.Pom, ftypes.Gradle, ftypes.Sbt:
-		ecosystem = vulnerability.Maven
+		eco = ecosystem.Maven
 		comparer = maven.Comparer{}
 	case ftypes.Npm, ftypes.Yarn, ftypes.Pnpm, ftypes.Bun, ftypes.NodePkg, ftypes.JavaScript:
-		ecosystem = vulnerability.Npm
+		eco = ecosystem.Npm
 		comparer = npm.Comparer{}
 	case ftypes.NuGet, ftypes.DotNetCore, ftypes.PackagesProps:
-		ecosystem = vulnerability.NuGet
+		eco = ecosystem.NuGet
 		comparer = compare.GenericComparer{}
 	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg, ftypes.Uv:
-		ecosystem = vulnerability.Pip
+		eco = ecosystem.Pip
 		comparer = pep440.Comparer{}
 	case ftypes.Pub:
-		ecosystem = vulnerability.Pub
+		eco = ecosystem.Pub
 		comparer = compare.GenericComparer{}
 	case ftypes.Hex:
-		ecosystem = vulnerability.Erlang
+		eco = ecosystem.Erlang
 		comparer = compare.GenericComparer{}
 	case ftypes.Conan:
-		ecosystem = vulnerability.Conan
+		eco = ecosystem.Conan
 		// Only semver can be used for version ranges
 		// https://docs.conan.io/en/latest/versioning/version_ranges.html
 		comparer = compare.GenericComparer{}
 	case ftypes.Swift:
 		// Swift uses semver
 		// https://www.swift.org/package-manager/#importing-dependencies
-		ecosystem = vulnerability.Swift
+		eco = ecosystem.Swift
 		comparer = compare.GenericComparer{}
 	case ftypes.Cocoapods:
 		// CocoaPods uses RubyGems version specifiers
 		// https://guides.cocoapods.org/making/making-a-cocoapod.html#cocoapods-versioning-specifics
-		ecosystem = vulnerability.Cocoapods
+		eco = ecosystem.Cocoapods
 		comparer = rubygems.Comparer{}
 	case ftypes.CondaPkg, ftypes.CondaEnv:
 		log.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
 		return Driver{}, false
 	case ftypes.Bitnami:
-		ecosystem = vulnerability.Bitnami
+		eco = ecosystem.Bitnami
 		comparer = bitnami.Comparer{}
 	case ftypes.K8sUpstream:
-		ecosystem = vulnerability.Kubernetes
+		eco = ecosystem.Kubernetes
 		comparer = compare.GenericComparer{}
 	case ftypes.Julia:
 		log.Warn("Julia is supported for SBOM, not for vulnerability scanning")
@@ -90,7 +91,7 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 		return Driver{}, false
 	}
 	return Driver{
-		ecosystem: ecosystem,
+		ecosystem: eco,
 		comparer:  comparer,
 		dbc:       db.Config{},
 	}, true
@@ -98,7 +99,7 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 
 // Driver represents security advisories for each programming language
 type Driver struct {
-	ecosystem dbTypes.Ecosystem
+	ecosystem ecosystem.Type
 	comparer  compare.Comparer
 	dbc       db.Config
 }

@@ -14,7 +14,7 @@ import (
 )
 
 func TestJsonScanner(t *testing.T) {
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"/code/data.json": `{ "x": { "y": 123, "z": ["a", "b", "c"]}}`,
 		"/rules/rule.rego": `package builtin.json.lol
 
@@ -55,6 +55,7 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 
 	assert.Equal(t, scan.Rule{
+		ID:             "ABC123",
 		AVDID:          "AVD-AB-0123",
 		Aliases:        []string{"ABC123"},
 		ShortCode:      "short",
@@ -76,7 +77,7 @@ deny[res] {
 }
 
 func TestYamlScanner(t *testing.T) {
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"/code/data.yaml": `---
 x:
   y: 123
@@ -124,6 +125,7 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 
 	assert.Equal(t, scan.Rule{
+		ID:             "ABC123",
 		AVDID:          "AVD-AB-0123",
 		Aliases:        []string{"ABC123"},
 		ShortCode:      "short",
@@ -147,7 +149,7 @@ deny[res] {
 }
 
 func TestTomlParser(t *testing.T) {
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"/code/code.toml": `
 [x]
 y = 123
@@ -192,6 +194,7 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 
 	assert.Equal(t, scan.Rule{
+		ID:             "ABC123",
 		AVDID:          "AVD-AB-0123",
 		Aliases:        []string{"ABC123"},
 		ShortCode:      "short",

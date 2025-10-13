@@ -36,7 +36,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0
 
@@ -44,8 +44,12 @@ jobs:
         env:
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
-          BRANCH_NAME=$(echo $COMMENT_BODY | grep -oE '@aqua-bot backport\s+(\S+)' | awk '{print $3}')
-          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          BRANCH_NAME=$(echo "$COMMENT_BODY" | grep -oE '@aqua-bot backport\s+(\S+)' | awk '{print $3}')
+          if [[ -z "$BRANCH_NAME" || "$BRANCH_NAME" == *".."* || ! "$BRANCH_NAME" =~ ^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$ ]]; then
+            echo "Error: Invalid branch name extracted (unsafe characters detected)." >&2
+            exit 1
+          fi
+          echo "BRANCH_NAME=$BRANCH_NAME" >> "$GITHUB_ENV"
 
       - name: Set up Git user
         run: |

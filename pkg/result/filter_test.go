@@ -173,12 +173,14 @@ func TestFilter(t *testing.T) {
 		license1 = types.DetectedLicense{
 			Name:       "GPL-3.0",
 			Severity:   dbTypes.SeverityLow.String(),
+			PkgName:    "foo",
 			FilePath:   "usr/share/gcc/python/libstdcxx/v6/__init__.py",
 			Category:   "restricted",
 			Confidence: 1,
 		}
 		license2 = types.DetectedLicense{
 			Name:       "GPL-3.0",
+			PkgName:    "bar",
 			Severity:   dbTypes.SeverityLow.String(),
 			FilePath:   "usr/share/gcc/python/libstdcxx/v6/printers.py",
 			Category:   "restricted",
@@ -620,7 +622,7 @@ func TestFilter(t *testing.T) {
 						{
 							Misconfigurations: []types.DetectedMisconfiguration{
 								misconf1,
-								misconf2,
+								misconf2, // passed
 								misconf3, // ignored by check
 							},
 						},
@@ -990,6 +992,67 @@ func TestFilter(t *testing.T) {
 								Vulnerability: dbTypes.Vulnerability{
 									Severity: dbTypes.SeverityHigh.String(),
 								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "ignore findings by type in policy file",
+			args: args{
+				report: types.Report{
+					Results: types.Results{
+						{
+							Target: "foo/package-lock.json",
+							Vulnerabilities: []types.DetectedVulnerability{
+								vuln1,
+								vuln7, // filtered by PkgName and Type
+							},
+						},
+						{
+							Target: "LICENSE.txt",
+							Licenses: []types.DetectedLicense{
+								license1, // filtered by PkgName and Type
+								license2,
+							},
+						},
+					},
+				},
+				policyFile: "testdata/ignore-by-type.rego",
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityLow,
+				},
+			},
+			want: types.Report{
+				Results: types.Results{
+					{
+						Target: "foo/package-lock.json",
+						Vulnerabilities: []types.DetectedVulnerability{
+							vuln1,
+						},
+						ModifiedFindings: []types.ModifiedFinding{
+							{
+								Type:      types.FindingTypeVulnerability,
+								Status:    types.FindingStatusIgnored,
+								Source:    "testdata/ignore-by-type.rego",
+								Statement: "Filtered by Rego",
+								Finding:   vuln7,
+							},
+						},
+					},
+					{
+						Target: "LICENSE.txt",
+						Licenses: []types.DetectedLicense{
+							license2,
+						},
+						ModifiedFindings: []types.ModifiedFinding{
+							{
+								Type:      types.FindingTypeLicense,
+								Status:    types.FindingStatusIgnored,
+								Source:    "testdata/ignore-by-type.rego",
+								Statement: "Filtered by Rego",
+								Finding:   license1,
 							},
 						},
 					},
