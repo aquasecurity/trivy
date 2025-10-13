@@ -226,8 +226,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	}
 
 	// Wait for all the goroutine to finish.
-	err = eg.Wait()
-	if err != nil {
+	if err = eg.Wait(); err != nil {
 		return artifact.Reference{}, xerrors.Errorf("analyze error: %w", err)
 	}
 

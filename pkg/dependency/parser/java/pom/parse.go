@@ -876,8 +876,5 @@ func isDirectory(path string) (bool, error) {
 }
 
 func shouldReturnError(err error) bool {
-	if err == nil {
-		return false
-	}
 	return errors.Is(err, context.DeadlineExceeded)
 }

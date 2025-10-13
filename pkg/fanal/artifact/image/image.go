@@ -414,8 +414,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layer types.Layer, disabled 
 	}
 
 	// Wait for all the goroutine to finish and check errors
-	err = eg.Wait()
-	if err != nil {
+	if err = eg.Wait(); err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("analyze error: %w", err)
 	}
 

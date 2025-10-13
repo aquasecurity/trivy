@@ -131,8 +131,7 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	}
 
 	// Wait for all the goroutine to finish.
-	err = eg.Wait()
-	if err != nil {
+	if err = eg.Wait(); err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("analyze error: %w", err)
 	}
 
