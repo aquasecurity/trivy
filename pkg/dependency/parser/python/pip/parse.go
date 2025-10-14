@@ -2,6 +2,7 @@ package pip
 
 import (
 	"bufio"
+	"context"
 	"strings"
 	"unicode"
 
@@ -53,7 +54,7 @@ func (p *Parser) splitLine(line string) []string {
 	return nil
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	// `requirements.txt` can use byte order marks (BOM)
 	// e.g. on Windows `requirements.txt` can use UTF-16LE with BOM
 	// We need to override them to avoid the file being read incorrectly

@@ -192,7 +192,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.input)
 			require.NoError(t, err)
 
-			got, _, err := packaging.NewParser().Parse(f)
+			got, _, err := packaging.NewParser().Parse(t.Context(), f)
 			require.Equal(t, tt.wantErr, err != nil)
 
 			assert.Equal(t, tt.want, got)
