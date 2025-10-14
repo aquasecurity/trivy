@@ -24,6 +24,7 @@
 --pkg-types
 --quiet
 --redis-tls
+--rego-error-limit
 --removed-pkgs
 --report
 --scanners

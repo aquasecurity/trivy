@@ -127,6 +127,7 @@ trivy image [flags] IMAGE_NAME
       --redis-key string                  redis key file location, if using redis as cache backend
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string             registry token
+      --rego-error-limit int              maximum number of compile errors allowed during Rego policy evaluation (default 10)
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --removed-pkgs                      detect vulnerabilities of removed packages (only for Alpine)
       --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform)
