@@ -40,6 +40,27 @@ func Test_pnpmPkgLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name: "V9 with node_modules",
+			dir:  "testdata/happy-v9",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Pnpm,
+						FilePath: "pnpm-lock.yaml",
+						Packages: types.Packages{
+							{
+								ID:           "vue-router@4.5.1(vue@3.5.22)",
+								Name:         "vue-router",
+								Version:      "4.5.1",
+								Licenses:     []string{"MIT"},
+								Relationship: types.RelationshipDirect,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "without node_modules",
 			dir:  "testdata/no-node_modules",
 			want: &analyzer.AnalysisResult{

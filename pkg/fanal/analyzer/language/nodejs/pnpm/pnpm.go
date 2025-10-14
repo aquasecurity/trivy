@@ -11,6 +11,7 @@ import (
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/pnpm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -65,8 +66,11 @@ func (a pnpmAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalys
 		}
 
 		// Fill licenses
-		for i, lib := range app.Packages {
-			if l, ok := licenses[lib.ID]; ok {
+		for i, pkg := range app.Packages {
+			// We use snapshots for pnpm package IDs.
+			// But to match licenses, we need to use the ID-building logic as for `package.json` files.
+			id := dependency.ID(types.NodePkg, pkg.Name, pkg.Version)
+			if l, ok := licenses[id]; ok {
 				app.Packages[i].Licenses = l
 			}
 		}
