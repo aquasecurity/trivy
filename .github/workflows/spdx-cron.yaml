@@ -20,12 +20,12 @@ jobs:
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
 
-      - name: Check if SPDX exceptions are up-to-date
+      - name: Check if SPDX license IDs and exceptions are up-to-date
         id: exceptions_check
         run: |
-          mage spdx:updateLicenseExceptions
+          mage spdx:updateLicenseEntries
           if [ -n "$(git status --porcelain)" ]; then
-            echo "Run 'mage spdx:updateLicenseExceptions' and push it"
+            echo "Run 'mage spdx:updateLicenseEntries' and push it"
             echo "send_notify=true" >> $GITHUB_OUTPUT
           fi
 
