@@ -1,6 +1,7 @@
 {
   "SchemaVersion": 2,
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:22848737c0d272ad5d7c7369d8ca830a62929e63e38edcb22085139a6ae0688d",
   "ArtifactName": "testdata/fixtures/images/alpine-distroless.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {

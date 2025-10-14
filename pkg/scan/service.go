@@ -2,12 +2,15 @@ package scan
 
 import (
 	"context"
+	"crypto/sha256"
+	"fmt"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -76,6 +79,7 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 	return types.Report{
 		SchemaVersion: report.SchemaVersion,
 		CreatedAt:     clock.Now(ctx),
+		ArtifactID:    s.generateArtifactID(artifactInfo),
 		ArtifactName:  artifactInfo.Name,
 		ArtifactType:  artifactInfo.Type,
 		Metadata: types.Metadata{
@@ -102,4 +106,38 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		Results: scanResponse.Results,
 		BOM:     artifactInfo.BOM,
 	}, nil
+}
+
+// generateArtifactID generates a unique ID for the artifact based on its type
+func (s Service) generateArtifactID(artifactInfo artifact.Reference) string {
+	switch artifactInfo.Type {
+	case ftypes.TypeContainerImage:
+		// Use image ID directly
+		return artifactInfo.ImageMetadata.ID
+
+	case ftypes.TypeRepository:
+		// Generate ID from repository URL and commit hash combination
+		if artifactInfo.RepoMetadata.RepoURL != "" && artifactInfo.RepoMetadata.Commit != "" {
+			// Calculate SHA256 of URL + commit hash
+			data := artifactInfo.RepoMetadata.RepoURL + "@" + artifactInfo.RepoMetadata.Commit
+			hash := sha256.Sum256([]byte(data))
+			return fmt.Sprintf("sha256:%x", hash)
+		}
+		// For local repositories without URL, use path and commit hash
+		if artifactInfo.RepoMetadata.Commit != "" {
+			data := artifactInfo.Name + "@" + artifactInfo.RepoMetadata.Commit
+			hash := sha256.Sum256([]byte(data))
+			return fmt.Sprintf("sha256:%x", hash)
+		}
+		// Empty string for non-Git directories
+		return ""
+
+	case ftypes.TypeFilesystem:
+		// Empty string for filesystem scans (as per requirement)
+		return ""
+
+	default:
+		// Empty string for other types
+		return ""
+	}
 }

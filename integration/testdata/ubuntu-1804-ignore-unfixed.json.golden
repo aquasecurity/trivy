@@ -1,6 +1,7 @@
 {
   "SchemaVersion": 2,
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:a2a15febcdf362f6115e801d37b5e60d6faaeedcb9896155e5fe9d754025be12",
   "ArtifactName": "testdata/fixtures/images/ubuntu-1804.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {

@@ -1,6 +1,7 @@
 {
   "SchemaVersion": 2,
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:4f8b4cb139bdac63ad60b7382a80cd0414c55018e2f80d4163f59e40f71766cc",
   "ArtifactName": "testdata/fixtures/repo/trivy-ci-test",
   "ArtifactType": "repository",
   "Metadata": {
