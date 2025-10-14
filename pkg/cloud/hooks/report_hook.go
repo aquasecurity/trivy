@@ -46,24 +46,24 @@ func (h *CloudPlatformResultsHook) PreReport(_ context.Context, _ *types.Report,
 	return nil
 }
 
-func (h *CloudPlatformResultsHook) PostReport(_ context.Context, report *types.Report, _ flag.Options) error {
+func (h *CloudPlatformResultsHook) PostReport(ctx context.Context, report *types.Report, _ flag.Options) error {
 	h.logger.Debug("PostReport called with report")
 	jsonReport, err := json.MarshalIndent(report, "", "  ")
 	if err != nil {
 		return xerrors.Errorf("failed to marshal report to JSON: %w", err)
 	}
 
-	return h.uploadResults(jsonReport)
+	return h.uploadResults(ctx, jsonReport)
 }
 
-func (h *CloudPlatformResultsHook) uploadResults(jsonReport []byte) error {
-	uploadUrl, err := h.getPresignedUploadUrl()
+func (h *CloudPlatformResultsHook) uploadResults(ctx context.Context, jsonReport []byte) error {
+	uploadUrl, err := h.getPresignedUploadUrl(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to get presigned upload URL: %w", err)
 	}
 
 	// create a new request to upload the results
-	req, err := http.NewRequest(http.MethodPut, uploadUrl, bytes.NewBuffer(jsonReport))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uploadUrl, bytes.NewBuffer(jsonReport))
 	if err != nil {
 		return fmt.Errorf("failed to create upload request: %w", err)
 	}
@@ -83,14 +83,14 @@ func (h *CloudPlatformResultsHook) uploadResults(jsonReport []byte) error {
 	return nil
 }
 
-func (h *CloudPlatformResultsHook) getPresignedUploadUrl() (string, error) {
+func (h *CloudPlatformResultsHook) getPresignedUploadUrl(ctx context.Context) (string, error) {
 	uploadUrl, err := url.JoinPath(h.cloudConfig.ApiURL, presignedUploadUrl)
 	if err != nil {
 		return "", fmt.Errorf("failed to join API URL and presigned upload URL: %w", err)
 	}
 	h.logger.Debug("Requesting result upload URL", log.String("uploadUrl", uploadUrl))
 
-	req, err := http.NewRequest(http.MethodGet, uploadUrl, http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uploadUrl, http.NoBody)
 	if err != nil {
 		return "", fmt.Errorf("failed to create request: %w", err)
 	}
