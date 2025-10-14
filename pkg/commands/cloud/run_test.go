@@ -60,35 +60,30 @@ func TestLogin(t *testing.T) {
 		name           string
 		token          string
 		serverResponse int
-		wantErr        bool
-		errorContains  string
+		wantErr        string
 	}{
 		{
 			name:           "successful login with valid token",
 			token:          "valid-token-123",
 			serverResponse: http.StatusOK,
-			wantErr:        false,
 		},
 		{
 			name:           "login fails with empty token",
 			token:          "",
 			serverResponse: http.StatusOK,
-			wantErr:        true,
-			errorContains:  "token is required for Trivy Cloud login",
+			wantErr:        "token is required for Trivy Cloud login",
 		},
 		{
 			name:           "login fails with server error",
 			token:          "valid-token-123",
 			serverResponse: http.StatusUnauthorized,
-			wantErr:        true,
-			errorContains:  "failed to verify token: received status code 401",
+			wantErr:        "failed to verify token: received status code 401",
 		},
 		{
 			name:           "login fails with server internal error",
 			token:          "valid-token-123",
 			serverResponse: http.StatusInternalServerError,
-			wantErr:        true,
-			errorContains:  "failed to verify token: received status code 500",
+			wantErr:        "failed to verify token: received status code 500",
 		},
 	}
 
@@ -129,11 +124,8 @@ func TestLogin(t *testing.T) {
 			ctx := context.Background()
 			err := Login(ctx, opts)
 
-			if tt.wantErr {
-				require.Error(t, err)
-				if tt.errorContains != "" {
-					require.ErrorContains(t, err, tt.errorContains)
-				}
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 

@@ -1,4 +1,4 @@
-package cloud
+package hooks
 
 import (
 	"bytes"
@@ -10,6 +10,7 @@ import (
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/cloud"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -22,12 +23,12 @@ const (
 
 type CloudPlatformResultsHook struct {
 	name        string
-	cloudConfig *Config
+	cloudConfig *cloud.Config
 	client      *http.Client
 	logger      *log.Logger
 }
 
-func NewResultsHook(cloudCfg *Config) *CloudPlatformResultsHook {
+func NewResultsHook(cloudCfg *cloud.Config) *CloudPlatformResultsHook {
 	return &CloudPlatformResultsHook{
 		name:        "Trivy Cloud Results Hook",
 		cloudConfig: cloudCfg,

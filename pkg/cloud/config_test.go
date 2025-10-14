@@ -2,8 +2,10 @@ package cloud
 
 import (
 	"context"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -217,6 +219,69 @@ func TestVerify(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
+		})
+	}
+}
+
+func TestShowConfig(t *testing.T) {
+	tests := []struct {
+		name         string
+		config       *Config
+		wantErr      string
+		wantContains []string
+	}{
+		{
+			name:   "success with valid config",
+			config: &Config{Token: "testtoken", ServerURL: "https://example.com", ApiURL: "https://api.example.com"},
+			wantContains: []string{
+				"Trivy Cloud Configuration",
+				"Trivy Server URL: https://example.com",
+				"API URL:          https://api.example.com",
+				"Logged In:        No",
+			},
+		},
+	}
+
+	tempDir := t.TempDir()
+	t.Setenv("XDG_DATA_HOME", tempDir)
+
+	keyring.MockInit()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer keyring.DeleteAll(ServiceName)
+			defer Clear()
+
+			if tt.config != nil {
+				err := tt.config.Save()
+				require.NoError(t, err)
+			}
+
+			r, w, err := os.Pipe()
+			require.NoError(t, err)
+
+			originalStdout := os.Stdout
+			os.Stdout = w
+
+			errChan := make(chan error, 1)
+			go func() {
+				errChan <- ShowConfig()
+				w.Close()
+			}()
+
+			output, _ := io.ReadAll(r)
+			os.Stdout = originalStdout
+
+			err = <-errChan
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+
+			outputStr := string(output)
+			for _, want := range tt.wantContains {
+				assert.Contains(t, outputStr, want)
+			}
 		})
 	}
 }

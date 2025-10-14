@@ -9,28 +9,30 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 
 	"github.com/samber/lo"
 	"github.com/zalando/go-keyring"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
 const (
-	ServiceName = "trivy-cloud"
-	TokenKey    = "token"
+	ServiceName           = "trivy-cloud"
+	TokenKey              = "token"
+	DefaultApiUrl         = "https://api.trivy.dev"
+	DefaultTrivyServerUrl = "https://scan.trivy.dev"
 )
 
 type Config struct {
-	ServerURL      string `yaml:"server_url"`
-	ApiURL         string `yaml:"api_url"`
-	ServerScanning bool   `yaml:"server_scanning"`
-	UploadResults  bool   `yaml:"results_upload"`
+	ServerURL      string `yaml:"server-url"`
+	ApiURL         string `yaml:"api-url"`
+	ServerScanning bool   `yaml:"server-scanning"`
+	UploadResults  bool   `yaml:"results-upload"`
 
 	IsLoggedIn bool   `yaml:"-"`
 	Token      string `yaml:"-"`
@@ -39,8 +41,8 @@ type Config struct {
 var defaultConfig = &Config{
 	ServerScanning: true,
 	UploadResults:  true,
-	ServerURL:      flag.DefaultTrivyServerUrl,
-	ApiURL:         flag.DefaultApiUrl,
+	ServerURL:      DefaultTrivyServerUrl,
+	ApiURL:         DefaultApiUrl,
 }
 
 func getConfigPath() string {
@@ -168,12 +170,7 @@ func OpenConfigForEditing() error {
 		configPath = getConfigPath()
 	}
 
-	// get the EDITOR environment variable
-	editor := os.Getenv("EDITOR")
-	if editor == "" {
-		logger.Error("EDITOR environment variable is not set, open the config file manually", log.String("config_path", configPath))
-		return nil
-	}
+	editor := getEditCommand()
 
 	cmd := exec.Command(editor, configPath)
 	cmd.Stdin = os.Stdin
@@ -207,4 +204,18 @@ func ShowConfig() error {
 	fmt.Printf("Results Upload:   %s\n", lo.Ternary(cloudConfig.UploadResults, "Enabled", "Disabled"))
 	fmt.Printf("Filepath:         %s\n", getConfigPath())
 	return nil
+}
+
+func getEditCommand() string {
+	editor := os.Getenv("EDITOR")
+	if editor != "" {
+		return editor
+	}
+
+	// fallback to notepad for windows or vi for macos/linux
+	if runtime.GOOS == "windows" {
+		return "notepad"
+	}
+	return "vi"
+
 }

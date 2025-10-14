@@ -1,9 +1,6 @@
 package flag
 
-const (
-	DefaultApiUrl         = "https://api.trivy.dev"
-	DefaultTrivyServerUrl = "https://scan.trivy.dev"
-)
+import "github.com/aquasecurity/trivy/pkg/cloud"
 
 var (
 	CloudTokenFlag = Flag[string]{
@@ -15,14 +12,14 @@ var (
 	CloudApiUrlFlag = Flag[string]{
 		Name:       "api-url",
 		ConfigName: "cloud.api-url",
-		Default:    DefaultApiUrl,
+		Default:    cloud.DefaultApiUrl,
 		Usage:      "API URL for Trivy Cloud platform",
 	}
 
 	CloudTrivyServerUrlFlag = Flag[string]{
 		Name:       "trivy-server-url",
 		ConfigName: "cloud.trivy_server_url",
-		Default:    DefaultTrivyServerUrl,
+		Default:    cloud.DefaultTrivyServerUrl,
 		Usage:      "Trivy Server URL for Trivy Cloud platform",
 	}
 )

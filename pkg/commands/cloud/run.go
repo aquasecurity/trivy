@@ -9,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cloud"
+	"github.com/aquasecurity/trivy/pkg/cloud/hooks"
 	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -18,7 +19,6 @@ const GroupCloud = "cloud"
 
 // Login performs a login to the Trivy Cloud Server service using the provided credentials.
 func Login(ctx context.Context, opts flag.Options) error {
-	logger := log.WithPrefix(log.PrefixCloud)
 	creds := opts.CloudOptions.LoginCredentials
 	if creds.Token == "" {
 		return xerrors.New("token is required for Trivy Cloud login")
@@ -47,19 +47,17 @@ func Login(ctx context.Context, opts flag.Options) error {
 		return xerrors.Errorf("failed to save Trivy Cloud config: %w", err)
 	}
 
-	logger.Info("Trivy Cloud login successful")
+	log.WithPrefix(log.PrefixCloud).Info("Trivy Cloud login successful")
 	return nil
 }
 
 // Logout removes the Trivy cloud configuration from both keychain and config file.
 func Logout() error {
-	logger := log.WithPrefix(log.PrefixCloud)
-
 	if err := cloud.Clear(); err != nil {
 		return xerrors.Errorf("failed to clear Trivy Cloud configuration: %w", err)
 	}
 
-	logger.Info("Logged out of Trivy cloud and removed configuration")
+	log.WithPrefix(log.PrefixCloud).Info("Logged out of Trivy cloud and removed configuration")
 	return nil
 }
 
@@ -89,7 +87,7 @@ func CheckTrivyCloudStatus(cmd *cobra.Command) error {
 		if cloudConfig.UploadResults {
 			logger.Info("Trivy Cloud results upload is enabled")
 			// add hook to upload the results to Trivy Cloud
-			resultHook := cloud.NewResultsHook(cloudConfig)
+			resultHook := hooks.NewResultsHook(cloudConfig)
 			extension.RegisterHook(resultHook)
 		}
 	}
