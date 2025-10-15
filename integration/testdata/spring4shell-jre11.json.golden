@@ -4,6 +4,7 @@
   "ArtifactID": "sha256:ed8f0747d483b60657982f0ef1ba74482aed08795cf0eb774b00bc53022a8351",
   "ArtifactName": "testdata/fixtures/images/spring4shell-jre11.tar.gz",
   "ArtifactType": "container_image",
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "Metadata": {
     "Size": 270418944,
     "OS": {

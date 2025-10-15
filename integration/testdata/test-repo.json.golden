@@ -4,6 +4,7 @@
   "ArtifactID": "sha256:4f8b4cb139bdac63ad60b7382a80cd0414c55018e2f80d4163f59e40f71766cc",
   "ArtifactName": "testdata/fixtures/repo/trivy-ci-test",
   "ArtifactType": "repository",
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000002",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",

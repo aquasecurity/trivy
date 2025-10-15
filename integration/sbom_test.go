@@ -35,7 +35,8 @@ func TestSBOM(t *testing.T) {
 				format:       "json",
 				artifactType: "cyclonedx",
 			},
-			golden: "testdata/centos-7.json.golden",
+			golden:   "testdata/centos-7.json.golden",
+			fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			override: func(t *testing.T, want, got *types.Report) {
 				want.ArtifactName = "testdata/fixtures/sbom/centos-7-cyclonedx.json"
 				want.ArtifactType = ftypes.TypeCycloneDX
@@ -60,7 +61,8 @@ func TestSBOM(t *testing.T) {
 				format:       "json",
 				artifactType: "cyclonedx",
 			},
-			golden: "testdata/fluentd-multiple-lockfiles.json.golden",
+			golden:   "testdata/fluentd-multiple-lockfiles.json.golden",
+			fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 		},
 		{
 			name: "scan SBOM into SBOM",
@@ -79,7 +81,8 @@ func TestSBOM(t *testing.T) {
 				format:       "json",
 				artifactType: "cyclonedx",
 			},
-			golden: "testdata/minikube-kbom.json.golden",
+			golden:   "testdata/minikube-kbom.json.golden",
+			fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 		},
 		{
 			name: "centos7 in in-toto attestation",
@@ -88,7 +91,8 @@ func TestSBOM(t *testing.T) {
 				format:       "json",
 				artifactType: "cyclonedx",
 			},
-			golden: "testdata/centos-7.json.golden",
+			golden:   "testdata/centos-7.json.golden",
+			fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			override: func(t *testing.T, want, got *types.Report) {
 				want.ArtifactName = "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl"
 				want.ArtifactType = ftypes.TypeCycloneDX
@@ -113,7 +117,8 @@ func TestSBOM(t *testing.T) {
 				format:       "json",
 				artifactType: "spdx",
 			},
-			golden: "testdata/centos-7.json.golden",
+			golden:   "testdata/centos-7.json.golden",
+			fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			override: func(t *testing.T, want, got *types.Report) {
 				want.ArtifactName = "testdata/fixtures/sbom/centos-7-spdx.txt"
 				want.ArtifactType = ftypes.TypeSPDX
@@ -133,7 +138,8 @@ func TestSBOM(t *testing.T) {
 				format:       "json",
 				artifactType: "spdx",
 			},
-			golden: "testdata/centos-7.json.golden",
+			golden:   "testdata/centos-7.json.golden",
+			fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			override: func(t *testing.T, want, got *types.Report) {
 				want.ArtifactName = "testdata/fixtures/sbom/centos-7-spdx.json"
 				want.ArtifactType = ftypes.TypeSPDX
@@ -154,7 +160,8 @@ func TestSBOM(t *testing.T) {
 				artifactType: "cyclonedx",
 				scanners:     "license",
 			},
-			golden: "testdata/license-cyclonedx.json.golden",
+			golden:   "testdata/license-cyclonedx.json.golden",
+			fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 		},
 	}
 

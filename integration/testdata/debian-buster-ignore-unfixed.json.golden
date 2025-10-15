@@ -4,6 +4,7 @@
   "ArtifactID": "sha256:c2c03a296d2329a4f3ab72a7bf38b78a8a80108204d326b0139d6af700e152d1",
   "ArtifactName": "testdata/fixtures/images/debian-buster.tar.gz",
   "ArtifactType": "container_image",
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "Metadata": {
     "Size": 119199744,
     "OS": {

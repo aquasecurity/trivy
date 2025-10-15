@@ -4,6 +4,7 @@
   "ArtifactID": "sha256:6fcac2cc8a710f21577b5bbd534e0bfc841c0cca569b57182ba19054696cddda",
   "ArtifactName": "testdata/fixtures/images/distroless-python27.tar.gz",
   "ArtifactType": "container_image",
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "Metadata": {
     "Size": 48271360,
     "OS": {

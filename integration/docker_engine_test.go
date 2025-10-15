@@ -248,6 +248,7 @@ func TestDockerEngine(t *testing.T) {
 				"--skip-update",
 				"--format=json",
 				"--list-all-pkgs=false",
+				"--image-src=docker",
 			}
 
 			if tt.ignoreUnfixed {
@@ -288,9 +289,10 @@ func TestDockerEngine(t *testing.T) {
 
 			// Run Trivy
 			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
-				wantErr: tt.wantErr,
+				wantErr:  tt.wantErr,
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				// Image config fields were removed
-				override: overrideFuncs(overrideUID, overrideDockerRemovedFields),
+				override: overrideFuncs(overrideUID, overrideDockerRemovedFields, overrideImageReportID),
 			})
 		})
 	}

@@ -4,6 +4,7 @@
   "ArtifactID": "sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4",
   "ArtifactName": "testdata/fixtures/images/alpine-310.tar.gz",
   "ArtifactType": "container_image",
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "Metadata": {
     "Size": 5843968,
     "OS": {

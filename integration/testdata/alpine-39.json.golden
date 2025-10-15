@@ -4,6 +4,7 @@
   "ArtifactID": "sha256:055936d3920576da37aa9bc460d70c5f212028bda1c08c0879aedf03d7a66ea1",
   "ArtifactName": "testdata/fixtures/images/alpine-39.tar.gz",
   "ArtifactType": "container_image",
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "Metadata": {
     "Size": 5796352,
     "OS": {

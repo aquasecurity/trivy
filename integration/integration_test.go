@@ -391,3 +391,9 @@ func overrideDockerRemovedFields(_ *testing.T, want, got *types.Report) {
 	got.Metadata.ImageConfig.Config.Hostname = ""
 	want.Metadata.ImageConfig.Config.Hostname = ""
 }
+
+// overrideImageReportID overrides the ReportID for tests that scan image files directly.
+// Image-based tests don't parse SBOM components (which consume UUIDs #1-#4), so ReportID becomes UUID #1 instead of #5.
+func overrideImageReportID(_ *testing.T, want, _ *types.Report) {
+	want.ReportID = "3ff14136-e09f-4df9-80ea-000000000001"
+}

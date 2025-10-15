@@ -4,6 +4,7 @@
   "ArtifactID": "sha256:8cdcbf18341ed8afa5322e7b0077f8ef3f46896882c921df5f97c51b369f6767",
   "ArtifactName": "testdata/fixtures/images/mariner-1.0.tar.gz",
   "ArtifactType": "container_image",
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "Metadata": {
     "Size": 177582080,
     "OS": {
