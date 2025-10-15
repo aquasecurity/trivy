@@ -1,6 +1,7 @@
 {
   "SchemaVersion": 2,
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:b88bc3d2f0b5aacf1d36efa498f427d923b01c854dac090acf5368c55ac04fda",
   "ArtifactName": "testdata/fixtures/images/spring4shell-jre8.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {

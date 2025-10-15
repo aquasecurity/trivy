@@ -199,6 +199,7 @@ func TestSBOM(t *testing.T) {
 }
 
 func overrideSBOMReport(_ *testing.T, want, got *types.Report) {
+	want.ArtifactID = ""
 	want.Metadata.ImageID = ""
 	want.Metadata.ImageConfig = v1.ConfigFile{}
 	want.Metadata.DiffIDs = nil

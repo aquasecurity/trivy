@@ -1,6 +1,7 @@
 {
   "SchemaVersion": 2,
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4",
   "ArtifactName": "testdata/fixtures/images/alpine-310.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {

@@ -1,6 +1,7 @@
 {
   "SchemaVersion": 2,
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:f1cb7c7d58b73eac859c395882eec49d50651244e342cd6c68a5c7809785f427",
   "ArtifactName": "testdata/fixtures/images/centos-7.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {

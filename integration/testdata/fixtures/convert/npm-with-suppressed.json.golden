@@ -3,18 +3,6 @@
   "CreatedAt": "2024-09-09T13:21:09.230231+06:00",
   "ArtifactName": "package-lock.json",
   "ArtifactType": "filesystem",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "package-lock.json",
@@ -33,7 +21,6 @@
           "DependsOn": [
             "ms@2.0.0"
           ],
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 11,
@@ -51,7 +38,6 @@
           "Version": "2.0.0",
           "Indirect": true,
           "Relationship": "indirect",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 20,
@@ -72,7 +58,6 @@
           "InstalledVersion": "3.0.1",
           "FixedVersion": "3.1.0, 2.6.9",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-20165",
           "DataSource": {
@@ -132,7 +117,6 @@
             "InstalledVersion": "3.0.1",
             "FixedVersion": "2.6.9, 3.1.0, 3.2.7, 4.3.1",
             "Status": "fixed",
-            "Layer": {},
             "SeveritySource": "ghsa",
             "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-16137",
             "DataSource": {
