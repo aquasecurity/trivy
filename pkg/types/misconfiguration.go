@@ -2,6 +2,12 @@ package types
 
 import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
+type Fingerprint struct {
+	Version   int    `json:",omitempty"`
+	Hash      string `json:",omitempty"`
+	FindingID string `json:",omitempty"`
+}
+
 // DetectedMisconfiguration holds detected misconfigurations
 type DetectedMisconfiguration struct {
 	Type          string               `json:",omitempty"`
@@ -19,6 +25,7 @@ type DetectedMisconfiguration struct {
 	Status        MisconfStatus        `json:",omitempty"`
 	Layer         ftypes.Layer         `json:",omitzero"`
 	CauseMetadata ftypes.CauseMetadata `json:",omitzero"`
+	Fingerprint   Fingerprint          `json:",omitzero"`
 
 	// For debugging
 	Traces []string `json:",omitempty"`

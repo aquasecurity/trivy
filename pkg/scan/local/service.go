@@ -415,6 +415,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 			Occurrences:   res.Occurrences,
 			RenderedCause: res.RenderedCause,
 		},
+		Fingerprint: computeFingerprint(res.FindingID),
 	}
 }
 

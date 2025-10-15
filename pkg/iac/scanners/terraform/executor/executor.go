@@ -97,20 +97,30 @@ func (e *Executor) Execute(ctx context.Context, modules terraform.Modules, baseP
 			continue
 		}
 
-		res.WithRenderedCause(e.renderCause(modules, res.Range()))
+		tfBlock := findBlockByRange(modules, res.Range())
+		if tfBlock == nil {
+			continue
+		}
+
+		res.WithRenderedCause(e.renderCause(tfBlock, res.Range()))
+		res.WithCausePath(buildCausePath(tfBlock, res.Range()))
 		results[i] = res
 	}
 
 	return results, nil
 }
 
-func (e *Executor) renderCause(modules terraform.Modules, causeRng types.Range) scan.RenderedCause {
-	tfBlock := findBlockForCause(modules, causeRng)
-	if tfBlock == nil {
-		e.logger.Debug("No matching Terraform block found", log.String("cause_range", causeRng.String()))
-		return scan.RenderedCause{}
+func findBlockByRange(modules terraform.Modules, rng types.Range) *terraform.Block {
+	for _, block := range modules.GetBlocks() {
+		blockRng := block.GetMetadata().Range()
+		if blockRng.GetFilename() == rng.GetFilename() && blockRng.Covers(rng) {
+			return block
+		}
 	}
+	return nil
+}
 
+func (e *Executor) renderCause(tfBlock *terraform.Block, causeRng types.Range) scan.RenderedCause {
 	block := hclwrite.NewBlock(tfBlock.Type(), normalizeBlockLables(tfBlock))
 
 	if !writeBlock(tfBlock, block, causeRng) {
@@ -170,14 +180,58 @@ func writeBlock(tfBlock *terraform.Block, block *hclwrite.Block, causeRng types.
 	return found
 }
 
-func findBlockForCause(modules terraform.Modules, causeRng types.Range) *terraform.Block {
-	for _, block := range modules.GetBlocks() {
-		blockRng := block.GetMetadata().Range()
-		if blockRng.GetFilename() == causeRng.GetFilename() && blockRng.Includes(causeRng) {
-			return block
-		}
+func buildCausePath(tfBlock *terraform.Block, causeRng types.Range) string {
+	// Always include the top-level block parts
+	parts := []string{
+		tfBlock.Type(),
+		tfBlock.TypeLabel(),
+		tfBlock.NameLabel(),
 	}
-	return nil
+
+	var walk func(b *terraform.Block) bool
+	walk = func(b *terraform.Block) bool {
+		for _, attr := range b.Attributes() {
+			if attr.GetMetadata().Range().Match(causeRng) {
+				parts = append(parts, attr.Name())
+				return true // stop traversal if cause matches this attribute
+			}
+		}
+
+		typeCount := make(map[string]int)
+		for _, child := range b.AllBlocks() {
+			typeCount[child.Type()]++
+		}
+		typeIndex := make(map[string]int)
+
+		for _, child := range b.AllBlocks() {
+			childRng := child.GetMetadata().Range()
+
+			idx := typeIndex[child.Type()]
+			typeIndex[child.Type()]++
+
+			part := child.Type()
+			if total := typeCount[child.Type()]; total > 1 {
+				// Include index and total to uniquely identify this block among siblings
+				part = fmt.Sprintf("%s[%d/%d]", child.Type(), idx, total-1)
+			}
+
+			if childRng.Match(causeRng) {
+				parts = append(parts, part)
+				return true // stop if cause matches this block
+			}
+
+			if childRng.Includes(causeRng) {
+				parts = append(parts, part)
+				if walk(child) {
+					return true // stop if found in deeper level
+				}
+			}
+		}
+		return false
+	}
+
+	walk(tfBlock)
+	return strings.Join(parts, ".")
 }
 
 func (e *Executor) filterResults(results scan.Results) scan.Results {
