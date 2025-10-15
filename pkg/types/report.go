@@ -12,6 +12,7 @@ import (
 // Report represents a scan result
 type Report struct {
 	SchemaVersion int                 `json:",omitempty"`
+	ReportID      string              `json:",omitempty"` // Unique identifier for this scan report
 	CreatedAt     time.Time           `json:",omitzero"`
 	ArtifactID    string              `json:",omitempty"` // Unique identifier for the artifact (e.g., image config hash)
 	ArtifactName  string              `json:",omitempty"`
