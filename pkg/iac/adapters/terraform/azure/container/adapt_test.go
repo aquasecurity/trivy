@@ -57,11 +57,16 @@ func Test_adaptCluster(t *testing.T) {
 				APIServerAuthorizedIPRanges: []iacTypes.StringValue{
 					iacTypes.String("1.2.3.4/32", iacTypes.NewTestMetadata()),
 				},
+				AzurePolicyEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				AddonProfile: container.AddonProfile{
 					Metadata: iacTypes.NewTestMetadata(),
 					OMSAgent: container.OMSAgent{
 						Metadata: iacTypes.NewTestMetadata(),
 						Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					},
+					AzurePolicy: container.AzurePolicy{
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},
 				RoleBasedAccessControl: container.RoleBasedAccessControl{
@@ -84,9 +89,14 @@ func Test_adaptCluster(t *testing.T) {
 					NetworkPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
 				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				AzurePolicyEnabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				AddonProfile: container.AddonProfile{
 					Metadata: iacTypes.NewTestMetadata(),
 					OMSAgent: container.OMSAgent{
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					},
+					AzurePolicy: container.AzurePolicy{
 						Metadata: iacTypes.NewTestMetadata(),
 						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
@@ -110,9 +120,14 @@ func Test_adaptCluster(t *testing.T) {
 					NetworkPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
 				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				AzurePolicyEnabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				AddonProfile: container.AddonProfile{
 					Metadata: iacTypes.NewTestMetadata(),
 					OMSAgent: container.OMSAgent{
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					},
+					AzurePolicy: container.AzurePolicy{
 						Metadata: iacTypes.NewTestMetadata(),
 						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
@@ -141,9 +156,14 @@ resource "azurerm_kubernetes_cluster" "misreporting_example" {
 					NetworkPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
 				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				AzurePolicyEnabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				AddonProfile: container.AddonProfile{
 					Metadata: iacTypes.NewTestMetadata(),
 					OMSAgent: container.OMSAgent{
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					},
+					AzurePolicy: container.AzurePolicy{
 						Metadata: iacTypes.NewTestMetadata(),
 						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
@@ -151,6 +171,74 @@ resource "azurerm_kubernetes_cluster" "misreporting_example" {
 				RoleBasedAccessControl: container.RoleBasedAccessControl{
 					Metadata: iacTypes.NewTestMetadata(),
 					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				},
+			},
+		},
+		{
+			name: "azure policy with new syntax",
+			terraform: `
+			resource "azurerm_kubernetes_cluster" "example" {
+				azure_policy_enabled = true
+			}
+`,
+			expected: container.KubernetesCluster{
+				Metadata: iacTypes.NewTestMetadata(),
+				NetworkProfile: container.NetworkProfile{
+					Metadata:      iacTypes.NewTestMetadata(),
+					NetworkPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
+				},
+				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				AzurePolicyEnabled:   iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				AddonProfile: container.AddonProfile{
+					Metadata: iacTypes.NewTestMetadata(),
+					OMSAgent: container.OMSAgent{
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					},
+					AzurePolicy: container.AzurePolicy{
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					},
+				},
+				RoleBasedAccessControl: container.RoleBasedAccessControl{
+					Metadata: iacTypes.NewTestMetadata(),
+					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				},
+			},
+		},
+		{
+			name: "azure policy with legacy syntax",
+			terraform: `
+			resource "azurerm_kubernetes_cluster" "example" {
+				addon_profile {
+					azure_policy {
+						enabled = true
+					}
+				}
+			}
+`,
+			expected: container.KubernetesCluster{
+				Metadata: iacTypes.NewTestMetadata(),
+				NetworkProfile: container.NetworkProfile{
+					Metadata:      iacTypes.NewTestMetadata(),
+					NetworkPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
+				},
+				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				AzurePolicyEnabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				AddonProfile: container.AddonProfile{
+					Metadata: iacTypes.NewTestMetadata(),
+					OMSAgent: container.OMSAgent{
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					},
+					AzurePolicy: container.AzurePolicy{
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					},
+				},
+				RoleBasedAccessControl: container.RoleBasedAccessControl{
+					Metadata: iacTypes.NewTestMetadata(),
+					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				},
 			},
 		},

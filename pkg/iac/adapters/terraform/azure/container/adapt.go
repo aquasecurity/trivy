@@ -33,6 +33,7 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 		},
 		EnablePrivateCluster:        iacTypes.BoolDefault(false, resource.GetMetadata()),
 		APIServerAuthorizedIPRanges: nil,
+		AzurePolicyEnabled:          iacTypes.BoolDefault(false, resource.GetMetadata()),
 		RoleBasedAccessControl: container.RoleBasedAccessControl{
 			Metadata: resource.GetMetadata(),
 			Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
@@ -40,6 +41,10 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 		AddonProfile: container.AddonProfile{
 			Metadata: resource.GetMetadata(),
 			OMSAgent: container.OMSAgent{
+				Metadata: resource.GetMetadata(),
+				Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
+			},
+			AzurePolicy: container.AzurePolicy{
 				Metadata: resource.GetMetadata(),
 				Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
 			},
@@ -69,6 +74,12 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 			cluster.AddonProfile.OMSAgent.Metadata = omsAgentBlock.GetMetadata()
 			enabledAttr := omsAgentBlock.GetAttribute("enabled")
 			cluster.AddonProfile.OMSAgent.Enabled = enabledAttr.AsBoolValueOrDefault(false, omsAgentBlock)
+		}
+		azurePolicyBlock := addonProfileBlock.GetBlock("azure_policy")
+		if azurePolicyBlock.IsNotNil() {
+			cluster.AddonProfile.AzurePolicy.Metadata = azurePolicyBlock.GetMetadata()
+			enabledAttr := azurePolicyBlock.GetAttribute("enabled")
+			cluster.AddonProfile.AzurePolicy.Enabled = enabledAttr.AsBoolValueOrDefault(false, azurePolicyBlock)
 		}
 	}
 
@@ -101,5 +112,11 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 		}
 
 	}
+
+	// azurerm >= 3.0.0 - new syntax for azure policy
+	if azurePolicyEnabledAttr := resource.GetAttribute("azure_policy_enabled"); azurePolicyEnabledAttr.IsNotNil() {
+		cluster.AzurePolicyEnabled = azurePolicyEnabledAttr.AsBoolValueOrDefault(false, resource)
+	}
+
 	return cluster
 }
