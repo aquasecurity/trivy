@@ -114,8 +114,27 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 func (s Service) generateArtifactID(artifactInfo artifact.Reference) string {
 	switch artifactInfo.Type {
 	case ftypes.TypeContainerImage:
-		// Use image ID directly
-		return artifactInfo.ImageMetadata.ID
+		// For container images, calculate hash(ImageID + Registry + Repository)
+		// to ensure same images in different repos/registries have different IDs
+		imageID := artifactInfo.ImageMetadata.ID
+		if imageID == "" {
+			return ""
+		}
+
+		// Use the Reference field if available
+		ref := artifactInfo.ImageMetadata.Reference
+		if ref.IsEmpty() {
+			// If no reference is available, fall back to using the image ID directly
+			log.Debug("No image reference available for Artifact ID calculation, using image ID directly",
+				log.String("image", artifactInfo.Name))
+			return imageID
+		}
+
+		// ref.Context() returns registry/repository (e.g., "index.docker.io/library/alpine")
+		// %s automatically calls String() method
+		data := fmt.Sprintf("%s:%s", imageID, ref.Context())
+		hash := sha256.Sum256([]byte(data))
+		return fmt.Sprintf("sha256:%x", hash)
 
 	case ftypes.TypeRepository:
 		// Generate ID from repository URL and commit hash combination

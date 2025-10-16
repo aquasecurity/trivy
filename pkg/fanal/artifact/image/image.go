@@ -146,6 +146,10 @@ func (a Artifact) Inspect(ctx context.Context) (ref artifact.Reference, err erro
 		return artifact.Reference{}, xerrors.Errorf("analyze error: %w", err)
 	}
 
+	repoTags := a.image.RepoTags()
+	repoDigests := a.image.RepoDigests()
+	imgRef := a.findMatchingReference(a.image.Name(), repoTags, repoDigests)
+
 	return artifact.Reference{
 		Name:    a.image.Name(),
 		Type:    types.TypeContainerImage,
@@ -154,8 +158,9 @@ func (a Artifact) Inspect(ctx context.Context) (ref artifact.Reference, err erro
 		ImageMetadata: artifact.ImageMetadata{
 			ID:          imageID,
 			DiffIDs:     diffIDs,
-			RepoTags:    a.image.RepoTags(),
-			RepoDigests: a.image.RepoDigests(),
+			RepoTags:    repoTags,
+			RepoDigests: repoDigests,
+			Reference:   imgRef,
 			ConfigFile:  *configFile,
 		},
 	}, nil
@@ -163,6 +168,96 @@ func (a Artifact) Inspect(ctx context.Context) (ref artifact.Reference, err erro
 
 func (a Artifact) Clean(_ artifact.Reference) error {
 	return nil
+}
+
+// findMatchingReference finds a RepoTag or RepoDigest that matches the artifact name
+func (a Artifact) findMatchingReference(artifactName string, repoTags, repoDigests []string) image.Reference {
+	refStr := a.findMatchingTag(artifactName, repoTags, repoDigests)
+	if refStr == "" {
+		return image.Reference{}
+	}
+
+	ref, err := image.ParseReference(refStr)
+	if err != nil {
+		a.logger.Debug("Failed to parse reference", log.String("ref", refStr), log.Err(err))
+		return image.Reference{}
+	}
+	return ref
+}
+
+// findMatchingTag finds a RepoTag or RepoDigest string that matches the artifact name
+func (a Artifact) findMatchingTag(artifactName string, repoTags, repoDigests []string) string {
+	// If there are no RepoTags or RepoDigests, return empty
+	if len(repoTags) == 0 && len(repoDigests) == 0 {
+		return ""
+	}
+
+	// TODO(knqyf263): refactor to use a more robust method instead of suffix-based detection
+	// Check if artifact name looks like a file path (tar archive)
+	archiveExts := []string{".tar", ".gz", ".tgz"}
+	ext := strings.ToLower(filepath.Ext(artifactName))
+	if slices.Contains(archiveExts, ext) || strings.Contains(artifactName, string(filepath.Separator)) {
+		// For file paths, use the first RepoTag or RepoDigest
+		if len(repoTags) > 0 {
+			return repoTags[0]
+		}
+		return repoDigests[0]
+	}
+
+	// Try to parse the artifact name as an image reference
+	artifactRef, err := image.ParseReference(artifactName)
+	if err != nil {
+		// If parsing fails, use the first RepoTag or RepoDigest
+		a.logger.Debug("Failed to parse artifact name as image reference, using first RepoTag",
+			log.String("name", artifactName), log.Err(err))
+		if len(repoTags) > 0 {
+			return repoTags[0]
+		}
+		return repoDigests[0]
+	}
+
+	artifactContext := artifactRef.Context().String()
+
+	// Check if artifact name contains a digest (e.g., alpine@sha256:xxx)
+	if strings.Contains(artifactName, "@") {
+		// Try to find a matching digest from RepoDigests
+		for _, digest := range repoDigests {
+			digestRef, err := image.ParseReference(digest)
+			if err != nil {
+				a.logger.Debug("Failed to parse repo digest", log.String("digest", digest), log.Err(err))
+				continue
+			}
+
+			if artifactContext == digestRef.Context().String() {
+				return digest
+			}
+		}
+	} else {
+		// Try to find a matching tag from RepoTags
+		for _, tag := range repoTags {
+			tagRef, err := image.ParseReference(tag)
+			if err != nil {
+				a.logger.Debug("Failed to parse repo tag", log.String("tag", tag), log.Err(err))
+				continue
+			}
+
+			if artifactContext == tagRef.Context().String() {
+				return tag
+			}
+		}
+	}
+
+	// If no matching tag found, use the first RepoTag or RepoDigest as fallback
+	a.logger.Debug("No matching repo tag/digest found for artifact, using first one",
+		log.String("name", artifactName),
+		log.String("context", artifactContext))
+	if len(repoTags) > 0 {
+		return repoTags[0]
+	}
+	if len(repoDigests) > 0 {
+		return repoDigests[0]
+	}
+	return ""
 }
 
 func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []string, error) {

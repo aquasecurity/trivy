@@ -54,7 +54,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			want: tTypes.Report{
 				SchemaVersion: 2,
 				CreatedAt:     time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC),
-				ArtifactID:    "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+				ArtifactID:    "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72", // Falls back to image ID when no Reference available
 				ArtifactName:  "../fanal/test/testdata/alpine-311.tar.gz",
 				ArtifactType:  ftypes.TypeContainerImage,
 				ReportID:      "3ff14136-e09f-4df9-80ea-000000000001",
