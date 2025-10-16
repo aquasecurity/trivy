@@ -106,7 +106,13 @@ func (m *Marshaler) Metadata(ctx context.Context) *cdx.Metadata {
 }
 
 func (m *Marshaler) MarshalRoot() (*cdx.Component, error) {
-	return m.MarshalComponent(m.bom.Root())
+	root := m.bom.Root()
+	// Since we reuse the scanned SBOM, the root component (metadata.component) can be empty.
+	if root == nil {
+		m.logger.Debug("Root component not found")
+		return nil, nil
+	}
+	return m.MarshalComponent(root)
 }
 
 func (m *Marshaler) MarshalComponent(component *core.Component) (*cdx.Component, error) {
