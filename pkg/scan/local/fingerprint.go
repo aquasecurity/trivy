@@ -13,6 +13,9 @@ const (
 )
 
 func computeFingerprint(findingID string) types.Fingerprint {
+	if findingID == "" {
+		return types.Fingerprint{}
+	}
 	hash := sha256.Sum256([]byte(findingID))
 	return types.Fingerprint{
 		Version:   FingerprintVersion,
