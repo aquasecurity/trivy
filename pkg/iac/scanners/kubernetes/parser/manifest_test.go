@@ -5,7 +5,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes/parser"
 )
@@ -86,6 +85,7 @@ func TestJsonManifestToRego(t *testing.T) {
 }
 
 func TestManifestToRego(t *testing.T) {
+	const filePath = "pod.json"
 	tests := []struct {
 		name     string
 		src      string
@@ -96,7 +96,7 @@ func TestManifestToRego(t *testing.T) {
 			src:  `field: !!timestamp 2024-04-01`,
 			expected: map[string]any{
 				"__defsec_metadata": map[string]any{
-					"filepath":  "",
+					"filepath":  filePath,
 					"offset":    0,
 					"startline": 1,
 					"endline":   1,
@@ -109,7 +109,7 @@ func TestManifestToRego(t *testing.T) {
 			src:  `field: !!binary dGVzdA==`,
 			expected: map[string]any{
 				"__defsec_metadata": map[string]any{
-					"filepath":  "",
+					"filepath":  filePath,
 					"offset":    0,
 					"startline": 1,
 					"endline":   1,
@@ -122,7 +122,7 @@ func TestManifestToRego(t *testing.T) {
 			src:  `field: 1.1`,
 			expected: map[string]any{
 				"__defsec_metadata": map[string]any{
-					"filepath":  "",
+					"filepath":  filePath,
 					"offset":    0,
 					"startline": 1,
 					"endline":   1,
@@ -134,8 +134,7 @@ func TestManifestToRego(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var manifest parser.Manifest
-			err := yaml.Unmarshal([]byte(tt.src), &manifest)
+			manifest, err := parser.ManifestFromYAML(filePath, []byte(tt.src))
 			require.NoError(t, err)
 			data := manifest.ToRego()
 			assert.Equal(t, tt.expected, data)
