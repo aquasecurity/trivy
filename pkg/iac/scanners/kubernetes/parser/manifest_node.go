@@ -130,17 +130,14 @@ func (n *ManifestNode) UnmarshalYAML(node *yaml.Node) error {
 }
 
 func (n *ManifestNode) handleSliceTag(node *yaml.Node) error {
-	var nodes []*ManifestNode
+	nodes := make([]*ManifestNode, 0, len(node.Content))
 	maxLine := node.Line
 	for _, contentNode := range node.Content {
-		newNode := new(ManifestNode)
-		newNode.FilePath = n.FilePath
-		if err := contentNode.Decode(newNode); err != nil {
+		newNode, err := newManifestNodeFromYaml(n.FilePath, contentNode)
+		if err != nil {
 			return err
 		}
-		if newNode.EndLine > maxLine {
-			maxLine = newNode.EndLine
-		}
+		maxLine = max(maxLine, newNode.EndLine)
 		nodes = append(nodes, newNode)
 	}
 	n.EndLine = maxLine
@@ -149,27 +146,52 @@ func (n *ManifestNode) handleSliceTag(node *yaml.Node) error {
 }
 
 func (n *ManifestNode) handleMapTag(node *yaml.Node) error {
-	output := make(map[string]*ManifestNode)
-	var key string
+	if len(node.Content)%2 != 0 {
+		return fmt.Errorf("invalid map node at line %d: uneven number of children", node.Line)
+	}
+
+	output := make(map[string]*ManifestNode, len(node.Content)/2)
 	maxLine := node.Line
-	for i, contentNode := range node.Content {
-		if i == 0 || i%2 == 0 {
-			key = contentNode.Value
-		} else {
-			newNode := new(ManifestNode)
-			newNode.FilePath = n.FilePath
-			if err := contentNode.Decode(newNode); err != nil {
-				return err
-			}
-			output[key] = newNode
-			if newNode.EndLine > maxLine {
-				maxLine = newNode.EndLine
-			}
+	for i := 0; i < len(node.Content); i += 2 {
+		keyNode := node.Content[i]
+		valueNode := node.Content[i+1]
+
+		newNode, err := newManifestNodeFromYaml(n.FilePath, valueNode)
+		if err != nil {
+			return err
 		}
+
+		if newNode.Type == TagMap {
+			// Set StartLine to the key's line so that the map node snippet
+			// correctly starts at the key in the YAML file
+			newNode.StartLine = keyNode.Line
+		}
+		output[keyNode.Value] = newNode
+
+		maxLine = max(maxLine, newNode.EndLine)
 	}
 	n.EndLine = maxLine
 	n.Value = output
 	return nil
+}
+
+func newManifestNodeFromYaml(filePath string, yamlNode *yaml.Node) (*ManifestNode, error) {
+	newNode := &ManifestNode{
+		FilePath: filePath,
+	}
+
+	if yamlNode.Tag == "!!null" {
+		// UnmarshalYAML is not called for null nodes
+		newNode.StartLine = yamlNode.Line
+		newNode.EndLine = yamlNode.Line
+		return newNode, nil
+	}
+
+	if err := yamlNode.Decode(newNode); err != nil {
+		return nil, err
+	}
+
+	return newNode, nil
 }
 
 func (n *ManifestNode) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
