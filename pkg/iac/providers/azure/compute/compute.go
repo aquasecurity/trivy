@@ -11,8 +11,9 @@ type Compute struct {
 }
 
 type VirtualMachine struct {
-	Metadata   iacTypes.Metadata
-	CustomData iacTypes.StringValue // NOT base64 encoded
+	Metadata            iacTypes.Metadata
+	CustomData          iacTypes.StringValue // NOT base64 encoded
+	NetworkInterfaceIDs []iacTypes.StringValue
 }
 
 type LinuxVirtualMachine struct {
