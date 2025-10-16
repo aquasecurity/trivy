@@ -12,6 +12,8 @@ type SecurityCenter struct {
 type Contact struct {
 	Metadata                 iacTypes.Metadata
 	EnableAlertNotifications iacTypes.BoolValue
+	EnableAlertsToAdmins     iacTypes.BoolValue
+	Email                    iacTypes.StringValue
 	Phone                    iacTypes.StringValue
 }
 
