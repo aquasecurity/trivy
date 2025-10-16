@@ -36,8 +36,8 @@ func Login(ctx context.Context, opts flag.Options) error {
 		return xerrors.Errorf("failed to load Trivy Cloud config: %w", err)
 	}
 	cloudConfig.Token = creds.Token
-	cloudConfig.ServerURL = opts.CloudOptions.TrivyServerUrl
-	cloudConfig.ApiURL = opts.CloudOptions.ApiUrl
+	cloudConfig.Server.URL = opts.CloudOptions.TrivyServerUrl
+	cloudConfig.Api.URL = opts.CloudOptions.ApiUrl
 
 	if err := cloudConfig.Verify(ctx); err != nil {
 		return xerrors.Errorf("failed to verify Trivy Cloud config: %w", err)
@@ -77,14 +77,14 @@ func CheckTrivyCloudStatus(cmd *cobra.Command) error {
 
 	if cloudConfig != nil && cloudConfig.Verify(cmd.Context()) == nil {
 		logger.Info("Trivy cloud is logged in")
-		if cloudConfig.ServerScanning {
+		if cloudConfig.Server.Scanning.Enabled {
 			logger.Info("Trivy Cloud server scanning is enabled")
-			os.Setenv("TRIVY_SERVER", cloudConfig.ServerURL)
+			os.Setenv("TRIVY_SERVER", cloudConfig.Server.URL)
 			os.Setenv("TRIVY_TOKEN_HEADER", "Authorization")
 			os.Setenv("TRIVY_TOKEN", fmt.Sprintf("Bearer %s", cloudConfig.Token))
 		}
 
-		if cloudConfig.UploadResults {
+		if cloudConfig.Server.Scanning.UploadResults {
 			logger.Info("Trivy Cloud results upload is enabled")
 			// add hook to upload the results to Trivy Cloud
 			resultHook := hooks.NewResultsHook(cloudConfig)
@@ -95,10 +95,23 @@ func CheckTrivyCloudStatus(cmd *cobra.Command) error {
 	return nil
 }
 
-func ShowConfig() error {
+func ListConfig() error {
 	return cloud.ShowConfig()
 }
 
 func EditConfig() error {
 	return cloud.OpenConfigForEditing()
+}
+
+func SetConfig(attribute string, value any) error {
+	return cloud.Set(attribute, value)
+}
+
+func GetConfig(attribute string) error {
+	value, err := cloud.Get(attribute)
+	if err != nil {
+		return xerrors.Errorf("failed to get Trivy Cloud config: %w", err)
+	}
+	fmt.Println(value)
+	return nil
 }
