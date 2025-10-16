@@ -84,7 +84,7 @@ func (h *CloudPlatformResultsHook) uploadResults(ctx context.Context, jsonReport
 }
 
 func (h *CloudPlatformResultsHook) getPresignedUploadUrl(ctx context.Context) (string, error) {
-	uploadUrl, err := url.JoinPath(h.cloudConfig.ApiURL, presignedUploadUrl)
+	uploadUrl, err := url.JoinPath(h.cloudConfig.Api.URL, presignedUploadUrl)
 	if err != nil {
 		return "", fmt.Errorf("failed to join API URL and presigned upload URL: %w", err)
 	}

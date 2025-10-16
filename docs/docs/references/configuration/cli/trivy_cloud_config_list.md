@@ -1,19 +1,19 @@
-## trivy cloud edit-config
+## trivy cloud config list
 
-Edit Trivy Cloud configuration
+List Trivy Cloud configuration
 
 ### Synopsis
 
-Edit the Trivy Cloud platform configuration in the default editor specified in the EDITOR environment variable
+List Trivy Cloud platform configuration in human readable format
 
 ```
-trivy cloud edit-config [flags]
+trivy cloud config list [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for edit-config
+  -h, --help   help for list
 ```
 
 ### Options inherited from parent commands
@@ -31,5 +31,5 @@ trivy cloud edit-config [flags]
 
 ### SEE ALSO
 
-* [trivy cloud](trivy_cloud.md)	 - Control Trivy Cloud platform integration settings
+* [trivy cloud config](trivy_cloud_config.md)	 - Control Trivy Cloud configuration
 

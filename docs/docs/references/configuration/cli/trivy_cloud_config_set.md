@@ -1,19 +1,19 @@
-## trivy cloud show-config
+## trivy cloud config set
 
-Show Trivy Cloud configuration
+Set Trivy Cloud configuration
 
 ### Synopsis
 
-Show Trivy Cloud platform configuration in human readable format
+Set the Trivy Cloud platform configuration
 
 ```
-trivy cloud show-config [flags]
+trivy cloud config set [setting] [value] [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for show-config
+  -h, --help   help for set
 ```
 
 ### Options inherited from parent commands
@@ -31,5 +31,5 @@ trivy cloud show-config [flags]
 
 ### SEE ALSO
 
-* [trivy cloud](trivy_cloud.md)	 - Control Trivy Cloud platform integration settings
+* [trivy cloud config](trivy_cloud_config.md)	 - Control Trivy Cloud configuration
 

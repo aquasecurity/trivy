@@ -27,17 +27,25 @@ func TestSave(t *testing.T) {
 		{
 			name: "config with all fields",
 			config: &Config{
-				Token:     "test-token-123",
-				ServerURL: "https://example.com",
-				ApiURL:    "https://api.example.com",
+				Token: "test-token-123",
+				Server: Server{
+					URL: "https://example.com",
+				},
+				Api: Api{
+					URL: "https://api.example.com",
+				},
 			},
 			wantErr: false,
 		},
 		{
 			name: "config without token",
 			config: &Config{
-				ServerURL: "https://example.com",
-				ApiURL:    "https://api.example.com",
+				Server: Server{
+					URL: "https://example.com",
+				},
+				Api: Api{
+					URL: "https://api.example.com",
+				},
 			},
 			wantErr: false,
 		},
@@ -67,7 +75,7 @@ func TestSave(t *testing.T) {
 			assert.Equal(t, tt.config, config)
 
 			configPath := getConfigPath()
-			if tt.config.ServerURL != "" || tt.config.ApiURL != "" {
+			if tt.config.Server.URL != "" || tt.config.Api.URL != "" {
 				assert.FileExists(t, configPath)
 			}
 		})
@@ -102,8 +110,10 @@ func TestClear(t *testing.T) {
 
 			if tt.createConfig {
 				config := &Config{
-					Token:     "testtoken",
-					ServerURL: "https://example.com",
+					Token: "testtoken",
+					Server: Server{
+						URL: "https://example.com",
+					},
 				}
 				err := config.Save()
 				require.NoError(t, err)
@@ -153,9 +163,13 @@ func TestLoad(t *testing.T) {
 			token := "testtoken"
 			if tt.createConfig {
 				config := &Config{
-					Token:     token,
-					ServerURL: "https://example.com",
-					ApiURL:    "https://api.example.com",
+					Token: token,
+					Server: Server{
+						URL: "https://example.com",
+					},
+					Api: Api{
+						URL: "https://api.example.com",
+					},
 				}
 				err := config.Save()
 				require.NoError(t, err)
@@ -169,8 +183,8 @@ func TestLoad(t *testing.T) {
 			require.NotNil(t, config)
 			require.NoError(t, err)
 			assert.Equal(t, token, config.Token)
-			assert.Equal(t, "https://example.com", config.ServerURL)
-			assert.Equal(t, "https://api.example.com", config.ApiURL)
+			assert.Equal(t, "https://example.com", config.Server.URL)
+			assert.Equal(t, "https://api.example.com", config.Api.URL)
 		})
 	}
 }
@@ -184,7 +198,7 @@ func TestVerify(t *testing.T) {
 	}{
 		{
 			name:    "success with valid config",
-			config:  &Config{Token: "testtoken", ServerURL: "https://example.com", ApiURL: "https://api.example.com"},
+			config:  &Config{Token: "testtoken", Server: Server{URL: "https://example.com"}, Api: Api{URL: "https://api.example.com"}},
 			status:  http.StatusOK,
 			wantErr: false,
 		},
@@ -211,7 +225,7 @@ func TestVerify(t *testing.T) {
 			}))
 			defer server.Close()
 
-			tt.config.ServerURL = server.URL
+			tt.config.Server.URL = server.URL
 
 			err := tt.config.Verify(context.Background())
 			if tt.wantErr {
@@ -231,13 +245,50 @@ func TestShowConfig(t *testing.T) {
 		wantContains []string
 	}{
 		{
-			name:   "success with valid config",
-			config: &Config{Token: "testtoken", ServerURL: "https://example.com", ApiURL: "https://api.example.com"},
+			name: "success with valid config",
+			config: &Config{
+				Token: "testtoken",
+				Server: Server{
+					URL: "https://example.com",
+					Scanning: Scanning{
+						Enabled:         true,
+						UploadResults:   false,
+						SecretConfig:    true,
+						MisconfigConfig: false,
+					},
+				},
+				Api: Api{URL: "https://api.example.com"},
+			},
 			wantContains: []string{
 				"Trivy Cloud Configuration",
-				"Trivy Server URL: https://example.com",
-				"API URL:          https://api.example.com",
-				"Logged In:        No",
+				"Logged In: No",
+				"Filepath:",
+				"api.url",
+				"https://api.example.com",
+				"server.url",
+				"https://example.com",
+				"server.scanning.enabled",
+				"Enabled",
+				"server.scanning.upload-results",
+				"Disabled",
+				"server.scanning.secret-config",
+				"server.scanning.misconfig-config",
+			},
+		},
+		{
+			name:   "success with default config",
+			config: nil,
+			wantContains: []string{
+				"Trivy Cloud Configuration",
+				"Logged In: No",
+				"api.url",
+				DefaultApiUrl,
+				"server.url",
+				DefaultTrivyServerUrl,
+				"server.scanning.enabled",
+				"server.scanning.upload-results",
+				"server.scanning.secret-config",
+				"server.scanning.misconfig-config",
 			},
 		},
 	}

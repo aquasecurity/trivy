@@ -1,11 +1,11 @@
-## trivy cloud
+## trivy cloud config
 
-Control Trivy Cloud platform integration settings
+Control Trivy Cloud configuration
 
 ### Options
 
 ```
-  -h, --help   help for cloud
+  -h, --help   help for config
 ```
 
 ### Options inherited from parent commands
@@ -23,6 +23,9 @@ Control Trivy Cloud platform integration settings
 
 ### SEE ALSO
 
-* [trivy](trivy.md)	 - Unified security scanner
-* [trivy cloud config](trivy_cloud_config.md)	 - Control Trivy Cloud configuration
+* [trivy cloud](trivy_cloud.md)	 - Control Trivy Cloud platform integration settings
+* [trivy cloud config edit](trivy_cloud_config_edit.md)	 - Edit Trivy Cloud configuration
+* [trivy cloud config get](trivy_cloud_config_get.md)	 - Get Trivy Cloud configuration
+* [trivy cloud config list](trivy_cloud_config_list.md)	 - List Trivy Cloud configuration
+* [trivy cloud config set](trivy_cloud_config_set.md)	 - Set Trivy Cloud configuration
 

@@ -1476,7 +1476,7 @@ func NewLogoutCommand() *cobra.Command {
 
 func NewCloudCommand() *cobra.Command {
 	cloudCmd := &cobra.Command{
-		Use:     "cloud [flags]",
+		Use:     "cloud subcommand",
 		Short:   "Control Trivy Cloud platform integration settings",
 		GroupID: cloud.GroupCloud,
 	}
@@ -1487,26 +1487,59 @@ func NewCloudCommand() *cobra.Command {
 		Title: "Trivy Cloud Commands",
 	})
 
-	cloudCmd.AddCommand(
+	configCmd := &cobra.Command{
+		Use:     "config subcommand",
+		Short:   "Control Trivy Cloud configuration",
+		GroupID: cloud.GroupCloud,
+	}
+
+	configCmd.AddGroup(&cobra.Group{
+		ID:    cloud.GroupCloud,
+		Title: "Trivy Cloud Configuration Commands",
+	})
+
+	configCmd.AddCommand(
 		&cobra.Command{
-			Use:     "edit-config",
+			Use:     "edit",
 			Short:   "Edit Trivy Cloud configuration",
-			Long:    "Edit the Trivy Cloud platform configuration in the default editor specified in the EDITOR environment variable",
+			Long:    "Edit Trivy Cloud platform configuration in the default editor specified in the EDITOR environment variable",
 			GroupID: cloud.GroupCloud,
 			RunE: func(_ *cobra.Command, _ []string) error {
 				return cloud.EditConfig()
 			},
 		},
 		&cobra.Command{
-			Use:     "show-config",
-			Short:   "Show Trivy Cloud configuration",
-			Long:    "Show Trivy Cloud platform configuration in human readable format",
+			Use:     "list",
+			Short:   "List Trivy Cloud configuration",
+			Long:    "List Trivy Cloud platform configuration in human readable format",
 			GroupID: cloud.GroupCloud,
 			RunE: func(_ *cobra.Command, _ []string) error {
-				return cloud.ShowConfig()
+				return cloud.ListConfig()
+			},
+		},
+		&cobra.Command{
+			Use:     "set [setting] [value]",
+			Short:   "Set Trivy Cloud configuration",
+			Long:    "Set the Trivy Cloud platform configuration",
+			Args:    cobra.ExactArgs(2),
+			GroupID: cloud.GroupCloud,
+			RunE: func(_ *cobra.Command, args []string) error {
+				return cloud.SetConfig(args[0], args[1])
+			},
+		},
+		&cobra.Command{
+			Use:     "get [setting]",
+			Short:   "Get Trivy Cloud configuration",
+			Long:    "Get the Trivy Cloud platform configuration",
+			Args:    cobra.ExactArgs(1),
+			GroupID: cloud.GroupCloud,
+			RunE: func(_ *cobra.Command, args []string) error {
+				return cloud.GetConfig(args[0])
 			},
 		},
 	)
+	cloudCmd.AddCommand(configCmd)
+
 	return cloudCmd
 }
 
