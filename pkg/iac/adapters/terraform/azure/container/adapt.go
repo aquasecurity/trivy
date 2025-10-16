@@ -34,6 +34,7 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 		EnablePrivateCluster:        iacTypes.BoolDefault(false, resource.GetMetadata()),
 		APIServerAuthorizedIPRanges: nil,
 		AzurePolicyEnabled:          iacTypes.BoolDefault(false, resource.GetMetadata()),
+		DiskEncryptionSetID:         iacTypes.StringDefault("", resource.GetMetadata()),
 		RoleBasedAccessControl: container.RoleBasedAccessControl{
 			Metadata: resource.GetMetadata(),
 			Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
@@ -116,6 +117,11 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 	// azurerm >= 3.0.0 - new syntax for azure policy
 	if azurePolicyEnabledAttr := resource.GetAttribute("azure_policy_enabled"); azurePolicyEnabledAttr.IsNotNil() {
 		cluster.AzurePolicyEnabled = azurePolicyEnabledAttr.AsBoolValueOrDefault(false, resource)
+	}
+
+	// disk encryption set ID
+	if diskEncryptionSetIDAttr := resource.GetAttribute("disk_encryption_set_id"); diskEncryptionSetIDAttr.IsNotNil() {
+		cluster.DiskEncryptionSetID = diskEncryptionSetIDAttr.AsStringValueOrDefault("", resource)
 	}
 
 	return cluster

@@ -16,6 +16,7 @@ type KubernetesCluster struct {
 	AddonProfile                AddonProfile
 	RoleBasedAccessControl      RoleBasedAccessControl
 	AzurePolicyEnabled          iacTypes.BoolValue
+	DiskEncryptionSetID         iacTypes.StringValue
 }
 
 type RoleBasedAccessControl struct {
