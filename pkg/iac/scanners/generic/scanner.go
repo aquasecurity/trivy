@@ -34,6 +34,18 @@ func NewTomlScanner(opts ...options.ScannerOption) *GenericScanner[*identityMars
 	return NewScanner("TOML", types.SourceTOML, ParseFunc[*identityMarshaler](parseTOML), opts...)
 }
 
+type LogicalPath struct {
+	Val string
+}
+
+func (p LogicalPath) Valid() bool {
+	return p.Val != ""
+}
+
+type LogicalPathFinder interface {
+	ResolveLogicalPath(filename string, startLine, endLine int) LogicalPath
+}
+
 type RegoMarshaler interface {
 	ToRego() any
 }
@@ -128,6 +140,27 @@ func (s *GenericScanner[T]) ScanFS(ctx context.Context, fsys fs.FS, dir string) 
 
 	if err := s.applyIgnoreRules(fsys, results); err != nil {
 		return nil, err
+	}
+
+	// TODO: Move this to the rego package?
+	for i, res := range results {
+		if res.Status() != scan.StatusFailed {
+			continue
+		}
+
+		srcPath := res.FilesystemPath()
+		if parsedObjects, ok := fileset[srcPath]; ok {
+			for _, obj := range parsedObjects {
+				if f, ok := any(obj).(LogicalPathFinder); ok {
+					logicalPath := f.ResolveLogicalPath(srcPath, res.Range().GetStartLine(), res.Range().GetEndLine())
+					if logicalPath.Valid() {
+						res.WithCausePath(logicalPath.Val)
+						results[i] = res
+						break
+					}
+				}
+			}
+		}
 	}
 
 	return results, nil

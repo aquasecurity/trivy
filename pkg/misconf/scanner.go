@@ -534,7 +534,7 @@ func newFindingID(configType types.ConfigType, filePath, checkID, causePath stri
 	}
 
 	switch configType {
-	case types.Terraform, types.CloudFormation:
+	case types.Terraform, types.CloudFormation, types.Kubernetes:
 		return filePath + "@" + checkID + "@" + causePath
 	default:
 		return ""

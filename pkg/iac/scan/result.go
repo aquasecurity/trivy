@@ -103,6 +103,10 @@ func (r Result) Traces() []string {
 	return r.traces
 }
 
+func (r Result) FilesystemPath() string {
+	return r.fsPath
+}
+
 type RenderedCause struct {
 	Raw string
 }
