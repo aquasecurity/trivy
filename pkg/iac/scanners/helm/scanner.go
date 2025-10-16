@@ -140,7 +140,7 @@ func (s *Scanner) getScanResults(ctx context.Context, path string, target fs.FS)
 		for _, manifest := range manifests {
 			fileResults, err := rs.ScanInput(ctx, types.SourceKubernetes, rego.Input{
 				Path:     file.TemplateFilePath,
-				Contents: manifest,
+				Contents: manifest.ToRego(),
 				FS:       manifestFS,
 			})
 			if err != nil {

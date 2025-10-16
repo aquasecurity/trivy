@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func Parse(_ context.Context, r io.Reader, path string) ([]any, error) {
+func Parse(_ context.Context, r io.Reader, path string) ([]*Manifest, error) {
 	contents, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
@@ -26,10 +26,10 @@ func Parse(_ context.Context, r io.Reader, path string) ([]any, error) {
 		if err != nil {
 			return nil, err
 		}
-		return []any{manifest.ToRego()}, nil
+		return []*Manifest{manifest}, nil
 	}
 
-	var results []any
+	var manifests []*Manifest
 
 	re := regexp.MustCompile(`(?m:^---\r?\n)`)
 	pos := 0
@@ -41,10 +41,10 @@ func Parse(_ context.Context, r io.Reader, path string) ([]any, error) {
 		}
 		if result.Content != nil {
 			result.Content.Offset = pos
-			results = append(results, result.ToRego())
+			manifests = append(manifests, &result)
 		}
 		pos += len(strings.Split(partial, "\n"))
 	}
 
-	return results, nil
+	return manifests, nil
 }
