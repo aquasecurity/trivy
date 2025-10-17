@@ -184,6 +184,7 @@ func (m *Decoder) decodeApplication(c *core.Component) *ftypes.Application {
 	return &app
 }
 
+//nolint:gocyclo
 func (m *Decoder) decodePackage(ctx context.Context, c *core.Component) (*ftypes.Package, error) {
 	p := (*purl.PackageURL)(c.PkgIdentifier.PURL)
 	if p == nil {
@@ -201,6 +202,7 @@ func (m *Decoder) decodePackage(ctx context.Context, c *core.Component) (*ftypes
 	pkg.Name = m.pkgName(pkg, c)
 	pkg.ID = dependency.ID(p.LangType(), pkg.Name, p.Version) // Re-generate ID with the updated name
 
+	buildInfo := &ftypes.BuildInfo{}
 	var err error
 	for _, prop := range c.Properties {
 		switch prop.Name {
@@ -224,7 +226,17 @@ func (m *Decoder) decodePackage(ctx context.Context, c *core.Component) (*ftypes
 			pkg.Layer.Digest = prop.Value
 		case core.PropertyLayerDiffID:
 			pkg.Layer.DiffID = prop.Value
+		case core.PropertyContentSet:
+			buildInfo.ContentSets = append(buildInfo.ContentSets, prop.Value)
+		case core.PropertyNVR:
+			buildInfo.Nvr = prop.Value
+		case core.PropertyArch:
+			buildInfo.Arch = prop.Value
 		}
+	}
+
+	if len(buildInfo.ContentSets) > 0 || buildInfo.Nvr != "" {
+		pkg.BuildInfo = buildInfo
 	}
 
 	pkg.Identifier.BOMRef = c.PkgIdentifier.BOMRef

@@ -47,6 +47,12 @@ const (
 	PropertyLayerDigest     = "LayerDigest"
 	PropertyLayerDiffID     = "LayerDiffID"
 
+	// Red Hat packages only.
+	// A package can use multiple NVR + Arch content sets or fields.
+	PropertyContentSet = "ContentSet"
+	PropertyNVR        = "NVR"
+	PropertyArch       = "Arch"
+
 	// Relationships
 	RelationshipDescribes RelationshipType = "describes"
 	RelationshipContains  RelationshipType = "contains"

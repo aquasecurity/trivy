@@ -85,6 +85,24 @@ var (
 				Version: "2.0.0",
 			},
 		},
+		Properties: core.Properties{
+			{
+				Name:  core.PropertyContentSet,
+				Value: "rhel-9-for-aarch64-appstream-rpms",
+			},
+			{
+				Name:  core.PropertyContentSet,
+				Value: "rhel-9-for-aarch64-appstream-source-rpms",
+			},
+			{
+				Name:  core.PropertySrcName,
+				Value: "rpm-package",
+			},
+			{
+				Name:  core.PropertySrcVersion,
+				Value: "2.0.0",
+			},
+		},
 		Licenses: []string{"GPL-2.0"},
 	}
 
@@ -226,6 +244,47 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 								Licenses:   []string{"MIT"},
 								Identifier: ftypes.PkgIdentifier{
 									PURL: orphanedApkComponent.PkgIdentifier.PURL,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "rpm package",
+			setupBOM: func() *core.BOM {
+				bom := core.NewBOM(core.Options{})
+				bom.SerialNumber = "test-multiple-os-types"
+				bom.Version = 1
+
+				// Add RPM package
+				bom.AddComponent(rpmTestComponent)
+
+				return bom
+			},
+			wantSBOM: types.SBOM{
+				Metadata: types.Metadata{
+					OS: nil, // No OS detected
+				},
+				Packages: []ftypes.PackageInfo{
+					{
+						Packages: ftypes.Packages{
+							{
+								ID:         "rpm-package@2.0.0",
+								Name:       "rpm-package",
+								Version:    "2.0.0",
+								SrcName:    "rpm-package",
+								SrcVersion: "2.0.0",
+								Licenses:   []string{"GPL-2.0"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: rpmTestComponent.PkgIdentifier.PURL,
+								},
+								BuildInfo: &ftypes.BuildInfo{
+									ContentSets: []string{
+										"rhel-9-for-aarch64-appstream-rpms",
+										"rhel-9-for-aarch64-appstream-source-rpms",
+									},
 								},
 							},
 						},
