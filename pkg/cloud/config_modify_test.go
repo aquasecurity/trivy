@@ -37,13 +37,13 @@ func TestSet(t *testing.T) {
 			name:          "error when setting boolean with nope",
 			configToSet:   map[string]any{"server.scanning.enabled": "nope"},
 			expected:      &Config{Api: Api{URL: "https://api.trivy.dev"}, Server: Server{URL: "https://scan.trivy.dev", Scanning: Scanning{Enabled: false, UploadResults: true, SecretConfig: true, MisconfigConfig: true}}, IsLoggedIn: false, Token: ""},
-			expectedError: "invalid boolean value \"nope\"",
+			expectedError: "cannot unmarshal !!str `nope` into bool",
 		},
 		{
 			name:          "error when setting boolean with invalid value",
 			configToSet:   map[string]any{"server.scanning.enabled": "invalid"},
 			expected:      &Config{Api: Api{URL: "https://api.trivy.dev"}, Server: Server{URL: "https://scan.trivy.dev", Scanning: Scanning{Enabled: false, UploadResults: true, SecretConfig: true, MisconfigConfig: true}}, IsLoggedIn: false, Token: ""},
-			expectedError: "invalid boolean value \"invalid\"",
+			expectedError: "cannot unmarshal !!str `invalid` into bool",
 		},
 	}
 
