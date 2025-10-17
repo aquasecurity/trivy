@@ -131,11 +131,6 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, targetKind TargetKi
 
 	r.versionChecker = notification.NewVersionChecker(string(targetKind), &cliOptions)
 
-	// Update the vulnerability database if needed.
-	if err := r.initDB(ctx, cliOptions); err != nil {
-		return nil, xerrors.Errorf("DB error: %w", err)
-	}
-
 	// Update the VEX repositories if needed
 	if err := operation.DownloadVEXRepositories(ctx, cliOptions); err != nil {
 		return nil, xerrors.Errorf("VEX repositories download error: %w", err)
@@ -151,6 +146,11 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, targetKind TargetKi
 	}
 	m.Register()
 	r.module = m
+
+	// Update the vulnerability database if needed.
+	if err := r.initDB(ctx, cliOptions); err != nil {
+		return nil, xerrors.Errorf("DB error: %w", err)
+	}
 
 	// Make a silent attempt to check for updates in the background
 	// only do this if the user has not disabled notices or is running
