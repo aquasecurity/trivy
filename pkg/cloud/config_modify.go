@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"golang.org/x/xerrors"
+	"gopkg.in/yaml.v3"
 )
 
 // Set sets a nested field in the Trivy Cloud config
@@ -86,33 +87,20 @@ func setNestedField(v reflect.Value, path string, value any) error {
 }
 
 func convertToType(value any, targetType reflect.Type) (reflect.Value, error) {
-	valueReflect := reflect.ValueOf(value)
-
-	if valueReflect.Type().AssignableTo(targetType) {
-		return valueReflect, nil
+	val := reflect.ValueOf(value)
+	if val.Type().AssignableTo(targetType) {
+		return val, nil
 	}
-
-	if valueStr, ok := value.(string); ok {
-		switch targetType.Kind() {
-		case reflect.Bool:
-			switch strings.ToLower(valueStr) {
-			case "true", "1", "yes", "on":
-				return reflect.ValueOf(true), nil
-			case "false", "0", "no", "off":
-				return reflect.ValueOf(false), nil
-			default:
-				return reflect.Value{}, xerrors.Errorf("invalid boolean value %q", valueStr)
-			}
-		case reflect.String:
-			return reflect.ValueOf(valueStr), nil
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			return reflect.Value{}, xerrors.New("integer conversion from string not yet implemented")
-		case reflect.Float32, reflect.Float64:
-			return reflect.Value{}, xerrors.New("float conversion from string not yet implemented")
-		}
+	targetPtr := reflect.New(targetType) // *T
+	targetInterface := targetPtr.Interface()
+	data, err := yaml.Marshal(value)
+	if err != nil {
+		return reflect.Value{}, xerrors.Errorf("failed to marshal value: %w", err)
 	}
-
-	return reflect.Value{}, xerrors.Errorf("cannot convert value of type %v to type %v", valueReflect.Type(), targetType)
+	if err := yaml.Unmarshal(data, targetInterface); err != nil {
+		return reflect.Value{}, xerrors.Errorf("failed to decode into %v: %w", targetType, err)
+	}
+	return targetPtr.Elem(), nil
 }
 
 func navigateToField(v reflect.Value, path string) (reflect.Value, error) {
