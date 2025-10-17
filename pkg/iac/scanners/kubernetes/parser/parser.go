@@ -3,12 +3,9 @@ package parser
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io"
 	"regexp"
 	"strings"
-
-	"gopkg.in/yaml.v3"
 )
 
 func Parse(_ context.Context, r io.Reader, path string) ([]any, error) {
@@ -29,22 +26,23 @@ func Parse(_ context.Context, r io.Reader, path string) ([]any, error) {
 		return []any{manifest.ToRego()}, nil
 	}
 
-	var results []any
+	var manifests []any
 
 	re := regexp.MustCompile(`(?m:^---\r?\n)`)
-	pos := 0
+	offset := 0
 	for _, partial := range re.Split(string(contents), -1) {
-		var result Manifest
-		result.Path = path
-		if err := yaml.Unmarshal([]byte(partial), &result); err != nil {
-			return nil, fmt.Errorf("unmarshal yaml: %w", err)
+		manifest, err := ManifestFromYAML(path, []byte(partial))
+		if err != nil {
+			return nil, err
 		}
-		if result.Content != nil {
-			result.Content.Offset = pos
-			results = append(results, result.ToRego())
+
+		if manifest.Content != nil {
+			manifest.Content.Offset = offset
+			manifests = append(manifests, manifest.ToRego())
 		}
-		pos += len(strings.Split(partial, "\n"))
+
+		offset += len(strings.Split(partial, "\n"))
 	}
 
-	return results, nil
+	return manifests, nil
 }
