@@ -86,6 +86,10 @@ func adaptLinuxVM(resource *terraform.Block) compute.LinuxVirtualMachine {
 		customDataVal = iacTypes.String(string(encoded), customDataAttr.GetMetadata())
 	}
 
+	// Extract network_interface_ids
+	nicIDsAttr := resource.GetAttribute("network_interface_ids")
+	nicIDs := nicIDsAttr.AsStringValues()
+
 	if resource.TypeLabel() == AzureVirtualMachine {
 		workingBlock = resource.GetBlock("os_profile_linux_config")
 	}
@@ -95,8 +99,9 @@ func adaptLinuxVM(resource *terraform.Block) compute.LinuxVirtualMachine {
 	return compute.LinuxVirtualMachine{
 		Metadata: resource.GetMetadata(),
 		VirtualMachine: compute.VirtualMachine{
-			Metadata:   resource.GetMetadata(),
-			CustomData: customDataVal,
+			Metadata:            resource.GetMetadata(),
+			CustomData:          customDataVal,
+			NetworkInterfaceIDs: nicIDs,
 		},
 		OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
 			Metadata:                      resource.GetMetadata(),
@@ -125,11 +130,16 @@ func adaptWindowsVM(resource *terraform.Block) compute.WindowsVirtualMachine {
 		customDataVal = iacTypes.String(string(encoded), customDataAttr.GetMetadata())
 	}
 
+	// Extract network_interface_ids
+	nicIDsAttr := resource.GetAttribute("network_interface_ids")
+	nicIDs := nicIDsAttr.AsStringValues()
+
 	return compute.WindowsVirtualMachine{
 		Metadata: resource.GetMetadata(),
 		VirtualMachine: compute.VirtualMachine{
-			Metadata:   resource.GetMetadata(),
-			CustomData: customDataVal,
+			Metadata:            resource.GetMetadata(),
+			CustomData:          customDataVal,
+			NetworkInterfaceIDs: nicIDs,
 		},
 	}
 }
