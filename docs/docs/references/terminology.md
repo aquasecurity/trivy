@@ -29,6 +29,9 @@ This page explains the terminology system used in Trivy, helping users understan
 ### Target
 Types of artifacts that Trivy can scan, like container images and filesystem.
 
+### Target type
+Trivy categorizes targets into Pre-build and Post-build targets, as defined [here](../coverage/language/index.md#target-types)
+
 ### Scanner
 Trivy's built-in security scanning engines. Trivy has four main scanners:
 
