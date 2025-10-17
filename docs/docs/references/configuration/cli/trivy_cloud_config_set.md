@@ -10,6 +10,13 @@ Set the Trivy Cloud platform configuration
 trivy cloud config set [setting] [value] [flags]
 ```
 
+### Examples
+
+```
+  $ trivy cloud config set server.scanning.enabled true
+  $ trivy cloud config set server.scanning.upload-results false
+```
+
 ### Options
 
 ```

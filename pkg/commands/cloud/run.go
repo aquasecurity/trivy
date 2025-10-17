@@ -107,6 +107,9 @@ func SetConfig(attribute string, value any) error {
 	return cloud.Set(attribute, value)
 }
 
+func UnsetConfig(attribute string) error {
+	return cloud.Unset(attribute)
+}
 func GetConfig(attribute string) error {
 	value, err := cloud.Get(attribute)
 	if err != nil {

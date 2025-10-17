@@ -21,6 +21,35 @@ func Set(attribute string, value any) error {
 	return config.Save()
 }
 
+// Unset sets a nested field in the Trivy Cloud config to its default value
+func Unset(attribute string) error {
+	config, err := Load()
+	if err != nil {
+		return xerrors.Errorf("failed to load Trivy Cloud config file: %w", err)
+	}
+
+	if err := unsetNestedField(reflect.ValueOf(config).Elem(), attribute); err != nil {
+		return xerrors.Errorf("failed to unset attribute %q: %w", attribute, err)
+	}
+
+	return config.Save()
+}
+
+func unsetNestedField(value reflect.Value, attribute string) error {
+	field, err := navigateToField(value, attribute)
+	if err != nil {
+		return err
+	}
+
+	defaultField, err := navigateToField(reflect.ValueOf(defaultConfig).Elem(), attribute)
+	if err != nil {
+		return err
+	}
+
+	field.Set(defaultField)
+	return nil
+}
+
 // Get gets a nested field from the Trivy Cloud config
 func Get(attribute string) (any, error) {
 	return GetWithDefault[any](attribute, nil)

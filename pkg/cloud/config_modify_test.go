@@ -143,3 +143,89 @@ func TestGet(t *testing.T) {
 		})
 	}
 }
+
+func TestUnset(t *testing.T) {
+	tests := []struct {
+		name          string
+		setupConfig   *Config
+		attribute     string
+		expectedValue any
+		expectedError string
+	}{
+		{
+			name:          "success with default config",
+			setupConfig:   defaultConfig,
+			attribute:     "server.scanning.enabled",
+			expectedValue: true,
+			expectedError: "",
+		},
+		{
+			name: "success with custom config",
+			setupConfig: &Config{
+				Token: "test",
+				Server: Server{
+					URL: "https://example.com",
+					Scanning: Scanning{
+						Enabled:         false,
+						UploadResults:   true,
+						SecretConfig:    false,
+						MisconfigConfig: true,
+					},
+				},
+				Api: Api{URL: "https://api.example.com"},
+			},
+			attribute:     "server.scanning.enabled",
+			expectedValue: true,
+			expectedError: "",
+		},
+		{
+			name: "success with custom url reset",
+			setupConfig: &Config{
+				Token: "test",
+				Server: Server{
+					URL: "https://example.com",
+					Scanning: Scanning{
+						Enabled:         false,
+						UploadResults:   true,
+						SecretConfig:    false,
+						MisconfigConfig: true,
+					},
+				},
+				Api: Api{URL: "https://api.custom.com"},
+			},
+			attribute:     "api.url",
+			expectedValue: "https://api.trivy.dev",
+			expectedError: "",
+		},
+		{
+			name:          "error with invalid attribute",
+			setupConfig:   defaultConfig,
+			attribute:     "server.scanning.foo",
+			expectedValue: true,
+			expectedError: "field \"foo\" not found in config",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tempDir := t.TempDir()
+			t.Setenv("XDG_DATA_HOME", tempDir)
+
+			keyring.MockInit()
+			defer keyring.DeleteAll(ServiceName)
+			defer Clear()
+
+			require.NoError(t, tt.setupConfig.Save())
+			err := Unset(tt.attribute)
+			if tt.expectedError != "" {
+				require.ErrorContains(t, err, tt.expectedError)
+				return
+			}
+
+			require.NoError(t, err)
+			value, err := Get(tt.attribute)
+			require.NoError(t, err)
+			assert.Equal(t, tt.expectedValue, value)
+		})
+	}
+}
