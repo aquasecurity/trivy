@@ -457,7 +457,7 @@ func TestTar(t *testing.T) {
 			// Run Trivy
 			runTest(t, osArgs, tt.golden, "", tt.args.Format, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-				override: overrideFuncs(overrideUID, overrideImageReportID, tt.override),
+				override: overrideFuncs(overrideUID, tt.override),
 			})
 		})
 	}

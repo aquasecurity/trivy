@@ -52,6 +52,9 @@ func TestSBOM(t *testing.T) {
 				// SBOM file doesn't contain info about layers
 				want.Metadata.Size = 0
 				want.Metadata.Layers = nil
+
+				// SBOM parsing consumes UUIDs #1-#4 for components, so ReportID becomes #5
+				want.ReportID = "3ff14136-e09f-4df9-80ea-000000000005"
 			},
 		},
 		{
@@ -108,6 +111,9 @@ func TestSBOM(t *testing.T) {
 				// SBOM file doesn't contain info about layers
 				want.Metadata.Size = 0
 				want.Metadata.Layers = nil
+
+				// SBOM parsing consumes UUIDs #1-#4 for components, so ReportID becomes #5
+				want.ReportID = "3ff14136-e09f-4df9-80ea-000000000005"
 			},
 		},
 		{
@@ -129,6 +135,9 @@ func TestSBOM(t *testing.T) {
 				// SBOM file doesn't contain info about layers
 				want.Metadata.Size = 0
 				want.Metadata.Layers = nil
+
+				// SBOM parsing consumes UUIDs #1-#4 for components, so ReportID becomes #5
+				want.ReportID = "3ff14136-e09f-4df9-80ea-000000000005"
 			},
 		},
 		{
@@ -150,6 +159,9 @@ func TestSBOM(t *testing.T) {
 				// SBOM file doesn't contain info about layers
 				want.Metadata.Size = 0
 				want.Metadata.Layers = nil
+
+				// SBOM parsing consumes UUIDs #1-#4 for components, so ReportID becomes #5
+				want.ReportID = "3ff14136-e09f-4df9-80ea-000000000005"
 			},
 		},
 		{

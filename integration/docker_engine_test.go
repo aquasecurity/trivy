@@ -292,7 +292,7 @@ func TestDockerEngine(t *testing.T) {
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				// Image config fields were removed
-				override: overrideFuncs(overrideUID, overrideDockerRemovedFields, overrideImageReportID),
+				override: overrideFuncs(overrideUID, overrideDockerRemovedFields),
 			})
 		})
 	}

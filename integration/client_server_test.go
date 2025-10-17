@@ -270,9 +270,6 @@ func TestClientServer(t *testing.T) {
 				Target:           "testdata/fixtures/repo/pom/",
 			},
 			golden: "testdata/pom.json.golden",
-			override: func(t *testing.T, want, got *types.Report) {
-				overrideClientServerRepoReportID(t, want, got)
-			},
 		},
 		{
 			name: "scan package-lock.json with repo command in client/server mode",
@@ -283,9 +280,6 @@ func TestClientServer(t *testing.T) {
 				ListAllPackages:  true,
 			},
 			golden: "testdata/npm.json.golden",
-			override: func(t *testing.T, want, got *types.Report) {
-				overrideClientServerRepoReportID(t, want, got)
-			},
 		},
 		{
 			name: "scan package-lock.json with severity from `ubuntu` in client/server mode",
@@ -299,9 +293,6 @@ func TestClientServer(t *testing.T) {
 				},
 			},
 			golden: "testdata/npm-ubuntu-severity.json.golden",
-			override: func(t *testing.T, want, got *types.Report) {
-				overrideClientServerRepoReportID(t, want, got)
-			},
 		},
 		{
 			name: "scan sample.pem with repo command in client/server mode",
@@ -312,9 +303,6 @@ func TestClientServer(t *testing.T) {
 				Target:           "testdata/fixtures/repo/secrets/",
 			},
 			golden: "testdata/secrets.json.golden",
-			override: func(t *testing.T, want, got *types.Report) {
-				overrideClientServerRepoReportID(t, want, got)
-			},
 		},
 		{
 			name: "scan remote repository with repo command in client/server mode",
@@ -324,10 +312,10 @@ func TestClientServer(t *testing.T) {
 				Target:           "https://github.com/knqyf263/trivy-ci-test",
 			},
 			golden: "testdata/test-repo.json.golden",
-			override: func(t *testing.T, want, got *types.Report) {
-				// Remote repos don't consume the extra UUID that local repos do
-				overrideClientServerReportID(t, want, got)
+			override: func(_ *testing.T, want, _ *types.Report) {
 				want.ArtifactName = "https://github.com/knqyf263/trivy-ci-test"
+				// Repository scans use commit hash for cache key (not random UUID), so ReportID becomes UUID #1
+				want.ReportID = "3ff14136-e09f-4df9-80ea-000000000001"
 			},
 		},
 	}
@@ -343,7 +331,7 @@ func TestClientServer(t *testing.T) {
 			}
 
 			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
-				override: overrideFuncs(overrideUID, overrideClientServerReportID, tt.override),
+				override: overrideFuncs(overrideUID, tt.override),
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
@@ -471,7 +459,7 @@ func TestClientServerWithFormat(t *testing.T) {
 			osArgs := setupClient(t, tt.args, addr, cacheDir)
 
 			runTest(t, osArgs, tt.golden, "", tt.args.Format, runOptions{
-				override: overrideFuncs(overrideUID, overrideClientServerReportID),
+				override: overrideUID,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
@@ -499,7 +487,6 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := setupClient(t, tt.args, addr, cacheDir)
 			runTest(t, osArgs, tt.golden, "", types.FormatCycloneDX, runOptions{
-				override: overrideClientServerReportID,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
@@ -569,7 +556,7 @@ func TestClientServerWithCustomOptions(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := setupClient(t, tt.args, addr, cacheDir)
 			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
-				override: overrideFuncs(overrideUID, overrideClientServerReportID),
+				override: overrideUID,
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
@@ -599,7 +586,7 @@ func TestClientServerWithRedis(t *testing.T) {
 
 		// Run Trivy client
 		runTest(t, osArgs, golden, "", types.FormatJSON, runOptions{
-			override: overrideFuncs(overrideUID, overrideClientServerReportID),
+			override: overrideUID,
 			fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 		})
 	})
@@ -772,16 +759,4 @@ func setupRedis(t *testing.T, ctx context.Context) (testcontainers.Container, st
 
 	addr := fmt.Sprintf("redis://%s:%s", ip, p.Port())
 	return redis, addr
-}
-
-// overrideClientServerReportID overrides the ReportID in the golden file to match the client/server mode behavior.
-// In client/server mode, the server doesn't call Inspect(), so ReportID becomes UUID #1 instead of #2.
-func overrideClientServerReportID(_ *testing.T, want, _ *types.Report) {
-	want.ReportID = "3ff14136-e09f-4df9-80ea-000000000001"
-}
-
-// overrideClientServerRepoReportID overrides the ReportID in the golden file for repo command in client/server mode.
-// In repo command with client/server mode, one additional UUID is consumed before ReportID is assigned.
-func overrideClientServerRepoReportID(_ *testing.T, want, _ *types.Report) {
-	want.ReportID = "3ff14136-e09f-4df9-80ea-000000000002"
 }
