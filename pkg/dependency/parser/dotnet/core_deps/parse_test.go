@@ -84,6 +84,34 @@ func TestParse(t *testing.T) {
 			file:    "testdata/invalid.deps.json",
 			wantErr: "failed to decode .deps.json file: jsontext: unexpected EOF within",
 		},
+		{
+			name: "published as self contained",
+			file: "testdata/self-contained.deps.json",
+			want: []ftypes.Package{
+				{
+					ID:      "Microsoft.CSharp/9.0.124.61010",
+					Name:    "Microsoft.CSharp",
+					Version: "9.0.124.61010",
+					Locations: []ftypes.Location{
+						{
+							StartLine: 21,
+							EndLine:   24,
+						},
+					},
+				},
+				{
+					ID:      "YamlDotNet/16.3.0",
+					Name:    "YamlDotNet",
+					Version: "16.3.0",
+					Locations: []ftypes.Location{
+						{
+							StartLine: 48,
+							EndLine:   54,
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
