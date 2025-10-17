@@ -2,6 +2,7 @@ package cyclonedx
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -84,7 +85,7 @@ func (b *BOM) parseBOM(bom *cdx.BOM) error {
 		dependencies := lo.FromPtr(dep.Dependencies)
 		if len(dependencies) == 0 {
 			// Empty dependsOn array - create empty relationship to preserve this information
-			b.BOM.AddRelationship(ref, nil, core.RelationshipDependsOn)
+			b.BOM.AddRelationship(context.Background(), ref, nil, core.RelationshipDependsOn)
 		} else {
 			// Process actual dependencies
 			for _, depRef := range dependencies {
@@ -92,7 +93,7 @@ func (b *BOM) parseBOM(bom *cdx.BOM) error {
 				if !ok {
 					continue
 				}
-				b.BOM.AddRelationship(ref, dependency, core.RelationshipDependsOn)
+				b.BOM.AddRelationship(context.Background(), ref, dependency, core.RelationshipDependsOn)
 			}
 		}
 	}
@@ -113,7 +114,7 @@ func (b *BOM) parseMetadataComponent(bom *cdx.BOM) (*core.Component, error) {
 		return nil, xerrors.Errorf("failed to parse metadata component: %w", err)
 	}
 	root.Root = true
-	b.BOM.AddComponent(root)
+	b.BOM.AddComponent(context.Background(), root)
 	return root, nil
 }
 
@@ -163,7 +164,7 @@ func (b *BOM) parseComponents(cdxComponents *[]cdx.Component) map[string]*core.C
 			continue
 		}
 
-		b.BOM.AddComponent(c)
+		b.BOM.AddComponent(context.Background(), c)
 		components[component.BOMRef] = c
 	}
 	return components

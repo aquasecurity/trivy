@@ -43,7 +43,7 @@ func TestK8s(t *testing.T) {
 		}
 
 		// Run Trivy
-		err := execute(osArgs)
+		err := execute(t.Context(), osArgs)
 		require.NoError(t, err)
 
 		var got report.ConsolidatedReport
@@ -115,7 +115,7 @@ func TestK8s(t *testing.T) {
 		}
 
 		// Run Trivy
-		err := execute(osArgs)
+		err := execute(t.Context(), osArgs)
 		require.NoError(t, err)
 
 		var got *cdx.BOM
@@ -160,7 +160,7 @@ func TestK8s(t *testing.T) {
 		}
 
 		// Run Trivy
-		err := execute(osArgs)
+		err := execute(t.Context(), osArgs)
 		require.NoError(t, err)
 
 		var got report.ConsolidatedReport

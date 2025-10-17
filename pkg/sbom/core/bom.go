@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"slices"
 	"sort"
 
@@ -249,9 +250,9 @@ func NewBOM(opts Options) *BOM {
 	}
 }
 
-func (b *BOM) setupComponent(c *Component) {
+func (b *BOM) setupComponent(ctx context.Context, c *Component) {
 	if c.id == uuid.Nil {
-		c.id = uuid.New()
+		c.id = uuid.New(ctx)
 	}
 	if c.PkgIdentifier.PURL != nil {
 		p := c.PkgIdentifier.PURL.String()
@@ -260,21 +261,21 @@ func (b *BOM) setupComponent(c *Component) {
 	sort.Sort(c.Properties)
 }
 
-func (b *BOM) AddComponent(c *Component) {
-	b.setupComponent(c)
+func (b *BOM) AddComponent(ctx context.Context, c *Component) {
+	b.setupComponent(ctx, c)
 	if c.Root {
 		b.rootID = c.id
 	}
 	b.components[c.id] = c
 }
 
-func (b *BOM) AddRelationship(parent, child *Component, relationshipType RelationshipType) {
+func (b *BOM) AddRelationship(ctx context.Context, parent, child *Component, relationshipType RelationshipType) {
 	// Check the wrong parent to avoid `panic`
 	if parent == nil {
 		return
 	}
 	if parent.id == uuid.Nil {
-		b.AddComponent(parent)
+		b.AddComponent(ctx, parent)
 	}
 
 	if child == nil {
@@ -287,7 +288,7 @@ func (b *BOM) AddRelationship(parent, child *Component, relationshipType Relatio
 	}
 
 	if child.id == uuid.Nil {
-		b.AddComponent(child)
+		b.AddComponent(ctx, child)
 	}
 
 	b.relationships[parent.id] = append(b.relationships[parent.id], Relationship{
@@ -300,9 +301,9 @@ func (b *BOM) AddRelationship(parent, child *Component, relationshipType Relatio
 	}
 }
 
-func (b *BOM) AddVulnerabilities(c *Component, vulns []Vulnerability) {
+func (b *BOM) AddVulnerabilities(ctx context.Context, c *Component, vulns []Vulnerability) {
 	if c.id == uuid.Nil {
-		b.AddComponent(c)
+		b.AddComponent(ctx, c)
 	}
 	if _, ok := b.vulnerabilities[c.id]; ok {
 		return

@@ -168,7 +168,7 @@ func extractGitInfo(dir string) (bool, artifact.RepoMetadata, error) {
 
 func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	// Calculate cache key
-	cacheKey, err := a.calcCacheKey()
+	cacheKey, err := a.calcCacheKey(ctx)
 	if err != nil {
 		return artifact.Reference{}, xerrors.Errorf("failed to calculate a cache key: %w", err)
 	}
@@ -343,7 +343,7 @@ func (a Artifact) Clean(reference artifact.Reference) error {
 	return a.cache.DeleteBlobs(context.TODO(), reference.BlobIDs)
 }
 
-func (a Artifact) calcCacheKey() (string, error) {
+func (a Artifact) calcCacheKey(ctx context.Context) (string, error) {
 	// If this is a clean git repository, use the commit hash as cache key
 	if a.isClean && a.repoMetadata.Commit != "" {
 		return cache.CalcKey(a.repoMetadata.Commit, artifactVersion, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
@@ -351,7 +351,7 @@ func (a Artifact) calcCacheKey() (string, error) {
 
 	// For non-git repositories or dirty git repositories, use UUID as cache key
 	h := sha256.New()
-	if _, err := h.Write([]byte(uuid.New().String())); err != nil {
+	if _, err := h.Write([]byte(uuid.New(ctx).String())); err != nil {
 		return "", xerrors.Errorf("sha256 calculation error: %w", err)
 	}
 

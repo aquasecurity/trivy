@@ -63,6 +63,7 @@ var (
 )
 
 func TestMarshaler_MarshalReport(t *testing.T) {
+	ctx := t.Context()
 	testSBOM := core.NewBOM(core.Options{GenerateBOMRef: true})
 
 	// Add root component
@@ -80,7 +81,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			},
 		},
 	}
-	testSBOM.AddComponent(rootComponent)
+	testSBOM.AddComponent(ctx, rootComponent)
 
 	// Add the jackson-databind component that matches scan results
 	jacksonComponent := &core.Component{
@@ -108,11 +109,11 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			},
 		},
 	}
-	testSBOM.AddComponent(jacksonComponent)
+	testSBOM.AddComponent(ctx, jacksonComponent)
 
 	// Establish relationships
-	testSBOM.AddRelationship(rootComponent, jacksonComponent, core.RelationshipContains)
-	testSBOM.AddRelationship(jacksonComponent, nil, core.RelationshipDependsOn)
+	testSBOM.AddRelationship(ctx, rootComponent, jacksonComponent, core.RelationshipContains)
+	testSBOM.AddRelationship(ctx, jacksonComponent, nil, core.RelationshipDependsOn)
 
 	tests := []struct {
 		name        string
@@ -2152,7 +2153,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+			ctx = uuid.With(ctx, "3ff14136-e09f-4df9-80ea-%012d")
 
 			marshaler := cyclonedx.NewMarshaler("dev")
 			got, err := marshaler.MarshalReport(ctx, tt.inputReport)

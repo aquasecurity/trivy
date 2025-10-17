@@ -1,6 +1,7 @@
 package vex_test
 
 import (
+	"context"
 	"fmt"
 	"net/http/httptest"
 	"os"
@@ -171,8 +172,8 @@ func TestFilter(t *testing.T) {
 	// Set up the OCI registry
 	tr, d := setUpRegistry(t)
 
-	uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
-	testCycloneDXSBOM := createCycloneDXBOMWithSpringComponent()
+	ctx := uuid.With(context.Background(), "3ff14136-e09f-4df9-80ea-%012d")
+	testCycloneDXSBOM := createCycloneDXBOMWithSpringComponent(ctx)
 
 	type args struct {
 		report *types.Report
@@ -661,7 +662,7 @@ func ociPURLString(ts *httptest.Server, d v1.Hash) string {
 	return p.String()
 }
 
-func createCycloneDXBOMWithSpringComponent() *core.BOM {
+func createCycloneDXBOMWithSpringComponent(ctx context.Context) *core.BOM {
 	bom := core.NewBOM(core.Options{})
 	bom.SerialNumber = "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79"
 	bom.Version = 1
@@ -678,7 +679,7 @@ func createCycloneDXBOMWithSpringComponent() *core.BOM {
 		Version:       springPackage.Version,
 		PkgIdentifier: pkgIdentifier,
 	}
-	bom.AddComponent(springComponent)
+	bom.AddComponent(ctx, springComponent)
 	return bom
 }
 

@@ -115,7 +115,7 @@ func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
 
 func (m *Marshaler) MarshalReport(ctx context.Context, report types.Report) (*spdx.Document, error) {
 	// Convert into an intermediate representation
-	bom, err := sbomio.NewEncoder().Encode(report)
+	bom, err := sbomio.NewEncoder().Encode(ctx, report)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to marshal report: %w", err)
 	}
@@ -224,7 +224,7 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 		DataLicense:       spdx.DataLicense,
 		SPDXIdentifier:    DocumentSPDXIdentifier,
 		DocumentName:      root.Name,
-		DocumentNamespace: getDocumentNamespace(root),
+		DocumentNamespace: getDocumentNamespace(ctx, root),
 		CreationInfo: &spdx.CreationInfo{
 			Creators: []common.Creator{
 				{
@@ -621,12 +621,12 @@ func elementID(elementType, pkgID string) spdx.ElementID {
 	return spdx.ElementID(fmt.Sprintf("%s-%s", elementType, pkgID))
 }
 
-func getDocumentNamespace(root *core.Component) string {
+func getDocumentNamespace(ctx context.Context, root *core.Component) string {
 	return fmt.Sprintf("%s/%s/%s-%s",
 		DocumentNamespace,
 		string(root.Type),
 		strings.ReplaceAll(strings.ReplaceAll(root.Name, "https://", ""), "http://", ""), // remove http(s):// prefix when scanning repos
-		uuid.New().String(),
+		uuid.New(ctx).String(),
 	)
 }
 

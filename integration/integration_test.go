@@ -239,10 +239,6 @@ type runOptions struct {
 // If outputFile is empty, the output file is created in a temporary directory.
 // If update is true, the golden file is updated.
 func runTest(t *testing.T, osArgs []string, wantFile, outputFile string, format types.Format, opts runOptions) {
-	if opts.fakeUUID != "" {
-		uuid.SetFakeUUID(t, opts.fakeUUID)
-	}
-
 	if outputFile == "" {
 		// Set up the output file
 		outputFile = filepath.Join(t.TempDir(), "output.json")
@@ -253,7 +249,11 @@ func runTest(t *testing.T, osArgs []string, wantFile, outputFile string, format 
 	osArgs = append(osArgs, "--output", outputFile)
 
 	// Run Trivy
-	err := execute(osArgs)
+	ctx := t.Context()
+	if opts.fakeUUID != "" {
+		ctx = uuid.With(ctx, opts.fakeUUID)
+	}
+	err := execute(ctx, osArgs)
 	if opts.wantErr != "" {
 		require.ErrorContains(t, err, opts.wantErr)
 		return
@@ -275,12 +275,12 @@ func runTest(t *testing.T, osArgs []string, wantFile, outputFile string, format 
 	}
 }
 
-func execute(osArgs []string) error {
+func execute(ctx context.Context, osArgs []string) error {
 	// viper.XXX() (e.g. viper.ReadInConfig()) affects the global state, so we need to reset it after each test.
 	defer viper.Reset()
 
 	// Set a fake time
-	ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+	ctx = clock.With(ctx, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 
 	// Setup CLI App
 	app := commands.NewApp()

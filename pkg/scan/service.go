@@ -79,7 +79,7 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 
 	return types.Report{
 		SchemaVersion: report.SchemaVersion,
-		ReportID:      uuid.New().String(),
+		ReportID:      uuid.New(ctx).String(),
 		CreatedAt:     clock.Now(ctx),
 		ArtifactID:    s.generateArtifactID(artifactInfo),
 		ArtifactName:  artifactInfo.Name,
