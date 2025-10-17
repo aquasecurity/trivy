@@ -67,13 +67,13 @@ type Parser struct {
 	releaseRemoteRepos  []string
 	snapshotRemoteRepos []string
 	offline             bool
-	servers             []Server
+	settings            *settings
 }
 
 func NewParser(filePath string, opts ...option) *Parser {
+	logger := log.WithPrefix("pom")
 	o := &options{
-		offline:            false,
-		releaseRemoteRepos: []string{centralURL}, // Maven doesn't use central repository for snapshot dependencies
+		offline: false,
 	}
 
 	for _, opt := range opts {
@@ -87,15 +87,41 @@ func NewParser(filePath string, opts ...option) *Parser {
 		localRepository = filepath.Join(homeDir, ".m2", "repository")
 	}
 
+	// Try to mimic Maven's default behavior when it comes to giving precedence to ordering of remote repositories.
+	// - start with the repositories defined via options
+	releaseRemoteRepos := slices.Clone(o.releaseRemoteRepos)
+	snapshotRemoteRepos := slices.Clone(o.snapshotRemoteRepos)
+
+	// - then include the repositories defined in settings.xml
+	for _, repository := range s.getEffectiveRepositories() {
+		if repoURL := createURLForRepository(repository, s.Servers); repoURL != nil {
+			if repository.Snapshots.IsEnabled() {
+				logger.Debug("Enabling snapshot repository from settings",
+					log.String("id", repository.ID), log.String("url", repository.URL))
+				snapshotRemoteRepos = append(snapshotRemoteRepos, repoURL.String())
+			}
+			if repository.Releases.IsEnabled() {
+				logger.Debug("Enabling release repository from settings",
+					log.String("id", repository.ID), log.String("url", repository.URL))
+				releaseRemoteRepos = append(releaseRemoteRepos, repoURL.String())
+			}
+		}
+	}
+
+	// - finally append the central repository last (only for releases, as central is not used for snapshot artifacts)
+	logger.Debug("Enabling Maven Central repository", log.String("url", centralURL))
+
+	releaseRemoteRepos = append(releaseRemoteRepos, centralURL)
+
 	return &Parser{
 		logger:              log.WithPrefix("pom"),
 		rootPath:            filepath.Clean(filePath),
 		cache:               newPOMCache(),
 		localRepository:     localRepository,
-		releaseRemoteRepos:  o.releaseRemoteRepos,
-		snapshotRemoteRepos: o.snapshotRemoteRepos,
+		releaseRemoteRepos:  releaseRemoteRepos,
+		snapshotRemoteRepos: snapshotRemoteRepos,
 		offline:             o.offline,
-		servers:             s.Servers,
+		settings:            &s,
 	}
 }
 
@@ -362,7 +388,7 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 		opts.exclusions = set.New[string]()
 	}
 	// Update remoteRepositories
-	pomReleaseRemoteRepos, pomSnapshotRemoteRepos := pom.repositories(p.servers)
+	pomReleaseRemoteRepos, pomSnapshotRemoteRepos := pom.repositories(p.settings.Servers, p.settings.ActiveProfiles)
 	p.releaseRemoteRepos = lo.Uniq(append(pomReleaseRemoteRepos, p.releaseRemoteRepos...))
 	p.snapshotRemoteRepos = lo.Uniq(append(pomSnapshotRemoteRepos, p.snapshotRemoteRepos...))
 
