@@ -28,4 +28,5 @@ Control Trivy Cloud configuration
 * [trivy cloud config get](trivy_cloud_config_get.md)	 - Get Trivy Cloud configuration
 * [trivy cloud config list](trivy_cloud_config_list.md)	 - List Trivy Cloud configuration
 * [trivy cloud config set](trivy_cloud_config_set.md)	 - Set Trivy Cloud configuration
+* [trivy cloud config unset](trivy_cloud_config_unset.md)	 - Unset Trivy Cloud configuration
 

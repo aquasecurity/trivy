@@ -1,26 +1,26 @@
-## trivy cloud config get
+## trivy cloud config unset
 
-Get Trivy Cloud configuration
+Unset Trivy Cloud configuration
 
 ### Synopsis
 
-Get the Trivy Cloud platform configuration
+Unset the Trivy Cloud platform configuration and return it to the default setting
 
 ```
-trivy cloud config get [setting] [flags]
+trivy cloud config unset [setting] [flags]
 ```
 
 ### Examples
 
 ```
-  $ trivy cloud config get server.scanning.enabled
-  $ trivy cloud config get server.scanning.upload-results
+  $ trivy cloud config unset server.scanning.enabled
+  $ trivy cloud config unset server.scanning.upload-results
 ```
 
 ### Options
 
 ```
-  -h, --help   help for get
+  -h, --help   help for unset
 ```
 
 ### Options inherited from parent commands

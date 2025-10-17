@@ -1518,9 +1518,11 @@ func NewCloudCommand() *cobra.Command {
 			},
 		},
 		&cobra.Command{
-			Use:     "set [setting] [value]",
-			Short:   "Set Trivy Cloud configuration",
-			Long:    "Set the Trivy Cloud platform configuration",
+			Use:   "set [setting] [value]",
+			Short: "Set Trivy Cloud configuration",
+			Long:  "Set the Trivy Cloud platform configuration",
+			Example: `  $ trivy cloud config set server.scanning.enabled true
+  $ trivy cloud config set server.scanning.upload-results false`,
 			Args:    cobra.ExactArgs(2),
 			GroupID: cloud.GroupCloud,
 			RunE: func(_ *cobra.Command, args []string) error {
@@ -1528,9 +1530,23 @@ func NewCloudCommand() *cobra.Command {
 			},
 		},
 		&cobra.Command{
-			Use:     "get [setting]",
-			Short:   "Get Trivy Cloud configuration",
-			Long:    "Get the Trivy Cloud platform configuration",
+			Use:   "unset [setting]",
+			Short: "Unset Trivy Cloud configuration",
+			Long:  "Unset the Trivy Cloud platform configuration and return it to the default setting",
+			Example: `  $ trivy cloud config unset server.scanning.enabled
+  $ trivy cloud config unset server.scanning.upload-results`,
+			Args:    cobra.ExactArgs(1),
+			GroupID: cloud.GroupCloud,
+			RunE: func(_ *cobra.Command, args []string) error {
+				return cloud.UnsetConfig(args[0])
+			},
+		},
+		&cobra.Command{
+			Use:   "get [setting]",
+			Short: "Get Trivy Cloud configuration",
+			Long:  "Get the Trivy Cloud platform configuration",
+			Example: `  $ trivy cloud config get server.scanning.enabled
+  $ trivy cloud config get server.scanning.upload-results`,
 			Args:    cobra.ExactArgs(1),
 			GroupID: cloud.GroupCloud,
 			RunE: func(_ *cobra.Command, args []string) error {
