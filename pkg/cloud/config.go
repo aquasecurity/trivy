@@ -39,6 +39,7 @@ type Scanning struct {
 	SecretConfig    bool `yaml:"secret-config"`
 	MisconfigConfig bool `yaml:"misconfig-config"`
 }
+
 type Server struct {
 	URL      string   `yaml:"url"`
 	Scanning Scanning `yaml:"scanning"`
@@ -207,9 +208,7 @@ func ShowConfig() error {
 	fields := collectConfigFields(reflect.ValueOf(cloudConfig).Elem(), "")
 	maxKeyLen := 0
 	for _, field := range fields {
-		if len(field.path) > maxKeyLen {
-			maxKeyLen = len(field.path)
-		}
+		maxKeyLen = max(maxKeyLen, len(field.path))
 	}
 
 	for _, field := range fields {
@@ -240,13 +239,10 @@ func collectConfigFields(v reflect.Value, prefix string) []configField {
 		}
 
 		tagName := strings.Split(yamlTag, ",")[0]
-		var fullPath string
-		if prefix == "" {
-			fullPath = tagName
-		} else {
+		fullPath := tagName
+		if prefix != "" {
 			fullPath = prefix + "." + tagName
 		}
-
 		if fieldValue.Kind() == reflect.Struct {
 			fields = append(fields, collectConfigFields(fieldValue, fullPath)...)
 		} else {
