@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func Parse(_ context.Context, r io.Reader, path string) ([]any, error) {
+func Parse(_ context.Context, r io.Reader, path string) ([]*Manifest, error) {
 	contents, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
@@ -23,10 +23,10 @@ func Parse(_ context.Context, r io.Reader, path string) ([]any, error) {
 		if err != nil {
 			return nil, err
 		}
-		return []any{manifest.ToRego()}, nil
+		return []*Manifest{manifest}, nil
 	}
 
-	var manifests []any
+	var manifests []*Manifest
 
 	re := regexp.MustCompile(`(?m:^---\r?\n)`)
 	offset := 0
@@ -35,10 +35,9 @@ func Parse(_ context.Context, r io.Reader, path string) ([]any, error) {
 		if err != nil {
 			return nil, err
 		}
-
 		if manifest.Content != nil {
 			manifest.Content.Offset = offset
-			manifests = append(manifests, manifest.ToRego())
+			manifests = append(manifests, manifest)
 		}
 
 		offset += countLines(partial)
