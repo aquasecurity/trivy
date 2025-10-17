@@ -22,41 +22,70 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-func NewJsonScanner(opts ...options.ScannerOption) *GenericScanner {
-	return NewScanner("JSON", types.SourceJSON, ParseFunc(parseJson), opts...)
+func NewJsonScanner(opts ...options.ScannerOption) *GenericScanner[*identityMarshaler] {
+	return NewScanner("JSON", types.SourceJSON, ParseFunc[*identityMarshaler](parseJson), opts...)
 }
 
-func NewYamlScanner(opts ...options.ScannerOption) *GenericScanner {
-	return NewScanner("YAML", types.SourceYAML, ParseFunc(parseYaml), opts...)
+func NewYamlScanner(opts ...options.ScannerOption) *GenericScanner[*identityMarshaler] {
+	return NewScanner("YAML", types.SourceYAML, ParseFunc[*identityMarshaler](parseYaml), opts...)
 }
 
-func NewTomlScanner(opts ...options.ScannerOption) *GenericScanner {
-	return NewScanner("TOML", types.SourceTOML, ParseFunc(parseTOML), opts...)
+func NewTomlScanner(opts ...options.ScannerOption) *GenericScanner[*identityMarshaler] {
+	return NewScanner("TOML", types.SourceTOML, ParseFunc[*identityMarshaler](parseTOML), opts...)
 }
 
-type configParser interface {
-	Parse(ctx context.Context, r io.Reader, path string) (any, error)
+type LogicalPath struct {
+	Val string
+}
+
+func (p LogicalPath) Valid() bool {
+	return p.Val != ""
+}
+
+type LogicalPathFinder interface {
+	ResolveLogicalPath(filename string, startLine, endLine int) LogicalPath
+}
+
+type RegoMarshaler interface {
+	ToRego() any
+}
+
+type identityMarshaler struct {
+	value any
+}
+
+func (r identityMarshaler) ToRego() any {
+	return r.value
+}
+
+type configParser[T RegoMarshaler] interface {
+	Parse(ctx context.Context, r io.Reader, path string) ([]T, error)
 }
 
 // GenericScanner is a scanner that scans a file as is without processing it
-type GenericScanner struct {
+type GenericScanner[T RegoMarshaler] struct {
 	*rego.RegoScannerProvider
 	name    string
 	source  types.Source
 	logger  *log.Logger
 	options []options.ScannerOption
 
-	parser configParser
+	parser configParser[T]
 }
 
-type ParseFunc func(ctx context.Context, r io.Reader, path string) (any, error)
+type ParseFunc[T RegoMarshaler] func(ctx context.Context, r io.Reader, path string) ([]T, error)
 
-func (f ParseFunc) Parse(ctx context.Context, r io.Reader, path string) (any, error) {
+func (f ParseFunc[T]) Parse(ctx context.Context, r io.Reader, path string) ([]T, error) {
 	return f(ctx, r, path)
 }
 
-func NewScanner(name string, source types.Source, parser configParser, opts ...options.ScannerOption) *GenericScanner {
-	s := &GenericScanner{
+func NewScanner[T RegoMarshaler](
+	name string,
+	source types.Source,
+	parser configParser[T],
+	opts ...options.ScannerOption,
+) *GenericScanner[T] {
+	s := &GenericScanner[T]{
 		RegoScannerProvider: rego.NewRegoScannerProvider(opts...),
 		name:                name,
 		options:             opts,
@@ -72,11 +101,11 @@ func NewScanner(name string, source types.Source, parser configParser, opts ...o
 	return s
 }
 
-func (s *GenericScanner) Name() string {
+func (s *GenericScanner[T]) Name() string {
 	return s.name
 }
 
-func (s *GenericScanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Results, error) {
+func (s *GenericScanner[T]) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Results, error) {
 	fileset, err := s.parseFS(ctx, fsys, dir)
 	if err != nil {
 		return nil, err
@@ -87,26 +116,11 @@ func (s *GenericScanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (sc
 	}
 
 	var inputs []rego.Input
-	for path, val := range fileset {
-		switch v := val.(type) {
-		case interface{ ToRego() any }:
+	for filePath, parsedObjects := range fileset {
+		for _, obj := range parsedObjects {
 			inputs = append(inputs, rego.Input{
-				Path:     path,
-				Contents: v.ToRego(),
-				FS:       fsys,
-			})
-		case []any:
-			for _, file := range v {
-				inputs = append(inputs, rego.Input{
-					Path:     path,
-					Contents: file,
-					FS:       fsys,
-				})
-			}
-		default:
-			inputs = append(inputs, rego.Input{
-				Path:     path,
-				Contents: v,
+				Path:     filePath,
+				Contents: obj.ToRego(),
 				FS:       fsys,
 			})
 		}
@@ -128,15 +142,36 @@ func (s *GenericScanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (sc
 		return nil, err
 	}
 
+	// TODO: Move this to the rego package?
+	for i, res := range results {
+		if res.Status() != scan.StatusFailed {
+			continue
+		}
+
+		srcPath := res.FilesystemPath()
+		if parsedObjects, ok := fileset[srcPath]; ok {
+			for _, obj := range parsedObjects {
+				if f, ok := any(obj).(LogicalPathFinder); ok {
+					logicalPath := f.ResolveLogicalPath(srcPath, res.Range().GetStartLine(), res.Range().GetEndLine())
+					if logicalPath.Valid() {
+						res.WithCausePath(logicalPath.Val)
+						results[i] = res
+						break
+					}
+				}
+			}
+		}
+	}
+
 	return results, nil
 }
 
-func (s *GenericScanner) supportsIgnoreRules() bool {
+func (s *GenericScanner[T]) supportsIgnoreRules() bool {
 	return s.source == types.SourceDockerfile
 }
 
-func (s *GenericScanner) parseFS(ctx context.Context, fsys fs.FS, path string) (map[string]any, error) {
-	files := make(map[string]any)
+func (s *GenericScanner[T]) parseFS(ctx context.Context, fsys fs.FS, path string) (map[string][]T, error) {
+	files := make(map[string][]T)
 	if err := fs.WalkDir(fsys, filepath.ToSlash(path), func(path string, entry fs.DirEntry, err error) error {
 		select {
 		case <-ctx.Done():
@@ -169,7 +204,7 @@ func (s *GenericScanner) parseFS(ctx context.Context, fsys fs.FS, path string) (
 	return files, nil
 }
 
-func (s *GenericScanner) applyIgnoreRules(fsys fs.FS, results scan.Results) error {
+func (s *GenericScanner[T]) applyIgnoreRules(fsys fs.FS, results scan.Results) error {
 	if !s.supportsIgnoreRules() {
 		return nil
 	}
@@ -190,21 +225,21 @@ func (s *GenericScanner) applyIgnoreRules(fsys fs.FS, results scan.Results) erro
 	return nil
 }
 
-func parseJson(_ context.Context, r io.Reader, _ string) (any, error) {
+func parseJson(_ context.Context, r io.Reader, _ string) ([]*identityMarshaler, error) {
 	var target any
 	if err := json.NewDecoder(r).Decode(&target); err != nil {
 		return nil, err
 	}
-	return target, nil
+	return []*identityMarshaler{{value: target}}, nil
 }
 
-func parseYaml(_ context.Context, r io.Reader, _ string) (any, error) {
+func parseYaml(_ context.Context, r io.Reader, _ string) ([]*identityMarshaler, error) {
 	contents, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
 	}
 
-	var results []any
+	var documents []*identityMarshaler
 
 	marker := "\n---\n"
 	altMarker := "\r\n---\r\n"
@@ -217,16 +252,16 @@ func parseYaml(_ context.Context, r io.Reader, _ string) (any, error) {
 		if err := yaml.Unmarshal([]byte(partial), &target); err != nil {
 			return nil, err
 		}
-		results = append(results, target)
+		documents = append(documents, &identityMarshaler{target})
 	}
 
-	return results, nil
+	return documents, nil
 }
 
-func parseTOML(_ context.Context, r io.Reader, _ string) (any, error) {
+func parseTOML(_ context.Context, r io.Reader, _ string) ([]*identityMarshaler, error) {
 	var target any
 	if _, err := toml.NewDecoder(r).Decode(&target); err != nil {
 		return nil, err
 	}
-	return target, nil
+	return []*identityMarshaler{{value: target}}, nil
 }

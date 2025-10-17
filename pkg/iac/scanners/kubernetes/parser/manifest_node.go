@@ -29,12 +29,21 @@ const (
 	TagBinary    TagType = "!!binary"
 )
 
+func (t TagType) Primitive() bool {
+	switch t {
+	case TagSlice, TagMap:
+		return false
+	default:
+		return true
+	}
+}
+
 type ManifestNode struct {
 	xjson.Location
-	Offset int
-	Value  any
-	Type   TagType
-	Path   string
+	Offset   int
+	Value    any
+	Type     TagType
+	FilePath string
 }
 
 func (n *ManifestNode) ToRego() any {
@@ -72,7 +81,7 @@ func (n *ManifestNode) metadata() map[string]any {
 	return map[string]any{
 		"startline": n.StartLine,
 		"endline":   n.EndLine,
-		"filepath":  n.Path,
+		"filepath":  n.FilePath,
 		"offset":    n.Offset,
 	}
 }
@@ -122,7 +131,7 @@ func (n *ManifestNode) UnmarshalYAML(node *yaml.Node) error {
 	default:
 		log.WithPrefix("k8s").Debug("Skipping unsupported node tag",
 			log.String("tag", node.Tag),
-			log.FilePath(n.Path),
+			log.FilePath(n.FilePath),
 			log.Int("line", node.Line),
 		)
 	}
@@ -134,7 +143,7 @@ func (n *ManifestNode) handleSliceTag(node *yaml.Node) error {
 	maxLine := node.Line
 	for _, contentNode := range node.Content {
 		newNode := new(ManifestNode)
-		newNode.Path = n.Path
+		newNode.FilePath = n.FilePath
 		if err := contentNode.Decode(newNode); err != nil {
 			return err
 		}
@@ -149,24 +158,29 @@ func (n *ManifestNode) handleSliceTag(node *yaml.Node) error {
 }
 
 func (n *ManifestNode) handleMapTag(node *yaml.Node) error {
-	output := make(map[string]*ManifestNode)
-	var key string
-	maxLine := node.Line
-	for i, contentNode := range node.Content {
-		if i == 0 || i%2 == 0 {
-			key = contentNode.Value
-		} else {
-			newNode := new(ManifestNode)
-			newNode.Path = n.Path
-			if err := contentNode.Decode(newNode); err != nil {
-				return err
-			}
-			output[key] = newNode
-			if newNode.EndLine > maxLine {
-				maxLine = newNode.EndLine
-			}
-		}
+	if len(node.Content)%2 != 0 {
+		return fmt.Errorf("invalid map node, uneven number of children")
 	}
+
+	output := make(map[string]*ManifestNode)
+	maxLine := node.Line
+
+	for i := 0; i < len(node.Content); i += 2 {
+		keyNode := node.Content[i]
+		valueNode := node.Content[i+1]
+
+		newNode := &ManifestNode{
+			FilePath: n.FilePath,
+		}
+		if err := valueNode.Decode(newNode); err != nil {
+			return err
+		}
+		newNode.StartLine = keyNode.Line
+		output[keyNode.Value] = newNode
+
+		maxLine = max(maxLine, newNode.EndLine)
+	}
+
 	n.EndLine = maxLine
 	n.Value = output
 	return nil

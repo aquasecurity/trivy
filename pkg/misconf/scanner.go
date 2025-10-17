@@ -485,6 +485,8 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 
 		cause := NewCauseWithCode(result, flattened)
 
+		filePath := flattened.Location.Filename
+
 		misconfResult := types.MisconfResult{
 			Namespace: result.RegoNamespace(),
 			Query:     query,
@@ -501,9 +503,10 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 			},
 			CauseMetadata: cause,
 			Traces:        result.Traces(),
+			// Build finding ID using file path, rule ID, and logical path to the cause
+			FindingID: newFindingID(configType, filePath, result.Rule().ID, flattened.CausePath),
 		}
 
-		filePath := flattened.Location.Filename
 		misconf, ok := misconfs[filePath]
 		if !ok {
 			misconf = types.Misconfiguration{
@@ -523,6 +526,19 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 	}
 
 	return types.ToMisconfigurations(misconfs)
+}
+
+func newFindingID(configType types.ConfigType, filePath, checkID, causePath string) string {
+	if causePath == "" {
+		return ""
+	}
+
+	switch configType {
+	case types.Terraform, types.CloudFormation, types.Kubernetes:
+		return filePath + "@" + checkID + "@" + causePath
+	default:
+		return ""
+	}
 }
 
 func NewCauseWithCode(underlying scan.Result, flat scan.FlatResult) types.CauseMetadata {

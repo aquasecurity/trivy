@@ -10,10 +10,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func NewScanner(opts ...options.ScannerOption) *generic.GenericScanner {
-	return generic.NewScanner("Kubernetes", types.SourceKubernetes, generic.ParseFunc(parse), opts...)
+func NewScanner(opts ...options.ScannerOption) *generic.GenericScanner[*parser.Manifest] {
+	return generic.NewScanner("Kubernetes", types.SourceKubernetes, generic.ParseFunc[*parser.Manifest](parse), opts...)
 }
 
-func parse(ctx context.Context, r io.Reader, path string) (any, error) {
+func parse(ctx context.Context, r io.Reader, path string) ([]*parser.Manifest, error) {
 	return parser.Parse(ctx, r, path)
 }

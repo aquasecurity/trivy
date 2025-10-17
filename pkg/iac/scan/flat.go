@@ -23,6 +23,7 @@ type FlatResult struct {
 	Occurrences     []Occurrence       `json:"occurrences,omitempty"`
 	Location        FlatRange          `json:"location"`
 	RenderedCause   RenderedCause      `json:"rendered_cause"`
+	CausePath       string
 }
 
 type FlatRange struct {
@@ -70,5 +71,6 @@ func (r *Result) Flatten() FlatResult {
 			EndLine:   rng.GetEndLine(),
 		},
 		RenderedCause: r.renderedCause,
+		CausePath:     r.causePath,
 	}
 }

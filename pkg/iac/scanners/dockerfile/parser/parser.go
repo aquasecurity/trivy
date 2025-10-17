@@ -12,7 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/dockerfile"
 )
 
-func Parse(_ context.Context, r io.Reader, path string) (any, error) {
+func Parse(_ context.Context, r io.Reader, path string) ([]*dockerfile.Dockerfile, error) {
 	parsed, err := parser.Parse(r)
 	if err != nil {
 		return nil, fmt.Errorf("dockerfile parse error: %w", err)
@@ -86,7 +86,7 @@ func Parse(_ context.Context, r io.Reader, path string) (any, error) {
 		parsedFile.Stages = append(parsedFile.Stages, stage)
 	}
 
-	return &parsedFile, nil
+	return []*dockerfile.Dockerfile{&parsedFile}, nil
 }
 
 func originalFromHeredoc(node *parser.Node) string {
