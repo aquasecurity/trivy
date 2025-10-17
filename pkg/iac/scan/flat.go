@@ -5,7 +5,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
 )
 
+// TODO: This struct is not currently serialized to JSON,
+// so JSON tags may be removed if unused.
 type FlatResult struct {
+	// TODO: The following fields are currently unused:
+	// nolint: gocritic
+	// Deprecated, RuleID, LongID, RuleSummary, Impact, RangeAnnotation
 	Deprecated      bool               `json:"deprecated,omitempty"`
 	RuleID          string             `json:"rule_id"`
 	LongID          string             `json:"long_id"`
@@ -32,7 +37,7 @@ type FlatRange struct {
 }
 
 func (r Results) Flatten() []FlatResult {
-	var results []FlatResult
+	results := make([]FlatResult, 0, len(r))
 	for _, original := range r {
 		results = append(results, original.Flatten())
 	}
@@ -50,7 +55,6 @@ func (r *Result) Flatten() FlatResult {
 
 	return FlatResult{
 		Deprecated:      r.rule.Deprecated,
-		RuleID:          r.rule.AVDID,
 		LongID:          r.Rule().LongID(),
 		RuleSummary:     r.rule.Summary,
 		RuleProvider:    r.rule.Provider,

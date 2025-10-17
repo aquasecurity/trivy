@@ -19,7 +19,7 @@ var emptyBucketCheck = `# METADATA
 # schemas:
 # - input: schema.cloud
 # custom:
-#   avd_id: USER-TEST-0123
+#   id: USER-TEST-0123
 #   short_code: non-empty-bucket
 #   provider: aws
 #   service: s3
