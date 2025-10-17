@@ -426,7 +426,7 @@ func Test_IgnoreByDynamicBlockValue(t *testing.T) {
 
 	check := `# METADATA
 # custom:
-#   avd_id: USER-TEST-0124
+#   id: USER-TEST-0124
 #   short_code: test
 #   provider: aws
 #   service: ec2
@@ -551,7 +551,38 @@ resource "aws_s3_bucket" "test" {}`,
 	}
 }
 
-func Test_IgnoreInlineByAVDID(t *testing.T) {
+func Test_IgnoreByAVDID(t *testing.T) {
+	check := `# METADATA
+# custom:
+#   id: TEST-0123
+#   avd_id: AVD-TEST-0123
+#   short_code: non-empty-bucket
+#   provider: aws
+#   service: s3
+package user.test123
+
+import rego.v1
+
+
+deny contains res if {
+  some bucket in input.aws.s3.buckets
+  bucket.name.value == ""
+  res := result.new("The bucket name cannot be empty.", bucket.name)
+}`
+
+	src := `
+# trivy:ignore:avd-test-0123
+resource "aws_s3_bucket" "test" {}
+`
+
+	results := scanHCL(t, src,
+		rego.WithPolicyReader(strings.NewReader(check)),
+		rego.WithPolicyNamespaces("user"),
+	)
+	testutil.AssertRuleNotFailed(t, "aws-s3-non-empty-bucket", results, "")
+}
+
+func Test_IgnoreInlineByAllIDs(t *testing.T) {
 	testCases := []struct {
 		input string
 	}{

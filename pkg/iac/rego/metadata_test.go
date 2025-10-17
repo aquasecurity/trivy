@@ -249,7 +249,7 @@ func TestMetadataFromAnnotations(t *testing.T) {
 # title: test
 # custom:
 #   id: test-001
-#   avd_id: test-001
+#   avd_id: avd-test-001
 #   severity: LOW
 #   minimum_trivy_version: 1.2.3
 #   input:
@@ -258,9 +258,11 @@ func TestMetadataFromAnnotations(t *testing.T) {
 package user.test
 `,
 			expected: &StaticMetadata{
-				Title:    "test",
-				ID:       "test-001",
-				AVDID:    "test-001",
+				Title: "test",
+				ID:    "test-001",
+				// Although this field is deprecated, we still test its parsing
+				// from metadata to ensure backward compatibility.
+				AVDID:    "avd-test-001",
 				Severity: "LOW",
 				InputOptions: InputOptions{
 					Selectors: []Selector{

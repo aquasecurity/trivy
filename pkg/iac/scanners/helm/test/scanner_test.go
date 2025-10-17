@@ -28,12 +28,12 @@ func TestScanner_ScanFS(t *testing.T) {
 			name:   "archived chart",
 			target: filepath.Join("testdata", "mysql-8.8.26.tar"),
 			assert: assertIds([]string{
-				"AVD-KSV-0001", "AVD-KSV-0003",
-				"AVD-KSV-0011", "AVD-KSV-0012", "AVD-KSV-0014",
-				"AVD-KSV-0015", "AVD-KSV-0016", "AVD-KSV-0018",
-				"AVD-KSV-0020", "AVD-KSV-0021", "AVD-KSV-0030",
-				"AVD-KSV-0104", "AVD-KSV-0106", "AVD-KSV-0125",
-				"AVD-KSV-0004",
+				"KSV001", "KSV003",
+				"KSV011", "KSV012", "KSV014",
+				"KSV015", "KSV016", "KSV018",
+				"KSV020", "KSV021", "KSV030",
+				"KSV104", "KSV106", "KSV0125",
+				"KSV004",
 			}),
 		},
 		{
@@ -41,19 +41,19 @@ func TestScanner_ScanFS(t *testing.T) {
 			target: filepath.Join("testdata", "testchart"),
 			assert: func(t *testing.T, results scan.Results) {
 				assertIds([]string{
-					"AVD-KSV-0001", "AVD-KSV-0003",
-					"AVD-KSV-0011", "AVD-KSV-0012", "AVD-KSV-0014",
-					"AVD-KSV-0015", "AVD-KSV-0016",
-					"AVD-KSV-0020", "AVD-KSV-0021", "AVD-KSV-0030",
-					"AVD-KSV-0104", "AVD-KSV-0106",
-					"AVD-KSV-0117", "AVD-KSV-0110", "AVD-KSV-0118",
-					"AVD-KSV-0004",
+					"KSV001", "KSV003",
+					"KSV011", "KSV012", "KSV014",
+					"KSV015", "KSV016",
+					"KSV020", "KSV021", "KSV030",
+					"KSV104", "KSV106",
+					"KSV117", "KSV110", "KSV118",
+					"KSV004",
 				})(t, results)
 
 				ignored := results.GetIgnored()
 				assert.Len(t, ignored, 1)
 
-				assert.Equal(t, "AVD-KSV-0018", ignored[0].Rule().AVDID)
+				assert.Equal(t, "KSV018", ignored[0].Rule().ID)
 				assert.Equal(t, "testchart/templates/deployment.yaml", ignored[0].Metadata().Range().GetFilename())
 			},
 		},
@@ -62,12 +62,12 @@ func TestScanner_ScanFS(t *testing.T) {
 			name:   "scanner with missing chart name can recover",
 			target: filepath.Join("testdata", "aws-cluster-autoscaler-bad.tar.gz"),
 			assert: assertIds([]string{
-				"AVD-KSV-0014", "AVD-KSV-0023", "AVD-KSV-0030",
-				"AVD-KSV-0104", "AVD-KSV-0003", "AVD-KSV-0018",
-				"AVD-KSV-0118", "AVD-KSV-0012", "AVD-KSV-0106",
-				"AVD-KSV-0016", "AVD-KSV-0001", "AVD-KSV-0011",
-				"AVD-KSV-0015", "AVD-KSV-0021", "AVD-KSV-0110", "AVD-KSV-0020",
-				"AVD-KSV-0004",
+				"KSV014", "KSV023", "KSV030",
+				"KSV104", "KSV003", "KSV018",
+				"KSV118", "KSV012", "KSV106",
+				"KSV016", "KSV001", "KSV011",
+				"KSV015", "KSV021", "KSV110", "KSV020",
+				"KSV004",
 			}),
 		},
 		{
@@ -77,8 +77,7 @@ func TestScanner_ScanFS(t *testing.T) {
 				rego.WithPolicyNamespaces("user"),
 				rego.WithPolicyReader(strings.NewReader(`package user.kubernetes.ID001
 __rego_metadata__ := {
-    "id": "ID001",
-	"avd_id": "AVD-USR-ID001",
+    "id": "USR-ID001",
     "title": "Services not allowed",
     "severity": "LOW",
     "description": "Services are not allowed because of some reasons.",
@@ -97,12 +96,12 @@ deny[res] {
 }`)),
 			},
 			assert: assertIds([]string{
-				"AVD-KSV-0001", "AVD-KSV-0003",
-				"AVD-KSV-0011", "AVD-KSV-0012", "AVD-KSV-0014",
-				"AVD-KSV-0015", "AVD-KSV-0016", "AVD-KSV-0018",
-				"AVD-KSV-0020", "AVD-KSV-0021", "AVD-KSV-0030",
-				"AVD-KSV-0104", "AVD-KSV-0106", "AVD-USR-ID001",
-				"AVD-KSV-0004", "AVD-KSV-0125",
+				"KSV001", "KSV003",
+				"KSV011", "KSV012", "KSV014",
+				"KSV015", "KSV016", "KSV018",
+				"KSV020", "KSV021", "KSV030",
+				"KSV104", "KSV106", "USR-ID001",
+				"KSV004", "KSV0125",
 			}),
 		},
 		{
@@ -125,7 +124,7 @@ deny[res] {
 # schemas:
 # - input: schema["kubernetes"]
 # custom:
-#   avd_id: AVD-USR-ID001
+#   id: USR-ID001
 #   severity: LOW
 #   input:
 #     selector:
@@ -157,7 +156,7 @@ deny[res] {
 # schemas:
 # - input: schema["kubernetes"]
 # custom:
-#   avd_id: AVD-USR-ID001
+#   id: USR-ID001
 #   severity: LOW
 #   input:
 #     selector:
@@ -202,7 +201,7 @@ func assertIds(expected []string) func(t *testing.T, results scan.Results) {
 
 		errorCodes := set.New[string]()
 		for _, result := range results.GetFailed() {
-			errorCodes.Append(result.Rule().AVDID)
+			errorCodes.Append(result.Rule().ID)
 		}
 		assert.ElementsMatch(t, expected, errorCodes.Items())
 	}
