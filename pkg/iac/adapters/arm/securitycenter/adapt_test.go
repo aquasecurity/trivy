@@ -42,7 +42,12 @@ func TestAdapt(t *testing.T) {
     {
       "type": "Microsoft.Security/securityContacts",
       "properties": {
-        "phone": "buz"
+        "emails": "security@example.com",
+        "phone": "buz",
+        "alertNotifications": true,
+        "notificationsByRole": {
+          "state": "On"
+        }
       }
     },
     {
@@ -55,7 +60,10 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: securitycenter.SecurityCenter{
 				Contacts: []securitycenter.Contact{{
-					Phone: types.StringTest("buz"),
+					Email:                    types.StringTest("security@example.com"),
+					Phone:                    types.StringTest("buz"),
+					EnableAlertNotifications: types.BoolTest(true),
+					EnableAlertsToAdmins:     types.BoolTest(true),
 				}},
 				Subscriptions: []securitycenter.SubscriptionPricing{{
 					Tier: types.StringTest("Standard"),

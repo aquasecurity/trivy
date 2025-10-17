@@ -3,6 +3,7 @@ package securitycenter
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/securitycenter"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(deployment azure.Deployment) securitycenter.SecurityCenter {
@@ -21,11 +22,13 @@ func adaptContacts(deployment azure.Deployment) (contacts []securitycenter.Conta
 }
 
 func adaptContact(resource azure.Resource) securitycenter.Contact {
+	alertsToAdminsState := resource.Properties.GetMapValue("notificationsByRole").GetMapValue("state").AsStringValue("", resource.Metadata)
+
 	return securitycenter.Contact{
-		Metadata: resource.Metadata,
-		// TODO: The email field does not exist
-		// https://learn.microsoft.com/en-us/azure/templates/microsoft.security/securitycontacts?pivots=deployment-language-arm-template#securitycontactproperties-1
-		EnableAlertNotifications: resource.Properties.GetMapValue("email").AsBoolValue(false, resource.Metadata),
+		Metadata:                 resource.Metadata,
+		EnableAlertNotifications: resource.Properties.GetMapValue("alertNotifications").AsBoolValue(false, resource.Metadata),
+		EnableAlertsToAdmins:     iacTypes.Bool(alertsToAdminsState.EqualTo("On"), resource.Metadata),
+		Email:                    resource.Properties.GetMapValue("emails").AsStringValue("", resource.Metadata),
 		Phone:                    resource.Properties.GetMapValue("phone").AsStringValue("", resource.Metadata),
 	}
 }

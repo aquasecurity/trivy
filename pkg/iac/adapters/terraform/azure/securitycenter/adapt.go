@@ -38,12 +38,20 @@ func adaptContact(resource *terraform.Block) securitycenter.Contact {
 	enableAlertNotifAttr := resource.GetAttribute("alert_notifications")
 	enableAlertNotifVal := enableAlertNotifAttr.AsBoolValueOrDefault(false, resource)
 
+	alertsToAdminsAttr := resource.GetAttribute("alerts_to_admins")
+	alertsToAdminsVal := alertsToAdminsAttr.AsBoolValueOrDefault(false, resource)
+
+	emailAttr := resource.GetAttribute("email")
+	emailVal := emailAttr.AsStringValueOrDefault("", resource)
+
 	phoneAttr := resource.GetAttribute("phone")
 	phoneVal := phoneAttr.AsStringValueOrDefault("", resource)
 
 	return securitycenter.Contact{
 		Metadata:                 resource.GetMetadata(),
 		EnableAlertNotifications: enableAlertNotifVal,
+		EnableAlertsToAdmins:     alertsToAdminsVal,
+		Email:                    emailVal,
 		Phone:                    phoneVal,
 	}
 }
