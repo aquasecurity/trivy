@@ -456,6 +456,7 @@ func TestTar(t *testing.T) {
 
 			// Run Trivy
 			runTest(t, osArgs, tt.golden, "", tt.args.Format, runOptions{
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: overrideFuncs(overrideUID, tt.override),
 			})
 		})
@@ -539,7 +540,9 @@ func TestTarWithEnv(t *testing.T) {
 			}
 
 			// Run Trivy
-			runTest(t, []string{"image"}, tt.golden, "", types.FormatJSON, runOptions{})
+			runTest(t, []string{"image"}, tt.golden, "", types.FormatJSON, runOptions{
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+			})
 		})
 	}
 }
@@ -607,7 +610,9 @@ cache:
 			}
 
 			// Run Trivy
-			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{})
+			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+			})
 		})
 	}
 }

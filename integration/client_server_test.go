@@ -314,6 +314,8 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/test-repo.json.golden",
 			override: func(_ *testing.T, want, _ *types.Report) {
 				want.ArtifactName = "https://github.com/knqyf263/trivy-ci-test"
+				// Repository scans use commit hash for cache key (not random UUID), so ReportID becomes UUID #1
+				want.ReportID = "3ff14136-e09f-4df9-80ea-000000000001"
 			},
 		},
 	}
@@ -330,6 +332,7 @@ func TestClientServer(t *testing.T) {
 
 			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
 				override: overrideFuncs(overrideUID, tt.override),
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
 	}
@@ -457,6 +460,7 @@ func TestClientServerWithFormat(t *testing.T) {
 
 			runTest(t, osArgs, tt.golden, "", tt.args.Format, runOptions{
 				override: overrideUID,
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
 	}
@@ -554,6 +558,7 @@ func TestClientServerWithCustomOptions(t *testing.T) {
 			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
 				override: overrideUID,
 				wantErr:  tt.wantErr,
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
 	}
@@ -582,6 +587,7 @@ func TestClientServerWithRedis(t *testing.T) {
 		// Run Trivy client
 		runTest(t, osArgs, golden, "", types.FormatJSON, runOptions{
 			override: overrideUID,
+			fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 		})
 	})
 

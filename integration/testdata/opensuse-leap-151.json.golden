@@ -4,6 +4,7 @@
   "ArtifactID": "sha256:fef5ad254f6378f08071cfa2daaf05a1ce9857141c944b67a40742e63e65cecc",
   "ArtifactName": "testdata/fixtures/images/opensuse-leap-151.tar.gz",
   "ArtifactType": "container_image",
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "Metadata": {
     "Size": 105899520,
     "OS": {

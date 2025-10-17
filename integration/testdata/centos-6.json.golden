@@ -4,6 +4,7 @@
   "ArtifactID": "sha256:5bf9684f472089d6d5cb636041d3d6dc748dbde39f1aefc374bbd367bd2aabbf",
   "ArtifactName": "testdata/fixtures/images/centos-6.tar.gz",
   "ArtifactType": "container_image",
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "Metadata": {
     "Size": 201540608,
     "OS": {

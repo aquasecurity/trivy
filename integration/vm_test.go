@@ -96,6 +96,7 @@ func TestVM(t *testing.T) {
 						got.Results[i].Target = got.Results[i].Target[lastIndex+1:]
 					}
 				}),
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
 	}

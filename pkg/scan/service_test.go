@@ -23,6 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scan/local"
 	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
 	tTypes "github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
@@ -56,6 +57,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 				ArtifactID:    "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 				ArtifactName:  "../fanal/test/testdata/alpine-311.tar.gz",
 				ArtifactType:  ftypes.TypeContainerImage,
+				ReportID:      "3ff14136-e09f-4df9-80ea-000000000001",
 				Metadata: tTypes.Metadata{
 					Size: 5861888,
 					OS: &ftypes.OS{
@@ -209,6 +211,9 @@ func TestScanner_ScanArtifact(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Set fake UUID for testing
+			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
 			// Initialize DB
 			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()

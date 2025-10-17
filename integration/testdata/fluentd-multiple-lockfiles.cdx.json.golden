@@ -2,7 +2,7 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000163",
+  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000164",
   "version": 1,
   "metadata": {
     "timestamp": "2021-08-25T12:20:30+00:00",
@@ -20,7 +20,7 @@
       ]
     },
     "component": {
-      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000001",
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000002",
       "type": "container",
       "name": "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
       "properties": [
@@ -65,7 +65,7 @@
   },
   "components": [
     {
-      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000003",
       "type": "operating-system",
       "name": "debian",
       "version": "10.2",
@@ -8575,9 +8575,9 @@
   ],
   "dependencies": [
     {
-      "ref": "3ff14136-e09f-4df9-80ea-000000000001",
+      "ref": "3ff14136-e09f-4df9-80ea-000000000002",
       "dependsOn": [
-        "3ff14136-e09f-4df9-80ea-000000000002",
+        "3ff14136-e09f-4df9-80ea-000000000003",
         "pkg:gem/activesupport@6.0.2.1",
         "pkg:gem/addressable@2.7.0",
         "pkg:gem/concurrent-ruby@1.1.6",
@@ -8636,7 +8636,7 @@
       ]
     },
     {
-      "ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "ref": "3ff14136-e09f-4df9-80ea-000000000003",
       "dependsOn": [
         "pkg:deb/debian/apt@1.8.2?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/base-passwd@3.5.46?arch=amd64&distro=debian-10.2",
