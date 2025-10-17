@@ -9,7 +9,7 @@ Trivy is available in most common distribution channels. The complete list of in
 - Download binary from [GitHub Release](https://github.com/aquasecurity/trivy/releases/latest/)
 - See [Installation](./installation.md) for more
 
-Trivy is integrated with many popular platforms and applications. The complete list of integrations is available in the [Ecosystem](../ecosystem/index.md) page. Here are a few popular options examples:
+Trivy is integrated with many popular platforms and applications. The complete list of integrations is available in the [Ecosystem](../ecosystem/index.md) page. Here are a few popular examples:
 
 - [GitHub Actions](https://github.com/aquasecurity/trivy-action)
 - [Kubernetes operator](https://github.com/aquasecurity/trivy-operator)
@@ -26,7 +26,7 @@ trivy <target> [--scanners <scanner1,scanner2>] <subject>
 
 ### Examples
 
-Scan a container image from registry, with the default scanner which is Vulnerabilities scanner:
+Scan a container image from a registry with the default scanner, which is the Vulnerabilities scanner:
 
 ```bash
 trivy image python:3.4-alpine
@@ -58,10 +58,10 @@ For a more complete introduction, check out the basic Trivy Demo: <https://githu
 
 ## Learn more
 
-Now that you up and ready, here are some resources to help you deepen your knowledge:
+Now that you are up and ready, here are some resources to help you deepen your knowledge:
 
 - Learn more about Trivy's capabilities by exploring the complete [documentation](../docs/index.md).
-- Explore community questions and under [GitHub Discussions](https://github.com/aquasecurity/trivy/discussions).
+- Explore community questions under [GitHub Discussions](https://github.com/aquasecurity/trivy/discussions).
 - Stay up to date by watching for [New Releases & Announcements](https://github.com/aquasecurity/trivy/discussions/categories/announcements).
 - Follow Trivy on Twitter/X: [@aquatrivy](https://x.com/aquatrivy)
 - Explore and subscribe to our YouTube channel [@AquaSecOSS](http://youtube.com/@aquasecoss)

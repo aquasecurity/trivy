@@ -62,7 +62,7 @@ For example:
 trivy image --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db alpine
 ```
 
-The flags accepts multiple values, which can be used to specify multiple alternative repository locations. In case of a transient errors (e.g. status 429 or 5xx), Trivy will fall back to alternative registries in the order specified.
+The flag accepts multiple values, which can be used to specify multiple alternative repository locations. In case of transient errors (e.g. status 429 or 5xx), Trivy will fall back to alternative registries in the order specified.
 
 For example:
 
@@ -72,8 +72,8 @@ trivy image --db-repository my.registry.local/trivy-db --db-repository registry.
 
 The Checks Bundle registry location option does not support fallback through multiple options. This is because in case of a failure pulling the Checks Bundle, Trivy will use the embedded checks as a fallback.
 
-!!! note 
-    Setting the repository location flags override the default values which include the official db locations. In case you want to preserve the default locations, you should include them in the list the you set as repository locations.
+!!! note
+    Setting the repository location flags overrides the default values which include the official db locations. In case you want to preserve the default locations, you should include them in the list you set as repository locations.
 
 !!!note
     When pulling `trivy-db` or `trivy-java-db`, if image tag is not specified, Trivy defaults to the db schema number instead of the `latest` tag.
