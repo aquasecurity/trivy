@@ -590,6 +590,207 @@ func TestEncoder_Encode(t *testing.T) {
 			},
 		},
 		{
+			name: "Red Hat container image",
+			report: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "redhat/ubi9-minimal",
+				ArtifactType:  ftypes.TypeContainerImage,
+				Metadata: types.Metadata{
+					OS: &ftypes.OS{
+						Family: ftypes.RedHat,
+						Name:   "9.5",
+					},
+					RepoTags: []string{
+						"redhat/ubi9:latest",
+					},
+					RepoDigests: []string{
+						"redhat/ubi9-minimal@sha256:e1c4703364c5cb58f5462575dc90345bcd934ddc45e6c32f9c162f2b5617681c",
+					},
+					ImageConfig: v1.ConfigFile{
+						Config: v1.Config{
+							Labels: map[string]string{
+								"vendor": "aquasecurity",
+							},
+						},
+					},
+				},
+				Results: []types.Result{
+					{
+						Target: "redhat/ubi9-minimal (redhat 9.5)",
+						Type:   ftypes.RedHat,
+						Class:  types.ClassOSPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:         "glibc@2.34-125.el9_5.8.aarch64",
+								Name:       "glibc",
+								Version:    "2.34",
+								Release:    "125.el9_5.8.aarch64",
+								Arch:       "aarch64",
+								SrcName:    "glibc",
+								SrcVersion: "2.34",
+								SrcRelease: "125.el9_5.8",
+								Maintainer: "Red Hat, Inc.",
+								BuildInfo: &ftypes.BuildInfo{
+									ContentSets: []string{
+										"rhel-9-for-aarch64-appstream-rpms",
+										"rhel-9-for-aarch64-appstream-source-rpms",
+									},
+								},
+								Identifier: ftypes.PkgIdentifier{
+									UID: "2acbd589f06ebbb8",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeRPM,
+										Name:    "glibc",
+										Version: "2.34-125.el9_5.8",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "aarch64",
+											},
+											{
+												Key:   "distro",
+												Value: "redhat-9.5",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantComponents: map[uuid.UUID]*core.Component{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					Type: core.TypeContainerImage,
+					Name: "redhat/ubi9-minimal",
+					Root: true,
+					PkgIdentifier: ftypes.PkgIdentifier{
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeOCI,
+							Name:    "ubi9-minimal",
+							Version: "sha256:e1c4703364c5cb58f5462575dc90345bcd934ddc45e6c32f9c162f2b5617681c",
+							Qualifiers: packageurl.Qualifiers{
+								{
+									Key:   "repository_url",
+									Value: "index.docker.io/redhat/ubi9-minimal",
+								},
+							},
+						},
+						BOMRef: "pkg:oci/ubi9-minimal@sha256%3Ae1c4703364c5cb58f5462575dc90345bcd934ddc45e6c32f9c162f2b5617681c?repository_url=index.docker.io%2Fredhat%2Fubi9-minimal",
+					},
+					Properties: []core.Property{
+						{
+							Name:  "Labels:vendor",
+							Value: "aquasecurity",
+						},
+						{
+							Name:  core.PropertyRepoDigest,
+							Value: "redhat/ubi9-minimal@sha256:e1c4703364c5cb58f5462575dc90345bcd934ddc45e6c32f9c162f2b5617681c",
+						},
+						{
+							Name:  core.PropertyRepoTag,
+							Value: "redhat/ubi9:latest",
+						},
+						{
+							Name:  core.PropertySchemaVersion,
+							Value: "2",
+						},
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					Type:    core.TypeOS,
+					Name:    "redhat",
+					Version: "9.5",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyClass,
+							Value: "os-pkgs",
+						},
+						{
+							Name:  core.PropertyType,
+							Value: "redhat",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): {
+					Type:       core.TypeLibrary,
+					Name:       "glibc",
+					Version:    "2.34-125.el9_5.8",
+					SrcName:    "glibc",
+					SrcVersion: "2.34-125.el9_5.8",
+					Supplier:   "Red Hat, Inc.",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyContentSet,
+							Value: "rhel-9-for-aarch64-appstream-rpms",
+						},
+						{
+							Name:  core.PropertyContentSet,
+							Value: "rhel-9-for-aarch64-appstream-source-rpms",
+						},
+						{
+							Name:  core.PropertyPkgID,
+							Value: "glibc@2.34-125.el9_5.8.aarch64",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "redhat",
+						},
+						{
+							Name:  core.PropertySrcName,
+							Value: "glibc",
+						},
+						{
+							Name:  core.PropertySrcRelease,
+							Value: "125.el9_5.8",
+						},
+						{
+							Name:  core.PropertySrcVersion,
+							Value: "2.34",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "2acbd589f06ebbb8",
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeRPM,
+							Name:    "glibc",
+							Version: "2.34-125.el9_5.8",
+							Qualifiers: packageurl.Qualifiers{
+								{
+									Key:   "arch",
+									Value: "aarch64",
+								},
+								{
+									Key:   "distro",
+									Value: "redhat-9.5",
+								},
+							},
+						},
+						BOMRef: "pkg:rpm/glibc@2.34-125.el9_5.8?arch=aarch64&distro=redhat-9.5",
+					},
+				},
+			},
+			wantRels: map[uuid.UUID][]core.Relationship{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): nil,
+			},
+			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
+		},
+		{
 			name: "root package",
 			report: types.Report{
 				SchemaVersion: 2,

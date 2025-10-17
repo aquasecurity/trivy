@@ -423,6 +423,29 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 		},
 	}
 
+	// Fill Red Hat specific properties
+	if pkg.BuildInfo != nil {
+		for _, cs := range pkg.BuildInfo.ContentSets {
+			properties = append(properties, core.Property{
+				Name:  core.PropertyContentSet,
+				Value: cs,
+			})
+		}
+
+		if pkg.BuildInfo.Nvr != "" {
+			properties = append(properties, core.Property{
+				Name:  core.PropertyNVR,
+				Value: pkg.BuildInfo.Nvr,
+			})
+		}
+		if pkg.BuildInfo.Arch != "" {
+			properties = append(properties, core.Property{
+				Name:  core.PropertyArch,
+				Value: pkg.BuildInfo.Arch,
+			})
+		}
+	}
+
 	var files []core.File
 	if pkg.FilePath != "" || pkg.Digest != "" {
 		files = append(files, core.File{
