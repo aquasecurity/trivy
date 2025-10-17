@@ -1,5 +1,7 @@
 package flag
 
+import "github.com/open-policy-agent/opa/ast"
+
 // e.g. config yaml:
 //
 //	rego:
@@ -74,6 +76,13 @@ var (
 			},
 		},
 	}
+	RegoErrorLimitFlag = Flag[int]{
+		Name:          "rego-error-limit",
+		ConfigName:    "rego.error-limit",
+		Usage:         "maximum number of compile errors allowed during Rego policy evaluation",
+		TelemetrySafe: true,
+		Default:       ast.CompileErrorLimitDefault,
+	}
 )
 
 // RegoFlagGroup composes common printer flag structs used for commands providing misconfinguration scanning.
@@ -84,6 +93,7 @@ type RegoFlagGroup struct {
 	CheckPaths              *Flag[[]string]
 	DataPaths               *Flag[[]string]
 	CheckNamespaces         *Flag[[]string]
+	ErrorLimit              *Flag[int]
 }
 
 type RegoOptions struct {
@@ -93,6 +103,7 @@ type RegoOptions struct {
 	CheckPaths              []string
 	DataPaths               []string
 	CheckNamespaces         []string
+	ErrorLimit              int
 }
 
 func NewRegoFlagGroup() *RegoFlagGroup {
@@ -103,6 +114,7 @@ func NewRegoFlagGroup() *RegoFlagGroup {
 		CheckPaths:              ConfigCheckFlag.Clone(),
 		DataPaths:               ConfigDataFlag.Clone(),
 		CheckNamespaces:         CheckNamespaceFlag.Clone(),
+		ErrorLimit:              RegoErrorLimitFlag.Clone(),
 	}
 }
 
@@ -118,6 +130,7 @@ func (f *RegoFlagGroup) Flags() []Flagger {
 		f.CheckPaths,
 		f.DataPaths,
 		f.CheckNamespaces,
+		f.ErrorLimit,
 	}
 }
 
@@ -129,6 +142,7 @@ func (f *RegoFlagGroup) ToOptions(opts *Options) error {
 		CheckPaths:              f.CheckPaths.Value(),
 		DataPaths:               f.DataPaths.Value(),
 		CheckNamespaces:         f.CheckNamespaces.Value(),
+		ErrorLimit:              f.ErrorLimit.Value(),
 	}
 	return nil
 }
