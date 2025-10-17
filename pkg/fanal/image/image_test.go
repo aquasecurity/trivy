@@ -407,16 +407,18 @@ func TestNewArchiveImage(t *testing.T) {
 		fileName string
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    v1.Image
-		wantErr string
+		name         string
+		args         args
+		want         v1.Image
+		wantRepoTags []string
+		wantErr      string
 	}{
 		{
 			name: "happy path",
 			args: args{
 				fileName: "../test/testdata/alpine-310.tar.gz",
 			},
+			wantRepoTags: []string{"alpine:3.10"},
 		},
 		{
 			name: "happy path with OCI Image Format",
@@ -490,8 +492,7 @@ func TestNewArchiveImage(t *testing.T) {
 				require.NoError(t, err, tt.name)
 			}
 
-			// archive doesn't support RepoTags and RepoDigests
-			assert.Empty(t, img.RepoTags())
+			assert.Equal(t, tt.wantRepoTags, img.RepoTags())
 			assert.Empty(t, img.RepoDigests())
 		})
 	}
