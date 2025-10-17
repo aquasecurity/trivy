@@ -1,11 +1,26 @@
-## trivy cloud
+## trivy cloud config set
 
-Control Trivy Cloud platform integration settings
+Set Trivy Cloud configuration
+
+### Synopsis
+
+Set the Trivy Cloud platform configuration
+
+```
+trivy cloud config set [setting] [value] [flags]
+```
+
+### Examples
+
+```
+  $ trivy cloud config set server.scanning.enabled true
+  $ trivy cloud config set server.scanning.upload-results false
+```
 
 ### Options
 
 ```
-  -h, --help   help for cloud
+  -h, --help   help for set
 ```
 
 ### Options inherited from parent commands
@@ -23,6 +38,5 @@ Control Trivy Cloud platform integration settings
 
 ### SEE ALSO
 
-* [trivy](trivy.md)	 - Unified security scanner
 * [trivy cloud config](trivy_cloud_config.md)	 - Control Trivy Cloud configuration
 

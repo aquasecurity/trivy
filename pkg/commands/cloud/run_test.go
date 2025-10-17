@@ -42,8 +42,12 @@ func TestLogout(t *testing.T) {
 
 			if tt.createConfigFile {
 				config := &cloud.Config{
-					ServerURL: "https://example.com",
-					ApiURL:    "https://api.example.com",
+					Server: cloud.Server{
+						URL: "https://example.com",
+					},
+					Api: cloud.Api{
+						URL: "https://api.example.com",
+					},
 				}
 				err := config.Save()
 				require.NoError(t, err)
@@ -134,8 +138,8 @@ func TestLogin(t *testing.T) {
 			config, err := cloud.Load()
 			require.NoError(t, err)
 			require.Equal(t, tt.token, config.Token)
-			require.Equal(t, server.URL, config.ServerURL)
-			require.Equal(t, server.URL+"/api", config.ApiURL)
+			require.Equal(t, server.URL, config.Server.URL)
+			require.Equal(t, server.URL+"/api", config.Api.URL)
 		})
 	}
 }

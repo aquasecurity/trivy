@@ -1,19 +1,26 @@
-## trivy cloud show-config
+## trivy cloud config unset
 
-Show Trivy Cloud configuration
+Unset Trivy Cloud configuration
 
 ### Synopsis
 
-Show Trivy Cloud platform configuration in human readable format
+Unset the Trivy Cloud platform configuration and return it to the default setting
 
 ```
-trivy cloud show-config [flags]
+trivy cloud config unset [setting] [flags]
+```
+
+### Examples
+
+```
+  $ trivy cloud config unset server.scanning.enabled
+  $ trivy cloud config unset server.scanning.upload-results
 ```
 
 ### Options
 
 ```
-  -h, --help   help for show-config
+  -h, --help   help for unset
 ```
 
 ### Options inherited from parent commands
@@ -31,5 +38,5 @@ trivy cloud show-config [flags]
 
 ### SEE ALSO
 
-* [trivy cloud](trivy_cloud.md)	 - Control Trivy Cloud platform integration settings
+* [trivy cloud config](trivy_cloud_config.md)	 - Control Trivy Cloud configuration
 

@@ -1,19 +1,26 @@
-## trivy cloud edit-config
+## trivy cloud config get
 
-Edit Trivy Cloud configuration
+Get Trivy Cloud configuration
 
 ### Synopsis
 
-Edit the Trivy Cloud platform configuration in the default editor specified in the EDITOR environment variable
+Get the Trivy Cloud platform configuration
 
 ```
-trivy cloud edit-config [flags]
+trivy cloud config get [setting] [flags]
+```
+
+### Examples
+
+```
+  $ trivy cloud config get server.scanning.enabled
+  $ trivy cloud config get server.scanning.upload-results
 ```
 
 ### Options
 
 ```
-  -h, --help   help for edit-config
+  -h, --help   help for get
 ```
 
 ### Options inherited from parent commands
@@ -31,5 +38,5 @@ trivy cloud edit-config [flags]
 
 ### SEE ALSO
 
-* [trivy cloud](trivy_cloud.md)	 - Control Trivy Cloud platform integration settings
+* [trivy cloud config](trivy_cloud_config.md)	 - Control Trivy Cloud configuration
 
