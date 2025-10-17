@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/dockerfile"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/dockerfile/parser"
 )
 
@@ -18,12 +17,11 @@ RUN make /app
 CMD python /app/app.py
 `
 
-	res, err := parser.Parse(t.Context(), strings.NewReader(input), "Dockerfile")
+	dfs, err := parser.Parse(t.Context(), strings.NewReader(input), "Dockerfile")
 	require.NoError(t, err)
+	require.Len(t, dfs, 1)
 
-	df, ok := res.(*dockerfile.Dockerfile)
-	require.True(t, ok)
-
+	df := dfs[0]
 	assert.Len(t, df.Stages, 1)
 
 	assert.Equal(t, "ubuntu:18.04", df.Stages[0].Name)
@@ -102,11 +100,12 @@ EOF`,
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			res, err := parser.Parse(t.Context(), strings.NewReader(tt.src), "Dockerfile")
+			dfs, err := parser.Parse(t.Context(), strings.NewReader(tt.src), "Dockerfile")
 			require.NoError(t, err)
+			require.Len(t, dfs, 1)
 
-			df, ok := res.(*dockerfile.Dockerfile)
-			require.True(t, ok)
+			df := dfs[0]
+			require.Len(t, df.Stages, 1)
 
 			cmd := df.Stages[0].Commands[0]
 
