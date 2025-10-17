@@ -46,7 +46,7 @@ func TestPlugin(t *testing.T) {
 			t.Setenv("XDG_DATA_HOME", t.TempDir())
 
 			// Install plugin
-			err := execute([]string{
+			err := execute(t.Context(), []string{
 				"plugin",
 				"install",
 				tt.plugin,
@@ -54,7 +54,7 @@ func TestPlugin(t *testing.T) {
 			require.NoError(t, err)
 
 			// Get list of plugins
-			err = execute([]string{
+			err = execute(t.Context(), []string{
 				"plugin",
 				"list",
 			})
@@ -76,7 +76,7 @@ func TestPlugin(t *testing.T) {
 				args = append(args, "--output-plugin-arg", tt.pluginArgs)
 			}
 
-			err = execute(args)
+			err = execute(t.Context(), args)
 			require.NoError(t, err)
 
 			if *update {

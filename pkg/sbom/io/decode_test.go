@@ -1,6 +1,7 @@
 package io_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/package-url/packageurl-go"
@@ -110,25 +111,25 @@ var (
 func TestDecoder_Decode_OSPackages(t *testing.T) {
 	tests := []struct {
 		name     string
-		setupBOM func() *core.BOM
+		setupBOM func(ctx context.Context) *core.BOM
 		wantSBOM types.SBOM
 		wantErr  string
 	}{
 		{
 			name: "OS packages with OS metadata should be included",
-			setupBOM: func() *core.BOM {
+			setupBOM: func(ctx context.Context) *core.BOM {
 				bom := core.NewBOM(core.Options{})
 				bom.SerialNumber = "test-with-os"
 				bom.Version = 1
 
 				// Add OS component
-				bom.AddComponent(wolfiOSComponent)
+				bom.AddComponent(ctx, wolfiOSComponent)
 
 				// Add APK package
-				bom.AddComponent(busyboxComponent)
+				bom.AddComponent(ctx, busyboxComponent)
 
 				// Create relationship between OS and package
-				bom.AddRelationship(wolfiOSComponent, busyboxComponent, core.RelationshipContains)
+				bom.AddRelationship(ctx, wolfiOSComponent, busyboxComponent, core.RelationshipContains)
 				return bom
 			},
 			wantSBOM: types.SBOM{
@@ -160,16 +161,16 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 		},
 		{
 			name: "multiple OS packages without OS metadata should be included and merged",
-			setupBOM: func() *core.BOM {
+			setupBOM: func(ctx context.Context) *core.BOM {
 				bom := core.NewBOM(core.Options{})
 				bom.SerialNumber = "test-multiple-no-os"
 				bom.Version = 1
 
 				// Add multiple APK packages including orphaned package
-				bom.AddComponent(apkToolsComponent)
-				bom.AddComponent(busyboxComponent)
-				bom.AddComponent(caCertificatesComponent)
-				bom.AddComponent(orphanedApkComponent)
+				bom.AddComponent(ctx, apkToolsComponent)
+				bom.AddComponent(ctx, busyboxComponent)
+				bom.AddComponent(ctx, caCertificatesComponent)
+				bom.AddComponent(ctx, orphanedApkComponent)
 
 				return bom
 			},
@@ -235,16 +236,16 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 		},
 		{
 			name: "multiple OS package types should return error",
-			setupBOM: func() *core.BOM {
+			setupBOM: func(ctx context.Context) *core.BOM {
 				bom := core.NewBOM(core.Options{})
 				bom.SerialNumber = "test-multiple-os-types"
 				bom.Version = 1
 
 				// Add APK package
-				bom.AddComponent(apkToolsComponent)
+				bom.AddComponent(ctx, apkToolsComponent)
 
 				// Add RPM package
-				bom.AddComponent(rpmTestComponent)
+				bom.AddComponent(ctx, rpmTestComponent)
 
 				return bom
 			},
@@ -252,7 +253,7 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 		},
 		{
 			name: "empty BOM should have no packages",
-			setupBOM: func() *core.BOM {
+			setupBOM: func(_ context.Context) *core.BOM {
 				bom := core.NewBOM(core.Options{})
 				bom.SerialNumber = "test-empty"
 				bom.Version = 1
@@ -266,21 +267,21 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 		},
 		{
 			name: "mixed OS packages (in-graph and out-of-graph) should be merged",
-			setupBOM: func() *core.BOM {
+			setupBOM: func(ctx context.Context) *core.BOM {
 				bom := core.NewBOM(core.Options{})
 				bom.SerialNumber = "test-mixed-os-packages"
 				bom.Version = 1
 
 				// Add OS component
-				bom.AddComponent(wolfiOSComponent)
+				bom.AddComponent(ctx, wolfiOSComponent)
 
 				// Add OS packages - busybox is connected to OS (in-graph)
-				bom.AddComponent(busyboxComponent)
+				bom.AddComponent(ctx, busyboxComponent)
 				// Add orphaned package not connected to OS (out-of-graph)
-				bom.AddComponent(orphanedApkComponent)
+				bom.AddComponent(ctx, orphanedApkComponent)
 
 				// Create relationship between OS and busybox only
-				bom.AddRelationship(wolfiOSComponent, busyboxComponent, core.RelationshipContains)
+				bom.AddRelationship(ctx, wolfiOSComponent, busyboxComponent, core.RelationshipContains)
 				// orphanedApkComponent is not connected to OS component
 
 				return bom
@@ -328,11 +329,12 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			bom := tt.setupBOM()
+			ctx := t.Context()
+			bom := tt.setupBOM(ctx)
 			decoder := sbomio.NewDecoder(bom)
 			var gotSBOM types.SBOM
 
-			err := decoder.Decode(t.Context(), &gotSBOM)
+			err := decoder.Decode(ctx, &gotSBOM)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return

@@ -296,7 +296,7 @@ func setupEnv(t *testing.T, imageRef name.Reference, baseDir string, opt registr
 			t.Setenv("TRIVY_REGISTRY_TOKEN", token)
 		case opt.AuthLogin:
 			t.Setenv("DOCKER_CONFIG", t.TempDir())
-			err := execute([]string{
+			err := execute(t.Context(), []string{
 				"registry",
 				"login",
 				"--username",

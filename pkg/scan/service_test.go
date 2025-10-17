@@ -211,9 +211,6 @@ func TestScanner_ScanArtifact(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Set fake UUID for testing
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
-
 			// Initialize DB
 			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()
@@ -232,7 +229,9 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			scanner := local.NewService(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
 			s := NewService(scanner, artifact)
 
-			ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			ctx := t.Context()
+			ctx = clock.With(ctx, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			ctx = uuid.With(ctx, "3ff14136-e09f-4df9-80ea-%012d")
 			got, err := s.ScanArtifact(ctx, tt.args.options)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)

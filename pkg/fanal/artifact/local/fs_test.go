@@ -254,14 +254,14 @@ func TestArtifact_Inspect(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set fake UUID for consistent test results
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+			ctx := uuid.With(t.Context(), "3ff14136-e09f-4df9-80ea-%012d")
 
 			c := cachetest.NewCache(t, tt.setupCache)
 
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(t.Context())
+			got, err := a.Inspect(ctx)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -726,7 +726,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set fake UUID for consistent test results
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+			ctx := uuid.With(t.Context(), "3ff14136-e09f-4df9-80ea-%012d")
 
 			c := cachetest.NewCache(t, nil)
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
@@ -738,7 +738,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(t.Context())
+			got, err := a.Inspect(ctx)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 			cachetest.AssertBlobs(t, c, tt.wantBlobs)
@@ -962,7 +962,7 @@ func TestTerraformPlanSnapshotMisconfScan(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set fake UUID for consistent test results
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+			ctx := uuid.With(t.Context(), "3ff14136-e09f-4df9-80ea-%012d")
 
 			tmpDir := t.TempDir()
 			f, err := os.Create(filepath.Join(tmpDir, "policy.rego"))
@@ -991,7 +991,7 @@ func TestTerraformPlanSnapshotMisconfScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), opt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(t.Context())
+			got, err := a.Inspect(ctx)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 			cachetest.AssertBlobs(t, c, tt.wantBlobs)
@@ -1293,7 +1293,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set fake UUID for consistent test results
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+			ctx := uuid.With(t.Context(), "3ff14136-e09f-4df9-80ea-%012d")
 
 			c := cachetest.NewCache(t, nil)
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
@@ -1303,7 +1303,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(t.Context())
+			got, err := a.Inspect(ctx)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 			cachetest.AssertBlobs(t, c, tt.wantBlobs)
@@ -1521,7 +1521,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set fake UUID for consistent test results
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+			ctx := uuid.With(t.Context(), "3ff14136-e09f-4df9-80ea-%012d")
 
 			c := cachetest.NewCache(t, nil)
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
@@ -1531,7 +1531,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(t.Context())
+			got, err := a.Inspect(ctx)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 			cachetest.AssertBlobs(t, c, tt.wantBlobs)
@@ -1782,7 +1782,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set fake UUID for consistent test results
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+			ctx := uuid.With(t.Context(), "3ff14136-e09f-4df9-80ea-%012d")
 
 			c := cachetest.NewCache(t, nil)
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
@@ -1792,7 +1792,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(t.Context())
+			got, err := a.Inspect(ctx)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 			cachetest.AssertBlobs(t, c, tt.wantBlobs)
@@ -2035,7 +2035,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set fake UUID for consistent test results
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+			ctx := uuid.With(t.Context(), "3ff14136-e09f-4df9-80ea-%012d")
 
 			c := cachetest.NewCache(t, nil)
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
@@ -2045,7 +2045,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(t.Context())
+			got, err := a.Inspect(ctx)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 			cachetest.AssertBlobs(t, c, tt.wantBlobs)
@@ -2152,7 +2152,7 @@ func TestMixedConfigurationScan(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set fake UUID for consistent test results
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+			ctx := uuid.With(t.Context(), "3ff14136-e09f-4df9-80ea-%012d")
 
 			c := cachetest.NewCache(t, nil)
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
@@ -2162,7 +2162,7 @@ func TestMixedConfigurationScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(t.Context())
+			got, err := a.Inspect(ctx)
 			require.NoError(t, err)
 			require.NotNil(t, got)
 
@@ -2310,7 +2310,7 @@ func TestJSONConfigScan(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set fake UUID for consistent test results
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+			ctx := uuid.With(t.Context(), "3ff14136-e09f-4df9-80ea-%012d")
 
 			c := cachetest.NewCache(t, nil)
 
@@ -2324,7 +2324,7 @@ func TestJSONConfigScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(t.Context())
+			got, err := a.Inspect(ctx)
 			require.NoError(t, err)
 			require.NotNil(t, got)
 
@@ -2472,7 +2472,7 @@ func TestYAMLConfigScan(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set fake UUID for consistent test results
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+			ctx := uuid.With(t.Context(), "3ff14136-e09f-4df9-80ea-%012d")
 
 			c := cachetest.NewCache(t, nil)
 
@@ -2486,7 +2486,7 @@ func TestYAMLConfigScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(t.Context())
+			got, err := a.Inspect(ctx)
 			require.NoError(t, err)
 			require.NotNil(t, got)
 

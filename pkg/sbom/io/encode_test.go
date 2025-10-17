@@ -1,6 +1,7 @@
 package io_test
 
 import (
+	"context"
 	"testing"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -1464,9 +1465,8 @@ func TestEncoder_Encode(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
-
-			got, err := sbomio.NewEncoder(sbomio.WithBOMRef()).Encode(tt.report)
+			ctx := uuid.With(t.Context(), "3ff14136-e09f-4df9-80ea-%012d")
+			got, err := sbomio.NewEncoder(sbomio.WithBOMRef()).Encode(ctx, tt.report)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -1541,33 +1541,33 @@ var (
 	}
 )
 
-func newTestBOM(t *testing.T) *core.BOM {
-	uuid.SetFakeUUID(t, "2ff14136-e09f-4df9-80ea-%012d")
+func newTestBOM(_ *testing.T) *core.BOM {
+	ctx := uuid.With(context.Background(), "2ff14136-e09f-4df9-80ea-%012d")
 	bom := core.NewBOM(core.Options{})
 
 	// Copy components to avoid UUID conflicts between tests
 	appComp := appComponent.Clone()
 	libComp := libComponent.Clone()
 
-	bom.AddComponent(appComp)
-	bom.AddComponent(libComp)
+	bom.AddComponent(ctx, appComp)
+	bom.AddComponent(ctx, libComp)
 	// Add Contains relationship between appComponent and libComponent
-	bom.AddRelationship(appComp, libComp, core.RelationshipContains)
+	bom.AddRelationship(ctx, appComp, libComp, core.RelationshipContains)
 	// Add empty relationship for libComponent to preserve structure for SBOM rescanning
-	bom.AddRelationship(libComp, nil, core.RelationshipDependsOn)
+	bom.AddRelationship(ctx, libComp, nil, core.RelationshipDependsOn)
 	return bom
 }
 
 // BOM without root component
-func newTestBOM2(t *testing.T) *core.BOM {
-	uuid.SetFakeUUID(t, "2ff14136-e09f-4df9-80ea-%012d")
+func newTestBOM2(_ *testing.T) *core.BOM {
+	ctx := uuid.With(context.Background(), "2ff14136-e09f-4df9-80ea-%012d")
 	bom := core.NewBOM(core.Options{})
 
 	// Copy component to avoid UUID conflicts between tests
 	libComp := libComponent.Clone()
 
-	bom.AddComponent(libComp)
+	bom.AddComponent(ctx, libComp)
 	// Add empty relationship for libComponent to preserve structure for SBOM rescanning
-	bom.AddRelationship(libComp, nil, core.RelationshipDependsOn)
+	bom.AddRelationship(ctx, libComp, nil, core.RelationshipDependsOn)
 	return bom
 }

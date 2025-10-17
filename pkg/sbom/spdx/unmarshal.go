@@ -2,6 +2,7 @@ package spdx
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"strings"
@@ -98,7 +99,7 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 			continue
 		}
 
-		s.BOM.AddRelationship(compA, compB, s.parseRelationshipType(rel.Relationship))
+		s.BOM.AddRelationship(context.Background(), compA, compB, s.parseRelationshipType(rel.Relationship))
 	}
 
 	return nil
@@ -154,7 +155,7 @@ func (s *SPDX) parsePackages(spdxDocument *spdx.Document) (map[common.ElementID]
 		if pkg.PackageSPDXIdentifier == rootID {
 			component.Root = true
 		}
-		s.BOM.AddComponent(component)
+		s.BOM.AddComponent(context.Background(), component)
 	}
 	return components, nil
 }
