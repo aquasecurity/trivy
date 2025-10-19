@@ -23,9 +23,8 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 	}
 	// Override report=all to summary if compliance flag is specified
 	if opts.Compliance.Spec.ID != "" && opts.ReportFormat == "all" {
-	log.WarnContext(ctx, `Compliance based results only have summary styled output. 
-	Example of correct usage: trivy k8s --report summary --compliance k8s-cis-1.23 --format table`)
-	opts.ReportFormat = "summary"
+		log.WarnContext(ctx, "Compliance based results only have summary styled output. Example of correct usage: trivy k8s --report summary --compliance k8s-cis-1.23 --format table")
+		opts.ReportFormat = "summary"
 	}
 	var artifacts []*k8sArtifacts.Artifact
 	var err error
