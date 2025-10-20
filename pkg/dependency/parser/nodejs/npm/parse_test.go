@@ -88,3 +88,39 @@ func TestParse(t *testing.T) {
 		})
 	}
 }
+
+func TestPkgNameFromPath(t *testing.T) {
+	tests := []struct {
+		path     string
+		expected string
+	}{
+		{
+			path:     "node_modules/package-name",
+			expected: "package-name",
+		},
+		{
+			path:     "node_modules/package-name/sub-package",
+			expected: "package-name/sub-package",
+		},
+		{
+			path:     "node_modules/package-name/node_modules/sub-sub-package",
+			expected: "sub-sub-package",
+		},
+		{
+			path:     "node_modules",
+			expected: "",
+		},
+		{
+			path:     "node_modules/",
+			expected: "",
+		},
+	}
+
+	parser := &Parser{}
+	for _, test := range tests {
+		t.Run(test.path, func(t *testing.T) {
+			path := parser.pkgNameFromPath(test.path)
+			assert.Equal(t, path, test.expected)
+		})
+	}
+}

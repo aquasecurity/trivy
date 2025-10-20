@@ -345,6 +345,10 @@ func (p *Parser) pkgNameFromPath(pkgPath string) string {
 	// node_modules/function1
 	// node_modules/nested_func/node_modules/debug
 	if index := strings.LastIndex(pkgPath, nodeModulesDir); index != -1 {
+		if index+len(nodeModulesDir) == len(pkgPath) {
+			return ""
+		}
+
 		return pkgPath[index+len(nodeModulesDir)+1:]
 	}
 	p.logger.Warn("Package path doesn't have `node_modules` prefix", log.String("pkg_path", pkgPath))
