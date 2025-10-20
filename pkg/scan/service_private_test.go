@@ -4,19 +4,13 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestService_generateArtifactID(t *testing.T) {
-	mustParseRef := func(s string) image.Reference {
-		ref, err := image.ParseReference(s)
-		require.NoError(t, err)
-		return ref
-	}
 
 	tests := []struct {
 		name         string
@@ -30,7 +24,7 @@ func TestService_generateArtifactID(t *testing.T) {
 				Type: ftypes.TypeContainerImage,
 				ImageMetadata: artifact.ImageMetadata{
 					ID:        "sha256:abc123",
-					Reference: mustParseRef("ghcr.io/aquasecurity/trivy:latest"),
+					Reference: testutil.MustParseReference(t, "ghcr.io/aquasecurity/trivy:latest"),
 				},
 			},
 			want: "sha256:58a3381def2cec86309c94be4fbeaca4b6c0231743ed1df9b0bea883a33cdebb",
@@ -42,7 +36,7 @@ func TestService_generateArtifactID(t *testing.T) {
 				Type: ftypes.TypeContainerImage,
 				ImageMetadata: artifact.ImageMetadata{
 					ID:        "sha256:abc123",
-					Reference: mustParseRef("ghcr.io/aquasecurity/trivy:v0.65.0"),
+					Reference: testutil.MustParseReference(t, "ghcr.io/aquasecurity/trivy:v0.65.0"),
 				},
 			},
 			want: "sha256:58a3381def2cec86309c94be4fbeaca4b6c0231743ed1df9b0bea883a33cdebb",
@@ -54,7 +48,7 @@ func TestService_generateArtifactID(t *testing.T) {
 				Type: ftypes.TypeContainerImage,
 				ImageMetadata: artifact.ImageMetadata{
 					ID:        "sha256:abc123",
-					Reference: mustParseRef("ghcr.io/aqua-sec/trivy:v0.65.0"),
+					Reference: testutil.MustParseReference(t, "ghcr.io/aqua-sec/trivy:v0.65.0"),
 				},
 			},
 			want: "sha256:bf73a838ae6a9d9c3018fbc7b628741f3be920b75c011a49c0b192736eb789b1",
@@ -66,7 +60,7 @@ func TestService_generateArtifactID(t *testing.T) {
 				Type: ftypes.TypeContainerImage,
 				ImageMetadata: artifact.ImageMetadata{
 					ID:        "sha256:abc123",
-					Reference: mustParseRef("docker.io/aquasecurity/trivy:v0.65.0"),
+					Reference: testutil.MustParseReference(t, "docker.io/aquasecurity/trivy:v0.65.0"),
 				},
 			},
 			want: "sha256:dcba426e1fbd6e7fda125be3b9a2507ce3da2c7954c2edbf0e06e34d7f0ca22f",
@@ -78,7 +72,7 @@ func TestService_generateArtifactID(t *testing.T) {
 				Type: ftypes.TypeContainerImage,
 				ImageMetadata: artifact.ImageMetadata{
 					ID:        "sha256:abc123",
-					Reference: mustParseRef("aquasecurity/trivy:latest"),
+					Reference: testutil.MustParseReference(t, "aquasecurity/trivy:latest"),
 				},
 			},
 			want: "sha256:dcba426e1fbd6e7fda125be3b9a2507ce3da2c7954c2edbf0e06e34d7f0ca22f",
@@ -90,7 +84,7 @@ func TestService_generateArtifactID(t *testing.T) {
 				Type: ftypes.TypeContainerImage,
 				ImageMetadata: artifact.ImageMetadata{
 					ID:        "sha256:alpine123",
-					Reference: mustParseRef("alpine:3.10"),
+					Reference: testutil.MustParseReference(t, "alpine:3.10"),
 				},
 			},
 			want: "sha256:56de33d7ec6a1f832c9a7b2a26b1870efe79198e1c13ac645d43798c90954bb5",
@@ -102,7 +96,7 @@ func TestService_generateArtifactID(t *testing.T) {
 				Type: ftypes.TypeContainerImage,
 				ImageMetadata: artifact.ImageMetadata{
 					ID:        "sha256:local123",
-					Reference: mustParseRef("localhost:5000/myapp:latest"),
+					Reference: testutil.MustParseReference(t, "localhost:5000/myapp:latest"),
 				},
 			},
 			want: "sha256:7cbf1bbde2285bac7c810fb76da5b0476d284f320f50b913987d6fc9226dc3e3",
@@ -114,7 +108,7 @@ func TestService_generateArtifactID(t *testing.T) {
 				Type: ftypes.TypeContainerImage,
 				ImageMetadata: artifact.ImageMetadata{
 					ID:        "sha256:gcr123",
-					Reference: mustParseRef("gcr.io/my-org/my-team/my-app:v1.0.0"),
+					Reference: testutil.MustParseReference(t, "gcr.io/my-org/my-team/my-app:v1.0.0"),
 				},
 			},
 			want: "sha256:edb01f579a800df17687439f1115bf4ced7bb977aa6afd468675ec56145a530c",
@@ -150,7 +144,7 @@ func TestService_generateArtifactID(t *testing.T) {
 				Type: ftypes.TypeContainerImage,
 				ImageMetadata: artifact.ImageMetadata{
 					ID:        "sha256:fallback123",
-					Reference: mustParseRef("alpine:3.11"),
+					Reference: testutil.MustParseReference(t, "alpine:3.11"),
 				},
 			},
 			want: "sha256:a840c3e6bbadd213fee8cf6e4c32082f06541b8792a929fd373a57e5af0e8fa5",

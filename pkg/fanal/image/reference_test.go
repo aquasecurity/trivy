@@ -7,15 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 )
-
-func mustParseReference(t *testing.T, ref string) image.Reference {
-	t.Helper()
-	r, err := image.ParseReference(ref)
-	require.NoError(t, err)
-	return r
-}
 
 func TestReference_MarshalJSON(t *testing.T) {
 	tests := []struct {
@@ -25,12 +19,12 @@ func TestReference_MarshalJSON(t *testing.T) {
 	}{
 		{
 			name: "valid reference with tag",
-			ref:  mustParseReference(t, "ghcr.io/aquasecurity/trivy:latest"),
+			ref:  testutil.MustParseReference(t, "ghcr.io/aquasecurity/trivy:latest"),
 			want: `"ghcr.io/aquasecurity/trivy:latest"`,
 		},
 		{
 			name: "valid reference with digest",
-			ref:  mustParseReference(t, "ghcr.io/aquasecurity/trivy@sha256:0000000000000000000000000000000000000000000000000000000000000000"),
+			ref:  testutil.MustParseReference(t, "ghcr.io/aquasecurity/trivy@sha256:0000000000000000000000000000000000000000000000000000000000000000"),
 			want: `"ghcr.io/aquasecurity/trivy@sha256:0000000000000000000000000000000000000000000000000000000000000000"`,
 		},
 		{
@@ -109,17 +103,17 @@ func TestReference_String(t *testing.T) {
 	}{
 		{
 			name: "ghcr.io with tag",
-			ref:  mustParseReference(t, "ghcr.io/aquasecurity/trivy:latest"),
+			ref:  testutil.MustParseReference(t, "ghcr.io/aquasecurity/trivy:latest"),
 			want: "ghcr.io/aquasecurity/trivy:latest",
 		},
 		{
 			name: "ghcr.io with digest",
-			ref:  mustParseReference(t, "ghcr.io/aquasecurity/trivy@sha256:0000000000000000000000000000000000000000000000000000000000000000"),
+			ref:  testutil.MustParseReference(t, "ghcr.io/aquasecurity/trivy@sha256:0000000000000000000000000000000000000000000000000000000000000000"),
 			want: "ghcr.io/aquasecurity/trivy@sha256:0000000000000000000000000000000000000000000000000000000000000000",
 		},
 		{
 			name: "docker.io implicit",
-			ref:  mustParseReference(t, "aquasecurity/trivy:latest"),
+			ref:  testutil.MustParseReference(t, "aquasecurity/trivy:latest"),
 			want: "aquasecurity/trivy:latest",
 		},
 	}
@@ -139,17 +133,17 @@ func TestReference_Context(t *testing.T) {
 	}{
 		{
 			name: "ghcr.io with tag",
-			ref:  mustParseReference(t, "ghcr.io/aquasecurity/trivy:latest"),
+			ref:  testutil.MustParseReference(t, "ghcr.io/aquasecurity/trivy:latest"),
 			want: "ghcr.io/aquasecurity/trivy",
 		},
 		{
 			name: "ghcr.io with digest",
-			ref:  mustParseReference(t, "ghcr.io/aquasecurity/trivy@sha256:0000000000000000000000000000000000000000000000000000000000000000"),
+			ref:  testutil.MustParseReference(t, "ghcr.io/aquasecurity/trivy@sha256:0000000000000000000000000000000000000000000000000000000000000000"),
 			want: "ghcr.io/aquasecurity/trivy",
 		},
 		{
 			name: "docker.io implicit",
-			ref:  mustParseReference(t, "aquasecurity/trivy:latest"),
+			ref:  testutil.MustParseReference(t, "aquasecurity/trivy:latest"),
 			want: "index.docker.io/aquasecurity/trivy",
 		},
 	}
@@ -169,7 +163,7 @@ func TestReference_IsEmpty(t *testing.T) {
 	}{
 		{
 			name: "non-empty reference",
-			ref:  mustParseReference(t, "ghcr.io/aquasecurity/trivy:latest"),
+			ref:  testutil.MustParseReference(t, "ghcr.io/aquasecurity/trivy:latest"),
 			want: false,
 		},
 		{
@@ -187,7 +181,7 @@ func TestReference_IsEmpty(t *testing.T) {
 }
 
 func TestReference_JSONRoundTrip(t *testing.T) {
-	ref := mustParseReference(t, "ghcr.io/aquasecurity/trivy:v0.65.0")
+	ref := testutil.MustParseReference(t, "ghcr.io/aquasecurity/trivy:v0.65.0")
 
 	// Marshal to JSON
 	data, err := json.Marshal(ref)
