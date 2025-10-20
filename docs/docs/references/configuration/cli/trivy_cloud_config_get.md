@@ -1,19 +1,28 @@
-## trivy cloud show-config
+## trivy cloud config get
 
-Show Trivy Cloud configuration
+Get Trivy Cloud configuration
 
 ### Synopsis
 
-Show Trivy Cloud platform configuration in human readable format
+Get a Trivy Cloud platform configuration
+			
+Available config settings can be viewed by using the `trivy cloud config list` command
 
 ```
-trivy cloud show-config [flags]
+trivy cloud config get [setting] [flags]
+```
+
+### Examples
+
+```
+  $ trivy cloud config get server.scanning.enabled
+  $ trivy cloud config get server.scanning.upload-results
 ```
 
 ### Options
 
 ```
-  -h, --help   help for show-config
+  -h, --help   help for get
 ```
 
 ### Options inherited from parent commands
@@ -31,5 +40,5 @@ trivy cloud show-config [flags]
 
 ### SEE ALSO
 
-* [trivy cloud](trivy_cloud.md)	 - Control Trivy Cloud platform integration settings
+* [trivy cloud config](trivy_cloud_config.md)	 - Control Trivy Cloud configuration
 

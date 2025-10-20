@@ -1,11 +1,28 @@
-## trivy cloud
+## trivy cloud config unset
 
-Control Trivy Cloud platform integration settings
+Unset Trivy Cloud configuration
+
+### Synopsis
+
+Unset a Trivy Cloud platform configuration and return it to the default setting
+			
+Available config settings can be viewed by using the `trivy cloud config list` command
+
+```
+trivy cloud config unset [setting] [flags]
+```
+
+### Examples
+
+```
+  $ trivy cloud config unset server.scanning.enabled
+  $ trivy cloud config unset server.scanning.upload-results
+```
 
 ### Options
 
 ```
-  -h, --help   help for cloud
+  -h, --help   help for unset
 ```
 
 ### Options inherited from parent commands
@@ -23,6 +40,5 @@ Control Trivy Cloud platform integration settings
 
 ### SEE ALSO
 
-* [trivy](trivy.md)	 - Unified security scanner
 * [trivy cloud config](trivy_cloud_config.md)	 - Control Trivy Cloud configuration
 

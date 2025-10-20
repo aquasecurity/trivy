@@ -1,11 +1,19 @@
-## trivy cloud
+## trivy cloud config edit
 
-Control Trivy Cloud platform integration settings
+Edit Trivy Cloud configuration
+
+### Synopsis
+
+Edit Trivy Cloud platform configuration in the default editor specified in the EDITOR environment variable
+
+```
+trivy cloud config edit [flags]
+```
 
 ### Options
 
 ```
-  -h, --help   help for cloud
+  -h, --help   help for edit
 ```
 
 ### Options inherited from parent commands
@@ -23,6 +31,5 @@ Control Trivy Cloud platform integration settings
 
 ### SEE ALSO
 
-* [trivy](trivy.md)	 - Unified security scanner
 * [trivy cloud config](trivy_cloud_config.md)	 - Control Trivy Cloud configuration
 

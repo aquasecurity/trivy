@@ -7,9 +7,10 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"runtime"
+	"reflect"
+	"strconv"
+	"strings"
 
 	"github.com/samber/lo"
 	"github.com/zalando/go-keyring"
@@ -28,21 +29,37 @@ const (
 	DefaultTrivyServerUrl = "https://scan.trivy.dev"
 )
 
-type Config struct {
-	ServerURL      string `yaml:"server-url"`
-	ApiURL         string `yaml:"api-url"`
-	ServerScanning bool   `yaml:"server-scanning"`
-	UploadResults  bool   `yaml:"results-upload"`
+type Api struct {
+	URL string `yaml:"url"`
+}
 
+type Scanning struct {
+	Enabled         bool `yaml:"enabled"`
+	UploadResults   bool `yaml:"upload-results"`
+	SecretConfig    bool `yaml:"secret-config"`
+	MisconfigConfig bool `yaml:"misconfig-config"`
+}
+
+type Server struct {
+	URL      string   `yaml:"url"`
+	Scanning Scanning `yaml:"scanning"`
+}
+
+type Config struct {
+	Api        Api    `yaml:"api"`
+	Server     Server `yaml:"server"`
 	IsLoggedIn bool   `yaml:"-"`
 	Token      string `yaml:"-"`
 }
 
 var defaultConfig = &Config{
-	ServerScanning: true,
-	UploadResults:  true,
-	ServerURL:      DefaultTrivyServerUrl,
-	ApiURL:         DefaultApiUrl,
+	Api: Api{
+		URL: DefaultApiUrl,
+	},
+	Server: Server{
+		URL:      DefaultTrivyServerUrl,
+		Scanning: Scanning{},
+	},
 }
 
 func getConfigPath() string {
@@ -51,8 +68,12 @@ func getConfigPath() string {
 }
 
 func (c *Config) Save() error {
-	if c.Token == "" && c.ServerURL == "" && c.ApiURL == "" {
+	if c.Token == "" && c.Server.URL == "" && c.Api.URL == "" {
 		return xerrors.New("no config to save, required fields are token, server url, and api url")
+	}
+
+	if err := c.initFirstLogin(); err != nil {
+		return err
 	}
 
 	if err := keyring.Set(ServiceName, TokenKey, c.Token); err != nil {
@@ -90,6 +111,33 @@ func Clear() error {
 	return nil
 }
 
+// initFirstLogin initializes the default scanning settings to turn them on
+// after this, the user can configure in the config using the config set/unset commands
+func (c *Config) initFirstLogin() error {
+	if c.Token == "" {
+		// this isn't a login save, without a token it can't login
+		return nil
+	}
+
+	var firstLogin bool
+	_, err := keyring.Get(ServiceName, TokenKey)
+	if err != nil {
+		if !errors.Is(err, keyring.ErrNotFound) {
+			return err
+		}
+		firstLogin = true
+	}
+
+	if firstLogin {
+		// if first login, turn on all scanning options
+		c.Server.Scanning.Enabled = true
+		c.Server.Scanning.UploadResults = true
+		c.Server.Scanning.MisconfigConfig = true
+		c.Server.Scanning.SecretConfig = true
+	}
+	return nil
+}
+
 // Load loads the Trivy Cloud config from the config file and the keychain
 // If the config file does not exist the default config is returned
 func Load() (*Config, error) {
@@ -102,7 +150,8 @@ func Load() (*Config, error) {
 			return nil, err
 		}
 		logger.Debug("No cloud config file found")
-		return defaultConfig, nil
+		defaultCopy := *defaultConfig
+		return &defaultCopy, nil
 	}
 	if err := yaml.Unmarshal(yamlData, &config); err != nil {
 		return nil, err
@@ -114,7 +163,8 @@ func Load() (*Config, error) {
 			return nil, err
 		}
 		logger.Debug("No token found in keychain")
-		return defaultConfig, nil
+		config.Token = ""
+		return &config, nil
 	}
 
 	config.Token = token
@@ -128,18 +178,19 @@ func (c *Config) Verify(ctx context.Context) error {
 		return xerrors.New("no token provided for verification")
 	}
 
-	if c.ServerURL == "" {
+	if c.Server.URL == "" {
 		return xerrors.New("no server URL provided for verification")
 	}
 
 	logger := log.WithPrefix(log.PrefixCloud)
-	logger.Debug("Verifying Trivy Cloud token")
 
 	client := xhttp.Client()
-	url, err := url.JoinPath(c.ServerURL, "verify")
+	url, err := url.JoinPath(c.Server.URL, "verify")
 	if err != nil {
 		return xerrors.Errorf("failed to join server URL and verify path: %w", err)
 	}
+
+	logger.Debug("Verifying Trivy Cloud token against server", log.String("verification_url", url))
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, http.NoBody)
 	if err != nil {
 		return xerrors.Errorf("failed to create verification request: %w", err)
@@ -159,29 +210,8 @@ func (c *Config) Verify(ctx context.Context) error {
 
 }
 
-// OpenConfigForEditing opens the Trivy Cloud config file for editing in the default editor specified in the EDITOR environment variable
-func OpenConfigForEditing() error {
-	configPath := getConfigPath()
-
-	logger := log.WithPrefix(log.PrefixCloud)
-	if !fsutils.FileExists(configPath) {
-		logger.Debug("Trivy Cloud config file does not exist", log.String("config_path", configPath))
-		defaultConfig.Save()
-		configPath = getConfigPath()
-	}
-
-	editor := getEditCommand()
-
-	cmd := exec.Command(editor, configPath)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	return cmd.Run()
-}
-
-// ShowConfig shows the Trivy Cloud config in human readable format
-func ShowConfig() error {
+// ListConfig shows the Trivy Cloud config in human readable format
+func ListConfig() error {
 	cloudConfig, err := Load()
 	if err != nil {
 		return xerrors.Errorf("failed to load Trivy Cloud config file: %w", err)
@@ -197,25 +227,72 @@ func ShowConfig() error {
 	fmt.Println()
 	fmt.Println("Trivy Cloud Configuration")
 	fmt.Println("-------------------------")
-	fmt.Printf("Logged In:        %s\n", lo.Ternary(loggedIn, "Yes", "No"))
-	fmt.Printf("Trivy Server URL: %s\n", cloudConfig.ServerURL)
-	fmt.Printf("API URL:          %s\n", cloudConfig.ApiURL)
-	fmt.Printf("Server Scanning:  %s\n", lo.Ternary(cloudConfig.ServerScanning, "Enabled", "Disabled"))
-	fmt.Printf("Results Upload:   %s\n", lo.Ternary(cloudConfig.UploadResults, "Enabled", "Disabled"))
-	fmt.Printf("Filepath:         %s\n", getConfigPath())
+	fmt.Printf("Filepath:  %s\n", getConfigPath())
+	fmt.Printf("Logged In: %s\n", lo.Ternary(loggedIn, "Yes", "No"))
+	fmt.Println()
+
+	fields := collectConfigFields(reflect.ValueOf(cloudConfig).Elem(), "")
+	maxKeyLen := 0
+	for _, field := range fields {
+		maxKeyLen = max(maxKeyLen, len(field.path))
+	}
+
+	for _, field := range fields {
+		fmt.Printf("%-*s  %s\n", maxKeyLen, field.path, formatValue(field.value))
+	}
+
+	fmt.Println()
+
 	return nil
 }
 
-func getEditCommand() string {
-	editor := os.Getenv("EDITOR")
-	if editor != "" {
-		return editor
+type configField struct {
+	path  string
+	value reflect.Value
+}
+
+func collectConfigFields(v reflect.Value, prefix string) []configField {
+	var fields []configField
+	t := v.Type()
+
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		fieldValue := v.Field(i)
+
+		yamlTag := field.Tag.Get("yaml")
+		if yamlTag == "-" || yamlTag == "" {
+			continue
+		}
+
+		tagName := strings.Split(yamlTag, ",")[0]
+		fullPath := tagName
+		if prefix != "" {
+			fullPath = prefix + "." + tagName
+		}
+		if fieldValue.Kind() == reflect.Struct {
+			fields = append(fields, collectConfigFields(fieldValue, fullPath)...)
+		} else {
+			fields = append(fields, configField{
+				path:  fullPath,
+				value: fieldValue,
+			})
+		}
 	}
 
-	// fallback to notepad for windows or vi for macos/linux
-	if runtime.GOOS == "windows" {
-		return "notepad"
-	}
-	return "vi"
+	return fields
+}
 
+func formatValue(v reflect.Value) string {
+	switch v.Kind() {
+	case reflect.Bool:
+		return lo.Ternary(v.Bool(), "Enabled", "Disabled")
+	case reflect.String:
+		return v.String()
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return strconv.FormatInt(v.Int(), 10)
+	case reflect.Float32, reflect.Float64:
+		return fmt.Sprintf("%f", v.Float())
+	default:
+		return fmt.Sprintf("%v", v.Interface())
+	}
 }
