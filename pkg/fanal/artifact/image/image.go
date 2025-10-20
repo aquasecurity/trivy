@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/docker/go-units"
+	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
 	"golang.org/x/sync/errgroup"
@@ -172,92 +173,103 @@ func (a Artifact) Clean(_ artifact.Reference) error {
 
 // findMatchingReference finds a RepoTag or RepoDigest that matches the artifact name
 func (a Artifact) findMatchingReference(artifactName string, repoTags, repoDigests []string) image.Reference {
-	refStr := a.findMatchingTag(artifactName, repoTags, repoDigests)
-	if refStr == "" {
-		return image.Reference{}
-	}
+	// Convert strings to typed references
+	parsedTags := a.parseRepoTags(repoTags)
+	parsedDigests := a.parseRepoDigests(repoDigests)
 
-	ref, err := image.ParseReference(refStr)
-	if err != nil {
-		a.logger.Debug("Failed to parse reference", log.String("ref", refStr), log.Err(err))
-		return image.Reference{}
-	}
-	return ref
+	ref := a.findMatchingRepoReference(artifactName, parsedTags, parsedDigests)
+	return image.NewReference(ref)
 }
 
-// findMatchingTag finds a RepoTag or RepoDigest string that matches the artifact name
-func (a Artifact) findMatchingTag(artifactName string, repoTags, repoDigests []string) string {
-	// If there are no RepoTags or RepoDigests, return empty
+// parseRepoTags parses repo tags into name.Tag
+func (a Artifact) parseRepoTags(repoTags []string) []name.Tag {
+	var tags []name.Tag
+	for _, tagStr := range repoTags {
+		tag, err := name.NewTag(tagStr)
+		if err != nil {
+			a.logger.Debug("Failed to parse repo tag", log.String("tag", tagStr), log.Err(err))
+			continue
+		}
+		tags = append(tags, tag)
+	}
+	return tags
+}
+
+// parseRepoDigests parses repo digests into name.Digest
+func (a Artifact) parseRepoDigests(repoDigests []string) []name.Digest {
+	var digests []name.Digest
+	for _, digestStr := range repoDigests {
+		digest, err := name.NewDigest(digestStr)
+		if err != nil {
+			a.logger.Debug("Failed to parse repo digest", log.String("digest", digestStr), log.Err(err))
+			continue
+		}
+		digests = append(digests, digest)
+	}
+	return digests
+}
+
+// findMatchingRepoReference finds a RepoTag or RepoDigest that matches the artifact name
+func (a Artifact) findMatchingRepoReference(artifactName string, repoTags []name.Tag, repoDigests []name.Digest) name.Reference {
+	// If there are no RepoTags or RepoDigests, return nil
 	if len(repoTags) == 0 && len(repoDigests) == 0 {
-		return ""
+		return nil
+	}
+
+	// Select the first available reference as fallback
+	var fallback name.Reference = lo.FirstOrEmpty(repoTags)
+	if lo.IsNil(fallback) {
+		fallback = lo.FirstOrEmpty(repoDigests)
 	}
 
 	// TODO(knqyf263): refactor to use a more robust method instead of suffix-based detection
 	// Check if artifact name looks like a file path (tar archive)
-	archiveExts := []string{".tar", ".gz", ".tgz"}
+	archiveExts := []string{
+		".tar",
+		".gz",
+		".gzip",
+		".tgz",
+	}
 	ext := strings.ToLower(filepath.Ext(artifactName))
 	if slices.Contains(archiveExts, ext) || strings.Contains(artifactName, string(filepath.Separator)) {
 		// For file paths, use the first RepoTag or RepoDigest
-		if len(repoTags) > 0 {
-			return repoTags[0]
-		}
-		return repoDigests[0]
+		return fallback
 	}
 
 	// Try to parse the artifact name as an image reference
-	artifactRef, err := image.ParseReference(artifactName)
+	artifactRef, err := name.ParseReference(artifactName)
 	if err != nil {
 		// If parsing fails, use the first RepoTag or RepoDigest
 		a.logger.Debug("Failed to parse artifact name as image reference, using first RepoTag",
 			log.String("name", artifactName), log.Err(err))
-		if len(repoTags) > 0 {
-			return repoTags[0]
-		}
-		return repoDigests[0]
+		return fallback
 	}
 
-	artifactContext := artifactRef.Context().String()
+	artifactRefName := artifactRef.Name()
 
-	// Check if artifact name contains a digest (e.g., alpine@sha256:xxx)
-	if strings.Contains(artifactName, "@") {
+	switch artifactRef.(type) {
+	case name.Digest:
 		// Try to find a matching digest from RepoDigests
-		for _, digest := range repoDigests {
-			digestRef, err := image.ParseReference(digest)
-			if err != nil {
-				a.logger.Debug("Failed to parse repo digest", log.String("digest", digest), log.Err(err))
-				continue
-			}
-
-			if artifactContext == digestRef.Context().String() {
-				return digest
-			}
+		if digest, ok := lo.Find(repoDigests, func(d name.Digest) bool {
+			return artifactRefName == d.Name()
+		}); ok {
+			return digest
 		}
-	} else {
+	case name.Tag:
 		// Try to find a matching tag from RepoTags
-		for _, tag := range repoTags {
-			tagRef, err := image.ParseReference(tag)
-			if err != nil {
-				a.logger.Debug("Failed to parse repo tag", log.String("tag", tag), log.Err(err))
-				continue
-			}
-
-			if artifactContext == tagRef.Context().String() {
-				return tag
-			}
+		if tag, ok := lo.Find(repoTags, func(t name.Tag) bool {
+			return artifactRefName == t.Name()
+		}); ok {
+			return tag
 		}
 	}
 
-	// If no matching tag found, use the first RepoTag or RepoDigest as fallback
+	// If no matching tag/digest found, use the first RepoTag or RepoDigest as fallback
+	// This also handles the case when the artifact is specified by image ID (e.g., `trivy image sha256:abc123`)
 	a.logger.Debug("No matching repo tag/digest found for artifact, using first one",
 		log.String("name", artifactName),
-		log.String("context", artifactContext))
-	if len(repoTags) > 0 {
-		return repoTags[0]
-	}
-	if len(repoDigests) > 0 {
-		return repoDigests[0]
-	}
-	return ""
+		log.String("ref", artifactRefName))
+	return fallback
 }
 
 func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []string, error) {

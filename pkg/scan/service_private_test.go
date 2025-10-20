@@ -30,7 +30,7 @@ func TestService_generateArtifactID(t *testing.T) {
 			want: "sha256:58a3381def2cec86309c94be4fbeaca4b6c0231743ed1df9b0bea883a33cdebb",
 		},
 		{
-			name: "same image with different tag should have same Artifact ID",
+			name: "same image with different tag should have same artifact ID",
 			artifactInfo: artifact.Reference{
 				Name: "ghcr.io/aquasecurity/trivy:v0.65.0",
 				Type: ftypes.TypeContainerImage,
@@ -42,7 +42,7 @@ func TestService_generateArtifactID(t *testing.T) {
 			want: "sha256:58a3381def2cec86309c94be4fbeaca4b6c0231743ed1df9b0bea883a33cdebb",
 		},
 		{
-			name: "different repository should have different Artifact ID",
+			name: "different repository should have different artifact ID",
 			artifactInfo: artifact.Reference{
 				Name: "ghcr.io/aqua-sec/trivy:v0.65.0",
 				Type: ftypes.TypeContainerImage,
@@ -54,7 +54,7 @@ func TestService_generateArtifactID(t *testing.T) {
 			want: "sha256:bf73a838ae6a9d9c3018fbc7b628741f3be920b75c011a49c0b192736eb789b1",
 		},
 		{
-			name: "different registry should have different Artifact ID",
+			name: "different registry should have different artifact ID",
 			artifactInfo: artifact.Reference{
 				Name: "docker.io/aquasecurity/trivy:v0.65.0",
 				Type: ftypes.TypeContainerImage,
@@ -114,7 +114,19 @@ func TestService_generateArtifactID(t *testing.T) {
 			want: "sha256:edb01f579a800df17687439f1115bf4ced7bb977aa6afd468675ec56145a530c",
 		},
 		{
-			name: "image with digest",
+			name: "same image with different digest should have same artifact ID",
+			artifactInfo: artifact.Reference{
+				Name: "ghcr.io/aquasecurity/trivy@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+				Type: ftypes.TypeContainerImage,
+				ImageMetadata: artifact.ImageMetadata{
+					ID:        "sha256:abc123",
+					Reference: testutil.MustParseReference(t, "ghcr.io/aquasecurity/trivy@sha256:0000000000000000000000000000000000000000000000000000000000000000"),
+				},
+			},
+			want: "sha256:58a3381def2cec86309c94be4fbeaca4b6c0231743ed1df9b0bea883a33cdebb",
+		},
+		{
+			name: "image with digest (no reference)",
 			artifactInfo: artifact.Reference{
 				Name: "ghcr.io/aquasecurity/trivy@sha256:abc123",
 				Type: ftypes.TypeContainerImage,

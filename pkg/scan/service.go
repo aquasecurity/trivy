@@ -115,7 +115,9 @@ func (s Service) generateArtifactID(artifactInfo artifact.Reference) string {
 	switch artifactInfo.Type {
 	case ftypes.TypeContainerImage:
 		// For container images, calculate hash(ImageID + Registry + Repository)
-		// to ensure same images in different repos/registries have different IDs
+		// to ensure same images in different repos/registries have different IDs.
+		// Note: The artifact ID does NOT include the tag or digest, only registry/repository,
+		// so the same image with different tags will have the same artifact ID.
 		imageID := artifactInfo.ImageMetadata.ID
 		if imageID == "" {
 			return ""
@@ -125,13 +127,12 @@ func (s Service) generateArtifactID(artifactInfo artifact.Reference) string {
 		ref := artifactInfo.ImageMetadata.Reference
 		if ref.IsEmpty() {
 			// If no reference is available, fall back to using the image ID directly
-			log.Debug("No image reference available for Artifact ID calculation, using image ID directly",
+			log.Debug("No image reference available for artifact ID calculation, using image ID directly",
 				log.String("image", artifactInfo.Name))
 			return imageID
 		}
 
 		// ref.Context() returns registry/repository (e.g., "index.docker.io/library/alpine")
-		// %s automatically calls String() method
 		data := fmt.Sprintf("%s:%s", imageID, ref.Context())
 		hash := sha256.Sum256([]byte(data))
 		return fmt.Sprintf("sha256:%x", hash)
