@@ -237,16 +237,18 @@ func TestVerify(t *testing.T) {
 	}
 }
 
-func TestShowConfig(t *testing.T) {
+func TestListConfig(t *testing.T) {
 	tests := []struct {
 		name         string
-		config       *Config
+		primeToken   bool
+		setupConfig  *Config
 		wantErr      string
 		wantContains []string
 	}{
 		{
-			name: "success with valid config",
-			config: &Config{
+			name:       "success with valid config",
+			primeToken: true,
+			setupConfig: &Config{
 				Token: "testtoken",
 				Server: Server{
 					URL: "https://example.com",
@@ -276,8 +278,8 @@ func TestShowConfig(t *testing.T) {
 			},
 		},
 		{
-			name:   "success with default config",
-			config: nil,
+			name:        "success with default config",
+			setupConfig: nil,
 			wantContains: []string{
 				"Trivy Cloud Configuration",
 				"Logged In: No",
@@ -302,8 +304,13 @@ func TestShowConfig(t *testing.T) {
 			defer keyring.DeleteAll(ServiceName)
 			defer Clear()
 
-			if tt.config != nil {
-				err := tt.config.Save()
+			if tt.primeToken {
+				// prime the token in the keyring so the custom config doesn't get overwritten
+				require.NoError(t, keyring.Set(ServiceName, TokenKey, tt.setupConfig.Token))
+			}
+
+			if tt.setupConfig != nil {
+				err := tt.setupConfig.Save()
 				require.NoError(t, err)
 			}
 
@@ -315,7 +322,7 @@ func TestShowConfig(t *testing.T) {
 
 			errChan := make(chan error, 1)
 			go func() {
-				errChan <- ShowConfig()
+				errChan <- ListConfig()
 				w.Close()
 			}()
 

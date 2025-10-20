@@ -17,32 +17,32 @@ func TestSet(t *testing.T) {
 	}{
 		{
 			name:          "success with valid config",
-			configToSet:   map[string]any{"server.scanning.enabled": false},
-			expected:      &Config{Api: Api{URL: "https://api.trivy.dev"}, Server: Server{URL: "https://scan.trivy.dev", Scanning: Scanning{Enabled: false, UploadResults: true, SecretConfig: true, MisconfigConfig: true}}, IsLoggedIn: false, Token: ""},
+			configToSet:   map[string]any{"server.scanning.enabled": true},
+			expected:      &Config{Api: Api{URL: "https://api.trivy.dev"}, Server: Server{URL: "https://scan.trivy.dev", Scanning: Scanning{Enabled: true, UploadResults: false, SecretConfig: false, MisconfigConfig: false}}, IsLoggedIn: false, Token: ""},
 			expectedError: "",
 		},
 		{
 			name:          "success with valid config using off for a boolean",
-			configToSet:   map[string]any{"server.scanning.enabled": "off"},
-			expected:      &Config{Api: Api{URL: "https://api.trivy.dev"}, Server: Server{URL: "https://scan.trivy.dev", Scanning: Scanning{Enabled: false, UploadResults: true, SecretConfig: true, MisconfigConfig: true}}, IsLoggedIn: false, Token: ""},
+			configToSet:   map[string]any{"server.scanning.enabled": "on"},
+			expected:      &Config{Api: Api{URL: "https://api.trivy.dev"}, Server: Server{URL: "https://scan.trivy.dev", Scanning: Scanning{Enabled: true, UploadResults: false, SecretConfig: false, MisconfigConfig: false}}, IsLoggedIn: false, Token: ""},
 			expectedError: "",
 		},
 		{
 			name:          "error with invalid config",
 			configToSet:   map[string]any{"server.scanning.foo": false},
-			expected:      &Config{Api: Api{URL: "https://api.trivy.dev"}, Server: Server{URL: "https://scan.trivy.dev", Scanning: Scanning{Enabled: false, UploadResults: true, SecretConfig: true, MisconfigConfig: true}}, IsLoggedIn: false, Token: ""},
+			expected:      &Config{Api: Api{URL: "https://api.trivy.dev"}, Server: Server{URL: "https://scan.trivy.dev", Scanning: Scanning{Enabled: false, UploadResults: false, SecretConfig: false, MisconfigConfig: false}}, IsLoggedIn: false, Token: ""},
 			expectedError: "field \"foo\" not found in config",
 		},
 		{
-			name:          "error when setting boolean with nope",
-			configToSet:   map[string]any{"server.scanning.enabled": "nope"},
-			expected:      &Config{Api: Api{URL: "https://api.trivy.dev"}, Server: Server{URL: "https://scan.trivy.dev", Scanning: Scanning{Enabled: false, UploadResults: true, SecretConfig: true, MisconfigConfig: true}}, IsLoggedIn: false, Token: ""},
-			expectedError: "cannot unmarshal !!str `nope` into bool",
+			name:          "error when setting boolean with yessir",
+			configToSet:   map[string]any{"server.scanning.enabled": "yessir"},
+			expected:      &Config{Api: Api{URL: "https://api.trivy.dev"}, Server: Server{URL: "https://scan.trivy.dev", Scanning: Scanning{Enabled: false, UploadResults: false, SecretConfig: false, MisconfigConfig: false}}, IsLoggedIn: false, Token: ""},
+			expectedError: "cannot unmarshal !!str `yessir` into bool",
 		},
 		{
 			name:          "error when setting boolean with invalid value",
 			configToSet:   map[string]any{"server.scanning.enabled": "invalid"},
-			expected:      &Config{Api: Api{URL: "https://api.trivy.dev"}, Server: Server{URL: "https://scan.trivy.dev", Scanning: Scanning{Enabled: false, UploadResults: true, SecretConfig: true, MisconfigConfig: true}}, IsLoggedIn: false, Token: ""},
+			expected:      &Config{Api: Api{URL: "https://api.trivy.dev"}, Server: Server{URL: "https://scan.trivy.dev", Scanning: Scanning{Enabled: false, UploadResults: false, SecretConfig: false, MisconfigConfig: false}}, IsLoggedIn: false, Token: ""},
 			expectedError: "cannot unmarshal !!str `invalid` into bool",
 		},
 	}
@@ -75,6 +75,7 @@ func TestSet(t *testing.T) {
 func TestGet(t *testing.T) {
 	tests := []struct {
 		name          string
+		primeToken    bool
 		setupConfig   *Config
 		attribute     string
 		defaultValue  any
@@ -86,11 +87,12 @@ func TestGet(t *testing.T) {
 			setupConfig:   nil,
 			attribute:     "server.scanning.enabled",
 			defaultValue:  false,
-			expected:      true,
+			expected:      false,
 			expectedError: "",
 		},
 		{
-			name: "success with custom config",
+			name:       "success with custom config",
+			primeToken: true,
 			setupConfig: &Config{
 				Token: "test",
 				Server: Server{
@@ -105,7 +107,7 @@ func TestGet(t *testing.T) {
 				Api: Api{URL: "https://api.example.com"},
 			},
 			attribute:     "server.scanning.enabled",
-			defaultValue:  true,
+			defaultValue:  false,
 			expected:      false,
 			expectedError: "",
 		},
@@ -128,6 +130,11 @@ func TestGet(t *testing.T) {
 			defer keyring.DeleteAll(ServiceName)
 			defer Clear()
 
+			if tt.primeToken {
+				// add the key so the custom config isn't overwritten
+				require.NoError(t, keyring.Set(ServiceName, TokenKey, tt.setupConfig.Token))
+			}
+
 			if tt.setupConfig != nil {
 				err := tt.setupConfig.Save()
 				require.NoError(t, err)
@@ -147,6 +154,7 @@ func TestGet(t *testing.T) {
 func TestUnset(t *testing.T) {
 	tests := []struct {
 		name          string
+		primeToken    bool
 		setupConfig   *Config
 		attribute     string
 		expectedValue any
@@ -156,7 +164,7 @@ func TestUnset(t *testing.T) {
 			name:          "success with default config",
 			setupConfig:   defaultConfig,
 			attribute:     "server.scanning.enabled",
-			expectedValue: true,
+			expectedValue: false,
 			expectedError: "",
 		},
 		{
@@ -175,7 +183,7 @@ func TestUnset(t *testing.T) {
 				Api: Api{URL: "https://api.example.com"},
 			},
 			attribute:     "server.scanning.enabled",
-			expectedValue: true,
+			expectedValue: false,
 			expectedError: "",
 		},
 		{
@@ -214,6 +222,11 @@ func TestUnset(t *testing.T) {
 			keyring.MockInit()
 			defer keyring.DeleteAll(ServiceName)
 			defer Clear()
+
+			if tt.primeToken {
+				// prime the token so it doesn't get overwritten
+				require.NoError(t, keyring.Set(ServiceName, TokenKey, tt.setupConfig.Token))
+			}
 
 			require.NoError(t, tt.setupConfig.Save())
 			err := Unset(tt.attribute)

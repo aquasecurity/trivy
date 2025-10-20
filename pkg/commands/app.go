@@ -1520,7 +1520,9 @@ func NewCloudCommand() *cobra.Command {
 		&cobra.Command{
 			Use:   "set [setting] [value]",
 			Short: "Set Trivy Cloud configuration",
-			Long:  "Set the Trivy Cloud platform configuration",
+			Long: `Set a Trivy Cloud platform setting
+			
+Available config settings can be viewed by using the ` + "`trivy cloud config list`" + ` command`,
 			Example: `  $ trivy cloud config set server.scanning.enabled true
   $ trivy cloud config set server.scanning.upload-results false`,
 			Args:    cobra.ExactArgs(2),
@@ -1532,7 +1534,9 @@ func NewCloudCommand() *cobra.Command {
 		&cobra.Command{
 			Use:   "unset [setting]",
 			Short: "Unset Trivy Cloud configuration",
-			Long:  "Unset the Trivy Cloud platform configuration and return it to the default setting",
+			Long: `Unset a Trivy Cloud platform configuration and return it to the default setting
+			
+Available config settings can be viewed by using the ` + "`trivy cloud config list`" + ` command`,
 			Example: `  $ trivy cloud config unset server.scanning.enabled
   $ trivy cloud config unset server.scanning.upload-results`,
 			Args:    cobra.ExactArgs(1),
@@ -1544,7 +1548,9 @@ func NewCloudCommand() *cobra.Command {
 		&cobra.Command{
 			Use:   "get [setting]",
 			Short: "Get Trivy Cloud configuration",
-			Long:  "Get the Trivy Cloud platform configuration",
+			Long: `Get a Trivy Cloud platform configuration
+			
+Available config settings can be viewed by using the ` + "`trivy cloud config list`" + ` command`,
 			Example: `  $ trivy cloud config get server.scanning.enabled
   $ trivy cloud config get server.scanning.upload-results`,
 			Args:    cobra.ExactArgs(1),

@@ -4,7 +4,9 @@ Set Trivy Cloud configuration
 
 ### Synopsis
 
-Set the Trivy Cloud platform configuration
+Set a Trivy Cloud platform setting
+			
+Available config settings can be viewed by using the `trivy cloud config list` command
 
 ```
 trivy cloud config set [setting] [value] [flags]

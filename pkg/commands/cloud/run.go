@@ -96,7 +96,7 @@ func CheckTrivyCloudStatus(cmd *cobra.Command) error {
 }
 
 func ListConfig() error {
-	return cloud.ShowConfig()
+	return cloud.ListConfig()
 }
 
 func EditConfig() error {

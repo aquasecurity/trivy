@@ -4,7 +4,9 @@ Unset Trivy Cloud configuration
 
 ### Synopsis
 
-Unset the Trivy Cloud platform configuration and return it to the default setting
+Unset a Trivy Cloud platform configuration and return it to the default setting
+			
+Available config settings can be viewed by using the `trivy cloud config list` command
 
 ```
 trivy cloud config unset [setting] [flags]

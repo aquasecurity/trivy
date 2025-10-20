@@ -57,13 +57,8 @@ var defaultConfig = &Config{
 		URL: DefaultApiUrl,
 	},
 	Server: Server{
-		URL: DefaultTrivyServerUrl,
-		Scanning: Scanning{
-			Enabled:         true,
-			UploadResults:   true,
-			SecretConfig:    true,
-			MisconfigConfig: true,
-		},
+		URL:      DefaultTrivyServerUrl,
+		Scanning: Scanning{},
 	},
 }
 
@@ -75,6 +70,10 @@ func getConfigPath() string {
 func (c *Config) Save() error {
 	if c.Token == "" && c.Server.URL == "" && c.Api.URL == "" {
 		return xerrors.New("no config to save, required fields are token, server url, and api url")
+	}
+
+	if err := c.initFirstLogin(); err != nil {
+		return err
 	}
 
 	if err := keyring.Set(ServiceName, TokenKey, c.Token); err != nil {
@@ -109,6 +108,33 @@ func Clear() error {
 		}
 	}
 
+	return nil
+}
+
+// initFirstLogin initializes the default scanning settings to turn them on
+// after this, the user can configure in the config using the config set/unset commands
+func (c *Config) initFirstLogin() error {
+	if c.Token == "" {
+		// this isn't a login save, without a token it can't login
+		return nil
+	}
+
+	var firstLogin bool
+	_, err := keyring.Get(ServiceName, TokenKey)
+	if err != nil {
+		if !errors.Is(err, keyring.ErrNotFound) {
+			return err
+		}
+		firstLogin = true
+	}
+
+	if firstLogin {
+		// if first login, turn on all scanning options
+		c.Server.Scanning.Enabled = true
+		c.Server.Scanning.UploadResults = true
+		c.Server.Scanning.MisconfigConfig = true
+		c.Server.Scanning.SecretConfig = true
+	}
 	return nil
 }
 
@@ -184,8 +210,8 @@ func (c *Config) Verify(ctx context.Context) error {
 
 }
 
-// ShowConfig shows the Trivy Cloud config in human readable format
-func ShowConfig() error {
+// ListConfig shows the Trivy Cloud config in human readable format
+func ListConfig() error {
 	cloudConfig, err := Load()
 	if err != nil {
 		return xerrors.Errorf("failed to load Trivy Cloud config file: %w", err)

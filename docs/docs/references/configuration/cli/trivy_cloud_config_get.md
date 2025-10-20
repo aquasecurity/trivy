@@ -4,7 +4,9 @@ Get Trivy Cloud configuration
 
 ### Synopsis
 
-Get the Trivy Cloud platform configuration
+Get a Trivy Cloud platform configuration
+			
+Available config settings can be viewed by using the `trivy cloud config list` command
 
 ```
 trivy cloud config get [setting] [flags]
