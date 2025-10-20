@@ -201,30 +201,8 @@ func (m *Decoder) decodePackage(ctx context.Context, c *core.Component) (*ftypes
 	pkg.Name = m.pkgName(pkg, c)
 	pkg.ID = dependency.ID(p.LangType(), pkg.Name, p.Version) // Re-generate ID with the updated name
 
-	var err error
-	for _, prop := range c.Properties {
-		switch prop.Name {
-		case core.PropertyPkgID:
-			pkg.ID = prop.Value
-		case core.PropertyFilePath:
-			pkg.FilePath = prop.Value
-		case core.PropertySrcName:
-			pkg.SrcName = prop.Value
-		case core.PropertySrcVersion:
-			pkg.SrcVersion = prop.Value
-		case core.PropertySrcRelease:
-			pkg.SrcRelease = prop.Value
-		case core.PropertySrcEpoch:
-			if pkg.SrcEpoch, err = strconv.Atoi(prop.Value); err != nil {
-				return nil, xerrors.Errorf("invalid src epoch: %w", err)
-			}
-		case core.PropertyModularitylabel:
-			pkg.Modularitylabel = prop.Value
-		case core.PropertyLayerDigest:
-			pkg.Layer.Digest = prop.Value
-		case core.PropertyLayerDiffID:
-			pkg.Layer.DiffID = prop.Value
-		}
+	if err := fillPkgFieldsFromComponentProps(c.Properties, pkg); err != nil {
+		return nil, xerrors.Errorf("failed to fill package properties: %w", err)
 	}
 
 	pkg.Identifier.BOMRef = c.PkgIdentifier.BOMRef
@@ -410,6 +388,46 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 			Type:     pkgType,
 			Packages: pkgs,
 		})
+	}
+	return nil
+}
+
+func fillPkgFieldsFromComponentProps(props []core.Property, pkg *ftypes.Package) error {
+	buildInfo := &ftypes.BuildInfo{}
+	var err error
+	for _, prop := range props {
+		switch prop.Name {
+		case core.PropertyPkgID:
+			pkg.ID = prop.Value
+		case core.PropertyFilePath:
+			pkg.FilePath = prop.Value
+		case core.PropertySrcName:
+			pkg.SrcName = prop.Value
+		case core.PropertySrcVersion:
+			pkg.SrcVersion = prop.Value
+		case core.PropertySrcRelease:
+			pkg.SrcRelease = prop.Value
+		case core.PropertySrcEpoch:
+			if pkg.SrcEpoch, err = strconv.Atoi(prop.Value); err != nil {
+				return xerrors.Errorf("invalid src epoch: %w", err)
+			}
+		case core.PropertyModularitylabel:
+			pkg.Modularitylabel = prop.Value
+		case core.PropertyLayerDigest:
+			pkg.Layer.Digest = prop.Value
+		case core.PropertyLayerDiffID:
+			pkg.Layer.DiffID = prop.Value
+		case core.PropertyContentSet:
+			buildInfo.ContentSets = append(buildInfo.ContentSets, prop.Value)
+		case core.PropertyNVR:
+			buildInfo.Nvr = prop.Value
+		case core.PropertyArch:
+			buildInfo.Arch = prop.Value
+		}
+	}
+
+	if len(buildInfo.ContentSets) > 0 || buildInfo.Nvr != "" {
+		pkg.BuildInfo = buildInfo
 	}
 	return nil
 }
