@@ -3,7 +3,6 @@ package types
 import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 type Fingerprint struct {
-	Version   int    `json:",omitempty"`
 	Hash      string `json:",omitempty"`
 	FindingID string `json:",omitempty"`
 }
