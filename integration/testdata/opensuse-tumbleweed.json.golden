@@ -15,6 +15,9 @@
     "DiffIDs": [
       "sha256:7a335bdf2d91d6d158da360054aa7e477d708187d43fe9d0ac20144cdf90f763"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:opensuse-tumbleweed"
+    ],
     "ImageConfig": {
       "architecture": "amd64",
       "author": "Fabian Vogt \u003cfvogt@suse.com\u003e",

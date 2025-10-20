@@ -15,6 +15,9 @@
     "DiffIDs": [
       "sha256:89da7cc836da4b53ab1ceb572576458c005e7e444b8bb79abda196668a2f0c92"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:alpine-distroless"
+    ],
     "ImageConfig": {
       "architecture": "amd64",
       "author": "github.com/chainguard-dev/apko",

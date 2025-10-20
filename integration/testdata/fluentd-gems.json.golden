@@ -20,6 +20,9 @@
       "sha256:788c00e2cfc8f2a018ae4344ccf0b2c226ebd756d7effd1ce50eea1a4252cd89",
       "sha256:25165eb51d15842f870f97873e0a58409d5e860e6108e3dd829bd10e484c0065"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:fluentd-multiple-lockfiles"
+    ],
     "ImageConfig": {
       "architecture": "amd64",
       "container": "232f3fc7ddffd71dc3ff52c6c0c3a5feea2f51acffd9b53850a8fc6f1a15319a",

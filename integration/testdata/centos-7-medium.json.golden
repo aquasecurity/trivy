@@ -15,6 +15,9 @@
     "DiffIDs": [
       "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:centos-7"
+    ],
     "ImageConfig": {
       "architecture": "amd64",
       "container": "cc6043a787f6d1c7ae3e121ebdf1c4478186336aa7274871780a0a7bcc3a061a",
