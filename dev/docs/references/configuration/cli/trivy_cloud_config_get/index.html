@@ -10,10 +10,10 @@
       
       
       
-        <link rel="canonical" href="https://trivy.dev/dev/docs/references/configuration/cli/trivy_cloud_show-config/">
+        <link rel="canonical" href="https://trivy.dev/dev/docs/references/configuration/cli/trivy_cloud_config_get/">
       
       
-        <link rel="prev" href="../trivy_cloud_edit-config/">
+        <link rel="prev" href="../trivy_cloud_config_unset/">
       
       
         <link rel="next" href="../trivy_config/">
@@ -27,7 +27,7 @@
     
     
       
-        <title>Cloud Show Config - Trivy</title>
+        <title>Cloud Config Get - Trivy</title>
       
     
     
@@ -75,9 +75,9 @@
 
 
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Trivy - Cloud Show Config" />
+<meta property="og:title" content="Trivy - Cloud Config Get" />
 <meta property="og:description" content="Trivy - All-in-one open source security scanner" />
-<meta property="og:url" content="https://trivy.dev/dev/docs/references/configuration/cli/trivy_cloud_show-config/" />
+<meta property="og:url" content="https://trivy.dev/dev/docs/references/configuration/cli/trivy_cloud_config_get/" />
 <meta property="og:image" content="https://trivy.dev/devassets/images/illustrations/banner.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1080" />
@@ -104,7 +104,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#trivy-cloud-show-config" class="md-skip">
+        <a href="#trivy-cloud-config-get" class="md-skip">
           Skip to content
         </a>
       
@@ -155,7 +155,7 @@ You're not viewing the latest version of the documentation.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Cloud Show Config
+              Cloud Config Get
             
           </span>
         </div>
@@ -5843,13 +5843,121 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../trivy_cloud_edit-config/" class="md-nav__link">
+      <a href="../trivy_cloud_config/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     
   
-    Cloud Edit Config
+    Cloud Config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trivy_cloud_config_edit/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud Config Edit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trivy_cloud_config_list/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud Config List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trivy_cloud_config_set/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud Config Set
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trivy_cloud_config_unset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud Config Unset
   
 
     
@@ -5883,7 +5991,7 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    Cloud Show Config
+    Cloud Config Get
   
 
     
@@ -5900,7 +6008,7 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    Cloud Show Config
+    Cloud Config Get
   
 
     
@@ -5924,15 +6032,15 @@ You're not viewing the latest version of the documentation.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#trivy-cloud-show-config" class="md-nav__link">
+  <a href="#trivy-cloud-config-get" class="md-nav__link">
     <span class="md-ellipsis">
       
-        trivy cloud show-config
+        trivy cloud config get
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="trivy cloud show-config">
+    <nav class="md-nav" aria-label="trivy cloud config get">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5940,6 +6048,17 @@ You're not viewing the latest version of the documentation.
     <span class="md-ellipsis">
       
         Synopsis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
       
     </span>
   </a>
@@ -8369,15 +8488,15 @@ You're not viewing the latest version of the documentation.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#trivy-cloud-show-config" class="md-nav__link">
+  <a href="#trivy-cloud-config-get" class="md-nav__link">
     <span class="md-ellipsis">
       
-        trivy cloud show-config
+        trivy cloud config get
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="trivy cloud show-config">
+    <nav class="md-nav" aria-label="trivy cloud config get">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -8385,6 +8504,17 @@ You're not viewing the latest version of the documentation.
     <span class="md-ellipsis">
       
         Synopsis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
       
     </span>
   </a>
@@ -8446,7 +8576,7 @@ You're not viewing the latest version of the documentation.
 
 
   
-    <a href="https://github.com/aquasecurity/trivy/blob/main/docs/docs/references/configuration/cli/trivy_cloud_show-config.md" title="Edit this page" class="md-content__button md-icon">
+    <a href="https://github.com/aquasecurity/trivy/blob/main/docs/docs/references/configuration/cli/trivy_cloud_config_get.md" title="Edit this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -8454,16 +8584,21 @@ You're not viewing the latest version of the documentation.
   
 
 
-  <h1>Cloud Show Config</h1>
+  <h1>Cloud Config Get</h1>
 
-<h2 id="trivy-cloud-show-config">trivy cloud show-config<a class="headerlink" href="#trivy-cloud-show-config" title="Permanent link">&para;</a></h2>
-<p>Show Trivy Cloud configuration</p>
+<h2 id="trivy-cloud-config-get">trivy cloud config get<a class="headerlink" href="#trivy-cloud-config-get" title="Permanent link">&para;</a></h2>
+<p>Get Trivy Cloud configuration</p>
 <h3 id="synopsis">Synopsis<a class="headerlink" href="#synopsis" title="Permanent link">&para;</a></h3>
-<p>Show Trivy Cloud platform configuration in human readable format</p>
-<div class="highlight"><pre><span></span><code>trivy cloud show-config [flags]
+<p>Get a Trivy Cloud platform configuration</p>
+<p>Available config settings can be viewed by using the <code>trivy cloud config list</code> command</p>
+<div class="highlight"><pre><span></span><code>trivy cloud config get [setting] [flags]
+</code></pre></div>
+<h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>  $ trivy cloud config get server.scanning.enabled
+  $ trivy cloud config get server.scanning.upload-results
 </code></pre></div>
 <h3 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>  -h, --help   help for show-config
+<div class="highlight"><pre><span></span><code>  -h, --help   help for get
 </code></pre></div>
 <h3 id="options-inherited-from-parent-commands">Options inherited from parent commands<a class="headerlink" href="#options-inherited-from-parent-commands" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>      --cache-dir string          cache directory (default &quot;/path/to/cache&quot;)
@@ -8477,7 +8612,7 @@ You're not viewing the latest version of the documentation.
 </code></pre></div>
 <h3 id="see-also">SEE ALSO<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h3>
 <ul>
-<li><a href="../trivy_cloud/">trivy cloud</a>  - Control Trivy Cloud platform integration settings</li>
+<li><a href="../trivy_cloud_config/">trivy cloud config</a>    - Control Trivy Cloud configuration</li>
 </ul>
 
 
@@ -8512,7 +8647,7 @@ You're not viewing the latest version of the documentation.
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../trivy_cloud_edit-config/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Cloud Edit Config">
+          <a href="../trivy_cloud_config_unset/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Cloud Config Unset">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -8522,7 +8657,7 @@ You're not viewing the latest version of the documentation.
                 Previous
               </span>
               <div class="md-ellipsis">
-                Cloud Edit Config
+                Cloud Config Unset
               </div>
             </div>
           </a>

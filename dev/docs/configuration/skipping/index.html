@@ -5916,13 +5916,13 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_cloud_edit-config/" class="md-nav__link">
+      <a href="../../references/configuration/cli/trivy_cloud_config/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     
   
-    Cloud Edit Config
+    Cloud Config
   
 
     
@@ -5943,13 +5943,121 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_cloud_show-config/" class="md-nav__link">
+      <a href="../../references/configuration/cli/trivy_cloud_config_edit/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     
   
-    Cloud Show Config
+    Cloud Config Edit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_cloud_config_list/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud Config List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_cloud_config_set/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud Config Set
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_cloud_config_unset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud Config Unset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_cloud_config_get/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud Config Get
   
 
     
@@ -8494,7 +8602,7 @@ A file pattern configuration takes the following form: <code>&lt;analyzer&gt;:&l
 </tr>
 </tbody>
 </table>
-<p>The list of analyzers can be found <a href="https://github.com/aquasecurity/trivy/tree/fcd8dcdd1d77708cf03981fb69bb34b4257a575e/pkg/fanal/analyzer/const.go">here</a>.
+<p>The list of analyzers can be found <a href="https://github.com/aquasecurity/trivy/tree/559fe1fa2c1cd3095cd904611463c47e9d47b539/pkg/fanal/analyzer/const.go">here</a>.
 Note that this flag is not applicable for parsers that accepts files of different extensions, for example the Terraform file parser which handles .tf and .tf.json files.</p>
 <p>The file path can use a <a href="https://pkg.go.dev/regexp/syntax">regular expression</a>. For example:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># interpret any file with .txt extension as a python pip requirements file</span>
