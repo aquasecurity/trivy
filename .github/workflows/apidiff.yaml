@@ -25,8 +25,9 @@ jobs:
       - name: Check for merge conflicts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          state=$(gh api "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" --jq .mergeable_state)
+          state=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq .mergeable_state)
           echo "mergeable_state=$state"
           
           if [ "$state" = "dirty" ]; then
