@@ -24,16 +24,34 @@ jobs:
       # frozen at an old state and apidiff cannot run correctly.
       - name: Check for merge conflicts
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+        # pull_request_target and mergeability are processed asynchronously.
+        # As a result, it’s possible that we start the check before GitHub has finished calculating the mergeability.
+        # To handle this, a retry mechanism has been added — it waits for 2 seconds after each attempt.
+        # If mergeable_state isn’t obtained after 5 attempts, an error is returned.
         run: |
-          state=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq .mergeable_state)
-          echo "mergeable_state=$state"
+          MAX=5
+          for i in $(seq 1 "$MAX"); do
+            state=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq .mergeable_state)
+            echo "mergeable_state=$state"
           
-          if [ "$state" = "dirty" ]; then
-            echo "::error::This PR has merge conflicts. Please resolve conflicts before running apidiff."
-            exit 1
-          fi
+            if [ "$state" = "dirty" ]; then
+              echo "::error::This PR has merge conflicts. Please resolve conflicts before running apidiff."
+              exit 1
+            fi
+          
+            if [ -n "$state" ] && [ "$state" != "unknown" ] && [ "$state" != "null" ]; then
+              break
+            fi
+          
+            if [ "$i" -lt "$MAX" ] && { [ -z "$state" ] || [ "$state" = "unknown" ] || [ "$state" = "null" ]; }; then
+              echo "::error::Could not determine mergeability after $i tries."
+              exit 1
+            fi
+          
+            sleep 2
+          done
 
       # Checkout PR merge commit to compare against base branch
       # This ensures we compare the actual merge result with the base branch,
