@@ -41,8 +41,20 @@ func Parse(_ context.Context, r io.Reader, path string) ([]any, error) {
 			manifests = append(manifests, manifest.ToRego())
 		}
 
-		offset += len(strings.Split(partial, "\n"))
+		offset += countLines(partial)
 	}
 
 	return manifests, nil
+}
+
+func countLines(s string) int {
+	if s == "" {
+		return 1
+	}
+
+	count := strings.Count(s, "\n")
+	if s[len(s)-1] != '\n' {
+		count++
+	}
+	return count
 }

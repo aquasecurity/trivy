@@ -986,10 +986,20 @@
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
-            "StartLine": 5,
+            "StartLine": 4,
             "EndLine": 7,
             "Code": {
               "Lines": [
+                {
+                  "Number": 4,
+                  "Content": "metadata:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mmetadata\u001b[0m:",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
                 {
                   "Number": 5,
                   "Content": "  name: nginx-deployment",
@@ -997,7 +1007,7 @@
                   "Annotation": "",
                   "Truncated": false,
                   "Highlighted": "  \u001b[38;5;33mname\u001b[0m: nginx-deployment",
-                  "FirstCause": true,
+                  "FirstCause": false,
                   "LastCause": false
                 },
                 {
@@ -1135,10 +1145,20 @@
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
-            "StartLine": 18,
+            "StartLine": 17,
             "EndLine": 22,
             "Code": {
               "Lines": [
+                {
+                  "Number": 17,
+                  "Content": "    spec:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "    \u001b[38;5;33mspec\u001b[0m:",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
                 {
                   "Number": 18,
                   "Content": "      containers:",
@@ -1146,7 +1166,7 @@
                   "Annotation": "",
                   "Truncated": false,
                   "Highlighted": "      \u001b[38;5;33mcontainers\u001b[0m:",
-                  "FirstCause": true,
+                  "FirstCause": false,
                   "LastCause": false
                 },
                 {
