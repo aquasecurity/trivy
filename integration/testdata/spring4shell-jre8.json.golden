@@ -23,6 +23,10 @@
       "sha256:77b2d158369254d5055183f5483f8b6661170857b61768d1d95d18c2ec1714b6",
       "sha256:eb769943b91f10a0418f2fc3b4a4fde6c6293be60c37293fcc0fa319edaf27a5"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:spring4shell-jre8"
+    ],
+    "RepoDigests": null,
     "ImageConfig": {
       "architecture": "amd64",
       "created": "2022-06-06T13:51:57.120019Z",
