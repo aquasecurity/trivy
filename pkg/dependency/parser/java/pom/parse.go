@@ -29,14 +29,9 @@ import (
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-const (
-	centralURL = "https://repo.maven.apache.org/maven2/"
-)
-
 type options struct {
-	offline             bool
-	releaseRemoteRepos  []string
-	snapshotRemoteRepos []string
+	offline     bool
+	defaultRepo repository
 }
 
 type option func(*options)
@@ -47,33 +42,30 @@ func WithOffline(offline bool) option {
 	}
 }
 
-func WithReleaseRemoteRepos(repos []string) option {
+func WithDefaultRepo(repo string, releaseEnabled, snapshotEnabled bool) option {
 	return func(opts *options) {
-		opts.releaseRemoteRepos = repos
-	}
-}
-
-func WithSnapshotRemoteRepos(repos []string) option {
-	return func(opts *options) {
-		opts.snapshotRemoteRepos = repos
+		opts.defaultRepo = repository{
+			url:             repo,
+			releaseEnabled:  releaseEnabled,
+			snapshotEnabled: snapshotEnabled,
+		}
 	}
 }
 
 type Parser struct {
-	logger              *log.Logger
-	rootPath            string
-	cache               pomCache
-	localRepository     string
-	releaseRemoteRepos  []string
-	snapshotRemoteRepos []string
-	offline             bool
-	servers             []Server
+	logger          *log.Logger
+	rootPath        string
+	cache           pomCache
+	localRepository string
+	remoteRepos     repositories
+	offline         bool
+	servers         []Server
 }
 
 func NewParser(filePath string, opts ...option) *Parser {
 	o := &options{
-		offline:            false,
-		releaseRemoteRepos: []string{centralURL}, // Maven doesn't use central repository for snapshot dependencies
+		offline:     false,
+		defaultRepo: mavenCentralRepo,
 	}
 
 	for _, opt := range opts {
@@ -87,15 +79,18 @@ func NewParser(filePath string, opts ...option) *Parser {
 		localRepository = filepath.Join(homeDir, ".m2", "repository")
 	}
 
+	remoteRepos := repositories{
+		defaultRepo: o.defaultRepo,
+	}
+
 	return &Parser{
-		logger:              log.WithPrefix("pom"),
-		rootPath:            filepath.Clean(filePath),
-		cache:               newPOMCache(),
-		localRepository:     localRepository,
-		releaseRemoteRepos:  o.releaseRemoteRepos,
-		snapshotRemoteRepos: o.snapshotRemoteRepos,
-		offline:             o.offline,
-		servers:             s.Servers,
+		logger:          log.WithPrefix("pom"),
+		rootPath:        filepath.Clean(filePath),
+		cache:           newPOMCache(),
+		localRepository: localRepository,
+		remoteRepos:     remoteRepos,
+		offline:         o.offline,
+		servers:         s.Servers,
 	}
 }
 
@@ -362,9 +357,11 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 		opts.exclusions = set.New[string]()
 	}
 	// Update remoteRepositories
-	pomReleaseRemoteRepos, pomSnapshotRemoteRepos := pom.repositories(p.servers)
-	p.releaseRemoteRepos = lo.Uniq(append(pomReleaseRemoteRepos, p.releaseRemoteRepos...))
-	p.snapshotRemoteRepos = lo.Uniq(append(pomSnapshotRemoteRepos, p.snapshotRemoteRepos...))
+	pomRepos := pom.repositories(p.servers)
+	p.remoteRepos.pom = lo.UniqBy(append(pomRepos, p.remoteRepos.pom...), func(r repository) string {
+		return r.url
+
+	})
 
 	// Resolve parent POM
 	if err := p.resolveParent(ctx, pom); err != nil {
@@ -710,17 +707,19 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 		return nil, xerrors.New("offline mode")
 	}
 
-	remoteRepos := p.releaseRemoteRepos
-	// Maven uses only snapshot repos for snapshot artifacts
-	if snapshot {
-		remoteRepos = p.snapshotRemoteRepos
-	}
+	// Try all remoteRepositories by following order:
+	// 1. remoteRepositories from settings.xml
+	// 2. remoteRepositories from pom.xml
+	// 3. default remoteRepository (Maven Central for Release repository)
+	for _, repo := range slices.Concat(p.remoteRepos.settings, p.remoteRepos.pom, []repository{p.remoteRepos.defaultRepo}) {
+		// Skip Release only repositories for snapshot artifacts and vice versa
+		if snapshot && !repo.snapshotEnabled || !snapshot && !repo.releaseEnabled {
+			continue
+		}
 
-	// try all remoteRepositories
-	for _, repo := range remoteRepos {
 		repoPaths := slices.Clone(paths) // Clone slice to avoid overwriting last element of `paths`
 		if snapshot {
-			pomFileName, err := p.fetchPomFileNameFromMavenMetadata(ctx, repo, repoPaths)
+			pomFileName, err := p.fetchPomFileNameFromMavenMetadata(ctx, repo.url, repoPaths)
 			if err != nil {
 				return nil, xerrors.Errorf("fetch maven-metadata.xml error: %w", err)
 			}
@@ -729,7 +728,7 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 				repoPaths[len(repoPaths)-1] = pomFileName
 			}
 		}
-		fetched, err := p.fetchPOMFromRemoteRepository(ctx, repo, repoPaths)
+		fetched, err := p.fetchPOMFromRemoteRepository(ctx, repo.url, repoPaths)
 		if err != nil {
 			return nil, xerrors.Errorf("fetch repository error: %w", err)
 		} else if fetched == nil {
