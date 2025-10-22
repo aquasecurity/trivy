@@ -24,7 +24,6 @@ func TestTar(t *testing.T) {
 		SkipDirs          []string
 		SkipFiles         []string
 		DetectionPriority ftypes.DetectionPriority
-		Distro            string
 	}
 	tests := []struct {
 		name   string
@@ -434,10 +433,6 @@ func TestTar(t *testing.T) {
 
 			if tt.args.DetectionPriority != "" {
 				osArgs = append(osArgs, "--detection-priority", string(tt.args.DetectionPriority))
-			}
-
-			if tt.args.Distro != "" {
-				osArgs = append(osArgs, "--distro", tt.args.Distro)
 			}
 
 			// Run Trivy
