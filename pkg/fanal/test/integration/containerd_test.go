@@ -715,6 +715,9 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			got, err := a.ApplyLayers(ctx, ref.ID, ref.BlobIDs)
 			require.NoError(t, err)
 
+			// Clear package detail fields
+			clearPackageDetailFields(got.Packages)
+
 			tag := strings.Split(tt.imageName, ":")[1]
 			goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", tag)
 
@@ -852,6 +855,9 @@ func TestContainerd_PullImage(t *testing.T) {
 			var wantPkgs types.Packages
 			err = json.NewDecoder(golden).Decode(&wantPkgs)
 			require.NoError(t, err)
+
+			// Clear package detail fields for comparison
+			clearPackageDetailFields(got.Packages)
 
 			// Assert
 			assert.Equal(t, wantPkgs, got.Packages)

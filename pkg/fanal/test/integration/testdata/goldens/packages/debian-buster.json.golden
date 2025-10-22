@@ -1,92 +1,200 @@
 [
   {
+    "ID": "adduser@3.118",
     "Name": "adduser",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/adduser@3.118?arch=all\u0026distro=debian-10.1"
+    },
     "Version": "3.118",
     "Arch": "all",
     "SrcName": "adduser",
-    "SrcVersion": "3.118"
+    "SrcVersion": "3.118",
+    "Licenses": [
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Debian Adduser Developers \u003cadduser@packages.debian.org\u003e"
   },
   {
+    "ID": "apt@1.8.2",
     "Name": "apt",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/apt@1.8.2?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.8.2",
     "Arch": "amd64",
     "SrcName": "apt",
-    "SrcVersion": "1.8.2"
+    "SrcVersion": "1.8.2",
+    "Licenses": [
+      "GPL-2.0-or-later",
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "APT Development Team \u003cdeity@lists.debian.org\u003e"
   },
   {
+    "ID": "base-files@10.3+deb10u1",
     "Name": "base-files",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/base-files@10.3%2Bdeb10u1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "10.3+deb10u1",
     "Arch": "amd64",
     "SrcName": "base-files",
-    "SrcVersion": "10.3+deb10u1"
+    "SrcVersion": "10.3+deb10u1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Santiago Vila \u003csanvila@debian.org\u003e"
   },
   {
+    "ID": "base-passwd@3.5.46",
     "Name": "base-passwd",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/base-passwd@3.5.46?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "3.5.46",
     "Arch": "amd64",
     "SrcName": "base-passwd",
-    "SrcVersion": "3.5.46"
+    "SrcVersion": "3.5.46",
+    "Licenses": [
+      "GPL-2.0-only",
+      "PD"
+    ],
+    "Maintainer": "Colin Watson \u003ccjwatson@debian.org\u003e"
   },
   {
+    "ID": "bash@5.0-4",
     "Name": "bash",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/bash@5.0-4?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "5.0",
     "Release": "4",
     "Arch": "amd64",
     "SrcName": "bash",
     "SrcVersion": "5.0",
-    "SrcRelease": "4"
+    "SrcRelease": "4",
+    "Licenses": [
+      "GPL-3.0-only"
+    ],
+    "Maintainer": "Matthias Klose \u003cdoko@debian.org\u003e"
   },
   {
+    "ID": "bsdutils@1:2.33.1-0.1",
     "Name": "bsdutils",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/bsdutils@2.33.1-0.1?arch=amd64\u0026distro=debian-10.1\u0026epoch=1"
+    },
     "Version": "2.33.1",
     "Release": "0.1",
     "Epoch": 1,
     "Arch": "amd64",
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
-    "SrcRelease": "0.1"
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
   },
   {
+    "ID": "coreutils@8.30-3",
     "Name": "coreutils",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/coreutils@8.30-3?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "8.30",
     "Release": "3",
     "Arch": "amd64",
     "SrcName": "coreutils",
     "SrcVersion": "8.30",
-    "SrcRelease": "3"
+    "SrcRelease": "3",
+    "Licenses": [
+      "GPL-3.0-only"
+    ],
+    "Maintainer": "Michael Stone \u003cmstone@debian.org\u003e"
   },
   {
+    "ID": "dash@0.5.10.2-5",
     "Name": "dash",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/dash@0.5.10.2-5?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "0.5.10.2",
     "Release": "5",
     "Arch": "amd64",
     "SrcName": "dash",
     "SrcVersion": "0.5.10.2",
-    "SrcRelease": "5"
+    "SrcRelease": "5",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Andrej Shadura \u003candrewsh@debian.org\u003e"
   },
   {
+    "ID": "debconf@1.5.71",
     "Name": "debconf",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/debconf@1.5.71?arch=all\u0026distro=debian-10.1"
+    },
     "Version": "1.5.71",
     "Arch": "all",
     "SrcName": "debconf",
-    "SrcVersion": "1.5.71"
+    "SrcVersion": "1.5.71",
+    "Licenses": [
+      "BSD-2-Clause"
+    ],
+    "Maintainer": "Debconf Developers \u003cdebconf-devel@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "debian-archive-keyring@2019.1",
     "Name": "debian-archive-keyring",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/debian-archive-keyring@2019.1?arch=all\u0026distro=debian-10.1"
+    },
     "Version": "2019.1",
     "Arch": "all",
     "SrcName": "debian-archive-keyring",
-    "SrcVersion": "2019.1"
+    "SrcVersion": "2019.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Debian Release Team \u003cpackages@release.debian.org\u003e"
   },
   {
+    "ID": "debianutils@4.8.6.1",
     "Name": "debianutils",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/debianutils@4.8.6.1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "4.8.6.1",
     "Arch": "amd64",
     "SrcName": "debianutils",
-    "SrcVersion": "4.8.6.1"
+    "SrcVersion": "4.8.6.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Clint Adams \u003cclint@debian.org\u003e"
   },
   {
+    "ID": "diffutils@1:3.7-3",
     "Name": "diffutils",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/diffutils@3.7-3?arch=amd64\u0026distro=debian-10.1\u0026epoch=1"
+    },
     "Version": "3.7",
     "Release": "3",
     "Epoch": 1,
@@ -94,103 +202,239 @@
     "SrcName": "diffutils",
     "SrcVersion": "3.7",
     "SrcRelease": "3",
-    "SrcEpoch": 1
+    "SrcEpoch": 1,
+    "Licenses": [
+      "GPL-2.0-or-later",
+      "GFDL-1.3-or-later"
+    ],
+    "Maintainer": "Santiago Vila \u003csanvila@debian.org\u003e"
   },
   {
+    "ID": "dpkg@1.19.7",
     "Name": "dpkg",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/dpkg@1.19.7?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.19.7",
     "Arch": "amd64",
     "SrcName": "dpkg",
-    "SrcVersion": "1.19.7"
+    "SrcVersion": "1.19.7",
+    "Licenses": [
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
+      "BSD-2-Clause",
+      "public-domain-s-s-d",
+      "public-domain-md5"
+    ],
+    "Maintainer": "Dpkg Developers \u003cdebian-dpkg@lists.debian.org\u003e"
   },
   {
+    "ID": "e2fsprogs@1.44.5-1+deb10u1",
     "Name": "e2fsprogs",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/e2fsprogs@1.44.5-1%2Bdeb10u1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.44.5",
     "Release": "1+deb10u1",
     "Arch": "amd64",
     "SrcName": "e2fsprogs",
     "SrcVersion": "1.44.5",
-    "SrcRelease": "1+deb10u1"
+    "SrcRelease": "1+deb10u1",
+    "Licenses": [
+      "GPL-2.0-only",
+      "LGPL-2.0-only"
+    ],
+    "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e"
   },
   {
+    "ID": "fdisk@2.33.1-0.1",
     "Name": "fdisk",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/fdisk@2.33.1-0.1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.33.1",
     "Release": "0.1",
     "Arch": "amd64",
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
-    "SrcRelease": "0.1"
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
   },
   {
+    "ID": "findutils@4.6.0+git+20190209-2",
     "Name": "findutils",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/findutils@4.6.0%2Bgit%2B20190209-2?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "4.6.0+git+20190209",
     "Release": "2",
     "Arch": "amd64",
     "SrcName": "findutils",
     "SrcVersion": "4.6.0+git+20190209",
-    "SrcRelease": "2"
+    "SrcRelease": "2",
+    "Licenses": [
+      "GPL-3.0-only",
+      "GFDL-1.3-only"
+    ],
+    "Maintainer": "Andreas Metzler \u003cametzler@debian.org\u003e"
   },
   {
+    "ID": "gcc-8-base@8.3.0-6",
     "Name": "gcc-8-base",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/gcc-8-base@8.3.0-6?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "8.3.0",
     "Release": "6",
     "Arch": "amd64",
     "SrcName": "gcc-8",
     "SrcVersion": "8.3.0",
-    "SrcRelease": "6"
+    "SrcRelease": "6",
+    "Licenses": [
+      "GPL-2.0-or-later",
+      "GPL-3.0-only",
+      "GFDL-1.2-only",
+      "GPL-2.0-only",
+      "Artistic-2.0",
+      "LGPL-2.0-or-later"
+    ],
+    "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e"
   },
   {
+    "ID": "gpgv@2.2.12-1+deb10u1",
     "Name": "gpgv",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/gpgv@2.2.12-1%2Bdeb10u1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.2.12",
     "Release": "1+deb10u1",
     "Arch": "amd64",
     "SrcName": "gnupg2",
     "SrcVersion": "2.2.12",
-    "SrcRelease": "1+deb10u1"
+    "SrcRelease": "1+deb10u1",
+    "Licenses": [
+      "GPL-3.0-or-later",
+      "permissive",
+      "LGPL-2.1-or-later",
+      "MIT",
+      "BSD-3-Clause",
+      "LGPL-3.0-or-later",
+      "RFC-Reference",
+      "TinySCHEME",
+      "CC0-1.0",
+      "GPL-3.0-only",
+      "LGPL-3.0-only",
+      "LGPL-2.1-only"
+    ],
+    "Maintainer": "Debian GnuPG Maintainers \u003cpkg-gnupg-maint@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "grep@3.3-1",
     "Name": "grep",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/grep@3.3-1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "3.3",
     "Release": "1",
     "Arch": "amd64",
     "SrcName": "grep",
     "SrcVersion": "3.3",
-    "SrcRelease": "1"
+    "SrcRelease": "1",
+    "Licenses": [
+      "GPL-3.0-or-later",
+      "GPL-3.0-only"
+    ],
+    "Maintainer": "Anibal Monsalve Salazar \u003canibal@debian.org\u003e"
   },
   {
+    "ID": "gzip@1.9-3",
     "Name": "gzip",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/gzip@1.9-3?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.9",
     "Release": "3",
     "Arch": "amd64",
     "SrcName": "gzip",
     "SrcVersion": "1.9",
-    "SrcRelease": "3"
+    "SrcRelease": "3",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Bdale Garbee \u003cbdale@gag.com\u003e"
   },
   {
+    "ID": "hostname@3.21",
     "Name": "hostname",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/hostname@3.21?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "3.21",
     "Arch": "amd64",
     "SrcName": "hostname",
-    "SrcVersion": "3.21"
+    "SrcVersion": "3.21",
+    "Licenses": [
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Michael Meskes \u003cmeskes@debian.org\u003e"
   },
   {
+    "ID": "init-system-helpers@1.56+nmu1",
     "Name": "init-system-helpers",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/init-system-helpers@1.56%2Bnmu1?arch=all\u0026distro=debian-10.1"
+    },
     "Version": "1.56+nmu1",
     "Arch": "all",
     "SrcName": "init-system-helpers",
-    "SrcVersion": "1.56+nmu1"
+    "SrcVersion": "1.56+nmu1",
+    "Licenses": [
+      "BSD-3-Clause",
+      "GPL-2.0-or-later",
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Debian systemd Maintainers \u003cpkg-systemd-maintainers@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "iproute2@4.20.0-2",
     "Name": "iproute2",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/iproute2@4.20.0-2?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "4.20.0",
     "Release": "2",
     "Arch": "amd64",
     "SrcName": "iproute2",
     "SrcVersion": "4.20.0",
-    "SrcRelease": "2"
+    "SrcRelease": "2",
+    "Licenses": [
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Alexander Wirt \u003cformorer@debian.org\u003e"
   },
   {
+    "ID": "iputils-ping@3:20180629-2",
     "Name": "iputils-ping",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/iputils-ping@20180629-2?arch=amd64\u0026distro=debian-10.1\u0026epoch=3"
+    },
     "Version": "20180629",
     "Release": "2",
     "Epoch": 3,
@@ -198,26 +442,54 @@
     "SrcName": "iputils",
     "SrcVersion": "20180629",
     "SrcRelease": "2",
-    "SrcEpoch": 3
+    "SrcEpoch": 3,
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Noah Meyerhans \u003cnoahm@debian.org\u003e"
   },
   {
+    "ID": "libacl1@2.2.53-4",
     "Name": "libacl1",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libacl1@2.2.53-4?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.2.53",
     "Release": "4",
     "Arch": "amd64",
     "SrcName": "acl",
     "SrcVersion": "2.2.53",
-    "SrcRelease": "4"
+    "SrcRelease": "4",
+    "Licenses": [
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-only"
+    ],
+    "Maintainer": "Guillem Jover \u003cguillem@debian.org\u003e"
   },
   {
+    "ID": "libapt-pkg5.0@1.8.2",
     "Name": "libapt-pkg5.0",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libapt-pkg5.0@1.8.2?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.8.2",
     "Arch": "amd64",
     "SrcName": "apt",
-    "SrcVersion": "1.8.2"
+    "SrcVersion": "1.8.2",
+    "Licenses": [
+      "GPL-2.0-or-later",
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "APT Development Team \u003cdeity@lists.debian.org\u003e"
   },
   {
+    "ID": "libattr1@1:2.4.48-4",
     "Name": "libattr1",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libattr1@2.4.48-4?arch=amd64\u0026distro=debian-10.1\u0026epoch=1"
+    },
     "Version": "2.4.48",
     "Release": "4",
     "Epoch": 1,
@@ -225,10 +497,21 @@
     "SrcName": "attr",
     "SrcVersion": "2.4.48",
     "SrcRelease": "4",
-    "SrcEpoch": 1
+    "SrcEpoch": 1,
+    "Licenses": [
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-only"
+    ],
+    "Maintainer": "Guillem Jover \u003cguillem@debian.org\u003e"
   },
   {
+    "ID": "libaudit-common@1:2.8.4-3",
     "Name": "libaudit-common",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libaudit-common@2.8.4-3?arch=all\u0026distro=debian-10.1\u0026epoch=1"
+    },
     "Version": "2.8.4",
     "Release": "3",
     "Epoch": 1,
@@ -236,10 +519,20 @@
     "SrcName": "audit",
     "SrcVersion": "2.8.4",
     "SrcRelease": "3",
-    "SrcEpoch": 1
+    "SrcEpoch": 1,
+    "Licenses": [
+      "GPL-2.0-only",
+      "LGPL-2.1-only",
+      "GPL-1.0-only"
+    ],
+    "Maintainer": "Laurent Bigonville \u003cbigon@debian.org\u003e"
   },
   {
+    "ID": "libaudit1@1:2.8.4-3",
     "Name": "libaudit1",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64\u0026distro=debian-10.1\u0026epoch=1"
+    },
     "Version": "2.8.4",
     "Release": "3",
     "Epoch": 1,
@@ -247,55 +540,124 @@
     "SrcName": "audit",
     "SrcVersion": "2.8.4",
     "SrcRelease": "3",
-    "SrcEpoch": 1
+    "SrcEpoch": 1,
+    "Licenses": [
+      "GPL-2.0-only",
+      "LGPL-2.1-only",
+      "GPL-1.0-only"
+    ],
+    "Maintainer": "Laurent Bigonville \u003cbigon@debian.org\u003e"
   },
   {
+    "ID": "libblkid1@2.33.1-0.1",
     "Name": "libblkid1",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libblkid1@2.33.1-0.1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.33.1",
     "Release": "0.1",
     "Arch": "amd64",
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
-    "SrcRelease": "0.1"
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
   },
   {
+    "ID": "libbz2-1.0@1.0.6-9.2~deb10u1",
     "Name": "libbz2-1.0",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libbz2-1.0@1.0.6-9.2~deb10u1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.0.6",
     "Release": "9.2~deb10u1",
     "Arch": "amd64",
     "SrcName": "bzip2",
     "SrcVersion": "1.0.6",
-    "SrcRelease": "9.2~deb10u1"
+    "SrcRelease": "9.2~deb10u1",
+    "Licenses": [
+      "BSD-3-Clause",
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Anibal Monsalve Salazar \u003canibal@debian.org\u003e"
   },
   {
+    "ID": "libc-bin@2.28-10",
     "Name": "libc-bin",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libc-bin@2.28-10?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.28",
     "Release": "10",
     "Arch": "amd64",
     "SrcName": "glibc",
     "SrcVersion": "2.28",
-    "SrcRelease": "10"
+    "SrcRelease": "10",
+    "Licenses": [
+      "LGPL-2.1-only",
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "GNU Libc Maintainers \u003cdebian-glibc@lists.debian.org\u003e"
   },
   {
+    "ID": "libc6@2.28-10",
     "Name": "libc6",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.28",
     "Release": "10",
     "Arch": "amd64",
     "SrcName": "glibc",
     "SrcVersion": "2.28",
-    "SrcRelease": "10"
+    "SrcRelease": "10",
+    "Licenses": [
+      "LGPL-2.1-only",
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "GNU Libc Maintainers \u003cdebian-glibc@lists.debian.org\u003e"
   },
   {
+    "ID": "libcap-ng0@0.7.9-2",
     "Name": "libcap-ng0",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libcap-ng0@0.7.9-2?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "0.7.9",
     "Release": "2",
     "Arch": "amd64",
     "SrcName": "libcap-ng",
     "SrcVersion": "0.7.9",
-    "SrcRelease": "2"
+    "SrcRelease": "2",
+    "Licenses": [
+      "LGPL-2.1-only",
+      "GPL-2.0-only",
+      "GPL-3.0-only"
+    ],
+    "Maintainer": "Pierre Chifflier \u003cpollux@debian.org\u003e"
   },
   {
+    "ID": "libcap2@1:2.25-2",
     "Name": "libcap2",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libcap2@2.25-2?arch=amd64\u0026distro=debian-10.1\u0026epoch=1"
+    },
     "Version": "2.25",
     "Release": "2",
     "Epoch": 1,
@@ -303,10 +665,20 @@
     "SrcName": "libcap2",
     "SrcVersion": "2.25",
     "SrcRelease": "2",
-    "SrcEpoch": 1
+    "SrcEpoch": 1,
+    "Licenses": [
+      "BSD-3-Clause",
+      "GPL-2.0-only",
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Christian Kastner \u003cckk@debian.org\u003e"
   },
   {
+    "ID": "libcap2-bin@1:2.25-2",
     "Name": "libcap2-bin",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libcap2-bin@2.25-2?arch=amd64\u0026distro=debian-10.1\u0026epoch=1"
+    },
     "Version": "2.25",
     "Release": "2",
     "Epoch": 1,
@@ -314,90 +686,178 @@
     "SrcName": "libcap2",
     "SrcVersion": "2.25",
     "SrcRelease": "2",
-    "SrcEpoch": 1
+    "SrcEpoch": 1,
+    "Licenses": [
+      "BSD-3-Clause",
+      "GPL-2.0-only",
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Christian Kastner \u003cckk@debian.org\u003e"
   },
   {
+    "ID": "libcom-err2@1.44.5-1+deb10u1",
     "Name": "libcom-err2",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libcom-err2@1.44.5-1%2Bdeb10u1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.44.5",
     "Release": "1+deb10u1",
     "Arch": "amd64",
     "SrcName": "e2fsprogs",
     "SrcVersion": "1.44.5",
-    "SrcRelease": "1+deb10u1"
+    "SrcRelease": "1+deb10u1",
+    "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e"
   },
   {
+    "ID": "libdb5.3@5.3.28+dfsg1-0.5",
     "Name": "libdb5.3",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libdb5.3@5.3.28%2Bdfsg1-0.5?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "5.3.28+dfsg1",
     "Release": "0.5",
     "Arch": "amd64",
     "SrcName": "db5.3",
     "SrcVersion": "5.3.28+dfsg1",
-    "SrcRelease": "0.5"
+    "SrcRelease": "0.5",
+    "Maintainer": "Debian Berkeley DB Team \u003cteam+bdb@tracker.debian.org\u003e"
   },
   {
+    "ID": "libdebconfclient0@0.249",
     "Name": "libdebconfclient0",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libdebconfclient0@0.249?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "0.249",
     "Arch": "amd64",
     "SrcName": "cdebconf",
-    "SrcVersion": "0.249"
+    "SrcVersion": "0.249",
+    "Maintainer": "Debian Install System Team \u003cdebian-boot@lists.debian.org\u003e"
   },
   {
+    "ID": "libelf1@0.176-1.1",
     "Name": "libelf1",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libelf1@0.176-1.1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "0.176",
     "Release": "1.1",
     "Arch": "amd64",
     "SrcName": "elfutils",
     "SrcVersion": "0.176",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0-only",
+      "GPL-3.0-only",
+      "LGPL-2.0-or-later"
+    ],
+    "Maintainer": "Kurt Roeckx \u003ckurt@roeckx.be\u003e"
   },
   {
+    "ID": "libext2fs2@1.44.5-1+deb10u1",
     "Name": "libext2fs2",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libext2fs2@1.44.5-1%2Bdeb10u1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.44.5",
     "Release": "1+deb10u1",
     "Arch": "amd64",
     "SrcName": "e2fsprogs",
     "SrcVersion": "1.44.5",
-    "SrcRelease": "1+deb10u1"
+    "SrcRelease": "1+deb10u1",
+    "Licenses": [
+      "GPL-2.0-only",
+      "LGPL-2.0-only"
+    ],
+    "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e"
   },
   {
+    "ID": "libfdisk1@2.33.1-0.1",
     "Name": "libfdisk1",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libfdisk1@2.33.1-0.1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.33.1",
     "Release": "0.1",
     "Arch": "amd64",
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
-    "SrcRelease": "0.1"
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
   },
   {
+    "ID": "libffi6@3.2.1-9",
     "Name": "libffi6",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libffi6@3.2.1-9?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "3.2.1",
     "Release": "9",
     "Arch": "amd64",
     "SrcName": "libffi",
     "SrcVersion": "3.2.1",
-    "SrcRelease": "9"
+    "SrcRelease": "9",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e"
   },
   {
+    "ID": "libgcc1@1:8.3.0-6",
     "Name": "libgcc1",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026distro=debian-10.1\u0026epoch=1"
+    },
     "Version": "8.3.0",
     "Release": "6",
     "Epoch": 1,
     "Arch": "amd64",
     "SrcName": "gcc-8",
     "SrcVersion": "8.3.0",
-    "SrcRelease": "6"
+    "SrcRelease": "6",
+    "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e"
   },
   {
+    "ID": "libgcrypt20@1.8.4-5",
     "Name": "libgcrypt20",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libgcrypt20@1.8.4-5?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.8.4",
     "Release": "5",
     "Arch": "amd64",
     "SrcName": "libgcrypt20",
     "SrcVersion": "1.8.4",
-    "SrcRelease": "5"
+    "SrcRelease": "5",
+    "Licenses": [
+      "LGPL-2.0-or-later",
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "libgmp10@2:6.1.2+dfsg-4",
     "Name": "libgmp10",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libgmp10@6.1.2%2Bdfsg-4?arch=amd64\u0026distro=debian-10.1\u0026epoch=2"
+    },
     "Version": "6.1.2+dfsg",
     "Release": "4",
     "Epoch": 2,
@@ -405,145 +865,335 @@
     "SrcName": "gmp",
     "SrcVersion": "6.1.2+dfsg",
     "SrcRelease": "4",
-    "SrcEpoch": 2
+    "SrcEpoch": 2,
+    "Licenses": [
+      "LGPL-3.0-only",
+      "GPL-2.0-only",
+      "GPL-3.0-only",
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Debian Science Team \u003cdebian-science-maintainers@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "libgnutls30@3.6.7-4",
     "Name": "libgnutls30",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libgnutls30@3.6.7-4?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "3.6.7",
     "Release": "4",
     "Arch": "amd64",
     "SrcName": "gnutls28",
     "SrcVersion": "3.6.7",
-    "SrcRelease": "4"
+    "SrcRelease": "4",
+    "Licenses": [
+      "LGPL-2.1-only",
+      "LGPL-2.0-or-later",
+      "LGPL-3.0-only",
+      "GPL-2.0-or-later",
+      "GPL-3.0-only",
+      "GFDL-1.3-only",
+      "CC0-1.0",
+      "MIT",
+      "LGPL-3.0-or-later",
+      "Apache-2.0",
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "libgpg-error0@1.35-1",
     "Name": "libgpg-error0",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libgpg-error0@1.35-1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.35",
     "Release": "1",
     "Arch": "amd64",
     "SrcName": "libgpg-error",
     "SrcVersion": "1.35",
-    "SrcRelease": "1"
+    "SrcRelease": "1",
+    "Licenses": [
+      "LGPL-2.1-or-later",
+      "BSD-3-Clause",
+      "g10-permissive",
+      "GPL-3.0-or-later",
+      "LGPL-2.1-only",
+      "GPL-3.0-only"
+    ],
+    "Maintainer": "Debian GnuPG Maintainers \u003cpkg-gnupg-maint@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "libhogweed4@3.4.1-1",
     "Name": "libhogweed4",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libhogweed4@3.4.1-1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "3.4.1",
     "Release": "1",
     "Arch": "amd64",
     "SrcName": "nettle",
     "SrcVersion": "3.4.1",
-    "SrcRelease": "1"
+    "SrcRelease": "1",
+    "Maintainer": "Magnus Holmgren \u003cholmgren@debian.org\u003e"
   },
   {
+    "ID": "libidn2-0@2.0.5-1",
     "Name": "libidn2-0",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libidn2-0@2.0.5-1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.0.5",
     "Release": "1",
     "Arch": "amd64",
     "SrcName": "libidn2",
     "SrcVersion": "2.0.5",
-    "SrcRelease": "1"
+    "SrcRelease": "1",
+    "Licenses": [
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-2.0-or-later",
+      "Unicode",
+      "GPL-3.0-only",
+      "GPL-2.0-only",
+      "LGPL-3.0-only"
+    ],
+    "Maintainer": "Debian Libidn team \u003chelp-libidn@gnu.org\u003e"
   },
   {
+    "ID": "liblz4-1@1.8.3-1",
     "Name": "liblz4-1",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/liblz4-1@1.8.3-1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.8.3",
     "Release": "1",
     "Arch": "amd64",
     "SrcName": "lz4",
     "SrcVersion": "1.8.3",
-    "SrcRelease": "1"
+    "SrcRelease": "1",
+    "Licenses": [
+      "BSD-2-Clause",
+      "GPL-2.0-or-later",
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Nobuhiro Iwamatsu \u003ciwamatsu@debian.org\u003e"
   },
   {
+    "ID": "liblzma5@5.2.4-1",
     "Name": "liblzma5",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/liblzma5@5.2.4-1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "5.2.4",
     "Release": "1",
     "Arch": "amd64",
     "SrcName": "xz-utils",
     "SrcVersion": "5.2.4",
-    "SrcRelease": "1"
+    "SrcRelease": "1",
+    "Licenses": [
+      "PD",
+      "probably-PD",
+      "GPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "permissive-fsf",
+      "Autoconf",
+      "permissive-nowarranty",
+      "GPL-2.0-only",
+      "none",
+      "config-h",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "noderivs",
+      "PD-debian",
+      "GPL-3.0-only"
+    ],
+    "Maintainer": "Jonathan Nieder \u003cjrnieder@gmail.com\u003e"
   },
   {
+    "ID": "libmnl0@1.0.4-2",
     "Name": "libmnl0",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libmnl0@1.0.4-2?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.0.4",
     "Release": "2",
     "Arch": "amd64",
     "SrcName": "libmnl",
     "SrcVersion": "1.0.4",
-    "SrcRelease": "2"
+    "SrcRelease": "2",
+    "Licenses": [
+      "LGPL-2.1-only",
+      "GPL-2.0-or-later",
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Anibal Monsalve Salazar \u003canibal@debian.org\u003e"
   },
   {
+    "ID": "libmount1@2.33.1-0.1",
     "Name": "libmount1",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libmount1@2.33.1-0.1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.33.1",
     "Release": "0.1",
     "Arch": "amd64",
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
-    "SrcRelease": "0.1"
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
   },
   {
+    "ID": "libncursesw6@6.1+20181013-2+deb10u1",
     "Name": "libncursesw6",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libncursesw6@6.1%2B20181013-2%2Bdeb10u1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "6.1+20181013",
     "Release": "2+deb10u1",
     "Arch": "amd64",
     "SrcName": "ncurses",
     "SrcVersion": "6.1+20181013",
-    "SrcRelease": "2+deb10u1"
+    "SrcRelease": "2+deb10u1",
+    "Maintainer": "Craig Small \u003ccsmall@debian.org\u003e"
   },
   {
+    "ID": "libnettle6@3.4.1-1",
     "Name": "libnettle6",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libnettle6@3.4.1-1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "3.4.1",
     "Release": "1",
     "Arch": "amd64",
     "SrcName": "nettle",
     "SrcVersion": "3.4.1",
-    "SrcRelease": "1"
+    "SrcRelease": "1",
+    "Licenses": [
+      "LGPL-2.1-or-later",
+      "LGPL-2.0-or-later",
+      "LGPL-2.0-only",
+      "other",
+      "GPL-2.0-or-later",
+      "GPL-2.0-with-autoconf-exception+",
+      "public-domain",
+      "GPL-2.0-only",
+      "GAP"
+    ],
+    "Maintainer": "Magnus Holmgren \u003cholmgren@debian.org\u003e"
   },
   {
+    "ID": "libp11-kit0@0.23.15-2",
     "Name": "libp11-kit0",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libp11-kit0@0.23.15-2?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "0.23.15",
     "Release": "2",
     "Arch": "amd64",
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.15",
-    "SrcRelease": "2"
+    "SrcRelease": "2",
+    "Licenses": [
+      "BSD-3-Clause",
+      "permissive-like-automake-output",
+      "ISC",
+      "ISC+IBM",
+      "same-as-rest-of-p11kit"
+    ],
+    "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "libpam-modules@1.3.1-5",
     "Name": "libpam-modules",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libpam-modules@1.3.1-5?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.3.1",
     "Release": "5",
     "Arch": "amd64",
     "SrcName": "pam",
     "SrcVersion": "1.3.1",
-    "SrcRelease": "5"
+    "SrcRelease": "5",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e"
   },
   {
+    "ID": "libpam-modules-bin@1.3.1-5",
     "Name": "libpam-modules-bin",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libpam-modules-bin@1.3.1-5?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.3.1",
     "Release": "5",
     "Arch": "amd64",
     "SrcName": "pam",
     "SrcVersion": "1.3.1",
-    "SrcRelease": "5"
+    "SrcRelease": "5",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e"
   },
   {
+    "ID": "libpam-runtime@1.3.1-5",
     "Name": "libpam-runtime",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libpam-runtime@1.3.1-5?arch=all\u0026distro=debian-10.1"
+    },
     "Version": "1.3.1",
     "Release": "5",
     "Arch": "all",
     "SrcName": "pam",
     "SrcVersion": "1.3.1",
-    "SrcRelease": "5"
+    "SrcRelease": "5",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e"
   },
   {
+    "ID": "libpam0g@1.3.1-5",
     "Name": "libpam0g",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libpam0g@1.3.1-5?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.3.1",
     "Release": "5",
     "Arch": "amd64",
     "SrcName": "pam",
     "SrcVersion": "1.3.1",
-    "SrcRelease": "5"
+    "SrcRelease": "5",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e"
   },
   {
+    "ID": "libpcre3@2:8.39-12",
     "Name": "libpcre3",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libpcre3@8.39-12?arch=amd64\u0026distro=debian-10.1\u0026epoch=2"
+    },
     "Version": "8.39",
     "Release": "12",
     "Epoch": 2,
@@ -551,154 +1201,342 @@
     "SrcName": "pcre3",
     "SrcVersion": "8.39",
     "SrcRelease": "12",
-    "SrcEpoch": 2
+    "SrcEpoch": 2,
+    "Maintainer": "Matthew Vernon \u003cmatthew@debian.org\u003e"
   },
   {
+    "ID": "libseccomp2@2.3.3-4",
     "Name": "libseccomp2",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libseccomp2@2.3.3-4?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.3.3",
     "Release": "4",
     "Arch": "amd64",
     "SrcName": "libseccomp",
     "SrcVersion": "2.3.3",
-    "SrcRelease": "4"
+    "SrcRelease": "4",
+    "Licenses": [
+      "LGPL-2.1-only"
+    ],
+    "Maintainer": "Kees Cook \u003ckees@debian.org\u003e"
   },
   {
+    "ID": "libselinux1@2.8-1+b1",
     "Name": "libselinux1",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libselinux1@2.8-1%2Bb1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.8",
     "Release": "1+b1",
     "Arch": "amd64",
     "SrcName": "libselinux",
     "SrcVersion": "2.8",
-    "SrcRelease": "1"
+    "SrcRelease": "1",
+    "Licenses": [
+      "LGPL-2.1-only",
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "libsemanage-common@2.8-2",
     "Name": "libsemanage-common",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libsemanage-common@2.8-2?arch=all\u0026distro=debian-10.1"
+    },
     "Version": "2.8",
     "Release": "2",
     "Arch": "all",
     "SrcName": "libsemanage",
     "SrcVersion": "2.8",
-    "SrcRelease": "2"
+    "SrcRelease": "2",
+    "Licenses": [
+      "LGPL-2.0-or-later",
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "libsemanage1@2.8-2",
     "Name": "libsemanage1",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libsemanage1@2.8-2?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.8",
     "Release": "2",
     "Arch": "amd64",
     "SrcName": "libsemanage",
     "SrcVersion": "2.8",
-    "SrcRelease": "2"
+    "SrcRelease": "2",
+    "Licenses": [
+      "LGPL-2.0-or-later",
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "libsepol1@2.8-1",
     "Name": "libsepol1",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libsepol1@2.8-1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.8",
     "Release": "1",
     "Arch": "amd64",
     "SrcName": "libsepol",
     "SrcVersion": "2.8",
-    "SrcRelease": "1"
+    "SrcRelease": "1",
+    "Licenses": [
+      "LGPL-2.0-or-later",
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "libsmartcols1@2.33.1-0.1",
     "Name": "libsmartcols1",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libsmartcols1@2.33.1-0.1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.33.1",
     "Release": "0.1",
     "Arch": "amd64",
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
-    "SrcRelease": "0.1"
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
   },
   {
+    "ID": "libss2@1.44.5-1+deb10u1",
     "Name": "libss2",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libss2@1.44.5-1%2Bdeb10u1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.44.5",
     "Release": "1+deb10u1",
     "Arch": "amd64",
     "SrcName": "e2fsprogs",
     "SrcVersion": "1.44.5",
-    "SrcRelease": "1+deb10u1"
+    "SrcRelease": "1+deb10u1",
+    "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e"
   },
   {
+    "ID": "libstdc++6@8.3.0-6",
     "Name": "libstdc++6",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libstdc%2B%2B6@8.3.0-6?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "8.3.0",
     "Release": "6",
     "Arch": "amd64",
     "SrcName": "gcc-8",
     "SrcVersion": "8.3.0",
-    "SrcRelease": "6"
+    "SrcRelease": "6",
+    "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e"
   },
   {
+    "ID": "libsystemd0@241-7~deb10u1",
     "Name": "libsystemd0",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libsystemd0@241-7~deb10u1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "241",
     "Release": "7~deb10u1",
     "Arch": "amd64",
     "SrcName": "systemd",
     "SrcVersion": "241",
-    "SrcRelease": "7~deb10u1"
+    "SrcRelease": "7~deb10u1",
+    "Licenses": [
+      "LGPL-2.1-or-later",
+      "CC0-1.0",
+      "GPL-2.0-only",
+      "GPL-2.0-or-later",
+      "MIT",
+      "public-domain",
+      "LGPL-2.1-only"
+    ],
+    "Maintainer": "Debian systemd Maintainers \u003cpkg-systemd-maintainers@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "libtasn1-6@4.13-3",
     "Name": "libtasn1-6",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libtasn1-6@4.13-3?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "4.13",
     "Release": "3",
     "Arch": "amd64",
     "SrcName": "libtasn1-6",
     "SrcVersion": "4.13",
-    "SrcRelease": "3"
+    "SrcRelease": "3",
+    "Licenses": [
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-only",
+      "GPL-3.0-only",
+      "GFDL-1.3-only"
+    ],
+    "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "libtinfo6@6.1+20181013-2+deb10u1",
     "Name": "libtinfo6",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libtinfo6@6.1%2B20181013-2%2Bdeb10u1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "6.1+20181013",
     "Release": "2+deb10u1",
     "Arch": "amd64",
     "SrcName": "ncurses",
     "SrcVersion": "6.1+20181013",
-    "SrcRelease": "2+deb10u1"
+    "SrcRelease": "2+deb10u1",
+    "Maintainer": "Craig Small \u003ccsmall@debian.org\u003e"
   },
   {
+    "ID": "libudev1@241-7~deb10u1",
     "Name": "libudev1",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libudev1@241-7~deb10u1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "241",
     "Release": "7~deb10u1",
     "Arch": "amd64",
     "SrcName": "systemd",
     "SrcVersion": "241",
-    "SrcRelease": "7~deb10u1"
+    "SrcRelease": "7~deb10u1",
+    "Licenses": [
+      "LGPL-2.1-or-later",
+      "CC0-1.0",
+      "GPL-2.0-only",
+      "GPL-2.0-or-later",
+      "MIT",
+      "public-domain",
+      "LGPL-2.1-only"
+    ],
+    "Maintainer": "Debian systemd Maintainers \u003cpkg-systemd-maintainers@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "libunistring2@0.9.10-1",
     "Name": "libunistring2",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libunistring2@0.9.10-1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "0.9.10",
     "Release": "1",
     "Arch": "amd64",
     "SrcName": "libunistring",
     "SrcVersion": "0.9.10",
-    "SrcRelease": "1"
+    "SrcRelease": "1",
+    "Licenses": [
+      "LGPL-3.0-or-later",
+      "GPL-2.0-or-later",
+      "FreeSoftware",
+      "GPL-2+ with distribution exception",
+      "GPL-3.0-or-later",
+      "GFDL-1.2-or-later",
+      "MIT",
+      "LGPL-3.0-only",
+      "GPL-3.0-only",
+      "GPL-2.0-only",
+      "GFDL-1.2-only"
+    ],
+    "Maintainer": "Jörg Frings-Fürst \u003cdebian@jff.email\u003e"
   },
   {
+    "ID": "libuuid1@2.33.1-0.1",
     "Name": "libuuid1",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libuuid1@2.33.1-0.1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.33.1",
     "Release": "0.1",
     "Arch": "amd64",
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
-    "SrcRelease": "0.1"
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
   },
   {
+    "ID": "libxtables12@1.8.2-4",
     "Name": "libxtables12",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libxtables12@1.8.2-4?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.8.2",
     "Release": "4",
     "Arch": "amd64",
     "SrcName": "iptables",
     "SrcVersion": "1.8.2",
-    "SrcRelease": "4"
+    "SrcRelease": "4",
+    "Licenses": [
+      "GPL-2.0-only",
+      "Artistic-2",
+      "GPL-2.0-or-later",
+      "custom"
+    ],
+    "Maintainer": "Debian Netfilter Packaging Team \u003cpkg-netfilter-team@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "libzstd1@1.3.8+dfsg-3",
     "Name": "libzstd1",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/libzstd1@1.3.8%2Bdfsg-3?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.3.8+dfsg",
     "Release": "3",
     "Arch": "amd64",
     "SrcName": "libzstd",
     "SrcVersion": "1.3.8+dfsg",
-    "SrcRelease": "3"
+    "SrcRelease": "3",
+    "Licenses": [
+      "BSD-3-Clause",
+      "GPL-2.0-only",
+      "Zlib",
+      "GPL-2.0-or-later",
+      "MIT"
+    ],
+    "Maintainer": "Debian Med Packaging Team \u003cdebian-med-packaging@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "login@1:4.5-1.1",
     "Name": "login",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/login@4.5-1.1?arch=amd64\u0026distro=debian-10.1\u0026epoch=1"
+    },
     "Version": "4.5",
     "Release": "1.1",
     "Epoch": 1,
@@ -706,46 +1544,94 @@
     "SrcName": "shadow",
     "SrcVersion": "4.5",
     "SrcRelease": "1.1",
-    "SrcEpoch": 1
+    "SrcEpoch": 1,
+    "Licenses": [
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Shadow package maintainers \u003cpkg-shadow-devel@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "mawk@1.3.3-17+b3",
     "Name": "mawk",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/mawk@1.3.3-17%2Bb3?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.3.3",
     "Release": "17+b3",
     "Arch": "amd64",
     "SrcName": "mawk",
     "SrcVersion": "1.3.3",
-    "SrcRelease": "17"
+    "SrcRelease": "17",
+    "Licenses": [
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e"
   },
   {
+    "ID": "mount@2.33.1-0.1",
     "Name": "mount",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/mount@2.33.1-0.1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.33.1",
     "Release": "0.1",
     "Arch": "amd64",
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
-    "SrcRelease": "0.1"
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
   },
   {
+    "ID": "ncurses-base@6.1+20181013-2+deb10u1",
     "Name": "ncurses-base",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/ncurses-base@6.1%2B20181013-2%2Bdeb10u1?arch=all\u0026distro=debian-10.1"
+    },
     "Version": "6.1+20181013",
     "Release": "2+deb10u1",
     "Arch": "all",
     "SrcName": "ncurses",
     "SrcVersion": "6.1+20181013",
-    "SrcRelease": "2+deb10u1"
+    "SrcRelease": "2+deb10u1",
+    "Maintainer": "Craig Small \u003ccsmall@debian.org\u003e"
   },
   {
+    "ID": "ncurses-bin@6.1+20181013-2+deb10u1",
     "Name": "ncurses-bin",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/ncurses-bin@6.1%2B20181013-2%2Bdeb10u1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "6.1+20181013",
     "Release": "2+deb10u1",
     "Arch": "amd64",
     "SrcName": "ncurses",
     "SrcVersion": "6.1+20181013",
-    "SrcRelease": "2+deb10u1"
+    "SrcRelease": "2+deb10u1",
+    "Maintainer": "Craig Small \u003ccsmall@debian.org\u003e"
   },
   {
+    "ID": "passwd@1:4.5-1.1",
     "Name": "passwd",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/passwd@4.5-1.1?arch=amd64\u0026distro=debian-10.1\u0026epoch=1"
+    },
     "Version": "4.5",
     "Release": "1.1",
     "Epoch": 1,
@@ -753,64 +1639,130 @@
     "SrcName": "shadow",
     "SrcVersion": "4.5",
     "SrcRelease": "1.1",
-    "SrcEpoch": 1
+    "SrcEpoch": 1,
+    "Licenses": [
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Shadow package maintainers \u003cpkg-shadow-devel@lists.alioth.debian.org\u003e"
   },
   {
+    "ID": "perl-base@5.28.1-6",
     "Name": "perl-base",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/perl-base@5.28.1-6?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "5.28.1",
     "Release": "6",
     "Arch": "amd64",
     "SrcName": "perl",
     "SrcVersion": "5.28.1",
-    "SrcRelease": "6"
+    "SrcRelease": "6",
+    "Maintainer": "Niko Tyni \u003cntyni@debian.org\u003e"
   },
   {
+    "ID": "sed@4.7-1",
     "Name": "sed",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/sed@4.7-1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "4.7",
     "Release": "1",
     "Arch": "amd64",
     "SrcName": "sed",
     "SrcVersion": "4.7",
-    "SrcRelease": "1"
+    "SrcRelease": "1",
+    "Licenses": [
+      "GPL-3.0-only"
+    ],
+    "Maintainer": "Clint Adams \u003cclint@debian.org\u003e"
   },
   {
+    "ID": "sysvinit-utils@2.93-8",
     "Name": "sysvinit-utils",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/sysvinit-utils@2.93-8?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.93",
     "Release": "8",
     "Arch": "amd64",
     "SrcName": "sysvinit",
     "SrcVersion": "2.93",
-    "SrcRelease": "8"
+    "SrcRelease": "8",
+    "Licenses": [
+      "GPL-2.0-or-later",
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Debian sysvinit maintainers \u003cdebian-init-diversity@chiark.greenend.org.uk\u003e"
   },
   {
+    "ID": "tar@1.30+dfsg-6",
     "Name": "tar",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/tar@1.30%2Bdfsg-6?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "1.30+dfsg",
     "Release": "6",
     "Arch": "amd64",
     "SrcName": "tar",
     "SrcVersion": "1.30+dfsg",
-    "SrcRelease": "6"
+    "SrcRelease": "6",
+    "Licenses": [
+      "GPL-3.0-only",
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Bdale Garbee \u003cbdale@gag.com\u003e"
   },
   {
+    "ID": "tzdata@2019b-0+deb10u1",
     "Name": "tzdata",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/tzdata@2019b-0%2Bdeb10u1?arch=all\u0026distro=debian-10.1"
+    },
     "Version": "2019b",
     "Release": "0+deb10u1",
     "Arch": "all",
     "SrcName": "tzdata",
     "SrcVersion": "2019b",
-    "SrcRelease": "0+deb10u1"
+    "SrcRelease": "0+deb10u1",
+    "Maintainer": "GNU Libc Maintainers \u003cdebian-glibc@lists.debian.org\u003e"
   },
   {
+    "ID": "util-linux@2.33.1-0.1",
     "Name": "util-linux",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/util-linux@2.33.1-0.1?arch=amd64\u0026distro=debian-10.1"
+    },
     "Version": "2.33.1",
     "Release": "0.1",
     "Arch": "amd64",
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
-    "SrcRelease": "0.1"
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
   },
   {
+    "ID": "zlib1g@1:1.2.11.dfsg-1",
     "Name": "zlib1g",
+    "Identifier": {
+      "PURL": "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64\u0026distro=debian-10.1\u0026epoch=1"
+    },
     "Version": "1.2.11.dfsg",
     "Release": "1",
     "Epoch": 1,
@@ -818,6 +1770,10 @@
     "SrcName": "zlib",
     "SrcVersion": "1.2.11.dfsg",
     "SrcRelease": "1",
-    "SrcEpoch": 1
+    "SrcEpoch": 1,
+    "Licenses": [
+      "Zlib"
+    ],
+    "Maintainer": "Mark Brown \u003cbroonie@debian.org\u003e"
   }
 ]

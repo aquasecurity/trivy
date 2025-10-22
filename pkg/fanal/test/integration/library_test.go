@@ -23,9 +23,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
+	_ "modernc.org/sqlite"
+
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
-	_ "modernc.org/sqlite"
 )
 
 var update = flag.Bool("update", false, "update golden files")
@@ -229,15 +230,13 @@ func commonChecks(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 }
 
 // clearPackageDetailFields clears package detail fields to keep golden files manageable.
-// Only Name and Version are actually compared in tests.
+// Fields cleared: Identifier.UID, Layer, InstalledFiles, DependsOn, Digest
+// Fields kept for comparison: ID, Name, Version, Epoch, Release, Arch, SrcName, SrcEpoch, SrcVersion, SrcRelease, Licenses, Maintainer, Modularitylabel, Indirect, Identifier.PURL, Identifier.BOMRef
 func clearPackageDetailFields(packages []types.Package) {
 	for i := range packages {
-		packages[i].ID = ""
-		packages[i].Identifier = types.PkgIdentifier{}
+		packages[i].Identifier.UID = "" // Clear UID but keep PURL and BOMRef
 		packages[i].Layer = types.Layer{}
 		packages[i].InstalledFiles = nil
-		packages[i].Licenses = nil
-		packages[i].Maintainer = ""
 		packages[i].DependsOn = nil
 		packages[i].Digest = ""
 	}
@@ -248,9 +247,9 @@ func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	sort.Sort(detail.Packages)
 
 	// Clear package detail fields to keep golden files manageable in size.
-	// Only Name and Version are compared in fanal tests.
-	// Other fields (ID, Identifier, Layer, InstalledFiles, Licenses, Maintainer, DependsOn, Digest)
-	// are validated in Trivy's integration tests instead.
+	// Cleared fields: Identifier.UID, Layer, InstalledFiles, DependsOn, Digest
+	// These fields are either too large (InstalledFiles, Layer) or not critical for comparison (UID, Digest, DependsOn).
+	// All other fields including ID, Name, Version, Licenses, Maintainer, etc. are compared.
 	clearPackageDetailFields(detail.Packages)
 
 	goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", tc.imageTag)
@@ -269,14 +268,10 @@ func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	err = json.Unmarshal(data, &expectedPkgs)
 	require.NoError(t, err)
 
-	require.Len(t, expectedPkgs, len(detail.Packages), tc.name)
-	sort.Slice(expectedPkgs, func(i, j int) bool { return expectedPkgs[i].Name < expectedPkgs[j].Name })
 	sort.Sort(detail.Packages)
+	sort.Slice(expectedPkgs, func(i, j int) bool { return expectedPkgs[i].Name < expectedPkgs[j].Name })
 
-	for i := 0; i < len(expectedPkgs); i++ {
-		require.Equal(t, expectedPkgs[i].Name, detail.Packages[i].Name, tc.name)
-		require.Equal(t, expectedPkgs[i].Version, detail.Packages[i].Version, tc.name)
-	}
+	assert.Equal(t, expectedPkgs, detail.Packages, tc.name)
 }
 
 func checkLangPkgs(detail types.ArtifactDetail, t *testing.T, tc testCase) {

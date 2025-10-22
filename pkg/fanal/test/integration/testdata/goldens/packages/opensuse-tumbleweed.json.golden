@@ -1,1130 +1,2136 @@
 [
   {
+    "ID": "aaa_base@84.87+git20240523.10a5692-1.1.x86_64",
     "Name": "aaa_base",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/aaa_base@84.87%2Bgit20240523.10a5692-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "84.87+git20240523.10a5692",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "aaa_base",
     "SrcVersion": "84.87+git20240523.10a5692",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "bash@5.2.26-12.1.x86_64",
     "Name": "bash",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/bash@5.2.26-12.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "5.2.26",
     "Release": "12.1",
     "Arch": "x86_64",
     "SrcName": "bash",
     "SrcVersion": "5.2.26",
-    "SrcRelease": "12.1"
+    "SrcRelease": "12.1",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "bash-sh@5.2.26-12.1.noarch",
     "Name": "bash-sh",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/bash-sh@5.2.26-12.1?arch=noarch\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "5.2.26",
     "Release": "12.1",
     "Arch": "noarch",
     "SrcName": "bash",
     "SrcVersion": "5.2.26",
-    "SrcRelease": "12.1"
+    "SrcRelease": "12.1",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "boost-license1_85_0@1.85.0-1.2.noarch",
     "Name": "boost-license1_85_0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/boost-license1_85_0@1.85.0-1.2?arch=noarch\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.85.0",
     "Release": "1.2",
     "Arch": "noarch",
     "SrcName": "boost-base",
     "SrcVersion": "1.85.0",
-    "SrcRelease": "1.2"
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "BSL-1.0"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "branding-openSUSE@84.87.20240405-1.2.noarch",
     "Name": "branding-openSUSE",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/branding-openSUSE@84.87.20240405-1.2?arch=noarch\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "84.87.20240405",
     "Release": "1.2",
     "Arch": "noarch",
     "SrcName": "branding-openSUSE",
     "SrcVersion": "84.87.20240405",
-    "SrcRelease": "1.2"
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "BSD-3-Clause AND CC-BY-SA-3.0 AND GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "ca-certificates@2+git20240415.3fe9324-1.1.noarch",
     "Name": "ca-certificates",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/ca-certificates@2%2Bgit20240415.3fe9324-1.1?arch=noarch\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2+git20240415.3fe9324",
     "Release": "1.1",
     "Arch": "noarch",
     "SrcName": "ca-certificates",
     "SrcVersion": "2+git20240415.3fe9324",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "ca-certificates-mozilla@2.66-1.2.noarch",
     "Name": "ca-certificates-mozilla",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/ca-certificates-mozilla@2.66-1.2?arch=noarch\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.66",
     "Release": "1.2",
     "Arch": "noarch",
     "SrcName": "ca-certificates-mozilla",
     "SrcVersion": "2.66",
-    "SrcRelease": "1.2"
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "MPL-2.0"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "coreutils@9.5-1.1.x86_64",
     "Name": "coreutils",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/coreutils@9.5-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "9.5",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "coreutils",
     "SrcVersion": "9.5",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "cracklib-dict-small@2.9.11-1.4.x86_64",
     "Name": "cracklib-dict-small",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/cracklib-dict-small@2.9.11-1.4?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.9.11",
     "Release": "1.4",
     "Arch": "x86_64",
     "SrcName": "cracklib",
     "SrcVersion": "2.9.11",
-    "SrcRelease": "1.4"
+    "SrcRelease": "1.4",
+    "Licenses": [
+      "LGPL-2.1-only"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "crypto-policies@20230920.570ea89-3.2.noarch",
     "Name": "crypto-policies",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/crypto-policies@20230920.570ea89-3.2?arch=noarch\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "20230920.570ea89",
     "Release": "3.2",
     "Arch": "noarch",
     "SrcName": "crypto-policies",
     "SrcVersion": "20230920.570ea89",
-    "SrcRelease": "3.2"
+    "SrcRelease": "3.2",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "curl@8.8.0-1.1.x86_64",
     "Name": "curl",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/curl@8.8.0-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "8.8.0",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "curl",
     "SrcVersion": "8.8.0",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "curl"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "file-magic@5.45-2.2.noarch",
     "Name": "file-magic",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/file-magic@5.45-2.2?arch=noarch\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "5.45",
     "Release": "2.2",
     "Arch": "noarch",
     "SrcName": "file",
     "SrcVersion": "5.45",
-    "SrcRelease": "2.2"
+    "SrcRelease": "2.2",
+    "Licenses": [
+      "BSD-2-Clause"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "filesystem@84.87-15.3.x86_64",
     "Name": "filesystem",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/filesystem@84.87-15.3?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "84.87",
     "Release": "15.3",
     "Arch": "x86_64",
     "SrcName": "filesystem",
     "SrcVersion": "84.87",
-    "SrcRelease": "15.3"
+    "SrcRelease": "15.3",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "fillup@1.42-281.1.x86_64",
     "Name": "fillup",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/fillup@1.42-281.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.42",
     "Release": "281.1",
     "Arch": "x86_64",
     "SrcName": "fillup",
     "SrcVersion": "1.42",
-    "SrcRelease": "281.1"
+    "SrcRelease": "281.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "glibc@2.39-9.1.x86_64",
     "Name": "glibc",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/glibc@2.39-9.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.39",
     "Release": "9.1",
     "Arch": "x86_64",
     "SrcName": "glibc",
     "SrcVersion": "2.39",
-    "SrcRelease": "9.1"
+    "SrcRelease": "9.1",
+    "Licenses": [
+      "GPL-2.0-or-later AND LGPL-2.1-or-later AND LGPL-2.1-or-later WITH GCC-exception-2.0"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "glibc-locale-base@2.39-9.1.x86_64",
     "Name": "glibc-locale-base",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/glibc-locale-base@2.39-9.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.39",
     "Release": "9.1",
     "Arch": "x86_64",
     "SrcName": "glibc",
     "SrcVersion": "2.39",
-    "SrcRelease": "9.1"
+    "SrcRelease": "9.1",
+    "Licenses": [
+      "GPL-2.0-or-later AND MIT AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "gpg-pubkey@29b700a4-62b07e22.",
     "Name": "gpg-pubkey",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/gpg-pubkey@29b700a4-62b07e22?arch=None\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "29b700a4",
     "Release": "62b07e22",
-    "Arch": "None"
+    "Arch": "None",
+    "Licenses": [
+      "pubkey"
+    ]
   },
   {
+    "ID": "gpg-pubkey@39db7c82-510a966b.",
     "Name": "gpg-pubkey",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/gpg-pubkey@39db7c82-510a966b?arch=None\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "39db7c82",
     "Release": "510a966b",
-    "Arch": "None"
+    "Arch": "None",
+    "Licenses": [
+      "pubkey"
+    ]
   },
   {
+    "ID": "gpg2@2.4.5-1.1.x86_64",
     "Name": "gpg2",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/gpg2@2.4.5-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.4.5",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "gpg2",
     "SrcVersion": "2.4.5",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "grep@3.11-3.1.x86_64",
     "Name": "grep",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/grep@3.11-3.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "3.11",
     "Release": "3.1",
     "Arch": "x86_64",
     "SrcName": "grep",
     "SrcVersion": "3.11",
-    "SrcRelease": "3.1"
+    "SrcRelease": "3.1",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "gzip@1.13-3.1.x86_64",
     "Name": "gzip",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/gzip@1.13-3.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.13",
     "Release": "3.1",
     "Arch": "x86_64",
     "SrcName": "gzip",
     "SrcVersion": "1.13",
-    "SrcRelease": "3.1"
+    "SrcRelease": "3.1",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "krb5@1.21.2-5.1.x86_64",
     "Name": "krb5",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/krb5@1.21.2-5.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.21.2",
     "Release": "5.1",
     "Arch": "x86_64",
     "SrcName": "krb5",
     "SrcVersion": "1.21.2",
-    "SrcRelease": "5.1"
+    "SrcRelease": "5.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libabsl_lite_2401_0_0@20240116.2-2.1.x86_64",
     "Name": "libabsl_lite_2401_0_0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libabsl_lite_2401_0_0@20240116.2-2.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "20240116.2",
     "Release": "2.1",
     "Arch": "x86_64",
     "SrcName": "abseil-cpp",
     "SrcVersion": "20240116.2",
-    "SrcRelease": "2.1"
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "Apache-2.0"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libacl1@2.3.2-2.1.x86_64",
     "Name": "libacl1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libacl1@2.3.2-2.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.3.2",
     "Release": "2.1",
     "Arch": "x86_64",
     "SrcName": "acl",
     "SrcVersion": "2.3.2",
-    "SrcRelease": "2.1"
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "GPL-2.0-or-later AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libassuan0@2.5.7-1.1.x86_64",
     "Name": "libassuan0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libassuan0@2.5.7-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.5.7",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "libassuan",
     "SrcVersion": "2.5.7",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-3.0-or-later AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libattr1@2.5.2-1.2.x86_64",
     "Name": "libattr1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libattr1@2.5.2-1.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.5.2",
     "Release": "1.2",
     "Arch": "x86_64",
     "SrcName": "attr",
     "SrcVersion": "2.5.2",
-    "SrcRelease": "1.2"
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "GPL-2.0-or-later AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libaudit1@3.1.1-1.6.x86_64",
     "Name": "libaudit1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libaudit1@3.1.1-1.6?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "3.1.1",
     "Release": "1.6",
     "Arch": "x86_64",
     "SrcName": "audit",
     "SrcVersion": "3.1.1",
-    "SrcRelease": "1.6"
+    "SrcRelease": "1.6",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libaugeas0@1.14.1-1.3.x86_64",
     "Name": "libaugeas0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libaugeas0@1.14.1-1.3?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.14.1",
     "Release": "1.3",
     "Arch": "x86_64",
     "SrcName": "augeas",
     "SrcVersion": "1.14.1",
-    "SrcRelease": "1.3"
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libblkid1@2.40.1-2.1.x86_64",
     "Name": "libblkid1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libblkid1@2.40.1-2.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.40.1",
     "Release": "2.1",
     "Arch": "x86_64",
     "SrcName": "util-linux",
     "SrcVersion": "2.40.1",
-    "SrcRelease": "2.1"
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libboost_thread1_85_0@1.85.0-1.2.x86_64",
     "Name": "libboost_thread1_85_0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libboost_thread1_85_0@1.85.0-1.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.85.0",
     "Release": "1.2",
     "Arch": "x86_64",
     "SrcName": "boost-base",
     "SrcVersion": "1.85.0",
-    "SrcRelease": "1.2"
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "BSL-1.0"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libbrotlicommon1@1.1.0-1.3.x86_64",
     "Name": "libbrotlicommon1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libbrotlicommon1@1.1.0-1.3?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.1.0",
     "Release": "1.3",
     "Arch": "x86_64",
     "SrcName": "brotli",
     "SrcVersion": "1.1.0",
-    "SrcRelease": "1.3"
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libbrotlidec1@1.1.0-1.3.x86_64",
     "Name": "libbrotlidec1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libbrotlidec1@1.1.0-1.3?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.1.0",
     "Release": "1.3",
     "Arch": "x86_64",
     "SrcName": "brotli",
     "SrcVersion": "1.1.0",
-    "SrcRelease": "1.3"
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libbz2-1@1.0.8-5.10.x86_64",
     "Name": "libbz2-1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libbz2-1@1.0.8-5.10?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.0.8",
     "Release": "5.10",
     "Arch": "x86_64",
     "SrcName": "bzip2",
     "SrcVersion": "1.0.8",
-    "SrcRelease": "5.10"
+    "SrcRelease": "5.10",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libcap-ng0@0.8.5-1.1.x86_64",
     "Name": "libcap-ng0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libcap-ng0@0.8.5-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "0.8.5",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "libcap-ng",
     "SrcVersion": "0.8.5",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libcap2@2.70-1.1.x86_64",
     "Name": "libcap2",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libcap2@2.70-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.70",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "libcap",
     "SrcVersion": "2.70",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "BSD-3-Clause OR GPL-2.0-only"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libcom_err2@1.47.0-4.2.x86_64",
     "Name": "libcom_err2",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libcom_err2@1.47.0-4.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.47.0",
     "Release": "4.2",
     "Arch": "x86_64",
     "SrcName": "e2fsprogs",
     "SrcVersion": "1.47.0",
-    "SrcRelease": "4.2"
+    "SrcRelease": "4.2",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libcrypt1@4.4.36-1.6.x86_64",
     "Name": "libcrypt1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libcrypt1@4.4.36-1.6?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "4.4.36",
     "Release": "1.6",
     "Arch": "x86_64",
     "SrcName": "libxcrypt",
     "SrcVersion": "4.4.36",
-    "SrcRelease": "1.6"
+    "SrcRelease": "1.6",
+    "Licenses": [
+      "BSD-2-Clause AND LGPL-2.1-or-later AND BSD-3-Clause AND SUSE-Public-Domain"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libcurl4@8.8.0-1.1.x86_64",
     "Name": "libcurl4",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libcurl4@8.8.0-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "8.8.0",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "curl",
     "SrcVersion": "8.8.0",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "curl"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libeconf0@0.6.3-1.1.x86_64",
     "Name": "libeconf0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libeconf0@0.6.3-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "0.6.3",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "libeconf",
     "SrcVersion": "0.6.3",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libfa1@1.14.1-1.3.x86_64",
     "Name": "libfa1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libfa1@1.14.1-1.3?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.14.1",
     "Release": "1.3",
     "Arch": "x86_64",
     "SrcName": "augeas",
     "SrcVersion": "1.14.1",
-    "SrcRelease": "1.3"
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libfdisk1@2.40.1-2.1.x86_64",
     "Name": "libfdisk1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libfdisk1@2.40.1-2.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.40.1",
     "Release": "2.1",
     "Arch": "x86_64",
     "SrcName": "util-linux",
     "SrcVersion": "2.40.1",
-    "SrcRelease": "2.1"
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libffi8@3.4.6-1.1.x86_64",
     "Name": "libffi8",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libffi8@3.4.6-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "3.4.6",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "libffi",
     "SrcVersion": "3.4.6",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libgcc_s1@14.1.0+git10173-1.1.x86_64",
     "Name": "libgcc_s1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libgcc_s1@14.1.0%2Bgit10173-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "14.1.0+git10173",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "gcc14",
     "SrcVersion": "14.1.0+git10173",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-3.0-or-later WITH GCC-exception-3.1"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libgcrypt20@1.10.3-3.3.x86_64",
     "Name": "libgcrypt20",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libgcrypt20@1.10.3-3.3?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.10.3",
     "Release": "3.3",
     "Arch": "x86_64",
     "SrcName": "libgcrypt",
     "SrcVersion": "1.10.3",
-    "SrcRelease": "3.3"
+    "SrcRelease": "3.3",
+    "Licenses": [
+      "GPL-2.0-or-later AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libglib-2_0-0@2.80.2-1.1.x86_64",
     "Name": "libglib-2_0-0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libglib-2_0-0@2.80.2-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.80.2",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "glib2",
     "SrcVersion": "2.80.2",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libgmp10@6.3.0-3.2.x86_64",
     "Name": "libgmp10",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libgmp10@6.3.0-3.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "6.3.0",
     "Release": "3.2",
     "Arch": "x86_64",
     "SrcName": "gmp",
     "SrcVersion": "6.3.0",
-    "SrcRelease": "3.2"
+    "SrcRelease": "3.2",
+    "Licenses": [
+      "GPL-2.0-or-later OR LGPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libgpg-error0@1.49-1.1.x86_64",
     "Name": "libgpg-error0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libgpg-error0@1.49-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.49",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "libgpg-error",
     "SrcVersion": "1.49",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0-or-later AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libgpgme11@1.23.2-4.2.x86_64",
     "Name": "libgpgme11",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libgpgme11@1.23.2-4.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.23.2",
     "Release": "4.2",
     "Arch": "x86_64",
     "SrcName": "gpgme",
     "SrcVersion": "1.23.2",
-    "SrcRelease": "4.2"
+    "SrcRelease": "4.2",
+    "Licenses": [
+      "GPL-3.0-or-later AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libidn2-0@2.3.7-1.2.x86_64",
     "Name": "libidn2-0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libidn2-0@2.3.7-1.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.3.7",
     "Release": "1.2",
     "Arch": "x86_64",
     "SrcName": "libidn2",
     "SrcVersion": "2.3.7",
-    "SrcRelease": "1.2"
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "GPL-2.0-or-later OR LGPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libkeyutils1@1.6.3-7.2.x86_64",
     "Name": "libkeyutils1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libkeyutils1@1.6.3-7.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.6.3",
     "Release": "7.2",
     "Arch": "x86_64",
     "SrcName": "keyutils",
     "SrcVersion": "1.6.3",
-    "SrcRelease": "7.2"
+    "SrcRelease": "7.2",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libksba8@1.6.6-1.1.x86_64",
     "Name": "libksba8",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libksba8@1.6.6-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.6.6",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "libksba",
     "SrcVersion": "1.6.6",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "(GPL-2.0-or-later OR LGPL-3.0-or-later) AND GPL-3.0-or-later AND MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libldap2@2.6.7-2.1.x86_64",
     "Name": "libldap2",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libldap2@2.6.7-2.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.6.7",
     "Release": "2.1",
     "Arch": "x86_64",
     "SrcName": "openldap2",
     "SrcVersion": "2.6.7",
-    "SrcRelease": "2.1"
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "OLDAP-2.8"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "liblua5_4-5@5.4.6-3.3.x86_64",
     "Name": "liblua5_4-5",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/liblua5_4-5@5.4.6-3.3?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "5.4.6",
     "Release": "3.3",
     "Arch": "x86_64",
     "SrcName": "lua54",
     "SrcVersion": "5.4.6",
-    "SrcRelease": "3.3"
+    "SrcRelease": "3.3",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "liblz4-1@1.9.4-2.8.x86_64",
     "Name": "liblz4-1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/liblz4-1@1.9.4-2.8?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.9.4",
     "Release": "2.8",
     "Arch": "x86_64",
     "SrcName": "lz4",
     "SrcVersion": "1.9.4",
-    "SrcRelease": "2.8"
+    "SrcRelease": "2.8",
+    "Licenses": [
+      "BSD-2-Clause"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "liblzma5@5.6.2-1.1.x86_64",
     "Name": "liblzma5",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/liblzma5@5.6.2-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "5.6.2",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "xz",
     "SrcVersion": "5.6.2",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "0BSD"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libmagic1@5.45-2.2.x86_64",
     "Name": "libmagic1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libmagic1@5.45-2.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "5.45",
     "Release": "2.2",
     "Arch": "x86_64",
     "SrcName": "file",
     "SrcVersion": "5.45",
-    "SrcRelease": "2.2"
+    "SrcRelease": "2.2",
+    "Licenses": [
+      "BSD-2-Clause"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libmount1@2.40.1-2.1.x86_64",
     "Name": "libmount1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libmount1@2.40.1-2.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.40.1",
     "Release": "2.1",
     "Arch": "x86_64",
     "SrcName": "util-linux",
     "SrcVersion": "2.40.1",
-    "SrcRelease": "2.1"
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libncurses6@6.5.20240601-38.1.x86_64",
     "Name": "libncurses6",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libncurses6@6.5.20240601-38.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "6.5.20240601",
     "Release": "38.1",
     "Arch": "x86_64",
     "SrcName": "ncurses",
     "SrcVersion": "6.5.20240601",
-    "SrcRelease": "38.1"
+    "SrcRelease": "38.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libnghttp2-14@1.61.0-1.1.x86_64",
     "Name": "libnghttp2-14",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libnghttp2-14@1.61.0-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.61.0",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "nghttp2",
     "SrcVersion": "1.61.0",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libnpth0@1.7-1.1.x86_64",
     "Name": "libnpth0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libnpth0@1.7-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.7",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "npth",
     "SrcVersion": "1.7",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "LGPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libnss_usrfiles2@2.27.1-1.2.x86_64",
     "Name": "libnss_usrfiles2",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libnss_usrfiles2@2.27.1-1.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.27.1",
     "Release": "1.2",
     "Arch": "x86_64",
     "SrcName": "libnss_usrfiles",
     "SrcVersion": "2.27.1",
-    "SrcRelease": "1.2"
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "LGPL-2.1-only"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libopenssl-3-fips-provider@3.1.4-9.1.x86_64",
     "Name": "libopenssl-3-fips-provider",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libopenssl-3-fips-provider@3.1.4-9.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "3.1.4",
     "Release": "9.1",
     "Arch": "x86_64",
     "SrcName": "openssl-3",
     "SrcVersion": "3.1.4",
-    "SrcRelease": "9.1"
+    "SrcRelease": "9.1",
+    "Licenses": [
+      "Apache-2.0"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libopenssl3@3.1.4-9.1.x86_64",
     "Name": "libopenssl3",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libopenssl3@3.1.4-9.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "3.1.4",
     "Release": "9.1",
     "Arch": "x86_64",
     "SrcName": "openssl-3",
     "SrcVersion": "3.1.4",
-    "SrcRelease": "9.1"
+    "SrcRelease": "9.1",
+    "Licenses": [
+      "Apache-2.0"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libp11-kit0@0.25.3-1.3.x86_64",
     "Name": "libp11-kit0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libp11-kit0@0.25.3-1.3?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "0.25.3",
     "Release": "1.3",
     "Arch": "x86_64",
     "SrcName": "p11-kit",
     "SrcVersion": "0.25.3",
-    "SrcRelease": "1.3"
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libpcre2-8-0@10.43-3.1.x86_64",
     "Name": "libpcre2-8-0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libpcre2-8-0@10.43-3.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "10.43",
     "Release": "3.1",
     "Arch": "x86_64",
     "SrcName": "pcre2",
     "SrcVersion": "10.43",
-    "SrcRelease": "3.1"
+    "SrcRelease": "3.1",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libpopt0@1.19-1.8.x86_64",
     "Name": "libpopt0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libpopt0@1.19-1.8?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.19",
     "Release": "1.8",
     "Arch": "x86_64",
     "SrcName": "popt",
     "SrcVersion": "1.19",
-    "SrcRelease": "1.8"
+    "SrcRelease": "1.8",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libprocps8@3.3.17-17.1.x86_64",
     "Name": "libprocps8",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libprocps8@3.3.17-17.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "3.3.17",
     "Release": "17.1",
     "Arch": "x86_64",
     "SrcName": "procps",
     "SrcVersion": "3.3.17",
-    "SrcRelease": "17.1"
+    "SrcRelease": "17.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libprotobuf-lite25_3_0@25.3-11.2.x86_64",
     "Name": "libprotobuf-lite25_3_0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libprotobuf-lite25_3_0@25.3-11.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "25.3",
     "Release": "11.2",
     "Arch": "x86_64",
     "SrcName": "protobuf",
     "SrcVersion": "25.3",
-    "SrcRelease": "11.2"
+    "SrcRelease": "11.2",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libpsl5@0.21.5-1.2.x86_64",
     "Name": "libpsl5",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libpsl5@0.21.5-1.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "0.21.5",
     "Release": "1.2",
     "Arch": "x86_64",
     "SrcName": "libpsl",
     "SrcVersion": "0.21.5",
-    "SrcRelease": "1.2"
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "MIT AND MPL-2.0"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libreadline8@8.2.10-1.3.x86_64",
     "Name": "libreadline8",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libreadline8@8.2.10-1.3?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "8.2.10",
     "Release": "1.3",
     "Arch": "x86_64",
     "SrcName": "readline",
     "SrcVersion": "8.2.10",
-    "SrcRelease": "1.3"
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libsasl2-3@2.1.28-8.1.x86_64",
     "Name": "libsasl2-3",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libsasl2-3@2.1.28-8.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.1.28",
     "Release": "8.1",
     "Arch": "x86_64",
     "SrcName": "cyrus-sasl",
     "SrcVersion": "2.1.28",
-    "SrcRelease": "8.1"
+    "SrcRelease": "8.1",
+    "Licenses": [
+      "BSD-4-Clause"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libselinux1@3.6-1.3.x86_64",
     "Name": "libselinux1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libselinux1@3.6-1.3?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "3.6",
     "Release": "1.3",
     "Arch": "x86_64",
     "SrcName": "libselinux",
     "SrcVersion": "3.6",
-    "SrcRelease": "1.3"
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "SUSE-Public-Domain"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libsemanage-conf@3.6-2.1.x86_64",
     "Name": "libsemanage-conf",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libsemanage-conf@3.6-2.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "3.6",
     "Release": "2.1",
     "Arch": "x86_64",
     "SrcName": "libsemanage",
     "SrcVersion": "3.6",
-    "SrcRelease": "2.1"
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libsemanage2@3.6-2.1.x86_64",
     "Name": "libsemanage2",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libsemanage2@3.6-2.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "3.6",
     "Release": "2.1",
     "Arch": "x86_64",
     "SrcName": "libsemanage",
     "SrcVersion": "3.6",
-    "SrcRelease": "2.1"
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libsepol2@3.6-1.3.x86_64",
     "Name": "libsepol2",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libsepol2@3.6-1.3?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "3.6",
     "Release": "1.3",
     "Arch": "x86_64",
     "SrcName": "libsepol",
     "SrcVersion": "3.6",
-    "SrcRelease": "1.3"
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libsigc-2_0-0@2.12.1-2.3.x86_64",
     "Name": "libsigc-2_0-0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libsigc-2_0-0@2.12.1-2.3?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.12.1",
     "Release": "2.3",
     "Arch": "x86_64",
     "SrcName": "libsigc++2",
     "SrcVersion": "2.12.1",
-    "SrcRelease": "2.3"
+    "SrcRelease": "2.3",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libsmartcols1@2.40.1-2.1.x86_64",
     "Name": "libsmartcols1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libsmartcols1@2.40.1-2.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.40.1",
     "Release": "2.1",
     "Arch": "x86_64",
     "SrcName": "util-linux",
     "SrcVersion": "2.40.1",
-    "SrcRelease": "2.1"
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libsolv-tools-base@0.7.29-1.1.x86_64",
     "Name": "libsolv-tools-base",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libsolv-tools-base@0.7.29-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "0.7.29",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "libsolv",
     "SrcVersion": "0.7.29",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libsqlite3-0@3.46.0-1.1.x86_64",
     "Name": "libsqlite3-0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libsqlite3-0@3.46.0-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "3.46.0",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "sqlite3",
     "SrcVersion": "3.46.0",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "SUSE-Public-Domain"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libssh-config@0.10.6-2.1.x86_64",
     "Name": "libssh-config",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libssh-config@0.10.6-2.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "0.10.6",
     "Release": "2.1",
     "Arch": "x86_64",
     "SrcName": "libssh",
     "SrcVersion": "0.10.6",
-    "SrcRelease": "2.1"
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libssh4@0.10.6-2.1.x86_64",
     "Name": "libssh4",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libssh4@0.10.6-2.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "0.10.6",
     "Release": "2.1",
     "Arch": "x86_64",
     "SrcName": "libssh",
     "SrcVersion": "0.10.6",
-    "SrcRelease": "2.1"
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libstdc++6@14.1.0+git10173-1.1.x86_64",
     "Name": "libstdc++6",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libstdc%2B%2B6@14.1.0%2Bgit10173-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "14.1.0+git10173",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "gcc14",
     "SrcVersion": "14.1.0+git10173",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-3.0-or-later WITH GCC-exception-3.1"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libsubid4@4.15.1-1.2.x86_64",
     "Name": "libsubid4",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libsubid4@4.15.1-1.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "4.15.1",
     "Release": "1.2",
     "Arch": "x86_64",
     "SrcName": "shadow",
     "SrcVersion": "4.15.1",
-    "SrcRelease": "1.2"
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "BSD-3-Clause AND GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libsystemd0@255.7-2.1.x86_64",
     "Name": "libsystemd0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libsystemd0@255.7-2.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "255.7",
     "Release": "2.1",
     "Arch": "x86_64",
     "SrcName": "systemd",
     "SrcVersion": "255.7",
-    "SrcRelease": "2.1"
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libtasn1-6@4.19.0-1.7.x86_64",
     "Name": "libtasn1-6",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libtasn1-6@4.19.0-1.7?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "4.19.0",
     "Release": "1.7",
     "Arch": "x86_64",
     "SrcName": "libtasn1",
     "SrcVersion": "4.19.0",
-    "SrcRelease": "1.7"
+    "SrcRelease": "1.7",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libudev1@255.7-2.1.x86_64",
     "Name": "libudev1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libudev1@255.7-2.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "255.7",
     "Release": "2.1",
     "Arch": "x86_64",
     "SrcName": "systemd",
     "SrcVersion": "255.7",
-    "SrcRelease": "2.1"
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libunistring5@1.2-1.1.x86_64",
     "Name": "libunistring5",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libunistring5@1.2-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.2",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "libunistring",
     "SrcVersion": "1.2",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-3.0-or-later OR LGPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libusb-1_0-0@1.0.27-1.2.x86_64",
     "Name": "libusb-1_0-0",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libusb-1_0-0@1.0.27-1.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.0.27",
     "Release": "1.2",
     "Arch": "x86_64",
     "SrcName": "libusb-1_0",
     "SrcVersion": "1.0.27",
-    "SrcRelease": "1.2"
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libuuid1@2.40.1-2.1.x86_64",
     "Name": "libuuid1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libuuid1@2.40.1-2.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.40.1",
     "Release": "2.1",
     "Arch": "x86_64",
     "SrcName": "util-linux",
     "SrcVersion": "2.40.1",
-    "SrcRelease": "2.1"
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libverto1@0.3.2-3.3.x86_64",
     "Name": "libverto1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libverto1@0.3.2-3.3?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "0.3.2",
     "Release": "3.3",
     "Arch": "x86_64",
     "SrcName": "libverto",
     "SrcVersion": "0.3.2",
-    "SrcRelease": "3.3"
+    "SrcRelease": "3.3",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libxml2-2@2.12.7-1.1.x86_64",
     "Name": "libxml2-2",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libxml2-2@2.12.7-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.12.7",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "libxml2",
     "SrcVersion": "2.12.7",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libyaml-cpp0_8@0.8.0-1.3.x86_64",
     "Name": "libyaml-cpp0_8",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libyaml-cpp0_8@0.8.0-1.3?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "0.8.0",
     "Release": "1.3",
     "Arch": "x86_64",
     "SrcName": "yaml-cpp",
     "SrcVersion": "0.8.0",
-    "SrcRelease": "1.3"
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libz1@1.3.1-1.1.x86_64",
     "Name": "libz1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libz1@1.3.1-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.3.1",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "zlib",
     "SrcVersion": "1.3.1",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "Zlib"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libzck1@1.4.0-2.1.x86_64",
     "Name": "libzck1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libzck1@1.4.0-2.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.4.0",
     "Release": "2.1",
     "Arch": "x86_64",
     "SrcName": "zchunk",
     "SrcVersion": "1.4.0",
-    "SrcRelease": "2.1"
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "BSD-2-Clause AND MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libzstd1@1.5.6-1.1.x86_64",
     "Name": "libzstd1",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libzstd1@1.5.6-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.5.6",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "zstd",
     "SrcVersion": "1.5.6",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "BSD-3-Clause AND GPL-2.0-only"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "libzypp@17.34.1-1.1.x86_64",
     "Name": "libzypp",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/libzypp@17.34.1-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "17.34.1",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "libzypp",
     "SrcVersion": "17.34.1",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "login_defs@4.15.1-1.2.noarch",
     "Name": "login_defs",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/login_defs@4.15.1-1.2?arch=noarch\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "4.15.1",
     "Release": "1.2",
     "Arch": "noarch",
     "SrcName": "shadow",
     "SrcVersion": "4.15.1",
-    "SrcRelease": "1.2"
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "BSD-3-Clause AND GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "lsb-release@3.3-1.3.noarch",
     "Name": "lsb-release",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/lsb-release@3.3-1.3?arch=noarch\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "3.3",
     "Release": "1.3",
     "Arch": "noarch",
     "SrcName": "lsb-release",
     "SrcVersion": "3.3",
-    "SrcRelease": "1.3"
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "ncurses-utils@6.5.20240601-38.1.x86_64",
     "Name": "ncurses-utils",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/ncurses-utils@6.5.20240601-38.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "6.5.20240601",
     "Release": "38.1",
     "Arch": "x86_64",
     "SrcName": "ncurses",
     "SrcVersion": "6.5.20240601",
-    "SrcRelease": "38.1"
+    "SrcRelease": "38.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "netcfg@11.6-13.3.noarch",
     "Name": "netcfg",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/netcfg@11.6-13.3?arch=noarch\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "11.6",
     "Release": "13.3",
     "Arch": "noarch",
     "SrcName": "netcfg",
     "SrcVersion": "11.6",
-    "SrcRelease": "13.3"
+    "SrcRelease": "13.3",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "openSUSE-build-key@1.0-53.1.x86_64",
     "Name": "openSUSE-build-key",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/openSUSE-build-key@1.0-53.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.0",
     "Release": "53.1",
     "Arch": "x86_64",
     "SrcName": "openSUSE-build-key",
     "SrcVersion": "1.0",
-    "SrcRelease": "53.1"
+    "SrcRelease": "53.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "openSUSE-release@20240607-2943.1.x86_64",
     "Name": "openSUSE-release",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/openSUSE-release@20240607-2943.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "20240607",
     "Release": "2943.1",
     "Arch": "x86_64",
     "SrcName": "openSUSE-release",
     "SrcVersion": "20240607",
-    "SrcRelease": "2943.1"
+    "SrcRelease": "2943.1",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "openSUSE-release-appliance-docker@20240607-2943.1.x86_64",
     "Name": "openSUSE-release-appliance-docker",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/openSUSE-release-appliance-docker@20240607-2943.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "20240607",
     "Release": "2943.1",
     "Arch": "x86_64",
     "SrcName": "openSUSE-release",
     "SrcVersion": "20240607",
-    "SrcRelease": "2943.1"
+    "SrcRelease": "2943.1",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "openssl@3.1.4-3.2.noarch",
     "Name": "openssl",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/openssl@3.1.4-3.2?arch=noarch\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "3.1.4",
     "Release": "3.2",
     "Arch": "noarch",
     "SrcName": "openssl",
     "SrcVersion": "3.1.4",
-    "SrcRelease": "3.2"
+    "SrcRelease": "3.2",
+    "Licenses": [
+      "Apache-2.0"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "openssl-3@3.1.4-9.1.x86_64",
     "Name": "openssl-3",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/openssl-3@3.1.4-9.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "3.1.4",
     "Release": "9.1",
     "Arch": "x86_64",
     "SrcName": "openssl-3",
     "SrcVersion": "3.1.4",
-    "SrcRelease": "9.1"
+    "SrcRelease": "9.1",
+    "Licenses": [
+      "Apache-2.0"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "p11-kit@0.25.3-1.3.x86_64",
     "Name": "p11-kit",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/p11-kit@0.25.3-1.3?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "0.25.3",
     "Release": "1.3",
     "Arch": "x86_64",
     "SrcName": "p11-kit",
     "SrcVersion": "0.25.3",
-    "SrcRelease": "1.3"
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "p11-kit-tools@0.25.3-1.3.x86_64",
     "Name": "p11-kit-tools",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/p11-kit-tools@0.25.3-1.3?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "0.25.3",
     "Release": "1.3",
     "Arch": "x86_64",
     "SrcName": "p11-kit",
     "SrcVersion": "0.25.3",
-    "SrcRelease": "1.3"
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "pam@1.6.1-1.1.x86_64",
     "Name": "pam",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/pam@1.6.1-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.6.1",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "pam",
     "SrcVersion": "1.6.1",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0-or-later OR BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "patterns-base-fips@20200505-51.1.x86_64",
     "Name": "patterns-base-fips",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/patterns-base-fips@20200505-51.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "20200505",
     "Release": "51.1",
     "Arch": "x86_64",
     "SrcName": "patterns-base",
     "SrcVersion": "20200505",
-    "SrcRelease": "51.1"
+    "SrcRelease": "51.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "patterns-base-minimal_base@20200505-51.1.x86_64",
     "Name": "patterns-base-minimal_base",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/patterns-base-minimal_base@20200505-51.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "20200505",
     "Release": "51.1",
     "Arch": "x86_64",
     "SrcName": "patterns-base",
     "SrcVersion": "20200505",
-    "SrcRelease": "51.1"
+    "SrcRelease": "51.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "permctl@1699_20240522-1.1.x86_64",
     "Name": "permctl",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/permctl@1699_20240522-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1699_20240522",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "permissions",
     "SrcVersion": "1699_20240522",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "permissions@1699_20240522-1.1.x86_64",
     "Name": "permissions",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/permissions@1699_20240522-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1699_20240522",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "permissions",
     "SrcVersion": "1699_20240522",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "permissions-config@1699_20240522-1.1.noarch",
     "Name": "permissions-config",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/permissions-config@1699_20240522-1.1?arch=noarch\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1699_20240522",
     "Release": "1.1",
     "Arch": "noarch",
     "SrcName": "permissions",
     "SrcVersion": "1699_20240522",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "pinentry@1.2.1-3.5.x86_64",
     "Name": "pinentry",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/pinentry@1.2.1-3.5?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.2.1",
     "Release": "3.5",
     "Arch": "x86_64",
     "SrcName": "pinentry",
     "SrcVersion": "1.2.1",
-    "SrcRelease": "3.5"
+    "SrcRelease": "3.5",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "procps@3.3.17-17.1.x86_64",
     "Name": "procps",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/procps@3.3.17-17.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "3.3.17",
     "Release": "17.1",
     "Arch": "x86_64",
     "SrcName": "procps",
     "SrcVersion": "3.3.17",
-    "SrcRelease": "17.1"
+    "SrcRelease": "17.1",
+    "Licenses": [
+      "GPL-2.0-or-later AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "rpm@4.19.1.1-3.2.x86_64",
     "Name": "rpm",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/rpm@4.19.1.1-3.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "4.19.1.1",
     "Release": "3.2",
     "Arch": "x86_64",
     "SrcName": "rpm",
     "SrcVersion": "4.19.1.1",
-    "SrcRelease": "3.2"
+    "SrcRelease": "3.2",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "rpm-config-SUSE@20240214-1.2.noarch",
     "Name": "rpm-config-SUSE",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/rpm-config-SUSE@20240214-1.2?arch=noarch\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "20240214",
     "Release": "1.2",
     "Arch": "noarch",
     "SrcName": "rpm-config-SUSE",
     "SrcVersion": "20240214",
-    "SrcRelease": "1.2"
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "sed@4.9-2.6.x86_64",
     "Name": "sed",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/sed@4.9-2.6?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "4.9",
     "Release": "2.6",
     "Arch": "x86_64",
     "SrcName": "sed",
     "SrcVersion": "4.9",
-    "SrcRelease": "2.6"
+    "SrcRelease": "2.6",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "shadow@4.15.1-1.2.x86_64",
     "Name": "shadow",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/shadow@4.15.1-1.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "4.15.1",
     "Release": "1.2",
     "Arch": "x86_64",
     "SrcName": "shadow",
     "SrcVersion": "4.15.1",
-    "SrcRelease": "1.2"
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "BSD-3-Clause AND GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "system-user-root@20190513-2.16.noarch",
     "Name": "system-user-root",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/system-user-root@20190513-2.16?arch=noarch\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "20190513",
     "Release": "2.16",
     "Arch": "noarch",
     "SrcName": "system-user-root",
     "SrcVersion": "20190513",
-    "SrcRelease": "2.16"
+    "SrcRelease": "2.16",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "tar@1.35-2.2.x86_64",
     "Name": "tar",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/tar@1.35-2.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.35",
     "Release": "2.2",
     "Arch": "x86_64",
     "SrcName": "tar",
     "SrcVersion": "1.35",
-    "SrcRelease": "2.2"
+    "SrcRelease": "2.2",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "terminfo-base@6.5.20240601-38.1.x86_64",
     "Name": "terminfo-base",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/terminfo-base@6.5.20240601-38.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "6.5.20240601",
     "Release": "38.1",
     "Arch": "x86_64",
     "SrcName": "ncurses",
     "SrcVersion": "6.5.20240601",
-    "SrcRelease": "38.1"
+    "SrcRelease": "38.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "timezone@2024a-3.2.x86_64",
     "Name": "timezone",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/timezone@2024a-3.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2024a",
     "Release": "3.2",
     "Arch": "x86_64",
     "SrcName": "timezone",
     "SrcVersion": "2024a",
-    "SrcRelease": "3.2"
+    "SrcRelease": "3.2",
+    "Licenses": [
+      "BSD-3-Clause AND SUSE-Public-Domain"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "util-linux@2.40.1-2.1.x86_64",
     "Name": "util-linux",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/util-linux@2.40.1-2.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "2.40.1",
     "Release": "2.1",
     "Arch": "x86_64",
     "SrcName": "util-linux",
     "SrcVersion": "2.40.1",
-    "SrcRelease": "2.1"
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "xz@5.6.2-1.1.x86_64",
     "Name": "xz",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/xz@5.6.2-1.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "5.6.2",
     "Release": "1.1",
     "Arch": "x86_64",
     "SrcName": "xz",
     "SrcVersion": "5.6.2",
-    "SrcRelease": "1.1"
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "0BSD AND GPL-2.0-or-later AND GPL-3.0-or-later AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE"
   },
   {
+    "ID": "zypper@1.14.73-1.2.x86_64",
     "Name": "zypper",
+    "Identifier": {
+      "PURL": "pkg:rpm/opensuse/zypper@1.14.73-1.2?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607"
+    },
     "Version": "1.14.73",
     "Release": "1.2",
     "Arch": "x86_64",
     "SrcName": "zypper",
     "SrcVersion": "1.14.73",
-    "SrcRelease": "1.2"
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE"
   }
 ]
