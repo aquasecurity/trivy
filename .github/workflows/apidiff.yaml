@@ -24,7 +24,7 @@ jobs:
       # frozen at an old state and apidiff cannot run correctly.
       - name: Check for merge conflicts
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         # pull_request_target and mergeability are processed asynchronously.
         # As a result, it’s possible that we start the check before GitHub has finished calculating the mergeability.
