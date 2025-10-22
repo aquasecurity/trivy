@@ -65,13 +65,9 @@ kind: Pod
 			require.NoError(t, err)
 			require.Len(t, manifests, len(tt.expectedOffsets))
 
-			for i, m := range manifests {
-				manifest := m.(map[string]any)
-				metadata, ok := manifest["__defsec_metadata"].(map[string]any)
-				require.True(t, ok)
-				offset, ok := metadata["offset"].(int)
-				require.True(t, ok)
-				require.Equal(t, tt.expectedOffsets[i], offset)
+			for i, manifest := range manifests {
+				require.NotNil(t, manifest.Content)
+				require.Equal(t, tt.expectedOffsets[i], manifest.Content.Offset)
 			}
 		})
 	}
