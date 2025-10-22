@@ -16,6 +16,9 @@
     "DiffIDs": [
       "sha256:af6bf1987c2eb07d73f33836b0d8fd825d7c785273526b077e46780e8b4b2ae9"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:centos-6"
+    ],
     "ImageConfig": {
       "architecture": "amd64",
       "author": "https://github.com/CentOS/sig-cloud-instance-images",

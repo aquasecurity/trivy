@@ -15,6 +15,9 @@
     "DiffIDs": [
       "sha256:4266328c97a194b2ca52ec83bc05496596303f5e9b244ffa99cf84763a487804"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:mariner-1.0"
+    ],
     "ImageConfig": {
       "architecture": "amd64",
       "created": "2022-01-27T01:19:38.526301656Z",

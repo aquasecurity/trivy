@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -219,53 +218,11 @@ func TestSBOM(t *testing.T) {
 
 func overrideSBOMReport(_ *testing.T, want, got *types.Report) {
 	want.ArtifactID = ""
-	want.Metadata.ImageID = ""
 	want.Metadata.ImageConfig = v1.ConfigFile{}
-	want.Metadata.DiffIDs = nil
 
 	// when running on Windows FS
 	got.ArtifactName = filepath.ToSlash(filepath.Clean(got.ArtifactName))
 	for i, result := range got.Results {
 		got.Results[i].Target = filepath.ToSlash(filepath.Clean(result.Target))
 	}
-}
-
-// TODO(teppei): merge into compareReports
-func compareSBOMReports(t *testing.T, wantFile, gotFile string, overrideWant types.Report) {
-	want := readReport(t, wantFile)
-
-	if overrideWant.ArtifactName != "" {
-		want.ArtifactName = overrideWant.ArtifactName
-	}
-	if overrideWant.ArtifactType != "" {
-		want.ArtifactType = overrideWant.ArtifactType
-	}
-	want.Metadata.ImageID = ""
-	want.Metadata.ImageConfig = v1.ConfigFile{}
-	want.Metadata.DiffIDs = nil
-	for i, result := range want.Results {
-		for j := range result.Vulnerabilities {
-			want.Results[i].Vulnerabilities[j].Layer.DiffID = ""
-		}
-	}
-
-	for i, result := range overrideWant.Results {
-		want.Results[i].Target = result.Target
-		for j, vuln := range result.Vulnerabilities {
-			if vuln.PkgIdentifier.PURL != nil {
-				want.Results[i].Vulnerabilities[j].PkgIdentifier.PURL = vuln.PkgIdentifier.PURL
-			}
-			if vuln.PkgIdentifier.BOMRef != "" {
-				want.Results[i].Vulnerabilities[j].PkgIdentifier.BOMRef = vuln.PkgIdentifier.BOMRef
-			}
-		}
-	}
-
-	got := readReport(t, gotFile)
-	// when running on Windows FS
-	got.ArtifactName = filepath.ToSlash(filepath.Clean(got.ArtifactName))
-	for i, result := range got.Results {
-		got.Results[i].Target = filepath.ToSlash(filepath.Clean(result.Target))
-	}
-	assert.Equal(t, want, got)
 }

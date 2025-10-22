@@ -18,6 +18,9 @@
       "sha256:7beb13bce073c21c9ee608acb13c7e851845245dc76ce81b418fdf580c45076b",
       "sha256:122be11ab4a29e554786b4a1ec4764dd55656b59d6228a0a3de78eaf5c1f226c"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:ubuntu-1804"
+    ],
     "ImageConfig": {
       "architecture": "amd64",
       "container": "41b694b9b42f9c5ef7fb40c24272927a727a6d6cb8120bb3eae5849ceb9bee77",

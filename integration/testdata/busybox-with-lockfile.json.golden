@@ -12,6 +12,9 @@
       "sha256:797ac4999b67d8c38a596919efa5b7b6a4a8fd5814cb8564efa482c5d8403e6d",
       "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:busybox-with-lockfile"
+    ],
     "ImageConfig": {
       "architecture": "amd64",
       "created": "2022-06-07T04:24:40.230164Z",
