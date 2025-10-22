@@ -228,9 +228,30 @@ func commonChecks(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	checkLangPkgs(detail, t, tc)
 }
 
+// clearPackageDetailFields clears package detail fields to keep golden files manageable.
+// Only Name and Version are actually compared in tests.
+func clearPackageDetailFields(packages []types.Package) {
+	for i := range packages {
+		packages[i].ID = ""
+		packages[i].Identifier = types.PkgIdentifier{}
+		packages[i].Layer = types.Layer{}
+		packages[i].InstalledFiles = nil
+		packages[i].Licenses = nil
+		packages[i].Maintainer = ""
+		packages[i].DependsOn = nil
+		packages[i].Digest = ""
+	}
+}
+
 func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	// Sort OS packages for consistency
 	sort.Sort(detail.Packages)
+
+	// Clear package detail fields to keep golden files manageable in size.
+	// Only Name and Version are compared in fanal tests.
+	// Other fields (ID, Identifier, Layer, InstalledFiles, Licenses, Maintainer, DependsOn, Digest)
+	// are validated in Trivy's integration tests instead.
+	clearPackageDetailFields(detail.Packages)
 
 	goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", tc.imageTag)
 

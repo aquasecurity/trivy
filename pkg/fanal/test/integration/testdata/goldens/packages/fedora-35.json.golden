@@ -6,12 +6,7 @@
     "Arch": "x86_64",
     "SrcName": "chkconfig",
     "SrcVersion": "1.19",
-    "SrcRelease": "1.fc35",
-    "License": "GPLv2",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "audit-libs",
@@ -20,12 +15,7 @@
     "Arch": "x86_64",
     "SrcName": "audit",
     "SrcVersion": "3.0.7",
-    "SrcRelease": "2.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "2.fc35"
   },
   {
     "Name": "basesystem",
@@ -34,12 +24,7 @@
     "Arch": "noarch",
     "SrcName": "basesystem",
     "SrcVersion": "11",
-    "SrcRelease": "12.fc35",
-    "License": "Public Domain",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "12.fc35"
   },
   {
     "Name": "bash",
@@ -48,12 +33,7 @@
     "Arch": "x86_64",
     "SrcName": "bash",
     "SrcVersion": "5.1.8",
-    "SrcRelease": "2.fc35",
-    "License": "GPLv3+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "2.fc35"
   },
   {
     "Name": "bzip2-libs",
@@ -62,12 +42,7 @@
     "Arch": "x86_64",
     "SrcName": "bzip2",
     "SrcVersion": "1.0.8",
-    "SrcRelease": "9.fc35",
-    "License": "BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "9.fc35"
   },
   {
     "Name": "ca-certificates",
@@ -76,12 +51,7 @@
     "Arch": "noarch",
     "SrcName": "ca-certificates",
     "SrcVersion": "2021.2.52",
-    "SrcRelease": "1.0.fc35",
-    "License": "Public Domain",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.0.fc35"
   },
   {
     "Name": "coreutils",
@@ -90,12 +60,7 @@
     "Arch": "x86_64",
     "SrcName": "coreutils",
     "SrcVersion": "8.32",
-    "SrcRelease": "31.fc35",
-    "License": "GPLv3+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "31.fc35"
   },
   {
     "Name": "coreutils-common",
@@ -104,12 +69,7 @@
     "Arch": "x86_64",
     "SrcName": "coreutils",
     "SrcVersion": "8.32",
-    "SrcRelease": "31.fc35",
-    "License": "GPLv3+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "31.fc35"
   },
   {
     "Name": "cracklib",
@@ -118,12 +78,7 @@
     "Arch": "x86_64",
     "SrcName": "cracklib",
     "SrcVersion": "2.9.6",
-    "SrcRelease": "27.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "27.fc35"
   },
   {
     "Name": "crypto-policies",
@@ -132,12 +87,7 @@
     "Arch": "noarch",
     "SrcName": "crypto-policies",
     "SrcVersion": "20210819",
-    "SrcRelease": "1.gitd0fdcfb.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.gitd0fdcfb.fc35"
   },
   {
     "Name": "curl",
@@ -146,12 +96,7 @@
     "Arch": "x86_64",
     "SrcName": "curl",
     "SrcVersion": "7.79.1",
-    "SrcRelease": "1.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "cyrus-sasl-lib",
@@ -160,12 +105,7 @@
     "Arch": "x86_64",
     "SrcName": "cyrus-sasl",
     "SrcVersion": "2.1.27",
-    "SrcRelease": "13.fc35",
-    "License": "BSD with advertising",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "13.fc35"
   },
   {
     "Name": "dnf",
@@ -174,12 +114,7 @@
     "Arch": "noarch",
     "SrcName": "dnf",
     "SrcVersion": "4.9.0",
-    "SrcRelease": "1.fc35",
-    "License": "GPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "dnf-data",
@@ -188,12 +123,7 @@
     "Arch": "noarch",
     "SrcName": "dnf",
     "SrcVersion": "4.9.0",
-    "SrcRelease": "1.fc35",
-    "License": "GPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "elfutils-default-yama-scope",
@@ -202,12 +132,7 @@
     "Arch": "noarch",
     "SrcName": "elfutils",
     "SrcVersion": "0.186",
-    "SrcRelease": "1.fc35",
-    "License": "GPLv2+ or LGPLv3+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "elfutils-libelf",
@@ -216,12 +141,7 @@
     "Arch": "x86_64",
     "SrcName": "elfutils",
     "SrcVersion": "0.186",
-    "SrcRelease": "1.fc35",
-    "License": "GPLv2+ or LGPLv3+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "elfutils-libs",
@@ -230,12 +150,7 @@
     "Arch": "x86_64",
     "SrcName": "elfutils",
     "SrcVersion": "0.186",
-    "SrcRelease": "1.fc35",
-    "License": "GPLv2+ or LGPLv3+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "expat",
@@ -244,12 +159,7 @@
     "Arch": "x86_64",
     "SrcName": "expat",
     "SrcVersion": "2.4.4",
-    "SrcRelease": "1.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "fedora-gpg-keys",
@@ -258,12 +168,7 @@
     "Arch": "noarch",
     "SrcName": "fedora-repos",
     "SrcVersion": "35",
-    "SrcRelease": "1",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1"
   },
   {
     "Name": "fedora-release-common",
@@ -272,12 +177,7 @@
     "Arch": "noarch",
     "SrcName": "fedora-release",
     "SrcVersion": "35",
-    "SrcRelease": "36",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "36"
   },
   {
     "Name": "fedora-release-container",
@@ -286,12 +186,7 @@
     "Arch": "noarch",
     "SrcName": "fedora-release",
     "SrcVersion": "35",
-    "SrcRelease": "36",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "36"
   },
   {
     "Name": "fedora-release-identity-container",
@@ -300,12 +195,7 @@
     "Arch": "noarch",
     "SrcName": "fedora-release",
     "SrcVersion": "35",
-    "SrcRelease": "36",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "36"
   },
   {
     "Name": "fedora-repos",
@@ -314,12 +204,7 @@
     "Arch": "noarch",
     "SrcName": "fedora-repos",
     "SrcVersion": "35",
-    "SrcRelease": "1",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1"
   },
   {
     "Name": "fedora-repos-modular",
@@ -328,12 +213,7 @@
     "Arch": "noarch",
     "SrcName": "fedora-repos",
     "SrcVersion": "35",
-    "SrcRelease": "1",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1"
   },
   {
     "Name": "file-libs",
@@ -342,12 +222,7 @@
     "Arch": "x86_64",
     "SrcName": "file",
     "SrcVersion": "5.40",
-    "SrcRelease": "9.fc35",
-    "License": "BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "9.fc35"
   },
   {
     "Name": "filesystem",
@@ -356,12 +231,7 @@
     "Arch": "x86_64",
     "SrcName": "filesystem",
     "SrcVersion": "3.14",
-    "SrcRelease": "7.fc35",
-    "License": "Public Domain",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "7.fc35"
   },
   {
     "Name": "gawk",
@@ -370,12 +240,7 @@
     "Arch": "x86_64",
     "SrcName": "gawk",
     "SrcVersion": "5.1.0",
-    "SrcRelease": "4.fc35",
-    "License": "GPLv3+ and GPLv2+ and LGPLv2+ and BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "4.fc35"
   },
   {
     "Name": "gdbm-libs",
@@ -386,12 +251,7 @@
     "SrcName": "gdbm",
     "SrcVersion": "1.22",
     "SrcRelease": "1.fc35",
-    "SrcEpoch": 1,
-    "License": "GPLv3+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcEpoch": 1
   },
   {
     "Name": "glib2",
@@ -400,12 +260,7 @@
     "Arch": "x86_64",
     "SrcName": "glib2",
     "SrcVersion": "2.70.4",
-    "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "glibc",
@@ -414,12 +269,7 @@
     "Arch": "x86_64",
     "SrcName": "glibc",
     "SrcVersion": "2.34",
-    "SrcRelease": "25.fc35",
-    "License": "LGPLv2+ and LGPLv2+ with exceptions and GPLv2+ and GPLv2+ with exceptions and BSD and Inner-Net and ISC and Public Domain and GFDL",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "25.fc35"
   },
   {
     "Name": "glibc-common",
@@ -428,12 +278,7 @@
     "Arch": "x86_64",
     "SrcName": "glibc",
     "SrcVersion": "2.34",
-    "SrcRelease": "25.fc35",
-    "License": "LGPLv2+ and LGPLv2+ with exceptions and GPLv2+ and GPLv2+ with exceptions and BSD and Inner-Net and ISC and Public Domain and GFDL",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "25.fc35"
   },
   {
     "Name": "glibc-minimal-langpack",
@@ -442,12 +287,7 @@
     "Arch": "x86_64",
     "SrcName": "glibc",
     "SrcVersion": "2.34",
-    "SrcRelease": "25.fc35",
-    "License": "LGPLv2+ and LGPLv2+ with exceptions and GPLv2+ and GPLv2+ with exceptions and BSD and Inner-Net and ISC and Public Domain and GFDL",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "25.fc35"
   },
   {
     "Name": "gmp",
@@ -458,12 +298,7 @@
     "SrcName": "gmp",
     "SrcVersion": "6.2.0",
     "SrcRelease": "7.fc35",
-    "SrcEpoch": 1,
-    "License": "LGPLv3+ or GPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcEpoch": 1
   },
   {
     "Name": "gnupg2",
@@ -472,12 +307,7 @@
     "Arch": "x86_64",
     "SrcName": "gnupg2",
     "SrcVersion": "2.3.4",
-    "SrcRelease": "1.fc35",
-    "License": "GPLv3+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "gnutls",
@@ -486,23 +316,13 @@
     "Arch": "x86_64",
     "SrcName": "gnutls",
     "SrcVersion": "3.7.2",
-    "SrcRelease": "2.fc35",
-    "License": "GPLv3+ and LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "2.fc35"
   },
   {
     "Name": "gpg-pubkey",
     "Version": "9867c58f",
     "Release": "601c49ca",
-    "Arch": "None",
-    "License": "pubkey",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "Arch": "None"
   },
   {
     "Name": "gpgme",
@@ -511,12 +331,7 @@
     "Arch": "x86_64",
     "SrcName": "gpgme",
     "SrcVersion": "1.15.1",
-    "SrcRelease": "6.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "6.fc35"
   },
   {
     "Name": "grep",
@@ -525,12 +340,7 @@
     "Arch": "x86_64",
     "SrcName": "grep",
     "SrcVersion": "3.6",
-    "SrcRelease": "4.fc35",
-    "License": "GPLv3+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "4.fc35"
   },
   {
     "Name": "gzip",
@@ -539,12 +349,7 @@
     "Arch": "x86_64",
     "SrcName": "gzip",
     "SrcVersion": "1.10",
-    "SrcRelease": "5.fc35",
-    "License": "GPLv3+ and GFDL",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "5.fc35"
   },
   {
     "Name": "ima-evm-utils",
@@ -553,12 +358,7 @@
     "Arch": "x86_64",
     "SrcName": "ima-evm-utils",
     "SrcVersion": "1.3.2",
-    "SrcRelease": "3.fc35",
-    "License": "GPLv2",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "3.fc35"
   },
   {
     "Name": "json-c",
@@ -567,12 +367,7 @@
     "Arch": "x86_64",
     "SrcName": "json-c",
     "SrcVersion": "0.15",
-    "SrcRelease": "2.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "2.fc35"
   },
   {
     "Name": "keyutils-libs",
@@ -581,12 +376,7 @@
     "Arch": "x86_64",
     "SrcName": "keyutils",
     "SrcVersion": "1.6.1",
-    "SrcRelease": "3.fc35",
-    "License": "GPLv2+ and LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "3.fc35"
   },
   {
     "Name": "krb5-libs",
@@ -595,12 +385,7 @@
     "Arch": "x86_64",
     "SrcName": "krb5",
     "SrcVersion": "1.19.2",
-    "SrcRelease": "2.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "2.fc35"
   },
   {
     "Name": "libacl",
@@ -609,12 +394,7 @@
     "Arch": "x86_64",
     "SrcName": "acl",
     "SrcVersion": "2.3.1",
-    "SrcRelease": "2.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "2.fc35"
   },
   {
     "Name": "libarchive",
@@ -623,12 +403,7 @@
     "Arch": "x86_64",
     "SrcName": "libarchive",
     "SrcVersion": "3.5.2",
-    "SrcRelease": "2.fc35",
-    "License": "BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "2.fc35"
   },
   {
     "Name": "libassuan",
@@ -637,12 +412,7 @@
     "Arch": "x86_64",
     "SrcName": "libassuan",
     "SrcVersion": "2.5.5",
-    "SrcRelease": "3.fc35",
-    "License": "LGPLv2+ and GPLv3+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "3.fc35"
   },
   {
     "Name": "libattr",
@@ -651,12 +421,7 @@
     "Arch": "x86_64",
     "SrcName": "attr",
     "SrcVersion": "2.5.1",
-    "SrcRelease": "3.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "3.fc35"
   },
   {
     "Name": "libblkid",
@@ -665,12 +430,7 @@
     "Arch": "x86_64",
     "SrcName": "util-linux",
     "SrcVersion": "2.37.4",
-    "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libbrotli",
@@ -679,12 +439,7 @@
     "Arch": "x86_64",
     "SrcName": "brotli",
     "SrcVersion": "1.0.9",
-    "SrcRelease": "6.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "6.fc35"
   },
   {
     "Name": "libcap",
@@ -693,12 +448,7 @@
     "Arch": "x86_64",
     "SrcName": "libcap",
     "SrcVersion": "2.48",
-    "SrcRelease": "3.fc35",
-    "License": "BSD or GPLv2",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "3.fc35"
   },
   {
     "Name": "libcap-ng",
@@ -707,12 +457,7 @@
     "Arch": "x86_64",
     "SrcName": "libcap-ng",
     "SrcVersion": "0.8.2",
-    "SrcRelease": "8.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "8.fc35"
   },
   {
     "Name": "libcom_err",
@@ -721,12 +466,7 @@
     "Arch": "x86_64",
     "SrcName": "e2fsprogs",
     "SrcVersion": "1.46.3",
-    "SrcRelease": "1.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libcomps",
@@ -735,12 +475,7 @@
     "Arch": "x86_64",
     "SrcName": "libcomps",
     "SrcVersion": "0.1.18",
-    "SrcRelease": "1.fc35",
-    "License": "GPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libcurl",
@@ -749,12 +484,7 @@
     "Arch": "x86_64",
     "SrcName": "curl",
     "SrcVersion": "7.79.1",
-    "SrcRelease": "1.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libdb",
@@ -763,12 +493,7 @@
     "Arch": "x86_64",
     "SrcName": "libdb",
     "SrcVersion": "5.3.28",
-    "SrcRelease": "50.fc35",
-    "License": "BSD and LGPLv2 and Sleepycat",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "50.fc35"
   },
   {
     "Name": "libdnf",
@@ -777,12 +502,7 @@
     "Arch": "x86_64",
     "SrcName": "libdnf",
     "SrcVersion": "0.64.0",
-    "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libeconf",
@@ -791,12 +511,7 @@
     "Arch": "x86_64",
     "SrcName": "libeconf",
     "SrcVersion": "0.4.0",
-    "SrcRelease": "2.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "2.fc35"
   },
   {
     "Name": "libffi",
@@ -805,12 +520,7 @@
     "Arch": "x86_64",
     "SrcName": "libffi",
     "SrcVersion": "3.1",
-    "SrcRelease": "29.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "29.fc35"
   },
   {
     "Name": "libfsverity",
@@ -819,12 +529,7 @@
     "Arch": "x86_64",
     "SrcName": "fsverity-utils",
     "SrcVersion": "1.4",
-    "SrcRelease": "6.fc35",
-    "License": "BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "6.fc35"
   },
   {
     "Name": "libgcc",
@@ -833,12 +538,7 @@
     "Arch": "x86_64",
     "SrcName": "gcc",
     "SrcVersion": "11.2.1",
-    "SrcRelease": "9.fc35",
-    "License": "GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "9.fc35"
   },
   {
     "Name": "libgcrypt",
@@ -847,12 +547,7 @@
     "Arch": "x86_64",
     "SrcName": "libgcrypt",
     "SrcVersion": "1.9.4",
-    "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libgomp",
@@ -861,12 +556,7 @@
     "Arch": "x86_64",
     "SrcName": "gcc",
     "SrcVersion": "11.2.1",
-    "SrcRelease": "9.fc35",
-    "License": "GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "9.fc35"
   },
   {
     "Name": "libgpg-error",
@@ -875,12 +565,7 @@
     "Arch": "x86_64",
     "SrcName": "libgpg-error",
     "SrcVersion": "1.43",
-    "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libidn2",
@@ -889,12 +574,7 @@
     "Arch": "x86_64",
     "SrcName": "libidn2",
     "SrcVersion": "2.3.2",
-    "SrcRelease": "3.fc35",
-    "License": "(GPLv2+ or LGPLv3+) and GPLv3+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "3.fc35"
   },
   {
     "Name": "libksba",
@@ -903,12 +583,7 @@
     "Arch": "x86_64",
     "SrcName": "libksba",
     "SrcVersion": "1.6.0",
-    "SrcRelease": "2.fc35",
-    "License": "(LGPLv3+ or GPLv2+) and GPLv3+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "2.fc35"
   },
   {
     "Name": "libmodulemd",
@@ -917,12 +592,7 @@
     "Arch": "x86_64",
     "SrcName": "libmodulemd",
     "SrcVersion": "2.14.0",
-    "SrcRelease": "1.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libmount",
@@ -931,12 +601,7 @@
     "Arch": "x86_64",
     "SrcName": "util-linux",
     "SrcVersion": "2.37.4",
-    "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libnghttp2",
@@ -945,12 +610,7 @@
     "Arch": "x86_64",
     "SrcName": "nghttp2",
     "SrcVersion": "1.45.1",
-    "SrcRelease": "1.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libnsl2",
@@ -959,12 +619,7 @@
     "Arch": "x86_64",
     "SrcName": "libnsl2",
     "SrcVersion": "1.3.0",
-    "SrcRelease": "4.fc35",
-    "License": "BSD and LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "4.fc35"
   },
   {
     "Name": "libpsl",
@@ -973,12 +628,7 @@
     "Arch": "x86_64",
     "SrcName": "libpsl",
     "SrcVersion": "0.21.1",
-    "SrcRelease": "4.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "4.fc35"
   },
   {
     "Name": "libpwquality",
@@ -987,12 +637,7 @@
     "Arch": "x86_64",
     "SrcName": "libpwquality",
     "SrcVersion": "1.4.4",
-    "SrcRelease": "6.fc35",
-    "License": "BSD or GPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "6.fc35"
   },
   {
     "Name": "librepo",
@@ -1001,12 +646,7 @@
     "Arch": "x86_64",
     "SrcName": "librepo",
     "SrcVersion": "1.14.2",
-    "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libreport-filesystem",
@@ -1015,12 +655,7 @@
     "Arch": "noarch",
     "SrcName": "libreport",
     "SrcVersion": "2.15.2",
-    "SrcRelease": "6.fc35",
-    "License": "GPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "6.fc35"
   },
   {
     "Name": "libselinux",
@@ -1029,12 +664,7 @@
     "Arch": "x86_64",
     "SrcName": "libselinux",
     "SrcVersion": "3.3",
-    "SrcRelease": "1.fc35",
-    "License": "Public Domain",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libsemanage",
@@ -1043,12 +673,7 @@
     "Arch": "x86_64",
     "SrcName": "libsemanage",
     "SrcVersion": "3.3",
-    "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libsepol",
@@ -1057,12 +682,7 @@
     "Arch": "x86_64",
     "SrcName": "libsepol",
     "SrcVersion": "3.3",
-    "SrcRelease": "2.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "2.fc35"
   },
   {
     "Name": "libsigsegv",
@@ -1071,12 +691,7 @@
     "Arch": "x86_64",
     "SrcName": "libsigsegv",
     "SrcVersion": "2.13",
-    "SrcRelease": "3.fc35",
-    "License": "GPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "3.fc35"
   },
   {
     "Name": "libsmartcols",
@@ -1085,12 +700,7 @@
     "Arch": "x86_64",
     "SrcName": "util-linux",
     "SrcVersion": "2.37.4",
-    "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libsolv",
@@ -1099,12 +709,7 @@
     "Arch": "x86_64",
     "SrcName": "libsolv",
     "SrcVersion": "0.7.19",
-    "SrcRelease": "3.fc35",
-    "License": "BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "3.fc35"
   },
   {
     "Name": "libssh",
@@ -1113,12 +718,7 @@
     "Arch": "x86_64",
     "SrcName": "libssh",
     "SrcVersion": "0.9.6",
-    "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libssh-config",
@@ -1127,12 +727,7 @@
     "Arch": "noarch",
     "SrcName": "libssh",
     "SrcVersion": "0.9.6",
-    "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libstdc++",
@@ -1141,12 +736,7 @@
     "Arch": "x86_64",
     "SrcName": "gcc",
     "SrcVersion": "11.2.1",
-    "SrcRelease": "9.fc35",
-    "License": "GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "9.fc35"
   },
   {
     "Name": "libtasn1",
@@ -1155,12 +745,7 @@
     "Arch": "x86_64",
     "SrcName": "libtasn1",
     "SrcVersion": "4.16.0",
-    "SrcRelease": "6.fc35",
-    "License": "GPLv3+ and LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "6.fc35"
   },
   {
     "Name": "libtirpc",
@@ -1169,12 +754,7 @@
     "Arch": "x86_64",
     "SrcName": "libtirpc",
     "SrcVersion": "1.3.2",
-    "SrcRelease": "1.fc35",
-    "License": "SISSL and BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libunistring",
@@ -1183,12 +763,7 @@
     "Arch": "x86_64",
     "SrcName": "libunistring",
     "SrcVersion": "0.9.10",
-    "SrcRelease": "14.fc35",
-    "License": "GPLv2+ or LGPLv3+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "14.fc35"
   },
   {
     "Name": "libuuid",
@@ -1197,12 +772,7 @@
     "Arch": "x86_64",
     "SrcName": "util-linux",
     "SrcVersion": "2.37.4",
-    "SrcRelease": "1.fc35",
-    "License": "BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libverto",
@@ -1211,12 +781,7 @@
     "Arch": "x86_64",
     "SrcName": "libverto",
     "SrcVersion": "0.3.2",
-    "SrcRelease": "2.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "2.fc35"
   },
   {
     "Name": "libxcrypt",
@@ -1225,12 +790,7 @@
     "Arch": "x86_64",
     "SrcName": "libxcrypt",
     "SrcVersion": "4.4.28",
-    "SrcRelease": "1.fc35",
-    "License": "LGPLv2+ and BSD and Public Domain",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "libxml2",
@@ -1239,12 +799,7 @@
     "Arch": "x86_64",
     "SrcName": "libxml2",
     "SrcVersion": "2.9.12",
-    "SrcRelease": "6.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "6.fc35"
   },
   {
     "Name": "libyaml",
@@ -1253,12 +808,7 @@
     "Arch": "x86_64",
     "SrcName": "libyaml",
     "SrcVersion": "0.2.5",
-    "SrcRelease": "6.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "6.fc35"
   },
   {
     "Name": "libzstd",
@@ -1267,12 +817,7 @@
     "Arch": "x86_64",
     "SrcName": "zstd",
     "SrcVersion": "1.5.2",
-    "SrcRelease": "1.fc35",
-    "License": "BSD and GPLv2",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "lua-libs",
@@ -1281,12 +826,7 @@
     "Arch": "x86_64",
     "SrcName": "lua",
     "SrcVersion": "5.4.4",
-    "SrcRelease": "1.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "lz4-libs",
@@ -1295,12 +835,7 @@
     "Arch": "x86_64",
     "SrcName": "lz4",
     "SrcVersion": "1.9.3",
-    "SrcRelease": "3.fc35",
-    "License": "GPLv2+ and BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "3.fc35"
   },
   {
     "Name": "mpdecimal",
@@ -1309,12 +844,7 @@
     "Arch": "x86_64",
     "SrcName": "mpdecimal",
     "SrcVersion": "2.5.1",
-    "SrcRelease": "2.fc35",
-    "License": "BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "2.fc35"
   },
   {
     "Name": "mpfr",
@@ -1323,12 +853,7 @@
     "Arch": "x86_64",
     "SrcName": "mpfr",
     "SrcVersion": "4.1.0",
-    "SrcRelease": "8.fc35",
-    "License": "LGPLv3+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "8.fc35"
   },
   {
     "Name": "ncurses-base",
@@ -1337,12 +862,7 @@
     "Arch": "noarch",
     "SrcName": "ncurses",
     "SrcVersion": "6.2",
-    "SrcRelease": "8.20210508.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "8.20210508.fc35"
   },
   {
     "Name": "ncurses-libs",
@@ -1351,12 +871,7 @@
     "Arch": "x86_64",
     "SrcName": "ncurses",
     "SrcVersion": "6.2",
-    "SrcRelease": "8.20210508.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "8.20210508.fc35"
   },
   {
     "Name": "nettle",
@@ -1365,12 +880,7 @@
     "Arch": "x86_64",
     "SrcName": "nettle",
     "SrcVersion": "3.7.3",
-    "SrcRelease": "2.fc35",
-    "License": "LGPLv3+ or GPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "2.fc35"
   },
   {
     "Name": "npth",
@@ -1379,12 +889,7 @@
     "Arch": "x86_64",
     "SrcName": "npth",
     "SrcVersion": "1.6",
-    "SrcRelease": "7.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "7.fc35"
   },
   {
     "Name": "openldap",
@@ -1393,12 +898,7 @@
     "Arch": "x86_64",
     "SrcName": "openldap",
     "SrcVersion": "2.4.59",
-    "SrcRelease": "3.fc35",
-    "License": "OpenLDAP",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "3.fc35"
   },
   {
     "Name": "openssl-libs",
@@ -1409,12 +909,7 @@
     "SrcName": "openssl",
     "SrcVersion": "1.1.1l",
     "SrcRelease": "2.fc35",
-    "SrcEpoch": 1,
-    "License": "OpenSSL and ASL 2.0",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcEpoch": 1
   },
   {
     "Name": "p11-kit",
@@ -1423,12 +918,7 @@
     "Arch": "x86_64",
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.22",
-    "SrcRelease": "4.fc35",
-    "License": "BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "4.fc35"
   },
   {
     "Name": "p11-kit-trust",
@@ -1437,12 +927,7 @@
     "Arch": "x86_64",
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.22",
-    "SrcRelease": "4.fc35",
-    "License": "BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "4.fc35"
   },
   {
     "Name": "pam",
@@ -1451,12 +936,7 @@
     "Arch": "x86_64",
     "SrcName": "pam",
     "SrcVersion": "1.5.2",
-    "SrcRelease": "7.fc35",
-    "License": "BSD and GPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "7.fc35"
   },
   {
     "Name": "pcre",
@@ -1465,12 +945,7 @@
     "Arch": "x86_64",
     "SrcName": "pcre",
     "SrcVersion": "8.45",
-    "SrcRelease": "1.fc35",
-    "License": "BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "pcre2",
@@ -1479,12 +954,7 @@
     "Arch": "x86_64",
     "SrcName": "pcre2",
     "SrcVersion": "10.39",
-    "SrcRelease": "1.fc35",
-    "License": "BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "pcre2-syntax",
@@ -1493,12 +963,7 @@
     "Arch": "noarch",
     "SrcName": "pcre2",
     "SrcVersion": "10.39",
-    "SrcRelease": "1.fc35",
-    "License": "BSD",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "popt",
@@ -1507,12 +972,7 @@
     "Arch": "x86_64",
     "SrcName": "popt",
     "SrcVersion": "1.18",
-    "SrcRelease": "6.fc35",
-    "License": "MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "6.fc35"
   },
   {
     "Name": "publicsuffix-list-dafsa",
@@ -1521,12 +981,7 @@
     "Arch": "noarch",
     "SrcName": "publicsuffix-list",
     "SrcVersion": "20210518",
-    "SrcRelease": "2.fc35",
-    "License": "MPLv2.0",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "2.fc35"
   },
   {
     "Name": "python-pip-wheel",
@@ -1535,12 +990,7 @@
     "Arch": "noarch",
     "SrcName": "python-pip",
     "SrcVersion": "21.2.3",
-    "SrcRelease": "4.fc35",
-    "License": "MIT and Python and ASL 2.0 and BSD and ISC and LGPLv2 and MPLv2.0 and (ASL 2.0 or BSD)",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "4.fc35"
   },
   {
     "Name": "python-setuptools-wheel",
@@ -1549,12 +999,7 @@
     "Arch": "noarch",
     "SrcName": "python-setuptools",
     "SrcVersion": "57.4.0",
-    "SrcRelease": "1.fc35",
-    "License": "MIT and (BSD or ASL 2.0)",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "python3",
@@ -1563,12 +1008,7 @@
     "Arch": "x86_64",
     "SrcName": "python3.10",
     "SrcVersion": "3.10.2",
-    "SrcRelease": "1.fc35",
-    "License": "Python",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "python3-dnf",
@@ -1577,12 +1017,7 @@
     "Arch": "noarch",
     "SrcName": "dnf",
     "SrcVersion": "4.9.0",
-    "SrcRelease": "1.fc35",
-    "License": "GPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "python3-gpg",
@@ -1591,12 +1026,7 @@
     "Arch": "x86_64",
     "SrcName": "gpgme",
     "SrcVersion": "1.15.1",
-    "SrcRelease": "6.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "6.fc35"
   },
   {
     "Name": "python3-hawkey",
@@ -1605,12 +1035,7 @@
     "Arch": "x86_64",
     "SrcName": "libdnf",
     "SrcVersion": "0.64.0",
-    "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "python3-libcomps",
@@ -1619,12 +1044,7 @@
     "Arch": "x86_64",
     "SrcName": "libcomps",
     "SrcVersion": "0.1.18",
-    "SrcRelease": "1.fc35",
-    "License": "GPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "python3-libdnf",
@@ -1633,12 +1053,7 @@
     "Arch": "x86_64",
     "SrcName": "libdnf",
     "SrcVersion": "0.64.0",
-    "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "python3-libs",
@@ -1647,12 +1062,7 @@
     "Arch": "x86_64",
     "SrcName": "python3.10",
     "SrcVersion": "3.10.2",
-    "SrcRelease": "1.fc35",
-    "License": "Python",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "python3-rpm",
@@ -1661,12 +1071,7 @@
     "Arch": "x86_64",
     "SrcName": "rpm",
     "SrcVersion": "4.17.0",
-    "SrcRelease": "4.fc35",
-    "License": "GPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "4.fc35"
   },
   {
     "Name": "readline",
@@ -1675,12 +1080,7 @@
     "Arch": "x86_64",
     "SrcName": "readline",
     "SrcVersion": "8.1",
-    "SrcRelease": "3.fc35",
-    "License": "GPLv3+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "3.fc35"
   },
   {
     "Name": "rootfiles",
@@ -1689,12 +1089,7 @@
     "Arch": "noarch",
     "SrcName": "rootfiles",
     "SrcVersion": "8.1",
-    "SrcRelease": "30.fc35",
-    "License": "Public Domain",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "30.fc35"
   },
   {
     "Name": "rpm",
@@ -1703,12 +1098,7 @@
     "Arch": "x86_64",
     "SrcName": "rpm",
     "SrcVersion": "4.17.0",
-    "SrcRelease": "4.fc35",
-    "License": "GPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "4.fc35"
   },
   {
     "Name": "rpm-build-libs",
@@ -1717,12 +1107,7 @@
     "Arch": "x86_64",
     "SrcName": "rpm",
     "SrcVersion": "4.17.0",
-    "SrcRelease": "4.fc35",
-    "License": "GPLv2+ and LGPLv2+ with exceptions",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "4.fc35"
   },
   {
     "Name": "rpm-libs",
@@ -1731,12 +1116,7 @@
     "Arch": "x86_64",
     "SrcName": "rpm",
     "SrcVersion": "4.17.0",
-    "SrcRelease": "4.fc35",
-    "License": "GPLv2+ and LGPLv2+ with exceptions",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "4.fc35"
   },
   {
     "Name": "rpm-sign-libs",
@@ -1745,12 +1125,7 @@
     "Arch": "x86_64",
     "SrcName": "rpm",
     "SrcVersion": "4.17.0",
-    "SrcRelease": "4.fc35",
-    "License": "GPLv2+ and LGPLv2+ with exceptions",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "4.fc35"
   },
   {
     "Name": "sed",
@@ -1759,12 +1134,7 @@
     "Arch": "x86_64",
     "SrcName": "sed",
     "SrcVersion": "4.8",
-    "SrcRelease": "8.fc35",
-    "License": "GPLv3+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "8.fc35"
   },
   {
     "Name": "setup",
@@ -1773,12 +1143,7 @@
     "Arch": "noarch",
     "SrcName": "setup",
     "SrcVersion": "2.13.9.1",
-    "SrcRelease": "2.fc35",
-    "License": "Public Domain",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "2.fc35"
   },
   {
     "Name": "shadow-utils",
@@ -1789,12 +1154,7 @@
     "SrcName": "shadow-utils",
     "SrcVersion": "4.9",
     "SrcRelease": "9.fc35",
-    "SrcEpoch": 2,
-    "License": "BSD and GPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcEpoch": 2
   },
   {
     "Name": "sqlite-libs",
@@ -1803,12 +1163,7 @@
     "Arch": "x86_64",
     "SrcName": "sqlite",
     "SrcVersion": "3.36.0",
-    "SrcRelease": "3.fc35",
-    "License": "Public Domain",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "3.fc35"
   },
   {
     "Name": "sudo",
@@ -1817,12 +1172,7 @@
     "Arch": "x86_64",
     "SrcName": "sudo",
     "SrcVersion": "1.9.7p2",
-    "SrcRelease": "2.fc35",
-    "License": "ISC",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "2.fc35"
   },
   {
     "Name": "tar",
@@ -1833,12 +1183,7 @@
     "SrcName": "tar",
     "SrcVersion": "1.34",
     "SrcRelease": "2.fc35",
-    "SrcEpoch": 2,
-    "License": "GPLv3+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcEpoch": 2
   },
   {
     "Name": "tpm2-tss",
@@ -1847,12 +1192,7 @@
     "Arch": "x86_64",
     "SrcName": "tpm2-tss",
     "SrcVersion": "3.1.0",
-    "SrcRelease": "3.fc35",
-    "License": "BSD and TCGL",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "3.fc35"
   },
   {
     "Name": "tzdata",
@@ -1861,12 +1201,7 @@
     "Arch": "noarch",
     "SrcName": "tzdata",
     "SrcVersion": "2021e",
-    "SrcRelease": "1.fc35",
-    "License": "Public Domain",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "vim-data",
@@ -1877,12 +1212,7 @@
     "SrcName": "vim",
     "SrcVersion": "8.2.4386",
     "SrcRelease": "1.fc35",
-    "SrcEpoch": 2,
-    "License": "Vim and MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcEpoch": 2
   },
   {
     "Name": "vim-minimal",
@@ -1893,12 +1223,7 @@
     "SrcName": "vim",
     "SrcVersion": "8.2.4386",
     "SrcRelease": "1.fc35",
-    "SrcEpoch": 2,
-    "License": "Vim and MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcEpoch": 2
   },
   {
     "Name": "xz-libs",
@@ -1907,12 +1232,7 @@
     "Arch": "x86_64",
     "SrcName": "xz",
     "SrcVersion": "5.2.5",
-    "SrcRelease": "7.fc35",
-    "License": "Public Domain",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "7.fc35"
   },
   {
     "Name": "yum",
@@ -1921,12 +1241,7 @@
     "Arch": "noarch",
     "SrcName": "dnf",
     "SrcVersion": "4.9.0",
-    "SrcRelease": "1.fc35",
-    "License": "GPLv2+",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "1.fc35"
   },
   {
     "Name": "zchunk-libs",
@@ -1935,12 +1250,7 @@
     "Arch": "x86_64",
     "SrcName": "zchunk",
     "SrcVersion": "1.1.15",
-    "SrcRelease": "2.fc35",
-    "License": "BSD and MIT",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "2.fc35"
   },
   {
     "Name": "zlib",
@@ -1949,11 +1259,6 @@
     "Arch": "x86_64",
     "SrcName": "zlib",
     "SrcVersion": "1.2.11",
-    "SrcRelease": "30.fc35",
-    "License": "zlib and Boost",
-    "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
-      "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
-    }
+    "SrcRelease": "30.fc35"
   }
 ]

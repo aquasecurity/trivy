@@ -6,11 +6,7 @@
     "Arch": "x86_64",
     "SrcName": "aaa_base",
     "SrcVersion": "84.87+git20180409.04c9dae",
-    "SrcRelease": "lp151.5.12.1",
-    "License": "GPL-2.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.5.12.1"
   },
   {
     "Name": "bash",
@@ -19,11 +15,7 @@
     "Arch": "x86_64",
     "SrcName": "bash",
     "SrcVersion": "4.4",
-    "SrcRelease": "lp151.10.3.1",
-    "License": "GPL-3.0-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.10.3.1"
   },
   {
     "Name": "boost-license1_66_0",
@@ -32,11 +24,7 @@
     "Arch": "noarch",
     "SrcName": "boost-base",
     "SrcVersion": "1.66.0",
-    "SrcRelease": "lp151.4.5",
-    "License": "BSL-1.0",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.5"
   },
   {
     "Name": "ca-certificates",
@@ -45,11 +33,7 @@
     "Arch": "noarch",
     "SrcName": "ca-certificates",
     "SrcVersion": "2+git20170807.10b2785",
-    "SrcRelease": "lp151.7.1",
-    "License": "GPL-2.0-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.7.1"
   },
   {
     "Name": "ca-certificates-mozilla",
@@ -58,11 +42,7 @@
     "Arch": "noarch",
     "SrcName": "ca-certificates-mozilla",
     "SrcVersion": "2.34",
-    "SrcRelease": "lp151.2.3.1",
-    "License": "MPL-2.0",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.3.1"
   },
   {
     "Name": "coreutils",
@@ -71,11 +51,7 @@
     "Arch": "x86_64",
     "SrcName": "coreutils",
     "SrcVersion": "8.29",
-    "SrcRelease": "lp151.3.3",
-    "License": "GPL-3.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3"
   },
   {
     "Name": "cpio",
@@ -84,11 +60,7 @@
     "Arch": "x86_64",
     "SrcName": "cpio",
     "SrcVersion": "2.12",
-    "SrcRelease": "lp151.2.68",
-    "License": "GPL-3.0",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.68"
   },
   {
     "Name": "cracklib",
@@ -97,11 +69,7 @@
     "Arch": "x86_64",
     "SrcName": "cracklib",
     "SrcVersion": "2.9.6",
-    "SrcRelease": "lp151.3.69",
-    "License": "LGPL-2.1",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.69"
   },
   {
     "Name": "cracklib-dict-small",
@@ -110,11 +78,7 @@
     "Arch": "x86_64",
     "SrcName": "cracklib",
     "SrcVersion": "2.9.6",
-    "SrcRelease": "lp151.3.69",
-    "License": "LGPL-2.1",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.69"
   },
   {
     "Name": "diffutils",
@@ -123,11 +87,7 @@
     "Arch": "x86_64",
     "SrcName": "diffutils",
     "SrcVersion": "3.6",
-    "SrcRelease": "lp151.3.3",
-    "License": "GFDL-1.2 and GPL-3.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3"
   },
   {
     "Name": "file-magic",
@@ -136,11 +96,7 @@
     "Arch": "noarch",
     "SrcName": "file",
     "SrcVersion": "5.32",
-    "SrcRelease": "lp151.7.22",
-    "License": "BSD-2-Clause",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.7.22"
   },
   {
     "Name": "filesystem",
@@ -149,11 +105,7 @@
     "Arch": "x86_64",
     "SrcName": "filesystem",
     "SrcVersion": "15.0",
-    "SrcRelease": "lp151.9.2",
-    "License": "MIT",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.9.2"
   },
   {
     "Name": "fillup",
@@ -162,11 +114,7 @@
     "Arch": "x86_64",
     "SrcName": "fillup",
     "SrcVersion": "1.42",
-    "SrcRelease": "lp151.3.2",
-    "License": "GPL-2.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.2"
   },
   {
     "Name": "findutils",
@@ -175,11 +123,7 @@
     "Arch": "x86_64",
     "SrcName": "findutils",
     "SrcVersion": "4.6.0",
-    "SrcRelease": "lp151.3.71",
-    "License": "GPL-3.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.71"
   },
   {
     "Name": "gawk",
@@ -188,11 +132,7 @@
     "Arch": "x86_64",
     "SrcName": "gawk",
     "SrcVersion": "4.2.1",
-    "SrcRelease": "lp151.2.70",
-    "License": "GPL-3.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.70"
   },
   {
     "Name": "glibc",
@@ -201,41 +141,25 @@
     "Arch": "x86_64",
     "SrcName": "glibc",
     "SrcVersion": "2.26",
-    "SrcRelease": "lp151.18.7",
-    "License": "LGPL-2.1+ AND SUSE-LGPL-2.1+-with-GCC-exception AND GPL-2.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.18.7"
   },
   {
     "Name": "gpg-pubkey",
     "Version": "307e3d54",
     "Release": "5aaa90a5",
-    "Arch": "None",
-    "License": "pubkey",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "Arch": "None"
   },
   {
     "Name": "gpg-pubkey",
     "Version": "39db7c82",
     "Release": "5847eb1f",
-    "Arch": "None",
-    "License": "pubkey",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "Arch": "None"
   },
   {
     "Name": "gpg-pubkey",
     "Version": "3dbdc284",
     "Release": "53674dd4",
-    "Arch": "None",
-    "License": "pubkey",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "Arch": "None"
   },
   {
     "Name": "gpg2",
@@ -244,11 +168,7 @@
     "Arch": "x86_64",
     "SrcName": "gpg2",
     "SrcVersion": "2.2.5",
-    "SrcRelease": "lp151.6.3.1",
-    "License": "GPL-3.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.6.3.1"
   },
   {
     "Name": "grep",
@@ -257,11 +177,7 @@
     "Arch": "x86_64",
     "SrcName": "grep",
     "SrcVersion": "3.1",
-    "SrcRelease": "lp151.3.29",
-    "License": "GPL-3.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.29"
   },
   {
     "Name": "info",
@@ -270,11 +186,7 @@
     "Arch": "x86_64",
     "SrcName": "texinfo",
     "SrcVersion": "6.5",
-    "SrcRelease": "lp151.5.69",
-    "License": "GPL-3.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.5.69"
   },
   {
     "Name": "krb5",
@@ -283,11 +195,7 @@
     "Arch": "x86_64",
     "SrcName": "krb5",
     "SrcVersion": "1.16.3",
-    "SrcRelease": "lp151.2.6.1",
-    "License": "MIT",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.6.1"
   },
   {
     "Name": "kubic-locale-archive",
@@ -296,11 +204,7 @@
     "Arch": "noarch",
     "SrcName": "kubic-locale-archive",
     "SrcVersion": "2.26",
-    "SrcRelease": "lp151.4.1",
-    "License": "GPL-2.0+ AND MIT AND LGPL-2.1+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.1"
   },
   {
     "Name": "libacl1",
@@ -309,11 +213,7 @@
     "Arch": "x86_64",
     "SrcName": "acl",
     "SrcVersion": "2.2.52",
-    "SrcRelease": "lp151.4.29",
-    "License": "GPL-2.0+ and LGPL-2.1+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.29"
   },
   {
     "Name": "libassuan0",
@@ -322,11 +222,7 @@
     "Arch": "x86_64",
     "SrcName": "libassuan",
     "SrcVersion": "2.5.1",
-    "SrcRelease": "lp151.3.3",
-    "License": "GPL-3.0+ and LGPL-2.1+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3"
   },
   {
     "Name": "libattr1",
@@ -335,11 +231,7 @@
     "Arch": "x86_64",
     "SrcName": "attr",
     "SrcVersion": "2.4.47",
-    "SrcRelease": "lp151.3.70",
-    "License": "GPL-2.0-or-later AND LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.70"
   },
   {
     "Name": "libaudit1",
@@ -348,11 +240,7 @@
     "Arch": "x86_64",
     "SrcName": "audit",
     "SrcVersion": "2.8.1",
-    "SrcRelease": "lp151.4.66",
-    "License": "LGPL-2.1+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.66"
   },
   {
     "Name": "libaugeas0",
@@ -361,11 +249,7 @@
     "Arch": "x86_64",
     "SrcName": "augeas",
     "SrcVersion": "1.10.1",
-    "SrcRelease": "lp151.2.3",
-    "License": "GPL-3.0-or-later AND LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.3"
   },
   {
     "Name": "libblkid1",
@@ -374,11 +258,7 @@
     "Arch": "x86_64",
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
-    "SrcRelease": "lp151.3.3.2",
-    "License": "LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3.2"
   },
   {
     "Name": "libboost_system1_66_0",
@@ -387,11 +267,7 @@
     "Arch": "x86_64",
     "SrcName": "boost-base",
     "SrcVersion": "1.66.0",
-    "SrcRelease": "lp151.4.5",
-    "License": "BSL-1.0",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.5"
   },
   {
     "Name": "libboost_thread1_66_0",
@@ -400,11 +276,7 @@
     "Arch": "x86_64",
     "SrcName": "boost-base",
     "SrcVersion": "1.66.0",
-    "SrcRelease": "lp151.4.5",
-    "License": "BSL-1.0",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.5"
   },
   {
     "Name": "libbz2-1",
@@ -413,11 +285,7 @@
     "Arch": "x86_64",
     "SrcName": "bzip2",
     "SrcVersion": "1.0.6",
-    "SrcRelease": "lp151.5.9.1",
-    "License": "BSD-3-Clause",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.5.9.1"
   },
   {
     "Name": "libcap-ng0",
@@ -426,11 +294,7 @@
     "Arch": "x86_64",
     "SrcName": "libcap-ng",
     "SrcVersion": "0.7.9",
-    "SrcRelease": "lp151.3.39",
-    "License": "LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.39"
   },
   {
     "Name": "libcap2",
@@ -439,11 +303,7 @@
     "Arch": "x86_64",
     "SrcName": "libcap",
     "SrcVersion": "2.25",
-    "SrcRelease": "lp151.3.70",
-    "License": "BSD-3-Clause and GPL-2.0",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.70"
   },
   {
     "Name": "libcom_err2",
@@ -452,11 +312,7 @@
     "Arch": "x86_64",
     "SrcName": "e2fsprogs",
     "SrcVersion": "1.43.8",
-    "SrcRelease": "lp151.5.6.1",
-    "License": "MIT",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.5.6.1"
   },
   {
     "Name": "libcrack2",
@@ -465,11 +321,7 @@
     "Arch": "x86_64",
     "SrcName": "cracklib",
     "SrcVersion": "2.9.6",
-    "SrcRelease": "lp151.3.69",
-    "License": "LGPL-2.1",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.69"
   },
   {
     "Name": "libcurl4",
@@ -478,11 +330,7 @@
     "Arch": "x86_64",
     "SrcName": "curl",
     "SrcVersion": "7.60.0",
-    "SrcRelease": "lp151.5.6.1",
-    "License": "curl",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.5.6.1"
   },
   {
     "Name": "libdw1",
@@ -491,11 +339,7 @@
     "Arch": "x86_64",
     "SrcName": "elfutils",
     "SrcVersion": "0.168",
-    "SrcRelease": "lp151.4.3.1",
-    "License": "SUSE-GPL-2.0-with-OSI-exception",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.3.1"
   },
   {
     "Name": "libebl-plugins",
@@ -504,11 +348,7 @@
     "Arch": "x86_64",
     "SrcName": "elfutils",
     "SrcVersion": "0.168",
-    "SrcRelease": "lp151.4.3.1",
-    "License": "SUSE-GPL-2.0-with-OSI-exception",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.3.1"
   },
   {
     "Name": "libelf1",
@@ -517,11 +357,7 @@
     "Arch": "x86_64",
     "SrcName": "elfutils",
     "SrcVersion": "0.168",
-    "SrcRelease": "lp151.4.3.1",
-    "License": "SUSE-GPL-2.0-with-OSI-exception",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.3.1"
   },
   {
     "Name": "libfdisk1",
@@ -530,11 +366,7 @@
     "Arch": "x86_64",
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
-    "SrcRelease": "lp151.3.3.2",
-    "License": "LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3.2"
   },
   {
     "Name": "libffi7",
@@ -543,11 +375,7 @@
     "Arch": "x86_64",
     "SrcName": "libffi",
     "SrcVersion": "3.2.1.git259",
-    "SrcRelease": "lp151.5.2",
-    "License": "MIT",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.5.2"
   },
   {
     "Name": "libgcc_s1",
@@ -556,11 +384,7 @@
     "Arch": "x86_64",
     "SrcName": "gcc8",
     "SrcVersion": "8.2.1+r264010",
-    "SrcRelease": "lp151.1.33",
-    "License": "GPL-3.0-with-GCC-exception",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.1.33"
   },
   {
     "Name": "libgcrypt20",
@@ -569,11 +393,7 @@
     "Arch": "x86_64",
     "SrcName": "libgcrypt",
     "SrcVersion": "1.8.2",
-    "SrcRelease": "lp151.9.4.1",
-    "License": "GPL-2.0+ AND LGPL-2.1+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.9.4.1"
   },
   {
     "Name": "libgmp10",
@@ -582,11 +402,7 @@
     "Arch": "x86_64",
     "SrcName": "gmp",
     "SrcVersion": "6.1.2",
-    "SrcRelease": "lp151.3.70",
-    "License": "GPL-3.0+ and LGPL-3.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.70"
   },
   {
     "Name": "libgnutls30",
@@ -595,11 +411,7 @@
     "Arch": "x86_64",
     "SrcName": "gnutls",
     "SrcVersion": "3.6.7",
-    "SrcRelease": "lp151.2.3.1",
-    "License": "LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.3.1"
   },
   {
     "Name": "libgpg-error0",
@@ -608,11 +420,7 @@
     "Arch": "x86_64",
     "SrcName": "libgpg-error",
     "SrcVersion": "1.29",
-    "SrcRelease": "lp151.2.4",
-    "License": "GPL-2.0-or-later AND LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.4"
   },
   {
     "Name": "libgpgme11",
@@ -621,11 +429,7 @@
     "Arch": "x86_64",
     "SrcName": "gpgme",
     "SrcVersion": "1.10.0",
-    "SrcRelease": "lp151.4.1",
-    "License": "LGPL-2.1-or-later AND GPL-3.0-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.1"
   },
   {
     "Name": "libhogweed4",
@@ -634,11 +438,7 @@
     "Arch": "x86_64",
     "SrcName": "libnettle",
     "SrcVersion": "3.4.1",
-    "SrcRelease": "lp151.1.1",
-    "License": "LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.1.1"
   },
   {
     "Name": "libidn2-0",
@@ -647,11 +447,7 @@
     "Arch": "x86_64",
     "SrcName": "libidn2",
     "SrcVersion": "2.0.4",
-    "SrcRelease": "lp151.2.3",
-    "License": "GPL-3.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.3"
   },
   {
     "Name": "libkeyutils1",
@@ -660,11 +456,7 @@
     "Arch": "x86_64",
     "SrcName": "keyutils",
     "SrcVersion": "1.5.10",
-    "SrcRelease": "lp151.4.70",
-    "License": "GPL-2.0+ and LGPL-2.1+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.70"
   },
   {
     "Name": "libksba8",
@@ -673,11 +465,7 @@
     "Arch": "x86_64",
     "SrcName": "libksba",
     "SrcVersion": "1.3.5",
-    "SrcRelease": "lp151.3.3",
-    "License": "(LGPL-3.0+ or GPL-2.0+) and GPL-3.0+ and MIT",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3"
   },
   {
     "Name": "libldap-2_4-2",
@@ -686,11 +474,7 @@
     "Arch": "x86_64",
     "SrcName": "openldap2",
     "SrcVersion": "2.4.46",
-    "SrcRelease": "lp151.10.3.1",
-    "License": "OLDAP-2.8",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.10.3.1"
   },
   {
     "Name": "liblua5_3-5",
@@ -699,11 +483,7 @@
     "Arch": "x86_64",
     "SrcName": "lua53",
     "SrcVersion": "5.3.4",
-    "SrcRelease": "lp151.3.25",
-    "License": "MIT",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.25"
   },
   {
     "Name": "liblz4-1",
@@ -712,11 +492,7 @@
     "Arch": "x86_64",
     "SrcName": "lz4",
     "SrcVersion": "1.8.0",
-    "SrcRelease": "lp151.3.3.1",
-    "License": "BSD-2-Clause",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3.1"
   },
   {
     "Name": "liblzma5",
@@ -725,11 +501,7 @@
     "Arch": "x86_64",
     "SrcName": "xz",
     "SrcVersion": "5.2.3",
-    "SrcRelease": "lp151.4.3.1",
-    "License": "SUSE-Public-Domain",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.3.1"
   },
   {
     "Name": "libmagic1",
@@ -738,11 +510,7 @@
     "Arch": "x86_64",
     "SrcName": "file",
     "SrcVersion": "5.32",
-    "SrcRelease": "lp151.7.22",
-    "License": "BSD-2-Clause",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.7.22"
   },
   {
     "Name": "libmodman1",
@@ -751,11 +519,7 @@
     "Arch": "x86_64",
     "SrcName": "libmodman",
     "SrcVersion": "2.0.1",
-    "SrcRelease": "lp151.2.3",
-    "License": "LGPL-2.1+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.3"
   },
   {
     "Name": "libmount1",
@@ -764,11 +528,7 @@
     "Arch": "x86_64",
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
-    "SrcRelease": "lp151.3.3.2",
-    "License": "LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3.2"
   },
   {
     "Name": "libncurses6",
@@ -777,11 +537,7 @@
     "Arch": "x86_64",
     "SrcName": "ncurses",
     "SrcVersion": "6.1",
-    "SrcRelease": "lp151.5.41",
-    "License": "MIT",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.5.41"
   },
   {
     "Name": "libnettle6",
@@ -790,11 +546,7 @@
     "Arch": "x86_64",
     "SrcName": "libnettle",
     "SrcVersion": "3.4.1",
-    "SrcRelease": "lp151.1.1",
-    "License": "LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.1.1"
   },
   {
     "Name": "libnghttp2-14",
@@ -803,11 +555,7 @@
     "Arch": "x86_64",
     "SrcName": "nghttp2",
     "SrcVersion": "1.39.2",
-    "SrcRelease": "lp151.3.3.1",
-    "License": "MIT",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3.1"
   },
   {
     "Name": "libnpth0",
@@ -816,11 +564,7 @@
     "Arch": "x86_64",
     "SrcName": "npth",
     "SrcVersion": "1.5",
-    "SrcRelease": "lp151.3.2",
-    "License": "LGPL-2.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.2"
   },
   {
     "Name": "libnsl2",
@@ -829,11 +573,7 @@
     "Arch": "x86_64",
     "SrcName": "libnsl",
     "SrcVersion": "1.2.0",
-    "SrcRelease": "lp151.3.67",
-    "License": "LGPL-2.1-only",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.67"
   },
   {
     "Name": "libopenssl1_1",
@@ -842,11 +582,7 @@
     "Arch": "x86_64",
     "SrcName": "openssl-1_1",
     "SrcVersion": "1.1.0i",
-    "SrcRelease": "lp151.8.3.1",
-    "License": "OpenSSL",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.8.3.1"
   },
   {
     "Name": "libp11-kit0",
@@ -855,11 +591,7 @@
     "Arch": "x86_64",
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.2",
-    "SrcRelease": "lp151.3.3",
-    "License": "BSD-3-Clause",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3"
   },
   {
     "Name": "libpcre1",
@@ -868,11 +600,7 @@
     "Arch": "x86_64",
     "SrcName": "pcre",
     "SrcVersion": "8.41",
-    "SrcRelease": "lp151.5.67",
-    "License": "BSD-3-Clause",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.5.67"
   },
   {
     "Name": "libpopt0",
@@ -881,11 +609,7 @@
     "Arch": "x86_64",
     "SrcName": "popt",
     "SrcVersion": "1.16",
-    "SrcRelease": "lp151.3.67",
-    "License": "MIT",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.67"
   },
   {
     "Name": "libprocps7",
@@ -894,11 +618,7 @@
     "Arch": "x86_64",
     "SrcName": "procps",
     "SrcVersion": "3.3.15",
-    "SrcRelease": "lp151.6.3.1",
-    "License": "LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.6.3.1"
   },
   {
     "Name": "libproxy1",
@@ -907,11 +627,7 @@
     "Arch": "x86_64",
     "SrcName": "libproxy",
     "SrcVersion": "0.4.15",
-    "SrcRelease": "lp151.3.3",
-    "License": "GPL-2.0+ AND LGPL-2.1+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3"
   },
   {
     "Name": "libpsl5",
@@ -920,11 +636,7 @@
     "Arch": "x86_64",
     "SrcName": "libpsl",
     "SrcVersion": "0.20.1",
-    "SrcRelease": "lp151.2.43",
-    "License": "MIT AND MPL-2.0",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.43"
   },
   {
     "Name": "libreadline7",
@@ -933,11 +645,7 @@
     "Arch": "x86_64",
     "SrcName": "bash",
     "SrcVersion": "4.4",
-    "SrcRelease": "lp151.10.3.1",
-    "License": "GPL-3.0-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.10.3.1"
   },
   {
     "Name": "libsasl2-3",
@@ -946,11 +654,7 @@
     "Arch": "x86_64",
     "SrcName": "cyrus-sasl",
     "SrcVersion": "2.1.26",
-    "SrcRelease": "lp151.5.1",
-    "License": "BSD-4-Clause",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.5.1"
   },
   {
     "Name": "libselinux1",
@@ -959,11 +663,7 @@
     "Arch": "x86_64",
     "SrcName": "libselinux",
     "SrcVersion": "2.8",
-    "SrcRelease": "lp151.1.30",
-    "License": "GPL-2.0-only AND SUSE-Public-Domain",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.1.30"
   },
   {
     "Name": "libsemanage1",
@@ -972,11 +672,7 @@
     "Arch": "x86_64",
     "SrcName": "libsemanage",
     "SrcVersion": "2.8",
-    "SrcRelease": "lp151.1.32",
-    "License": "LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.1.32"
   },
   {
     "Name": "libsepol1",
@@ -985,11 +681,7 @@
     "Arch": "x86_64",
     "SrcName": "libsepol",
     "SrcVersion": "2.8",
-    "SrcRelease": "lp151.1.36",
-    "License": "LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.1.36"
   },
   {
     "Name": "libsmartcols1",
@@ -998,11 +690,7 @@
     "Arch": "x86_64",
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
-    "SrcRelease": "lp151.3.3.2",
-    "License": "LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3.2"
   },
   {
     "Name": "libsolv-tools",
@@ -1011,11 +699,7 @@
     "Arch": "x86_64",
     "SrcName": "libsolv",
     "SrcVersion": "0.7.6",
-    "SrcRelease": "lp151.2.3.2",
-    "License": "BSD-3-Clause",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.3.2"
   },
   {
     "Name": "libsqlite3-0",
@@ -1024,11 +708,7 @@
     "Arch": "x86_64",
     "SrcName": "sqlite3",
     "SrcVersion": "3.28.0",
-    "SrcRelease": "lp151.2.3.1",
-    "License": "SUSE-Public-Domain",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.3.1"
   },
   {
     "Name": "libssh4",
@@ -1037,11 +717,7 @@
     "Arch": "x86_64",
     "SrcName": "libssh",
     "SrcVersion": "0.8.7",
-    "SrcRelease": "lp151.2.3.1",
-    "License": "LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.3.1"
   },
   {
     "Name": "libstdc++6",
@@ -1050,11 +726,7 @@
     "Arch": "x86_64",
     "SrcName": "gcc8",
     "SrcVersion": "8.2.1+r264010",
-    "SrcRelease": "lp151.1.33",
-    "License": "GPL-3.0-with-GCC-exception",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.1.33"
   },
   {
     "Name": "libsystemd0",
@@ -1063,11 +735,7 @@
     "Arch": "x86_64",
     "SrcName": "systemd",
     "SrcVersion": "234",
-    "SrcRelease": "lp151.26.4.1",
-    "License": "LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.26.4.1"
   },
   {
     "Name": "libtasn1",
@@ -1076,11 +744,7 @@
     "Arch": "x86_64",
     "SrcName": "libtasn1",
     "SrcVersion": "4.13",
-    "SrcRelease": "lp151.4.3.1",
-    "License": "LGPL-2.1-or-later AND GPL-3.0-only",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.3.1"
   },
   {
     "Name": "libtasn1-6",
@@ -1089,11 +753,7 @@
     "Arch": "x86_64",
     "SrcName": "libtasn1",
     "SrcVersion": "4.13",
-    "SrcRelease": "lp151.4.3.1",
-    "License": "LGPL-2.1-or-later AND GPL-3.0-only",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.3.1"
   },
   {
     "Name": "libtirpc-netconfig",
@@ -1102,11 +762,7 @@
     "Arch": "x86_64",
     "SrcName": "libtirpc",
     "SrcVersion": "1.0.2",
-    "SrcRelease": "lp151.4.8",
-    "License": "BSD-3-Clause AND GPL-2.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.8"
   },
   {
     "Name": "libtirpc3",
@@ -1115,11 +771,7 @@
     "Arch": "x86_64",
     "SrcName": "libtirpc",
     "SrcVersion": "1.0.2",
-    "SrcRelease": "lp151.4.8",
-    "License": "BSD-3-Clause AND GPL-2.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.8"
   },
   {
     "Name": "libudev1",
@@ -1128,11 +780,7 @@
     "Arch": "x86_64",
     "SrcName": "systemd",
     "SrcVersion": "234",
-    "SrcRelease": "lp151.26.4.1",
-    "License": "LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.26.4.1"
   },
   {
     "Name": "libunistring2",
@@ -1141,11 +789,7 @@
     "Arch": "x86_64",
     "SrcName": "libunistring",
     "SrcVersion": "0.9.9",
-    "SrcRelease": "lp151.2.3",
-    "License": "LGPL-3.0-or-later OR GPL-2.0-only",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.3"
   },
   {
     "Name": "libusb-1_0-0",
@@ -1154,11 +798,7 @@
     "Arch": "x86_64",
     "SrcName": "libusb-1_0",
     "SrcVersion": "1.0.21",
-    "SrcRelease": "lp151.2.3",
-    "License": "LGPL-2.1+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.3"
   },
   {
     "Name": "libutempter0",
@@ -1167,11 +807,7 @@
     "Arch": "x86_64",
     "SrcName": "utempter",
     "SrcVersion": "1.1.6",
-    "SrcRelease": "lp151.4.70",
-    "License": "MIT",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.70"
   },
   {
     "Name": "libuuid1",
@@ -1180,11 +816,7 @@
     "Arch": "x86_64",
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
-    "SrcRelease": "lp151.3.3.2",
-    "License": "BSD-3-Clause",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3.2"
   },
   {
     "Name": "libverto1",
@@ -1193,11 +825,7 @@
     "Arch": "x86_64",
     "SrcName": "libverto",
     "SrcVersion": "0.2.6",
-    "SrcRelease": "lp151.4.70",
-    "License": "MIT",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.70"
   },
   {
     "Name": "libxml2-2",
@@ -1206,11 +834,7 @@
     "Arch": "x86_64",
     "SrcName": "libxml2",
     "SrcVersion": "2.9.7",
-    "SrcRelease": "lp151.5.3.1",
-    "License": "MIT",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.5.3.1"
   },
   {
     "Name": "libz1",
@@ -1219,11 +843,7 @@
     "Arch": "x86_64",
     "SrcName": "zlib",
     "SrcVersion": "1.2.11",
-    "SrcRelease": "lp151.5.3.1",
-    "License": "Zlib",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.5.3.1"
   },
   {
     "Name": "libzio1",
@@ -1232,11 +852,7 @@
     "Arch": "x86_64",
     "SrcName": "libzio",
     "SrcVersion": "1.06",
-    "SrcRelease": "lp151.3.71",
-    "License": "GPL-2.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.71"
   },
   {
     "Name": "libzstd1",
@@ -1245,11 +861,7 @@
     "Arch": "x86_64",
     "SrcName": "zstd",
     "SrcVersion": "1.4.2",
-    "SrcRelease": "lp151.3.3.1",
-    "License": "BSD-3-Clause AND GPL-2.0-only",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3.1"
   },
   {
     "Name": "libzypp",
@@ -1258,11 +870,7 @@
     "Arch": "x86_64",
     "SrcName": "libzypp",
     "SrcVersion": "17.15.0",
-    "SrcRelease": "lp151.2.3.2",
-    "License": "GPL-2.0-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.3.2"
   },
   {
     "Name": "ncurses-utils",
@@ -1271,11 +879,7 @@
     "Arch": "x86_64",
     "SrcName": "ncurses",
     "SrcVersion": "6.1",
-    "SrcRelease": "lp151.5.41",
-    "License": "MIT",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.5.41"
   },
   {
     "Name": "netcfg",
@@ -1284,11 +888,7 @@
     "Arch": "noarch",
     "SrcName": "netcfg",
     "SrcVersion": "11.6",
-    "SrcRelease": "lp151.2.2",
-    "License": "BSD-3-Clause",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.2"
   },
   {
     "Name": "openSUSE-build-key",
@@ -1297,11 +897,7 @@
     "Arch": "noarch",
     "SrcName": "openSUSE-build-key",
     "SrcVersion": "1.0",
-    "SrcRelease": "lp151.3.1",
-    "License": "GPL-2.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.1"
   },
   {
     "Name": "openSUSE-release",
@@ -1310,11 +906,7 @@
     "Arch": "x86_64",
     "SrcName": "openSUSE-release",
     "SrcVersion": "15.1",
-    "SrcRelease": "lp151.301.1",
-    "License": "BSD-3-Clause",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.301.1"
   },
   {
     "Name": "openSUSE-release-appliance-docker",
@@ -1323,11 +915,7 @@
     "Arch": "x86_64",
     "SrcName": "openSUSE-release",
     "SrcVersion": "15.1",
-    "SrcRelease": "lp151.301.1",
-    "License": "BSD-3-Clause",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.301.1"
   },
   {
     "Name": "openssl",
@@ -1336,11 +924,7 @@
     "Arch": "noarch",
     "SrcName": "openssl",
     "SrcVersion": "1.1.0i",
-    "SrcRelease": "lp151.1.1",
-    "License": "OpenSSL",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.1.1"
   },
   {
     "Name": "openssl-1_1",
@@ -1349,11 +933,7 @@
     "Arch": "x86_64",
     "SrcName": "openssl-1_1",
     "SrcVersion": "1.1.0i",
-    "SrcRelease": "lp151.8.3.1",
-    "License": "OpenSSL",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.8.3.1"
   },
   {
     "Name": "p11-kit",
@@ -1362,11 +942,7 @@
     "Arch": "x86_64",
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.2",
-    "SrcRelease": "lp151.3.3",
-    "License": "BSD-3-Clause",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3"
   },
   {
     "Name": "p11-kit-tools",
@@ -1375,11 +951,7 @@
     "Arch": "x86_64",
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.2",
-    "SrcRelease": "lp151.3.3",
-    "License": "BSD-3-Clause",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3"
   },
   {
     "Name": "pam",
@@ -1388,11 +960,7 @@
     "Arch": "x86_64",
     "SrcName": "pam",
     "SrcVersion": "1.3.0",
-    "SrcRelease": "lp151.7.38",
-    "License": "GPL-2.0+ or BSD-3-Clause",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.7.38"
   },
   {
     "Name": "perl-base",
@@ -1401,11 +969,7 @@
     "Arch": "x86_64",
     "SrcName": "perl",
     "SrcVersion": "5.26.1",
-    "SrcRelease": "lp151.8.37",
-    "License": "Artistic-1.0 or GPL-2.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.8.37"
   },
   {
     "Name": "permissions",
@@ -1414,11 +978,7 @@
     "Arch": "x86_64",
     "SrcName": "permissions",
     "SrcVersion": "20181116",
-    "SrcRelease": "lp151.4.6.1",
-    "License": "GPL-2.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.6.1"
   },
   {
     "Name": "pinentry",
@@ -1427,11 +987,7 @@
     "Arch": "x86_64",
     "SrcName": "pinentry",
     "SrcVersion": "1.1.0",
-    "SrcRelease": "lp151.4.3.1",
-    "License": "GPL-2.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.3.1"
   },
   {
     "Name": "procps",
@@ -1440,11 +996,7 @@
     "Arch": "x86_64",
     "SrcName": "procps",
     "SrcVersion": "3.3.15",
-    "SrcRelease": "lp151.6.3.1",
-    "License": "GPL-2.0-or-later AND LGPL-2.1-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.6.3.1"
   },
   {
     "Name": "rpm",
@@ -1453,11 +1005,7 @@
     "Arch": "x86_64",
     "SrcName": "rpm",
     "SrcVersion": "4.14.1",
-    "SrcRelease": "lp151.13.10",
-    "License": "GPL-2.0-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.13.10"
   },
   {
     "Name": "sed",
@@ -1466,11 +1014,7 @@
     "Arch": "x86_64",
     "SrcName": "sed",
     "SrcVersion": "4.4",
-    "SrcRelease": "lp151.3.4",
-    "License": "GPL-3.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.4"
   },
   {
     "Name": "shadow",
@@ -1479,11 +1023,7 @@
     "Arch": "x86_64",
     "SrcName": "shadow",
     "SrcVersion": "4.6",
-    "SrcRelease": "lp151.2.3.2",
-    "License": "BSD-3-Clause AND GPL-2.0-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.3.2"
   },
   {
     "Name": "system-group-hardware",
@@ -1492,11 +1032,7 @@
     "Arch": "noarch",
     "SrcName": "system-users",
     "SrcVersion": "20170617",
-    "SrcRelease": "lp151.4.70",
-    "License": "MIT",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.4.70"
   },
   {
     "Name": "system-user-root",
@@ -1505,11 +1041,7 @@
     "Arch": "noarch",
     "SrcName": "system-user-root",
     "SrcVersion": "20190513",
-    "SrcRelease": "lp151.3.3.1",
-    "License": "MIT",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3.1"
   },
   {
     "Name": "sysuser-shadow",
@@ -1518,11 +1050,7 @@
     "Arch": "noarch",
     "SrcName": "sysuser-tools",
     "SrcVersion": "2.0",
-    "SrcRelease": "lp151.3.70",
-    "License": "MIT",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.70"
   },
   {
     "Name": "terminfo-base",
@@ -1531,11 +1059,7 @@
     "Arch": "x86_64",
     "SrcName": "ncurses",
     "SrcVersion": "6.1",
-    "SrcRelease": "lp151.5.41",
-    "License": "MIT",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.5.41"
   },
   {
     "Name": "update-alternatives",
@@ -1544,11 +1068,7 @@
     "Arch": "x86_64",
     "SrcName": "update-alternatives",
     "SrcVersion": "1.19.0.4",
-    "SrcRelease": "lp151.3.67",
-    "License": "GPL-2.0+",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.67"
   },
   {
     "Name": "util-linux",
@@ -1557,11 +1077,7 @@
     "Arch": "x86_64",
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
-    "SrcRelease": "lp151.3.3.2",
-    "License": "GPL-2.0-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.3.3.2"
   },
   {
     "Name": "zypper",
@@ -1570,10 +1086,6 @@
     "Arch": "x86_64",
     "SrcName": "zypper",
     "SrcVersion": "1.14.30",
-    "SrcRelease": "lp151.2.3.1",
-    "License": "GPL-2.0-or-later",
-    "Layer": {
-      "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-    }
+    "SrcRelease": "lp151.2.3.1"
   }
 ]
