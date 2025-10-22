@@ -11,6 +11,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// TestVM tests scanning VM images (VMDK, disk images).
+//
+// NOTE: This test CAN update golden files with the -update flag because the golden files
+// used here are not shared with other tests. These VM-specific golden files are unique
+// to this test and should be updated here.
 func TestVM(t *testing.T) {
 	type args struct {
 		input        string
@@ -30,7 +35,7 @@ func TestVM(t *testing.T) {
 				format:       "json",
 				artifactType: "vm",
 			},
-			golden: "testdata/amazonlinux2-gp2-x86-vm.json.golden",
+			golden: goldenAmazonLinux2GP2X86VM,
 		},
 		{
 			name: "amazon linux 2 in Snapshot, filesystem XFS",
@@ -39,7 +44,7 @@ func TestVM(t *testing.T) {
 				format:       "json",
 				artifactType: "vm",
 			},
-			golden: "testdata/amazonlinux2-gp2-x86-vm.json.golden",
+			golden: goldenAmazonLinux2GP2X86VM,
 		},
 		{
 			name: "Ubuntu in Snapshot, filesystem EXT4",
@@ -48,7 +53,7 @@ func TestVM(t *testing.T) {
 				format:       "json",
 				artifactType: "vm",
 			},
-			golden: "testdata/ubuntu-gp2-x86-vm.json.golden",
+			golden: goldenUbuntuGP2X86VM,
 		},
 		{
 			name: "Ubuntu in VMDK, filesystem EXT4",
@@ -57,7 +62,7 @@ func TestVM(t *testing.T) {
 				format:       "json",
 				artifactType: "vm",
 			},
-			golden: "testdata/ubuntu-gp2-x86-vm.json.golden",
+			golden: goldenUbuntuGP2X86VM,
 		},
 	}
 
@@ -97,6 +102,7 @@ func TestVM(t *testing.T) {
 					}
 				}),
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+				update:   *update,
 			})
 		})
 	}

@@ -9,6 +9,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// TestConvert tests the convert command with various output formats.
+//
+// NOTE: This test CAN update golden files with the -update flag because the golden files
+// used here are not shared with other tests. These format conversion golden files are unique
+// to this test and should be updated here.
 func TestConvert(t *testing.T) {
 	type args struct {
 		input          string
@@ -26,10 +31,10 @@ func TestConvert(t *testing.T) {
 		{
 			name: "npm",
 			args: args{
-				input:  "testdata/npm.json.golden",
+				input:  goldenNPM,
 				format: "cyclonedx",
 			},
-			golden: "testdata/npm-cyclonedx.json.golden",
+			golden: goldenNPMCycloneDX,
 		},
 		{
 			name: "npm without package UID",
@@ -37,17 +42,17 @@ func TestConvert(t *testing.T) {
 				input:  "testdata/fixtures/convert/npm.json.golden",
 				format: "cyclonedx",
 			},
-			golden: "testdata/npm-cyclonedx.json.golden",
+			golden: goldenNPMCycloneDX,
 		},
 		{
 			name: "npm with suppressed vulnerability",
 			args: args{
-				input:          "testdata/fixtures/convert/npm-with-suppressed.json.golden",
+				input:          goldenConvertNPMWithSuppressed,
 				format:         "json",
 				showSuppressed: true,
 				listAllPkgs:    true,
 			},
-			golden: "testdata/fixtures/convert/npm-with-suppressed.json.golden",
+			golden: goldenConvertNPMWithSuppressed,
 		},
 	}
 

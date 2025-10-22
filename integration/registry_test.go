@@ -120,6 +120,14 @@ type registryOption struct {
 	AuthLogin     bool
 }
 
+// TestRegistry tests scanning images from a container registry.
+//
+// IMPORTANT: Golden files used in this test cannot be updated with the -update flag
+// because the registry authentication and settings modify the output.
+// If golden files need to be updated, they should be generated from TestTar.
+//
+// All golden files used in TestRegistry MUST also be used in TestTar
+// to ensure they can be properly updated when needed.
 func TestRegistry(t *testing.T) {
 	ctx := t.Context()
 
@@ -168,7 +176,7 @@ func TestRegistry(t *testing.T) {
 				Username: authUsername,
 				Password: authPassword,
 			},
-			golden: "testdata/alpine-310.json.golden",
+			golden: goldenAlpine310JSON,
 		},
 		{
 			name:      "authenticate with registry token",
@@ -181,7 +189,7 @@ func TestRegistry(t *testing.T) {
 				Password:      authPassword,
 				RegistryToken: true,
 			},
-			golden: "testdata/alpine-310.json.golden",
+			golden: goldenAlpine310JSON,
 		},
 		{
 			name:      "authenticate with 'trivy registry login'",
@@ -193,7 +201,7 @@ func TestRegistry(t *testing.T) {
 				Password:  authPassword,
 				AuthLogin: true,
 			},
-			golden: "testdata/alpine-310.json.golden",
+			golden: goldenAlpine310JSON,
 		},
 		{
 			name:      "amazonlinux 2",
@@ -204,7 +212,7 @@ func TestRegistry(t *testing.T) {
 				Username: authUsername,
 				Password: authPassword,
 			},
-			golden: "testdata/amazon-2.json.golden",
+			golden: goldenAmazon2,
 		},
 		{
 			name:      "debian buster",
@@ -215,7 +223,7 @@ func TestRegistry(t *testing.T) {
 				Username: authUsername,
 				Password: authPassword,
 			},
-			golden: "testdata/debian-buster.json.golden",
+			golden: goldenDebianBuster,
 		},
 		{
 			name:      "sad path",
@@ -249,6 +257,7 @@ func TestRegistry(t *testing.T) {
 						want.Results[i].Target = fmt.Sprintf("%s (%s)", s, tt.os)
 					}
 				}),
+				update: false, // Golden files should be updated via TestTar, not TestRegistry
 			})
 		})
 	}

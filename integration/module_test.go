@@ -11,6 +11,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// TestModule tests Trivy with Wasm modules.
+//
+// NOTE: This test CAN update golden files with the -update flag because the golden files
+// used here are not shared with other tests. These module-specific golden files are unique
+// to this test and should be updated here.
 func TestModule(t *testing.T) {
 	tests := []struct {
 		name   string
@@ -20,12 +25,12 @@ func TestModule(t *testing.T) {
 		{
 			name:   "spring4shell jre 8, severity update",
 			input:  "testdata/fixtures/images/spring4shell-jre8.tar.gz",
-			golden: "testdata/spring4shell-jre8.json.golden",
+			golden: goldenSpring4ShellJRE8,
 		},
 		{
 			name:   "spring4shell jre 11, no severity update",
 			input:  "testdata/fixtures/images/spring4shell-jre11.tar.gz",
-			golden: "testdata/spring4shell-jre11.json.golden",
+			golden: goldenSpring4ShellJRE11,
 		},
 	}
 

@@ -13,7 +13,14 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// TestConfiguration tests the configuration of the CLI flags, environmental variables, and config file
+// TestConfiguration tests the configuration of the CLI flags, environmental variables, and config file.
+//
+// IMPORTANT: Golden files used in this test cannot be updated with the -update flag
+// because the configuration test may apply specific settings that modify the output.
+// If golden files need to be updated, they should be generated from TestRepository.
+//
+// All golden files used in TestConfiguration MUST also be used in TestRepository
+// to ensure they can be properly updated when needed.
 func TestConfiguration(t *testing.T) {
 	type args struct {
 		input      string
@@ -50,7 +57,7 @@ scan:
     - testdata/fixtures/repo/gomod/submod2/go.mod
 `,
 			},
-			golden: "testdata/gomod-skip.json.golden",
+			golden: goldenGoModSkip,
 		},
 		{
 			name: "dockerfile with custom file pattern",
@@ -78,7 +85,7 @@ rego:
     - testing
 `,
 			},
-			golden: "testdata/dockerfile_file_pattern.json.golden",
+			golden: goldenDockerfileFilePattern,
 		},
 		{
 			name: "key alias", // "--scanners" vs "--security-checks"
@@ -96,7 +103,7 @@ scan:
     - vuln
 `,
 			},
-			golden: "testdata/gomod.json.golden",
+			golden: goldenGoMod,
 		},
 		{
 			name: "value alias", // "--scanners vuln" vs "--scanners vulnerability"
@@ -114,7 +121,7 @@ scan:
     - vulnerability
 `,
 			},
-			golden: "testdata/gomod.json.golden",
+			golden: goldenGoMod,
 		},
 		{
 			name: "invalid value",
@@ -173,6 +180,7 @@ severity:
 			runTest(t, osArgs, tt.golden, outputFile, types.FormatJSON, runOptions{
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+				update:   false, // Golden files should be updated via TestRepository, not TestConfiguration
 			})
 		})
 
@@ -198,6 +206,7 @@ severity:
 			runTest(t, osArgs, tt.golden, outputFile, types.FormatJSON, runOptions{
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+				update:   false, // Golden files should be updated via TestRepository, not TestConfiguration
 			})
 		})
 
@@ -230,6 +239,7 @@ db:
 			runTest(t, osArgs, tt.golden, outputFile, types.FormatJSON, runOptions{
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+				update:   false, // Golden files should be updated via TestRepository, not TestConfiguration
 			})
 		})
 	}
