@@ -2,9 +2,6 @@
   {
     "ID": "bash@4.4.18-1.ph3.x86_64",
     "Name": "bash",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/bash@4.4.18-1.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "4.4.18",
     "Release": "1.ph3",
     "Arch": "x86_64",
@@ -19,9 +16,6 @@
   {
     "ID": "bzip2-libs@1.0.6-10.ph3.x86_64",
     "Name": "bzip2-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/bzip2-libs@1.0.6-10.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "1.0.6",
     "Release": "10.ph3",
     "Arch": "x86_64",
@@ -36,9 +30,6 @@
   {
     "ID": "ca-certificates@20190521-1.ph3.x86_64",
     "Name": "ca-certificates",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/ca-certificates@20190521-1.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "20190521",
     "Release": "1.ph3",
     "Arch": "x86_64",
@@ -53,9 +44,6 @@
   {
     "ID": "ca-certificates-pki@20190521-1.ph3.x86_64",
     "Name": "ca-certificates-pki",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/ca-certificates-pki@20190521-1.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "20190521",
     "Release": "1.ph3",
     "Arch": "x86_64",
@@ -70,9 +58,6 @@
   {
     "ID": "curl@7.61.1-4.ph3.x86_64",
     "Name": "curl",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/curl@7.61.1-4.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "7.61.1",
     "Release": "4.ph3",
     "Arch": "x86_64",
@@ -87,9 +72,6 @@
   {
     "ID": "curl-libs@7.61.1-4.ph3.x86_64",
     "Name": "curl-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/curl-libs@7.61.1-4.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "7.61.1",
     "Release": "4.ph3",
     "Arch": "x86_64",
@@ -104,9 +86,6 @@
   {
     "ID": "e2fsprogs-libs@1.44.3-2.ph3.x86_64",
     "Name": "e2fsprogs-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/e2fsprogs-libs@1.44.3-2.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "1.44.3",
     "Release": "2.ph3",
     "Arch": "x86_64",
@@ -121,9 +100,6 @@
   {
     "ID": "elfutils-libelf@0.176-1.ph3.x86_64",
     "Name": "elfutils-libelf",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/elfutils-libelf@0.176-1.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "0.176",
     "Release": "1.ph3",
     "Arch": "x86_64",
@@ -138,9 +114,6 @@
   {
     "ID": "expat-libs@2.2.6-2.ph3.x86_64",
     "Name": "expat-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/expat-libs@2.2.6-2.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "2.2.6",
     "Release": "2.ph3",
     "Arch": "x86_64",
@@ -155,9 +128,6 @@
   {
     "ID": "filesystem@1.1-4.ph3.x86_64",
     "Name": "filesystem",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/filesystem@1.1-4.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "1.1",
     "Release": "4.ph3",
     "Arch": "x86_64",
@@ -172,9 +142,6 @@
   {
     "ID": "glibc@2.28-3.ph3.x86_64",
     "Name": "glibc",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/glibc@2.28-3.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "2.28",
     "Release": "3.ph3",
     "Arch": "x86_64",
@@ -189,9 +156,6 @@
   {
     "ID": "gpg-pubkey@66fd4949-4803fe57.",
     "Name": "gpg-pubkey",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/gpg-pubkey@66fd4949-4803fe57?arch=None\u0026distro=photon-3.0"
-    },
     "Version": "66fd4949",
     "Release": "4803fe57",
     "Arch": "None",
@@ -202,9 +166,6 @@
   {
     "ID": "krb5@1.17-1.ph3.x86_64",
     "Name": "krb5",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/krb5@1.17-1.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "1.17",
     "Release": "1.ph3",
     "Arch": "x86_64",
@@ -219,9 +180,6 @@
   {
     "ID": "libcap@2.25-8.ph3.x86_64",
     "Name": "libcap",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/libcap@2.25-8.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "2.25",
     "Release": "8.ph3",
     "Arch": "x86_64",
@@ -236,9 +194,6 @@
   {
     "ID": "libdb@5.3.28-2.ph3.x86_64",
     "Name": "libdb",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/libdb@5.3.28-2.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "5.3.28",
     "Release": "2.ph3",
     "Arch": "x86_64",
@@ -253,9 +208,6 @@
   {
     "ID": "libgcc@7.3.0-4.ph3.x86_64",
     "Name": "libgcc",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/libgcc@7.3.0-4.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "7.3.0",
     "Release": "4.ph3",
     "Arch": "x86_64",
@@ -270,9 +222,6 @@
   {
     "ID": "libsolv@0.6.26-5.ph3.x86_64",
     "Name": "libsolv",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/libsolv@0.6.26-5.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "0.6.26",
     "Release": "5.ph3",
     "Arch": "x86_64",
@@ -287,9 +236,6 @@
   {
     "ID": "libssh2@1.9.0-1.ph3.x86_64",
     "Name": "libssh2",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/libssh2@1.9.0-1.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "1.9.0",
     "Release": "1.ph3",
     "Arch": "x86_64",
@@ -304,9 +250,6 @@
   {
     "ID": "ncurses-libs@6.1-1.ph3.x86_64",
     "Name": "ncurses-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/ncurses-libs@6.1-1.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "6.1",
     "Release": "1.ph3",
     "Arch": "x86_64",
@@ -321,9 +264,6 @@
   {
     "ID": "nspr@4.21-1.ph3.x86_64",
     "Name": "nspr",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/nspr@4.21-1.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "4.21",
     "Release": "1.ph3",
     "Arch": "x86_64",
@@ -338,9 +278,6 @@
   {
     "ID": "nss-libs@3.44-2.ph3.x86_64",
     "Name": "nss-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/nss-libs@3.44-2.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "3.44",
     "Release": "2.ph3",
     "Arch": "x86_64",
@@ -355,9 +292,6 @@
   {
     "ID": "openssl@1.0.2s-1.ph3.x86_64",
     "Name": "openssl",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/openssl@1.0.2s-1.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "1.0.2s",
     "Release": "1.ph3",
     "Arch": "x86_64",
@@ -372,9 +306,6 @@
   {
     "ID": "photon-release@3.0-3.ph3.noarch",
     "Name": "photon-release",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/photon-release@3.0-3.ph3?arch=noarch\u0026distro=photon-3.0"
-    },
     "Version": "3.0",
     "Release": "3.ph3",
     "Arch": "noarch",
@@ -389,9 +320,6 @@
   {
     "ID": "photon-repos@3.0-3.ph3.noarch",
     "Name": "photon-repos",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/photon-repos@3.0-3.ph3?arch=noarch\u0026distro=photon-3.0"
-    },
     "Version": "3.0",
     "Release": "3.ph3",
     "Arch": "noarch",
@@ -406,9 +334,6 @@
   {
     "ID": "popt@1.16-5.ph3.x86_64",
     "Name": "popt",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/popt@1.16-5.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "1.16",
     "Release": "5.ph3",
     "Arch": "x86_64",
@@ -423,9 +348,6 @@
   {
     "ID": "readline@7.0-2.ph3.x86_64",
     "Name": "readline",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/readline@7.0-2.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "7.0",
     "Release": "2.ph3",
     "Arch": "x86_64",
@@ -440,9 +362,6 @@
   {
     "ID": "rpm-libs@4.14.2-4.ph3.x86_64",
     "Name": "rpm-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/rpm-libs@4.14.2-4.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "4.14.2",
     "Release": "4.ph3",
     "Arch": "x86_64",
@@ -457,9 +376,6 @@
   {
     "ID": "sqlite-libs@3.27.2-3.ph3.x86_64",
     "Name": "sqlite-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/sqlite-libs@3.27.2-3.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "3.27.2",
     "Release": "3.ph3",
     "Arch": "x86_64",
@@ -474,9 +390,6 @@
   {
     "ID": "tdnf@2.0.0-10.ph3.x86_64",
     "Name": "tdnf",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/tdnf@2.0.0-10.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "2.0.0",
     "Release": "10.ph3",
     "Arch": "x86_64",
@@ -491,9 +404,6 @@
   {
     "ID": "tdnf-cli-libs@2.0.0-10.ph3.x86_64",
     "Name": "tdnf-cli-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/tdnf-cli-libs@2.0.0-10.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "2.0.0",
     "Release": "10.ph3",
     "Arch": "x86_64",
@@ -508,9 +418,6 @@
   {
     "ID": "toybox@0.7.7-1.ph3.x86_64",
     "Name": "toybox",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/toybox@0.7.7-1.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "0.7.7",
     "Release": "1.ph3",
     "Arch": "x86_64",
@@ -525,9 +432,6 @@
   {
     "ID": "xz-libs@5.2.4-1.ph3.x86_64",
     "Name": "xz-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/xz-libs@5.2.4-1.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "5.2.4",
     "Release": "1.ph3",
     "Arch": "x86_64",
@@ -542,9 +446,6 @@
   {
     "ID": "zlib@1.2.11-1.ph3.x86_64",
     "Name": "zlib",
-    "Identifier": {
-      "PURL": "pkg:rpm/photon/zlib@1.2.11-1.ph3?arch=x86_64\u0026distro=photon-3.0"
-    },
     "Version": "1.2.11",
     "Release": "1.ph3",
     "Arch": "x86_64",

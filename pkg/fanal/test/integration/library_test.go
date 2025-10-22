@@ -230,11 +230,11 @@ func commonChecks(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 }
 
 // clearPackageDetailFields clears package detail fields to keep golden files manageable.
-// Fields cleared: Identifier.UID, Layer, InstalledFiles, DependsOn, Digest
-// Fields kept for comparison: ID, Name, Version, Epoch, Release, Arch, SrcName, SrcEpoch, SrcVersion, SrcRelease, Licenses, Maintainer, Modularitylabel, Indirect, Identifier.PURL, Identifier.BOMRef
+// Fields cleared: Identifier (UID, PURL, BOMRef), Layer, InstalledFiles, DependsOn, Digest
+// Fields kept for comparison: ID, Name, Version, Epoch, Release, Arch, SrcName, SrcEpoch, SrcVersion, SrcRelease, Licenses, Maintainer, Modularitylabel, Indirect
 func clearPackageDetailFields(packages []types.Package) {
 	for i := range packages {
-		packages[i].Identifier.UID = "" // Clear UID but keep PURL and BOMRef
+		packages[i].Identifier = types.PkgIdentifier{} // Clear entire Identifier (UID, PURL, BOMRef)
 		packages[i].Layer = types.Layer{}
 		packages[i].InstalledFiles = nil
 		packages[i].DependsOn = nil
@@ -264,12 +264,12 @@ func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	data, err := os.ReadFile(goldenFile)
 	require.NoError(t, err, tc.name)
 
-	var expectedPkgs []types.Package
+	var expectedPkgs types.Packages
 	err = json.Unmarshal(data, &expectedPkgs)
 	require.NoError(t, err)
 
 	sort.Sort(detail.Packages)
-	sort.Slice(expectedPkgs, func(i, j int) bool { return expectedPkgs[i].Name < expectedPkgs[j].Name })
+	sort.Sort(expectedPkgs)
 
 	assert.Equal(t, expectedPkgs, detail.Packages, tc.name)
 }

@@ -2,9 +2,6 @@
   {
     "ID": "amazon-linux-extras@1.6.7-1.amzn2.noarch",
     "Name": "amazon-linux-extras",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/amazon-linux-extras@1.6.7-1.amzn2?arch=noarch\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.6.7",
     "Release": "1.amzn2",
     "Arch": "noarch",
@@ -19,9 +16,6 @@
   {
     "ID": "basesystem@10.0-7.amzn2.0.1.noarch",
     "Name": "basesystem",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/basesystem@10.0-7.amzn2.0.1?arch=noarch\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "10.0",
     "Release": "7.amzn2.0.1",
     "Arch": "noarch",
@@ -36,9 +30,6 @@
   {
     "ID": "bash@4.2.46-30.amzn2.x86_64",
     "Name": "bash",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/bash@4.2.46-30.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "4.2.46",
     "Release": "30.amzn2",
     "Arch": "x86_64",
@@ -53,9 +44,6 @@
   {
     "ID": "bzip2-libs@1.0.6-13.amzn2.0.2.x86_64",
     "Name": "bzip2-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/bzip2-libs@1.0.6-13.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.0.6",
     "Release": "13.amzn2.0.2",
     "Arch": "x86_64",
@@ -70,9 +58,6 @@
   {
     "ID": "ca-certificates@2018.2.22-70.0.amzn2.noarch",
     "Name": "ca-certificates",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/ca-certificates@2018.2.22-70.0.amzn2?arch=noarch\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2018.2.22",
     "Release": "70.0.amzn2",
     "Arch": "noarch",
@@ -87,9 +72,6 @@
   {
     "ID": "chkconfig@1.7.4-1.amzn2.0.2.x86_64",
     "Name": "chkconfig",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/chkconfig@1.7.4-1.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.7.4",
     "Release": "1.amzn2.0.2",
     "Arch": "x86_64",
@@ -104,9 +86,6 @@
   {
     "ID": "coreutils@8.22-21.amzn2.x86_64",
     "Name": "coreutils",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/coreutils@8.22-21.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "8.22",
     "Release": "21.amzn2",
     "Arch": "x86_64",
@@ -121,9 +100,6 @@
   {
     "ID": "cpio@2.11-27.amzn2.x86_64",
     "Name": "cpio",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/cpio@2.11-27.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.11",
     "Release": "27.amzn2",
     "Arch": "x86_64",
@@ -138,9 +114,6 @@
   {
     "ID": "curl@7.61.1-9.amzn2.0.1.x86_64",
     "Name": "curl",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/curl@7.61.1-9.amzn2.0.1?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "7.61.1",
     "Release": "9.amzn2.0.1",
     "Arch": "x86_64",
@@ -155,9 +128,6 @@
   {
     "ID": "cyrus-sasl-lib@2.1.26-23.amzn2.x86_64",
     "Name": "cyrus-sasl-lib",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/cyrus-sasl-lib@2.1.26-23.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.1.26",
     "Release": "23.amzn2",
     "Arch": "x86_64",
@@ -172,9 +142,6 @@
   {
     "ID": "diffutils@3.3-4.amzn2.0.2.x86_64",
     "Name": "diffutils",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/diffutils@3.3-4.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "3.3",
     "Release": "4.amzn2.0.2",
     "Arch": "x86_64",
@@ -189,9 +156,6 @@
   {
     "ID": "elfutils-libelf@0.170-4.amzn2.x86_64",
     "Name": "elfutils-libelf",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/elfutils-libelf@0.170-4.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "0.170",
     "Release": "4.amzn2",
     "Arch": "x86_64",
@@ -206,9 +170,6 @@
   {
     "ID": "expat@2.1.0-10.amzn2.0.2.x86_64",
     "Name": "expat",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/expat@2.1.0-10.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.1.0",
     "Release": "10.amzn2.0.2",
     "Arch": "x86_64",
@@ -223,9 +184,6 @@
   {
     "ID": "file-libs@5.11-33.amzn2.0.2.x86_64",
     "Name": "file-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/file-libs@5.11-33.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "5.11",
     "Release": "33.amzn2.0.2",
     "Arch": "x86_64",
@@ -240,9 +198,6 @@
   {
     "ID": "filesystem@3.2-25.amzn2.0.4.x86_64",
     "Name": "filesystem",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/filesystem@3.2-25.amzn2.0.4?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "3.2",
     "Release": "25.amzn2.0.4",
     "Arch": "x86_64",
@@ -257,9 +212,6 @@
   {
     "ID": "findutils@4.5.11-5.amzn2.0.2.x86_64",
     "Name": "findutils",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/findutils@4.5.11-5.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29\u0026epoch=1"
-    },
     "Version": "4.5.11",
     "Release": "5.amzn2.0.2",
     "Epoch": 1,
@@ -276,9 +228,6 @@
   {
     "ID": "gawk@4.0.2-4.amzn2.1.2.x86_64",
     "Name": "gawk",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/gawk@4.0.2-4.amzn2.1.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "4.0.2",
     "Release": "4.amzn2.1.2",
     "Arch": "x86_64",
@@ -293,9 +242,6 @@
   {
     "ID": "gdbm@1.13-6.amzn2.0.2.x86_64",
     "Name": "gdbm",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/gdbm@1.13-6.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29\u0026epoch=1"
-    },
     "Version": "1.13",
     "Release": "6.amzn2.0.2",
     "Epoch": 1,
@@ -312,9 +258,6 @@
   {
     "ID": "glib2@2.54.2-2.amzn2.x86_64",
     "Name": "glib2",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/glib2@2.54.2-2.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.54.2",
     "Release": "2.amzn2",
     "Arch": "x86_64",
@@ -329,9 +272,6 @@
   {
     "ID": "glibc@2.26-32.amzn2.0.1.x86_64",
     "Name": "glibc",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/glibc@2.26-32.amzn2.0.1?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.26",
     "Release": "32.amzn2.0.1",
     "Arch": "x86_64",
@@ -346,9 +286,6 @@
   {
     "ID": "glibc-common@2.26-32.amzn2.0.1.x86_64",
     "Name": "glibc-common",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/glibc-common@2.26-32.amzn2.0.1?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.26",
     "Release": "32.amzn2.0.1",
     "Arch": "x86_64",
@@ -363,9 +300,6 @@
   {
     "ID": "glibc-langpack-en@2.26-32.amzn2.0.1.x86_64",
     "Name": "glibc-langpack-en",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/glibc-langpack-en@2.26-32.amzn2.0.1?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.26",
     "Release": "32.amzn2.0.1",
     "Arch": "x86_64",
@@ -380,9 +314,6 @@
   {
     "ID": "glibc-minimal-langpack@2.26-32.amzn2.0.1.x86_64",
     "Name": "glibc-minimal-langpack",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/glibc-minimal-langpack@2.26-32.amzn2.0.1?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.26",
     "Release": "32.amzn2.0.1",
     "Arch": "x86_64",
@@ -397,9 +328,6 @@
   {
     "ID": "gmp@6.0.0-15.amzn2.0.2.x86_64",
     "Name": "gmp",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/gmp@6.0.0-15.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29\u0026epoch=1"
-    },
     "Version": "6.0.0",
     "Release": "15.amzn2.0.2",
     "Epoch": 1,
@@ -416,9 +344,6 @@
   {
     "ID": "gnupg2@2.0.22-5.amzn2.0.3.x86_64",
     "Name": "gnupg2",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/gnupg2@2.0.22-5.amzn2.0.3?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.0.22",
     "Release": "5.amzn2.0.3",
     "Arch": "x86_64",
@@ -433,9 +358,6 @@
   {
     "ID": "gpg-pubkey@c87f5b1a-593863f8.",
     "Name": "gpg-pubkey",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/gpg-pubkey@c87f5b1a-593863f8?arch=None\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "c87f5b1a",
     "Release": "593863f8",
     "Arch": "None",
@@ -446,9 +368,6 @@
   {
     "ID": "gpgme@1.3.2-5.amzn2.0.2.x86_64",
     "Name": "gpgme",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/gpgme@1.3.2-5.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.3.2",
     "Release": "5.amzn2.0.2",
     "Arch": "x86_64",
@@ -463,9 +382,6 @@
   {
     "ID": "grep@2.20-3.amzn2.0.2.x86_64",
     "Name": "grep",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/grep@2.20-3.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.20",
     "Release": "3.amzn2.0.2",
     "Arch": "x86_64",
@@ -480,9 +396,6 @@
   {
     "ID": "info@5.1-5.amzn2.x86_64",
     "Name": "info",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/info@5.1-5.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "5.1",
     "Release": "5.amzn2",
     "Arch": "x86_64",
@@ -497,9 +410,6 @@
   {
     "ID": "keyutils-libs@1.5.8-3.amzn2.0.2.x86_64",
     "Name": "keyutils-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/keyutils-libs@1.5.8-3.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.5.8",
     "Release": "3.amzn2.0.2",
     "Arch": "x86_64",
@@ -514,9 +424,6 @@
   {
     "ID": "krb5-libs@1.15.1-20.amzn2.0.1.x86_64",
     "Name": "krb5-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/krb5-libs@1.15.1-20.amzn2.0.1?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.15.1",
     "Release": "20.amzn2.0.1",
     "Arch": "x86_64",
@@ -531,9 +438,6 @@
   {
     "ID": "libacl@2.2.51-14.amzn2.x86_64",
     "Name": "libacl",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libacl@2.2.51-14.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.2.51",
     "Release": "14.amzn2",
     "Arch": "x86_64",
@@ -548,9 +452,6 @@
   {
     "ID": "libassuan@2.1.0-3.amzn2.0.2.x86_64",
     "Name": "libassuan",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libassuan@2.1.0-3.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.1.0",
     "Release": "3.amzn2.0.2",
     "Arch": "x86_64",
@@ -565,9 +466,6 @@
   {
     "ID": "libattr@2.4.46-12.amzn2.0.2.x86_64",
     "Name": "libattr",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libattr@2.4.46-12.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.4.46",
     "Release": "12.amzn2.0.2",
     "Arch": "x86_64",
@@ -582,9 +480,6 @@
   {
     "ID": "libblkid@2.30.2-2.amzn2.0.4.x86_64",
     "Name": "libblkid",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libblkid@2.30.2-2.amzn2.0.4?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.30.2",
     "Release": "2.amzn2.0.4",
     "Arch": "x86_64",
@@ -599,9 +494,6 @@
   {
     "ID": "libcap@2.22-9.amzn2.0.2.x86_64",
     "Name": "libcap",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libcap@2.22-9.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.22",
     "Release": "9.amzn2.0.2",
     "Arch": "x86_64",
@@ -616,9 +508,6 @@
   {
     "ID": "libcom_err@1.42.9-12.amzn2.0.2.x86_64",
     "Name": "libcom_err",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libcom_err@1.42.9-12.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.42.9",
     "Release": "12.amzn2.0.2",
     "Arch": "x86_64",
@@ -633,9 +522,6 @@
   {
     "ID": "libcrypt@2.26-32.amzn2.0.1.x86_64",
     "Name": "libcrypt",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libcrypt@2.26-32.amzn2.0.1?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.26",
     "Release": "32.amzn2.0.1",
     "Arch": "x86_64",
@@ -650,9 +536,6 @@
   {
     "ID": "libcurl@7.61.1-9.amzn2.0.1.x86_64",
     "Name": "libcurl",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libcurl@7.61.1-9.amzn2.0.1?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "7.61.1",
     "Release": "9.amzn2.0.1",
     "Arch": "x86_64",
@@ -667,9 +550,6 @@
   {
     "ID": "libdb@5.3.21-24.amzn2.0.3.x86_64",
     "Name": "libdb",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libdb@5.3.21-24.amzn2.0.3?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "5.3.21",
     "Release": "24.amzn2.0.3",
     "Arch": "x86_64",
@@ -684,9 +564,6 @@
   {
     "ID": "libdb-utils@5.3.21-24.amzn2.0.3.x86_64",
     "Name": "libdb-utils",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libdb-utils@5.3.21-24.amzn2.0.3?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "5.3.21",
     "Release": "24.amzn2.0.3",
     "Arch": "x86_64",
@@ -701,9 +578,6 @@
   {
     "ID": "libffi@3.0.13-18.amzn2.0.2.x86_64",
     "Name": "libffi",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libffi@3.0.13-18.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "3.0.13",
     "Release": "18.amzn2.0.2",
     "Arch": "x86_64",
@@ -718,9 +592,6 @@
   {
     "ID": "libgcc@7.3.1-5.amzn2.0.2.x86_64",
     "Name": "libgcc",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libgcc@7.3.1-5.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "7.3.1",
     "Release": "5.amzn2.0.2",
     "Arch": "x86_64",
@@ -735,9 +606,6 @@
   {
     "ID": "libgcrypt@1.5.3-14.amzn2.0.2.x86_64",
     "Name": "libgcrypt",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libgcrypt@1.5.3-14.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.5.3",
     "Release": "14.amzn2.0.2",
     "Arch": "x86_64",
@@ -752,9 +620,6 @@
   {
     "ID": "libgpg-error@1.12-3.amzn2.0.3.x86_64",
     "Name": "libgpg-error",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libgpg-error@1.12-3.amzn2.0.3?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.12",
     "Release": "3.amzn2.0.3",
     "Arch": "x86_64",
@@ -769,9 +634,6 @@
   {
     "ID": "libidn2@2.0.4-1.amzn2.0.2.x86_64",
     "Name": "libidn2",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libidn2@2.0.4-1.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.0.4",
     "Release": "1.amzn2.0.2",
     "Arch": "x86_64",
@@ -786,9 +648,6 @@
   {
     "ID": "libmetalink@0.1.2-7.amzn2.0.2.x86_64",
     "Name": "libmetalink",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libmetalink@0.1.2-7.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "0.1.2",
     "Release": "7.amzn2.0.2",
     "Arch": "x86_64",
@@ -803,9 +662,6 @@
   {
     "ID": "libmount@2.30.2-2.amzn2.0.4.x86_64",
     "Name": "libmount",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libmount@2.30.2-2.amzn2.0.4?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.30.2",
     "Release": "2.amzn2.0.4",
     "Arch": "x86_64",
@@ -820,9 +676,6 @@
   {
     "ID": "libnghttp2@1.31.1-1.amzn2.0.2.x86_64",
     "Name": "libnghttp2",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libnghttp2@1.31.1-1.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.31.1",
     "Release": "1.amzn2.0.2",
     "Arch": "x86_64",
@@ -837,9 +690,6 @@
   {
     "ID": "libselinux@2.5-12.amzn2.0.2.x86_64",
     "Name": "libselinux",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libselinux@2.5-12.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.5",
     "Release": "12.amzn2.0.2",
     "Arch": "x86_64",
@@ -854,9 +704,6 @@
   {
     "ID": "libsepol@2.5-8.1.amzn2.0.2.x86_64",
     "Name": "libsepol",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libsepol@2.5-8.1.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.5",
     "Release": "8.1.amzn2.0.2",
     "Arch": "x86_64",
@@ -871,9 +718,6 @@
   {
     "ID": "libssh2@1.4.3-12.amzn2.2.x86_64",
     "Name": "libssh2",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libssh2@1.4.3-12.amzn2.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.4.3",
     "Release": "12.amzn2.2",
     "Arch": "x86_64",
@@ -888,9 +732,6 @@
   {
     "ID": "libstdc++@7.3.1-5.amzn2.0.2.x86_64",
     "Name": "libstdc++",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libstdc%2B%2B@7.3.1-5.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "7.3.1",
     "Release": "5.amzn2.0.2",
     "Arch": "x86_64",
@@ -905,9 +746,6 @@
   {
     "ID": "libtasn1@4.10-1.amzn2.0.2.x86_64",
     "Name": "libtasn1",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libtasn1@4.10-1.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "4.10",
     "Release": "1.amzn2.0.2",
     "Arch": "x86_64",
@@ -922,9 +760,6 @@
   {
     "ID": "libunistring@0.9.3-9.amzn2.0.2.x86_64",
     "Name": "libunistring",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libunistring@0.9.3-9.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "0.9.3",
     "Release": "9.amzn2.0.2",
     "Arch": "x86_64",
@@ -939,9 +774,6 @@
   {
     "ID": "libuuid@2.30.2-2.amzn2.0.4.x86_64",
     "Name": "libuuid",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libuuid@2.30.2-2.amzn2.0.4?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.30.2",
     "Release": "2.amzn2.0.4",
     "Arch": "x86_64",
@@ -956,9 +788,6 @@
   {
     "ID": "libverto@0.2.5-4.amzn2.0.2.x86_64",
     "Name": "libverto",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libverto@0.2.5-4.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "0.2.5",
     "Release": "4.amzn2.0.2",
     "Arch": "x86_64",
@@ -973,9 +802,6 @@
   {
     "ID": "libxml2@2.9.1-6.amzn2.3.2.x86_64",
     "Name": "libxml2",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/libxml2@2.9.1-6.amzn2.3.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.9.1",
     "Release": "6.amzn2.3.2",
     "Arch": "x86_64",
@@ -990,9 +816,6 @@
   {
     "ID": "lua@5.1.4-15.amzn2.0.2.x86_64",
     "Name": "lua",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/lua@5.1.4-15.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "5.1.4",
     "Release": "15.amzn2.0.2",
     "Arch": "x86_64",
@@ -1007,9 +830,6 @@
   {
     "ID": "ncurses@6.0-8.20170212.amzn2.1.2.x86_64",
     "Name": "ncurses",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/ncurses@6.0-8.20170212.amzn2.1.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "6.0",
     "Release": "8.20170212.amzn2.1.2",
     "Arch": "x86_64",
@@ -1024,9 +844,6 @@
   {
     "ID": "ncurses-base@6.0-8.20170212.amzn2.1.2.noarch",
     "Name": "ncurses-base",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/ncurses-base@6.0-8.20170212.amzn2.1.2?arch=noarch\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "6.0",
     "Release": "8.20170212.amzn2.1.2",
     "Arch": "noarch",
@@ -1041,9 +858,6 @@
   {
     "ID": "ncurses-libs@6.0-8.20170212.amzn2.1.2.x86_64",
     "Name": "ncurses-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/ncurses-libs@6.0-8.20170212.amzn2.1.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "6.0",
     "Release": "8.20170212.amzn2.1.2",
     "Arch": "x86_64",
@@ -1058,9 +872,6 @@
   {
     "ID": "nspr@4.19.0-1.amzn2.x86_64",
     "Name": "nspr",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/nspr@4.19.0-1.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "4.19.0",
     "Release": "1.amzn2",
     "Arch": "x86_64",
@@ -1075,9 +886,6 @@
   {
     "ID": "nss@3.36.0-7.amzn2.x86_64",
     "Name": "nss",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/nss@3.36.0-7.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "3.36.0",
     "Release": "7.amzn2",
     "Arch": "x86_64",
@@ -1092,9 +900,6 @@
   {
     "ID": "nss-pem@1.0.3-5.amzn2.x86_64",
     "Name": "nss-pem",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/nss-pem@1.0.3-5.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.0.3",
     "Release": "5.amzn2",
     "Arch": "x86_64",
@@ -1109,9 +914,6 @@
   {
     "ID": "nss-softokn@3.36.0-5.amzn2.x86_64",
     "Name": "nss-softokn",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/nss-softokn@3.36.0-5.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "3.36.0",
     "Release": "5.amzn2",
     "Arch": "x86_64",
@@ -1126,9 +928,6 @@
   {
     "ID": "nss-softokn-freebl@3.36.0-5.amzn2.x86_64",
     "Name": "nss-softokn-freebl",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/nss-softokn-freebl@3.36.0-5.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "3.36.0",
     "Release": "5.amzn2",
     "Arch": "x86_64",
@@ -1143,9 +942,6 @@
   {
     "ID": "nss-sysinit@3.36.0-7.amzn2.x86_64",
     "Name": "nss-sysinit",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/nss-sysinit@3.36.0-7.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "3.36.0",
     "Release": "7.amzn2",
     "Arch": "x86_64",
@@ -1160,9 +956,6 @@
   {
     "ID": "nss-tools@3.36.0-7.amzn2.x86_64",
     "Name": "nss-tools",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/nss-tools@3.36.0-7.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "3.36.0",
     "Release": "7.amzn2",
     "Arch": "x86_64",
@@ -1177,9 +970,6 @@
   {
     "ID": "nss-util@3.36.0-1.amzn2.x86_64",
     "Name": "nss-util",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/nss-util@3.36.0-1.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "3.36.0",
     "Release": "1.amzn2",
     "Arch": "x86_64",
@@ -1194,9 +984,6 @@
   {
     "ID": "openldap@2.4.44-15.amzn2.x86_64",
     "Name": "openldap",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/openldap@2.4.44-15.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.4.44",
     "Release": "15.amzn2",
     "Arch": "x86_64",
@@ -1211,9 +998,6 @@
   {
     "ID": "openssl-libs@1.0.2k-16.amzn2.1.1.x86_64",
     "Name": "openssl-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/openssl-libs@1.0.2k-16.amzn2.1.1?arch=x86_64\u0026distro=amazon-2+%28Karoo%29\u0026epoch=1"
-    },
     "Version": "1.0.2k",
     "Release": "16.amzn2.1.1",
     "Epoch": 1,
@@ -1230,9 +1014,6 @@
   {
     "ID": "p11-kit@0.23.5-3.amzn2.0.2.x86_64",
     "Name": "p11-kit",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/p11-kit@0.23.5-3.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "0.23.5",
     "Release": "3.amzn2.0.2",
     "Arch": "x86_64",
@@ -1247,9 +1028,6 @@
   {
     "ID": "p11-kit-trust@0.23.5-3.amzn2.0.2.x86_64",
     "Name": "p11-kit-trust",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/p11-kit-trust@0.23.5-3.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "0.23.5",
     "Release": "3.amzn2.0.2",
     "Arch": "x86_64",
@@ -1264,9 +1042,6 @@
   {
     "ID": "pcre@8.32-17.amzn2.0.2.x86_64",
     "Name": "pcre",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/pcre@8.32-17.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "8.32",
     "Release": "17.amzn2.0.2",
     "Arch": "x86_64",
@@ -1281,9 +1056,6 @@
   {
     "ID": "pinentry@0.8.1-17.amzn2.0.2.x86_64",
     "Name": "pinentry",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/pinentry@0.8.1-17.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "0.8.1",
     "Release": "17.amzn2.0.2",
     "Arch": "x86_64",
@@ -1298,9 +1070,6 @@
   {
     "ID": "popt@1.13-16.amzn2.0.2.x86_64",
     "Name": "popt",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/popt@1.13-16.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.13",
     "Release": "16.amzn2.0.2",
     "Arch": "x86_64",
@@ -1315,9 +1084,6 @@
   {
     "ID": "pth@2.0.7-23.amzn2.0.2.x86_64",
     "Name": "pth",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/pth@2.0.7-23.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.0.7",
     "Release": "23.amzn2.0.2",
     "Arch": "x86_64",
@@ -1332,9 +1098,6 @@
   {
     "ID": "pygpgme@0.3-9.amzn2.0.2.x86_64",
     "Name": "pygpgme",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/pygpgme@0.3-9.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "0.3",
     "Release": "9.amzn2.0.2",
     "Arch": "x86_64",
@@ -1349,9 +1112,6 @@
   {
     "ID": "pyliblzma@0.5.3-11.amzn2.0.2.x86_64",
     "Name": "pyliblzma",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/pyliblzma@0.5.3-11.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "0.5.3",
     "Release": "11.amzn2.0.2",
     "Arch": "x86_64",
@@ -1366,9 +1126,6 @@
   {
     "ID": "python@2.7.14-58.amzn2.0.4.x86_64",
     "Name": "python",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/python@2.7.14-58.amzn2.0.4?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.7.14",
     "Release": "58.amzn2.0.4",
     "Arch": "x86_64",
@@ -1383,9 +1140,6 @@
   {
     "ID": "python-iniparse@0.4-9.amzn2.noarch",
     "Name": "python-iniparse",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/python-iniparse@0.4-9.amzn2?arch=noarch\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "0.4",
     "Release": "9.amzn2",
     "Arch": "noarch",
@@ -1400,9 +1154,6 @@
   {
     "ID": "python-libs@2.7.14-58.amzn2.0.4.x86_64",
     "Name": "python-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/python-libs@2.7.14-58.amzn2.0.4?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.7.14",
     "Release": "58.amzn2.0.4",
     "Arch": "x86_64",
@@ -1417,9 +1168,6 @@
   {
     "ID": "python-pycurl@7.19.0-19.amzn2.0.2.x86_64",
     "Name": "python-pycurl",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/python-pycurl@7.19.0-19.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "7.19.0",
     "Release": "19.amzn2.0.2",
     "Arch": "x86_64",
@@ -1434,9 +1182,6 @@
   {
     "ID": "python-urlgrabber@3.10-8.amzn2.noarch",
     "Name": "python-urlgrabber",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/python-urlgrabber@3.10-8.amzn2?arch=noarch\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "3.10",
     "Release": "8.amzn2",
     "Arch": "noarch",
@@ -1451,9 +1196,6 @@
   {
     "ID": "pyxattr@0.5.1-5.amzn2.0.2.x86_64",
     "Name": "pyxattr",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/pyxattr@0.5.1-5.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "0.5.1",
     "Release": "5.amzn2.0.2",
     "Arch": "x86_64",
@@ -1468,9 +1210,6 @@
   {
     "ID": "readline@6.2-10.amzn2.0.2.x86_64",
     "Name": "readline",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/readline@6.2-10.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "6.2",
     "Release": "10.amzn2.0.2",
     "Arch": "x86_64",
@@ -1485,9 +1224,6 @@
   {
     "ID": "rpm@4.11.3-25.amzn2.0.3.x86_64",
     "Name": "rpm",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/rpm@4.11.3-25.amzn2.0.3?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "4.11.3",
     "Release": "25.amzn2.0.3",
     "Arch": "x86_64",
@@ -1502,9 +1238,6 @@
   {
     "ID": "rpm-build-libs@4.11.3-25.amzn2.0.3.x86_64",
     "Name": "rpm-build-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/rpm-build-libs@4.11.3-25.amzn2.0.3?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "4.11.3",
     "Release": "25.amzn2.0.3",
     "Arch": "x86_64",
@@ -1519,9 +1252,6 @@
   {
     "ID": "rpm-libs@4.11.3-25.amzn2.0.3.x86_64",
     "Name": "rpm-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/rpm-libs@4.11.3-25.amzn2.0.3?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "4.11.3",
     "Release": "25.amzn2.0.3",
     "Arch": "x86_64",
@@ -1536,9 +1266,6 @@
   {
     "ID": "rpm-python@4.11.3-25.amzn2.0.3.x86_64",
     "Name": "rpm-python",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/rpm-python@4.11.3-25.amzn2.0.3?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "4.11.3",
     "Release": "25.amzn2.0.3",
     "Arch": "x86_64",
@@ -1553,9 +1280,6 @@
   {
     "ID": "sed@4.2.2-5.amzn2.0.2.x86_64",
     "Name": "sed",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/sed@4.2.2-5.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "4.2.2",
     "Release": "5.amzn2.0.2",
     "Arch": "x86_64",
@@ -1570,9 +1294,6 @@
   {
     "ID": "setup@2.8.71-10.amzn2.noarch",
     "Name": "setup",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/setup@2.8.71-10.amzn2?arch=noarch\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2.8.71",
     "Release": "10.amzn2",
     "Arch": "noarch",
@@ -1587,9 +1308,6 @@
   {
     "ID": "shared-mime-info@1.8-4.amzn2.x86_64",
     "Name": "shared-mime-info",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/shared-mime-info@1.8-4.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.8",
     "Release": "4.amzn2",
     "Arch": "x86_64",
@@ -1604,9 +1322,6 @@
   {
     "ID": "sqlite@3.7.17-8.amzn2.0.2.x86_64",
     "Name": "sqlite",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/sqlite@3.7.17-8.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "3.7.17",
     "Release": "8.amzn2.0.2",
     "Arch": "x86_64",
@@ -1621,9 +1336,6 @@
   {
     "ID": "system-release@2-10.amzn2.x86_64",
     "Name": "system-release",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/system-release@2-10.amzn2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29\u0026epoch=1"
-    },
     "Version": "2",
     "Release": "10.amzn2",
     "Epoch": 1,
@@ -1640,9 +1352,6 @@
   {
     "ID": "tzdata@2018i-1.amzn2.noarch",
     "Name": "tzdata",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/tzdata@2018i-1.amzn2?arch=noarch\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "2018i",
     "Release": "1.amzn2",
     "Arch": "noarch",
@@ -1657,9 +1366,6 @@
   {
     "ID": "vim-minimal@7.4.160-4.amzn2.0.16.x86_64",
     "Name": "vim-minimal",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/vim-minimal@7.4.160-4.amzn2.0.16?arch=x86_64\u0026distro=amazon-2+%28Karoo%29\u0026epoch=2"
-    },
     "Version": "7.4.160",
     "Release": "4.amzn2.0.16",
     "Epoch": 2,
@@ -1676,9 +1382,6 @@
   {
     "ID": "xz-libs@5.2.2-1.amzn2.0.2.x86_64",
     "Name": "xz-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/xz-libs@5.2.2-1.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "5.2.2",
     "Release": "1.amzn2.0.2",
     "Arch": "x86_64",
@@ -1693,9 +1396,6 @@
   {
     "ID": "yum@3.4.3-158.amzn2.0.2.noarch",
     "Name": "yum",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/yum@3.4.3-158.amzn2.0.2?arch=noarch\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "3.4.3",
     "Release": "158.amzn2.0.2",
     "Arch": "noarch",
@@ -1710,9 +1410,6 @@
   {
     "ID": "yum-metadata-parser@1.1.4-10.amzn2.0.2.x86_64",
     "Name": "yum-metadata-parser",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/yum-metadata-parser@1.1.4-10.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.1.4",
     "Release": "10.amzn2.0.2",
     "Arch": "x86_64",
@@ -1727,9 +1424,6 @@
   {
     "ID": "yum-plugin-ovl@1.1.31-46.amzn2.0.1.noarch",
     "Name": "yum-plugin-ovl",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/yum-plugin-ovl@1.1.31-46.amzn2.0.1?arch=noarch\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.1.31",
     "Release": "46.amzn2.0.1",
     "Arch": "noarch",
@@ -1744,9 +1438,6 @@
   {
     "ID": "yum-plugin-priorities@1.1.31-46.amzn2.0.1.noarch",
     "Name": "yum-plugin-priorities",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/yum-plugin-priorities@1.1.31-46.amzn2.0.1?arch=noarch\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.1.31",
     "Release": "46.amzn2.0.1",
     "Arch": "noarch",
@@ -1761,9 +1452,6 @@
   {
     "ID": "zlib@1.2.7-17.amzn2.0.2.x86_64",
     "Name": "zlib",
-    "Identifier": {
-      "PURL": "pkg:rpm/amazon/zlib@1.2.7-17.amzn2.0.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
-    },
     "Version": "1.2.7",
     "Release": "17.amzn2.0.2",
     "Arch": "x86_64",

@@ -2,9 +2,6 @@
   {
     "ID": "aaa_base@84.87+git20180409.04c9dae-lp151.5.12.1.x86_64",
     "Name": "aaa_base",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/aaa_base@84.87%2Bgit20180409.04c9dae-lp151.5.12.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "84.87+git20180409.04c9dae",
     "Release": "lp151.5.12.1",
     "Arch": "x86_64",
@@ -19,9 +16,6 @@
   {
     "ID": "bash@4.4-lp151.10.3.1.x86_64",
     "Name": "bash",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/bash@4.4-lp151.10.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "4.4",
     "Release": "lp151.10.3.1",
     "Arch": "x86_64",
@@ -36,9 +30,6 @@
   {
     "ID": "boost-license1_66_0@1.66.0-lp151.4.5.noarch",
     "Name": "boost-license1_66_0",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/boost-license1_66_0@1.66.0-lp151.4.5?arch=noarch\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.66.0",
     "Release": "lp151.4.5",
     "Arch": "noarch",
@@ -53,9 +44,6 @@
   {
     "ID": "ca-certificates@2+git20170807.10b2785-lp151.7.1.noarch",
     "Name": "ca-certificates",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/ca-certificates@2%2Bgit20170807.10b2785-lp151.7.1?arch=noarch\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2+git20170807.10b2785",
     "Release": "lp151.7.1",
     "Arch": "noarch",
@@ -70,9 +58,6 @@
   {
     "ID": "ca-certificates-mozilla@2.34-lp151.2.3.1.noarch",
     "Name": "ca-certificates-mozilla",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/ca-certificates-mozilla@2.34-lp151.2.3.1?arch=noarch\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.34",
     "Release": "lp151.2.3.1",
     "Arch": "noarch",
@@ -87,9 +72,6 @@
   {
     "ID": "coreutils@8.29-lp151.3.3.x86_64",
     "Name": "coreutils",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/coreutils@8.29-lp151.3.3?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "8.29",
     "Release": "lp151.3.3",
     "Arch": "x86_64",
@@ -104,9 +86,6 @@
   {
     "ID": "cpio@2.12-lp151.2.68.x86_64",
     "Name": "cpio",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/cpio@2.12-lp151.2.68?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.12",
     "Release": "lp151.2.68",
     "Arch": "x86_64",
@@ -121,9 +100,6 @@
   {
     "ID": "cracklib@2.9.6-lp151.3.69.x86_64",
     "Name": "cracklib",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/cracklib@2.9.6-lp151.3.69?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.9.6",
     "Release": "lp151.3.69",
     "Arch": "x86_64",
@@ -138,9 +114,6 @@
   {
     "ID": "cracklib-dict-small@2.9.6-lp151.3.69.x86_64",
     "Name": "cracklib-dict-small",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/cracklib-dict-small@2.9.6-lp151.3.69?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.9.6",
     "Release": "lp151.3.69",
     "Arch": "x86_64",
@@ -155,9 +128,6 @@
   {
     "ID": "diffutils@3.6-lp151.3.3.x86_64",
     "Name": "diffutils",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/diffutils@3.6-lp151.3.3?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "3.6",
     "Release": "lp151.3.3",
     "Arch": "x86_64",
@@ -172,9 +142,6 @@
   {
     "ID": "file-magic@5.32-lp151.7.22.noarch",
     "Name": "file-magic",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/file-magic@5.32-lp151.7.22?arch=noarch\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "5.32",
     "Release": "lp151.7.22",
     "Arch": "noarch",
@@ -189,9 +156,6 @@
   {
     "ID": "filesystem@15.0-lp151.9.2.x86_64",
     "Name": "filesystem",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/filesystem@15.0-lp151.9.2?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "15.0",
     "Release": "lp151.9.2",
     "Arch": "x86_64",
@@ -206,9 +170,6 @@
   {
     "ID": "fillup@1.42-lp151.3.2.x86_64",
     "Name": "fillup",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/fillup@1.42-lp151.3.2?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.42",
     "Release": "lp151.3.2",
     "Arch": "x86_64",
@@ -223,9 +184,6 @@
   {
     "ID": "findutils@4.6.0-lp151.3.71.x86_64",
     "Name": "findutils",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/findutils@4.6.0-lp151.3.71?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "4.6.0",
     "Release": "lp151.3.71",
     "Arch": "x86_64",
@@ -240,9 +198,6 @@
   {
     "ID": "gawk@4.2.1-lp151.2.70.x86_64",
     "Name": "gawk",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/gawk@4.2.1-lp151.2.70?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "4.2.1",
     "Release": "lp151.2.70",
     "Arch": "x86_64",
@@ -257,9 +212,6 @@
   {
     "ID": "glibc@2.26-lp151.18.7.x86_64",
     "Name": "glibc",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/glibc@2.26-lp151.18.7?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.26",
     "Release": "lp151.18.7",
     "Arch": "x86_64",
@@ -274,9 +226,6 @@
   {
     "ID": "gpg-pubkey@307e3d54-5aaa90a5.",
     "Name": "gpg-pubkey",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/gpg-pubkey@307e3d54-5aaa90a5?arch=None\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "307e3d54",
     "Release": "5aaa90a5",
     "Arch": "None",
@@ -287,9 +236,6 @@
   {
     "ID": "gpg-pubkey@39db7c82-5847eb1f.",
     "Name": "gpg-pubkey",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/gpg-pubkey@39db7c82-5847eb1f?arch=None\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "39db7c82",
     "Release": "5847eb1f",
     "Arch": "None",
@@ -300,9 +246,6 @@
   {
     "ID": "gpg-pubkey@3dbdc284-53674dd4.",
     "Name": "gpg-pubkey",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/gpg-pubkey@3dbdc284-53674dd4?arch=None\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "3dbdc284",
     "Release": "53674dd4",
     "Arch": "None",
@@ -313,9 +256,6 @@
   {
     "ID": "gpg2@2.2.5-lp151.6.3.1.x86_64",
     "Name": "gpg2",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/gpg2@2.2.5-lp151.6.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.2.5",
     "Release": "lp151.6.3.1",
     "Arch": "x86_64",
@@ -330,9 +270,6 @@
   {
     "ID": "grep@3.1-lp151.3.29.x86_64",
     "Name": "grep",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/grep@3.1-lp151.3.29?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "3.1",
     "Release": "lp151.3.29",
     "Arch": "x86_64",
@@ -347,9 +284,6 @@
   {
     "ID": "info@6.5-lp151.5.69.x86_64",
     "Name": "info",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/info@6.5-lp151.5.69?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "6.5",
     "Release": "lp151.5.69",
     "Arch": "x86_64",
@@ -364,9 +298,6 @@
   {
     "ID": "krb5@1.16.3-lp151.2.6.1.x86_64",
     "Name": "krb5",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/krb5@1.16.3-lp151.2.6.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.16.3",
     "Release": "lp151.2.6.1",
     "Arch": "x86_64",
@@ -381,9 +312,6 @@
   {
     "ID": "kubic-locale-archive@2.26-lp151.4.1.noarch",
     "Name": "kubic-locale-archive",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/kubic-locale-archive@2.26-lp151.4.1?arch=noarch\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.26",
     "Release": "lp151.4.1",
     "Arch": "noarch",
@@ -398,9 +326,6 @@
   {
     "ID": "libacl1@2.2.52-lp151.4.29.x86_64",
     "Name": "libacl1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libacl1@2.2.52-lp151.4.29?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.2.52",
     "Release": "lp151.4.29",
     "Arch": "x86_64",
@@ -415,9 +340,6 @@
   {
     "ID": "libassuan0@2.5.1-lp151.3.3.x86_64",
     "Name": "libassuan0",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libassuan0@2.5.1-lp151.3.3?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.5.1",
     "Release": "lp151.3.3",
     "Arch": "x86_64",
@@ -432,9 +354,6 @@
   {
     "ID": "libattr1@2.4.47-lp151.3.70.x86_64",
     "Name": "libattr1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libattr1@2.4.47-lp151.3.70?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.4.47",
     "Release": "lp151.3.70",
     "Arch": "x86_64",
@@ -449,9 +368,6 @@
   {
     "ID": "libaudit1@2.8.1-lp151.4.66.x86_64",
     "Name": "libaudit1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libaudit1@2.8.1-lp151.4.66?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.8.1",
     "Release": "lp151.4.66",
     "Arch": "x86_64",
@@ -466,9 +382,6 @@
   {
     "ID": "libaugeas0@1.10.1-lp151.2.3.x86_64",
     "Name": "libaugeas0",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libaugeas0@1.10.1-lp151.2.3?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.10.1",
     "Release": "lp151.2.3",
     "Arch": "x86_64",
@@ -483,9 +396,6 @@
   {
     "ID": "libblkid1@2.33.1-lp151.3.3.2.x86_64",
     "Name": "libblkid1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libblkid1@2.33.1-lp151.3.3.2?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.33.1",
     "Release": "lp151.3.3.2",
     "Arch": "x86_64",
@@ -500,9 +410,6 @@
   {
     "ID": "libboost_system1_66_0@1.66.0-lp151.4.5.x86_64",
     "Name": "libboost_system1_66_0",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libboost_system1_66_0@1.66.0-lp151.4.5?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.66.0",
     "Release": "lp151.4.5",
     "Arch": "x86_64",
@@ -517,9 +424,6 @@
   {
     "ID": "libboost_thread1_66_0@1.66.0-lp151.4.5.x86_64",
     "Name": "libboost_thread1_66_0",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libboost_thread1_66_0@1.66.0-lp151.4.5?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.66.0",
     "Release": "lp151.4.5",
     "Arch": "x86_64",
@@ -534,9 +438,6 @@
   {
     "ID": "libbz2-1@1.0.6-lp151.5.9.1.x86_64",
     "Name": "libbz2-1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libbz2-1@1.0.6-lp151.5.9.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.0.6",
     "Release": "lp151.5.9.1",
     "Arch": "x86_64",
@@ -551,9 +452,6 @@
   {
     "ID": "libcap-ng0@0.7.9-lp151.3.39.x86_64",
     "Name": "libcap-ng0",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libcap-ng0@0.7.9-lp151.3.39?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "0.7.9",
     "Release": "lp151.3.39",
     "Arch": "x86_64",
@@ -568,9 +466,6 @@
   {
     "ID": "libcap2@2.25-lp151.3.70.x86_64",
     "Name": "libcap2",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libcap2@2.25-lp151.3.70?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.25",
     "Release": "lp151.3.70",
     "Arch": "x86_64",
@@ -585,9 +480,6 @@
   {
     "ID": "libcom_err2@1.43.8-lp151.5.6.1.x86_64",
     "Name": "libcom_err2",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libcom_err2@1.43.8-lp151.5.6.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.43.8",
     "Release": "lp151.5.6.1",
     "Arch": "x86_64",
@@ -602,9 +494,6 @@
   {
     "ID": "libcrack2@2.9.6-lp151.3.69.x86_64",
     "Name": "libcrack2",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libcrack2@2.9.6-lp151.3.69?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.9.6",
     "Release": "lp151.3.69",
     "Arch": "x86_64",
@@ -619,9 +508,6 @@
   {
     "ID": "libcurl4@7.60.0-lp151.5.6.1.x86_64",
     "Name": "libcurl4",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libcurl4@7.60.0-lp151.5.6.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "7.60.0",
     "Release": "lp151.5.6.1",
     "Arch": "x86_64",
@@ -636,9 +522,6 @@
   {
     "ID": "libdw1@0.168-lp151.4.3.1.x86_64",
     "Name": "libdw1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libdw1@0.168-lp151.4.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "0.168",
     "Release": "lp151.4.3.1",
     "Arch": "x86_64",
@@ -653,9 +536,6 @@
   {
     "ID": "libebl-plugins@0.168-lp151.4.3.1.x86_64",
     "Name": "libebl-plugins",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libebl-plugins@0.168-lp151.4.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "0.168",
     "Release": "lp151.4.3.1",
     "Arch": "x86_64",
@@ -670,9 +550,6 @@
   {
     "ID": "libelf1@0.168-lp151.4.3.1.x86_64",
     "Name": "libelf1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libelf1@0.168-lp151.4.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "0.168",
     "Release": "lp151.4.3.1",
     "Arch": "x86_64",
@@ -687,9 +564,6 @@
   {
     "ID": "libfdisk1@2.33.1-lp151.3.3.2.x86_64",
     "Name": "libfdisk1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libfdisk1@2.33.1-lp151.3.3.2?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.33.1",
     "Release": "lp151.3.3.2",
     "Arch": "x86_64",
@@ -704,9 +578,6 @@
   {
     "ID": "libffi7@3.2.1.git259-lp151.5.2.x86_64",
     "Name": "libffi7",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libffi7@3.2.1.git259-lp151.5.2?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "3.2.1.git259",
     "Release": "lp151.5.2",
     "Arch": "x86_64",
@@ -721,9 +592,6 @@
   {
     "ID": "libgcc_s1@8.2.1+r264010-lp151.1.33.x86_64",
     "Name": "libgcc_s1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libgcc_s1@8.2.1%2Br264010-lp151.1.33?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "8.2.1+r264010",
     "Release": "lp151.1.33",
     "Arch": "x86_64",
@@ -738,9 +606,6 @@
   {
     "ID": "libgcrypt20@1.8.2-lp151.9.4.1.x86_64",
     "Name": "libgcrypt20",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libgcrypt20@1.8.2-lp151.9.4.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.8.2",
     "Release": "lp151.9.4.1",
     "Arch": "x86_64",
@@ -755,9 +620,6 @@
   {
     "ID": "libgmp10@6.1.2-lp151.3.70.x86_64",
     "Name": "libgmp10",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libgmp10@6.1.2-lp151.3.70?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "6.1.2",
     "Release": "lp151.3.70",
     "Arch": "x86_64",
@@ -772,9 +634,6 @@
   {
     "ID": "libgnutls30@3.6.7-lp151.2.3.1.x86_64",
     "Name": "libgnutls30",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libgnutls30@3.6.7-lp151.2.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "3.6.7",
     "Release": "lp151.2.3.1",
     "Arch": "x86_64",
@@ -789,9 +648,6 @@
   {
     "ID": "libgpg-error0@1.29-lp151.2.4.x86_64",
     "Name": "libgpg-error0",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libgpg-error0@1.29-lp151.2.4?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.29",
     "Release": "lp151.2.4",
     "Arch": "x86_64",
@@ -806,9 +662,6 @@
   {
     "ID": "libgpgme11@1.10.0-lp151.4.1.x86_64",
     "Name": "libgpgme11",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libgpgme11@1.10.0-lp151.4.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.10.0",
     "Release": "lp151.4.1",
     "Arch": "x86_64",
@@ -823,9 +676,6 @@
   {
     "ID": "libhogweed4@3.4.1-lp151.1.1.x86_64",
     "Name": "libhogweed4",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libhogweed4@3.4.1-lp151.1.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "3.4.1",
     "Release": "lp151.1.1",
     "Arch": "x86_64",
@@ -840,9 +690,6 @@
   {
     "ID": "libidn2-0@2.0.4-lp151.2.3.x86_64",
     "Name": "libidn2-0",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libidn2-0@2.0.4-lp151.2.3?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.0.4",
     "Release": "lp151.2.3",
     "Arch": "x86_64",
@@ -857,9 +704,6 @@
   {
     "ID": "libkeyutils1@1.5.10-lp151.4.70.x86_64",
     "Name": "libkeyutils1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libkeyutils1@1.5.10-lp151.4.70?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.5.10",
     "Release": "lp151.4.70",
     "Arch": "x86_64",
@@ -874,9 +718,6 @@
   {
     "ID": "libksba8@1.3.5-lp151.3.3.x86_64",
     "Name": "libksba8",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libksba8@1.3.5-lp151.3.3?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.3.5",
     "Release": "lp151.3.3",
     "Arch": "x86_64",
@@ -891,9 +732,6 @@
   {
     "ID": "libldap-2_4-2@2.4.46-lp151.10.3.1.x86_64",
     "Name": "libldap-2_4-2",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libldap-2_4-2@2.4.46-lp151.10.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.4.46",
     "Release": "lp151.10.3.1",
     "Arch": "x86_64",
@@ -908,9 +746,6 @@
   {
     "ID": "liblua5_3-5@5.3.4-lp151.3.25.x86_64",
     "Name": "liblua5_3-5",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/liblua5_3-5@5.3.4-lp151.3.25?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "5.3.4",
     "Release": "lp151.3.25",
     "Arch": "x86_64",
@@ -925,9 +760,6 @@
   {
     "ID": "liblz4-1@1.8.0-lp151.3.3.1.x86_64",
     "Name": "liblz4-1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/liblz4-1@1.8.0-lp151.3.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.8.0",
     "Release": "lp151.3.3.1",
     "Arch": "x86_64",
@@ -942,9 +774,6 @@
   {
     "ID": "liblzma5@5.2.3-lp151.4.3.1.x86_64",
     "Name": "liblzma5",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/liblzma5@5.2.3-lp151.4.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "5.2.3",
     "Release": "lp151.4.3.1",
     "Arch": "x86_64",
@@ -959,9 +788,6 @@
   {
     "ID": "libmagic1@5.32-lp151.7.22.x86_64",
     "Name": "libmagic1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libmagic1@5.32-lp151.7.22?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "5.32",
     "Release": "lp151.7.22",
     "Arch": "x86_64",
@@ -976,9 +802,6 @@
   {
     "ID": "libmodman1@2.0.1-lp151.2.3.x86_64",
     "Name": "libmodman1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libmodman1@2.0.1-lp151.2.3?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.0.1",
     "Release": "lp151.2.3",
     "Arch": "x86_64",
@@ -993,9 +816,6 @@
   {
     "ID": "libmount1@2.33.1-lp151.3.3.2.x86_64",
     "Name": "libmount1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libmount1@2.33.1-lp151.3.3.2?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.33.1",
     "Release": "lp151.3.3.2",
     "Arch": "x86_64",
@@ -1010,9 +830,6 @@
   {
     "ID": "libncurses6@6.1-lp151.5.41.x86_64",
     "Name": "libncurses6",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libncurses6@6.1-lp151.5.41?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "6.1",
     "Release": "lp151.5.41",
     "Arch": "x86_64",
@@ -1027,9 +844,6 @@
   {
     "ID": "libnettle6@3.4.1-lp151.1.1.x86_64",
     "Name": "libnettle6",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libnettle6@3.4.1-lp151.1.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "3.4.1",
     "Release": "lp151.1.1",
     "Arch": "x86_64",
@@ -1044,9 +858,6 @@
   {
     "ID": "libnghttp2-14@1.39.2-lp151.3.3.1.x86_64",
     "Name": "libnghttp2-14",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libnghttp2-14@1.39.2-lp151.3.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.39.2",
     "Release": "lp151.3.3.1",
     "Arch": "x86_64",
@@ -1061,9 +872,6 @@
   {
     "ID": "libnpth0@1.5-lp151.3.2.x86_64",
     "Name": "libnpth0",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libnpth0@1.5-lp151.3.2?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.5",
     "Release": "lp151.3.2",
     "Arch": "x86_64",
@@ -1078,9 +886,6 @@
   {
     "ID": "libnsl2@1.2.0-lp151.3.67.x86_64",
     "Name": "libnsl2",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libnsl2@1.2.0-lp151.3.67?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.2.0",
     "Release": "lp151.3.67",
     "Arch": "x86_64",
@@ -1095,9 +900,6 @@
   {
     "ID": "libopenssl1_1@1.1.0i-lp151.8.3.1.x86_64",
     "Name": "libopenssl1_1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libopenssl1_1@1.1.0i-lp151.8.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.1.0i",
     "Release": "lp151.8.3.1",
     "Arch": "x86_64",
@@ -1112,9 +914,6 @@
   {
     "ID": "libp11-kit0@0.23.2-lp151.3.3.x86_64",
     "Name": "libp11-kit0",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libp11-kit0@0.23.2-lp151.3.3?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "0.23.2",
     "Release": "lp151.3.3",
     "Arch": "x86_64",
@@ -1129,9 +928,6 @@
   {
     "ID": "libpcre1@8.41-lp151.5.67.x86_64",
     "Name": "libpcre1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libpcre1@8.41-lp151.5.67?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "8.41",
     "Release": "lp151.5.67",
     "Arch": "x86_64",
@@ -1146,9 +942,6 @@
   {
     "ID": "libpopt0@1.16-lp151.3.67.x86_64",
     "Name": "libpopt0",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libpopt0@1.16-lp151.3.67?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.16",
     "Release": "lp151.3.67",
     "Arch": "x86_64",
@@ -1163,9 +956,6 @@
   {
     "ID": "libprocps7@3.3.15-lp151.6.3.1.x86_64",
     "Name": "libprocps7",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libprocps7@3.3.15-lp151.6.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "3.3.15",
     "Release": "lp151.6.3.1",
     "Arch": "x86_64",
@@ -1180,9 +970,6 @@
   {
     "ID": "libproxy1@0.4.15-lp151.3.3.x86_64",
     "Name": "libproxy1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libproxy1@0.4.15-lp151.3.3?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "0.4.15",
     "Release": "lp151.3.3",
     "Arch": "x86_64",
@@ -1197,9 +984,6 @@
   {
     "ID": "libpsl5@0.20.1-lp151.2.43.x86_64",
     "Name": "libpsl5",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libpsl5@0.20.1-lp151.2.43?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "0.20.1",
     "Release": "lp151.2.43",
     "Arch": "x86_64",
@@ -1214,9 +998,6 @@
   {
     "ID": "libreadline7@7.0-lp151.10.3.1.x86_64",
     "Name": "libreadline7",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libreadline7@7.0-lp151.10.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "7.0",
     "Release": "lp151.10.3.1",
     "Arch": "x86_64",
@@ -1231,9 +1012,6 @@
   {
     "ID": "libsasl2-3@2.1.26-lp151.5.1.x86_64",
     "Name": "libsasl2-3",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libsasl2-3@2.1.26-lp151.5.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.1.26",
     "Release": "lp151.5.1",
     "Arch": "x86_64",
@@ -1248,9 +1026,6 @@
   {
     "ID": "libselinux1@2.8-lp151.1.30.x86_64",
     "Name": "libselinux1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libselinux1@2.8-lp151.1.30?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.8",
     "Release": "lp151.1.30",
     "Arch": "x86_64",
@@ -1265,9 +1040,6 @@
   {
     "ID": "libsemanage1@2.8-lp151.1.32.x86_64",
     "Name": "libsemanage1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libsemanage1@2.8-lp151.1.32?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.8",
     "Release": "lp151.1.32",
     "Arch": "x86_64",
@@ -1282,9 +1054,6 @@
   {
     "ID": "libsepol1@2.8-lp151.1.36.x86_64",
     "Name": "libsepol1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libsepol1@2.8-lp151.1.36?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.8",
     "Release": "lp151.1.36",
     "Arch": "x86_64",
@@ -1299,9 +1068,6 @@
   {
     "ID": "libsmartcols1@2.33.1-lp151.3.3.2.x86_64",
     "Name": "libsmartcols1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libsmartcols1@2.33.1-lp151.3.3.2?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.33.1",
     "Release": "lp151.3.3.2",
     "Arch": "x86_64",
@@ -1316,9 +1082,6 @@
   {
     "ID": "libsolv-tools@0.7.6-lp151.2.3.2.x86_64",
     "Name": "libsolv-tools",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libsolv-tools@0.7.6-lp151.2.3.2?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "0.7.6",
     "Release": "lp151.2.3.2",
     "Arch": "x86_64",
@@ -1333,9 +1096,6 @@
   {
     "ID": "libsqlite3-0@3.28.0-lp151.2.3.1.x86_64",
     "Name": "libsqlite3-0",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libsqlite3-0@3.28.0-lp151.2.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "3.28.0",
     "Release": "lp151.2.3.1",
     "Arch": "x86_64",
@@ -1350,9 +1110,6 @@
   {
     "ID": "libssh4@0.8.7-lp151.2.3.1.x86_64",
     "Name": "libssh4",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libssh4@0.8.7-lp151.2.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "0.8.7",
     "Release": "lp151.2.3.1",
     "Arch": "x86_64",
@@ -1367,9 +1124,6 @@
   {
     "ID": "libstdc++6@8.2.1+r264010-lp151.1.33.x86_64",
     "Name": "libstdc++6",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libstdc%2B%2B6@8.2.1%2Br264010-lp151.1.33?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "8.2.1+r264010",
     "Release": "lp151.1.33",
     "Arch": "x86_64",
@@ -1384,9 +1138,6 @@
   {
     "ID": "libsystemd0@234-lp151.26.4.1.x86_64",
     "Name": "libsystemd0",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libsystemd0@234-lp151.26.4.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "234",
     "Release": "lp151.26.4.1",
     "Arch": "x86_64",
@@ -1401,9 +1152,6 @@
   {
     "ID": "libtasn1@4.13-lp151.4.3.1.x86_64",
     "Name": "libtasn1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libtasn1@4.13-lp151.4.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "4.13",
     "Release": "lp151.4.3.1",
     "Arch": "x86_64",
@@ -1418,9 +1166,6 @@
   {
     "ID": "libtasn1-6@4.13-lp151.4.3.1.x86_64",
     "Name": "libtasn1-6",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libtasn1-6@4.13-lp151.4.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "4.13",
     "Release": "lp151.4.3.1",
     "Arch": "x86_64",
@@ -1435,9 +1180,6 @@
   {
     "ID": "libtirpc-netconfig@1.0.2-lp151.4.8.x86_64",
     "Name": "libtirpc-netconfig",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libtirpc-netconfig@1.0.2-lp151.4.8?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.0.2",
     "Release": "lp151.4.8",
     "Arch": "x86_64",
@@ -1452,9 +1194,6 @@
   {
     "ID": "libtirpc3@1.0.2-lp151.4.8.x86_64",
     "Name": "libtirpc3",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libtirpc3@1.0.2-lp151.4.8?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.0.2",
     "Release": "lp151.4.8",
     "Arch": "x86_64",
@@ -1469,9 +1208,6 @@
   {
     "ID": "libudev1@234-lp151.26.4.1.x86_64",
     "Name": "libudev1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libudev1@234-lp151.26.4.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "234",
     "Release": "lp151.26.4.1",
     "Arch": "x86_64",
@@ -1486,9 +1222,6 @@
   {
     "ID": "libunistring2@0.9.9-lp151.2.3.x86_64",
     "Name": "libunistring2",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libunistring2@0.9.9-lp151.2.3?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "0.9.9",
     "Release": "lp151.2.3",
     "Arch": "x86_64",
@@ -1503,9 +1236,6 @@
   {
     "ID": "libusb-1_0-0@1.0.21-lp151.2.3.x86_64",
     "Name": "libusb-1_0-0",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libusb-1_0-0@1.0.21-lp151.2.3?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.0.21",
     "Release": "lp151.2.3",
     "Arch": "x86_64",
@@ -1520,9 +1250,6 @@
   {
     "ID": "libutempter0@1.1.6-lp151.4.70.x86_64",
     "Name": "libutempter0",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libutempter0@1.1.6-lp151.4.70?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.1.6",
     "Release": "lp151.4.70",
     "Arch": "x86_64",
@@ -1537,9 +1264,6 @@
   {
     "ID": "libuuid1@2.33.1-lp151.3.3.2.x86_64",
     "Name": "libuuid1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libuuid1@2.33.1-lp151.3.3.2?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.33.1",
     "Release": "lp151.3.3.2",
     "Arch": "x86_64",
@@ -1554,9 +1278,6 @@
   {
     "ID": "libverto1@0.2.6-lp151.4.70.x86_64",
     "Name": "libverto1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libverto1@0.2.6-lp151.4.70?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "0.2.6",
     "Release": "lp151.4.70",
     "Arch": "x86_64",
@@ -1571,9 +1292,6 @@
   {
     "ID": "libxml2-2@2.9.7-lp151.5.3.1.x86_64",
     "Name": "libxml2-2",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libxml2-2@2.9.7-lp151.5.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.9.7",
     "Release": "lp151.5.3.1",
     "Arch": "x86_64",
@@ -1588,9 +1306,6 @@
   {
     "ID": "libz1@1.2.11-lp151.5.3.1.x86_64",
     "Name": "libz1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libz1@1.2.11-lp151.5.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.2.11",
     "Release": "lp151.5.3.1",
     "Arch": "x86_64",
@@ -1605,9 +1320,6 @@
   {
     "ID": "libzio1@1.06-lp151.3.71.x86_64",
     "Name": "libzio1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libzio1@1.06-lp151.3.71?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.06",
     "Release": "lp151.3.71",
     "Arch": "x86_64",
@@ -1622,9 +1334,6 @@
   {
     "ID": "libzstd1@1.4.2-lp151.3.3.1.x86_64",
     "Name": "libzstd1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libzstd1@1.4.2-lp151.3.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.4.2",
     "Release": "lp151.3.3.1",
     "Arch": "x86_64",
@@ -1639,9 +1348,6 @@
   {
     "ID": "libzypp@17.15.0-lp151.2.3.2.x86_64",
     "Name": "libzypp",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/libzypp@17.15.0-lp151.2.3.2?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "17.15.0",
     "Release": "lp151.2.3.2",
     "Arch": "x86_64",
@@ -1656,9 +1362,6 @@
   {
     "ID": "ncurses-utils@6.1-lp151.5.41.x86_64",
     "Name": "ncurses-utils",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/ncurses-utils@6.1-lp151.5.41?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "6.1",
     "Release": "lp151.5.41",
     "Arch": "x86_64",
@@ -1673,9 +1376,6 @@
   {
     "ID": "netcfg@11.6-lp151.2.2.noarch",
     "Name": "netcfg",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/netcfg@11.6-lp151.2.2?arch=noarch\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "11.6",
     "Release": "lp151.2.2",
     "Arch": "noarch",
@@ -1690,9 +1390,6 @@
   {
     "ID": "openSUSE-build-key@1.0-lp151.3.1.noarch",
     "Name": "openSUSE-build-key",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/openSUSE-build-key@1.0-lp151.3.1?arch=noarch\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.0",
     "Release": "lp151.3.1",
     "Arch": "noarch",
@@ -1707,9 +1404,6 @@
   {
     "ID": "openSUSE-release@15.1-lp151.301.1.x86_64",
     "Name": "openSUSE-release",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/openSUSE-release@15.1-lp151.301.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "15.1",
     "Release": "lp151.301.1",
     "Arch": "x86_64",
@@ -1724,9 +1418,6 @@
   {
     "ID": "openSUSE-release-appliance-docker@15.1-lp151.301.1.x86_64",
     "Name": "openSUSE-release-appliance-docker",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/openSUSE-release-appliance-docker@15.1-lp151.301.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "15.1",
     "Release": "lp151.301.1",
     "Arch": "x86_64",
@@ -1741,9 +1432,6 @@
   {
     "ID": "openssl@1.1.0i-lp151.1.1.noarch",
     "Name": "openssl",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/openssl@1.1.0i-lp151.1.1?arch=noarch\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.1.0i",
     "Release": "lp151.1.1",
     "Arch": "noarch",
@@ -1758,9 +1446,6 @@
   {
     "ID": "openssl-1_1@1.1.0i-lp151.8.3.1.x86_64",
     "Name": "openssl-1_1",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/openssl-1_1@1.1.0i-lp151.8.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.1.0i",
     "Release": "lp151.8.3.1",
     "Arch": "x86_64",
@@ -1775,9 +1460,6 @@
   {
     "ID": "p11-kit@0.23.2-lp151.3.3.x86_64",
     "Name": "p11-kit",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/p11-kit@0.23.2-lp151.3.3?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "0.23.2",
     "Release": "lp151.3.3",
     "Arch": "x86_64",
@@ -1792,9 +1474,6 @@
   {
     "ID": "p11-kit-tools@0.23.2-lp151.3.3.x86_64",
     "Name": "p11-kit-tools",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/p11-kit-tools@0.23.2-lp151.3.3?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "0.23.2",
     "Release": "lp151.3.3",
     "Arch": "x86_64",
@@ -1809,9 +1488,6 @@
   {
     "ID": "pam@1.3.0-lp151.7.38.x86_64",
     "Name": "pam",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/pam@1.3.0-lp151.7.38?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.3.0",
     "Release": "lp151.7.38",
     "Arch": "x86_64",
@@ -1826,9 +1502,6 @@
   {
     "ID": "perl-base@5.26.1-lp151.8.37.x86_64",
     "Name": "perl-base",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/perl-base@5.26.1-lp151.8.37?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "5.26.1",
     "Release": "lp151.8.37",
     "Arch": "x86_64",
@@ -1843,9 +1516,6 @@
   {
     "ID": "permissions@20181116-lp151.4.6.1.x86_64",
     "Name": "permissions",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/permissions@20181116-lp151.4.6.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "20181116",
     "Release": "lp151.4.6.1",
     "Arch": "x86_64",
@@ -1860,9 +1530,6 @@
   {
     "ID": "pinentry@1.1.0-lp151.4.3.1.x86_64",
     "Name": "pinentry",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/pinentry@1.1.0-lp151.4.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.1.0",
     "Release": "lp151.4.3.1",
     "Arch": "x86_64",
@@ -1877,9 +1544,6 @@
   {
     "ID": "procps@3.3.15-lp151.6.3.1.x86_64",
     "Name": "procps",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/procps@3.3.15-lp151.6.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "3.3.15",
     "Release": "lp151.6.3.1",
     "Arch": "x86_64",
@@ -1894,9 +1558,6 @@
   {
     "ID": "rpm@4.14.1-lp151.13.10.x86_64",
     "Name": "rpm",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/rpm@4.14.1-lp151.13.10?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "4.14.1",
     "Release": "lp151.13.10",
     "Arch": "x86_64",
@@ -1911,9 +1572,6 @@
   {
     "ID": "sed@4.4-lp151.3.4.x86_64",
     "Name": "sed",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/sed@4.4-lp151.3.4?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "4.4",
     "Release": "lp151.3.4",
     "Arch": "x86_64",
@@ -1928,9 +1586,6 @@
   {
     "ID": "shadow@4.6-lp151.2.3.2.x86_64",
     "Name": "shadow",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/shadow@4.6-lp151.2.3.2?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "4.6",
     "Release": "lp151.2.3.2",
     "Arch": "x86_64",
@@ -1945,9 +1600,6 @@
   {
     "ID": "system-group-hardware@20170617-lp151.4.70.noarch",
     "Name": "system-group-hardware",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/system-group-hardware@20170617-lp151.4.70?arch=noarch\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "20170617",
     "Release": "lp151.4.70",
     "Arch": "noarch",
@@ -1962,9 +1614,6 @@
   {
     "ID": "system-user-root@20190513-lp151.3.3.1.noarch",
     "Name": "system-user-root",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/system-user-root@20190513-lp151.3.3.1?arch=noarch\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "20190513",
     "Release": "lp151.3.3.1",
     "Arch": "noarch",
@@ -1979,9 +1628,6 @@
   {
     "ID": "sysuser-shadow@2.0-lp151.3.70.noarch",
     "Name": "sysuser-shadow",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/sysuser-shadow@2.0-lp151.3.70?arch=noarch\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.0",
     "Release": "lp151.3.70",
     "Arch": "noarch",
@@ -1996,9 +1642,6 @@
   {
     "ID": "terminfo-base@6.1-lp151.5.41.x86_64",
     "Name": "terminfo-base",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/terminfo-base@6.1-lp151.5.41?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "6.1",
     "Release": "lp151.5.41",
     "Arch": "x86_64",
@@ -2013,9 +1656,6 @@
   {
     "ID": "update-alternatives@1.19.0.4-lp151.3.67.x86_64",
     "Name": "update-alternatives",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/update-alternatives@1.19.0.4-lp151.3.67?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.19.0.4",
     "Release": "lp151.3.67",
     "Arch": "x86_64",
@@ -2030,9 +1670,6 @@
   {
     "ID": "util-linux@2.33.1-lp151.3.3.2.x86_64",
     "Name": "util-linux",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/util-linux@2.33.1-lp151.3.3.2?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "2.33.1",
     "Release": "lp151.3.3.2",
     "Arch": "x86_64",
@@ -2047,9 +1684,6 @@
   {
     "ID": "zypper@1.14.30-lp151.2.3.1.x86_64",
     "Name": "zypper",
-    "Identifier": {
-      "PURL": "pkg:rpm/opensuse/zypper@1.14.30-lp151.2.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1"
-    },
     "Version": "1.14.30",
     "Release": "lp151.2.3.1",
     "Arch": "x86_64",

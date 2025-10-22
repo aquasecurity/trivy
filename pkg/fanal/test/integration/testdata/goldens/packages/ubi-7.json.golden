@@ -2,9 +2,6 @@
   {
     "ID": "acl@2.2.51-14.el7.x86_64",
     "Name": "acl",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/acl@2.2.51-14.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.2.51",
     "Release": "14.el7",
     "Arch": "x86_64",
@@ -23,9 +20,6 @@
   {
     "ID": "audit-libs@2.8.5-4.el7.x86_64",
     "Name": "audit-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/audit-libs@2.8.5-4.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.8.5",
     "Release": "4.el7",
     "Arch": "x86_64",
@@ -44,9 +38,6 @@
   {
     "ID": "basesystem@10.0-7.el7.noarch",
     "Name": "basesystem",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/basesystem@10.0-7.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "10.0",
     "Release": "7.el7",
     "Arch": "noarch",
@@ -65,9 +56,6 @@
   {
     "ID": "bash@4.2.46-33.el7.x86_64",
     "Name": "bash",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/bash@4.2.46-33.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "4.2.46",
     "Release": "33.el7",
     "Arch": "x86_64",
@@ -86,9 +74,6 @@
   {
     "ID": "binutils@2.27-41.base.el7.x86_64",
     "Name": "binutils",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/binutils@2.27-41.base.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.27",
     "Release": "41.base.el7",
     "Arch": "x86_64",
@@ -107,9 +92,6 @@
   {
     "ID": "bzip2-libs@1.0.6-13.el7.x86_64",
     "Name": "bzip2-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/bzip2-libs@1.0.6-13.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.0.6",
     "Release": "13.el7",
     "Arch": "x86_64",
@@ -128,9 +110,6 @@
   {
     "ID": "ca-certificates@2018.2.22-70.0.el7_5.noarch",
     "Name": "ca-certificates",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/ca-certificates@2018.2.22-70.0.el7_5?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "2018.2.22",
     "Release": "70.0.el7_5",
     "Arch": "noarch",
@@ -149,9 +128,6 @@
   {
     "ID": "chkconfig@1.7.4-1.el7.x86_64",
     "Name": "chkconfig",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/chkconfig@1.7.4-1.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.7.4",
     "Release": "1.el7",
     "Arch": "x86_64",
@@ -170,9 +146,6 @@
   {
     "ID": "coreutils@8.22-24.el7.x86_64",
     "Name": "coreutils",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/coreutils@8.22-24.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "8.22",
     "Release": "24.el7",
     "Arch": "x86_64",
@@ -191,9 +164,6 @@
   {
     "ID": "cpio@2.11-27.el7.x86_64",
     "Name": "cpio",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/cpio@2.11-27.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.11",
     "Release": "27.el7",
     "Arch": "x86_64",
@@ -212,9 +182,6 @@
   {
     "ID": "cracklib@2.9.0-11.el7.x86_64",
     "Name": "cracklib",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/cracklib@2.9.0-11.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.9.0",
     "Release": "11.el7",
     "Arch": "x86_64",
@@ -233,9 +200,6 @@
   {
     "ID": "cracklib-dicts@2.9.0-11.el7.x86_64",
     "Name": "cracklib-dicts",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/cracklib-dicts@2.9.0-11.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.9.0",
     "Release": "11.el7",
     "Arch": "x86_64",
@@ -254,9 +218,6 @@
   {
     "ID": "cryptsetup-libs@2.0.3-5.el7.x86_64",
     "Name": "cryptsetup-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/cryptsetup-libs@2.0.3-5.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.0.3",
     "Release": "5.el7",
     "Arch": "x86_64",
@@ -275,9 +236,6 @@
   {
     "ID": "curl@7.29.0-54.el7.x86_64",
     "Name": "curl",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/curl@7.29.0-54.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "7.29.0",
     "Release": "54.el7",
     "Arch": "x86_64",
@@ -296,9 +254,6 @@
   {
     "ID": "cyrus-sasl-lib@2.1.26-23.el7.x86_64",
     "Name": "cyrus-sasl-lib",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/cyrus-sasl-lib@2.1.26-23.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.1.26",
     "Release": "23.el7",
     "Arch": "x86_64",
@@ -317,9 +272,6 @@
   {
     "ID": "dbus@1.10.24-13.el7_6.x86_64",
     "Name": "dbus",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/dbus@1.10.24-13.el7_6?arch=x86_64\u0026distro=redhat-7.7\u0026epoch=1"
-    },
     "Version": "1.10.24",
     "Release": "13.el7_6",
     "Epoch": 1,
@@ -340,9 +292,6 @@
   {
     "ID": "dbus-glib@0.100-7.el7.x86_64",
     "Name": "dbus-glib",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/dbus-glib@0.100-7.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "0.100",
     "Release": "7.el7",
     "Arch": "x86_64",
@@ -361,9 +310,6 @@
   {
     "ID": "dbus-libs@1.10.24-13.el7_6.x86_64",
     "Name": "dbus-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/dbus-libs@1.10.24-13.el7_6?arch=x86_64\u0026distro=redhat-7.7\u0026epoch=1"
-    },
     "Version": "1.10.24",
     "Release": "13.el7_6",
     "Epoch": 1,
@@ -384,9 +330,6 @@
   {
     "ID": "dbus-python@1.1.1-9.el7.x86_64",
     "Name": "dbus-python",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/dbus-python@1.1.1-9.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.1.1",
     "Release": "9.el7",
     "Arch": "x86_64",
@@ -405,9 +348,6 @@
   {
     "ID": "device-mapper@1.02.158-2.el7.x86_64",
     "Name": "device-mapper",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/device-mapper@1.02.158-2.el7?arch=x86_64\u0026distro=redhat-7.7\u0026epoch=7"
-    },
     "Version": "1.02.158",
     "Release": "2.el7",
     "Epoch": 7,
@@ -428,9 +368,6 @@
   {
     "ID": "device-mapper-libs@1.02.158-2.el7.x86_64",
     "Name": "device-mapper-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/device-mapper-libs@1.02.158-2.el7?arch=x86_64\u0026distro=redhat-7.7\u0026epoch=7"
-    },
     "Version": "1.02.158",
     "Release": "2.el7",
     "Epoch": 7,
@@ -451,9 +388,6 @@
   {
     "ID": "diffutils@3.3-5.el7.x86_64",
     "Name": "diffutils",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/diffutils@3.3-5.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "3.3",
     "Release": "5.el7",
     "Arch": "x86_64",
@@ -472,9 +406,6 @@
   {
     "ID": "dmidecode@3.2-3.el7.x86_64",
     "Name": "dmidecode",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/dmidecode@3.2-3.el7?arch=x86_64\u0026distro=redhat-7.7\u0026epoch=1"
-    },
     "Version": "3.2",
     "Release": "3.el7",
     "Epoch": 1,
@@ -495,9 +426,6 @@
   {
     "ID": "dracut@033-564.el7.x86_64",
     "Name": "dracut",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/dracut@033-564.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "033",
     "Release": "564.el7",
     "Arch": "x86_64",
@@ -516,9 +444,6 @@
   {
     "ID": "elfutils-default-yama-scope@0.176-2.el7.noarch",
     "Name": "elfutils-default-yama-scope",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/elfutils-default-yama-scope@0.176-2.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "0.176",
     "Release": "2.el7",
     "Arch": "noarch",
@@ -537,9 +462,6 @@
   {
     "ID": "elfutils-libelf@0.176-2.el7.x86_64",
     "Name": "elfutils-libelf",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/elfutils-libelf@0.176-2.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "0.176",
     "Release": "2.el7",
     "Arch": "x86_64",
@@ -558,9 +480,6 @@
   {
     "ID": "elfutils-libs@0.176-2.el7.x86_64",
     "Name": "elfutils-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/elfutils-libs@0.176-2.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "0.176",
     "Release": "2.el7",
     "Arch": "x86_64",
@@ -579,9 +498,6 @@
   {
     "ID": "expat@2.1.0-10.el7_3.x86_64",
     "Name": "expat",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/expat@2.1.0-10.el7_3?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.1.0",
     "Release": "10.el7_3",
     "Arch": "x86_64",
@@ -600,9 +516,6 @@
   {
     "ID": "file-libs@5.11-35.el7.x86_64",
     "Name": "file-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/file-libs@5.11-35.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "5.11",
     "Release": "35.el7",
     "Arch": "x86_64",
@@ -621,9 +534,6 @@
   {
     "ID": "filesystem@3.2-25.el7.x86_64",
     "Name": "filesystem",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/filesystem@3.2-25.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "3.2",
     "Release": "25.el7",
     "Arch": "x86_64",
@@ -642,9 +552,6 @@
   {
     "ID": "findutils@4.5.11-6.el7.x86_64",
     "Name": "findutils",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/findutils@4.5.11-6.el7?arch=x86_64\u0026distro=redhat-7.7\u0026epoch=1"
-    },
     "Version": "4.5.11",
     "Release": "6.el7",
     "Epoch": 1,
@@ -665,9 +572,6 @@
   {
     "ID": "gawk@4.0.2-4.el7_3.1.x86_64",
     "Name": "gawk",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/gawk@4.0.2-4.el7_3.1?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "4.0.2",
     "Release": "4.el7_3.1",
     "Arch": "x86_64",
@@ -686,9 +590,6 @@
   {
     "ID": "gdb-gdbserver@7.6.1-115.el7.x86_64",
     "Name": "gdb-gdbserver",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/gdb-gdbserver@7.6.1-115.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "7.6.1",
     "Release": "115.el7",
     "Arch": "x86_64",
@@ -707,9 +608,6 @@
   {
     "ID": "gdbm@1.10-8.el7.x86_64",
     "Name": "gdbm",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/gdbm@1.10-8.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.10",
     "Release": "8.el7",
     "Arch": "x86_64",
@@ -728,9 +626,6 @@
   {
     "ID": "glib2@2.56.1-5.el7.x86_64",
     "Name": "glib2",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/glib2@2.56.1-5.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.56.1",
     "Release": "5.el7",
     "Arch": "x86_64",
@@ -749,9 +644,6 @@
   {
     "ID": "glibc@2.17-292.el7.x86_64",
     "Name": "glibc",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/glibc@2.17-292.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.17",
     "Release": "292.el7",
     "Arch": "x86_64",
@@ -770,9 +662,6 @@
   {
     "ID": "glibc-common@2.17-292.el7.x86_64",
     "Name": "glibc-common",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/glibc-common@2.17-292.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.17",
     "Release": "292.el7",
     "Arch": "x86_64",
@@ -791,9 +680,6 @@
   {
     "ID": "gmp@6.0.0-15.el7.x86_64",
     "Name": "gmp",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/gmp@6.0.0-15.el7?arch=x86_64\u0026distro=redhat-7.7\u0026epoch=1"
-    },
     "Version": "6.0.0",
     "Release": "15.el7",
     "Epoch": 1,
@@ -814,9 +700,6 @@
   {
     "ID": "gnupg2@2.0.22-5.el7_5.x86_64",
     "Name": "gnupg2",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/gnupg2@2.0.22-5.el7_5?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.0.22",
     "Release": "5.el7_5",
     "Arch": "x86_64",
@@ -835,9 +718,6 @@
   {
     "ID": "gobject-introspection@1.56.1-1.el7.x86_64",
     "Name": "gobject-introspection",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/gobject-introspection@1.56.1-1.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.56.1",
     "Release": "1.el7",
     "Arch": "x86_64",
@@ -856,9 +736,6 @@
   {
     "ID": "gpgme@1.3.2-5.el7.x86_64",
     "Name": "gpgme",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/gpgme@1.3.2-5.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.3.2",
     "Release": "5.el7",
     "Arch": "x86_64",
@@ -877,9 +754,6 @@
   {
     "ID": "grep@2.20-3.el7.x86_64",
     "Name": "grep",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/grep@2.20-3.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.20",
     "Release": "3.el7",
     "Arch": "x86_64",
@@ -898,9 +772,6 @@
   {
     "ID": "gzip@1.5-10.el7.x86_64",
     "Name": "gzip",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/gzip@1.5-10.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.5",
     "Release": "10.el7",
     "Arch": "x86_64",
@@ -919,9 +790,6 @@
   {
     "ID": "hardlink@1.0-19.el7.x86_64",
     "Name": "hardlink",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/hardlink@1.0-19.el7?arch=x86_64\u0026distro=redhat-7.7\u0026epoch=1"
-    },
     "Version": "1.0",
     "Release": "19.el7",
     "Epoch": 1,
@@ -942,9 +810,6 @@
   {
     "ID": "info@5.1-5.el7.x86_64",
     "Name": "info",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/info@5.1-5.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "5.1",
     "Release": "5.el7",
     "Arch": "x86_64",
@@ -963,9 +828,6 @@
   {
     "ID": "json-c@0.11-4.el7_0.x86_64",
     "Name": "json-c",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/json-c@0.11-4.el7_0?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "0.11",
     "Release": "4.el7_0",
     "Arch": "x86_64",
@@ -984,9 +846,6 @@
   {
     "ID": "keyutils-libs@1.5.8-3.el7.x86_64",
     "Name": "keyutils-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/keyutils-libs@1.5.8-3.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.5.8",
     "Release": "3.el7",
     "Arch": "x86_64",
@@ -1005,9 +864,6 @@
   {
     "ID": "kmod@20-25.el7.x86_64",
     "Name": "kmod",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/kmod@20-25.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "20",
     "Release": "25.el7",
     "Arch": "x86_64",
@@ -1026,9 +882,6 @@
   {
     "ID": "kmod-libs@20-25.el7.x86_64",
     "Name": "kmod-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/kmod-libs@20-25.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "20",
     "Release": "25.el7",
     "Arch": "x86_64",
@@ -1047,9 +900,6 @@
   {
     "ID": "kpartx@0.4.9-127.el7.x86_64",
     "Name": "kpartx",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/kpartx@0.4.9-127.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "0.4.9",
     "Release": "127.el7",
     "Arch": "x86_64",
@@ -1068,9 +918,6 @@
   {
     "ID": "krb5-libs@1.15.1-37.el7_7.2.x86_64",
     "Name": "krb5-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/krb5-libs@1.15.1-37.el7_7.2?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.15.1",
     "Release": "37.el7_7.2",
     "Arch": "x86_64",
@@ -1089,9 +936,6 @@
   {
     "ID": "libacl@2.2.51-14.el7.x86_64",
     "Name": "libacl",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libacl@2.2.51-14.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.2.51",
     "Release": "14.el7",
     "Arch": "x86_64",
@@ -1110,9 +954,6 @@
   {
     "ID": "libassuan@2.1.0-3.el7.x86_64",
     "Name": "libassuan",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libassuan@2.1.0-3.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.1.0",
     "Release": "3.el7",
     "Arch": "x86_64",
@@ -1131,9 +972,6 @@
   {
     "ID": "libattr@2.4.46-13.el7.x86_64",
     "Name": "libattr",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libattr@2.4.46-13.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.4.46",
     "Release": "13.el7",
     "Arch": "x86_64",
@@ -1152,9 +990,6 @@
   {
     "ID": "libblkid@2.23.2-61.el7.x86_64",
     "Name": "libblkid",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libblkid@2.23.2-61.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.23.2",
     "Release": "61.el7",
     "Arch": "x86_64",
@@ -1173,9 +1008,6 @@
   {
     "ID": "libcap@2.22-10.el7.x86_64",
     "Name": "libcap",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libcap@2.22-10.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.22",
     "Release": "10.el7",
     "Arch": "x86_64",
@@ -1194,9 +1026,6 @@
   {
     "ID": "libcap-ng@0.7.5-4.el7.x86_64",
     "Name": "libcap-ng",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libcap-ng@0.7.5-4.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "0.7.5",
     "Release": "4.el7",
     "Arch": "x86_64",
@@ -1215,9 +1044,6 @@
   {
     "ID": "libcom_err@1.42.9-16.el7.x86_64",
     "Name": "libcom_err",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libcom_err@1.42.9-16.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.42.9",
     "Release": "16.el7",
     "Arch": "x86_64",
@@ -1236,9 +1062,6 @@
   {
     "ID": "libcurl@7.29.0-54.el7.x86_64",
     "Name": "libcurl",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libcurl@7.29.0-54.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "7.29.0",
     "Release": "54.el7",
     "Arch": "x86_64",
@@ -1257,9 +1080,6 @@
   {
     "ID": "libdb@5.3.21-25.el7.x86_64",
     "Name": "libdb",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libdb@5.3.21-25.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "5.3.21",
     "Release": "25.el7",
     "Arch": "x86_64",
@@ -1278,9 +1098,6 @@
   {
     "ID": "libdb-utils@5.3.21-25.el7.x86_64",
     "Name": "libdb-utils",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libdb-utils@5.3.21-25.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "5.3.21",
     "Release": "25.el7",
     "Arch": "x86_64",
@@ -1299,9 +1116,6 @@
   {
     "ID": "libffi@3.0.13-18.el7.x86_64",
     "Name": "libffi",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libffi@3.0.13-18.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "3.0.13",
     "Release": "18.el7",
     "Arch": "x86_64",
@@ -1320,9 +1134,6 @@
   {
     "ID": "libgcc@4.8.5-39.el7.x86_64",
     "Name": "libgcc",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libgcc@4.8.5-39.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "4.8.5",
     "Release": "39.el7",
     "Arch": "x86_64",
@@ -1341,9 +1152,6 @@
   {
     "ID": "libgcrypt@1.5.3-14.el7.x86_64",
     "Name": "libgcrypt",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libgcrypt@1.5.3-14.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.5.3",
     "Release": "14.el7",
     "Arch": "x86_64",
@@ -1362,9 +1170,6 @@
   {
     "ID": "libgpg-error@1.12-3.el7.x86_64",
     "Name": "libgpg-error",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libgpg-error@1.12-3.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.12",
     "Release": "3.el7",
     "Arch": "x86_64",
@@ -1383,9 +1188,6 @@
   {
     "ID": "libidn@1.28-4.el7.x86_64",
     "Name": "libidn",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libidn@1.28-4.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.28",
     "Release": "4.el7",
     "Arch": "x86_64",
@@ -1404,9 +1206,6 @@
   {
     "ID": "libmount@2.23.2-61.el7.x86_64",
     "Name": "libmount",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libmount@2.23.2-61.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.23.2",
     "Release": "61.el7",
     "Arch": "x86_64",
@@ -1425,9 +1224,6 @@
   {
     "ID": "libnl@1.1.4-3.el7.x86_64",
     "Name": "libnl",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libnl@1.1.4-3.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.1.4",
     "Release": "3.el7",
     "Arch": "x86_64",
@@ -1446,9 +1242,6 @@
   {
     "ID": "libpwquality@1.2.3-5.el7.x86_64",
     "Name": "libpwquality",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libpwquality@1.2.3-5.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.2.3",
     "Release": "5.el7",
     "Arch": "x86_64",
@@ -1467,9 +1260,6 @@
   {
     "ID": "libselinux@2.5-14.1.el7.x86_64",
     "Name": "libselinux",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libselinux@2.5-14.1.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.5",
     "Release": "14.1.el7",
     "Arch": "x86_64",
@@ -1488,9 +1278,6 @@
   {
     "ID": "libsemanage@2.5-14.el7.x86_64",
     "Name": "libsemanage",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libsemanage@2.5-14.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.5",
     "Release": "14.el7",
     "Arch": "x86_64",
@@ -1509,9 +1296,6 @@
   {
     "ID": "libsepol@2.5-10.el7.x86_64",
     "Name": "libsepol",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libsepol@2.5-10.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.5",
     "Release": "10.el7",
     "Arch": "x86_64",
@@ -1530,9 +1314,6 @@
   {
     "ID": "libsmartcols@2.23.2-61.el7.x86_64",
     "Name": "libsmartcols",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libsmartcols@2.23.2-61.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.23.2",
     "Release": "61.el7",
     "Arch": "x86_64",
@@ -1551,9 +1332,6 @@
   {
     "ID": "libssh2@1.8.0-3.el7.x86_64",
     "Name": "libssh2",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libssh2@1.8.0-3.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.8.0",
     "Release": "3.el7",
     "Arch": "x86_64",
@@ -1572,9 +1350,6 @@
   {
     "ID": "libstdc++@4.8.5-39.el7.x86_64",
     "Name": "libstdc++",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libstdc%2B%2B@4.8.5-39.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "4.8.5",
     "Release": "39.el7",
     "Arch": "x86_64",
@@ -1593,9 +1368,6 @@
   {
     "ID": "libtasn1@4.10-1.el7.x86_64",
     "Name": "libtasn1",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libtasn1@4.10-1.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "4.10",
     "Release": "1.el7",
     "Arch": "x86_64",
@@ -1614,9 +1386,6 @@
   {
     "ID": "libuser@0.60-9.el7.x86_64",
     "Name": "libuser",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libuser@0.60-9.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "0.60",
     "Release": "9.el7",
     "Arch": "x86_64",
@@ -1635,9 +1404,6 @@
   {
     "ID": "libutempter@1.1.6-4.el7.x86_64",
     "Name": "libutempter",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libutempter@1.1.6-4.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.1.6",
     "Release": "4.el7",
     "Arch": "x86_64",
@@ -1656,9 +1422,6 @@
   {
     "ID": "libuuid@2.23.2-61.el7.x86_64",
     "Name": "libuuid",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libuuid@2.23.2-61.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.23.2",
     "Release": "61.el7",
     "Arch": "x86_64",
@@ -1677,9 +1440,6 @@
   {
     "ID": "libverto@0.2.5-4.el7.x86_64",
     "Name": "libverto",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libverto@0.2.5-4.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "0.2.5",
     "Release": "4.el7",
     "Arch": "x86_64",
@@ -1698,9 +1458,6 @@
   {
     "ID": "libxml2@2.9.1-6.el7_2.3.x86_64",
     "Name": "libxml2",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libxml2@2.9.1-6.el7_2.3?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.9.1",
     "Release": "6.el7_2.3",
     "Arch": "x86_64",
@@ -1719,9 +1476,6 @@
   {
     "ID": "libxml2-python@2.9.1-6.el7_2.3.x86_64",
     "Name": "libxml2-python",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/libxml2-python@2.9.1-6.el7_2.3?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.9.1",
     "Release": "6.el7_2.3",
     "Arch": "x86_64",
@@ -1740,9 +1494,6 @@
   {
     "ID": "lua@5.1.4-15.el7.x86_64",
     "Name": "lua",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/lua@5.1.4-15.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "5.1.4",
     "Release": "15.el7",
     "Arch": "x86_64",
@@ -1761,9 +1512,6 @@
   {
     "ID": "lz4@1.7.5-3.el7.x86_64",
     "Name": "lz4",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/lz4@1.7.5-3.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.7.5",
     "Release": "3.el7",
     "Arch": "x86_64",
@@ -1782,9 +1530,6 @@
   {
     "ID": "ncurses@5.9-14.20130511.el7_4.x86_64",
     "Name": "ncurses",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/ncurses@5.9-14.20130511.el7_4?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "5.9",
     "Release": "14.20130511.el7_4",
     "Arch": "x86_64",
@@ -1803,9 +1548,6 @@
   {
     "ID": "ncurses-base@5.9-14.20130511.el7_4.noarch",
     "Name": "ncurses-base",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/ncurses-base@5.9-14.20130511.el7_4?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "5.9",
     "Release": "14.20130511.el7_4",
     "Arch": "noarch",
@@ -1824,9 +1566,6 @@
   {
     "ID": "ncurses-libs@5.9-14.20130511.el7_4.x86_64",
     "Name": "ncurses-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/ncurses-libs@5.9-14.20130511.el7_4?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "5.9",
     "Release": "14.20130511.el7_4",
     "Arch": "x86_64",
@@ -1845,9 +1584,6 @@
   {
     "ID": "nspr@4.21.0-1.el7.x86_64",
     "Name": "nspr",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/nspr@4.21.0-1.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "4.21.0",
     "Release": "1.el7",
     "Arch": "x86_64",
@@ -1866,9 +1602,6 @@
   {
     "ID": "nss@3.44.0-4.el7.x86_64",
     "Name": "nss",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/nss@3.44.0-4.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "3.44.0",
     "Release": "4.el7",
     "Arch": "x86_64",
@@ -1887,9 +1620,6 @@
   {
     "ID": "nss-pem@1.0.3-7.el7.x86_64",
     "Name": "nss-pem",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/nss-pem@1.0.3-7.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.0.3",
     "Release": "7.el7",
     "Arch": "x86_64",
@@ -1908,9 +1638,6 @@
   {
     "ID": "nss-softokn@3.44.0-5.el7.x86_64",
     "Name": "nss-softokn",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/nss-softokn@3.44.0-5.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "3.44.0",
     "Release": "5.el7",
     "Arch": "x86_64",
@@ -1929,9 +1656,6 @@
   {
     "ID": "nss-softokn-freebl@3.44.0-5.el7.x86_64",
     "Name": "nss-softokn-freebl",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/nss-softokn-freebl@3.44.0-5.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "3.44.0",
     "Release": "5.el7",
     "Arch": "x86_64",
@@ -1950,9 +1674,6 @@
   {
     "ID": "nss-sysinit@3.44.0-4.el7.x86_64",
     "Name": "nss-sysinit",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/nss-sysinit@3.44.0-4.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "3.44.0",
     "Release": "4.el7",
     "Arch": "x86_64",
@@ -1971,9 +1692,6 @@
   {
     "ID": "nss-tools@3.44.0-4.el7.x86_64",
     "Name": "nss-tools",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/nss-tools@3.44.0-4.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "3.44.0",
     "Release": "4.el7",
     "Arch": "x86_64",
@@ -1992,9 +1710,6 @@
   {
     "ID": "nss-util@3.44.0-3.el7.x86_64",
     "Name": "nss-util",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/nss-util@3.44.0-3.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "3.44.0",
     "Release": "3.el7",
     "Arch": "x86_64",
@@ -2013,9 +1728,6 @@
   {
     "ID": "openldap@2.4.44-21.el7_6.x86_64",
     "Name": "openldap",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/openldap@2.4.44-21.el7_6?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.4.44",
     "Release": "21.el7_6",
     "Arch": "x86_64",
@@ -2034,9 +1746,6 @@
   {
     "ID": "openssl-libs@1.0.2k-19.el7.x86_64",
     "Name": "openssl-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/openssl-libs@1.0.2k-19.el7?arch=x86_64\u0026distro=redhat-7.7\u0026epoch=1"
-    },
     "Version": "1.0.2k",
     "Release": "19.el7",
     "Epoch": 1,
@@ -2057,9 +1766,6 @@
   {
     "ID": "p11-kit@0.23.5-3.el7.x86_64",
     "Name": "p11-kit",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/p11-kit@0.23.5-3.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "0.23.5",
     "Release": "3.el7",
     "Arch": "x86_64",
@@ -2078,9 +1784,6 @@
   {
     "ID": "p11-kit-trust@0.23.5-3.el7.x86_64",
     "Name": "p11-kit-trust",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/p11-kit-trust@0.23.5-3.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "0.23.5",
     "Release": "3.el7",
     "Arch": "x86_64",
@@ -2099,9 +1802,6 @@
   {
     "ID": "pam@1.1.8-22.el7.x86_64",
     "Name": "pam",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/pam@1.1.8-22.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.1.8",
     "Release": "22.el7",
     "Arch": "x86_64",
@@ -2120,9 +1820,6 @@
   {
     "ID": "passwd@0.79-5.el7.x86_64",
     "Name": "passwd",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/passwd@0.79-5.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "0.79",
     "Release": "5.el7",
     "Arch": "x86_64",
@@ -2141,9 +1838,6 @@
   {
     "ID": "pcre@8.32-17.el7.x86_64",
     "Name": "pcre",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/pcre@8.32-17.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "8.32",
     "Release": "17.el7",
     "Arch": "x86_64",
@@ -2162,9 +1856,6 @@
   {
     "ID": "pinentry@0.8.1-17.el7.x86_64",
     "Name": "pinentry",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/pinentry@0.8.1-17.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "0.8.1",
     "Release": "17.el7",
     "Arch": "x86_64",
@@ -2183,9 +1874,6 @@
   {
     "ID": "pkgconfig@0.27.1-4.el7.x86_64",
     "Name": "pkgconfig",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/pkgconfig@0.27.1-4.el7?arch=x86_64\u0026distro=redhat-7.7\u0026epoch=1"
-    },
     "Version": "0.27.1",
     "Release": "4.el7",
     "Epoch": 1,
@@ -2206,9 +1894,6 @@
   {
     "ID": "popt@1.13-16.el7.x86_64",
     "Name": "popt",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/popt@1.13-16.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.13",
     "Release": "16.el7",
     "Arch": "x86_64",
@@ -2227,9 +1912,6 @@
   {
     "ID": "procps-ng@3.3.10-26.el7.x86_64",
     "Name": "procps-ng",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/procps-ng@3.3.10-26.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "3.3.10",
     "Release": "26.el7",
     "Arch": "x86_64",
@@ -2248,9 +1930,6 @@
   {
     "ID": "pth@2.0.7-23.el7.x86_64",
     "Name": "pth",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/pth@2.0.7-23.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.0.7",
     "Release": "23.el7",
     "Arch": "x86_64",
@@ -2269,9 +1948,6 @@
   {
     "ID": "pygpgme@0.3-9.el7.x86_64",
     "Name": "pygpgme",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/pygpgme@0.3-9.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "0.3",
     "Release": "9.el7",
     "Arch": "x86_64",
@@ -2290,9 +1966,6 @@
   {
     "ID": "pyliblzma@0.5.3-11.el7.x86_64",
     "Name": "pyliblzma",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/pyliblzma@0.5.3-11.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "0.5.3",
     "Release": "11.el7",
     "Arch": "x86_64",
@@ -2311,9 +1984,6 @@
   {
     "ID": "python@2.7.5-86.el7.x86_64",
     "Name": "python",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python@2.7.5-86.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.7.5",
     "Release": "86.el7",
     "Arch": "x86_64",
@@ -2332,9 +2002,6 @@
   {
     "ID": "python-backports@1.0-8.el7.x86_64",
     "Name": "python-backports",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-backports@1.0-8.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.0",
     "Release": "8.el7",
     "Arch": "x86_64",
@@ -2353,9 +2020,6 @@
   {
     "ID": "python-backports-ssl_match_hostname@3.5.0.1-1.el7.noarch",
     "Name": "python-backports-ssl_match_hostname",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-backports-ssl_match_hostname@3.5.0.1-1.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "3.5.0.1",
     "Release": "1.el7",
     "Arch": "noarch",
@@ -2374,9 +2038,6 @@
   {
     "ID": "python-chardet@2.2.1-3.el7.noarch",
     "Name": "python-chardet",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-chardet@2.2.1-3.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "2.2.1",
     "Release": "3.el7",
     "Arch": "noarch",
@@ -2395,9 +2056,6 @@
   {
     "ID": "python-dateutil@1.5-7.el7.noarch",
     "Name": "python-dateutil",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-dateutil@1.5-7.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "1.5",
     "Release": "7.el7",
     "Arch": "noarch",
@@ -2416,9 +2074,6 @@
   {
     "ID": "python-decorator@3.4.0-3.el7.noarch",
     "Name": "python-decorator",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-decorator@3.4.0-3.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "3.4.0",
     "Release": "3.el7",
     "Arch": "noarch",
@@ -2437,9 +2092,6 @@
   {
     "ID": "python-dmidecode@3.12.2-3.el7.x86_64",
     "Name": "python-dmidecode",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-dmidecode@3.12.2-3.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "3.12.2",
     "Release": "3.el7",
     "Arch": "x86_64",
@@ -2458,9 +2110,6 @@
   {
     "ID": "python-ethtool@0.8-8.el7.x86_64",
     "Name": "python-ethtool",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-ethtool@0.8-8.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "0.8",
     "Release": "8.el7",
     "Arch": "x86_64",
@@ -2479,9 +2128,6 @@
   {
     "ID": "python-gobject-base@3.22.0-1.el7_4.1.x86_64",
     "Name": "python-gobject-base",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-gobject-base@3.22.0-1.el7_4.1?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "3.22.0",
     "Release": "1.el7_4.1",
     "Arch": "x86_64",
@@ -2500,9 +2146,6 @@
   {
     "ID": "python-iniparse@0.4-9.el7.noarch",
     "Name": "python-iniparse",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-iniparse@0.4-9.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "0.4",
     "Release": "9.el7",
     "Arch": "noarch",
@@ -2521,9 +2164,6 @@
   {
     "ID": "python-inotify@0.9.4-4.el7.noarch",
     "Name": "python-inotify",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-inotify@0.9.4-4.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "0.9.4",
     "Release": "4.el7",
     "Arch": "noarch",
@@ -2542,9 +2182,6 @@
   {
     "ID": "python-ipaddress@1.0.16-2.el7.noarch",
     "Name": "python-ipaddress",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-ipaddress@1.0.16-2.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "1.0.16",
     "Release": "2.el7",
     "Arch": "noarch",
@@ -2563,9 +2200,6 @@
   {
     "ID": "python-kitchen@1.1.1-5.el7.noarch",
     "Name": "python-kitchen",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-kitchen@1.1.1-5.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "1.1.1",
     "Release": "5.el7",
     "Arch": "noarch",
@@ -2584,9 +2218,6 @@
   {
     "ID": "python-libs@2.7.5-86.el7.x86_64",
     "Name": "python-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-libs@2.7.5-86.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.7.5",
     "Release": "86.el7",
     "Arch": "x86_64",
@@ -2605,9 +2236,6 @@
   {
     "ID": "python-pycurl@7.19.0-19.el7.x86_64",
     "Name": "python-pycurl",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-pycurl@7.19.0-19.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "7.19.0",
     "Release": "19.el7",
     "Arch": "x86_64",
@@ -2626,9 +2254,6 @@
   {
     "ID": "python-setuptools@0.9.8-7.el7.noarch",
     "Name": "python-setuptools",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-setuptools@0.9.8-7.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "0.9.8",
     "Release": "7.el7",
     "Arch": "noarch",
@@ -2647,9 +2272,6 @@
   {
     "ID": "python-six@1.9.0-2.el7.noarch",
     "Name": "python-six",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-six@1.9.0-2.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "1.9.0",
     "Release": "2.el7",
     "Arch": "noarch",
@@ -2668,9 +2290,6 @@
   {
     "ID": "python-syspurpose@1.24.13-3.el7_7.x86_64",
     "Name": "python-syspurpose",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-syspurpose@1.24.13-3.el7_7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.24.13",
     "Release": "3.el7_7",
     "Arch": "x86_64",
@@ -2689,9 +2308,6 @@
   {
     "ID": "python-urlgrabber@3.10-9.el7.noarch",
     "Name": "python-urlgrabber",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/python-urlgrabber@3.10-9.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "3.10",
     "Release": "9.el7",
     "Arch": "noarch",
@@ -2710,9 +2326,6 @@
   {
     "ID": "pyxattr@0.5.1-5.el7.x86_64",
     "Name": "pyxattr",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/pyxattr@0.5.1-5.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "0.5.1",
     "Release": "5.el7",
     "Arch": "x86_64",
@@ -2731,9 +2344,6 @@
   {
     "ID": "qrencode-libs@3.4.1-3.el7.x86_64",
     "Name": "qrencode-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/qrencode-libs@3.4.1-3.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "3.4.1",
     "Release": "3.el7",
     "Arch": "x86_64",
@@ -2752,9 +2362,6 @@
   {
     "ID": "readline@6.2-11.el7.x86_64",
     "Name": "readline",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/readline@6.2-11.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "6.2",
     "Release": "11.el7",
     "Arch": "x86_64",
@@ -2773,9 +2380,6 @@
   {
     "ID": "redhat-release-server@7.7-10.el7.x86_64",
     "Name": "redhat-release-server",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/redhat-release-server@7.7-10.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "7.7",
     "Release": "10.el7",
     "Arch": "x86_64",
@@ -2794,9 +2398,6 @@
   {
     "ID": "rootfiles@8.1-11.el7.noarch",
     "Name": "rootfiles",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/rootfiles@8.1-11.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "8.1",
     "Release": "11.el7",
     "Arch": "noarch",
@@ -2815,9 +2416,6 @@
   {
     "ID": "rpm@4.11.3-40.el7.x86_64",
     "Name": "rpm",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/rpm@4.11.3-40.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "4.11.3",
     "Release": "40.el7",
     "Arch": "x86_64",
@@ -2836,9 +2434,6 @@
   {
     "ID": "rpm-build-libs@4.11.3-40.el7.x86_64",
     "Name": "rpm-build-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/rpm-build-libs@4.11.3-40.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "4.11.3",
     "Release": "40.el7",
     "Arch": "x86_64",
@@ -2857,9 +2452,6 @@
   {
     "ID": "rpm-libs@4.11.3-40.el7.x86_64",
     "Name": "rpm-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/rpm-libs@4.11.3-40.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "4.11.3",
     "Release": "40.el7",
     "Arch": "x86_64",
@@ -2878,9 +2470,6 @@
   {
     "ID": "rpm-python@4.11.3-40.el7.x86_64",
     "Name": "rpm-python",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/rpm-python@4.11.3-40.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "4.11.3",
     "Release": "40.el7",
     "Arch": "x86_64",
@@ -2899,9 +2488,6 @@
   {
     "ID": "sed@4.2.2-5.el7.x86_64",
     "Name": "sed",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/sed@4.2.2-5.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "4.2.2",
     "Release": "5.el7",
     "Arch": "x86_64",
@@ -2920,9 +2506,6 @@
   {
     "ID": "setup@2.8.71-10.el7.noarch",
     "Name": "setup",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/setup@2.8.71-10.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "2.8.71",
     "Release": "10.el7",
     "Arch": "noarch",
@@ -2941,9 +2524,6 @@
   {
     "ID": "shadow-utils@4.6-5.el7.x86_64",
     "Name": "shadow-utils",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/shadow-utils@4.6-5.el7?arch=x86_64\u0026distro=redhat-7.7\u0026epoch=2"
-    },
     "Version": "4.6",
     "Release": "5.el7",
     "Epoch": 2,
@@ -2964,9 +2544,6 @@
   {
     "ID": "shared-mime-info@1.8-4.el7.x86_64",
     "Name": "shared-mime-info",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/shared-mime-info@1.8-4.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.8",
     "Release": "4.el7",
     "Arch": "x86_64",
@@ -2985,9 +2562,6 @@
   {
     "ID": "sqlite@3.7.17-8.el7.x86_64",
     "Name": "sqlite",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/sqlite@3.7.17-8.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "3.7.17",
     "Release": "8.el7",
     "Arch": "x86_64",
@@ -3006,9 +2580,6 @@
   {
     "ID": "subscription-manager@1.24.13-3.el7_7.x86_64",
     "Name": "subscription-manager",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/subscription-manager@1.24.13-3.el7_7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.24.13",
     "Release": "3.el7_7",
     "Arch": "x86_64",
@@ -3027,9 +2598,6 @@
   {
     "ID": "subscription-manager-rhsm@1.24.13-3.el7_7.x86_64",
     "Name": "subscription-manager-rhsm",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/subscription-manager-rhsm@1.24.13-3.el7_7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.24.13",
     "Release": "3.el7_7",
     "Arch": "x86_64",
@@ -3048,9 +2616,6 @@
   {
     "ID": "subscription-manager-rhsm-certificates@1.24.13-3.el7_7.x86_64",
     "Name": "subscription-manager-rhsm-certificates",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/subscription-manager-rhsm-certificates@1.24.13-3.el7_7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.24.13",
     "Release": "3.el7_7",
     "Arch": "x86_64",
@@ -3069,9 +2634,6 @@
   {
     "ID": "systemd@219-67.el7_7.1.x86_64",
     "Name": "systemd",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/systemd@219-67.el7_7.1?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "219",
     "Release": "67.el7_7.1",
     "Arch": "x86_64",
@@ -3090,9 +2652,6 @@
   {
     "ID": "systemd-libs@219-67.el7_7.1.x86_64",
     "Name": "systemd-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/systemd-libs@219-67.el7_7.1?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "219",
     "Release": "67.el7_7.1",
     "Arch": "x86_64",
@@ -3111,9 +2670,6 @@
   {
     "ID": "tar@1.26-35.el7.x86_64",
     "Name": "tar",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/tar@1.26-35.el7?arch=x86_64\u0026distro=redhat-7.7\u0026epoch=2"
-    },
     "Version": "1.26",
     "Release": "35.el7",
     "Epoch": 2,
@@ -3134,9 +2690,6 @@
   {
     "ID": "tzdata@2019b-1.el7.noarch",
     "Name": "tzdata",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/tzdata@2019b-1.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "2019b",
     "Release": "1.el7",
     "Arch": "noarch",
@@ -3155,9 +2708,6 @@
   {
     "ID": "usermode@1.111-6.el7.x86_64",
     "Name": "usermode",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/usermode@1.111-6.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.111",
     "Release": "6.el7",
     "Arch": "x86_64",
@@ -3176,9 +2726,6 @@
   {
     "ID": "ustr@1.0.4-16.el7.x86_64",
     "Name": "ustr",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/ustr@1.0.4-16.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.0.4",
     "Release": "16.el7",
     "Arch": "x86_64",
@@ -3197,9 +2744,6 @@
   {
     "ID": "util-linux@2.23.2-61.el7.x86_64",
     "Name": "util-linux",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/util-linux@2.23.2-61.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.23.2",
     "Release": "61.el7",
     "Arch": "x86_64",
@@ -3218,9 +2762,6 @@
   {
     "ID": "vim-minimal@7.4.629-6.el7.x86_64",
     "Name": "vim-minimal",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/vim-minimal@7.4.629-6.el7?arch=x86_64\u0026distro=redhat-7.7\u0026epoch=2"
-    },
     "Version": "7.4.629",
     "Release": "6.el7",
     "Epoch": 2,
@@ -3241,9 +2782,6 @@
   {
     "ID": "virt-what@1.18-4.el7.x86_64",
     "Name": "virt-what",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/virt-what@1.18-4.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.18",
     "Release": "4.el7",
     "Arch": "x86_64",
@@ -3262,9 +2800,6 @@
   {
     "ID": "which@2.20-7.el7.x86_64",
     "Name": "which",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/which@2.20-7.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "2.20",
     "Release": "7.el7",
     "Arch": "x86_64",
@@ -3283,9 +2818,6 @@
   {
     "ID": "xz@5.2.2-1.el7.x86_64",
     "Name": "xz",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/xz@5.2.2-1.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "5.2.2",
     "Release": "1.el7",
     "Arch": "x86_64",
@@ -3304,9 +2836,6 @@
   {
     "ID": "xz-libs@5.2.2-1.el7.x86_64",
     "Name": "xz-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/xz-libs@5.2.2-1.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "5.2.2",
     "Release": "1.el7",
     "Arch": "x86_64",
@@ -3325,9 +2854,6 @@
   {
     "ID": "yum@3.4.3-163.el7.noarch",
     "Name": "yum",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/yum@3.4.3-163.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "3.4.3",
     "Release": "163.el7",
     "Arch": "noarch",
@@ -3346,9 +2872,6 @@
   {
     "ID": "yum-metadata-parser@1.1.4-10.el7.x86_64",
     "Name": "yum-metadata-parser",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/yum-metadata-parser@1.1.4-10.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.1.4",
     "Release": "10.el7",
     "Arch": "x86_64",
@@ -3367,9 +2890,6 @@
   {
     "ID": "yum-plugin-ovl@1.1.31-52.el7.noarch",
     "Name": "yum-plugin-ovl",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/yum-plugin-ovl@1.1.31-52.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "1.1.31",
     "Release": "52.el7",
     "Arch": "noarch",
@@ -3388,9 +2908,6 @@
   {
     "ID": "yum-utils@1.1.31-52.el7.noarch",
     "Name": "yum-utils",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/yum-utils@1.1.31-52.el7?arch=noarch\u0026distro=redhat-7.7"
-    },
     "Version": "1.1.31",
     "Release": "52.el7",
     "Arch": "noarch",
@@ -3409,9 +2926,6 @@
   {
     "ID": "zlib@1.2.7-18.el7.x86_64",
     "Name": "zlib",
-    "Identifier": {
-      "PURL": "pkg:rpm/redhat/zlib@1.2.7-18.el7?arch=x86_64\u0026distro=redhat-7.7"
-    },
     "Version": "1.2.7",
     "Release": "18.el7",
     "Arch": "x86_64",

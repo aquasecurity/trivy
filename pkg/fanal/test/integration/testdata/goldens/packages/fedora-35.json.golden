@@ -2,9 +2,6 @@
   {
     "ID": "alternatives@1.19-1.fc35.x86_64",
     "Name": "alternatives",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/alternatives@1.19-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.19",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -19,9 +16,6 @@
   {
     "ID": "audit-libs@3.0.7-2.fc35.x86_64",
     "Name": "audit-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/audit-libs@3.0.7-2.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "3.0.7",
     "Release": "2.fc35",
     "Arch": "x86_64",
@@ -36,9 +30,6 @@
   {
     "ID": "basesystem@11-12.fc35.noarch",
     "Name": "basesystem",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/basesystem@11-12.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "11",
     "Release": "12.fc35",
     "Arch": "noarch",
@@ -53,9 +44,6 @@
   {
     "ID": "bash@5.1.8-2.fc35.x86_64",
     "Name": "bash",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/bash@5.1.8-2.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "5.1.8",
     "Release": "2.fc35",
     "Arch": "x86_64",
@@ -70,9 +58,6 @@
   {
     "ID": "bzip2-libs@1.0.8-9.fc35.x86_64",
     "Name": "bzip2-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/bzip2-libs@1.0.8-9.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.0.8",
     "Release": "9.fc35",
     "Arch": "x86_64",
@@ -87,9 +72,6 @@
   {
     "ID": "ca-certificates@2021.2.52-1.0.fc35.noarch",
     "Name": "ca-certificates",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/ca-certificates@2021.2.52-1.0.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "2021.2.52",
     "Release": "1.0.fc35",
     "Arch": "noarch",
@@ -104,9 +86,6 @@
   {
     "ID": "coreutils@8.32-31.fc35.x86_64",
     "Name": "coreutils",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/coreutils@8.32-31.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "8.32",
     "Release": "31.fc35",
     "Arch": "x86_64",
@@ -121,9 +100,6 @@
   {
     "ID": "coreutils-common@8.32-31.fc35.x86_64",
     "Name": "coreutils-common",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/coreutils-common@8.32-31.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "8.32",
     "Release": "31.fc35",
     "Arch": "x86_64",
@@ -138,9 +114,6 @@
   {
     "ID": "cracklib@2.9.6-27.fc35.x86_64",
     "Name": "cracklib",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/cracklib@2.9.6-27.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.9.6",
     "Release": "27.fc35",
     "Arch": "x86_64",
@@ -155,9 +128,6 @@
   {
     "ID": "crypto-policies@20210819-1.gitd0fdcfb.fc35.noarch",
     "Name": "crypto-policies",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/crypto-policies@20210819-1.gitd0fdcfb.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "20210819",
     "Release": "1.gitd0fdcfb.fc35",
     "Arch": "noarch",
@@ -172,9 +142,6 @@
   {
     "ID": "curl@7.79.1-1.fc35.x86_64",
     "Name": "curl",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/curl@7.79.1-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "7.79.1",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -189,9 +156,6 @@
   {
     "ID": "cyrus-sasl-lib@2.1.27-13.fc35.x86_64",
     "Name": "cyrus-sasl-lib",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/cyrus-sasl-lib@2.1.27-13.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.1.27",
     "Release": "13.fc35",
     "Arch": "x86_64",
@@ -206,9 +170,6 @@
   {
     "ID": "dnf@4.9.0-1.fc35.noarch",
     "Name": "dnf",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/dnf@4.9.0-1.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "4.9.0",
     "Release": "1.fc35",
     "Arch": "noarch",
@@ -223,9 +184,6 @@
   {
     "ID": "dnf-data@4.9.0-1.fc35.noarch",
     "Name": "dnf-data",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/dnf-data@4.9.0-1.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "4.9.0",
     "Release": "1.fc35",
     "Arch": "noarch",
@@ -240,9 +198,6 @@
   {
     "ID": "elfutils-default-yama-scope@0.186-1.fc35.noarch",
     "Name": "elfutils-default-yama-scope",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/elfutils-default-yama-scope@0.186-1.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "0.186",
     "Release": "1.fc35",
     "Arch": "noarch",
@@ -257,9 +212,6 @@
   {
     "ID": "elfutils-libelf@0.186-1.fc35.x86_64",
     "Name": "elfutils-libelf",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/elfutils-libelf@0.186-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.186",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -274,9 +226,6 @@
   {
     "ID": "elfutils-libs@0.186-1.fc35.x86_64",
     "Name": "elfutils-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/elfutils-libs@0.186-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.186",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -291,9 +240,6 @@
   {
     "ID": "expat@2.4.4-1.fc35.x86_64",
     "Name": "expat",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/expat@2.4.4-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.4.4",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -308,9 +254,6 @@
   {
     "ID": "fedora-gpg-keys@35-1.noarch",
     "Name": "fedora-gpg-keys",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/fedora-gpg-keys@35-1?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "35",
     "Release": "1",
     "Arch": "noarch",
@@ -325,9 +268,6 @@
   {
     "ID": "fedora-release-common@35-36.noarch",
     "Name": "fedora-release-common",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/fedora-release-common@35-36?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "35",
     "Release": "36",
     "Arch": "noarch",
@@ -342,9 +282,6 @@
   {
     "ID": "fedora-release-container@35-36.noarch",
     "Name": "fedora-release-container",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/fedora-release-container@35-36?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "35",
     "Release": "36",
     "Arch": "noarch",
@@ -359,9 +296,6 @@
   {
     "ID": "fedora-release-identity-container@35-36.noarch",
     "Name": "fedora-release-identity-container",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/fedora-release-identity-container@35-36?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "35",
     "Release": "36",
     "Arch": "noarch",
@@ -376,9 +310,6 @@
   {
     "ID": "fedora-repos@35-1.noarch",
     "Name": "fedora-repos",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/fedora-repos@35-1?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "35",
     "Release": "1",
     "Arch": "noarch",
@@ -393,9 +324,6 @@
   {
     "ID": "fedora-repos-modular@35-1.noarch",
     "Name": "fedora-repos-modular",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/fedora-repos-modular@35-1?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "35",
     "Release": "1",
     "Arch": "noarch",
@@ -410,9 +338,6 @@
   {
     "ID": "file-libs@5.40-9.fc35.x86_64",
     "Name": "file-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/file-libs@5.40-9.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "5.40",
     "Release": "9.fc35",
     "Arch": "x86_64",
@@ -427,9 +352,6 @@
   {
     "ID": "filesystem@3.14-7.fc35.x86_64",
     "Name": "filesystem",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/filesystem@3.14-7.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "3.14",
     "Release": "7.fc35",
     "Arch": "x86_64",
@@ -444,9 +366,6 @@
   {
     "ID": "gawk@5.1.0-4.fc35.x86_64",
     "Name": "gawk",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/gawk@5.1.0-4.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "5.1.0",
     "Release": "4.fc35",
     "Arch": "x86_64",
@@ -461,9 +380,6 @@
   {
     "ID": "gdbm-libs@1.22-1.fc35.x86_64",
     "Name": "gdbm-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/gdbm-libs@1.22-1.fc35?arch=x86_64\u0026distro=fedora-35\u0026epoch=1"
-    },
     "Version": "1.22",
     "Release": "1.fc35",
     "Epoch": 1,
@@ -480,9 +396,6 @@
   {
     "ID": "glib2@2.70.4-1.fc35.x86_64",
     "Name": "glib2",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/glib2@2.70.4-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.70.4",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -497,9 +410,6 @@
   {
     "ID": "glibc@2.34-25.fc35.x86_64",
     "Name": "glibc",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/glibc@2.34-25.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.34",
     "Release": "25.fc35",
     "Arch": "x86_64",
@@ -514,9 +424,6 @@
   {
     "ID": "glibc-common@2.34-25.fc35.x86_64",
     "Name": "glibc-common",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/glibc-common@2.34-25.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.34",
     "Release": "25.fc35",
     "Arch": "x86_64",
@@ -531,9 +438,6 @@
   {
     "ID": "glibc-minimal-langpack@2.34-25.fc35.x86_64",
     "Name": "glibc-minimal-langpack",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/glibc-minimal-langpack@2.34-25.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.34",
     "Release": "25.fc35",
     "Arch": "x86_64",
@@ -548,9 +452,6 @@
   {
     "ID": "gmp@6.2.0-7.fc35.x86_64",
     "Name": "gmp",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/gmp@6.2.0-7.fc35?arch=x86_64\u0026distro=fedora-35\u0026epoch=1"
-    },
     "Version": "6.2.0",
     "Release": "7.fc35",
     "Epoch": 1,
@@ -567,9 +468,6 @@
   {
     "ID": "gnupg2@2.3.4-1.fc35.x86_64",
     "Name": "gnupg2",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/gnupg2@2.3.4-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.3.4",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -584,9 +482,6 @@
   {
     "ID": "gnutls@3.7.2-2.fc35.x86_64",
     "Name": "gnutls",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/gnutls@3.7.2-2.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "3.7.2",
     "Release": "2.fc35",
     "Arch": "x86_64",
@@ -601,9 +496,6 @@
   {
     "ID": "gpg-pubkey@9867c58f-601c49ca.",
     "Name": "gpg-pubkey",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/gpg-pubkey@9867c58f-601c49ca?arch=None\u0026distro=fedora-35"
-    },
     "Version": "9867c58f",
     "Release": "601c49ca",
     "Arch": "None",
@@ -614,9 +506,6 @@
   {
     "ID": "gpgme@1.15.1-6.fc35.x86_64",
     "Name": "gpgme",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/gpgme@1.15.1-6.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.15.1",
     "Release": "6.fc35",
     "Arch": "x86_64",
@@ -631,9 +520,6 @@
   {
     "ID": "grep@3.6-4.fc35.x86_64",
     "Name": "grep",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/grep@3.6-4.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "3.6",
     "Release": "4.fc35",
     "Arch": "x86_64",
@@ -648,9 +534,6 @@
   {
     "ID": "gzip@1.10-5.fc35.x86_64",
     "Name": "gzip",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/gzip@1.10-5.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.10",
     "Release": "5.fc35",
     "Arch": "x86_64",
@@ -665,9 +548,6 @@
   {
     "ID": "ima-evm-utils@1.3.2-3.fc35.x86_64",
     "Name": "ima-evm-utils",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/ima-evm-utils@1.3.2-3.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.3.2",
     "Release": "3.fc35",
     "Arch": "x86_64",
@@ -682,9 +562,6 @@
   {
     "ID": "json-c@0.15-2.fc35.x86_64",
     "Name": "json-c",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/json-c@0.15-2.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.15",
     "Release": "2.fc35",
     "Arch": "x86_64",
@@ -699,9 +576,6 @@
   {
     "ID": "keyutils-libs@1.6.1-3.fc35.x86_64",
     "Name": "keyutils-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/keyutils-libs@1.6.1-3.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.6.1",
     "Release": "3.fc35",
     "Arch": "x86_64",
@@ -716,9 +590,6 @@
   {
     "ID": "krb5-libs@1.19.2-2.fc35.x86_64",
     "Name": "krb5-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/krb5-libs@1.19.2-2.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.19.2",
     "Release": "2.fc35",
     "Arch": "x86_64",
@@ -733,9 +604,6 @@
   {
     "ID": "libacl@2.3.1-2.fc35.x86_64",
     "Name": "libacl",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libacl@2.3.1-2.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.3.1",
     "Release": "2.fc35",
     "Arch": "x86_64",
@@ -750,9 +618,6 @@
   {
     "ID": "libarchive@3.5.2-2.fc35.x86_64",
     "Name": "libarchive",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libarchive@3.5.2-2.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "3.5.2",
     "Release": "2.fc35",
     "Arch": "x86_64",
@@ -767,9 +632,6 @@
   {
     "ID": "libassuan@2.5.5-3.fc35.x86_64",
     "Name": "libassuan",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libassuan@2.5.5-3.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.5.5",
     "Release": "3.fc35",
     "Arch": "x86_64",
@@ -784,9 +646,6 @@
   {
     "ID": "libattr@2.5.1-3.fc35.x86_64",
     "Name": "libattr",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libattr@2.5.1-3.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.5.1",
     "Release": "3.fc35",
     "Arch": "x86_64",
@@ -801,9 +660,6 @@
   {
     "ID": "libblkid@2.37.4-1.fc35.x86_64",
     "Name": "libblkid",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libblkid@2.37.4-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.37.4",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -818,9 +674,6 @@
   {
     "ID": "libbrotli@1.0.9-6.fc35.x86_64",
     "Name": "libbrotli",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libbrotli@1.0.9-6.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.0.9",
     "Release": "6.fc35",
     "Arch": "x86_64",
@@ -835,9 +688,6 @@
   {
     "ID": "libcap@2.48-3.fc35.x86_64",
     "Name": "libcap",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libcap@2.48-3.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.48",
     "Release": "3.fc35",
     "Arch": "x86_64",
@@ -852,9 +702,6 @@
   {
     "ID": "libcap-ng@0.8.2-8.fc35.x86_64",
     "Name": "libcap-ng",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libcap-ng@0.8.2-8.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.8.2",
     "Release": "8.fc35",
     "Arch": "x86_64",
@@ -869,9 +716,6 @@
   {
     "ID": "libcom_err@1.46.3-1.fc35.x86_64",
     "Name": "libcom_err",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libcom_err@1.46.3-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.46.3",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -886,9 +730,6 @@
   {
     "ID": "libcomps@0.1.18-1.fc35.x86_64",
     "Name": "libcomps",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libcomps@0.1.18-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.1.18",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -903,9 +744,6 @@
   {
     "ID": "libcurl@7.79.1-1.fc35.x86_64",
     "Name": "libcurl",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libcurl@7.79.1-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "7.79.1",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -920,9 +758,6 @@
   {
     "ID": "libdb@5.3.28-50.fc35.x86_64",
     "Name": "libdb",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libdb@5.3.28-50.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "5.3.28",
     "Release": "50.fc35",
     "Arch": "x86_64",
@@ -937,9 +772,6 @@
   {
     "ID": "libdnf@0.64.0-1.fc35.x86_64",
     "Name": "libdnf",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libdnf@0.64.0-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.64.0",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -954,9 +786,6 @@
   {
     "ID": "libeconf@0.4.0-2.fc35.x86_64",
     "Name": "libeconf",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libeconf@0.4.0-2.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.4.0",
     "Release": "2.fc35",
     "Arch": "x86_64",
@@ -971,9 +800,6 @@
   {
     "ID": "libffi@3.1-29.fc35.x86_64",
     "Name": "libffi",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libffi@3.1-29.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "3.1",
     "Release": "29.fc35",
     "Arch": "x86_64",
@@ -988,9 +814,6 @@
   {
     "ID": "libfsverity@1.4-6.fc35.x86_64",
     "Name": "libfsverity",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libfsverity@1.4-6.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.4",
     "Release": "6.fc35",
     "Arch": "x86_64",
@@ -1005,9 +828,6 @@
   {
     "ID": "libgcc@11.2.1-9.fc35.x86_64",
     "Name": "libgcc",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libgcc@11.2.1-9.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "11.2.1",
     "Release": "9.fc35",
     "Arch": "x86_64",
@@ -1022,9 +842,6 @@
   {
     "ID": "libgcrypt@1.9.4-1.fc35.x86_64",
     "Name": "libgcrypt",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libgcrypt@1.9.4-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.9.4",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1039,9 +856,6 @@
   {
     "ID": "libgomp@11.2.1-9.fc35.x86_64",
     "Name": "libgomp",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libgomp@11.2.1-9.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "11.2.1",
     "Release": "9.fc35",
     "Arch": "x86_64",
@@ -1056,9 +870,6 @@
   {
     "ID": "libgpg-error@1.43-1.fc35.x86_64",
     "Name": "libgpg-error",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libgpg-error@1.43-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.43",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1073,9 +884,6 @@
   {
     "ID": "libidn2@2.3.2-3.fc35.x86_64",
     "Name": "libidn2",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libidn2@2.3.2-3.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.3.2",
     "Release": "3.fc35",
     "Arch": "x86_64",
@@ -1090,9 +898,6 @@
   {
     "ID": "libksba@1.6.0-2.fc35.x86_64",
     "Name": "libksba",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libksba@1.6.0-2.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.6.0",
     "Release": "2.fc35",
     "Arch": "x86_64",
@@ -1107,9 +912,6 @@
   {
     "ID": "libmodulemd@2.14.0-1.fc35.x86_64",
     "Name": "libmodulemd",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libmodulemd@2.14.0-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.14.0",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1124,9 +926,6 @@
   {
     "ID": "libmount@2.37.4-1.fc35.x86_64",
     "Name": "libmount",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libmount@2.37.4-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.37.4",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1141,9 +940,6 @@
   {
     "ID": "libnghttp2@1.45.1-1.fc35.x86_64",
     "Name": "libnghttp2",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libnghttp2@1.45.1-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.45.1",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1158,9 +954,6 @@
   {
     "ID": "libnsl2@1.3.0-4.fc35.x86_64",
     "Name": "libnsl2",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libnsl2@1.3.0-4.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.3.0",
     "Release": "4.fc35",
     "Arch": "x86_64",
@@ -1175,9 +968,6 @@
   {
     "ID": "libpsl@0.21.1-4.fc35.x86_64",
     "Name": "libpsl",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libpsl@0.21.1-4.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.21.1",
     "Release": "4.fc35",
     "Arch": "x86_64",
@@ -1192,9 +982,6 @@
   {
     "ID": "libpwquality@1.4.4-6.fc35.x86_64",
     "Name": "libpwquality",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libpwquality@1.4.4-6.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.4.4",
     "Release": "6.fc35",
     "Arch": "x86_64",
@@ -1209,9 +996,6 @@
   {
     "ID": "librepo@1.14.2-1.fc35.x86_64",
     "Name": "librepo",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/librepo@1.14.2-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.14.2",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1226,9 +1010,6 @@
   {
     "ID": "libreport-filesystem@2.15.2-6.fc35.noarch",
     "Name": "libreport-filesystem",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libreport-filesystem@2.15.2-6.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "2.15.2",
     "Release": "6.fc35",
     "Arch": "noarch",
@@ -1243,9 +1024,6 @@
   {
     "ID": "libselinux@3.3-1.fc35.x86_64",
     "Name": "libselinux",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libselinux@3.3-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "3.3",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1260,9 +1038,6 @@
   {
     "ID": "libsemanage@3.3-1.fc35.x86_64",
     "Name": "libsemanage",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libsemanage@3.3-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "3.3",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1277,9 +1052,6 @@
   {
     "ID": "libsepol@3.3-2.fc35.x86_64",
     "Name": "libsepol",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libsepol@3.3-2.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "3.3",
     "Release": "2.fc35",
     "Arch": "x86_64",
@@ -1294,9 +1066,6 @@
   {
     "ID": "libsigsegv@2.13-3.fc35.x86_64",
     "Name": "libsigsegv",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libsigsegv@2.13-3.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.13",
     "Release": "3.fc35",
     "Arch": "x86_64",
@@ -1311,9 +1080,6 @@
   {
     "ID": "libsmartcols@2.37.4-1.fc35.x86_64",
     "Name": "libsmartcols",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libsmartcols@2.37.4-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.37.4",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1328,9 +1094,6 @@
   {
     "ID": "libsolv@0.7.19-3.fc35.x86_64",
     "Name": "libsolv",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libsolv@0.7.19-3.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.7.19",
     "Release": "3.fc35",
     "Arch": "x86_64",
@@ -1345,9 +1108,6 @@
   {
     "ID": "libssh@0.9.6-1.fc35.x86_64",
     "Name": "libssh",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libssh@0.9.6-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.9.6",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1362,9 +1122,6 @@
   {
     "ID": "libssh-config@0.9.6-1.fc35.noarch",
     "Name": "libssh-config",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libssh-config@0.9.6-1.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "0.9.6",
     "Release": "1.fc35",
     "Arch": "noarch",
@@ -1379,9 +1136,6 @@
   {
     "ID": "libstdc++@11.2.1-9.fc35.x86_64",
     "Name": "libstdc++",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libstdc%2B%2B@11.2.1-9.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "11.2.1",
     "Release": "9.fc35",
     "Arch": "x86_64",
@@ -1396,9 +1150,6 @@
   {
     "ID": "libtasn1@4.16.0-6.fc35.x86_64",
     "Name": "libtasn1",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libtasn1@4.16.0-6.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "4.16.0",
     "Release": "6.fc35",
     "Arch": "x86_64",
@@ -1413,9 +1164,6 @@
   {
     "ID": "libtirpc@1.3.2-1.fc35.x86_64",
     "Name": "libtirpc",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libtirpc@1.3.2-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.3.2",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1430,9 +1178,6 @@
   {
     "ID": "libunistring@0.9.10-14.fc35.x86_64",
     "Name": "libunistring",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libunistring@0.9.10-14.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.9.10",
     "Release": "14.fc35",
     "Arch": "x86_64",
@@ -1447,9 +1192,6 @@
   {
     "ID": "libuuid@2.37.4-1.fc35.x86_64",
     "Name": "libuuid",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libuuid@2.37.4-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.37.4",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1464,9 +1206,6 @@
   {
     "ID": "libverto@0.3.2-2.fc35.x86_64",
     "Name": "libverto",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libverto@0.3.2-2.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.3.2",
     "Release": "2.fc35",
     "Arch": "x86_64",
@@ -1481,9 +1220,6 @@
   {
     "ID": "libxcrypt@4.4.28-1.fc35.x86_64",
     "Name": "libxcrypt",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libxcrypt@4.4.28-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "4.4.28",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1498,9 +1234,6 @@
   {
     "ID": "libxml2@2.9.12-6.fc35.x86_64",
     "Name": "libxml2",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libxml2@2.9.12-6.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.9.12",
     "Release": "6.fc35",
     "Arch": "x86_64",
@@ -1515,9 +1248,6 @@
   {
     "ID": "libyaml@0.2.5-6.fc35.x86_64",
     "Name": "libyaml",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libyaml@0.2.5-6.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.2.5",
     "Release": "6.fc35",
     "Arch": "x86_64",
@@ -1532,9 +1262,6 @@
   {
     "ID": "libzstd@1.5.2-1.fc35.x86_64",
     "Name": "libzstd",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/libzstd@1.5.2-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.5.2",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1549,9 +1276,6 @@
   {
     "ID": "lua-libs@5.4.4-1.fc35.x86_64",
     "Name": "lua-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/lua-libs@5.4.4-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "5.4.4",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1566,9 +1290,6 @@
   {
     "ID": "lz4-libs@1.9.3-3.fc35.x86_64",
     "Name": "lz4-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/lz4-libs@1.9.3-3.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.9.3",
     "Release": "3.fc35",
     "Arch": "x86_64",
@@ -1583,9 +1304,6 @@
   {
     "ID": "mpdecimal@2.5.1-2.fc35.x86_64",
     "Name": "mpdecimal",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/mpdecimal@2.5.1-2.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.5.1",
     "Release": "2.fc35",
     "Arch": "x86_64",
@@ -1600,9 +1318,6 @@
   {
     "ID": "mpfr@4.1.0-8.fc35.x86_64",
     "Name": "mpfr",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/mpfr@4.1.0-8.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "4.1.0",
     "Release": "8.fc35",
     "Arch": "x86_64",
@@ -1617,9 +1332,6 @@
   {
     "ID": "ncurses-base@6.2-8.20210508.fc35.noarch",
     "Name": "ncurses-base",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/ncurses-base@6.2-8.20210508.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "6.2",
     "Release": "8.20210508.fc35",
     "Arch": "noarch",
@@ -1634,9 +1346,6 @@
   {
     "ID": "ncurses-libs@6.2-8.20210508.fc35.x86_64",
     "Name": "ncurses-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/ncurses-libs@6.2-8.20210508.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "6.2",
     "Release": "8.20210508.fc35",
     "Arch": "x86_64",
@@ -1651,9 +1360,6 @@
   {
     "ID": "nettle@3.7.3-2.fc35.x86_64",
     "Name": "nettle",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/nettle@3.7.3-2.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "3.7.3",
     "Release": "2.fc35",
     "Arch": "x86_64",
@@ -1668,9 +1374,6 @@
   {
     "ID": "npth@1.6-7.fc35.x86_64",
     "Name": "npth",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/npth@1.6-7.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.6",
     "Release": "7.fc35",
     "Arch": "x86_64",
@@ -1685,9 +1388,6 @@
   {
     "ID": "openldap@2.4.59-3.fc35.x86_64",
     "Name": "openldap",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/openldap@2.4.59-3.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "2.4.59",
     "Release": "3.fc35",
     "Arch": "x86_64",
@@ -1702,9 +1402,6 @@
   {
     "ID": "openssl-libs@1.1.1l-2.fc35.x86_64",
     "Name": "openssl-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/openssl-libs@1.1.1l-2.fc35?arch=x86_64\u0026distro=fedora-35\u0026epoch=1"
-    },
     "Version": "1.1.1l",
     "Release": "2.fc35",
     "Epoch": 1,
@@ -1721,9 +1418,6 @@
   {
     "ID": "p11-kit@0.23.22-4.fc35.x86_64",
     "Name": "p11-kit",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/p11-kit@0.23.22-4.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.23.22",
     "Release": "4.fc35",
     "Arch": "x86_64",
@@ -1738,9 +1432,6 @@
   {
     "ID": "p11-kit-trust@0.23.22-4.fc35.x86_64",
     "Name": "p11-kit-trust",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/p11-kit-trust@0.23.22-4.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.23.22",
     "Release": "4.fc35",
     "Arch": "x86_64",
@@ -1755,9 +1446,6 @@
   {
     "ID": "pam@1.5.2-7.fc35.x86_64",
     "Name": "pam",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/pam@1.5.2-7.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.5.2",
     "Release": "7.fc35",
     "Arch": "x86_64",
@@ -1772,9 +1460,6 @@
   {
     "ID": "pcre@8.45-1.fc35.x86_64",
     "Name": "pcre",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/pcre@8.45-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "8.45",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1789,9 +1474,6 @@
   {
     "ID": "pcre2@10.39-1.fc35.x86_64",
     "Name": "pcre2",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/pcre2@10.39-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "10.39",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1806,9 +1488,6 @@
   {
     "ID": "pcre2-syntax@10.39-1.fc35.noarch",
     "Name": "pcre2-syntax",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/pcre2-syntax@10.39-1.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "10.39",
     "Release": "1.fc35",
     "Arch": "noarch",
@@ -1823,9 +1502,6 @@
   {
     "ID": "popt@1.18-6.fc35.x86_64",
     "Name": "popt",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/popt@1.18-6.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.18",
     "Release": "6.fc35",
     "Arch": "x86_64",
@@ -1840,9 +1516,6 @@
   {
     "ID": "publicsuffix-list-dafsa@20210518-2.fc35.noarch",
     "Name": "publicsuffix-list-dafsa",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/publicsuffix-list-dafsa@20210518-2.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "20210518",
     "Release": "2.fc35",
     "Arch": "noarch",
@@ -1857,9 +1530,6 @@
   {
     "ID": "python-pip-wheel@21.2.3-4.fc35.noarch",
     "Name": "python-pip-wheel",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/python-pip-wheel@21.2.3-4.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "21.2.3",
     "Release": "4.fc35",
     "Arch": "noarch",
@@ -1874,9 +1544,6 @@
   {
     "ID": "python-setuptools-wheel@57.4.0-1.fc35.noarch",
     "Name": "python-setuptools-wheel",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/python-setuptools-wheel@57.4.0-1.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "57.4.0",
     "Release": "1.fc35",
     "Arch": "noarch",
@@ -1891,9 +1558,6 @@
   {
     "ID": "python3@3.10.2-1.fc35.x86_64",
     "Name": "python3",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/python3@3.10.2-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "3.10.2",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1908,9 +1572,6 @@
   {
     "ID": "python3-dnf@4.9.0-1.fc35.noarch",
     "Name": "python3-dnf",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/python3-dnf@4.9.0-1.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "4.9.0",
     "Release": "1.fc35",
     "Arch": "noarch",
@@ -1925,9 +1586,6 @@
   {
     "ID": "python3-gpg@1.15.1-6.fc35.x86_64",
     "Name": "python3-gpg",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/python3-gpg@1.15.1-6.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.15.1",
     "Release": "6.fc35",
     "Arch": "x86_64",
@@ -1942,9 +1600,6 @@
   {
     "ID": "python3-hawkey@0.64.0-1.fc35.x86_64",
     "Name": "python3-hawkey",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/python3-hawkey@0.64.0-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.64.0",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1959,9 +1614,6 @@
   {
     "ID": "python3-libcomps@0.1.18-1.fc35.x86_64",
     "Name": "python3-libcomps",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/python3-libcomps@0.1.18-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.1.18",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1976,9 +1628,6 @@
   {
     "ID": "python3-libdnf@0.64.0-1.fc35.x86_64",
     "Name": "python3-libdnf",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/python3-libdnf@0.64.0-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "0.64.0",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -1993,9 +1642,6 @@
   {
     "ID": "python3-libs@3.10.2-1.fc35.x86_64",
     "Name": "python3-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/python3-libs@3.10.2-1.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "3.10.2",
     "Release": "1.fc35",
     "Arch": "x86_64",
@@ -2010,9 +1656,6 @@
   {
     "ID": "python3-rpm@4.17.0-4.fc35.x86_64",
     "Name": "python3-rpm",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/python3-rpm@4.17.0-4.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "4.17.0",
     "Release": "4.fc35",
     "Arch": "x86_64",
@@ -2027,9 +1670,6 @@
   {
     "ID": "readline@8.1-3.fc35.x86_64",
     "Name": "readline",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/readline@8.1-3.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "8.1",
     "Release": "3.fc35",
     "Arch": "x86_64",
@@ -2044,9 +1684,6 @@
   {
     "ID": "rootfiles@8.1-30.fc35.noarch",
     "Name": "rootfiles",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/rootfiles@8.1-30.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "8.1",
     "Release": "30.fc35",
     "Arch": "noarch",
@@ -2061,9 +1698,6 @@
   {
     "ID": "rpm@4.17.0-4.fc35.x86_64",
     "Name": "rpm",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/rpm@4.17.0-4.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "4.17.0",
     "Release": "4.fc35",
     "Arch": "x86_64",
@@ -2078,9 +1712,6 @@
   {
     "ID": "rpm-build-libs@4.17.0-4.fc35.x86_64",
     "Name": "rpm-build-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/rpm-build-libs@4.17.0-4.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "4.17.0",
     "Release": "4.fc35",
     "Arch": "x86_64",
@@ -2095,9 +1726,6 @@
   {
     "ID": "rpm-libs@4.17.0-4.fc35.x86_64",
     "Name": "rpm-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/rpm-libs@4.17.0-4.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "4.17.0",
     "Release": "4.fc35",
     "Arch": "x86_64",
@@ -2112,9 +1740,6 @@
   {
     "ID": "rpm-sign-libs@4.17.0-4.fc35.x86_64",
     "Name": "rpm-sign-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/rpm-sign-libs@4.17.0-4.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "4.17.0",
     "Release": "4.fc35",
     "Arch": "x86_64",
@@ -2129,9 +1754,6 @@
   {
     "ID": "sed@4.8-8.fc35.x86_64",
     "Name": "sed",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/sed@4.8-8.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "4.8",
     "Release": "8.fc35",
     "Arch": "x86_64",
@@ -2146,9 +1768,6 @@
   {
     "ID": "setup@2.13.9.1-2.fc35.noarch",
     "Name": "setup",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/setup@2.13.9.1-2.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "2.13.9.1",
     "Release": "2.fc35",
     "Arch": "noarch",
@@ -2163,9 +1782,6 @@
   {
     "ID": "shadow-utils@4.9-9.fc35.x86_64",
     "Name": "shadow-utils",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/shadow-utils@4.9-9.fc35?arch=x86_64\u0026distro=fedora-35\u0026epoch=2"
-    },
     "Version": "4.9",
     "Release": "9.fc35",
     "Epoch": 2,
@@ -2182,9 +1798,6 @@
   {
     "ID": "sqlite-libs@3.36.0-3.fc35.x86_64",
     "Name": "sqlite-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/sqlite-libs@3.36.0-3.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "3.36.0",
     "Release": "3.fc35",
     "Arch": "x86_64",
@@ -2199,9 +1812,6 @@
   {
     "ID": "sudo@1.9.7p2-2.fc35.x86_64",
     "Name": "sudo",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/sudo@1.9.7p2-2.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.9.7p2",
     "Release": "2.fc35",
     "Arch": "x86_64",
@@ -2216,9 +1826,6 @@
   {
     "ID": "tar@1.34-2.fc35.x86_64",
     "Name": "tar",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/tar@1.34-2.fc35?arch=x86_64\u0026distro=fedora-35\u0026epoch=2"
-    },
     "Version": "1.34",
     "Release": "2.fc35",
     "Epoch": 2,
@@ -2235,9 +1842,6 @@
   {
     "ID": "tpm2-tss@3.1.0-3.fc35.x86_64",
     "Name": "tpm2-tss",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/tpm2-tss@3.1.0-3.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "3.1.0",
     "Release": "3.fc35",
     "Arch": "x86_64",
@@ -2252,9 +1856,6 @@
   {
     "ID": "tzdata@2021e-1.fc35.noarch",
     "Name": "tzdata",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/tzdata@2021e-1.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "2021e",
     "Release": "1.fc35",
     "Arch": "noarch",
@@ -2269,9 +1870,6 @@
   {
     "ID": "vim-data@8.2.4386-1.fc35.noarch",
     "Name": "vim-data",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/vim-data@8.2.4386-1.fc35?arch=noarch\u0026distro=fedora-35\u0026epoch=2"
-    },
     "Version": "8.2.4386",
     "Release": "1.fc35",
     "Epoch": 2,
@@ -2288,9 +1886,6 @@
   {
     "ID": "vim-minimal@8.2.4386-1.fc35.x86_64",
     "Name": "vim-minimal",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/vim-minimal@8.2.4386-1.fc35?arch=x86_64\u0026distro=fedora-35\u0026epoch=2"
-    },
     "Version": "8.2.4386",
     "Release": "1.fc35",
     "Epoch": 2,
@@ -2307,9 +1902,6 @@
   {
     "ID": "xz-libs@5.2.5-7.fc35.x86_64",
     "Name": "xz-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/xz-libs@5.2.5-7.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "5.2.5",
     "Release": "7.fc35",
     "Arch": "x86_64",
@@ -2324,9 +1916,6 @@
   {
     "ID": "yum@4.9.0-1.fc35.noarch",
     "Name": "yum",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/yum@4.9.0-1.fc35?arch=noarch\u0026distro=fedora-35"
-    },
     "Version": "4.9.0",
     "Release": "1.fc35",
     "Arch": "noarch",
@@ -2341,9 +1930,6 @@
   {
     "ID": "zchunk-libs@1.1.15-2.fc35.x86_64",
     "Name": "zchunk-libs",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/zchunk-libs@1.1.15-2.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.1.15",
     "Release": "2.fc35",
     "Arch": "x86_64",
@@ -2358,9 +1944,6 @@
   {
     "ID": "zlib@1.2.11-30.fc35.x86_64",
     "Name": "zlib",
-    "Identifier": {
-      "PURL": "pkg:rpm/fedora/zlib@1.2.11-30.fc35?arch=x86_64\u0026distro=fedora-35"
-    },
     "Version": "1.2.11",
     "Release": "30.fc35",
     "Arch": "x86_64",
