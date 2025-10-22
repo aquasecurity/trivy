@@ -154,6 +154,9 @@ severity:
 	// Set a temp dir so that modules will not be loaded
 	t.Setenv("XDG_DATA_HOME", cacheDir)
 
+	// Disable Go license detection
+	t.Setenv("GOPATH", cacheDir)
+
 	for _, tt := range tests {
 		command := "repo"
 
