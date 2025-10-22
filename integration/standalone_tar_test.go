@@ -457,8 +457,8 @@ func TestTar(t *testing.T) {
 // be updated via TestTar, which generates the canonical output without modifications.
 func TestTarWithOverride(t *testing.T) {
 	type args struct {
-		Input  string
-		Distro string
+		input  string
+		distro string
 	}
 	tests := []struct {
 		name     string
@@ -469,8 +469,8 @@ func TestTarWithOverride(t *testing.T) {
 		{
 			name: "alpine 3.9 as alpine 3.10",
 			args: args{
-				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
-				Distro: "alpine/3.10",
+				input:  "testdata/fixtures/images/alpine-39.tar.gz",
+				distro: "alpine/3.10",
 			},
 			override: func(_ *testing.T, want, _ *types.Report) {
 				want.Metadata.OS.Name = "3.10"
@@ -486,16 +486,19 @@ func TestTarWithOverride(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := []string{
-				"--cache-dir", cacheDir,
+				"--cache-dir",
+				cacheDir,
 				"image",
-				"--format", "json",
+				"--format",
+				"json",
 				"--skip-db-update",
 				"--list-all-pkgs=false",
-				"--input", tt.args.Input,
+				"--input",
+				tt.args.input,
 			}
 
-			if tt.args.Distro != "" {
-				osArgs = append(osArgs, "--distro", tt.args.Distro)
+			if tt.args.distro != "" {
+				osArgs = append(osArgs, "--distro", tt.args.distro)
 			}
 
 			// Run Trivy

@@ -1,10 +1,10 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:b94321659aca6a89cb7650a5b864bc8ec4bf62c620b8f1a01530c2e90a88c391",
   "ArtifactName": "testdata/fixtures/images/amazon-2.tar.gz",
   "ArtifactType": "container_image",
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "Metadata": {
     "Size": 168852480,
     "OS": {
