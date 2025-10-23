@@ -62,7 +62,7 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 	defer log.InitLogger(s.opts.Debug, false)
 
 	if s.opts.Format == types.FormatCycloneDX {
-		kbom, err := s.clusterInfoToReportResources(artifactsData)
+		kbom, err := s.clusterInfoToReportResources(ctx, artifactsData)
 		if err != nil {
 			return report.Report{}, err
 		}
@@ -385,7 +385,7 @@ func (*Scanner) findNodeName(allArtifact []*artifacts.Artifact) string {
 	return ""
 }
 
-func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.BOM, error) {
+func (s *Scanner) clusterInfoToReportResources(ctx context.Context, allArtifact []*artifacts.Artifact) (*core.BOM, error) {
 	var rootComponent *core.Component
 	var coreComponents []*core.Component
 
@@ -450,7 +450,7 @@ func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact
 						},
 					},
 				}
-				kbom.AddRelationship(controlPlane, imageComponent, core.RelationshipDependsOn)
+				kbom.AddRelationship(ctx, controlPlane, imageComponent, core.RelationshipDependsOn)
 			}
 		case nodeComponents:
 			var nf bom.NodeInfo
@@ -458,7 +458,7 @@ func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact
 			if err != nil {
 				return nil, err
 			}
-			coreComponents = append(coreComponents, s.nodeComponent(kbom, nf))
+			coreComponents = append(coreComponents, s.nodeComponent(ctx, kbom, nf))
 		case clusterInfo:
 			var cf bom.ClusterInfo
 			if err := ms.Decode(artifact.RawResource, &cf); err != nil {
@@ -476,20 +476,20 @@ func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact
 				},
 				Root: true,
 			}
-			kbom.AddComponent(rootComponent)
+			kbom.AddComponent(ctx, rootComponent)
 		default:
 			return nil, fmt.Errorf("resource kind %s is not supported", artifact.Kind)
 		}
 	}
 
 	for _, c := range coreComponents {
-		kbom.AddRelationship(rootComponent, c, core.RelationshipContains)
+		kbom.AddRelationship(ctx, rootComponent, c, core.RelationshipContains)
 	}
 
 	return kbom, nil
 }
 
-func (s *Scanner) nodeComponent(b *core.BOM, nf bom.NodeInfo) *core.Component {
+func (s *Scanner) nodeComponent(ctx context.Context, b *core.BOM, nf bom.NodeInfo) *core.Component {
 	osName, osVersion := osNameVersion(nf.OsImage)
 	runtimeName, runtimeVersion := runtimeNameVersion(nf.ContainerRuntimeVersion)
 	kubeletVersion := unifiedVersion(nf.KubeletVersion)
@@ -520,13 +520,13 @@ func (s *Scanner) nodeComponent(b *core.BOM, nf bom.NodeInfo) *core.Component {
 			},
 		},
 	}
-	b.AddRelationship(nodeComponent, osComponent, core.RelationshipContains)
+	b.AddRelationship(ctx, nodeComponent, osComponent, core.RelationshipContains)
 
 	appComponent := &core.Component{
 		Type: core.TypeApplication,
 		Name: nodeCoreComponents,
 	}
-	b.AddRelationship(nodeComponent, appComponent, core.RelationshipContains)
+	b.AddRelationship(ctx, nodeComponent, appComponent, core.RelationshipContains)
 
 	kubeletComponent := &core.Component{
 		Type:    core.TypeApplication,
@@ -548,7 +548,7 @@ func (s *Scanner) nodeComponent(b *core.BOM, nf bom.NodeInfo) *core.Component {
 			PURL: generatePURL(kubelet, kubeletVersion, nf.NodeName),
 		},
 	}
-	b.AddRelationship(appComponent, kubeletComponent, core.RelationshipContains)
+	b.AddRelationship(ctx, appComponent, kubeletComponent, core.RelationshipContains)
 
 	runtimeComponent := &core.Component{
 		Type:    core.TypeApplication,
@@ -570,7 +570,7 @@ func (s *Scanner) nodeComponent(b *core.BOM, nf bom.NodeInfo) *core.Component {
 			PURL: packageurl.NewPackageURL(packageurl.TypeGolang, "", runtimeName, runtimeVersion, packageurl.Qualifiers{}, ""),
 		},
 	}
-	b.AddRelationship(appComponent, runtimeComponent, core.RelationshipContains)
+	b.AddRelationship(ctx, appComponent, runtimeComponent, core.RelationshipContains)
 
 	return nodeComponent
 }

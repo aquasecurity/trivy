@@ -628,7 +628,7 @@ func setup(t *testing.T, options setupOptions) (string, string) {
 		osArgs := setupServer(addr, options.token, options.tokenHeader, options.pathPrefix, cacheDir, options.cacheBackend)
 
 		// Run Trivy server
-		assert.NoError(t, execute(osArgs))
+		assert.NoError(t, execute(t.Context(), osArgs))
 	}()
 
 	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)

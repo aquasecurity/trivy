@@ -1,6 +1,7 @@
 package io
 
 import (
+	"context"
 	"fmt"
 	"slices"
 	"strconv"
@@ -56,13 +57,13 @@ func NewEncoder(opts ...EncoderOption) *Encoder {
 	return e
 }
 
-func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
+func (e *Encoder) Encode(ctx context.Context, report types.Report) (*core.BOM, error) {
 	// When report.BOM is not nil, reuse the existing BOM structure unless ForceRegenerate is set.
 	// This happens in two scenarios:
 	// 1. SBOM scanning: When scanning an existing SBOM file to refresh vulnerabilities
 	// 2. Library usage: When using Trivy as a library with a custom BOM in the report
 	if report.BOM != nil && !e.forceRegenerate {
-		return e.reuseExistingBOM(report)
+		return e.reuseExistingBOM(ctx, report)
 	}
 	// Metadata component
 	root, err := e.rootComponent(report)
@@ -75,15 +76,15 @@ func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
 		e.bom.SerialNumber = report.BOM.SerialNumber
 		e.bom.Version = report.BOM.Version
 	}
-	e.bom.AddComponent(root)
+	e.bom.AddComponent(ctx, root)
 
 	for _, result := range report.Results {
-		e.encodeResult(root, report.Metadata, result)
+		e.encodeResult(ctx, root, report.Metadata, result)
 	}
 
 	// Components that do not have their own dependencies MUST be declared as empty elements within the graph.
 	if _, ok := e.bom.Relationships()[root.ID()]; !ok {
-		e.bom.AddRelationship(root, nil, "")
+		e.bom.AddRelationship(ctx, root, nil, "")
 	}
 	return e.bom, nil
 }
@@ -172,7 +173,7 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 	return root, nil
 }
 
-func (e *Encoder) encodeResult(root *core.Component, metadata types.Metadata, result types.Result) {
+func (e *Encoder) encodeResult(ctx context.Context, root *core.Component, metadata types.Metadata, result types.Result) {
 	if slices.Contains(ftypes.AggregatingTypes, result.Type) {
 		// If a package is language-specific package that isn't associated with a lock file,
 		// it will be a dependency of a component under "metadata".
@@ -184,7 +185,7 @@ func (e *Encoder) encodeResult(root *core.Component, metadata types.Metadata, re
 		// ref. https://cyclonedx.org/use-cases/#inventory
 
 		// Dependency graph from #1 to #2
-		e.encodePackages(root, result)
+		e.encodePackages(ctx, root, result)
 	} else if result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg {
 		// If a package is OS package, it will be a dependency of "Operating System" component.
 		// e.g.
@@ -204,14 +205,14 @@ func (e *Encoder) encodeResult(root *core.Component, metadata types.Metadata, re
 		//       -> etc.
 
 		// #2
-		appComponent := e.resultComponent(root, result, metadata.OS)
+		appComponent := e.resultComponent(ctx, root, result, metadata.OS)
 
 		// #3
-		e.encodePackages(appComponent, result)
+		e.encodePackages(ctx, appComponent, result)
 	}
 }
 
-func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
+func (e *Encoder) encodePackages(ctx context.Context, parent *core.Component, result types.Result) {
 	// Get dependency parents first
 	parents := ftypes.Packages(result.Packages).ParentDeps()
 
@@ -246,11 +247,11 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 		dependencies[pkgID] = c
 
 		// Add a component
-		e.bom.AddComponent(c)
+		e.bom.AddComponent(ctx, c)
 
 		// Add vulnerabilities
 		if vv := vulns[pkg.Identifier.UID]; vv != nil {
-			e.bom.AddVulnerabilities(c, vv)
+			e.bom.AddVulnerabilities(ctx, c, vv)
 		}
 	}
 
@@ -260,7 +261,7 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 
 		// Add a relationship between the parent and the package if needed
 		if e.belongToParent(pkg, parents, hasRoot) {
-			e.bom.AddRelationship(parent, c, core.RelationshipContains)
+			e.bom.AddRelationship(ctx, parent, c, core.RelationshipContains)
 		}
 
 		// Add relationships between the package and its dependencies
@@ -269,13 +270,13 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 			if !ok {
 				continue
 			}
-			e.bom.AddRelationship(c, dependsOn, core.RelationshipDependsOn)
+			e.bom.AddRelationship(ctx, c, dependsOn, core.RelationshipDependsOn)
 		}
 
 		// Components that do not have their own dependencies MUST be declared as empty elements within the graph.
 		// TODO: Should check if the component has actually no dependencies or the dependency graph is not supported.
 		if len(pkg.DependsOn) == 0 {
-			e.bom.AddRelationship(c, nil, "")
+			e.bom.AddRelationship(ctx, c, nil, "")
 		}
 	}
 }
@@ -291,7 +292,7 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 // For SBOM scanning (case 1), this approach is CycloneDX-specific
 // because: SPDX 2.3 does not include vulnerabilities in the SBOM specification.
 // Therefore, the method uses BOM-Ref for component-vulnerability lookup rather than SPDX-ID.
-func (e *Encoder) reuseExistingBOM(report types.Report) (*core.BOM, error) {
+func (e *Encoder) reuseExistingBOM(ctx context.Context, report types.Report) (*core.BOM, error) {
 	bom := report.BOM.Clone()
 
 	// Create a lookup map from BOM-Ref to component for efficient vulnerability assignment
@@ -319,14 +320,14 @@ func (e *Encoder) reuseExistingBOM(report types.Report) (*core.BOM, error) {
 					log.Int("vulnerabilities", len(componentVulns)))
 				continue
 			}
-			bom.AddVulnerabilities(c, componentVulns)
+			bom.AddVulnerabilities(ctx, c, componentVulns)
 		}
 	}
 
 	return bom, nil
 }
 
-func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound *ftypes.OS) *core.Component {
+func (e *Encoder) resultComponent(ctx context.Context, root *core.Component, r types.Result, osFound *ftypes.OS) *core.Component {
 	component := &core.Component{
 		Name: r.Target,
 		Properties: []core.Property{
@@ -352,7 +353,7 @@ func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound 
 		component.Type = core.TypeApplication
 	}
 
-	e.bom.AddRelationship(root, component, core.RelationshipContains)
+	e.bom.AddRelationship(ctx, root, component, core.RelationshipContains)
 	return component
 }
 

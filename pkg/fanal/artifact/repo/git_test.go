@@ -301,7 +301,7 @@ func TestArtifact_Inspect(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set fake UUID for consistency
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+			ctx := uuid.With(t.Context(), "3ff14136-e09f-4df9-80ea-%012d")
 
 			// Create memory cache
 			c := cache.NewMemoryCache()
@@ -315,7 +315,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			require.NoError(t, err)
 			defer cleanup()
 
-			ref, err := art.Inspect(t.Context())
+			ref, err := art.Inspect(ctx)
 			if tt.wantErr {
 				assert.Error(t, err)
 				return
