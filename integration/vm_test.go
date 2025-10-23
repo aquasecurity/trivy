@@ -107,7 +107,6 @@ func TestVM(t *testing.T) {
 					}
 				}),
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-				update:   false, // TODO: Cannot update golden files due to override handling issue
 			})
 		})
 	}

@@ -122,13 +122,12 @@ type registryOption struct {
 
 // TestRegistry tests scanning images from a container registry.
 //
-// IMPORTANT: Golden files used in this test cannot be updated with the -update flag
-// because the registry authentication and settings modify the output.
-// If golden files need to be updated, they should be generated from TestTar.
-//
-// All golden files used in TestRegistry MUST also be used in TestTar
-// to ensure they can be properly updated when needed.
+// Golden files are shared with TestTar.
 func TestRegistry(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestRegistry when -update flag is set. Golden files should be updated via TestTar.")
+	}
+
 	ctx := t.Context()
 
 	baseDir, err := filepath.Abs(".")
@@ -257,7 +256,6 @@ func TestRegistry(t *testing.T) {
 						want.Results[i].Target = fmt.Sprintf("%s (%s)", s, tt.os)
 					}
 				}),
-				update: false, // Golden files should be updated via TestTar, not TestRegistry
 			})
 		})
 	}

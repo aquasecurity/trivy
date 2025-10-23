@@ -97,7 +97,6 @@ func TestSBOM(t *testing.T) {
 			runTest(t, osArgs, tt.golden, types.Format(tt.args.format), runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: nil, // Do not use overrides - golden files are generated from this test as the canonical source
-				update:   *update,
 			})
 		})
 	}
@@ -117,6 +116,10 @@ func TestSBOM(t *testing.T) {
 // All golden files used in TestSBOMEquivalence MUST also be used in TestTar
 // to ensure they can be properly updated when needed.
 func TestSBOMEquivalence(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestSBOMEquivalence when -update flag is set. Golden files should be updated via TestTar.")
+	}
+
 	type args struct {
 		input        string
 		format       string
@@ -239,7 +242,6 @@ func TestSBOMEquivalence(t *testing.T) {
 			runTest(t, osArgs, tt.golden, types.Format(tt.args.format), runOptions{
 				override: overrideFuncs(overrideSBOMReport, overrideUID, tt.override),
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-				update:   false, // Golden files should be updated via TestTar, not TestSBOMEquivalence
 			})
 		})
 	}

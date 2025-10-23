@@ -79,7 +79,6 @@ func TestConvert(t *testing.T) {
 			runTest(t, osArgs, tt.golden, types.Format(tt.args.format), runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: nil, // Do not use overrides - golden files are generated from this test as the canonical source
-				update:   *update,
 			})
 		})
 	}

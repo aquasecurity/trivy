@@ -521,7 +521,6 @@ func TestRepository(t *testing.T) {
 			runTest(t, osArgs, tt.golden, format, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: nil, // Do not use overrides - golden files are generated from this test as the canonical source
-				update:   *update,
 			})
 		})
 	}
@@ -536,6 +535,10 @@ func TestRepository(t *testing.T) {
 // All golden files used in TestRepositoryWithOverride MUST also be used in TestRepository
 // to ensure they can be properly updated when needed.
 func TestRepositoryWithOverride(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestRepositoryWithOverride when -update flag is set. Golden files should be updated via TestRepository.")
+	}
+
 	t.Setenv("NUGET_PACKAGES", t.TempDir())
 	tests := []struct {
 		name     string
@@ -605,7 +608,6 @@ func TestRepositoryWithOverride(t *testing.T) {
 			runTest(t, osArgs, tt.golden, format, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: overrideFuncs(overrideUID, tt.override),
-				update:   false, // Golden files should be updated via TestRepository, not TestRepositoryWithOverride
 			})
 		})
 	}

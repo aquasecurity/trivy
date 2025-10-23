@@ -445,7 +445,6 @@ func TestTar(t *testing.T) {
 			runTest(t, osArgs, tt.golden, tt.args.Format, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: nil, // Do not use overrides - golden files are generated from this test as the canonical source
-				update:   *update,
 			})
 		})
 	}
@@ -453,10 +452,12 @@ func TestTar(t *testing.T) {
 
 // TestTarWithOverride tests container image scanning with overrides applied.
 //
-// IMPORTANT: Golden files used in this test cannot be updated with the -update flag
-// because these tests apply overrides that modify the output. Golden files should
-// be updated via TestTar, which generates the canonical output without modifications.
+// Golden files are shared with TestTar.
 func TestTarWithOverride(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestTarWithOverride when -update flag is set. Golden files should be updated via TestTar.")
+	}
+
 	type args struct {
 		input  string
 		distro string
@@ -506,7 +507,6 @@ func TestTarWithOverride(t *testing.T) {
 			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: overrideFuncs(overrideUID, tt.override),
-				update:   false, // Golden files should be updated via TestTar, not this test
 			})
 		})
 	}
@@ -514,13 +514,12 @@ func TestTarWithOverride(t *testing.T) {
 
 // TestTarWithEnv tests container image scanning with environment variables.
 //
-// IMPORTANT: Golden files used in this test cannot be updated with the -update flag
-// because the golden files are shared with TestTar.
-// If golden files need to be updated, they should be generated from TestTar.
-//
-// All golden files used in TestTarWithEnv MUST also be used in TestTar
-// to ensure they can be properly updated when needed.
+// Golden files are shared with TestTar.
 func TestTarWithEnv(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestTarWithEnv when -update flag is set. Golden files should be updated via TestTar.")
+	}
+
 	type args struct {
 		IgnoreUnfixed bool
 		Severity      []string
@@ -599,7 +598,6 @@ func TestTarWithEnv(t *testing.T) {
 			// Run Trivy
 			runTest(t, []string{"image"}, tt.golden, types.FormatJSON, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-				update:   false, // Golden files should be updated via TestTar, not TestTarWithEnv
 			})
 		})
 	}
@@ -607,13 +605,12 @@ func TestTarWithEnv(t *testing.T) {
 
 // TestTarWithConfigFile tests container image scanning with config files.
 //
-// IMPORTANT: Golden files used in this test cannot be updated with the -update flag
-// because the golden files are shared with TestTar.
-// If golden files need to be updated, they should be generated from TestTar.
-//
-// All golden files used in TestTarWithConfigFile MUST also be used in TestTar
-// to ensure they can be properly updated when needed.
+// Golden files are shared with TestTar.
 func TestTarWithConfigFile(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestTarWithConfigFile when -update flag is set. Golden files should be updated via TestTar.")
+	}
+
 	tests := []struct {
 		name       string
 		input      string
@@ -678,7 +675,6 @@ cache:
 			// Run Trivy
 			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-				update:   false, // Golden files should be updated via TestTar, not TestTarWithConfigFile
 			})
 		})
 	}

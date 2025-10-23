@@ -349,25 +349,16 @@ type runOptions struct {
 	wantErr  string
 	override OverrideFunc
 	fakeUUID string
-
-	// update indicates whether to update the golden file for this specific test case.
-	// This field is controlled by both the -update CLI flag and the test case configuration.
-	// The golden file is updated only when both conditions are met:
-	//   1. The -update flag is specified when running the tests
-	//   2. This field is set to true for the specific test case
-	// If -update is specified but this field is false, the golden file will not be updated.
-	// This allows fine-grained control over which test cases should update their golden files.
-	update bool
 }
 
 // runTest runs Trivy with the given args and compares the output with the golden file.
-// The output file is created in a temporary directory, unless update is true, in which case
+// The output file is created in a temporary directory, unless -update flag is set, in which case
 // the golden file is updated directly.
 func runTest(t *testing.T, osArgs []string, wantFile string, format types.Format, opts runOptions) {
 	// Ensure that tests updating golden files don't use override functions
 	// as overrides would modify the golden file output
-	if opts.update && opts.override != nil {
-		require.Fail(t, "invalid test configuration", "cannot use override functions when update=true")
+	if *update && opts.override != nil {
+		require.Fail(t, "invalid test configuration", "cannot use override functions when -update is set")
 	}
 
 	if opts.fakeUUID != "" {
@@ -376,7 +367,7 @@ func runTest(t *testing.T, osArgs []string, wantFile string, format types.Format
 
 	// Set up the output file
 	outputFile := filepath.Join(t.TempDir(), "output.json")
-	if opts.update {
+	if *update {
 		outputFile = wantFile
 	}
 	osArgs = append(osArgs, "--output", outputFile)

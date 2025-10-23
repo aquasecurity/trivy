@@ -15,13 +15,12 @@ import (
 
 // TestConfiguration tests the configuration of the CLI flags, environmental variables, and config file.
 //
-// IMPORTANT: Golden files used in this test cannot be updated with the -update flag
-// because the configuration test may apply specific settings that modify the output.
-// If golden files need to be updated, they should be generated from TestRepository.
-//
-// All golden files used in TestConfiguration MUST also be used in TestRepository
-// to ensure they can be properly updated when needed.
+// Golden files are shared with TestRepository.
 func TestConfiguration(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestConfiguration when -update flag is set. Golden files should be updated via TestRepository.")
+	}
+
 	type args struct {
 		input      string
 		flags      map[string]string
@@ -179,7 +178,6 @@ severity:
 			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-				update:   false, // Golden files should be updated via TestRepository, not TestConfiguration
 			})
 		})
 
@@ -201,7 +199,6 @@ severity:
 			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-				update:   false, // Golden files should be updated via TestRepository, not TestConfiguration
 			})
 		})
 
@@ -230,7 +227,6 @@ db:
 			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-				update:   false, // Golden files should be updated via TestRepository, not TestConfiguration
 			})
 		})
 	}

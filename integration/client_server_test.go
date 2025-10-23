@@ -42,15 +42,12 @@ type csArgs struct {
 
 // TestClientServer tests the client-server mode of Trivy.
 //
-// IMPORTANT: Golden files used in this test cannot be updated with the -update flag
-// because the client-server mode applies overrides that modify the output.
-// If golden files need to be updated, they should be generated from either:
-//   - TestTar (for container image scanning)
-//   - TestRepository (for filesystem/repository scanning)
-//
-// All golden files used in TestClientServer MUST also be used in TestTar or TestRepository
-// to ensure they can be properly updated when needed.
+// Golden files are shared with TestTar or TestRepository.
 func TestClientServer(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestClientServer when -update flag is set. Golden files should be updated via TestTar or TestRepository.")
+	}
+
 	tests := []struct {
 		name     string
 		args     csArgs
@@ -343,7 +340,6 @@ func TestClientServer(t *testing.T) {
 			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				override: overrideFuncs(overrideUID, tt.override),
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-				update:   false, // Golden files should be updated via TestTar or TestRepository, not TestClientServer
 			})
 		})
 	}
@@ -477,7 +473,6 @@ func TestClientServerWithFormat(t *testing.T) {
 			runTest(t, osArgs, tt.golden, tt.args.Format, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: nil, // Do not use overrides - golden files are generated from this test as the canonical source
-				update:   *update,
 			})
 		})
 	}
@@ -511,7 +506,6 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 			runTest(t, osArgs, tt.golden, types.FormatCycloneDX, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: nil, // Do not use overrides - golden files are generated from this test as the canonical source
-				update:   *update,
 			})
 		})
 	}
@@ -519,13 +513,12 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 
 // TestClientServerWithCustomOptions tests the client-server mode with custom options.
 //
-// IMPORTANT: Golden files used in this test cannot be updated with the -update flag
-// because the custom options (token, pathPrefix, etc.) modify the output.
-// If golden files need to be updated, they should be generated from TestTar or TestRepository.
-//
-// All golden files used in TestClientServerWithCustomOptions MUST also be used in
-// TestTar or TestRepository to ensure they can be properly updated when needed.
+// Golden files are shared with TestTar or TestRepository.
 func TestClientServerWithCustomOptions(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestClientServerWithCustomOptions when -update flag is set. Golden files should be updated via TestTar or TestRepository.")
+	}
+
 	token := "token"
 	tokenHeader := "Trivy-Token"
 	pathPrefix := "prefix"
@@ -591,7 +584,6 @@ func TestClientServerWithCustomOptions(t *testing.T) {
 				override: overrideUID,
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-				update:   false, // Golden files should be updated via TestTar or TestRepository, not TestClientServerWithCustomOptions
 			})
 		})
 	}
@@ -599,13 +591,12 @@ func TestClientServerWithCustomOptions(t *testing.T) {
 
 // TestClientServerWithRedis tests the client-server mode with Redis cache backend.
 //
-// IMPORTANT: Golden files used in this test cannot be updated with the -update flag
-// because the Redis cache backend may modify the output or behavior.
-// If golden files need to be updated, they should be generated from TestTar or TestRepository.
-//
-// All golden files used in TestClientServerWithRedis MUST also be used in
-// TestTar or TestRepository to ensure they can be properly updated when needed.
+// Golden files are shared with TestTar or TestRepository.
 func TestClientServerWithRedis(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestClientServerWithRedis when -update flag is set. Golden files should be updated via TestTar or TestRepository.")
+	}
+
 	// Set up a Redis container
 	ctx := t.Context()
 	// This test includes 2 checks
@@ -629,7 +620,6 @@ func TestClientServerWithRedis(t *testing.T) {
 		runTest(t, osArgs, golden, types.FormatJSON, runOptions{
 			override: overrideUID,
 			fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-			update:   false, // Golden files should be updated via TestTar or TestRepository, not TestClientServerWithRedis
 		})
 	})
 

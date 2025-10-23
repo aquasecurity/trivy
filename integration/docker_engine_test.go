@@ -16,13 +16,12 @@ import (
 
 // TestDockerEngine tests scanning images via Docker Engine API.
 //
-// IMPORTANT: Golden files used in this test cannot be updated with the -update flag
-// because the Docker Engine mode applies overrides that modify the output.
-// If golden files need to be updated, they should be generated from TestTar.
-//
-// All golden files used in TestDockerEngine MUST also be used in TestTar
-// to ensure they can be properly updated when needed.
+// Golden files are shared with TestTar.
 func TestDockerEngine(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestDockerEngine when -update flag is set. Golden files should be updated via TestTar.")
+	}
+
 	tests := []struct {
 		name          string
 		invalidImage  bool
@@ -300,7 +299,6 @@ func TestDockerEngine(t *testing.T) {
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				// Image config fields were removed
 				override: overrideFuncs(overrideUID, overrideDockerRemovedFields, overrideDockerEngineRepoTags),
-				update:   false, // Golden files should be updated via TestTar, not TestDockerEngine
 			})
 		})
 	}
