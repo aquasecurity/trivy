@@ -99,7 +99,7 @@ func TestPkgNameFromPath(t *testing.T) {
 			expected: "package-name",
 		},
 		{
-			path:     "node_modules/package-name/sub-package",
+			path:     "node_modules/package-namespace/package-name",
 			expected: "package-name/sub-package",
 		},
 		{
