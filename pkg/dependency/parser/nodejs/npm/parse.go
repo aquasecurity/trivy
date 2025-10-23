@@ -345,7 +345,15 @@ func (p *Parser) pkgNameFromPath(pkgPath string) string {
 	// node_modules/function1
 	// node_modules/nested_func/node_modules/debug
 	if index := strings.LastIndex(pkgPath, nodeModulesDir); index != -1 {
-		return pkgPath[index+len(nodeModulesDir)+1:]
+		pkgName := pkgPath[index+len(nodeModulesDir):]
+		pkgName = strings.TrimPrefix(pkgName, "/")
+
+		if pkgName == "" {
+			p.logger.Warn("Invalid package-lock.json file. Package path doesn't have package name suffix", log.String("pkg_path", pkgPath))
+			return ""
+		}
+
+		return pkgName
 	}
 	p.logger.Warn("Package path doesn't have `node_modules` prefix", log.String("pkg_path", pkgPath))
 	return pkgPath
