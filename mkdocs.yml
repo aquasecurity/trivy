@@ -168,13 +168,15 @@ nav:
       - References:
           - Configuration:
               - CLI:
-                  - Overview: guide/references/configuration/cli/trivy.md
-                  - Clean: guide/references/configuration/cli/trivy_clean.md
-                  - Config: guide/references/configuration/cli/trivy_config.md
-                  - Convert: guide/references/configuration/cli/trivy_convert.md
-                  - Filesystem: guide/references/configuration/cli/trivy_filesystem.md
-                  - Image: guide/references/configuration/cli/trivy_image.md
-                  - Kubernetes: guide/references/configuration/cli/trivy_kubernetes.md
+                  - Overview: docs/references/configuration/cli/trivy.md
+                  - Clean: docs/references/configuration/cli/trivy_clean.md
+                  - Config: docs/references/configuration/cli/trivy_config.md
+                  - Convert: docs/references/configuration/cli/trivy_convert.md
+                  - Filesystem: docs/references/configuration/cli/trivy_filesystem.md
+                  - Image: docs/references/configuration/cli/trivy_image.md
+                  - Kubernetes: docs/references/configuration/cli/trivy_kubernetes.md
+                  - Login: guide/references/configuration/cli/trivy_login.md
+                  - Logout: guide/references/configuration/cli/trivy_logout.md
                   - Module:
                       - Module: guide/references/configuration/cli/trivy_module.md
                       - Module Install: guide/references/configuration/cli/trivy_module_install.md
