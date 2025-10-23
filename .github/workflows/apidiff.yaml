@@ -72,8 +72,10 @@ jobs:
       # Use base.ref instead of base.sha, since base.sha is outdated (not updated after every commit).
       # cf. https://github.com/orgs/community/discussions/59677
       - name: Fetch base commit
+        id: fetch_base
         run: |
           BASE_REF="${{ github.event.pull_request.base.ref || github.event.merge_group.base_ref }}"
+          echo "base_ref=$BASE_REF" >> $GITHUB_OUTPUT
           if [ -n "$BASE_REF" ]; then
             git fetch --depth=1 origin "$BASE_REF"
           fi
@@ -86,6 +88,7 @@ jobs:
         continue-on-error: true
         uses: joelanford/go-apidiff@60c4206be8f84348ebda2a3e0c3ac9cb54b8f685 # v0.8.3
         with:
+          base-ref: ${{ steps.fetch_base.outputs.base_ref }}
           version: v0.8.3
 
       - name: Add apidiff label
