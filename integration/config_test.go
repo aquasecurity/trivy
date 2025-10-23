@@ -176,11 +176,7 @@ severity:
 				osArgs = append(osArgs, "--"+key, value)
 			}
 
-			// Set up the output file
-			outputFile := filepath.Join(t.TempDir(), "output.json")
-			osArgs = append(osArgs, "--output", outputFile)
-
-			runTest(t, osArgs, tt.golden, outputFile, types.FormatJSON, runOptions{
+			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				update:   false, // Golden files should be updated via TestRepository, not TestConfiguration
@@ -188,10 +184,6 @@ severity:
 		})
 
 		t.Run(tt.name+" with environmental variables", func(t *testing.T) {
-			// Set up the output file
-			outputFile := filepath.Join(t.TempDir(), "output.json")
-
-			t.Setenv("TRIVY_OUTPUT", outputFile)
 			t.Setenv("TRIVY_FORMAT", "json")
 			t.Setenv("TRIVY_LIST_ALL_PKGS", "false")
 			t.Setenv("TRIVY_CACHE_DIR", cacheDir)
@@ -206,7 +198,7 @@ severity:
 				tt.args.input,
 			}
 
-			runTest(t, osArgs, tt.golden, outputFile, types.FormatJSON, runOptions{
+			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				update:   false, // Golden files should be updated via TestRepository, not TestConfiguration
@@ -214,19 +206,15 @@ severity:
 		})
 
 		t.Run(tt.name+" with config file", func(t *testing.T) {
-			// Set up the output file
-			outputFile := filepath.Join(t.TempDir(), "output.json")
-
 			configFile := tt.args.configFile
 			configFile += fmt.Sprintf(`
 format: json
 list-all-pkgs: false
-output: %s
 cache:
   dir: %s
 db:
   skip-update: true
-`, outputFile, cacheDir)
+`, cacheDir)
 
 			configPath := filepath.Join(t.TempDir(), "trivy.yaml")
 			err := os.WriteFile(configPath, []byte(configFile), 0o444)
@@ -239,7 +227,7 @@ db:
 				tt.args.input,
 			}
 
-			runTest(t, osArgs, tt.golden, outputFile, types.FormatJSON, runOptions{
+			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				update:   false, // Golden files should be updated via TestRepository, not TestConfiguration
