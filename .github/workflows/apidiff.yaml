@@ -80,11 +80,11 @@ jobs:
             echo "::error::BASE_REF is empty (no base ref in event payload)"; exit 1
           fi
       
-          git fetch --depth=1 origin "BASE_REF"
+          git fetch --depth=1 origin "$BASE_REF"
       
-          BASE_SHA="$(git rev-parse "origin/BASE_REF")"
+          BASE_SHA="$(git rev-parse "origin/$BASE_REF")"
           if [ -z "${BASE_SHA:-}" ]; then
-            echo "::error::BASE_SHA is empty (failed to resolve origin/BASE_REF)"; exit 1
+            echo "::error::BASE_SHA is empty (failed to resolve origin/$BASE_REF)"; exit 1
           fi
       
           echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
