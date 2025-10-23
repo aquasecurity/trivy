@@ -23,10 +23,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
-	_ "modernc.org/sqlite"
-
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
+	_ "modernc.org/sqlite"
 )
 
 var update = flag.Bool("update", false, "update golden files")
