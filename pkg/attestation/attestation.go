@@ -29,7 +29,7 @@ func (s *Statement) UnmarshalJSON(b []byte) error {
 	}
 
 	if envelope.PayloadType != in_toto.PayloadType {
-		return xerrors.Errorf("invalid attestation payload type: %s", envelope.PayloadType)
+		return xerrors.Errorf("invalid attestation payload  type: %s", envelope.PayloadType)
 	}
 
 	decoded, err := base64.StdEncoding.DecodeString(envelope.Payload)
