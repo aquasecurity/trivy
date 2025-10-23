@@ -37,7 +37,12 @@ type repoTestArgs struct {
 	tfExcludeDownloadedModules bool
 }
 
-// TestRepository tests `trivy repo` with the local code repositories
+// TestRepository tests `trivy repo` with the local code repositories.
+//
+// NOTE: This test CAN update golden files with the -update flag.
+// This is the canonical source for repository/filesystem scanning golden files.
+// Golden files generated here may be shared with other tests like TestConfiguration
+// and TestClientServerWithRedis (when scanning repositories).
 func TestRepository(t *testing.T) {
 	t.Setenv("NUGET_PACKAGES", t.TempDir())
 	tests := []struct {
@@ -563,7 +568,7 @@ func TestRepository(t *testing.T) {
 			runTest(t, osArgs, tt.golden, "", format, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: tt.override,
-				update:   false, // always false to avoid golden file updates with minor changes
+				update:   *update,
 			})
 		})
 	}
