@@ -40,13 +40,13 @@ func adaptNotificationsSources(resource azure.Resource) []securitycenter.Notific
 	var sources []securitycenter.NotificationSource
 
 	notificationsSourcesArray := resource.Properties.GetMapValue("notificationsSources")
-	if notificationsSourcesArray.IsArray() {
-		for _, sourceItem := range notificationsSourcesArray.AsArray() {
-			if sourceItem.IsMap() {
+	if notificationsSourcesArray.Kind == azure.KindArray {
+		for _, sourceItem := range notificationsSourcesArray.AsList() {
+			if sourceItem.Kind == azure.KindObject {
 				sourceMap := sourceItem.AsMap()
 				sources = append(sources, securitycenter.NotificationSource{
-					SourceType:      sourceMap.GetMapValue("sourceType").AsStringValue("", resource.Metadata),
-					MinimalSeverity: sourceMap.GetMapValue("minimalSeverity").AsStringValue("", resource.Metadata),
+					SourceType:      sourceMap["sourceType"].AsStringValue("", resource.Metadata),
+					MinimalSeverity: sourceMap["minimalSeverity"].AsStringValue("", resource.Metadata),
 				})
 			}
 		}
