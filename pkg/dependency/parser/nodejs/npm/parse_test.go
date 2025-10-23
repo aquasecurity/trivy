@@ -124,7 +124,7 @@ func TestPkgNameFromPath(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.path, func(t *testing.T) {
 			path := parser.pkgNameFromPath(test.path)
-			assert.Equal(t, path, test.expected)
+			assert.Equal(t, test.expected, path)
 		})
 	}
 }
