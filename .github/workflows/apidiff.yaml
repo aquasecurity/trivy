@@ -81,12 +81,11 @@ jobs:
           fi
       
           git fetch --depth=1 origin "$BASE_REF"
-      
-          BASE_SHA="$(git rev-parse "origin/$BASE_REF")"
+          
+          BASE_SHA="$(git rev-parse "origin/$BASE_REF")" 
           if [ -z "${BASE_SHA:-}" ]; then
             echo "::error::BASE_SHA is empty (failed to resolve origin/$BASE_REF)"; exit 1
           fi
-      
           echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
 
       # NOTE: go-apidiff is not managed in go.mod because installing it via `go get -tool`
