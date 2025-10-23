@@ -319,11 +319,6 @@ func TestClientServer(t *testing.T) {
 				Target:           "https://github.com/knqyf263/trivy-ci-test",
 			},
 			golden: goldenTestRepo,
-			override: func(_ *testing.T, want, _ *types.Report) {
-				want.ArtifactName = "https://github.com/knqyf263/trivy-ci-test"
-				// Repository scans use commit hash for cache key (not random UUID), so ReportID becomes UUID #1
-				want.ReportID = "3ff14136-e09f-4df9-80ea-000000000001"
-			},
 		},
 	}
 

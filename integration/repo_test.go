@@ -497,6 +497,14 @@ func TestRepository(t *testing.T) {
 			},
 			golden: goldenJuliaSPDX,
 		},
+		{
+			name: "multiple lockfiles",
+			args: repoTestArgs{
+				scanner: types.VulnerabilityScanner,
+				input:   "https://github.com/knqyf263/trivy-ci-test",
+			},
+			golden: goldenTestRepo,
+		},
 	}
 
 	// Set up testing DB
@@ -546,19 +554,6 @@ func TestRepositoryWithOverride(t *testing.T) {
 		golden   string
 		override func(t *testing.T, want, got *types.Report)
 	}{
-		{
-			name: "multiple lockfiles",
-			args: repoTestArgs{
-				scanner: types.VulnerabilityScanner,
-				input:   "testdata/fixtures/repo/trivy-ci-test",
-			},
-			golden: goldenTestRepo,
-			override: func(_ *testing.T, want, _ *types.Report) {
-				// Clear all metadata as this is a local directory scan without git info
-				want.ArtifactID = ""
-				want.Metadata = types.Metadata{}
-			},
-		},
 		{
 			name: "gomod with fs subcommand",
 			args: repoTestArgs{
