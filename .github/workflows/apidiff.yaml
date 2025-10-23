@@ -74,11 +74,20 @@ jobs:
       - name: Fetch base commit
         id: fetch_base
         run: |
+          set -euo pipefail
           BASE_REF="${{ github.event.pull_request.base.ref || github.event.merge_group.base_ref }}"
-          echo "base_ref=$BASE_REF" >> $GITHUB_OUTPUT
-          if [ -n "$BASE_REF" ]; then
-            git fetch --depth=1 origin "$BASE_REF"
+          if [ -z "${BASE_REF:-}" ]; then
+            echo "::error::BASE_REF is empty (no base ref in event payload)"; exit 1
           fi
+      
+          git fetch --depth=1 origin "BASE_REF"
+      
+          BASE_SHA="$(git rev-parse "origin/BASE_REF")"
+          if [ -z "${BASE_SHA:-}" ]; then
+            echo "::error::BASE_SHA is empty (failed to resolve origin/BASE_REF)"; exit 1
+          fi
+      
+          echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
 
       # NOTE: go-apidiff is not managed in go.mod because installing it via `go get -tool`
       # would cause `mage tool:install` to attempt building it on Windows, which currently
@@ -88,7 +97,7 @@ jobs:
         continue-on-error: true
         uses: joelanford/go-apidiff@60c4206be8f84348ebda2a3e0c3ac9cb54b8f685 # v0.8.3
         with:
-          base-ref: ${{ steps.fetch_base.outputs.base_ref }}
+          base-ref: ${{ steps.fetch_base.outputs.base_sha }}
           version: v0.8.3
 
       - name: Add apidiff label
