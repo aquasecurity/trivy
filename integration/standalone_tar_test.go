@@ -14,6 +14,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// TestTar tests `trivy image --input` with tar archives of container images.
+//
+// NOTE: This test CAN update golden files with the -update flag.
+// This is the canonical source for container image scanning golden files.
+// Golden files generated here may be shared with other tests like TestClientServer,
+// TestDockerEngine, TestRegistry, and TestClientServerWithRedis (when scanning images).
 func TestTar(t *testing.T) {
 	type args struct {
 		IgnoreUnfixed     bool
