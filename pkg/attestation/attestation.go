@@ -22,6 +22,7 @@ type Statement in_toto.Statement
 
 func (s *Statement) UnmarshalJSON(b []byte) error {
 	var envelope dsse.Envelope
+
 	err := json.NewDecoder(bytes.NewReader(b)).Decode(&envelope)
 	if err != nil {
 		return xerrors.Errorf("failed to decode as a dsse envelope: %w", err)
