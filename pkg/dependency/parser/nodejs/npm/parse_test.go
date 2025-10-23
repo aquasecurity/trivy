@@ -99,12 +99,16 @@ func TestPkgNameFromPath(t *testing.T) {
 			expected: "package-name",
 		},
 		{
-			path:     "node_modules/package-namespace/package-name",
-			expected: "package-name/sub-package",
+			path:     "node_modules/@package-namespace/package-name",
+			expected: "@package-namespace/package-name",
 		},
 		{
 			path:     "node_modules/package-name/node_modules/sub-sub-package",
 			expected: "sub-sub-package",
+		},
+		{
+			path:     "no/node/modules/dir",
+			expected: "no/node/modules/dir",
 		},
 		{
 			path:     "node_modules",
@@ -116,7 +120,7 @@ func TestPkgNameFromPath(t *testing.T) {
 		},
 	}
 
-	parser := &Parser{}
+	parser := NewParser()
 	for _, test := range tests {
 		t.Run(test.path, func(t *testing.T) {
 			path := parser.pkgNameFromPath(test.path)
