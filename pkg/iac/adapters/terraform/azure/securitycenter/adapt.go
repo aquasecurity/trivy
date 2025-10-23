@@ -38,6 +38,7 @@ func adaptContact(resource *terraform.Block) securitycenter.Contact {
 	enableAlertNotifAttr := resource.GetAttribute("alert_notifications")
 	enableAlertNotifVal := enableAlertNotifAttr.AsBoolValueOrDefault(false, resource)
 
+	// TODO: add support for the new format https://github.com/hashicorp/terraform-provider-azurerm/issues/30797
 	alertsToAdminsAttr := resource.GetAttribute("alerts_to_admins")
 	alertsToAdminsVal := alertsToAdminsAttr.AsBoolValueOrDefault(false, resource)
 
