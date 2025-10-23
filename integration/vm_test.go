@@ -13,10 +13,15 @@ import (
 
 // TestVM tests scanning VM images (VMDK, disk images).
 //
-// NOTE: This test CAN update golden files with the -update flag because the golden files
-// used here are not shared with other tests. These VM-specific golden files are unique
-// to this test and should be updated here.
+// TODO: Golden files cannot be updated with the -update flag currently because
+// ArtifactName contains random file paths from t.TempDir() and Target contains full paths.
+// This test applies overrides to normalize these values for comparison, but those overrides
+// would not be applied to golden files in update mode.
+// For now, golden files must be updated manually.
 func TestVM(t *testing.T) {
+	if *update {
+		t.Fatal("TestVM does not support -update flag. Golden files must be updated manually. See TODO comment above.")
+	}
 	type args struct {
 		input        string
 		format       string
@@ -102,7 +107,7 @@ func TestVM(t *testing.T) {
 					}
 				}),
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-				update:   *update,
+				update:   false, // TODO: Cannot update golden files due to override handling issue
 			})
 		})
 	}
