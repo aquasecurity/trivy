@@ -24,13 +24,35 @@ func adaptContacts(deployment azure.Deployment) (contacts []securitycenter.Conta
 func adaptContact(resource azure.Resource) securitycenter.Contact {
 	alertsToAdminsState := resource.Properties.GetMapValue("notificationsByRole").GetMapValue("state").AsStringValue("", resource.Metadata)
 
+	notificationsSources := adaptNotificationsSources(resource)
+
 	return securitycenter.Contact{
-		Metadata:                 resource.Metadata,
-		EnableAlertNotifications: resource.Properties.GetMapValue("alertNotifications").AsBoolValue(false, resource.Metadata),
-		EnableAlertsToAdmins:     iacTypes.Bool(alertsToAdminsState.EqualTo("On"), resource.Metadata),
-		Email:                    resource.Properties.GetMapValue("emails").AsStringValue("", resource.Metadata),
-		Phone:                    resource.Properties.GetMapValue("phone").AsStringValue("", resource.Metadata),
+		Metadata:             resource.Metadata,
+		IsEnabled:            resource.Properties.GetMapValue("isEnabled").AsBoolValue(false, resource.Metadata),
+		EnableAlertsToAdmins: iacTypes.Bool(alertsToAdminsState.EqualTo("On"), resource.Metadata),
+		Email:                resource.Properties.GetMapValue("emails").AsStringValue("", resource.Metadata),
+		Phone:                resource.Properties.GetMapValue("phone").AsStringValue("", resource.Metadata),
+		NotificationsSources: notificationsSources,
 	}
+}
+
+func adaptNotificationsSources(resource azure.Resource) []securitycenter.NotificationSource {
+	var sources []securitycenter.NotificationSource
+
+	notificationsSourcesArray := resource.Properties.GetMapValue("notificationsSources")
+	if notificationsSourcesArray.IsArray() {
+		for _, sourceItem := range notificationsSourcesArray.AsArray() {
+			if sourceItem.IsMap() {
+				sourceMap := sourceItem.AsMap()
+				sources = append(sources, securitycenter.NotificationSource{
+					SourceType:      sourceMap.GetMapValue("sourceType").AsStringValue("", resource.Metadata),
+					MinimalSeverity: sourceMap.GetMapValue("minimalSeverity").AsStringValue("", resource.Metadata),
+				})
+			}
+		}
+	}
+
+	return sources
 }
 
 func adaptSubscriptions(deployment azure.Deployment) (subscriptions []securitycenter.SubscriptionPricing) {

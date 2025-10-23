@@ -29,11 +29,12 @@ func Test_adaptContact(t *testing.T) {
 			}
 `,
 			expected: securitycenter.Contact{
-				Metadata:                 iacTypes.NewTestMetadata(),
-				EnableAlertNotifications: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				EnableAlertsToAdmins:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				Email:                    iacTypes.String("contact@example.com", iacTypes.NewTestMetadata()),
-				Phone:                    iacTypes.String("+1-555-555-5555", iacTypes.NewTestMetadata()),
+				Metadata:             iacTypes.NewTestMetadata(),
+				IsEnabled:            iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				EnableAlertsToAdmins: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				Email:                iacTypes.String("contact@example.com", iacTypes.NewTestMetadata()),
+				Phone:                iacTypes.String("+1-555-555-5555", iacTypes.NewTestMetadata()),
+				NotificationsSources: []securitycenter.NotificationSource{},
 			},
 		},
 		{
@@ -43,11 +44,12 @@ func Test_adaptContact(t *testing.T) {
 			}
 `,
 			expected: securitycenter.Contact{
-				Metadata:                 iacTypes.NewTestMetadata(),
-				EnableAlertNotifications: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				EnableAlertsToAdmins:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				Email:                    iacTypes.String("", iacTypes.NewTestMetadata()),
-				Phone:                    iacTypes.String("", iacTypes.NewTestMetadata()),
+				Metadata:             iacTypes.NewTestMetadata(),
+				IsEnabled:            iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				EnableAlertsToAdmins: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				Email:                iacTypes.String("", iacTypes.NewTestMetadata()),
+				Phone:                iacTypes.String("", iacTypes.NewTestMetadata()),
+				NotificationsSources: []securitycenter.NotificationSource{},
 			},
 		},
 	}
@@ -138,8 +140,8 @@ func TestLines(t *testing.T) {
 	assert.Equal(t, 4, contact.Phone.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 4, contact.Phone.GetMetadata().Range().GetEndLine())
 
-	assert.Equal(t, 5, contact.EnableAlertNotifications.GetMetadata().Range().GetStartLine())
-	assert.Equal(t, 5, contact.EnableAlertNotifications.GetMetadata().Range().GetEndLine())
+	assert.Equal(t, 5, contact.IsEnabled.GetMetadata().Range().GetStartLine())
+	assert.Equal(t, 5, contact.IsEnabled.GetMetadata().Range().GetEndLine())
 
 	assert.Equal(t, 6, contact.EnableAlertsToAdmins.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 6, contact.EnableAlertsToAdmins.GetMetadata().Range().GetEndLine())

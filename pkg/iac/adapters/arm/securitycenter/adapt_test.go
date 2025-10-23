@@ -29,7 +29,13 @@ func TestAdapt(t *testing.T) {
   ]
 }`,
 			expected: securitycenter.SecurityCenter{
-				Contacts: []securitycenter.Contact{{}},
+				Contacts: []securitycenter.Contact{{
+					IsEnabled:            types.BoolTest(false),
+					EnableAlertsToAdmins: types.BoolTest(false),
+					Email:                types.StringTest(""),
+					Phone:                types.StringTest(""),
+					NotificationsSources: []securitycenter.NotificationSource{},
+				}},
 				Subscriptions: []securitycenter.SubscriptionPricing{{
 					Tier: types.StringTest("Free"),
 				}},
@@ -44,10 +50,16 @@ func TestAdapt(t *testing.T) {
       "properties": {
         "emails": "security@example.com",
         "phone": "buz",
-        "alertNotifications": true,
+        "isEnabled": true,
         "notificationsByRole": {
           "state": "On"
-        }
+        },
+        "notificationsSources": [
+          {
+            "sourceType": "Alert",
+            "minimalSeverity": "High"
+          }
+        ]
       }
     },
     {
@@ -60,10 +72,14 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: securitycenter.SecurityCenter{
 				Contacts: []securitycenter.Contact{{
-					Email:                    types.StringTest("security@example.com"),
-					Phone:                    types.StringTest("buz"),
-					EnableAlertNotifications: types.BoolTest(true),
-					EnableAlertsToAdmins:     types.BoolTest(true),
+					Email:                types.StringTest("security@example.com"),
+					Phone:                types.StringTest("buz"),
+					IsEnabled:            types.BoolTest(true),
+					EnableAlertsToAdmins: types.BoolTest(true),
+					NotificationsSources: []securitycenter.NotificationSource{{
+						SourceType:      types.StringTest("Alert"),
+						MinimalSeverity: types.StringTest("High"),
+					}},
 				}},
 				Subscriptions: []securitycenter.SubscriptionPricing{{
 					Tier: types.StringTest("Standard"),

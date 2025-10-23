@@ -10,11 +10,17 @@ type SecurityCenter struct {
 }
 
 type Contact struct {
-	Metadata                 iacTypes.Metadata
-	EnableAlertNotifications iacTypes.BoolValue
-	EnableAlertsToAdmins     iacTypes.BoolValue
-	Email                    iacTypes.StringValue
-	Phone                    iacTypes.StringValue
+	Metadata             iacTypes.Metadata
+	IsEnabled            iacTypes.BoolValue
+	EnableAlertsToAdmins iacTypes.BoolValue
+	Email                iacTypes.StringValue
+	Phone                iacTypes.StringValue
+	NotificationsSources []NotificationSource
+}
+
+type NotificationSource struct {
+	SourceType      iacTypes.StringValue
+	MinimalSeverity iacTypes.StringValue
 }
 
 const (
