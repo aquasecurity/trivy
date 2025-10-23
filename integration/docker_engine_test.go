@@ -23,9 +23,6 @@ import (
 // All golden files used in TestDockerEngine MUST also be used in TestTar
 // to ensure they can be properly updated when needed.
 func TestDockerEngine(t *testing.T) {
-	if *update {
-		t.Skipf("This test doesn't update golden files")
-	}
 	tests := []struct {
 		name          string
 		invalidImage  bool
