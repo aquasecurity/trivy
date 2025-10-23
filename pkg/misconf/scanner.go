@@ -478,6 +478,7 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 
 		query := fmt.Sprintf("data.%s.%s", result.RegoNamespace(), result.RegoRule())
 
+		// TODO: use the ID field
 		ruleID := result.Rule().AVDID
 		if result.RegoNamespace() != "" && len(result.Rule().Aliases) > 0 {
 			ruleID = result.Rule().Aliases[0]

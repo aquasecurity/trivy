@@ -119,7 +119,7 @@ message DetectedMisconfiguration {
   string status = 11;
   Layer layer = 12;
   CauseMetadata cause_metadata = 13;
-  string avd_id = 14;
+  string avd_id = 14 [deprecated = true];
   string query = 15;
 }
 
