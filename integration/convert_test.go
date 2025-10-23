@@ -3,7 +3,6 @@
 package integration
 
 import (
-	"path/filepath"
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -60,6 +59,7 @@ func TestConvert(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := []string{
 				"convert",
+				tt.args.input,
 				"--cache-dir",
 				t.TempDir(),
 				"-q",
@@ -75,17 +75,10 @@ func TestConvert(t *testing.T) {
 				osArgs = append(osArgs, "--list-all-pkgs=false")
 			}
 
-			// Set up the output file
-			outputFile := filepath.Join(t.TempDir(), "output.json")
-			if *update {
-				outputFile = tt.golden
-			}
-
-			osArgs = append(osArgs, "--output", outputFile, tt.args.input)
-
 			// Run "trivy convert"
-			runTest(t, osArgs, tt.golden, outputFile, types.Format(tt.args.format), runOptions{
+			runTest(t, osArgs, tt.golden, "", types.Format(tt.args.format), runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+				update:   *update,
 			})
 		})
 	}
