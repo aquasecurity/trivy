@@ -3,6 +3,7 @@
 package integration
 
 import (
+	"cmp"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -41,15 +42,14 @@ type repoTestArgs struct {
 //
 // NOTE: This test CAN update golden files with the -update flag.
 // This is the canonical source for repository/filesystem scanning golden files.
-// Golden files generated here may be shared with other tests like TestConfiguration
-// and TestClientServerWithRedis (when scanning repositories).
+// Golden files generated here may be shared with other tests like TestRepositoryWithOverride,
+// TestConfiguration, and TestClientServerWithRedis (when scanning repositories).
 func TestRepository(t *testing.T) {
 	t.Setenv("NUGET_PACKAGES", t.TempDir())
 	tests := []struct {
-		name     string
-		args     repoTestArgs
-		golden   string
-		override func(t *testing.T, want, got *types.Report)
+		name   string
+		args   repoTestArgs
+		golden string
 	}{
 		{
 			name: "gomod",
@@ -313,19 +313,6 @@ func TestRepository(t *testing.T) {
 			golden: goldenCargoLock,
 		},
 		{
-			name: "multiple lockfiles",
-			args: repoTestArgs{
-				scanner: types.VulnerabilityScanner,
-				input:   "testdata/fixtures/repo/trivy-ci-test",
-			},
-			golden: goldenTestRepo,
-			override: func(_ *testing.T, want, _ *types.Report) {
-				// Clear all metadata as this is a local directory scan without git info
-				want.ArtifactID = ""
-				want.Metadata = types.Metadata{}
-			},
-		},
-		{
 			name: "installed.json",
 			args: repoTestArgs{
 				command:     "rootfs",
@@ -502,6 +489,74 @@ func TestRepository(t *testing.T) {
 			golden: goldenCondaSPDX,
 		},
 		{
+			name: "julia generating SPDX SBOM",
+			args: repoTestArgs{
+				command: "rootfs",
+				format:  "spdx-json",
+				input:   "testdata/fixtures/repo/julia",
+			},
+			golden: goldenJuliaSPDX,
+		},
+	}
+
+	// Set up testing DB
+	cacheDir := initDB(t)
+
+	// Set up VEX
+	initVEXRepository(t, cacheDir, cacheDir)
+
+	// Set a temp dir so that the VEX config will be loaded and modules will not be loaded
+	t.Setenv("XDG_DATA_HOME", cacheDir)
+
+	// Disable Go license detection
+	t.Setenv("GOPATH", cacheDir)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			command := cmp.Or(tt.args.command, "repo")
+			format := cmp.Or(tt.args.format, types.FormatJSON)
+
+			osArgs := buildArgs(t, cacheDir, command, format, tt.args)
+
+			runTest(t, osArgs, tt.golden, format, runOptions{
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+				override: nil, // Do not use overrides - golden files are generated from this test as the canonical source
+				update:   *update,
+			})
+		})
+	}
+}
+
+// TestRepositoryWithOverride tests `trivy repo` with override functions for specific edge cases.
+//
+// IMPORTANT: Golden files used in this test cannot be updated with the -update flag
+// because the golden files are shared with TestRepository.
+// If golden files need to be updated, they should be generated from TestRepository.
+//
+// All golden files used in TestRepositoryWithOverride MUST also be used in TestRepository
+// to ensure they can be properly updated when needed.
+func TestRepositoryWithOverride(t *testing.T) {
+	t.Setenv("NUGET_PACKAGES", t.TempDir())
+	tests := []struct {
+		name     string
+		args     repoTestArgs
+		golden   string
+		override func(t *testing.T, want, got *types.Report)
+	}{
+		{
+			name: "multiple lockfiles",
+			args: repoTestArgs{
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/repo/trivy-ci-test",
+			},
+			golden: goldenTestRepo,
+			override: func(_ *testing.T, want, _ *types.Report) {
+				// Clear all metadata as this is a local directory scan without git info
+				want.ArtifactID = ""
+				want.Metadata = types.Metadata{}
+			},
+		},
+		{
 			name: "gomod with fs subcommand",
 			args: repoTestArgs{
 				command:   "fs",
@@ -528,28 +583,10 @@ func TestRepository(t *testing.T) {
 				want.ArtifactType = ftypes.TypeFilesystem
 			},
 		},
-		{
-			name: "julia generating SPDX SBOM",
-			args: repoTestArgs{
-				command: "rootfs",
-				format:  "spdx-json",
-				input:   "testdata/fixtures/repo/julia",
-			},
-			golden: goldenJuliaSPDX,
-		},
 	}
 
 	// Set up testing DB
 	cacheDir := initDB(t)
-
-	// Set up VEX
-	initVEXRepository(t, cacheDir, cacheDir)
-
-	// Set a temp dir so that the VEX config will be loaded and modules will not be loaded
-	t.Setenv("XDG_DATA_HOME", cacheDir)
-
-	// Disable Go license detection
-	t.Setenv("GOPATH", cacheDir)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -567,8 +604,8 @@ func TestRepository(t *testing.T) {
 
 			runTest(t, osArgs, tt.golden, format, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-				override: tt.override,
-				update:   *update,
+				override: overrideFuncs(overrideUID, tt.override),
+				update:   false, // Golden files should be updated via TestRepository, not TestRepositoryWithOverride
 			})
 		})
 	}

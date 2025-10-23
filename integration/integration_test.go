@@ -364,6 +364,12 @@ type runOptions struct {
 // The output file is created in a temporary directory, unless update is true, in which case
 // the golden file is updated directly.
 func runTest(t *testing.T, osArgs []string, wantFile string, format types.Format, opts runOptions) {
+	// Ensure that tests updating golden files don't use override functions
+	// as overrides would modify the golden file output
+	if opts.update && opts.override != nil {
+		require.Fail(t, "invalid test configuration", "cannot use override functions when update=true")
+	}
+
 	if opts.fakeUUID != "" {
 		uuid.SetFakeUUID(t, opts.fakeUUID)
 	}

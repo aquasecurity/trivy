@@ -512,6 +512,14 @@ func TestTarWithOverride(t *testing.T) {
 	}
 }
 
+// TestTarWithEnv tests container image scanning with environment variables.
+//
+// IMPORTANT: Golden files used in this test cannot be updated with the -update flag
+// because the golden files are shared with TestTar.
+// If golden files need to be updated, they should be generated from TestTar.
+//
+// All golden files used in TestTarWithEnv MUST also be used in TestTar
+// to ensure they can be properly updated when needed.
 func TestTarWithEnv(t *testing.T) {
 	type args struct {
 		IgnoreUnfixed bool
@@ -591,11 +599,20 @@ func TestTarWithEnv(t *testing.T) {
 			// Run Trivy
 			runTest(t, []string{"image"}, tt.golden, types.FormatJSON, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+				update:   false, // Golden files should be updated via TestTar, not TestTarWithEnv
 			})
 		})
 	}
 }
 
+// TestTarWithConfigFile tests container image scanning with config files.
+//
+// IMPORTANT: Golden files used in this test cannot be updated with the -update flag
+// because the golden files are shared with TestTar.
+// If golden files need to be updated, they should be generated from TestTar.
+//
+// All golden files used in TestTarWithConfigFile MUST also be used in TestTar
+// to ensure they can be properly updated when needed.
 func TestTarWithConfigFile(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -661,6 +678,7 @@ cache:
 			// Run Trivy
 			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+				update:   false, // Golden files should be updated via TestTar, not TestTarWithConfigFile
 			})
 		})
 	}

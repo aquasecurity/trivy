@@ -475,8 +475,8 @@ func TestClientServerWithFormat(t *testing.T) {
 			osArgs := setupClient(t, tt.args, addr, cacheDir)
 
 			runTest(t, osArgs, tt.golden, tt.args.Format, runOptions{
-				override: overrideUID,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+				override: nil, // Do not use overrides - golden files are generated from this test as the canonical source
 				update:   *update,
 			})
 		})
@@ -510,6 +510,7 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 			osArgs := setupClient(t, tt.args, addr, cacheDir)
 			runTest(t, osArgs, tt.golden, types.FormatCycloneDX, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+				override: nil, // Do not use overrides - golden files are generated from this test as the canonical source
 				update:   *update,
 			})
 		})
