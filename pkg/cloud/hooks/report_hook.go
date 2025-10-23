@@ -10,7 +10,6 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/cloud"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -21,32 +20,34 @@ const (
 	presignedUploadUrl = "/trivy-reports/upload-url"
 )
 
-type CloudPlatformResultsHook struct {
+type ReportHook struct {
 	name        string
-	cloudConfig *cloud.Config
+	apiUrl      string
+	accessToken string
 	client      *http.Client
 	logger      *log.Logger
 }
 
-func NewResultsHook(cloudCfg *cloud.Config) *CloudPlatformResultsHook {
-	return &CloudPlatformResultsHook{
+func NewReportHook(apiUrl, accessToken string) *ReportHook {
+	return &ReportHook{
 		name:        "Trivy Cloud Results Hook",
-		cloudConfig: cloudCfg,
+		apiUrl:      apiUrl,
+		accessToken: accessToken,
 		client:      xhttp.Client(),
 		logger:      log.WithPrefix(log.PrefixCloud),
 	}
 }
 
-func (h *CloudPlatformResultsHook) Name() string {
+func (h *ReportHook) Name() string {
 	return h.name
 }
 
 // PreReport is not going go to be called so we return nil
-func (h *CloudPlatformResultsHook) PreReport(_ context.Context, _ *types.Report, _ flag.Options) error {
+func (h *ReportHook) PreReport(_ context.Context, _ *types.Report, _ flag.Options) error {
 	return nil
 }
 
-func (h *CloudPlatformResultsHook) PostReport(ctx context.Context, report *types.Report, _ flag.Options) error {
+func (h *ReportHook) PostReport(ctx context.Context, report *types.Report, _ flag.Options) error {
 	h.logger.Debug("PostReport called with report")
 	jsonReport, err := json.MarshalIndent(report, "", "  ")
 	if err != nil {
@@ -56,7 +57,7 @@ func (h *CloudPlatformResultsHook) PostReport(ctx context.Context, report *types
 	return h.uploadResults(ctx, jsonReport)
 }
 
-func (h *CloudPlatformResultsHook) uploadResults(ctx context.Context, jsonReport []byte) error {
+func (h *ReportHook) uploadResults(ctx context.Context, jsonReport []byte) error {
 	uploadUrl, err := h.getPresignedUploadUrl(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to get presigned upload URL: %w", err)
@@ -83,8 +84,8 @@ func (h *CloudPlatformResultsHook) uploadResults(ctx context.Context, jsonReport
 	return nil
 }
 
-func (h *CloudPlatformResultsHook) getPresignedUploadUrl(ctx context.Context) (string, error) {
-	uploadUrl, err := url.JoinPath(h.cloudConfig.Api.URL, presignedUploadUrl)
+func (h *ReportHook) getPresignedUploadUrl(ctx context.Context) (string, error) {
+	uploadUrl, err := url.JoinPath(h.apiUrl, presignedUploadUrl)
 	if err != nil {
 		return "", fmt.Errorf("failed to join API URL and presigned upload URL: %w", err)
 	}
@@ -95,7 +96,7 @@ func (h *CloudPlatformResultsHook) getPresignedUploadUrl(ctx context.Context) (s
 		return "", fmt.Errorf("failed to create request: %w", err)
 	}
 
-	req.Header.Set("Authorization", "Bearer "+h.cloudConfig.Token)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", h.accessToken))
 	resp, err := h.client.Do(req)
 	if err != nil {
 		return "", fmt.Errorf("failed to get upload URL: %w", err)

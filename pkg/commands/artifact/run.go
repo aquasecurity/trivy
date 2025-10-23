@@ -14,6 +14,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/commands/cloud"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/extension"
@@ -375,6 +376,11 @@ func (r *runner) initJavaDB(opts flag.Options) error {
 func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
 	defer cancel()
+
+	if err := cloud.UpdateOptsForCloudIntegration(ctx, &opts); err != nil {
+		// log failure but continue with the scan
+		log.Error("failed to check Trivy Cloud integration", "error", err)
+	}
 
 	if opts.GenerateDefaultConfig {
 		log.Info("Writing the default config to trivy-default.yaml...")
