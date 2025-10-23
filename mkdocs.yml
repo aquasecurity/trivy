@@ -170,9 +170,13 @@ nav:
                   - Overview: docs/references/configuration/cli/trivy.md
                   - Clean: docs/references/configuration/cli/trivy_clean.md
                   - Cloud:
-                      - Cloud: docs/references/configuration/cli/trivy_cloud.md
-                      - Cloud Edit Config: docs/references/configuration/cli/trivy_cloud_edit-config.md
-                      - Cloud Show Config: docs/references/configuration/cli/trivy_cloud_show-config.md
+                      - Cloud: docs/references/configuration/cli/trivy_cloud.md                      
+                      - Cloud Config: docs/references/configuration/cli/trivy_cloud_config.md 
+                      - Cloud Config Edit: docs/references/configuration/cli/trivy_cloud_config_edit.md 
+                      - Cloud Config List: docs/references/configuration/cli/trivy_cloud_config_list.md
+                      - Cloud Config Set: docs/references/configuration/cli/trivy_cloud_config_set.md
+                      - Cloud Config Unset: docs/references/configuration/cli/trivy_cloud_config_unset.md
+                      - Cloud Config Get: docs/references/configuration/cli/trivy_cloud_config_get.md
                   - Config: docs/references/configuration/cli/trivy_config.md
                   - Convert: docs/references/configuration/cli/trivy_convert.md
                   - Filesystem: docs/references/configuration/cli/trivy_filesystem.md

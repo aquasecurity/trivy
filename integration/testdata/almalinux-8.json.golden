@@ -15,6 +15,9 @@
     "DiffIDs": [
       "sha256:124d41c237c5e823577dda97e87cebaecce62d585c725d07e709ce410681de4d"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:almalinux-8"
+    ],
     "ImageConfig": {
       "architecture": "amd64",
       "container": "a467f67a48d469e1975b7414f33f2cf87121d4cc59d2ee029ea58e6b81774769",

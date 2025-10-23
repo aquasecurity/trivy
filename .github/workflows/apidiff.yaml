@@ -20,11 +20,46 @@ jobs:
     runs-on: ubuntu-24.04
     name: API Diff Check
     steps:
-      # Checkout PR code for static analysis only
+      # Check if PR has conflicts. When conflicts exist, the merge commit becomes
+      # frozen at an old state and apidiff cannot run correctly.
+      - name: Check for merge conflicts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        # pull_request_target and mergeability are processed asynchronously.
+        # As a result, it’s possible that we start the check before GitHub has finished calculating the mergeability.
+        # To handle this, a retry mechanism has been added — it waits for 2 seconds after each attempt.
+        # If mergeable_state isn’t obtained after 5 attempts, an error is returned.
+        run: |
+          MAX=5
+          for i in $(seq 1 "$MAX"); do
+            state=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq .mergeable_state)
+            echo "mergeable_state=$state"
+          
+            if [ "$state" = "dirty" ]; then
+              echo "::error::This PR has merge conflicts. Please resolve conflicts before running apidiff."
+              exit 1
+            fi
+          
+            if [ -n "$state" ] && [ "$state" != "unknown" ] && [ "$state" != "null" ]; then
+              break
+            fi
+          
+            if [ "$i" -lt "$MAX" ] && { [ -z "$state" ] || [ "$state" = "unknown" ] || [ "$state" = "null" ]; }; then
+              echo "::error::Could not determine mergeability after $i tries."
+              exit 1
+            fi
+          
+            sleep 2
+          done
+
+      # Checkout PR merge commit to compare against base branch
+      # This ensures we compare the actual merge result with the base branch,
+      # avoiding false positives when PR is not rebased with latest main
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
 
       - name: Set up Go
         uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
@@ -32,7 +67,8 @@ jobs:
           go-version-file: go.mod
           cache: false
 
-      # Ensure the base commit exists locally when checkout uses depth=1 (default).
+      # Ensure the base commit exists locally for go-apidiff to compare against.
+      # Even though we checkout the merge commit, go-apidiff needs the base ref to exist.
       - name: Fetch base commit
         run: |
           BASE_REF="${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}"

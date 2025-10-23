@@ -15,6 +15,9 @@
     "DiffIDs": [
       "sha256:7cdd3aec849d122d63dc83a5e1e2fb89b341c67b03e25979131ca335a463bb57"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:sle-micro-rancher-5.4_ndb"
+    ],
     "ImageConfig": {
       "architecture": "amd64",
       "author": "SUSE LLC (https://www.suse.com/)",

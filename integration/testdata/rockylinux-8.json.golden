@@ -15,6 +15,9 @@
     "DiffIDs": [
       "sha256:65dbea0a4b39709e0a2cc8624fd99478e9f302c0a5661d7676d6d3bd3cb6d181"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:rockylinux-8"
+    ],
     "ImageConfig": {
       "architecture": "amd64",
       "container": "16458df10693f731fae0492f791a5e4b725245c35cf28c7fca00982219d7bdf3",

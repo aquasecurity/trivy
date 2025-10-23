@@ -1,21 +1,9 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000002",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/gomod",
   "ArtifactType": "repository",
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000002",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "go.mod",
@@ -33,7 +21,6 @@
           "InstalledVersion": "v2.7.1+incompatible",
           "FixedVersion": "v2.8.0",
           "Status": "fixed",
-          "Layer": {},
           "DataSource": {
             "ID": "ghsa",
             "Name": "GitHub Security Advisory Go",
@@ -60,7 +47,6 @@
           "InstalledVersion": "v0.35.0",
           "FixedVersion": "0.37.0",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-23628",
           "DataSource": {
@@ -107,7 +93,6 @@
           "InstalledVersion": "v0.3.6",
           "FixedVersion": "0.3.7",
           "Status": "fixed",
-          "Layer": {},
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-38561",
           "DataSource": {
             "ID": "ghsa",
@@ -140,7 +125,6 @@
           "InstalledVersion": "v2.7.1+incompatible",
           "FixedVersion": "v2.8.0",
           "Status": "fixed",
-          "Layer": {},
           "DataSource": {
             "ID": "ghsa",
             "Name": "GitHub Security Advisory Go",
@@ -174,7 +158,6 @@
           "InstalledVersion": "v2.7.1+incompatible",
           "FixedVersion": "v2.8.0",
           "Status": "fixed",
-          "Layer": {},
           "DataSource": {
             "ID": "ghsa",
             "Name": "GitHub Security Advisory Go",

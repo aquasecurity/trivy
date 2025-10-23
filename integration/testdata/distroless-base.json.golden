@@ -16,6 +16,9 @@
       "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
       "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:distroless-base"
+    ],
     "ImageConfig": {
       "architecture": "amd64",
       "author": "Bazel",

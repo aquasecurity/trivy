@@ -1476,7 +1476,7 @@ func NewLogoutCommand() *cobra.Command {
 
 func NewCloudCommand() *cobra.Command {
 	cloudCmd := &cobra.Command{
-		Use:     "cloud [flags]",
+		Use:     "cloud subcommand",
 		Short:   "Control Trivy Cloud platform integration settings",
 		GroupID: cloud.GroupCloud,
 	}
@@ -1487,26 +1487,81 @@ func NewCloudCommand() *cobra.Command {
 		Title: "Trivy Cloud Commands",
 	})
 
-	cloudCmd.AddCommand(
+	configCmd := &cobra.Command{
+		Use:     "config subcommand",
+		Short:   "Control Trivy Cloud configuration",
+		GroupID: cloud.GroupCloud,
+	}
+
+	configCmd.AddGroup(&cobra.Group{
+		ID:    cloud.GroupCloud,
+		Title: "Trivy Cloud Configuration Commands",
+	})
+
+	configCmd.AddCommand(
 		&cobra.Command{
-			Use:     "edit-config",
+			Use:     "edit",
 			Short:   "Edit Trivy Cloud configuration",
-			Long:    "Edit the Trivy Cloud platform configuration in the default editor specified in the EDITOR environment variable",
+			Long:    "Edit Trivy Cloud platform configuration in the default editor specified in the EDITOR environment variable",
 			GroupID: cloud.GroupCloud,
 			RunE: func(_ *cobra.Command, _ []string) error {
 				return cloud.EditConfig()
 			},
 		},
 		&cobra.Command{
-			Use:     "show-config",
-			Short:   "Show Trivy Cloud configuration",
-			Long:    "Show Trivy Cloud platform configuration in human readable format",
+			Use:     "list",
+			Short:   "List Trivy Cloud configuration",
+			Long:    "List Trivy Cloud platform configuration in human readable format",
 			GroupID: cloud.GroupCloud,
 			RunE: func(_ *cobra.Command, _ []string) error {
-				return cloud.ShowConfig()
+				return cloud.ListConfig()
+			},
+		},
+		&cobra.Command{
+			Use:   "set [setting] [value]",
+			Short: "Set Trivy Cloud configuration",
+			Long: `Set a Trivy Cloud platform setting
+			
+Available config settings can be viewed by using the ` + "`trivy cloud config list`" + ` command`,
+			Example: `  $ trivy cloud config set server.scanning.enabled true
+  $ trivy cloud config set server.scanning.upload-results false`,
+			Args:    cobra.ExactArgs(2),
+			GroupID: cloud.GroupCloud,
+			RunE: func(_ *cobra.Command, args []string) error {
+				return cloud.SetConfig(args[0], args[1])
+			},
+		},
+		&cobra.Command{
+			Use:   "unset [setting]",
+			Short: "Unset Trivy Cloud configuration",
+			Long: `Unset a Trivy Cloud platform configuration and return it to the default setting
+			
+Available config settings can be viewed by using the ` + "`trivy cloud config list`" + ` command`,
+			Example: `  $ trivy cloud config unset server.scanning.enabled
+  $ trivy cloud config unset server.scanning.upload-results`,
+			Args:    cobra.ExactArgs(1),
+			GroupID: cloud.GroupCloud,
+			RunE: func(_ *cobra.Command, args []string) error {
+				return cloud.UnsetConfig(args[0])
+			},
+		},
+		&cobra.Command{
+			Use:   "get [setting]",
+			Short: "Get Trivy Cloud configuration",
+			Long: `Get a Trivy Cloud platform configuration
+			
+Available config settings can be viewed by using the ` + "`trivy cloud config list`" + ` command`,
+			Example: `  $ trivy cloud config get server.scanning.enabled
+  $ trivy cloud config get server.scanning.upload-results`,
+			Args:    cobra.ExactArgs(1),
+			GroupID: cloud.GroupCloud,
+			RunE: func(_ *cobra.Command, args []string) error {
+				return cloud.GetConfig(args[0])
 			},
 		},
 	)
+	cloudCmd.AddCommand(configCmd)
+
 	return cloudCmd
 }
 

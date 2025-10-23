@@ -244,6 +244,7 @@ func TestRegistry(t *testing.T) {
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: overrideFuncs(overrideUID, func(_ *testing.T, want, _ *types.Report) {
 					want.ArtifactName = s
+					want.Metadata.RepoTags = []string{s}
 					for i := range want.Results {
 						want.Results[i].Target = fmt.Sprintf("%s (%s)", s, tt.os)
 					}

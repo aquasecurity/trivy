@@ -24,6 +24,5 @@ Control Trivy Cloud platform integration settings
 ### SEE ALSO
 
 * [trivy](trivy.md)	 - Unified security scanner
-* [trivy cloud edit-config](trivy_cloud_edit-config.md)	 - Edit Trivy Cloud configuration
-* [trivy cloud show-config](trivy_cloud_show-config.md)	 - Show Trivy Cloud configuration
+* [trivy cloud config](trivy_cloud_config.md)	 - Control Trivy Cloud configuration
 

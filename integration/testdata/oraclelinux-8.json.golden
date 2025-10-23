@@ -15,6 +15,9 @@
     "DiffIDs": [
       "sha256:91bac58a9ffae0dc2031e3f90d7bf04f66ccf019f180372152b0916d6e8a796f"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:oraclelinux-8"
+    ],
     "ImageConfig": {
       "architecture": "amd64",
       "author": "Oracle Linux Product Team \u003col-ovm-info_ww@oracle.com\u003e",
