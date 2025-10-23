@@ -48,6 +48,7 @@ func TestStatement_UnmarshalJSON(t *testing.T) {
 
 			got := attestation.Statement{Predicate: &attestation.CosignPredicate{}}
 			err = json.NewDecoder(f).Decode(&got)
+
 			require.NoError(t, err)
 			require.Equal(t, tt.want, got)
 		})
