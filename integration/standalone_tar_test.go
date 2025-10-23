@@ -442,7 +442,7 @@ func TestTar(t *testing.T) {
 			}
 
 			// Run Trivy
-			runTest(t, osArgs, tt.golden, "", tt.args.Format, runOptions{
+			runTest(t, osArgs, tt.golden, tt.args.Format, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: nil, // Do not use overrides - golden files are generated from this test as the canonical source
 				update:   *update,
@@ -503,7 +503,7 @@ func TestTarWithOverride(t *testing.T) {
 			}
 
 			// Run Trivy
-			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: overrideFuncs(overrideUID, tt.override),
 				update:   false, // Golden files should be updated via TestTar, not this test
@@ -589,7 +589,7 @@ func TestTarWithEnv(t *testing.T) {
 			}
 
 			// Run Trivy
-			runTest(t, []string{"image"}, tt.golden, "", types.FormatJSON, runOptions{
+			runTest(t, []string{"image"}, tt.golden, types.FormatJSON, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
@@ -659,7 +659,7 @@ cache:
 			}
 
 			// Run Trivy
-			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})

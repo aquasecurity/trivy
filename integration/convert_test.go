@@ -76,7 +76,7 @@ func TestConvert(t *testing.T) {
 			}
 
 			// Run "trivy convert"
-			runTest(t, osArgs, tt.golden, "", types.Format(tt.args.format), runOptions{
+			runTest(t, osArgs, tt.golden, types.Format(tt.args.format), runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				update:   *update,
 			})

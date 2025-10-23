@@ -361,19 +361,17 @@ type runOptions struct {
 }
 
 // runTest runs Trivy with the given args and compares the output with the golden file.
-// If outputFile is empty, the output file is created in a temporary directory.
-// If update is true, the golden file is updated.
-func runTest(t *testing.T, osArgs []string, wantFile, outputFile string, format types.Format, opts runOptions) {
+// The output file is created in a temporary directory, unless update is true, in which case
+// the golden file is updated directly.
+func runTest(t *testing.T, osArgs []string, wantFile string, format types.Format, opts runOptions) {
 	if opts.fakeUUID != "" {
 		uuid.SetFakeUUID(t, opts.fakeUUID)
 	}
 
-	if outputFile == "" {
-		// Set up the output file
-		outputFile = filepath.Join(t.TempDir(), "output.json")
-		if opts.update {
-			outputFile = wantFile
-		}
+	// Set up the output file
+	outputFile := filepath.Join(t.TempDir(), "output.json")
+	if opts.update {
+		outputFile = wantFile
 	}
 	osArgs = append(osArgs, "--output", outputFile)
 

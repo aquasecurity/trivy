@@ -340,7 +340,7 @@ func TestClientServer(t *testing.T) {
 				osArgs = append(osArgs, "--secret-config", tt.args.secretConfig)
 			}
 
-			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				override: overrideFuncs(overrideUID, tt.override),
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				update:   false, // Golden files should be updated via TestTar or TestRepository, not TestClientServer
@@ -474,7 +474,7 @@ func TestClientServerWithFormat(t *testing.T) {
 			t.Setenv("AWS_ACCOUNT_ID", "123456789012")
 			osArgs := setupClient(t, tt.args, addr, cacheDir)
 
-			runTest(t, osArgs, tt.golden, "", tt.args.Format, runOptions{
+			runTest(t, osArgs, tt.golden, tt.args.Format, runOptions{
 				override: overrideUID,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				update:   *update,
@@ -508,7 +508,7 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := setupClient(t, tt.args, addr, cacheDir)
-			runTest(t, osArgs, tt.golden, "", types.FormatCycloneDX, runOptions{
+			runTest(t, osArgs, tt.golden, types.FormatCycloneDX, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				update:   *update,
 			})
@@ -586,7 +586,7 @@ func TestClientServerWithCustomOptions(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := setupClient(t, tt.args, addr, cacheDir)
-			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				override: overrideUID,
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
@@ -625,7 +625,7 @@ func TestClientServerWithRedis(t *testing.T) {
 		osArgs := setupClient(t, testArgs, addr, cacheDir)
 
 		// Run Trivy client
-		runTest(t, osArgs, golden, "", types.FormatJSON, runOptions{
+		runTest(t, osArgs, golden, types.FormatJSON, runOptions{
 			override: overrideUID,
 			fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			update:   false, // Golden files should be updated via TestTar or TestRepository, not TestClientServerWithRedis
@@ -639,7 +639,7 @@ func TestClientServerWithRedis(t *testing.T) {
 		osArgs := setupClient(t, testArgs, addr, cacheDir)
 
 		// Run Trivy client
-		runTest(t, osArgs, "", "", types.FormatJSON, runOptions{
+		runTest(t, osArgs, "", types.FormatJSON, runOptions{
 			wantErr: "unable to store cache",
 		})
 	})

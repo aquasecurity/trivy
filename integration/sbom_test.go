@@ -202,7 +202,7 @@ func TestSBOM(t *testing.T) {
 			}
 
 			// Run "trivy sbom"
-			runTest(t, osArgs, tt.golden, "", types.Format(tt.args.format), runOptions{
+			runTest(t, osArgs, tt.golden, types.Format(tt.args.format), runOptions{
 				override: overrideFuncs(overrideSBOMReport, overrideUID, tt.override),
 				fakeUUID: tt.fakeUUID,
 				update:   tt.update && *update, // Controlled by test case update field and -update flag

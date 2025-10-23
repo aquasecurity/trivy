@@ -565,7 +565,7 @@ func TestRepository(t *testing.T) {
 
 			osArgs := buildArgs(t, cacheDir, command, format, tt.args)
 
-			runTest(t, osArgs, tt.golden, "", format, runOptions{
+			runTest(t, osArgs, tt.golden, format, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: tt.override,
 				update:   *update,

@@ -247,7 +247,7 @@ func TestRegistry(t *testing.T) {
 			require.NoError(t, err)
 
 			// Run Trivy
-			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: overrideFuncs(overrideUID, func(_ *testing.T, want, _ *types.Report) {

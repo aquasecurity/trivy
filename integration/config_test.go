@@ -176,7 +176,7 @@ severity:
 				osArgs = append(osArgs, "--"+key, value)
 			}
 
-			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				update:   false, // Golden files should be updated via TestRepository, not TestConfiguration
@@ -198,7 +198,7 @@ severity:
 				tt.args.input,
 			}
 
-			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				update:   false, // Golden files should be updated via TestRepository, not TestConfiguration
@@ -227,7 +227,7 @@ db:
 				tt.args.input,
 			}
 
-			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				update:   false, // Golden files should be updated via TestRepository, not TestConfiguration
