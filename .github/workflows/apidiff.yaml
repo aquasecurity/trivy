@@ -69,9 +69,11 @@ jobs:
 
       # Ensure the base commit exists locally for go-apidiff to compare against.
       # Even though we checkout the merge commit, go-apidiff needs the base ref to exist.
+      # Use base.ref instead of base.sha, since base.sha is outdated (not updated after every commit).
+      # cf. https://github.com/orgs/community/discussions/59677
       - name: Fetch base commit
         run: |
-          BASE_REF="${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}"
+          BASE_REF="${{ github.event.pull_request.base.ref || github.event.merge_group.base_ref }}"
           if [ -n "$BASE_REF" ]; then
             git fetch --depth=1 origin "$BASE_REF"
           fi
