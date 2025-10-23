@@ -17,7 +17,6 @@
   ],
   "misconfigurations": [
     "AVD-KSV-01010",
-    "AVD-KSV-01010",
     "KCV0001",
     "KCV0006",
     "KCV0010",

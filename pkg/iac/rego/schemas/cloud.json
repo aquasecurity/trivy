@@ -5354,35 +5354,15 @@
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         },
+        "enablealertnotifications": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
+        },
         "enablealertstoadmins": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
         },
-        "isenabled": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
-        },
-        "notificationssources": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.securitycenter.NotificationSource"
-          }
-        },
         "phone": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
-        }
-      }
-    },
-    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.securitycenter.NotificationSource": {
-      "type": "object",
-      "properties": {
-        "minimalseverity": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
-        },
-        "sourcetype": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         }
