@@ -22,10 +22,9 @@ func TestConvert(t *testing.T) {
 		listAllPkgs    bool
 	}
 	tests := []struct {
-		name     string
-		args     args
-		golden   string
-		override OverrideFunc
+		name   string
+		args   args
+		golden string
 	}{
 		{
 			name: "npm",
