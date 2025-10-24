@@ -124,7 +124,34 @@ func (p *pom) licenses() []string {
 }
 
 func (p *pom) repositories(servers []Server) []repository {
+	logger := log.WithPrefix("pom")
+	var repos []repository
+	for _, rep := range p.content.Repositories.Repository {
+		r := repository{
+			releaseEnabled:  rep.Releases.Enabled == "true",
+			snapshotEnabled: rep.Snapshots.Enabled == "true",
+		}
+		if !r.releaseEnabled && !r.snapshotEnabled {
+			continue
+		}
+		repoURL, err := url.Parse(rep.URL)
+		if err != nil {
+			logger.Debug("Unable to parse remote repository url", log.Err(err))
+			continue
+		}
 
+		// Get the credentials from settings.xml based on matching server id
+		// with the repository id from pom.xml and use it for accessing the repository url
+		for _, server := range servers {
+			if rep.ID == server.ID && server.Username != "" && server.Password != "" {
+				repoURL.User = url.UserPassword(server.Username, server.Password)
+				break
+			}
+		}
+
+		r.url = repoURL.String()
+		repos = append(repos, r)
+	}
 	return repos
 }
 
