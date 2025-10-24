@@ -4,7 +4,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"net/url"
 	"reflect"
 	"strings"
 
@@ -13,7 +12,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/x/slices"
 )
@@ -124,35 +122,7 @@ func (p *pom) licenses() []string {
 }
 
 func (p *pom) repositories(servers []Server) []repository {
-	logger := log.WithPrefix("pom")
-	var repos []repository
-	for _, rep := range p.content.Repositories.Repository {
-		r := repository{
-			releaseEnabled:  rep.Releases.Enabled == "true",
-			snapshotEnabled: rep.Snapshots.Enabled == "true",
-		}
-		if !r.releaseEnabled && !r.snapshotEnabled {
-			continue
-		}
-		repoURL, err := url.Parse(rep.URL)
-		if err != nil {
-			logger.Debug("Unable to parse remote repository url", log.Err(err))
-			continue
-		}
-
-		// Get the credentials from settings.xml based on matching server id
-		// with the repository id from pom.xml and use it for accessing the repository url
-		for _, server := range servers {
-			if rep.ID == server.ID && server.Username != "" && server.Password != "" {
-				repoURL.User = url.UserPassword(server.Username, server.Password)
-				break
-			}
-		}
-
-		r.url = repoURL.String()
-		repos = append(repos, r)
-	}
-	return repos
+	return resolveRemoteRepos(servers, p.content.Repositories)
 }
 
 type pomXML struct {
@@ -379,21 +349,17 @@ func findDep(name string, depManagement []pomDependency) (pomDependency, bool) {
 }
 
 type pomRepositories struct {
-	Text       string          `xml:",chardata"`
 	Repository []pomRepository `xml:"repository"`
 }
 
 type pomRepository struct {
-	Text     string `xml:",chardata"`
 	ID       string `xml:"id"`
 	Name     string `xml:"name"`
 	URL      string `xml:"url"`
 	Releases struct {
-		Text    string `xml:",chardata"`
 		Enabled string `xml:"enabled"`
 	} `xml:"releases"`
 	Snapshots struct {
-		Text    string `xml:",chardata"`
 		Enabled string `xml:"enabled"`
 	} `xml:"snapshots"`
 }

@@ -27,7 +27,7 @@ var mavenCentralRepo = repository{
 	releaseEnabled: true,
 }
 
-func resolverRemoteRepos(servers []Server, pomRepos pomRepositories) []repository {
+func resolveRemoteRepos(servers []Server, pomRepos pomRepositories) []repository {
 	logger := log.WithPrefix("pom")
 	var repos []repository
 	for _, rep := range pomRepos.Repository {
