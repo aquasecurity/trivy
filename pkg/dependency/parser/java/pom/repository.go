@@ -27,10 +27,10 @@ var mavenCentralRepo = repository{
 	releaseEnabled: true,
 }
 
-func resolveRemoteRepos(servers []Server, pomRepos pomRepositories) []repository {
+func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 	logger := log.WithPrefix("pom")
 	var repos []repository
-	for _, rep := range pomRepos.Repository {
+	for _, rep := range pomRepos {
 		r := repository{
 			releaseEnabled:  rep.Releases.Enabled == "true",
 			snapshotEnabled: rep.Snapshots.Enabled == "true",

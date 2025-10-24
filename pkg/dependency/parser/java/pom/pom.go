@@ -122,7 +122,7 @@ func (p *pom) licenses() []string {
 }
 
 func (p *pom) repositories(servers []Server) []repository {
-	return resolveRemoteRepos(servers, p.content.Repositories)
+	return resolvePomRepos(servers, p.content.Repositories)
 }
 
 type pomXML struct {
@@ -141,7 +141,7 @@ type pomXML struct {
 		Dependencies pomDependencies `xml:"dependencies"`
 	} `xml:"dependencyManagement"`
 	Dependencies pomDependencies `xml:"dependencies"`
-	Repositories pomRepositories `xml:"repositories"`
+	Repositories []pomRepository `xml:"repositories>repository"`
 }
 
 type pomParent struct {
@@ -346,10 +346,6 @@ func findDep(name string, depManagement []pomDependency) (pomDependency, bool) {
 	return lo.Find(depManagement, func(item pomDependency) bool {
 		return item.Name() == name
 	})
-}
-
-type pomRepositories struct {
-	Repository []pomRepository `xml:"repository"`
 }
 
 type pomRepository struct {
