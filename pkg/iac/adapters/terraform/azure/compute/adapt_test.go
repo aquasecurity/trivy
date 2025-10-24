@@ -123,12 +123,89 @@ export DATABASE_PASSWORD=\"SomeSortOfPassword\"
 				},
 			},
 		},
+		{
+			name: "with network interfaces",
+			terraform: `
+resource "azurerm_linux_virtual_machine" "example" {
+	name                  = "example-vm"
+	resource_group_name   = "example-resources"
+	location              = "East US"
+	size                  = "Standard_F2"
+	network_interface_ids = [
+		"nic-1",
+		"nic-2"
+	]
+	admin_username = "adminuser"
+	
+	os_disk {
+		caching              = "ReadWrite"
+		storage_account_type = "Standard_LRS"
+	}
+}`,
+			expected: compute.LinuxVirtualMachine{
+				Metadata: iacTypes.NewTestMetadata(),
+				VirtualMachine: compute.VirtualMachine{
+					Metadata:   iacTypes.NewTestMetadata(),
+					CustomData: iacTypes.String("", iacTypes.NewTestMetadata()),
+					NetworkInterfaces: []compute.NetworkInterface{
+						{
+							Metadata:        iacTypes.NewTestMetadata(),
+							SubnetID:        iacTypes.String("", iacTypes.NewTestMetadata()),
+							SecurityGroups:  nil,
+							HasPublicIP:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							PublicIPAddress: iacTypes.String("", iacTypes.NewTestMetadata()),
+						},
+						{
+							Metadata:        iacTypes.NewTestMetadata(),
+							SubnetID:        iacTypes.String("", iacTypes.NewTestMetadata()),
+							SecurityGroups:  nil,
+							HasPublicIP:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							PublicIPAddress: iacTypes.String("", iacTypes.NewTestMetadata()),
+						},
+					},
+				},
+				OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
+					Metadata:                      iacTypes.NewTestMetadata(),
+					DisablePasswordAuthentication: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				},
+			},
+		},
+		{
+			name: "without network interfaces",
+			terraform: `
+resource "azurerm_linux_virtual_machine" "example" {
+	name                  = "example-vm"
+	resource_group_name   = "example-resources"
+	location              = "East US"
+	size                  = "Standard_F2"
+	network_interface_ids = []
+	admin_username = "adminuser"
+	
+	os_disk {
+		caching              = "ReadWrite"
+		storage_account_type = "Standard_LRS"
+	}
+}`,
+			expected: compute.LinuxVirtualMachine{
+				Metadata: iacTypes.NewTestMetadata(),
+				VirtualMachine: compute.VirtualMachine{
+					Metadata:   iacTypes.NewTestMetadata(),
+					CustomData: iacTypes.String("", iacTypes.NewTestMetadata()),
+					// Empty array in Terraform is parsed as nil
+					NetworkInterfaces: nil,
+				},
+				OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
+					Metadata:                      iacTypes.NewTestMetadata(),
+					DisablePasswordAuthentication: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			modules := tftestutil.CreateModulesFromSource(t, test.terraform, ".tf")
-			adapted := adaptLinuxVM(modules.GetBlocks()[0])
+			adapted := adaptLinuxVM(modules.GetBlocks()[0], modules)
 			testutil.AssertDefsecEqual(t, test.expected, adapted)
 		})
 	}
@@ -180,12 +257,53 @@ export GREETING="Hello there"
 				},
 			},
 		},
+		{
+			name: "with network interfaces",
+			terraform: `
+resource "azurerm_windows_virtual_machine" "example" {
+	name                  = "example-machine"
+	resource_group_name   = "example-resources"
+	location              = "East US"
+	size                  = "Standard_F2"
+	network_interface_ids = ["nic-1", "nic-2"]
+	admin_username        = "adminuser"
+	admin_password        = "P@ssw0rd1234!"
+	
+	os_disk {
+		caching              = "ReadWrite"
+		storage_account_type = "Standard_LRS"
+	}
+}`,
+			expected: compute.WindowsVirtualMachine{
+				Metadata: iacTypes.NewTestMetadata(),
+				VirtualMachine: compute.VirtualMachine{
+					Metadata:   iacTypes.NewTestMetadata(),
+					CustomData: iacTypes.String("", iacTypes.NewTestMetadata()),
+					NetworkInterfaces: []compute.NetworkInterface{
+						{
+							Metadata:        iacTypes.NewTestMetadata(),
+							SubnetID:        iacTypes.String("", iacTypes.NewTestMetadata()),
+							SecurityGroups:  nil,
+							HasPublicIP:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							PublicIPAddress: iacTypes.String("", iacTypes.NewTestMetadata()),
+						},
+						{
+							Metadata:        iacTypes.NewTestMetadata(),
+							SubnetID:        iacTypes.String("", iacTypes.NewTestMetadata()),
+							SecurityGroups:  nil,
+							HasPublicIP:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							PublicIPAddress: iacTypes.String("", iacTypes.NewTestMetadata()),
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			modules := tftestutil.CreateModulesFromSource(t, test.terraform, ".tf")
-			adapted := adaptWindowsVM(modules.GetBlocks()[0])
+			adapted := adaptWindowsVM(modules.GetBlocks()[0], modules)
 			testutil.AssertDefsecEqual(t, test.expected, adapted)
 		})
 	}

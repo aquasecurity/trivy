@@ -1,6 +1,7 @@
 package compute
 
 import (
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -11,8 +12,17 @@ type Compute struct {
 }
 
 type VirtualMachine struct {
-	Metadata   iacTypes.Metadata
-	CustomData iacTypes.StringValue // NOT base64 encoded
+	Metadata          iacTypes.Metadata
+	CustomData        iacTypes.StringValue // NOT base64 encoded
+	NetworkInterfaces []NetworkInterface
+}
+
+type NetworkInterface struct {
+	Metadata        iacTypes.Metadata
+	SubnetID        iacTypes.StringValue
+	SecurityGroups  []network.SecurityGroup
+	HasPublicIP     iacTypes.BoolValue
+	PublicIPAddress iacTypes.StringValue
 }
 
 type LinuxVirtualMachine struct {
