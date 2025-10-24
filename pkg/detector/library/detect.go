@@ -5,15 +5,24 @@ import (
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/detector/library/rootio"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// DriverProvider is a function that creates driver functions if applicable
+type DriverProvider func(ftypes.LangType, []ftypes.Package) (typeFunc func() string, detectFunc func(string, string, string) ([]types.DetectedVulnerability, error))
+
+// providers dynamically generate drivers based on package information
+var providers = []DriverProvider{
+	rootio.Provider,
+}
+
 // Detect scans language-specific packages and returns vulnerabilities.
 func Detect(ctx context.Context, libType ftypes.LangType, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	driver, ok := NewDriver(libType)
-	if !ok {
+	driver := newDriver(libType, pkgs)
+	if driver.Type() == "" {
 		return nil, nil
 	}
 
@@ -47,4 +56,20 @@ func detect(ctx context.Context, driver Driver, pkgs []ftypes.Package) ([]types.
 	}
 
 	return vulnerabilities, nil
+}
+
+func newDriver(libType ftypes.LangType, pkgs []ftypes.Package) Driver {
+	// Try providers first
+	for _, provider := range providers {
+		if typeFunc, detectFunc := provider(libType, pkgs); typeFunc != nil && detectFunc != nil {
+			return NewCustomDriver(typeFunc, detectFunc)
+		}
+	}
+
+	// Fall back to standard driver
+	driver, ok := NewDriver(libType)
+	if !ok {
+		return Driver{}
+	}
+	return driver
 }
