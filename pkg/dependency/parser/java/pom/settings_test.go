@@ -364,7 +364,7 @@ func Test_effectiveRepositories(t *testing.T) {
 					snapshotEnabled: true,
 				},
 				{
-					url:             "https://example.com/repo1",
+					url:             "https://u:p@example.com/repo1",
 					releaseEnabled:  true,
 					snapshotEnabled: false,
 				},
