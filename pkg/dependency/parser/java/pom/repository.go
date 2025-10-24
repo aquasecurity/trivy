@@ -32,8 +32,8 @@ func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 	var repos []repository
 	for _, rep := range pomRepos {
 		r := repository{
-			releaseEnabled:  rep.Releases.Enabled == "true",
-			snapshotEnabled: rep.Snapshots.Enabled == "true",
+			releaseEnabled:  rep.ReleasesEnabled == "true",
+			snapshotEnabled: rep.SnapshotsEnabled == "true",
 		}
 
 		// Add only enabled repositories

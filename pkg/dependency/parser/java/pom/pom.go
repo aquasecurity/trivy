@@ -349,13 +349,9 @@ func findDep(name string, depManagement []pomDependency) (pomDependency, bool) {
 }
 
 type pomRepository struct {
-	ID       string `xml:"id"`
-	Name     string `xml:"name"`
-	URL      string `xml:"url"`
-	Releases struct {
-		Enabled string `xml:"enabled"`
-	} `xml:"releases"`
-	Snapshots struct {
-		Enabled string `xml:"enabled"`
-	} `xml:"snapshots"`
+	ID               string `xml:"id"`
+	Name             string `xml:"name"`
+	URL              string `xml:"url"`
+	ReleasesEnabled  string `xml:"releases>enabled"`
+	SnapshotsEnabled string `xml:"snapshots>enabled"`
 }

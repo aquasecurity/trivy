@@ -40,32 +40,16 @@ func Test_ReadSettings(t *testing.T) {
 						ID: "mycompany-global",
 						Repositories: []pomRepository{
 							{
-								ID:  "mycompany-internal-releases",
-								URL: "https://mycompany.example.com/repository/internal-releases",
-								Releases: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "true",
-								},
-								Snapshots: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "false",
-								},
+								ID:               "mycompany-internal-releases",
+								URL:              "https://mycompany.example.com/repository/internal-releases",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "false",
 							},
 							{
-								ID:  "mycompany-global-releases",
-								URL: "https://mycompany.example.com/repository/global-releases",
-								Releases: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "true",
-								},
-								Snapshots: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "false",
-								},
+								ID:               "mycompany-global-releases",
+								URL:              "https://mycompany.example.com/repository/global-releases",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "false",
 							},
 						},
 						ActiveByDefault: false,
@@ -74,18 +58,10 @@ func Test_ReadSettings(t *testing.T) {
 						ID: "default",
 						Repositories: []pomRepository{
 							{
-								ID:  "mycompany-default-releases",
-								URL: "https://mycompany.example.com/repository/default-releases",
-								Releases: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "true",
-								},
-								Snapshots: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "false",
-								},
+								ID:               "mycompany-default-releases",
+								URL:              "https://mycompany.example.com/repository/default-releases",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "false",
 							},
 						},
 						ActiveByDefault: true,
@@ -121,32 +97,16 @@ func Test_ReadSettings(t *testing.T) {
 						ID: "mycompany-global",
 						Repositories: []pomRepository{
 							{
-								ID:  "mycompany-releases",
-								URL: "https://mycompany.example.com/repository/user-releases",
-								Releases: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "true",
-								},
-								Snapshots: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "false",
-								},
+								ID:               "mycompany-releases",
+								URL:              "https://mycompany.example.com/repository/user-releases",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "false",
 							},
 							{
-								ID:  "mycompany-user-snapshots",
-								URL: "https://mycompany.example.com/repository/user-snapshots",
-								Releases: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "false",
-								},
-								Snapshots: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "true",
-								},
+								ID:               "mycompany-user-snapshots",
+								URL:              "https://mycompany.example.com/repository/user-snapshots",
+								ReleasesEnabled:  "false",
+								SnapshotsEnabled: "true",
 							},
 						},
 						ActiveByDefault: true,
@@ -259,32 +219,16 @@ func Test_ReadSettings(t *testing.T) {
 						ID: "mycompany-global",
 						Repositories: []pomRepository{
 							{
-								ID:  "mycompany-releases",
-								URL: "https://mycompany.example.com/repository/user-releases",
-								Releases: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "true",
-								},
-								Snapshots: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "false",
-								},
+								ID:               "mycompany-releases",
+								URL:              "https://mycompany.example.com/repository/user-releases",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "false",
 							},
 							{
-								ID:  "mycompany-user-snapshots",
-								URL: "https://mycompany.example.com/repository/user-snapshots",
-								Releases: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "false",
-								},
-								Snapshots: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "true",
-								},
+								ID:               "mycompany-user-snapshots",
+								URL:              "https://mycompany.example.com/repository/user-snapshots",
+								ReleasesEnabled:  "false",
+								SnapshotsEnabled: "true",
 							},
 						},
 						ActiveByDefault: true,
@@ -293,18 +237,10 @@ func Test_ReadSettings(t *testing.T) {
 						ID: "default",
 						Repositories: []pomRepository{
 							{
-								ID:  "mycompany-default-releases",
-								URL: "https://mycompany.example.com/repository/default-releases",
-								Releases: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "true",
-								},
-								Snapshots: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "false",
-								},
+								ID:               "mycompany-default-releases",
+								URL:              "https://mycompany.example.com/repository/default-releases",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "false",
 							},
 						},
 						ActiveByDefault: true,
@@ -358,18 +294,10 @@ func Test_ReadSettings(t *testing.T) {
 						ID: "mycompany-global",
 						Repositories: []pomRepository{
 							{
-								ID:  "mycompany-releases",
-								URL: "https://mycompany.example.com/repository/user-releases",
-								Releases: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "true",
-								},
-								Snapshots: struct {
-									Enabled string `xml:"enabled"`
-								}{
-									Enabled: "false",
-								},
+								ID:               "mycompany-releases",
+								URL:              "https://mycompany.example.com/repository/user-releases",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "false",
 							},
 						},
 					},
