@@ -1,10 +1,10 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4",
   "ArtifactName": "testdata/fixtures/images/alpine-310.tar.gz",
   "ArtifactType": "container_image",
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "Metadata": {
     "Size": 5843968,
     "OS": {
@@ -73,7 +73,7 @@
           "PkgName": "libcrypto1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
-            "UID": "c6c116a4441ec6de"
+            "UID": "2fdf6d39693d0b83"
           },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
@@ -146,7 +146,7 @@
           "PkgName": "libcrypto1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
-            "UID": "c6c116a4441ec6de"
+            "UID": "2fdf6d39693d0b83"
           },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",
@@ -229,7 +229,7 @@
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
-            "UID": "e132dcfcc51772ef"
+            "UID": "d57bb696f7371159"
           },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
@@ -302,7 +302,7 @@
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
-            "UID": "e132dcfcc51772ef"
+            "UID": "d57bb696f7371159"
           },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",
