@@ -30,8 +30,9 @@ import (
 )
 
 type options struct {
-	offline     bool
-	defaultRepo repository
+	offline       bool
+	defaultRepo   repository
+	settingsRepos []repository
 }
 
 type option func(*options)
@@ -49,6 +50,18 @@ func WithDefaultRepo(repo string, releaseEnabled, snapshotEnabled bool) option {
 			releaseEnabled:  releaseEnabled,
 			snapshotEnabled: snapshotEnabled,
 		}
+	}
+}
+
+func WithSettingsRepos(urls []string, releaseEnabled, snapshotEnabled bool) option {
+	return func(opts *options) {
+		opts.settingsRepos = lo.Map(urls, func(url string, _ int) repository {
+			return repository{
+				url:             url,
+				releaseEnabled:  releaseEnabled,
+				snapshotEnabled: snapshotEnabled,
+			}
+		})
 	}
 }
 
@@ -81,6 +94,7 @@ func NewParser(filePath string, opts ...option) *Parser {
 
 	remoteRepos := repositories{
 		defaultRepo: o.defaultRepo,
+		settings:    o.settingsRepos,
 	}
 
 	return &Parser{

@@ -35,6 +35,63 @@ func Test_ReadSettings(t *testing.T) {
 						Username: "test-user-only",
 					},
 				},
+				Profiles: []Profile{
+					{
+						ID: "mycompany-global",
+						Repositories: []pomRepository{
+							{
+								ID:  "mycompany-internal-releases",
+								URL: "https://mycompany.example.com/repository/internal-releases",
+								Releases: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "true",
+								},
+								Snapshots: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "false",
+								},
+							},
+							{
+								ID:  "mycompany-global-releases",
+								URL: "https://mycompany.example.com/repository/global-releases",
+								Releases: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "true",
+								},
+								Snapshots: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "false",
+								},
+							},
+						},
+						ActiveByDefault: false,
+					},
+					{
+						ID: "default",
+						Repositories: []pomRepository{
+							{
+								ID:  "mycompany-default-releases",
+								URL: "https://mycompany.example.com/repository/default-releases",
+								Releases: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "true",
+								},
+								Snapshots: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "false",
+								},
+							},
+						},
+						ActiveByDefault: true,
+					},
+				},
+				ActiveProfiles: []string{},
 			},
 		},
 		{
@@ -58,6 +115,45 @@ func Test_ReadSettings(t *testing.T) {
 						ID:       "server-with-name-only",
 						Username: "test-user-only",
 					},
+				},
+				Profiles: []Profile{
+					{
+						ID: "mycompany-global",
+						Repositories: []pomRepository{
+							{
+								ID:  "mycompany-releases",
+								URL: "https://mycompany.example.com/repository/user-releases",
+								Releases: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "true",
+								},
+								Snapshots: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "false",
+								},
+							},
+							{
+								ID:  "mycompany-user-snapshots",
+								URL: "https://mycompany.example.com/repository/user-snapshots",
+								Releases: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "false",
+								},
+								Snapshots: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "true",
+								},
+							},
+						},
+						ActiveByDefault: true,
+					},
+				},
+				ActiveProfiles: []string{
+					"mycompany-global",
 				},
 			},
 		},
@@ -112,6 +208,65 @@ func Test_ReadSettings(t *testing.T) {
 						ID: "global-server",
 					},
 				},
+				Profiles: []Profile{
+					{
+						ID: "mycompany-global",
+						Repositories: []pomRepository{
+							{
+								ID:  "mycompany-releases",
+								URL: "https://mycompany.example.com/repository/user-releases",
+								Releases: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "true",
+								},
+								Snapshots: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "false",
+								},
+							},
+							{
+								ID:  "mycompany-user-snapshots",
+								URL: "https://mycompany.example.com/repository/user-snapshots",
+								Releases: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "false",
+								},
+								Snapshots: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "true",
+								},
+							},
+						},
+						ActiveByDefault: true,
+					},
+					{
+						ID: "default",
+						Repositories: []pomRepository{
+							{
+								ID:  "mycompany-default-releases",
+								URL: "https://mycompany.example.com/repository/default-releases",
+								Releases: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "true",
+								},
+								Snapshots: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "false",
+								},
+							},
+						},
+						ActiveByDefault: true,
+					},
+				},
+				ActiveProfiles: []string{
+					"mycompany-global",
+				},
 			},
 		},
 		{
@@ -123,6 +278,7 @@ func Test_ReadSettings(t *testing.T) {
 			wantSettings: settings{},
 		},
 		{
+			// TODO - add placeholders for profiles
 			name: "environment placeholders are dereferenced",
 			envs: map[string]string{
 				"HOME":            filepath.Join("testdata", "settings", "user-settings-with-env-placeholders"),

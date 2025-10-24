@@ -2217,7 +2217,8 @@ func TestPom_Parse(t *testing.T) {
 				remoteRepoURL = ts.URL
 			}
 
-			p := pom.NewParser(tt.inputFile, pom.WithDefaultRepo(remoteRepoURL, true, true), pom.WithOffline(tt.offline))
+			p := pom.NewParser(tt.inputFile, pom.WithDefaultRepo(remoteRepoURL, true, true),
+				pom.WithSettingsRepos(nil, false, false), pom.WithOffline(tt.offline))
 
 			gotPkgs, gotDeps, err := p.Parse(t.Context(), f)
 			if tt.wantErr != "" {
