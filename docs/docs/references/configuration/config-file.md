@@ -495,6 +495,9 @@ rego:
   # Same as '--config-data'
   data: []
 
+  # Same as '--rego-error-limit'
+  error-limit: 10
+
   # Same as '--include-deprecated-checks'
   include-deprecated-checks: false
 
