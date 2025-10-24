@@ -7,6 +7,7 @@ import (
 	"slices"
 
 	"github.com/samber/lo"
+	"github.com/samber/lo/mutable"
 	"golang.org/x/net/html/charset"
 )
 
@@ -39,6 +40,10 @@ func (s settings) effectiveRepositories() []repository {
 	pomRepos = lo.UniqBy(pomRepos, func(r pomRepository) string {
 		return r.ID
 	})
+
+	// mvn takes repositories from settings in reverse order
+	// cf. https://github.com/aquasecurity/trivy/issues/7807#issuecomment-2541485152
+	mutable.Reverse(pomRepos)
 
 	return resolvePomRepos(s.Servers, pomRepos)
 }
