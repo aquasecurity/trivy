@@ -105,9 +105,12 @@ func TestSBOM(t *testing.T) {
 // TestSBOMEquivalence tests that scanning an SBOM produces equivalent results to scanning the original artifact.
 //
 // This test verifies that scanning an image through SBOM:
-//   trivy image centos:7 -f cyclonedx -o centos7.cdx.json && trivy sbom centos7.cdx.json
+//
+//	trivy image centos:7 -f cyclonedx -o centos7.cdx.json && trivy sbom centos7.cdx.json
+//
 // produces the same vulnerability results as direct image scanning:
-//   trivy image centos:7
+//
+//	trivy image centos:7
 //
 // IMPORTANT: Golden files used in this test cannot be updated with the -update flag
 // because the golden files are shared with TestTar.
