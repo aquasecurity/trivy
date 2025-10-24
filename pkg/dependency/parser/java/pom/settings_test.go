@@ -319,3 +319,148 @@ func Test_ReadSettings(t *testing.T) {
 		})
 	}
 }
+
+func Test_effectiveRepositories(t *testing.T) {
+	tests := []struct {
+		name string
+		s    settings
+		want []repository
+	}{
+		{
+			name: "single active profile, reversed order",
+			s: settings{
+				Servers: []Server{
+					{
+						ID:       "r1",
+						Username: "u",
+						Password: "p",
+					},
+				},
+				Profiles: []Profile{
+					{
+						ID: "p1",
+						Repositories: []pomRepository{
+							{
+								ID:               "r1",
+								URL:              "https://example.com/repo1",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "false",
+							},
+							{
+								ID:               "r2",
+								URL:              "https://example.com/repo2",
+								ReleasesEnabled:  "false",
+								SnapshotsEnabled: "true",
+							},
+						},
+					},
+				},
+				ActiveProfiles: []string{"p1"},
+			},
+			want: []repository{
+				{
+					url:             "https://example.com/repo2",
+					releaseEnabled:  false,
+					snapshotEnabled: true,
+				},
+				{
+					url:             "https://example.com/repo1",
+					releaseEnabled:  true,
+					snapshotEnabled: false,
+				},
+			},
+		},
+		{
+			name: "activeByDefault + activeProfiles with dedup and reverse",
+			s: settings{
+				Servers: nil,
+				Profiles: []Profile{
+					{
+						ID:              "p1",
+						ActiveByDefault: true,
+						Repositories: []pomRepository{
+							{
+								ID:               "dup",
+								URL:              "https://p1.example.com/dup",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "false",
+							},
+							{
+								ID:               "only-p1",
+								URL:              "https://p1.example.com/only",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "true",
+							},
+						},
+					},
+					{
+						ID: "p2",
+						Repositories: []pomRepository{
+							{
+								ID:               "dup",
+								URL:              "https://p2.example.com/dup",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "true",
+							},
+						},
+					},
+				},
+				ActiveProfiles: []string{"p2"},
+			},
+			// Expected order after dedup (keep first occurrence from p1) and reverse:
+			// Input order before reverse: [dup(from p1), only-p1, dup(from p2 - removed by dedup)]
+			// After reverse: [only-p1, dup(from p1)]
+			want: []repository{
+				{
+					url:             "https://p1.example.com/only",
+					releaseEnabled:  true,
+					snapshotEnabled: true,
+				},
+				{
+					url:             "https://p1.example.com/dup",
+					releaseEnabled:  true,
+					snapshotEnabled: false,
+				},
+			},
+		},
+		{
+			name: "disabled repositories are ignored",
+			s: settings{
+				Profiles: []Profile{
+					{
+						ID:              "p",
+						ActiveByDefault: true,
+						Repositories: []pomRepository{
+							{
+								ID:               "disabled",
+								URL:              "https://example.com/disabled",
+								ReleasesEnabled:  "false",
+								SnapshotsEnabled: "false",
+							},
+							{
+								ID:               "enabled",
+								URL:              "https://example.com/enabled",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "false",
+							},
+						},
+					},
+				},
+			},
+			want: []repository{
+				{
+					url:             "https://example.com/enabled",
+					releaseEnabled:  true,
+					snapshotEnabled: false,
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.s.effectiveRepositories()
+			require.Equal(t, tt.want, got)
+		})
+	}
+}
