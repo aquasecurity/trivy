@@ -238,7 +238,7 @@ search in Containerd. If the image is not found there either, the scan will
 fail and no more image sources will be searched.
 
 ### Docker Engine
-Trivy tries to looks for the specified image in your local Docker Engine.
+Trivy tries to look for the specified image in your local Docker Engine.
 It will be skipped if Docker Engine is not running locally.
 
 If your docker socket is not the default path, you can override it via `DOCKER_HOST`.
@@ -248,7 +248,7 @@ If your docker socket is not the default path, you can override it via `DOCKER_H
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
     
-Trivy tries to looks for the specified image in your local [containerd](https://containerd.io/).
+Trivy tries to look for the specified image in your local [containerd](https://containerd.io/).
 It will be skipped if containerd is not running locally.
 
 Specify your image name in containerd running locally.
