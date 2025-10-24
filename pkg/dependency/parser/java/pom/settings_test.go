@@ -159,14 +159,14 @@ func Test_ReadSettings(t *testing.T) {
 		},
 		{
 			// $ mvn help:effective-settings
-			//[INFO] ------------------< org.apache.maven:standalone-pom >-------------------
-			//[INFO] --- maven-help-plugin:3.4.0:effective-settings (default-cli) @ standalone-pom ---
-			//Effective user-specific configuration settings:
+			// [INFO] ------------------< org.apache.maven:standalone-pom >-------------------
+			// [INFO] --- maven-help-plugin:3.4.0:effective-settings (default-cli) @ standalone-pom ---
+			// Effective user-specific configuration settings:
 			//
-			//<?xml version="1.0" encoding="UTF-8"?>
-			//<settings xmlns="http://maven.apache.org/SETTINGS/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd">
+			// <?xml version="1.0" encoding="UTF-8"?>
+			// <settings xmlns="http://maven.apache.org/SETTINGS/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd">
 			//  <localRepository>/root/testdata/user/repository</localRepository>
-			//  <servers>
+			//   <servers>
 			//    <server>
 			//      <id>user-server</id>
 			//    </server>
@@ -183,7 +183,53 @@ func Test_ReadSettings(t *testing.T) {
 			//      <id>global-server</id>
 			//    </server>
 			//  </servers>
-			//</settings>
+			//  <profiles>
+			//    <profile>
+			//      <activation>
+			//        <activeByDefault>true</activeByDefault>
+			//      </activation>
+			//      <repositories>
+			//        <repository>
+			//          <releases>
+			//            <checksumPolicy>fail</checksumPolicy>
+			//          </releases>
+			//          <snapshots>
+			//            <enabled>false</enabled>
+			//          </snapshots>
+			//          <id>mycompany-releases</id>
+			//          <url>https://mycompany.example.com/repository/user-releases</url>
+			//        </repository>
+			//        <repository>
+			//          <releases>
+			//            <enabled>false</enabled>
+			//          </releases>
+			//          <snapshots />
+			//          <id>mycompany-user-snapshots</id>
+			//          <url>https://mycompany.example.com/repository/user-snapshots</url>
+			//        </repository>
+			//      </repositories>
+			//      <id>mycompany-global</id>
+			//    </profile>
+			//    <profile>
+			//      <activation>
+			//        <activeByDefault>true</activeByDefault>
+			//      </activation>
+			//      <repositories>
+			//        <repository>
+			//          <releases />
+			//          <snapshots>
+			//            <enabled>false</enabled>
+			//          </snapshots>
+			//          <id>mycompany-default-releases</id>
+			//          <url>https://mycompany.example.com/repository/default-releases</url>
+			//        </repository>
+			//      </repositories>
+			//    </profile>
+			//  </profiles>
+			//  <activeProfiles>
+			//    <activeProfile>mycompany-global</activeProfile>
+			//  </activeProfiles>
+			// </settings>
 			name: "happy path with global and user settings",
 			envs: map[string]string{
 				"HOME":       filepath.Join("testdata", "settings", "user"),
@@ -278,7 +324,6 @@ func Test_ReadSettings(t *testing.T) {
 			wantSettings: settings{},
 		},
 		{
-			// TODO - add placeholders for profiles
 			name: "environment placeholders are dereferenced",
 			envs: map[string]string{
 				"HOME":            filepath.Join("testdata", "settings", "user-settings-with-env-placeholders"),
@@ -288,6 +333,9 @@ func Test_ReadSettings(t *testing.T) {
 				"SERVER_ID":       "server-id-from-env",
 				"USERNAME":        "username-from-env",
 				"PASSWORD":        "password-from-env",
+				"PROFILE_ID":      "mycompany-global",
+				"REPO_ID":         "mycompany-releases",
+				"REPO_URL":        "https://mycompany.example.com",
 			},
 			wantSettings: settings{
 				LocalRepository: "part1/part2/.m2/repository",
@@ -304,6 +352,30 @@ func Test_ReadSettings(t *testing.T) {
 						ID:       "server-with-name-only",
 						Username: "test-user-only",
 					},
+				},
+				Profiles: []Profile{
+					{
+						ID: "mycompany-global",
+						Repositories: []pomRepository{
+							{
+								ID:  "mycompany-releases",
+								URL: "https://mycompany.example.com/repository/user-releases",
+								Releases: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "true",
+								},
+								Snapshots: struct {
+									Enabled string `xml:"enabled"`
+								}{
+									Enabled: "false",
+								},
+							},
+						},
+					},
+				},
+				ActiveProfiles: []string{
+					"mycompany-global",
 				},
 			},
 		},
