@@ -248,7 +248,7 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 				helpMarkdown: fmt.Sprintf("**License %s**\n| PkgName | Classification | Path |\n| --- | --- | --- |\n|%s|%s|%s|",
 					license.Name, license.PkgName, license.Category, license.FilePath),
 				message: fmt.Sprintf("Artifact: %s\nLicense %s\nPkgName: %s\n Classification: %s\n Path: %s",
-					res.Target, license.Name, license.Category, license.PkgName, license.FilePath),
+					res.Target, license.Name, license.PkgName, license.Category, license.FilePath),
 			})
 		}
 
