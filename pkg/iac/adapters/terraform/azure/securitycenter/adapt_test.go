@@ -34,6 +34,8 @@ func Test_adaptContact(t *testing.T) {
 				EnableAlertsToAdmins:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				Email:                    iacTypes.String("contact@example.com", iacTypes.NewTestMetadata()),
 				Phone:                    iacTypes.String("+1-555-555-5555", iacTypes.NewTestMetadata()),
+				IsEnabled:                iacTypes.BoolValue{},
+				MinimalSeverity:          iacTypes.StringValue{},
 			},
 		},
 		{
@@ -48,6 +50,8 @@ func Test_adaptContact(t *testing.T) {
 				EnableAlertsToAdmins:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				Email:                    iacTypes.String("", iacTypes.NewTestMetadata()),
 				Phone:                    iacTypes.String("", iacTypes.NewTestMetadata()),
+				IsEnabled:                iacTypes.BoolValue{},
+				MinimalSeverity:          iacTypes.StringValue{},
 			},
 		},
 	}
