@@ -14,7 +14,7 @@ func Adapt(modules terraform.Modules) securitycenter.SecurityCenter {
 }
 
 func adaptContacts(modules terraform.Modules) []securitycenter.Contact {
-	contacts := []securitycenter.Contact{}
+	var contacts []securitycenter.Contact
 
 	for _, module := range modules {
 		for _, resource := range module.GetResourcesByType("azurerm_security_center_contact") {
@@ -25,7 +25,7 @@ func adaptContacts(modules terraform.Modules) []securitycenter.Contact {
 }
 
 func adaptSubscriptions(modules terraform.Modules) []securitycenter.SubscriptionPricing {
-	subscriptions := []securitycenter.SubscriptionPricing{}
+	var subscriptions []securitycenter.SubscriptionPricing
 
 	for _, module := range modules {
 		for _, resource := range module.GetResourcesByType("azurerm_security_center_subscription_pricing") {
