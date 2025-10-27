@@ -157,7 +157,8 @@ func adaptAgentPool(block *terraform.Block) container.AgentPool {
 	// Extract node_type or type (depending on Terraform provider version)
 	if nodeTypeAttr := block.GetAttribute("type"); nodeTypeAttr.IsNotNil() {
 		agentPool.NodeType = nodeTypeAttr.AsStringValueOrDefault("", block)
-	} else if nodeTypeAttr := block.GetAttribute("node_type"); nodeTypeAttr.IsNotNil() {
+	}
+	if nodeTypeAttr := block.GetAttribute("node_type"); nodeTypeAttr.IsNotNil() {
 		agentPool.NodeType = nodeTypeAttr.AsStringValueOrDefault("", block)
 	}
 
