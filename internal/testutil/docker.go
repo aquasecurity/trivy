@@ -78,15 +78,11 @@ func (c *DockerClient) ImageCleanLoad(t *testing.T, ctx context.Context, archive
 	manifest, err := tarball.LoadManifest(opener)
 	require.NoError(t, err, "failed to load manifest from archive")
 
-	// Collect all RepoTags from all manifest entries
-	var allTags []string
-	for _, m := range manifest {
-		allTags = append(allTags, m.RepoTags...)
-	}
-
 	// Remove existing images with the same RepoTags to avoid conflicts
-	for _, tag := range allTags {
-		c.ImageRemove(t, ctx, tag)
+	for _, m := range manifest {
+		for _, tag := range m.RepoTags {
+			c.ImageRemove(t, ctx, tag)
+		}
 	}
 
 	// Load image
