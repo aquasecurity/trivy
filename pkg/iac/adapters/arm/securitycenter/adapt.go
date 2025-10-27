@@ -14,7 +14,7 @@ func Adapt(deployment azure.Deployment) securitycenter.SecurityCenter {
 }
 
 func adaptContacts(deployment azure.Deployment) []securitycenter.Contact {
-	contacts := []securitycenter.Contact{}
+	var contacts []securitycenter.Contact
 	for _, resource := range deployment.GetResourcesByType("Microsoft.Security/securityContacts") {
 		contacts = append(contacts, adaptContact(resource))
 	}
@@ -75,7 +75,7 @@ func extractFromNotificationsSources(notificationsSources azure.Value, isEnabled
 }
 
 func adaptSubscriptions(deployment azure.Deployment) []securitycenter.SubscriptionPricing {
-	subscriptions := []securitycenter.SubscriptionPricing{}
+	var subscriptions []securitycenter.SubscriptionPricing
 	for _, resource := range deployment.GetResourcesByType("Microsoft.Security/pricings") {
 		subscriptions = append(subscriptions, adaptSubscription(resource))
 	}
