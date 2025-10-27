@@ -1,6 +1,7 @@
-package library
+package generic
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -17,15 +18,25 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/rubygems"
+	"github.com/aquasecurity/trivy/pkg/detector/library/driver"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// Driver is specific Trivy library driver
+// This driver supports multiple ecosystems using generic comparison logic
+type Driver struct {
+	ecosystem ecosystem.Type
+	comparer  compare.Comparer
+	dbc       db.Config
+}
+
 // NewDriver returns a driver according to the library type
-func NewDriver(libType ftypes.LangType) (Driver, bool) {
+func NewDriver(libType ftypes.LangType) (driver.Driver, bool) {
 	var eco ecosystem.Type
 	var comparer compare.Comparer
+	logger := log.WithPrefix("generic-driver")
 
 	switch libType {
 	case ftypes.Bundler, ftypes.GemSpec:
@@ -74,8 +85,8 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 		eco = ecosystem.Cocoapods
 		comparer = rubygems.Comparer{}
 	case ftypes.CondaPkg, ftypes.CondaEnv:
-		log.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
-		return Driver{}, false
+		logger.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
+		return nil, false
 	case ftypes.Bitnami:
 		eco = ecosystem.Bitnami
 		comparer = bitnami.Comparer{}
@@ -83,12 +94,12 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 		eco = ecosystem.Kubernetes
 		comparer = compare.GenericComparer{}
 	case ftypes.Julia:
-		log.Warn("Julia is supported for SBOM, not for vulnerability scanning")
-		return Driver{}, false
+		logger.Warn("Julia is supported for SBOM, not for vulnerability scanning")
+		return nil, false
 	default:
-		log.Warn("The library type is not supported for vulnerability scanning",
+		logger.Warn("The library type is not supported for vulnerability scanning",
 			log.String("type", string(libType)))
-		return Driver{}, false
+		return nil, false
 	}
 	return Driver{
 		ecosystem: eco,
@@ -97,58 +108,34 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 	}, true
 }
 
-// Driver represents security advisories for each programming language
-type Driver struct {
-	ecosystem ecosystem.Type
-	comparer  compare.Comparer
-	dbc       db.Config
-	// Optional fields for custom implementations (e.g., rootio)
-	typeFunc                  func() string
-	detectVulnerabilitiesFunc func(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error)
-}
-
-// NewCustomDriver creates a Driver with custom type and detect functions
-func NewCustomDriver(typeFunc func() string, detectFunc func(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error)) Driver {
-	return Driver{
-		typeFunc:                  typeFunc,
-		detectVulnerabilitiesFunc: detectFunc,
-	}
-}
-
 // Type returns the driver ecosystem
-func (d *Driver) Type() string {
-	if d.typeFunc != nil {
-		return d.typeFunc()
-	}
+func (d Driver) Type() string {
 	return string(d.ecosystem)
 }
 
-// DetectVulnerabilities scans buckets with the prefix according to the ecosystem.
+// Detect scans buckets with the prefix according to the ecosystem.
 // If "ecosystem" is pip, it looks for buckets with "pip::" and gets security advisories from those buckets.
 // It allows us to add a new data source with the ecosystem prefix (e.g. pip::new-data-source)
 // and detect vulnerabilities without specifying a specific bucket name.
-func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
-	if d.detectVulnerabilitiesFunc != nil {
-		return d.detectVulnerabilitiesFunc(pkgID, pkgName, pkgVer)
-	}
+func (d Driver) Detect(_ context.Context, pkg ftypes.Package) ([]types.DetectedVulnerability, error) {
 	// e.g. "pip::", "npm::"
 	prefix := fmt.Sprintf("%s::", d.ecosystem)
-	advisories, err := d.dbc.GetAdvisories(prefix, vulnerability.NormalizePkgName(d.ecosystem, pkgName))
+	advisories, err := d.dbc.GetAdvisories(prefix, vulnerability.NormalizePkgName(d.ecosystem, pkg.Name))
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s advisories: %w", d.ecosystem, err)
 	}
 
 	var vulns []types.DetectedVulnerability
 	for _, adv := range advisories {
-		if !d.comparer.IsVulnerable(pkgVer, adv) {
+		if !d.comparer.IsVulnerable(pkg.Version, adv) {
 			continue
 		}
 
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  adv.VulnerabilityID,
-			PkgID:            pkgID,
-			PkgName:          pkgName,
-			InstalledVersion: pkgVer,
+			PkgID:            pkg.ID,
+			PkgName:          pkg.Name,
+			InstalledVersion: pkg.Version,
 			FixedVersion:     createFixedVersions(adv),
 			DataSource:       adv.DataSource,
 			Custom:           adv.Custom,

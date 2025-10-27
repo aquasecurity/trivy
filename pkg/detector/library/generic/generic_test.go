@@ -1,4 +1,4 @@
-package library_test
+package generic_test
 
 import (
 	"testing"
@@ -10,7 +10,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/internal/dbtest"
-	"github.com/aquasecurity/trivy/pkg/detector/library"
+	"github.com/aquasecurity/trivy/pkg/detector/library/generic"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -215,10 +215,15 @@ func TestDriver_Detect(t *testing.T) {
 			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()
 
-			driver, ok := library.NewDriver(tt.libType)
+			driver, ok := generic.NewDriver(tt.libType)
 			require.True(t, ok)
 
-			got, err := driver.DetectVulnerabilities("", tt.args.pkgName, tt.args.pkgVer)
+			// TODO change this
+			pkg := ftypes.Package{
+				Name:    tt.args.pkgName,
+				Version: tt.args.pkgVer,
+			}
+			got, err := driver.Detect(t.Context(), pkg)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
