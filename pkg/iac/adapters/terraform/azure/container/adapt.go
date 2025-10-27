@@ -35,6 +35,7 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 		APIServerAuthorizedIPRanges: nil,
 		AzurePolicyEnabled:          iacTypes.BoolDefault(false, resource.GetMetadata()),
 		DiskEncryptionSetID:         iacTypes.StringDefault("", resource.GetMetadata()),
+		AgentPools:                  []container.AgentPool{},
 		RoleBasedAccessControl: container.RoleBasedAccessControl{
 			Metadata: resource.GetMetadata(),
 			Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
@@ -124,5 +125,41 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 		cluster.DiskEncryptionSetID = diskEncryptionSetIDAttr.AsStringValueOrDefault("", resource)
 	}
 
+	// adapt agent pools
+	cluster.AgentPools = adaptAgentPools(resource)
+
 	return cluster
+}
+
+func adaptAgentPools(resource *terraform.Block) []container.AgentPool {
+	pools := []container.AgentPool{}
+
+	// Extract from default_node_pool block
+	if defaultNodePoolBlock := resource.GetBlock("default_node_pool"); defaultNodePoolBlock.IsNotNil() {
+		pools = append(pools, adaptAgentPool(defaultNodePoolBlock))
+	}
+
+	return pools
+}
+
+func adaptAgentPool(block *terraform.Block) container.AgentPool {
+	agentPool := container.AgentPool{
+		Metadata:            block.GetMetadata(),
+		DiskEncryptionSetID: iacTypes.StringDefault("", block.GetMetadata()),
+		NodeType:            iacTypes.StringDefault("", block.GetMetadata()),
+	}
+
+	// Extract disk_encryption_set_id
+	if diskEncryptionSetIDAttr := block.GetAttribute("disk_encryption_set_id"); diskEncryptionSetIDAttr.IsNotNil() {
+		agentPool.DiskEncryptionSetID = diskEncryptionSetIDAttr.AsStringValueOrDefault("", block)
+	}
+
+	// Extract node_type or type (depending on Terraform provider version)
+	if nodeTypeAttr := block.GetAttribute("type"); nodeTypeAttr.IsNotNil() {
+		agentPool.NodeType = nodeTypeAttr.AsStringValueOrDefault("", block)
+	} else if nodeTypeAttr := block.GetAttribute("node_type"); nodeTypeAttr.IsNotNil() {
+		agentPool.NodeType = nodeTypeAttr.AsStringValueOrDefault("", block)
+	}
+
+	return agentPool
 }
