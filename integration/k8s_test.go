@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 
@@ -18,9 +19,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// Note: the test required k8s (kind) cluster installed.
-// "mage test:k8s" will run this test.
-
+// TestK8s tests Kubernetes cluster scanning.
+//
+// NOTE: This test CAN update golden files with the -update flag. The K8s-specific golden files
+// are unique to this test and not shared with other tests.
+// Requires k8s (kind) cluster installed. Run with "mage test:k8s".
 func TestK8s(t *testing.T) {
 	// Set up testing DB
 	cacheDir := initDB(t)
@@ -28,15 +31,24 @@ func TestK8s(t *testing.T) {
 		// Set up the output file
 		outputFile := filepath.Join(t.TempDir(), "output.json")
 
+		// it uses a fixed version of trivy-checks bundle - v1.11.2
+		// its hash is sha256:f3ea8227f838a985f0c884909e9d226362f5fc5ab6021310a179fbb24c5b57fd
 		osArgs := []string{
-			"--cache-dir", cacheDir,
+			"--cache-dir",
+			cacheDir,
 			"k8s",
 			"kind-kind-test",
-			"--report", "summary",
+			"--report",
+			"summary",
+			"--checks-bundle-repository",
+			"mirror.gcr.io/aquasec/trivy-checks:1.11.2@sha256:f3ea8227f838a985f0c884909e9d226362f5fc5ab6021310a179fbb24c5b57fd",
 			"-q",
-			"--timeout", "5m0s",
-			"--format", "json",
-			"--output", outputFile,
+			"--timeout",
+			"5m0s",
+			"--format",
+			"json",
+			"--output",
+			outputFile,
 		}
 
 		// Run Trivy
@@ -143,13 +155,15 @@ func TestK8s(t *testing.T) {
 			cacheDir,
 			"k8s",
 			"limitedcontext",
-			"--kubeconfig", "limitedconfig",
+			"--kubeconfig",
+			"limitedconfig",
 			"--report",
 			"summary",
 			"-q",
 			"--timeout",
 			"5m0s",
-			"--include-namespaces", "limitedns",
+			"--include-namespaces",
+			"limitedns",
 			"--format",
 			"json",
 			"--output",

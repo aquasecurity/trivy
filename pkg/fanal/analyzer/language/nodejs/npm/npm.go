@@ -44,7 +44,7 @@ func newNpmLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, e
 	}, nil
 }
 
-func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a npmLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	// Parse package-lock.json
 	required := func(path string, _ fs.DirEntry) bool {
 		return filepath.Base(path) == types.NpmPkgLock || input.FilePatterns.Match(path)
@@ -59,7 +59,7 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 			licenses = make(map[string][]string)
 		}
 
-		app, err := a.parseNpmPkgLock(input.FS, filePath)
+		app, err := a.parseNpmPkgLock(ctx, input.FS, filePath)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
@@ -108,7 +108,7 @@ func (a npmLibraryAnalyzer) Version() int {
 	return version
 }
 
-func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, filePath string) (*types.Application, error) {
+func (a npmLibraryAnalyzer) parseNpmPkgLock(ctx context.Context, fsys fs.FS, filePath string) (*types.Application, error) {
 	f, err := fsys.Open(filePath)
 	if err != nil {
 		return nil, xerrors.Errorf("file open error: %w", err)
@@ -121,7 +121,7 @@ func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, filePath string) (*types
 	}
 
 	// parse package-lock.json file
-	return language.Parse(types.Npm, filePath, file, a.lockParser)
+	return language.Parse(ctx, types.Npm, filePath, file, a.lockParser)
 }
 
 func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[string][]string, error) {

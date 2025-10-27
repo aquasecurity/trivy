@@ -1,6 +1,8 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:88702f6b6133bf06cc46af48437d0c0fc661239155548757c65916504a0e5eee",
   "ArtifactName": "testdata/fixtures/images/busybox-with-lockfile.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -9,6 +11,9 @@
     "DiffIDs": [
       "sha256:797ac4999b67d8c38a596919efa5b7b6a4a8fd5814cb8564efa482c5d8403e6d",
       "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+    ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:busybox-with-lockfile"
     ],
     "ImageConfig": {
       "architecture": "amd64",

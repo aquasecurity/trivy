@@ -56,8 +56,7 @@ func NewMarshaler(version string) Marshaler {
 // MarshalReport converts the Trivy report to the CycloneDX format
 func (m *Marshaler) MarshalReport(ctx context.Context, report types.Report) (*cdx.BOM, error) {
 	// Convert into an intermediate representation
-	opts := core.Options{GenerateBOMRef: true}
-	bom, err := sbomio.NewEncoder(opts).Encode(report)
+	bom, err := sbomio.NewEncoder(sbomio.WithBOMRef()).Encode(report)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to marshal report: %w", err)
 	}

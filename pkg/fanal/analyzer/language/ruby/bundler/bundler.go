@@ -21,8 +21,8 @@ const version = 1
 
 type bundlerLibraryAnalyzer struct{}
 
-func (a bundlerLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	res, err := language.Analyze(types.Bundler, input.FilePath, input.Content, bundler.NewParser())
+func (a bundlerLibraryAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	res, err := language.Analyze(ctx, types.Bundler, input.FilePath, input.Content, bundler.NewParser())
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse Gemfile.lock: %w", err)
 	}

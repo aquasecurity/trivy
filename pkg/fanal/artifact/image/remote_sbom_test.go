@@ -121,6 +121,18 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 				BlobIDs: []string{
 					"sha256:066b9998617ffb7dfe0a3219ac5c3efc1008a6223606fcf474e7d5c965e4e8da",
 				},
+				ImageMetadata: artifact.ImageMetadata{
+					ID: "sha256:9c6f0724472873bb50a2ae67a9e7adcb57673a183cea8b06eb778dca859181b5",
+					DiffIDs: []string{
+						"sha256:994393dc58e7931862558d06e46aa2bb17487044f670f310dffe1d24e4d1eec7",
+					},
+					RepoTags: []string{
+						"alpine:3.16",
+					},
+					RepoDigests: []string{
+						"alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad",
+					},
+				},
 			},
 		},
 		{

@@ -120,7 +120,14 @@ type registryOption struct {
 	AuthLogin     bool
 }
 
+// TestRegistry tests scanning images from a container registry.
+//
+// Golden files are shared with TestTar.
 func TestRegistry(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestRegistry when -update flag is set. Golden files should be updated via TestTar.")
+	}
+
 	ctx := t.Context()
 
 	baseDir, err := filepath.Abs(".")
@@ -168,7 +175,7 @@ func TestRegistry(t *testing.T) {
 				Username: authUsername,
 				Password: authPassword,
 			},
-			golden: "testdata/alpine-310.json.golden",
+			golden: goldenAlpine310JSON,
 		},
 		{
 			name:      "authenticate with registry token",
@@ -181,7 +188,7 @@ func TestRegistry(t *testing.T) {
 				Password:      authPassword,
 				RegistryToken: true,
 			},
-			golden: "testdata/alpine-310.json.golden",
+			golden: goldenAlpine310JSON,
 		},
 		{
 			name:      "authenticate with 'trivy registry login'",
@@ -193,7 +200,7 @@ func TestRegistry(t *testing.T) {
 				Password:  authPassword,
 				AuthLogin: true,
 			},
-			golden: "testdata/alpine-310.json.golden",
+			golden: goldenAlpine310JSON,
 		},
 		{
 			name:      "amazonlinux 2",
@@ -204,7 +211,7 @@ func TestRegistry(t *testing.T) {
 				Username: authUsername,
 				Password: authPassword,
 			},
-			golden: "testdata/amazon-2.json.golden",
+			golden: goldenAmazon2,
 		},
 		{
 			name:      "debian buster",
@@ -215,7 +222,7 @@ func TestRegistry(t *testing.T) {
 				Username: authUsername,
 				Password: authPassword,
 			},
-			golden: "testdata/debian-buster.json.golden",
+			golden: goldenDebianBuster,
 		},
 		{
 			name:      "sad path",
@@ -239,10 +246,12 @@ func TestRegistry(t *testing.T) {
 			require.NoError(t, err)
 
 			// Run Trivy
-			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
-				wantErr: tt.wantErr,
+			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
+				wantErr:  tt.wantErr,
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: overrideFuncs(overrideUID, func(_ *testing.T, want, _ *types.Report) {
 					want.ArtifactName = s
+					want.Metadata.RepoTags = []string{s}
 					for i := range want.Results {
 						want.Results[i].Target = fmt.Sprintf("%s (%s)", s, tt.os)
 					}

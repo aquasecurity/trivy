@@ -89,7 +89,7 @@ func (a *ImageFile) Inspect(ctx context.Context) (artifact.Reference, error) {
 		return artifact.Reference{}, xerrors.Errorf("cache calculation error: %w", err)
 	}
 
-	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
+	if err = a.cache.PutBlob(ctx, cacheKey, blobInfo); err != nil {
 		return artifact.Reference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 
@@ -119,5 +119,5 @@ func (a *ImageFile) calcCacheKey(blobInfo types.BlobInfo) (string, error) {
 
 func (a *ImageFile) Clean(reference artifact.Reference) error {
 	_ = a.file.Close()
-	return a.cache.DeleteBlobs(reference.BlobIDs)
+	return a.cache.DeleteBlobs(context.TODO(), reference.BlobIDs)
 }

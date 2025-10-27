@@ -4735,9 +4735,26 @@
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
         },
+        "azurepolicy": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.container.AzurePolicy"
+        },
         "omsagent": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.container.OMSAgent"
+        }
+      }
+    },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.container.AzurePolicy": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "enabled": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
         }
       }
     },
@@ -4770,6 +4787,14 @@
             "type": "object",
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
           }
+        },
+        "azurepolicyenabled": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
+        },
+        "diskencryptionsetid": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         },
         "enableprivatecluster": {
           "type": "object",

@@ -64,7 +64,7 @@ func Test_ScanFS(t *testing.T) {
 			assert.Len(t, failed, len(tc.expectedIDs))
 
 			ids := lo.Map(failed, func(res scan.Result, _ int) string {
-				return res.Rule().AVDID
+				return res.Rule().ID
 			})
 			sort.Strings(ids)
 

@@ -3,12 +3,16 @@
 package integration
 
 import (
-	"path/filepath"
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// TestConvert tests the convert command with various output formats.
+//
+// NOTE: This test CAN update golden files with the -update flag because the golden files
+// used here are not shared with other tests. These format conversion golden files are unique
+// to this test and should be updated here.
 func TestConvert(t *testing.T) {
 	type args struct {
 		input          string
@@ -18,18 +22,17 @@ func TestConvert(t *testing.T) {
 		listAllPkgs    bool
 	}
 	tests := []struct {
-		name     string
-		args     args
-		golden   string
-		override OverrideFunc
+		name   string
+		args   args
+		golden string
 	}{
 		{
 			name: "npm",
 			args: args{
-				input:  "testdata/npm.json.golden",
+				input:  goldenNPM,
 				format: "cyclonedx",
 			},
-			golden: "testdata/npm-cyclonedx.json.golden",
+			golden: goldenNPMCycloneDX,
 		},
 		{
 			name: "npm without package UID",
@@ -37,17 +40,17 @@ func TestConvert(t *testing.T) {
 				input:  "testdata/fixtures/convert/npm.json.golden",
 				format: "cyclonedx",
 			},
-			golden: "testdata/npm-cyclonedx.json.golden",
+			golden: goldenNPMCycloneDX,
 		},
 		{
 			name: "npm with suppressed vulnerability",
 			args: args{
-				input:          "testdata/fixtures/convert/npm-with-suppressed.json.golden",
+				input:          goldenConvertNPMWithSuppressed,
 				format:         "json",
 				showSuppressed: true,
 				listAllPkgs:    true,
 			},
-			golden: "testdata/fixtures/convert/npm-with-suppressed.json.golden",
+			golden: goldenConvertNPMWithSuppressed,
 		},
 	}
 
@@ -55,6 +58,7 @@ func TestConvert(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := []string{
 				"convert",
+				tt.args.input,
 				"--cache-dir",
 				t.TempDir(),
 				"-q",
@@ -70,17 +74,10 @@ func TestConvert(t *testing.T) {
 				osArgs = append(osArgs, "--list-all-pkgs=false")
 			}
 
-			// Set up the output file
-			outputFile := filepath.Join(t.TempDir(), "output.json")
-			if *update {
-				outputFile = tt.golden
-			}
-
-			osArgs = append(osArgs, "--output", outputFile, tt.args.input)
-
 			// Run "trivy convert"
-			runTest(t, osArgs, tt.golden, outputFile, types.Format(tt.args.format), runOptions{
+			runTest(t, osArgs, tt.golden, types.Format(tt.args.format), runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+				override: nil, // Do not use overrides - golden files are generated from this test as the canonical source
 			})
 		})
 	}

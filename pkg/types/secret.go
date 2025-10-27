@@ -6,4 +6,4 @@ import (
 
 type DetectedSecret ftypes.SecretFinding
 
-func (DetectedSecret) findingType() FindingType { return FindingTypeSecret }
+func (DetectedSecret) FindingType() FindingType { return FindingTypeSecret }

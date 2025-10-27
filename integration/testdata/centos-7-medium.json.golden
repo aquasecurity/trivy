@@ -1,6 +1,8 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:f1cb7c7d58b73eac859c395882eec49d50651244e342cd6c68a5c7809785f427",
   "ArtifactName": "testdata/fixtures/images/centos-7.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -12,6 +14,9 @@
     "ImageID": "sha256:f1cb7c7d58b73eac859c395882eec49d50651244e342cd6c68a5c7809785f427",
     "DiffIDs": [
       "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
+    ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:centos-7"
     ],
     "ImageConfig": {
       "architecture": "amd64",

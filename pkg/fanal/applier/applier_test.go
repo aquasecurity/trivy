@@ -43,11 +43,11 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			setUpCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
 
-				require.NoError(t, c.PutArtifact("sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e", types.ArtifactInfo{
+				require.NoError(t, c.PutArtifact(t.Context(), "sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e", types.ArtifactInfo{
 					SchemaVersion: 1,
 				}))
 
-				require.NoError(t, c.PutBlob("sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", types.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", types.BlobInfo{
 					SchemaVersion: 1,
 					Size:          1000,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
@@ -71,7 +71,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					},
 				}))
 
-				require.NoError(t, c.PutBlob("sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5", types.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5", types.BlobInfo{
 					SchemaVersion: 1,
 					Size:          2000,
 					Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
@@ -91,7 +91,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					},
 				}))
 
-				require.NoError(t, c.PutBlob("sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7", types.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7", types.BlobInfo{
 					SchemaVersion: 1,
 					Size:          3000,
 					Digest:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
@@ -244,7 +244,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			},
 			setUpCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutArtifact("sha256:3bb70bd5fb37e05b8ecaaace5d6a6b5ec7834037c07ecb5907355c23ab70352d", types.ArtifactInfo{
+				require.NoError(t, c.PutArtifact(t.Context(), "sha256:3bb70bd5fb37e05b8ecaaace5d6a6b5ec7834037c07ecb5907355c23ab70352d", types.ArtifactInfo{
 					SchemaVersion: 1,
 					HistoryPackages: types.Packages{
 						{
@@ -282,7 +282,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					},
 				}))
 
-				require.NoError(t, c.PutBlob("sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028", types.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028", types.BlobInfo{
 					SchemaVersion: 1,
 					Size:          1000,
 					Digest:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
@@ -513,7 +513,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			},
 			setUpCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutBlob("sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", types.BlobInfo{}))
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", types.BlobInfo{}))
 				return c
 			},
 			wantErr: "layer cache missing",
@@ -530,11 +530,11 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			},
 			setUpCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutArtifact("sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e", types.ArtifactInfo{
+				require.NoError(t, c.PutArtifact(t.Context(), "sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e", types.ArtifactInfo{
 					SchemaVersion: 1,
 				}))
 
-				require.NoError(t, c.PutBlob("sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", types.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", types.BlobInfo{
 					SchemaVersion: 1,
 					Size:          1000,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
@@ -554,7 +554,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					},
 				}))
 
-				require.NoError(t, c.PutBlob("sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5", types.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5", types.BlobInfo{
 					SchemaVersion: 1,
 					Size:          2000,
 					Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
@@ -574,7 +574,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					},
 				}))
 
-				require.NoError(t, c.PutBlob("sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7", types.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7", types.BlobInfo{
 					SchemaVersion: 1,
 					Size:          3000,
 					Digest:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
@@ -700,11 +700,11 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			},
 			setUpCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutArtifact("sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e", types.ArtifactInfo{
+				require.NoError(t, c.PutArtifact(t.Context(), "sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e", types.ArtifactInfo{
 					SchemaVersion: 1,
 				}))
 
-				require.NoError(t, c.PutBlob("sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", types.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", types.BlobInfo{
 					SchemaVersion: 1,
 					OS: types.OS{
 						Family: "debian",
@@ -732,11 +732,11 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			},
 			setUpCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutArtifact("sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e", types.ArtifactInfo{
+				require.NoError(t, c.PutArtifact(t.Context(), "sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e", types.ArtifactInfo{
 					SchemaVersion: 1,
 				}))
 
-				require.NoError(t, c.PutBlob("sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", types.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", types.BlobInfo{
 					SchemaVersion: 1,
 					Size:          1000,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
@@ -772,7 +772,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					},
 				}))
 
-				require.NoError(t, c.PutBlob("sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5", types.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5", types.BlobInfo{
 					SchemaVersion: 1,
 					Size:          2000,
 					Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
@@ -931,11 +931,11 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			},
 			setUpCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutArtifact("sha256:fb44d01953611ba18d43d88e158c25579d18eff42db671182245010620a283f3", types.ArtifactInfo{
+				require.NoError(t, c.PutArtifact(t.Context(), "sha256:fb44d01953611ba18d43d88e158c25579d18eff42db671182245010620a283f3", types.ArtifactInfo{
 					SchemaVersion: 1,
 				}))
 
-				require.NoError(t, c.PutBlob("sha256:2615f175cf3da67c48c6542914744943ee5e9c253547b03e3cfe8aae605c3199", types.BlobInfo{
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:2615f175cf3da67c48c6542914744943ee5e9c253547b03e3cfe8aae605c3199", types.BlobInfo{
 					SchemaVersion: 1,
 					Size:          1000,
 					Digest:        "sha256:fb44d01953611ba18d43d88e158c25579d18eff42db671182245010620a283f3",
@@ -1009,7 +1009,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 
 			a := applier.NewApplier(c)
 
-			got, err := a.ApplyLayers(tt.args.imageID, tt.args.layerIDs)
+			got, err := a.ApplyLayers(t.Context(), tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return

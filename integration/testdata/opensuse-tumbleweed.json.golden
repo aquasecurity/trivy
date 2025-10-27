@@ -1,6 +1,8 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:580e73f5c823232e6587136e9f5428a89afdf77a123bb8575d08208e0cc34b12",
   "ArtifactName": "testdata/fixtures/images/opensuse-tumbleweed.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -12,6 +14,9 @@
     "ImageID": "sha256:580e73f5c823232e6587136e9f5428a89afdf77a123bb8575d08208e0cc34b12",
     "DiffIDs": [
       "sha256:7a335bdf2d91d6d158da360054aa7e477d708187d43fe9d0ac20144cdf90f763"
+    ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:opensuse-tumbleweed"
     ],
     "ImageConfig": {
       "architecture": "amd64",

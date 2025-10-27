@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -322,8 +323,9 @@ func (t Test) VM() error {
 
 // UpdateVMGolden updates golden files for integration tests
 func (t Test) UpdateVMGolden() error {
-	mg.Deps(t.FixtureVMImages)
-	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=vm_integration", "./integration/...", "-update")
+	return errors.New("`mage test:updateVMGolden` is currently not supported. See TestVM function comments in integration/vm_test.go for details")
+	// mg.Deps(t.FixtureVMImages)
+	// return sh.RunWithV(ENV, "go", "test", "-v", "-tags=vm_integration", "./integration/...", "-update")
 }
 
 // E2e runs E2E tests using testscript framework
@@ -506,7 +508,7 @@ func (Helm) UpdateVersion() error {
 
 type SPDX mg.Namespace
 
-// UpdateLicenseExceptions updates 'exception.json' with SPDX license exceptions
-func (SPDX) UpdateLicenseExceptions() error {
+// UpdateLicenseEntries updates both SPDX license IDs and exceptions
+func (SPDX) UpdateLicenseEntries() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_spdx", "./magefiles/spdx.go")
 }

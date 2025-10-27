@@ -1,6 +1,8 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:ed8f0747d483b60657982f0ef1ba74482aed08795cf0eb774b00bc53022a8351",
   "ArtifactName": "testdata/fixtures/images/spring4shell-jre11.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -20,6 +22,9 @@
       "sha256:19da2426772aaa344a242e474fd7906d272fc8ded6eef5b4e461a4aa0725d7e5",
       "sha256:1fdc094b0e85888d2204310083e3c09fff6a4daeecf22692aa6be5e8b4001f94",
       "sha256:192960b65b1579403b36581de471fd2bd75a043b4743552f27ba16623f02c68f"
+    ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:spring4shell-jre11"
     ],
     "ImageConfig": {
       "architecture": "amd64",

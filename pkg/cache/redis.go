@@ -116,43 +116,43 @@ func NewRedisCache(backend, caCertPath, certPath, keyPath string, enableTLS bool
 	}, nil
 }
 
-func (c RedisCache) PutArtifact(artifactID string, artifactConfig types.ArtifactInfo) error {
+func (c RedisCache) PutArtifact(ctx context.Context, artifactID string, artifactConfig types.ArtifactInfo) error {
 	key := fmt.Sprintf("%s::%s::%s", redisPrefix, artifactBucket, artifactID)
 	b, err := json.Marshal(artifactConfig)
 	if err != nil {
 		return xerrors.Errorf("failed to marshal artifact JSON: %w", err)
 	}
-	if err := c.client.Set(context.TODO(), key, string(b), c.expiration).Err(); err != nil {
+	if err := c.client.Set(ctx, key, string(b), c.expiration).Err(); err != nil {
 		return xerrors.Errorf("unable to store artifact information in Redis cache (%s): %w", artifactID, err)
 	}
 	return nil
 }
 
-func (c RedisCache) PutBlob(blobID string, blobInfo types.BlobInfo) error {
+func (c RedisCache) PutBlob(ctx context.Context, blobID string, blobInfo types.BlobInfo) error {
 	b, err := json.Marshal(blobInfo)
 	if err != nil {
 		return xerrors.Errorf("failed to marshal blob JSON: %w", err)
 	}
 	key := fmt.Sprintf("%s::%s::%s", redisPrefix, blobBucket, blobID)
-	if err := c.client.Set(context.TODO(), key, string(b), c.expiration).Err(); err != nil {
+	if err := c.client.Set(ctx, key, string(b), c.expiration).Err(); err != nil {
 		return xerrors.Errorf("unable to store blob information in Redis cache (%s): %w", blobID, err)
 	}
 	return nil
 }
-func (c RedisCache) DeleteBlobs(blobIDs []string) error {
+func (c RedisCache) DeleteBlobs(ctx context.Context, blobIDs []string) error {
 	var errs error
 	for _, blobID := range blobIDs {
 		key := fmt.Sprintf("%s::%s::%s", redisPrefix, blobBucket, blobID)
-		if err := c.client.Del(context.TODO(), key).Err(); err != nil {
+		if err := c.client.Del(ctx, key).Err(); err != nil {
 			errs = multierror.Append(errs, xerrors.Errorf("unable to delete blob %s: %w", blobID, err))
 		}
 	}
 	return errs
 }
 
-func (c RedisCache) GetArtifact(artifactID string) (types.ArtifactInfo, error) {
+func (c RedisCache) GetArtifact(ctx context.Context, artifactID string) (types.ArtifactInfo, error) {
 	key := fmt.Sprintf("%s::%s::%s", redisPrefix, artifactBucket, artifactID)
-	val, err := c.client.Get(context.TODO(), key).Bytes()
+	val, err := c.client.Get(ctx, key).Bytes()
 	if err == redis.Nil {
 		return types.ArtifactInfo{}, xerrors.Errorf("artifact (%s) is missing in Redis cache", artifactID)
 	} else if err != nil {
@@ -167,9 +167,9 @@ func (c RedisCache) GetArtifact(artifactID string) (types.ArtifactInfo, error) {
 	return info, nil
 }
 
-func (c RedisCache) GetBlob(blobID string) (types.BlobInfo, error) {
+func (c RedisCache) GetBlob(ctx context.Context, blobID string) (types.BlobInfo, error) {
 	key := fmt.Sprintf("%s::%s::%s", redisPrefix, blobBucket, blobID)
-	val, err := c.client.Get(context.TODO(), key).Bytes()
+	val, err := c.client.Get(ctx, key).Bytes()
 	if err == redis.Nil {
 		return types.BlobInfo{}, xerrors.Errorf("blob (%s) is missing in Redis cache", blobID)
 	} else if err != nil {
@@ -183,11 +183,11 @@ func (c RedisCache) GetBlob(blobID string) (types.BlobInfo, error) {
 	return blobInfo, nil
 }
 
-func (c RedisCache) MissingBlobs(artifactID string, blobIDs []string) (bool, []string, error) {
+func (c RedisCache) MissingBlobs(ctx context.Context, artifactID string, blobIDs []string) (bool, []string, error) {
 	var missingArtifact bool
 	var missingBlobIDs []string
 	for _, blobID := range blobIDs {
-		blobInfo, err := c.GetBlob(blobID)
+		blobInfo, err := c.GetBlob(ctx, blobID)
 		if err != nil {
 			// error means cache missed blob info
 			missingBlobIDs = append(missingBlobIDs, blobID)
@@ -198,7 +198,7 @@ func (c RedisCache) MissingBlobs(artifactID string, blobIDs []string) (bool, []s
 		}
 	}
 	// get artifact info
-	artifactInfo, err := c.GetArtifact(artifactID)
+	artifactInfo, err := c.GetArtifact(ctx, artifactID)
 	// error means cache missed artifact info
 	if err != nil {
 		return true, missingBlobIDs, nil
@@ -213,9 +213,7 @@ func (c RedisCache) Close() error {
 	return c.client.Close()
 }
 
-func (c RedisCache) Clear() error {
-	ctx := context.Background()
-
+func (c RedisCache) Clear(ctx context.Context) error {
 	for {
 		keys, cursor, err := c.client.Scan(ctx, 0, redisPrefix+"::*", 100).Result()
 		if err != nil {

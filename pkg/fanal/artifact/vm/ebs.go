@@ -9,7 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
-	"github.com/aquasecurity/trivy/pkg/cloud/aws/config"
+	config "github.com/aquasecurity/trivy/pkg/config/aws"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -54,7 +54,7 @@ func (a *EBS) Inspect(ctx context.Context) (artifact.Reference, error) {
 		return artifact.Reference{}, xerrors.Errorf("cache key calculation error: %w", err)
 	}
 
-	if a.hasCache(cacheKey) {
+	if a.hasCache(ctx, cacheKey) {
 		return artifact.Reference{
 			Name:    a.snapshotID,
 			Type:    types.TypeVM,
@@ -68,7 +68,7 @@ func (a *EBS) Inspect(ctx context.Context) (artifact.Reference, error) {
 		return artifact.Reference{}, xerrors.Errorf("inspection error: %w", err)
 	}
 
-	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
+	if err = a.cache.PutBlob(ctx, cacheKey, blobInfo); err != nil {
 		return artifact.Reference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 
@@ -109,8 +109,8 @@ func (a *EBS) calcCacheKey(key string) (string, error) {
 	return s, nil
 }
 
-func (a *EBS) hasCache(cacheKey string) bool {
-	_, missingCacheKeys, err := a.cache.MissingBlobs(cacheKey, []string{cacheKey})
+func (a *EBS) hasCache(ctx context.Context, cacheKey string) bool {
+	_, missingCacheKeys, err := a.cache.MissingBlobs(ctx, cacheKey, []string{cacheKey})
 	if err != nil {
 		a.logger.Debug("Unable to query missing cache", log.Err(err))
 		return false

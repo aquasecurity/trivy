@@ -11,6 +11,7 @@ import (
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/pnpm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -41,7 +42,7 @@ func newPnpmAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) 
 	}, nil
 }
 
-func (a pnpmAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a pnpmAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
 	required := func(path string, _ fs.DirEntry) bool {
@@ -57,7 +58,7 @@ func (a pnpmAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		}
 
 		// Parse pnpm-lock.yaml
-		app, err := language.Parse(types.Pnpm, filePath, r, a.lockParser)
+		app, err := language.Parse(ctx, types.Pnpm, filePath, r, a.lockParser)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
@@ -65,8 +66,11 @@ func (a pnpmAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		}
 
 		// Fill licenses
-		for i, lib := range app.Packages {
-			if l, ok := licenses[lib.ID]; ok {
+		for i, pkg := range app.Packages {
+			// We use snapshots for pnpm package IDs.
+			// But to match licenses, we need to use the ID-building logic as for `package.json` files.
+			id := dependency.ID(types.NodePkg, pkg.Name, pkg.Version)
+			if l, ok := licenses[id]; ok {
 				app.Packages[i].Licenses = l
 			}
 		}

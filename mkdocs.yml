@@ -169,11 +169,21 @@ nav:
               - CLI:
                   - Overview: docs/references/configuration/cli/trivy.md
                   - Clean: docs/references/configuration/cli/trivy_clean.md
+                  - Cloud:
+                      - Cloud: docs/references/configuration/cli/trivy_cloud.md                      
+                      - Cloud Config: docs/references/configuration/cli/trivy_cloud_config.md 
+                      - Cloud Config Edit: docs/references/configuration/cli/trivy_cloud_config_edit.md 
+                      - Cloud Config List: docs/references/configuration/cli/trivy_cloud_config_list.md
+                      - Cloud Config Set: docs/references/configuration/cli/trivy_cloud_config_set.md
+                      - Cloud Config Unset: docs/references/configuration/cli/trivy_cloud_config_unset.md
+                      - Cloud Config Get: docs/references/configuration/cli/trivy_cloud_config_get.md
                   - Config: docs/references/configuration/cli/trivy_config.md
                   - Convert: docs/references/configuration/cli/trivy_convert.md
                   - Filesystem: docs/references/configuration/cli/trivy_filesystem.md
                   - Image: docs/references/configuration/cli/trivy_image.md
                   - Kubernetes: docs/references/configuration/cli/trivy_kubernetes.md
+                  - Login: docs/references/configuration/cli/trivy_login.md
+                  - Logout: docs/references/configuration/cli/trivy_logout.md
                   - Module:
                       - Module: docs/references/configuration/cli/trivy_module.md
                       - Module Install: docs/references/configuration/cli/trivy_module_install.md
@@ -226,6 +236,9 @@ nav:
       - Contribute Rego Checks:
           - Overview: community/contribute/checks/overview.md
           - Add Service Support: community/contribute/checks/service-support.md
+      - Contribute Vulnerability Data Sources:
+          - Overview: community/contribute/vulnerability-database/overview.md
+          - Add Vulnerability Advisory Source: community/contribute/vulnerability-database/add-vulnerability-source.md
       - Maintainer:
           - PR Review: community/maintainer/pr-review.md
           - Release Flow: community/maintainer/release-flow.md

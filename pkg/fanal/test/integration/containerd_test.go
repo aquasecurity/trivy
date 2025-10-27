@@ -678,7 +678,7 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			require.NoError(t, err)
 
 			defer func() {
-				c.Clear()
+				c.Clear(t.Context())
 				c.Close()
 			}()
 
@@ -712,8 +712,11 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			require.Equal(t, tt.wantMetadata, ref.ImageMetadata)
 
 			a := applier.NewApplier(c)
-			got, err := a.ApplyLayers(ref.ID, ref.BlobIDs)
+			got, err := a.ApplyLayers(ctx, ref.ID, ref.BlobIDs)
 			require.NoError(t, err)
+
+			// Clear package detail fields
+			clearPackageDetailFields(got.Packages)
 
 			tag := strings.Split(tt.imageName, ":")[1]
 			goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", tag)
@@ -813,7 +816,7 @@ func TestContainerd_PullImage(t *testing.T) {
 			require.NoError(t, err)
 
 			defer func() {
-				c.Clear()
+				c.Clear(t.Context())
 				c.Close()
 			}()
 
@@ -841,7 +844,7 @@ func TestContainerd_PullImage(t *testing.T) {
 			require.Equal(t, tt.wantMetadata, ref.ImageMetadata)
 
 			a := applier.NewApplier(c)
-			got, err := a.ApplyLayers(ref.ID, ref.BlobIDs)
+			got, err := a.ApplyLayers(ctx, ref.ID, ref.BlobIDs)
 			require.NoError(t, err)
 
 			// Parse a golden file
@@ -852,6 +855,9 @@ func TestContainerd_PullImage(t *testing.T) {
 			var wantPkgs types.Packages
 			err = json.NewDecoder(golden).Decode(&wantPkgs)
 			require.NoError(t, err)
+
+			// Clear package detail fields for comparison
+			clearPackageDetailFields(got.Packages)
 
 			// Assert
 			assert.Equal(t, wantPkgs, got.Packages)
