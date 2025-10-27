@@ -2267,7 +2267,7 @@ func TestPom_Parse(t *testing.T) {
 				ts := httptest.NewServer(h)
 				defaultRepo = ts.URL
 
-				// Enable custom repository to by sure in repositroy order checking
+				// Enable custom repository to be sure in repository order checking
 				if tt.enableRepoForSettingsRepo {
 					ch := http.FileServer(http.Dir(filepath.Join("testdata", "repository-for-settings-repo")))
 					cts := httptest.NewServer(ch)
