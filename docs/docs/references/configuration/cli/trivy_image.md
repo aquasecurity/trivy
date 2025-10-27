@@ -39,7 +39,6 @@ trivy image [flags] IMAGE_NAME
       --check-namespaces strings          Rego namespaces
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "mirror.gcr.io/aquasec/trivy-checks:1")
       --cloud-api-url string              API URL for Trivy Cloud platform (default "https://api.trivy.dev")
-      --cloud-download-misconfig-config   Download misconfig configurations from Trivy Cloud platform (default true)
       --cloud-download-secret-config      Download secret configurations from Trivy Cloud platform (default true)
       --cloud-server-scanning             Use server-side image scanning in Trivy Cloud platform (default true)
       --cloud-token string                Token used to athenticate with Trivy Cloud platform

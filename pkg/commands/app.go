@@ -351,6 +351,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewScanFlagGroup(),
 		flag.NewSecretFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
+		flag.NewCloudFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -417,6 +418,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewScanFlagGroup(),
 		flag.NewSecretFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
+		flag.NewCloudFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -482,6 +484,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewSecretFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
 		flag.NewRepoFlagGroup(),
+		flag.NewCloudFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -704,6 +707,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewModuleFlagGroup(),
 		flag.NewRegistryFlagGroup(),
 		flag.NewRegoFlagGroup(),
+		flag.NewCloudFlagGroup(),
 		&flag.K8sFlagGroup{
 			// Keep only --k8s-version flag and disable others
 			K8sVersion: flag.K8sVersionFlag.Clone(),
@@ -1097,6 +1101,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewScanFlagGroup(),
 		flag.NewSecretFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
+		flag.NewCloudFlagGroup(),
 		&flag.AWSFlagGroup{
 			Region: &flag.Flag[string]{
 				Name:       "aws-region",
