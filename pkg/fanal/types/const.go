@@ -182,6 +182,7 @@ const (
 	PipfileLock     = "Pipfile.lock"
 	PoetryLock      = "poetry.lock"
 	UvLock          = "uv.lock"
+	PyLock          = "pylock.toml"
 
 	GemfileLock = "Gemfile.lock"
 
