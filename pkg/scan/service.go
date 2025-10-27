@@ -126,7 +126,11 @@ func (s Service) generateArtifactID(artifactInfo artifact.Reference) string {
 		// Use the Reference field if available
 		ref := artifactInfo.ImageMetadata.Reference
 		if ref.IsEmpty() {
-			// If no reference is available, fall back to using the image ID directly
+			// Reference is empty when RepoTags and RepoDigests are both empty.
+			// This happens in the following cases:
+			// 1. Images built without tags (e.g., "docker build ." without -t flag)
+			// 2. Images saved by ID (e.g., "docker save <image-id>" or "docker save sha256:xxx")
+			// In these cases, fall back to using the image ID directly.
 			log.Debug("No image reference available for artifact ID calculation, using image ID directly",
 				log.String("image", artifactInfo.Name))
 			return imageID
