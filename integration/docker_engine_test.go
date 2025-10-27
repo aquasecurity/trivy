@@ -228,23 +228,8 @@ func TestDockerEngine(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			imageName := tt.input
 			if !tt.invalidImage {
-				testfile, err := os.Open(tt.input)
-				require.NoError(t, err, tt.name)
-				defer testfile.Close()
-
-				// Extract RepoTags from archive BEFORE loading to remove conflicting images
-				repoTags := cli.ExtractRepoTagsFromArchive(t, tt.input)
-
-				// Remove existing images with the same RepoTags to avoid conflicts
-				for _, tag := range repoTags {
-					cli.ImageRemove(t, ctx, tag)
-				}
-
-				// Ensure image doesn't already exist
-				cli.ImageRemove(t, ctx, tt.input)
-
-				// Load image into docker engine
-				imageName = cli.ImageLoad(t, ctx, tt.input)
+				// Removes any existing images with conflicting RepoTags and loading images
+				imageName = cli.ImageCleanLoad(t, ctx, tt.input)
 			}
 
 			osArgs := []string{

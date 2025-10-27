@@ -63,10 +63,14 @@ func (c *DockerClient) ImageRemove(t *testing.T, ctx context.Context, imageID st
 	})
 }
 
-// ExtractRepoTagsFromArchive extracts all RepoTags from a Docker archive tar file
-func (c *DockerClient) ExtractRepoTagsFromArchive(t *testing.T, archivePath string) []string {
+// ImageCleanLoad performs a clean load of a Docker image from a tar archive.
+// It removes any existing images with conflicting RepoTags before loading,
+// ensuring the loaded image has the correct RepoTags from the archive.
+// It automatically registers cleanup via t.Cleanup() to remove the loaded image after the test.
+func (c *DockerClient) ImageCleanLoad(t *testing.T, ctx context.Context, archivePath string) string {
 	t.Helper()
 
+	// Extract RepoTags from archive
 	opener := func() (io.ReadCloser, error) {
 		return gzutil.OpenFile(archivePath)
 	}
@@ -79,5 +83,12 @@ func (c *DockerClient) ExtractRepoTagsFromArchive(t *testing.T, archivePath stri
 	for _, m := range manifest {
 		allTags = append(allTags, m.RepoTags...)
 	}
-	return allTags
+
+	// Remove existing images with the same RepoTags to avoid conflicts
+	for _, tag := range allTags {
+		c.ImageRemove(t, ctx, tag)
+	}
+
+	// Load image
+	return c.ImageLoad(t, ctx, archivePath)
 }
