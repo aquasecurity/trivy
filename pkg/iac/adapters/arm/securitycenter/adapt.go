@@ -13,7 +13,8 @@ func Adapt(deployment azure.Deployment) securitycenter.SecurityCenter {
 	}
 }
 
-func adaptContacts(deployment azure.Deployment) (contacts []securitycenter.Contact) {
+func adaptContacts(deployment azure.Deployment) []securitycenter.Contact {
+	contacts := []securitycenter.Contact{}
 	for _, resource := range deployment.GetResourcesByType("Microsoft.Security/securityContacts") {
 		contacts = append(contacts, adaptContact(resource))
 	}
@@ -73,7 +74,8 @@ func extractFromNotificationsSources(notificationsSources azure.Value, isEnabled
 	return enableAlertNotifications, minimalSeverity
 }
 
-func adaptSubscriptions(deployment azure.Deployment) (subscriptions []securitycenter.SubscriptionPricing) {
+func adaptSubscriptions(deployment azure.Deployment) []securitycenter.SubscriptionPricing {
+	subscriptions := []securitycenter.SubscriptionPricing{}
 	for _, resource := range deployment.GetResourcesByType("Microsoft.Security/pricings") {
 		subscriptions = append(subscriptions, adaptSubscription(resource))
 	}
