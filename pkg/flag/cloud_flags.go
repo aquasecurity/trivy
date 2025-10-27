@@ -44,14 +44,6 @@ var (
 		TelemetrySafe: true,
 	}
 
-	CloudMisconfigConfigFlag = Flag[bool]{
-		Name:          "cloud-download-misconfig-config",
-		ConfigName:    "cloud.download-misconfig-config",
-		Default:       true,
-		Usage:         "Download misconfig configurations from Trivy Cloud platform",
-		TelemetrySafe: true,
-	}
-
 	CloudUseServerSideScanningFlag = Flag[bool]{
 		Name:          "cloud-server-scanning",
 		ConfigName:    "cloud.server-scanning",
@@ -67,7 +59,6 @@ type CloudFlagGroup struct {
 	CloudTrivyServerURL        *Flag[string]
 	CloudUploadResults         *Flag[bool]
 	CloudSecretConfig          *Flag[bool]
-	CloudMisconfigConfig       *Flag[bool]
 	CloudUseServerSideScanning *Flag[bool]
 }
 
@@ -78,7 +69,6 @@ func NewCloudFlagGroup() *CloudFlagGroup {
 		CloudTrivyServerURL:        CloudTrivyServerURLFlag.Clone(),
 		CloudUploadResults:         CloudUploadResultsFlag.Clone(),
 		CloudSecretConfig:          CloudSecretConfigFlag.Clone(),
-		CloudMisconfigConfig:       CloudMisconfigConfigFlag.Clone(),
 		CloudUseServerSideScanning: CloudUseServerSideScanningFlag.Clone(),
 	}
 }
@@ -94,7 +84,6 @@ func (f *CloudFlagGroup) Flags() []Flagger {
 		f.CloudTrivyServerURL,
 		f.CloudUploadResults,
 		f.CloudSecretConfig,
-		f.CloudMisconfigConfig,
 		f.CloudUseServerSideScanning,
 	}
 }
@@ -111,7 +100,6 @@ type CloudOptions struct {
 	TrivyServerURL        string
 	UploadResults         bool
 	SecretConfig          bool
-	MisconfigConfig       bool
 	UseServerSideScanning bool
 }
 
@@ -123,7 +111,6 @@ func (f *CloudFlagGroup) ToOptions(opts *Options) error {
 		TrivyServerURL:        f.CloudTrivyServerURL.Value(),
 		UploadResults:         f.CloudUploadResults.Value(),
 		SecretConfig:          f.CloudSecretConfig.Value(),
-		MisconfigConfig:       f.CloudMisconfigConfig.Value(),
 		UseServerSideScanning: f.CloudUseServerSideScanning.Value(),
 	}
 	return nil
