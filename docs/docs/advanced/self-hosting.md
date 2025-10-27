@@ -104,7 +104,8 @@ For Java DB the process is the same, except for the following:
 
 1. Image location is `ghcr.io/aquasecurity/trivy-java-db:1`
 2. Archive file name is `javadb.tar.gz`
-3. DB file name is `trivy-java.db`
+3. Java DB files names are `trivy-java.db` and `metadata.json`
+4. The cache subdirectory is `java-db`.
 
 ## VEX Hub
 
