@@ -1,6 +1,7 @@
 package image
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"fmt"
@@ -183,30 +184,26 @@ func (a Artifact) findMatchingReference(artifactName string, repoTags, repoDiges
 
 // parseRepoTags parses repo tags into name.Tag
 func (a Artifact) parseRepoTags(repoTags []string) []name.Tag {
-	var tags []name.Tag
-	for _, tagStr := range repoTags {
+	return lo.FilterMap(repoTags, func(tagStr string, _ int) (name.Tag, bool) {
 		tag, err := name.NewTag(tagStr)
 		if err != nil {
 			a.logger.Debug("Failed to parse repo tag", log.String("tag", tagStr), log.Err(err))
-			continue
+			return name.Tag{}, false
 		}
-		tags = append(tags, tag)
-	}
-	return tags
+		return tag, true
+	})
 }
 
 // parseRepoDigests parses repo digests into name.Digest
 func (a Artifact) parseRepoDigests(repoDigests []string) []name.Digest {
-	var digests []name.Digest
-	for _, digestStr := range repoDigests {
+	return lo.FilterMap(repoDigests, func(digestStr string, _ int) (name.Digest, bool) {
 		digest, err := name.NewDigest(digestStr)
 		if err != nil {
 			a.logger.Debug("Failed to parse repo digest", log.String("digest", digestStr), log.Err(err))
-			continue
+			return name.Digest{}, false
 		}
-		digests = append(digests, digest)
-	}
-	return digests
+		return digest, true
+	})
 }
 
 // findMatchingRepoReference finds a RepoTag or RepoDigest that matches the artifact name
@@ -217,10 +214,7 @@ func (a Artifact) findMatchingRepoReference(artifactName string, repoTags []name
 	}
 
 	// Select the first available reference as fallback
-	var fallback name.Reference = lo.FirstOrEmpty(repoTags)
-	if lo.IsNil(fallback) {
-		fallback = lo.FirstOrEmpty(repoDigests)
-	}
+	fallback := cmp.Or[name.Reference](lo.FirstOrEmpty(repoTags), lo.FirstOrEmpty(repoDigests))
 
 	// TODO(knqyf263): refactor to use a more robust method instead of suffix-based detection
 	// Check if artifact name looks like a file path (tar archive)
@@ -231,7 +225,7 @@ func (a Artifact) findMatchingRepoReference(artifactName string, repoTags []name
 		".tgz",
 	}
 	ext := strings.ToLower(filepath.Ext(artifactName))
-	if slices.Contains(archiveExts, ext) || strings.Contains(artifactName, string(filepath.Separator)) {
+	if slices.Contains(archiveExts, ext) {
 		// For file paths, use the first RepoTag or RepoDigest
 		return fallback
 	}
@@ -268,7 +262,8 @@ func (a Artifact) findMatchingRepoReference(artifactName string, repoTags []name
 	// This also handles the case when the artifact is specified by image ID (e.g., `trivy image sha256:abc123`)
 	a.logger.Debug("No matching repo tag/digest found for artifact, using first one",
 		log.String("name", artifactName),
-		log.String("ref", artifactRefName))
+		log.String("ref", artifactRefName),
+		log.String("fallback", fallback.String()))
 	return fallback
 }
 
