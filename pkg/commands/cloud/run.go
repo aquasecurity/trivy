@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // UpdateOptsForCloudIntegration checks if the Trivy Cloud integration is enabled and configures the options accordingly
@@ -38,7 +39,7 @@ func UpdateOptsForCloudIntegration(ctx context.Context, opts *flag.Options) erro
 		opts.CustomHeaders.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
 	}
 
-	if opts.CloudOptions.SecretConfig || opts.CloudOptions.MisconfigConfig {
+	if opts.CloudOptions.SecretConfig && opts.Scanners.Enabled(types.SecretScanner) {
 		if err := cloud.GetConfigs(ctx, opts, accessToken); err != nil {
 			return xerrors.Errorf("failed to download configs: %w", err)
 		}
