@@ -132,7 +132,7 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 }
 
 func adaptAgentPools(resource *terraform.Block) []container.AgentPool {
-	var pools []container.AgentPool
+	pools := []container.AgentPool{}
 
 	// Extract from default_node_pool block
 	if defaultNodePoolBlock := resource.GetBlock("default_node_pool"); defaultNodePoolBlock.IsNotNil() {
