@@ -288,7 +288,7 @@ func TestDockerEngine(t *testing.T) {
 					got.ArtifactName = tt.input
 
 					// Override Result.Target for each result to match golden file expectations
-					require.Equal(t, len(want.Results), len(got.Results))
+					require.Len(t, got.Results, len(want.Results))
 					for i := range got.Results {
 						got.Results[i].Target = want.Results[i].Target
 					}

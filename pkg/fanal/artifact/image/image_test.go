@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/cachetest"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -444,6 +445,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 					RepoTags:    []string{"alpine:3.11"},
 					RepoDigests: nil,
+					Reference:   testutil.MustParseReference(t, "alpine:3.11"),
 					ConfigFile: v1.ConfigFile{
 						Architecture:  "amd64",
 						Author:        "",
@@ -1776,6 +1778,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 					RepoTags:    []string{"vuln-image:latest"},
 					RepoDigests: nil,
+					Reference:   testutil.MustParseReference(t, "vuln-image:latest"),
 					ConfigFile: v1.ConfigFile{
 						Architecture:  "amd64",
 						Author:        "",
@@ -1933,6 +1936,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 					RepoTags:    []string{"vuln-image:latest"},
 					RepoDigests: nil,
+					Reference:   testutil.MustParseReference(t, "vuln-image:latest"),
 					ConfigFile: v1.ConfigFile{
 						Architecture:  "amd64",
 						Author:        "",
