@@ -23,16 +23,16 @@ func adaptCompute(modules terraform.Modules) compute.Compute {
 	for _, module := range modules {
 
 		for _, resource := range module.GetResourcesByType("azurerm_linux_virtual_machine") {
-			linuxVirtualMachines = append(linuxVirtualMachines, adaptLinuxVM(resource))
+			linuxVirtualMachines = append(linuxVirtualMachines, adaptLinuxVM(resource, modules))
 		}
 		for _, resource := range module.GetResourcesByType("azurerm_windows_virtual_machine") {
-			windowsVirtualMachines = append(windowsVirtualMachines, adaptWindowsVM(resource))
+			windowsVirtualMachines = append(windowsVirtualMachines, adaptWindowsVM(resource, modules))
 		}
 		for _, resource := range module.GetResourcesByType(AzureVirtualMachine) {
 			if linuxConfigBlock := resource.GetBlock("os_profile_linux_config"); linuxConfigBlock.IsNotNil() {
-				linuxVirtualMachines = append(linuxVirtualMachines, adaptLinuxVM(resource))
+				linuxVirtualMachines = append(linuxVirtualMachines, adaptLinuxVM(resource, modules))
 			} else if windowsConfigBlock := resource.GetBlock("os_profile_windows_config"); windowsConfigBlock.IsNotNil() {
-				windowsVirtualMachines = append(windowsVirtualMachines, adaptWindowsVM(resource))
+				windowsVirtualMachines = append(windowsVirtualMachines, adaptWindowsVM(resource, modules))
 			}
 		}
 		for _, resource := range module.GetResourcesByType("azurerm_managed_disk") {
@@ -68,7 +68,7 @@ func adaptManagedDisk(resource *terraform.Block) compute.ManagedDisk {
 	return disk
 }
 
-func adaptLinuxVM(resource *terraform.Block) compute.LinuxVirtualMachine {
+func adaptLinuxVM(resource *terraform.Block, modules terraform.Modules) compute.LinuxVirtualMachine {
 	workingBlock := resource
 
 	if resource.TypeLabel() == AzureVirtualMachine {
@@ -86,9 +86,7 @@ func adaptLinuxVM(resource *terraform.Block) compute.LinuxVirtualMachine {
 		customDataVal = iacTypes.String(string(encoded), customDataAttr.GetMetadata())
 	}
 
-	// Extract network_interface_ids
-	nicIDsAttr := resource.GetAttribute("network_interface_ids")
-	nicIDs := nicIDsAttr.AsStringValues()
+	networkInterfaces := resolveNetworkInterfaces(resource, modules)
 
 	if resource.TypeLabel() == AzureVirtualMachine {
 		workingBlock = resource.GetBlock("os_profile_linux_config")
@@ -99,9 +97,9 @@ func adaptLinuxVM(resource *terraform.Block) compute.LinuxVirtualMachine {
 	return compute.LinuxVirtualMachine{
 		Metadata: resource.GetMetadata(),
 		VirtualMachine: compute.VirtualMachine{
-			Metadata:            resource.GetMetadata(),
-			CustomData:          customDataVal,
-			NetworkInterfaceIDs: nicIDs,
+			Metadata:          resource.GetMetadata(),
+			CustomData:        customDataVal,
+			NetworkInterfaces: networkInterfaces,
 		},
 		OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
 			Metadata:                      resource.GetMetadata(),
@@ -110,7 +108,7 @@ func adaptLinuxVM(resource *terraform.Block) compute.LinuxVirtualMachine {
 	}
 }
 
-func adaptWindowsVM(resource *terraform.Block) compute.WindowsVirtualMachine {
+func adaptWindowsVM(resource *terraform.Block, modules terraform.Modules) compute.WindowsVirtualMachine {
 	workingBlock := resource
 
 	if resource.TypeLabel() == AzureVirtualMachine {
@@ -130,16 +128,63 @@ func adaptWindowsVM(resource *terraform.Block) compute.WindowsVirtualMachine {
 		customDataVal = iacTypes.String(string(encoded), customDataAttr.GetMetadata())
 	}
 
-	// Extract network_interface_ids
-	nicIDsAttr := resource.GetAttribute("network_interface_ids")
-	nicIDs := nicIDsAttr.AsStringValues()
+	networkInterfaces := resolveNetworkInterfaces(resource, modules)
 
 	return compute.WindowsVirtualMachine{
 		Metadata: resource.GetMetadata(),
 		VirtualMachine: compute.VirtualMachine{
-			Metadata:            resource.GetMetadata(),
-			CustomData:          customDataVal,
-			NetworkInterfaceIDs: nicIDs,
+			Metadata:          resource.GetMetadata(),
+			CustomData:        customDataVal,
+			NetworkInterfaces: networkInterfaces,
 		},
 	}
+}
+
+func resolveNetworkInterfaces(resource *terraform.Block, modules terraform.Modules) []compute.NetworkInterface {
+	var networkInterfaces []compute.NetworkInterface
+
+	nicIDsAttr := resource.GetAttribute("network_interface_ids")
+	if nicIDsAttr.IsNil() {
+		return networkInterfaces
+	}
+
+	for _, nicIDVal := range nicIDsAttr.AsStringValues() {
+		if referencedNIC, err := modules.GetReferencedBlock(nicIDsAttr, resource); err == nil {
+			ni := adaptNetworkInterface(referencedNIC)
+			networkInterfaces = append(networkInterfaces, ni)
+			continue
+		}
+
+		networkInterfaces = append(networkInterfaces, compute.NetworkInterface{
+			Metadata:        nicIDVal.GetMetadata(),
+			SubnetID:        iacTypes.StringDefault("", nicIDVal.GetMetadata()),
+			SecurityGroups:  nil,
+			HasPublicIP:     iacTypes.BoolDefault(false, nicIDVal.GetMetadata()),
+			PublicIPAddress: iacTypes.StringDefault("", nicIDVal.GetMetadata()),
+		})
+	}
+
+	return networkInterfaces
+}
+
+func adaptNetworkInterface(resource *terraform.Block) compute.NetworkInterface {
+	ni := compute.NetworkInterface{
+		Metadata:        resource.GetMetadata(),
+		SubnetID:        iacTypes.StringDefault("", resource.GetMetadata()),
+		SecurityGroups:  nil,
+		HasPublicIP:     iacTypes.BoolDefault(false, resource.GetMetadata()),
+		PublicIPAddress: iacTypes.StringDefault("", resource.GetMetadata()),
+	}
+	ipConfigs := resource.GetBlocks("ip_configuration")
+	if len(ipConfigs) > 0 {
+		ipConfig := ipConfigs[0]
+		if subnetAttr := ipConfig.GetAttribute("subnet_id"); subnetAttr.IsNotNil() {
+			ni.SubnetID = subnetAttr.AsStringValueOrDefault("", ipConfig)
+		}
+		if publicIPAttr := ipConfig.GetAttribute("public_ip_address_id"); publicIPAttr.IsNotNil() {
+			ni.HasPublicIP = iacTypes.Bool(true, publicIPAttr.GetMetadata())
+		}
+	}
+
+	return ni
 }

@@ -117,9 +117,21 @@ func TestAdapt(t *testing.T) {
 				LinuxVirtualMachines: []compute.LinuxVirtualMachine{{
 					VirtualMachine: compute.VirtualMachine{
 						CustomData: types.StringTest("test"),
-						NetworkInterfaceIDs: []types.StringValue{
-							types.StringTest("/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Network/networkInterfaces/nic-1"),
-							types.StringTest("/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Network/networkInterfaces/nic-2"),
+						NetworkInterfaces: []compute.NetworkInterface{
+							{
+								Metadata:        types.NewTestMetadata(),
+								SubnetID:        types.StringTest(""),
+								SecurityGroups:  nil,
+								HasPublicIP:     types.BoolTest(false),
+								PublicIPAddress: types.StringTest(""),
+							},
+							{
+								Metadata:        types.NewTestMetadata(),
+								SubnetID:        types.StringTest(""),
+								SecurityGroups:  nil,
+								HasPublicIP:     types.BoolTest(false),
+								PublicIPAddress: types.StringTest(""),
+							},
 						},
 					},
 					OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
@@ -129,9 +141,21 @@ func TestAdapt(t *testing.T) {
 				WindowsVirtualMachines: []compute.WindowsVirtualMachine{{
 					VirtualMachine: compute.VirtualMachine{
 						CustomData: types.StringTest("test"),
-						NetworkInterfaceIDs: []types.StringValue{
-							types.StringTest("/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Network/networkInterfaces/nic-1"),
-							types.StringTest("/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Network/networkInterfaces/nic-2"),
+						NetworkInterfaces: []compute.NetworkInterface{
+							{
+								Metadata:        types.NewTestMetadata(),
+								SubnetID:        types.StringTest(""),
+								SecurityGroups:  nil,
+								HasPublicIP:     types.BoolTest(false),
+								PublicIPAddress: types.StringTest(""),
+							},
+							{
+								Metadata:        types.NewTestMetadata(),
+								SubnetID:        types.StringTest(""),
+								SecurityGroups:  nil,
+								HasPublicIP:     types.BoolTest(false),
+								PublicIPAddress: types.StringTest(""),
+							},
 						},
 					},
 				}},
