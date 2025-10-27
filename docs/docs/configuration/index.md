@@ -9,7 +9,7 @@ Trivy's settings can be configured in any of the following methods, which will a
 You can view the list of available flags by adding the `--help` flag to a Trivy command, or by exploring the [CLI reference](../references/configuration/cli/trivy.md).
 
 ## Environment Variables
-Any CLI option can be set as an environment variable. The environment variable name are similar to the CLI option name, with the following augmentations:
+Any CLI option can be set as an environment variable. The environment variable names are similar to the CLI option names, with the following augmentations:
 
 - Add `TRIVY_` prefix
 - All uppercase letters

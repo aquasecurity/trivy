@@ -10,7 +10,7 @@
     analyze error: timeout: context deadline exceeded
     ```
 
-Your scan may time out. Java takes a particularly long time to scan. Try increasing the value of the ---timeout option such as `--timeout 15m`.
+Your scan may time out. Java takes a particularly long time to scan. Try increasing the value of the `--timeout` option such as `--timeout 15m`.
 
 ### Unable to initialize an image scanner
 
