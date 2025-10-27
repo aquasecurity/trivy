@@ -3,13 +3,17 @@ package testutil
 import (
 	"context"
 	"encoding/json"
+	"io"
 	"os"
 	"strings"
 	"testing"
 
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
+	"github.com/google/go-containerregistry/pkg/v1/tarball"
 	"github.com/stretchr/testify/require"
+
+	gzutil "github.com/aquasecurity/trivy/pkg/fanal/utils/gzip"
 )
 
 type DockerClient struct {
@@ -22,6 +26,8 @@ func NewDockerClient(t *testing.T) *DockerClient {
 	return &DockerClient{Client: cli}
 }
 
+// ImageLoad loads a Docker image from a tar archive file into the Docker engine.
+// It automatically registers cleanup via t.Cleanup() to remove the loaded image after the test.
 func (c *DockerClient) ImageLoad(t *testing.T, ctx context.Context, imageFile string) string {
 	t.Helper()
 	testfile, err := os.Open(imageFile)
@@ -43,6 +49,7 @@ func (c *DockerClient) ImageLoad(t *testing.T, ctx context.Context, imageFile st
 	loadedImage = strings.TrimSpace(loadedImage)
 	require.NotEmpty(t, loadedImage, data.Stream)
 
+	// Register cleanup to remove the loaded image after the test
 	t.Cleanup(func() { c.ImageRemove(t, ctx, loadedImage) })
 
 	return loadedImage
@@ -54,4 +61,23 @@ func (c *DockerClient) ImageRemove(t *testing.T, ctx context.Context, imageID st
 		Force:         true,
 		PruneChildren: true,
 	})
+}
+
+// ExtractRepoTagsFromArchive extracts all RepoTags from a Docker archive tar file
+func (c *DockerClient) ExtractRepoTagsFromArchive(t *testing.T, archivePath string) []string {
+	t.Helper()
+
+	opener := func() (io.ReadCloser, error) {
+		return gzutil.OpenFile(archivePath)
+	}
+
+	manifest, err := tarball.LoadManifest(opener)
+	require.NoError(t, err, "failed to load manifest from archive")
+
+	// Collect all RepoTags from all manifest entries
+	var allTags []string
+	for _, m := range manifest {
+		allTags = append(allTags, m.RepoTags...)
+	}
+	return allTags
 }
