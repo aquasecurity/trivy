@@ -83,15 +83,16 @@ func NewParser(filePath string, opts ...option) *Parser {
 		defaultRepo: mavenCentralRepo,
 	}
 
-	for _, opt := range opts {
-		opt(o)
-	}
-
 	s := readSettings()
+	o.settingsRepos = s.effectiveRepositories()
 	localRepository := s.LocalRepository
 	if localRepository == "" {
 		homeDir, _ := os.UserHomeDir()
 		localRepository = filepath.Join(homeDir, ".m2", "repository")
+	}
+
+	for _, opt := range opts {
+		opt(o)
 	}
 
 	remoteRepos := repositories{
