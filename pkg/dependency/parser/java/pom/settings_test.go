@@ -360,12 +360,12 @@ func Test_effectiveRepositories(t *testing.T) {
 			},
 			want: []repository{
 				{
-					url:             mustParseURL("https://example.com/repo2"),
+					url:             mustParseURL(t, "https://example.com/repo2"),
 					releaseEnabled:  false,
 					snapshotEnabled: true,
 				},
 				{
-					url:             mustParseURL("https://u:p@example.com/repo1"),
+					url:             mustParseURL(t, "https://u:p@example.com/repo1"),
 					releaseEnabled:  true,
 					snapshotEnabled: false,
 				},
@@ -413,12 +413,12 @@ func Test_effectiveRepositories(t *testing.T) {
 			// After reverse: [only-p1, dup(from p1)]
 			want: []repository{
 				{
-					url:             mustParseURL("https://p1.example.com/only"),
+					url:             mustParseURL(t, "https://p1.example.com/only"),
 					releaseEnabled:  true,
 					snapshotEnabled: true,
 				},
 				{
-					url:             mustParseURL("https://p1.example.com/dup"),
+					url:             mustParseURL(t, "https://p1.example.com/dup"),
 					releaseEnabled:  true,
 					snapshotEnabled: false,
 				},
@@ -450,7 +450,7 @@ func Test_effectiveRepositories(t *testing.T) {
 			},
 			want: []repository{
 				{
-					url:             mustParseURL("https://example.com/enabled"),
+					url:             mustParseURL(t, "https://example.com/enabled"),
 					releaseEnabled:  true,
 					snapshotEnabled: false,
 				},
@@ -467,10 +467,9 @@ func Test_effectiveRepositories(t *testing.T) {
 }
 
 // mustParseURL parses a URL and panics on error; handy for test literals
-func mustParseURL(s string) url.URL {
+func mustParseURL(t *testing.T, s string) url.URL {
+	t.Helper()
 	u, err := url.Parse(s)
-	if err != nil {
-		panic(err)
-	}
+	require.NoError(t, err)
 	return *u
 }
