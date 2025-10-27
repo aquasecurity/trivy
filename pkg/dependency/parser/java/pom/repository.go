@@ -6,12 +6,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-const (
-	centralURL = "https://repo.maven.apache.org/maven2/"
-)
+var centralURL, _ = url.Parse("https://repo.maven.apache.org/maven2/")
 
 type repository struct {
-	url             string
+	url             url.URL
 	releaseEnabled  bool
 	snapshotEnabled bool
 }
@@ -23,7 +21,7 @@ type repositories struct {
 }
 
 var mavenCentralRepo = repository{
-	url:            centralURL,
+	url:            *centralURL,
 	releaseEnabled: true,
 }
 
@@ -57,7 +55,7 @@ func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 		}
 
 		logger.Debug("Adding repository", log.String("id", rep.ID), log.String("url", rep.URL))
-		r.url = repoURL.String()
+		r.url = *repoURL
 		repos = append(repos, r)
 	}
 	return repos

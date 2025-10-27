@@ -43,21 +43,23 @@ func WithOffline(offline bool) option {
 	}
 }
 
-func WithDefaultRepo(repo string, releaseEnabled, snapshotEnabled bool) option {
+func WithDefaultRepo(repoURL string, releaseEnabled, snapshotEnabled bool) option {
 	return func(opts *options) {
+		u, _ := url.Parse(repoURL)
 		opts.defaultRepo = repository{
-			url:             repo,
+			url:             *u,
 			releaseEnabled:  releaseEnabled,
 			snapshotEnabled: snapshotEnabled,
 		}
 	}
 }
 
-func WithSettingsRepos(urls []string, releaseEnabled, snapshotEnabled bool) option {
+func WithSettingsRepos(repoURLs []string, releaseEnabled, snapshotEnabled bool) option {
 	return func(opts *options) {
-		opts.settingsRepos = lo.Map(urls, func(url string, _ int) repository {
+		opts.settingsRepos = lo.Map(repoURLs, func(repoURL string, _ int) repository {
+			u, _ := url.Parse(repoURL)
 			return repository{
-				url:             url,
+				url:             *u,
 				releaseEnabled:  releaseEnabled,
 				snapshotEnabled: snapshotEnabled,
 			}
@@ -372,9 +374,8 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 	}
 	// Update remoteRepositories
 	pomRepos := pom.repositories(p.servers)
-	p.remoteRepos.pom = lo.UniqBy(append(pomRepos, p.remoteRepos.pom...), func(r repository) string {
+	p.remoteRepos.pom = lo.UniqBy(append(pomRepos, p.remoteRepos.pom...), func(r repository) url.URL {
 		return r.url
-
 	})
 
 	// Resolve parent POM
@@ -753,16 +754,11 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 	return nil, xerrors.Errorf("the POM was not found in remote remoteRepositories")
 }
 
-func (p *Parser) remoteRepoRequest(ctx context.Context, repo string, paths []string) (*http.Request, error) {
-	repoURL, err := url.Parse(repo)
-	if err != nil {
-		return nil, xerrors.Errorf("unable to parse URL: %w", err)
-	}
-
+func (p *Parser) remoteRepoRequest(ctx context.Context, repoURL url.URL, paths []string) (*http.Request, error) {
 	paths = append([]string{repoURL.Path}, paths...)
 	repoURL.Path = path.Join(paths...)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, repoURL.String(), http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, repoURL.Redacted(), http.NoBody)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to create HTTP request: %w", err)
 	}
@@ -775,14 +771,14 @@ func (p *Parser) remoteRepoRequest(ctx context.Context, repo string, paths []str
 }
 
 // fetchPomFileNameFromMavenMetadata fetches `maven-metadata.xml` file to detect file name of pom file.
-func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repo string, paths []string) (string, error) {
+func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repoURL url.URL, paths []string) (string, error) {
 	// Overwrite pom file name to `maven-metadata.xml`
 	mavenMetadataPaths := slices.Clone(paths[:len(paths)-1]) // Clone slice to avoid shadow overwriting last element of `paths`
 	mavenMetadataPaths = append(mavenMetadataPaths, "maven-metadata.xml")
 
-	req, err := p.remoteRepoRequest(ctx, repo, mavenMetadataPaths)
+	req, err := p.remoteRepoRequest(ctx, repoURL, mavenMetadataPaths)
 	if err != nil {
-		p.logger.Debug("Unable to create request", log.String("repo", repo), log.Err(err))
+		p.logger.Debug("Unable to create request", log.String("repo", repoURL.Redacted()), log.Err(err))
 		return "", nil
 	}
 
@@ -792,13 +788,15 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repo str
 		if shouldReturnError(err) {
 			return "", err
 		}
-		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
-		return "", nil
-	} else if resp.StatusCode != http.StatusOK {
-		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Int("statusCode", resp.StatusCode))
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Err(err))
 		return "", nil
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
+		return "", nil
+	}
 
 	mavenMetadata, err := parseMavenMetadata(resp.Body)
 	if err != nil {
@@ -816,10 +814,10 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repo str
 	return pomFileName, nil
 }
 
-func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repo string, paths []string) (*pom, error) {
-	req, err := p.remoteRepoRequest(ctx, repo, paths)
+func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repoURL url.URL, paths []string) (*pom, error) {
+	req, err := p.remoteRepoRequest(ctx, repoURL, paths)
 	if err != nil {
-		p.logger.Debug("Unable to create request", log.String("repo", repo), log.Err(err))
+		p.logger.Debug("Unable to create request", log.String("repo", repoURL.Redacted()), log.Err(err))
 		return nil, nil
 	}
 
@@ -829,13 +827,15 @@ func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repo string, 
 		if shouldReturnError(err) {
 			return nil, err
 		}
-		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
-		return nil, nil
-	} else if resp.StatusCode != http.StatusOK {
-		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Int("statusCode", resp.StatusCode))
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Err(err))
 		return nil, nil
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
+		return nil, nil
+	}
 
 	content, err := parsePom(resp.Body, false)
 	if err != nil {

@@ -1,6 +1,7 @@
 package pom
 
 import (
+	"net/url"
 	"path/filepath"
 	"testing"
 
@@ -359,12 +360,12 @@ func Test_effectiveRepositories(t *testing.T) {
 			},
 			want: []repository{
 				{
-					url:             "https://example.com/repo2",
+					url:             mustParseURL("https://example.com/repo2"),
 					releaseEnabled:  false,
 					snapshotEnabled: true,
 				},
 				{
-					url:             "https://u:p@example.com/repo1",
+					url:             mustParseURL("https://u:p@example.com/repo1"),
 					releaseEnabled:  true,
 					snapshotEnabled: false,
 				},
@@ -412,12 +413,12 @@ func Test_effectiveRepositories(t *testing.T) {
 			// After reverse: [only-p1, dup(from p1)]
 			want: []repository{
 				{
-					url:             "https://p1.example.com/only",
+					url:             mustParseURL("https://p1.example.com/only"),
 					releaseEnabled:  true,
 					snapshotEnabled: true,
 				},
 				{
-					url:             "https://p1.example.com/dup",
+					url:             mustParseURL("https://p1.example.com/dup"),
 					releaseEnabled:  true,
 					snapshotEnabled: false,
 				},
@@ -449,7 +450,7 @@ func Test_effectiveRepositories(t *testing.T) {
 			},
 			want: []repository{
 				{
-					url:             "https://example.com/enabled",
+					url:             mustParseURL("https://example.com/enabled"),
 					releaseEnabled:  true,
 					snapshotEnabled: false,
 				},
@@ -463,4 +464,13 @@ func Test_effectiveRepositories(t *testing.T) {
 			require.Equal(t, tt.want, got)
 		})
 	}
+}
+
+// mustParseURL parses a URL and panics on error; handy for test literals
+func mustParseURL(s string) url.URL {
+	u, err := url.Parse(s)
+	if err != nil {
+		panic(err)
+	}
+	return *u
 }
