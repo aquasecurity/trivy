@@ -16,9 +16,9 @@ func Adapt(modules terraform.Modules) compute.Compute {
 
 func adaptCompute(modules terraform.Modules) compute.Compute {
 
-	var managedDisks []compute.ManagedDisk
-	var linuxVirtualMachines []compute.LinuxVirtualMachine
-	var windowsVirtualMachines []compute.WindowsVirtualMachine
+	managedDisks := []compute.ManagedDisk{}
+	linuxVirtualMachines := []compute.LinuxVirtualMachine{}
+	windowsVirtualMachines := []compute.WindowsVirtualMachine{}
 
 	for _, module := range modules {
 
