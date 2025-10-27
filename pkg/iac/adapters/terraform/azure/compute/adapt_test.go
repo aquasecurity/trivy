@@ -147,9 +147,21 @@ resource "azurerm_linux_virtual_machine" "example" {
 				VirtualMachine: compute.VirtualMachine{
 					Metadata:   iacTypes.NewTestMetadata(),
 					CustomData: iacTypes.String("", iacTypes.NewTestMetadata()),
-					NetworkInterfaceIDs: []iacTypes.StringValue{
-						iacTypes.String("nic-1", iacTypes.NewTestMetadata()),
-						iacTypes.String("nic-2", iacTypes.NewTestMetadata()),
+					NetworkInterfaces: []compute.NetworkInterface{
+						{
+							Metadata:        iacTypes.NewTestMetadata(),
+							SubnetID:        iacTypes.String("", iacTypes.NewTestMetadata()),
+							SecurityGroups:  nil,
+							HasPublicIP:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							PublicIPAddress: iacTypes.String("", iacTypes.NewTestMetadata()),
+						},
+						{
+							Metadata:        iacTypes.NewTestMetadata(),
+							SubnetID:        iacTypes.String("", iacTypes.NewTestMetadata()),
+							SecurityGroups:  nil,
+							HasPublicIP:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							PublicIPAddress: iacTypes.String("", iacTypes.NewTestMetadata()),
+						},
 					},
 				},
 				OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
@@ -180,7 +192,7 @@ resource "azurerm_linux_virtual_machine" "example" {
 					Metadata:   iacTypes.NewTestMetadata(),
 					CustomData: iacTypes.String("", iacTypes.NewTestMetadata()),
 					// Empty array in Terraform is parsed as nil
-					NetworkInterfaceIDs: nil,
+					NetworkInterfaces: nil,
 				},
 				OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
 					Metadata:                      iacTypes.NewTestMetadata(),
@@ -193,7 +205,7 @@ resource "azurerm_linux_virtual_machine" "example" {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			modules := tftestutil.CreateModulesFromSource(t, test.terraform, ".tf")
-			adapted := adaptLinuxVM(modules.GetBlocks()[0])
+			adapted := adaptLinuxVM(modules.GetBlocks()[0], modules)
 			testutil.AssertDefsecEqual(t, test.expected, adapted)
 		})
 	}
@@ -267,9 +279,21 @@ resource "azurerm_windows_virtual_machine" "example" {
 				VirtualMachine: compute.VirtualMachine{
 					Metadata:   iacTypes.NewTestMetadata(),
 					CustomData: iacTypes.String("", iacTypes.NewTestMetadata()),
-					NetworkInterfaceIDs: []iacTypes.StringValue{
-						iacTypes.String("nic-1", iacTypes.NewTestMetadata()),
-						iacTypes.String("nic-2", iacTypes.NewTestMetadata()),
+					NetworkInterfaces: []compute.NetworkInterface{
+						{
+							Metadata:        iacTypes.NewTestMetadata(),
+							SubnetID:        iacTypes.String("", iacTypes.NewTestMetadata()),
+							SecurityGroups:  nil,
+							HasPublicIP:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							PublicIPAddress: iacTypes.String("", iacTypes.NewTestMetadata()),
+						},
+						{
+							Metadata:        iacTypes.NewTestMetadata(),
+							SubnetID:        iacTypes.String("", iacTypes.NewTestMetadata()),
+							SecurityGroups:  nil,
+							HasPublicIP:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							PublicIPAddress: iacTypes.String("", iacTypes.NewTestMetadata()),
+						},
 					},
 				},
 			},
@@ -279,7 +303,7 @@ resource "azurerm_windows_virtual_machine" "example" {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			modules := tftestutil.CreateModulesFromSource(t, test.terraform, ".tf")
-			adapted := adaptWindowsVM(modules.GetBlocks()[0])
+			adapted := adaptWindowsVM(modules.GetBlocks()[0], modules)
 			testutil.AssertDefsecEqual(t, test.expected, adapted)
 		})
 	}

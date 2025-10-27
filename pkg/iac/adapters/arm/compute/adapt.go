@@ -47,7 +47,7 @@ func adaptWindowsVirtualMachines(deployment azure.Deployment) (windowsVirtualMac
 
 func adaptWindowsVirtualMachine(resource azure.Resource) compute.WindowsVirtualMachine {
 	networkProfile := resource.Properties.GetMapValue("networkProfile")
-	nicIDs := extractNetworkInterfaceIDs(networkProfile, resource.Metadata)
+	networkInterfaces := extractNetworkInterfaces(networkProfile, resource.Metadata)
 
 	return compute.WindowsVirtualMachine{
 		Metadata: resource.Metadata,
@@ -55,7 +55,7 @@ func adaptWindowsVirtualMachine(resource azure.Resource) compute.WindowsVirtualM
 			Metadata: resource.Metadata,
 			CustomData: resource.Properties.GetMapValue("osProfile").
 				GetMapValue("customData").AsStringValue("", resource.Metadata),
-			NetworkInterfaceIDs: nicIDs,
+			NetworkInterfaces: networkInterfaces,
 		},
 	}
 }
@@ -72,7 +72,7 @@ func adaptLinuxVirtualMachines(deployment azure.Deployment) (linuxVirtualMachine
 
 func adaptLinuxVirtualMachine(resource azure.Resource) compute.LinuxVirtualMachine {
 	networkProfile := resource.Properties.GetMapValue("networkProfile")
-	nicIDs := extractNetworkInterfaceIDs(networkProfile, resource.Metadata)
+	networkInterfaces := extractNetworkInterfaces(networkProfile, resource.Metadata)
 
 	return compute.LinuxVirtualMachine{
 		Metadata: resource.Metadata,
@@ -80,7 +80,7 @@ func adaptLinuxVirtualMachine(resource azure.Resource) compute.LinuxVirtualMachi
 			Metadata: resource.Metadata,
 			CustomData: resource.Properties.GetMapValue("osProfile").
 				GetMapValue("customData").AsStringValue("", resource.Metadata),
-			NetworkInterfaceIDs: nicIDs,
+			NetworkInterfaces: networkInterfaces,
 		},
 		OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
 			Metadata: resource.Metadata,
@@ -92,16 +92,25 @@ func adaptLinuxVirtualMachine(resource azure.Resource) compute.LinuxVirtualMachi
 
 }
 
-func extractNetworkInterfaceIDs(networkProfile azure.Value, metadata iacTypes.Metadata) []iacTypes.StringValue {
-	var nicIDs []iacTypes.StringValue
+func extractNetworkInterfaces(networkProfile azure.Value, metadata iacTypes.Metadata) []compute.NetworkInterface {
+	var networkInterfaces []compute.NetworkInterface
 
 	nicsArray := networkProfile.GetMapValue("networkInterfaces").AsList()
 	for _, nic := range nicsArray {
 		nicID := nic.GetMapValue("id").AsStringValue("", metadata)
 		if nicID.Value() != "" {
-			nicIDs = append(nicIDs, nicID)
+			// Create a minimal NetworkInterface object with the ID information
+			// In ARM templates, we don't have direct access to subnet details like in Terraform
+			networkInterface := compute.NetworkInterface{
+				Metadata:        nicID.GetMetadata(),
+				SubnetID:        iacTypes.StringDefault("", nicID.GetMetadata()),
+				SecurityGroups:  nil,
+				HasPublicIP:     iacTypes.BoolDefault(false, nicID.GetMetadata()),
+				PublicIPAddress: iacTypes.StringDefault("", nicID.GetMetadata()),
+			}
+			networkInterfaces = append(networkInterfaces, networkInterface)
 		}
 	}
 
-	return nicIDs
+	return networkInterfaces
 }
