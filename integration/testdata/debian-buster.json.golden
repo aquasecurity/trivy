@@ -2,7 +2,7 @@
   "SchemaVersion": 2,
   "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
-  "ArtifactID": "sha256:c2c03a296d2329a4f3ab72a7bf38b78a8a80108204d326b0139d6af700e152d1",
+  "ArtifactID": "sha256:b75d2c78a42eae6eaa44e99638ba5fa36900538fa0b7a4feba19d18dd588552d",
   "ArtifactName": "testdata/fixtures/images/debian-buster.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {

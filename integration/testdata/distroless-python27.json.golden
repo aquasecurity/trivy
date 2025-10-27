@@ -2,7 +2,7 @@
   "SchemaVersion": 2,
   "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
-  "ArtifactID": "sha256:6fcac2cc8a710f21577b5bbd534e0bfc841c0cca569b57182ba19054696cddda",
+  "ArtifactID": "sha256:b9ec0b7f93064fddace988e9a901386ccd55a6c16a34c00d5c45b06f62ec20ca",
   "ArtifactName": "testdata/fixtures/images/distroless-python27.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {

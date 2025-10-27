@@ -2,7 +2,7 @@
   "SchemaVersion": 2,
   "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
-  "ArtifactID": "sha256:7f04a8d247173b1f2546d22913af637bbab4e7411e00ae6207da8d94c445750d",
+  "ArtifactID": "sha256:6c3688715cb42ea1466b96eb45b39d8afc9f8cdcf723df8464fb26391711a7db",
   "ArtifactName": "testdata/fixtures/images/distroless-base.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {

@@ -2,7 +2,7 @@
   "SchemaVersion": 2,
   "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
-  "ArtifactID": "sha256:961c4ee06269351d858969ea0426878675ed708d3a140246eabbc0bfc352bffa",
+  "ArtifactID": "sha256:5a0fd7bb415c9b52d1bb909e40b9f498a89a5572724bd107d26ead4a25f203e1",
   "ArtifactName": "testdata/fixtures/images/amazon-1.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {

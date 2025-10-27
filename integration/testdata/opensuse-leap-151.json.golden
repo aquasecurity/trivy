@@ -2,7 +2,7 @@
   "SchemaVersion": 2,
   "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
-  "ArtifactID": "sha256:fef5ad254f6378f08071cfa2daaf05a1ce9857141c944b67a40742e63e65cecc",
+  "ArtifactID": "sha256:b9f31768f6c3908af7de80cff1a9e53c62f46d1bc54aaf3b97b2c922ed9cf1fd",
   "ArtifactName": "testdata/fixtures/images/opensuse-leap-151.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {

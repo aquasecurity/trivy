@@ -2,7 +2,7 @@
   "SchemaVersion": 2,
   "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
-  "ArtifactID": "sha256:8988c7081e1f7b6c2928cbc4832b8a05968bb589d45d444ca1e3027c68f97f56",
+  "ArtifactID": "sha256:2982b2b5fd16f59d6b9ccdef6292e710791eb7fa12895a593959c5bceb7780e6",
   "ArtifactName": "testdata/fixtures/images/oraclelinux-8.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
