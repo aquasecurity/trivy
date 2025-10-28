@@ -23,13 +23,13 @@ import (
 type ConfigType string
 
 const (
-	// Additional config types can be added here - in future custom checks etc
+	// Additional config types can be added here - in future pipeline rego etc
 	ConfigTypeSecret ConfigType = "secret"
 )
 
 const (
 	SecretConfigPath = "/configs/secrets/secret-config.yaml"
-	configCacheTTL   = -time.Hour
+	configCacheTTL   = time.Hour
 )
 
 var configPaths = map[ConfigType]string{
@@ -73,7 +73,7 @@ func getConfigFromTrivyCloud(ctx context.Context, client *http.Client, opts *fla
 
 	configFilename := filepath.Join(configDir, "config.yaml")
 	// Return cached config if it was updated within the last hour
-	if stat, err := os.Stat(configFilename); err == nil && stat.ModTime().After(time.Now().Add(configCacheTTL)) {
+	if stat, err := os.Stat(configFilename); err == nil && stat.ModTime().After(time.Now().Add(-configCacheTTL)) {
 		logger.Debug("Config found in cache", log.String("configType", string(configType)), log.String("configPath", configFilename))
 		return configFilename, nil
 	}
