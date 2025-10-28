@@ -442,6 +442,8 @@ func TestArtifact_Inspect(t *testing.T) {
 					DiffIDs: []string{
 						alpineBaseLayerDiffID,
 					},
+					RepoTags:    []string{"alpine:3.11"},
+					RepoDigests: nil,
 					ConfigFile: v1.ConfigFile{
 						Architecture:  "amd64",
 						Author:        "",
@@ -1772,6 +1774,8 @@ func TestArtifact_Inspect(t *testing.T) {
 						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 						"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
 					},
+					RepoTags:    []string{"vuln-image:latest"},
+					RepoDigests: nil,
 					ConfigFile: v1.ConfigFile{
 						Architecture:  "amd64",
 						Author:        "",
@@ -1927,6 +1931,8 @@ func TestArtifact_Inspect(t *testing.T) {
 						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 						"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
 					},
+					RepoTags:    []string{"vuln-image:latest"},
+					RepoDigests: nil,
 					ConfigFile: v1.ConfigFile{
 						Architecture:  "amd64",
 						Author:        "",

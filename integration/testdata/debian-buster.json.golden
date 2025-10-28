@@ -1,8 +1,10 @@
 {
   "SchemaVersion": 2,
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:c2c03a296d2329a4f3ab72a7bf38b78a8a80108204d326b0139d6af700e152d1",
   "ArtifactName": "testdata/fixtures/images/debian-buster.tar.gz",
   "ArtifactType": "container_image",
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "Metadata": {
     "Size": 119199744,
     "OS": {
@@ -12,6 +14,9 @@
     "ImageID": "sha256:c2c03a296d2329a4f3ab72a7bf38b78a8a80108204d326b0139d6af700e152d1",
     "DiffIDs": [
       "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:debian-buster"
     ],
     "ImageConfig": {
       "architecture": "amd64",

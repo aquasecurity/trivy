@@ -37,8 +37,9 @@ type TerraformCustomCheck struct {
 }
 
 type Rule struct {
-	Deprecated          bool                             `json:"deprecated"`
-	ID                  string                           `json:"id"`
+	ID         string `json:"id"`
+	Deprecated bool   `json:"deprecated"`
+	// Deprecated: Use the ID field instead.
 	AVDID               string                           `json:"avd_id"`
 	Aliases             []string                         `json:"aliases"`
 	ShortCode           string                           `json:"short_code"`
@@ -65,7 +66,7 @@ func (r Rule) IsDeprecated() bool {
 }
 
 func (r Rule) HasID(id string) bool {
-	if r.AVDID == id || r.LongID() == id {
+	if r.ID == id || r.AVDID == id || r.LongID() == id {
 		return true
 	}
 	return slices.Contains(r.Aliases, id)

@@ -20,7 +20,6 @@ func TestJsonScanner(t *testing.T) {
 
 __rego_metadata__ := {
 	"id": "ABC123",
-	"avd_id": "AVD-AB-0123",
 	"title": "title",
 	"short_code": "short",
 	"severity": "CRITICAL",
@@ -56,7 +55,6 @@ deny[res] {
 
 	assert.Equal(t, scan.Rule{
 		ID:             "ABC123",
-		AVDID:          "AVD-AB-0123",
 		Aliases:        []string{"ABC123"},
 		ShortCode:      "short",
 		Summary:        "title",
@@ -90,7 +88,6 @@ x:
 
 __rego_metadata__ := {
 	"id": "ABC123",
-	"avd_id": "AVD-AB-0123",
 	"title": "title",
 	"short_code": "short",
 	"severity": "CRITICAL",
@@ -126,7 +123,6 @@ deny[res] {
 
 	assert.Equal(t, scan.Rule{
 		ID:             "ABC123",
-		AVDID:          "AVD-AB-0123",
 		Aliases:        []string{"ABC123"},
 		ShortCode:      "short",
 		Summary:        "title",
@@ -159,7 +155,6 @@ z = ["a", "b", "c"]
 
 __rego_metadata__ := {
 	"id": "ABC123",
-	"avd_id": "AVD-AB-0123",
 	"title": "title",
 	"short_code": "short",
 	"severity": "CRITICAL",
@@ -195,7 +190,6 @@ deny[res] {
 
 	assert.Equal(t, scan.Rule{
 		ID:             "ABC123",
-		AVDID:          "AVD-AB-0123",
 		Aliases:        []string{"ABC123"},
 		ShortCode:      "short",
 		Summary:        "title",

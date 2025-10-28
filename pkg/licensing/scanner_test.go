@@ -143,6 +143,19 @@ func TestScanner_Scan(t *testing.T) {
 			wantCategory: types.CategoryUnknown,
 			wantSeverity: "UNKNOWN",
 		},
+		{
+			// `Unlicensed` is a special license name in npm.
+			// It means the developer does not grant anyone the right to use the private or unpublished package under any circumstances.
+			name: "'unlicensed' npm license as unknown",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryUnencumbered: {
+					expression.Unlicense,
+				},
+			},
+			licenseName:  "UNLICENSED",
+			wantCategory: types.CategoryUnknown,
+			wantSeverity: "UNKNOWN",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

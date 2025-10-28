@@ -188,9 +188,7 @@ func TestNormalize(t *testing.T) {
 			licenses: []expression.Expression{
 				expression.SimpleExpr{License: "The Unlicense"},
 				expression.SimpleExpr{License: "Unlicense"},
-				expression.SimpleExpr{License: "Unlicensed"},
 				expression.SimpleExpr{License: "UNLICENSE"},
-				expression.SimpleExpr{License: "UNLICENSED"},
 			},
 			want:        "Unlicense",
 			wantLicense: expression.SimpleExpr{License: "Unlicense"},

@@ -1,8 +1,10 @@
 {
   "SchemaVersion": 2,
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:22848737c0d272ad5d7c7369d8ca830a62929e63e38edcb22085139a6ae0688d",
   "ArtifactName": "testdata/fixtures/images/alpine-distroless.tar.gz",
   "ArtifactType": "container_image",
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "Metadata": {
     "Size": 35812864,
     "OS": {
@@ -12,6 +14,9 @@
     "ImageID": "sha256:22848737c0d272ad5d7c7369d8ca830a62929e63e38edcb22085139a6ae0688d",
     "DiffIDs": [
       "sha256:89da7cc836da4b53ab1ceb572576458c005e7e444b8bb79abda196668a2f0c92"
+    ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:alpine-distroless"
     ],
     "ImageConfig": {
       "architecture": "amd64",

@@ -151,8 +151,7 @@ func readReport(t *testing.T, filePath string) types.Report {
 	// We don't compare history because the nano-seconds in "created" don't match
 	report.Metadata.ImageConfig.History = nil
 
-	// We don't compare repo tags because the archive doesn't support it
-	report.Metadata.RepoTags = nil
+	// We don't compare repo digests because archives don't contain them
 	report.Metadata.RepoDigests = nil
 	for i := range report.Metadata.Layers {
 		report.Metadata.Layers[i].Digest = ""

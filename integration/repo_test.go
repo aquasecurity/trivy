@@ -316,6 +316,7 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/test-repo.json.golden",
 			override: func(_ *testing.T, want, _ *types.Report) {
 				// Clear all metadata as this is a local directory scan without git info
+				want.ArtifactID = ""
 				want.Metadata = types.Metadata{}
 			},
 		},

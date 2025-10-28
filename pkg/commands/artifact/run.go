@@ -52,9 +52,7 @@ const (
 	TargetK8s            TargetKind = "k8s"
 )
 
-var (
-	SkipScan = errors.New("skip subsequent processes")
-)
+var SkipScan = errors.New("skip subsequent processes")
 
 // InitializeScanService defines the initialize function signature of scan service
 type InitializeScanService func(context.Context, ScannerConfig) (scan.Service, func(), error)
@@ -116,11 +114,19 @@ func WithInitializeService(f InitializeScanService) RunnerOption {
 
 // NewRunner initializes Runner that provides scanning functionalities.
 // It is possible to return SkipScan and it must be handled by caller.
-func NewRunner(ctx context.Context, cliOptions flag.Options, targetKind TargetKind, opts ...RunnerOption) (Runner, error) {
+func NewRunner(ctx context.Context, cliOptions flag.Options, targetKind TargetKind, opts ...RunnerOption) (_ Runner, err error) {
 	r := &runner{}
 	for _, opt := range opts {
 		opt(r)
 	}
+
+	defer func() {
+		if err != nil {
+			if cErr := r.Close(ctx); cErr != nil {
+				log.ErrorContext(ctx, "failed to close runner: %s", cErr)
+			}
+		}
+	}()
 
 	// Set the default HTTP transport
 	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
@@ -171,8 +177,10 @@ func (r *runner) Close(ctx context.Context) error {
 		}
 	}
 
-	if err := r.module.Close(ctx); err != nil {
-		errs = multierror.Append(errs, err)
+	if r.module != nil {
+		if err := r.module.Close(ctx); err != nil {
+			errs = multierror.Append(errs, err)
+		}
 	}
 
 	// silently check if there is notifications

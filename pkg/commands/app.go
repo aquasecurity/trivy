@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/auth"
 	"github.com/aquasecurity/trivy/pkg/commands/clean"
+	"github.com/aquasecurity/trivy/pkg/commands/cloud"
 	"github.com/aquasecurity/trivy/pkg/commands/convert"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -81,6 +82,10 @@ func NewApp() *cobra.Command {
 			ID:    groupUtility,
 			Title: "Utility Commands",
 		},
+		&cobra.Group{
+			ID:    cloud.GroupCloud,
+			Title: "Trivy Cloud Commands",
+		},
 	)
 	rootCmd.SetCompletionCommandGroupID(groupUtility)
 	rootCmd.SetHelpCommandGroupID(groupUtility)
@@ -102,6 +107,9 @@ func NewApp() *cobra.Command {
 		NewCleanCommand(globalFlags),
 		NewRegistryCommand(globalFlags),
 		NewVEXCommand(globalFlags),
+		NewLoginCommand(globalFlags),
+		NewLogoutCommand(),
+		NewCloudCommand(),
 	)
 
 	if plugins := loadPluginCommands(); len(plugins) > 0 {
@@ -209,7 +217,7 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			// Initialize logger
 			log.InitLogger(opts.Debug, opts.Quiet)
 
-			return nil
+			return cloud.CheckTrivyCloudStatus(cmd)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			flags := flag.Flags{globalFlags}
@@ -1412,6 +1420,149 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 	cmd.AddCommand(repoCmd)
 	return cmd
+}
+
+func NewLoginCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	loginFlags := &flag.Flags{
+		globalFlags,
+		flag.NewCloudFlagGroup(),
+	}
+
+	loginCmd := &cobra.Command{
+		Use:     "login [flags]",
+		Short:   "Log in to the Trivy Cloud platform",
+		Long:    "Log in to the Trivy Cloud platform to enable scanning of images and repositories in the cloud using the token retrieved from the Trivy Cloud platform",
+		GroupID: cloud.GroupCloud,
+		Args:    cobra.NoArgs,
+		Example: `  # Log in to the Trivy Cloud platform
+  $ trivy login --token <token>`,
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
+			if err := loginFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := loginFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			cloudOptions, err := loginFlags.ToOptions(args)
+			if err != nil {
+				return xerrors.Errorf("flag error: %w", err)
+			}
+			return cloud.Login(cmd.Context(), cloudOptions)
+		},
+	}
+
+	loginFlags.AddFlags(loginCmd)
+	loginCmd.SetFlagErrorFunc(flagErrorFunc)
+
+	return loginCmd
+}
+
+func NewLogoutCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "logout",
+		Short:   "Log out of Trivy Cloud platform",
+		GroupID: cloud.GroupCloud,
+		Args:    cobra.NoArgs,
+		RunE: func(_ *cobra.Command, _ []string) error {
+			return cloud.Logout()
+		},
+	}
+
+	return cmd
+}
+
+func NewCloudCommand() *cobra.Command {
+	cloudCmd := &cobra.Command{
+		Use:     "cloud subcommand",
+		Short:   "Control Trivy Cloud platform integration settings",
+		GroupID: cloud.GroupCloud,
+	}
+
+	// add the group the sub commands so they don't check the login status
+	cloudCmd.AddGroup(&cobra.Group{
+		ID:    cloud.GroupCloud,
+		Title: "Trivy Cloud Commands",
+	})
+
+	configCmd := &cobra.Command{
+		Use:     "config subcommand",
+		Short:   "Control Trivy Cloud configuration",
+		GroupID: cloud.GroupCloud,
+	}
+
+	configCmd.AddGroup(&cobra.Group{
+		ID:    cloud.GroupCloud,
+		Title: "Trivy Cloud Configuration Commands",
+	})
+
+	configCmd.AddCommand(
+		&cobra.Command{
+			Use:     "edit",
+			Short:   "Edit Trivy Cloud configuration",
+			Long:    "Edit Trivy Cloud platform configuration in the default editor specified in the EDITOR environment variable",
+			GroupID: cloud.GroupCloud,
+			RunE: func(_ *cobra.Command, _ []string) error {
+				return cloud.EditConfig()
+			},
+		},
+		&cobra.Command{
+			Use:     "list",
+			Short:   "List Trivy Cloud configuration",
+			Long:    "List Trivy Cloud platform configuration in human readable format",
+			GroupID: cloud.GroupCloud,
+			RunE: func(_ *cobra.Command, _ []string) error {
+				return cloud.ListConfig()
+			},
+		},
+		&cobra.Command{
+			Use:   "set [setting] [value]",
+			Short: "Set Trivy Cloud configuration",
+			Long: `Set a Trivy Cloud platform setting
+			
+Available config settings can be viewed by using the ` + "`trivy cloud config list`" + ` command`,
+			Example: `  $ trivy cloud config set server.scanning.enabled true
+  $ trivy cloud config set server.scanning.upload-results false`,
+			Args:    cobra.ExactArgs(2),
+			GroupID: cloud.GroupCloud,
+			RunE: func(_ *cobra.Command, args []string) error {
+				return cloud.SetConfig(args[0], args[1])
+			},
+		},
+		&cobra.Command{
+			Use:   "unset [setting]",
+			Short: "Unset Trivy Cloud configuration",
+			Long: `Unset a Trivy Cloud platform configuration and return it to the default setting
+			
+Available config settings can be viewed by using the ` + "`trivy cloud config list`" + ` command`,
+			Example: `  $ trivy cloud config unset server.scanning.enabled
+  $ trivy cloud config unset server.scanning.upload-results`,
+			Args:    cobra.ExactArgs(1),
+			GroupID: cloud.GroupCloud,
+			RunE: func(_ *cobra.Command, args []string) error {
+				return cloud.UnsetConfig(args[0])
+			},
+		},
+		&cobra.Command{
+			Use:   "get [setting]",
+			Short: "Get Trivy Cloud configuration",
+			Long: `Get a Trivy Cloud platform configuration
+			
+Available config settings can be viewed by using the ` + "`trivy cloud config list`" + ` command`,
+			Example: `  $ trivy cloud config get server.scanning.enabled
+  $ trivy cloud config get server.scanning.upload-results`,
+			Args:    cobra.ExactArgs(1),
+			GroupID: cloud.GroupCloud,
+			RunE: func(_ *cobra.Command, args []string) error {
+				return cloud.GetConfig(args[0])
+			},
+		},
+	)
+	cloudCmd.AddCommand(configCmd)
+
+	return cloudCmd
 }
 
 func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {

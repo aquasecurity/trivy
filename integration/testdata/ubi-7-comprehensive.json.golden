@@ -1,8 +1,10 @@
 {
   "SchemaVersion": 2,
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:6fecccc91c83e11ae4fede6793e9410841221d4779520c2b9e9fb7f7b3830264",
   "ArtifactName": "testdata/fixtures/images/ubi-7.tar.gz",
   "ArtifactType": "container_image",
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "Metadata": {
     "Size": 215162880,
     "OS": {
@@ -13,6 +15,9 @@
     "DiffIDs": [
       "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac",
       "sha256:ecb0311889b3478bc9b62660fa9391d5ebf8da4c6ae143cb33434873668f9e36"
+    ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:ubi-7"
     ],
     "ImageConfig": {
       "architecture": "amd64",

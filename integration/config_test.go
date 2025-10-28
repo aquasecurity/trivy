@@ -171,7 +171,8 @@ severity:
 			osArgs = append(osArgs, "--output", outputFile)
 
 			runTest(t, osArgs, tt.golden, outputFile, types.FormatJSON, runOptions{
-				wantErr: tt.wantErr,
+				wantErr:  tt.wantErr,
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
 
@@ -195,7 +196,8 @@ severity:
 			}
 
 			runTest(t, osArgs, tt.golden, outputFile, types.FormatJSON, runOptions{
-				wantErr: tt.wantErr,
+				wantErr:  tt.wantErr,
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
 
@@ -226,7 +228,8 @@ db:
 			}
 
 			runTest(t, osArgs, tt.golden, outputFile, types.FormatJSON, runOptions{
-				wantErr: tt.wantErr,
+				wantErr:  tt.wantErr,
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
 	}

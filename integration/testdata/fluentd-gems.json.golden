@@ -1,8 +1,10 @@
 {
   "SchemaVersion": 2,
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:5a992077baba51b97f27591a10d54d2f2723dc9c81a3fe419e261023f2554933",
   "ArtifactName": "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
   "ArtifactType": "container_image",
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "Metadata": {
     "Size": 157340160,
     "OS": {
@@ -17,6 +19,9 @@
       "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9",
       "sha256:788c00e2cfc8f2a018ae4344ccf0b2c226ebd756d7effd1ce50eea1a4252cd89",
       "sha256:25165eb51d15842f870f97873e0a58409d5e860e6108e3dd829bd10e484c0065"
+    ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:fluentd-multiple-lockfiles"
     ],
     "ImageConfig": {
       "architecture": "amd64",

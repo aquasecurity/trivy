@@ -10,11 +10,11 @@ import (
 	"reflect"
 	"slices"
 	"strings"
-	"sync"
 
 	"github.com/docker/go-units"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
@@ -367,8 +367,11 @@ func (a Artifact) inspectLayer(ctx context.Context, layer types.Layer, disabled 
 	// Count the bytes read from the layer
 	cr := xio.NewCountingReader(rc)
 
+	// `errgroup` cancels the context after Wait returns, so it can’t be use later.
+	// We need a separate context specifically for Analyze.
+	eg, egCtx := errgroup.WithContext(ctx)
+
 	// Prepare variables
-	var wg sync.WaitGroup
 	opts := analyzer.AnalysisOptions{
 		Offline:      a.artifactOption.Offline,
 		FileChecksum: a.artifactOption.FileChecksum,
@@ -385,7 +388,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layer types.Layer, disabled 
 
 	// Walk a tar layer
 	opqDirs, whFiles, err := a.walker.Walk(cr, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
+		if err = a.analyzer.AnalyzeFile(egCtx, eg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
 
@@ -410,8 +413,10 @@ func (a Artifact) inspectLayer(ctx context.Context, layer types.Layer, disabled 
 		return types.BlobInfo{}, xerrors.Errorf("walk error: %w", err)
 	}
 
-	// Wait for all the goroutine to finish.
-	wg.Wait()
+	// Wait for all the goroutine to finish and check errors
+	if err = eg.Wait(); err != nil {
+		return types.BlobInfo{}, xerrors.Errorf("analyze error: %w", err)
+	}
 
 	// Post-analysis
 	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
