@@ -16,15 +16,11 @@ import (
 )
 
 func TestDriver_Detect(t *testing.T) {
-	type args struct {
-		pkgName string
-		pkgVer  string
-	}
 	tests := []struct {
 		name     string
 		fixtures []string
 		libType  ftypes.LangType
-		args     args
+		pkg      ftypes.Package
 		want     []types.DetectedVulnerability
 		wantErr  string
 	}{
@@ -35,9 +31,12 @@ func TestDriver_Detect(t *testing.T) {
 				"testdata/fixtures/data-source.yaml",
 			},
 			libType: ftypes.Composer,
-			args: args{
-				pkgName: "symfony/symfony",
-				pkgVer:  "4.2.6",
+			pkg: ftypes.Package{
+				Name:       "symfony/symfony",
+				Version:    "4.2.6",
+				Layer:      ftypes.Layer{Digest: "sha256:layer"},
+				FilePath:   "/path/to/composer.lock",
+				Identifier: ftypes.PkgIdentifier{BOMRef: "bom-ref-1"},
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -45,6 +44,9 @@ func TestDriver_Detect(t *testing.T) {
 					PkgName:          "symfony/symfony",
 					InstalledVersion: "4.2.6",
 					FixedVersion:     "4.2.7",
+					Layer:            ftypes.Layer{Digest: "sha256:layer"},
+					PkgPath:          "/path/to/composer.lock",
+					PkgIdentifier:    ftypes.PkgIdentifier{BOMRef: "bom-ref-1"},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.GLAD,
 						Name: "GitLab Advisory Database Community",
@@ -60,9 +62,12 @@ func TestDriver_Detect(t *testing.T) {
 				"testdata/fixtures/data-source.yaml",
 			},
 			libType: ftypes.GoModule,
-			args: args{
-				pkgName: "github.com/Masterminds/vcs",
-				pkgVer:  "v1.13.1",
+			pkg: ftypes.Package{
+				Name:       "github.com/Masterminds/vcs",
+				Version:    "v1.13.1",
+				Layer:      ftypes.Layer{Digest: "sha256:layer"},
+				FilePath:   "/path/to/go.mod",
+				Identifier: ftypes.PkgIdentifier{BOMRef: "bom-ref-1"},
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -70,6 +75,9 @@ func TestDriver_Detect(t *testing.T) {
 					PkgName:          "github.com/Masterminds/vcs",
 					InstalledVersion: "v1.13.1",
 					FixedVersion:     "v1.13.2",
+					Layer:            ftypes.Layer{Digest: "sha256:layer"},
+					PkgPath:          "/path/to/go.mod",
+					PkgIdentifier:    ftypes.PkgIdentifier{BOMRef: "bom-ref-1"},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.GLAD,
 						Name: "GitLab Advisory Database Community",
@@ -82,9 +90,12 @@ func TestDriver_Detect(t *testing.T) {
 			name:     "non-prefixed buckets",
 			fixtures: []string{"testdata/fixtures/php-without-prefix.yaml"},
 			libType:  ftypes.Composer,
-			args: args{
-				pkgName: "symfony/symfony",
-				pkgVer:  "4.2.6",
+			pkg: ftypes.Package{
+				Name:       "symfony/symfony",
+				Version:    "4.2.6",
+				Layer:      ftypes.Layer{Digest: "sha256:layer"},
+				FilePath:   "/path/to/composer.lock",
+				Identifier: ftypes.PkgIdentifier{BOMRef: "bom-ref-1"},
 			},
 			want: nil,
 		},
@@ -95,9 +106,12 @@ func TestDriver_Detect(t *testing.T) {
 				"testdata/fixtures/data-source.yaml",
 			},
 			libType: ftypes.Composer,
-			args: args{
-				pkgName: "symfony/symfony",
-				pkgVer:  "4.4.6",
+			pkg: ftypes.Package{
+				Name:       "symfony/symfony",
+				Version:    "4.4.6",
+				Layer:      ftypes.Layer{Digest: "sha256:layer"},
+				FilePath:   "/path/to/composer.lock",
+				Identifier: ftypes.PkgIdentifier{BOMRef: "bom-ref-1"},
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -105,6 +119,9 @@ func TestDriver_Detect(t *testing.T) {
 					PkgName:          "symfony/symfony",
 					InstalledVersion: "4.4.6",
 					FixedVersion:     "4.4.7",
+					Layer:            ftypes.Layer{Digest: "sha256:layer"},
+					PkgPath:          "/path/to/composer.lock",
+					PkgIdentifier:    ftypes.PkgIdentifier{BOMRef: "bom-ref-1"},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.PhpSecurityAdvisories,
 						Name: "PHP Security Advisories Database",
@@ -120,9 +137,12 @@ func TestDriver_Detect(t *testing.T) {
 				"testdata/fixtures/data-source.yaml",
 			},
 			libType: ftypes.Bundler,
-			args: args{
-				pkgName: "activesupport",
-				pkgVer:  "4.1.1",
+			pkg: ftypes.Package{
+				Name:       "activesupport",
+				Version:    "4.1.1",
+				Layer:      ftypes.Layer{Digest: "sha256:layer"},
+				FilePath:   "/path/to/Gemfile.lock",
+				Identifier: ftypes.PkgIdentifier{BOMRef: "bom-ref-1"},
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -130,6 +150,9 @@ func TestDriver_Detect(t *testing.T) {
 					PkgName:          "activesupport",
 					InstalledVersion: "4.1.1",
 					FixedVersion:     ">= 4.2.2, ~> 4.1.11",
+					Layer:            ftypes.Layer{Digest: "sha256:layer"},
+					PkgPath:          "/path/to/Gemfile.lock",
+					PkgIdentifier:    ftypes.PkgIdentifier{BOMRef: "bom-ref-1"},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.RubySec,
 						Name: "Ruby Advisory Database",
@@ -142,18 +165,24 @@ func TestDriver_Detect(t *testing.T) {
 			name:     "no vulnerability",
 			fixtures: []string{"testdata/fixtures/php.yaml"},
 			libType:  ftypes.Composer,
-			args: args{
-				pkgName: "symfony/symfony",
-				pkgVer:  "4.4.7",
+			pkg: ftypes.Package{
+				Name:       "symfony/symfony",
+				Version:    "4.4.7",
+				Layer:      ftypes.Layer{Digest: "sha256:layer"},
+				FilePath:   "/path/to/composer.lock",
+				Identifier: ftypes.PkgIdentifier{BOMRef: "bom-ref-1"},
 			},
 		},
 		{
 			name:     "malformed JSON",
 			fixtures: []string{"testdata/fixtures/invalid-type.yaml"},
 			libType:  ftypes.Composer,
-			args: args{
-				pkgName: "symfony/symfony",
-				pkgVer:  "5.1.5",
+			pkg: ftypes.Package{
+				Name:       "symfony/symfony",
+				Version:    "5.1.5",
+				Layer:      ftypes.Layer{Digest: "sha256:layer"},
+				FilePath:   "/path/to/composer.lock",
+				Identifier: ftypes.PkgIdentifier{BOMRef: "bom-ref-1"},
 			},
 			wantErr: "json unmarshal error",
 		},
@@ -164,9 +193,12 @@ func TestDriver_Detect(t *testing.T) {
 				"testdata/fixtures/data-source.yaml",
 			},
 			libType: ftypes.PythonPkg,
-			args: args{
-				pkgName: "Django",
-				pkgVer:  "4.2.1",
+			pkg: ftypes.Package{
+				Name:       "Django",
+				Version:    "4.2.1",
+				Layer:      ftypes.Layer{Digest: "sha256:layer"},
+				FilePath:   "/path/to/requirements.txt",
+				Identifier: ftypes.PkgIdentifier{BOMRef: "bom-ref-1"},
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -174,6 +206,9 @@ func TestDriver_Detect(t *testing.T) {
 					PkgName:          "Django",
 					InstalledVersion: "4.2.1",
 					FixedVersion:     "4.2.3",
+					Layer:            ftypes.Layer{Digest: "sha256:layer"},
+					PkgPath:          "/path/to/requirements.txt",
+					PkgIdentifier:    ftypes.PkgIdentifier{BOMRef: "bom-ref-1"},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.GHSA,
 						Name: "GitHub Security Advisory Pip",
@@ -189,9 +224,12 @@ func TestDriver_Detect(t *testing.T) {
 				"testdata/fixtures/data-source.yaml",
 			},
 			libType: ftypes.GoBinary,
-			args: args{
-				pkgName: "github.com/docker/docker",
-				pkgVer:  "23.0.14",
+			pkg: ftypes.Package{
+				Name:       "github.com/docker/docker",
+				Version:    "23.0.14",
+				Layer:      ftypes.Layer{Digest: "sha256:layer"},
+				FilePath:   "/path/to/go.mod",
+				Identifier: ftypes.PkgIdentifier{BOMRef: "bom-ref-1"},
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -199,6 +237,9 @@ func TestDriver_Detect(t *testing.T) {
 					PkgName:          "github.com/docker/docker",
 					InstalledVersion: "23.0.14",
 					FixedVersion:     "23.0.15, 26.1.5, 27.1.1, 25.0.6",
+					Layer:            ftypes.Layer{Digest: "sha256:layer"},
+					PkgPath:          "/path/to/go.mod",
+					PkgIdentifier:    ftypes.PkgIdentifier{BOMRef: "bom-ref-1"},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.GHSA,
 						Name: "GitHub Security Advisory Go",
@@ -218,12 +259,8 @@ func TestDriver_Detect(t *testing.T) {
 			driver, ok := generic.NewScanner(tt.libType)
 			require.True(t, ok)
 
-			// TODO change this
-			pkg := ftypes.Package{
-				Name:    tt.args.pkgName,
-				Version: tt.args.pkgVer,
-			}
-			got, err := driver.Detect(t.Context(), pkg)
+			// Pass the package directly
+			got, err := driver.Detect(t.Context(), tt.pkg)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return

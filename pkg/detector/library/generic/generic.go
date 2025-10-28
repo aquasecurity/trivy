@@ -137,6 +137,9 @@ func (s Scanner) Detect(_ context.Context, pkg ftypes.Package) ([]types.Detected
 			PkgName:          pkg.Name,
 			InstalledVersion: pkg.Version,
 			FixedVersion:     createFixedVersions(adv),
+			Layer:            pkg.Layer,
+			PkgPath:          pkg.FilePath,
+			PkgIdentifier:    pkg.Identifier,
 			DataSource:       adv.DataSource,
 			Custom:           adv.Custom,
 		}
