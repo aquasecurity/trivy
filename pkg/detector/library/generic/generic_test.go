@@ -215,7 +215,7 @@ func TestDriver_Detect(t *testing.T) {
 			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()
 
-			driver, ok := generic.NewDriver(tt.libType)
+			driver, ok := generic.NewScanner(tt.libType)
 			require.True(t, ok)
 
 			// TODO change this

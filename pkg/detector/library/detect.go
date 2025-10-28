@@ -20,7 +20,7 @@ func newDriver(libType ftypes.LangType, _ []ftypes.Package) (driver.Driver, bool
 	//	}
 	//}
 
-	return generic.NewDriver(libType)
+	return generic.NewScanner(libType)
 }
 
 // Detect scans language-specific packages and returns vulnerabilities.

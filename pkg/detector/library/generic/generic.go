@@ -24,16 +24,16 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// Driver is specific Trivy library driver
+// Scanner is specific Trivy library driver
 // This driver supports multiple ecosystems using generic comparison logic
-type Driver struct {
+type Scanner struct {
 	ecosystem ecosystem.Type
 	comparer  compare.Comparer
 	dbc       db.Config
 }
 
-// NewDriver returns a driver according to the library type
-func NewDriver(libType ftypes.LangType) (driver.Driver, bool) {
+// NewScanner returns a driver according to the library type
+func NewScanner(libType ftypes.LangType) (driver.Driver, bool) {
 	var eco ecosystem.Type
 	var comparer compare.Comparer
 	logger := log.WithPrefix("generic-driver")
@@ -101,7 +101,7 @@ func NewDriver(libType ftypes.LangType) (driver.Driver, bool) {
 			log.String("type", string(libType)))
 		return nil, false
 	}
-	return Driver{
+	return Scanner{
 		ecosystem: eco,
 		comparer:  comparer,
 		dbc:       db.Config{},
@@ -109,25 +109,25 @@ func NewDriver(libType ftypes.LangType) (driver.Driver, bool) {
 }
 
 // Type returns the driver ecosystem
-func (d Driver) Type() string {
-	return string(d.ecosystem)
+func (s Scanner) Type() string {
+	return string(s.ecosystem)
 }
 
 // Detect scans buckets with the prefix according to the ecosystem.
 // If "ecosystem" is pip, it looks for buckets with "pip::" and gets security advisories from those buckets.
 // It allows us to add a new data source with the ecosystem prefix (e.g. pip::new-data-source)
 // and detect vulnerabilities without specifying a specific bucket name.
-func (d Driver) Detect(_ context.Context, pkg ftypes.Package) ([]types.DetectedVulnerability, error) {
+func (s Scanner) Detect(_ context.Context, pkg ftypes.Package) ([]types.DetectedVulnerability, error) {
 	// e.g. "pip::", "npm::"
-	prefix := fmt.Sprintf("%s::", d.ecosystem)
-	advisories, err := d.dbc.GetAdvisories(prefix, vulnerability.NormalizePkgName(d.ecosystem, pkg.Name))
+	prefix := fmt.Sprintf("%s::", s.ecosystem)
+	advisories, err := s.dbc.GetAdvisories(prefix, vulnerability.NormalizePkgName(s.ecosystem, pkg.Name))
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get %s advisories: %w", d.ecosystem, err)
+		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.ecosystem, err)
 	}
 
 	var vulns []types.DetectedVulnerability
 	for _, adv := range advisories {
-		if !d.comparer.IsVulnerable(pkg.Version, adv) {
+		if !s.comparer.IsVulnerable(pkg.Version, adv) {
 			continue
 		}
 
