@@ -10,81 +10,99 @@ import (
 
 func TestNewCaseInsensitive(t *testing.T) {
 	tests := []struct {
-		name     string
-		values   []string
-		wantSize int
-		desc     string
+		name   string
+		values []string
+		want   []string
+		desc   string
 	}{
 		{
-			name:     "empty set",
-			values:   []string{},
-			wantSize: 0,
-			desc:     "should create empty set when no values provided",
+			name:   "empty set",
+			values: []string{},
+			want:   []string{},
+			desc:   "should create empty set when no values provided",
 		},
 		{
-			name:     "single value",
-			values:   []string{"Hello"},
-			wantSize: 1,
-			desc:     "should create set with single value",
+			name:   "single value",
+			values: []string{"Hello"},
+			want:   []string{"Hello"},
+			desc:   "should create set with single value",
 		},
 		{
-			name:     "multiple values",
-			values:   []string{"Hello", "World", "Test"},
-			wantSize: 3,
-			desc:     "should create set with multiple values",
+			name:   "multiple values",
+			values: []string{"Hello", "World", "Test"},
+			want:   []string{"Hello", "World", "Test"},
+			desc:   "should create set with multiple values",
 		},
 		{
-			name:     "case insensitive duplicates",
-			values:   []string{"Hello", "HELLO", "hello", "HeLLo"},
-			wantSize: 1,
-			desc:     "should treat case variations as duplicates",
+			name:   "case insensitive duplicates",
+			values: []string{"Hello", "HELLO", "hello", "HeLLo"},
+			want:   []string{"Hello"},
+			desc:   "should treat case variations as duplicates and preserve first occurrence",
 		},
 		{
-			name:     "mixed case duplicates",
-			values:   []string{"Test", "TEST", "test", "World", "WORLD"},
-			wantSize: 2,
-			desc:     "should treat case variations as duplicates across multiple strings",
+			name:   "mixed case duplicates",
+			values: []string{"Test", "TEST", "test", "World", "WORLD"},
+			want:   []string{"Test", "World"},
+			desc:   "should treat case variations as duplicates across multiple strings and preserve first occurrences",
+		},
+		{
+			name:   "empty strings",
+			values: []string{"", "test", ""},
+			want:   []string{"", "test"},
+			desc:   "should handle empty strings and treat duplicates correctly",
+		},
+		{
+			name:   "unicode strings",
+			values: []string{"こんにちは", "世界", "こんにちは"},
+			want:   []string{"こんにちは", "世界"},
+			desc:   "should handle unicode strings correctly",
+		},
+		{
+			name:   "strings with spaces",
+			values: []string{"Hello World", "hello world", "HELLO WORLD"},
+			want:   []string{"Hello World"},
+			desc:   "should handle strings with spaces case-insensitively and preserve original spacing",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := set.NewCaseInsensitive(tt.values...)
-			assert.Equal(t, tt.wantSize, s.Size(), "unexpected set size")
+			assert.ElementsMatch(t, tt.want, s.Items(), "unexpected set contents")
 		})
 	}
 }
 
 func TestCaseInsensitiveSet_Append(t *testing.T) {
 	tests := []struct {
-		name     string
-		initial  []string
-		append   []string
-		wantSize int
+		name    string
+		initial []string
+		append  []string
+		want    []string
 	}{
 		{
-			name:     "append to empty set",
-			initial:  []string{},
-			append:   []string{"Hello", "World"},
-			wantSize: 2,
+			name:    "append to empty set",
+			initial: []string{},
+			append:  []string{"Hello", "World"},
+			want:    []string{"Hello", "World"},
 		},
 		{
-			name:     "append case variations",
-			initial:  []string{"Hello"},
-			append:   []string{"HELLO", "hello"},
-			wantSize: 1,
+			name:    "append case variations",
+			initial: []string{"Hello"},
+			append:  []string{"HELLO", "hello"},
+			want:    []string{"Hello"},
 		},
 		{
-			name:     "append new and existing",
-			initial:  []string{"Hello"},
-			append:   []string{"HELLO", "World"},
-			wantSize: 2,
+			name:    "append new and existing",
+			initial: []string{"Hello"},
+			append:  []string{"HELLO", "World"},
+			want:    []string{"Hello", "World"},
 		},
 		{
-			name:     "append empty slice",
-			initial:  []string{"Hello"},
-			append:   []string{},
-			wantSize: 1,
+			name:    "append empty slice",
+			initial: []string{"Hello"},
+			append:  []string{},
+			want:    []string{"Hello"},
 		},
 	}
 
@@ -93,54 +111,54 @@ func TestCaseInsensitiveSet_Append(t *testing.T) {
 			s := set.NewCaseInsensitive(tt.initial...)
 			got := s.Append(tt.append...)
 
-			assert.Equal(t, tt.wantSize, got, "unexpected returned size")
-			assert.Equal(t, tt.wantSize, s.Size(), "unexpected actual size")
+			assert.Equal(t, len(tt.want), got, "unexpected returned size")
+			assert.ElementsMatch(t, tt.want, s.Items(), "unexpected set contents")
 		})
 	}
 }
 
 func TestCaseInsensitiveSet_Contains(t *testing.T) {
 	tests := []struct {
-		name     string
-		initial  []string
-		check    string
-		expected bool
+		name    string
+		initial []string
+		check   string
+		want    bool
 	}{
 		{
-			name:     "exact match",
-			initial:  []string{"Hello"},
-			check:    "Hello",
-			expected: true,
+			name:    "exact match",
+			initial: []string{"Hello"},
+			check:   "Hello",
+			want:    true,
 		},
 		{
-			name:     "lowercase match",
-			initial:  []string{"Hello"},
-			check:    "hello",
-			expected: true,
+			name:    "lowercase match",
+			initial: []string{"Hello"},
+			check:   "hello",
+			want:    true,
 		},
 		{
-			name:     "uppercase match",
-			initial:  []string{"Hello"},
-			check:    "HELLO",
-			expected: true,
+			name:    "uppercase match",
+			initial: []string{"Hello"},
+			check:   "HELLO",
+			want:    true,
 		},
 		{
-			name:     "mixed case match",
-			initial:  []string{"Hello"},
-			check:    "HeLLo",
-			expected: true,
+			name:    "mixed case match",
+			initial: []string{"Hello"},
+			check:   "HeLLo",
+			want:    true,
 		},
 		{
-			name:     "not found",
-			initial:  []string{"Hello"},
-			check:    "World",
-			expected: false,
+			name:    "not found",
+			initial: []string{"Hello"},
+			check:   "World",
+			want:    false,
 		},
 		{
-			name:     "empty string exists",
-			initial:  []string{""},
-			check:    "",
-			expected: true,
+			name:    "empty string exists",
+			initial: []string{""},
+			check:   "",
+			want:    true,
 		},
 	}
 
@@ -148,7 +166,7 @@ func TestCaseInsensitiveSet_Contains(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			s := set.NewCaseInsensitive(tt.initial...)
 			got := s.Contains(tt.check)
-			assert.Equal(t, tt.expected, got, "unexpected contains result")
+			assert.Equal(t, tt.want, got, "unexpected contains result")
 		})
 	}
 }
@@ -199,38 +217,6 @@ func TestCaseInsensitiveSet_Remove(t *testing.T) {
 			got := s.Size()
 			assert.Equal(t, tt.wantSize, got, "unexpected set size after remove")
 			assert.False(t, s.Contains(tt.remove), "set should not contain removed item")
-		})
-	}
-}
-
-func TestCaseInsensitiveSet_PreservesOriginalCasing(t *testing.T) {
-	tests := []struct {
-		name     string
-		values   []string
-		expected []string
-	}{
-		{
-			name:     "first occurrence preserved",
-			values:   []string{"Hello", "HELLO", "hello"},
-			expected: []string{"Hello"},
-		},
-		{
-			name:     "multiple first occurrences",
-			values:   []string{"Hello", "WORLD", "hello", "world"},
-			expected: []string{"Hello", "WORLD"},
-		},
-		{
-			name:     "mixed order",
-			values:   []string{"test", "TEST", "World", "WORLD", "test"},
-			expected: []string{"test", "World"},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := set.NewCaseInsensitive(tt.values...)
-			got := s.Items()
-			assert.ElementsMatch(t, tt.expected, got, "original casing should be preserved")
 		})
 	}
 }
@@ -298,40 +284,40 @@ func TestCaseInsensitiveSet_Clone(t *testing.T) {
 
 func TestCaseInsensitiveSet_Union(t *testing.T) {
 	tests := []struct {
-		name     string
-		set1     []string
-		set2     []string
-		expected []string
+		name string
+		set1 []string
+		set2 []string
+		want []string
 	}{
 		{
-			name:     "non-overlapping sets",
-			set1:     []string{"Hello", "World"},
-			set2:     []string{"Test", "Data"},
-			expected: []string{"Hello", "World", "Test", "Data"},
+			name: "non-overlapping sets",
+			set1: []string{"Hello", "World"},
+			set2: []string{"Test", "Data"},
+			want: []string{"Hello", "World", "Test", "Data"},
 		},
 		{
-			name:     "overlapping sets with same case",
-			set1:     []string{"Hello", "World"},
-			set2:     []string{"World", "Test"},
-			expected: []string{"Hello", "World", "Test"},
+			name: "overlapping sets with same case",
+			set1: []string{"Hello", "World"},
+			set2: []string{"World", "Test"},
+			want: []string{"Hello", "World", "Test"},
 		},
 		{
-			name:     "overlapping sets with different case",
-			set1:     []string{"Hello", "World"},
-			set2:     []string{"HELLO", "test"},
-			expected: []string{"Hello", "World", "test"},
+			name: "overlapping sets with different case",
+			set1: []string{"Hello", "World"},
+			set2: []string{"HELLO", "test"},
+			want: []string{"Hello", "World", "test"},
 		},
 		{
-			name:     "union with empty set",
-			set1:     []string{"Hello"},
-			set2:     []string{},
-			expected: []string{"Hello"},
+			name: "union with empty set",
+			set1: []string{"Hello"},
+			set2: []string{},
+			want: []string{"Hello"},
 		},
 		{
-			name:     "empty sets union",
-			set1:     []string{},
-			set2:     []string{},
-			expected: []string{},
+			name: "empty sets union",
+			set1: []string{},
+			set2: []string{},
+			want: []string{},
 		},
 	}
 
@@ -343,41 +329,41 @@ func TestCaseInsensitiveSet_Union(t *testing.T) {
 			result := s1.Union(s2)
 			got := result.Items()
 
-			assert.ElementsMatch(t, tt.expected, got, "unexpected union result")
+			assert.ElementsMatch(t, tt.want, got, "unexpected union result")
 		})
 	}
 }
 
 func TestCaseInsensitiveSet_Intersection(t *testing.T) {
 	tests := []struct {
-		name     string
-		set1     []string
-		set2     []string
-		expected []string
+		name string
+		set1 []string
+		set2 []string
+		want []string
 	}{
 		{
-			name:     "overlapping sets with same case",
-			set1:     []string{"Hello", "World", "Test"},
-			set2:     []string{"World", "Test", "Data"},
-			expected: []string{"World", "Test"},
+			name: "overlapping sets with same case",
+			set1: []string{"Hello", "World", "Test"},
+			set2: []string{"World", "Test", "Data"},
+			want: []string{"World", "Test"},
 		},
 		{
-			name:     "overlapping sets with different case",
-			set1:     []string{"Hello", "World"},
-			set2:     []string{"hello", "WORLD"},
-			expected: []string{"Hello", "World"},
+			name: "overlapping sets with different case",
+			set1: []string{"Hello", "World"},
+			set2: []string{"hello", "WORLD"},
+			want: []string{"Hello", "World"},
 		},
 		{
-			name:     "non-overlapping sets",
-			set1:     []string{"Hello"},
-			set2:     []string{"World"},
-			expected: []string{},
+			name: "non-overlapping sets",
+			set1: []string{"Hello"},
+			set2: []string{"World"},
+			want: []string{},
 		},
 		{
-			name:     "intersection with empty set",
-			set1:     []string{"Hello"},
-			set2:     []string{},
-			expected: []string{},
+			name: "intersection with empty set",
+			set1: []string{"Hello"},
+			set2: []string{},
+			want: []string{},
 		},
 	}
 
@@ -389,47 +375,47 @@ func TestCaseInsensitiveSet_Intersection(t *testing.T) {
 			result := s1.Intersection(s2)
 			got := result.Items()
 
-			assert.ElementsMatch(t, tt.expected, got, "unexpected intersection result")
+			assert.ElementsMatch(t, tt.want, got, "unexpected intersection result")
 		})
 	}
 }
 
 func TestCaseInsensitiveSet_Difference(t *testing.T) {
 	tests := []struct {
-		name     string
-		set1     []string
-		set2     []string
-		expected []string
+		name string
+		set1 []string
+		set2 []string
+		want []string
 	}{
 		{
-			name:     "difference with same case",
-			set1:     []string{"Hello", "World", "Test"},
-			set2:     []string{"World", "Data"},
-			expected: []string{"Hello", "Test"},
+			name: "difference with same case",
+			set1: []string{"Hello", "World", "Test"},
+			set2: []string{"World", "Data"},
+			want: []string{"Hello", "Test"},
 		},
 		{
-			name:     "difference with different case",
-			set1:     []string{"Hello", "World", "Test"},
-			set2:     []string{"hello", "WORLD"},
-			expected: []string{"Test"},
+			name: "difference with different case",
+			set1: []string{"Hello", "World", "Test"},
+			set2: []string{"hello", "WORLD"},
+			want: []string{"Test"},
 		},
 		{
-			name:     "difference with non-overlapping set",
-			set1:     []string{"Hello", "World"},
-			set2:     []string{"Test", "Data"},
-			expected: []string{"Hello", "World"},
+			name: "difference with non-overlapping set",
+			set1: []string{"Hello", "World"},
+			set2: []string{"Test", "Data"},
+			want: []string{"Hello", "World"},
 		},
 		{
-			name:     "difference with empty set",
-			set1:     []string{"Hello", "World"},
-			set2:     []string{},
-			expected: []string{"Hello", "World"},
+			name: "difference with empty set",
+			set1: []string{"Hello", "World"},
+			set2: []string{},
+			want: []string{"Hello", "World"},
 		},
 		{
-			name:     "difference of empty set",
-			set1:     []string{},
-			set2:     []string{"Hello"},
-			expected: []string{},
+			name: "difference of empty set",
+			set1: []string{},
+			set2: []string{"Hello"},
+			want: []string{},
 		},
 	}
 
@@ -441,28 +427,8 @@ func TestCaseInsensitiveSet_Difference(t *testing.T) {
 			result := s1.Difference(s2)
 			got := result.Items()
 
-			assert.ElementsMatch(t, tt.expected, got, "unexpected difference result")
+			assert.ElementsMatch(t, tt.want, got, "unexpected difference result")
 		})
 	}
 }
 
-func TestCaseInsensitiveSet_SpecialCases(t *testing.T) {
-	t.Run("empty string", func(t *testing.T) {
-		s := set.NewCaseInsensitive("", "test", "")
-		assert.Equal(t, 2, s.Size(), "should handle empty strings")
-		assert.True(t, s.Contains(""), "should contain empty string")
-	})
-
-	t.Run("unicode strings", func(t *testing.T) {
-		s := set.NewCaseInsensitive("こんにちは", "世界", "こんにちは")
-		assert.Equal(t, 2, s.Size(), "should handle unicode strings")
-		assert.True(t, s.Contains("こんにちは"), "should contain unicode string")
-	})
-
-	t.Run("strings with spaces", func(t *testing.T) {
-		s := set.NewCaseInsensitive("Hello World", "hello world", "HELLO WORLD")
-		assert.Equal(t, 1, s.Size(), "should handle strings with spaces case-insensitively")
-		items := s.Items()
-		assert.Equal(t, []string{"Hello World"}, items, "should preserve original spacing and casing")
-	})
-}
