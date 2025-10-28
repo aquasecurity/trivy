@@ -5,12 +5,12 @@ import (
 	"context"
 	"strings"
 
+	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/rootio"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -35,20 +35,20 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 	switch baseOS {
 	case ftypes.Debian:
 		comparer = version.NewDEBComparer()
-		vsg = rootio.NewVulnSrcGetter(vulnerability.Debian)
+		vsg = rootio.NewVulnSrcGetter(ecosystem.Debian)
 		versionTrimmer = version.Major
 	case ftypes.Ubuntu:
 		comparer = version.NewDEBComparer()
-		vsg = rootio.NewVulnSrcGetter(vulnerability.Ubuntu)
+		vsg = rootio.NewVulnSrcGetter(ecosystem.Ubuntu)
 		versionTrimmer = version.Minor
 	case ftypes.Alpine:
 		comparer = version.NewAPKComparer()
-		vsg = rootio.NewVulnSrcGetter(vulnerability.Alpine)
+		vsg = rootio.NewVulnSrcGetter(ecosystem.Alpine)
 		versionTrimmer = version.Minor
 	default:
 		// Should never happen as it's validated in the provider
 		comparer = version.NewDEBComparer()
-		vsg = rootio.NewVulnSrcGetter(vulnerability.Debian)
+		vsg = rootio.NewVulnSrcGetter(ecosystem.Debian)
 		versionTrimmer = version.Major
 	}
 
