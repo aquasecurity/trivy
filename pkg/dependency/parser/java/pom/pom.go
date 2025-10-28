@@ -4,7 +4,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"net/url"
 	"reflect"
 	"strings"
 
@@ -13,7 +12,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/x/slices"
 )
@@ -123,42 +121,8 @@ func (p *pom) licenses() []string {
 	}))
 }
 
-func (p *pom) repositories(servers []Server) ([]string, []string) {
-	logger := log.WithPrefix("pom")
-	var releaseRepos, snapshotRepos []string
-	for _, rep := range p.content.Repositories.Repository {
-		snapshot := rep.Snapshots.Enabled == "true"
-		release := rep.Releases.Enabled == "true"
-		// Add only enabled repositories
-		if !release && !snapshot {
-			continue
-		}
-
-		repoURL, err := url.Parse(rep.URL)
-		if err != nil {
-			logger.Debug("Unable to parse remote repository url", log.Err(err))
-			continue
-		}
-
-		// Get the credentials from settings.xml based on matching server id
-		// with the repository id from pom.xml and use it for accessing the repository url
-		for _, server := range servers {
-			if rep.ID == server.ID && server.Username != "" && server.Password != "" {
-				repoURL.User = url.UserPassword(server.Username, server.Password)
-				break
-			}
-		}
-
-		logger.Debug("Adding repository", log.String("id", rep.ID), log.String("url", rep.URL))
-		if snapshot {
-			snapshotRepos = append(snapshotRepos, repoURL.String())
-		}
-		if release {
-			releaseRepos = append(releaseRepos, repoURL.String())
-		}
-	}
-
-	return releaseRepos, snapshotRepos
+func (p *pom) repositories(servers []Server) []repository {
+	return resolvePomRepos(servers, p.content.Repositories)
 }
 
 type pomXML struct {
@@ -177,7 +141,7 @@ type pomXML struct {
 		Dependencies pomDependencies `xml:"dependencies"`
 	} `xml:"dependencyManagement"`
 	Dependencies pomDependencies `xml:"dependencies"`
-	Repositories pomRepositories `xml:"repositories"`
+	Repositories []pomRepository `xml:"repositories>repository"`
 }
 
 type pomParent struct {
@@ -384,22 +348,10 @@ func findDep(name string, depManagement []pomDependency) (pomDependency, bool) {
 	})
 }
 
-type pomRepositories struct {
-	Text       string          `xml:",chardata"`
-	Repository []pomRepository `xml:"repository"`
-}
-
 type pomRepository struct {
-	Text     string `xml:",chardata"`
-	ID       string `xml:"id"`
-	Name     string `xml:"name"`
-	URL      string `xml:"url"`
-	Releases struct {
-		Text    string `xml:",chardata"`
-		Enabled string `xml:"enabled"`
-	} `xml:"releases"`
-	Snapshots struct {
-		Text    string `xml:",chardata"`
-		Enabled string `xml:"enabled"`
-	} `xml:"snapshots"`
+	ID               string `xml:"id"`
+	Name             string `xml:"name"`
+	URL              string `xml:"url"`
+	ReleasesEnabled  string `xml:"releases>enabled"`
+	SnapshotsEnabled string `xml:"snapshots>enabled"`
 }
