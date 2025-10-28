@@ -4,8 +4,8 @@ import (
 	"regexp"
 
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
+	"github.com/aquasecurity/trivy/pkg/detector/library/driver"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var (
@@ -14,54 +14,40 @@ var (
 
 // Provider creates Root.io driver functions if Root.io packages are detected
 // It returns nil functions if conditions are not met
-func Provider(libType ftypes.LangType, pkgs []ftypes.Package) (func() string, func(string, string, string) ([]types.DetectedVulnerability, error)) {
-	eco, ok := getEcosystem(libType)
-	if !ok || !isRootIOEnvironment(pkgs) {
-		return nil, nil
+func Provider(libType ftypes.LangType, pkgs []ftypes.Package) driver.Driver {
+	eco := langTypeToEcosystem(libType)
+
+	// Unsupported Root.io ecosystem
+	if eco == "" {
+		return nil
 	}
 
-	comparer := getComparerForEcosystem(eco)
-	scanner := NewScanner(eco, comparer)
-	
-	// Return the scanner's methods as functions
-	return scanner.Type, scanner.DetectVulnerabilities
+	// Check if the environment contains Root.io packages
+	if !isRootIOEnvironment(pkgs) {
+		return nil
+	}
+
+	return NewScanner(eco)
 }
 
-// getEcosystem maps language type to ecosystem
-func getEcosystem(libType ftypes.LangType) (ecosystem.Type, bool) {
+func langTypeToEcosystem(libType ftypes.LangType) ecosystem.Type {
 	switch libType {
 	case ftypes.Bundler, ftypes.GemSpec:
-		return ecosystem.RubyGems, true
+		return ecosystem.RubyGems
 	case ftypes.RustBinary, ftypes.Cargo:
-		return ecosystem.Cargo, true
-	case ftypes.Composer, ftypes.ComposerVendor:
-		return ecosystem.Composer, true
+		return ecosystem.Cargo
 	case ftypes.GoBinary, ftypes.GoModule:
-		return ecosystem.Go, true
+		return ecosystem.Go
 	case ftypes.Jar, ftypes.Pom, ftypes.Gradle, ftypes.Sbt:
-		return ecosystem.Maven, true
+		return ecosystem.Maven
 	case ftypes.Npm, ftypes.Yarn, ftypes.Pnpm, ftypes.Bun, ftypes.NodePkg, ftypes.JavaScript:
-		return ecosystem.Npm, true
+		return ecosystem.Npm
 	case ftypes.NuGet, ftypes.DotNetCore, ftypes.PackagesProps:
-		return ecosystem.NuGet, true
+		return ecosystem.NuGet
 	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg, ftypes.Uv:
-		return ecosystem.Pip, true
-	case ftypes.Pub:
-		return ecosystem.Pub, true
-	case ftypes.Hex:
-		return ecosystem.Erlang, true
-	case ftypes.Conan:
-		return ecosystem.Conan, true
-	case ftypes.Swift:
-		return ecosystem.Swift, true
-	case ftypes.Cocoapods:
-		return ecosystem.Cocoapods, true
-	case ftypes.Bitnami:
-		return ecosystem.Bitnami, true
-	case ftypes.K8sUpstream:
-		return ecosystem.Kubernetes, true
+		return ecosystem.Pip
 	default:
-		return "", false
+		return ""
 	}
 }
 

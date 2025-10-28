@@ -4,17 +4,18 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rootio"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestProvider(t *testing.T) {
 	tests := []struct {
-		name     string
-		libType  ftypes.LangType
-		pkgs     []ftypes.Package
-		wantType string
+		name    string
+		libType ftypes.LangType
+		pkgs    []ftypes.Package
+		want    bool // true if driver should be returned, false if nil
 	}{
 		{
 			name:    "Python packages with rootio version",
@@ -23,7 +24,7 @@ func TestProvider(t *testing.T) {
 				{Name: "requests", Version: "2.28.1"},
 				{Name: "django", Version: "4.0.1+root.io.1"},
 			},
-			wantType: "pip",
+			want: true,
 		},
 		{
 			name:    "Ruby packages with rootio version",
@@ -32,7 +33,7 @@ func TestProvider(t *testing.T) {
 				{Name: "rails", Version: "7.0.1"},
 				{Name: "puma", Version: "5.6.4+root.io.1"},
 			},
-			wantType: "rubygems",
+			want: true,
 		},
 		{
 			name:    "Node packages with rootio version",
@@ -41,7 +42,7 @@ func TestProvider(t *testing.T) {
 				{Name: "express", Version: "4.18.1"},
 				{Name: "lodash", Version: "4.17.21+root.io.1"},
 			},
-			wantType: "npm",
+			want: true,
 		},
 		{
 			name:    "Python packages without rootio version",
@@ -50,7 +51,7 @@ func TestProvider(t *testing.T) {
 				{Name: "requests", Version: "2.28.1"},
 				{Name: "django", Version: "4.0.1"},
 			},
-			wantType: "",
+			want: false,
 		},
 		{
 			name:    "Unsupported language type",
@@ -58,76 +59,17 @@ func TestProvider(t *testing.T) {
 			pkgs: []ftypes.Package{
 				{Name: "DataFrames", Version: "1.3.4+root.io.1"},
 			},
-			wantType: "",
+			want: false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			typeFunc, detectFunc := Provider(tt.libType, tt.pkgs)
-			if tt.wantType == "" {
-				assert.Nil(t, typeFunc)
-				assert.Nil(t, detectFunc)
+			driver := rootio.Provider(tt.libType, tt.pkgs)
+			if tt.want {
+				require.NotNil(t, driver, "Provider should return a driver for Root.io environment")
 			} else {
-				assert.NotNil(t, typeFunc)
-				assert.NotNil(t, detectFunc)
-				assert.Equal(t, tt.wantType, typeFunc())
-			}
-		})
-	}
-}
-
-func TestGetEcosystem(t *testing.T) {
-	tests := []struct {
-		name      string
-		libType   ftypes.LangType
-		wantEco   ecosystem.Type
-		wantFound bool
-	}{
-		{
-			name:      "Python Pip",
-			libType:   ftypes.Pip,
-			wantEco:   ecosystem.Pip,
-			wantFound: true,
-		},
-		{
-			name:      "Ruby Bundler",
-			libType:   ftypes.Bundler,
-			wantEco:   ecosystem.RubyGems,
-			wantFound: true,
-		},
-		{
-			name:      "Node NPM",
-			libType:   ftypes.Npm,
-			wantEco:   ecosystem.Npm,
-			wantFound: true,
-		},
-		{
-			name:      "Java Maven",
-			libType:   ftypes.Jar,
-			wantEco:   ecosystem.Maven,
-			wantFound: true,
-		},
-		{
-			name:      "Go Module",
-			libType:   ftypes.GoModule,
-			wantEco:   ecosystem.Go,
-			wantFound: true,
-		},
-		{
-			name:      "Unsupported Julia",
-			libType:   ftypes.Julia,
-			wantEco:   "",
-			wantFound: false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			eco, found := getEcosystem(tt.libType)
-			assert.Equal(t, tt.wantFound, found)
-			if found {
-				assert.Equal(t, tt.wantEco, eco)
+				assert.Nil(t, driver, "Provider should return nil for non-Root.io environment")
 			}
 		})
 	}

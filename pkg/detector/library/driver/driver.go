@@ -14,4 +14,4 @@ type Driver interface {
 }
 
 // Provider creates a specialized driver based on the environment
-type Provider func(osFamily ftypes.OSType, pkgs []ftypes.Package) Driver
+type Provider func(libType ftypes.LangType, pkgs []ftypes.Package) Driver

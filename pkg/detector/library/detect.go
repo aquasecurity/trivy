@@ -3,6 +3,7 @@ package library
 import (
 	"context"
 
+	"github.com/aquasecurity/trivy/pkg/detector/library/rootio"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/detector/library/driver"
@@ -12,13 +13,19 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func newDriver(libType ftypes.LangType, _ []ftypes.Package) (driver.Driver, bool) {
-	//// Try providers first
-	// for _, provider := range providers {
-	//	if d := provider(osFamily, pkgs); d != nil {
-	//		return d, nil
-	//	}
-	//}
+// providers dynamically generate drivers based on package information
+// and environment detection. They are tried before standard OS-specific drivers.
+var providers = []driver.Provider{
+	rootio.Provider,
+}
+
+func newDriver(libType ftypes.LangType, pkgs []ftypes.Package) (driver.Driver, bool) {
+	// Try providers first
+	for _, provider := range providers {
+		if d := provider(libType, pkgs); d != nil {
+			return d, true
+		}
+	}
 
 	return generic.NewScanner(libType)
 }
@@ -51,11 +58,6 @@ func detect(ctx context.Context, driver driver.Driver, pkgs []ftypes.Package) ([
 			return nil, xerrors.Errorf("failed to detect %s vulnerabilities: %w", driver.Type(), err)
 		}
 
-		for i := range vulns {
-			vulns[i].Layer = pkg.Layer
-			vulns[i].PkgPath = pkg.FilePath
-			vulns[i].PkgIdentifier = pkg.Identifier
-		}
 		vulnerabilities = append(vulnerabilities, vulns...)
 	}
 
