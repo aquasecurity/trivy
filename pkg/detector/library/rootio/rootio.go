@@ -1,8 +1,10 @@
 package rootio
 
 import (
+	"context"
 	"strings"
 
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"golang.org/x/xerrors"
 
@@ -19,16 +21,16 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// Driver implements the Root.io driver for language packages
-type Driver struct {
+// Scanner implements the Root.io driver for language packages
+type Scanner struct {
 	ecosystem ecosystem.Type
 	comparer  compare.Comparer
 	logger    *log.Logger
 }
 
-// NewDriver is the factory method for Scanner
-func NewDriver(eco ecosystem.Type) *Driver {
-	return &Driver{
+// NewScanner is the factory method for Scanner
+func NewScanner(eco ecosystem.Type) Scanner {
+	return Scanner{
 		ecosystem: eco,
 		comparer:  comparer(eco),
 		logger:    log.WithPrefix("rootio-" + string(eco)),
@@ -57,15 +59,15 @@ func comparer(eco ecosystem.Type) compare.Comparer {
 }
 
 // Type returns the scanner ecosystem
-func (d Driver) Type() string {
+func (d Scanner) Type() string {
 	return string(d.ecosystem)
 }
 
 // Detect scans packages for vulnerabilities with Root.io-specific handling
-func (d Driver) Detect(pkg ftypes.Package) ([]types.DetectedVulnerability, error) {
+func (d Scanner) Detect(_ context.Context, pkg ftypes.Package) ([]types.DetectedVulnerability, error) {
 	getter := rootio.NewVulnSrcGetter(d.ecosystem)
 	advisories, err := getter.Get(db.GetParams{
-		PkgName: pkg.Name,
+		PkgName: vulnerability.NormalizePkgName(d.ecosystem, pkg.Name),
 	})
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s advisories: %w", d.ecosystem, err)
@@ -86,6 +88,9 @@ func (d Driver) Detect(pkg ftypes.Package) ([]types.DetectedVulnerability, error
 			PkgName:          pkg.Name,
 			InstalledVersion: pkg.Version,
 			FixedVersion:     fixedVersion,
+			Layer:            pkg.Layer,
+			PkgPath:          pkg.FilePath,
+			PkgIdentifier:    pkg.Identifier,
 			DataSource:       adv.DataSource,
 			Custom:           adv.Custom,
 		}
