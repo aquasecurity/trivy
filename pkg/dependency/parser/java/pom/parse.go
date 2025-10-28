@@ -759,7 +759,7 @@ func (p *Parser) remoteRepoRequest(ctx context.Context, repoURL url.URL, paths [
 	paths = append([]string{repoURL.Path}, paths...)
 	repoURL.Path = path.Join(paths...)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, repoURL.Redacted(), http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, repoURL.String(), http.NoBody)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to create HTTP request: %w", err)
 	}
