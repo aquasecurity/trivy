@@ -373,7 +373,7 @@ var (
 	}
 )
 
-var spdxLicenses = set.New[string]()
+var spdxLicenses = set.NewCaseInsensitive()
 
 //go:embed licenses.json
 var licenses []byte
@@ -389,10 +389,8 @@ var initSpdxLicenses = sync.OnceFunc(func() {
 		return
 	}
 
-	// SPDX license list is case-insensitive. Store in upper case for simplicity.
-	spdxLicenses.Append(lo.Map(lics, func(l string, _ int) string {
-		return strings.ToUpper(l)
-	})...)
+	// SPDX license list is case-insensitive.
+	spdxLicenses.Append(lics...)
 })
 
 //go:embed exceptions.json
@@ -419,7 +417,7 @@ var initSpdxExceptions = sync.OnceFunc(func() {
 func ValidateSPDXLicense(license string) bool {
 	initSpdxLicenses()
 
-	return spdxLicenses.Contains(strings.ToUpper(license))
+	return spdxLicenses.Contains(license)
 }
 
 // ValidateSPDXException returns true if SPDX exception list contain exceptionID
