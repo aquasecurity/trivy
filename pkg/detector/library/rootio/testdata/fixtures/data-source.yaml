@@ -1,0 +1,12 @@
+- bucket: data-source
+  pairs:
+    - key: "pip::GitHub Security Advisory Pip"
+      value:
+        ID: "ghsa"
+        Name: "GitHub Security Advisory Pip"
+        URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+    - key: "root.io pip"
+      value:
+        ID: "rootio"
+        Name: "root.io pip"
+        URL: "https://api.root.io/external/patch_feed"

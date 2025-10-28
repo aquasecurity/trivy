@@ -1,0 +1,22 @@
+- bucket: "pip::GitHub Security Advisory Pip"
+  pairs:
+    - bucket: django
+      pairs:
+        - key: CVE-2022-1234
+          value:
+            PatchedVersions:
+              - "4.0.2"
+            VulnerableVersions:
+              - "< 4.0.2"
+        - key: CVE-2023-1234
+          value:
+            PatchedVersions:
+              - "4.0.2"
+            VulnerableVersions:
+              - "< 4.0.2"
+        - key: CVE-2024-1234
+          value:
+            PatchedVersions:
+              - "4.0.2"
+            VulnerableVersions:
+              - "< 4.0.2"

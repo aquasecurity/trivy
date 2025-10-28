@@ -1,0 +1,22 @@
+- bucket: "root.io pip"
+  pairs:
+    - bucket: django
+      pairs:
+        - key: CVE-2022-5678
+          value:
+            PatchedVersions:
+              - "4.0.2.post1"
+            VulnerableVersions:
+              - "<4.0.2.post1"
+        - key: CVE-2023-1234
+          value:
+            PatchedVersions:
+              - "4.0.2.post1"
+            VulnerableVersions:
+              - "< 4.0.2.post1"
+        - key: CVE-2024-1234
+          value:
+            PatchedVersions:
+              - "4.0.2.post1"
+            VulnerableVersions:
+              - ">= 4.0.2 <4.0.2.post1"
