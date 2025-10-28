@@ -2,7 +2,7 @@
   "SchemaVersion": 2,
   "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
-  "ArtifactID": "sha256:ed8f0747d483b60657982f0ef1ba74482aed08795cf0eb774b00bc53022a8351",
+  "ArtifactID": "sha256:d5fbfb11da0ffb72f8bdeae29420a8101a04534c281854fe5ace22ec13d133bb",
   "ArtifactName": "testdata/fixtures/images/spring4shell-jre11.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {

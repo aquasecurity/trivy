@@ -2,7 +2,7 @@
   "SchemaVersion": 2,
   "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
-  "ArtifactID": "sha256:5bf9684f472089d6d5cb636041d3d6dc748dbde39f1aefc374bbd367bd2aabbf",
+  "ArtifactID": "sha256:6fd360ff01eb63800aaafdb5e58af85fab9d7849344b577f5f6077cceb0399bb",
   "ArtifactName": "testdata/fixtures/images/centos-6.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {

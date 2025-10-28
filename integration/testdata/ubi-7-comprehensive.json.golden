@@ -2,7 +2,7 @@
   "SchemaVersion": 2,
   "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
-  "ArtifactID": "sha256:6fecccc91c83e11ae4fede6793e9410841221d4779520c2b9e9fb7f7b3830264",
+  "ArtifactID": "sha256:b4b4762f4769903a61d4605927079c4e60d007d9b12f65c39714e5311fa3d0ca",
   "ArtifactName": "testdata/fixtures/images/ubi-7.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {

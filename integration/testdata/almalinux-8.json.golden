@@ -2,7 +2,7 @@
   "SchemaVersion": 2,
   "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
-  "ArtifactID": "sha256:4ca63ce1d8a90da2ed4f2d5e93e8e9db2f32d0fabf0718a2edebbe0e70826622",
+  "ArtifactID": "sha256:fb75459277a4cbcf98182b48c789cfbd4b34414e05898e1231ae8b2ca099f4e7",
   "ArtifactName": "testdata/fixtures/images/almalinux-8.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {

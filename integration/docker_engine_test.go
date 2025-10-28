@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
@@ -227,29 +226,17 @@ func TestDockerEngine(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			imageName := tt.input
 			if !tt.invalidImage {
-				testfile, err := os.Open(tt.input)
-				require.NoError(t, err, tt.name)
-				defer testfile.Close()
-
-				// Ensure image doesn't already exist
-				cli.ImageRemove(t, ctx, tt.input)
-
-				// Load image into docker engine
-				loadedImage := cli.ImageLoad(t, ctx, tt.input)
-
-				// Tag our image to something unique
-				err = cli.ImageTag(ctx, loadedImage, tt.input)
-				require.NoError(t, err, tt.name)
-
-				// Cleanup
-				t.Cleanup(func() { cli.ImageRemove(t, ctx, tt.input) })
+				// Removes any existing images with conflicting RepoTags and loading images
+				imageName = cli.ImageCleanLoad(t, ctx, tt.input)
 			}
 
 			osArgs := []string{
+				"image",
+				imageName,
 				"--cache-dir",
 				cacheDir,
-				"image",
 				"--quiet",
 				"--skip-db-update",
 				"--format=json",
@@ -291,26 +278,22 @@ func TestDockerEngine(t *testing.T) {
 				}...)
 			}
 
-			osArgs = append(osArgs, tt.input)
-
 			// Run Trivy
 			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				// Image config fields were removed
-				override: overrideFuncs(overrideUID, overrideDockerRemovedFields, overrideDockerEngineRepoTags),
+				override: overrideFuncs(overrideUID, overrideDockerRemovedFields, func(t *testing.T, want, got *types.Report) {
+					// Override ArtifactName to match the archive file path
+					got.ArtifactName = tt.input
+
+					// Override Result.Target for each result to match golden file expectations
+					require.Len(t, got.Results, len(want.Results))
+					for i := range got.Results {
+						got.Results[i].Target = want.Results[i].Target
+					}
+				}),
 			})
 		})
 	}
-}
-
-// overrideDockerEngineRepoTags removes test-specific RepoTags that are added during the test.
-// In TestDockerEngine, we tag the loaded image with the archive file path (e.g., "testdata/fixtures/images/alpine-39.tar.gz")
-// for test purposes. This function filters out these test tags from the actual results to match the expected
-// RepoTags from the archive's manifest.json.
-func overrideDockerEngineRepoTags(_ *testing.T, _, got *types.Report) {
-	// Keep only tags that don't start with "testdata/fixtures/images/"
-	got.Metadata.RepoTags = lo.Filter(got.Metadata.RepoTags, func(tag string, _ int) bool {
-		return !strings.HasPrefix(tag, "testdata/fixtures/images/")
-	})
 }
