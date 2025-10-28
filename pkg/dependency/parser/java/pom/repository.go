@@ -1,6 +1,7 @@
 package pom
 
 import (
+	"errors"
 	"net/url"
 
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -41,7 +42,11 @@ func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 
 		repoURL, err := url.Parse(rep.URL)
 		if err != nil {
-			logger.Debug("Unable to parse remote repository url", log.Err(err))
+			var ue *url.Error
+			if errors.As(err, &ue) {
+				err = ue.Unwrap()
+			}
+			logger.Debug("Unable to parse remote repository url", log.String("id", rep.ID), log.Err(err))
 			continue
 		}
 
@@ -54,7 +59,7 @@ func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 			}
 		}
 
-		logger.Debug("Adding repository", log.String("id", rep.ID), log.String("url", rep.URL))
+		logger.Debug("Adding repository", log.String("id", rep.ID), log.String("url", repoURL.Redacted()))
 		r.url = *repoURL
 		repos = append(repos, r)
 	}
