@@ -13,23 +13,16 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 )
 
-type ScannerOption struct {
-	IgnoredLicenses   []string
-	LicenseCategories map[types.LicenseCategory][]string
-}
-
 type Scanner struct {
-	categories map[types.LicenseCategory][]string
+	categories map[types.LicenseCategory]set.Set[string]
 }
 
 func NewScanner(categories map[types.LicenseCategory][]string) Scanner {
-	// Convert all license names to uppercase for case-insensitive comparison
-	for k, v := range categories {
-		categories[k] = lo.Map(v, func(name string, _ int) string {
-			return strings.ToUpper(name)
-		})
+	return Scanner{
+		categories: lo.MapValues(categories, func(v []string, _ types.LicenseCategory) set.Set[string] {
+			return set.NewCaseInsensitive(v...)
+		}),
 	}
-	return Scanner{categories: categories}
 }
 
 func (s *Scanner) Scan(licenseName string) (types.LicenseCategory, string) {
@@ -84,12 +77,9 @@ func (s *Scanner) detectCategory(license expression.Expression) types.LicenseCat
 // ScanTextLicense checks license names from `categories` as glob patterns and matches licenseText against those patterns.
 // If a match is found, it returns `unknown` category and severity.
 func (s *Scanner) ScanTextLicense(licenseText string) (types.LicenseCategory, string) {
-	// We converted all licenses from `categories` to uppercase, to make comparison case-insensitive
-	// So we need to convert the license text to uppercase as well
-	licenseText = strings.ToUpper(licenseText)
 	for cat, names := range s.categories {
-		for _, name := range names {
-			n, ok := strings.CutPrefix(name, strings.ToUpper(LicenseTextPrefix))
+		for name := range names.Iter() {
+			n, ok := strings.CutPrefix(name, LicenseTextPrefix)
 			if !ok {
 				continue
 			}
@@ -121,13 +111,11 @@ func categoryToSeverity(category types.LicenseCategory) dbTypes.Severity {
 }
 
 func (s *Scanner) licenseToCategory(se expression.SimpleExpr) types.LicenseCategory {
-	// We converted all licenses from `categories` to uppercase, to make comparison case-insensitive
-	// So we need to convert the license name to uppercase as well
-	normalizedNames := set.New(strings.ToUpper(se.String())) // The license name with suffix (e.g. AGPL-1.0-or-later)
-	normalizedNames.Append(strings.ToUpper(se.License))      // Also accept the license name without suffix (e.g. AGPL-1.0)
+	normalizedNames := set.NewCaseInsensitive(se.String()) // The license name with suffix (e.g. AGPL-1.0-or-later)
+	normalizedNames.Append(se.License)                     // Also accept the license name without suffix (e.g. AGPL-1.0)
 
 	for category, names := range s.categories {
-		if normalizedNames.Intersection(set.New(names...)).Size() > 0 {
+		if normalizedNames.Intersection(names).Size() > 0 {
 			return category
 		}
 	}
