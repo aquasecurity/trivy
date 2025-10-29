@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"io/fs"
 	"path"
-	"slices"
-	"strings"
 
 	"github.com/open-policy-agent/opa/v1/loader"
 	"github.com/open-policy-agent/opa/v1/storage"
@@ -13,6 +11,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 )
+
+var dataFileExtensions = set.NewCaseInsensitive(".yaml", ".yml", ".json")
 
 // initialize a store populated with OPA data files found in dataPaths
 func initStore(dataFS fs.FS, dataPaths, namespaces []string) (storage.Store, error) {
@@ -55,9 +55,5 @@ func initStore(dataFS fs.FS, dataPaths, namespaces []string) (storage.Store, err
 }
 
 func isDataFile(filePath string) bool {
-	return slices.Contains([]string{
-		".yaml",
-		".yml",
-		".json",
-	}, strings.ToLower(path.Ext(filePath)))
+	return dataFileExtensions.Contains(path.Ext(filePath))
 }
