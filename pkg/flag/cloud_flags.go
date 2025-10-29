@@ -8,7 +8,7 @@ const (
 var (
 	CloudTokenFlag = Flag[string]{
 		Name:       "cloud-token",
-		ConfigName: "cloud.cloud-token",
+		ConfigName: "cloud.token",
 		Usage:      "Token used to athenticate with Trivy Cloud platform",
 	}
 
