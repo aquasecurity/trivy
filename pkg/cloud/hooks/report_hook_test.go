@@ -213,7 +213,7 @@ func TestReportHook_PostReport(t *testing.T) {
 
 			if tt.errorContains != "" {
 				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.errorContains)
+				require.ErrorContains(t, err, tt.errorContains)
 				return
 			}
 
@@ -257,7 +257,7 @@ func TestReportHook_uploadResults(t *testing.T) {
 
 			if tt.errorContains != "" {
 				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.errorContains)
+				require.ErrorContains(t, err, tt.errorContains)
 				return
 			}
 
@@ -304,13 +304,12 @@ func TestReportHook_getPresignedUploadUrl(t *testing.T) {
 
 			if tt.errorContains != "" {
 				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.errorContains)
+				require.ErrorContains(t, err, tt.errorContains)
 				assert.Empty(t, url)
 				return
 			}
 
 			require.NoError(t, err)
-			assert.NotEmpty(t, url)
 			assert.Contains(t, url, mockServer.server.URL)
 			assert.Contains(t, url, "/upload-report")
 		})
