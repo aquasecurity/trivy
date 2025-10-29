@@ -99,16 +99,17 @@ func (r *registry) getSpecRules(spec string) []ruleTypes.RegisteredRule {
 		return nil
 	}
 
+	checkIDs := set.New[string]()
+	for _, csRule := range complianceSpec.Spec.Controls {
+		for _, c := range csRule.Checks {
+			checkIDs.Append(c.ID)
+		}
+	}
+
 	registered := r.getFrameworkRules(framework.ALL)
 	for _, rule := range registered {
-		for _, csRule := range complianceSpec.Spec.Controls {
-			if len(csRule.Checks) > 0 {
-				for _, c := range csRule.Checks {
-					if rule.GetRule().AVDID == c.ID || rule.GetRule().ID == c.ID {
-						specRules = append(specRules, rule)
-					}
-				}
-			}
+		if checkIDs.Contains(rule.AVDID) || checkIDs.Contains(rule.ID) {
+			specRules = append(specRules, rule)
 		}
 	}
 
