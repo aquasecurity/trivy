@@ -3,7 +3,6 @@ package flag
 import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing/expression"
-	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 var (
@@ -28,37 +27,37 @@ var (
 	// LicenseForbidden is an option only in a config file
 	LicenseForbidden = Flag[[]string]{
 		ConfigName: "license.forbidden",
-		Default:    expression.ForbiddenLicenses.Items(),
+		Default:    expression.ForbiddenLicenses,
 		Usage:      "forbidden licenses",
 	}
 	// LicenseRestricted is an option only in a config file
 	LicenseRestricted = Flag[[]string]{
 		ConfigName: "license.restricted",
-		Default:    expression.RestrictedLicenses.Items(),
+		Default:    expression.RestrictedLicenses,
 		Usage:      "restricted licenses",
 	}
 	// LicenseReciprocal is an option only in a config file
 	LicenseReciprocal = Flag[[]string]{
 		ConfigName: "license.reciprocal",
-		Default:    expression.ReciprocalLicenses.Items(),
+		Default:    expression.ReciprocalLicenses,
 		Usage:      "reciprocal licenses",
 	}
 	// LicenseNotice is an option only in a config file
 	LicenseNotice = Flag[[]string]{
 		ConfigName: "license.notice",
-		Default:    expression.NoticeLicenses.Items(),
+		Default:    expression.NoticeLicenses,
 		Usage:      "notice licenses",
 	}
 	// LicensePermissive is an option only in a config file
 	LicensePermissive = Flag[[]string]{
 		ConfigName: "license.permissive",
-		Default:    expression.PermissiveLicenses.Items(),
+		Default:    expression.PermissiveLicenses,
 		Usage:      "permissive licenses",
 	}
 	// LicenseUnencumbered is an option only in a config file
 	LicenseUnencumbered = Flag[[]string]{
 		ConfigName: "license.unencumbered",
-		Default:    expression.UnencumberedLicenses.Items(),
+		Default:    expression.UnencumberedLicenses,
 		Usage:      "unencumbered licenses",
 	}
 )
@@ -82,7 +81,7 @@ type LicenseOptions struct {
 	IgnoredLicenses        []string
 	LicenseConfidenceLevel float64
 	LicenseRiskThreshold   int
-	LicenseCategories      map[types.LicenseCategory]set.Set[string]
+	LicenseCategories      map[types.LicenseCategory][]string
 }
 
 func NewLicenseFlagGroup() *LicenseFlagGroup {
@@ -118,13 +117,13 @@ func (f *LicenseFlagGroup) Flags() []Flagger {
 }
 
 func (f *LicenseFlagGroup) ToOptions(opts *Options) error {
-	licenseCategories := make(map[types.LicenseCategory]set.Set[string])
-	licenseCategories[types.CategoryForbidden] = set.NewCaseInsensitive(f.LicenseForbidden.Value()...)
-	licenseCategories[types.CategoryRestricted] = set.NewCaseInsensitive(f.LicenseRestricted.Value()...)
-	licenseCategories[types.CategoryReciprocal] = set.NewCaseInsensitive(f.LicenseReciprocal.Value()...)
-	licenseCategories[types.CategoryNotice] = set.NewCaseInsensitive(f.LicenseNotice.Value()...)
-	licenseCategories[types.CategoryPermissive] = set.NewCaseInsensitive(f.LicensePermissive.Value()...)
-	licenseCategories[types.CategoryUnencumbered] = set.NewCaseInsensitive(f.LicenseUnencumbered.Value()...)
+	licenseCategories := make(map[types.LicenseCategory][]string)
+	licenseCategories[types.CategoryForbidden] = f.LicenseForbidden.Value()
+	licenseCategories[types.CategoryRestricted] = f.LicenseRestricted.Value()
+	licenseCategories[types.CategoryReciprocal] = f.LicenseReciprocal.Value()
+	licenseCategories[types.CategoryNotice] = f.LicenseNotice.Value()
+	licenseCategories[types.CategoryPermissive] = f.LicensePermissive.Value()
+	licenseCategories[types.CategoryUnencumbered] = f.LicenseUnencumbered.Value()
 
 	opts.LicenseOptions = LicenseOptions{
 		LicenseFull:            f.LicenseFull.Value(),

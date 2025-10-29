@@ -203,7 +203,7 @@ var GnuLicenses = []string{
 var (
 	// ForbiddenLicenses - Licenses that are forbidden to be used.
 	// ported from https://github.com/google/licenseclassifier/blob/7c62d6fe8d3aa2f39c4affb58c9781d9dc951a2d/license_type.go#L340-L364
-	ForbiddenLicenses = set.NewCaseInsensitive(
+	ForbiddenLicenses = []string{
 		AGPL10,
 		AGPL30,
 		CCBYNC10,
@@ -226,12 +226,12 @@ var (
 		Facebook3Clause,
 		FacebookExamples,
 		WTFPL,
-	)
+	}
 
 	// RestrictedLicenses - Licenses in this category require mandatory source distribution if we ship a product
 	// that includes third-party code protected by such a license.
 	// ported from https://github.com/google/licenseclassifier/blob/7c62d6fe8d3aa2f39c4affb58c9781d9dc951a2d/license_type.go#L182-L219
-	RestrictedLicenses = set.NewCaseInsensitive(
+	RestrictedLicenses = []string{
 		BCL,
 		CCBYND10,
 		CCBYND20,
@@ -265,12 +265,12 @@ var (
 		OSL30,
 		QPL10,
 		Sleepycat,
-	)
+	}
 
 	// ReciprocalLicenses - These licenses allow usage of software made available  under such licenses freely
 	// in *unmodified* form. If the third-party source code is modified in any way these modifications to the
 	// original third-party source code must be made available.
-	ReciprocalLicenses = set.NewCaseInsensitive(
+	ReciprocalLicenses = []string{
 		APSL10,
 		APSL11,
 		APSL12,
@@ -286,13 +286,13 @@ var (
 		MPL11,
 		MPL20,
 		Ruby,
-	)
+	}
 
 	// NoticeLicenses - These licenses contain few restrictions, allowing original or modified third-party software
 	// to be shipped in any product without endangering or encumbering our source code.
 	// All of the licenses in this category do, however, have an "original Copyright notice" or "advertising clause",
 	// wherein any external distributions must include the notice or clause specified in the license.
-	NoticeLicenses = set.NewCaseInsensitive(
+	NoticeLicenses = []string{
 		AFL11,
 		AFL12,
 		AFL20,
@@ -357,20 +357,20 @@ var (
 		ZPL11,
 		ZPL20,
 		ZPL21,
-	)
+	}
 
 	// PermissiveLicenses - These licenses can be used in (relatively rare) cases where third-party software is
 	// under a license (not "Public Domain" or "free for any use" like 'unencumbered') that is even more lenient
 	// than a 'notice' license. Use the 'permissive' license type when even a copyright notice is not required
 	// for license compliance.
-	PermissiveLicenses = set.NewCaseInsensitive()
+	PermissiveLicenses []string
 
 	// UnencumberedLicenses - Licenses that basically declare that the code is "free for any use".
-	UnencumberedLicenses = set.NewCaseInsensitive(
+	UnencumberedLicenses = []string{
 		CC010,
 		Unlicense,
 		ZeroBSD,
-	)
+	}
 )
 
 var spdxLicenses = set.NewCaseInsensitive()
