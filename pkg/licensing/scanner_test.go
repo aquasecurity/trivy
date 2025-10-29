@@ -8,23 +8,24 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/licensing/expression"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 func TestScanner_Scan(t *testing.T) {
 	tests := []struct {
 		name         string
-		categories   map[types.LicenseCategory][]string
+		categories   map[types.LicenseCategory]set.Set[string]
 		licenseName  string
 		wantCategory types.LicenseCategory
 		wantSeverity string
 	}{
 		{
 			name: "forbidden",
-			categories: map[types.LicenseCategory][]string{
-				types.CategoryForbidden: {
+			categories: map[types.LicenseCategory]set.Set[string]{
+				types.CategoryForbidden: set.NewCaseInsensitive(
 					expression.BSD3Clause,
 					expression.Apache20,
-				},
+				),
 			},
 			licenseName:  expression.Apache20,
 			wantCategory: types.CategoryForbidden,
@@ -32,11 +33,11 @@ func TestScanner_Scan(t *testing.T) {
 		},
 		{
 			name: "has plus",
-			categories: map[types.LicenseCategory][]string{
-				types.CategoryForbidden: {
+			categories: map[types.LicenseCategory]set.Set[string]{
+				types.CategoryForbidden: set.NewCaseInsensitive(
 					expression.BSD3Clause,
 					expression.Apache20,
-				},
+				),
 			},
 			licenseName:  "Apache-2.0+",
 			wantCategory: types.CategoryForbidden,
@@ -44,10 +45,10 @@ func TestScanner_Scan(t *testing.T) {
 		},
 		{
 			name: "`categories` contains license with suffix",
-			categories: map[types.LicenseCategory][]string{
-				types.CategoryNotice: {
+			categories: map[types.LicenseCategory]set.Set[string]{
+				types.CategoryNotice: set.NewCaseInsensitive(
 					"LGPL-2.0-only",
-				},
+				),
 			},
 			licenseName:  "LGPL-2.0-only",
 			wantCategory: types.CategoryNotice,
@@ -55,14 +56,14 @@ func TestScanner_Scan(t *testing.T) {
 		},
 		{
 			name: "restricted",
-			categories: map[types.LicenseCategory][]string{
-				types.CategoryForbidden: {
+			categories: map[types.LicenseCategory]set.Set[string]{
+				types.CategoryForbidden: set.NewCaseInsensitive(
 					expression.GPL30,
-				},
-				types.CategoryRestricted: {
+				),
+				types.CategoryRestricted: set.NewCaseInsensitive(
 					expression.BSD3Clause,
 					expression.Apache20,
-				},
+				),
 			},
 			licenseName:  expression.BSD3Clause,
 			wantCategory: types.CategoryRestricted,
@@ -70,11 +71,11 @@ func TestScanner_Scan(t *testing.T) {
 		},
 		{
 			name: "unnormalized license",
-			categories: map[types.LicenseCategory][]string{
-				types.CategoryRestricted: {
+			categories: map[types.LicenseCategory]set.Set[string]{
+				types.CategoryRestricted: set.NewCaseInsensitive(
 					expression.BSD3Clause,
 					expression.MIT,
-				},
+				),
 			},
 			licenseName:  "MIT License",
 			wantCategory: types.CategoryRestricted,
@@ -82,13 +83,13 @@ func TestScanner_Scan(t *testing.T) {
 		},
 		{
 			name: "compound OR license",
-			categories: map[types.LicenseCategory][]string{
-				types.CategoryForbidden: {
+			categories: map[types.LicenseCategory]set.Set[string]{
+				types.CategoryForbidden: set.NewCaseInsensitive(
 					expression.GPL30,
-				},
-				types.CategoryRestricted: {
+				),
+				types.CategoryRestricted: set.NewCaseInsensitive(
 					expression.Apache20,
-				},
+				),
 			},
 			licenseName:  expression.GPL30 + " OR " + expression.Apache20,
 			wantCategory: types.CategoryRestricted,
@@ -96,13 +97,13 @@ func TestScanner_Scan(t *testing.T) {
 		},
 		{
 			name: "compound AND license",
-			categories: map[types.LicenseCategory][]string{
-				types.CategoryForbidden: {
+			categories: map[types.LicenseCategory]set.Set[string]{
+				types.CategoryForbidden: set.NewCaseInsensitive(
 					expression.GPL30,
-				},
-				types.CategoryRestricted: {
+				),
+				types.CategoryRestricted: set.NewCaseInsensitive(
 					expression.Apache20,
-				},
+				),
 			},
 			licenseName:  expression.GPL30 + " AND " + expression.Apache20,
 			wantCategory: types.CategoryForbidden,
@@ -110,12 +111,12 @@ func TestScanner_Scan(t *testing.T) {
 		},
 		{
 			name: "license with exception",
-			categories: map[types.LicenseCategory][]string{
-				types.CategoryForbidden: {
+			categories: map[types.LicenseCategory]set.Set[string]{
+				types.CategoryForbidden: set.NewCaseInsensitive(
 					"GPL-2.0-only WITH Classpath-exception-2.0",
 					expression.GPL30,
 					expression.Apache20,
-				},
+				),
 			},
 			licenseName:  "GPL-3.0-only OR GPL-2.0-only WITH Classpath-exception-2.0 AND Apache-2.0",
 			wantCategory: types.CategoryForbidden,
@@ -123,10 +124,10 @@ func TestScanner_Scan(t *testing.T) {
 		},
 		{
 			name: "with separator in lowercase",
-			categories: map[types.LicenseCategory][]string{
-				types.CategoryForbidden: {
+			categories: map[types.LicenseCategory]set.Set[string]{
+				types.CategoryForbidden: set.NewCaseInsensitive(
 					"Similar to Apache License but with the acknowledgment clause removed.",
-				},
+				),
 			},
 			licenseName:  "Similar to Apache License but with the acknowledgment clause removed.",
 			wantCategory: types.CategoryForbidden,
@@ -134,10 +135,10 @@ func TestScanner_Scan(t *testing.T) {
 		},
 		{
 			name: "compound unknown license",
-			categories: map[types.LicenseCategory][]string{
-				types.CategoryForbidden: {
+			categories: map[types.LicenseCategory]set.Set[string]{
+				types.CategoryForbidden: set.NewCaseInsensitive(
 					expression.GPL30,
-				},
+				),
 			},
 			licenseName:  expression.GPL30 + " AND " + expression.Apache20,
 			wantCategory: types.CategoryUnknown,
@@ -145,16 +146,16 @@ func TestScanner_Scan(t *testing.T) {
 		},
 		{
 			name: "compound long license, recursive",
-			categories: map[types.LicenseCategory][]string{
-				types.CategoryForbidden: {
+			categories: map[types.LicenseCategory]set.Set[string]{
+				types.CategoryForbidden: set.NewCaseInsensitive(
 					expression.GPL30,
-				},
-				types.CategoryRestricted: {
+				),
+				types.CategoryRestricted: set.NewCaseInsensitive(
 					expression.BSD3Clause,
-				},
-				types.CategoryNotice: {
+				),
+				types.CategoryNotice: set.NewCaseInsensitive(
 					expression.Apache20,
-				},
+				),
 			},
 			licenseName:  "(" + expression.BSD3Clause + " OR " + expression.GPL30 + ")" + " AND (" + expression.GPL30 + " OR " + expression.Apache20 + ")",
 			wantCategory: types.CategoryRestricted,
@@ -162,7 +163,7 @@ func TestScanner_Scan(t *testing.T) {
 		},
 		{
 			name:         "unknown",
-			categories:   make(map[types.LicenseCategory][]string),
+			categories:   make(map[types.LicenseCategory]set.Set[string]),
 			licenseName:  expression.BSD3Clause,
 			wantCategory: types.CategoryUnknown,
 			wantSeverity: "UNKNOWN",
@@ -171,10 +172,10 @@ func TestScanner_Scan(t *testing.T) {
 			// `Unlicensed` is a special license name in npm.
 			// It means the developer does not grant anyone the right to use the private or unpublished package under any circumstances.
 			name: "'unlicensed' npm license as unknown",
-			categories: map[types.LicenseCategory][]string{
-				types.CategoryUnencumbered: {
+			categories: map[types.LicenseCategory]set.Set[string]{
+				types.CategoryUnencumbered: set.NewCaseInsensitive(
 					expression.Unlicense,
-				},
+				),
 			},
 			licenseName:  "UNLICENSED",
 			wantCategory: types.CategoryUnknown,
@@ -194,15 +195,17 @@ func TestScanner_Scan(t *testing.T) {
 func TestScanner_ScanTextLicense(t *testing.T) {
 	tests := []struct {
 		name         string
-		categories   map[types.LicenseCategory][]string
+		categories   map[types.LicenseCategory]set.Set[string]
 		licenseText  string
 		wantCategory types.LicenseCategory
 		wantSeverity string
 	}{
 		{
 			name: "match license text pattern",
-			categories: map[types.LicenseCategory][]string{
-				types.CategoryForbidden: {"text://Apache.*License"},
+			categories: map[types.LicenseCategory]set.Set[string]{
+				types.CategoryForbidden: set.NewCaseInsensitive(
+					"text://Apache.*License",
+				),
 			},
 			licenseText:  "Apache Software Foundation License",
 			wantCategory: types.CategoryForbidden,
@@ -210,8 +213,10 @@ func TestScanner_ScanTextLicense(t *testing.T) {
 		},
 		{
 			name: "no match returns unknown",
-			categories: map[types.LicenseCategory][]string{
-				types.CategoryNotice: {"text://MIT.*"},
+			categories: map[types.LicenseCategory]set.Set[string]{
+				types.CategoryNotice: set.NewCaseInsensitive(
+					"text://MIT.*",
+				),
 			},
 			licenseText:  "Some other license text",
 			wantCategory: types.CategoryUnknown,
@@ -219,8 +224,10 @@ func TestScanner_ScanTextLicense(t *testing.T) {
 		},
 		{
 			name: "invalid regexp is ignored",
-			categories: map[types.LicenseCategory][]string{
-				types.CategoryRestricted: {"text://("},
+			categories: map[types.LicenseCategory]set.Set[string]{
+				types.CategoryRestricted: set.NewCaseInsensitive(
+					"text://(",
+				),
 			},
 			licenseText:  "MIT License",
 			wantCategory: types.CategoryUnknown,
@@ -228,8 +235,10 @@ func TestScanner_ScanTextLicense(t *testing.T) {
 		},
 		{
 			name: "category without text prefix is ignored",
-			categories: map[types.LicenseCategory][]string{
-				types.CategoryNotice: {"MIT"},
+			categories: map[types.LicenseCategory]set.Set[string]{
+				types.CategoryNotice: set.NewCaseInsensitive(
+					"MIT",
+				),
 			},
 			licenseText:  "MIT License",
 			wantCategory: types.CategoryUnknown,
