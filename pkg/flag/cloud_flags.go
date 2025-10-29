@@ -37,10 +37,10 @@ var (
 	}
 
 	CloudSecretConfigFlag = Flag[bool]{
-		Name:          "cloud-download-secret-config",
-		ConfigName:    "cloud.download-secret-config",
+		Name:          "cloud-use-secret-config",
+		ConfigName:    "cloud.use-secret-config",
 		Default:       true,
-		Usage:         "Download secret configurations from Trivy Cloud platform",
+		Usage:         "Use secret configurations from Trivy Cloud platform",
 		TelemetrySafe: true,
 	}
 

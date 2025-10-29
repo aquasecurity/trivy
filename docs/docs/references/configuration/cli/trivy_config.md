@@ -15,11 +15,11 @@ trivy config [flags] DIR
       --check-namespaces strings          Rego namespaces
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "mirror.gcr.io/aquasec/trivy-checks:1")
       --cloud-api-url string              API URL for Trivy Cloud platform (default "https://api.trivy.dev")
-      --cloud-download-secret-config      Download secret configurations from Trivy Cloud platform (default true)
       --cloud-server-scanning             Use server-side image scanning in Trivy Cloud platform (default true)
       --cloud-token string                Token used to athenticate with Trivy Cloud platform
       --cloud-trivy-server-url string     Trivy Server URL for Trivy Cloud platform (default "https://scan.trivy.dev")
       --cloud-upload-results              Upload results to Trivy Cloud platform (default true)
+      --cloud-use-secret-config           Use secret configurations from Trivy Cloud platform (default true)
       --compliance string                 compliance report to generate
       --config-check strings              specify the paths to the Rego check files or to the directories containing them, applying config files
       --config-data strings               specify paths from which data for the Rego checks will be recursively loaded
