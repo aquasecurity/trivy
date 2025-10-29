@@ -51,7 +51,7 @@ func buildGitSource(repoURL string) string { return "git::" + repoURL }
 func TestResolveModuleFromCache(t *testing.T) {
 
 	repo := "terraform-aws-s3-bucket"
-	gs := gittest.NewServer(t, repo, "testdata/terraform-aws-s3-bucket")
+	gs := gittest.NewServer(t, repo, "testdata/terraform-aws-s3-bucket", gittest.Options{})
 	defer gs.Close()
 
 	repoURL := gs.URL + "/" + repo + ".git"
@@ -141,7 +141,7 @@ func TestResolveModuleFromCache(t *testing.T) {
 
 func TestResolveModuleFromCacheWithDifferentSubdir(t *testing.T) {
 	repo := "terraform-aws-s3-bucket"
-	gs := gittest.NewServer(t, repo, "testdata/terraform-aws-s3-bucket")
+	gs := gittest.NewServer(t, repo, "testdata/terraform-aws-s3-bucket", gittest.Options{})
 	defer gs.Close()
 
 	repoURL := gs.URL + "/" + repo + ".git"

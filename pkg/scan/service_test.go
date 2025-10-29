@@ -23,6 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scan/local"
 	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
 	tTypes "github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
@@ -53,8 +54,10 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			want: tTypes.Report{
 				SchemaVersion: 2,
 				CreatedAt:     time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC),
+				ArtifactID:    "sha256:574abdaf07824449b1277ec1e7e67659cc869bbf97fd95447812b55644350a21", // hash(ImageID:index.docker.io/library/alpine) from RepoTag alpine:3.11
 				ArtifactName:  "../fanal/test/testdata/alpine-311.tar.gz",
 				ArtifactType:  ftypes.TypeContainerImage,
+				ReportID:      "3ff14136-e09f-4df9-80ea-000000000001",
 				Metadata: tTypes.Metadata{
 					Size: 5861888,
 					OS: &ftypes.OS{
@@ -67,6 +70,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 					DiffIDs: []string{
 						"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 					},
+					RepoTags: []string{"alpine:3.11"},
 					Layers: ftypes.Layers{
 						{
 							Size:   5861888,
@@ -208,6 +212,9 @@ func TestScanner_ScanArtifact(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Set fake UUID for testing
+			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
 			// Initialize DB
 			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()

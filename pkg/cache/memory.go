@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"context"
 	"sync"
 
 	"golang.org/x/xerrors"
@@ -20,19 +21,19 @@ func NewMemoryCache() *MemoryCache {
 }
 
 // PutArtifact stores the artifact information in the memory cache
-func (c *MemoryCache) PutArtifact(artifactID string, artifactInfo types.ArtifactInfo) error {
+func (c *MemoryCache) PutArtifact(_ context.Context, artifactID string, artifactInfo types.ArtifactInfo) error {
 	c.artifacts.Store(artifactID, artifactInfo)
 	return nil
 }
 
 // PutBlob stores the blob information in the memory cache
-func (c *MemoryCache) PutBlob(blobID string, blobInfo types.BlobInfo) error {
+func (c *MemoryCache) PutBlob(_ context.Context, blobID string, blobInfo types.BlobInfo) error {
 	c.blobs.Store(blobID, blobInfo)
 	return nil
 }
 
 // DeleteBlobs removes the specified blobs from the memory cache
-func (c *MemoryCache) DeleteBlobs(blobIDs []string) error {
+func (c *MemoryCache) DeleteBlobs(_ context.Context, blobIDs []string) error {
 	for _, blobID := range blobIDs {
 		c.blobs.Delete(blobID)
 	}
@@ -40,7 +41,7 @@ func (c *MemoryCache) DeleteBlobs(blobIDs []string) error {
 }
 
 // GetArtifact retrieves the artifact information from the memory cache
-func (c *MemoryCache) GetArtifact(artifactID string) (types.ArtifactInfo, error) {
+func (c *MemoryCache) GetArtifact(_ context.Context, artifactID string) (types.ArtifactInfo, error) {
 	info, ok := c.artifacts.Load(artifactID)
 	if !ok {
 		return types.ArtifactInfo{}, xerrors.Errorf("artifact (%s) not found in memory cache", artifactID)
@@ -53,7 +54,7 @@ func (c *MemoryCache) GetArtifact(artifactID string) (types.ArtifactInfo, error)
 }
 
 // GetBlob retrieves the blob information from the memory cache
-func (c *MemoryCache) GetBlob(blobID string) (types.BlobInfo, error) {
+func (c *MemoryCache) GetBlob(_ context.Context, blobID string) (types.BlobInfo, error) {
 	info, ok := c.blobs.Load(blobID)
 	if !ok {
 		return types.BlobInfo{}, xerrors.Errorf("blob (%s) not found in memory cache", blobID)
@@ -66,16 +67,16 @@ func (c *MemoryCache) GetBlob(blobID string) (types.BlobInfo, error) {
 }
 
 // MissingBlobs determines the missing artifact and blob information in the memory cache
-func (c *MemoryCache) MissingBlobs(artifactID string, blobIDs []string) (bool, []string, error) {
+func (c *MemoryCache) MissingBlobs(ctx context.Context, artifactID string, blobIDs []string) (bool, []string, error) {
 	var missingArtifact bool
 	var missingBlobIDs []string
 
-	if _, err := c.GetArtifact(artifactID); err != nil {
+	if _, err := c.GetArtifact(ctx, artifactID); err != nil {
 		missingArtifact = true
 	}
 
 	for _, blobID := range blobIDs {
-		if _, err := c.GetBlob(blobID); err != nil {
+		if _, err := c.GetBlob(ctx, blobID); err != nil {
 			missingBlobIDs = append(missingBlobIDs, blobID)
 		}
 	}
@@ -91,7 +92,7 @@ func (c *MemoryCache) Close() error {
 }
 
 // Clear clears the artifact and blob information from the memory cache
-func (c *MemoryCache) Clear() error {
+func (c *MemoryCache) Clear(_ context.Context) error {
 	c.artifacts = sync.Map{}
 	c.blobs = sync.Map{}
 	return nil

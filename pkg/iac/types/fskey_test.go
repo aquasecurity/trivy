@@ -4,10 +4,11 @@ import (
 	"io/fs"
 	"os"
 	"testing"
+	"testing/fstest"
 
-	"github.com/liamg/memoryfs"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/set"
 )
 
@@ -16,8 +17,9 @@ func Test_FSKey(t *testing.T) {
 	systems := []fs.FS{
 		os.DirFS("."),
 		os.DirFS(".."),
-		memoryfs.New(),
-		memoryfs.New(),
+		fstest.MapFS{},
+		mapfs.New(),
+		mapfs.New(),
 	}
 
 	keys := set.New[string]()

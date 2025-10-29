@@ -1,6 +1,7 @@
 package image
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"fmt"
@@ -10,11 +11,12 @@ import (
 	"reflect"
 	"slices"
 	"strings"
-	"sync"
 
 	"github.com/docker/go-units"
+	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
@@ -130,7 +132,7 @@ func (a Artifact) Inspect(ctx context.Context) (ref artifact.Reference, err erro
 	// Parse histories and extract a list of "created_by"
 	layerKeyMap := a.consolidateCreatedBy(diffIDs, layerKeys, configFile)
 
-	missingImage, missingLayers, err := a.cache.MissingBlobs(imageKey, layerKeys)
+	missingImage, missingLayers, err := a.cache.MissingBlobs(ctx, imageKey, layerKeys)
 	if err != nil {
 		return artifact.Reference{}, xerrors.Errorf("unable to get missing layers: %w", err)
 	}
@@ -146,6 +148,10 @@ func (a Artifact) Inspect(ctx context.Context) (ref artifact.Reference, err erro
 		return artifact.Reference{}, xerrors.Errorf("analyze error: %w", err)
 	}
 
+	repoTags := a.image.RepoTags()
+	repoDigests := a.image.RepoDigests()
+	imgRef := a.findMatchingReference(a.image.Name(), repoTags, repoDigests)
+
 	return artifact.Reference{
 		Name:    a.image.Name(),
 		Type:    types.TypeContainerImage,
@@ -154,8 +160,9 @@ func (a Artifact) Inspect(ctx context.Context) (ref artifact.Reference, err erro
 		ImageMetadata: artifact.ImageMetadata{
 			ID:          imageID,
 			DiffIDs:     diffIDs,
-			RepoTags:    a.image.RepoTags(),
-			RepoDigests: a.image.RepoDigests(),
+			RepoTags:    repoTags,
+			RepoDigests: repoDigests,
+			Reference:   imgRef,
 			ConfigFile:  *configFile,
 		},
 	}, nil
@@ -163,6 +170,101 @@ func (a Artifact) Inspect(ctx context.Context) (ref artifact.Reference, err erro
 
 func (a Artifact) Clean(_ artifact.Reference) error {
 	return nil
+}
+
+// findMatchingReference finds a RepoTag or RepoDigest that matches the artifact name
+func (a Artifact) findMatchingReference(artifactName string, repoTags, repoDigests []string) image.Reference {
+	// Convert strings to typed references
+	parsedTags := a.parseRepoTags(repoTags)
+	parsedDigests := a.parseRepoDigests(repoDigests)
+
+	ref := a.findMatchingRepoReference(artifactName, parsedTags, parsedDigests)
+	return image.NewReference(ref)
+}
+
+// parseRepoTags parses repo tags into name.Tag
+func (a Artifact) parseRepoTags(repoTags []string) []name.Tag {
+	return lo.FilterMap(repoTags, func(tagStr string, _ int) (name.Tag, bool) {
+		tag, err := name.NewTag(tagStr)
+		if err != nil {
+			a.logger.Debug("Failed to parse repo tag", log.String("tag", tagStr), log.Err(err))
+			return name.Tag{}, false
+		}
+		return tag, true
+	})
+}
+
+// parseRepoDigests parses repo digests into name.Digest
+func (a Artifact) parseRepoDigests(repoDigests []string) []name.Digest {
+	return lo.FilterMap(repoDigests, func(digestStr string, _ int) (name.Digest, bool) {
+		digest, err := name.NewDigest(digestStr)
+		if err != nil {
+			a.logger.Debug("Failed to parse repo digest", log.String("digest", digestStr), log.Err(err))
+			return name.Digest{}, false
+		}
+		return digest, true
+	})
+}
+
+// findMatchingRepoReference finds a RepoTag or RepoDigest that matches the artifact name
+func (a Artifact) findMatchingRepoReference(artifactName string, repoTags []name.Tag, repoDigests []name.Digest) name.Reference {
+	// If there are no RepoTags or RepoDigests, return nil
+	if len(repoTags) == 0 && len(repoDigests) == 0 {
+		return nil
+	}
+
+	// Select the first available reference as fallback
+	fallback := cmp.Or[name.Reference](lo.FirstOrEmpty(repoTags), lo.FirstOrEmpty(repoDigests))
+
+	// TODO(knqyf263): refactor to use a more robust method instead of suffix-based detection
+	// Check if artifact name looks like a file path (tar archive)
+	archiveExts := []string{
+		".tar",
+		".gz",
+		".gzip",
+		".tgz",
+	}
+	ext := strings.ToLower(filepath.Ext(artifactName))
+	if slices.Contains(archiveExts, ext) {
+		// For file paths, use the first RepoTag or RepoDigest
+		return fallback
+	}
+
+	// Try to parse the artifact name as an image reference
+	artifactRef, err := name.ParseReference(artifactName)
+	if err != nil {
+		// If parsing fails, use the first RepoTag or RepoDigest
+		a.logger.Debug("Failed to parse artifact name as image reference, using first RepoTag",
+			log.String("name", artifactName), log.Err(err))
+		return fallback
+	}
+
+	artifactRefName := artifactRef.Name()
+
+	switch artifactRef.(type) {
+	case name.Digest:
+		// Try to find a matching digest from RepoDigests
+		if digest, ok := lo.Find(repoDigests, func(d name.Digest) bool {
+			return artifactRefName == d.Name()
+		}); ok {
+			return digest
+		}
+	case name.Tag:
+		// Try to find a matching tag from RepoTags
+		if tag, ok := lo.Find(repoTags, func(t name.Tag) bool {
+			return artifactRefName == t.Name()
+		}); ok {
+			return tag
+		}
+	}
+
+	// If no matching tag/digest found, use the first RepoTag or RepoDigest as fallback
+	// This also handles the case when the artifact is specified by image ID (e.g., `trivy image sha256:abc123`)
+	a.logger.Debug("No matching repo tag/digest found for artifact, using first one",
+		log.String("name", artifactName),
+		log.String("ref", artifactRefName),
+		log.String("fallback", fallback.String()))
+	return fallback
 }
 
 func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []string, error) {
@@ -332,7 +434,7 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 		if err != nil {
 			return nil, xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
 		}
-		if err = a.cache.PutBlob(layerKey, layerInfo); err != nil {
+		if err = a.cache.PutBlob(ctx, layerKey, layerInfo); err != nil {
 			return nil, xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
 		}
 		if lo.IsNotEmpty(layerInfo.OS) {
@@ -367,8 +469,11 @@ func (a Artifact) inspectLayer(ctx context.Context, layer types.Layer, disabled 
 	// Count the bytes read from the layer
 	cr := xio.NewCountingReader(rc)
 
+	// `errgroup` cancels the context after Wait returns, so it can’t be use later.
+	// We need a separate context specifically for Analyze.
+	eg, egCtx := errgroup.WithContext(ctx)
+
 	// Prepare variables
-	var wg sync.WaitGroup
 	opts := analyzer.AnalysisOptions{
 		Offline:      a.artifactOption.Offline,
 		FileChecksum: a.artifactOption.FileChecksum,
@@ -385,7 +490,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layer types.Layer, disabled 
 
 	// Walk a tar layer
 	opqDirs, whFiles, err := a.walker.Walk(cr, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
+		if err = a.analyzer.AnalyzeFile(egCtx, eg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
 
@@ -410,8 +515,10 @@ func (a Artifact) inspectLayer(ctx context.Context, layer types.Layer, disabled 
 		return types.BlobInfo{}, xerrors.Errorf("walk error: %w", err)
 	}
 
-	// Wait for all the goroutine to finish.
-	wg.Wait()
+	// Wait for all the goroutine to finish and check errors
+	if err = eg.Wait(); err != nil {
+		return types.BlobInfo{}, xerrors.Errorf("analyze error: %w", err)
+	}
 
 	// Post-analysis
 	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
@@ -518,7 +625,7 @@ func (a Artifact) inspectConfig(ctx context.Context, imageID string, osFound typ
 		HistoryPackages:  result.HistoryPackages,
 	}
 
-	if err := a.cache.PutArtifact(imageID, info); err != nil {
+	if err := a.cache.PutArtifact(ctx, imageID, info); err != nil {
 		return xerrors.Errorf("failed to put image info into the cache: %w", err)
 	}
 

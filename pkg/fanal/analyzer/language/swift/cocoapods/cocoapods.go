@@ -23,9 +23,9 @@ const (
 // cocoaPodsLockAnalyzer analyzes Podfile.lock
 type cocoaPodsLockAnalyzer struct{}
 
-func (a cocoaPodsLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a cocoaPodsLockAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	p := cocoapods.NewParser()
-	res, err := language.Analyze(types.Cocoapods, input.FilePath, input.Content, p)
+	res, err := language.Analyze(ctx, types.Cocoapods, input.FilePath, input.Content, p)
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
 	}

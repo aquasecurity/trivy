@@ -1,6 +1,8 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:ed11998b28b0bcd0488c4d2fda300f80d71ac058ce7eb12a43a4deb312ce429c",
   "ArtifactName": "testdata/fixtures/images/rockylinux-8.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -12,6 +14,9 @@
     "ImageID": "sha256:210996f98b856d7cd00496ddbe9412e73f1c714c95de09661e07b4e43648f9ab",
     "DiffIDs": [
       "sha256:65dbea0a4b39709e0a2cc8624fd99478e9f302c0a5661d7676d6d3bd3cb6d181"
+    ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:rockylinux-8"
     ],
     "ImageConfig": {
       "architecture": "amd64",

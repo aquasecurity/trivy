@@ -12,25 +12,57 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/scan/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-type Encoder struct {
-	bom        *core.BOM
-	opts       core.Options
-	components map[uuid.UUID]*core.Component
+type EncoderOption func(*Encoder)
+
+// WithBOMRef enables BOM-Ref generation for CycloneDX components
+func WithBOMRef() EncoderOption {
+	return func(e *Encoder) {
+		e.bomOpts.GenerateBOMRef = true
+	}
 }
 
-func NewEncoder(opts core.Options) *Encoder {
-	return &Encoder{opts: opts}
+// WithParents enables holding parent maps in the BOM structure
+func WithParents() EncoderOption {
+	return func(e *Encoder) {
+		e.bomOpts.Parents = true
+	}
+}
+
+// ForceRegenerate forces regeneration of BOM instead of reusing existing one
+func ForceRegenerate() EncoderOption {
+	return func(e *Encoder) {
+		e.forceRegenerate = true
+	}
+}
+
+type Encoder struct {
+	bom             *core.BOM
+	bomOpts         core.Options
+	forceRegenerate bool
+}
+
+func NewEncoder(opts ...EncoderOption) *Encoder {
+	e := &Encoder{}
+	for _, opt := range opts {
+		opt(e)
+	}
+	return e
 }
 
 func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
-	if report.BOM != nil {
-		e.components = report.BOM.Components()
+	// When report.BOM is not nil, reuse the existing BOM structure unless ForceRegenerate is set.
+	// This happens in two scenarios:
+	// 1. SBOM scanning: When scanning an existing SBOM file to refresh vulnerabilities
+	// 2. Library usage: When using Trivy as a library with a custom BOM in the report
+	if report.BOM != nil && !e.forceRegenerate {
+		return e.reuseExistingBOM(report)
 	}
 	// Metadata component
 	root, err := e.rootComponent(report)
@@ -38,7 +70,7 @@ func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
 		return nil, xerrors.Errorf("failed to create root component: %w", err)
 	}
 
-	e.bom = core.NewBOM(e.opts)
+	e.bom = core.NewBOM(e.bomOpts)
 	if report.BOM != nil {
 		e.bom.SerialNumber = report.BOM.SerialNumber
 		e.bom.Version = report.BOM.Version
@@ -101,11 +133,6 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 	case ftypes.TypeRepository:
 		root.Type = core.TypeRepository
 	case ftypes.TypeCycloneDX, ftypes.TypeSPDX:
-		// When we scan SBOM file
-		// If SBOM file doesn't contain root component - use filesystem
-		if r.BOM != nil && r.BOM.Root() != nil {
-			return r.BOM.Root(), nil
-		}
 		// When we scan a `json` file (meaning a file in `json` format) which was created from the SBOM file.
 		// e.g. for use in `convert` mode.
 		// See https://github.com/aquasecurity/trivy/issues/6780
@@ -253,14 +280,50 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 	}
 }
 
-// existedPkgIdentifier tries to look for package identifier (BOM-ref, PURL) by component name and component type
-func (e *Encoder) existedPkgIdentifier(name string, componentType core.ComponentType) ftypes.PkgIdentifier {
-	for _, c := range e.components {
-		if c.Name == name && c.Type == componentType {
-			return c.PkgIdentifier
+// reuseExistingBOM preserves the original SBOM structure and only updates the vulnerabilities section
+// with newly detected vulnerabilities. This method handles two use cases:
+//  1. SBOM scanning (CycloneDX): When scanning an existing SBOM file to refresh vulnerability data while
+//     preserving the original structure, components, and relationships
+//     e.g. $ trivy sbom sbom.cdx.json --scanners vuln --format cyclonedx
+//  2. Library usage: When using Trivy as a library with a pre-existing custom BOM that needs
+//     to be enriched with vulnerability information
+//
+// For SBOM scanning (case 1), this approach is CycloneDX-specific
+// because: SPDX 2.3 does not include vulnerabilities in the SBOM specification.
+// Therefore, the method uses BOM-Ref for component-vulnerability lookup rather than SPDX-ID.
+func (e *Encoder) reuseExistingBOM(report types.Report) (*core.BOM, error) {
+	bom := report.BOM.Clone()
+
+	// Create a lookup map from BOM-Ref to component for efficient vulnerability assignment
+	// BOM-Ref is used as the key because it's the standard identifier in CycloneDX format
+	// and is guaranteed to be present in components from CycloneDX SBOMs
+	components := lo.MapKeys(report.BOM.Components(), func(v *core.Component, _ uuid.UUID) string {
+		return v.PkgIdentifier.BOMRef
+	})
+
+	for _, result := range report.Results {
+		// Group newly detected vulnerabilities by their component's BOM-Ref
+		vulns := make(map[string][]core.Vulnerability)
+		for _, vuln := range result.Vulnerabilities {
+			vulns[vuln.PkgIdentifier.BOMRef] = append(vulns[vuln.PkgIdentifier.BOMRef], e.vulnerability(vuln))
+		}
+
+		// Associate vulnerabilities with their corresponding components in the SBOM
+		for bomRef, componentVulns := range vulns {
+			c, ok := components[bomRef]
+			if !ok {
+				// This should never happen in proper SBOM rescanning because vulnerabilities
+				// should only be detected for components that exist in the original SBOM
+				log.Warn("Skipping vulnerabilities for component not found in SBOM",
+					log.String("bom-ref", bomRef),
+					log.Int("vulnerabilities", len(componentVulns)))
+				continue
+			}
+			bom.AddVulnerabilities(c, componentVulns)
 		}
 	}
-	return ftypes.PkgIdentifier{}
+
+	return bom, nil
 }
 
 func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound *ftypes.OS) *core.Component {
@@ -285,10 +348,8 @@ func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound 
 			component.Version = osFound.Name
 		}
 		component.Type = core.TypeOS
-		component.PkgIdentifier = e.existedPkgIdentifier(component.Name, component.Type)
 	case types.ClassLangPkg:
 		component.Type = core.TypeApplication
-		component.PkgIdentifier = e.existedPkgIdentifier(component.Name, component.Type)
 	}
 
 	e.bom.AddRelationship(root, component, core.RelationshipContains)
@@ -360,6 +421,29 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 			Name:  core.PropertyLayerDiffID,
 			Value: pkg.Layer.DiffID,
 		},
+	}
+
+	// Fill Red Hat specific properties
+	if pkg.BuildInfo != nil {
+		for _, cs := range pkg.BuildInfo.ContentSets {
+			properties = append(properties, core.Property{
+				Name:  core.PropertyContentSet,
+				Value: cs,
+			})
+		}
+
+		if pkg.BuildInfo.Nvr != "" {
+			properties = append(properties, core.Property{
+				Name:  core.PropertyNVR,
+				Value: pkg.BuildInfo.Nvr,
+			})
+		}
+		if pkg.BuildInfo.Arch != "" {
+			properties = append(properties, core.Property{
+				Name:  core.PropertyArch,
+				Value: pkg.BuildInfo.Arch,
+			})
+		}
 	}
 
 	var files []core.File

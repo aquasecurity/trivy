@@ -1,6 +1,8 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:f3d716e4652bf4a60bf4289eace7bb2b46878fa9461c86b12b4c059126563aee",
   "ArtifactName": "testdata/fixtures/images/sle-micro-rancher-5.4_ndb.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -12,6 +14,9 @@
     "ImageID": "sha256:c45ec974938acac29c893b5d273d73e4ebdd7e6a97b6fa861dfbd8dd430b9016",
     "DiffIDs": [
       "sha256:7cdd3aec849d122d63dc83a5e1e2fb89b341c67b03e25979131ca335a463bb57"
+    ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:sle-micro-rancher-5.4_ndb"
     ],
     "ImageConfig": {
       "architecture": "amd64",

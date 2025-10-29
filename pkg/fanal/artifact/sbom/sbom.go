@@ -71,7 +71,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 		return artifact.Reference{}, xerrors.Errorf("failed to calculate a cache key: %w", err)
 	}
 
-	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
+	if err = a.cache.PutBlob(ctx, cacheKey, blobInfo); err != nil {
 		return artifact.Reference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 
@@ -89,6 +89,12 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 		Type:    artifactType,
 		ID:      cacheKey, // use a cache key as pseudo artifact ID
 		BlobIDs: []string{cacheKey},
+		ImageMetadata: artifact.ImageMetadata{
+			ID:          bom.Metadata.ImageID,
+			DiffIDs:     bom.Metadata.DiffIDs,
+			RepoTags:    bom.Metadata.RepoTags,
+			RepoDigests: bom.Metadata.RepoDigests,
+		},
 
 		// Keep an original report
 		BOM: bom.BOM,
@@ -96,7 +102,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 }
 
 func (a Artifact) Clean(reference artifact.Reference) error {
-	return a.cache.DeleteBlobs(reference.BlobIDs)
+	return a.cache.DeleteBlobs(context.TODO(), reference.BlobIDs)
 }
 
 func (a Artifact) calcCacheKey(blobInfo types.BlobInfo) (string, error) {

@@ -13,6 +13,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
+// TestPlugin tests Trivy plugins.
+//
+// NOTE: This test CAN update golden files with the -update flag because the golden files
+// used here are not shared with other tests. These plugin-specific golden files are unique
+// to this test and should be updated here.
 func TestPlugin(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -23,13 +28,13 @@ func TestPlugin(t *testing.T) {
 		{
 			name:   "count plugin installed from `index`",
 			plugin: "count@v0.2.0",
-			golden: "testdata/count-0.2.0-plugin.txt.golden",
+			golden: goldenCountPlugin020,
 		},
 		{
 			name:       "count plugin installed from github archive",
 			plugin:     "https://github.com/aquasecurity/trivy-plugin-count/archive/refs/tags/v0.1.0.zip",
 			pluginArgs: "--published-before=2020-01-01",
-			golden:     "testdata/count-0.1.0-plugin-with-before-flag.txt.golden",
+			golden:     goldenCountPlugin010WithBeforeFlag,
 		},
 	}
 

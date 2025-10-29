@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/aquasecurity/trivy/pkg/vex"
 )
 
@@ -51,6 +52,20 @@ var (
 				Type:      packageurl.TypeDebian,
 				Namespace: "debian",
 				Name:      "bash",
+				Version:   "5.3",
+			},
+		},
+	}
+	baseFilesPackage = ftypes.Package{
+		ID:      "base-files@5.3",
+		Name:    "base-files",
+		Version: "5.3",
+		Identifier: ftypes.PkgIdentifier{
+			UID: "07",
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeDebian,
+				Namespace: "debian",
+				Name:      "base-files",
 				Version:   "5.3",
 			},
 		},
@@ -155,6 +170,9 @@ func TestMain(m *testing.M) {
 func TestFilter(t *testing.T) {
 	// Set up the OCI registry
 	tr, d := setUpRegistry(t)
+
+	uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+	testCycloneDXSBOM := createCycloneDXBOMWithSpringComponent()
 
 	type args struct {
 		report *types.Report
@@ -329,10 +347,7 @@ func TestFilter(t *testing.T) {
 			args: args{
 				report: &types.Report{
 					ArtifactType: ftypes.TypeCycloneDX,
-					BOM: &core.BOM{
-						SerialNumber: "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
-						Version:      1,
-					},
+					BOM:          testCycloneDXSBOM,
 					Results: []types.Result{
 						springResult(types.Result{
 							Vulnerabilities: []types.DetectedVulnerability{vuln1},
@@ -350,10 +365,7 @@ func TestFilter(t *testing.T) {
 			},
 			want: &types.Report{
 				ArtifactType: ftypes.TypeCycloneDX,
-				BOM: &core.BOM{
-					SerialNumber: "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
-					Version:      1,
-				},
+				BOM:          testCycloneDXSBOM,
 				Results: []types.Result{
 					springResult(types.Result{
 						Vulnerabilities:  []types.DetectedVulnerability{},
@@ -542,6 +554,38 @@ repositories:
 			}, fmt.Sprintf("%s/debian@%s", strings.TrimPrefix(tr.URL, "http://"), d.String())),
 		},
 		{
+			name: "infinity loop for OS packages",
+			args: args{
+				// - oci:debian?tag=12
+				//     - pkg:deb/debian/bash@5.3
+				//        - pkg:deb/debian/base-files@5.3
+				//     - pkg:deb/debian/base-files@5.3
+				//        - pkg:deb/debian/bash@5.3
+				report: imageReport([]types.Result{
+					infinityLoopOSPackagesResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{
+							vuln3,
+						},
+					}),
+				}),
+				opts: vex.Options{
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/openvex-multiple.json",
+						},
+					},
+				},
+			},
+			want: imageReport([]types.Result{
+				infinityLoopOSPackagesResult(types.Result{
+					Vulnerabilities: []types.DetectedVulnerability{
+						vuln3,
+					},
+				}),
+			}),
+		},
+		{
 			name: "unknown format",
 			args: args{
 				report: &types.Report{},
@@ -617,6 +661,27 @@ func ociPURLString(ts *httptest.Server, d v1.Hash) string {
 	return p.String()
 }
 
+func createCycloneDXBOMWithSpringComponent() *core.BOM {
+	bom := core.NewBOM(core.Options{})
+	bom.SerialNumber = "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79"
+	bom.Version = 1
+	pkgIdentifier := ftypes.PkgIdentifier{
+		// Components got from scanned SBOM files don't have UID
+		BOMRef: springPackage.Identifier.BOMRef,
+		PURL:   springPackage.Identifier.PURL,
+	}
+	// Add the spring component to match vuln1's BOM-Ref
+	springComponent := &core.Component{
+		Type:          core.TypeLibrary,
+		Name:          springPackage.Identifier.PURL.Name,
+		Group:         springPackage.Identifier.PURL.Namespace,
+		Version:       springPackage.Version,
+		PkgIdentifier: pkgIdentifier,
+	}
+	bom.AddComponent(springComponent)
+	return bom
+}
+
 func fsReport(results types.Results) *types.Report {
 	return &types.Report{
 		ArtifactName: ".",
@@ -637,6 +702,24 @@ func bashResult(result types.Result) types.Result {
 	result.Type = ftypes.Debian
 	result.Class = types.ClassOSPkg
 	result.Packages = []ftypes.Package{bashPackage}
+	return result
+}
+
+func infinityLoopOSPackagesResult(result types.Result) types.Result {
+	result.Type = ftypes.Debian
+	result.Class = types.ClassOSPkg
+
+	bashPkg := clonePackage(bashPackage)
+	baseFilesPkg := clonePackage(baseFilesPackage)
+
+	bashPkg.DependsOn = []string{baseFilesPkg.ID}
+	baseFilesPkg.DependsOn = []string{bashPkg.ID}
+
+	result.Packages = []ftypes.Package{
+		bashPkg,
+		baseFilesPkg,
+	}
+
 	return result
 }
 
@@ -665,11 +748,11 @@ func goMultiPathResult(result types.Result) types.Result {
 	result.Type = ftypes.GoModule
 	result.Class = types.ClassLangPkg
 
-	// - pkg:golang/github.com/aquasecurity/go-module@v2.0.0
-	//     - pkg:golang/github.com/aquasecurity/go-direct1@v3.0.0
+	// - pkg:golang/github.com/aquasecurity/go-module@v1.0.0
+	//     - pkg:golang/github.com/aquasecurity/go-direct1@v2.0.0
 	//         - pkg:golang/github.com/aquasecurity/go-transitive@v5.0.0
-	//     - pkg:golang/github.com/aquasecurity/go-direct2@v4.0.0
-	//         - pkg:golang/github.com/aquasecurity/go-transitive@v5.0.0
+	//     - pkg:golang/github.com/aquasecurity/go-direct2@v3.0.0
+	//         - pkg:golang/github.com/aquasecurity/go-transitive@v4.0.0
 	goModule := clonePackage(goModulePackage)
 	goDirect1 := clonePackage(goDirectPackage1)
 	goDirect2 := clonePackage(goDirectPackage2)

@@ -1,6 +1,8 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:1d4bc53b38b27a97aca270bea3abf3e9ea14964d02c71d2c93cd7bc53b74d660",
   "ArtifactName": "testdata/fixtures/images/photon-30.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -12,6 +14,9 @@
     "ImageID": "sha256:5ccb5186b75cd13ff0d028f5b5b2bdf7ef7ca2b3d56eb2c6eb6c136077a6991a",
     "DiffIDs": [
       "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
+    ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:photon-30"
     ],
     "ImageConfig": {
       "architecture": "amd64",

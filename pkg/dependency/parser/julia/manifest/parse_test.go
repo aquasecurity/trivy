@@ -78,7 +78,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.file)
 			require.NoError(t, err)
 
-			gotPkgs, gotDeps, err := NewParser().Parse(f)
+			gotPkgs, gotDeps, err := NewParser().Parse(t.Context(), f)
 
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)

@@ -47,8 +47,8 @@ Trivy adheres to the XDG specification, so the location depends on whether XDG_D
 Trivy will now search XDG_DATA_HOME for the location of the Trivy modules cache.
 The preference order is as follows:
 
-- XDG_DATA_HOME if set and .trivy/plugins exists within the XDG_DATA_HOME dir
-- $HOME/.trivy/plugins
+- XDG_DATA_HOME if set and .trivy/modules exists within the XDG_DATA_HOME dir
+- $HOME/.trivy/modules
 
 For example, to download the WebAssembly module, you can execute the following command:
 
@@ -137,6 +137,10 @@ $ go mod init github.com/aquasecurity/trivy-module-wordpress
 ```go
 package main
 
+import (
+    "github.com/aquasecurity/trivy/pkg/module/wasm"
+)
+
 const (
     version = 1
     name = "wordpress-module"
@@ -144,6 +148,10 @@ const (
 
 // main is required for Go to compile the Wasm module
 func main() {}  
+
+func init() {
+	wasm.RegisterModule(WordpressModule{})
+}
 
 type WordpressModule struct{
 	// Cannot define fields as modules can't keep state.

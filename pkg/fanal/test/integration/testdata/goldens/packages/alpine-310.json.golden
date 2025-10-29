@@ -2,10 +2,6 @@
   {
     "ID": "alpine-baselayout@3.1.2-r0",
     "Name": "alpine-baselayout",
-    "Identifier": {
-      "PURL": "pkg:apk/alpine/alpine-baselayout@3.1.2-r0?arch=x86_64\u0026distro=3.10.2",
-      "UID": "6d6ce35c691e934f"
-    },
     "Version": "3.1.2-r0",
     "Arch": "x86_64",
     "SrcName": "alpine-baselayout",
@@ -13,51 +9,11 @@
     "Licenses": [
       "GPL-2.0-only"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
-    "DependsOn": [
-      "busybox@1.30.1-r2",
-      "musl@1.1.22-r3"
-    ],
-    "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
-      "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    },
-    "Digest": "sha1:574d490311b68db01c0a3e44f5491be0cdc79250",
-    "InstalledFiles": [
-      "etc/hosts",
-      "etc/sysctl.conf",
-      "etc/group",
-      "etc/protocols",
-      "etc/fstab",
-      "etc/mtab",
-      "etc/profile",
-      "etc/shells",
-      "etc/motd",
-      "etc/inittab",
-      "etc/hostname",
-      "etc/modules",
-      "etc/services",
-      "etc/shadow",
-      "etc/passwd",
-      "etc/profile.d/color_prompt",
-      "etc/sysctl.d/00-alpine.conf",
-      "etc/modprobe.d/i386.conf",
-      "etc/modprobe.d/blacklist.conf",
-      "etc/modprobe.d/aliases.conf",
-      "etc/modprobe.d/kms.conf",
-      "etc/crontabs/root",
-      "sbin/mkmntdirs",
-      "var/run",
-      "var/spool/cron/crontabs"
-    ]
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
   },
   {
     "ID": "alpine-keys@2.1-r2",
     "Name": "alpine-keys",
-    "Identifier": {
-      "PURL": "pkg:apk/alpine/alpine-keys@2.1-r2?arch=x86_64\u0026distro=3.10.2",
-      "UID": "f85995d82b77fe17"
-    },
     "Version": "2.1-r2",
     "Arch": "x86_64",
     "SrcName": "alpine-keys",
@@ -65,40 +21,11 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
-    "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
-      "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    },
-    "Digest": "sha1:6dd672e2dabc14aa324cf9cd4553e98b69a769c1",
-    "InstalledFiles": [
-      "etc/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
-      "etc/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
-      "etc/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
-      "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub",
-      "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
-      "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
-      "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58cbb476.rsa.pub",
-      "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub",
-      "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
-      "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58e4f17d.rsa.pub",
-      "usr/share/apk/keys/aarch64/alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub",
-      "usr/share/apk/keys/ppc64le/alpine-devel@lists.alpinelinux.org-58cbb476.rsa.pub",
-      "usr/share/apk/keys/x86/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
-      "usr/share/apk/keys/x86/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
-      "usr/share/apk/keys/s390x/alpine-devel@lists.alpinelinux.org-58e4f17d.rsa.pub",
-      "usr/share/apk/keys/armhf/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub",
-      "usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
-      "usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub"
-    ]
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
   },
   {
     "ID": "apk-tools@2.10.4-r2",
     "Name": "apk-tools",
-    "Identifier": {
-      "PURL": "pkg:apk/alpine/apk-tools@2.10.4-r2?arch=x86_64\u0026distro=3.10.2",
-      "UID": "e85c589338bc6551"
-    },
     "Version": "2.10.4-r2",
     "Arch": "x86_64",
     "SrcName": "apk-tools",
@@ -106,29 +33,11 @@
     "Licenses": [
       "GPL-2.0-only"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
-    "DependsOn": [
-      "libcrypto1.1@1.1.1c-r0",
-      "libssl1.1@1.1.1c-r0",
-      "musl@1.1.22-r3",
-      "zlib@1.2.11-r1"
-    ],
-    "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
-      "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    },
-    "Digest": "sha1:e6393c9419776955346cddd70ad4ec66082a2705",
-    "InstalledFiles": [
-      "sbin/apk"
-    ]
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
   },
   {
     "ID": "busybox@1.30.1-r2",
     "Name": "busybox",
-    "Identifier": {
-      "PURL": "pkg:apk/alpine/busybox@1.30.1-r2?arch=x86_64\u0026distro=3.10.2",
-      "UID": "1ae96e9b05861c6e"
-    },
     "Version": "1.30.1-r2",
     "Arch": "x86_64",
     "SrcName": "busybox",
@@ -136,31 +45,11 @@
     "Licenses": [
       "GPL-2.0-only"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
-    "DependsOn": [
-      "musl@1.1.22-r3"
-    ],
-    "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
-      "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    },
-    "Digest": "sha1:9c244d7f4909bffcef4c67380b6aed145c41a232",
-    "InstalledFiles": [
-      "bin/busybox",
-      "bin/sh",
-      "etc/securetty",
-      "etc/udhcpd.conf",
-      "etc/logrotate.d/acpid",
-      "etc/network/if-up.d/dad"
-    ]
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
   },
   {
     "ID": "ca-certificates-cacert@20190108-r0",
     "Name": "ca-certificates-cacert",
-    "Identifier": {
-      "PURL": "pkg:apk/alpine/ca-certificates-cacert@20190108-r0?arch=x86_64\u0026distro=3.10.2",
-      "UID": "a848273c1a749619"
-    },
     "Version": "20190108-r0",
     "Arch": "x86_64",
     "SrcName": "ca-certificates",
@@ -169,23 +58,11 @@
       "MPL-2.0",
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
-    "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
-      "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    },
-    "Digest": "sha1:0d69933c7cd071e82acb24c6e4268e4752f7a3f7",
-    "InstalledFiles": [
-      "etc/ssl/cert.pem"
-    ]
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
   },
   {
     "ID": "libc-utils@0.7.1-r0",
     "Name": "libc-utils",
-    "Identifier": {
-      "PURL": "pkg:apk/alpine/libc-utils@0.7.1-r0?arch=x86_64\u0026distro=3.10.2",
-      "UID": "217c3efd50863e03"
-    },
     "Version": "0.7.1-r0",
     "Arch": "x86_64",
     "SrcName": "libc-dev",
@@ -193,23 +70,11 @@
     "Licenses": [
       "BSD-3-Clause"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
-    "DependsOn": [
-      "musl-utils@1.1.22-r3"
-    ],
-    "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
-      "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    },
-    "Digest": "sha1:1ff2cf7a0a53c1e83c8649f27b95aaa07bd4a83e"
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
   },
   {
     "ID": "libcrypto1.1@1.1.1c-r0",
     "Name": "libcrypto1.1",
-    "Identifier": {
-      "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
-      "UID": "2fdf6d39693d0b83"
-    },
     "Version": "1.1.1c-r0",
     "Arch": "x86_64",
     "SrcName": "openssl",
@@ -217,37 +82,11 @@
     "Licenses": [
       "OpenSSL"
     ],
-    "Maintainer": "Timo Teras \u003ctimo.teras@iki.fi\u003e",
-    "DependsOn": [
-      "musl@1.1.22-r3"
-    ],
-    "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
-      "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    },
-    "Digest": "sha1:547053af84ac3667548b11b990d7b80ef23b9a3f",
-    "InstalledFiles": [
-      "etc/ssl/openssl.cnf.dist",
-      "etc/ssl/ct_log_list.cnf",
-      "etc/ssl/ct_log_list.cnf.dist",
-      "etc/ssl/openssl.cnf",
-      "etc/ssl/misc/CA.pl",
-      "etc/ssl/misc/tsget.pl",
-      "etc/ssl/misc/tsget",
-      "lib/libcrypto.so.1.1",
-      "usr/lib/libcrypto.so.1.1",
-      "usr/lib/engines-1.1/capi.so",
-      "usr/lib/engines-1.1/padlock.so",
-      "usr/lib/engines-1.1/afalg.so"
-    ]
+    "Maintainer": "Timo Teras \u003ctimo.teras@iki.fi\u003e"
   },
   {
     "ID": "libssl1.1@1.1.1c-r0",
     "Name": "libssl1.1",
-    "Identifier": {
-      "PURL": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
-      "UID": "d57bb696f7371159"
-    },
     "Version": "1.1.1c-r0",
     "Arch": "x86_64",
     "SrcName": "openssl",
@@ -255,58 +94,22 @@
     "Licenses": [
       "OpenSSL"
     ],
-    "Maintainer": "Timo Teras \u003ctimo.teras@iki.fi\u003e",
-    "DependsOn": [
-      "libcrypto1.1@1.1.1c-r0",
-      "musl@1.1.22-r3"
-    ],
-    "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
-      "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    },
-    "Digest": "sha1:6f37a428d6f8de036a523d42e6b0c99288153c38",
-    "InstalledFiles": [
-      "lib/libssl.so.1.1",
-      "usr/lib/libssl.so.1.1"
-    ]
+    "Maintainer": "Timo Teras \u003ctimo.teras@iki.fi\u003e"
   },
   {
     "ID": "libtls-standalone@2.9.1-r0",
     "Name": "libtls-standalone",
-    "Identifier": {
-      "PURL": "pkg:apk/alpine/libtls-standalone@2.9.1-r0?arch=x86_64\u0026distro=3.10.2",
-      "UID": "578e2c441f445479"
-    },
     "Version": "2.9.1-r0",
     "Arch": "x86_64",
     "SrcName": "libtls-standalone",
     "SrcVersion": "2.9.1-r0",
     "Licenses": [
       "ISC"
-    ],
-    "DependsOn": [
-      "ca-certificates-cacert@20190108-r0",
-      "libcrypto1.1@1.1.1c-r0",
-      "libssl1.1@1.1.1c-r0",
-      "musl@1.1.22-r3"
-    ],
-    "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
-      "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    },
-    "Digest": "sha1:f149b608e1e33cfad61fbcf9e3fdb6494f7d691a",
-    "InstalledFiles": [
-      "usr/lib/libtls-standalone.so.1.0.0",
-      "usr/lib/libtls-standalone.so.1"
     ]
   },
   {
     "ID": "musl@1.1.22-r3",
     "Name": "musl",
-    "Identifier": {
-      "PURL": "pkg:apk/alpine/musl@1.1.22-r3?arch=x86_64\u0026distro=3.10.2",
-      "UID": "b4c2daf4a121c758"
-    },
     "Version": "1.1.22-r3",
     "Arch": "x86_64",
     "SrcName": "musl",
@@ -314,24 +117,11 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Timo Teräs \u003ctimo.teras@iki.fi\u003e",
-    "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
-      "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    },
-    "Digest": "sha1:d489e0f3fbb5548758f5ccd2c5a0cef70260ef62",
-    "InstalledFiles": [
-      "lib/libc.musl-x86_64.so.1",
-      "lib/ld-musl-x86_64.so.1"
-    ]
+    "Maintainer": "Timo Teräs \u003ctimo.teras@iki.fi\u003e"
   },
   {
     "ID": "musl-utils@1.1.22-r3",
     "Name": "musl-utils",
-    "Identifier": {
-      "PURL": "pkg:apk/alpine/musl-utils@1.1.22-r3?arch=x86_64\u0026distro=3.10.2",
-      "UID": "98c7d8944c5f13a4"
-    },
     "Version": "1.1.22-r3",
     "Arch": "x86_64",
     "SrcName": "musl",
@@ -341,31 +131,11 @@
       "BSD-3-Clause",
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Timo Teräs \u003ctimo.teras@iki.fi\u003e",
-    "DependsOn": [
-      "musl@1.1.22-r3",
-      "scanelf@1.2.3-r0"
-    ],
-    "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
-      "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    },
-    "Digest": "sha1:8bb14c727be819d07a1e9d8b998dc94bde989205",
-    "InstalledFiles": [
-      "sbin/ldconfig",
-      "usr/bin/iconv",
-      "usr/bin/ldd",
-      "usr/bin/getconf",
-      "usr/bin/getent"
-    ]
+    "Maintainer": "Timo Teräs \u003ctimo.teras@iki.fi\u003e"
   },
   {
     "ID": "scanelf@1.2.3-r0",
     "Name": "scanelf",
-    "Identifier": {
-      "PURL": "pkg:apk/alpine/scanelf@1.2.3-r0?arch=x86_64\u0026distro=3.10.2",
-      "UID": "1ca987fe564f5102"
-    },
     "Version": "1.2.3-r0",
     "Arch": "x86_64",
     "SrcName": "pax-utils",
@@ -373,26 +143,11 @@
     "Licenses": [
       "GPL-2.0-only"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
-    "DependsOn": [
-      "musl@1.1.22-r3"
-    ],
-    "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
-      "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    },
-    "Digest": "sha1:cb3059ce358cea0f5f78a0220a2980e6c4916a94",
-    "InstalledFiles": [
-      "usr/bin/scanelf"
-    ]
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
   },
   {
     "ID": "ssl_client@1.30.1-r2",
     "Name": "ssl_client",
-    "Identifier": {
-      "PURL": "pkg:apk/alpine/ssl_client@1.30.1-r2?arch=x86_64\u0026distro=3.10.2",
-      "UID": "433659d244b0b632"
-    },
     "Version": "1.30.1-r2",
     "Arch": "x86_64",
     "SrcName": "busybox",
@@ -400,27 +155,11 @@
     "Licenses": [
       "GPL-2.0-only"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
-    "DependsOn": [
-      "libtls-standalone@2.9.1-r0",
-      "musl@1.1.22-r3"
-    ],
-    "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
-      "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    },
-    "Digest": "sha1:1f7afca8301f00cef8a9797124721d9f8c16f586",
-    "InstalledFiles": [
-      "usr/bin/ssl_client"
-    ]
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
   },
   {
     "ID": "zlib@1.2.11-r1",
     "Name": "zlib",
-    "Identifier": {
-      "PURL": "pkg:apk/alpine/zlib@1.2.11-r1?arch=x86_64\u0026distro=3.10.2",
-      "UID": "4eb417f1df4f2172"
-    },
     "Version": "1.2.11-r1",
     "Arch": "x86_64",
     "SrcName": "zlib",
@@ -428,18 +167,6 @@
     "Licenses": [
       "Zlib"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
-    "DependsOn": [
-      "musl@1.1.22-r3"
-    ],
-    "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
-      "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    },
-    "Digest": "sha1:bacb380dfa6f2f5e8dc366144f09b3181001cf76",
-    "InstalledFiles": [
-      "lib/libz.so.1.2.11",
-      "lib/libz.so.1"
-    ]
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
   }
 ]

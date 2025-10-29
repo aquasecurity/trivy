@@ -2,6 +2,7 @@ package parser
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/fs"
 	"path"
@@ -43,7 +44,9 @@ func (e *evaluator) loadModules(ctx context.Context) []*ModuleDefinition {
 		}
 		moduleDefinition, err := e.loadModule(ctx, moduleBlock)
 		if err != nil {
-			e.logger.Error("Failed to load module. Maybe try 'terraform init'?", log.Err(err))
+			rng := moduleBlock.GetMetadata().Range()
+			e.logger.Error("Failed to load module. Maybe try 'terraform init'?",
+				log.String("loc", rng.String()), log.Err(err))
 			continue
 		}
 
@@ -56,25 +59,18 @@ func (e *evaluator) loadModules(ctx context.Context) []*ModuleDefinition {
 
 // takes in a module "x" {} block and loads resources etc. into e.moduleBlocks - additionally returns variables to add to ["module.x.*"] variables
 func (e *evaluator) loadModule(ctx context.Context, b *terraform.Block) (*ModuleDefinition, error) {
-
-	metadata := b.GetMetadata()
-
 	if b.Label() == "" {
-		return nil, fmt.Errorf("module without label at %s", metadata.Range())
+		return nil, errors.New("module without label")
 	}
 
-	var source string
-	attrs := b.Attributes()
-	for _, attr := range attrs {
-		if attr.Name() == "source" {
-			sourceVal := attr.Value()
-			if sourceVal.Type() == cty.String {
-				source = sourceVal.AsString()
-			}
-		}
+	sourceVal := b.GetAttribute("source").Value()
+	if !sourceVal.IsKnown() || sourceVal.Type() != cty.String {
+		return nil, errors.New("source is not a string")
 	}
+
+	source := sourceVal.AsString()
 	if source == "" {
-		return nil, fmt.Errorf("could not read module source attribute at %s", metadata.Range().String())
+		return nil, errors.New("source is empty")
 	}
 
 	if e.moduleMetadata != nil {

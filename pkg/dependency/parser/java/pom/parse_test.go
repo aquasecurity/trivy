@@ -110,13 +110,14 @@ var (
 
 func TestPom_Parse(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputFile string
-		local     bool
-		offline   bool
-		want      []ftypes.Package
-		wantDeps  []ftypes.Dependency
-		wantErr   string
+		name                      string
+		inputFile                 string
+		local                     bool
+		enableRepoForSettingsRepo bool // use another repo for repository from settings.xml
+		offline                   bool
+		want                      []ftypes.Package
+		wantDeps                  []ftypes.Dependency
+		wantErr                   string
 	}{
 		{
 			name:      "local repository",
@@ -322,6 +323,55 @@ func TestPom_Parse(t *testing.T) {
 							StartLine: 17,
 							EndLine:   21,
 						},
+					},
+				},
+			},
+		},
+		{
+			name:                      "multiple repositories are used",
+			inputFile:                 filepath.Join("testdata", "happy", "pom.xml"),
+			local:                     false,
+			enableRepoForSettingsRepo: true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:happy:1.0.0",
+					Name:         "com.example:happy",
+					Version:      "1.0.0",
+					Licenses:     []string{"BSD-3-Clause"},
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "org.example:example-api:1.7.30",
+					Name:         "org.example:example-api",
+					Version:      "1.7.30",
+					Licenses:     []string{"Custom License from custom repo"},
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 32,
+							EndLine:   36,
+						},
+					},
+				},
+				{
+					ID:           "org.example:example-runtime:1.0.0",
+					Name:         "org.example:example-runtime",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 37,
+							EndLine:   42,
+						},
+					},
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:happy:1.0.0",
+					DependsOn: []string{
+						"org.example:example-api:1.7.30",
+						"org.example:example-runtime:1.0.0",
 					},
 				},
 			},
@@ -2138,6 +2188,67 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
+		// `mvn` can take values from multiple dependencyManagement sections (from both the root and parent POMs).
+		// However, it does not override the `test` scope defined in the parent POM.
+		// [INFO] --- dependency:3.7.0:tree (default-cli) @ get-fields-from-multiple-depmanagements ---
+		// [INFO] com.example:get-fields-from-multiple-depmanagements:jar:1.0.0
+		// [INFO] \- org.example:example-dependency:jar:4.0.0:compile
+		// [INFO]    +- org.example:example-api4:jar:4.0.0:compile
+		// [INFO]    +- org.example:example-api5:jar:4.0.0:test
+		// [INFO]    \- org.example:example-api6:jar:1.7.30:runtime
+		// [INFO] ------------------------------------------------------------------------
+		{
+			name:      "don't overwrite test scope from upper depManagement",
+			inputFile: filepath.Join("testdata", "get-fields-from-multiple-depmanagements", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:get-fields-from-multiple-depmanagements:1.0.0",
+					Name:         "com.example:get-fields-from-multiple-depmanagements",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "org.example:example-dependency:4.0.0",
+					Name:         "org.example:example-dependency",
+					Version:      "4.0.0",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 30,
+							EndLine:   34,
+						},
+					},
+				},
+				{
+					ID:           "org.example:example-api4:4.0.0",
+					Name:         "org.example:example-api4",
+					Version:      "4.0.0",
+					Relationship: ftypes.RelationshipIndirect,
+				},
+				{
+					ID:           "org.example:example-api6:1.7.30",
+					Name:         "org.example:example-api6",
+					Version:      "1.7.30",
+					Relationship: ftypes.RelationshipIndirect,
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:get-fields-from-multiple-depmanagements:1.0.0",
+					DependsOn: []string{
+						"org.example:example-dependency:4.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-dependency:4.0.0",
+					DependsOn: []string{
+						"org.example:example-api4:4.0.0",
+						"org.example:example-api6:1.7.30",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -2145,7 +2256,8 @@ func TestPom_Parse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			var remoteRepos []string
+			var defaultRepo string
+			var settingsRepos []string
 			if tt.local {
 				// for local repository
 				t.Setenv("MAVEN_HOME", "testdata/settings/global")
@@ -2153,12 +2265,20 @@ func TestPom_Parse(t *testing.T) {
 				// for remote repository
 				h := http.FileServer(http.Dir(filepath.Join("testdata", "repository")))
 				ts := httptest.NewServer(h)
-				remoteRepos = []string{ts.URL}
+				defaultRepo = ts.URL
+
+				// Enable custom repository to be sure in repository order checking
+				if tt.enableRepoForSettingsRepo {
+					ch := http.FileServer(http.Dir(filepath.Join("testdata", "repository-for-settings-repo")))
+					cts := httptest.NewServer(ch)
+					settingsRepos = []string{cts.URL}
+				}
 			}
 
-			p := pom.NewParser(tt.inputFile, pom.WithReleaseRemoteRepos(remoteRepos), pom.WithSnapshotRemoteRepos(remoteRepos), pom.WithOffline(tt.offline))
+			p := pom.NewParser(tt.inputFile, pom.WithDefaultRepo(defaultRepo, true, true),
+				pom.WithSettingsRepos(settingsRepos, true, false), pom.WithOffline(tt.offline))
 
-			gotPkgs, gotDeps, err := p.Parse(f)
+			gotPkgs, gotDeps, err := p.Parse(t.Context(), f)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return

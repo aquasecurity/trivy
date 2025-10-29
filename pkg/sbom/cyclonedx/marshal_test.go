@@ -62,9 +62,9 @@ var (
 	}
 )
 
-func TestMarshaler_MarshalReport(t *testing.T) {
-	testSBOM := core.NewBOM(core.Options{GenerateBOMRef: true})
-	testSBOM.AddComponent(&core.Component{
+var (
+	// Add root component
+	rootComponent = &core.Component{
 		Root: true,
 		Type: core.TypeApplication,
 		Name: "jackson-databind-2.13.4.1.jar",
@@ -77,7 +77,62 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				Value: "2",
 			},
 		},
-	})
+	}
+
+	jacksonComponent = &core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "jackson-databind",
+		Group:   "com.fasterxml.jackson.core",
+		Version: "2.13.4.1",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "com.fasterxml.jackson.core",
+				Name:      "jackson-databind",
+				Version:   "2.13.4.1",
+			},
+		},
+		Properties: []core.Property{
+			{
+				Name:  core.PropertyPkgType,
+				Value: "jar",
+			},
+			{
+				Name:  core.PropertyFilePath,
+				Value: "jackson-databind-2.13.4.1.jar",
+			},
+		},
+	}
+)
+
+func testSBOM() *core.BOM {
+	sbom := core.NewBOM(core.Options{GenerateBOMRef: true})
+
+	// Add root component
+	sbom.AddComponent(rootComponent)
+
+	// Add the jackson-databind component that matches scan results
+	sbom.AddComponent(jacksonComponent)
+
+	// Establish relationships
+	sbom.AddRelationship(rootComponent, jacksonComponent, core.RelationshipContains)
+	sbom.AddRelationship(jacksonComponent, nil, core.RelationshipDependsOn)
+	return sbom
+}
+
+func testSBOMWithoutRoot() *core.BOM {
+	sbom := core.NewBOM(core.Options{GenerateBOMRef: true})
+
+	// Add the jackson-databind component that matches scan results
+	sbom.AddComponent(jacksonComponent)
+
+	// Establish relationships
+	sbom.AddRelationship(jacksonComponent, nil, core.RelationshipDependsOn)
+	return sbom
+}
+
+func TestMarshaler_MarshalReport(t *testing.T) {
 
 	tests := []struct {
 		name        string
@@ -1526,14 +1581,14 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						},
 					},
 				},
-				BOM: testSBOM,
+				BOM: testSBOM(),
 			},
 			want: &cdx.BOM{
 				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  cdx.SpecVersion1_6,
 				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
-				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000002",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
@@ -2112,6 +2167,67 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "happy path. Root component doesn't exist",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "empty/path",
+				ArtifactType:  ftypes.TypeFilesystem,
+				Results:       types.Results{},
+				BOM:           testSBOMWithoutRoot(),
+			},
+			want: &cdx.BOM{
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
+				BOMFormat:    "CycloneDX",
+				SpecVersion:  cdx.SpecVersion1_6,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+				Version:      1,
+				Metadata: &cdx.Metadata{
+					Timestamp: "2021-08-25T12:20:30+00:00",
+					Tools: &cdx.ToolsChoice{
+						Components: &[]cdx.Component{
+							{
+								Type:    cdx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+								Manufacturer: &cdx.OrganizationalEntity{
+									Name: "Aqua Security Software Ltd.",
+								},
+							},
+						},
+					},
+				},
+				Components: &[]cdx.Component{
+					{
+						BOMRef:     "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+						Type:       cdx.ComponentTypeLibrary,
+						Group:      "com.fasterxml.jackson.core",
+						Name:       "jackson-databind",
+						Version:    "2.13.4.1",
+						PackageURL: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:FilePath",
+								Value: "jackson-databind-2.13.4.1.jar",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "jar",
+							},
+						},
+					},
+				},
+				Vulnerabilities: &[]cdx.Vulnerability{},
+				Dependencies: &[]cdx.Dependency{
+					{
+						Ref:          "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+						Dependencies: lo.ToPtr([]string{}),
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -2129,13 +2245,15 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 
 func TestMarshaler_Licenses(t *testing.T) {
 	tests := []struct {
-		name    string
-		license string
-		want    *cdx.Licenses
+		name     string
+		licenses []string
+		want     *cdx.Licenses
 	}{
 		{
-			name:    "SPDX ID",
-			license: "MIT",
+			name: "SPDX ID",
+			licenses: []string{
+				"MIT",
+			},
 			want: &cdx.Licenses{
 				cdx.LicenseChoice{
 					License: &cdx.License{
@@ -2145,8 +2263,10 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
-			name:    "Unknown SPDX ID",
-			license: "no-spdx-id-license",
+			name: "Unknown SPDX ID",
+			licenses: []string{
+				"no-spdx-id-license",
+			},
 			want: &cdx.Licenses{
 				cdx.LicenseChoice{
 					License: &cdx.License{
@@ -2156,8 +2276,10 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
-			name:    "text license",
-			license: "text://text of license",
+			name: "text license",
+			licenses: []string{
+				"text://text of license",
+			},
 			want: &cdx.Licenses{
 				cdx.LicenseChoice{
 					License: &cdx.License{
@@ -2167,8 +2289,10 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
-			name:    "SPDX license with exception",
-			license: "AFL 2.0 with Linux-syscall-note",
+			name: "SPDX license with exception",
+			licenses: []string{
+				"AFL 2.0 with Linux-syscall-note",
+			},
 			want: &cdx.Licenses{
 				cdx.LicenseChoice{
 					Expression: "AFL-2.0 WITH Linux-syscall-note",
@@ -2176,8 +2300,10 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
-			name:    "SPDX license with wrong exception",
-			license: "GPL-2.0-with-autoconf-exception+",
+			name: "SPDX license with wrong exception",
+			licenses: []string{
+				"GPL-2.0-with-autoconf-exception+",
+			},
 			want: &cdx.Licenses{
 				cdx.LicenseChoice{
 					License: &cdx.License{
@@ -2187,8 +2313,10 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
-			name:    "SPDX expression",
-			license: "GPL-3.0-only OR AFL 2.0 with Linux-syscall-note AND GPL-3.0-only",
+			name: "SPDX expression",
+			licenses: []string{
+				"GPL-3.0-only OR AFL 2.0 with Linux-syscall-note AND GPL-3.0-only",
+			},
 			want: &cdx.Licenses{
 				cdx.LicenseChoice{
 					Expression: "GPL-3.0-only OR AFL-2.0 WITH Linux-syscall-note AND GPL-3.0-only",
@@ -2196,8 +2324,10 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
-			name:    "invalid SPDX expression",
-			license: "wrong-spdx-id OR GPL-3.0-only",
+			name: "invalid SPDX expression",
+			licenses: []string{
+				"wrong-spdx-id OR GPL-3.0-only",
+			},
 			want: &cdx.Licenses{
 				cdx.LicenseChoice{
 					License: &cdx.License{
@@ -2207,16 +2337,93 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
-			name:    "empty license",
-			license: "",
-			want:    nil,
+			name: "multiple SPDX IDs",
+			licenses: []string{
+				"AFL 2.0 with Linux-syscall-note",
+				"GPL-3.0-only OR MIT",
+			},
+			want: &cdx.Licenses{
+				cdx.LicenseChoice{
+					Expression: "AFL-2.0 WITH Linux-syscall-note AND GPL-3.0-only OR MIT",
+				},
+			},
+		},
+		{
+			name: "multiple SPDX expressions",
+			licenses: []string{
+				"MIT",
+				"AFL 2.0",
+			},
+			want: &cdx.Licenses{
+				cdx.LicenseChoice{
+					License: &cdx.License{
+						ID: "MIT",
+					},
+				},
+				cdx.LicenseChoice{
+					License: &cdx.License{
+						ID: "AFL-2.0",
+					},
+				},
+			},
+		},
+		{
+			name: "SPDX ID + license name",
+			licenses: []string{
+				"MIT",
+				"license-name",
+			},
+			want: &cdx.Licenses{
+				cdx.LicenseChoice{
+					License: &cdx.License{
+						ID: "MIT",
+					},
+				},
+				cdx.LicenseChoice{
+					License: &cdx.License{
+						Name: "license-name",
+					},
+				},
+			},
+		},
+		{
+			name: "SPDX ID + SPDX exception",
+			licenses: []string{
+				"MIT",
+				"AFL 2.0 with Linux-Syscall-Note",
+			},
+			want: &cdx.Licenses{
+				cdx.LicenseChoice{
+					Expression: "MIT AND AFL-2.0 WITH Linux-syscall-note",
+				},
+			},
+		},
+		{
+			name: "license normalization error",
+			licenses: []string{
+				"Copyright (c) 2000, 2025, Oracle and/or its affiliates. Under GPLv2 license as shown in the Description field.",
+			},
+			want: &cdx.Licenses{
+				cdx.LicenseChoice{
+					License: &cdx.License{
+						Name: "Copyright (c) 2000, 2025, Oracle and/or its affiliates. Under GPLv2 license as shown in the Description field.",
+					},
+				},
+			},
+		},
+		{
+			name: "empty license",
+			licenses: []string{
+				"",
+			},
+			want: nil,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			marshaler := cyclonedx.NewMarshaler("dev")
-			got := marshaler.Licenses([]string{tt.license})
+			got := marshaler.Licenses(tt.licenses)
 			assert.Equal(t, tt.want, got)
 		})
 	}

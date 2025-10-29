@@ -1,6 +1,7 @@
 package language_test
 
 import (
+	"context"
 	"io"
 	"strings"
 	"testing"
@@ -19,7 +20,7 @@ type mockParser struct {
 	t *testing.T
 }
 
-func (p *mockParser) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
+func (p *mockParser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
 	b, err := io.ReadAll(r)
 	require.NoError(p.t, err)
 
@@ -95,7 +96,7 @@ func TestAnalyze(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mp := &mockParser{t: t}
 
-			got, err := language.Analyze(tt.args.fileType, tt.args.filePath, tt.args.content, mp)
+			got, err := language.Analyze(t.Context(), tt.args.fileType, tt.args.filePath, tt.args.content, mp)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return

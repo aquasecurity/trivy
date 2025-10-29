@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/cachetest"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -442,6 +443,9 @@ func TestArtifact_Inspect(t *testing.T) {
 					DiffIDs: []string{
 						alpineBaseLayerDiffID,
 					},
+					RepoTags:    []string{"alpine:3.11"},
+					RepoDigests: nil,
+					Reference:   testutil.MustParseReference(t, "alpine:3.11"),
 					ConfigFile: v1.ConfigFile{
 						Architecture:  "amd64",
 						Author:        "",
@@ -493,7 +497,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutArtifact("sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b", types.ArtifactInfo{
+				require.NoError(t, c.PutArtifact(t.Context(), "sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b", types.ArtifactInfo{
 					SchemaVersion: types.ArtifactJSONSchemaVersion,
 				}))
 				return c
@@ -1772,6 +1776,9 @@ func TestArtifact_Inspect(t *testing.T) {
 						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 						"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
 					},
+					RepoTags:    []string{"vuln-image:latest"},
+					RepoDigests: nil,
+					Reference:   testutil.MustParseReference(t, "vuln-image:latest"),
 					ConfigFile: v1.ConfigFile{
 						Architecture:  "amd64",
 						Author:        "",
@@ -1854,7 +1861,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				require.NoError(t, c.PutArtifact("sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b", types.ArtifactInfo{
+				require.NoError(t, c.PutArtifact(t.Context(), "sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b", types.ArtifactInfo{
 					SchemaVersion: types.ArtifactJSONSchemaVersion,
 				}))
 				return c
@@ -1927,6 +1934,9 @@ func TestArtifact_Inspect(t *testing.T) {
 						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 						"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
 					},
+					RepoTags:    []string{"vuln-image:latest"},
+					RepoDigests: nil,
+					Reference:   testutil.MustParseReference(t, "vuln-image:latest"),
 					ConfigFile: v1.ConfigFile{
 						Architecture:  "amd64",
 						Author:        "",
