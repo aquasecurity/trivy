@@ -14,6 +14,10 @@ import (
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
+type accessTokenResponse struct {
+	Token string `json:"token"`
+}
+
 const (
 	accessTokenPath = "/api-keys/access-tokens"
 )
@@ -30,12 +34,12 @@ func GetAccessToken(ctx context.Context, opts flag.Options) (string, error) {
 	logger := log.WithPrefix(log.PrefixCloud)
 
 	client := xhttp.Client()
-	url, err := url.JoinPath(opts.CloudOptions.ApiURL, accessTokenPath)
+	u, err := url.JoinPath(opts.CloudOptions.ApiURL, accessTokenPath)
 	if err != nil {
 		return "", xerrors.Errorf("failed to join server URL and token path: %w", err)
 	}
-	logger.Debug("Requesting access token from Trivy Cloud", log.String("url", url))
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, http.NoBody)
+	logger.Debug("Requesting access token from Trivy Cloud", log.String("url", u))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u, http.NoBody)
 	if err != nil {
 		return "", xerrors.Errorf("failed to create token request: %w", err)
 	}
@@ -50,13 +54,11 @@ func GetAccessToken(ctx context.Context, opts flag.Options) (string, error) {
 		return "", xerrors.Errorf("failed to get access token: received status code %d", resp.StatusCode)
 	}
 
-	var accessTokenResponse struct {
-		Token string `json:"token"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&accessTokenResponse); err != nil {
+	var tokenResponse accessTokenResponse
+	if err := json.NewDecoder(resp.Body).Decode(&tokenResponse); err != nil {
 		return "", xerrors.Errorf("failed to decode access token response: %w", err)
 	}
 
 	logger.Debug("Created a new access token")
-	return accessTokenResponse.Token, nil
+	return tokenResponse.Token, nil
 }

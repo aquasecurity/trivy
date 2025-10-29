@@ -25,11 +25,11 @@ trivy vm [flags] VM_IMAGE
       --cache-ttl duration                cache TTL when using redis as cache backend
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "mirror.gcr.io/aquasec/trivy-checks:1")
       --cloud-api-url string              API URL for Trivy Cloud platform (default "https://api.trivy.dev")
-      --cloud-download-secret-config      Download secret configurations from Trivy Cloud platform (default true)
       --cloud-server-scanning             Use server-side image scanning in Trivy Cloud platform (default true)
       --cloud-token string                Token used to athenticate with Trivy Cloud platform
       --cloud-trivy-server-url string     Trivy Server URL for Trivy Cloud platform (default "https://scan.trivy.dev")
       --cloud-upload-results              Upload results to Trivy Cloud platform (default true)
+      --cloud-use-secret-config           Use secret configurations from Trivy Cloud platform (default true)
       --compliance string                 compliance report to generate
       --config-file-schemas strings       specify paths to JSON configuration file schemas to determine that a file matches some configuration and pass the schema to Rego checks for type checking
       --custom-headers strings            custom headers in client mode
