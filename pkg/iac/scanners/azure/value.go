@@ -5,13 +5,13 @@ import (
 	"encoding/json/v2"
 	"fmt"
 	"maps"
-	"slices"
 	"strings"
 	"time"
 
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 type EvalContext struct{}
@@ -41,6 +41,8 @@ type Value struct {
 var NullValue = Value{
 	Kind: KindNull,
 }
+
+var boolTrueValues = set.NewCaseInsensitive("true", "1", "yes", "on", "enabled")
 
 func NewValue(value any, metadata types.Metadata) Value {
 
@@ -207,14 +209,7 @@ func (v Value) AsIntValue(defaultValue int, metadata types.Metadata) types.IntVa
 func (v Value) AsBoolValue(defaultValue bool, metadata types.Metadata) types.BoolValue {
 	v.Resolve()
 	if v.Kind == KindString {
-		possibleValue := strings.ToLower(v.rLit.(string))
-		if slices.Contains([]string{
-			"true",
-			"1",
-			"yes",
-			"on",
-			"enabled",
-		}, possibleValue) {
+		if boolTrueValues.Contains(v.rLit.(string)) {
 			return types.Bool(true, metadata)
 		}
 	}
