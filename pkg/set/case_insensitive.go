@@ -76,9 +76,7 @@ func (s caseInsensitiveStringSet) Iter() iter.Seq[string] {
 // If the same item (case-insensitive) exists in both sets, the casing from this set is preserved
 func (s caseInsensitiveStringSet) Union(other Set[string]) Set[string] {
 	result := make(caseInsensitiveStringSet, s.Size()+other.Size())
-	for k, v := range s {
-		result[k] = v
-	}
+	maps.Copy(result, s)
 	result.Append(other.Items()...)
 	return result
 }

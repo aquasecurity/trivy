@@ -431,4 +431,3 @@ func TestCaseInsensitiveSet_Difference(t *testing.T) {
 		})
 	}
 }
-
