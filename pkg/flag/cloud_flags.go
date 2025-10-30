@@ -16,7 +16,7 @@ var (
 		Name:          "cloud-api-url",
 		ConfigName:    "cloud.api-url",
 		Default:       DefaultApiURL,
-		Usage:         "API URL for Trivy Cloud platform",
+		Usage:         "API URL for Trivy Cloud platform, requires the token to be provided to have an effect",
 		TelemetrySafe: true,
 	}
 
@@ -24,7 +24,7 @@ var (
 		Name:          "cloud-trivy-server-url",
 		ConfigName:    "cloud.trivy-server-url",
 		Default:       DefaultTrivyServerURL,
-		Usage:         "Trivy Server URL for Trivy Cloud platform",
+		Usage:         "Trivy Server URL for Trivy Cloud platform, requires the token to be provided to have an effect",
 		TelemetrySafe: true,
 	}
 
@@ -32,7 +32,7 @@ var (
 		Name:          "cloud-upload-results",
 		ConfigName:    "cloud.upload-results",
 		Default:       true,
-		Usage:         "Upload results to Trivy Cloud platform",
+		Usage:         "Upload results to Trivy Cloud platform, requires the token to be provided to have an effect",
 		TelemetrySafe: true,
 	}
 
@@ -40,7 +40,7 @@ var (
 		Name:          "cloud-use-secret-config",
 		ConfigName:    "cloud.use-secret-config",
 		Default:       true,
-		Usage:         "Use secret configurations from Trivy Cloud platform",
+		Usage:         "Use secret configurations from Trivy Cloud platform, requires the token to be provided to have an effect",
 		TelemetrySafe: true,
 	}
 
@@ -48,17 +48,18 @@ var (
 		Name:          "cloud-server-scanning",
 		ConfigName:    "cloud.server-scanning",
 		Default:       true,
-		Usage:         "Use server-side image scanning in Trivy Cloud platform",
+		Usage:         "Use server-side image scanning in Trivy Cloud platform, requires the token to be provided to have an effect",
 		TelemetrySafe: true,
 	}
 )
 
 type CloudFlagGroup struct {
-	CloudToken                 *Flag[string]
-	CloudApiURL                *Flag[string]
-	CloudTrivyServerURL        *Flag[string]
-	CloudUploadResults         *Flag[bool]
-	CloudSecretConfig          *Flag[bool]
+	CloudToken          *Flag[string]
+	CloudApiURL         *Flag[string]
+	CloudTrivyServerURL *Flag[string]
+	CloudUploadResults  *Flag[bool]
+	CloudSecretConfig   *Flag[bool]
+
 	CloudUseServerSideScanning *Flag[bool]
 }
 
