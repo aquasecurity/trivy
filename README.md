@@ -59,6 +59,8 @@ Please be aware: canary builds might have critical bugs, it's not recommended fo
 
 ### General usage
 
+All usage examples, see the [Target section of the documentation](https://trivy.dev/latest/docs/) in the left sidebar.
+
 ```bash
 trivy <target> [--scanners <scanner1,scanner2>] <subject>
 ```
