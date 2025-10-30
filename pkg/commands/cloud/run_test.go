@@ -1,7 +1,6 @@
 package cloud
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -129,7 +128,7 @@ func TestUpdateOptsForCloudIntegration(t *testing.T) {
 			t.Setenv("XDG_DATA_HOME", tempDir)
 			mockServer.configAvailable = tt.configAvailable
 
-			err := UpdateOptsForCloudIntegration(context.Background(), tt.opts)
+			err := UpdateOptsForCloudIntegration(t.Context(), tt.opts)
 
 			if tt.errorContains != "" {
 				require.ErrorContains(t, err, tt.errorContains)
