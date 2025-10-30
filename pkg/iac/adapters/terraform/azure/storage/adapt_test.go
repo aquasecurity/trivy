@@ -24,10 +24,10 @@ func Test_Adapt(t *testing.T) {
 			expected: storage.Storage{
 				Accounts: []storage.Account{
 					{
-						PublicNetworkAccess:          iacTypes.BoolTest(true),
-						MinimumTLSVersion:            iacTypes.StringTest(minimumTlsVersionOneTwo),
-						EnforceHTTPS:                 iacTypes.BoolTest(true),
-						AccountReplicationType:       iacTypes.StringTest(""),
+						PublicNetworkAccess:             iacTypes.BoolTest(true),
+						MinimumTLSVersion:               iacTypes.StringTest(minimumTlsVersionOneTwo),
+						EnforceHTTPS:                    iacTypes.BoolTest(true),
+						AccountReplicationType:          iacTypes.StringTest(""),
 						InfrastructureEncryptionEnabled: iacTypes.BoolTest(false),
 						BlobProperties: storage.BlobProperties{
 							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
@@ -123,7 +123,7 @@ func Test_Adapt(t *testing.T) {
 								RetentionPolicyDays: iacTypes.Int(10, iacTypes.NewTestMetadata()),
 							},
 						},
-						AccountReplicationType:       iacTypes.StringTest(""),
+						AccountReplicationType:          iacTypes.StringTest(""),
 						InfrastructureEncryptionEnabled: iacTypes.BoolTest(false),
 						BlobProperties: storage.BlobProperties{
 							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
@@ -148,8 +148,8 @@ func Test_Adapt(t *testing.T) {
 							Metadata:      iacTypes.NewUnmanagedMetadata(),
 							EnableLogging: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 						},
-						MinimumTLSVersion:            iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
-						AccountReplicationType:       iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+						MinimumTLSVersion:               iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+						AccountReplicationType:          iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 						InfrastructureEncryptionEnabled: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 						BlobProperties: storage.BlobProperties{
 							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
@@ -194,8 +194,8 @@ func Test_Adapt(t *testing.T) {
 							Metadata:      iacTypes.NewUnmanagedMetadata(),
 							EnableLogging: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 						},
-						MinimumTLSVersion:            iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
-						AccountReplicationType:       iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+						MinimumTLSVersion:               iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+						AccountReplicationType:          iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 						InfrastructureEncryptionEnabled: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 						BlobProperties: storage.BlobProperties{
 							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
