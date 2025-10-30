@@ -46,7 +46,7 @@ func GetConfigs(ctx context.Context, opts *flag.Options, accessToken string) err
 
 	if opts.CloudOptions.SecretConfig && opts.Scanners.Enabled(types.SecretScanner) {
 		if opts.SecretOptions.SecretConfigPath != "" {
-			logger.Warn("Secret config path already set", log.String("configPath", opts.SecretOptions.SecretConfigPath))
+			logger.Warn("Secret config path already set", log.FilePath(opts.SecretOptions.SecretConfigPath))
 			return nil
 		}
 
@@ -64,7 +64,7 @@ func GetConfigs(ctx context.Context, opts *flag.Options, accessToken string) err
 // getConfigFromTrivyCloud downloads a config from Trivy Cloud and saves it to a file
 // it returns the path to the config file if it was downloaded successfully, otherwise it returns an error
 func getConfigFromTrivyCloud(ctx context.Context, client *http.Client, opts *flag.Options, accessToken string, configType ConfigType) (string, error) {
-	logger := log.WithPrefix(log.PrefixCloud)
+	logger := log.WithPrefix(log.PrefixCloud).With("configType", configType)
 	configTypeStr := string(configType)
 	configDir := filepath.Join(fsutils.TrivyHomeDir(), "cloud", configTypeStr)
 	if err := os.MkdirAll(configDir, os.ModePerm); err != nil {
@@ -74,11 +74,11 @@ func getConfigFromTrivyCloud(ctx context.Context, client *http.Client, opts *fla
 	configFilename := filepath.Join(configDir, "config.yaml")
 	// Return cached config if it was updated within the last hour
 	if stat, err := os.Stat(configFilename); err == nil && stat.ModTime().After(time.Now().Add(-configCacheTTL)) {
-		logger.Debug("Config found in cache", log.String("configType", string(configType)), log.String("configPath", configFilename))
+		logger.Debug("Config found in cache", log.FilePath(configFilename))
 		return configFilename, nil
 	}
 
-	logger.Debug("Config not found in cache", log.String("configType", string(configType)), log.String("configPath", configFilename))
+	logger.Debug("Config not found in cache", log.FilePath(configFilename))
 	configPath, ok := configPaths[configType]
 	if !ok {
 		return "", xerrors.Errorf("unknown config type: %s", configType)
