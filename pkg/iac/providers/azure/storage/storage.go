@@ -9,18 +9,18 @@ type Storage struct {
 }
 
 type Account struct {
-	Metadata                     iacTypes.Metadata
-	NetworkRules                 []NetworkRule
-	EnforceHTTPS                 iacTypes.BoolValue
-	Containers                   []Container
-	QueueProperties              QueueProperties
-	MinimumTLSVersion            iacTypes.StringValue
-	Queues                       []Queue
-	PublicNetworkAccess          iacTypes.BoolValue
-	BlobProperties               BlobProperties
-	AccountReplicationType       iacTypes.StringValue
+	Metadata                        iacTypes.Metadata
+	NetworkRules                    []NetworkRule
+	EnforceHTTPS                    iacTypes.BoolValue
+	Containers                      []Container
+	QueueProperties                 QueueProperties
+	MinimumTLSVersion               iacTypes.StringValue
+	Queues                          []Queue
+	PublicNetworkAccess             iacTypes.BoolValue
+	BlobProperties                  BlobProperties
+	AccountReplicationType          iacTypes.StringValue
 	InfrastructureEncryptionEnabled iacTypes.BoolValue
-	CustomerManagedKey           CustomerManagedKey
+	CustomerManagedKey              CustomerManagedKey
 }
 
 type Queue struct {
@@ -61,7 +61,7 @@ type Container struct {
 }
 
 type BlobProperties struct {
-	Metadata             iacTypes.Metadata
+	Metadata              iacTypes.Metadata
 	DeleteRetentionPolicy DeleteRetentionPolicy
 }
 
@@ -71,7 +71,7 @@ type DeleteRetentionPolicy struct {
 }
 
 type CustomerManagedKey struct {
-	Metadata                iacTypes.Metadata
+	Metadata               iacTypes.Metadata
 	KeyVaultKeyId          iacTypes.StringValue
 	UserAssignedIdentityId iacTypes.StringValue
 }
