@@ -14,7 +14,8 @@ func Adapt(deployment azure.Deployment) compute.Compute {
 	}
 }
 
-func adaptManagedDisks(deployment azure.Deployment) (managedDisks []compute.ManagedDisk) {
+func adaptManagedDisks(deployment azure.Deployment) []compute.ManagedDisk {
+	managedDisks := []compute.ManagedDisk{}
 
 	for _, resource := range deployment.GetResourcesByType("Microsoft.Compute/disks") {
 		managedDisks = append(managedDisks, adaptManagedDisk(resource))
