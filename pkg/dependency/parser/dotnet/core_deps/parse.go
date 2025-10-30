@@ -32,9 +32,10 @@ type RuntimeTarget struct {
 }
 
 type TargetLib struct {
-	Runtime        any `json:"runtime"`
-	RuntimeTargets any `json:"runtimeTargets"`
-	Native         any `json:"native"`
+	Dependencies   map[string]string `json:"dependencies"`
+	Runtime        any               `json:"runtime"`
+	RuntimeTargets any               `json:"runtimeTargets"`
+	Native         any               `json:"native"`
 }
 
 type Parser struct {
@@ -55,7 +56,18 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		return nil, nil, xerrors.Errorf("failed to decode .deps.json file: %w", err)
 	}
 
+	// Get target libraries for RuntimeTarget
+	targetLibs, ok := depsFile.Targets[depsFile.RuntimeTarget.Name]
+	if !ok {
+		// If the target is not found, take all dependencies
+		p.once.Do(func() {
+			p.logger.Debug("Unable to find `Target` for Runtime Target Name. All dependencies from `libraries` section will be included in the report", log.String("Runtime Target Name", depsFile.RuntimeTarget.Name))
+		})
+	}
+
 	var pkgs ftypes.Packages
+	depsMap := make(map[string][]string)
+
 	for nameVer, lib := range depsFile.Libraries {
 		if !strings.EqualFold(lib.Type, "package") {
 			continue
@@ -68,28 +80,50 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			continue
 		}
 
-		// Take target libraries for RuntimeTarget
-		if targetLibs, ok := depsFile.Targets[depsFile.RuntimeTarget.Name]; !ok {
-			// If the target is not found, take all dependencies
-			p.once.Do(func() {
-				p.logger.Debug("Unable to find `Target` for Runtime Target Name. All dependencies from `libraries` section will be included in the report", log.String("Runtime Target Name", depsFile.RuntimeTarget.Name))
-			})
-		} else if !p.isRuntimeLibrary(targetLibs, nameVer) {
+		// Skip non-runtime libraries if target libraries are available
+		if ok && !p.isRuntimeLibrary(targetLibs, nameVer) {
 			// Skip non-runtime libraries
 			// cf. https://github.com/aquasecurity/trivy/pull/7039#discussion_r1674566823
 			continue
 		}
 
+		pkgID := dependency.ID(ftypes.DotNetCore, split[0], split[1])
 		pkgs = append(pkgs, ftypes.Package{
-			ID:        dependency.ID(ftypes.DotNetCore, split[0], split[1]),
+			ID:        pkgID,
 			Name:      split[0],
 			Version:   split[1],
 			Locations: []ftypes.Location{ftypes.Location(lib.Location)},
 		})
+
+		// Extract dependency relationships from targets section
+		if targetLib, exists := targetLibs[nameVer]; exists {
+			var dependsOn []string
+			for depName, depVersion := range targetLib.Dependencies {
+				depID := dependency.ID(ftypes.DotNetCore, depName, depVersion)
+				dependsOn = append(dependsOn, depID)
+			}
+
+			if len(dependsOn) > 0 {
+				// Merge with existing dependencies if any
+				if existing, found := depsMap[pkgID]; found {
+					dependsOn = lo.Uniq(append(dependsOn, existing...))
+				}
+				depsMap[pkgID] = dependsOn
+			}
+		}
+	}
+
+	// Build dependencies slice from depsMap
+	var deps []ftypes.Dependency
+	for pkgID, dependsOn := range depsMap {
+		deps = append(deps, ftypes.Dependency{
+			ID:        pkgID,
+			DependsOn: dependsOn,
+		})
 	}
 
 	sort.Sort(pkgs)
-	return pkgs, nil, nil
+	return pkgs, deps, nil
 }
 
 // isRuntimeLibrary returns true if library contains `runtime`, `runtimeTarget` or `native` sections, or if the library is missing from `targetLibs`.
@@ -105,5 +139,5 @@ func (p *Parser) isRuntimeLibrary(targetLibs map[string]TargetLib, library strin
 		return true
 	}
 	// Check that `runtime`, `runtimeTarget` and `native` sections are not empty
-	return !lo.IsEmpty(lib)
+	return !lo.IsEmpty(lib.Runtime) || !lo.IsEmpty(lib.RuntimeTargets) || !lo.IsEmpty(lib.Native)
 }

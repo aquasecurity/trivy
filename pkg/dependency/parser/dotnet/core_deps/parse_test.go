@@ -13,10 +13,11 @@ import (
 
 func TestParse(t *testing.T) {
 	tests := []struct {
-		name    string
-		file    string // Test input file
-		want    []ftypes.Package
-		wantErr string
+		name     string
+		file     string // Test input file
+		want     []ftypes.Package
+		wantDeps []ftypes.Dependency
+		wantErr  string
 	}{
 		{
 			name: "happy path",
@@ -34,6 +35,7 @@ func TestParse(t *testing.T) {
 					},
 				},
 			},
+			wantDeps: nil, // Newtonsoft.Json has no dependencies in the test file
 		},
 		{
 			name: "happy path with skipped libs",
@@ -73,11 +75,22 @@ func TestParse(t *testing.T) {
 					},
 				},
 			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID:        "JsonDiffPatch/2.0.61",
+					DependsOn: []string{"Microsoft.NETCore.App/1.1.2"},
+				},
+				{
+					ID:        "Libuv/1.9.1",
+					DependsOn: []string{"Microsoft.NETCore.Platforms/1.1.0"},
+				},
+			},
 		},
 		{
-			name: "happy path without libs",
-			file: "testdata/no-libraries.deps.json",
-			want: nil,
+			name:     "happy path without libs",
+			file:     "testdata/no-libraries.deps.json",
+			want:     nil,
+			wantDeps: nil,
 		},
 		{
 			name:    "sad path",
@@ -91,7 +104,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.file)
 			require.NoError(t, err)
 
-			got, _, err := NewParser().Parse(t.Context(), f)
+			got, gotDeps, err := NewParser().Parse(t.Context(), f)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 			} else {
@@ -101,7 +114,23 @@ func TestParse(t *testing.T) {
 				sort.Sort(ftypes.Packages(tt.want))
 
 				assert.Equal(t, tt.want, got)
+
+				if tt.wantDeps != nil {
+					sortDeps(gotDeps)
+					sortDeps(tt.wantDeps)
+					assert.Equal(t, tt.wantDeps, gotDeps)
+				}
 			}
 		})
+	}
+}
+
+func sortDeps(deps []ftypes.Dependency) {
+	sort.Slice(deps, func(i, j int) bool {
+		return deps[i].ID < deps[j].ID
+	})
+
+	for i := range deps {
+		sort.Strings(deps[i].DependsOn)
 	}
 }
