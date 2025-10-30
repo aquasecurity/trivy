@@ -26,6 +26,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:spring4shell-jre11"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:spring4shell-jre11",
     "ImageConfig": {
       "architecture": "amd64",
       "created": "2022-06-07T03:41:13.228952Z",
