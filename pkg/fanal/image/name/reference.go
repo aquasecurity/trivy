@@ -1,4 +1,4 @@
-package image
+package name
 
 import (
 	"encoding/json"

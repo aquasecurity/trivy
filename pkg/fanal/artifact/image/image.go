@@ -24,6 +24,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	imagename "github.com/aquasecurity/trivy/pkg/fanal/image/name"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -173,13 +174,13 @@ func (a Artifact) Clean(_ artifact.Reference) error {
 }
 
 // findMatchingReference finds a RepoTag or RepoDigest that matches the artifact name
-func (a Artifact) findMatchingReference(artifactName string, repoTags, repoDigests []string) image.Reference {
+func (a Artifact) findMatchingReference(artifactName string, repoTags, repoDigests []string) imagename.Reference {
 	// Convert strings to typed references
 	parsedTags := a.parseRepoTags(repoTags)
 	parsedDigests := a.parseRepoDigests(repoDigests)
 
 	ref := a.findMatchingRepoReference(artifactName, parsedTags, parsedDigests)
-	return image.NewReference(ref)
+	return imagename.NewReference(ref)
 }
 
 // parseRepoTags parses repo tags into name.Tag

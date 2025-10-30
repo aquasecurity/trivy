@@ -5,7 +5,7 @@ import (
 
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
-	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	"github.com/aquasecurity/trivy/pkg/fanal/image/name"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
@@ -39,12 +39,12 @@ type Metadata struct {
 
 	// Container image
 	ImageID     string          `json:",omitempty"`
-	DiffIDs     []string        `json:",omitempty"`
-	RepoTags    []string        `json:",omitempty"`
-	RepoDigests []string        `json:",omitempty"`
-	Reference   image.Reference `json:",omitzero"`
-	ImageConfig v1.ConfigFile   `json:",omitzero"`
-	Layers      ftypes.Layers   `json:",omitzero"`
+	DiffIDs     []string       `json:",omitempty"`
+	RepoTags    []string       `json:",omitempty"`
+	RepoDigests []string       `json:",omitempty"`
+	Reference   name.Reference `json:",omitzero"`
+	ImageConfig v1.ConfigFile  `json:",omitzero"`
+	Layers      ftypes.Layers  `json:",omitzero"`
 
 	// Git repository
 	RepoURL   string   `json:",omitzero"`
