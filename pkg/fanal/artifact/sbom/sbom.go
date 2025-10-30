@@ -94,6 +94,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 			DiffIDs:     bom.Metadata.DiffIDs,
 			RepoTags:    bom.Metadata.RepoTags,
 			RepoDigests: bom.Metadata.RepoDigests,
+			Reference:   bom.Metadata.Reference,
 		},
 
 		// Keep an original report
