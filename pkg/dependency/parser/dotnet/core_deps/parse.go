@@ -97,11 +97,9 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 
 		// Extract dependency relationships from targets section
 		if targetLib, exists := targetLibs[nameVer]; exists {
-			var dependsOn []string
-			for depName, depVersion := range targetLib.Dependencies {
-				depID := dependency.ID(ftypes.DotNetCore, depName, depVersion)
-				dependsOn = append(dependsOn, depID)
-			}
+			dependsOn := lo.MapToSlice(targetLib.Dependencies, func(depVersion, depName string) string {
+				return dependency.ID(ftypes.DotNetCore, depName, depVersion)
+			})
 
 			if len(dependsOn) > 0 {
 				// Merge with existing dependencies if any
