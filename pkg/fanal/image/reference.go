@@ -56,7 +56,7 @@ func (r *Reference) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// IsEmpty returns true if the reference is empty
-func (r Reference) IsEmpty() bool {
+// IsZero returns true if the reference is empty (for omitzero support)
+func (r Reference) IsZero() bool {
 	return lo.IsNil(r.Reference)
 }

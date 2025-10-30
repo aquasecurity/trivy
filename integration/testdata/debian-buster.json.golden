@@ -18,6 +18,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:debian-buster"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:debian-buster",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "cbb6a20ddb7dedfeee41aeb21e9780f14afbb0f47a6b1ffa514a1822f45d0a51",

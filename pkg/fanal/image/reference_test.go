@@ -87,8 +87,8 @@ func TestReference_UnmarshalJSON(t *testing.T) {
 			if err != nil {
 				return
 			}
-			assert.Equal(t, tt.wantIsEmpty, r.IsEmpty())
-			if !r.IsEmpty() {
+			assert.Equal(t, tt.wantIsEmpty, r.IsZero())
+			if !r.IsZero() {
 				assert.Equal(t, tt.want, r.String())
 			}
 		})
@@ -175,7 +175,7 @@ func TestReference_IsEmpty(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, tt.ref.IsEmpty())
+			assert.Equal(t, tt.want, tt.ref.IsZero())
 		})
 	}
 }

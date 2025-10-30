@@ -18,6 +18,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:sle-micro-rancher-5.4_ndb"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:sle-micro-rancher-5.4_ndb",
     "ImageConfig": {
       "architecture": "amd64",
       "author": "SUSE LLC (https://www.suse.com/)",

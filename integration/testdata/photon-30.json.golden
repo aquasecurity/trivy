@@ -18,6 +18,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:photon-30"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:photon-30",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "ed27e7f1fbd8ef9d3ea89947f682907e9a65a8e51bbe2e0eba60db6e69213848",
