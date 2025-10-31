@@ -125,6 +125,11 @@ spec:
             - mountPath: /home/scanner/.cache
               name: data
               readOnly: false
+          {{- with .Values.trivy.sslCertDir }}
+            - mountPath: {{ . }}
+              name: ssl-cert-dir
+              readOnly: true
+          {{- end }}
           {{- if .Values.resources }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
@@ -135,4 +140,9 @@ spec:
         {{- if not .Values.persistence.enabled }}
         - name: data
           emptyDir: {}
+        {{- end }}
+        {{- with .Values.trivy.sslCertDir }}
+        - name: ssl-cert-dir
+          hostPath:
+            path: {{ . }}
         {{- end }}
