@@ -2,6 +2,7 @@ package library
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/samber/lo"
@@ -13,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/bitnami"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare/generic"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/maven"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
@@ -33,13 +35,13 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 		comparer = rubygems.Comparer{}
 	case ftypes.RustBinary, ftypes.Cargo:
 		eco = ecosystem.Cargo
-		comparer = compare.GenericComparer{}
+		comparer = generic.Comparer{}
 	case ftypes.Composer, ftypes.ComposerVendor:
 		eco = ecosystem.Composer
-		comparer = compare.GenericComparer{}
+		comparer = generic.Comparer{}
 	case ftypes.GoBinary, ftypes.GoModule:
 		eco = ecosystem.Go
-		comparer = compare.GenericComparer{}
+		comparer = generic.Comparer{}
 	case ftypes.Jar, ftypes.Pom, ftypes.Gradle, ftypes.Sbt:
 		eco = ecosystem.Maven
 		comparer = maven.Comparer{}
@@ -48,26 +50,26 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 		comparer = npm.Comparer{}
 	case ftypes.NuGet, ftypes.DotNetCore, ftypes.PackagesProps:
 		eco = ecosystem.NuGet
-		comparer = compare.GenericComparer{}
+		comparer = generic.Comparer{}
 	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg, ftypes.Uv:
 		eco = ecosystem.Pip
 		comparer = pep440.Comparer{}
 	case ftypes.Pub:
 		eco = ecosystem.Pub
-		comparer = compare.GenericComparer{}
+		comparer = generic.Comparer{}
 	case ftypes.Hex:
 		eco = ecosystem.Erlang
-		comparer = compare.GenericComparer{}
+		comparer = generic.Comparer{}
 	case ftypes.Conan:
 		eco = ecosystem.Conan
 		// Only semver can be used for version ranges
 		// https://docs.conan.io/en/latest/versioning/version_ranges.html
-		comparer = compare.GenericComparer{}
+		comparer = generic.Comparer{}
 	case ftypes.Swift:
 		// Swift uses semver
 		// https://www.swift.org/package-manager/#importing-dependencies
 		eco = ecosystem.Swift
-		comparer = compare.GenericComparer{}
+		comparer = generic.Comparer{}
 	case ftypes.Cocoapods:
 		// CocoaPods uses RubyGems version specifiers
 		// https://guides.cocoapods.org/making/making-a-cocoapod.html#cocoapods-versioning-specifics
@@ -81,7 +83,7 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 		comparer = bitnami.Comparer{}
 	case ftypes.K8sUpstream:
 		eco = ecosystem.Kubernetes
-		comparer = compare.GenericComparer{}
+		comparer = generic.Comparer{}
 	case ftypes.Julia:
 		log.Warn("Julia is supported for SBOM, not for vulnerability scanning")
 		return Driver{}, false
@@ -123,7 +125,7 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 
 	var vulns []types.DetectedVulnerability
 	for _, adv := range advisories {
-		if !d.comparer.IsVulnerable(pkgVer, adv) {
+		if !d.IsVulnerable(pkgVer, adv) {
 			continue
 		}
 
@@ -140,6 +142,42 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 	}
 
 	return vulns, nil
+}
+
+// IsVulnerable checks if the package version is vulnerable to the advisory.
+// It supports both vulnerable versions and patched/unaftfected versions.
+func (d *Driver) IsVulnerable(pkgVer string, advisory dbTypes.Advisory) bool {
+	// If one of vulnerable/patched versions is empty, we should detect it anyway.
+	if slices.Contains(append(advisory.VulnerableVersions, advisory.PatchedVersions...), "") {
+		return true
+	}
+	var matched bool
+	var err error
+
+	if len(advisory.VulnerableVersions) != 0 {
+		matched, err = d.comparer.MatchVersion(pkgVer, strings.Join(advisory.VulnerableVersions, " || "))
+		if err != nil {
+			log.Warn("Version matching error", log.Err(err))
+			return false
+		} else if !matched {
+			// the version is not vulnerable
+			return false
+		}
+	}
+
+	secureVersions := append(advisory.PatchedVersions, advisory.UnaffectedVersions...)
+	if len(secureVersions) == 0 {
+		// the version matches vulnerable versions and patched/unaffected versions are not provided
+		// or all values are empty
+		return matched
+	}
+
+	matched, err = d.comparer.MatchVersion(pkgVer, strings.Join(secureVersions, " || "))
+	if err != nil {
+		log.Warn("Version matching error", log.Err(err))
+		return false
+	}
+	return !matched
 }
 
 func createFixedVersions(advisory dbTypes.Advisory) string {
