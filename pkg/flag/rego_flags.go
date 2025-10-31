@@ -1,6 +1,8 @@
 package flag
 
-import "github.com/open-policy-agent/opa/ast"
+import (
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
+)
 
 // e.g. config yaml:
 //
@@ -81,7 +83,7 @@ var (
 		ConfigName:    "rego.error-limit",
 		Usage:         "maximum number of compile errors allowed during Rego policy evaluation",
 		TelemetrySafe: true,
-		Default:       ast.CompileErrorLimitDefault,
+		Default:       rego.CompileErrorLimit,
 	}
 )
 

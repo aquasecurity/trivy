@@ -25,9 +25,16 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 )
 
-var checkTypesWithSubtype = set.New(types.SourceCloud, types.SourceDefsec, types.SourceKubernetes)
+// CompileErrorLimit defines the default compile error limit.
+// We set this value explicitly instead of relying on OPA's ast.CompileErrorLimitDefault
+// to avoid dependency on potential upstream changes.
+const CompileErrorLimit = 10
 
-var supportedProviders = makeSupportedProviders()
+var (
+	checkTypesWithSubtype = set.New(types.SourceCloud, types.SourceDefsec, types.SourceKubernetes)
+
+	supportedProviders = makeSupportedProviders()
+)
 
 func makeSupportedProviders() set.Set[string] {
 	m := set.New[string]()
@@ -92,7 +99,7 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 	LoadAndRegister()
 
 	s := &Scanner{
-		regoErrorLimit: ast.CompileErrorLimitDefault,
+		regoErrorLimit: CompileErrorLimit,
 		ruleNamespaces: builtinNamespaces.Clone(),
 		runtimeValues:  addRuntimeValues(),
 		logger:         log.WithPrefix("rego"),
