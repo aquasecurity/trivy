@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/cachetest"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
@@ -203,6 +204,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					RepoTags: []string{
 						"maven-test-project:latest",
 					},
+					Reference: testutil.MustParseReference(t, "maven-test-project:latest"),
 				},
 			},
 		},
