@@ -23,7 +23,6 @@ import (
 	goversion "github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/rust/cargo"
-	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -45,14 +44,12 @@ var requiredFiles = []string{
 type cargoAnalyzer struct {
 	logger     *log.Logger
 	lockParser language.Parser
-	comparer   compare.GenericComparer
 }
 
 func newCargoAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &cargoAnalyzer{
 		logger:     log.WithPrefix("cargo"),
 		lockParser: cargo.NewParser(),
-		comparer:   compare.GenericComparer{},
 	}, nil
 }
 

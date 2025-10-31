@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -696,9 +695,7 @@ func TestMatchVersion(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := cargoAnalyzer{
-				comparer: compare.GenericComparer{},
-			}
+			a := cargoAnalyzer{}
 			match, _ := a.matchVersion(tt.version, tt.constraint)
 			assert.Equal(t, tt.want, match)
 		})
