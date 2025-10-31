@@ -183,7 +183,7 @@ func (a Artifact) parseImageReferences(references []string) []name.Reference {
 	return lo.FilterMap(references, func(ref string, _ int) (name.Reference, bool) {
 		tag, err := name.ParseReference(ref)
 		if err != nil {
-			a.logger.Debug("Failed to parse repo tag", log.String("ref", ref), log.Err(err))
+			a.logger.Debug("Failed to parse repo tag/digest", log.String("ref", ref), log.Err(err))
 			return name.Reference{}, false
 		}
 		return tag, true
@@ -197,7 +197,7 @@ func (a Artifact) findMatchingRepoReference(artifactName string, references []na
 		return name.Reference{}
 	}
 
-	// Select the first available reference as fallback
+	// Use the first available reference as fallback (tags take precedence over digests)
 	fallback := lo.FirstOrEmpty(references)
 
 	// TODO(knqyf263): refactor to use a more robust method instead of suffix-based detection
