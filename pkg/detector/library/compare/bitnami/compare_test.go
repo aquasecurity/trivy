@@ -5,136 +5,90 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/bitnami"
 )
 
-func TestBitnamiComparer_IsVulnerable(t *testing.T) {
+func TestBitnamiComparer_MatchVersion(t *testing.T) {
 	type args struct {
 		currentVersion string
-		advisory       types.Advisory
+		constraint     string
 	}
 	tests := []struct {
-		name string
-		args args
-		want bool
+		name    string
+		args    args
+		want    bool
+		wantErr bool
 	}{
 		{
-			name: "not vulnerable",
+			name: "not vulnerable constraint",
 			args: args{
 				currentVersion: "1.2.3",
-				advisory: types.Advisory{
-					VulnerableVersions: []string{"<1.2.3"},
-				},
+				constraint:     "<1.2.3",
 			},
 			want: false,
 		},
 		{
-			name: "vulnerable",
+			name: "vulnerable constraint",
 			args: args{
 				currentVersion: "1.2.3",
-				advisory: types.Advisory{
-					VulnerableVersions: []string{"<=1.2.3"},
-				},
+				constraint:     "<=1.2.3",
 			},
 			want: true,
 		},
 		{
-			name: "patched",
-			args: args{
-				currentVersion: "1.2.3",
-				advisory: types.Advisory{
-					PatchedVersions: []string{">=1.2.3"},
-				},
-			},
-			want: false,
-		},
-		{
-			name: "unaffected",
-			args: args{
-				currentVersion: "1.2.3",
-				advisory: types.Advisory{
-					UnaffectedVersions: []string{"=1.2.3"},
-				},
-			},
-			want: false,
-		},
-		{
-			name: "vulnerable based on patched & unaffected versions",
-			args: args{
-				currentVersion: "1.2.3",
-				advisory: types.Advisory{
-					UnaffectedVersions: []string{"=1.2.0"},
-					PatchedVersions:    []string{">=1.2.4"},
-				},
-			},
-			want: true,
-		},
-		{
-			name: "patched with revision on current version",
+			name: "revision on current version patched",
 			args: args{
 				currentVersion: "1.2.3-1",
-				advisory: types.Advisory{
-					PatchedVersions: []string{">=1.2.3"},
-				},
-			},
-			want: false,
-		},
-		{
-			name: "vulnerable with revision on current version",
-			args: args{
-				currentVersion: "1.2.3-1",
-				advisory: types.Advisory{
-					PatchedVersions: []string{">=1.2.4"},
-				},
+				constraint:     ">=1.2.3",
 			},
 			want: true,
 		},
 		{
-			name: "patched with revision on patch",
+			name: "revision on current version not patched",
+			args: args{
+				currentVersion: "1.2.3-1",
+				constraint:     ">=1.2.4",
+			},
+			want: false,
+		},
+		{
+			name: "revision on patch",
 			args: args{
 				currentVersion: "1.2.4",
-				advisory: types.Advisory{
-					PatchedVersions: []string{">=1.2.3-1"},
-				},
+				constraint:     ">=1.2.3-1",
 			},
-			want: false,
+			want: true,
 		},
 		{
 			name: "vulnerable with revision on patch",
 			args: args{
 				currentVersion: "1.2.3",
-				advisory: types.Advisory{
-					PatchedVersions: []string{">=1.2.3-1"},
-				},
-			},
-			want: true,
-		},
-		{
-			name: "patched with revisions on both current and patch",
-			args: args{
-				currentVersion: "1.2.4-2",
-				advisory: types.Advisory{
-					PatchedVersions: []string{">=1.2.3-1"},
-				},
+				constraint:     ">=1.2.3-1",
 			},
 			want: false,
 		},
 		{
-			name: "vulnerable with revision on both current and patch",
+			name: "revisions on both current and patch",
 			args: args{
-				currentVersion: "1.2.3-0",
-				advisory: types.Advisory{
-					PatchedVersions: []string{">=1.2.3-1"},
-				},
+				currentVersion: "1.2.4-2",
+				constraint:     ">=1.2.3-1",
 			},
 			want: true,
+		},
+		{
+			name: "revision on both current and patch vulnerable",
+			args: args{
+				currentVersion: "1.2.3-0",
+				constraint:     ">=1.2.3-1",
+			},
+			want: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			b := bitnami.Comparer{}
-			got := b.IsVulnerable(tt.args.currentVersion, tt.args.advisory)
+			got, err := b.MatchVersion(tt.args.currentVersion, tt.args.constraint)
+			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
