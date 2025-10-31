@@ -23,6 +23,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:fluentd-multiple-lockfiles"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:fluentd-multiple-lockfiles",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "232f3fc7ddffd71dc3ff52c6c0c3a5feea2f51acffd9b53850a8fc6f1a15319a",

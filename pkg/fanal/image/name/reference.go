@@ -1,4 +1,4 @@
-package image
+package name
 
 import (
 	"encoding/json"
@@ -11,11 +11,6 @@ import (
 // Reference wraps name.Reference to support JSON marshaling/unmarshaling
 type Reference struct {
 	name.Reference
-}
-
-// NewReference creates a new Reference from name.Reference
-func NewReference(ref name.Reference) Reference {
-	return Reference{Reference: ref}
 }
 
 // ParseReference parses a string into a Reference
@@ -56,7 +51,7 @@ func (r *Reference) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// IsEmpty returns true if the reference is empty
-func (r Reference) IsEmpty() bool {
+// IsZero returns true if the reference is empty (for omitzero support)
+func (r Reference) IsZero() bool {
 	return lo.IsNil(r.Reference)
 }

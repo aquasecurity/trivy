@@ -1,7 +1,6 @@
 package image
 
 import (
-	"cmp"
 	"context"
 	"errors"
 	"fmt"
@@ -13,7 +12,6 @@ import (
 	"strings"
 
 	"github.com/docker/go-units"
-	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
 	"golang.org/x/sync/errgroup"
@@ -24,6 +22,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	"github.com/aquasecurity/trivy/pkg/fanal/image/name"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -173,48 +172,33 @@ func (a Artifact) Clean(_ artifact.Reference) error {
 }
 
 // findMatchingReference finds a RepoTag or RepoDigest that matches the artifact name
-func (a Artifact) findMatchingReference(artifactName string, repoTags, repoDigests []string) image.Reference {
+func (a Artifact) findMatchingReference(artifactName string, repoTags, repoDigests []string) name.Reference {
 	// Convert strings to typed references
-	parsedTags := a.parseRepoTags(repoTags)
-	parsedDigests := a.parseRepoDigests(repoDigests)
-
-	ref := a.findMatchingRepoReference(artifactName, parsedTags, parsedDigests)
-	return image.NewReference(ref)
+	references := a.parseImageReferences(slices.Concat(repoTags, repoDigests))
+	return a.findMatchingRepoReference(artifactName, references)
 }
 
-// parseRepoTags parses repo tags into name.Tag
-func (a Artifact) parseRepoTags(repoTags []string) []name.Tag {
-	return lo.FilterMap(repoTags, func(tagStr string, _ int) (name.Tag, bool) {
-		tag, err := name.NewTag(tagStr)
+// parseImageReferences parses repo tags/digests into name.Reference
+func (a Artifact) parseImageReferences(references []string) []name.Reference {
+	return lo.FilterMap(references, func(ref string, _ int) (name.Reference, bool) {
+		tag, err := name.ParseReference(ref)
 		if err != nil {
-			a.logger.Debug("Failed to parse repo tag", log.String("tag", tagStr), log.Err(err))
-			return name.Tag{}, false
+			a.logger.Debug("Failed to parse repo tag/digest", log.String("ref", ref), log.Err(err))
+			return name.Reference{}, false
 		}
 		return tag, true
 	})
 }
 
-// parseRepoDigests parses repo digests into name.Digest
-func (a Artifact) parseRepoDigests(repoDigests []string) []name.Digest {
-	return lo.FilterMap(repoDigests, func(digestStr string, _ int) (name.Digest, bool) {
-		digest, err := name.NewDigest(digestStr)
-		if err != nil {
-			a.logger.Debug("Failed to parse repo digest", log.String("digest", digestStr), log.Err(err))
-			return name.Digest{}, false
-		}
-		return digest, true
-	})
-}
-
 // findMatchingRepoReference finds a RepoTag or RepoDigest that matches the artifact name
-func (a Artifact) findMatchingRepoReference(artifactName string, repoTags []name.Tag, repoDigests []name.Digest) name.Reference {
+func (a Artifact) findMatchingRepoReference(artifactName string, references []name.Reference) name.Reference {
 	// If there are no RepoTags or RepoDigests, return nil
-	if len(repoTags) == 0 && len(repoDigests) == 0 {
-		return nil
+	if len(references) == 0 {
+		return name.Reference{}
 	}
 
-	// Select the first available reference as fallback
-	fallback := cmp.Or[name.Reference](lo.FirstOrEmpty(repoTags), lo.FirstOrEmpty(repoDigests))
+	// Use the first available reference as fallback (tags take precedence over digests)
+	fallback := lo.FirstOrEmpty(references)
 
 	// TODO(knqyf263): refactor to use a more robust method instead of suffix-based detection
 	// Check if artifact name looks like a file path (tar archive)
@@ -240,22 +224,11 @@ func (a Artifact) findMatchingRepoReference(artifactName string, repoTags []name
 	}
 
 	artifactRefName := artifactRef.Name()
-
-	switch artifactRef.(type) {
-	case name.Digest:
-		// Try to find a matching digest from RepoDigests
-		if digest, ok := lo.Find(repoDigests, func(d name.Digest) bool {
-			return artifactRefName == d.Name()
-		}); ok {
-			return digest
-		}
-	case name.Tag:
-		// Try to find a matching tag from RepoTags
-		if tag, ok := lo.Find(repoTags, func(t name.Tag) bool {
-			return artifactRefName == t.Name()
-		}); ok {
-			return tag
-		}
+	// Try to find a matching digest from RepoTags/RepoDigests
+	if ref, ok := lo.Find(references, func(d name.Reference) bool {
+		return artifactRefName == d.Name()
+	}); ok {
+		return ref
 	}
 
 	// If no matching tag/digest found, use the first RepoTag or RepoDigest as fallback

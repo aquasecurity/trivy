@@ -19,6 +19,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:ubi-7"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:ubi-7",
     "ImageConfig": {
       "architecture": "amd64",
       "created": "2019-09-02T12:56:43.939095Z",

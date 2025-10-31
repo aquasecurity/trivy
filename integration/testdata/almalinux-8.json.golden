@@ -18,6 +18,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:almalinux-8"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:almalinux-8",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "a467f67a48d469e1975b7414f33f2cf87121d4cc59d2ee029ea58e6b81774769",

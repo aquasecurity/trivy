@@ -15,6 +15,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:busybox-with-lockfile"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:busybox-with-lockfile",
     "ImageConfig": {
       "architecture": "amd64",
       "created": "2022-06-07T04:24:40.230164Z",

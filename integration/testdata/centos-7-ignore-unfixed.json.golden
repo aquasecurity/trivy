@@ -18,6 +18,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:centos-7"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:centos-7",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "cc6043a787f6d1c7ae3e121ebdf1c4478186336aa7274871780a0a7bcc3a061a",

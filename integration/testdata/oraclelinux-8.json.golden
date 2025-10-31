@@ -18,6 +18,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:oraclelinux-8"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:oraclelinux-8",
     "ImageConfig": {
       "architecture": "amd64",
       "author": "Oracle Linux Product Team \u003col-ovm-info_ww@oracle.com\u003e",

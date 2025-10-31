@@ -1,4 +1,4 @@
-package image_test
+package name_test
 
 import (
 	"encoding/json"
@@ -8,13 +8,13 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	"github.com/aquasecurity/trivy/pkg/fanal/image/name"
 )
 
 func TestReference_MarshalJSON(t *testing.T) {
 	tests := []struct {
 		name string
-		ref  image.Reference
+		ref  name.Reference
 		want string
 	}{
 		{
@@ -29,7 +29,7 @@ func TestReference_MarshalJSON(t *testing.T) {
 		},
 		{
 			name: "empty reference",
-			ref:  image.Reference{},
+			ref:  name.Reference{},
 			want: `""`,
 		},
 	}
@@ -81,14 +81,14 @@ func TestReference_UnmarshalJSON(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var r image.Reference
+			var r name.Reference
 			err := json.Unmarshal([]byte(tt.json), &r)
 			tt.wantErr(t, err)
 			if err != nil {
 				return
 			}
-			assert.Equal(t, tt.wantIsEmpty, r.IsEmpty())
-			if !r.IsEmpty() {
+			assert.Equal(t, tt.wantIsEmpty, r.IsZero())
+			if !r.IsZero() {
 				assert.Equal(t, tt.want, r.String())
 			}
 		})
@@ -98,7 +98,7 @@ func TestReference_UnmarshalJSON(t *testing.T) {
 func TestReference_String(t *testing.T) {
 	tests := []struct {
 		name string
-		ref  image.Reference
+		ref  name.Reference
 		want string
 	}{
 		{
@@ -128,7 +128,7 @@ func TestReference_String(t *testing.T) {
 func TestReference_Context(t *testing.T) {
 	tests := []struct {
 		name string
-		ref  image.Reference
+		ref  name.Reference
 		want string
 	}{
 		{
@@ -158,7 +158,7 @@ func TestReference_Context(t *testing.T) {
 func TestReference_IsEmpty(t *testing.T) {
 	tests := []struct {
 		name string
-		ref  image.Reference
+		ref  name.Reference
 		want bool
 	}{
 		{
@@ -168,14 +168,14 @@ func TestReference_IsEmpty(t *testing.T) {
 		},
 		{
 			name: "empty reference",
-			ref:  image.Reference{},
+			ref:  name.Reference{},
 			want: true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, tt.ref.IsEmpty())
+			assert.Equal(t, tt.want, tt.ref.IsZero())
 		})
 	}
 }
@@ -188,7 +188,7 @@ func TestReference_JSONRoundTrip(t *testing.T) {
 	require.NoError(t, err)
 
 	// Unmarshal from JSON
-	var decoded image.Reference
+	var decoded name.Reference
 	err = json.Unmarshal(data, &decoded)
 	require.NoError(t, err)
 

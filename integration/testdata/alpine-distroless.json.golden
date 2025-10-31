@@ -18,6 +18,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:alpine-distroless"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:alpine-distroless",
     "ImageConfig": {
       "architecture": "amd64",
       "author": "github.com/chainguard-dev/apko",

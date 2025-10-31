@@ -19,6 +19,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:distroless-base"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:distroless-base",
     "ImageConfig": {
       "architecture": "amd64",
       "author": "Bazel",
