@@ -750,6 +750,7 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 		DisableEmbeddedPolicies:  disableEmbedded,
 		DisableEmbeddedLibraries: disableEmbedded,
 		IncludeDeprecatedChecks:  opts.IncludeDeprecatedChecks,
+		RegoErrorLimit:           opts.RegoOptions.ErrorLimit,
 		TfExcludeDownloaded:      opts.TfExcludeDownloaded,
 		RawConfigScanners:        opts.RawConfigScanners,
 		FilePatterns:             opts.FilePatterns,

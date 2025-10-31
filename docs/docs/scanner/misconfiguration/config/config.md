@@ -46,6 +46,22 @@ This can be repeated for specifying multiple packages.
 trivy config --config-check ./my-check --namespaces main --namespaces user ./configs
 ```
 
+### Limiting Rego compile errors
+
+By default, Trivy limits the number of compile errors allowed during Rego policy compilation.
+You can configure this limit using the `--rego-error-limit` flag.
+
+```bash
+trivy config --rego-error-limit 20 ./configs
+```
+
+This flag controls the maximum number of compile errors Trivy will tolerate before stopping the compilation.
+
+If the number of compile errors exceeds this limit, Trivy will terminate the scan.
+You can set `--rego-error-limit 0` to enforce strict checking and disallow any compile errors.
+
+The default value is defined internally via [CompileErrorLimit](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}pkg/iac/rego/scanner.go).
+
 ### Private Terraform registries
 Trivy can download Terraform code from private registries.
 To pass credentials you must use the `TF_TOKEN_` environment variables.
