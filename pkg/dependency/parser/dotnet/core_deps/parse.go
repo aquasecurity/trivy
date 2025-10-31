@@ -6,7 +6,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -31,10 +30,16 @@ type RuntimeTarget struct {
 	Name string `json:"name"`
 }
 
+type Runtime struct {
+	AssemblyVersion string `json:"assemblyVersion"`
+	FileVersion     string `json:"fileVersion"`
+	xjson.Location
+}
+
 type TargetLib struct {
-	Runtime        any `json:"runtime"`
-	RuntimeTargets any `json:"runtimeTargets"`
-	Native         any `json:"native"`
+	Runtime        map[string]Runtime `json:"runtime"`
+	RuntimeTargets any                `json:"runtimeTargets"`
+	Native         any                `json:"native"`
 }
 
 type Parser struct {
@@ -55,7 +60,27 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		return nil, nil, xerrors.Errorf("failed to decode .deps.json file: %w", err)
 	}
 
+	var runtimePack = ""
+	for nameVer, lib := range depsFile.Libraries {
+		if strings.EqualFold(lib.Type, "runtimepack") {
+			runtimePack = nameVer
+			break
+		}
+	}
+
 	var pkgs ftypes.Packages
+	for dllName, lib := range depsFile.Targets[depsFile.RuntimeTarget.Name][runtimePack].Runtime {
+		packageName := strings.TrimSuffix(dllName, ".dll")
+		// Add the package if it is packaged for this runtime
+		p.logger.Debug("Adding packaged dependency", "name", packageName+"/"+lib.FileVersion)
+		pkgs = append(pkgs, ftypes.Package{
+			ID:        dependency.ID(ftypes.DotNetCore, packageName, lib.FileVersion),
+			Name:      packageName,
+			Version:   lib.FileVersion,
+			Locations: []ftypes.Location{ftypes.Location(lib.Location)},
+		})
+	}
+
 	for nameVer, lib := range depsFile.Libraries {
 		if !strings.EqualFold(lib.Type, "package") {
 			continue
@@ -77,9 +102,11 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		} else if !p.isRuntimeLibrary(targetLibs, nameVer) {
 			// Skip non-runtime libraries
 			// cf. https://github.com/aquasecurity/trivy/pull/7039#discussion_r1674566823
+			p.logger.Debug("Skip non-runtime library", "name", nameVer)
 			continue
 		}
 
+		p.logger.Debug("Adding dependency", "name", nameVer)
 		pkgs = append(pkgs, ftypes.Package{
 			ID:        dependency.ID(ftypes.DotNetCore, split[0], split[1]),
 			Name:      split[0],
@@ -105,5 +132,5 @@ func (p *Parser) isRuntimeLibrary(targetLibs map[string]TargetLib, library strin
 		return true
 	}
 	// Check that `runtime`, `runtimeTarget` and `native` sections are not empty
-	return !lo.IsEmpty(lib)
+	return len(lib.Runtime) != 0 || lib.RuntimeTargets != nil || lib.Native != nil
 }
