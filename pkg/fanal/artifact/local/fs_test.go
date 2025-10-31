@@ -2476,9 +2476,29 @@ func TestYAMLConfigScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					Namespaces:     []string{"user"},
-					PolicyPaths:    []string{"./testdata/misconfig/yaml/with-rego-error-limit/checks"},
+					Namespaces: []string{"user"},
+					PolicyPaths: []string{
+						"./testdata/misconfig/yaml/with-rego-error-limit/checks/test_2_errors.rego",
+						"./testdata/misconfig/yaml/with-rego-error-limit/checks/test.json",
+					},
 					RegoErrorLimit: 1,
+				},
+			},
+			wantErr: "ego_type_error: undefined ref: input.wrong_ref",
+		},
+		{
+			name: "with Rego error limit 0",
+			fields: fields{
+				dir: "./testdata/misconfig/yaml/with-rego-error-limit/src",
+			},
+			artifactOpt: artifact.Option{
+				MisconfScannerOption: misconf.ScannerOption{
+					Namespaces: []string{"user"},
+					PolicyPaths: []string{
+						"./testdata/misconfig/yaml/with-rego-error-limit/checks/test_1_error.rego",
+						"./testdata/misconfig/yaml/with-rego-error-limit/checks/test.json",
+					},
+					RegoErrorLimit: 0,
 				},
 			},
 			wantErr: "ego_type_error: undefined ref: input.wrong_ref",

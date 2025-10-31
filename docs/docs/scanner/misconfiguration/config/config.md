@@ -58,6 +58,7 @@ trivy config --rego-error-limit 20 ./configs
 This flag controls the maximum number of compile errors Trivy will tolerate before stopping the compilation.
 
 If the number of compile errors exceeds this limit, Trivy will terminate the scan.
+You can set `--rego-error-limit 0` to enforce strict checking and disallow any compile errors.
 
 The default value is defined internally via [CompileErrorLimit](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}pkg/iac/rego/scanner.go).
 

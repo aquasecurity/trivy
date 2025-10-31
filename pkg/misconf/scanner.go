@@ -237,7 +237,7 @@ func initRegoOptions(opt ScannerOption) ([]options.ScannerOption, error) {
 		rego.WithTrivyVersion(app.Version()),
 	}
 
-	if opt.RegoErrorLimit > 0 {
+	if opt.RegoErrorLimit >= 0 {
 		opts = append(opts, rego.WithRegoErrorLimits(opt.RegoErrorLimit))
 	}
 
