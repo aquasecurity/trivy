@@ -230,3 +230,359 @@ func TestDriver_Detect(t *testing.T) {
 		})
 	}
 }
+
+func TestDriver_IsVulnerable(t *testing.T) {
+	type args struct {
+		libType  ftypes.LangType
+		ver      string
+		advisory dbTypes.Advisory
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		// Generic (semver-like)
+		{
+			name: "generic no patch",
+			args: args{
+				libType: ftypes.GoModule,
+				ver:     "1.2.3",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<=99.999.99999"},
+					PatchedVersions:    []string{"<0.0.0"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "generic pre-release",
+			args: args{
+				libType: ftypes.GoModule,
+				ver:     "1.2.2-alpha",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<=1.2.2"},
+					PatchedVersions:    []string{">=1.2.2"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "generic multiple constraints",
+			args: args{
+				libType: ftypes.GoModule,
+				ver:     "2.0.0",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=1.7.0 <1.7.16", ">=1.8.0 <1.8.8", ">=2.0.0 <2.0.8", ">=3.0.0-beta.1 <3.0.0-beta.7"},
+					PatchedVersions:    []string{">=3.0.0-beta.7", ">=2.0.8 <3.0.0-beta.1", ">=1.8.8 <2.0.0", ">=1.7.16 <1.8.0"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "generic invalid version",
+			args: args{
+				libType: ftypes.GoModule,
+				ver:     "1.2..4",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<1.0.0"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "generic improper constraint",
+			args: args{
+				libType: ftypes.GoModule,
+				ver:     "1.2.3",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"*"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "generic empty patched version",
+			args: args{
+				libType: ftypes.GoModule,
+				ver:     "1.2.3",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<=99.999.99999"},
+					PatchedVersions:    []string{""},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "generic empty vulnerable and patched versions",
+			args: args{
+				libType: ftypes.GoModule,
+				ver:     "1.2.3",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{""},
+					PatchedVersions:    []string{""},
+				},
+			},
+			want: true,
+		},
+
+		// NPM
+		{
+			name: "npm happy path",
+			args: args{
+				libType: ftypes.Npm,
+				ver:     "1.0.0",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<=1.0"},
+					PatchedVersions:    []string{">=1.1"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "npm wildcard vuln",
+			args: args{
+				libType: ftypes.Npm,
+				ver:     "1.2.3",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"*"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "npm prerelease treated as patched",
+			args: args{
+				libType: ftypes.Npm,
+				ver:     "1.2.3-alpha",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<=1.2.2"},
+					PatchedVersions:    []string{">=1.2.2"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "npm multiple constraints",
+			args: args{
+				libType: ftypes.Npm,
+				ver:     "2.0.0",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=1.7.0 <1.7.16", ">=1.8.0 <1.8.8", ">=2.0.0 <2.0.8", ">=3.0.0-beta.1 <3.0.0-beta.7"},
+					PatchedVersions:    []string{">=3.0.0-beta.7", ">=2.0.8 <3.0.0-beta.1", ">=1.8.8 <2.0.0", ">=1.7.16 <1.8.0"},
+				},
+			},
+			want: true,
+		},
+
+		// RubyGems
+		{
+			name: "rubygems patched",
+			args: args{
+				libType: ftypes.Bundler,
+				ver:     "1.2.3",
+				advisory: dbTypes.Advisory{
+					PatchedVersions: []string{">=1.2.0"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "rubygems pre-release vulnerable",
+			args: args{
+				libType: ftypes.Bundler,
+				ver:     "1.2.3.a",
+				advisory: dbTypes.Advisory{
+					PatchedVersions: []string{">=1.2.3"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "rubygems unaffected",
+			args: args{
+				libType: ftypes.Bundler,
+				ver:     "4.1a",
+				advisory: dbTypes.Advisory{
+					UnaffectedVersions: []string{"< 4.2b1"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "rubygems hyphen",
+			args: args{
+				libType: ftypes.Bundler,
+				ver:     "1.9.25-x86-mingw32",
+				advisory: dbTypes.Advisory{
+					PatchedVersions: []string{">=1.9.24"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "rubygems pessimistic",
+			args: args{
+				libType: ftypes.Bundler,
+				ver:     "1.8.6-java",
+				advisory: dbTypes.Advisory{
+					PatchedVersions: []string{"~> 1.5.5", "~> 1.6.8", ">= 1.7.7"},
+				},
+			},
+			want: false,
+		},
+
+		// PEP440 (Python)
+		{
+			name: "pep440 happy path",
+			args: args{
+				libType: ftypes.PythonPkg,
+				ver:     "1.0.0",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<=1.0"},
+					PatchedVersions:    []string{">=1.1"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "pep440 wildcard vuln",
+			args: args{
+				libType: ftypes.PythonPkg,
+				ver:     "1.2.3",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"*"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "pep440 prerelease patched",
+			args: args{
+				libType: ftypes.PythonPkg,
+				ver:     "1.2.3a1",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<=1.2.2"},
+					PatchedVersions:    []string{">=1.2.2"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "pep440 multiple constraints",
+			args: args{
+				libType: ftypes.PythonPkg,
+				ver:     "2.0.0",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=1.7.0 <1.7.16", ">=1.8.0 <1.8.8", ">=2.0.0 <2.0.8", ">=3.0.0b1 <3.0.0b7"},
+					PatchedVersions:    []string{">=3.0.0b7", ">=2.0.8 <3.0.0b1", ">=1.8.8 <2.0.0", ">=1.7.16 <1.8.0"},
+				},
+			},
+			want: true,
+		},
+
+		// Maven
+		{
+			name: "maven final release patched",
+			args: args{
+				libType: ftypes.Jar,
+				ver:     "1.2.3.final",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<1.2.3"},
+					PatchedVersions:    []string{"1.2.3"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "maven prerelease vulnerable",
+			args: args{
+				libType: ftypes.Jar,
+				ver:     "1.2.3-a1",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<1.2.3"},
+					PatchedVersions:    []string{">=1.2.3"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "maven version requirements vuln",
+			args: args{
+				libType: ftypes.Jar,
+				ver:     "1.2.3",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"(,1.2.3]"},
+					PatchedVersions:    []string{"1.2.4"},
+				},
+			},
+			want: true,
+		},
+
+		// Bitnami (debian-like revisions)
+		{
+			name: "bitnami patched",
+			args: args{
+				libType: ftypes.Bitnami,
+				ver:     "1.2.3",
+				advisory: dbTypes.Advisory{
+					PatchedVersions: []string{">=1.2.3"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "bitnami unaffected",
+			args: args{
+				libType: ftypes.Bitnami,
+				ver:     "1.2.3",
+				advisory: dbTypes.Advisory{
+					UnaffectedVersions: []string{"=1.2.3"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "bitnami vulnerable by patched range",
+			args: args{
+				libType: ftypes.Bitnami,
+				ver:     "1.2.3",
+				advisory: dbTypes.Advisory{
+					PatchedVersions: []string{">=1.2.4"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "bitnami revision patched",
+			args: args{
+				libType: ftypes.Bitnami,
+				ver:     "1.2.3-1",
+				advisory: dbTypes.Advisory{
+					PatchedVersions: []string{">=1.2.3"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "bitnami revision vulnerable",
+			args: args{
+				libType: ftypes.Bitnami,
+				ver:     "1.2.3-1",
+				advisory: dbTypes.Advisory{
+					PatchedVersions: []string{">=1.2.4"},
+				},
+			},
+			want: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			d, ok := library.NewDriver(tt.args.libType)
+			require.True(t, ok)
+			got := d.IsVulnerable(tt.args.ver, tt.args.advisory)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
