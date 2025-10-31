@@ -3,7 +3,7 @@ package pep440_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 )
@@ -65,11 +65,11 @@ func TestPep440Comparer_MatchVersion(t *testing.T) {
 			c := pep440.Comparer{}
 			got, err := c.MatchVersion(tt.args.currentVersion, tt.args.constraint)
 			if tt.wantErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 				return
 			}
-			assert.NoError(t, err)
-			assert.Equal(t, tt.want, got)
+			require.NoError(t, err)
+			require.Equal(t, tt.want, got)
 		})
 	}
 }

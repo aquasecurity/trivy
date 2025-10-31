@@ -3,7 +3,7 @@ package bitnami_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/bitnami"
 )
@@ -88,8 +88,8 @@ func TestBitnamiComparer_MatchVersion(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			b := bitnami.Comparer{}
 			got, err := b.MatchVersion(tt.args.currentVersion, tt.args.constraint)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.want, got)
+			require.NoError(t, err)
+			require.Equal(t, tt.want, got)
 		})
 	}
 }
