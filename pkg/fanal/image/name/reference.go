@@ -13,11 +13,6 @@ type Reference struct {
 	name.Reference
 }
 
-// NewReference creates a new Reference from name.Reference
-func NewReference(ref name.Reference) Reference {
-	return Reference{Reference: ref}
-}
-
 // ParseReference parses a string into a Reference
 func ParseReference(s string) (Reference, error) {
 	if s == "" {
