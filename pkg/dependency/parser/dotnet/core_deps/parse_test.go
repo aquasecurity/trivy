@@ -24,9 +24,22 @@ func TestParse(t *testing.T) {
 			file: "testdata/happy.deps.json",
 			want: []ftypes.Package{
 				{
-					ID:      "Newtonsoft.Json/13.0.1",
-					Name:    "Newtonsoft.Json",
-					Version: "13.0.1",
+					ID:           "ExampleApp1/1.0.0",
+					Name:         "ExampleApp1",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 28,
+							EndLine:   32,
+						},
+					},
+				},
+				{
+					ID:           "Newtonsoft.Json/13.0.1",
+					Name:         "Newtonsoft.Json",
+					Version:      "13.0.1",
+					Relationship: ftypes.RelationshipDirect,
 					Locations: []ftypes.Location{
 						{
 							StartLine: 33,
@@ -35,16 +48,34 @@ func TestParse(t *testing.T) {
 					},
 				},
 			},
-			wantDeps: nil, // Newtonsoft.Json has no dependencies in the test file
+			wantDeps: []ftypes.Dependency{
+				{
+					ID:        "ExampleApp1/1.0.0",
+					DependsOn: []string{"Newtonsoft.Json/13.0.1"},
+				},
+			},
 		},
 		{
 			name: "happy path with skipped libs",
 			file: "testdata/without-runtime.deps.json",
 			want: []ftypes.Package{
 				{
-					ID:      "JsonDiffPatch/2.0.61",
-					Name:    "JsonDiffPatch",
-					Version: "2.0.61",
+					ID:           "hello2/1.0.0",
+					Name:         "hello2",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 61,
+							EndLine:   65,
+						},
+					},
+				},
+				{
+					ID:           "JsonDiffPatch/2.0.61",
+					Name:         "JsonDiffPatch",
+					Version:      "2.0.61",
+					Relationship: ftypes.RelationshipDirect,
 					Locations: []ftypes.Location{
 						{
 							StartLine: 66,
@@ -53,9 +84,10 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
-					ID:      "Libuv/1.9.1",
-					Name:    "Libuv",
-					Version: "1.9.1",
+					ID:           "Libuv/1.9.1",
+					Name:         "Libuv",
+					Version:      "1.9.1",
+					Relationship: ftypes.RelationshipDirect,
 					Locations: []ftypes.Location{
 						{
 							StartLine: 73,
@@ -64,9 +96,10 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
-					ID:      "System.Collections.Immutable/1.3.0",
-					Name:    "System.Collections.Immutable",
-					Version: "1.3.0",
+					ID:           "System.Collections.Immutable/1.3.0",
+					Name:         "System.Collections.Immutable",
+					Version:      "1.3.0",
+					Relationship: ftypes.RelationshipDirect,
 					Locations: []ftypes.Location{
 						{
 							StartLine: 101,
@@ -83,6 +116,10 @@ func TestParse(t *testing.T) {
 				{
 					ID:        "Libuv/1.9.1",
 					DependsOn: []string{"Microsoft.NETCore.Platforms/1.1.0"},
+				},
+				{
+					ID:        "hello2/1.0.0",
+					DependsOn: []string{"JsonDiffPatch/2.0.61"},
 				},
 			},
 		},
@@ -114,23 +151,8 @@ func TestParse(t *testing.T) {
 				sort.Sort(ftypes.Packages(tt.want))
 
 				assert.Equal(t, tt.want, got)
-
-				if tt.wantDeps != nil {
-					sortDeps(gotDeps)
-					sortDeps(tt.wantDeps)
-					assert.Equal(t, tt.wantDeps, gotDeps)
-				}
+				assert.Equal(t, tt.wantDeps, gotDeps)
 			}
 		})
-	}
-}
-
-func sortDeps(deps []ftypes.Dependency) {
-	sort.Slice(deps, func(i, j int) bool {
-		return deps[i].ID < deps[j].ID
-	})
-
-	for i := range deps {
-		sort.Strings(deps[i].DependsOn)
 	}
 }

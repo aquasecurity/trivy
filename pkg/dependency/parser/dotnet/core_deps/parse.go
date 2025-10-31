@@ -65,18 +65,34 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		})
 	}
 
+	// First pass: collect all packages
 	var pkgs ftypes.Packages
-	depsMap := make(map[string][]string)
+	pkgSet := make(map[string]struct{})
 
 	for nameVer, lib := range depsFile.Libraries {
-		if !strings.EqualFold(lib.Type, "package") {
-			continue
-		}
-
 		split := strings.Split(nameVer, "/")
 		if len(split) != 2 {
 			// Invalid name
 			p.logger.Warn("Cannot parse .NET library version", log.String("library", nameVer))
+			continue
+		}
+
+		pkgID := dependency.ID(ftypes.DotNetCore, split[0], split[1])
+
+		// Include project types as root packages
+		if strings.EqualFold(lib.Type, "project") {
+			pkgs = append(pkgs, ftypes.Package{
+				ID:           pkgID,
+				Name:         split[0],
+				Version:      split[1],
+				Relationship: ftypes.RelationshipRoot,
+				Locations:    []ftypes.Location{ftypes.Location(lib.Location)},
+			})
+			pkgSet[pkgID] = struct{}{}
+			continue
+		}
+
+		if !strings.EqualFold(lib.Type, "package") {
 			continue
 		}
 
@@ -87,40 +103,50 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			continue
 		}
 
-		pkgID := dependency.ID(ftypes.DotNetCore, split[0], split[1])
 		pkgs = append(pkgs, ftypes.Package{
-			ID:        pkgID,
-			Name:      split[0],
-			Version:   split[1],
-			Locations: []ftypes.Location{ftypes.Location(lib.Location)},
+			ID:           pkgID,
+			Name:         split[0],
+			Version:      split[1],
+			Relationship: ftypes.RelationshipDirect,
+			Locations:    []ftypes.Location{ftypes.Location(lib.Location)},
 		})
+		pkgSet[pkgID] = struct{}{}
+	}
 
-		// Extract dependency relationships from targets section
-		if targetLib, exists := targetLibs[nameVer]; exists {
+	// Second pass: build dependency graph from targets section
+	var deps []ftypes.Dependency
+	for nameVer, targetLib := range targetLibs {
+		split := strings.Split(nameVer, "/")
+		if len(split) != 2 {
+			continue
+		}
+
+		pkgID := dependency.ID(ftypes.DotNetCore, split[0], split[1])
+		// Only create dependencies for packages that exist in our package list
+		if _, exists := pkgSet[pkgID]; !exists {
+			continue
+		}
+
+		if len(targetLib.Dependencies) > 0 {
 			dependsOn := lo.MapToSlice(targetLib.Dependencies, func(depVersion, depName string) string {
 				return dependency.ID(ftypes.DotNetCore, depName, depVersion)
 			})
-
-			if len(dependsOn) > 0 {
-				// Merge with existing dependencies if any
-				if existing, found := depsMap[pkgID]; found {
-					dependsOn = lo.Uniq(append(dependsOn, existing...))
-				}
-				depsMap[pkgID] = dependsOn
-			}
+			deps = append(deps, ftypes.Dependency{
+				ID:        pkgID,
+				DependsOn: dependsOn,
+			})
 		}
 	}
 
-	// Build dependencies slice from depsMap
-	var deps []ftypes.Dependency
-	for pkgID, dependsOn := range depsMap {
-		deps = append(deps, ftypes.Dependency{
-			ID:        pkgID,
-			DependsOn: dependsOn,
-		})
+	sort.Sort(pkgs)
+	sort.Slice(deps, func(i, j int) bool {
+		return deps[i].ID < deps[j].ID
+	})
+	// Sort DependsOn arrays for consistency
+	for i := range deps {
+		sort.Strings(deps[i].DependsOn)
 	}
 
-	sort.Sort(pkgs)
 	return pkgs, deps, nil
 }
 
