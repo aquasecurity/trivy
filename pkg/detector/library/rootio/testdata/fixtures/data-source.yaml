@@ -5,6 +5,11 @@
         ID: "ghsa"
         Name: "GitHub Security Advisory Pip"
         URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+    - key: "npm::GitHub Security Advisory npm"
+      value:
+        ID: "ghsa"
+        Name: "GitHub Security Advisory npm"
+        URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
     - key: "root.io pip"
       value:
         ID: "rootio"

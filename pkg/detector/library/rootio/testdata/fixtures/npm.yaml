@@ -1,0 +1,10 @@
+- bucket: "npm::GitHub Security Advisory npm"
+  pairs:
+    - bucket: lodash
+      pairs:
+        - key: CVE-2020-28500
+          value:
+            PatchedVersions:
+              - "4.17.21"
+            VulnerableVersions:
+              - ">=4.0.0, <4.17.21"
