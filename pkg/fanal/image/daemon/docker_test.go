@@ -1,6 +1,7 @@
 package daemon
 
 import (
+	"context"
 	"testing"
 
 	"github.com/google/go-containerregistry/pkg/name"
@@ -37,7 +38,7 @@ func TestDockerImage(t *testing.T) {
 			ref, err := name.ParseReference(tt.imageName)
 			require.NoError(t, err)
 
-			_, cleanup, err := DockerImage(ref, "")
+			_, cleanup, err := DockerImage(context.Background(), ref, "")
 			assert.Equal(t, tt.wantErr, err != nil, err)
 			defer func() {
 				if cleanup != nil {
