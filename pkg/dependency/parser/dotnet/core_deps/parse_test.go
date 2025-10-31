@@ -2,7 +2,6 @@ package core_deps
 
 import (
 	"os"
-	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -87,7 +86,7 @@ func TestParse(t *testing.T) {
 					ID:           "Libuv/1.9.1",
 					Name:         "Libuv",
 					Version:      "1.9.1",
-					Relationship: ftypes.RelationshipDirect,
+					Relationship: ftypes.RelationshipIndirect,
 					Locations: []ftypes.Location{
 						{
 							StartLine: 73,
@@ -99,7 +98,7 @@ func TestParse(t *testing.T) {
 					ID:           "System.Collections.Immutable/1.3.0",
 					Name:         "System.Collections.Immutable",
 					Version:      "1.3.0",
-					Relationship: ftypes.RelationshipDirect,
+					Relationship: ftypes.RelationshipIndirect,
 					Locations: []ftypes.Location{
 						{
 							StartLine: 101,
@@ -109,14 +108,6 @@ func TestParse(t *testing.T) {
 				},
 			},
 			wantDeps: []ftypes.Dependency{
-				{
-					ID:        "JsonDiffPatch/2.0.61",
-					DependsOn: []string{"Microsoft.NETCore.App/1.1.2"},
-				},
-				{
-					ID:        "Libuv/1.9.1",
-					DependsOn: []string{"Microsoft.NETCore.Platforms/1.1.0"},
-				},
 				{
 					ID:        "hello2/1.0.0",
 					DependsOn: []string{"JsonDiffPatch/2.0.61"},
@@ -144,15 +135,12 @@ func TestParse(t *testing.T) {
 			got, gotDeps, err := NewParser().Parse(t.Context(), f)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
-			} else {
-				require.NoError(t, err)
-
-				sort.Sort(ftypes.Packages(got))
-				sort.Sort(ftypes.Packages(tt.want))
-
-				assert.Equal(t, tt.want, got)
-				assert.Equal(t, tt.wantDeps, gotDeps)
+				return
 			}
+
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+			assert.Equal(t, tt.wantDeps, gotDeps)
 		})
 	}
 }

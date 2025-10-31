@@ -2,6 +2,7 @@ package core_deps
 
 import (
 	"context"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -57,8 +58,8 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	}
 
 	// Get target libraries for RuntimeTarget
-	targetLibs, ok := depsFile.Targets[depsFile.RuntimeTarget.Name]
-	if !ok {
+	targetLibs, targetLibsFound := depsFile.Targets[depsFile.RuntimeTarget.Name]
+	if !targetLibsFound {
 		// If the target is not found, take all dependencies
 		p.once.Do(func() {
 			p.logger.Debug("Unable to find `Target` for Runtime Target Name. All dependencies from `libraries` section will be included in the report", log.String("Runtime Target Name", depsFile.RuntimeTarget.Name))
@@ -66,8 +67,8 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	}
 
 	// First pass: collect all packages
-	var pkgs ftypes.Packages
-	pkgSet := make(map[string]struct{})
+	var projectNameVer string
+	var pkgs = make(map[string]ftypes.Package)
 
 	for nameVer, lib := range depsFile.Libraries {
 		split := strings.Split(nameVer, "/")
@@ -77,60 +78,81 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			continue
 		}
 
-		pkgID := dependency.ID(ftypes.DotNetCore, split[0], split[1])
-
-		// Include project types as root packages
-		if strings.EqualFold(lib.Type, "project") {
-			pkgs = append(pkgs, ftypes.Package{
-				ID:           pkgID,
-				Name:         split[0],
-				Version:      split[1],
-				Relationship: ftypes.RelationshipRoot,
-				Locations:    []ftypes.Location{ftypes.Location(lib.Location)},
-			})
-			pkgSet[pkgID] = struct{}{}
-			continue
-		}
-
-		if !strings.EqualFold(lib.Type, "package") {
+		// Skip unsupported library types
+		if !strings.EqualFold(lib.Type, "package") && !strings.EqualFold(lib.Type, "project") {
 			continue
 		}
 
 		// Skip non-runtime libraries if target libraries are available
-		if ok && !p.isRuntimeLibrary(targetLibs, nameVer) {
+		if targetLibsFound && !p.isRuntimeLibrary(targetLibs, nameVer) {
 			// Skip non-runtime libraries
 			// cf. https://github.com/aquasecurity/trivy/pull/7039#discussion_r1674566823
 			continue
 		}
 
-		pkgs = append(pkgs, ftypes.Package{
-			ID:           pkgID,
-			Name:         split[0],
-			Version:      split[1],
-			Relationship: ftypes.RelationshipDirect,
-			Locations:    []ftypes.Location{ftypes.Location(lib.Location)},
-		})
-		pkgSet[pkgID] = struct{}{}
+		pkg := ftypes.Package{
+			ID:        packageID(split[0], split[1]),
+			Name:      split[0],
+			Version:   split[1],
+			Locations: []ftypes.Location{ftypes.Location(lib.Location)},
+		}
+
+		// Identify root package
+		if strings.EqualFold(lib.Type, "project") {
+			if projectNameVer != "" {
+				p.logger.Warn("Multiple root projects found in .deps.json", log.String("existing_root", projectNameVer), log.String("new_root", nameVer))
+				continue
+			}
+			projectNameVer = nameVer
+			pkg.Relationship = ftypes.RelationshipRoot
+		}
+
+		pkgs[pkg.ID] = pkg
 	}
 
-	// Second pass: build dependency graph from targets section
-	var deps []ftypes.Dependency
-	for nameVer, targetLib := range targetLibs {
-		split := strings.Split(nameVer, "/")
-		if len(split) != 2 {
+	if len(pkgs) == 0 {
+		return nil, nil, nil
+	}
+
+	// If target libraries are not found, return all collected packages without dependencies
+	if !targetLibsFound {
+		pkgSlice := lo.Values(pkgs)
+		sort.Sort(ftypes.Packages(pkgSlice))
+		return pkgSlice, nil, nil
+	}
+
+	directDeps := lo.MapToSlice(targetLibs[projectNameVer].Dependencies, func(depName, depVersion string) string {
+		return packageID(depName, depVersion)
+	})
+
+	// Second pass: build dependency graph + fill Relationships from targets section
+	var deps ftypes.Dependencies
+	for pkgID, pkg := range pkgs {
+		// Fill relationship field for package
+		// If Root package didn't find or don't have dependencies, skip setting Relationship,
+		// because most likely file is broken.
+		// Root package Relationship is already set
+		if len(directDeps) > 0 && pkg.Relationship != ftypes.RelationshipRoot {
+			pkg.Relationship = lo.Ternary(slices.Contains(directDeps, pkgID), ftypes.RelationshipDirect, ftypes.RelationshipIndirect)
+			pkgs[pkgID] = pkg
+		}
+
+		// Build dependency graph
+		dependencies, ok := targetLibs[pkgID]
+		// Package doesn't have dependencies
+		if !ok {
 			continue
 		}
 
-		pkgID := dependency.ID(ftypes.DotNetCore, split[0], split[1])
-		// Only create dependencies for packages that exist in our package list
-		if _, exists := pkgSet[pkgID]; !exists {
-			continue
+		var dependsOn []string
+		for depName, depVersion := range dependencies.Dependencies {
+			depID := packageID(depName, depVersion)
+			// Only create dependencies for packages that exist in package lists
+			if _, exists := pkgs[depID]; exists {
+				dependsOn = append(dependsOn, depID)
+			}
 		}
-
-		if len(targetLib.Dependencies) > 0 {
-			dependsOn := lo.MapToSlice(targetLib.Dependencies, func(depVersion, depName string) string {
-				return dependency.ID(ftypes.DotNetCore, depName, depVersion)
-			})
+		if len(dependsOn) > 0 {
 			deps = append(deps, ftypes.Dependency{
 				ID:        pkgID,
 				DependsOn: dependsOn,
@@ -138,16 +160,10 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		}
 	}
 
-	sort.Sort(pkgs)
-	sort.Slice(deps, func(i, j int) bool {
-		return deps[i].ID < deps[j].ID
-	})
-	// Sort DependsOn arrays for consistency
-	for i := range deps {
-		sort.Strings(deps[i].DependsOn)
-	}
-
-	return pkgs, deps, nil
+	pkgSlice := lo.Values(pkgs)
+	sort.Sort(ftypes.Packages(pkgSlice))
+	sort.Sort(deps)
+	return pkgSlice, deps, nil
 }
 
 // isRuntimeLibrary returns true if library contains `runtime`, `runtimeTarget` or `native` sections, or if the library is missing from `targetLibs`.
@@ -164,4 +180,8 @@ func (p *Parser) isRuntimeLibrary(targetLibs map[string]TargetLib, library strin
 	}
 	// Check that `runtime`, `runtimeTarget` and `native` sections are not empty
 	return !lo.IsEmpty(lib.Runtime) || !lo.IsEmpty(lib.RuntimeTargets) || !lo.IsEmpty(lib.Native)
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.DotNetCore, name, version)
 }
