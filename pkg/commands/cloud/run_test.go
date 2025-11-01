@@ -1,145 +1,148 @@
 package cloud
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/zalando/go-keyring"
 
-	"github.com/aquasecurity/trivy/pkg/cloud"
 	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func TestLogout(t *testing.T) {
-	tests := []struct {
-		name             string
-		createConfigFile bool
-	}{
-		{
-			name:             "successful logout when the config file exists",
-			createConfigFile: true,
-		},
-		{
-			name:             "successful logout when the config file does not exist",
-			createConfigFile: false,
-		},
-	}
-
-	tempDir := t.TempDir()
-	t.Setenv("XDG_DATA_HOME", tempDir)
-
-	keyring.MockInit()
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-
-			defer keyring.DeleteAll(cloud.ServiceName)
-			defer cloud.Clear()
-			cloud.Clear()
-
-			if tt.createConfigFile {
-				config := &cloud.Config{
-					Server: cloud.Server{
-						URL: "https://example.com",
-					},
-					Api: cloud.Api{
-						URL: "https://api.example.com",
-					},
-				}
-				err := config.Save()
-				require.NoError(t, err)
-			}
-
-			err := Logout()
-			require.NoError(t, err)
-		})
-	}
+type mockCloudServer struct {
+	server          *httptest.Server
+	configAvailable bool
 }
 
-func TestLogin(t *testing.T) {
+func (m *mockCloudServer) Start() {
+	m.server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Authorization") != "Bearer valid-cloud-token" && r.Header.Get("Authorization") != "Bearer test-access-token" {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		if r.URL.Path == "/api-keys/access-tokens" {
+			w.WriteHeader(http.StatusCreated)
+			w.Write([]byte(`{"token": "test-access-token"}`))
+			return
+		}
+
+		if r.URL.Path == "/configs/secrets/secret-config.yaml" {
+			if !m.configAvailable {
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+			if r.Header.Get("Authorization") != "Bearer test-access-token" {
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(`{"content": {"key": "value"}}`))
+			return
+		}
+
+		w.WriteHeader(http.StatusNotFound)
+	}))
+}
+
+func (m *mockCloudServer) Close() {
+	m.server.Close()
+}
+
+func TestUpdateOptsForCloudIntegration(t *testing.T) {
+	mockServer := &mockCloudServer{}
+	mockServer.Start()
+	defer mockServer.Close()
+
 	tests := []struct {
-		name           string
-		token          string
-		serverResponse int
-		wantErr        string
+		name            string
+		opts            *flag.Options
+		configAvailable bool
+		errorContains   string
 	}{
 		{
-			name:           "successful login with valid token",
-			token:          "valid-token-123",
-			serverResponse: http.StatusOK,
+			name: "valid token and config to download",
+			opts: &flag.Options{
+				CloudOptions: flag.CloudOptions{
+					CloudToken:     "valid-cloud-token",
+					ApiURL:         mockServer.server.URL,
+					TrivyServerURL: mockServer.server.URL,
+					SecretConfig:   true,
+				},
+				ScanOptions: flag.ScanOptions{
+					Scanners: types.Scanners{types.SecretScanner},
+				},
+			},
+			configAvailable: true,
 		},
 		{
-			name:           "login fails with empty token",
-			token:          "",
-			serverResponse: http.StatusOK,
-			wantErr:        "token is required for Trivy Cloud login",
+			name: "valid token but config not requested",
+			opts: &flag.Options{
+				CloudOptions: flag.CloudOptions{
+					CloudToken:     "valid-cloud-token",
+					ApiURL:         mockServer.server.URL,
+					TrivyServerURL: mockServer.server.URL,
+					SecretConfig:   false,
+				},
+				ScanOptions: flag.ScanOptions{
+					Scanners: types.Scanners{types.SecretScanner},
+				},
+			},
+			configAvailable: true,
 		},
 		{
-			name:           "login fails with server error",
-			token:          "valid-token-123",
-			serverResponse: http.StatusUnauthorized,
-			wantErr:        "failed to verify token: received status code 401",
+			name: "valid token but config not available",
+			opts: &flag.Options{
+				CloudOptions: flag.CloudOptions{
+					CloudToken:     "valid-cloud-token",
+					ApiURL:         mockServer.server.URL,
+					TrivyServerURL: mockServer.server.URL,
+					SecretConfig:   false,
+				},
+			},
+			configAvailable: false,
 		},
 		{
-			name:           "login fails with server internal error",
-			token:          "valid-token-123",
-			serverResponse: http.StatusInternalServerError,
-			wantErr:        "failed to verify token: received status code 500",
+			name: "invalid token 401 status code",
+			opts: &flag.Options{
+				CloudOptions: flag.CloudOptions{
+					CloudToken:     "invalid-token",
+					ApiURL:         mockServer.server.URL,
+					TrivyServerURL: mockServer.server.URL,
+					SecretConfig:   false,
+				},
+				ScanOptions: flag.ScanOptions{
+					Scanners: types.Scanners{types.SecretScanner},
+				},
+			},
+			configAvailable: true,
+			errorContains:   "failed to get access token for Trivy Cloud",
 		},
 	}
 
-	tempDir := t.TempDir()
-	t.Setenv("XDG_DATA_HOME", tempDir)
-
-	keyring.MockInit()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			defer keyring.DeleteAll(cloud.ServiceName)
+			tempDir := t.TempDir()
+			t.Setenv("XDG_DATA_HOME", tempDir)
+			mockServer.configAvailable = tt.configAvailable
 
-			defer cloud.Clear()
-			cloud.Clear()
+			err := UpdateOptsForCloudIntegration(t.Context(), tt.opts)
 
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, http.MethodPost, r.Method)
-				assert.Equal(t, "/verify", r.URL.Path)
-
-				if tt.token != "" {
-					expectedAuth := "Bearer " + tt.token
-					assert.Equal(t, expectedAuth, r.Header.Get("Authorization"))
-				}
-
-				w.WriteHeader(tt.serverResponse)
-			}))
-			defer server.Close()
-
-			opts := flag.Options{
-				CloudOptions: flag.CloudOptions{
-					LoginCredentials: flag.CloudLoginCredentials{
-						Token: tt.token,
-					},
-					ApiUrl:         server.URL + "/api",
-					TrivyServerUrl: server.URL,
-				},
-			}
-
-			ctx := context.Background()
-			err := Login(ctx, opts)
-
-			if tt.wantErr != "" {
-				require.ErrorContains(t, err, tt.wantErr)
+			if tt.errorContains != "" {
+				require.ErrorContains(t, err, tt.errorContains)
 				return
 			}
 
 			require.NoError(t, err)
 
-			config, err := cloud.Load()
-			require.NoError(t, err)
-			require.Equal(t, tt.token, config.Token)
-			require.Equal(t, server.URL, config.Server.URL)
-			require.Equal(t, server.URL+"/api", config.Api.URL)
+			if tt.opts.CloudOptions.SecretConfig && tt.opts.ScanOptions.Scanners.Enabled(types.SecretScanner) {
+				assert.NotEmpty(t, tt.opts.SecretOptions.SecretConfigPath)
+				assert.FileExists(t, tt.opts.SecretOptions.SecretConfigPath)
+			} else {
+				assert.Empty(t, tt.opts.SecretOptions.SecretConfigPath)
+			}
 		})
 	}
 }
