@@ -61,9 +61,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	targetLibs, targetLibsFound := depsFile.Targets[depsFile.RuntimeTarget.Name]
 	if !targetLibsFound {
 		// If the target is not found, take all dependencies
-		p.once.Do(func() {
-			p.logger.Debug("Unable to find `Target` for Runtime Target Name. All dependencies from `libraries` section will be included in the report", log.String("Runtime Target Name", depsFile.RuntimeTarget.Name))
-		})
+		p.logger.Debug("Unable to find `Target` for Runtime Target Name. All dependencies from `libraries` section will be included in the report", log.String("Runtime Target Name", depsFile.RuntimeTarget.Name))
 	}
 
 	// First pass: collect all packages
