@@ -10,13 +10,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
