@@ -49,6 +49,36 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 			MinimumTLSVersion: resource.Properties.GetMapValue("minimumTlsVersion").
 				AsStringValue("TLS1_0", resource.Properties.GetMetadata()),
 			Queues: queues,
+			BlobProperties: storage.BlobProperties{
+				Metadata: resource.Properties.GetMetadata(),
+				DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+					Metadata: resource.Properties.GetMetadata(),
+					Days:     resource.Properties.GetMapValue("blobServices").GetMapValue("properties").GetMapValue("deleteRetentionPolicy").GetMapValue("days").AsIntValue(0, resource.Properties.GetMetadata()),
+				},
+			},
+			AccountReplicationType:          resource.Properties.GetMapValue("sku").GetMapValue("name").AsStringValue("", resource.Properties.GetMetadata()),
+			InfrastructureEncryptionEnabled: resource.Properties.GetMapValue("encryption").GetMapValue("requireInfrastructureEncryption").AsBoolValue(false, resource.Properties.GetMetadata()),
+			CustomerManagedKey: storage.CustomerManagedKey{
+				Metadata:               resource.Properties.GetMetadata(),
+				KeyVaultKeyId:          resource.Properties.GetMapValue("encryption").GetMapValue("keyVaultProperties").GetMapValue("keyUri").AsStringValue("", resource.Properties.GetMetadata()),
+				UserAssignedIdentityId: resource.Properties.GetMapValue("encryption").GetMapValue("identity").GetMapValue("userAssignedIdentity").AsStringValue("", resource.Properties.GetMetadata()),
+			},
+		}
+
+		// Adapt queue properties logging
+		queueServiceLogging := resource.Properties.GetMapValue("queueServices").GetMapValue("properties").GetMapValue("logging")
+		if !queueServiceLogging.IsNull() {
+			account.QueueProperties.Logging = storage.QueueLogging{
+				Metadata:            queueServiceLogging.GetMetadata(),
+				Delete:              queueServiceLogging.GetMapValue("delete").AsBoolValue(false, queueServiceLogging.GetMetadata()),
+				Read:                queueServiceLogging.GetMapValue("read").AsBoolValue(false, queueServiceLogging.GetMetadata()),
+				Write:               queueServiceLogging.GetMapValue("write").AsBoolValue(false, queueServiceLogging.GetMetadata()),
+				Version:             queueServiceLogging.GetMapValue("version").AsStringValue("", queueServiceLogging.GetMetadata()),
+				RetentionPolicyDays: queueServiceLogging.GetMapValue("retentionPolicy").GetMapValue("days").AsIntValue(0, queueServiceLogging.GetMetadata()),
+			}
+			if account.QueueProperties.Logging.Delete.IsTrue() || account.QueueProperties.Logging.Read.IsTrue() || account.QueueProperties.Logging.Write.IsTrue() {
+				account.QueueProperties.EnableLogging = types.Bool(true, queueServiceLogging.GetMetadata())
+			}
 		}
 
 		publicNetworkAccess := resource.Properties.GetMapValue("publicNetworkAccess")
