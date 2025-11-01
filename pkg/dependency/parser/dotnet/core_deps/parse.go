@@ -121,9 +121,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		return pkgSlice, nil, nil
 	}
 
-	directDeps := lo.MapToSlice(targetLibs[projectNameVer].Dependencies, func(depName, depVersion string) string {
-		return packageID(depName, depVersion)
-	})
+	directDeps := lo.MapToSlice(targetLibs[projectNameVer].Dependencies, packageID)
 
 	// Second pass: build dependency graph + fill Relationships from targets section
 	var deps ftypes.Dependencies

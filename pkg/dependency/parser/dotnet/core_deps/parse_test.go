@@ -121,6 +121,36 @@ func TestParse(t *testing.T) {
 			wantDeps: nil,
 		},
 		{
+			name: "target libs not found",
+			file: "testdata/missing-target.deps.json",
+			want: []ftypes.Package{
+				{
+					ID:           "ExampleApp1/1.0.0",
+					Name:         "ExampleApp1",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 28,
+							EndLine:   32,
+						},
+					},
+				},
+				{
+					ID:      "Newtonsoft.Json/13.0.1",
+					Name:    "Newtonsoft.Json",
+					Version: "13.0.1",
+					Locations: []ftypes.Location{
+						{
+							StartLine: 33,
+							EndLine:   39,
+						},
+					},
+				},
+			},
+			wantDeps: nil,
+		},
+		{
 			name:    "sad path",
 			file:    "testdata/invalid.deps.json",
 			wantErr: "failed to decode .deps.json file: jsontext: unexpected EOF within",
