@@ -15,6 +15,8 @@ type KubernetesCluster struct {
 	APIServerAuthorizedIPRanges []iacTypes.StringValue
 	AddonProfile                AddonProfile
 	RoleBasedAccessControl      RoleBasedAccessControl
+	AzurePolicyEnabled          iacTypes.BoolValue
+	DiskEncryptionSetID         iacTypes.StringValue
 }
 
 type RoleBasedAccessControl struct {
@@ -23,11 +25,17 @@ type RoleBasedAccessControl struct {
 }
 
 type AddonProfile struct {
-	Metadata iacTypes.Metadata
-	OMSAgent OMSAgent
+	Metadata    iacTypes.Metadata
+	OMSAgent    OMSAgent
+	AzurePolicy AzurePolicy
 }
 
 type OMSAgent struct {
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
+}
+
+type AzurePolicy struct {
 	Metadata iacTypes.Metadata
 	Enabled  iacTypes.BoolValue
 }

@@ -68,6 +68,7 @@ jobs:
             windows
             minimos
             rootio
+            seal
 
             # Languages
             ruby

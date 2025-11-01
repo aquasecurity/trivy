@@ -3,6 +3,7 @@ package jar
 import (
 	"archive/zip"
 	"bufio"
+	"context"
 	"crypto/sha1" // nolint:gosec
 	"encoding/hex"
 	"errors"
@@ -75,7 +76,7 @@ func NewParser(c Client, opts ...Option) *Parser {
 	return p
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	pkgs, deps, err := p.parseArtifact(p.rootFilePath, p.size, r)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("unable to parse %s: %w", p.rootFilePath, err)

@@ -42,6 +42,12 @@ func TestParse(t *testing.T) {
 			wantDeps: npmV3WithWorkspaceDeps,
 		},
 		{
+			name:     "lock version v3 with workspace as object",
+			file:     "testdata/package-lock_v3_with_workspace_as_object.json",
+			want:     npmV3WithWorkspaceAsObjectPkgs,
+			wantDeps: nil,
+		},
+		{
 			name:     "lock version v3 with peer dependencies",
 			file:     "testdata/package-lock_v3_with_peer.json",
 			want:     npmV3WithPeerDependenciesPkgs,
@@ -72,13 +78,53 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.file)
 			require.NoError(t, err)
 
-			got, deps, err := NewParser().Parse(f)
+			got, deps, err := NewParser().Parse(t.Context(), f)
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.want, got)
 			if tt.wantDeps != nil {
 				assert.Equal(t, tt.wantDeps, deps)
 			}
+		})
+	}
+}
+
+func TestPkgNameFromPath(t *testing.T) {
+	tests := []struct {
+		path     string
+		expected string
+	}{
+		{
+			path:     "node_modules/package-name",
+			expected: "package-name",
+		},
+		{
+			path:     "node_modules/@package-namespace/package-name",
+			expected: "@package-namespace/package-name",
+		},
+		{
+			path:     "node_modules/package-name/node_modules/sub-sub-package",
+			expected: "sub-sub-package",
+		},
+		{
+			path:     "no/node/modules/dir",
+			expected: "no/node/modules/dir",
+		},
+		{
+			path:     "node_modules",
+			expected: "",
+		},
+		{
+			path:     "node_modules/",
+			expected: "",
+		},
+	}
+
+	parser := NewParser()
+	for _, test := range tests {
+		t.Run(test.path, func(t *testing.T) {
+			path := parser.pkgNameFromPath(test.path)
+			assert.Equal(t, test.expected, path)
 		})
 	}
 }

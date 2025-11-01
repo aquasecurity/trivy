@@ -46,6 +46,22 @@ This can be repeated for specifying multiple packages.
 trivy config --config-check ./my-check --namespaces main --namespaces user ./configs
 ```
 
+### Limiting Rego compile errors
+
+By default, Trivy limits the number of compile errors allowed during Rego policy compilation.
+You can configure this limit using the `--rego-error-limit` flag.
+
+```bash
+trivy config --rego-error-limit 20 ./configs
+```
+
+This flag controls the maximum number of compile errors Trivy will tolerate before stopping the compilation.
+
+If the number of compile errors exceeds this limit, Trivy will terminate the scan.
+You can set `--rego-error-limit 0` to enforce strict checking and disallow any compile errors.
+
+The default value is defined internally via [CompileErrorLimit](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}pkg/iac/rego/scanner.go).
+
 ### Private Terraform registries
 Trivy can download Terraform code from private registries.
 To pass credentials you must use the `TF_TOKEN_` environment variables.
@@ -132,9 +148,16 @@ It is also possible to specify multiple input schemas with `--config-file-schema
 
 ### Filtering resources by inline comments
 
-Trivy supports ignoring misconfigured resources by inline comments for Terraform, CloudFormation and Helm configuration files only.
+Trivy supports ignoring misconfigured resources by inline comments for Terraform, CloudFormation, Helm and Dockerfile configuration files only.
 
 In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned). The format for these comments is `trivy:ignore:<rule>` immediately following the format-specific line-comment [token](https://developer.hashicorp.com/terraform/language/syntax/configuration#comments).
+
+
+!!!note
+    Inline ignore rules only work for checks associated with an existing resource.
+    Checks triggered by the absence of a resource (e.g., **AVD-DS-0002** when a Dockerfile lacks a `USER` instruction) cannot be ignored inline.  
+    Use a [.trivyignore.yaml](../../../configuration/filtering.md#trivyignoreyaml) file to ignore such checks.
+
 
 The ignore rule must contain one of the possible check IDs that can be found in its metadata: ID, short code or alias. The `id` from the metadata is not case-sensitive, so you can specify, for example, `AVD-AWS-0089` or `avd-aws-0089`.
 

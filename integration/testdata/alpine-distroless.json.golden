@@ -1,6 +1,8 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:0edd1906378dca3abc435f47f2e4b91059e9950e55cd82c76089d60b9ca68f90",
   "ArtifactName": "testdata/fixtures/images/alpine-distroless.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -13,6 +15,10 @@
     "DiffIDs": [
       "sha256:89da7cc836da4b53ab1ceb572576458c005e7e444b8bb79abda196668a2f0c92"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:alpine-distroless"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:alpine-distroless",
     "ImageConfig": {
       "architecture": "amd64",
       "author": "github.com/chainguard-dev/apko",
@@ -63,7 +69,7 @@
           "PkgName": "git",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/git@2.35.1-r2?arch=x86_64\u0026distro=3.16",
-            "UID": "2999d822f6cae40c"
+            "UID": "c6eb6e6e6823b430"
           },
           "InstalledVersion": "2.35.1-r2",
           "FixedVersion": "2.35.2-r0",

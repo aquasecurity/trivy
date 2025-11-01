@@ -1,11 +1,12 @@
 package conan
 
 import (
+	"context"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"slices"
 	"strings"
 
-	"github.com/go-json-experiment/json"
-	"github.com/go-json-experiment/json/jsontext"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -118,7 +119,7 @@ func (p *Parser) parseV2(lock LockFile) ([]ftypes.Package, []ftypes.Dependency, 
 	return pkgs, []ftypes.Dependency{}, nil
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lock LockFile
 	if err := xjson.UnmarshalRead(r, &lock); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode conan lock file: %w", err)

@@ -1,6 +1,8 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:8ac64b751688d0e2577befd47be60baea54f7294bee6deeb0288b580daf6ca52",
   "ArtifactName": "testdata/fixtures/images/spring4shell-jre8.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -21,6 +23,10 @@
       "sha256:77b2d158369254d5055183f5483f8b6661170857b61768d1d95d18c2ec1714b6",
       "sha256:eb769943b91f10a0418f2fc3b4a4fde6c6293be60c37293fcc0fa319edaf27a5"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:spring4shell-jre8"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:spring4shell-jre8",
     "ImageConfig": {
       "architecture": "amd64",
       "created": "2022-06-06T13:51:57.120019Z",

@@ -56,7 +56,7 @@ func adaptSecurityAlertPolicies(_ azure2.Resource, deployment azure2.Deployment)
 func adaptStringList(value azure2.Value) []iacTypes.StringValue {
 	var list []iacTypes.StringValue
 	for _, v := range value.AsList() {
-		list = append(list, v.AsStringValue("", value.Metadata))
+		list = append(list, v.AsStringValue("", value.GetMetadata()))
 	}
 	return list
 }

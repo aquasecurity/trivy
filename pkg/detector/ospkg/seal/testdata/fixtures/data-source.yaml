@@ -1,0 +1,25 @@
+- bucket: data-source
+  pairs:
+    - key: debian 12
+      value:
+        ID: "debian"
+        Name: "Debian Security Tracker"
+        URL: "https://salsa.debian.org/security-tracker-team/security-tracker"
+    - key: seal debian
+      value:
+        ID: "seal"
+        Name: "Seal Security Database"
+        URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+        BaseID: "debian"
+    - key: seal alpine
+      value:
+        ID: "seal"
+        Name: "Seal Security Database"
+        URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+        BaseID: "alpine"
+    - key: seal Red Hat 6
+      value:
+        ID: "seal"
+        Name: "Seal Security Database"
+        URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+        BaseID: "redhat"

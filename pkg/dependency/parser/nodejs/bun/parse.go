@@ -1,13 +1,14 @@
 package bun
 
 import (
+	"context"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"io"
 	"sort"
 	"strings"
 
-	"github.com/go-json-experiment/json"
-	"github.com/go-json-experiment/json/jsontext"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -77,7 +78,7 @@ func (p *ParsedPackage) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(metaRaw, &p.Meta)
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockFile LockFile
 	data, err := io.ReadAll(r)
 	if err != nil {

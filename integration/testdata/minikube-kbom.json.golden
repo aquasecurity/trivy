@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000020",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/sbom/minikube-kbom.json",
   "ArtifactType": "cyclonedx",
@@ -7,16 +8,6 @@
     "OS": {
       "Family": "ubuntu",
       "Name": "22.04.2"
-    },
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
     }
   },
   "Results": [
@@ -42,7 +33,6 @@
           "InstalledVersion": "1.27.0",
           "FixedVersion": "1.24.14, 1.25.9, 1.26.4, 1.27.1",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "k8s",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-2431",
           "DataSource": {

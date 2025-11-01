@@ -9,7 +9,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/google/wire"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -30,15 +29,6 @@ import (
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
-)
-
-// SuperSet binds dependencies for Local scan
-var SuperSet = wire.NewSet(
-	vulnerability.SuperSet,
-	applier.NewApplier,
-	ospkg.NewScanner,
-	langpkg.NewScanner,
-	NewService,
 )
 
 // Service implements the OspkgDetector and LibraryDetector
@@ -63,7 +53,7 @@ func NewService(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner la
 // Scan scans the artifact and return results.
 func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobKeys []string, options types.ScanOptions) (
 	types.ScanResponse, error) {
-	detail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
+	detail, err := s.applier.ApplyLayers(ctx, artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
 		log.Debug("OS is not detected.")

@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"os"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 	bolt "go.etcd.io/bbolt"
+	bberrors "go.etcd.io/bbolt/errors"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -34,7 +36,7 @@ func NewFSCache(cacheDir string) (FSCache, error) {
 	})
 	if err != nil {
 		// Check if the error is due to timeout (database locked by another process)
-		if errors.Is(err, bolt.ErrTimeout) {
+		if errors.Is(err, bberrors.ErrTimeout) {
 			return FSCache{}, xerrors.Errorf("cache may be in use by another process: %w", err)
 		}
 		return FSCache{}, xerrors.Errorf("unable to open cache DB: %w", err)
@@ -62,7 +64,7 @@ func NewFSCache(cacheDir string) (FSCache, error) {
 }
 
 // GetBlob gets blob information such as layer data from local cache
-func (fs FSCache) GetBlob(blobID string) (types.BlobInfo, error) {
+func (fs FSCache) GetBlob(_ context.Context, blobID string) (types.BlobInfo, error) {
 	var blobInfo types.BlobInfo
 	err := fs.db.View(func(tx *bolt.Tx) error {
 		var err error
@@ -90,7 +92,7 @@ func (fs FSCache) getBlob(blobBucket *bolt.Bucket, diffID string) (types.BlobInf
 }
 
 // PutBlob stores blob information such as layer information in local cache
-func (fs FSCache) PutBlob(blobID string, blobInfo types.BlobInfo) error {
+func (fs FSCache) PutBlob(_ context.Context, blobID string, blobInfo types.BlobInfo) error {
 	b, err := json.Marshal(blobInfo)
 	if err != nil {
 		return xerrors.Errorf("unable to marshal blob JSON (%s): %w", blobID, err)
@@ -110,7 +112,7 @@ func (fs FSCache) PutBlob(blobID string, blobInfo types.BlobInfo) error {
 }
 
 // GetArtifact gets artifact information such as image metadata from local cache
-func (fs FSCache) GetArtifact(artifactID string) (types.ArtifactInfo, error) {
+func (fs FSCache) GetArtifact(_ context.Context, artifactID string) (types.ArtifactInfo, error) {
 	var blob []byte
 	err := fs.db.View(func(tx *bolt.Tx) error {
 		artifactBucket := tx.Bucket([]byte(artifactBucket))
@@ -129,7 +131,7 @@ func (fs FSCache) GetArtifact(artifactID string) (types.ArtifactInfo, error) {
 }
 
 // DeleteBlobs removes blobs by IDs
-func (fs FSCache) DeleteBlobs(blobIDs []string) error {
+func (fs FSCache) DeleteBlobs(_ context.Context, blobIDs []string) error {
 	var errs error
 	err := fs.db.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(blobBucket))
@@ -147,7 +149,7 @@ func (fs FSCache) DeleteBlobs(blobIDs []string) error {
 }
 
 // PutArtifact stores artifact information such as image metadata in local cache
-func (fs FSCache) PutArtifact(artifactID string, artifactInfo types.ArtifactInfo) (err error) {
+func (fs FSCache) PutArtifact(_ context.Context, artifactID string, artifactInfo types.ArtifactInfo) (err error) {
 	b, err := json.Marshal(artifactInfo)
 	if err != nil {
 		return xerrors.Errorf("unable to marshal artifact JSON (%s): %w", artifactID, err)
@@ -168,7 +170,7 @@ func (fs FSCache) PutArtifact(artifactID string, artifactInfo types.ArtifactInfo
 }
 
 // MissingBlobs returns missing blob IDs such as layer IDs
-func (fs FSCache) MissingBlobs(artifactID string, blobIDs []string) (bool, []string, error) {
+func (fs FSCache) MissingBlobs(ctx context.Context, artifactID string, blobIDs []string) (bool, []string, error) {
 	var missingArtifact bool
 	var missingBlobIDs []string
 	err := fs.db.View(func(tx *bolt.Tx) error {
@@ -191,7 +193,7 @@ func (fs FSCache) MissingBlobs(artifactID string, blobIDs []string) (bool, []str
 	}
 
 	// get artifact info
-	artifactInfo, err := fs.GetArtifact(artifactID)
+	artifactInfo, err := fs.GetArtifact(ctx, artifactID)
 	if err != nil {
 		// error means cache missed artifact info
 		return true, missingBlobIDs, nil
@@ -211,7 +213,7 @@ func (fs FSCache) Close() error {
 }
 
 // Clear removes the database
-func (fs FSCache) Clear() error {
+func (fs FSCache) Clear(_ context.Context) error {
 	if err := fs.Close(); err != nil {
 		return err
 	}

@@ -1,6 +1,8 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:fb75459277a4cbcf98182b48c789cfbd4b34414e05898e1231ae8b2ca099f4e7",
   "ArtifactName": "testdata/fixtures/images/almalinux-8.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -13,6 +15,10 @@
     "DiffIDs": [
       "sha256:124d41c237c5e823577dda97e87cebaecce62d585c725d07e709ce410681de4d"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:almalinux-8"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:almalinux-8",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "a467f67a48d469e1975b7414f33f2cf87121d4cc59d2ee029ea58e6b81774769",

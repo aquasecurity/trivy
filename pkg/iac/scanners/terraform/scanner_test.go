@@ -18,7 +18,7 @@ import (
 
 func Test_OptionWithPolicyDirs(t *testing.T) {
 
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"/code/main.tf":    `resource "aws_s3_bucket" "my-bucket" {}`,
 		"/rules/test.rego": emptyBucketCheck,
 	})
@@ -32,7 +32,7 @@ func Test_OptionWithPolicyDirs(t *testing.T) {
 	require.Len(t, results.GetFailed(), 1)
 
 	failure := results.GetFailed()[0]
-	assert.Equal(t, "USER-TEST-0123", failure.Rule().AVDID)
+	assert.Equal(t, "USER-TEST-0123", failure.Rule().ID)
 
 	actualCode, err := failure.GetCode()
 	require.NoError(t, err)
@@ -113,7 +113,7 @@ func Test_OptionWithPolicyNamespaces(t *testing.T) {
 
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 
-			fs := testutil.CreateFS(t, map[string]string{
+			fs := testutil.CreateFS(map[string]string{
 				"/code/main.tf": `
 resource "aws_s3_bucket" "my-bucket" {
 	bucket = "evil"
@@ -161,7 +161,7 @@ cause := bucket.name
 }
 
 func Test_IAMPolicyRego(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"/code/main.tf": `
 resource "aws_sqs_queue_policy" "bad_example" {
    queue_url = aws_sqs_queue.q.id
@@ -189,7 +189,6 @@ resource "aws_sqs_queue_policy" "bad_example" {
 # - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-using-identity-based-policies.html
 # custom:
 #   id: TEST123
-#   avd_id: AVD-TEST-0123
 #   short_code: no-wildcard-actions
 #   severity: CRITICAL
 #   recommended_action: Avoid using "*" for actions in SQS policies and specify only required actions.
@@ -223,13 +222,12 @@ deny[res] {
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
-	assert.Equal(t, "AVD-TEST-0123", results[0].Rule().AVDID)
+	assert.Equal(t, "TEST123", results[0].Rule().ID)
 	assert.NotNil(t, results[0].Metadata().Range().GetFS())
-
 }
 
 func Test_ContainerDefinitionRego(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"/code/main.tf": `
 resource "aws_ecs_task_definition" "test" {
   family                = "test"
@@ -273,8 +271,7 @@ package defsec.abcdefg
 
 
 __rego_metadata__ := {
-	"id": "TEST123",
-	"avd_id": "AVD-TEST-0123",
+	"id": "TEST-0123",
 	"title": "Buckets should not be evil",
 	"short_code": "no-evil-buckets",
 	"severity": "CRITICAL",
@@ -306,7 +303,7 @@ deny[res] {
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
-	assert.Equal(t, "AVD-TEST-0123", results[0].Rule().AVDID)
+	assert.Equal(t, "TEST-0123", results[0].Rule().ID)
 	assert.NotNil(t, results[0].Metadata().Range().GetFS())
 
 }
@@ -349,7 +346,7 @@ resource "aws_s3_bucket_public_access_block" "foo" {
 
 `
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/main.tf": code,
 	})
 
@@ -361,13 +358,13 @@ resource "aws_s3_bucket_public_access_block" "foo" {
 	failed := results.GetFailed()
 	for _, result := range failed {
 		// public access block
-		assert.NotEqual(t, "AVD-AWS-0094", result.Rule().AVDID, "AVD-AWS-0094 should not be reported - was found at "+result.Metadata().Range().String())
+		assert.NotEqual(t, "AVD-AWS-0094", result.Rule().ID, "AVD-AWS-0094 should not be reported - was found at "+result.Metadata().Range().String())
 		// encryption
-		assert.NotEqual(t, "AVD-AWS-0088", result.Rule().AVDID)
+		assert.NotEqual(t, "AVD-AWS-0088", result.Rule().ID)
 		// logging
-		assert.NotEqual(t, "AVD-AWS-0089", result.Rule().AVDID)
+		assert.NotEqual(t, "AVD-AWS-0089", result.Rule().ID)
 		// versioning
-		assert.NotEqual(t, "AVD-AWS-0090", result.Rule().AVDID)
+		assert.NotEqual(t, "AVD-AWS-0090", result.Rule().ID)
 	}
 }
 
@@ -412,7 +409,7 @@ resource "aws_s3_bucket_public_access_block" "testB" {
 
 `
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/main.tf": code,
 	})
 
@@ -423,7 +420,7 @@ resource "aws_s3_bucket_public_access_block" "testB" {
 
 	for _, result := range results.GetFailed() {
 		// public access block
-		assert.NotEqual(t, "AVD-AWS-0094", result.Rule().AVDID)
+		assert.NotEqual(t, "AVD-AWS-0094", result.Rule().ID)
 	}
 
 }
@@ -431,7 +428,7 @@ resource "aws_s3_bucket_public_access_block" "testB" {
 // PoC for replacing Go with Rego: AVD-AWS-0001
 func Test_RegoRules(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"/code/main.tf": `
 resource "aws_apigatewayv2_stage" "bad_example" {
   api_id = aws_apigatewayv2_api.example.id
@@ -442,7 +439,7 @@ resource "aws_apigatewayv2_stage" "bad_example" {
 # schemas:
 # - input: schema.input
 # custom:
-#   avd_id: AVD-AWS-0001
+#   id: AWS-0001
 #   input:
 #     selector:
 #     - type: cloud
@@ -481,7 +478,7 @@ deny[res] {
 
 	failure := results.GetFailed()[0]
 
-	assert.Equal(t, "AVD-AWS-0001", failure.Rule().AVDID)
+	assert.Equal(t, "AWS-0001", failure.Rule().ID)
 
 	actualCode, err := failure.GetCode()
 	require.NoError(t, err)
@@ -525,7 +522,7 @@ deny[res] {
 }
 
 func Test_OptionWithConfigsFileSystem(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/main.tf": `
 variable "bucket_name" {
   type = string
@@ -537,7 +534,7 @@ resource "aws_s3_bucket" "main" {
 		"rules/bucket_name.rego": emptyBucketCheck,
 	})
 
-	configsFS := testutil.CreateFS(t, map[string]string{
+	configsFS := testutil.CreateFS(map[string]string{
 		"main.tfvars": `
 bucket_name = "test"
 `,
@@ -562,7 +559,7 @@ bucket_name = "test"
 }
 
 func Test_OptionWithConfigsFileSystem_ConfigInCode(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/main.tf": `
 variable "bucket_name" {
   type = string
@@ -596,7 +593,7 @@ bucket_name = "test"
 }
 
 func Test_DoNotScanNonRootModules(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"/code/app1/main.tf": `
 module "s3" {
   source      = "./modules/s3"
@@ -636,7 +633,7 @@ resource "aws_security_group" "main" {
 # schemas:
 # - input: schema.input
 # custom:
-#   avd_id: AVD-AWS-0002
+#   id: AWS-0002
 #   input:
 #     selector:
 #     - type: cloud
@@ -666,11 +663,11 @@ deny[res] {
 
 	assert.Len(t, results.GetPassed(), 2)
 	require.Len(t, results.GetFailed(), 1)
-	assert.Equal(t, "AVD-AWS-0002", results.GetFailed()[0].Rule().AVDID)
+	assert.Equal(t, "AWS-0002", results.GetFailed()[0].Rule().ID)
 }
 
 func Test_RoleRefToOutput(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/main.tf": `
 module "this" {
   source = "./modules/iam"
@@ -706,7 +703,7 @@ output "role_name" {
 # schemas:
 # - input: schema.input
 # custom:
-#   avd_id: AVD-AWS-0001
+#   id: AWS-0001
 #   input:
 #     selector:
 #     - type: cloud
@@ -738,7 +735,7 @@ deny[res] {
 }
 
 func Test_RegoRefToAwsProviderAttributes(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/providers.tf": `
 provider "aws" {
   region  = "us-east-2"
@@ -755,7 +752,7 @@ provider "aws" {
 # schemas:
 # - input: schema.input
 # custom:
-#   avd_id: AVD-AWS-0001
+#   id: AWS-0001
 #   input:
 #     selector:
 #     - type: cloud
@@ -774,7 +771,7 @@ deny[res] {
 # schemas:
 # - input: schema.input
 # custom:
-#   avd_id: AVD-AWS-0002
+#   id: AWS-0002
 #   input:
 #     selector:
 #     - type: cloud
@@ -804,14 +801,14 @@ deny[res] {
 	require.Len(t, results, 2)
 
 	require.Len(t, results.GetFailed(), 1)
-	assert.Equal(t, "AVD-AWS-0001", results.GetFailed()[0].Rule().AVDID)
+	assert.Equal(t, "AWS-0001", results.GetFailed()[0].Rule().ID)
 
 	require.Len(t, results.GetPassed(), 1)
-	assert.Equal(t, "AVD-AWS-0002", results.GetPassed()[0].Rule().AVDID)
+	assert.Equal(t, "AWS-0002", results.GetPassed()[0].Rule().ID)
 }
 
 func TestScanModuleWithCount(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/main.tf": `
 module "this" {
   count = 0
@@ -837,7 +834,7 @@ module "this" {
 # schemas:
 # - input: schema.input
 # custom:
-#   avd_id: AVD-AWS-0001
+#   id: AWS-0001
 #   input:
 #     selector:
 #     - type: cloud
@@ -877,7 +874,7 @@ deny[res] {
 }
 
 func TestSkipDir(t *testing.T) {
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"deployments/main.tf": `
 module "use_bad_configuration" {
   source = "../modules"
@@ -979,8 +976,7 @@ resource "aws_s3_bucket_versioning" "test" {
 # schemas:
 #   - input: schema["input"]
 # custom:
-#   id: AVD-BAR-0001
-#   avd_id: AVD-BAR-0001
+#   id: BAR-0001
 #   provider: custom
 #   service: custom
 #   severity: LOW
@@ -1014,8 +1010,7 @@ func TestRenderedCause(t *testing.T) {
 	s3check := `# METADATA
 # title: S3 Data should be versioned
 # custom:
-#   id: AVD-AWS-0090
-#   avd_id: AVD-AWS-0090
+#   id: AWS-0090
 package user.aws.s3.aws0090
 
 import rego.v1
@@ -1032,8 +1027,7 @@ deny contains res if {
 	iamcheck := `# METADATA
 # title: Service accounts should not have roles assigned with excessive privileges
 # custom:
-#   id: AVD-GCP-0007
-#   avd_id: AVD-GCP-0007
+#   id: GCP-0007
 package user.google.iam.google0007
 
 import rego.v1
@@ -1256,4 +1250,23 @@ deny contains res if {
 	failed := results.GetFailed()
 
 	assert.Len(t, failed, 1)
+}
+
+func Test_ScanTofuFiles(t *testing.T) {
+	fsys := testutil.CreateFS(map[string]string{
+		"code/main.tofu":   `resource "aws_s3_bucket" "this" {}`,
+		"rules/check.rego": emptyBucketCheck,
+	})
+
+	scanner := New(
+		rego.WithPolicyNamespaces("user"),
+		rego.WithPolicyDirs("rules"),
+		rego.WithPolicyFilesystem(fsys),
+	)
+
+	results, err := scanner.ScanFS(t.Context(), fsys, "code")
+	require.NoError(t, err)
+
+	assert.Len(t, results, 1)
+	assert.Len(t, results.GetFailed(), 1)
 }

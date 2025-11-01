@@ -12,7 +12,7 @@ import (
 
 func Test_TFVarsFile(t *testing.T) {
 	t.Run("tfvars file", func(t *testing.T) {
-		fs := testutil.CreateFS(t, map[string]string{
+		fs := testutil.CreateFS(map[string]string{
 			"test.tfvars": `instance_type = "t2.large"`,
 		})
 
@@ -22,7 +22,7 @@ func Test_TFVarsFile(t *testing.T) {
 	})
 
 	t.Run("tfvars json file", func(t *testing.T) {
-		fs := testutil.CreateFS(t, map[string]string{
+		fs := testutil.CreateFS(map[string]string{
 			"test.tfvars.json": `{
   "variable": {
     "foo": {

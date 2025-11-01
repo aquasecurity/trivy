@@ -4,7 +4,7 @@
 # schemas:
 #   - input: schema["cloud"]
 # custom:
-#   avd_id: ID001
+#   id: ID001
 #   severity: MEDIUM
 #   input:
 #     selector: 

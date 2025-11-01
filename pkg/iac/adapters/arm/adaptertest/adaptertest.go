@@ -13,7 +13,7 @@ import (
 type adaptFn[T any] func(deployment azure.Deployment) T
 
 func AdaptAndCompare[T any](t *testing.T, source string, expected any, fn adaptFn[T]) {
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"test.json": source,
 	})
 

@@ -48,7 +48,7 @@ func buildGraph(blocks terraform.Blocks, paths []string) modulesGraph {
 
 	for _, block := range moduleBlocks {
 		sourceVal := block.GetAttribute("source").Value()
-		if sourceVal.Type() != cty.String {
+		if !sourceVal.IsKnown() || sourceVal.Type() != cty.String {
 			continue
 		}
 

@@ -10,10 +10,9 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/snapshot"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 type FileType string
@@ -146,8 +145,13 @@ func init() {
 			Parameters map[string]any `json:"parameters"`
 			Resources  []any          `json:"resources"`
 		}{}
-		metadata := types.NewUnmanagedMetadata()
-		if err := armjson.UnmarshalFromReader(r, &sniff, &metadata); err != nil {
+
+		data, err := io.ReadAll(r)
+		if err != nil {
+			return false
+		}
+
+		if err := json.Unmarshal(xjson.ToRFC8259(data), &sniff); err != nil {
 			return false
 		}
 

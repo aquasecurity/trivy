@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/azure"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/bottlerocket"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/chainguard"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/coreos"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/echo"
@@ -21,6 +22,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/redhat"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rocky"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rootio"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/seal"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/suse"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/ubuntu"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/wolfi"
@@ -55,12 +57,14 @@ var (
 		ftypes.Chainguard:         chainguard.NewScanner(),
 		ftypes.Echo:               echo.NewScanner(),
 		ftypes.MinimOS:            minimos.NewScanner(),
+		ftypes.CoreOS:             coreos.NewScanner(),
 	}
 
 	// providers dynamically generate drivers based on package information
 	// and environment detection. They are tried before standard OS-specific drivers.
 	providers = []driver.Provider{
 		rootio.Provider,
+		seal.Provider,
 	}
 )
 

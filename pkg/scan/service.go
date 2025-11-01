@@ -2,133 +2,19 @@ package scan
 
 import (
 	"context"
+	"crypto/sha256"
+	"fmt"
 
-	"github.com/google/wire"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
-	flocal "github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact/repo"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
-	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
-	"github.com/aquasecurity/trivy/pkg/rpc/client"
-	"github.com/aquasecurity/trivy/pkg/scan/local"
 	"github.com/aquasecurity/trivy/pkg/types"
-)
-
-///////////////
-// Standalone
-///////////////
-
-// StandaloneSuperSet is used in the standalone mode
-var StandaloneSuperSet = wire.NewSet(
-	// Cache
-	cache.New,
-	wire.Bind(new(cache.ArtifactCache), new(cache.Cache)),
-	wire.Bind(new(cache.LocalArtifactCache), new(cache.Cache)),
-
-	local.SuperSet,
-	wire.Bind(new(Backend), new(local.Service)),
-	NewService,
-)
-
-// StandaloneDockerSet binds docker dependencies
-var StandaloneDockerSet = wire.NewSet(
-	image.NewContainerImage,
-	aimage.NewArtifact,
-	StandaloneSuperSet,
-)
-
-// StandaloneArchiveSet binds archive scan dependencies
-var StandaloneArchiveSet = wire.NewSet(
-	image.NewArchiveImage,
-	aimage.NewArtifact,
-	StandaloneSuperSet,
-)
-
-// StandaloneFilesystemSet binds filesystem dependencies
-var StandaloneFilesystemSet = wire.NewSet(
-	flocal.ArtifactSet,
-	StandaloneSuperSet,
-)
-
-// StandaloneRepositorySet binds repository dependencies
-var StandaloneRepositorySet = wire.NewSet(
-	repo.ArtifactSet,
-	StandaloneSuperSet,
-)
-
-// StandaloneSBOMSet binds sbom dependencies
-var StandaloneSBOMSet = wire.NewSet(
-	sbom.NewArtifact,
-	StandaloneSuperSet,
-)
-
-// StandaloneVMSet binds vm dependencies
-var StandaloneVMSet = wire.NewSet(
-	vm.ArtifactSet,
-	StandaloneSuperSet,
-)
-
-/////////////////
-// Client/Server
-/////////////////
-
-// RemoteSuperSet is used in the client mode
-var RemoteSuperSet = wire.NewSet(
-	// Cache
-	cache.NewRemoteCache,
-	wire.Bind(new(cache.ArtifactCache), new(*cache.RemoteCache)), // No need for LocalArtifactCache
-
-	client.NewService,
-	wire.Value([]client.Option(nil)),
-	wire.Bind(new(Backend), new(client.Service)),
-	NewService,
-)
-
-// RemoteFilesystemSet binds filesystem dependencies for client/server mode
-var RemoteFilesystemSet = wire.NewSet(
-	flocal.ArtifactSet,
-	RemoteSuperSet,
-)
-
-// RemoteRepositorySet binds repository dependencies for client/server mode
-var RemoteRepositorySet = wire.NewSet(
-	repo.ArtifactSet,
-	RemoteSuperSet,
-)
-
-// RemoteSBOMSet binds sbom dependencies for client/server mode
-var RemoteSBOMSet = wire.NewSet(
-	sbom.NewArtifact,
-	RemoteSuperSet,
-)
-
-// RemoteVMSet binds vm dependencies for client/server mode
-var RemoteVMSet = wire.NewSet(
-	vm.ArtifactSet,
-	RemoteSuperSet,
-)
-
-// RemoteDockerSet binds remote docker dependencies
-var RemoteDockerSet = wire.NewSet(
-	aimage.NewArtifact,
-	image.NewContainerImage,
-	RemoteSuperSet,
-)
-
-// RemoteArchiveSet binds remote archive dependencies
-var RemoteArchiveSet = wire.NewSet(
-	aimage.NewArtifact,
-	image.NewArchiveImage,
-	RemoteSuperSet,
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 // Service is the main service that coordinates security scanning operations.
@@ -193,7 +79,9 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 
 	return types.Report{
 		SchemaVersion: report.SchemaVersion,
+		ReportID:      uuid.New().String(),
 		CreatedAt:     clock.Now(ctx),
+		ArtifactID:    s.generateArtifactID(artifactInfo),
 		ArtifactName:  artifactInfo.Name,
 		ArtifactType:  artifactInfo.Type,
 		Metadata: types.Metadata{
@@ -204,6 +92,7 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 			DiffIDs:     artifactInfo.ImageMetadata.DiffIDs,
 			RepoTags:    artifactInfo.ImageMetadata.RepoTags,
 			RepoDigests: artifactInfo.ImageMetadata.RepoDigests,
+			Reference:   artifactInfo.ImageMetadata.Reference,
 			ImageConfig: artifactInfo.ImageMetadata.ConfigFile,
 			Size:        scanResponse.Layers.TotalSize(),
 			Layers:      lo.Ternary(len(scanResponse.Layers) > 0, scanResponse.Layers, nil),
@@ -220,4 +109,62 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		Results: scanResponse.Results,
 		BOM:     artifactInfo.BOM,
 	}, nil
+}
+
+// generateArtifactID generates a unique ID for the artifact based on its type
+func (s Service) generateArtifactID(artifactInfo artifact.Reference) string {
+	switch artifactInfo.Type {
+	case ftypes.TypeContainerImage:
+		// For container images, calculate hash(ImageID + Registry + Repository)
+		// to ensure same images in different repos/registries have different IDs.
+		// Note: The artifact ID does NOT include the tag or digest, only registry/repository,
+		// so the same image with different tags will have the same artifact ID.
+		imageID := artifactInfo.ImageMetadata.ID
+		if imageID == "" {
+			return ""
+		}
+
+		// Use the Reference field if available
+		ref := artifactInfo.ImageMetadata.Reference
+		if ref.IsZero() {
+			// Reference is empty when RepoTags and RepoDigests are both empty.
+			// This happens in the following cases:
+			// 1. Images built without tags (e.g., "docker build ." without -t flag)
+			// 2. Images saved by ID (e.g., "docker save <image-id>" or "docker save sha256:xxx")
+			// In these cases, fall back to using the image ID directly.
+			log.Debug("No image reference available for artifact ID calculation, using image ID directly",
+				log.String("image", artifactInfo.Name))
+			return imageID
+		}
+
+		// ref.Context() returns registry/repository (e.g., "index.docker.io/library/alpine")
+		data := fmt.Sprintf("%s:%s", imageID, ref.Context())
+		hash := sha256.Sum256([]byte(data))
+		return fmt.Sprintf("sha256:%x", hash)
+
+	case ftypes.TypeRepository:
+		// Generate ID from repository URL and commit hash combination
+		if artifactInfo.RepoMetadata.RepoURL != "" && artifactInfo.RepoMetadata.Commit != "" {
+			// Calculate SHA256 of URL + commit hash
+			data := artifactInfo.RepoMetadata.RepoURL + "@" + artifactInfo.RepoMetadata.Commit
+			hash := sha256.Sum256([]byte(data))
+			return fmt.Sprintf("sha256:%x", hash)
+		}
+		// For local repositories without URL, use path and commit hash
+		if artifactInfo.RepoMetadata.Commit != "" {
+			data := artifactInfo.Name + "@" + artifactInfo.RepoMetadata.Commit
+			hash := sha256.Sum256([]byte(data))
+			return fmt.Sprintf("sha256:%x", hash)
+		}
+		// Empty string for non-Git directories
+		return ""
+
+	case ftypes.TypeFilesystem:
+		// Empty string for filesystem scans (as per requirement)
+		return ""
+
+	default:
+		// Empty string for other types
+		return ""
+	}
 }
