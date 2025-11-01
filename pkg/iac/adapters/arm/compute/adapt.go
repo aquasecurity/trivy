@@ -14,7 +14,8 @@ func Adapt(deployment azure.Deployment) compute.Compute {
 	}
 }
 
-func adaptManagedDisks(deployment azure.Deployment) (managedDisks []compute.ManagedDisk) {
+func adaptManagedDisks(deployment azure.Deployment) []compute.ManagedDisk {
+	var managedDisks []compute.ManagedDisk
 
 	for _, resource := range deployment.GetResourcesByType("Microsoft.Compute/disks") {
 		managedDisks = append(managedDisks, adaptManagedDisk(resource))
@@ -46,12 +47,16 @@ func adaptWindowsVirtualMachines(deployment azure.Deployment) (windowsVirtualMac
 }
 
 func adaptWindowsVirtualMachine(resource azure.Resource) compute.WindowsVirtualMachine {
+	networkProfile := resource.Properties.GetMapValue("networkProfile")
+	networkInterfaces := extractNetworkInterfaces(networkProfile, resource.Metadata)
+
 	return compute.WindowsVirtualMachine{
 		Metadata: resource.Metadata,
 		VirtualMachine: compute.VirtualMachine{
 			Metadata: resource.Metadata,
 			CustomData: resource.Properties.GetMapValue("osProfile").
 				GetMapValue("customData").AsStringValue("", resource.Metadata),
+			NetworkInterfaces: networkInterfaces,
 		},
 	}
 }
@@ -67,12 +72,16 @@ func adaptLinuxVirtualMachines(deployment azure.Deployment) (linuxVirtualMachine
 }
 
 func adaptLinuxVirtualMachine(resource azure.Resource) compute.LinuxVirtualMachine {
+	networkProfile := resource.Properties.GetMapValue("networkProfile")
+	networkInterfaces := extractNetworkInterfaces(networkProfile, resource.Metadata)
+
 	return compute.LinuxVirtualMachine{
 		Metadata: resource.Metadata,
 		VirtualMachine: compute.VirtualMachine{
 			Metadata: resource.Metadata,
 			CustomData: resource.Properties.GetMapValue("osProfile").
 				GetMapValue("customData").AsStringValue("", resource.Metadata),
+			NetworkInterfaces: networkInterfaces,
 		},
 		OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
 			Metadata: resource.Metadata,
@@ -82,4 +91,27 @@ func adaptLinuxVirtualMachine(resource azure.Resource) compute.LinuxVirtualMachi
 		},
 	}
 
+}
+
+func extractNetworkInterfaces(networkProfile azure.Value, metadata iacTypes.Metadata) []compute.NetworkInterface {
+	var networkInterfaces []compute.NetworkInterface
+
+	nicsArray := networkProfile.GetMapValue("networkInterfaces").AsList()
+	for _, nic := range nicsArray {
+		nicID := nic.GetMapValue("id").AsStringValue("", metadata)
+		if nicID.Value() != "" {
+			// Create a minimal NetworkInterface object with the ID information
+			// In ARM templates, we don't have direct access to subnet details like in Terraform
+			networkInterface := compute.NetworkInterface{
+				Metadata:        nicID.GetMetadata(),
+				SubnetID:        iacTypes.StringDefault("", nicID.GetMetadata()),
+				SecurityGroups:  nil,
+				HasPublicIP:     iacTypes.BoolDefault(false, nicID.GetMetadata()),
+				PublicIPAddress: iacTypes.StringDefault("", nicID.GetMetadata()),
+			}
+			networkInterfaces = append(networkInterfaces, networkInterface)
+		}
+	}
+
+	return networkInterfaces
 }
