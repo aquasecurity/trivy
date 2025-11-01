@@ -9019,7 +9019,7 @@ Suppressed<span class="w"> </span>Vulnerabilities<span class="w"> </span><span c
 </tr>
 <tr>
 <td style="text-align: center;">License</td>
-<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
 </tr>
 </tbody>
 </table>
@@ -9039,6 +9039,10 @@ AVD-DS-0002
 <span class="c1"># Ignore secrets</span>
 generic-unwanted-rule
 aws-account-id
+
+<span class="c1"># Ignore licenses</span>
+GPL-3.0
+Apache-2.0<span class="w"> </span>WITH<span class="w"> </span>LLVM-exception
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>python:3.4-alpine3.9
 </code></pre></div>
@@ -9162,7 +9166,25 @@ licenses:
 <span class="w">  </span>-<span class="w"> </span>id:<span class="w"> </span>GPL-3.0<span class="w"> </span><span class="c1"># License name is used as ID</span>
 <span class="w">    </span>paths:
 <span class="w">      </span>-<span class="w"> </span><span class="s2">&quot;usr/share/gcc/python/libstdcxx/v6/__init__.py&quot;</span>
+<span class="w">  </span>-<span class="w"> </span>id:<span class="w"> </span>MIT<span class="w"> </span>AND<span class="w"> </span>GPL-2.0-or-later<span class="w"> </span><span class="c1"># Compound license expressions are supported</span>
+<span class="w">  </span>-<span class="w"> </span>id:<span class="w"> </span>Apache-2.0<span class="w"> </span>WITH<span class="w"> </span>LLVM-exception<span class="w"> </span><span class="c1"># License expressions with exceptions are supported</span>
+<span class="w">  </span>-<span class="w"> </span>id:<span class="w"> </span>LLVM-exception<span class="w"> </span><span class="c1"># Individual license components or exceptions can be ignored</span>
 </code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Enhanced License Expression Support</p>
+<p>Trivy supports filtering complex SPDX license expressions including:</p>
+<ul>
+<li><strong>Compound expressions</strong> with AND/OR operators: <code>MIT AND GPL-2.0-or-later</code></li>
+<li><strong>License exceptions</strong> with WITH operator: <code>Apache-2.0 WITH LLVM-exception</code></li>
+<li><strong>Individual components</strong>: You can ignore specific license components or exceptions from compound expressions</li>
+</ul>
+<p>When filtering compound expressions:</p>
+<ul>
+<li><strong>AND/OR expressions</strong>: All individual license components must be explicitly ignored for the entire expression to be ignored</li>
+<li><strong>WITH expressions</strong>: License expressions with exceptions are treated as single entities and can be ignored as a whole</li>
+<li><strong>Component matching</strong>: You can also ignore individual license names or exception names to filter specific parts of compound expressions</li>
+</ul>
+</div>
 <p>Since this feature is experimental, you must explicitly specify the YAML file path using the <code>--ignorefile</code> flag.
 Once this functionality is stable, the YAML file will be loaded automatically.</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--ignorefile<span class="w"> </span>./.trivyignore.yaml<span class="w"> </span>python:3.9.16-alpine3.16
@@ -9275,8 +9297,8 @@ The <code>input</code> for the evaluation is each <a href="https://github.com/aq
 <span class="p">}</span>
 </code></pre></div>
 <p>For more advanced use cases, there is a built-in Rego library with helper functions that you can import into your policy using: <code>import data.lib.trivy</code>.
-More info about the helper functions are in the library <a href="https://github.com/aquasecurity/trivy/tree/v0.67.0-63-g18c0ee86f/pkg/result/module.go">here</a>.</p>
-<p>You can create a whitelist of checks using Rego, see the detailed <a href="https://github.com/aquasecurity/trivy/tree/v0.67.0-63-g18c0ee86f/examples/ignore-policies/whitelist.rego">example</a>. Additional examples are available <a href="https://github.com/aquasecurity/trivy/tree/v0.67.0-63-g18c0ee86f/examples/ignore-policies">here</a>.</p>
+More info about the helper functions are in the library <a href="https://github.com/aquasecurity/trivy/tree/v0.67.0-64-g012f3d753/pkg/result/module.go">here</a>.</p>
+<p>You can create a whitelist of checks using Rego, see the detailed <a href="https://github.com/aquasecurity/trivy/tree/v0.67.0-64-g012f3d753/examples/ignore-policies/whitelist.rego">example</a>. Additional examples are available <a href="https://github.com/aquasecurity/trivy/tree/v0.67.0-64-g012f3d753/examples/ignore-policies">here</a>.</p>
 <h3 id="by-vulnerability-exploitability-exchange-vex">By Vulnerability Exploitability Exchange (VEX)<a class="headerlink" href="#by-vulnerability-exploitability-exchange-vex" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
