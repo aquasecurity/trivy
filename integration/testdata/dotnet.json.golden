@@ -11,6 +11,22 @@
       "Type": "dotnet-core",
       "Packages": [
         {
+          "ID": "Microsoft.VisualStudio.TestPlatform.Common/17.2.0-release-20220408-11",
+          "Name": "Microsoft.VisualStudio.TestPlatform.Common",
+          "Identifier": {
+            "PURL": "pkg:nuget/Microsoft.VisualStudio.TestPlatform.Common@17.2.0-release-20220408-11",
+            "UID": "2d904514f21a2664"
+          },
+          "Version": "17.2.0-release-20220408-11",
+          "Relationship": "root",
+          "Locations": [
+            {
+              "StartLine": 15,
+              "EndLine": 19
+            }
+          ]
+        },
+        {
           "ID": "Newtonsoft.Json/9.0.1",
           "Name": "Newtonsoft.Json",
           "Identifier": {

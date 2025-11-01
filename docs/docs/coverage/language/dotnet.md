@@ -13,7 +13,7 @@ The following table provides an outline of the features Trivy offers.
 
 | Package manager | File               | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position |
 |:---------------:|--------------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
-|    .Net Core    | *.deps.json        |            ✓            |     Excluded     |                  -                   |    ✓     |
+|    .Net Core    | *.deps.json        |            ✓            |     Excluded     |                  ✓                   |    ✓     |
 |      NuGet      | packages.config    |            ✓            |     Excluded     |                  -                   |    -     |
 |      NuGet      | *Packages.props    |            -            |     Excluded     |                  -                   |    -     |
 |      NuGet      | packages.lock.json |            ✓            |     Included     |                  ✓                   |    ✓     |
