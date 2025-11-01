@@ -1,5 +1,49 @@
 # Changelog
 
+## [0.68.0](https://github.com/aquasecurity/trivy/compare/v0.67.0...v0.68.0) (2025-11-01)
+
+
+### Features
+
+* add ArtifactID field to uniquely identify scan targets ([#9663](https://github.com/aquasecurity/trivy/issues/9663)) ([84a7d9a](https://github.com/aquasecurity/trivy/commit/84a7d9a5d6880ef4248ead6bcf2e580deed9107b))
+* add ReportID field to scan reports ([#9670](https://github.com/aquasecurity/trivy/issues/9670)) ([fc976be](https://github.com/aquasecurity/trivy/commit/fc976bea480599e52365d306ad8d6031718d4303))
+* allow ignoring findings by type in Rego ([#9578](https://github.com/aquasecurity/trivy/issues/9578)) ([c638fc6](https://github.com/aquasecurity/trivy/commit/c638fc646c3c0d56ea50c830a31609badb477c5e))
+* **cli:** Add trivy cloud suppport ([#9637](https://github.com/aquasecurity/trivy/issues/9637)) ([8e6a7ff](https://github.com/aquasecurity/trivy/commit/8e6a7ff670c64106d4dea6972ac3f6228f9c6269))
+* **dotnet:** add dependency graph support for .deps.json files ([#9726](https://github.com/aquasecurity/trivy/issues/9726)) ([18c0ee8](https://github.com/aquasecurity/trivy/commit/18c0ee86f318c7d2b1dab979370f62dd00b73979))
+* **fs:** change artifact type to repository when git info is detected ([#9613](https://github.com/aquasecurity/trivy/issues/9613)) ([cff91ac](https://github.com/aquasecurity/trivy/commit/cff91acdef91fbce22306a72000c43a26ac8d79b))
+* **image:** add RepoTags support for Docker archives ([#9690](https://github.com/aquasecurity/trivy/issues/9690)) ([a9a3031](https://github.com/aquasecurity/trivy/commit/a9a3031675150e70a32df8d55b4aec2c4a33084b))
+* include registry and repository in artifact ID calculation ([#9689](https://github.com/aquasecurity/trivy/issues/9689)) ([758f271](https://github.com/aquasecurity/trivy/commit/758f2710403d5f0e9b3e138a604f95cbcab6f275))
+* **java:** add support remote repositories from settings.xml files ([#9708](https://github.com/aquasecurity/trivy/issues/9708)) ([eff52eb](https://github.com/aquasecurity/trivy/commit/eff52eb2e60a700d831cbc3d260217162b38e45c))
+* **license:** use separate SPDX ids to ignore SPDX expressions ([#9087](https://github.com/aquasecurity/trivy/issues/9087)) ([012f3d7](https://github.com/aquasecurity/trivy/commit/012f3d75359e019df1eb2602460146d43cb59715))
+* **misconf:** Add RoleAssignments attribute ([#9396](https://github.com/aquasecurity/trivy/issues/9396)) ([3fb8703](https://github.com/aquasecurity/trivy/commit/3fb8703f8cd659a36d6a9affe0d2e20cd752a1e4))
+* **misconf:** Add support for configurable Rego error limit ([#9657](https://github.com/aquasecurity/trivy/issues/9657)) ([445cd2b](https://github.com/aquasecurity/trivy/commit/445cd2b6b4faf78349245bc6541176e2fbf88715))
+* **misconf:** include map key in manifest snippet for diagnostics ([#9681](https://github.com/aquasecurity/trivy/issues/9681)) ([197c9e1](https://github.com/aquasecurity/trivy/commit/197c9e1dce450737fc705184eed4c24fcfc1ecc1))
+* **misconf:** Update Azure Container Schema ([#9673](https://github.com/aquasecurity/trivy/issues/9673)) ([43a7546](https://github.com/aquasecurity/trivy/commit/43a7546d31f2cc8dd5f8d68f82822aff1bddc4d2))
+* **report:** add image reference to report metadata ([#9729](https://github.com/aquasecurity/trivy/issues/9729)) ([d020f26](https://github.com/aquasecurity/trivy/commit/d020f2690e58c328f96e3083ce57fe2b71f308f3))
+* **sbom:** use SPDX license IDs list to validate SPDX IDs  ([#9569](https://github.com/aquasecurity/trivy/issues/9569)) ([35db88c](https://github.com/aquasecurity/trivy/commit/35db88c81cc5cdb8ab25362aea455c586d2e1d32))
+
+
+### Bug Fixes
+
+* add `buildInfo` for `BlobInfo` in `rpc` package ([#9608](https://github.com/aquasecurity/trivy/issues/9608)) ([6def66e](https://github.com/aquasecurity/trivy/commit/6def66e002427eadcc6dbabe56b01c37c1eae075))
+* close all opened resources if an error occurs ([#9665](https://github.com/aquasecurity/trivy/issues/9665)) ([fa6f779](https://github.com/aquasecurity/trivy/commit/fa6f77902234f5bee70287a841e8cfa42ca4a505))
+* **java:** update order for resolving package fields from multiple demManagement ([#9575](https://github.com/aquasecurity/trivy/issues/9575)) ([e286c5e](https://github.com/aquasecurity/trivy/commit/e286c5e207b6d8a1ef01f3f634f874e2e3d4c0f0))
+* **license:** don't normalize `unlicensed` licenses into `unlicense` ([#9611](https://github.com/aquasecurity/trivy/issues/9611)) ([09162e5](https://github.com/aquasecurity/trivy/commit/09162e52ecf2a3e7a65dcf4ab2c2ea43ee6f5437))
+* **license:** handle SPDX WITH exceptions as single license in category detection ([#9380](https://github.com/aquasecurity/trivy/issues/9380)) ([212f078](https://github.com/aquasecurity/trivy/commit/212f0781c552cd0395791a4a0276e1e39579f491))
+* **nodejs:** fix npmjs parser.pkgNameFromPath() panic issue ([#9688](https://github.com/aquasecurity/trivy/issues/9688)) ([231492d](https://github.com/aquasecurity/trivy/commit/231492db52ce69c8d9186b039b038bf0153f8dfa))
+* **nodejs:** use the default ID format to match licenses in pnpm packages. ([#9661](https://github.com/aquasecurity/trivy/issues/9661)) ([804ea4a](https://github.com/aquasecurity/trivy/commit/804ea4aa575e486fd888f59c9ceb495857b57f8c))
+* **os:** Add photon 5.0 in supported OS ([#9724](https://github.com/aquasecurity/trivy/issues/9724)) ([29f0347](https://github.com/aquasecurity/trivy/commit/29f034796590bc6b7a17fa4fee8b43c822a77c13))
+* **report:** correct field order in SARIF license results ([#9712](https://github.com/aquasecurity/trivy/issues/9712)) ([d20216e](https://github.com/aquasecurity/trivy/commit/d20216edf6fdbd0281173b25b796880bc6b2b210))
+* restore compatibility for google.protobuf.Value ([#9559](https://github.com/aquasecurity/trivy/issues/9559)) ([aeeb2a1](https://github.com/aquasecurity/trivy/commit/aeeb2a1f842b56147996b600bd34db2cf05cd28e))
+* **sbom:** add `buildInfo` info as properties ([#9683](https://github.com/aquasecurity/trivy/issues/9683)) ([2c43425](https://github.com/aquasecurity/trivy/commit/2c43425e051d80d45169a2c675dba79caa91b1e7))
+* **sbom:** don’t panic on SBOM format if scanned CycloneDX file has empty metadata ([#9562](https://github.com/aquasecurity/trivy/issues/9562)) ([fb0593b](https://github.com/aquasecurity/trivy/commit/fb0593bee68a24b7ecddeb737e1d8e3c3a3c0364))
+* Trim the end-of-range suffix ([#9618](https://github.com/aquasecurity/trivy/issues/9618)) ([e18b038](https://github.com/aquasecurity/trivy/commit/e18b038ee2dce6c239246592fcef769853c11660))
+* Use `fetch-level: 1` to check out trivy-repo in the release workflow ([#9636](https://github.com/aquasecurity/trivy/issues/9636)) ([6e53686](https://github.com/aquasecurity/trivy/commit/6e53686526ef21e8a347fc07daa2f628e24eb9e5))
+* use context for analyzers ([#9538](https://github.com/aquasecurity/trivy/issues/9538)) ([b885d3a](https://github.com/aquasecurity/trivy/commit/b885d3a3693a62bd2f506aeb238025242735ef1d))
+* using SrcVersion instead of Version for echo detector ([#9552](https://github.com/aquasecurity/trivy/issues/9552)) ([66479f0](https://github.com/aquasecurity/trivy/commit/66479f050dc1f0faa314c5a4b9159f38bb1f146b))
+* validate backport branch name ([#9548](https://github.com/aquasecurity/trivy/issues/9548)) ([f0fd432](https://github.com/aquasecurity/trivy/commit/f0fd432a7aeced7cca1acab5a52d72cd960e7171))
+* **vex:** don't use reused BOM ([#9604](https://github.com/aquasecurity/trivy/issues/9604)) ([7422cc7](https://github.com/aquasecurity/trivy/commit/7422cc7168ab917ec96b75de784be72e9b6bdb2e))
+
 ## [0.67.0](https://github.com/aquasecurity/trivy/compare/v0.66.0...v0.67.0) (2025-09-30)
 
 
