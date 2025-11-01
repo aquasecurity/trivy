@@ -9,8 +9,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func tryDockerDaemon(_ context.Context, imageName string, ref name.Reference, opt types.ImageOptions) (types.Image, func(), error) {
-	img, cleanup, err := daemon.DockerImage(ref, opt.DockerOptions.Host)
+func tryDockerDaemon(ctx context.Context, imageName string, ref name.Reference, opt types.ImageOptions) (types.Image, func(), error) {
+	img, cleanup, err := daemon.DockerImage(ctx, ref, opt.DockerOptions.Host)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -21,8 +21,8 @@ func tryDockerDaemon(_ context.Context, imageName string, ref name.Reference, op
 
 }
 
-func tryPodmanDaemon(_ context.Context, imageName string, _ name.Reference, opts types.ImageOptions) (types.Image, func(), error) {
-	img, cleanup, err := daemon.PodmanImage(imageName, opts.PodmanOptions.Host)
+func tryPodmanDaemon(ctx context.Context, imageName string, _ name.Reference, opts types.ImageOptions) (types.Image, func(), error) {
+	img, cleanup, err := daemon.PodmanImage(ctx, imageName, opts.PodmanOptions.Host)
 	if err != nil {
 		return nil, nil, err
 	}

@@ -1,6 +1,7 @@
 package daemon
 
 import (
+	"context"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
@@ -83,7 +84,7 @@ func TestPodmanImage(t *testing.T) {
 			ref, err := name.ParseReference(tt.imageName)
 			require.NoError(t, err)
 
-			img, cleanup, err := PodmanImage(ref.Name(), "")
+			img, cleanup, err := PodmanImage(context.Background(), ref.Name(), "")
 			defer cleanup()
 
 			if tt.wantErr {
