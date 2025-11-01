@@ -68,11 +68,11 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 
 	// First pass: collect all packages
 	var projectNameVer string
-	var pkgs = make(map[string]ftypes.Package)
+	pkgs := make(map[string]ftypes.Package, len(depsFile.Libraries))
 
 	for nameVer, lib := range depsFile.Libraries {
-		split := strings.Split(nameVer, "/")
-		if len(split) != 2 {
+		name, version, ok := strings.Cut(nameVer, "/")
+		if !ok {
 			// Invalid name
 			p.logger.Warn("Cannot parse .NET library version", log.String("library", nameVer))
 			continue
@@ -91,9 +91,9 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		}
 
 		pkg := ftypes.Package{
-			ID:        packageID(split[0], split[1]),
-			Name:      split[0],
-			Version:   split[1],
+			ID:        packageID(name, version),
+			Name:      name,
+			Version:   version,
 			Locations: []ftypes.Location{ftypes.Location(lib.Location)},
 		}
 
