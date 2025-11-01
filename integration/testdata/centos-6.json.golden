@@ -19,6 +19,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:centos-6"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:centos-6",
     "ImageConfig": {
       "architecture": "amd64",
       "author": "https://github.com/CentOS/sig-cloud-instance-images",

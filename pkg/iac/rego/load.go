@@ -248,6 +248,7 @@ func (s *Scanner) compilePolicies(srcFS fs.FS, paths []string) error {
 		WithCapabilities(ast.CapabilitiesForThisVersion()).
 		WithSchemas(schemaSet)
 
+	compiler.SetErrorLimit(s.regoErrorLimit)
 	compiler.Compile(s.policies)
 	if compiler.Failed() {
 		s.fallbackChecks(compiler)

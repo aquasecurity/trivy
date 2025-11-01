@@ -27,6 +27,7 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -249,7 +250,7 @@ func TestRegistry(t *testing.T) {
 			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-				override: overrideFuncs(overrideUID, func(_ *testing.T, want, got *types.Report) {
+				override: overrideFuncs(overrideUID, func(t *testing.T, want, got *types.Report) {
 					// Exclude ArtifactID from comparison because registry tests use random ports
 					// (e.g., localhost:54321/alpine:3.10), which causes RepoTags and the calculated
 					// Artifact ID to vary on each test run.
@@ -258,6 +259,7 @@ func TestRegistry(t *testing.T) {
 
 					want.ArtifactName = s
 					want.Metadata.RepoTags = []string{s}
+					want.Metadata.Reference = testutil.MustParseReference(t, s)
 					for i := range want.Results {
 						want.Results[i].Target = fmt.Sprintf("%s (%s)", s, tt.os)
 					}

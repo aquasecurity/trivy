@@ -18,6 +18,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:opensuse-tumbleweed"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:opensuse-tumbleweed",
     "ImageConfig": {
       "architecture": "amd64",
       "author": "Fabian Vogt \u003cfvogt@suse.com\u003e",

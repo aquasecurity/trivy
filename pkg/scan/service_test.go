@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/internal/dbtest"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
@@ -77,6 +78,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 							DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 						},
 					},
+					Reference: testutil.MustParseReference(t, "alpine:3.11"),
 					ImageConfig: v1.ConfigFile{
 						Architecture:  "amd64",
 						Container:     "fb71ddde5f6411a82eb056a9190f0cc1c80d7f77a8509ee90a2054428edb0024",

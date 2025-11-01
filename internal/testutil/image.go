@@ -11,7 +11,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	"github.com/aquasecurity/trivy/pkg/fanal/image/name"
 )
 
 var (
@@ -72,9 +72,9 @@ func imageName(img, subpath, tag, digest string) string {
 }
 
 // MustParseReference parses a string into a Reference and fails the test if there's an error
-func MustParseReference(t *testing.T, s string) image.Reference {
+func MustParseReference(t *testing.T, s string) name.Reference {
 	t.Helper()
-	ref, err := image.ParseReference(s)
+	ref, err := name.ParseReference(s)
 	require.NoError(t, err)
 	return ref
 }

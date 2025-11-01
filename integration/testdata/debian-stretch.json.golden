@@ -18,6 +18,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:debian-stretch"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:debian-stretch",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "957bc0b73d29f0e1030fec9c63f81d3e81baa610cffcc9c574b14fee6d1821ae",

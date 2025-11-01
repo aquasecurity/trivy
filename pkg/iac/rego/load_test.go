@@ -9,7 +9,6 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -255,7 +254,7 @@ func Test_FallbackErrorWithoutLocation(t *testing.T) {
 		},
 	}
 
-	for i := range ast.CompileErrorLimitDefault + 1 {
+	for i := range rego.CompileErrorLimit + 1 {
 		src := `# METADATA
 # schemas:
 # - input: schema["fooschema"]

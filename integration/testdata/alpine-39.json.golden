@@ -19,6 +19,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:alpine-39"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:alpine-39",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "c10d36fa368a7ea673683682666758adf35efe98e10989505f4f566b5b18538f",

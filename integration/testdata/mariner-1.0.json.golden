@@ -18,6 +18,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:mariner-1.0"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:mariner-1.0",
     "ImageConfig": {
       "architecture": "amd64",
       "created": "2022-01-27T01:19:38.526301656Z",

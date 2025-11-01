@@ -167,6 +167,13 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 		})
 	}
 
+	if !r.Metadata.Reference.IsZero() {
+		props = append(props, core.Property{
+			Name:  core.PropertyReference,
+			Value: r.Metadata.Reference.String(),
+		})
+	}
+
 	root.Properties = filterProperties(props)
 
 	return root, nil

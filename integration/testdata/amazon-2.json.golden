@@ -18,6 +18,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:amazon-2"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:amazon-2",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "e020a5508b9f809b29659128692cd634e3d4fba3f2c13d2029d797317b5c3a56",

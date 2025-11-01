@@ -18,6 +18,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:rockylinux-8"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:rockylinux-8",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "16458df10693f731fae0492f791a5e4b725245c35cf28c7fca00982219d7bdf3",

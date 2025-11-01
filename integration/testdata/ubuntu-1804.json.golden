@@ -21,6 +21,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:ubuntu-1804"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:ubuntu-1804",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "41b694b9b42f9c5ef7fb40c24272927a727a6d6cb8120bb3eae5849ceb9bee77",
