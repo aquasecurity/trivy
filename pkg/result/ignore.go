@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"

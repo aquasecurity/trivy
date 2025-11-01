@@ -381,6 +381,13 @@ func TestFilter(t *testing.T) {
 								secret2,
 							},
 						},
+						{
+							Target: "LICENSE.txt",
+							Licenses: []types.DetectedLicense{
+								license1, // ignored
+								license3,
+							},
+						},
 					},
 				},
 				severities: []dbTypes.Severity{
@@ -449,6 +456,20 @@ func TestFilter(t *testing.T) {
 								Status:  types.FindingStatusIgnored,
 								Source:  "testdata/.trivyignore",
 								Finding: secret2,
+							},
+						},
+					},
+					{
+						Target: "LICENSE.txt",
+						Licenses: []types.DetectedLicense{
+							license3,
+						},
+						ModifiedFindings: []types.ModifiedFinding{
+							{
+								Type:    types.FindingTypeLicense,
+								Status:  types.FindingStatusIgnored,
+								Source:  "testdata/.trivyignore",
+								Finding: license1,
 							},
 						},
 					},
