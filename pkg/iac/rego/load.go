@@ -206,7 +206,8 @@ func (s *Scanner) findMatchedEmbeddedCheck(badPolicy *ast.Module) *ast.Module {
 		if err != nil || meta == nil {
 			continue
 		}
-		if badPolicyMeta.AVDID != "" && badPolicyMeta.AVDID == meta.AVDID {
+		if (badPolicyMeta.AVDID != "" && badPolicyMeta.AVDID == meta.AVDID) ||
+			(badPolicyMeta.ID != "" && badPolicyMeta.ID != "N/A" && badPolicyMeta.ID == meta.ID) {
 			return embeddedCheck
 		}
 	}
@@ -247,6 +248,7 @@ func (s *Scanner) compilePolicies(srcFS fs.FS, paths []string) error {
 		WithCapabilities(ast.CapabilitiesForThisVersion()).
 		WithSchemas(schemaSet)
 
+	compiler.SetErrorLimit(s.regoErrorLimit)
 	compiler.Compile(s.policies)
 	if compiler.Failed() {
 		s.fallbackChecks(compiler)

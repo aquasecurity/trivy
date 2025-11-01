@@ -11,7 +11,17 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// TestVM tests scanning VM images (VMDK, disk images).
+//
+// TODO: Golden files cannot be updated with the -update flag currently because
+// ArtifactName contains random file paths from t.TempDir() and Target contains full paths.
+// This test applies overrides to normalize these values for comparison, but those overrides
+// would not be applied to golden files in update mode.
+// For now, golden files must be updated manually.
 func TestVM(t *testing.T) {
+	if *update {
+		t.Fatal("TestVM does not support -update flag. Golden files must be updated manually. See TODO comment above.")
+	}
 	type args struct {
 		input        string
 		format       string
@@ -30,7 +40,7 @@ func TestVM(t *testing.T) {
 				format:       "json",
 				artifactType: "vm",
 			},
-			golden: "testdata/amazonlinux2-gp2-x86-vm.json.golden",
+			golden: goldenAmazonLinux2GP2X86VM,
 		},
 		{
 			name: "amazon linux 2 in Snapshot, filesystem XFS",
@@ -39,7 +49,7 @@ func TestVM(t *testing.T) {
 				format:       "json",
 				artifactType: "vm",
 			},
-			golden: "testdata/amazonlinux2-gp2-x86-vm.json.golden",
+			golden: goldenAmazonLinux2GP2X86VM,
 		},
 		{
 			name: "Ubuntu in Snapshot, filesystem EXT4",
@@ -48,7 +58,7 @@ func TestVM(t *testing.T) {
 				format:       "json",
 				artifactType: "vm",
 			},
-			golden: "testdata/ubuntu-gp2-x86-vm.json.golden",
+			golden: goldenUbuntuGP2X86VM,
 		},
 		{
 			name: "Ubuntu in VMDK, filesystem EXT4",
@@ -57,7 +67,7 @@ func TestVM(t *testing.T) {
 				format:       "json",
 				artifactType: "vm",
 			},
-			golden: "testdata/ubuntu-gp2-x86-vm.json.golden",
+			golden: goldenUbuntuGP2X86VM,
 		},
 	}
 
@@ -88,7 +98,7 @@ func TestVM(t *testing.T) {
 			osArgs = append(osArgs, imagePath)
 
 			// Run "trivy vm"
-			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				override: overrideFuncs(overrideUID, func(t *testing.T, _, got *types.Report) {
 					got.ArtifactName = "disk.img"
 					for i := range got.Results {
@@ -96,6 +106,7 @@ func TestVM(t *testing.T) {
 						got.Results[i].Target = got.Results[i].Target[lastIndex+1:]
 					}
 				}),
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
 	}

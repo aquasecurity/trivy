@@ -489,7 +489,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 								RuleID:    lo.ToPtr("alpine-base:GPL-3.0"),
 								RuleIndex: lo.ToPtr(uint(0)),
 								Level:     lo.ToPtr("error"),
-								Message:   sarif.Message{Text: lo.ToPtr("Artifact: OS Packages\nLicense GPL-3.0\nPkgName: restricted\n Classification: alpine-base\n Path: ")},
+								Message:   sarif.Message{Text: lo.ToPtr("Artifact: OS Packages\nLicense GPL-3.0\nPkgName: alpine-base\n Classification: restricted\n Path: ")},
 								Locations: []*sarif.Location{
 									{
 										Message: sarif.NewTextMessage(""),

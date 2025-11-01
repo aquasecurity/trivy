@@ -33,6 +33,7 @@ const (
 	PropertyRepoDigest   = "RepoDigest"
 	PropertyDiffID       = "DiffID"
 	PropertyRepoTag      = "RepoTag"
+	PropertyReference    = "Reference"
 	PropertyLabelsPrefix = "Labels"
 
 	// Package properties
@@ -46,6 +47,12 @@ const (
 	PropertyFilePath        = "FilePath"
 	PropertyLayerDigest     = "LayerDigest"
 	PropertyLayerDiffID     = "LayerDiffID"
+
+	// Red Hat packages only.
+	// A package can use multiple NVR + Arch content sets or fields.
+	PropertyContentSet = "ContentSet"
+	PropertyNVR        = "NVR"
+	PropertyArch       = "Arch"
 
 	// Relationships
 	RelationshipDescribes RelationshipType = "describes"

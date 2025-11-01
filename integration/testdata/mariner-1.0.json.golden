@@ -1,6 +1,8 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:357e30db7fb673e279ababa1128b33c8acc2fce50826727ec57ef24f5213fe0d",
   "ArtifactName": "testdata/fixtures/images/mariner-1.0.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -13,6 +15,10 @@
     "DiffIDs": [
       "sha256:4266328c97a194b2ca52ec83bc05496596303f5e9b244ffa99cf84763a487804"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:mariner-1.0"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:mariner-1.0",
     "ImageConfig": {
       "architecture": "amd64",
       "created": "2022-01-27T01:19:38.526301656Z",

@@ -13,8 +13,14 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// TestConfiguration tests the configuration of the CLI flags, environmental variables, and config file
+// TestConfiguration tests the configuration of the CLI flags, environmental variables, and config file.
+//
+// Golden files are shared with TestRepository.
 func TestConfiguration(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestConfiguration when -update flag is set. Golden files should be updated via TestRepository.")
+	}
+
 	type args struct {
 		input      string
 		flags      map[string]string
@@ -50,7 +56,7 @@ scan:
     - testdata/fixtures/repo/gomod/submod2/go.mod
 `,
 			},
-			golden: "testdata/gomod-skip.json.golden",
+			golden: goldenGoModSkip,
 		},
 		{
 			name: "dockerfile with custom file pattern",
@@ -78,7 +84,7 @@ rego:
     - testing
 `,
 			},
-			golden: "testdata/dockerfile_file_pattern.json.golden",
+			golden: goldenDockerfileFilePattern,
 		},
 		{
 			name: "key alias", // "--scanners" vs "--security-checks"
@@ -96,7 +102,7 @@ scan:
     - vuln
 `,
 			},
-			golden: "testdata/gomod.json.golden",
+			golden: goldenGoMod,
 		},
 		{
 			name: "value alias", // "--scanners vuln" vs "--scanners vulnerability"
@@ -114,7 +120,7 @@ scan:
     - vulnerability
 `,
 			},
-			golden: "testdata/gomod.json.golden",
+			golden: goldenGoMod,
 		},
 		{
 			name: "invalid value",
@@ -147,6 +153,9 @@ severity:
 	// Set a temp dir so that modules will not be loaded
 	t.Setenv("XDG_DATA_HOME", cacheDir)
 
+	// Disable Go license detection
+	t.Setenv("GOPATH", cacheDir)
+
 	for _, tt := range tests {
 		command := "repo"
 
@@ -166,20 +175,13 @@ severity:
 				osArgs = append(osArgs, "--"+key, value)
 			}
 
-			// Set up the output file
-			outputFile := filepath.Join(t.TempDir(), "output.json")
-			osArgs = append(osArgs, "--output", outputFile)
-
-			runTest(t, osArgs, tt.golden, outputFile, types.FormatJSON, runOptions{
-				wantErr: tt.wantErr,
+			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
+				wantErr:  tt.wantErr,
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
 
 		t.Run(tt.name+" with environmental variables", func(t *testing.T) {
-			// Set up the output file
-			outputFile := filepath.Join(t.TempDir(), "output.json")
-
-			t.Setenv("TRIVY_OUTPUT", outputFile)
 			t.Setenv("TRIVY_FORMAT", "json")
 			t.Setenv("TRIVY_LIST_ALL_PKGS", "false")
 			t.Setenv("TRIVY_CACHE_DIR", cacheDir)
@@ -194,25 +196,22 @@ severity:
 				tt.args.input,
 			}
 
-			runTest(t, osArgs, tt.golden, outputFile, types.FormatJSON, runOptions{
-				wantErr: tt.wantErr,
+			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
+				wantErr:  tt.wantErr,
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
 
 		t.Run(tt.name+" with config file", func(t *testing.T) {
-			// Set up the output file
-			outputFile := filepath.Join(t.TempDir(), "output.json")
-
 			configFile := tt.args.configFile
 			configFile += fmt.Sprintf(`
 format: json
 list-all-pkgs: false
-output: %s
 cache:
   dir: %s
 db:
   skip-update: true
-`, outputFile, cacheDir)
+`, cacheDir)
 
 			configPath := filepath.Join(t.TempDir(), "trivy.yaml")
 			err := os.WriteFile(configPath, []byte(configFile), 0o444)
@@ -225,8 +224,9 @@ db:
 				tt.args.input,
 			}
 
-			runTest(t, osArgs, tt.golden, outputFile, types.FormatJSON, runOptions{
-				wantErr: tt.wantErr,
+			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
+				wantErr:  tt.wantErr,
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
 	}

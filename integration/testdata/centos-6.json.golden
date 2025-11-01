@@ -1,6 +1,8 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:6fd360ff01eb63800aaafdb5e58af85fab9d7849344b577f5f6077cceb0399bb",
   "ArtifactName": "testdata/fixtures/images/centos-6.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -14,6 +16,10 @@
     "DiffIDs": [
       "sha256:af6bf1987c2eb07d73f33836b0d8fd825d7c785273526b077e46780e8b4b2ae9"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:centos-6"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:centos-6",
     "ImageConfig": {
       "architecture": "amd64",
       "author": "https://github.com/CentOS/sig-cloud-instance-images",

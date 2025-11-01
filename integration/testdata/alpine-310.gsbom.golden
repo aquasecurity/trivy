@@ -5,6 +5,9 @@
     "version": "dev",
     "url": "https://github.com/aquasecurity/trivy"
   },
+  "metadata": {
+    "aquasecurity:trivy:RepoTag": "ghcr.io/aquasecurity/trivy-test-images:alpine-310"
+  },
   "ref": "/ref/feature-1",
   "sha": "39da54a1ff04120a31df8cbc94ce9ede251d21a3",
   "job": {

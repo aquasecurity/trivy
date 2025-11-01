@@ -348,7 +348,7 @@ func TestParse(t *testing.T) {
 			c := sonatype.New(sonatype.WithURL(ts.URL), sonatype.WithHTTPClient(ts.Client()))
 			p := jar.NewParser(c, jar.WithFilePath(v.file), jar.WithOffline(v.offline), jar.WithSize(stat.Size()))
 
-			got, _, err := p.Parse(f)
+			got, _, err := p.Parse(t.Context(), f)
 			require.NoError(t, err)
 
 			sort.Sort(ftypes.Packages(got))

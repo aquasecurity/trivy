@@ -15,6 +15,8 @@ FilesAnalyzed: false
 PackageAttributionText: SchemaVersion: 2
 PackageAttributionText: ImageID: sha256:f1cb7c7d58b73eac859c395882eec49d50651244e342cd6c68a5c7809785f427
 PackageAttributionText: DiffID: sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a
+PackageAttributionText: RepoTag: ghcr.io/aquasecurity/trivy-test-images:centos-7
+PackageAttributionText: Reference: ghcr.io/aquasecurity/trivy-test-images:centos-7
 
 ##### Package: centos
 
@@ -53,7 +55,7 @@ PackageAttributionText: LayerDiffID: sha256:89169d87dbe2b72ba42bfbb3579c957322ba
 
 ##### Relationships
 
-Relationship: SPDXRef-DOCUMENT DESCRIBE SPDXRef-ContainerImage-dd5cad897c6263
+Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-ContainerImage-dd5cad897c6263
 Relationship: SPDXRef-ContainerImage-dd5cad897c6263 CONTAINS SPDXRef-OperatingSystem-2e91c856c499a371
 Relationship: SPDXRef-OperatingSystem-2e91c856c499a371 DEPENDS_ON SPDXRef-Package-5a18334f22149877
 Relationship: SPDXRef-OperatingSystem-2e91c856c499a371 DEPENDS_ON SPDXRef-Package-e16b1cbaa5186199

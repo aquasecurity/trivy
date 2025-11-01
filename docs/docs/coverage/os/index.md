@@ -27,7 +27,7 @@ Trivy supports operating systems for
 | [openSUSE Tumbleweed](suse.md)                 | (n/a)                               | zypper/rpm       |
 | [SUSE Linux Enterprise](suse.md)               | 11, 12, 15                          | zypper/rpm       |
 | [SUSE Linux Enterprise Micro](suse.md)         | 5, 6                                | zypper/rpm       |
-| [Photon OS](photon.md)                         | 1.0, 2.0, 3.0, 4.0                  | tndf/yum/rpm     |
+| [Photon OS](photon.md)                         | 1.0, 2.0, 3.0, 4.0, 5.0             | tndf/yum/rpm     |
 | [CoreOS](coreos.md)[^3]                        | All versions (SBOM only)            | rpm              |
 | [Echo](echo.md)                                | (n/a)                               | apt/dpkg         |
 | [Debian GNU/Linux](debian.md)                  | 7, 8, 9, 10, 11, 12                 | apt/dpkg         |

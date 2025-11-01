@@ -5,7 +5,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
 )
 
+// TODO: This struct is not currently serialized to JSON,
+// so JSON tags may be removed if unused.
 type FlatResult struct {
+	// TODO: The following fields are currently unused:
+	// nolint: gocritic
+	// Deprecated, RuleID, LongID, RuleSummary, Impact, RangeAnnotation
 	Deprecated      bool               `json:"deprecated,omitempty"`
 	RuleID          string             `json:"rule_id"`
 	LongID          string             `json:"long_id"`

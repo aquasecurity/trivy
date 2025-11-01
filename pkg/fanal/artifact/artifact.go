@@ -8,6 +8,7 @@ import (
 	"github.com/google/go-containerregistry/pkg/v1"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/image/name"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/misconf"
@@ -103,6 +104,7 @@ type ImageMetadata struct {
 	DiffIDs     []string // uncompressed layer IDs
 	RepoTags    []string
 	RepoDigests []string
+	Reference   name.Reference // image reference matching the artifact name
 	ConfigFile  v1.ConfigFile
 }
 

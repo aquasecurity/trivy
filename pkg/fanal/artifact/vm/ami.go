@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/cloud/aws/config"
+	awsConfig "github.com/aquasecurity/trivy/pkg/config/aws"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
@@ -21,7 +21,7 @@ type AMI struct {
 func newAMI(imageID string, storage Storage, region, endpoint string) (*AMI, error) {
 	// TODO: propagate context
 	ctx := context.TODO()
-	cfg, err := config.LoadDefaultAWSConfig(ctx, region, endpoint)
+	cfg, err := awsConfig.LoadDefaultAWSConfig(ctx, region, endpoint)
 	if err != nil {
 		return nil, err
 	}

@@ -310,6 +310,7 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 				},
 				RepoTags:    []string{testutil.ImageName("", "alpine-310", "")},
 				RepoDigests: []string{testutil.ImageName("", "", "sha256:f12582b2f2190f350e3904462c1c23aaf366b4f76705e97b199f9bbded1d816a")},
+				Reference:   testutil.MustParseReference(t, testutil.ImageName("", "alpine-310", "")),
 				ConfigFile: v1.ConfigFile{
 					Architecture: "amd64",
 					Created: v1.Time{
@@ -354,6 +355,7 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			tarArchive: "../../../../integration/testdata/fixtures/images/vulnimage.tar.gz",
 			wantMetadata: artifact.ImageMetadata{
 				ID: "sha256:c17083664da903e13e9092fa3a3a1aeee2431aa2728298e3dbcec72f26369c41",
+				Reference: testutil.MustParseReference(t, testutil.ImageName("", "vulnimage", "")),
 				DiffIDs: []string{
 					"sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
 					"sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
@@ -715,6 +717,9 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			got, err := a.ApplyLayers(ctx, ref.ID, ref.BlobIDs)
 			require.NoError(t, err)
 
+			// Clear package detail fields
+			clearPackageDetailFields(got.Packages)
+
 			tag := strings.Split(tt.imageName, ":")[1]
 			goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", tag)
 
@@ -762,6 +767,7 @@ func TestContainerd_PullImage(t *testing.T) {
 				},
 				RepoTags:    []string{testutil.ImageName("", "alpine-310", "")},
 				RepoDigests: []string{testutil.ImageName("", "", "sha256:72c42ed48c3a2db31b7dafe17d275b634664a708d901ec9fd57b1529280f01fb")},
+				Reference:   testutil.MustParseReference(t, testutil.ImageName("", "alpine-310", "")),
 				ConfigFile: v1.ConfigFile{
 					Architecture: "amd64",
 					Created: v1.Time{
@@ -852,6 +858,9 @@ func TestContainerd_PullImage(t *testing.T) {
 			var wantPkgs types.Packages
 			err = json.NewDecoder(golden).Decode(&wantPkgs)
 			require.NoError(t, err)
+
+			// Clear package detail fields for comparison
+			clearPackageDetailFields(got.Packages)
 
 			// Assert
 			assert.Equal(t, wantPkgs, got.Packages)

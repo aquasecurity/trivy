@@ -1,6 +1,8 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:988a8e3eb049d90c20fafb183d0e792c99b8ba28433be1d1e4447a8b5a1adbdf",
   "ArtifactName": "testdata/fixtures/images/alpine-39.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -14,6 +16,10 @@
     "DiffIDs": [
       "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:alpine-39"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:alpine-39",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "c10d36fa368a7ea673683682666758adf35efe98e10989505f4f566b5b18538f",
@@ -68,7 +74,7 @@
           "PkgName": "libcrypto1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1b-r1?arch=x86_64\u0026distro=3.9.4",
-            "UID": "d2c46e721bca75d3"
+            "UID": "6ab2c6870b0dc22c"
           },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r2",
@@ -151,7 +157,7 @@
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libssl1.1@1.1.1b-r1?arch=x86_64\u0026distro=3.9.4",
-            "UID": "e39a91b0fefcbb1d"
+            "UID": "68dcd92c977c18d3"
           },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r2",

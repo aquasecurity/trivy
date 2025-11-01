@@ -7,6 +7,11 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/image/name"
 )
 
 var (
@@ -64,4 +69,12 @@ func imageName(img, subpath, tag, digest string) string {
 		img = fmt.Sprintf("%s@%s", img, digest)
 	}
 	return img
+}
+
+// MustParseReference parses a string into a Reference and fails the test if there's an error
+func MustParseReference(t *testing.T, s string) name.Reference {
+	t.Helper()
+	ref, err := name.ParseReference(s)
+	require.NoError(t, err)
+	return ref
 }
