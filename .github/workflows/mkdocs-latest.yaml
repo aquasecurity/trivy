@@ -55,4 +55,4 @@ jobs:
           gh workflow run build-docs.yml \
             --repo ${{ github.repository_owner }}/trivy-www \
             --ref main \
-            --field version=${{ github.ref_name }}
+            --field from_version=${{ github.ref_name }}
