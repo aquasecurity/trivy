@@ -406,6 +406,7 @@ type Options struct {
 	RemoteOptions
 	RepoOptions
 	ReportOptions
+	ProOptions
 	ScanOptions
 	SecretOptions
 	VulnerabilityOptions

@@ -53,9 +53,9 @@ func TestGetAccessToken(t *testing.T) {
 		{
 			name: "happy path",
 			opts: flag.Options{
-				CloudOptions: flag.CloudOptions{
-					CloudToken: "valid-token",
-					ApiURL:     mockServer.server.URL,
+				ProOptions: flag.ProOptions{
+					ProToken: "valid-token",
+					ApiURL:   mockServer.server.URL,
 				},
 			},
 			want:               "test-token",
@@ -64,20 +64,20 @@ func TestGetAccessToken(t *testing.T) {
 		{
 			name: "no API URL",
 			opts: flag.Options{
-				CloudOptions: flag.CloudOptions{
-					CloudToken: "valid-token",
-					ApiURL:     "",
+				ProOptions: flag.ProOptions{
+					ProToken: "valid-token",
+					ApiURL:   "",
 				},
 			},
-			errorContains:      "no API URL provided for getting access token from Trivy Cloud",
+			errorContains:      "no API URL provided for getting access token from Trivy Pro",
 			expectedStatusCode: http.StatusInternalServerError,
 		},
 		{
 			name: "invalid token",
 			opts: flag.Options{
-				CloudOptions: flag.CloudOptions{
-					CloudToken: "invalid-token",
-					ApiURL:     mockServer.server.URL,
+				ProOptions: flag.ProOptions{
+					ProToken: "invalid-token",
+					ApiURL:   mockServer.server.URL,
 				},
 			},
 			errorContains:      "failed to get access token: received status code 401",
