@@ -101,7 +101,6 @@ func TestNewDockerImage(t *testing.T) {
 				Config: v1.Config{
 					Cmd:         []string{"/bin/sh"},
 					Env:         []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
-					Image:       "sha256:74df73bb19fbfc7fb5ab9a8234b3d98ee2fb92df5b824496679802685205ab8c",
 					ArgsEscaped: true,
 				},
 				OSVersion: "",
@@ -144,7 +143,6 @@ func TestNewDockerImage(t *testing.T) {
 				Config: v1.Config{
 					Cmd:         []string{"/bin/sh"},
 					Env:         []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
-					Image:       "sha256:74df73bb19fbfc7fb5ab9a8234b3d98ee2fb92df5b824496679802685205ab8c",
 					ArgsEscaped: true,
 				},
 				OSVersion: "",
@@ -409,16 +407,18 @@ func TestNewArchiveImage(t *testing.T) {
 		fileName string
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    v1.Image
-		wantErr string
+		name         string
+		args         args
+		want         v1.Image
+		wantRepoTags []string
+		wantErr      string
 	}{
 		{
 			name: "happy path",
 			args: args{
 				fileName: "../test/testdata/alpine-310.tar.gz",
 			},
+			wantRepoTags: []string{"alpine:3.10"},
 		},
 		{
 			name: "happy path with OCI Image Format",
@@ -492,8 +492,7 @@ func TestNewArchiveImage(t *testing.T) {
 				require.NoError(t, err, tt.name)
 			}
 
-			// archive doesn't support RepoTags and RepoDigests
-			assert.Empty(t, img.RepoTags())
+			assert.Equal(t, tt.wantRepoTags, img.RepoTags())
 			assert.Empty(t, img.RepoDigests())
 		})
 	}

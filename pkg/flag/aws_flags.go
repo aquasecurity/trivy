@@ -12,14 +12,16 @@ var (
 		Usage:      "AWS Endpoint override",
 	}
 	awsServiceFlag = Flag[[]string]{
-		Name:       "service",
-		ConfigName: "cloud.aws.service",
-		Usage:      "Only scan AWS Service(s) specified with this flag. Can specify multiple services using --service A --service B etc.",
+		Name:          "service",
+		ConfigName:    "cloud.aws.service",
+		Usage:         "Only scan AWS Service(s) specified with this flag. Can specify multiple services using --service A --service B etc.",
+		TelemetrySafe: true,
 	}
 	awsSkipServicesFlag = Flag[[]string]{
-		Name:       "skip-service",
-		ConfigName: "cloud.aws.skip-service",
-		Usage:      "Skip selected AWS Service(s) specified with this flag. Can specify multiple services using --skip-service A --skip-service B etc.",
+		Name:          "skip-service",
+		ConfigName:    "cloud.aws.skip-service",
+		Usage:         "Skip selected AWS Service(s) specified with this flag. Can specify multiple services using --skip-service A --skip-service B etc.",
+		TelemetrySafe: true,
 	}
 	awsAccountFlag = Flag[string]{
 		Name:       "account",

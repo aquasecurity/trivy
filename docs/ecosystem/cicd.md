@@ -43,11 +43,11 @@ The Dagger module for Trivy provides functions for scanning container images fro
 
 
 ## Semaphore (Community)
-[Semaphore](https://semaphoreci.com/) is a CI/CD service.
+[Semaphore](https://semaphore.io/) is a CI/CD service.
 
 You can use Trivy in Semaphore for scanning code, containers, infrastructure, and Kubernetes in Semaphore workflow.
 
-👉 Get it at: <https://semaphoreci.com/blog/continuous-container-vulnerability-testing-with-trivy>
+👉 Get it at: <https://docs.semaphore.io/using-semaphore/recipes/trivy>
 
 ## CircleCI (Community)
 [CircleCI](https://circleci.com/) is a CI/CD service.

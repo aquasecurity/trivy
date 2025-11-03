@@ -2,7 +2,7 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000005",
+  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000006",
   "version": 1,
   "metadata": {
     "timestamp": "2021-08-25T12:20:30+00:00",
@@ -10,6 +10,9 @@
       "components": [
         {
           "type": "application",
+          "manufacturer": {
+            "name": "Aqua Security Software Ltd."
+          },
           "group": "aquasecurity",
           "name": "trivy",
           "version": "dev"
@@ -17,7 +20,7 @@
       ]
     },
     "component": {
-      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000003",
       "type": "application",
       "name": "testdata/fixtures/repo/conda",
       "properties": [
@@ -43,7 +46,7 @@
       "licenses": [
         {
           "license": {
-            "name": "OpenSSL"
+            "id": "OpenSSL"
           }
         }
       ],
@@ -73,7 +76,7 @@
       "licenses": [
         {
           "license": {
-            "name": "MIT"
+            "id": "MIT"
           }
         }
       ],
@@ -92,7 +95,7 @@
   ],
   "dependencies": [
     {
-      "ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "ref": "3ff14136-e09f-4df9-80ea-000000000003",
       "dependsOn": [
         "pkg:conda/openssl@1.1.1q",
         "pkg:conda/pip@22.2.2"

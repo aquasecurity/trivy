@@ -11,20 +11,20 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/cache"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
-	"github.com/aquasecurity/trivy/pkg/fanal/applier"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
-	"github.com/aquasecurity/trivy/pkg/fanal/image"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/applier"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
+	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
+
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 	_ "modernc.org/sqlite"
 )
 
@@ -145,7 +145,7 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 	cli := testutil.NewDockerClient(t)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := context.Background()
+			ctx := t.Context()
 			d := t.TempDir()
 
 			c, err := cache.NewFSCache(d)
@@ -177,7 +177,7 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			}
 
 			// clear Cache
-			require.NoError(t, c.Clear(), tt.name)
+			require.NoError(t, c.Clear(t.Context()), tt.name)
 		})
 	}
 }
@@ -186,7 +186,7 @@ func TestFanal_Library_TarMode(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			ctx := context.Background()
+			ctx := t.Context()
 			d := t.TempDir()
 
 			c, err := cache.NewFSCache(d)
@@ -208,7 +208,7 @@ func TestFanal_Library_TarMode(t *testing.T) {
 			runChecks(t, ctx, ar, applier, tt)
 
 			// clear Cache
-			require.NoError(t, c.Clear(), tt.name)
+			require.NoError(t, c.Close())
 		})
 	}
 }
@@ -216,7 +216,7 @@ func TestFanal_Library_TarMode(t *testing.T) {
 func runChecks(t *testing.T, ctx context.Context, ar artifact.Artifact, applier applier.Applier, tc testCase) {
 	imageInfo, err := ar.Inspect(ctx)
 	require.NoError(t, err, tc.name)
-	imageDetail, err := applier.ApplyLayers(imageInfo.ID, imageInfo.BlobIDs)
+	imageDetail, err := applier.ApplyLayers(ctx, imageInfo.ID, imageInfo.BlobIDs)
 	require.NoError(t, err, tc.name)
 	commonChecks(t, imageDetail, tc)
 }
@@ -228,34 +228,49 @@ func commonChecks(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	checkLangPkgs(detail, t, tc)
 }
 
+// clearPackageDetailFields clears package detail fields to keep golden files manageable.
+// Fields cleared: Identifier (UID, PURL, BOMRef), Layer, InstalledFiles, DependsOn, Digest
+// Fields kept for comparison: ID, Name, Version, Epoch, Release, Arch, SrcName, SrcEpoch, SrcVersion, SrcRelease, Licenses, Maintainer, Modularitylabel, Indirect
+func clearPackageDetailFields(packages []types.Package) {
+	for i := range packages {
+		packages[i].Identifier = types.PkgIdentifier{} // Clear entire Identifier (UID, PURL, BOMRef)
+		packages[i].Layer = types.Layer{}
+		packages[i].InstalledFiles = nil
+		packages[i].DependsOn = nil
+		packages[i].Digest = ""
+	}
+}
+
 func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	// Sort OS packages for consistency
 	sort.Sort(detail.Packages)
+
+	// Clear package detail fields to keep golden files manageable in size.
+	// Cleared fields: Identifier.UID, Layer, InstalledFiles, DependsOn, Digest
+	// These fields are either too large (InstalledFiles, Layer) or not critical for comparison (UID, Digest, DependsOn).
+	// All other fields including ID, Name, Version, Licenses, Maintainer, etc. are compared.
+	clearPackageDetailFields(detail.Packages)
 
 	goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", tc.imageTag)
 
 	if *update {
 		b, err := json.MarshalIndent(detail.Packages, "", "  ")
 		require.NoError(t, err)
-		err = os.WriteFile(goldenFile, b, 0666)
+		err = os.WriteFile(goldenFile, b, 0o666)
 		require.NoError(t, err)
 		return
 	}
 	data, err := os.ReadFile(goldenFile)
 	require.NoError(t, err, tc.name)
 
-	var expectedPkgs []types.Package
+	var expectedPkgs types.Packages
 	err = json.Unmarshal(data, &expectedPkgs)
 	require.NoError(t, err)
 
-	require.Equal(t, len(expectedPkgs), len(detail.Packages), tc.name)
-	sort.Slice(expectedPkgs, func(i, j int) bool { return expectedPkgs[i].Name < expectedPkgs[j].Name })
 	sort.Sort(detail.Packages)
+	sort.Sort(expectedPkgs)
 
-	for i := 0; i < len(expectedPkgs); i++ {
-		require.Equal(t, expectedPkgs[i].Name, detail.Packages[i].Name, tc.name)
-		require.Equal(t, expectedPkgs[i].Version, detail.Packages[i].Version, tc.name)
-	}
+	assert.Equal(t, expectedPkgs, detail.Packages, tc.name)
 }
 
 func checkLangPkgs(detail types.ArtifactDetail, t *testing.T, tc testCase) {
@@ -285,7 +300,7 @@ func checkLangPkgs(detail types.ArtifactDetail, t *testing.T, tc testCase) {
 		if *update {
 			b, err := json.MarshalIndent(detail.Applications, "", "  ")
 			require.NoError(t, err)
-			err = os.WriteFile(tc.wantApplicationFile, b, 0666)
+			err = os.WriteFile(tc.wantApplicationFile, b, 0o666)
 			require.NoError(t, err)
 			return
 		}
@@ -308,7 +323,7 @@ func checkPackageFromCommands(t *testing.T, detail types.ArtifactDetail, tc test
 			sort.Sort(types.Packages(detail.ImageConfig.Packages))
 			b, err := json.MarshalIndent(detail.ImageConfig.Packages, "", "  ")
 			require.NoError(t, err)
-			err = os.WriteFile(tc.wantPkgsFromCmds, b, 0666)
+			err = os.WriteFile(tc.wantPkgsFromCmds, b, 0o666)
 			require.NoError(t, err)
 			return
 		}

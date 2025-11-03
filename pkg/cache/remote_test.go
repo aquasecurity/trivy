@@ -16,6 +16,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
@@ -145,12 +146,11 @@ func TestRemoteCache_PutArtifact(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(cache.RemoteOptions{
+			c := cache.NewRemoteCache(t.Context(), cache.RemoteOptions{
 				ServerAddr:    ts.URL,
 				CustomHeaders: tt.args.customHeaders,
-				Insecure:      false,
 			})
-			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
+			err := c.PutArtifact(t.Context(), tt.args.imageID, tt.args.imageInfo)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
@@ -208,12 +208,11 @@ func TestRemoteCache_PutBlob(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(cache.RemoteOptions{
+			c := cache.NewRemoteCache(t.Context(), cache.RemoteOptions{
 				ServerAddr:    ts.URL,
 				CustomHeaders: tt.args.customHeaders,
-				Insecure:      false,
 			})
-			err := c.PutBlob(tt.args.diffID, tt.args.layerInfo)
+			err := c.PutBlob(t.Context(), tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
@@ -288,12 +287,11 @@ func TestRemoteCache_MissingBlobs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(cache.RemoteOptions{
+			c := cache.NewRemoteCache(t.Context(), cache.RemoteOptions{
 				ServerAddr:    ts.URL,
 				CustomHeaders: tt.args.customHeaders,
-				Insecure:      false,
 			})
-			gotMissingImage, gotMissingLayerIDs, err := c.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
+			gotMissingImage, gotMissingLayerIDs, err := c.MissingBlobs(t.Context(), tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
@@ -339,12 +337,14 @@ func TestRemoteCache_PutArtifactInsecure(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(cache.RemoteOptions{
+			ctx := xhttp.WithTransport(t.Context(), xhttp.NewTransport(xhttp.Options{
+				Insecure: tt.args.insecure,
+			}))
+			c := cache.NewRemoteCache(ctx, cache.RemoteOptions{
 				ServerAddr:    ts.URL,
 				CustomHeaders: nil,
-				Insecure:      tt.args.insecure,
 			})
-			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
+			err := c.PutArtifact(t.Context(), tt.args.imageID, tt.args.imageInfo)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return

@@ -1,6 +1,7 @@
 package cyclonedx
 
 import (
+	"cmp"
 	"context"
 	"fmt"
 	"net/url"
@@ -18,6 +19,8 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/digest"
+	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
@@ -26,9 +29,10 @@ import (
 )
 
 const (
-	ToolVendor = "aquasecurity"
-	ToolName   = "trivy"
-	Namespace  = ToolVendor + ":" + ToolName + ":"
+	ToolVendor       = "aquasecurity"
+	ToolName         = "trivy"
+	ToolManufacturer = "Aqua Security Software Ltd."
+	Namespace        = ToolVendor + ":" + ToolName + ":"
 
 	// https://json-schema.org/understanding-json-schema/reference/string.html#dates-and-times
 	timeLayout = "2006-01-02T15:04:05+00:00"
@@ -38,19 +42,21 @@ type Marshaler struct {
 	appVersion   string // Trivy version
 	bom          *core.BOM
 	componentIDs map[uuid.UUID]string
+
+	logger *log.Logger
 }
 
 func NewMarshaler(version string) Marshaler {
 	return Marshaler{
 		appVersion: version,
+		logger:     log.WithPrefix(log.PrefixCycloneDX),
 	}
 }
 
 // MarshalReport converts the Trivy report to the CycloneDX format
 func (m *Marshaler) MarshalReport(ctx context.Context, report types.Report) (*cdx.BOM, error) {
 	// Convert into an intermediate representation
-	opts := core.Options{GenerateBOMRef: true}
-	bom, err := sbomio.NewEncoder(opts).Encode(report)
+	bom, err := sbomio.NewEncoder(sbomio.WithBOMRef()).Encode(report)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to marshal report: %w", err)
 	}
@@ -88,10 +94,11 @@ func (m *Marshaler) Metadata(ctx context.Context) *cdx.Metadata {
 		Tools: &cdx.ToolsChoice{
 			Components: &[]cdx.Component{
 				{
-					Type:    cdx.ComponentTypeApplication,
-					Group:   ToolVendor,
-					Name:    ToolName,
-					Version: m.appVersion,
+					Type:         cdx.ComponentTypeApplication,
+					Group:        ToolVendor,
+					Name:         ToolName,
+					Version:      m.appVersion,
+					Manufacturer: &cdx.OrganizationalEntity{Name: ToolManufacturer},
 				},
 			},
 		},
@@ -99,7 +106,13 @@ func (m *Marshaler) Metadata(ctx context.Context) *cdx.Metadata {
 }
 
 func (m *Marshaler) MarshalRoot() (*cdx.Component, error) {
-	return m.MarshalComponent(m.bom.Root())
+	root := m.bom.Root()
+	// Since we reuse the scanned SBOM, the root component (metadata.component) can be empty.
+	if root == nil {
+		m.logger.Debug("Root component not found")
+		return nil, nil
+	}
+	return m.MarshalComponent(root)
 }
 
 func (m *Marshaler) MarshalComponent(component *core.Component) (*cdx.Component, error) {
@@ -250,7 +263,7 @@ func (*Marshaler) Supplier(supplier string) *cdx.OrganizationalEntity {
 	}
 }
 
-func (*Marshaler) Hashes(files []core.File) *[]cdx.Hash {
+func (m *Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 	digests := lo.FlatMap(files, func(file core.File, _ int) []digest.Digest {
 		return file.Digests
 	})
@@ -266,10 +279,12 @@ func (*Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 			alg = cdx.HashAlgoSHA1
 		case digest.SHA256:
 			alg = cdx.HashAlgoSHA256
+		case digest.SHA512:
+			alg = cdx.HashAlgoSHA512
 		case digest.MD5:
 			alg = cdx.HashAlgoMD5
 		default:
-			log.Debug("Unable to convert algorithm to CycloneDX format", log.Any("alg", d.Algorithm()))
+			m.logger.Debug("Unable to convert algorithm to CycloneDX format", log.Any("alg", d.Algorithm()))
 			continue
 		}
 
@@ -281,30 +296,81 @@ func (*Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 	return &cdxHashes
 }
 
-func (*Marshaler) Licenses(licenses []string) *cdx.Licenses {
+func (m *Marshaler) Licenses(licenses []string) *cdx.Licenses {
+	licenses = lo.Compact(licenses)
 	if len(licenses) == 0 {
 		return nil
 	}
-	choices := lo.Map(licenses, func(license string, _ int) cdx.LicenseChoice {
-		return cdx.LicenseChoice{
-			License: &cdx.License{
-				Name: license,
-			},
+	return m.normalizeLicenses(licenses)
+}
+
+func (m *Marshaler) normalizeLicenses(licenses []string) *cdx.Licenses {
+	expressions := lo.Map(licenses, func(license string, _ int) expression.Expression {
+		return m.normalizeLicense(license)
+	})
+	// Check if all licenses are valid SPDX expressions
+	allValidSPDX := lo.EveryBy(expressions, func(expr expression.Expression) bool {
+		return expr.IsSPDXExpression()
+	})
+
+	// Check if at least one is a CompoundExpr
+	hasCompoundExpr := lo.ContainsBy(expressions, func(expr expression.Expression) bool {
+		_, isCompound := expr.(expression.CompoundExpr)
+		return isCompound
+	})
+
+	// If all are valid SPDX AND at least one contains CompoundExpr, combine into single Expression
+	if allValidSPDX && hasCompoundExpr {
+		exprStrs := lo.Map(expressions, func(expr expression.Expression, _ int) string {
+			return expr.String()
+		})
+		return &cdx.Licenses{{Expression: strings.Join(exprStrs, " AND ")}}
+	}
+
+	// Otherwise use individual LicenseChoice entries with license.id or license.name
+	choices := lo.Map(expressions, func(expr expression.Expression, _ int) cdx.LicenseChoice {
+		if s, ok := expr.(expression.SimpleExpr); ok && s.IsSPDXExpression() {
+			// Use license.id for valid SPDX ID (e.g., "MIT", "Apache-2.0")
+			return cdx.LicenseChoice{License: &cdx.License{ID: s.String()}}
 		}
+		// Use license.name for everything else (invalid SPDX ID, SPDX expression, etc.)
+		return cdx.LicenseChoice{License: &cdx.License{Name: expr.String()}}
 	})
 	return lo.ToPtr(cdx.Licenses(choices))
+}
+
+func (m *Marshaler) normalizeLicense(license string) expression.Expression {
+	// Save text license as licenseChoice.license.name
+	if after, ok := strings.CutPrefix(license, licensing.LicenseTextPrefix); ok {
+		return expression.SimpleExpr{
+			License: after,
+		}
+	}
+
+	// e.g. GPL-3.0-with-autoconf-exception
+	license = strings.ReplaceAll(license, "-with-", " WITH ")
+	license = strings.ReplaceAll(license, "-WITH-", " WITH ")
+
+	normalizedLicenses, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX)
+	if err != nil {
+		// Not fail on the invalid license
+		m.logger.Warn("Unable to marshal SPDX licenses", log.String("license", license))
+		return expression.SimpleExpr{License: license}
+	}
+
+	return normalizedLicenses
 }
 
 func (*Marshaler) Properties(properties []core.Property) *[]cdx.Property {
 	cdxProps := make([]cdx.Property, 0, len(properties))
 	for _, property := range properties {
-		namespace := Namespace
-		if property.Namespace != "" {
-			namespace = property.Namespace
-		}
+		namespace := cmp.Or(property.Namespace, Namespace)
+
+		// External property preserves original name, Trivy property gets namespace prefix
+		name := lo.Ternary(property.External, property.Name, namespace+property.Name)
 
 		cdxProps = append(cdxProps, cdx.Property{
-			Name:  namespace + property.Name,
+			Name:  name,
 			Value: property.Value,
 		})
 	}
@@ -396,7 +462,7 @@ func (*Marshaler) source(source *dtypes.DataSource) *cdx.Source {
 	}
 }
 
-func (*Marshaler) cwes(cweIDs []string) *[]int {
+func (m *Marshaler) cwes(cweIDs []string) *[]int {
 	// to skip cdx.Vulnerability.CWEs when generating json
 	// we should return 'clear' nil without 'type' interface part
 	if cweIDs == nil {
@@ -406,7 +472,7 @@ func (*Marshaler) cwes(cweIDs []string) *[]int {
 	for _, cweID := range cweIDs {
 		number, err := strconv.Atoi(strings.TrimPrefix(strings.ToLower(cweID), "cwe-"))
 		if err != nil {
-			log.Debug("CWE-ID parse error", log.Err(err))
+			m.logger.Debug("CWE-ID parse error", log.Err(err))
 			continue
 		}
 		ret = append(ret, number)

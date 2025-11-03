@@ -513,6 +513,32 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			name:      "happy path for third party sbom, no operation-system component",
 			inputFile: "testdata/happy/third-party-bom-no-os.json",
 			want: types.SBOM{
+				Packages: []ftypes.PackageInfo{
+					{
+						Packages: ftypes.Packages{
+							{
+								ID:         "musl@1.2.3-r0",
+								Name:       "musl",
+								Version:    "1.2.3-r0",
+								SrcName:    "musl",
+								SrcVersion: "1.2.3-r0",
+								Licenses:   []string{"MIT"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeApk,
+										Namespace: "alpine",
+										Name:      "musl",
+										Version:   "1.2.3-r0",
+										Qualifiers: packageurl.Qualifiers{
+											{Key: "distro", Value: "3.16.0"},
+										},
+									},
+									BOMRef: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+								},
+							},
+						},
+					},
+				},
 				Applications: []ftypes.Application{
 					{
 						Type:     "composer",
@@ -816,6 +842,91 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 									},
 									BOMRef: "pkg:composer/pear/core@1.13.1",
 								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "SHA-512",
+			inputFile: "testdata/happy/package-hashes.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: ftypes.NodePkg,
+						Packages: ftypes.Packages{
+							{
+								ID:      "@angular/animations@19.2.10",
+								Name:    "@angular/animations",
+								Version: "19.2.10",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeNPM,
+										Namespace: "@angular",
+										Name:      "animations",
+										Version:   "19.2.10",
+									},
+									BOMRef: "@angular/animations@19.2.10",
+								},
+								Digest: "sha512:2e51fa9add03f3e308d0b57c40dc7dfeba8b2efd1609f60f4bfe625d21a92327ec7e52e83b97511a1b52e297506eee60aa69cb75ff62eebe257512637fbc1bfa",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "happy path - third-party SBOM scan of `file` root component",
+			inputFile: "testdata/happy/third-party-scan-file-component.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type:     "jar",
+						FilePath: "",
+						Packages: ftypes.Packages{
+							ftypes.Package{
+								ID:   "commons-io:commons-io:2.13.0",
+								Name: "commons-io:commons-io",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "",
+									PURL: &packageurl.PackageURL{
+										Type:       "maven",
+										Namespace:  "commons-io",
+										Name:       "commons-io",
+										Version:    "2.13.0",
+										Qualifiers: nil,
+										Subpath:    "",
+									},
+									BOMRef: "pkg:maven/commons-io/commons-io@2.13.0?package-id=6033c6b2f2d3cf10",
+								},
+								Version:            "2.13.0",
+								Release:            "",
+								Epoch:              0,
+								Arch:               "",
+								Dev:                false,
+								SrcName:            "",
+								SrcVersion:         "",
+								SrcRelease:         "",
+								SrcEpoch:           0,
+								Licenses:           []string{"Apache-2.0"},
+								Maintainer:         "",
+								ExternalReferences: nil,
+								Modularitylabel:    "",
+								BuildInfo:          nil,
+								Indirect:           false,
+								Relationship:       0,
+								DependsOn:          nil,
+								Layer: ftypes.Layer{
+									Size:      0,
+									Digest:    "",
+									DiffID:    "",
+									CreatedBy: "",
+								},
+								FilePath:       "",
+								Digest:         "",
+								Locations:      nil,
+								InstalledFiles: nil,
 							},
 						},
 					},

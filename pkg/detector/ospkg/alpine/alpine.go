@@ -8,6 +8,7 @@ import (
 	version "github.com/knqyf263/go-apk-version"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alpine"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
@@ -88,7 +89,10 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, repo *ftypes.Reposit
 		if srcName == "" {
 			srcName = pkg.Name
 		}
-		advisories, err := s.vs.Get(stream, srcName)
+		advisories, err := s.vs.Get(db.GetParams{
+			Release: stream,
+			PkgName: srcName,
+		})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get alpine advisories: %w", err)
 		}

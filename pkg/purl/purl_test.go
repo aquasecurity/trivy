@@ -489,6 +489,43 @@ func TestNewPackageURL(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "coreos package",
+			typ:  ftypes.CoreOS,
+			metadata: types.Metadata{
+				OS: &ftypes.OS{
+					Family: ftypes.CoreOS,
+					Name:   "1.34.0",
+				},
+			},
+			pkg: ftypes.Package{
+				ID:      "glibc@2.40",
+				Name:    "glibc",
+				Version: "2.40",
+				Epoch:   1,
+				Arch:    "x86_64",
+			},
+			want: &purl.PackageURL{
+				Type:      "rpm",
+				Namespace: "coreos",
+				Name:      "glibc",
+				Version:   "2.40",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "arch",
+						Value: "x86_64",
+					},
+					{
+						Key:   "epoch",
+						Value: "1",
+					},
+					{
+						Key:   "distro",
+						Value: "coreos-1.34.0",
+					},
+				},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -794,6 +831,49 @@ func TestPackageURL_Package(t *testing.T) {
 							{
 								Key:   "distro",
 								Value: "bottlerocket-1.34.0",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "coreos with epoch",
+			pkgURL: &purl.PackageURL{
+				Type:      "rpm",
+				Namespace: "coreos",
+				Name:      "glibc",
+				Version:   "2.40",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "epoch",
+						Value: "1",
+					},
+					{
+						Key:   "distro",
+						Value: "coreos-1.34.0",
+					},
+				},
+			},
+			wantPkg: &ftypes.Package{
+				ID:      "glibc@2.40",
+				Name:    "glibc",
+				Version: "2.40",
+				Epoch:   1,
+				Identifier: ftypes.PkgIdentifier{
+					PURL: &packageurl.PackageURL{
+						Type:      "rpm",
+						Namespace: "coreos",
+						Name:      "glibc",
+						Version:   "2.40",
+						Qualifiers: packageurl.Qualifiers{
+							{
+								Key:   "epoch",
+								Value: "1",
+							},
+							{
+								Key:   "distro",
+								Value: "coreos-1.34.0",
 							},
 						},
 					},

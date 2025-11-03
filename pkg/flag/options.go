@@ -76,6 +76,9 @@ type Flag[T FlagType] struct {
 	// Aliases represents aliases
 	Aliases []Alias
 
+	// TelemetrySafe indicates if the flag value is safe to be included in telemetry.
+	TelemetrySafe bool
+
 	// value is the value passed through CLI flag, env, or config file.
 	// It is populated after flag.Parse() is called.
 	value T
@@ -102,6 +105,8 @@ func (f *Flag[T]) Parse() error {
 
 	v := f.parse()
 	if v == nil {
+		// parse() should have already handled defaults,
+		// so if it returns nil, use the zero value
 		f.value = lo.Empty[T]()
 		return nil
 	}
@@ -145,7 +150,17 @@ func (f *Flag[T]) parse() any {
 			return v
 		}
 	}
-	return viper.Get(f.ConfigName)
+
+	v = viper.Get(f.ConfigName)
+
+	// For config-only flags (f.Name == ""), manually handle default values
+	// since we can't use viper.SetDefault due to the IsSet() bug
+	// See: https://github.com/spf13/viper/discussions/1766
+	if v == nil && f.Name == "" && !reflect.ValueOf(f.Default).IsZero() {
+		return f.Default
+	}
+
+	return v
 }
 
 // cast converts the value to the type of the flag.
@@ -216,6 +231,17 @@ func (f *Flag[T]) GetDefaultValue() any {
 
 func (f *Flag[T]) GetAliases() []Alias {
 	return f.Aliases
+}
+
+func (f *Flag[T]) IsTelemetrySafe() bool {
+	return f.TelemetrySafe
+}
+
+func (f *Flag[T]) IsSet() bool {
+	if f == nil {
+		return false
+	}
+	return f.isSet()
 }
 
 func (f *Flag[T]) Hidden() bool {
@@ -297,13 +323,16 @@ func (f *Flag[T]) Bind(cmd *cobra.Command) error {
 		return nil
 	} else if f.Name == "" {
 		// This flag is available only in trivy.yaml
-		viper.SetDefault(f.ConfigName, f.Default)
+		// NOTE: viper.SetDefault is not used here to avoid the bug where IsSet()
+		// always returns true after SetDefault is called. Defaults are handled
+		// manually in the parse() method instead.
+		// See: https://github.com/spf13/viper/discussions/1766
 		return nil
 	}
 
 	// Bind CLI flags
 	flag := cmd.Flags().Lookup(f.Name)
-	if f == nil {
+	if flag == nil {
 		// Lookup local persistent flags
 		flag = cmd.PersistentFlags().Lookup(f.Name)
 	}
@@ -349,6 +378,8 @@ type Flagger interface {
 	GetDefaultValue() any
 	GetAliases() []Alias
 	Hidden() bool
+	IsTelemetrySafe() bool
+	IsSet() bool
 
 	Parse() error
 	Add(cmd *cobra.Command)
@@ -375,6 +406,7 @@ type Options struct {
 	RemoteOptions
 	RepoOptions
 	ReportOptions
+	CloudOptions
 	ScanOptions
 	SecretOptions
 	VulnerabilityOptions
@@ -391,6 +423,9 @@ type Options struct {
 
 	// args is the arguments passed to the command.
 	args []string
+
+	// usedFlags allows us to get the underlying flags for the options
+	usedFlags []Flagger
 }
 
 // Align takes consistency of options
@@ -517,7 +552,6 @@ func (o *Options) RemoteCacheOpts() cache.RemoteOptions {
 	return cache.RemoteOptions{
 		ServerAddr:    o.ServerAddr,
 		CustomHeaders: o.CustomHeaders,
-		Insecure:      o.Insecure,
 		PathPrefix:    o.PathPrefix,
 	}
 }
@@ -556,10 +590,28 @@ func (o *Options) OutputWriter(ctx context.Context) (io.Writer, func() error, er
 	return f, f.Close, nil
 }
 
-func (o *Options) outputPluginWriter(ctx context.Context) (io.Writer, func() error, error) {
+// GetUsedFlags returns the explicitly set flags for the options.
+func (o *Options) GetUsedFlags() []Flagger {
+	return o.usedFlags
+}
+
+func (o *Options) outputPluginWriter(ctx context.Context) (writer io.Writer, cleanup func() error, err error) {
 	pluginName := strings.TrimPrefix(o.Output, "plugin=")
 
 	pr, pw := io.Pipe()
+
+	// Close pipes on error
+	defer func() {
+		if err != nil {
+			if pr != nil {
+				pr.Close()
+			}
+			if pw != nil {
+				pw.Close()
+			}
+		}
+	}()
+
 	wait, err := plugin.Start(ctx, pluginName, plugin.Options{
 		Args:  o.OutputPluginArgs,
 		Stdin: pr,
@@ -568,7 +620,7 @@ func (o *Options) outputPluginWriter(ctx context.Context) (io.Writer, func() err
 		return nil, nil, xerrors.Errorf("plugin start: %w", err)
 	}
 
-	cleanup := func() error {
+	cleanup = func() error {
 		if err = pw.Close(); err != nil {
 			return xerrors.Errorf("failed to close pipe: %w", err)
 		}
@@ -651,6 +703,8 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 		if err := parseFlags(group); err != nil {
 			return Options{}, xerrors.Errorf("unable to parse flags: %w", err)
 		}
+
+		opts.usedFlags = append(opts.usedFlags, usedFlags(group)...)
 
 		if err := group.ToOptions(&opts); err != nil {
 			return Options{}, xerrors.Errorf("unable to convert flags to options: %w", err)
@@ -751,4 +805,22 @@ func findFlagGroup[T FlagGroup](f *Flags) (T, bool) {
 	}
 	var zero T
 	return zero, false
+}
+
+// usedFlags returns a slice of flags that are set in the given FlagGroup.
+func usedFlags(fg FlagGroup) []Flagger {
+	if fg == nil || fg.Flags() == nil {
+		return nil
+	}
+
+	var flags []Flagger
+	for _, flag := range fg.Flags() {
+		if flag == nil {
+			continue
+		}
+		if flag.IsSet() {
+			flags = append(flags, flag)
+		}
+	}
+	return flags
 }

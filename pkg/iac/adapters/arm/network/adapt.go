@@ -1,13 +1,15 @@
 package network
 
 import (
-	"strconv"
-	"strings"
-
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
+
+func parsePortRange(input string, meta iacTypes.Metadata) common.PortRange {
+	return common.ParsePortRange(input, meta, common.WithWildcard())
+}
 
 func Adapt(deployment azure.Deployment) network.Network {
 	return network.Network{
@@ -42,20 +44,30 @@ func adaptSecurityGroupRule(resource azure.Resource) network.SecurityGroupRule {
 	sourceAddressPrefixes := resource.Properties.GetMapValue("sourceAddressPrefixes").AsStringValuesList("")
 	sourceAddressPrefixes = append(sourceAddressPrefixes, resource.Properties.GetMapValue("sourceAddressPrefix").AsStringValue("", resource.Metadata))
 
-	var sourcePortRanges []network.PortRange
+	var sourcePortRanges []common.PortRange
 	for _, portRange := range resource.Properties.GetMapValue("sourcePortRanges").AsList() {
-		sourcePortRanges = append(sourcePortRanges, expandRange(portRange.AsString(), resource.Metadata))
+		rng := parsePortRange(portRange.AsString(), resource.Metadata)
+		if rng.Valid() {
+			sourcePortRanges = append(sourcePortRanges, rng)
+		}
 	}
-	sourcePortRanges = append(sourcePortRanges, expandRange(resource.Properties.GetMapValue("sourcePortRange").AsString(), resource.Metadata))
+	if rng := parsePortRange(resource.Properties.GetMapValue("sourcePortRange").AsString(), resource.Metadata); rng.Valid() {
+		sourcePortRanges = append(sourcePortRanges, rng)
+	}
 
 	destinationAddressPrefixes := resource.Properties.GetMapValue("destinationAddressPrefixes").AsStringValuesList("")
 	destinationAddressPrefixes = append(destinationAddressPrefixes, resource.Properties.GetMapValue("destinationAddressPrefix").AsStringValue("", resource.Metadata))
 
-	var destinationPortRanges []network.PortRange
+	var destinationPortRanges []common.PortRange
 	for _, portRange := range resource.Properties.GetMapValue("destinationPortRanges").AsList() {
-		destinationPortRanges = append(destinationPortRanges, expandRange(portRange.AsString(), resource.Metadata))
+		rng := parsePortRange(portRange.AsString(), resource.Metadata)
+		if rng.Valid() {
+			destinationPortRanges = append(destinationPortRanges, rng)
+		}
 	}
-	destinationPortRanges = append(destinationPortRanges, expandRange(resource.Properties.GetMapValue("destinationPortRange").AsString(), resource.Metadata))
+	if rng := parsePortRange(resource.Properties.GetMapValue("destinationPortRange").AsString(), resource.Metadata); rng.Valid() {
+		destinationPortRanges = append(destinationPortRanges, rng)
+	}
 
 	allow := iacTypes.BoolDefault(false, resource.Metadata)
 	if resource.Properties.GetMapValue("access").AsString() == "Allow" {
@@ -94,33 +106,5 @@ func adaptNetworkWatcherFlowLog(resource azure.Resource) network.NetworkWatcherF
 			Enabled:  resource.Properties.GetMapValue("retentionPolicy").GetMapValue("enabled").AsBoolValue(false, resource.Metadata),
 			Days:     resource.Properties.GetMapValue("retentionPolicy").GetMapValue("days").AsIntValue(0, resource.Metadata),
 		},
-	}
-}
-
-func expandRange(r string, m iacTypes.Metadata) network.PortRange {
-	start := 0
-	end := 65535
-	switch {
-	case r == "*":
-	case strings.Contains(r, "-"):
-		if parts := strings.Split(r, "-"); len(parts) == 2 {
-			if p1, err := strconv.ParseInt(parts[0], 10, 32); err == nil {
-				start = int(p1)
-			}
-			if p2, err := strconv.ParseInt(parts[1], 10, 32); err == nil {
-				end = int(p2)
-			}
-		}
-	default:
-		if val, err := strconv.ParseInt(r, 10, 32); err == nil {
-			start = int(val)
-			end = int(val)
-		}
-	}
-
-	return network.PortRange{
-		Metadata: m,
-		Start:    iacTypes.Int(start, m),
-		End:      iacTypes.Int(end, m),
 	}
 }

@@ -43,6 +43,23 @@
     }
   },
   "definitions": {
+    "github.com.aquasecurity.trivy.pkg.iac.adapters.common.PortRange": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "end": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
+        },
+        "start": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
+        }
+      }
+    },
     "github.com.aquasecurity.trivy.pkg.iac.providers.aws.AWS": {
       "type": "object",
       "properties": {
@@ -4555,6 +4572,13 @@
     "github.com.aquasecurity.trivy.pkg.iac.providers.azure.authorization.Authorization": {
       "type": "object",
       "properties": {
+        "roleassignments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.authorization.RoleAssignment"
+          }
+        },
         "roledefinitions": {
           "type": "array",
           "items": {
@@ -4577,6 +4601,31 @@
             "type": "object",
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
           }
+        }
+      }
+    },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.authorization.RoleAssignment": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "principalid": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "principaltype": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "roledefinitionid": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "roledefinitionname": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         }
       }
     },
@@ -4718,9 +4767,26 @@
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
         },
+        "azurepolicy": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.container.AzurePolicy"
+        },
         "omsagent": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.container.OMSAgent"
+        }
+      }
+    },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.container.AzurePolicy": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "enabled": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
         }
       }
     },
@@ -4753,6 +4819,14 @@
             "type": "object",
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
           }
+        },
+        "azurepolicyenabled": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
+        },
+        "diskencryptionsetid": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         },
         "enableprivatecluster": {
           "type": "object",
@@ -5244,23 +5318,6 @@
         }
       }
     },
-    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.network.PortRange": {
-      "type": "object",
-      "properties": {
-        "__defsec_metadata": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
-        },
-        "end": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
-        },
-        "start": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
-        }
-      }
-    },
     "github.com.aquasecurity.trivy.pkg.iac.providers.azure.network.RetentionPolicy": {
       "type": "object",
       "properties": {
@@ -5316,7 +5373,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.network.PortRange"
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.adapters.common.PortRange"
           }
         },
         "outbound": {
@@ -5338,7 +5395,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.network.PortRange"
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.adapters.common.PortRange"
           }
         }
       }
@@ -6135,7 +6192,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.compute.PortRange"
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.adapters.common.PortRange"
           }
         },
         "protocol": {
@@ -6267,23 +6324,6 @@
         }
       }
     },
-    "github.com.aquasecurity.trivy.pkg.iac.providers.google.compute.PortRange": {
-      "type": "object",
-      "properties": {
-        "__defsec_metadata": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
-        },
-        "end": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
-        },
-        "start": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
-        }
-      }
-    },
     "github.com.aquasecurity.trivy.pkg.iac.providers.google.compute.ProjectMetadata": {
       "type": "object",
       "properties": {
@@ -6377,6 +6417,10 @@
         "name": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "privateipgoogleaccess": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
         },
         "purpose": {
           "type": "object",
@@ -6741,6 +6785,46 @@
         }
       }
     },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.AuditConfig": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "auditlogconfigs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.AuditLogConfig"
+          }
+        },
+        "service": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        }
+      }
+    },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.AuditLogConfig": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "exemptedmembers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+          }
+        },
+        "logtype": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        }
+      }
+    },
     "github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.Binding": {
       "type": "object",
       "properties": {
@@ -6771,6 +6855,13 @@
         "__defsec_metadata": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "auditconfigs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.AuditConfig"
+          }
         },
         "bindings": {
           "type": "array",
@@ -6849,6 +6940,13 @@
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
         },
+        "auditconfigs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.AuditConfig"
+          }
+        },
         "bindings": {
           "type": "array",
           "items": {
@@ -6871,6 +6969,13 @@
         "__defsec_metadata": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "auditconfigs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.AuditConfig"
+          }
         },
         "autocreatenetwork": {
           "type": "object",
@@ -7137,6 +7242,10 @@
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         },
+        "logging": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.storage.BucketLogging"
+        },
         "members": {
           "type": "array",
           "items": {
@@ -7147,6 +7256,10 @@
         "name": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "versioning": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.storage.BucketVersioning"
         }
       }
     },
@@ -7160,6 +7273,36 @@
         "defaultkmskeyname": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        }
+      }
+    },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.google.storage.BucketLogging": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "logbucket": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "logobjectprefix": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        }
+      }
+    },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.google.storage.BucketVersioning": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "enabled": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
         }
       }
     },

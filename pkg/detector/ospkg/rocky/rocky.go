@@ -7,6 +7,7 @@ import (
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/rocky"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -50,7 +51,11 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 			continue
 		}
 		pkgName := addModularNamespace(pkg.Name, pkg.Modularitylabel)
-		advisories, err := s.vs.Get(osVer, pkgName, pkg.Arch)
+		advisories, err := s.vs.Get(db.GetParams{
+			Release: osVer,
+			PkgName: pkgName,
+			Arch:    pkg.Arch,
+		})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Rocky Linux advisories: %w", err)
 		}

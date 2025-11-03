@@ -55,7 +55,7 @@ func (d *Dependencies) UnmarshalTOML(data any) error {
 	switch deps := data.(type) {
 	case map[string]any: // For Poetry v1
 		d.Set = set.New[string](lo.MapToSlice(deps, func(pkgName string, _ any) string {
-			return python.NormalizePkgName(pkgName)
+			return python.NormalizePkgName(pkgName, true)
 		})...)
 	case []any: // For Poetry v2
 		d.Set = set.New[string]()

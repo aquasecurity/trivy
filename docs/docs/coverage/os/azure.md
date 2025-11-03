@@ -28,6 +28,7 @@ The table below outlines the features offered by Trivy.
 |:------------------------------------:|:---------:|
 |    Detect unfixed vulnerabilities    |     ✓     |
 | [Dependency graph][dependency-graph] |     ✓     |
+|        End of life awareness         |     -     |
 
 ## SBOM
 Trivy detects packages that have been installed through package managers such as `tdnf`, `dnf` and `yum`.

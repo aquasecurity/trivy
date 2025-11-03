@@ -8,6 +8,7 @@ import (
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alma"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -20,8 +21,9 @@ var (
 	eolDates = map[string]time.Time{
 		// Source:
 		// https://endoflife.date/almalinux
-		"8": time.Date(2029, 3, 1, 23, 59, 59, 0, time.UTC),
-		"9": time.Date(2032, 5, 31, 23, 59, 59, 0, time.UTC),
+		"8":  time.Date(2029, 3, 1, 23, 59, 59, 0, time.UTC),
+		"9":  time.Date(2032, 5, 31, 23, 59, 59, 0, time.UTC),
+		"10": time.Date(2035, 5, 31, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -51,7 +53,10 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 			continue
 		}
 		pkgName := addModularNamespace(pkg.Name, pkg.Modularitylabel)
-		advisories, err := s.vs.Get(osVer, pkgName)
+		advisories, err := s.vs.Get(db.GetParams{
+			Release: osVer,
+			PkgName: pkgName,
+		})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get AlmaLinux advisories: %w", err)
 		}

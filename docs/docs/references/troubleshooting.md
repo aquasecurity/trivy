@@ -78,6 +78,16 @@ Common mistakes include the following, depending on where you are pulling images
 $ TRIVY_INSECURE=true trivy image [YOUR_IMAGE]
 ```
 
+Alternatively, you can specify the location of your certificate using `SSL_CERT_FILE` or `SSL_CERT_DIR` environment variables.
+
+```
+$ SSL_CERT_FILE=/path/to/cert trivy image [YOUR_IMAGE]
+```
+
+```
+$ SSL_CERT_DIR=/path/to/certs trivy image [YOUR_IMAGE]
+```
+
 ### GitHub Rate limiting
 Trivy uses GitHub API for [VEX repositories](../supply-chain/vex/repo.md).
 
@@ -115,14 +125,57 @@ $ trivy image --download-java-db-only
 $ trivy image [YOUR_JAVA_IMAGE]
 ```
 
-### Running in parallel takes same time as series run
-When running trivy on multiple images simultaneously, it will take same time as running trivy in series.
-This is because of a limitation of boltdb.
-> Bolt obtains a file lock on the data file so multiple processes cannot open the same database at the same time. Opening an already open Bolt database will cause it to hang until the other process closes it.
+### Database and cache lock errors
 
-Reference : [boltdb: Opening a database][boltdb].
+!!! error
+    ```
+    cache may be in use by another process
+    ```
 
-[boltdb]: https://github.com/boltdb/bolt#opening-a-database
+!!! error
+    ```
+    vulnerability database may be in use by another process
+    ```
+
+By default, Trivy uses BoltDB for its vulnerability database and cache storage. BoltDB creates file locks to prevent data corruption, which means only one process can access the same database file at a time.
+
+As stated in the BoltDB documentation:
+
+> Please note that Bolt obtains a file lock on the data file so multiple processes cannot open the same database at the same time. Opening an already open Bolt database will cause it to hang until the other process closes it.
+
+Reference: [BoltDB README](https://github.com/boltdb/bolt#opening-a-database)
+
+These errors occur when:
+
+- Multiple Trivy processes try to use the same cache directory simultaneously
+- A previous Trivy process did not shut down cleanly
+- Trivy server is running and holding locks on the database and cache
+
+#### Important Note
+
+Running multiple Trivy processes on the same machine is **not recommended**. Using the same cache directory for multiple processes does not improve performance and can cause unexpected errors due to BoltDB's locking mechanism.
+
+#### Solutions
+
+**Solution 1: Terminate conflicting processes** (Recommended)
+
+Check for running Trivy processes and terminate them:
+
+```bash
+$ ps aux | grep trivy
+$ kill [process_id]
+```
+
+**Solution 2: Use different cache directories** (If multiple processes are absolutely necessary)
+
+If you must run multiple Trivy processes on the same machine, specify different cache directories for each process:
+
+```bash
+$ trivy image --cache-dir /tmp/trivy-cache-1 debian:11 &
+$ trivy image --cache-dir /tmp/trivy-cache-2 debian:12 &
+```
+
+Note that each cache directory will download its own copy of the vulnerability database and other scan assets, which will increase network traffic and storage usage.
 
 ### Multiple Trivy servers
 
@@ -266,6 +319,25 @@ $ brew unlink trivy && brew uninstall trivy
 $ brew install aquasecurity/trivy/trivy
 ```
 
+
+## Debugging
+### HTTP Request/Response Tracing
+
+For debugging network issues, connection problems, or authentication failures, you can enable HTTP request/response tracing using the `--trace-http` flag.
+
+!!! danger "Security Warning"
+    While Trivy attempts to redact known sensitive information such as authentication headers and common secrets, the `--trace-http` flag may still expose sensitive data in HTTP requests and responses.
+    
+    **Never use this flag in production environments or CI/CD pipelines.**
+    This flag is automatically disabled in CI environments for security.
+
+```bash
+# Enable HTTP tracing for debugging registry issues
+$ trivy image --trace-http registry.example.com/my-image:latest
+
+# HTTP tracing with other debugging options
+$ trivy image --trace-http --debug --insecure my-image:tag
+```
 
 ## Others
 ### Unknown error

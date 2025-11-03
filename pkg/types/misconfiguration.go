@@ -4,8 +4,9 @@ import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 // DetectedMisconfiguration holds detected misconfigurations
 type DetectedMisconfiguration struct {
-	Type          string               `json:",omitempty"`
-	ID            string               `json:",omitempty"`
+	Type string `json:",omitempty"`
+	ID   string `json:",omitempty"`
+	// Deprecated: Use the ID field instead.
 	AVDID         string               `json:",omitempty"`
 	Title         string               `json:",omitempty"`
 	Description   string               `json:",omitempty"`
@@ -17,8 +18,8 @@ type DetectedMisconfiguration struct {
 	PrimaryURL    string               `json:",omitempty"`
 	References    []string             `json:",omitempty"`
 	Status        MisconfStatus        `json:",omitempty"`
-	Layer         ftypes.Layer         `json:",omitempty"`
-	CauseMetadata ftypes.CauseMetadata `json:",omitempty"`
+	Layer         ftypes.Layer         `json:",omitzero"`
+	CauseMetadata ftypes.CauseMetadata `json:",omitzero"`
 
 	// For debugging
 	Traces []string `json:",omitempty"`
@@ -38,4 +39,4 @@ const (
 	MisconfStatusException MisconfStatus = "EXCEPTION"
 )
 
-func (DetectedMisconfiguration) findingType() FindingType { return FindingTypeMisconfiguration }
+func (DetectedMisconfiguration) FindingType() FindingType { return FindingTypeMisconfiguration }

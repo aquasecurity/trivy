@@ -40,7 +40,7 @@ func (a *eggAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
 }
 
 // Analyze analyzes egg archive files
-func (a *eggAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a *eggAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	// .egg file is zip format and PKG-INFO needs to be extracted from the zip file.
 	pkginfoInZip, err := findFileInZip(input.Content, input.Info.Size(), isEggFile)
 	if err != nil {
@@ -57,7 +57,7 @@ func (a *eggAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (
 		return nil, xerrors.Errorf("unable to convert PKG-INFO reader: %w", err)
 	}
 
-	app, err := language.ParsePackage(types.PythonPkg, input.FilePath, rsa, packaging.NewParser(), input.Options.FileChecksum)
+	app, err := language.ParsePackage(ctx, types.PythonPkg, input.FilePath, rsa, packaging.NewParser(), input.Options.FileChecksum)
 	if err != nil {
 		return nil, xerrors.Errorf("parse error: %w", err)
 	} else if app == nil {

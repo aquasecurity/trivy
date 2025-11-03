@@ -88,8 +88,8 @@ func GetComplianceSpec(specNameOrPath, cacheDir string) (ComplianceSpec, error) 
 
 	var b []byte
 	var err error
-	if strings.HasPrefix(specNameOrPath, "@") { // load user specified spec from disk
-		b, err = os.ReadFile(strings.TrimPrefix(specNameOrPath, "@"))
+	if after, ok := strings.CutPrefix(specNameOrPath, "@"); ok { // load user specified spec from disk
+		b, err = os.ReadFile(after)
 		if err != nil {
 			return ComplianceSpec{}, fmt.Errorf("error retrieving compliance spec from path: %w", err)
 		}

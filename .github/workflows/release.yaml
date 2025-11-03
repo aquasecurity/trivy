@@ -19,12 +19,12 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0
 
       - name: Restore Trivy binaries from cache
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: dist/
           key: ${{ runner.os }}-bins-${{github.workflow}}-${{github.sha}}
@@ -35,11 +35,10 @@ jobs:
           sudo apt-get -y install rpm reprepro createrepo-c distro-info
 
       - name: Checkout trivy-repo
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           repository: ${{ github.repository_owner }}/trivy-repo
           path: trivy-repo
-          fetch-depth: 0
           token: ${{ secrets.ORG_REPO_TOKEN }}
 
       - name: Setup git settings
@@ -62,7 +61,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0
 
@@ -72,9 +71,10 @@ jobs:
           git config --global user.name "GitHub Actions"
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
         with:
           go-version-file: go.mod
+          cache: false
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -85,3 +85,43 @@ jobs:
           # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
           # This allows the created PR to trigger tests and other workflows
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+
+  # `trigger-version-update` triggers the `update_version` workflow in the `trivy-telemetry` repository
+  # and the trivy-downloads repository.
+  trigger-version-update:
+    needs: deploy-packages
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Trigger update_version workflow in trivy-telemetry
+        env:
+          # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
+          # This allows triggering workflows in other repositories
+          GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+        run: |
+          gh workflow run update_version.yml \
+            --repo ${{ github.repository_owner }}/trivy-telemetry \
+            --ref main \
+            --field version=${{ github.ref_name }}
+
+      - name: Trigger update_version workflow in trivy-downloads
+        env:
+          # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
+          # This allows triggering workflows in other repositories
+          GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+        run: |
+          gh workflow run update_version.yml \
+            --repo ${{ github.repository_owner }}/trivy-downloads \
+            --ref main \
+            --field version=${{ github.ref_name }} \
+            --field artifact=trivy
+
+      - name: Trigger version update and release workflow in trivy-chocolatey
+        env:
+          # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
+          # This allows triggering workflows in other repositories
+          GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+        run: |
+          gh workflow run release.yml \
+            --repo ${{ github.repository_owner }}/trivy-chocolatey \
+            --ref main \
+            --field version=${{ github.ref_name }}

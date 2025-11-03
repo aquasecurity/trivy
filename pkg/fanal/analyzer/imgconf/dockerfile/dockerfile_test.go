@@ -168,6 +168,10 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 							EmptyLayer: false,
 						},
 						{
+							CreatedBy:  "USER root", // .Config.User takes precedence over this line
+							EmptyLayer: true,
+						},
+						{
 							CreatedBy:  `HEALTHCHECK &{["CMD-SHELL" "curl -sS 127.0.0.1 || exit 1"] "10s" "3s" "0s" '\x00'}`,
 							EmptyLayer: true,
 						},
@@ -426,12 +430,12 @@ func Test_ImageConfigToDockerfile(t *testing.T) {
 				},
 			},
 			expected: `ARG TAG=latest
-ENV TAG=latest
+ENV TAG="latest"
 ENTRYPOINT ["/bin/sh" "-c" "echo test"]
 `,
 		},
 		{
-			name: "buildah backend or docker legacy builder (DOCKER_BUILDKIT=0)",
+			name: "remove backend-specific metadata suffixes",
 			input: &v1.ConfigFile{
 				History: []v1.History{
 					{
@@ -441,14 +445,29 @@ ENTRYPOINT ["/bin/sh" "-c" "echo test"]
 						CreatedBy: "/bin/sh -c #(nop) ADD file:24d346633efc860b5011cefa5c0af73006e74e5dfb3c5c0e9cb0e90a927931e1 in readme |inheritLabels=false",
 					},
 					{
+						CreatedBy: "/bin/sh -c #(nop) HEALTHCHECK NONE|unsetLabel=true|inheritLabels=false|force-mtime=10",
+					},
+					{
 						CreatedBy: `/bin/sh -c #(nop) ENTRYPOINT ["/bin/sh"]|inheritLabels=false`,
 					},
 				},
 			},
 			expected: `COPY dir:3a024d8085bc39741a0a094a8e287a00a760975c7c2e6b5dc6c7d3174b7d1ab6 ./files
 ADD file:24d346633efc860b5011cefa5c0af73006e74e5dfb3c5c0e9cb0e90a927931e1 readme
+HEALTHCHECK NONE
 ENTRYPOINT ["/bin/sh"]
 `,
+		},
+		{
+			name: "legacy env format",
+			input: &v1.ConfigFile{
+				History: []v1.History{
+					{
+						CreatedBy: "ENV TEST=foo bar",
+					},
+				},
+			},
+			expected: "ENV TEST=\"foo bar\"\n",
 		},
 	}
 

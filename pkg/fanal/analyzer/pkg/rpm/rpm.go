@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 func init() {
@@ -39,6 +40,9 @@ var (
 		// SQLite3
 		"usr/lib/sysimage/rpm/rpmdb.sqlite",
 		"var/lib/rpm/rpmdb.sqlite",
+
+		// CoreOS
+		"usr/share/rpm/rpmdb.sqlite",
 	}
 
 	errUnexpectedNameFormat = xerrors.New("unexpected name format")
@@ -261,7 +265,7 @@ func packageProvidedByVendor(pkg *rpmdb.PackageInfo) bool {
 }
 
 func writeToTempFile(rc io.Reader) (string, error) {
-	tmpDir, err := os.MkdirTemp("", "rpm")
+	tmpDir, err := xos.MkdirTemp("", "rpmdb-")
 	if err != nil {
 		return "", xerrors.Errorf("failed to create a temp dir: %w", err)
 	}

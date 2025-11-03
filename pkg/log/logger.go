@@ -26,6 +26,8 @@ const (
 	PrefixVulnerabilityDB  = "vulndb"
 	PrefixJavaDB           = "javadb"
 	PrefixSPDX             = "spdx"
+	PrefixCycloneDX        = "cyclonedx"
+	PrefixCloud            = "cloud"
 )
 
 // Logger is an alias of slog.Logger

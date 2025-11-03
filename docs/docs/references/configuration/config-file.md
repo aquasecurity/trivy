@@ -495,6 +495,9 @@ rego:
   # Same as '--config-data'
   data: []
 
+  # Same as '--rego-error-limit'
+  error-limit: 10
+
   # Same as '--include-deprecated-checks'
   include-deprecated-checks: false
 
@@ -504,7 +507,7 @@ rego:
   # Same as '--skip-check-update'
   skip-check-update: false
 
-  # Same as '--trace'
+  # Same as '--trace-rego'
   trace: false
 
 ```
@@ -530,7 +533,7 @@ ignore-policy: ""
 ignorefile: ".trivyignore"
 
 # Same as '--list-all-pkgs'
-list-all-pkgs: false
+list-all-pkgs: true
 
 # Same as '--output'
 output: ""

@@ -218,6 +218,38 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "git repository: artifact type is changed to repository",
+			fields: fields{
+				dir: "../../../../internal/gittest/testdata/test-repo",
+			},
+			wantBlobs: []cachetest.WantBlob{
+				{
+					// Cache key is based on commit hash (8a19b492a589955c3e70c6ad8efd1e4ec6ae0d35)
+					ID: "sha256:c7173e152a268c038257b877794285986c52ac569de7e516b2963f557f4e26ee",
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: types.BlobJSONSchemaVersion,
+					},
+				},
+			},
+			want: artifact.Reference{
+				Name: "../../../../internal/gittest/testdata/test-repo",
+				Type: types.TypeRepository,
+				ID:   "sha256:c7173e152a268c038257b877794285986c52ac569de7e516b2963f557f4e26ee",
+				BlobIDs: []string{
+					"sha256:c7173e152a268c038257b877794285986c52ac569de7e516b2963f557f4e26ee",
+				},
+				RepoMetadata: artifact.RepoMetadata{
+					RepoURL:   "https://github.com/aquasecurity/trivy-test-repo/",
+					Branch:    "main",
+					Tags:      []string{"v0.0.1"},
+					Commit:    "8a19b492a589955c3e70c6ad8efd1e4ec6ae0d35",
+					CommitMsg: "Update README.md",
+					Author:    "Teppei Fukuda <knqyf263@gmail.com>",
+					Committer: "GitHub <noreply@github.com>",
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -691,6 +723,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			},
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set fake UUID for consistent test results
@@ -2315,6 +2348,7 @@ func TestYAMLConfigScan(t *testing.T) {
 		artifactOpt artifact.Option
 		wantBlobs   []cachetest.WantBlob
 		want        artifact.Reference
+		wantErr     string
 	}{
 		{
 			name: "happy path without custom schema",
@@ -2435,6 +2469,40 @@ func TestYAMLConfigScan(t *testing.T) {
 				Type: types.TypeFilesystem,
 			},
 		},
+		{
+			name: "with rego error limit",
+			fields: fields{
+				dir: "./testdata/misconfig/yaml/with-rego-error-limit/src",
+			},
+			artifactOpt: artifact.Option{
+				MisconfScannerOption: misconf.ScannerOption{
+					Namespaces: []string{"user"},
+					PolicyPaths: []string{
+						"./testdata/misconfig/yaml/with-rego-error-limit/checks/test_2_errors.rego",
+						"./testdata/misconfig/yaml/with-rego-error-limit/checks/test.json",
+					},
+					RegoErrorLimit: 1,
+				},
+			},
+			wantErr: "ego_type_error: undefined ref: input.wrong_ref",
+		},
+		{
+			name: "with Rego error limit 0",
+			fields: fields{
+				dir: "./testdata/misconfig/yaml/with-rego-error-limit/src",
+			},
+			artifactOpt: artifact.Option{
+				MisconfScannerOption: misconf.ScannerOption{
+					Namespaces: []string{"user"},
+					PolicyPaths: []string{
+						"./testdata/misconfig/yaml/with-rego-error-limit/checks/test_1_error.rego",
+						"./testdata/misconfig/yaml/with-rego-error-limit/checks/test.json",
+					},
+					RegoErrorLimit: 0,
+				},
+			},
+			wantErr: "ego_type_error: undefined ref: input.wrong_ref",
+		},
 	}
 
 	for _, tt := range tests {
@@ -2455,6 +2523,10 @@ func TestYAMLConfigScan(t *testing.T) {
 			require.NoError(t, err)
 
 			got, err := a.Inspect(t.Context())
+			if tt.wantErr != "" {
+				assert.ErrorContains(t, err, tt.wantErr)
+				return
+			}
 			require.NoError(t, err)
 			require.NotNil(t, got)
 
@@ -2528,6 +2600,63 @@ func TestArtifact_AnalysisStrategy(t *testing.T) {
 
 			// Check if the walked roots match the expected roots
 			assert.ElementsMatch(t, tt.wantRoots, rw.walkedRoots)
+		})
+	}
+}
+
+func Test_sanitizeRemoteURL(t *testing.T) {
+	tests := []struct {
+		name string
+		in   string
+		want string
+	}{
+		{
+			name: "https with user:pass",
+			in:   "https://user:token@github.com/org/repo.git",
+			want: "https://github.com/org/repo.git",
+		},
+		{
+			name: "port in authority with userinfo",
+			in:   "https://user:pass@host:8443/repo.git",
+			want: "https://host:8443/repo.git",
+		},
+		{
+			name: "http with username only",
+			in:   "http://user@github.com/org/repo",
+			want: "http://github.com/org/repo",
+		},
+		{
+			name: "double scheme after userinfo",
+			in:   "https://gitlab-ci-token:glcbt-64_QwERTyuiOp-AsD2NgCJ7@example.com/gitrepo.git",
+			want: "https://example.com/gitrepo.git",
+		},
+		{
+			name: "ssh scheme with username",
+			in:   "ssh://git@github.com/org/repo.git",
+			want: "ssh://github.com/org/repo.git",
+		},
+		{
+			name: "scp-like ssh unchanged",
+			in:   "git@github.com:org/repo.git",
+			want: "git@github.com:org/repo.git",
+		},
+		{
+			name: "already clean https",
+			in:   "https://github.com/org/repo.git",
+			want: "https://github.com/org/repo.git",
+		},
+		{
+			name: "no scheme left as-is",
+			in:   "github.com/org/repo.git",
+			want: "github.com/org/repo.git",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got := sanitizeRemoteURL(tt.in)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

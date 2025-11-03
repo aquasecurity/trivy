@@ -1,6 +1,7 @@
 package network
 
 import (
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -19,16 +20,10 @@ type SecurityGroupRule struct {
 	Outbound             iacTypes.BoolValue
 	Allow                iacTypes.BoolValue
 	SourceAddresses      []iacTypes.StringValue
-	SourcePorts          []PortRange
+	SourcePorts          []common.PortRange
 	DestinationAddresses []iacTypes.StringValue
-	DestinationPorts     []PortRange
+	DestinationPorts     []common.PortRange
 	Protocol             iacTypes.StringValue
-}
-
-type PortRange struct {
-	Metadata iacTypes.Metadata
-	Start    iacTypes.IntValue
-	End      iacTypes.IntValue
 }
 
 type NetworkWatcherFlowLog struct {

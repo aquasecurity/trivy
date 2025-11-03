@@ -21,6 +21,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
     ignore:
       - dependency-name: "github.com/aquasecurity/trivy-*" ## `trivy-*` dependencies are updated manually
     groups:

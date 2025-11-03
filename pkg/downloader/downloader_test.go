@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/downloader"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
 func TestDownload(t *testing.T) {
@@ -42,8 +43,13 @@ func TestDownload(t *testing.T) {
 			// Set up the destination path
 			dst := t.TempDir()
 
+			// Configure the HTTP transport with the insecure option
+			ctx := xhttp.WithTransport(t.Context(), xhttp.NewTransport(xhttp.Options{
+				Insecure: tt.insecure,
+			}))
+
 			// Execute the download
-			_, err := downloader.Download(t.Context(), server.URL, dst, "", downloader.Options{
+			_, err := downloader.Download(ctx, server.URL, dst, "", downloader.Options{
 				Insecure: tt.insecure,
 			})
 

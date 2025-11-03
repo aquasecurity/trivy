@@ -14,6 +14,8 @@ import (
 	dimage "github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	"golang.org/x/xerrors"
+
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 var (
@@ -130,7 +132,7 @@ func PodmanImage(ref, host string) (Image, func(), error) {
 		return nil, cleanup, xerrors.Errorf("unable to inspect the image (%s): %w", ref, err)
 	}
 
-	f, err := os.CreateTemp("", "fanal-*")
+	f, err := xos.CreateTemp("", "podman-export-")
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to create a temporary file: %w", err)
 	}

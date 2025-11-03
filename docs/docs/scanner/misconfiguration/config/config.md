@@ -46,6 +46,22 @@ This can be repeated for specifying multiple packages.
 trivy config --config-check ./my-check --namespaces main --namespaces user ./configs
 ```
 
+### Limiting Rego compile errors
+
+By default, Trivy limits the number of compile errors allowed during Rego policy compilation.
+You can configure this limit using the `--rego-error-limit` flag.
+
+```bash
+trivy config --rego-error-limit 20 ./configs
+```
+
+This flag controls the maximum number of compile errors Trivy will tolerate before stopping the compilation.
+
+If the number of compile errors exceeds this limit, Trivy will terminate the scan.
+You can set `--rego-error-limit 0` to enforce strict checking and disallow any compile errors.
+
+The default value is defined internally via [CompileErrorLimit](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}pkg/iac/rego/scanner.go).
+
 ### Private Terraform registries
 Trivy can download Terraform code from private registries.
 To pass credentials you must use the `TF_TOKEN_` environment variables.
@@ -64,12 +80,84 @@ From the Terraform [docs](https://developer.hashicorp.com/terraform/cli/config/c
 
 If multiple variables evaluate to the same hostname, Trivy will choose the environment variable name where the dashes have not been encoded as double underscores.
 
+### Scan arbitrary JSON and YAML configurations
+By default, scanning JSON and YAML configurations is disabled, since Trivy does not contain built-in checks for these configurations. To enable it, pass the `json` or `yaml` to `--misconfig-scanners`. See [Enabling a subset of misconfiguration scanners](#enabling-a-subset-of-misconfiguration-scanners) for more information. Trivy will pass each file as is to the checks input.
+
+
+!!! example
+```bash
+$ cat iac/serverless.yaml
+service: serverless-rest-api-with-pynamodb
+
+frameworkVersion: ">=2.24.0"
+
+plugins:
+  - serverless-python-requirements
+...
+
+$ cat serverless.rego
+# METADATA
+# title: Serverless Framework service name not starting with "aws-"
+# description: Ensure that Serverless Framework service names start with "aws-"
+# schemas:
+#   - input: schema["serverless-schema"]
+# custom:
+#   avd_id: AVD-SF-0001
+#   severity: LOW
+package user.serverless001
+
+deny[res] {
+    not startswith(input.service, "aws-")
+    res := result.new(
+        sprintf("Service name %q is not allowed", [input.service]),
+        input.service
+    )
+}
+
+$ trivy config --misconfig-scanners=json,yaml --config-check ./serverless.rego --check-namespaces user ./iac
+serverless.yaml (yaml)
+
+Tests: 4 (SUCCESSES: 3, FAILURES: 1)
+Failures: 1 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+
+LOW: Service name "serverless-rest-api-with-pynamodb" is not allowed
+═════════════════════════════════════════════════════════════════════════════════════════════════════════
+Ensure that Serverless Framework service names start with "aws-"
+```
+
+!!! note
+In the case above, the custom check specified has a metadata annotation for the input schema `input: schema["serverless-schema"]`. This allows Trivy to type check the input IaC files provided.
+
+Optionally, you can also pass schemas using the `config-file-schemas` flag. Trivy will use these schemas for file filtering and type checking in Rego checks.
+
+!!! example
+```bash
+$ trivy config --misconfig-scanners=json,yaml --config-check ./serverless.rego --check-namespaces user --config-file-schemas ./serverless-schema.json ./iac
+```
+
+If the `--config-file-schemas` flag is specified Trivy ensures that each input IaC config file being scanned is type-checked against the schema. If the input file does not match any of the passed schemas, it will be ignored.
+
+If the schema is specified in the check metadata and is in the directory specified in the `--config-check` argument, it will be automatically loaded as specified [here](../custom/schema.md#custom-checks-with-custom-schemas), and will only be used for type checking in Rego.
+
+!!! note
+If a user specifies the `--config-file-schemas` flag, all input IaC config files are ensured that they pass type-checking. It is not required to pass an input schema in case type checking is not required. This is helpful for scenarios where you simply want to write a Rego check and pass in IaC input for it. Such a use case could include scanning for a new service which Trivy might not support just yet.
+
+!!! tip
+It is also possible to specify multiple input schemas with `--config-file-schema` flag as it can accept a comma separated list of file paths or a directory as input. In the case of multiple schemas being specified, all of them will be evaluated against all the input files.
+
 
 ### Filtering resources by inline comments
 
-Trivy supports ignoring misconfigured resources by inline comments for Terraform, CloudFormation and Helm configuration files only.
+Trivy supports ignoring misconfigured resources by inline comments for Terraform, CloudFormation, Helm and Dockerfile configuration files only.
 
 In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned). The format for these comments is `trivy:ignore:<rule>` immediately following the format-specific line-comment [token](https://developer.hashicorp.com/terraform/language/syntax/configuration#comments).
+
+
+!!!note
+    Inline ignore rules only work for checks associated with an existing resource.
+    Checks triggered by the absence of a resource (e.g., **AVD-DS-0002** when a Dockerfile lacks a `USER` instruction) cannot be ignored inline.  
+    Use a [.trivyignore.yaml](../../../configuration/filtering.md#trivyignoreyaml) file to ignore such checks.
+
 
 The ignore rule must contain one of the possible check IDs that can be found in its metadata: ID, short code or alias. The `id` from the metadata is not case-sensitive, so you can specify, for example, `AVD-AWS-0089` or `avd-aws-0089`.
 
@@ -105,7 +193,6 @@ As an example, consider the following check metadata:
   # severity: LOW
   # short_code: enable-logging
 ```
-
 Long ID would look like the following: `aws-s3-enable-logging`.
 
 Example for CloudFromation:
@@ -257,3 +344,126 @@ You can use wildcards in the `ws` (workspace) and `ignore` sections of the ignor
 
 This example ignores all checks starting with `aws-s3-` for workspaces matching the pattern `dev-*`.
 
+### Expiration Date
+
+You can specify the expiration date of the ignore rule in `yyyy-mm-dd` format. This is a useful feature when you want to make sure that an ignored issue is not forgotten and worth revisiting in the future. For example:
+```tf
+#trivy:ignore:aws-s3-enable-logging:exp:2024-03-10
+resource "aws_s3_bucket" "example" {
+  bucket = "test"
+}
+```
+
+The `aws-s3-enable-logging` check will be ignored until `2024-03-10` until the ignore rule expires.
+
+#### Ignoring by attributes
+
+You can ignore a resource by its attribute value. This is useful when using the `for-each` meta-argument. For example:
+
+```tf
+locals {
+  ports = ["3306", "5432"]
+}
+
+#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=3306]
+resource "aws_security_group_rule" "example" {
+  for_each                 = toset(local.ports)
+  type                     = "ingress"
+  from_port                = each.key
+  to_port                  = each.key
+  protocol                 = "TCP"
+  cidr_blocks              = ["0.0.0.0/0"]
+  security_group_id        = aws_security_group.example.id
+  source_security_group_id = aws_security_group.example.id
+}
+```
+
+The `aws-ec2-no-public-ingress-sgr` check will be ignored only for the `aws_security_group_rule` resource with port number `5432`. It is important to note that the ignore rule should not enclose the attribute value in quotes, despite the fact that the port is represented as a string.
+
+If you want to ignore multiple resources on different attributes, you can specify multiple ignore rules:
+
+```tf
+#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=3306]
+#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=5432]
+```
+
+You can also ignore a resource on multiple attributes in the same rule:
+```tf
+locals {
+  rules = {
+    first = {
+      port = 1000
+      type = "ingress"
+    },
+    second = {
+      port = 1000
+      type = "egress"
+    }
+  }
+}
+
+#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=1000,type=egress]
+resource "aws_security_group_rule" "example" {
+  for_each = { for k, v in local.rules : k => v }
+
+  type                     = each.value.type
+  from_port                = each.value.port
+  to_port                  = each.value.port
+  protocol                 = "TCP"
+  cidr_blocks              = ["0.0.0.0/0"]
+  security_group_id        = aws_security_group.example.id
+  source_security_group_id = aws_security_group.example.id
+}
+```
+
+Checks can also be ignored by nested attributes:
+
+```tf
+#trivy:ignore:*[logging_config.prefix=myprefix]
+resource "aws_cloudfront_distribution" "example" {
+  logging_config {
+    include_cookies = false
+    bucket          = "mylogs.s3.amazonaws.com"
+    prefix          = "myprefix"
+  }
+}
+```
+
+#### Ignoring module issues
+
+Issues in third-party modules cannot be ignored using the method described above, because you may not have access to modify the module source code. In such a situation you can add ignore rules above the module block, for example:
+
+```tf
+#trivy:ignore:aws-s3-enable-logging
+module "s3_bucket" {
+  source = "terraform-aws-modules/s3-bucket/aws"
+
+  bucket = "my-s3-bucket"
+}
+```
+
+An example of ignoring checks for a specific bucket in a module:
+```tf
+locals {
+  bucket = ["test1", "test2"]
+}
+
+#trivy:ignore:*[bucket=test1]
+module "s3_bucket" {
+  for_each = toset(local.bucket)
+  source   = "terraform-aws-modules/s3-bucket/aws"
+  bucket   = each.value
+}
+```
+
+#### Support for Wildcards
+
+You can use wildcards in the `ws` (workspace) and `ignore` sections of the ignore rules.
+
+```tf
+# trivy:ignore:aws-s3-*:ws:dev-*
+```
+
+This example ignores all checks starting with `aws-s3-` for workspaces matching the pattern `dev-*`.
+
+[custom]: custom/index.md

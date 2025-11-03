@@ -24,9 +24,9 @@ const (
 // swiftLockAnalyzer analyzes Package.resolved files
 type swiftLockAnalyzer struct{}
 
-func (a swiftLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a swiftLockAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	p := swift.NewParser()
-	res, err := language.Analyze(types.Swift, input.FilePath, input.Content, p)
+	res, err := language.Analyze(ctx, types.Swift, input.FilePath, input.Content, p)
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
 	}

@@ -118,6 +118,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 											},
 											"precision":         "very-high",
 											"security-severity": "7.5",
+											"cvssv3_vector":     "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+											"cvssv3_baseScore":  7.5,
 										},
 										Help: &sarif.MultiformatMessageString{
 											Text:     lo.ToPtr("Vulnerability CVE-2020-0001\nSeverity: HIGH\nPackage: foo\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)\nbaz"),
@@ -487,7 +489,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 								RuleID:    lo.ToPtr("alpine-base:GPL-3.0"),
 								RuleIndex: lo.ToPtr(uint(0)),
 								Level:     lo.ToPtr("error"),
-								Message:   sarif.Message{Text: lo.ToPtr("Artifact: OS Packages\nLicense GPL-3.0\nPkgName: restricted\n Classification: alpine-base\n Path: ")},
+								Message:   sarif.Message{Text: lo.ToPtr("Artifact: OS Packages\nLicense GPL-3.0\nPkgName: alpine-base\n Classification: restricted\n Path: ")},
 								Locations: []*sarif.Location{
 									{
 										Message: sarif.NewTextMessage(""),

@@ -15,6 +15,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/fanal/image/name"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -68,7 +69,7 @@ func (m *Decoder) Decode(ctx context.Context, sbom *types.SBOM) error {
 	m.addLangPkgs(sbom)
 
 	// Add remaining packages
-	if err := m.addOrphanPkgs(ctx, sbom); err != nil {
+	if err := m.addOrphanPkgs(sbom); err != nil {
 		return xerrors.Errorf("failed to aggregate packages: %w", err)
 	}
 
@@ -105,6 +106,10 @@ func (m *Decoder) decodeRoot(s *types.SBOM) error {
 			s.Metadata.DiffIDs = append(s.Metadata.DiffIDs, prop.Value)
 		case core.PropertyRepoTag:
 			s.Metadata.RepoTags = append(s.Metadata.RepoTags, prop.Value)
+		case core.PropertyReference:
+			if s.Metadata.Reference, err = name.ParseReference(prop.Value); err != nil {
+				m.logger.Warn("Failed to parse image reference", log.String("value", prop.Value), log.Err(err))
+			}
 		}
 	}
 	return nil
@@ -201,30 +206,8 @@ func (m *Decoder) decodePackage(ctx context.Context, c *core.Component) (*ftypes
 	pkg.Name = m.pkgName(pkg, c)
 	pkg.ID = dependency.ID(p.LangType(), pkg.Name, p.Version) // Re-generate ID with the updated name
 
-	var err error
-	for _, prop := range c.Properties {
-		switch prop.Name {
-		case core.PropertyPkgID:
-			pkg.ID = prop.Value
-		case core.PropertyFilePath:
-			pkg.FilePath = prop.Value
-		case core.PropertySrcName:
-			pkg.SrcName = prop.Value
-		case core.PropertySrcVersion:
-			pkg.SrcVersion = prop.Value
-		case core.PropertySrcRelease:
-			pkg.SrcRelease = prop.Value
-		case core.PropertySrcEpoch:
-			if pkg.SrcEpoch, err = strconv.Atoi(prop.Value); err != nil {
-				return nil, xerrors.Errorf("invalid src epoch: %w", err)
-			}
-		case core.PropertyModularitylabel:
-			pkg.Modularitylabel = prop.Value
-		case core.PropertyLayerDigest:
-			pkg.Layer.Digest = prop.Value
-		case core.PropertyLayerDiffID:
-			pkg.Layer.DiffID = prop.Value
-		}
+	if err := fillPkgFieldsFromComponentProps(c.Properties, pkg); err != nil {
+		return nil, xerrors.Errorf("failed to fill package properties: %w", err)
 	}
 
 	pkg.Identifier.BOMRef = c.PkgIdentifier.BOMRef
@@ -369,7 +352,7 @@ func (m *Decoder) traverseDependencies(id uuid.UUID) ftypes.Packages {
 
 // addOrphanPkgs adds orphan packages.
 // Orphan packages are packages that are not related to any components.
-func (m *Decoder) addOrphanPkgs(ctx context.Context, sbom *types.SBOM) error {
+func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 	osPkgMap := make(map[string]ftypes.Packages)
 	langPkgMap := make(map[ftypes.LangType]ftypes.Packages)
 	for _, pkg := range m.pkgs {
@@ -387,17 +370,18 @@ func (m *Decoder) addOrphanPkgs(ctx context.Context, sbom *types.SBOM) error {
 		return xerrors.Errorf("multiple types of OS packages in SBOM are not supported (%q)", lo.Keys(osPkgMap))
 	}
 
-	// Add OS packages only when OS is detected.
+	// Add OS packages
 	for _, pkgs := range osPkgMap {
-		if sbom.Metadata.OS == nil || !sbom.Metadata.OS.Detected() {
-			m.logger.WarnContext(ctx, "Ignore the OS package as no OS is detected.")
-			break
-		}
-
 		// TODO: mismatch between the OS and the packages should be rejected.
 		// e.g. OS: debian, Packages: rpm
-		sort.Sort(pkgs)
-		sbom.Packages = append(sbom.Packages, ftypes.PackageInfo{Packages: pkgs})
+
+		// addOSPkgs creates exactly one PackageInfo with empty FilePath, so we can merge directly
+		if len(sbom.Packages) == 0 {
+			sbom.Packages = append(sbom.Packages, ftypes.PackageInfo{})
+		}
+		// Merge with existing PackageInfo (always sbom.Packages[0])
+		sbom.Packages[0].Packages = append(sbom.Packages[0].Packages, pkgs...)
+		sort.Sort(sbom.Packages[0].Packages)
 
 		break // Just take the first element
 	}
@@ -409,6 +393,46 @@ func (m *Decoder) addOrphanPkgs(ctx context.Context, sbom *types.SBOM) error {
 			Type:     pkgType,
 			Packages: pkgs,
 		})
+	}
+	return nil
+}
+
+func fillPkgFieldsFromComponentProps(props []core.Property, pkg *ftypes.Package) error {
+	buildInfo := &ftypes.BuildInfo{}
+	var err error
+	for _, prop := range props {
+		switch prop.Name {
+		case core.PropertyPkgID:
+			pkg.ID = prop.Value
+		case core.PropertyFilePath:
+			pkg.FilePath = prop.Value
+		case core.PropertySrcName:
+			pkg.SrcName = prop.Value
+		case core.PropertySrcVersion:
+			pkg.SrcVersion = prop.Value
+		case core.PropertySrcRelease:
+			pkg.SrcRelease = prop.Value
+		case core.PropertySrcEpoch:
+			if pkg.SrcEpoch, err = strconv.Atoi(prop.Value); err != nil {
+				return xerrors.Errorf("invalid src epoch: %w", err)
+			}
+		case core.PropertyModularitylabel:
+			pkg.Modularitylabel = prop.Value
+		case core.PropertyLayerDigest:
+			pkg.Layer.Digest = prop.Value
+		case core.PropertyLayerDiffID:
+			pkg.Layer.DiffID = prop.Value
+		case core.PropertyContentSet:
+			buildInfo.ContentSets = append(buildInfo.ContentSets, prop.Value)
+		case core.PropertyNVR:
+			buildInfo.Nvr = prop.Value
+		case core.PropertyArch:
+			buildInfo.Arch = prop.Value
+		}
+	}
+
+	if len(buildInfo.ContentSets) > 0 || buildInfo.Nvr != "" {
+		pkg.BuildInfo = buildInfo
 	}
 	return nil
 }

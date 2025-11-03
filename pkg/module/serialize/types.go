@@ -26,6 +26,6 @@ type PostScanSpec struct {
 	Action PostScanAction
 
 	// IDs represent which vulnerability and misconfiguration ID will be updated or deleted in post scanning.
-	// When the action is UPDATE, the matched result will be passed to the module.
+	// When the action is UPDATE or DELETE, the matched result will be passed to the module.
 	IDs []string
 }

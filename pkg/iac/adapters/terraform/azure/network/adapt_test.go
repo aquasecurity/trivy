@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -62,14 +63,14 @@ func Test_Adapt(t *testing.T) {
 								DestinationAddresses: []iacTypes.StringValue{
 									iacTypes.String("*", iacTypes.NewTestMetadata()),
 								},
-								SourcePorts: []network.PortRange{
+								SourcePorts: []common.PortRange{
 									{
 										Metadata: iacTypes.NewTestMetadata(),
 										Start:    iacTypes.IntTest(0),
 										End:      iacTypes.IntTest(65535),
 									},
 								},
-								DestinationPorts: []network.PortRange{
+								DestinationPorts: []common.PortRange{
 									{
 										Metadata: iacTypes.NewTestMetadata(),
 										Start:    iacTypes.IntTest(3389),

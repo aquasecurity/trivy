@@ -8,7 +8,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/mitchellh/mapstructure"
+	"github.com/go-viper/mapstructure/v2"
 	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/samber/lo"
@@ -23,8 +23,9 @@ import (
 const annotationScopePackage = "package"
 
 type StaticMetadata struct {
-	Deprecated          bool
-	ID                  string
+	Deprecated bool
+	ID         string
+	// Deprecated: Use the ID field instead.
 	AVDID               string
 	Title               string
 	ShortCode           string
@@ -179,7 +180,7 @@ func (sm *StaticMetadata) updateAliases(meta map[string]any) {
 	}
 }
 
-func (sm *StaticMetadata) hasAnyFramework(frameworks []framework.Framework) bool {
+func (sm *StaticMetadata) matchAnyFramework(frameworks []framework.Framework) bool {
 	if len(frameworks) == 0 {
 		frameworks = []framework.Framework{framework.Default}
 	}
@@ -272,6 +273,7 @@ func (sm *StaticMetadata) ToRule() scan.Rule {
 
 	return scan.Rule{
 		Deprecated:          sm.Deprecated,
+		ID:                  sm.ID,
 		AVDID:               sm.AVDID,
 		Aliases:             append(sm.Aliases, sm.ID),
 		ShortCode:           sm.ShortCode,

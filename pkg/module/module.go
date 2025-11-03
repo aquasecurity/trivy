@@ -192,7 +192,7 @@ func ptrSizeToString(mem api.Memory, ptrSize uint64) (string, error) {
 	return string(buf), nil
 }
 
-// stringToPtr returns a pointer and size pair for the given string in a way compatible with WebAssembly numeric types.
+// stringToPtrSize returns a pointer and size pair for the given string in a way compatible with WebAssembly numeric types.
 // The caller is responsible for calling free at some point if needed.
 func stringToPtrSize(ctx context.Context, s string, mod api.Module, malloc api.Function) (uint64, uint64, error) {
 	size := uint64(len(s))

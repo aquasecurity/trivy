@@ -1,6 +1,7 @@
 package context
 
 import (
+	"maps"
 	"strings"
 
 	"github.com/hashicorp/hcl/v2"
@@ -126,9 +127,7 @@ func mergeVars(src cty.Value, parts []string, value cty.Value) cty.Value {
 func mergeObjects(a, b cty.Value) cty.Value {
 	output := make(map[string]cty.Value)
 
-	for key, val := range a.AsValueMap() {
-		output[key] = val
-	}
+	maps.Copy(output, a.AsValueMap())
 	b.ForEachElement(func(key, val cty.Value) (stop bool) {
 		k := key.AsString()
 		old := output[k]
@@ -143,5 +142,10 @@ func mergeObjects(a, b cty.Value) cty.Value {
 }
 
 func isNotEmptyObject(val cty.Value) bool {
-	return !val.IsNull() && val.IsKnown() && val.Type().IsObjectType() && val.LengthInt() > 0
+	if val.IsNull() || !val.IsKnown() || !val.Type().IsObjectType() {
+		return false
+	}
+
+	unmarked, _ := val.Unmark()
+	return unmarked.LengthInt() > 0
 }

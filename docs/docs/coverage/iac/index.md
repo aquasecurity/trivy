@@ -22,4 +22,4 @@ Trivy scans Infrastructure as Code (IaC) files for
 
 [misconf]: ../../scanner/misconfiguration/index.md
 [secret]: ../../scanner/secret.md
-[json-and-yaml]: ../../scanner/misconfiguration/index.md#scan-arbitrary-json-and-yaml-configurations
+[json-and-yaml]: ../../scanner/misconfiguration/config/config.md#scan-arbitrary-json-and-yaml-configurations

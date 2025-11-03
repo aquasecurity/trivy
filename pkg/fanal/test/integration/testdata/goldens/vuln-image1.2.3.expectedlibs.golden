@@ -12,7 +12,6 @@
         },
         "Version": "2.7.2",
         "Relationship": "direct",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 51,
@@ -32,7 +31,6 @@
         "DependsOn": [
           "i18n@1.6.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 53,
@@ -49,7 +47,6 @@
         },
         "Version": "2.2.0",
         "Relationship": "direct",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 60,
@@ -70,7 +67,6 @@
           "coderay@1.1.2",
           "method_source@0.9.2"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 79,
@@ -100,7 +96,6 @@
           "railties@5.2.3",
           "sprockets-rails@3.2.1"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 86,
@@ -126,7 +121,6 @@
           "ruby-progressbar@1.10.0",
           "unicode-display_width@1.5.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 112,
@@ -149,7 +143,6 @@
           "nio4r@2.3.1",
           "websocket-driver@0.7.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 4,
@@ -174,7 +167,6 @@
           "mail@2.7.1",
           "rails-dom-testing@2.0.3"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 8,
@@ -200,7 +192,6 @@
           "rails-dom-testing@2.0.3",
           "rails-html-sanitizer@1.0.3"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 14,
@@ -225,7 +216,6 @@
           "rails-dom-testing@2.0.3",
           "rails-html-sanitizer@1.0.3"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 21,
@@ -247,7 +237,6 @@
           "activesupport@5.2.3",
           "globalid@0.4.2"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 27,
@@ -268,7 +257,6 @@
         "DependsOn": [
           "activesupport@5.2.3"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 30,
@@ -291,7 +279,6 @@
           "activesupport@5.2.3",
           "arel@9.0.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 32,
@@ -314,7 +301,6 @@
           "activerecord@5.2.3",
           "marcel@0.3.3"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 36,
@@ -338,7 +324,6 @@
           "minitest@5.11.3",
           "tzinfo@1.2.5"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 40,
@@ -356,7 +341,6 @@
         "Version": "9.0.0",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 45,
@@ -374,7 +358,6 @@
         "Version": "2.4.0",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 46,
@@ -392,7 +375,6 @@
         "Version": "3.2.3",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 47,
@@ -410,7 +392,6 @@
         "Version": "1.1.2",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 48,
@@ -428,7 +409,6 @@
         "Version": "1.1.5",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 49,
@@ -446,7 +426,6 @@
         "Version": "1.0.4",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 50,
@@ -464,7 +443,6 @@
         "Version": "1.8.0",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 52,
@@ -485,7 +463,6 @@
         "DependsOn": [
           "activesupport@5.2.3"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 55,
@@ -506,7 +483,6 @@
         "DependsOn": [
           "concurrent-ruby@1.1.5"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 57,
@@ -524,7 +500,6 @@
         "Version": "1.5.2",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 59,
@@ -546,7 +521,6 @@
           "crass@1.0.4",
           "nokogiri@1.10.3"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 61,
@@ -567,7 +541,6 @@
         "DependsOn": [
           "mini_mime@1.0.1"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 64,
@@ -588,7 +561,6 @@
         "DependsOn": [
           "mimemagic@0.3.3"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 66,
@@ -606,7 +578,6 @@
         "Version": "0.9.2",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 68,
@@ -624,7 +595,6 @@
         "Version": "0.3.3",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 69,
@@ -642,7 +612,6 @@
         "Version": "1.0.1",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 70,
@@ -660,7 +629,6 @@
         "Version": "2.4.0",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 71,
@@ -678,7 +646,6 @@
         "Version": "5.11.3",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 72,
@@ -696,7 +663,6 @@
         "Version": "2.3.1",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 73,
@@ -717,7 +683,6 @@
         "DependsOn": [
           "mini_portile2@2.4.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 74,
@@ -735,7 +700,6 @@
         "Version": "1.17.0",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 76,
@@ -756,7 +720,6 @@
         "DependsOn": [
           "ast@2.4.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 77,
@@ -774,7 +737,6 @@
         "Version": "3.1.0",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 82,
@@ -792,7 +754,6 @@
         "Version": "2.0.7",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 83,
@@ -813,7 +774,6 @@
         "DependsOn": [
           "rack@2.0.7"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 84,
@@ -835,7 +795,6 @@
           "activesupport@5.2.3",
           "nokogiri@1.10.3"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 99,
@@ -856,7 +815,6 @@
         "DependsOn": [
           "loofah@2.2.3"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 102,
@@ -881,7 +839,6 @@
           "rake@12.3.2",
           "thor@0.20.3"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 104,
@@ -899,7 +856,6 @@
         "Version": "3.0.0",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 110,
@@ -917,7 +873,6 @@
         "Version": "12.3.2",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 111,
@@ -935,7 +890,6 @@
         "Version": "1.10.0",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 120,
@@ -957,7 +911,6 @@
           "concurrent-ruby@1.1.5",
           "rack@2.0.7"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 121,
@@ -980,7 +933,6 @@
           "activesupport@5.2.3",
           "sprockets@3.7.2"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 124,
@@ -998,7 +950,6 @@
         "Version": "0.20.3",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 128,
@@ -1016,7 +967,6 @@
         "Version": "0.3.6",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 129,
@@ -1037,7 +987,6 @@
         "DependsOn": [
           "thread_safe@0.3.6"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 130,
@@ -1055,7 +1004,6 @@
         "Version": "1.5.0",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 132,
@@ -1076,7 +1024,6 @@
         "DependsOn": [
           "websocket-extensions@0.1.3"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 133,
@@ -1094,7 +1041,6 @@
         "Version": "0.1.3",
         "Indirect": true,
         "Relationship": "indirect",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 135,
@@ -1124,7 +1070,6 @@
           "tendril@0.4.1",
           "url@1.7.2"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 2,
@@ -1140,7 +1085,6 @@
           "UID": "527fae74cf16ee7b"
         },
         "Version": "0.1.2",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 15,
@@ -1156,7 +1100,6 @@
           "UID": "7ed30462ad4d3f73"
         },
         "Version": "0.7.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 20,
@@ -1172,7 +1115,6 @@
           "UID": "923d02b9471117a4"
         },
         "Version": "1.0.4",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 25,
@@ -1188,7 +1130,6 @@
           "UID": "534d592a586af917"
         },
         "Version": "0.1.7",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 30,
@@ -1207,7 +1148,6 @@
         "DependsOn": [
           "bitflags@1.0.4"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 35,
@@ -1223,7 +1163,6 @@
           "UID": "31513de656860d15"
         },
         "Version": "0.1.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 43,
@@ -1243,7 +1182,6 @@
           "mac@0.1.1",
           "new_debug_unreachable@1.0.3"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 48,
@@ -1263,7 +1201,6 @@
           "winapi-build@0.1.1",
           "winapi@0.2.8"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 57,
@@ -1287,7 +1224,6 @@
           "quote@0.6.12",
           "syn@0.15.34"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 66,
@@ -1308,7 +1244,6 @@
           "unicode-bidi@0.3.4",
           "unicode-normalization@0.1.8"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 79,
@@ -1324,7 +1259,6 @@
           "UID": "4aff7ab01356bada"
         },
         "Version": "0.4.4",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 89,
@@ -1344,7 +1278,6 @@
           "winapi-build@0.1.1",
           "winapi@0.2.8"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 94,
@@ -1360,7 +1293,6 @@
           "UID": "dc8cd0220cdde21c"
         },
         "Version": "0.2.11",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 103,
@@ -1376,7 +1308,6 @@
           "UID": "2e4334f512c2da87"
         },
         "Version": "1.3.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 108,
@@ -1392,7 +1323,6 @@
           "UID": "269b1cde2d08166e"
         },
         "Version": "0.2.54",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 113,
@@ -1411,7 +1341,6 @@
         "DependsOn": [
           "pnacl-build-helper@1.4.11"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 118,
@@ -1430,7 +1359,6 @@
         "DependsOn": [
           "cfg-if@0.1.7"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 126,
@@ -1446,7 +1374,6 @@
           "UID": "1185b2b0745c221"
         },
         "Version": "0.1.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 134,
@@ -1462,7 +1389,6 @@
           "UID": "8c23f27efaff6301"
         },
         "Version": "1.0.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 139,
@@ -1489,7 +1415,6 @@
           "string_cache_codegen@0.4.2",
           "tendril@0.4.1"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 144,
@@ -1505,7 +1430,6 @@
           "UID": "81da4fade350ea84"
         },
         "Version": "0.1.8",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 160,
@@ -1521,7 +1445,6 @@
           "UID": "a4666c488ce7b5cb"
         },
         "Version": "1.0.3",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 165,
@@ -1542,7 +1465,6 @@
           "libc@0.2.54",
           "openssl@0.8.3"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 170,
@@ -1564,7 +1486,6 @@
           "libc@0.2.54",
           "openssl-sys@0.7.17"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 179,
@@ -1587,7 +1508,6 @@
           "pkg-config@0.3.14",
           "user32-sys@0.2.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 190,
@@ -1603,7 +1523,6 @@
           "UID": "c442dfa6d6be550d"
         },
         "Version": "1.0.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 202,
@@ -1622,7 +1541,6 @@
         "DependsOn": [
           "phf_shared@0.7.24"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 207,
@@ -1642,7 +1560,6 @@
           "phf_generator@0.7.24",
           "phf_shared@0.7.24"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 215,
@@ -1662,7 +1579,6 @@
           "phf_shared@0.7.24",
           "rand@0.6.5"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 224,
@@ -1681,7 +1597,6 @@
         "DependsOn": [
           "siphasher@0.2.3"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 233,
@@ -1697,7 +1612,6 @@
           "UID": "5cf1d9ec06ce2165"
         },
         "Version": "0.3.14",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 241,
@@ -1717,7 +1631,6 @@
           "tempdir@0.3.7",
           "walkdir@1.0.7"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 246,
@@ -1733,7 +1646,6 @@
           "UID": "3324b417bef2a649"
         },
         "Version": "0.1.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 255,
@@ -1752,7 +1664,6 @@
         "DependsOn": [
           "unicode-xid@0.1.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 260,
@@ -1771,7 +1682,6 @@
         "DependsOn": [
           "proc-macro2@0.4.30"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 268,
@@ -1794,7 +1704,6 @@
           "rdrand@0.4.0",
           "winapi@0.3.7"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 276,
@@ -1823,7 +1732,6 @@
           "rand_xorshift@0.1.1",
           "winapi@0.3.7"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 288,
@@ -1843,7 +1751,6 @@
           "autocfg@0.1.2",
           "rand_core@0.3.1"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 306,
@@ -1862,7 +1769,6 @@
         "DependsOn": [
           "rand_core@0.4.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 315,
@@ -1878,7 +1784,6 @@
           "UID": "a17be2d5af86e701"
         },
         "Version": "0.4.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 323,
@@ -1897,7 +1802,6 @@
         "DependsOn": [
           "rand_core@0.3.1"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 328,
@@ -1916,7 +1820,6 @@
         "DependsOn": [
           "rand_core@0.3.1"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 336,
@@ -1937,7 +1840,6 @@
           "rand_core@0.4.0",
           "winapi@0.3.7"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 344,
@@ -1961,7 +1863,6 @@
           "rdrand@0.4.0",
           "winapi@0.3.7"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 354,
@@ -1981,7 +1882,6 @@
           "autocfg@0.1.2",
           "rand_core@0.4.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 367,
@@ -2000,7 +1900,6 @@
         "DependsOn": [
           "rand_core@0.3.1"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 376,
@@ -2019,7 +1918,6 @@
         "DependsOn": [
           "rand_core@0.3.1"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 384,
@@ -2038,7 +1936,6 @@
         "DependsOn": [
           "winapi@0.3.7"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 392,
@@ -2054,7 +1951,6 @@
           "UID": "4aae5dd6e37bffdb"
         },
         "Version": "0.2.8",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 400,
@@ -2074,7 +1970,6 @@
           "kernel32-sys@0.2.2",
           "winapi@0.2.8"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 405,
@@ -2090,7 +1985,6 @@
           "UID": "5a88cd7c139193aa"
         },
         "Version": "1.0.91",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 414,
@@ -2111,7 +2005,6 @@
           "quote@0.6.12",
           "syn@0.15.34"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 419,
@@ -2132,7 +2025,6 @@
           "ryu@0.2.8",
           "serde@1.0.91"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 429,
@@ -2148,7 +2040,6 @@
           "UID": "b790a7dc3920aecc"
         },
         "Version": "0.2.3",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 439,
@@ -2164,7 +2055,6 @@
           "UID": "f222b109875a6950"
         },
         "Version": "0.6.9",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 444,
@@ -2189,7 +2079,6 @@
           "string_cache_codegen@0.4.2",
           "string_cache_shared@0.3.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 449,
@@ -2212,7 +2101,6 @@
           "quote@0.6.12",
           "string_cache_shared@0.3.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 463,
@@ -2228,7 +2116,6 @@
           "UID": "eaf649152096f011"
         },
         "Version": "0.3.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 475,
@@ -2249,7 +2136,6 @@
           "quote@0.6.12",
           "unicode-xid@0.1.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 480,
@@ -2269,7 +2155,6 @@
           "rand@0.4.6",
           "remove_dir_all@0.5.1"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 490,
@@ -2290,7 +2175,6 @@
           "mac@0.1.1",
           "utf-8@0.7.5"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 499,
@@ -2309,7 +2193,6 @@
         "DependsOn": [
           "matches@0.1.8"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 509,
@@ -2328,7 +2211,6 @@
         "DependsOn": [
           "smallvec@0.6.9"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 517,
@@ -2344,7 +2226,6 @@
           "UID": "812bfb20444d6773"
         },
         "Version": "0.1.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 525,
@@ -2365,7 +2246,6 @@
           "matches@0.1.8",
           "percent-encoding@1.0.1"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 530,
@@ -2385,7 +2265,6 @@
           "winapi-build@0.1.1",
           "winapi@0.2.8"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 540,
@@ -2401,7 +2280,6 @@
           "UID": "4bd5c4499e77b190"
         },
         "Version": "0.7.5",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 549,
@@ -2422,7 +2300,6 @@
           "same-file@0.1.3",
           "winapi@0.2.8"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 554,
@@ -2438,7 +2315,6 @@
           "UID": "2b9eef53fe7d8358"
         },
         "Version": "0.2.8",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 564,
@@ -2458,7 +2334,6 @@
           "winapi-i686-pc-windows-gnu@0.4.0",
           "winapi-x86_64-pc-windows-gnu@0.4.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 569,
@@ -2474,7 +2349,6 @@
           "UID": "96ec9e9d498b4ef7"
         },
         "Version": "0.1.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 578,
@@ -2490,7 +2364,6 @@
           "UID": "1b230d529eec4e4f"
         },
         "Version": "0.4.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 583,
@@ -2506,7 +2379,6 @@
           "UID": "94fafef2976facb5"
         },
         "Version": "0.4.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 588,
@@ -2535,7 +2407,6 @@
           "guzzlehttp/promises@v1.3.1",
           "guzzlehttp/psr7@1.5.2"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 9,
@@ -2554,7 +2425,6 @@
         "Licenses": [
           "MIT"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 74,
@@ -2577,7 +2447,6 @@
           "psr/http-message@1.0.1",
           "ralouphie/getallheaders@2.0.5"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 125,
@@ -2602,7 +2471,6 @@
           "symfony/filesystem@v4.2.7",
           "symfony/process@v4.2.7"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 192,
@@ -2624,7 +2492,6 @@
         "DependsOn": [
           "pear/pear_exception@v1.0.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 238,
@@ -2643,7 +2510,6 @@
         "Licenses": [
           "BSD-2-Clause"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 291,
@@ -2662,7 +2528,6 @@
         "Licenses": [
           "MIT"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 346,
@@ -2681,7 +2546,6 @@
         "Licenses": [
           "MIT"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 396,
@@ -2704,7 +2568,6 @@
           "symfony/contracts@v1.0.2",
           "symfony/polyfill-mbstring@v1.11.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 436,
@@ -2723,7 +2586,6 @@
         "Licenses": [
           "MIT"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 508,
@@ -2745,7 +2607,6 @@
         "DependsOn": [
           "symfony/polyfill-ctype@v1.11.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 576,
@@ -2764,7 +2625,6 @@
         "Licenses": [
           "MIT"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 626,
@@ -2783,7 +2643,6 @@
         "Licenses": [
           "MIT"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 684,
@@ -2802,7 +2661,6 @@
         "Licenses": [
           "MIT"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 743,
@@ -2824,7 +2682,6 @@
           "UID": "abb547f5589e4959"
         },
         "Version": "2.0.6",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 6,
@@ -2840,7 +2697,6 @@
           "UID": "1126bc6bfa8295d8"
         },
         "Version": "3.3.9",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 16,
@@ -2856,7 +2712,6 @@
           "UID": "fbee11c088549b29"
         },
         "Version": "4.0.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 21,
@@ -2872,7 +2727,6 @@
           "UID": "4473a912b2b0d935"
         },
         "Version": "4.17.4",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 11,
@@ -2891,7 +2745,6 @@
         "DependsOn": [
           "js-tokens@4.0.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 26,
@@ -2907,7 +2760,6 @@
           "UID": "23ceee882eda18a4"
         },
         "Version": "4.1.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 34,
@@ -2926,7 +2778,6 @@
         "DependsOn": [
           "asap@2.0.6"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 39,
@@ -2947,7 +2798,6 @@
           "object-assign@4.1.1",
           "react-is@16.8.6"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 47,
@@ -2969,7 +2819,6 @@
           "prop-types@15.7.2",
           "scheduler@0.13.6"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 57,
@@ -2985,7 +2834,6 @@
           "UID": "cb2875411ead1f9a"
         },
         "Version": "16.8.6",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 68,
@@ -3005,7 +2853,6 @@
           "loose-envify@1.4.0",
           "symbol-observable@1.2.0"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 73,
@@ -3025,7 +2872,6 @@
           "loose-envify@1.4.0",
           "object-assign@4.1.1"
         ],
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 82,
@@ -3041,7 +2887,6 @@
           "UID": "5318f6146dc0264"
         },
         "Version": "1.2.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 91,
@@ -3062,7 +2907,6 @@
           "UID": "eaf235720b7bd6d4"
         },
         "Version": "2.4.2",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 19,
@@ -3077,7 +2921,6 @@
           "UID": "c72404a556d5fefc"
         },
         "Version": "1.4.3",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 26,
@@ -3092,7 +2935,6 @@
           "UID": "4d4043fc18530c4e"
         },
         "Version": "2.6.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 32,
@@ -3107,7 +2949,6 @@
           "UID": "a49012bdf0aa6572"
         },
         "Version": "3.6.0.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 39,
@@ -3122,7 +2963,6 @@
           "UID": "4bc185d0ab442a72"
         },
         "Version": "1.9.130",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 45,
@@ -3137,7 +2977,6 @@
           "UID": "c13ca226c8938c5d"
         },
         "Version": "1.12.130",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 53,
@@ -3152,7 +2991,6 @@
           "UID": "f1e0486cb7f807fd"
         },
         "Version": "4.3.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 60,
@@ -3167,7 +3005,6 @@
           "UID": "56ffce20ab1cfcbf"
         },
         "Version": "2019.3.9",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 71,
@@ -3182,7 +3019,6 @@
           "UID": "f459dfb7e38575b6"
         },
         "Version": "3.0.4",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 78,
@@ -3197,7 +3033,6 @@
           "UID": "5453b8bdb53908f4"
         },
         "Version": "4.4.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 85,
@@ -3212,7 +3047,6 @@
           "UID": "ae1afb5dd98fda8d"
         },
         "Version": "2.0.9",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 92,
@@ -3227,7 +3061,6 @@
           "UID": "2456816e402bc4b2"
         },
         "Version": "1.4.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 100,
@@ -3242,7 +3075,6 @@
           "UID": "6b0c11924c07350"
         },
         "Version": "2.5.2",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 108,
@@ -3257,7 +3089,6 @@
           "UID": "8837120b637a8fd3"
         },
         "Version": "2.1.6",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 116,
@@ -3271,7 +3102,6 @@
           "PURL": "pkg:pypi/django-postgres-extra",
           "UID": "ef80d693bc9e6b51"
         },
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 124,
@@ -3286,7 +3116,6 @@
           "UID": "d87630c5a30c9d3"
         },
         "Version": "2.0.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 129,
@@ -3301,7 +3130,6 @@
           "UID": "3d7f4ecf81af4fc3"
         },
         "Version": "3.0.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 136,
@@ -3316,7 +3144,6 @@
           "UID": "2ed5c8d7d921f353"
         },
         "Version": "3.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 144,
@@ -3331,7 +3158,6 @@
           "UID": "b9818850a6395a78"
         },
         "Version": "3.9.2",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 151,
@@ -3346,7 +3172,6 @@
           "UID": "e0716ea8c627d52f"
         },
         "Version": "1.11.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 159,
@@ -3361,7 +3186,6 @@
           "UID": "10ac97ed7a098f18"
         },
         "Version": "0.14",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 167,
@@ -3376,7 +3200,6 @@
           "UID": "9faba86de45abcc5"
         },
         "Version": "0.9.3",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 175,
@@ -3391,7 +3214,6 @@
           "UID": "41a5745039319984"
         },
         "Version": "2016.10.13",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 182,
@@ -3406,7 +3228,6 @@
           "UID": "3feb80b6855d93fc"
         },
         "Version": "19.9.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 188,
@@ -3421,7 +3242,6 @@
           "UID": "bb90d823e31cc905"
         },
         "Version": "1.0.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 196,
@@ -3436,7 +3256,6 @@
           "UID": "cf158fa53fec4809"
         },
         "Version": "0.12.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 230,
@@ -3451,7 +3270,6 @@
           "UID": "b14fc2f2a7ef1e0d"
         },
         "Version": "2.8",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 236,
@@ -3466,7 +3284,6 @@
           "UID": "882fe2359f6ae7d"
         },
         "Version": "2.10.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 243,
@@ -3481,7 +3298,6 @@
           "UID": "82ca41bff20ffe7"
         },
         "Version": "0.9.4",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 250,
@@ -3496,7 +3312,6 @@
           "UID": "16131f9ec1debbab"
         },
         "Version": "4.5.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 257,
@@ -3511,7 +3326,6 @@
           "UID": "ccd31f5b6cf3b87b"
         },
         "Version": "1.1.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 264,
@@ -3526,7 +3340,6 @@
           "UID": "6ec03a1175710be8"
         },
         "Version": "1.9.0.post1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 297,
@@ -3541,7 +3354,6 @@
           "UID": "24ca65b34656f4fe"
         },
         "Version": "2.8.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 305,
@@ -3556,7 +3368,6 @@
           "UID": "cace845a08062384"
         },
         "Version": "1.8.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 339,
@@ -3571,7 +3382,6 @@
           "UID": "5ab70d21f916b062"
         },
         "Version": "2.5.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 346,
@@ -3586,7 +3396,6 @@
           "UID": "1196e92ba0352e75"
         },
         "Version": "7.43.0.2",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 353,
@@ -3601,7 +3410,6 @@
           "UID": "ce312b70022257a2"
         },
         "Version": "2.3.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 366,
@@ -3616,7 +3424,6 @@
           "UID": "ca80b0e4aec9de5d"
         },
         "Version": "1.7.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 373,
@@ -3631,7 +3438,6 @@
           "UID": "bc6992ae46534e3"
         },
         "Version": "2.3.6",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 380,
@@ -3646,7 +3452,6 @@
           "UID": "b2ebaa709e6a347b"
         },
         "Version": "2.8.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 386,
@@ -3661,7 +3466,6 @@
           "UID": "2917289cbf9e4763"
         },
         "Version": "3.1.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 394,
@@ -3676,7 +3480,6 @@
           "UID": "4ee3e390bf941d50"
         },
         "Version": "2019.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 400,
@@ -3691,7 +3494,6 @@
           "UID": "61b1761eb9c760ae"
         },
         "Version": "5.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 407,
@@ -3706,7 +3508,6 @@
           "UID": "265e9c7eea13d22d"
         },
         "Version": "3.2.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 424,
@@ -3721,7 +3522,6 @@
           "UID": "bfa4f165c40babce"
         },
         "Version": "2.21.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 431,
@@ -3736,7 +3536,6 @@
           "UID": "1a4ba07f9995e4ec"
         },
         "Version": "0.9.2",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 439,
@@ -3751,7 +3550,6 @@
           "UID": "eb74f26bb04808e9"
         },
         "Version": "0.2.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 447,
@@ -3766,7 +3564,6 @@
           "UID": "21f7c84bdff019e5"
         },
         "Version": "6.0.4",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 454,
@@ -3781,7 +3578,6 @@
           "UID": "2608107c1c7a60c5"
         },
         "Version": "0.7.10",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 462,
@@ -3796,7 +3592,6 @@
           "UID": "2f910bba245384"
         },
         "Version": "1.12.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 470,
@@ -3811,7 +3606,6 @@
           "UID": "8a41dce5ceb6e25d"
         },
         "Version": "0.3.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 477,
@@ -3826,7 +3620,6 @@
           "UID": "7cb12caf440e98d3"
         },
         "Version": "5.1.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 484,
@@ -3841,7 +3634,6 @@
           "UID": "e6ed0d9bee45f366"
         },
         "Version": "1.24.1",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 496,
@@ -3856,7 +3648,6 @@
           "UID": "143f2a81995593aa"
         },
         "Version": "1.3.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 504,
@@ -3871,7 +3662,6 @@
           "UID": "c672df016be1530b"
         },
         "Version": "0.12.0",
-        "Layer": {},
         "Locations": [
           {
             "StartLine": 511,

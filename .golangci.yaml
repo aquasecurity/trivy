@@ -14,6 +14,8 @@ linters:
               desc: "Use 'slices' instead"
             - pkg: "golang.org/x/exp/maps"
               desc: "Use 'maps' or 'github.com/samber/lo' instead"
+            - pkg: "io/ioutil"
+              desc: "io/ioutil is deprecated. Use 'io' or 'os' instead"
     dupl:
       threshold: 100
     errcheck:
@@ -57,6 +59,9 @@ linters:
               recommendations:
                 - github.com/aquasecurity/go-version
               reason: "`aquasecurity/go-version` is designed for our use-cases"
+          - github.com/liamg/memoryfs:
+              recommendations:
+                - github.com/aquasecurity/trivy/pkg/mapfs
     gosec:
       excludes:
         - G101
@@ -191,7 +196,7 @@ linters:
     warn-unused: true
 
 run:
-  go: '1.24'
+  go: '1.25'
   timeout: 30m
 
 formatters:

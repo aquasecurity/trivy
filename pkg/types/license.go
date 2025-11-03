@@ -33,4 +33,4 @@ type DetectedLicense struct {
 	Link string
 }
 
-func (DetectedLicense) findingType() FindingType { return FindingTypeLicense }
+func (DetectedLicense) FindingType() FindingType { return FindingTypeLicense }

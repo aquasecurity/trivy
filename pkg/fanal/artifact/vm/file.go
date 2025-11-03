@@ -35,11 +35,18 @@ type ImageFile struct {
 	reader   *io.SectionReader
 }
 
-func newFile(filePath string, storage Storage) (*ImageFile, error) {
+func newFile(filePath string, storage Storage) (imgFile *ImageFile, err error) {
 	f, err := os.Open(filePath)
 	if err != nil {
 		return nil, xerrors.Errorf("file open error: %w", err)
 	}
+
+	// Close file on error
+	defer func() {
+		if err != nil && f != nil {
+			f.Close()
+		}
+	}()
 
 	c, err := lru.New[string, []byte](storageFILECacheSize)
 	if err != nil {
@@ -82,7 +89,7 @@ func (a *ImageFile) Inspect(ctx context.Context) (artifact.Reference, error) {
 		return artifact.Reference{}, xerrors.Errorf("cache calculation error: %w", err)
 	}
 
-	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
+	if err = a.cache.PutBlob(ctx, cacheKey, blobInfo); err != nil {
 		return artifact.Reference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 
@@ -112,5 +119,5 @@ func (a *ImageFile) calcCacheKey(blobInfo types.BlobInfo) (string, error) {
 
 func (a *ImageFile) Clean(reference artifact.Reference) error {
 	_ = a.file.Close()
-	return a.cache.DeleteBlobs(reference.BlobIDs)
+	return a.cache.DeleteBlobs(context.TODO(), reference.BlobIDs)
 }

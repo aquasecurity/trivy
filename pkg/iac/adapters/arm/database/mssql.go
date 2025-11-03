@@ -17,7 +17,8 @@ func adaptMSSQLServer(resource azure2.Resource, deployment azure2.Deployment) da
 	return database.MSSQLServer{
 		Metadata: resource.Metadata,
 		Server: database.Server{
-			Metadata:                  resource.Metadata,
+			Metadata: resource.Metadata,
+			// TODO: this property doesn't exist.
 			EnableSSLEnforcement:      resource.Properties.GetMapValue("sslEnforcement").AsBoolValue(false, resource.Metadata),
 			MinimumTLSVersion:         resource.Properties.GetMapValue("minimalTlsVersion").AsStringValue("TLSEnforcementDisabled", resource.Metadata),
 			EnablePublicNetworkAccess: resource.Properties.GetMapValue("publicNetworkAccess").AsBoolValue(false, resource.Metadata),
@@ -55,7 +56,7 @@ func adaptSecurityAlertPolicies(_ azure2.Resource, deployment azure2.Deployment)
 func adaptStringList(value azure2.Value) []iacTypes.StringValue {
 	var list []iacTypes.StringValue
 	for _, v := range value.AsList() {
-		list = append(list, v.AsStringValue("", value.Metadata))
+		list = append(list, v.AsStringValue("", value.GetMetadata()))
 	}
 	return list
 }

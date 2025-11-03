@@ -183,7 +183,7 @@ func (b *Block) Clone(index cty.Value) *Block {
 	if len(clone.hclBlock.Labels) > 0 {
 		position := len(clone.hclBlock.Labels) - 1
 		labels := make([]string, len(clone.hclBlock.Labels))
-		for i := 0; i < len(labels); i++ {
+		for i := range labels {
 			labels[i] = clone.hclBlock.Labels[i]
 		}
 		if index.IsKnown() && !index.IsNull() {

@@ -5,9 +5,8 @@ import (
 	"io"
 	"os"
 	"strings"
-	"sync"
 
-	"github.com/google/wire"
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
@@ -31,15 +30,7 @@ const (
 	TypeFile Type = "file"
 )
 
-var (
-	ArtifactSet = wire.NewSet(
-		walker.NewVM,
-		wire.Bind(new(Walker), new(*walker.VM)),
-		NewArtifact,
-	)
-
-	_ Walker = (*walker.VM)(nil)
-)
+var _ Walker = (*walker.VM)(nil)
 
 type Walker interface {
 	Walk(*io.SectionReader, string, walker.Option, walker.WalkFunc) error
@@ -92,7 +83,9 @@ type Storage struct {
 }
 
 func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobInfo, error) {
-	var wg sync.WaitGroup
+	// `errgroup` cancels the context after Wait returns, so it can’t be use later.
+	// We need a separate context specifically for Analyze.
+	eg, egCtx := errgroup.WithContext(ctx)
 	limit := semaphore.New(a.artifactOption.Parallel)
 	result := analyzer.NewAnalysisResult()
 
@@ -111,7 +104,7 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
 	err = a.walker.Walk(r, "/", a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		path := strings.TrimPrefix(filePath, "/")
-		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", path, info, opener, nil, opts); err != nil {
+		if err = a.analyzer.AnalyzeFile(egCtx, eg, limit, result, "/", path, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", path, err)
 		}
 
@@ -133,12 +126,13 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 
 		return nil
 	})
-
-	// Wait for all the goroutine to finish.
-	wg.Wait()
-
 	if err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("walk vm error: %w", err)
+	}
+
+	// Wait for all the goroutine to finish.
+	if err = eg.Wait(); err != nil {
+		return types.BlobInfo{}, xerrors.Errorf("analyze error: %w", err)
 	}
 
 	// Post-analysis

@@ -28,6 +28,18 @@ func Test_depsLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/datacollector.deps.json",
 						Packages: types.Packages{
 							{
+								ID:           "Microsoft.VisualStudio.TestPlatform.Common/17.2.0-release-20220408-11",
+								Name:         "Microsoft.VisualStudio.TestPlatform.Common",
+								Version:      "17.2.0-release-20220408-11",
+								Relationship: types.RelationshipRoot,
+								Locations: []types.Location{
+									{
+										StartLine: 15,
+										EndLine:   19,
+									},
+								},
+							},
+							{
 								ID:      "Newtonsoft.Json/9.0.1",
 								Name:    "Newtonsoft.Json",
 								Version: "9.0.1",

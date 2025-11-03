@@ -1,26 +1,31 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "3ff14136-e09f-4df9-80ea-000000000002",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/dotnet",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "datacollector.deps.json",
       "Class": "lang-pkgs",
       "Type": "dotnet-core",
       "Packages": [
+        {
+          "ID": "Microsoft.VisualStudio.TestPlatform.Common/17.2.0-release-20220408-11",
+          "Name": "Microsoft.VisualStudio.TestPlatform.Common",
+          "Identifier": {
+            "PURL": "pkg:nuget/Microsoft.VisualStudio.TestPlatform.Common@17.2.0-release-20220408-11",
+            "UID": "2d904514f21a2664"
+          },
+          "Version": "17.2.0-release-20220408-11",
+          "Relationship": "root",
+          "Locations": [
+            {
+              "StartLine": 15,
+              "EndLine": 19
+            }
+          ]
+        },
         {
           "ID": "Newtonsoft.Json/9.0.1",
           "Name": "Newtonsoft.Json",
@@ -29,7 +34,6 @@
             "UID": "e678401f5d07418a"
           },
           "Version": "9.0.1",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 8,
@@ -50,7 +54,6 @@
           "InstalledVersion": "9.0.1",
           "FixedVersion": "13.0.1",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://github.com/advisories/GHSA-5crp-9r3c-p9vr",
           "DataSource": {

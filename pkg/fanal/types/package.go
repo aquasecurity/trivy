@@ -179,7 +179,7 @@ type BuildInfo struct {
 type Package struct {
 	ID                 string        `json:",omitempty"`
 	Name               string        `json:",omitempty"`
-	Identifier         PkgIdentifier `json:",omitempty"`
+	Identifier         PkgIdentifier `json:",omitzero"`
 	Version            string        `json:",omitempty"`
 	Release            string        `json:",omitempty"`
 	Epoch              int           `json:",omitempty"`
@@ -203,7 +203,7 @@ type Package struct {
 	// Note:　it may have interdependencies, which may lead to infinite loops.
 	DependsOn []string `json:",omitempty"`
 
-	Layer Layer `json:",omitempty"`
+	Layer Layer `json:",omitzero"`
 
 	// Each package metadata have the file path, while the package from lock files does not have.
 	FilePath string `json:",omitempty"`
@@ -245,6 +245,8 @@ func (pkgs Packages) Less(i, j int) bool {
 		return pkgs[i].Name < pkgs[j].Name
 	case pkgs[i].Version != pkgs[j].Version:
 		return pkgs[i].Version < pkgs[j].Version
+	case pkgs[i].ID != pkgs[j].ID:
+		return pkgs[i].ID < pkgs[j].ID
 	}
 	return pkgs[i].FilePath < pkgs[j].FilePath
 }

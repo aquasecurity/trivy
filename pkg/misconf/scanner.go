@@ -52,12 +52,6 @@ var enablediacTypes = map[detection.FileType]types.ConfigType{
 	detection.FileTypeYAML:                  types.YAML,
 }
 
-type DisabledCheck struct {
-	ID      string
-	Scanner string // For logging
-	Reason  string // For logging
-}
-
 type ScannerOption struct {
 	Trace                    bool
 	Namespaces               []string
@@ -66,6 +60,7 @@ type ScannerOption struct {
 	DisableEmbeddedPolicies  bool
 	DisableEmbeddedLibraries bool
 	IncludeDeprecatedChecks  bool
+	RegoErrorLimit           int
 
 	HelmValues              []string
 	HelmValueFiles          []string
@@ -82,9 +77,8 @@ type ScannerOption struct {
 	FilePatterns      []string
 	ConfigFileSchemas []*ConfigFileSchema
 
-	DisabledChecks []DisabledCheck
-	SkipFiles      []string
-	SkipDirs       []string
+	SkipFiles []string
+	SkipDirs  []string
 
 	RegoScanner *rego.Scanner
 }
@@ -236,18 +230,15 @@ func InitRegoScanner(opt ScannerOption) (*rego.Scanner, error) {
 }
 
 func initRegoOptions(opt ScannerOption) ([]options.ScannerOption, error) {
-	disabledCheckIDs := lo.Map(opt.DisabledChecks, func(check DisabledCheck, _ int) string {
-		log.Info("Check disabled", log.Prefix(log.PrefixMisconfiguration), log.String("ID", check.ID),
-			log.String("scanner", check.Scanner), log.String("reason", check.Reason))
-		return check.ID
-	})
-
 	opts := []options.ScannerOption{
 		rego.WithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
 		rego.WithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
 		rego.WithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
-		rego.WithDisabledCheckIDs(disabledCheckIDs...),
 		rego.WithTrivyVersion(app.Version()),
+	}
+
+	if opt.RegoErrorLimit >= 0 {
+		opts = append(opts, rego.WithRegoErrorLimits(opt.RegoErrorLimit))
 	}
 
 	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)
@@ -465,7 +456,7 @@ func CreateDataFS(dataPaths []string, opts ...string) (fs.FS, []string, error) {
 		if err := fsys.MkdirAll("system", 0o700); err != nil {
 			return nil, nil, err
 		}
-		data := []byte(fmt.Sprintf(`{"k8s": {"version": %q}}`, k8sVersion))
+		data := fmt.Appendf(nil, `{"k8s": {"version": %q}}`, k8sVersion)
 		if err := fsys.WriteVirtualFile("system/k8s-version.json", data, 0o600); err != nil {
 			return nil, nil, err
 		}
@@ -492,6 +483,7 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 
 		query := fmt.Sprintf("data.%s.%s", result.RegoNamespace(), result.RegoRule())
 
+		// TODO: use the ID field
 		ruleID := result.Rule().AVDID
 		if result.RegoNamespace() != "" && len(result.Rule().Aliases) > 0 {
 			ruleID = result.Rule().Aliases[0]

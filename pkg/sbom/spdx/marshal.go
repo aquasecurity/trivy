@@ -115,7 +115,7 @@ func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
 
 func (m *Marshaler) MarshalReport(ctx context.Context, report types.Report) (*spdx.Document, error) {
 	// Convert into an intermediate representation
-	bom, err := sbomio.NewEncoder(core.Options{}).Encode(report)
+	bom, err := sbomio.NewEncoder().Encode(report)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to marshal report: %w", err)
 	}
@@ -419,8 +419,8 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 		// We need to save text licenses before normalization,
 		// because it is impossible to handle all cases possible in the text.
 		// as an example, parse a license with 2 consecutive tokens (see https://github.com/aquasecurity/trivy/issues/8465)
-		if strings.HasPrefix(license, licensing.LicenseTextPrefix) {
-			license = strings.TrimPrefix(license, licensing.LicenseTextPrefix)
+		if after, ok := strings.CutPrefix(license, licensing.LicenseTextPrefix); ok {
+			license = after
 			otherLicense := m.newOtherLicense(license, true)
 			otherLicenses[otherLicense.LicenseIdentifier] = otherLicense
 			return otherLicense.LicenseIdentifier
@@ -436,11 +436,7 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 		var licenseName string
 		switch e := expr.(type) {
 		case expression.SimpleExpr:
-			if strings.HasPrefix(e.License, LicenseRefPrefix) {
-				return e
-			}
-
-			if expression.ValidateSPDXLicense(e.License) || expression.ValidateSPDXException(e.License) {
+			if strings.HasPrefix(e.License, LicenseRefPrefix) || e.IsSPDXExpression() {
 				return e
 			}
 
@@ -452,10 +448,10 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 			}
 
 			// Check that license and exception are valid
-			if expression.ValidateSPDXLicense(e.Left().String()) && expression.ValidateSPDXException(e.Right().String()) {
+			if e.IsSPDXExpression() {
 				// Use SimpleExpr for a valid SPDX license with an exception,
 				// to avoid parsing the license and exception separately.
-				return e
+				return expression.SimpleExpr{License: e.String()}
 			}
 
 			licenseName = e.String()

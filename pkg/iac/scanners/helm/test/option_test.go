@@ -183,7 +183,7 @@ func Test_helm_parser_with_options_with_kube_versions(t *testing.T) {
 			testName:      "Parsing directory 'with-kube-version' with invalid kube version",
 			chartName:     "with-kube-version",
 			kubeVersion:   "a.b.c",
-			expectedError: "Invalid Semantic Version",
+			expectedError: "could not parse \"a.b.c\" as version",
 		},
 	}
 

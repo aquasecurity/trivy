@@ -298,6 +298,129 @@ resource "google_project_iam_member" "project" {
 				},
 			},
 		},
+		{
+			name: "audit configs",
+			terraform: `
+data "google_organization" "org" {
+  domain = "example.com"
+}
+
+resource "google_project" "test" {
+  name                = "Test project"
+  project_id          = "test"
+  org_id              = data.google_organization.org.org_id
+  auto_create_network = false
+}
+
+resource "google_folder" "test" {
+  display_name = "Test folder"
+  parent       = data.google_organization.org.org_id
+}
+
+resource "google_project_iam_audit_config" "project_audit" {
+  project = google_project.test.project_id
+  service = "allServices"
+  
+  audit_log_config {
+    log_type = "ADMIN_READ"
+  }
+  
+  audit_log_config {
+    log_type = "DATA_WRITE"
+    exempted_members = [
+      "user:alice@example.com",
+      "serviceAccount:test@project.iam.gserviceaccount.com"
+    ]
+  }
+}
+
+resource "google_organization_iam_audit_config" "org_audit" {
+  org_id  = data.google_organization.org.org_id
+  service = "storage.googleapis.com"
+  
+  audit_log_config {
+    log_type = "DATA_READ"
+    exempted_members = ["user:bob@example.com"]
+  }
+}
+
+resource "google_folder_iam_audit_config" "folder_audit" {
+  folder  = google_folder.test.name
+  service = "compute.googleapis.com"
+  
+  audit_log_config {
+    log_type = "ADMIN_READ"
+  }
+}
+`,
+			expected: iam.IAM{
+				Projects: []iam.Project{
+					{
+						Metadata:          iacTypes.NewTestMetadata(),
+						AutoCreateNetwork: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						AuditConfigs: []iam.AuditConfig{
+							{
+								Metadata: iacTypes.NewTestMetadata(),
+								Service:  iacTypes.String("allServices", iacTypes.NewTestMetadata()),
+								AuditLogConfigs: []iam.AuditLogConfig{
+									{
+										Metadata:        iacTypes.NewTestMetadata(),
+										LogType:         iacTypes.String("ADMIN_READ", iacTypes.NewTestMetadata()),
+										ExemptedMembers: nil,
+									},
+									{
+										Metadata: iacTypes.NewTestMetadata(),
+										LogType:  iacTypes.String("DATA_WRITE", iacTypes.NewTestMetadata()),
+										ExemptedMembers: []iacTypes.StringValue{
+											iacTypes.String("user:alice@example.com", iacTypes.NewTestMetadata()),
+											iacTypes.String("serviceAccount:test@project.iam.gserviceaccount.com", iacTypes.NewTestMetadata()),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Organizations: []iam.Organization{
+					{
+						Metadata: iacTypes.NewTestMetadata(),
+						AuditConfigs: []iam.AuditConfig{
+							{
+								Metadata: iacTypes.NewTestMetadata(),
+								Service:  iacTypes.String("storage.googleapis.com", iacTypes.NewTestMetadata()),
+								AuditLogConfigs: []iam.AuditLogConfig{
+									{
+										Metadata: iacTypes.NewTestMetadata(),
+										LogType:  iacTypes.String("DATA_READ", iacTypes.NewTestMetadata()),
+										ExemptedMembers: []iacTypes.StringValue{
+											iacTypes.String("user:bob@example.com", iacTypes.NewTestMetadata()),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Folders: []iam.Folder{
+					{
+						Metadata: iacTypes.NewTestMetadata(),
+						AuditConfigs: []iam.AuditConfig{
+							{
+								Metadata: iacTypes.NewTestMetadata(),
+								Service:  iacTypes.String("compute.googleapis.com", iacTypes.NewTestMetadata()),
+								AuditLogConfigs: []iam.AuditLogConfig{
+									{
+										Metadata:        iacTypes.NewTestMetadata(),
+										LogType:         iacTypes.String("ADMIN_READ", iacTypes.NewTestMetadata()),
+										ExemptedMembers: nil,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {

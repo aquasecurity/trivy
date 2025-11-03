@@ -67,6 +67,8 @@ jobs:
             distroless
             windows
             minimos
+            rootio
+            seal
 
             # Languages
             ruby

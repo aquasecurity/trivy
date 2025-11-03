@@ -188,9 +188,7 @@ func TestNormalize(t *testing.T) {
 			licenses: []expression.Expression{
 				expression.SimpleExpr{License: "The Unlicense"},
 				expression.SimpleExpr{License: "Unlicense"},
-				expression.SimpleExpr{License: "Unlicensed"},
 				expression.SimpleExpr{License: "UNLICENSE"},
-				expression.SimpleExpr{License: "UNLICENSED"},
 			},
 			want:        "Unlicense",
 			wantLicense: expression.SimpleExpr{License: "Unlicense"},
@@ -362,6 +360,21 @@ func TestLaxSplitLicense(t *testing.T) {
 			wantLicenses: []string{
 				"MPL-2.0",
 				"GPL-2.0-or-later",
+			},
+		},
+		{
+			license: "GPL-2.0-only WITH Classpath-exception-2.0",
+			wantLicenses: []string{
+				"GPL-2.0-only WITH Classpath-exception-2.0",
+			},
+		},
+		{
+			license: "BSD-3-CLAUSE OR GPL-2.0-only WITH Classpath-exception-2.0 AND MPL-2.0 ASL 2.0",
+			wantLicenses: []string{
+				"BSD-3-Clause",
+				"GPL-2.0-only WITH Classpath-exception-2.0",
+				"MPL-2.0",
+				"Apache-2.0",
 			},
 		},
 	}

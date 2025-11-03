@@ -3,29 +3,26 @@ package server
 import (
 	"context"
 
-	"github.com/google/wire"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
 	"github.com/aquasecurity/trivy/pkg/scan/local"
+	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
-)
-
-// ScanSuperSet binds the dependencies for the server implementation.
-var ScanSuperSet = wire.NewSet(
-	local.SuperSet,
-	wire.Bind(new(scan.Backend), new(local.Service)),
-	NewScanServer,
 )
 
 // ScanServer implements the scanner service.
@@ -37,6 +34,17 @@ type ScanServer struct {
 // NewScanServer creates a new ScanServer instance with the specified backend implementation.
 func NewScanServer(s scan.Backend) *ScanServer {
 	return &ScanServer{local: s}
+}
+
+// initializeScanServer creates a new RPC scan server with the provided cache.
+func initializeScanServer(localArtifactCache cache.LocalArtifactCache) *ScanServer {
+	applier := applier.NewApplier(localArtifactCache)
+	osScanner := ospkg.NewScanner()
+	langScanner := langpkg.NewScanner()
+	vulnClient := vulnerability.NewClient(db.Config{})
+
+	localService := local.NewService(applier, osScanner, langScanner, vulnClient)
+	return NewScanServer(localService)
 }
 
 // Log and return an error
@@ -114,32 +122,33 @@ func NewCacheServer(c cache.Cache) *CacheServer {
 }
 
 // PutArtifact puts the artifacts in cache
-func (s *CacheServer) PutArtifact(_ context.Context, in *rpcCache.PutArtifactRequest) (*emptypb.Empty, error) {
+func (s *CacheServer) PutArtifact(ctx context.Context, in *rpcCache.PutArtifactRequest) (*emptypb.Empty, error) {
 	if in.ArtifactInfo == nil {
 		return nil, teeError(xerrors.Errorf("empty image info"))
 	}
 	imageInfo := rpc.ConvertFromRPCPutArtifactRequest(in)
-	if err := s.cache.PutArtifact(in.ArtifactId, imageInfo); err != nil {
+	if err := s.cache.PutArtifact(ctx, in.ArtifactId, imageInfo); err != nil {
 		return nil, teeError(xerrors.Errorf("unable to store image info in cache: %w", err))
 	}
 	return &emptypb.Empty{}, nil
 }
 
 // PutBlob puts the blobs in cache
-func (s *CacheServer) PutBlob(_ context.Context, in *rpcCache.PutBlobRequest) (*emptypb.Empty, error) {
+func (s *CacheServer) PutBlob(ctx context.Context, in *rpcCache.PutBlobRequest) (*emptypb.Empty, error) {
 	if in.BlobInfo == nil {
 		return nil, teeError(xerrors.Errorf("empty layer info"))
 	}
 	layerInfo := rpc.ConvertFromRPCPutBlobRequest(in)
-	if err := s.cache.PutBlob(in.DiffId, layerInfo); err != nil {
+	if err := s.cache.PutBlob(ctx, in.DiffId, layerInfo); err != nil {
 		return nil, teeError(xerrors.Errorf("unable to store layer info in cache: %w", err))
 	}
 	return &emptypb.Empty{}, nil
 }
 
 // MissingBlobs returns missing blobs from cache
-func (s *CacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBlobsRequest) (*rpcCache.MissingBlobsResponse, error) {
-	missingArtifact, blobIDs, err := s.cache.MissingBlobs(in.ArtifactId, in.BlobIds)
+func (s *CacheServer) MissingBlobs(ctx context.Context, in *rpcCache.MissingBlobsRequest) (*rpcCache.MissingBlobsResponse, error) {
+	missingArtifact, blobIDs, err := s.cache.MissingBlobs(ctx, in.ArtifactId, in.BlobIds)
+
 	if err != nil {
 		return nil, teeError(xerrors.Errorf("failed to get missing blobs: %w", err))
 	}
@@ -150,9 +159,9 @@ func (s *CacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBlobsR
 }
 
 // DeleteBlobs removes blobs by IDs
-func (s *CacheServer) DeleteBlobs(_ context.Context, in *rpcCache.DeleteBlobsRequest) (*emptypb.Empty, error) {
+func (s *CacheServer) DeleteBlobs(ctx context.Context, in *rpcCache.DeleteBlobsRequest) (*emptypb.Empty, error) {
 	blobIDs := rpc.ConvertFromDeleteBlobsRequest(in)
-	if err := s.cache.DeleteBlobs(blobIDs); err != nil {
+	if err := s.cache.DeleteBlobs(ctx, blobIDs); err != nil {
 		return nil, teeError(xerrors.Errorf("failed to remove a blobs: %w", err))
 	}
 	return &emptypb.Empty{}, nil

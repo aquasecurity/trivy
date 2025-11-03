@@ -23,7 +23,7 @@ const (
 
 type parser struct{}
 
-func (*parser) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
+func (*parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
 	p := packagejson.NewParser()
 	pkg, err := p.Parse(r)
 	if err != nil {
@@ -42,8 +42,8 @@ func (*parser) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, e
 type nodePkgLibraryAnalyzer struct{}
 
 // Analyze analyzes package.json for node packages
-func (a nodePkgLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	return language.AnalyzePackage(types.NodePkg, input.FilePath, input.Content, &parser{}, input.Options.FileChecksum)
+func (a nodePkgLibraryAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	return language.AnalyzePackage(ctx, types.NodePkg, input.FilePath, input.Content, &parser{}, input.Options.FileChecksum)
 }
 
 func (a nodePkgLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
