@@ -105,6 +105,37 @@ func adaptAccounts(modules terraform.Modules) ([]storage.Account, []string, []st
 				}
 				account.Queues = append(account.Queues, queue)
 			}
+			// Adapt customer managed key resource
+			// Only use the resource if the block wasn't already set (they are mutually exclusive in Terraform)
+			if account.CustomerManagedKey.KeyVaultKeyId.IsEmpty() {
+				customerManagedKeyResources := module.GetReferencingResources(resource, "azurerm_storage_account_customer_managed_key", "storage_account_id")
+				for _, cmkResource := range customerManagedKeyResources {
+					keyVaultKeyIdAttr := cmkResource.GetAttribute("key_vault_key_id")
+					if keyVaultKeyIdAttr.IsNotNil() {
+						account.CustomerManagedKey.KeyVaultKeyId = keyVaultKeyIdAttr.AsStringValueOrDefault("", cmkResource)
+						account.CustomerManagedKey.Metadata = cmkResource.GetMetadata()
+					} else {
+						// If key_vault_key_id is not directly set, try to construct from key_vault_id and key_name
+						keyVaultIdAttr := cmkResource.GetAttribute("key_vault_id")
+						keyNameAttr := cmkResource.GetAttribute("key_name")
+						if keyVaultIdAttr.IsNotNil() && keyNameAttr.IsNotNil() {
+							keyVaultId := keyVaultIdAttr.AsStringValueOrDefault("", cmkResource)
+							keyName := keyNameAttr.AsStringValueOrDefault("", cmkResource)
+							if !keyVaultId.IsEmpty() && !keyName.IsEmpty() {
+								// Construct the full key ID format: https://{keyVaultId}/keys/{keyName}
+								keyId := keyVaultId.Value() + "/keys/" + keyName.Value()
+								account.CustomerManagedKey.KeyVaultKeyId = iacTypes.String(keyId, cmkResource.GetMetadata())
+								account.CustomerManagedKey.Metadata = cmkResource.GetMetadata()
+							}
+						}
+					}
+					userAssignedIdentityIdAttr := cmkResource.GetAttribute("user_assigned_identity_id")
+					if userAssignedIdentityIdAttr.IsNotNil() {
+						account.CustomerManagedKey.UserAssignedIdentityId = userAssignedIdentityIdAttr.AsStringValueOrDefault("", cmkResource)
+					}
+					break // Only process the first matching resource
+				}
+			}
 			accounts = append(accounts, account)
 		}
 	}
