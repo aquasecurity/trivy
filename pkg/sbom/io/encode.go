@@ -521,13 +521,10 @@ func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Pac
 	// - A package with parents can also be a direct dependency.
 	// - There are packages with cyclic dependencies. (see https://github.com/aquasecurity/trivy/issues/9011)
 	// Therefore, all packages without a `root` component must be included in the parent.
-	if pkg.Relationship == ftypes.RelationshipUnknown {
+	if pkg.Relationship == ftypes.RelationshipUnknown || pkg.Relationship == ftypes.RelationshipDirect {
 		return !hasRoot
 	}
 
-	if pkg.Relationship == ftypes.RelationshipDirect {
-		return !hasRoot
-	}
 	return len(parents[pkg.ID]) == 0
 }
 
