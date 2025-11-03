@@ -1,4 +1,8 @@
+<<<<<<< HEAD:pkg/pro/token_test.go
+package pro
+=======
 package cloud
+>>>>>>> 9503fe645 (refactor(cli): Rework Trivy Cloud integration logic):pkg/cloud/token_test.go
 
 import (
 	"net/http"
@@ -67,17 +71,6 @@ func TestGetAccessToken(t *testing.T) {
 				ProOptions: flag.ProOptions{
 					ProToken: "valid-token",
 					ApiURL:   "",
-				},
-			},
-			errorContains:      "no API URL provided for getting access token from Trivy Pro",
-			expectedStatusCode: http.StatusInternalServerError,
-		},
-		{
-			name: "invalid token",
-			opts: flag.Options{
-				ProOptions: flag.ProOptions{
-					ProToken: "invalid-token",
-					ApiURL:   mockServer.server.URL,
 				},
 			},
 			errorContains:      "failed to get access token: received status code 401",

@@ -38,6 +38,13 @@ trivy image [flags] IMAGE_NAME
       --cache-ttl duration                cache TTL when using redis as cache backend
       --check-namespaces strings          Rego namespaces
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "mirror.gcr.io/aquasec/trivy-checks:1")
+      --cloud-api-url string              API URL for Trivy Cloud platform (default "https://api.trivy.dev")
+      --cloud-download-misconfig-config   Download misconfig configurations from Trivy Cloud platform (default true)
+      --cloud-download-secret-config      Download secret configurations from Trivy Cloud platform (default true)
+      --cloud-server-scanning             Use server-side image scanning in Trivy Cloud platform (default true)
+      --cloud-token string                Token used to athenticate with Trivy Cloud platform
+      --cloud-trivy-server-url string     Trivy Server URL for Trivy Cloud platform (default "https://scan.trivy.dev")
+      --cloud-upload-results              Upload results to Trivy Cloud platform (default true)
       --compliance string                 compliance report to generate (built-in compliance's: docker-cis-1.6.0)
       --config-check strings              specify the paths to the Rego check files or to the directories containing them, applying config files
       --config-data strings               specify paths from which data for the Rego checks will be recursively loaded
@@ -122,10 +129,11 @@ trivy image [flags] IMAGE_NAME
       --platform string                   set platform in the form os/arch if image is multi-platform capable
       --podman-host string                unix podman socket path to use for podman scanning
       --pro-api-url string                API URL for Trivy Pro platform, requires the token to be provided to have an effect (default "https://api.trivy.dev")
+      --pro-app-url string                App URL for Trivy Pro platform, requires the token to be provided to have an effect (default "https://app.trivy.dev")
       --pro-server-scanning               Use server-side image scanning in Trivy Pro platform, requires the token to be provided to have an effect (default true)
       --pro-token string                  Token used to athenticate with Trivy Pro platform
       --pro-trivy-server-url string       Trivy Server URL for Trivy Pro platform, requires the token to be provided to have an effect (default "https://scan.trivy.dev")
-      --pro-upload-results                Upload results to Trivy Pro platform, requires the token to be provided to have an effect (default true)
+      --pro-upload-results                Upload results to Trivy Pro platform, requires the token to be provided to have an effect
       --pro-use-secret-config             Use secret configurations from Trivy Pro platform, requires the token to be provided to have an effect (default true)
       --raw-config-scanners strings       specify the types of scanners that will also scan raw configurations. For example, scanners will scan a non-adapted configuration into a shared state (allowed values: terraform)
       --redis-ca string                   redis ca file location, if using redis as cache backend
