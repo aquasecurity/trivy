@@ -114,7 +114,7 @@ func (p podmanClient) imageSave(ctx context.Context, imageNames []string, _ ...c
 }
 
 func (p podmanClient) get(ctx context.Context, url string) (*http.Response, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
 	if err != nil {
 		return nil, err
 	}
