@@ -44,13 +44,13 @@ func GetConfigs(ctx context.Context, opts *flag.Options, accessToken string) err
 	logger := log.WithPrefix(log.PrefixCloud)
 	client := xhttp.ClientWithContext(ctx)
 
-	if opts.CloudOptions.SecretConfig && opts.Scanners.Enabled(types.SecretScanner) {
+	if opts.ProOptions.SecretConfig && opts.Scanners.Enabled(types.SecretScanner) {
 		if opts.SecretOptions.SecretConfigPath != "" {
 			logger.Warn("Secret config path already set", log.FilePath(opts.SecretOptions.SecretConfigPath))
 			return nil
 		}
 
-		configPath, err := getConfigFromTrivyCloud(ctx, client, opts, accessToken, ConfigTypeSecret)
+		configPath, err := getConfigFromTrivyPro(ctx, client, opts, accessToken, ConfigTypeSecret)
 		if err != nil {
 			return xerrors.Errorf("failed to get secret config: %w", err)
 		}
@@ -61,9 +61,9 @@ func GetConfigs(ctx context.Context, opts *flag.Options, accessToken string) err
 	return nil
 }
 
-// getConfigFromTrivyCloud downloads a config from Trivy Cloud and saves it to a file
+// getConfigFromTrivyPro downloads a config from Trivy Pro and saves it to a file
 // it returns the path to the config file if it was downloaded successfully, otherwise it returns an error
-func getConfigFromTrivyCloud(ctx context.Context, client *http.Client, opts *flag.Options, accessToken string, configType ConfigType) (string, error) {
+func getConfigFromTrivyPro(ctx context.Context, client *http.Client, opts *flag.Options, accessToken string, configType ConfigType) (string, error) {
 	logger := log.WithPrefix(log.PrefixCloud).With("configType", configType)
 	configTypeStr := string(configType)
 	configDir := filepath.Join(fsutils.TrivyHomeDir(), "cloud", configTypeStr)
@@ -83,7 +83,7 @@ func getConfigFromTrivyCloud(ctx context.Context, client *http.Client, opts *fla
 	if !ok {
 		return "", xerrors.Errorf("unknown config type: %s", configType)
 	}
-	configUrl, err := url.JoinPath(opts.CloudOptions.TrivyServerURL, configPath)
+	configUrl, err := url.JoinPath(opts.ProOptions.TrivyServerURL, configPath)
 	if err != nil {
 		return "", xerrors.Errorf("failed to join API URL and config path: %w", err)
 	}
@@ -99,7 +99,7 @@ func getConfigFromTrivyCloud(ctx context.Context, client *http.Client, opts *fla
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		if resp.StatusCode == http.StatusNotFound {
-			logger.Debug("Config not found in Trivy Cloud", log.String("configType", string(configType)))
+			logger.Debug("Config not found in Trivy Pro", log.String("configType", string(configType)))
 			return "", nil
 		}
 		return "", xerrors.Errorf("failed to get config: received status code %d", resp.StatusCode)

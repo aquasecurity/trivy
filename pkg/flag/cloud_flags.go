@@ -6,97 +6,97 @@ const (
 )
 
 var (
-	CloudTokenFlag = Flag[string]{
-		Name:       "cloud-token",
-		ConfigName: "cloud.token",
-		Usage:      "Token used to athenticate with Trivy Cloud platform",
+	ProTokenFlag = Flag[string]{
+		Name:       "pro-token",
+		ConfigName: "pro.token",
+		Usage:      "Token used to athenticate with Trivy Pro platform",
 	}
 
-	CloudApiURLFlag = Flag[string]{
-		Name:          "cloud-api-url",
-		ConfigName:    "cloud.api-url",
+	ProAPIURLFlag = Flag[string]{
+		Name:          "pro-api-url",
+		ConfigName:    "pro.api-url",
 		Default:       DefaultApiURL,
-		Usage:         "API URL for Trivy Cloud platform, requires the token to be provided to have an effect",
+		Usage:         "API URL for Trivy Pro platform, requires the token to be provided to have an effect",
 		TelemetrySafe: true,
 	}
 
-	CloudTrivyServerURLFlag = Flag[string]{
-		Name:          "cloud-trivy-server-url",
-		ConfigName:    "cloud.trivy-server-url",
+	ProTrivyServerURLFlag = Flag[string]{
+		Name:          "pro-trivy-server-url",
+		ConfigName:    "pro.trivy-server-url",
 		Default:       DefaultTrivyServerURL,
-		Usage:         "Trivy Server URL for Trivy Cloud platform, requires the token to be provided to have an effect",
+		Usage:         "Trivy Server URL for Trivy Pro platform, requires the token to be provided to have an effect",
 		TelemetrySafe: true,
 	}
 
-	CloudUploadResultsFlag = Flag[bool]{
-		Name:          "cloud-upload-results",
-		ConfigName:    "cloud.upload-results",
+	ProUploadResultsFlag = Flag[bool]{
+		Name:          "pro-upload-results",
+		ConfigName:    "pro.upload-results",
 		Default:       true,
-		Usage:         "Upload results to Trivy Cloud platform, requires the token to be provided to have an effect",
+		Usage:         "Upload results to Trivy Pro platform, requires the token to be provided to have an effect",
 		TelemetrySafe: true,
 	}
 
-	CloudSecretConfigFlag = Flag[bool]{
-		Name:          "cloud-use-secret-config",
-		ConfigName:    "cloud.use-secret-config",
+	ProSecretConfigFlag = Flag[bool]{
+		Name:          "pro-use-secret-config",
+		ConfigName:    "pro.use-secret-config",
 		Default:       true,
-		Usage:         "Use secret configurations from Trivy Cloud platform, requires the token to be provided to have an effect",
+		Usage:         "Use secret configurations from Trivy Pro platform, requires the token to be provided to have an effect",
 		TelemetrySafe: true,
 	}
 
-	CloudUseServerSideScanningFlag = Flag[bool]{
-		Name:          "cloud-server-scanning",
-		ConfigName:    "cloud.server-scanning",
+	ProUseServerSideScanningFlag = Flag[bool]{
+		Name:          "pro-server-scanning",
+		ConfigName:    "pro.server-scanning",
 		Default:       true,
-		Usage:         "Use server-side image scanning in Trivy Cloud platform, requires the token to be provided to have an effect",
+		Usage:         "Use server-side image scanning in Trivy Pro platform, requires the token to be provided to have an effect",
 		TelemetrySafe: true,
 	}
 )
 
-type CloudFlagGroup struct {
-	CloudToken          *Flag[string]
-	CloudApiURL         *Flag[string]
-	CloudTrivyServerURL *Flag[string]
-	CloudUploadResults  *Flag[bool]
-	CloudSecretConfig   *Flag[bool]
+type ProFlagGroup struct {
+	ProToken          *Flag[string]
+	ProApiURL         *Flag[string]
+	ProTrivyServerURL *Flag[string]
+	ProUploadResults  *Flag[bool]
+	ProSecretConfig   *Flag[bool]
 
-	CloudUseServerSideScanning *Flag[bool]
+	ProUseServerSideScanning *Flag[bool]
 }
 
-func NewCloudFlagGroup() *CloudFlagGroup {
-	return &CloudFlagGroup{
-		CloudToken:                 CloudTokenFlag.Clone(),
-		CloudApiURL:                CloudApiURLFlag.Clone(),
-		CloudTrivyServerURL:        CloudTrivyServerURLFlag.Clone(),
-		CloudUploadResults:         CloudUploadResultsFlag.Clone(),
-		CloudSecretConfig:          CloudSecretConfigFlag.Clone(),
-		CloudUseServerSideScanning: CloudUseServerSideScanningFlag.Clone(),
+func NewProFlagGroup() *ProFlagGroup {
+	return &ProFlagGroup{
+		ProToken:                 ProTokenFlag.Clone(),
+		ProApiURL:                ProAPIURLFlag.Clone(),
+		ProTrivyServerURL:        ProTrivyServerURLFlag.Clone(),
+		ProUploadResults:         ProUploadResultsFlag.Clone(),
+		ProSecretConfig:          ProSecretConfigFlag.Clone(),
+		ProUseServerSideScanning: ProUseServerSideScanningFlag.Clone(),
 	}
 }
 
-func (f *CloudFlagGroup) Name() string {
-	return "Trivy Cloud"
+func (f *ProFlagGroup) Name() string {
+	return "Trivy Pro"
 }
 
-func (f *CloudFlagGroup) Flags() []Flagger {
+func (f *ProFlagGroup) Flags() []Flagger {
 	return []Flagger{
-		f.CloudToken,
-		f.CloudApiURL,
-		f.CloudTrivyServerURL,
-		f.CloudUploadResults,
-		f.CloudSecretConfig,
-		f.CloudUseServerSideScanning,
+		f.ProToken,
+		f.ProApiURL,
+		f.ProTrivyServerURL,
+		f.ProUploadResults,
+		f.ProSecretConfig,
+		f.ProUseServerSideScanning,
 	}
 }
 
-// CloudLoginCredentials is the credentials used to authenticate with Trivy Cloud platform
+// ProLoginCredentials is the credentials used to authenticate with Trivy Pro platform
 // In the future this would likely have more information stored for refresh tokens, etc
-type CloudLoginCredentials struct {
+type ProLoginCredentials struct {
 	Token string
 }
 
-type CloudOptions struct {
-	CloudToken            string
+type ProOptions struct {
+	ProToken              string
 	ApiURL                string
 	TrivyServerURL        string
 	UploadResults         bool
@@ -105,14 +105,14 @@ type CloudOptions struct {
 }
 
 // ToOptions converts the flags to options
-func (f *CloudFlagGroup) ToOptions(opts *Options) error {
-	opts.CloudOptions = CloudOptions{
-		CloudToken:            f.CloudToken.Value(),
-		ApiURL:                f.CloudApiURL.Value(),
-		TrivyServerURL:        f.CloudTrivyServerURL.Value(),
-		UploadResults:         f.CloudUploadResults.Value(),
-		SecretConfig:          f.CloudSecretConfig.Value(),
-		UseServerSideScanning: f.CloudUseServerSideScanning.Value(),
+func (f *ProFlagGroup) ToOptions(opts *Options) error {
+	opts.ProOptions = ProOptions{
+		ProToken:              f.ProToken.Value(),
+		ApiURL:                f.ProApiURL.Value(),
+		TrivyServerURL:        f.ProTrivyServerURL.Value(),
+		UploadResults:         f.ProUploadResults.Value(),
+		SecretConfig:          f.ProSecretConfig.Value(),
+		UseServerSideScanning: f.ProUseServerSideScanning.Value(),
 	}
 	return nil
 }

@@ -65,8 +65,8 @@ func TestUpdateOptsForCloudIntegration(t *testing.T) {
 		{
 			name: "valid token and config to download",
 			opts: &flag.Options{
-				CloudOptions: flag.CloudOptions{
-					CloudToken:     "valid-cloud-token",
+				ProOptions: flag.ProOptions{
+					ProToken:       "valid-cloud-token",
 					ApiURL:         mockServer.server.URL,
 					TrivyServerURL: mockServer.server.URL,
 					SecretConfig:   true,
@@ -80,8 +80,8 @@ func TestUpdateOptsForCloudIntegration(t *testing.T) {
 		{
 			name: "valid token but config not requested",
 			opts: &flag.Options{
-				CloudOptions: flag.CloudOptions{
-					CloudToken:     "valid-cloud-token",
+				ProOptions: flag.ProOptions{
+					ProToken:       "valid-cloud-token",
 					ApiURL:         mockServer.server.URL,
 					TrivyServerURL: mockServer.server.URL,
 					SecretConfig:   false,
@@ -95,8 +95,8 @@ func TestUpdateOptsForCloudIntegration(t *testing.T) {
 		{
 			name: "valid token but config not available",
 			opts: &flag.Options{
-				CloudOptions: flag.CloudOptions{
-					CloudToken:     "valid-cloud-token",
+				ProOptions: flag.ProOptions{
+					ProToken:       "valid-cloud-token",
 					ApiURL:         mockServer.server.URL,
 					TrivyServerURL: mockServer.server.URL,
 					SecretConfig:   false,
@@ -107,8 +107,8 @@ func TestUpdateOptsForCloudIntegration(t *testing.T) {
 		{
 			name: "invalid token 401 status code",
 			opts: &flag.Options{
-				CloudOptions: flag.CloudOptions{
-					CloudToken:     "invalid-token",
+				ProOptions: flag.ProOptions{
+					ProToken:       "invalid-token",
 					ApiURL:         mockServer.server.URL,
 					TrivyServerURL: mockServer.server.URL,
 					SecretConfig:   false,
@@ -118,7 +118,7 @@ func TestUpdateOptsForCloudIntegration(t *testing.T) {
 				},
 			},
 			configAvailable: true,
-			errorContains:   "failed to get access token for Trivy Cloud",
+			errorContains:   "failed to get access token for Trivy Pro",
 		},
 	}
 
@@ -128,7 +128,7 @@ func TestUpdateOptsForCloudIntegration(t *testing.T) {
 			t.Setenv("XDG_DATA_HOME", tempDir)
 			mockServer.configAvailable = tt.configAvailable
 
-			err := UpdateOptsForCloudIntegration(t.Context(), tt.opts)
+			err := UpdateOptsForProIntegration(t.Context(), tt.opts)
 
 			if tt.errorContains != "" {
 				require.ErrorContains(t, err, tt.errorContains)
@@ -137,7 +137,7 @@ func TestUpdateOptsForCloudIntegration(t *testing.T) {
 
 			require.NoError(t, err)
 
-			if tt.opts.CloudOptions.SecretConfig && tt.opts.ScanOptions.Scanners.Enabled(types.SecretScanner) {
+			if tt.opts.ProOptions.SecretConfig && tt.opts.ScanOptions.Scanners.Enabled(types.SecretScanner) {
 				assert.NotEmpty(t, tt.opts.SecretOptions.SecretConfigPath)
 				assert.FileExists(t, tt.opts.SecretOptions.SecretConfigPath)
 			} else {

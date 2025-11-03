@@ -48,7 +48,7 @@ func TestGetConfigs_Secrets(t *testing.T) {
 			t.Setenv("XDG_DATA_HOME", tempDir)
 
 			opts := &flag.Options{
-				CloudOptions: flag.CloudOptions{
+				ProOptions: flag.ProOptions{
 					SecretConfig:   true,
 					TrivyServerURL: tt.serverURL,
 				},
