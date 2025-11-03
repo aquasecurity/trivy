@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/compute"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -175,21 +176,21 @@ func adaptNetworkInterface(resource *terraform.Block, modules terraform.Modules)
 		HasPublicIP:     iacTypes.BoolDefault(false, resource.GetMetadata()),
 		PublicIPAddress: iacTypes.StringDefault("", resource.GetMetadata()),
 	}
+	
+	if nsgAttr := resource.GetAttribute("network_security_group_id"); nsgAttr.IsNotNil() {
+		if referencedNSG, err := modules.GetReferencedBlock(nsgAttr, resource); err == nil {
+			ni.SecurityGroups = []network.SecurityGroup{adaptSecurityGroupFromBlock(referencedNSG)}
+		}
+	}
+	
 	ipConfigs := resource.GetBlocks("ip_configuration")
 	if len(ipConfigs) > 0 {
 		ipConfig := ipConfigs[0]
 		if subnetAttr := ipConfig.GetAttribute("subnet_id"); subnetAttr.IsNotNil() {
-			// Resolve the subnet reference to the actual azurerm_subnet resource
-			// This ensures we're working with an actual subnet resource, not just an arbitrary string
-			// The resolved subnet block could be used in future for additional subnet property checks
 			if _, err := modules.GetReferencedBlock(subnetAttr, ipConfig); err == nil {
-				// We found the referenced azurerm_subnet resource - this validates the subnet exists
 			}
-			// Use the original attribute value resolution which handles computed values like .id
-			// This preserves the actual Azure resource ID if it's resolvable
 			ni.SubnetID = subnetAttr.AsStringValueOrDefault("", ipConfig)
 		}
-		// Check both public_ip_address and public_ip_addresses to determine if interface is public
 		publicIPAttr := ipConfig.GetAttribute("public_ip_address")
 		publicIPsAttr := ipConfig.GetAttribute("public_ip_addresses")
 		if publicIPAttr.IsNotNil() || publicIPsAttr.IsNotNil() {
@@ -204,4 +205,44 @@ func adaptNetworkInterface(resource *terraform.Block, modules terraform.Modules)
 	}
 
 	return ni
+}
+
+func adaptSecurityGroupFromBlock(resource *terraform.Block) network.SecurityGroup {
+	var rules []network.SecurityGroupRule
+	for _, ruleBlock := range resource.GetBlocks("security_rule") {
+		rules = append(rules, adaptSecurityGroupRule(ruleBlock))
+	}
+	return network.SecurityGroup{
+		Metadata: resource.GetMetadata(),
+		Rules:    rules,
+	}
+}
+
+func adaptSecurityGroupRule(ruleBlock *terraform.Block) network.SecurityGroupRule {
+	rule := network.SecurityGroupRule{
+		Metadata:             ruleBlock.GetMetadata(),
+		Outbound:             iacTypes.BoolDefault(false, ruleBlock.GetMetadata()),
+		Allow:                iacTypes.BoolDefault(true, ruleBlock.GetMetadata()),
+		SourceAddresses:      nil,
+		SourcePorts:          nil,
+		DestinationAddresses: nil,
+		DestinationPorts:     nil,
+		Protocol:             ruleBlock.GetAttribute("protocol").AsStringValueOrDefault("", ruleBlock),
+	}
+
+	accessAttr := ruleBlock.GetAttribute("access")
+	if accessAttr.Equals("Allow") {
+		rule.Allow = iacTypes.Bool(true, accessAttr.GetMetadata())
+	} else if accessAttr.Equals("Deny") {
+		rule.Allow = iacTypes.Bool(false, accessAttr.GetMetadata())
+	}
+
+	directionAttr := ruleBlock.GetAttribute("direction")
+	if directionAttr.Equals("Inbound") {
+		rule.Outbound = iacTypes.Bool(false, directionAttr.GetMetadata())
+	} else if directionAttr.Equals("Outbound") {
+		rule.Outbound = iacTypes.Bool(true, directionAttr.GetMetadata())
+	}
+
+	return rule
 }
