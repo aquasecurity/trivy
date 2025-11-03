@@ -237,7 +237,7 @@ func TestFlag_IsSet(t *testing.T) {
 			envs: map[string]string{
 				"TRIVY_CACHE_DIR":         "/env/cache",
 				"TRIVY_QUIET":             "true",
-				"TRIVY_LICENSE_FORBIDDEN": "MIT,Apache-2.0", // Will not be respected even when explicitly set.
+				"TRIVY_LICENSE_FORBIDDEN": "MIT,Apache-2.0", // Will not be respected even when explicitly set, because ENVs are derived from flag.Name, and LicenseForbidden is a config-only flag (has no Name field).
 			},
 			want: wantFlags{
 				CacheDir:         wantFlag[string]{IsSet: true, Value: "/env/cache"},
