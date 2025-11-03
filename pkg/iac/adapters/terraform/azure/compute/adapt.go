@@ -189,8 +189,17 @@ func adaptNetworkInterface(resource *terraform.Block, modules terraform.Modules)
 			// This preserves the actual Azure resource ID if it's resolvable
 			ni.SubnetID = subnetAttr.AsStringValueOrDefault("", ipConfig)
 		}
-		if publicIPAttr := ipConfig.GetAttribute("public_ip_address_id"); publicIPAttr.IsNotNil() {
-			ni.HasPublicIP = iacTypes.Bool(true, publicIPAttr.GetMetadata())
+		// Check both public_ip_address and public_ip_addresses to determine if interface is public
+		publicIPAttr := ipConfig.GetAttribute("public_ip_address")
+		publicIPsAttr := ipConfig.GetAttribute("public_ip_addresses")
+		if publicIPAttr.IsNotNil() || publicIPsAttr.IsNotNil() {
+			var metadata iacTypes.Metadata
+			if publicIPAttr.IsNotNil() {
+				metadata = publicIPAttr.GetMetadata()
+			} else {
+				metadata = publicIPsAttr.GetMetadata()
+			}
+			ni.HasPublicIP = iacTypes.Bool(true, metadata)
 		}
 	}
 
