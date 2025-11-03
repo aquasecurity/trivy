@@ -120,7 +120,7 @@ func (m *mockReportServer) Close() {
 
 func TestReportHook_Name(t *testing.T) {
 	hook := NewReportHook("http://api.example.com", "test-token")
-	assert.Equal(t, "Trivy Cloud Results Hook", hook.Name())
+	assert.Equal(t, "Trivy Pro Results Hook", hook.Name())
 }
 
 func TestReportHook_PreReport(t *testing.T) {

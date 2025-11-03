@@ -377,9 +377,9 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
 	defer cancel()
 
-	if err := cloud.UpdateOptsForCloudIntegration(ctx, &opts); err != nil {
+	if err := cloud.UpdateOptsForProIntegration(ctx, &opts); err != nil {
 		// log failure but continue with the scan
-		log.Error("failed to check Trivy Cloud integration", "error", err)
+		log.Error("failed to check Trivy Pro integration", "error", err)
 	}
 
 	if opts.GenerateDefaultConfig {

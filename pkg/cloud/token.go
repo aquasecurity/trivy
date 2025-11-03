@@ -23,35 +23,35 @@ const (
 )
 
 func GetAccessToken(ctx context.Context, opts flag.Options) (string, error) {
-	if opts.CloudOptions.CloudToken == "" {
-		return "", xerrors.New("no cloud token provided for getting access token from Trivy Cloud")
+	if opts.ProOptions.ProToken == "" {
+		return "", xerrors.New("no pro token provided for getting access token from Trivy Pro")
 	}
 
-	if opts.CloudOptions.ApiURL == "" {
-		return "", xerrors.New("no API URL provided for getting access token from Trivy Cloud")
+	if opts.ProOptions.ApiURL == "" {
+		return "", xerrors.New("no API URL provided for getting access token from Trivy Pro")
 	}
 
 	logger := log.WithPrefix(log.PrefixCloud)
 
 	client := xhttp.Client()
-	u, err := url.JoinPath(opts.CloudOptions.ApiURL, accessTokenPath)
+	u, err := url.JoinPath(opts.ProOptions.ApiURL, accessTokenPath)
 	if err != nil {
 		return "", xerrors.Errorf("failed to join server URL and token path: %w", err)
 	}
-	logger.Debug("Requesting access token from Trivy Cloud", log.String("url", u))
+	logger.Debug("Requesting access token from Trivy Pro", log.String("url", u))
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u, http.NoBody)
 	if err != nil {
 		return "", xerrors.Errorf("failed to create token request: %w", err)
 	}
 
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", opts.CloudOptions.CloudToken))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", opts.ProOptions.ProToken))
 	resp, err := client.Do(req)
 	if err != nil {
 		return "", xerrors.Errorf("failed to get access token: %w", err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusCreated {
-		return "", xerrors.Errorf("failed to get access token: received status code %d", resp.StatusCode)
+		return "", xerrors.Errorf("failed to get access token from Trivy Pro: received status code %d", resp.StatusCode)
 	}
 
 	var tokenResponse accessTokenResponse

@@ -30,7 +30,7 @@ type ReportHook struct {
 
 func NewReportHook(apiUrl, accessToken string) *ReportHook {
 	return &ReportHook{
-		name:        "Trivy Cloud Results Hook",
+		name:        "Trivy Pro Results Hook",
 		apiUrl:      apiUrl,
 		accessToken: accessToken,
 		client:      xhttp.Client(),
@@ -80,7 +80,7 @@ func (h *ReportHook) uploadResults(ctx context.Context, jsonReport []byte) error
 		return fmt.Errorf("failed to upload results: received status code %d", resp.StatusCode)
 	}
 
-	h.logger.Info("Report uploaded successfully to Trivy Cloud")
+	h.logger.Info("Report uploaded successfully to Trivy Pro")
 	return nil
 }
 
