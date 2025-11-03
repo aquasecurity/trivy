@@ -25,7 +25,7 @@ func Adapt(modules terraform.Modules) storage.Storage {
 			Metadata: iacTypes.NewUnmanagedMetadata(),
 			DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
 				Metadata: iacTypes.NewUnmanagedMetadata(),
-				Days:     iacTypes.IntDefault(0, iacTypes.NewUnmanagedMetadata()),
+				Days:     iacTypes.IntDefault(7, iacTypes.NewUnmanagedMetadata()),
 			},
 		},
 		AccountReplicationType:          iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
@@ -128,7 +128,7 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 			Metadata: resource.GetMetadata(),
 			DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
 				Metadata: resource.GetMetadata(),
-				Days:     iacTypes.IntDefault(0, resource.GetMetadata()),
+				Days:     iacTypes.IntDefault(7, resource.GetMetadata()),
 			},
 		},
 		AccountReplicationType:          resource.GetAttribute("account_replication_type").AsStringValueOrDefault("", resource),
@@ -157,7 +157,7 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 			account.BlobProperties.DeleteRetentionPolicy.Metadata = deleteRetentionPolicyBlock.GetMetadata()
 			daysAttr := deleteRetentionPolicyBlock.GetAttribute("days")
 			if daysAttr.IsNotNil() {
-				account.BlobProperties.DeleteRetentionPolicy.Days = daysAttr.AsIntValueOrDefault(0, deleteRetentionPolicyBlock)
+				account.BlobProperties.DeleteRetentionPolicy.Days = daysAttr.AsIntValueOrDefault(7, deleteRetentionPolicyBlock)
 			}
 		}
 	}
