@@ -31,7 +31,7 @@ func Test_Adapt(t *testing.T) {
 						InfrastructureEncryptionEnabled: iacTypes.BoolTest(false),
 						BlobProperties: storage.BlobProperties{
 							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
-								Days: iacTypes.IntTest(0),
+								Days: iacTypes.IntTest(7),
 							},
 						},
 						CustomerManagedKey: storage.CustomerManagedKey{
@@ -39,7 +39,13 @@ func Test_Adapt(t *testing.T) {
 							UserAssignedIdentityId: iacTypes.StringTest(""),
 						},
 					},
-					{},
+					{
+						BlobProperties: storage.BlobProperties{
+							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+								Days: iacTypes.IntTest(7),
+							},
+						},
+					},
 				},
 			},
 		},
@@ -127,7 +133,7 @@ func Test_Adapt(t *testing.T) {
 						InfrastructureEncryptionEnabled: iacTypes.BoolTest(false),
 						BlobProperties: storage.BlobProperties{
 							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
-								Days: iacTypes.IntTest(0),
+								Days: iacTypes.IntTest(7),
 							},
 						},
 						CustomerManagedKey: storage.CustomerManagedKey{
@@ -153,7 +159,7 @@ func Test_Adapt(t *testing.T) {
 						InfrastructureEncryptionEnabled: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 						BlobProperties: storage.BlobProperties{
 							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
-								Days: iacTypes.IntDefault(0, iacTypes.NewUnmanagedMetadata()),
+								Days: iacTypes.IntDefault(7, iacTypes.NewUnmanagedMetadata()),
 							},
 						},
 						CustomerManagedKey: storage.CustomerManagedKey{
@@ -199,7 +205,7 @@ func Test_Adapt(t *testing.T) {
 						InfrastructureEncryptionEnabled: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 						BlobProperties: storage.BlobProperties{
 							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
-								Days: iacTypes.IntDefault(0, iacTypes.NewUnmanagedMetadata()),
+								Days: iacTypes.IntDefault(7, iacTypes.NewUnmanagedMetadata()),
 							},
 						},
 						CustomerManagedKey: storage.CustomerManagedKey{
