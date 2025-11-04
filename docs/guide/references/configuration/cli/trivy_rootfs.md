@@ -108,7 +108,7 @@ trivy rootfs [flags] ROOTDIR
       --pro-api-url string                API URL for Trivy Pro platform, requires the token to be provided to have an effect (default "https://api.trivy.dev")
       --pro-app-url string                App URL for Trivy Pro platform, requires the token to be provided to have an effect (default "https://app.trivy.dev")
       --pro-server-scanning               Use server-side image scanning in Trivy Pro platform, requires the token to be provided to have an effect (default true)
-      --pro-token string                  Token used to athenticate with Trivy Pro platform
+      --pro-token string                  Token used to authenticate with Trivy Pro platform
       --pro-trivy-server-url string       Trivy Server URL for Trivy Pro platform, requires the token to be provided to have an effect (default "https://scan.trivy.dev")
       --pro-upload-results                Upload results to Trivy Pro platform, requires the token to be provided to have an effect
       --pro-use-secret-config             Use secret configurations from Trivy Pro platform, requires the token to be provided to have an effect (default true)

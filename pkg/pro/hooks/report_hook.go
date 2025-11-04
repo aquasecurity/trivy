@@ -42,7 +42,7 @@ func (h *ReportHook) Name() string {
 	return h.name
 }
 
-// PreReport is not going go to be called so we return nil
+// PreReport is not going to be called so we return nil
 func (h *ReportHook) PreReport(_ context.Context, _ *types.Report, _ flag.Options) error {
 	return nil
 }
@@ -103,7 +103,7 @@ func (h *ReportHook) getPresignedUploadUrl(ctx context.Context) (string, error) 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", xerrors.Errorf("failed to get upload URL: %w", err)
+		return "", xerrors.Errorf("failed to get upload URL: received status code %d", resp.StatusCode)
 	}
 
 	var uploadResponse struct {

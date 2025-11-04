@@ -9,7 +9,7 @@ var (
 	ProTokenFlag = Flag[string]{
 		Name:       "pro-token",
 		ConfigName: "pro.token",
-		Usage:      "Token used to athenticate with Trivy Pro platform",
+		Usage:      "Token used to authenticate with Trivy Pro platform",
 	}
 
 	ProAPIURLFlag = Flag[string]{

@@ -1,8 +1,4 @@
-<<<<<<< HEAD:pkg/pro/token_test.go
 package pro
-=======
-package cloud
->>>>>>> 9503fe645 (refactor(cli): Rework Trivy Cloud integration logic):pkg/cloud/token_test.go
 
 import (
 	"net/http"
@@ -73,7 +69,7 @@ func TestGetAccessToken(t *testing.T) {
 					ApiURL:   "",
 				},
 			},
-			errorContains:      "failed to get access token: received status code 401",
+			errorContains:      "no API URL provided for getting access token from Trivy Pro",
 			expectedStatusCode: http.StatusUnauthorized,
 		},
 	}
@@ -82,6 +78,7 @@ func TestGetAccessToken(t *testing.T) {
 			got, err := GetAccessToken(t.Context(), tt.opts)
 
 			if tt.errorContains != "" {
+				require.ErrorContains(t, err, tt.errorContains)
 				return
 			}
 
