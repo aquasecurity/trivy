@@ -84,6 +84,82 @@ func TestAdapt(t *testing.T) {
 				}},
 			},
 		},
+		{
+			name: "with network interfaces",
+			source: `{
+  "resources": [
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "properties": {
+        "osProfile": {
+          "customData": "test",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": false
+          },
+          "windowsConfiguration": {}
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Network/networkInterfaces/nic-1"
+            },
+            {
+              "id": "/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Network/networkInterfaces/nic-2"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}`,
+			expected: compute.Compute{
+				LinuxVirtualMachines: []compute.LinuxVirtualMachine{{
+					VirtualMachine: compute.VirtualMachine{
+						CustomData: types.StringTest("test"),
+						NetworkInterfaces: []compute.NetworkInterface{
+							{
+								Metadata:        types.NewTestMetadata(),
+								SubnetID:        types.StringTest(""),
+								SecurityGroups:  nil,
+								HasPublicIP:     types.BoolTest(false),
+								PublicIPAddress: types.StringTest(""),
+							},
+							{
+								Metadata:        types.NewTestMetadata(),
+								SubnetID:        types.StringTest(""),
+								SecurityGroups:  nil,
+								HasPublicIP:     types.BoolTest(false),
+								PublicIPAddress: types.StringTest(""),
+							},
+						},
+					},
+					OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
+						DisablePasswordAuthentication: types.BoolTest(false),
+					},
+				}},
+				WindowsVirtualMachines: []compute.WindowsVirtualMachine{{
+					VirtualMachine: compute.VirtualMachine{
+						CustomData: types.StringTest("test"),
+						NetworkInterfaces: []compute.NetworkInterface{
+							{
+								Metadata:        types.NewTestMetadata(),
+								SubnetID:        types.StringTest(""),
+								SecurityGroups:  nil,
+								HasPublicIP:     types.BoolTest(false),
+								PublicIPAddress: types.StringTest(""),
+							},
+							{
+								Metadata:        types.NewTestMetadata(),
+								SubnetID:        types.StringTest(""),
+								SecurityGroups:  nil,
+								HasPublicIP:     types.BoolTest(false),
+								PublicIPAddress: types.StringTest(""),
+							},
+						},
+					},
+				}},
+			},
+		},
 	}
 
 	for _, tt := range tests {
