@@ -46,16 +46,12 @@ func adaptWindowsVirtualMachines(deployment azure.Deployment) (windowsVirtualMac
 }
 
 func adaptWindowsVirtualMachine(resource azure.Resource) compute.WindowsVirtualMachine {
-	networkProfile := resource.Properties.GetMapValue("networkProfile")
-	nicIDs := extractNetworkInterfaceIDs(networkProfile, resource.Metadata)
-
 	return compute.WindowsVirtualMachine{
 		Metadata: resource.Metadata,
 		VirtualMachine: compute.VirtualMachine{
 			Metadata: resource.Metadata,
 			CustomData: resource.Properties.GetMapValue("osProfile").
 				GetMapValue("customData").AsStringValue("", resource.Metadata),
-			NetworkInterfaceIDs: nicIDs,
 		},
 	}
 }
@@ -71,16 +67,12 @@ func adaptLinuxVirtualMachines(deployment azure.Deployment) (linuxVirtualMachine
 }
 
 func adaptLinuxVirtualMachine(resource azure.Resource) compute.LinuxVirtualMachine {
-	networkProfile := resource.Properties.GetMapValue("networkProfile")
-	nicIDs := extractNetworkInterfaceIDs(networkProfile, resource.Metadata)
-
 	return compute.LinuxVirtualMachine{
 		Metadata: resource.Metadata,
 		VirtualMachine: compute.VirtualMachine{
 			Metadata: resource.Metadata,
 			CustomData: resource.Properties.GetMapValue("osProfile").
 				GetMapValue("customData").AsStringValue("", resource.Metadata),
-			NetworkInterfaceIDs: nicIDs,
 		},
 		OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
 			Metadata: resource.Metadata,
@@ -90,18 +82,4 @@ func adaptLinuxVirtualMachine(resource azure.Resource) compute.LinuxVirtualMachi
 		},
 	}
 
-}
-
-func extractNetworkInterfaceIDs(networkProfile azure.Value, metadata iacTypes.Metadata) []iacTypes.StringValue {
-	var nicIDs []iacTypes.StringValue
-
-	nicsArray := networkProfile.GetMapValue("networkInterfaces").AsList()
-	for _, nic := range nicsArray {
-		nicID := nic.GetMapValue("id").AsStringValue("", metadata)
-		if nicID.Value() != "" {
-			nicIDs = append(nicIDs, nicID)
-		}
-	}
-
-	return nicIDs
 }
