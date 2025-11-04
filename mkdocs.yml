@@ -174,8 +174,8 @@ nav:
                   - Filesystem: docs/references/configuration/cli/trivy_filesystem.md
                   - Image: docs/references/configuration/cli/trivy_image.md
                   - Kubernetes: docs/references/configuration/cli/trivy_kubernetes.md
-                  - Login: guide/references/configuration/cli/trivy_login.md
-                  - Logout: guide/references/configuration/cli/trivy_logout.md
+                  - Login: docs/references/configuration/cli/trivy_login.md
+                  - Logout: docs/references/configuration/cli/trivy_logout.md
                   - Module:
                       - Module: guide/references/configuration/cli/trivy_module.md
                       - Module Install: guide/references/configuration/cli/trivy_module_install.md

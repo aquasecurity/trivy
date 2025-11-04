@@ -1,8 +1,4 @@
-<<<<<<< HEAD:pkg/pro/token_test.go
 package pro
-=======
-package cloud
->>>>>>> 9503fe645 (refactor(cli): Rework Trivy Cloud integration logic):pkg/cloud/token_test.go
 
 import (
 	"net/http"
