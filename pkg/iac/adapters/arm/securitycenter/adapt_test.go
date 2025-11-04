@@ -145,7 +145,6 @@ func TestAdapt(t *testing.T) {
 					IsEnabled:                types.BoolTest(false),
 					MinimalSeverity:          types.StringTest("Medium"),
 				}},
-				Subscriptions: []securitycenter.SubscriptionPricing{},
 			},
 		},
 	}
