@@ -20,6 +20,14 @@ var (
 		TelemetrySafe: true,
 	}
 
+	ProAppURLFlag = Flag[string]{
+		Name:          "pro-app-url",
+		ConfigName:    "pro.app-url",
+		Default:       "https://app.trivy.dev",
+		Usage:         "App URL for Trivy Pro platform, requires the token to be provided to have an effect",
+		TelemetrySafe: true,
+	}
+
 	ProTrivyServerURLFlag = Flag[string]{
 		Name:          "pro-trivy-server-url",
 		ConfigName:    "pro.trivy-server-url",
@@ -31,7 +39,7 @@ var (
 	ProUploadResultsFlag = Flag[bool]{
 		Name:          "pro-upload-results",
 		ConfigName:    "pro.upload-results",
-		Default:       true,
+		Default:       false,
 		Usage:         "Upload results to Trivy Pro platform, requires the token to be provided to have an effect",
 		TelemetrySafe: true,
 	}
@@ -56,6 +64,7 @@ var (
 type ProFlagGroup struct {
 	ProToken          *Flag[string]
 	ProApiURL         *Flag[string]
+	ProAppURL         *Flag[string]
 	ProTrivyServerURL *Flag[string]
 	ProUploadResults  *Flag[bool]
 	ProSecretConfig   *Flag[bool]
@@ -67,6 +76,7 @@ func NewProFlagGroup() *ProFlagGroup {
 	return &ProFlagGroup{
 		ProToken:                 ProTokenFlag.Clone(),
 		ProApiURL:                ProAPIURLFlag.Clone(),
+		ProAppURL:                ProAppURLFlag.Clone(),
 		ProTrivyServerURL:        ProTrivyServerURLFlag.Clone(),
 		ProUploadResults:         ProUploadResultsFlag.Clone(),
 		ProSecretConfig:          ProSecretConfigFlag.Clone(),
@@ -82,6 +92,7 @@ func (f *ProFlagGroup) Flags() []Flagger {
 	return []Flagger{
 		f.ProToken,
 		f.ProApiURL,
+		f.ProAppURL,
 		f.ProTrivyServerURL,
 		f.ProUploadResults,
 		f.ProSecretConfig,
@@ -98,6 +109,7 @@ type ProLoginCredentials struct {
 type ProOptions struct {
 	ProToken              string
 	ApiURL                string
+	AppURL                string
 	TrivyServerURL        string
 	UploadResults         bool
 	SecretConfig          bool
@@ -109,6 +121,7 @@ func (f *ProFlagGroup) ToOptions(opts *Options) error {
 	opts.ProOptions = ProOptions{
 		ProToken:              f.ProToken.Value(),
 		ApiURL:                f.ProApiURL.Value(),
+		AppURL:                f.ProAppURL.Value(),
 		TrivyServerURL:        f.ProTrivyServerURL.Value(),
 		UploadResults:         f.ProUploadResults.Value(),
 		SecretConfig:          f.ProSecretConfig.Value(),

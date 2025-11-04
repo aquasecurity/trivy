@@ -1,6 +1,6 @@
 ## trivy logout
 
-Log out of Trivy Cloud platform
+Log out of Trivy Pro
 
 ```
 trivy logout [flags]

@@ -23,7 +23,7 @@ import (
 type ConfigType string
 
 const (
-	// Additional config types can be added here - in future pipeline rego etc
+	// Additional config types can be added here - in future pipeline rego et
 	ConfigTypeSecret ConfigType = "secret"
 )
 
@@ -41,7 +41,7 @@ type cloudConfigResponse struct {
 }
 
 func GetConfigs(ctx context.Context, opts *flag.Options, accessToken string) error {
-	logger := log.WithPrefix(log.PrefixCloud)
+	logger := log.WithPrefix(log.PrefixPro)
 	client := xhttp.ClientWithContext(ctx)
 
 	if opts.ProOptions.SecretConfig && opts.Scanners.Enabled(types.SecretScanner) {
@@ -64,7 +64,7 @@ func GetConfigs(ctx context.Context, opts *flag.Options, accessToken string) err
 // getConfigFromTrivyPro downloads a config from Trivy Pro and saves it to a file
 // it returns the path to the config file if it was downloaded successfully, otherwise it returns an error
 func getConfigFromTrivyPro(ctx context.Context, client *http.Client, opts *flag.Options, accessToken string, configType ConfigType) (string, error) {
-	logger := log.WithPrefix(log.PrefixCloud).With("configType", configType)
+	logger := log.WithPrefix(log.PrefixPro).With("configType", configType)
 	configTypeStr := string(configType)
 	configDir := filepath.Join(fsutils.TrivyHomeDir(), "cloud", configTypeStr)
 	if err := os.MkdirAll(configDir, os.ModePerm); err != nil {

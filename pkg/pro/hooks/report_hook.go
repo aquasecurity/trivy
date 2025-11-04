@@ -34,7 +34,7 @@ func NewReportHook(apiUrl, accessToken string) *ReportHook {
 		apiUrl:      apiUrl,
 		accessToken: accessToken,
 		client:      xhttp.Client(),
-		logger:      log.WithPrefix(log.PrefixCloud),
+		logger:      log.WithPrefix(log.PrefixPro),
 	}
 }
 
@@ -60,24 +60,23 @@ func (h *ReportHook) PostReport(ctx context.Context, report *types.Report, _ fla
 func (h *ReportHook) uploadResults(ctx context.Context, jsonReport []byte) error {
 	uploadUrl, err := h.getPresignedUploadUrl(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to get presigned upload URL: %w", err)
+		return xerrors.Errorf("failed to get presigned upload URL: %w", err)
 	}
 
-	// create a new request to upload the results
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uploadUrl, bytes.NewBuffer(jsonReport))
 	if err != nil {
-		return fmt.Errorf("failed to create upload request: %w", err)
+		return xerrors.Errorf("failed to create upload request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := h.client.Do(req)
 	if err != nil {
-		return fmt.Errorf("failed to upload results: %w", err)
+		return xerrors.Errorf("failed to upload results: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("failed to upload results: received status code %d", resp.StatusCode)
+		return xerrors.Errorf("failed to upload results: received status code %d", resp.StatusCode)
 	}
 
 	h.logger.Info("Report uploaded successfully to Trivy Pro")
@@ -87,27 +86,26 @@ func (h *ReportHook) uploadResults(ctx context.Context, jsonReport []byte) error
 func (h *ReportHook) getPresignedUploadUrl(ctx context.Context) (string, error) {
 	uploadUrl, err := url.JoinPath(h.apiUrl, presignedUploadUrl)
 	if err != nil {
-		return "", fmt.Errorf("failed to join API URL and presigned upload URL: %w", err)
+		return "", xerrors.Errorf("failed to join API URL and presigned upload URL: %w", err)
 	}
 	h.logger.Debug("Requesting result upload URL", log.String("uploadUrl", uploadUrl))
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uploadUrl, http.NoBody)
 	if err != nil {
-		return "", fmt.Errorf("failed to create request: %w", err)
+		return "", xerrors.Errorf("failed to create request: %w", err)
 	}
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", h.accessToken))
 	resp, err := h.client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("failed to get upload URL: %w", err)
+		return "", xerrors.Errorf("failed to get upload URL: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("failed to get upload URL: %w", err)
+		return "", xerrors.Errorf("failed to get upload URL: %w", err)
 	}
 
-	// read the upload URL from the response
 	var uploadResponse struct {
 		UploadURL string `json:"uploadUrl"`
 	}

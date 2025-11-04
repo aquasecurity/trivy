@@ -401,12 +401,12 @@ type Options struct {
 	MisconfOptions
 	ModuleOptions
 	PackageOptions
+	ProOptions
 	RegistryOptions
 	RegoOptions
 	RemoteOptions
 	RepoOptions
 	ReportOptions
-	ProOptions
 	ScanOptions
 	SecretOptions
 	VulnerabilityOptions
