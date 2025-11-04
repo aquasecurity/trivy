@@ -123,71 +123,6 @@ export DATABASE_PASSWORD=\"SomeSortOfPassword\"
 				},
 			},
 		},
-		{
-			name: "with network interfaces",
-			terraform: `
-resource "azurerm_linux_virtual_machine" "example" {
-	name                  = "example-vm"
-	resource_group_name   = "example-resources"
-	location              = "East US"
-	size                  = "Standard_F2"
-	network_interface_ids = [
-		"nic-1",
-		"nic-2"
-	]
-	admin_username = "adminuser"
-	
-	os_disk {
-		caching              = "ReadWrite"
-		storage_account_type = "Standard_LRS"
-	}
-}`,
-			expected: compute.LinuxVirtualMachine{
-				Metadata: iacTypes.NewTestMetadata(),
-				VirtualMachine: compute.VirtualMachine{
-					Metadata:   iacTypes.NewTestMetadata(),
-					CustomData: iacTypes.String("", iacTypes.NewTestMetadata()),
-					NetworkInterfaceIDs: []iacTypes.StringValue{
-						iacTypes.String("nic-1", iacTypes.NewTestMetadata()),
-						iacTypes.String("nic-2", iacTypes.NewTestMetadata()),
-					},
-				},
-				OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
-					Metadata:                      iacTypes.NewTestMetadata(),
-					DisablePasswordAuthentication: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				},
-			},
-		},
-		{
-			name: "without network interfaces",
-			terraform: `
-resource "azurerm_linux_virtual_machine" "example" {
-	name                  = "example-vm"
-	resource_group_name   = "example-resources"
-	location              = "East US"
-	size                  = "Standard_F2"
-	network_interface_ids = []
-	admin_username = "adminuser"
-	
-	os_disk {
-		caching              = "ReadWrite"
-		storage_account_type = "Standard_LRS"
-	}
-}`,
-			expected: compute.LinuxVirtualMachine{
-				Metadata: iacTypes.NewTestMetadata(),
-				VirtualMachine: compute.VirtualMachine{
-					Metadata:   iacTypes.NewTestMetadata(),
-					CustomData: iacTypes.String("", iacTypes.NewTestMetadata()),
-					// Empty array in Terraform is parsed as nil
-					NetworkInterfaceIDs: nil,
-				},
-				OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
-					Metadata:                      iacTypes.NewTestMetadata(),
-					DisablePasswordAuthentication: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				},
-			},
-		},
 	}
 
 	for _, test := range tests {
@@ -242,35 +177,6 @@ export GREETING="Hello there"
 					Metadata: iacTypes.NewTestMetadata(),
 					CustomData: iacTypes.String(`export GREETING="Hello there"
 `, iacTypes.NewTestMetadata()),
-				},
-			},
-		},
-		{
-			name: "with network interfaces",
-			terraform: `
-resource "azurerm_windows_virtual_machine" "example" {
-	name                  = "example-machine"
-	resource_group_name   = "example-resources"
-	location              = "East US"
-	size                  = "Standard_F2"
-	network_interface_ids = ["nic-1", "nic-2"]
-	admin_username        = "adminuser"
-	admin_password        = "P@ssw0rd1234!"
-	
-	os_disk {
-		caching              = "ReadWrite"
-		storage_account_type = "Standard_LRS"
-	}
-}`,
-			expected: compute.WindowsVirtualMachine{
-				Metadata: iacTypes.NewTestMetadata(),
-				VirtualMachine: compute.VirtualMachine{
-					Metadata:   iacTypes.NewTestMetadata(),
-					CustomData: iacTypes.String("", iacTypes.NewTestMetadata()),
-					NetworkInterfaceIDs: []iacTypes.StringValue{
-						iacTypes.String("nic-1", iacTypes.NewTestMetadata()),
-						iacTypes.String("nic-2", iacTypes.NewTestMetadata()),
-					},
 				},
 			},
 		},
