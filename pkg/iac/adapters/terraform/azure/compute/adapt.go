@@ -3,6 +3,7 @@ package compute
 import (
 	"encoding/base64"
 
+	anetwork "github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/compute"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
@@ -157,7 +158,7 @@ func resolveNetworkInterfaces(resource *terraform.Block, modules terraform.Modul
 		}
 
 		networkInterfaces = append(networkInterfaces, compute.NetworkInterface{
-			Metadata:        nicIDVal.GetMetadata(),
+			Metadata:        iacTypes.NewUnmanagedMetadata(),
 			SubnetID:        iacTypes.StringDefault("", nicIDVal.GetMetadata()),
 			SecurityGroups:  nil,
 			HasPublicIP:     iacTypes.BoolDefault(false, nicIDVal.GetMetadata()),
@@ -176,31 +177,22 @@ func adaptNetworkInterface(resource *terraform.Block, modules terraform.Modules)
 		HasPublicIP:     iacTypes.BoolDefault(false, resource.GetMetadata()),
 		PublicIPAddress: iacTypes.StringDefault("", resource.GetMetadata()),
 	}
-	
+
 	if nsgAttr := resource.GetAttribute("network_security_group_id"); nsgAttr.IsNotNil() {
 		if referencedNSG, err := modules.GetReferencedBlock(nsgAttr, resource); err == nil {
 			ni.SecurityGroups = []network.SecurityGroup{adaptSecurityGroupFromBlock(referencedNSG)}
 		}
 	}
-	
+
 	ipConfigs := resource.GetBlocks("ip_configuration")
 	if len(ipConfigs) > 0 {
 		ipConfig := ipConfigs[0]
 		if subnetAttr := ipConfig.GetAttribute("subnet_id"); subnetAttr.IsNotNil() {
-			if _, err := modules.GetReferencedBlock(subnetAttr, ipConfig); err == nil {
-			}
 			ni.SubnetID = subnetAttr.AsStringValueOrDefault("", ipConfig)
 		}
-		publicIPAttr := ipConfig.GetAttribute("public_ip_address")
-		publicIPsAttr := ipConfig.GetAttribute("public_ip_addresses")
-		if publicIPAttr.IsNotNil() || publicIPsAttr.IsNotNil() {
-			var metadata iacTypes.Metadata
-			if publicIPAttr.IsNotNil() {
-				metadata = publicIPAttr.GetMetadata()
-			} else {
-				metadata = publicIPsAttr.GetMetadata()
-			}
-			ni.HasPublicIP = iacTypes.Bool(true, metadata)
+
+		if publicIPAttr := ipConfig.GetAttribute("public_ip_address_id"); publicIPAttr.IsNotNil() {
+			ni.HasPublicIP = iacTypes.Bool(true, publicIPAttr.GetMetadata())
 		}
 	}
 
@@ -210,39 +202,10 @@ func adaptNetworkInterface(resource *terraform.Block, modules terraform.Modules)
 func adaptSecurityGroupFromBlock(resource *terraform.Block) network.SecurityGroup {
 	var rules []network.SecurityGroupRule
 	for _, ruleBlock := range resource.GetBlocks("security_rule") {
-		rules = append(rules, adaptSecurityGroupRule(ruleBlock))
+		rules = append(rules, anetwork.AdaptSGRule(ruleBlock))
 	}
 	return network.SecurityGroup{
 		Metadata: resource.GetMetadata(),
 		Rules:    rules,
 	}
-}
-
-func adaptSecurityGroupRule(ruleBlock *terraform.Block) network.SecurityGroupRule {
-	rule := network.SecurityGroupRule{
-		Metadata:             ruleBlock.GetMetadata(),
-		Outbound:             iacTypes.BoolDefault(false, ruleBlock.GetMetadata()),
-		Allow:                iacTypes.BoolDefault(true, ruleBlock.GetMetadata()),
-		SourceAddresses:      nil,
-		SourcePorts:          nil,
-		DestinationAddresses: nil,
-		DestinationPorts:     nil,
-		Protocol:             ruleBlock.GetAttribute("protocol").AsStringValueOrDefault("", ruleBlock),
-	}
-
-	accessAttr := ruleBlock.GetAttribute("access")
-	if accessAttr.Equals("Allow") {
-		rule.Allow = iacTypes.Bool(true, accessAttr.GetMetadata())
-	} else if accessAttr.Equals("Deny") {
-		rule.Allow = iacTypes.Bool(false, accessAttr.GetMetadata())
-	}
-
-	directionAttr := ruleBlock.GetAttribute("direction")
-	if directionAttr.Equals("Inbound") {
-		rule.Outbound = iacTypes.Bool(false, directionAttr.GetMetadata())
-	} else if directionAttr.Equals("Outbound") {
-		rule.Outbound = iacTypes.Bool(true, directionAttr.GetMetadata())
-	}
-
-	return rule
 }

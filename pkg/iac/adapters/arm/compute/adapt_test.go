@@ -113,7 +113,6 @@ func TestAdapt(t *testing.T) {
   ]
 }`,
 			expected: compute.Compute{
-				ManagedDisks: []compute.ManagedDisk{},
 				LinuxVirtualMachines: []compute.LinuxVirtualMachine{{
 					VirtualMachine: compute.VirtualMachine{
 						CustomData: types.StringTest("test"),
