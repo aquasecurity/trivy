@@ -6,11 +6,11 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/cloud"
-	"github.com/aquasecurity/trivy/pkg/cloud/hooks"
 	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/pro"
+	"github.com/aquasecurity/trivy/pkg/pro/hooks"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -23,7 +23,7 @@ func UpdateOptsForProIntegration(ctx context.Context, opts *flag.Options) error 
 	}
 
 	logger := log.WithPrefix(log.PrefixCloud)
-	accessToken, err := cloud.GetAccessToken(ctx, *opts)
+	accessToken, err := pro.GetAccessToken(ctx, *opts)
 	if err != nil {
 		return xerrors.Errorf("failed to get access token for Trivy Pro: %w", err)
 	}
@@ -40,7 +40,7 @@ func UpdateOptsForProIntegration(ctx context.Context, opts *flag.Options) error 
 	}
 
 	if opts.ProOptions.SecretConfig && opts.Scanners.Enabled(types.SecretScanner) {
-		if err := cloud.GetConfigs(ctx, opts, accessToken); err != nil {
+		if err := pro.GetConfigs(ctx, opts, accessToken); err != nil {
 			return xerrors.Errorf("failed to download configs: %w", err)
 		}
 	}
