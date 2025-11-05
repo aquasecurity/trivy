@@ -120,12 +120,10 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 		cluster.AzurePolicyEnabled = azurePolicyEnabledAttr.AsBoolValueOrDefault(false, resource)
 	}
 
-	// disk encryption set ID
 	if diskEncryptionSetIDAttr := resource.GetAttribute("disk_encryption_set_id"); diskEncryptionSetIDAttr.IsNotNil() {
 		cluster.DiskEncryptionSetID = diskEncryptionSetIDAttr.AsStringValueOrDefault("", resource)
 	}
 
-	// adapt agent pools
 	cluster.AgentPools = adaptAgentPools(resource)
 
 	return cluster
@@ -134,7 +132,6 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 func adaptAgentPools(resource *terraform.Block) []container.AgentPool {
 	pools := []container.AgentPool{}
 
-	// Extract from default_node_pool block
 	if defaultNodePoolBlock := resource.GetBlock("default_node_pool"); defaultNodePoolBlock.IsNotNil() {
 		pools = append(pools, adaptAgentPool(defaultNodePoolBlock))
 	}
@@ -146,20 +143,18 @@ func adaptAgentPool(block *terraform.Block) container.AgentPool {
 	agentPool := container.AgentPool{
 		Metadata:            block.GetMetadata(),
 		DiskEncryptionSetID: iacTypes.StringDefault("", block.GetMetadata()),
-		NodeType:            iacTypes.StringDefault("", block.GetMetadata()),
+		NodeType:            iacTypes.StringDefault("VirtualMachineScaleSets", block.GetMetadata()),
 	}
 
-	// Extract disk_encryption_set_id
 	if diskEncryptionSetIDAttr := block.GetAttribute("disk_encryption_set_id"); diskEncryptionSetIDAttr.IsNotNil() {
 		agentPool.DiskEncryptionSetID = diskEncryptionSetIDAttr.AsStringValueOrDefault("", block)
 	}
 
-	// Extract node_type or type (depending on Terraform provider version)
 	if nodeTypeAttr := block.GetAttribute("type"); nodeTypeAttr.IsNotNil() {
-		agentPool.NodeType = nodeTypeAttr.AsStringValueOrDefault("", block)
+		agentPool.NodeType = nodeTypeAttr.AsStringValueOrDefault("VirtualMachineScaleSets", block)
 	}
 	if nodeTypeAttr := block.GetAttribute("node_type"); nodeTypeAttr.IsNotNil() {
-		agentPool.NodeType = nodeTypeAttr.AsStringValueOrDefault("", block)
+		agentPool.NodeType = nodeTypeAttr.AsStringValueOrDefault("VirtualMachineScaleSets", block)
 	}
 
 	return agentPool
