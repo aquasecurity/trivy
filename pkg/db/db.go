@@ -34,10 +34,15 @@ var (
 	DefaultGCRRepository = fmt.Sprintf("%s:%d", "mirror.gcr.io/aquasec/trivy-db", db.SchemaVersion)
 	defaultGCRRepository = lo.Must(name.NewTag(DefaultGCRRepository))
 
-	Init  = db.Init
 	Close = db.Close
 	Path  = db.Path
 )
+
+// Init initializes the vulnerability database with read-only mode
+func Init(dbDir string, opts ...db.Option) error {
+	opts = append(opts, db.WithReadOnly())
+	return db.Init(dbDir, opts...)
+}
 
 type options struct {
 	artifact       *oci.Artifact
