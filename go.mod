@@ -24,7 +24,6 @@ require (
 	github.com/aquasecurity/testdocker v0.0.0-20250616060700-ba6845ac6d17
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-checks v1.11.3-0.20250604022615-9a7efa7c9169
-	github.com/aquasecurity/trivy-db v0.0.0-20250929072116-eba1ced2340a
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
 	github.com/aquasecurity/trivy-kubernetes v0.9.1
 	github.com/aws/aws-sdk-go-v2 v1.39.2
@@ -130,7 +129,10 @@ require (
 	modernc.org/sqlite v1.39.0
 )
 
-require github.com/zalando/go-keyring v0.2.6
+require (
+	github.com/aquasecurity/trivy-db v0.0.0-00010101000000-000000000000
+	github.com/zalando/go-keyring v0.2.6
+)
 
 require (
 	al.essio.dev/pkg/shellescape v1.5.1 // indirect
@@ -516,3 +518,8 @@ tool (
 )
 
 replace github.com/aquasecurity/trivy-db => github.com/knqyf263/trivy-db v0.0.0-20251105074114-618a6e5129c9
+
+// golang.org/x/tools@v0.37.0 introduced a breaking change to DeleteStmt function
+// that is incompatible with gopls@v0.20.0. Pin to v0.35.1 until gopls is updated.
+// See: https://github.com/aquasecurity/trivy/pull/9654
+replace golang.org/x/tools => golang.org/x/tools v0.35.1-0.20250728180453-01a3475a31bc
