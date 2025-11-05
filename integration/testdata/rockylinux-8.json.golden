@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:ed11998b28b0bcd0488c4d2fda300f80d71ac058ce7eb12a43a4deb312ce429c",
   "ArtifactName": "testdata/fixtures/images/rockylinux-8.tar.gz",

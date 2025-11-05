@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:357e30db7fb673e279ababa1128b33c8acc2fce50826727ec57ef24f5213fe0d",
   "ArtifactName": "testdata/fixtures/images/mariner-1.0.tar.gz",

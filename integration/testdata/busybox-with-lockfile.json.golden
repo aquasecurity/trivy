@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:4f807ebe9dfe3b25af3d4354d6cff8288e9a8c63477dabcde5e63998f0e68188",
   "ArtifactName": "testdata/fixtures/images/busybox-with-lockfile.tar.gz",

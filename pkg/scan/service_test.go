@@ -58,7 +58,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 				ArtifactID:    "sha256:574abdaf07824449b1277ec1e7e67659cc869bbf97fd95447812b55644350a21", // hash(ImageID:index.docker.io/library/alpine) from RepoTag alpine:3.11
 				ArtifactName:  "../fanal/test/testdata/alpine-311.tar.gz",
 				ArtifactType:  ftypes.TypeContainerImage,
-				ReportID:      "3ff14136-e09f-4df9-80ea-000000000001",
+				ReportID:      "017b7d41-e09f-7000-80ea-000000000001",
 				Metadata: tTypes.Metadata{
 					Size: 5861888,
 					OS: &ftypes.OS{
@@ -214,8 +214,8 @@ func TestScanner_ScanArtifact(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Set fake UUID for testing
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+			// Set fake UUID v7 for testing
+			uuid.SetFakeUUIDV7(t, "017b7d41-e09f-7000-80ea-%012d")
 
 			// Initialize DB
 			_ = dbtest.InitDB(t, tt.fixtures)

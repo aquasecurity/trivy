@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:61d0ff5073e754270b3b59487ac8049c50e12bca1cf792d84ec9a62dad36a8a1",
   "ArtifactName": "testdata/fixtures/images/ubuntu-1804.tar.gz",

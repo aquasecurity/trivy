@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:1ab435ff0da0a8c95292bfd8a3b270b457cfca575a4a68731dd2fc142e2c13ef",
   "ArtifactName": "testdata/fixtures/images/opensuse-tumbleweed.tar.gz",

@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:4f8b4cb139bdac63ad60b7382a80cd0414c55018e2f80d4163f59e40f71766cc",
   "ArtifactName": "https://github.com/knqyf263/trivy-ci-test",

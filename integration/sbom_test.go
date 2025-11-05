@@ -154,8 +154,8 @@ func TestSBOMEquivalence(t *testing.T) {
 				want.Results[0].Vulnerabilities[1].PkgIdentifier.BOMRef = "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"
 				want.Results[0].Vulnerabilities[2].PkgIdentifier.BOMRef = "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"
 
-				// SBOM parsing consumes UUIDs #1-#4 for components, so ReportID becomes #5
-				want.ReportID = "3ff14136-e09f-4df9-80ea-000000000005"
+				// ReportID uses v7 UUID with independent counter from v4 UUIDs used for SBOM components
+				want.ReportID = "017b7d41-e09f-7000-80ea-000000000001"
 			},
 		},
 		{
@@ -173,8 +173,8 @@ func TestSBOMEquivalence(t *testing.T) {
 				require.Len(t, got.Results, 1)
 				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-spdx.txt (centos 7.6.1810)"
 
-				// SBOM parsing consumes UUIDs #1-#4 for components, so ReportID becomes #5
-				want.ReportID = "3ff14136-e09f-4df9-80ea-000000000005"
+				// ReportID uses v7 UUID with independent counter from v4 UUIDs used for SBOM components
+				want.ReportID = "017b7d41-e09f-7000-80ea-000000000001"
 			},
 		},
 		{
@@ -192,8 +192,8 @@ func TestSBOMEquivalence(t *testing.T) {
 				require.Len(t, got.Results, 1)
 				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-spdx.json (centos 7.6.1810)"
 
-				// SBOM parsing consumes UUIDs #1-#4 for components, so ReportID becomes #5
-				want.ReportID = "3ff14136-e09f-4df9-80ea-000000000005"
+				// ReportID uses v7 UUID with independent counter from v4 UUIDs used for SBOM components
+				want.ReportID = "017b7d41-e09f-7000-80ea-000000000001"
 			},
 		},
 		{
@@ -216,8 +216,8 @@ func TestSBOMEquivalence(t *testing.T) {
 				want.Results[0].Vulnerabilities[1].PkgIdentifier.BOMRef = "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"
 				want.Results[0].Vulnerabilities[2].PkgIdentifier.BOMRef = "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"
 
-				// SBOM parsing consumes UUIDs #1-#4 for components, so ReportID becomes #5
-				want.ReportID = "3ff14136-e09f-4df9-80ea-000000000005"
+				// ReportID uses v7 UUID with independent counter from v4 UUIDs used for SBOM components
+				want.ReportID = "017b7d41-e09f-7000-80ea-000000000001"
 			},
 		},
 	}

@@ -364,6 +364,8 @@ func runTest(t *testing.T, osArgs []string, wantFile string, format types.Format
 	if opts.fakeUUID != "" {
 		uuid.SetFakeUUID(t, opts.fakeUUID)
 	}
+	// Set fake UUID v7 for ReportID generation. Format is not configurable.
+	uuid.SetFakeUUIDV7(t, "017b7d41-e09f-7000-80ea-%012d")
 
 	// Set up the output file
 	outputFile := filepath.Join(t.TempDir(), "output.json")
