@@ -130,7 +130,7 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 }
 
 func adaptAgentPools(resource *terraform.Block) []container.AgentPool {
-	pools := []container.AgentPool{}
+	var pools []container.AgentPool
 
 	if defaultNodePoolBlock := resource.GetBlock("default_node_pool"); defaultNodePoolBlock.IsNotNil() {
 		pools = append(pools, adaptAgentPool(defaultNodePoolBlock))
@@ -140,19 +140,9 @@ func adaptAgentPools(resource *terraform.Block) []container.AgentPool {
 }
 
 func adaptAgentPool(block *terraform.Block) container.AgentPool {
-	agentPool := container.AgentPool{
+	return container.AgentPool{
 		Metadata:            block.GetMetadata(),
-		DiskEncryptionSetID: iacTypes.StringDefault("", block.GetMetadata()),
-		NodeType:            iacTypes.StringDefault("VirtualMachineScaleSets", block.GetMetadata()),
+		DiskEncryptionSetID: block.GetAttribute("disk_encryption_set_id").AsStringValueOrDefault("", block),
+		NodeType:            block.GetAttribute("type").AsStringValueOrDefault("VirtualMachineScaleSets", block),
 	}
-
-	if diskEncryptionSetIDAttr := block.GetAttribute("disk_encryption_set_id"); diskEncryptionSetIDAttr.IsNotNil() {
-		agentPool.DiskEncryptionSetID = diskEncryptionSetIDAttr.AsStringValueOrDefault("", block)
-	}
-
-	if nodeTypeAttr := block.GetAttribute("type"); nodeTypeAttr.IsNotNil() {
-		agentPool.NodeType = nodeTypeAttr.AsStringValueOrDefault("VirtualMachineScaleSets", block)
-	}
-
-	return agentPool
 }

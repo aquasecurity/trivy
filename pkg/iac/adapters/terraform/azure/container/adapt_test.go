@@ -59,7 +59,6 @@ func Test_adaptCluster(t *testing.T) {
 				},
 				AzurePolicyEnabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				DiskEncryptionSetID: iacTypes.String("", iacTypes.NewTestMetadata()),
-				AgentPools:          []container.AgentPool{},
 				AddonProfile: container.AddonProfile{
 					Metadata: iacTypes.NewTestMetadata(),
 					OMSAgent: container.OMSAgent{
@@ -93,7 +92,6 @@ func Test_adaptCluster(t *testing.T) {
 				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				AzurePolicyEnabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				DiskEncryptionSetID:  iacTypes.String("", iacTypes.NewTestMetadata()),
-				AgentPools:           []container.AgentPool{},
 				AddonProfile: container.AddonProfile{
 					Metadata: iacTypes.NewTestMetadata(),
 					OMSAgent: container.OMSAgent{
@@ -126,7 +124,6 @@ func Test_adaptCluster(t *testing.T) {
 				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				AzurePolicyEnabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				DiskEncryptionSetID:  iacTypes.String("", iacTypes.NewTestMetadata()),
-				AgentPools:           []container.AgentPool{},
 				AddonProfile: container.AddonProfile{
 					Metadata: iacTypes.NewTestMetadata(),
 					OMSAgent: container.OMSAgent{
@@ -164,7 +161,6 @@ resource "azurerm_kubernetes_cluster" "misreporting_example" {
 				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				AzurePolicyEnabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				DiskEncryptionSetID:  iacTypes.String("", iacTypes.NewTestMetadata()),
-				AgentPools:           []container.AgentPool{},
 				AddonProfile: container.AddonProfile{
 					Metadata: iacTypes.NewTestMetadata(),
 					OMSAgent: container.OMSAgent{
@@ -198,7 +194,6 @@ resource "azurerm_kubernetes_cluster" "misreporting_example" {
 				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				AzurePolicyEnabled:   iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				DiskEncryptionSetID:  iacTypes.String("", iacTypes.NewTestMetadata()),
-				AgentPools:           []container.AgentPool{},
 				AddonProfile: container.AddonProfile{
 					Metadata: iacTypes.NewTestMetadata(),
 					OMSAgent: container.OMSAgent{
@@ -236,7 +231,6 @@ resource "azurerm_kubernetes_cluster" "misreporting_example" {
 				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				AzurePolicyEnabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				DiskEncryptionSetID:  iacTypes.String("", iacTypes.NewTestMetadata()),
-				AgentPools:           []container.AgentPool{},
 				AddonProfile: container.AddonProfile{
 					Metadata: iacTypes.NewTestMetadata(),
 					OMSAgent: container.OMSAgent{
@@ -270,7 +264,6 @@ resource "azurerm_kubernetes_cluster" "misreporting_example" {
 				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				AzurePolicyEnabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				DiskEncryptionSetID:  iacTypes.String("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.Compute/diskEncryptionSets/example-des", iacTypes.NewTestMetadata()),
-				AgentPools:           []container.AgentPool{},
 				AddonProfile: container.AddonProfile{
 					Metadata: iacTypes.NewTestMetadata(),
 					OMSAgent: container.OMSAgent{
