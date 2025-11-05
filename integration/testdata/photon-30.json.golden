@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:1d4bc53b38b27a97aca270bea3abf3e9ea14964d02c71d2c93cd7bc53b74d660",
   "ArtifactName": "testdata/fixtures/images/photon-30.tar.gz",
