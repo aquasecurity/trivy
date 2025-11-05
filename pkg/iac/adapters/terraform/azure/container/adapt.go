@@ -35,6 +35,7 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 		APIServerAuthorizedIPRanges: nil,
 		AzurePolicyEnabled:          iacTypes.BoolDefault(false, resource.GetMetadata()),
 		DiskEncryptionSetID:         iacTypes.StringDefault("", resource.GetMetadata()),
+		AgentPools:                  []container.AgentPool{},
 		RoleBasedAccessControl: container.RoleBasedAccessControl{
 			Metadata: resource.GetMetadata(),
 			Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
@@ -119,10 +120,29 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 		cluster.AzurePolicyEnabled = azurePolicyEnabledAttr.AsBoolValueOrDefault(false, resource)
 	}
 
-	// disk encryption set ID
 	if diskEncryptionSetIDAttr := resource.GetAttribute("disk_encryption_set_id"); diskEncryptionSetIDAttr.IsNotNil() {
 		cluster.DiskEncryptionSetID = diskEncryptionSetIDAttr.AsStringValueOrDefault("", resource)
 	}
 
+	cluster.AgentPools = adaptAgentPools(resource)
+
 	return cluster
+}
+
+func adaptAgentPools(resource *terraform.Block) []container.AgentPool {
+	var pools []container.AgentPool
+
+	if defaultNodePoolBlock := resource.GetBlock("default_node_pool"); defaultNodePoolBlock.IsNotNil() {
+		pools = append(pools, adaptAgentPool(defaultNodePoolBlock))
+	}
+
+	return pools
+}
+
+func adaptAgentPool(block *terraform.Block) container.AgentPool {
+	return container.AgentPool{
+		Metadata:            block.GetMetadata(),
+		DiskEncryptionSetID: block.GetAttribute("disk_encryption_set_id").AsStringValueOrDefault("", block),
+		NodeType:            block.GetAttribute("type").AsStringValueOrDefault("VirtualMachineScaleSets", block),
+	}
 }

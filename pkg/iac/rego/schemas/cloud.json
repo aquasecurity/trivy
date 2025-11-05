@@ -4812,6 +4812,23 @@
         }
       }
     },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.container.AgentPool": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "diskencryptionsetid": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "nodetype": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        }
+      }
+    },
     "github.com.aquasecurity.trivy.pkg.iac.providers.azure.container.AzurePolicy": {
       "type": "object",
       "properties": {
@@ -4847,6 +4864,13 @@
         "addonprofile": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.container.AddonProfile"
+        },
+        "agentpools": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.container.AgentPool"
+          }
         },
         "apiserverauthorizedipranges": {
           "type": "array",
