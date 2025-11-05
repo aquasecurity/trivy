@@ -153,9 +153,6 @@ func adaptAgentPool(block *terraform.Block) container.AgentPool {
 	if nodeTypeAttr := block.GetAttribute("type"); nodeTypeAttr.IsNotNil() {
 		agentPool.NodeType = nodeTypeAttr.AsStringValueOrDefault("VirtualMachineScaleSets", block)
 	}
-	if nodeTypeAttr := block.GetAttribute("node_type"); nodeTypeAttr.IsNotNil() {
-		agentPool.NodeType = nodeTypeAttr.AsStringValueOrDefault("VirtualMachineScaleSets", block)
-	}
 
 	return agentPool
 }
