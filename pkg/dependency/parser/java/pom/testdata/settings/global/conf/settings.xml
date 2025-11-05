@@ -25,9 +25,6 @@
                 <repository>
                     <id>mycompany-internal-releases</id>
                     <url>https://mycompany.example.com/repository/internal-releases</url>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
