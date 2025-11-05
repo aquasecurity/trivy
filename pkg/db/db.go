@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/samber/lo"
+	bolt "go.etcd.io/bbolt"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -40,7 +41,7 @@ var (
 
 // Init initializes the vulnerability database with read-only mode
 func Init(dbDir string, opts ...db.Option) error {
-	opts = append(opts, db.WithReadOnly())
+	opts = append(opts, db.WithBoltOptions(&bolt.Options{ReadOnly: true}))
 	return db.Init(dbDir, opts...)
 }
 
