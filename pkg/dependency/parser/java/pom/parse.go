@@ -373,11 +373,8 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 	if opts.exclusions == nil {
 		opts.exclusions = set.New[string]()
 	}
-	// Update remoteRepositories
-	pomRepos := pom.repositories(p.servers)
-	p.remoteRepos.pom = lo.UniqBy(append(pomRepos, p.remoteRepos.pom...), func(r repository) url.URL {
-		return r.url
-	})
+	// Resolve pom repositories using Servers from settings.xml
+	pom.resolveRepositories(p.servers)
 
 	// Resolve parent POM
 	if err := p.resolveParent(ctx, pom); err != nil {
@@ -408,6 +405,8 @@ func (p *Parser) resolveParent(ctx context.Context, pom *pom) error {
 	if pom.nil() {
 		return nil
 	}
+	// Resolve pom repositories using Servers from settings.xml,
+	pom.resolveRepositories(p.servers)
 
 	// Parse parent POM
 	parent, err := p.parseParent(ctx, pom.filePath, pom.content.Parent)
@@ -417,6 +416,8 @@ func (p *Parser) resolveParent(ctx context.Context, pom *pom) error {
 
 	// Inherit values/properties from parent
 	pom.inherit(parent)
+
+	pom.remoteRepos = append(pom.remoteRepos, parent.remoteRepos...)
 
 	// Merge properties
 	pom.content.Properties = p.mergeProperties(pom.content.Properties, parent.content.Properties)
@@ -727,7 +728,7 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 	// 1. remoteRepositories from settings.xml
 	// 2. remoteRepositories from pom.xml
 	// 3. default remoteRepository (Maven Central for Release repository)
-	for _, repo := range slices.Concat(p.remoteRepos.settings, p.remoteRepos.pom, []repository{p.remoteRepos.defaultRepo}) {
+	for _, repo := range slices.Concat(p.remoteRepos.settings, []repository{p.remoteRepos.defaultRepo}) {
 		// Skip Release only repositories for snapshot artifacts and vice versa
 		if snapshot && !repo.snapshotEnabled || !snapshot && !repo.releaseEnabled {
 			continue

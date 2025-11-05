@@ -46,6 +46,8 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 	testutil.CopyDir(t, filepath.Join("testdata", "repository", dependency2Dir), filepath.Join(rootRepo, dependency2Dir))
 	addRepoURLToPOM(t, filepath.Join(rootRepo, dependency2Dir, "example-dependency2-5.0.0.pom"), ts2.URL)
 
+	// TODO add parents
+
 	tsRoot := httptest.NewServer(http.FileServer(http.Dir(rootRepo)))
 	defer tsRoot.Close()
 

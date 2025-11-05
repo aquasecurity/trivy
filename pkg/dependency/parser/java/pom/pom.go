@@ -17,8 +17,9 @@ import (
 )
 
 type pom struct {
-	filePath string
-	content  *pomXML
+	filePath    string
+	content     *pomXML
+	remoteRepos []repository
 }
 
 func (p *pom) nil() bool {
@@ -121,8 +122,8 @@ func (p *pom) licenses() []string {
 	}))
 }
 
-func (p *pom) repositories(servers []Server) []repository {
-	return resolvePomRepos(servers, p.content.Repositories)
+func (p *pom) resolveRepositories(servers []Server) {
+	p.remoteRepos = resolvePomRepos(servers, p.content.Repositories)
 }
 
 type pomXML struct {
