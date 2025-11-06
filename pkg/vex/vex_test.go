@@ -625,9 +625,8 @@ repositories:
 			},
 			want: imageReport([]types.Result{
 				bashPackagesResult(types.Result{
-					Vulnerabilities: []types.DetectedVulnerability{
-						vuln3,
-					},
+					Vulnerabilities:  []types.DetectedVulnerability{},
+					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln3, vulnerableCodeNotInExecutePath, "testdata/openvex-oci.json")},
 				}),
 			}),
 		},
