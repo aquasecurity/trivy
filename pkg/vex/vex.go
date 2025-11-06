@@ -205,6 +205,8 @@ func reachRoot(leaf *core.Component, components map[uuid.UUID]*core.Component, p
 				continue
 			}
 
+			// Each DFS path needs its own visited set,
+			// to avoid false positives in other paths
 			newVisited := visited.Clone()
 			if dfs(components[parent], newVisited) {
 				return true
