@@ -1,6 +1,8 @@
 package mod
 
 import (
+	"io/fs"
+	"os"
 	"path/filepath"
 	"sort"
 	"testing"
@@ -8,10 +10,83 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
+
+// prepareGOPATH copies testdata/pkg into a temporary directory and
+// renames placeholder files: "mod" -> "go.mod" and "sum" -> "go.sum".
+// It returns the temporary directory path to be used as GOPATH.
+func prepareGOPATH(t *testing.T) string {
+	t.Helper()
+
+	gopath := t.TempDir()
+	src := filepath.Join("testdata", "pkg")
+	dst := filepath.Join(gopath, "pkg")
+
+	// Copy the directory tree
+	testutil.CopyDir(t, src, dst)
+
+	// Rename placeholder files inside the copied tree
+	err := filepath.WalkDir(dst, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+		return renameGoFiles(path)
+	})
+	require.NoError(t, err)
+
+	return gopath
+}
+
+// renameGoFiles switches placeholder names to real Go module filenames.
+// "mod" -> "go.mod" and "sum" -> "go.sum".
+func renameGoFiles(path string) error {
+	name, isDir, ok := placeholderTarget(filepath.Base(path))
+	if !ok || isDir {
+		return nil
+	}
+	return os.Rename(path, filepath.Join(filepath.Dir(path), name))
+}
+
+// placeholderTarget maps placeholder base names to real targets.
+// Returns: targetName, isDir, ok
+func placeholderTarget(base string) (string, bool, bool) {
+	switch base {
+	case "mod":
+		return "go.mod", false, true
+	case "sum":
+		return "go.sum", false, true
+	case "vendor":
+		return ".", true, true
+	default:
+		return "", false, false
+	}
+}
+
+// addTestInput writes/copies test inputs into the in-memory FS
+// according to placeholder naming rules.
+func addTestInput(t *testing.T, mfs *mapfs.FS, path string) {
+	t.Helper()
+	target, isDir, ok := placeholderTarget(filepath.Base(path))
+	if !ok {
+		return
+	}
+
+	// vendor dir
+	if isDir {
+		require.NoError(t, mfs.CopyDir(path, target))
+		return
+	}
+
+	// go.mod and go.sum files
+	require.NoError(t, mfs.WriteFile(target, path))
+}
 
 func Test_gomodAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
@@ -340,22 +415,16 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		t.Setenv("GOPATH", "testdata")
+		// Prepare a temporary GOPATH with restored file names.
+		t.Setenv("GOPATH", prepareGOPATH(t))
 		t.Run(tt.name, func(t *testing.T) {
 			a, err := newGoModAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 
 			mfs := mapfs.New()
 			for _, file := range tt.files {
-				// Since broken go.mod files bothers IDE, we should use other file names than "go.mod" and "go.sum".
-				switch filepath.Base(file) {
-				case "mod":
-					require.NoError(t, mfs.WriteFile("go.mod", file))
-				case "sum":
-					require.NoError(t, mfs.WriteFile("go.sum", file))
-				case "vendor":
-					require.NoError(t, mfs.CopyDir(file, "."))
-				}
+				// Since broken go.mod files bothers IDE, we use placeholders and map them here.
+				addTestInput(t, mfs, file)
 			}
 
 			ctx := t.Context()
