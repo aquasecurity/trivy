@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 
 	fixtures "github.com/aquasecurity/bolt-fixtures"
@@ -42,19 +43,19 @@ func Close() error {
 }
 
 // InitWithMetadata initializes a database with optional metadata and DB file creation.
-// If meta is nil, no metadata file is created.
+// If meta is empty, no metadata file is created.
 // If createDBFile is false, no DB file is created (useful for testing "DB not found" scenarios).
 // Returns the dbDir path.
-func InitWithMetadata(t *testing.T, meta *metadata.Metadata, createDBFile bool) string {
+func InitWithMetadata(t *testing.T, meta metadata.Metadata, createDBFile bool) string {
 	t.Helper()
 
 	cacheDir := t.TempDir()
 	dbDir := db.Dir(cacheDir)
 
 	// Create metadata if provided
-	if meta != nil {
+	if !lo.IsEmpty(meta) {
 		metaClient := metadata.NewClient(dbDir)
-		err := metaClient.Update(*meta)
+		err := metaClient.Update(meta)
 		require.NoError(t, err)
 	}
 

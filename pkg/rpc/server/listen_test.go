@@ -74,7 +74,7 @@ func Test_dbWorker_update(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Initialize DB with metadata
-			dbDir := dbtest.InitWithMetadata(t, &cachedMetadata, true)
+			dbDir := dbtest.InitWithMetadata(t, cachedMetadata, true)
 			t.Cleanup(func() {
 				require.NoError(t, db.Close())
 			})

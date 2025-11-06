@@ -29,7 +29,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		name         string
 		skip         bool
 		dbFileExists bool
-		metadata     *metadata.Metadata
+		metadata     metadata.Metadata
 		want         bool
 		wantLogs     []string
 		wantErr      string
@@ -37,7 +37,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		{
 			name:         "happy path",
 			dbFileExists: true,
-			metadata: &metadata.Metadata{
+			metadata: metadata.Metadata{
 				Version:      db.SchemaVersion,
 				NextUpdate:   timeNextUpdateDay1,
 				DownloadedAt: timeDownloadAt,
@@ -47,7 +47,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		{
 			name:         "happy path for first run",
 			dbFileExists: true,
-			metadata:     nil,
+			metadata:     metadata.Metadata{},
 			want:         true,
 			wantLogs: []string{
 				"There is no valid metadata file",
@@ -65,7 +65,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		{
 			name:         "happy path with old schema version",
 			dbFileExists: true,
-			metadata: &metadata.Metadata{
+			metadata: metadata.Metadata{
 				Version:      0,
 				NextUpdate:   timeNextUpdateDay1,
 				DownloadedAt: timeDownloadAt,
@@ -78,7 +78,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		{
 			name:         "happy path with --skip-db-update",
 			dbFileExists: true,
-			metadata: &metadata.Metadata{
+			metadata: metadata.Metadata{
 				Version:      db.SchemaVersion,
 				NextUpdate:   timeNextUpdateDay1,
 				DownloadedAt: timeDownloadAt,
@@ -92,7 +92,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		{
 			name:         "skip downloading DB",
 			dbFileExists: true,
-			metadata: &metadata.Metadata{
+			metadata: metadata.Metadata{
 				Version:      db.SchemaVersion,
 				NextUpdate:   timeNextUpdateDay2,
 				DownloadedAt: timeDownloadAt,
@@ -105,7 +105,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		{
 			name:         "newer schema version",
 			dbFileExists: true,
-			metadata: &metadata.Metadata{
+			metadata: metadata.Metadata{
 				Version:      db.SchemaVersion + 1,
 				NextUpdate:   timeNextUpdateDay2,
 				DownloadedAt: timeDownloadAt,
@@ -130,7 +130,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		{
 			name:         "--skip-db-update without metadata.json on the first run",
 			dbFileExists: true,
-			metadata:     nil,
+			metadata:     metadata.Metadata{},
 			skip:         true,
 			wantErr:      "--skip-db-update cannot be specified on the first run",
 			wantLogs: []string{
@@ -141,7 +141,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		{
 			name:         "--skip-db-update with different schema version",
 			dbFileExists: true,
-			metadata: &metadata.Metadata{
+			metadata: metadata.Metadata{
 				Version:      0,
 				NextUpdate:   timeNextUpdateDay1,
 				DownloadedAt: timeDownloadAt,
@@ -156,7 +156,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		{
 			name:         "happy with old DownloadedAt",
 			dbFileExists: true,
-			metadata: &metadata.Metadata{
+			metadata: metadata.Metadata{
 				Version:      db.SchemaVersion,
 				NextUpdate:   timeNextUpdateDay1,
 				DownloadedAt: timeDownloadAt,
@@ -166,7 +166,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		{
 			name:         "skip downloading DB with recent DownloadedAt",
 			dbFileExists: true,
-			metadata: &metadata.Metadata{
+			metadata: metadata.Metadata{
 				Version:      db.SchemaVersion,
 				NextUpdate:   timeNextUpdateDay1,
 				DownloadedAt: time.Date(2019, 9, 30, 23, 30, 0, 0, time.UTC),
@@ -180,7 +180,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			name:         "DownloadedAt is zero, skip is false",
 			dbFileExists: true,
 			skip:         false,
-			metadata: &metadata.Metadata{
+			metadata: metadata.Metadata{
 				Version:      db.SchemaVersion,
 				DownloadedAt: time.Time{}, // zero time
 				NextUpdate:   timeNextUpdateDay1,
@@ -194,7 +194,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			name:         "DownloadedAt is zero, skip is true",
 			dbFileExists: true,
 			skip:         true,
-			metadata: &metadata.Metadata{
+			metadata: metadata.Metadata{
 				Version:      db.SchemaVersion,
 				DownloadedAt: time.Time{}, // zero time
 				NextUpdate:   timeNextUpdateDay1,
@@ -208,7 +208,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			name:         "DownloadedAt is zero, skip is true, old schema version",
 			dbFileExists: true,
 			skip:         true,
-			metadata: &metadata.Metadata{
+			metadata: metadata.Metadata{
 				Version:      0,
 				DownloadedAt: time.Time{}, // zero time
 				NextUpdate:   timeNextUpdateDay1,
@@ -222,7 +222,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		{
 			name:         "trivy.db is missing but metadata with recent DownloadedAt",
 			dbFileExists: false,
-			metadata: &metadata.Metadata{
+			metadata: metadata.Metadata{
 				Version:      db.SchemaVersion,
 				NextUpdate:   timeNextUpdateDay1,
 				DownloadedAt: time.Date(2019, 9, 30, 23, 30, 0, 0, time.UTC),
