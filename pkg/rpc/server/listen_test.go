@@ -75,7 +75,9 @@ func Test_dbWorker_update(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// Initialize DB with metadata
 			dbDir := dbtest.InitWithMetadata(t, &cachedMetadata, true)
-			defer func() { _ = db.Close() }()
+			t.Cleanup(func() {
+				require.NoError(t, db.Close())
+			})
 
 			// Set a fake time
 			ctx := clock.With(t.Context(), tt.now)
