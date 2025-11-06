@@ -182,11 +182,10 @@ func reachRoot(leaf *core.Component, components map[uuid.UUID]*core.Component, p
 		return false
 	}
 
-	visited := set.New[uuid.UUID]()
-
 	// Use Depth First Search (DFS)
-	var dfs func(c *core.Component) bool
-	dfs = func(c *core.Component) bool {
+	var dfs func(c *core.Component, visited set.Set[uuid.UUID]) bool
+	dfs = func(c *core.Component, visited set.Set[uuid.UUID]) bool {
+
 		// Call the function with the current component and the leaf component
 		switch {
 		case notAffected(c, leaf):
@@ -205,12 +204,14 @@ func reachRoot(leaf *core.Component, components map[uuid.UUID]*core.Component, p
 			if visited.Contains(parent) {
 				continue
 			}
-			if dfs(components[parent]) {
+
+			newVisited := visited.Clone()
+			if dfs(components[parent], newVisited) {
 				return true
 			}
 		}
 		return false
 	}
 
-	return dfs(leaf)
+	return dfs(leaf, set.New[uuid.UUID]())
 }

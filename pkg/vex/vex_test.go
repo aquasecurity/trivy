@@ -600,7 +600,7 @@ repositories:
 			}),
 		},
 		{
-			name: "check one parent from multiple branches",
+			name: "check one parent from multiple dependency paths",
 			args: args{
 				// - oci:debian?tag=12
 				//     - pkg:deb/debian/base-files@5.3
