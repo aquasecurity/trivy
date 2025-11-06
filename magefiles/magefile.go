@@ -24,6 +24,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
+const buildTags = "dfrunsecurity dfparents dfexcludepatterns dfrundevice"
+
 var (
 	GOPATH = os.Getenv("GOPATH")
 	GOBIN  = filepath.Join(GOPATH, "bin")
@@ -380,7 +382,8 @@ func Build() error {
 	if err != nil {
 		return err
 	}
-	return sh.RunWith(ENV, "go", "build", "-ldflags", ldflags, filepath.Join(wd, "cmd", "trivy"))
+	return sh.RunWith(ENV, "go", "build", "-tags", buildTags, "-ldflags", ldflags,
+		filepath.Join(wd, "cmd", "trivy"))
 }
 
 // Install installs Trivy
@@ -393,7 +396,8 @@ func Install() error {
 	if err != nil {
 		return err
 	}
-	return sh.RunWith(ENV, "go", "install", "-ldflags", ldflags, filepath.Join(wd, "cmd", "trivy"))
+	return sh.RunWith(ENV, "go", "install", "-tags", buildTags, "-ldflags", ldflags,
+		filepath.Join(wd, "cmd", "trivy"))
 }
 
 // Clean cleans up the fixtures
