@@ -139,7 +139,13 @@ func (v *VersionChecker) PrintNotices(ctx context.Context, output io.Writer) {
 
 	if len(notices) > 0 {
 		logger.Debug("Printing notices")
-		fmt.Fprintf(output, "\n📣 \x1b[34mNotices:\x1b[0m\n")
+
+		if v.cliOptions.NoColor {
+			fmt.Printf("\n  Notices:\n")
+		} else {
+			fmt.Fprintf(output, "\n📣 \x1b[34mNotices:\x1b[0m\n")
+		}
+
 		for _, notice := range notices {
 			fmt.Fprintf(output, "  - %s\n", notice)
 		}
