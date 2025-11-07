@@ -25,10 +25,10 @@ type pkgLicenseRenderer struct {
 	once        *sync.Once
 }
 
-func NewPkgLicenseRenderer(buf *bytes.Buffer, isTerminal bool, severities []dbTypes.Severity) *pkgLicenseRenderer {
+func NewPkgLicenseRenderer(buf *bytes.Buffer, isTerminal, noColor bool, severities []dbTypes.Severity) *pkgLicenseRenderer {
 	return &pkgLicenseRenderer{
 		w:           buf,
-		tableWriter: newTableWriter(buf, isTerminal),
+		tableWriter: newTableWriter(buf, isTerminal, noColor),
 		isTerminal:  isTerminal,
 		severities:  severities,
 		once:        new(sync.Once),
@@ -107,10 +107,10 @@ type fileLicenseRenderer struct {
 	once        *sync.Once
 }
 
-func NewFileLicenseRenderer(buf *bytes.Buffer, isTerminal bool, severities []dbTypes.Severity) *fileLicenseRenderer {
+func NewFileLicenseRenderer(buf *bytes.Buffer, isTerminal, noColor bool, severities []dbTypes.Severity) *fileLicenseRenderer {
 	return &fileLicenseRenderer{
 		w:           buf,
-		tableWriter: newTableWriter(buf, isTerminal),
+		tableWriter: newTableWriter(buf, isTerminal, noColor),
 		isTerminal:  isTerminal,
 		severities:  severities,
 		once:        new(sync.Once),
