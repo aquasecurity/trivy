@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
@@ -11,6 +13,8 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/dockerfile"
 )
+
+var unknownFlagRe = regexp.MustCompile(`unknown flag:\s+([^\s]+)`)
 
 func Parse(_ context.Context, r io.Reader, path string) ([]*dockerfile.Dockerfile, error) {
 	parsed, err := parser.Parse(r)
@@ -28,7 +32,7 @@ func Parse(_ context.Context, r io.Reader, path string) ([]*dockerfile.Dockerfil
 	for _, child := range parsed.AST.Children {
 		child.Value = strings.ToLower(child.Value)
 
-		instr, err := instructions.ParseInstruction(child)
+		instr, err := parseInstruction(child)
 		if err != nil {
 			return nil, fmt.Errorf("parse dockerfile instruction: %w", err)
 		}
@@ -87,6 +91,40 @@ func Parse(_ context.Context, r io.Reader, path string) ([]*dockerfile.Dockerfil
 	}
 
 	return []*dockerfile.Dockerfile{&parsedFile}, nil
+}
+
+func parseInstruction(child *parser.Node) (any, error) {
+	var lastErr error
+
+	for {
+		instr, err := instructions.ParseInstruction(child)
+		if err == nil {
+			return instr, nil
+		}
+
+		if lastErr != nil && err.Error() == lastErr.Error() {
+			return nil, fmt.Errorf("cannot parse instruction after removing unsupported flags: %w", err)
+		}
+
+		lastErr = err
+
+		flagName := extractUnknownFlag(err.Error())
+		if flagName == "" {
+			return nil, fmt.Errorf("cannot extract unknown flag from error: %w", err)
+		}
+
+		child.Flags = slices.DeleteFunc(child.Flags, func(flag string) bool {
+			return strings.HasPrefix(flag, flagName)
+		})
+	}
+}
+
+func extractUnknownFlag(errMsg string) string {
+	matches := unknownFlagRe.FindStringSubmatch(errMsg)
+	if len(matches) > 1 {
+		return matches[1]
+	}
+	return ""
 }
 
 func originalFromHeredoc(node *parser.Node) string {
