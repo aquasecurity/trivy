@@ -78,8 +78,8 @@ func NewWriter(options Options) *Writer {
 
 		summaryRenderer:       NewSummaryRenderer(buf, isTerminal, options.NoColor, options.Scanners),
 		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, isTerminal, options.Tree, options.ShowSuppressed, options.NoColor, options.Severities),
-		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, isTerminal, options.RenderCause),
-		secretRenderer:        NewSecretRenderer(buf, isTerminal, options.Severities),
+		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, isTerminal, options.NoColor, options.RenderCause),
+		secretRenderer:        NewSecretRenderer(buf, isTerminal, options.NoColor, options.Severities),
 		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, isTerminal, options.NoColor, options.Severities),
 		fileLicenseRenderer:   NewFileLicenseRenderer(buf, isTerminal, options.NoColor, options.Severities),
 		options:               options,
@@ -192,8 +192,8 @@ func IsOutputToTerminal(output io.Writer) bool {
 	return (o.Mode() & os.ModeCharDevice) == os.ModeCharDevice
 }
 
-func RenderTarget(w io.Writer, target string, isTerminal bool) {
-	if isTerminal {
+func RenderTarget(w io.Writer, target string, isTerminal, noColor bool) {
+	if isTerminal && !noColor {
 		// nolint
 		_ = tml.Fprintf(w, "\n<underline><bold>%s</bold></underline>\n\n", target)
 	} else {

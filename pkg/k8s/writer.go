@@ -27,7 +27,7 @@ func Write(ctx context.Context, k8sreport report.Report, option report.Option) e
 
 		if option.Report == report.SummaryReport {
 			target := fmt.Sprintf("Summary Report for %s", k8sreport.ClusterName)
-			table.RenderTarget(option.Output, target, table.IsOutputToTerminal(option.Output))
+			table.RenderTarget(option.Output, target, table.IsOutputToTerminal(option.Output), option.NoColor)
 		}
 
 		for _, r := range separatedReports {

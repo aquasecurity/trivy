@@ -112,6 +112,7 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 		Severities: r.flagOpts.Severities,
 		Scanners:   r.flagOpts.ScanOptions.Scanners,
 		APIVersion: r.flagOpts.AppVersion,
+		NoColor:    r.flagOpts.GlobalOptions.NoColor,
 	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
