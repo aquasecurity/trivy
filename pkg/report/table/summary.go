@@ -158,7 +158,7 @@ func (r *summaryRenderer) Render(report types.Report) {
 		r.printf("\n<underline><bold>Report Summary</bold></underline>\n\n")
 	}
 
-	t := newTableWriter(r.w, r.isTerminal)
+	t := newTableWriter(r.w, r.isTerminal, r.noColor)
 	t.SetAutoMerge(false)
 	t.SetColumnMaxWidth(80)
 

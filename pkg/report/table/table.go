@@ -80,8 +80,8 @@ func NewWriter(options Options) *Writer {
 		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, isTerminal, options.Tree, options.ShowSuppressed, options.NoColor, options.Severities),
 		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, isTerminal, options.RenderCause),
 		secretRenderer:        NewSecretRenderer(buf, isTerminal, options.Severities),
-		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, isTerminal, options.Severities),
-		fileLicenseRenderer:   NewFileLicenseRenderer(buf, isTerminal, options.Severities),
+		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, isTerminal, options.NoColor, options.Severities),
+		fileLicenseRenderer:   NewFileLicenseRenderer(buf, isTerminal, options.NoColor, options.Severities),
 		options:               options,
 	}
 }
@@ -141,15 +141,16 @@ func (tw *Writer) render(result types.Result) {
 	}
 }
 
-func newTableWriter(output io.Writer, isTerminal bool) *table.Table {
+func newTableWriter(output io.Writer, isTerminal, noColor bool) *table.Table {
 	tableWriter := table.New(output)
-	if isTerminal { // use ansi output if we're not piping elsewhere
+	if isTerminal && !noColor { // use ansi output if we're not piping elsewhere
 		tableWriter.SetHeaderStyle(table.StyleBold)
 		tableWriter.SetLineStyle(table.StyleDim)
 	}
 	tableWriter.SetBorders(true)
 	tableWriter.SetAutoMerge(true)
 	tableWriter.SetRowLines(true)
+	color.NoColor = noColor
 
 	return tableWriter
 }
