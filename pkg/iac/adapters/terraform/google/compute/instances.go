@@ -1,8 +1,6 @@
 package compute
 
 import (
-	"github.com/zclconf/go-cty/cty"
-
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/compute"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -31,9 +29,6 @@ func adaptInstances(modules terraform.Modules) (instances []compute.Instance) {
 			OSLoginEnabled:              iacTypes.BoolDefault(true, instanceBlock.GetMetadata()),
 			EnableProjectSSHKeyBlocking: iacTypes.BoolDefault(false, instanceBlock.GetMetadata()),
 			EnableSerialPort:            iacTypes.BoolDefault(false, instanceBlock.GetMetadata()),
-			NetworkInterfaces:           nil,
-			BootDisks:                   nil,
-			AttachedDisks:               nil,
 		}
 
 		// network interfaces
@@ -60,16 +55,11 @@ func adaptInstances(modules terraform.Modules) (instances []compute.Instance) {
 		}
 
 		// metadata
-		if metadataAttr := instanceBlock.GetAttribute("metadata"); metadataAttr.IsNotNil() {
-			if val := metadataAttr.MapValue("enable-oslogin"); val.Type() == cty.Bool {
-				instance.OSLoginEnabled = iacTypes.BoolExplicit(val.True(), metadataAttr.GetMetadata())
-			}
-			if val := metadataAttr.MapValue("block-project-ssh-keys"); val.Type() == cty.Bool {
-				instance.EnableProjectSSHKeyBlocking = iacTypes.BoolExplicit(val.True(), metadataAttr.GetMetadata())
-			}
-			if val := metadataAttr.MapValue("serial-port-enable"); val.Type() == cty.Bool {
-				instance.EnableSerialPort = iacTypes.BoolExplicit(val.True(), metadataAttr.GetMetadata())
-			}
+		if attr := instanceBlock.GetAttribute("metadata"); attr.IsNotNil() {
+			flags := parseMetadataFlags(attr)
+			instance.OSLoginEnabled = flags.EnableOSLogin
+			instance.EnableProjectSSHKeyBlocking = flags.BlockProjectSSHKeys
+			instance.EnableSerialPort = flags.EnableSerialPort
 		}
 
 		// disks
