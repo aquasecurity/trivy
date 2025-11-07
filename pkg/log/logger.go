@@ -38,7 +38,7 @@ func New(h slog.Handler) *Logger {
 }
 
 // InitLogger initializes the logger variable and flushes the buffered logs if needed.
-func InitLogger(debug, disable bool, noColor bool) {
+func InitLogger(debug, disable, noColor bool) {
 	level := lo.Ternary(debug, slog.LevelDebug, slog.LevelInfo)
 	out := lo.Ternary(disable, io.Discard, io.Writer(os.Stderr))
 	h := NewHandler(out, &Options{Level: level, NoColor: noColor})

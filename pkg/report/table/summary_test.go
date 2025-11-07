@@ -425,7 +425,7 @@ Legend:
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := bytes.NewBuffer([]byte{})
-			r := table.NewSummaryRenderer(buf, false, tt.scanners)
+			r := table.NewSummaryRenderer(buf, false, true, tt.scanners)
 			r.Render(tt.report)
 			require.Equal(t, tt.want, buf.String())
 		})
