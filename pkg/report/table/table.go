@@ -66,6 +66,8 @@ type Options struct {
 	// For licenses
 	LicenseRiskThreshold int
 	IgnoredLicenses      []string
+
+	NoColor bool
 }
 
 func NewWriter(options Options) *Writer {
@@ -74,8 +76,8 @@ func NewWriter(options Options) *Writer {
 	return &Writer{
 		buf: buf,
 
-		summaryRenderer:       NewSummaryRenderer(buf, isTerminal, options.Scanners),
-		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, isTerminal, options.Tree, options.ShowSuppressed, options.Severities),
+		summaryRenderer:       NewSummaryRenderer(buf, isTerminal, options.NoColor, options.Scanners),
+		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, isTerminal, options.Tree, options.ShowSuppressed, options.NoColor, options.Severities),
 		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, isTerminal, options.RenderCause),
 		secretRenderer:        NewSecretRenderer(buf, isTerminal, options.Severities),
 		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, isTerminal, options.Severities),
