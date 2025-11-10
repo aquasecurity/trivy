@@ -4,14 +4,13 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"slices"
 
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
-
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 func init() {
@@ -29,14 +28,17 @@ func (a debianOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 	for scanner.Scan() {
 		line := scanner.Text()
 		return &analyzer.AnalysisResult{
-			OS: types.OS{Family: aos.Debian, Name: line},
+			OS: types.OS{
+				Family: types.Debian,
+				Name:   line,
+			},
 		}, nil
 	}
-	return nil, xerrors.Errorf("debian: %w", aos.AnalyzeOSError)
+	return nil, xerrors.Errorf("debian: %w", fos.AnalyzeOSError)
 }
 
 func (a debianOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return utils.StringInSlice(filePath, requiredFiles)
+	return slices.Contains(requiredFiles, filePath)
 }
 
 func (a debianOSAnalyzer) Type() analyzer.Type {
@@ -45,4 +47,9 @@ func (a debianOSAnalyzer) Type() analyzer.Type {
 
 func (a debianOSAnalyzer) Version() int {
 	return version
+}
+
+// StaticPaths returns the static paths of the debian analyzer
+func (a debianOSAnalyzer) StaticPaths() []string {
+	return requiredFiles
 }

@@ -5,18 +5,18 @@ import (
 	"context"
 	"io"
 	"os"
-	"path/filepath"
+	"path"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
@@ -27,12 +27,12 @@ var (
 	dpkgLicenseAnalyzerVersion = 1
 
 	commonLicenseReferenceRegexp = regexp.MustCompile(`/?usr/share/common-licenses/([0-9A-Za-z_.+-]+[0-9A-Za-z+])`)
-	licenseSplitRegexp           = regexp.MustCompile("(,?[_ ]+or[_ ]+)|(,?[_ ]+and[_ ])|(,[ ]*)")
 )
 
 // dpkgLicenseAnalyzer parses copyright files and detect licenses
 type dpkgLicenseAnalyzer struct {
-	licenseFull bool
+	licenseFull               bool
+	classifierConfidenceLevel float64
 }
 
 // Analyze parses /usr/share/doc/*/copyright files
@@ -48,8 +48,7 @@ func (a *dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.Analysis
 		if _, err = input.Content.Seek(0, io.SeekStart); err != nil {
 			return nil, xerrors.Errorf("seek error: %w", err)
 		}
-
-		licenseFile, err := licensing.Classify(input.FilePath, input.Content)
+		licenseFile, err := licensing.Classify(input.FilePath, input.Content, a.classifierConfidenceLevel)
 		if err != nil {
 			return nil, xerrors.Errorf("license classification error: %w", err)
 		}
@@ -76,7 +75,7 @@ func (a *dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.Analysis
 }
 
 // parseCopyright parses /usr/share/doc/*/copyright files
-func (a *dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]types.LicenseFinding, error) {
+func (a *dpkgLicenseAnalyzer) parseCopyright(r xio.ReadSeekerAt) ([]types.LicenseFinding, error) {
 	scanner := bufio.NewScanner(r)
 	var licenses []string
 	for scanner.Scan() {
@@ -89,15 +88,12 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]types.Licens
 			l := strings.TrimSpace(line[8:])
 
 			l = normalizeLicense(l)
-			if len(l) > 0 {
-				// Split licenses without considering "and"/"or"
-				// examples:
-				// 'GPL-1+,GPL-2' => {"GPL-1", "GPL-2"}
-				// 'GPL-1+ or Artistic or Artistic-dist' => {"GPL-1", "Artistic", "Artistic-dist"}
-				// 'LGPLv3+_or_GPLv2+' => {"LGPLv3", "GPLv2"}
-				// 'BSD-3-CLAUSE and GPL-2' => {"BSD-3-CLAUSE", "GPL-2"}
-				// 'GPL-1+ or Artistic, and BSD-4-clause-POWERDOG' => {"GPL-1+", "Artistic", "BSD-4-clause-POWERDOG"}
-				for _, lic := range licenseSplitRegexp.Split(l, -1) {
+			if l != "" {
+				for _, lic := range licensing.SplitLicenses(l) {
+					if lic == "" {
+						continue
+					}
+
 					lic = licensing.Normalize(lic)
 					if !slices.Contains(licenses, lic) {
 						licenses = append(licenses, lic)
@@ -109,7 +105,7 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]types.Licens
 			license := commonLicenseReferenceRegexp.FindStringSubmatch(line)
 			if len(license) == 2 {
 				l := licensing.Normalize(license[1])
-				if !slices.Contains(licenses, l) {
+				if l != "" && !slices.Contains(licenses, l) {
 					licenses = append(licenses, l)
 				}
 			}
@@ -124,11 +120,18 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]types.Licens
 
 func (a *dpkgLicenseAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
 	a.licenseFull = opt.LicenseScannerOption.Full
+	a.classifierConfidenceLevel = opt.LicenseScannerOption.ClassifierConfidenceLevel
 	return nil
 }
 
 func (a *dpkgLicenseAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return strings.HasPrefix(filePath, "usr/share/doc/") && filepath.Base(filePath) == "copyright"
+	// To exclude files from subfolders
+	// e.g. usr/share/doc/ca-certificates/examples/ca-certificates-local/debian/copyright
+	match, err := path.Match("usr/share/doc/*/copyright", filePath)
+	if err != nil {
+		return false
+	}
+	return match
 }
 
 func (a *dpkgLicenseAnalyzer) Type() analyzer.Type {
@@ -149,4 +152,8 @@ func normalizeLicense(s string) string {
 	s = strings.TrimSuffix(s, " license")
 
 	return strings.TrimSpace(s)
+}
+
+func (a *dpkgLicenseAnalyzer) StaticPaths() []string {
+	return []string{"usr/share/doc/"}
 }

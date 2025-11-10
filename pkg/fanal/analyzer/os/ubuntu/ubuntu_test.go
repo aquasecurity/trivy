@@ -1,16 +1,14 @@
 package ubuntu
 
 import (
-	"context"
 	"os"
 	"testing"
-
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func Test_ubuntuOSAnalyzer_Analyze(t *testing.T) {
@@ -40,18 +38,16 @@ func Test_ubuntuOSAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			ctx := context.Background()
+			ctx := t.Context()
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: "etc/lsb-release",
 				Content:  f,
 			})
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
-			} else {
-				require.NoError(t, err)
 			}
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

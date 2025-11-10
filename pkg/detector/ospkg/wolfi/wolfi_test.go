@@ -4,17 +4,16 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/detector/ospkg/wolfi"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/internal/dbtest"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/wolfi"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestScanner_Detect(t *testing.T) {
@@ -30,8 +29,11 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/wolfi.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				"testdata/fixtures/wolfi.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				pkgs: []ftypes.Package{
 					{
@@ -63,14 +65,17 @@ func TestScanner_Detect(t *testing.T) {
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Wolfi,
 						Name: "Wolfi Secdb",
-						URL:  "https://packages.wolfi.dev/os/security.json/",
+						URL:  "https://packages.wolfi.dev/os/security.json",
 					},
 				},
 			},
 		},
 		{
-			name:     "contain rc",
-			fixtures: []string{"testdata/fixtures/wolfi.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "contain rc",
+			fixtures: []string{
+				"testdata/fixtures/wolfi.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				pkgs: []ftypes.Package{
 					{
@@ -90,14 +95,17 @@ func TestScanner_Detect(t *testing.T) {
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Wolfi,
 						Name: "Wolfi Secdb",
-						URL:  "https://packages.wolfi.dev/os/security.json/",
+						URL:  "https://packages.wolfi.dev/os/security.json",
 					},
 				},
 			},
 		},
 		{
-			name:     "contain pre",
-			fixtures: []string{"testdata/fixtures/wolfi.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "contain pre",
+			fixtures: []string{
+				"testdata/fixtures/wolfi.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				pkgs: []ftypes.Package{
 					{
@@ -123,14 +131,17 @@ func TestScanner_Detect(t *testing.T) {
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Wolfi,
 						Name: "Wolfi Secdb",
-						URL:  "https://packages.wolfi.dev/os/security.json/",
+						URL:  "https://packages.wolfi.dev/os/security.json",
 					},
 				},
 			},
 		},
 		{
-			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "Get returns an error",
+			fixtures: []string{
+				"testdata/fixtures/invalid.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				pkgs: []ftypes.Package{
 					{
@@ -144,11 +155,14 @@ func TestScanner_Detect(t *testing.T) {
 			wantErr: "failed to get Wolfi advisories",
 		},
 		{
-			name:     "No src name",
-			fixtures: []string{"testdata/fixtures/wolfi.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "No src name",
+			fixtures: []string{
+				"testdata/fixtures/wolfi.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				repo: &ftypes.Repository{
-					Family:  os.Wolfi,
+					Family:  ftypes.Wolfi,
 					Release: "3.10",
 				},
 				pkgs: []ftypes.Package{
@@ -168,7 +182,7 @@ func TestScanner_Detect(t *testing.T) {
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Wolfi,
 						Name: "Wolfi Secdb",
-						URL:  "https://packages.wolfi.dev/os/security.json/",
+						URL:  "https://packages.wolfi.dev/os/security.json",
 					},
 				},
 			},
@@ -180,17 +194,16 @@ func TestScanner_Detect(t *testing.T) {
 			defer db.Close()
 
 			s := wolfi.NewScanner()
-			got, err := s.Detect("", tt.args.repo, tt.args.pkgs)
+			got, err := s.Detect(t.Context(), "", tt.args.repo, tt.args.pkgs)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 
 			sort.Slice(got, func(i, j int) bool {
 				return got[i].VulnerabilityID < got[j].VulnerabilityID
 			})
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

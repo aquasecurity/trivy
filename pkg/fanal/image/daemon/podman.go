@@ -12,7 +12,10 @@ import (
 
 	api "github.com/docker/docker/api/types"
 	dimage "github.com/docker/docker/api/types/image"
+	"github.com/docker/docker/client"
 	"golang.org/x/xerrors"
+
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 var (
@@ -25,10 +28,13 @@ type podmanClient struct {
 	c http.Client
 }
 
-func newPodmanClient() (podmanClient, error) {
+func newPodmanClient(host string) (podmanClient, error) {
 	// Get Podman socket location
 	sockDir := os.Getenv("XDG_RUNTIME_DIR")
 	socket := filepath.Join(sockDir, "podman", "podman.sock")
+	if host != "" {
+		socket = host
+	}
 
 	if _, err := os.Stat(socket); err != nil {
 		return podmanClient{}, xerrors.Errorf("no podman socket found: %w", err)
@@ -49,9 +55,9 @@ type errResponse struct {
 	Message string
 }
 
-func (p podmanClient) imageInspect(imageName string) (api.ImageInspect, error) {
+func (p podmanClient) imageInspect(ctx context.Context, imageName string) (api.ImageInspect, error) {
 	url := fmt.Sprintf(inspectURL, imageName)
-	resp, err := p.c.Get(url)
+	resp, err := p.get(ctx, url)
 	if err != nil {
 		return api.ImageInspect{}, xerrors.Errorf("http error: %w", err)
 	}
@@ -72,9 +78,9 @@ func (p podmanClient) imageInspect(imageName string) (api.ImageInspect, error) {
 	return inspect, nil
 }
 
-func (p podmanClient) imageHistoryInspect(imageName string) ([]dimage.HistoryResponseItem, error) {
+func (p podmanClient) imageHistoryInspect(ctx context.Context, imageName string) ([]dimage.HistoryResponseItem, error) {
 	url := fmt.Sprintf(historyURL, imageName)
-	resp, err := p.c.Get(url)
+	resp, err := p.get(ctx, url)
 	if err != nil {
 		return []dimage.HistoryResponseItem{}, xerrors.Errorf("http error: %w", err)
 	}
@@ -95,40 +101,49 @@ func (p podmanClient) imageHistoryInspect(imageName string) ([]dimage.HistoryRes
 	return history, nil
 }
 
-func (p podmanClient) imageSave(_ context.Context, imageNames []string) (io.ReadCloser, error) {
+func (p podmanClient) imageSave(ctx context.Context, imageNames []string, _ ...client.ImageSaveOption) (io.ReadCloser, error) {
 	if len(imageNames) < 1 {
 		return nil, xerrors.Errorf("no specified image")
 	}
 	url := fmt.Sprintf(saveURL, imageNames[0])
-	resp, err := p.c.Get(url)
+	resp, err := p.get(ctx, url)
 	if err != nil {
 		return nil, xerrors.Errorf("http error: %w", err)
 	}
 	return resp.Body, nil
 }
 
+func (p podmanClient) get(ctx context.Context, url string) (*http.Response, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
+	if err != nil {
+		return nil, err
+	}
+
+	return p.c.Do(req)
+}
+
 // PodmanImage implements v1.Image by extending daemon.Image.
 // The caller must call cleanup() to remove a temporary file.
-func PodmanImage(ref string) (Image, func(), error) {
+func PodmanImage(ctx context.Context, ref, host string) (Image, func(), error) {
 	cleanup := func() {}
 
-	c, err := newPodmanClient()
+	c, err := newPodmanClient(host)
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("unable to initialize Podman client: %w", err)
 	}
-	inspect, err := c.imageInspect(ref)
+	inspect, err := c.imageInspect(ctx, ref)
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("unable to inspect the image (%s): %w", ref, err)
 	}
 
-	history, err := c.imageHistoryInspect(ref)
+	history, err := c.imageHistoryInspect(ctx, ref)
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("unable to inspect the image (%s): %w", ref, err)
 	}
 
-	f, err := os.CreateTemp("", "fanal-*")
+	f, err := xos.CreateTemp("", "podman-export-")
 	if err != nil {
-		return nil, cleanup, xerrors.Errorf("failed to create a temporary file")
+		return nil, cleanup, xerrors.Errorf("failed to create a temporary file: %w", err)
 	}
 
 	cleanup = func() {
@@ -137,7 +152,7 @@ func PodmanImage(ref string) (Image, func(), error) {
 	}
 
 	return &image{
-		opener:  imageOpener(context.Background(), ref, f, c.imageSave),
+		opener:  imageOpener(ctx, ref, f, c.imageSave),
 		inspect: inspect,
 		history: configHistory(history),
 	}, cleanup, nil

@@ -10,21 +10,26 @@ import (
 	"strings"
 	"time"
 
-	"github.com/containerd/containerd"
-	"github.com/containerd/containerd/content"
-	"github.com/containerd/containerd/images/archive"
-	"github.com/containerd/containerd/namespaces"
-	"github.com/containerd/containerd/platforms"
-	"github.com/containerd/containerd/reference/docker"
-	refdocker "github.com/containerd/containerd/reference/docker"
-	api "github.com/docker/docker/api/types"
+	"github.com/containerd/containerd/v2/client"
+	"github.com/containerd/containerd/v2/core/content"
+	"github.com/containerd/containerd/v2/core/images/archive"
+	"github.com/containerd/containerd/v2/pkg/namespaces"
+	"github.com/containerd/platforms"
+	"github.com/distribution/reference"
+	dockertypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	dockerimage "github.com/docker/docker/api/types/image"
+	dockerClient "github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	dockerspec "github.com/moby/docker-image-spec/specs-go/v1"
 	"github.com/opencontainers/go-digest"
 	ocispec "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 const (
@@ -51,24 +56,31 @@ func (n familiarNamed) String() string {
 	return string(n)
 }
 
-func imageWriter(client *containerd.Client, img containerd.Image) imageSave {
-	return func(ctx context.Context, ref []string) (io.ReadCloser, error) {
+func imageWriter(c *client.Client, img client.Image, platform types.Platform) imageSave {
+	return func(ctx context.Context, ref []string, _ ...dockerClient.ImageSaveOption) (io.ReadCloser, error) {
 		if len(ref) < 1 {
 			return nil, xerrors.New("no image reference")
 		}
-		imgOpts := archive.WithImage(client.ImageService(), ref[0])
+		imgOpts := archive.WithImage(c.ImageService(), ref[0])
 		manifestOpts := archive.WithManifest(img.Target())
-		platOpts := archive.WithPlatform(platforms.DefaultStrict())
+
+		var platformMatchComparer platforms.MatchComparer
+		if platform.Platform == nil {
+			platformMatchComparer = platforms.DefaultStrict()
+		} else {
+			platformMatchComparer = img.Platform()
+		}
+		platOpts := archive.WithPlatform(platformMatchComparer)
 		pr, pw := io.Pipe()
 		go func() {
-			pw.CloseWithError(archive.Export(ctx, client.ContentStore(), pw, imgOpts, manifestOpts, platOpts))
+			pw.CloseWithError(archive.Export(ctx, c.ContentStore(), pw, imgOpts, manifestOpts, platOpts))
 		}()
 		return pr, nil
 	}
 }
 
 // ContainerdImage implements v1.Image
-func ContainerdImage(ctx context.Context, imageName string) (Image, func(), error) {
+func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOptions) (Image, func(), error) {
 	cleanup := func() {}
 
 	addr := os.Getenv("CONTAINERD_ADDRESS")
@@ -86,7 +98,17 @@ func ContainerdImage(ctx context.Context, imageName string) (Image, func(), erro
 		return nil, cleanup, err
 	}
 
-	client, err := containerd.New(addr)
+	var options []client.Opt
+	if opts.RegistryOptions.Platform.Platform != nil {
+		ociPlatform, err := platforms.Parse(opts.RegistryOptions.Platform.String())
+		if err != nil {
+			return nil, cleanup, err
+		}
+
+		options = append(options, client.WithDefaultPlatform(platforms.OnlyStrict(ociPlatform)))
+	}
+
+	c, err := client.New(addr, options...)
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to initialize a containerd client: %w", err)
 	}
@@ -98,7 +120,7 @@ func ContainerdImage(ctx context.Context, imageName string) (Image, func(), erro
 
 	ctx = namespaces.WithNamespace(ctx, namespace)
 
-	imgs, err := client.ListImages(ctx, searchFilters...)
+	imgs, err := c.ListImages(ctx, searchFilters...)
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to list images from containerd client: %w", err)
 	}
@@ -109,13 +131,13 @@ func ContainerdImage(ctx context.Context, imageName string) (Image, func(), erro
 
 	img := imgs[0]
 
-	f, err := os.CreateTemp("", "fanal-containerd-*")
+	f, err := xos.CreateTemp("", "containerd-export-")
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to create a temporary file: %w", err)
 	}
 
 	cleanup = func() {
-		_ = client.Close()
+		_ = c.Close()
 		_ = f.Close()
 		_ = os.Remove(f.Name())
 	}
@@ -126,38 +148,38 @@ func ContainerdImage(ctx context.Context, imageName string) (Image, func(), erro
 	}
 
 	return &image{
-		opener:  imageOpener(ctx, ref.String(), f, imageWriter(client, img)),
+		opener:  imageOpener(ctx, ref.String(), f, imageWriter(c, img, opts.RegistryOptions.Platform)),
 		inspect: insp,
 		history: history,
 	}, cleanup, nil
 }
 
-func parseReference(imageName string) (refdocker.Reference, []string, error) {
-	ref, err := refdocker.ParseAnyReference(imageName)
+func parseReference(imageName string) (reference.Reference, []string, error) {
+	ref, err := reference.ParseAnyReference(imageName)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("parse error: %w", err)
 	}
 
-	d, isDigested := ref.(refdocker.Digested)
-	n, isNamed := ref.(refdocker.Named)
-	nt, isNamedAndTagged := ref.(refdocker.NamedTagged)
+	d, isDigested := ref.(reference.Digested)
+	n, isNamed := ref.(reference.Named)
+	nt, isNamedAndTagged := ref.(reference.NamedTagged)
 
 	// a name plus a digest
 	// example: name@sha256:41adb3ef...
 	if isDigested && isNamed {
-		digest := d.Digest()
+		dgst := d.Digest()
 		// for the filters, each slice entry is logically or'd. each
 		// comma-separated filter is logically anded
 		return ref, []string{
-			fmt.Sprintf(`name~="^%s(:|@).*",target.digest=="%s"`, n.Name(), digest),
-			fmt.Sprintf(`name~="^%s(:|@).*",target.digest=="%s"`, refdocker.FamiliarName(n), digest),
+			fmt.Sprintf(`name~="^%s(:|@).*",target.digest==%q`, n.Name(), dgst),
+			fmt.Sprintf(`name~="^%s(:|@).*",target.digest==%q`, reference.FamiliarName(n), dgst),
 		}, nil
 	}
 
 	// digested, but not named. i.e. a plain digest
 	// example: sha256:41adb3ef...
 	if isDigested {
-		return ref, []string{fmt.Sprintf(`target.digest=="%s"`, d.Digest())}, nil
+		return ref, []string{fmt.Sprintf(`target.digest==%q`, d.Digest())}, nil
 	}
 
 	// a name plus a tag
@@ -166,7 +188,7 @@ func parseReference(imageName string) (refdocker.Reference, []string, error) {
 		tag := nt.Tag()
 		return familiarNamed(imageName), []string{
 			fmt.Sprintf(`name=="%s:%s"`, nt.Name(), tag),
-			fmt.Sprintf(`name=="%s:%s"`, refdocker.FamiliarName(nt), tag),
+			fmt.Sprintf(`name=="%s:%s"`, reference.FamiliarName(nt), tag),
 		}, nil
 	}
 
@@ -175,7 +197,7 @@ func parseReference(imageName string) (refdocker.Reference, []string, error) {
 
 // readImageConfig reads the config spec (`application/vnd.oci.image.config.v1+json`) for img.platform from content store.
 // ported from https://github.com/containerd/nerdctl/blob/7dfbaa2122628921febeb097e7a8a86074dc931d/pkg/imgutil/imgutil.go#L377-L393
-func readImageConfig(ctx context.Context, img containerd.Image) (ocispec.Image, ocispec.Descriptor, error) {
+func readImageConfig(ctx context.Context, img client.Image) (ocispec.Image, ocispec.Descriptor, error) {
 	var config ocispec.Image
 
 	configDesc, err := img.Config(ctx) // aware of img.platform
@@ -193,24 +215,24 @@ func readImageConfig(ctx context.Context, img containerd.Image) (ocispec.Image, 
 }
 
 // ported from https://github.com/containerd/nerdctl/blob/d110fea18018f13c3f798fa6565e482f3ff03591/pkg/inspecttypes/dockercompat/dockercompat.go#L279-L321
-func inspect(ctx context.Context, img containerd.Image, ref docker.Reference) (api.ImageInspect, []v1.History, refdocker.Reference, error) {
-	if _, ok := ref.(refdocker.Digested); ok {
+func inspect(ctx context.Context, img client.Image, ref reference.Reference) (dockerimage.InspectResponse, []v1.History, reference.Reference, error) {
+	if _, ok := ref.(reference.Digested); ok {
 		ref = familiarNamed(img.Name())
 	}
 
 	var tag string
-	if tagged, ok := ref.(refdocker.Tagged); ok {
+	if tagged, ok := ref.(reference.Tagged); ok {
 		tag = tagged.Tag()
 	}
 
 	var repository string
-	if n, isNamed := ref.(docker.Named); isNamed {
-		repository = refdocker.FamiliarName(n)
+	if n, isNamed := ref.(reference.Named); isNamed {
+		repository = reference.FamiliarName(n)
 	}
 
 	imgConfig, imgConfigDesc, err := readImageConfig(ctx, img)
 	if err != nil {
-		return api.ImageInspect{}, nil, nil, err
+		return dockerimage.InspectResponse{}, nil, nil, err
 	}
 
 	var lastHistory ocispec.History
@@ -234,14 +256,22 @@ func inspect(ctx context.Context, img containerd.Image, ref docker.Reference) (a
 		portSet[nat.Port(k)] = struct{}{}
 	}
 
-	return api.ImageInspect{
+	created := ""
+	if lastHistory.Created != nil {
+		created = lastHistory.Created.Format(time.RFC3339Nano)
+	}
+
+	return dockerimage.InspectResponse{
 		ID:          imgConfigDesc.Digest.String(),
 		RepoTags:    []string{fmt.Sprintf("%s:%s", repository, tag)},
 		RepoDigests: []string{fmt.Sprintf("%s@%s", repository, img.Target().Digest)},
 		Comment:     lastHistory.Comment,
-		Created:     lastHistory.Created.Format(time.RFC3339Nano),
+		Created:     created,
 		Author:      lastHistory.Author,
-		Config: &container.Config{
+		Config: &dockerspec.DockerOCIImageConfig{
+			ImageConfig: imgConfig.Config,
+		},
+		ContainerConfig: &container.Config{
 			User:         imgConfig.Config.User,
 			ExposedPorts: portSet,
 			Env:          imgConfig.Config.Env,
@@ -253,7 +283,7 @@ func inspect(ctx context.Context, img containerd.Image, ref docker.Reference) (a
 		},
 		Architecture: imgConfig.Architecture,
 		Os:           imgConfig.OS,
-		RootFS: api.RootFS{
+		RootFS: dockertypes.RootFS{
 			Type: imgConfig.RootFS.Type,
 			Layers: lo.Map(imgConfig.RootFS.DiffIDs, func(d digest.Digest, _ int) string {
 				return d.String()

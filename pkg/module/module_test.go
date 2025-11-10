@@ -1,18 +1,18 @@
 package module_test
 
 import (
-	"context"
 	"io/fs"
 	"path/filepath"
 	"runtime"
 	"testing"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/module"
-	"github.com/aquasecurity/trivy/pkg/scanner/post"
 )
 
 func TestManager_Register(t *testing.T) {
@@ -21,12 +21,12 @@ func TestManager_Register(t *testing.T) {
 		t.Skip("Test satisfied adequately by Linux tests")
 	}
 	tests := []struct {
-		name                    string
-		moduleDir               string
-		enabledModules          []string
-		wantAnalyzerVersions    analyzer.Versions
-		wantPostScannerVersions map[string]int
-		wantErr                 bool
+		name                 string
+		moduleDir            string
+		enabledModules       []string
+		wantAnalyzerVersions analyzer.Versions
+		wantExtentions       []string
+		wantErr              bool
 	}{
 		{
 			name:      "happy path",
@@ -35,10 +35,10 @@ func TestManager_Register(t *testing.T) {
 				Analyzers: map[string]int{
 					"happy": 1,
 				},
-				PostAnalyzers: map[string]int{},
+				PostAnalyzers: make(map[string]int),
 			},
-			wantPostScannerVersions: map[string]int{
-				"happy": 1,
+			wantExtentions: []string{
+				"happy",
 			},
 		},
 		{
@@ -48,29 +48,29 @@ func TestManager_Register(t *testing.T) {
 				Analyzers: map[string]int{
 					"analyzer": 1,
 				},
-				PostAnalyzers: map[string]int{},
+				PostAnalyzers: make(map[string]int),
 			},
-			wantPostScannerVersions: map[string]int{},
+			wantExtentions: []string{},
 		},
 		{
 			name:      "only post scanner",
 			moduleDir: "testdata/scanner",
 			wantAnalyzerVersions: analyzer.Versions{
-				Analyzers:     map[string]int{},
-				PostAnalyzers: map[string]int{},
+				Analyzers:     make(map[string]int),
+				PostAnalyzers: make(map[string]int),
 			},
-			wantPostScannerVersions: map[string]int{
-				"scanner": 2,
+			wantExtentions: []string{
+				"scanner",
 			},
 		},
 		{
 			name:      "no module dir",
 			moduleDir: "no-such-dir",
 			wantAnalyzerVersions: analyzer.Versions{
-				Analyzers:     map[string]int{},
-				PostAnalyzers: map[string]int{},
+				Analyzers:     make(map[string]int),
+				PostAnalyzers: make(map[string]int),
 			},
-			wantPostScannerVersions: map[string]int{},
+			wantExtentions: []string{},
 		},
 		{
 			name:      "pass enabled modules",
@@ -84,17 +84,17 @@ func TestManager_Register(t *testing.T) {
 					"happy":    1,
 					"analyzer": 1,
 				},
-				PostAnalyzers: map[string]int{},
+				PostAnalyzers: make(map[string]int),
 			},
-			wantPostScannerVersions: map[string]int{
-				"happy": 1,
+			wantExtentions: []string{
+				"happy",
 			},
 		},
 	}
 
 	// Confirm that wasm modules are generated beforehand
 	var count int
-	err := filepath.WalkDir("testdata", func(path string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir("testdata", func(path string, _ fs.DirEntry, _ error) error {
 		if filepath.Ext(path) == ".wasm" {
 			count++
 		}
@@ -102,11 +102,11 @@ func TestManager_Register(t *testing.T) {
 	})
 	require.NoError(t, err)
 	// WASM modules must be generated before running the tests.
-	require.Equal(t, count, 3, "missing WASM modules, try 'make test' or 'make generate-test-modules'")
+	require.Equal(t, 3, count, "missing WASM modules, try 'mage test:unit' or 'mage test:generateModules'")
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m, err := module.NewManager(context.Background(), module.Options{
+			m, err := module.NewManager(t.Context(), module.Options{
 				Dir:            tt.moduleDir,
 				EnabledModules: tt.enabledModules,
 			})
@@ -125,9 +125,10 @@ func TestManager_Register(t *testing.T) {
 			got := a.AnalyzerVersions()
 			assert.Equal(t, tt.wantAnalyzerVersions, got)
 
-			// Confirm the post scanner is registered
-			gotScannerVersions := post.ScannerVersions()
-			assert.Equal(t, tt.wantPostScannerVersions, gotScannerVersions)
+			hookNames := lo.Map(extension.Hooks(), func(hook extension.Hook, _ int) string {
+				return hook.Name()
+			})
+			assert.Equal(t, tt.wantExtentions, hookNames)
 		})
 	}
 }

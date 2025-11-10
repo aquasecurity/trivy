@@ -1,0 +1,45 @@
+{
+  "SchemaVersion": 2,
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/sbom/license-cyclonedx.json",
+  "ArtifactType": "cyclonedx",
+  "Results": [
+    {
+      "Target": "Java",
+      "Class": "license",
+      "Licenses": [
+        {
+          "Severity": "MEDIUM",
+          "Category": "reciprocal",
+          "PkgName": "org.eclipse.sisu:org.eclipse.sisu.plexus",
+          "FilePath": "",
+          "Name": "EPL-1.0",
+          "Text": "",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "org.ow2.asm:asm",
+          "FilePath": "",
+          "Name": "BSD-3-Clause",
+          "Text": "",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "org.slf4j:slf4j-api",
+          "FilePath": "",
+          "Name": "MIT License",
+          "Text": "",
+          "Confidence": 1,
+          "Link": ""
+        }
+      ]
+    }
+  ]
+}

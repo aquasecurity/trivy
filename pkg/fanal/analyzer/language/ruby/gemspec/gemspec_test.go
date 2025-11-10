@@ -1,7 +1,6 @@
 package gemspec
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -14,10 +13,11 @@ import (
 
 func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputFile string
-		want      *analyzer.AnalysisResult
-		wantErr   string
+		name            string
+		inputFile       string
+		includeChecksum bool
+		want            *analyzer.AnalysisResult
+		wantErr         string
 	}{
 		{
 			name:      "happy path",
@@ -27,12 +27,42 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GemSpec,
 						FilePath: "testdata/multiple_licenses.gemspec",
-						Libraries: []types.Package{
+						Packages: types.Packages{
 							{
-								Name:     "test-unit",
-								Version:  "3.3.7",
-								Licenses: []string{"Ruby", "BSDL", "PSFL"},
+								Name:    "test-unit",
+								Version: "3.3.7",
+								Licenses: []string{
+									"Ruby",
+									"BSDL",
+									"PSFL",
+								},
 								FilePath: "testdata/multiple_licenses.gemspec",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:            "happy path with checksum",
+			inputFile:       "testdata/multiple_licenses.gemspec",
+			includeChecksum: true,
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.GemSpec,
+						FilePath: "testdata/multiple_licenses.gemspec",
+						Packages: types.Packages{
+							{
+								Name:    "test-unit",
+								Version: "3.3.7",
+								Licenses: []string{
+									"Ruby",
+									"BSDL",
+									"PSFL",
+								},
+								FilePath: "testdata/multiple_licenses.gemspec",
+								Digest:   "sha1:6ba7904180fad7e09f224cd3e4d449ea53401fb9",
 							},
 						},
 					},
@@ -53,18 +83,18 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			a := gemspecLibraryAnalyzer{}
-			ctx := context.Background()
+			ctx := t.Context()
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
+				Options:  analyzer.AnalysisOptions{FileChecksum: tt.includeChecksum},
 			})
 
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

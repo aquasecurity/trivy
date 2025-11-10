@@ -1,0 +1,26 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "author": "Aqua Security",
+  "role": "Project Release Bot",
+  "timestamp": "2023-01-16T19:07:16.853479631-06:00",
+  "version": 1,
+  "statements": [
+    {
+      "vulnerability": {
+        "name": "CVE-2024-0001"
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/go-direct1@v2.0.0",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/aquasecurity/go-transitive@v4.0.0"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path"
+    }
+  ]
+}

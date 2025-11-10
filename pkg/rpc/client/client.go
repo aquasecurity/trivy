@@ -2,14 +2,19 @@ package client
 
 import (
 	"context"
-	"crypto/tls"
 	"net/http"
 
+	"github.com/samber/lo"
+	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	r "github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
+	"github.com/aquasecurity/trivy/pkg/x/slices"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
+	"github.com/aquasecurity/trivy/rpc/common"
 	rpc "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
@@ -26,51 +31,55 @@ func WithRPCClient(c rpc.Scanner) Option {
 	}
 }
 
-// ScannerOption holds options for RPC client
-type ScannerOption struct {
+// ServiceOption holds options for RPC client
+type ServiceOption struct {
 	RemoteURL     string
 	Insecure      bool
 	CustomHeaders http.Header
+	PathPrefix    string
 }
 
-// Scanner implements the RPC scanner
-type Scanner struct {
+// Service implements the RPC client for remote scanning
+type Service struct {
 	customHeaders http.Header
 	client        rpc.Scanner
 }
 
-// NewScanner is the factory method to return RPC Scanner
-func NewScanner(scannerOptions ScannerOption, opts ...Option) Scanner {
-	httpClient := &http.Client{
-		Transport: &http.Transport{
-			Proxy: http.ProxyFromEnvironment,
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: scannerOptions.Insecure,
-			},
-		},
+// NewService is the factory method to return RPC Service
+func NewService(scannerOptions ServiceOption, opts ...Option) Service {
+	var twirpOpts []twirp.ClientOption
+	if scannerOptions.PathPrefix != "" {
+		twirpOpts = append(twirpOpts, twirp.WithClientPathPrefix(scannerOptions.PathPrefix))
 	}
-
-	c := rpc.NewScannerProtobufClient(scannerOptions.RemoteURL, httpClient)
+	c := rpc.NewScannerProtobufClient(scannerOptions.RemoteURL, xhttp.Client(), twirpOpts...)
 
 	o := &options{rpcClient: c}
 	for _, opt := range opts {
 		opt(o)
 	}
 
-	return Scanner{
+	return Service{
 		customHeaders: scannerOptions.CustomHeaders,
 		client:        o.rpcClient,
 	}
 }
 
 // Scan scans the image
-func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, opts types.ScanOptions) (types.Results, ftypes.OS, error) {
+func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, opts types.ScanOptions) (types.ScanResponse, error) {
 	ctx = WithCustomHeaders(ctx, s.customHeaders)
 
 	// Convert to the rpc struct
-	licenseCategories := map[string]*rpc.Licenses{}
+	licenseCategories := make(map[string]*rpc.Licenses)
 	for category, names := range opts.LicenseCategories {
 		licenseCategories[string(category)] = &rpc.Licenses{Names: names}
+	}
+
+	var distro *common.OS
+	if !lo.IsEmpty(opts.Distro) {
+		distro = &common.OS{
+			Family: string(opts.Distro.Family),
+			Name:   opts.Distro.Name,
+		}
 	}
 
 	var res *rpc.ScanResponse
@@ -81,17 +90,30 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			ArtifactId: artifactKey,
 			BlobIds:    blobKeys,
 			Options: &rpc.ScanOptions{
-				VulnType:          opts.VulnType,
-				Scanners:          opts.Scanners.StringSlice(),
-				ListAllPackages:   opts.ListAllPackages,
-				LicenseCategories: licenseCategories,
+				PkgTypes:            opts.PkgTypes,
+				PkgRelationships:    xstrings.ToStringSlice(opts.PkgRelationships),
+				Scanners:            xstrings.ToStringSlice(opts.Scanners),
+				LicenseCategories:   licenseCategories,
+				LicenseFull:         opts.LicenseFull,
+				IncludeDevDeps:      opts.IncludeDevDeps,
+				Distro:              distro,
+				VulnSeveritySources: xstrings.ToStringSlice(opts.VulnSeveritySources),
 			},
 		})
 		return err
 	})
 	if err != nil {
-		return nil, ftypes.OS{}, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
+		return types.ScanResponse{}, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
 	}
 
-	return r.ConvertFromRPCResults(res.Results), r.ConvertFromRPCOS(res.Os), nil
+	return types.ScanResponse{
+		Results: r.ConvertFromRPCResults(res.Results),
+		OS:      r.ConvertFromRPCOS(res.Os),
+		Layers: slices.ZeroToNil(lo.FilterMap(res.Layers, func(layer *common.Layer, _ int) (ftypes.Layer, bool) {
+			if layer == nil {
+				return ftypes.Layer{}, false
+			}
+			return r.ConvertFromRPCLayer(layer), true
+		})),
+	}, nil
 }

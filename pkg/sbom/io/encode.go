@@ -1,0 +1,531 @@
+package io
+
+import (
+	"fmt"
+	"slices"
+	"strconv"
+
+	"github.com/google/uuid"
+	"github.com/package-url/packageurl-go"
+	"github.com/samber/lo"
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/digest"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/purl"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	"github.com/aquasecurity/trivy/pkg/scan/utils"
+	"github.com/aquasecurity/trivy/pkg/types"
+)
+
+type EncoderOption func(*Encoder)
+
+// WithBOMRef enables BOM-Ref generation for CycloneDX components
+func WithBOMRef() EncoderOption {
+	return func(e *Encoder) {
+		e.bomOpts.GenerateBOMRef = true
+	}
+}
+
+// WithParents enables holding parent maps in the BOM structure
+func WithParents() EncoderOption {
+	return func(e *Encoder) {
+		e.bomOpts.Parents = true
+	}
+}
+
+// ForceRegenerate forces regeneration of BOM instead of reusing existing one
+func ForceRegenerate() EncoderOption {
+	return func(e *Encoder) {
+		e.forceRegenerate = true
+	}
+}
+
+type Encoder struct {
+	bom             *core.BOM
+	bomOpts         core.Options
+	forceRegenerate bool
+}
+
+func NewEncoder(opts ...EncoderOption) *Encoder {
+	e := &Encoder{}
+	for _, opt := range opts {
+		opt(e)
+	}
+	return e
+}
+
+func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
+	// When report.BOM is not nil, reuse the existing BOM structure unless ForceRegenerate is set.
+	// This happens in two scenarios:
+	// 1. SBOM scanning: When scanning an existing SBOM file to refresh vulnerabilities
+	// 2. Library usage: When using Trivy as a library with a custom BOM in the report
+	if report.BOM != nil && !e.forceRegenerate {
+		return e.reuseExistingBOM(report)
+	}
+	// Metadata component
+	root, err := e.rootComponent(report)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to create root component: %w", err)
+	}
+
+	e.bom = core.NewBOM(e.bomOpts)
+	if report.BOM != nil {
+		e.bom.SerialNumber = report.BOM.SerialNumber
+		e.bom.Version = report.BOM.Version
+	}
+	e.bom.AddComponent(root)
+
+	for _, result := range report.Results {
+		e.encodeResult(root, report.Metadata, result)
+	}
+
+	// Components that do not have their own dependencies MUST be declared as empty elements within the graph.
+	if _, ok := e.bom.Relationships()[root.ID()]; !ok {
+		e.bom.AddRelationship(root, nil, "")
+	}
+	return e.bom, nil
+}
+
+func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
+	root := &core.Component{
+		Root: true,
+		Name: r.ArtifactName,
+	}
+
+	props := []core.Property{
+		{
+			Name:  core.PropertySchemaVersion,
+			Value: strconv.Itoa(r.SchemaVersion),
+		},
+	}
+
+	switch r.ArtifactType {
+	case ftypes.TypeContainerImage:
+		root.Type = core.TypeContainerImage
+		props = append(props, core.Property{
+			Name:  core.PropertyImageID,
+			Value: r.Metadata.ImageID,
+		})
+
+		// Save image labels as properties with `Labels:` prefix.
+		// e.g. `LABEL vendor="aquasecurity"` => `Labels:vendor` -> `aquasecurity`
+		for label, value := range r.Metadata.ImageConfig.Config.Labels {
+			props = append(props, core.Property{
+				Name:  core.PropertyLabelsPrefix + ":" + label,
+				Value: value,
+			})
+		}
+
+		p, err := purl.New(purl.TypeOCI, r.Metadata, ftypes.Package{})
+		if err != nil {
+			return nil, xerrors.Errorf("failed to new package url for oci: %w", err)
+		}
+		if p != nil {
+			root.PkgIdentifier.PURL = p.Unwrap()
+		}
+
+	case ftypes.TypeVM:
+		root.Type = core.TypeVM
+	case ftypes.TypeFilesystem:
+		root.Type = core.TypeFilesystem
+	case ftypes.TypeRepository:
+		root.Type = core.TypeRepository
+	case ftypes.TypeCycloneDX, ftypes.TypeSPDX:
+		// When we scan a `json` file (meaning a file in `json` format) which was created from the SBOM file.
+		// e.g. for use in `convert` mode.
+		// See https://github.com/aquasecurity/trivy/issues/6780
+		root.Type = core.TypeFilesystem
+	}
+
+	if r.Metadata.Size != 0 {
+		props = append(props, core.Property{
+			Name:  core.PropertySize,
+			Value: strconv.FormatInt(r.Metadata.Size, 10),
+		})
+	}
+
+	for _, d := range r.Metadata.RepoDigests {
+		props = append(props, core.Property{
+			Name:  core.PropertyRepoDigest,
+			Value: d,
+		})
+	}
+
+	for _, id := range r.Metadata.DiffIDs {
+		props = append(props, core.Property{
+			Name:  core.PropertyDiffID,
+			Value: id,
+		})
+	}
+
+	for _, tag := range r.Metadata.RepoTags {
+		props = append(props, core.Property{
+			Name:  core.PropertyRepoTag,
+			Value: tag,
+		})
+	}
+
+	if !r.Metadata.Reference.IsZero() {
+		props = append(props, core.Property{
+			Name:  core.PropertyReference,
+			Value: r.Metadata.Reference.String(),
+		})
+	}
+
+	root.Properties = filterProperties(props)
+
+	return root, nil
+}
+
+func (e *Encoder) encodeResult(root *core.Component, metadata types.Metadata, result types.Result) {
+	if slices.Contains(ftypes.AggregatingTypes, result.Type) {
+		// If a package is language-specific package that isn't associated with a lock file,
+		// it will be a dependency of a component under "metadata".
+		// e.g.
+		//   Container component (alpine:3.15) ----------------------- #1
+		//     -> Library component (npm package, express-4.17.3) ---- #2
+		//     -> Library component (python package, django-4.0.2) --- #2
+		//     -> etc.
+		// ref. https://cyclonedx.org/use-cases/#inventory
+
+		// Dependency graph from #1 to #2
+		e.encodePackages(root, result)
+	} else if result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg {
+		// If a package is OS package, it will be a dependency of "Operating System" component.
+		// e.g.
+		//   Container component (alpine:3.15) --------------------- #1
+		//     -> Operating System Component (Alpine Linux 3.15) --- #2
+		//       -> Library component (bash-4.12) ------------------ #3
+		//       -> Library component (vim-8.2)   ------------------ #3
+		//       -> etc.
+		//
+		// Else if a package is language-specific package associated with a lock file,
+		// it will be a dependency of "Application" component.
+		// e.g.
+		//   Container component (alpine:3.15) ------------------------ #1
+		//     -> Application component (/app/package-lock.json) ------ #2
+		//       -> Library component (npm package, express-4.17.3) --- #3
+		//       -> Library component (npm package, lodash-4.17.21) --- #3
+		//       -> etc.
+
+		// #2
+		appComponent := e.resultComponent(root, result, metadata.OS)
+
+		// #3
+		e.encodePackages(appComponent, result)
+	}
+}
+
+func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
+	// Get dependency parents first
+	parents := ftypes.Packages(result.Packages).ParentDeps()
+
+	// Group vulnerabilities by package ID
+	vulns := make(map[string][]core.Vulnerability)
+	for _, vuln := range result.Vulnerabilities {
+		v := e.vulnerability(vuln)
+		vulns[vuln.PkgIdentifier.UID] = append(vulns[vuln.PkgIdentifier.UID], v)
+	}
+
+	// UID => Package Component
+	components := make(map[string]*core.Component, len(result.Packages))
+	// PkgID => Package Component
+	dependencies := make(map[string]*core.Component, len(result.Packages))
+	var hasRoot bool
+	for i, pkg := range result.Packages {
+		pkgID := lo.Ternary(pkg.ID == "", fmt.Sprintf("%s@%s", pkg.Name, pkg.Version), pkg.ID)
+		result.Packages[i].ID = pkgID
+
+		// Check if the project has a root dependency
+		// TODO: Ideally, all projects should have a root dependency.
+		if pkg.Relationship == ftypes.RelationshipRoot {
+			hasRoot = true
+		}
+
+		// Convert packages to components
+		c := e.component(result, pkg)
+		components[pkg.Identifier.UID] = c
+
+		// For dependencies: the key "pkgID" might be duplicated in aggregated packages,
+		// but it doesn't matter as they don't have "DependsOn".
+		dependencies[pkgID] = c
+
+		// Add a component
+		e.bom.AddComponent(c)
+
+		// Add vulnerabilities
+		if vv := vulns[pkg.Identifier.UID]; vv != nil {
+			e.bom.AddVulnerabilities(c, vv)
+		}
+	}
+
+	// Build a dependency graph between packages
+	for _, pkg := range result.Packages {
+		c := components[pkg.Identifier.UID]
+
+		// Add a relationship between the parent and the package if needed
+		if e.belongToParent(pkg, parents, hasRoot) {
+			e.bom.AddRelationship(parent, c, core.RelationshipContains)
+		}
+
+		// Add relationships between the package and its dependencies
+		for _, dep := range pkg.DependsOn {
+			dependsOn, ok := dependencies[dep]
+			if !ok {
+				continue
+			}
+			e.bom.AddRelationship(c, dependsOn, core.RelationshipDependsOn)
+		}
+
+		// Components that do not have their own dependencies MUST be declared as empty elements within the graph.
+		// TODO: Should check if the component has actually no dependencies or the dependency graph is not supported.
+		if len(pkg.DependsOn) == 0 {
+			e.bom.AddRelationship(c, nil, "")
+		}
+	}
+}
+
+// reuseExistingBOM preserves the original SBOM structure and only updates the vulnerabilities section
+// with newly detected vulnerabilities. This method handles two use cases:
+//  1. SBOM scanning (CycloneDX): When scanning an existing SBOM file to refresh vulnerability data while
+//     preserving the original structure, components, and relationships
+//     e.g. $ trivy sbom sbom.cdx.json --scanners vuln --format cyclonedx
+//  2. Library usage: When using Trivy as a library with a pre-existing custom BOM that needs
+//     to be enriched with vulnerability information
+//
+// For SBOM scanning (case 1), this approach is CycloneDX-specific
+// because: SPDX 2.3 does not include vulnerabilities in the SBOM specification.
+// Therefore, the method uses BOM-Ref for component-vulnerability lookup rather than SPDX-ID.
+func (e *Encoder) reuseExistingBOM(report types.Report) (*core.BOM, error) {
+	bom := report.BOM.Clone()
+
+	// Create a lookup map from BOM-Ref to component for efficient vulnerability assignment
+	// BOM-Ref is used as the key because it's the standard identifier in CycloneDX format
+	// and is guaranteed to be present in components from CycloneDX SBOMs
+	components := lo.MapKeys(report.BOM.Components(), func(v *core.Component, _ uuid.UUID) string {
+		return v.PkgIdentifier.BOMRef
+	})
+
+	for _, result := range report.Results {
+		// Group newly detected vulnerabilities by their component's BOM-Ref
+		vulns := make(map[string][]core.Vulnerability)
+		for _, vuln := range result.Vulnerabilities {
+			vulns[vuln.PkgIdentifier.BOMRef] = append(vulns[vuln.PkgIdentifier.BOMRef], e.vulnerability(vuln))
+		}
+
+		// Associate vulnerabilities with their corresponding components in the SBOM
+		for bomRef, componentVulns := range vulns {
+			c, ok := components[bomRef]
+			if !ok {
+				// This should never happen in proper SBOM rescanning because vulnerabilities
+				// should only be detected for components that exist in the original SBOM
+				log.Warn("Skipping vulnerabilities for component not found in SBOM",
+					log.String("bom-ref", bomRef),
+					log.Int("vulnerabilities", len(componentVulns)))
+				continue
+			}
+			bom.AddVulnerabilities(c, componentVulns)
+		}
+	}
+
+	return bom, nil
+}
+
+func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound *ftypes.OS) *core.Component {
+	component := &core.Component{
+		Name: r.Target,
+		Properties: []core.Property{
+			{
+				Name:  core.PropertyType,
+				Value: string(r.Type),
+			},
+			{
+				Name:  core.PropertyClass,
+				Value: string(r.Class),
+			},
+		},
+	}
+
+	switch r.Class {
+	case types.ClassOSPkg:
+		if osFound != nil {
+			component.Name = string(osFound.Family)
+			component.Version = osFound.Name
+		}
+		component.Type = core.TypeOS
+	case types.ClassLangPkg:
+		component.Type = core.TypeApplication
+	}
+
+	e.bom.AddRelationship(root, component, core.RelationshipContains)
+	return component
+}
+
+func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Component {
+	name := pkg.Name
+	version := utils.FormatVersion(pkg)
+	var group string
+	// there are cases when we can't build purl
+	// e.g. local Go packages
+	if pu := pkg.Identifier.PURL; pu != nil {
+		version = pu.Version
+		for _, q := range pu.Qualifiers {
+			if q.Key == "epoch" && q.Value != "0" {
+				version = fmt.Sprintf("%s:%s", q.Value, version)
+			}
+		}
+
+		// Use `group` field for GroupID and `name` for ArtifactID for java files
+		// https://github.com/aquasecurity/trivy/issues/4675
+		// Use `group` field for npm scopes
+		// https://github.com/aquasecurity/trivy/issues/5908
+		if pu.Type == packageurl.TypeMaven || pu.Type == packageurl.TypeNPM {
+			name = pu.Name
+			group = pu.Namespace
+		}
+	}
+
+	properties := []core.Property{
+		{
+			Name:  core.PropertyPkgID,
+			Value: pkg.ID,
+		},
+		{
+			Name:  core.PropertyPkgType,
+			Value: string(result.Type),
+		},
+		{
+			Name:  core.PropertyFilePath,
+			Value: pkg.FilePath,
+		},
+		{
+			Name:  core.PropertySrcName,
+			Value: pkg.SrcName,
+		},
+		{
+			Name:  core.PropertySrcVersion,
+			Value: pkg.SrcVersion,
+		},
+		{
+			Name:  core.PropertySrcRelease,
+			Value: pkg.SrcRelease,
+		},
+		{
+			Name:  core.PropertySrcEpoch,
+			Value: strconv.Itoa(pkg.SrcEpoch),
+		},
+		{
+			Name:  core.PropertyModularitylabel,
+			Value: pkg.Modularitylabel,
+		},
+		{
+			Name:  core.PropertyLayerDigest,
+			Value: pkg.Layer.Digest,
+		},
+		{
+			Name:  core.PropertyLayerDiffID,
+			Value: pkg.Layer.DiffID,
+		},
+	}
+
+	// Fill Red Hat specific properties
+	if pkg.BuildInfo != nil {
+		for _, cs := range pkg.BuildInfo.ContentSets {
+			properties = append(properties, core.Property{
+				Name:  core.PropertyContentSet,
+				Value: cs,
+			})
+		}
+
+		if pkg.BuildInfo.Nvr != "" {
+			properties = append(properties, core.Property{
+				Name:  core.PropertyNVR,
+				Value: pkg.BuildInfo.Nvr,
+			})
+		}
+		if pkg.BuildInfo.Arch != "" {
+			properties = append(properties, core.Property{
+				Name:  core.PropertyArch,
+				Value: pkg.BuildInfo.Arch,
+			})
+		}
+	}
+
+	var files []core.File
+	if pkg.FilePath != "" || pkg.Digest != "" {
+		files = append(files, core.File{
+			Path:    pkg.FilePath,
+			Digests: lo.Ternary(pkg.Digest != "", []digest.Digest{pkg.Digest}, nil),
+		})
+	}
+
+	// TODO(refactor): simplify the list of conditions
+	var srcFile string
+	if result.Class == types.ClassLangPkg && !slices.Contains(ftypes.AggregatingTypes, result.Type) {
+		srcFile = result.Target
+	}
+
+	return &core.Component{
+		Type:       core.TypeLibrary,
+		Name:       name,
+		Group:      group,
+		Version:    version,
+		SrcName:    pkg.SrcName,
+		SrcVersion: utils.FormatSrcVersion(pkg),
+		SrcFile:    srcFile,
+		PkgIdentifier: ftypes.PkgIdentifier{
+			UID:    pkg.Identifier.UID,
+			PURL:   pkg.Identifier.PURL,
+			BOMRef: pkg.Identifier.BOMRef,
+		},
+		Supplier:   pkg.Maintainer,
+		Licenses:   pkg.Licenses,
+		Files:      files,
+		Properties: filterProperties(properties),
+	}
+}
+
+func (*Encoder) vulnerability(vuln types.DetectedVulnerability) core.Vulnerability {
+	return core.Vulnerability{
+		Vulnerability:    vuln.Vulnerability,
+		ID:               vuln.VulnerabilityID,
+		PkgName:          vuln.PkgName,
+		InstalledVersion: vuln.InstalledVersion,
+		FixedVersion:     vuln.FixedVersion,
+		PrimaryURL:       vuln.PrimaryURL,
+		DataSource:       vuln.DataSource,
+	}
+}
+
+// belongToParent determines if a package should be directly included in the parent based on its relationship and dependencies.
+func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Packages, hasRoot bool) bool {
+	// Case 1: Relationship: known , DependsOn: known
+	//         Packages with no parent are included in the parent
+	//         - Relationship:
+	//           - Root: true (it doesn't have a parent)
+	//           - Workspace: false (it always has a parent)
+	//           - Direct:
+	//             - No root dependency in the project: true (e.g., poetry.lock)
+	//             - Otherwise: false (Direct dependencies should belong to the root/workspace)
+	//           - Indirect: false (it always has a parent)
+	// Case 2: Relationship: unknown, DependsOn: unknown (e.g., conan lockfile v2)
+	//         All packages are included in the parent
+	// Case 3: Relationship: known , DependsOn: unknown (e.g., go.mod without $GOPATH)
+	//         All packages are included in the parent
+	// Case 4: Relationship: unknown, DependsOn: known (e.g., GoBinaries, OS packages)
+	//         - Packages with parents: false. These packages are included in the packages from `parents` (e.g. GoBinaries deps and root package).
+	//         - Packages without parents: true. These packages are included in the parent (e.g. OS packages without parents).
+	if pkg.Relationship == ftypes.RelationshipDirect {
+		return !hasRoot
+	}
+
+	return len(parents[pkg.ID]) == 0
+}
+
+func filterProperties(props []core.Property) []core.Property {
+	return lo.Filter(props, func(property core.Property, _ int) bool {
+		return property.Value != "" && (property.Name != core.PropertySrcEpoch || property.Value != "0")
+	})
+}

@@ -1,0 +1,55 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "host",
+  "documentNamespace": "http://trivy.dev/filesystem/host-1022538e-83fe-4aa7-8718-a78839114c83",
+  "creationInfo": {
+    "creators": [
+      "Organization: aquasecurity",
+      "Tool: trivy-0.58.1"
+    ],
+    "created": "2025-01-30T11:30:05Z"
+  },
+  "packages": [
+    {
+      "name": "ca-certificates",
+      "SPDXID": "SPDXRef-Package-c1d4029824045f75",
+      "versionInfo": "20230311",
+      "supplier": "Organization: Julien Cristau <jcristau@debian.org>",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": false,
+      "sourceInfo": "built package from: ca-certificates 20230311",
+      "licenseConcluded": "GPL-2.0-or-later AND GPL-2.0-only AND MPL-2.0",
+      "licenseDeclared": "GPL-2.0-or-later AND GPL-2.0-only AND MPL-2.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:deb/debian/ca-certificates@20230311?arch=all&distro=debian-12.9"
+        }
+      ],
+      "primaryPackagePurpose": "LIBRARY"
+    },
+    {
+      "name": "debian",
+      "SPDXID": "SPDXRef-OperatingSystem-23c1e7dfb45d904f",
+      "versionInfo": "12.9",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": false,
+      "primaryPackagePurpose": "OPERATING-SYSTEM"
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-OperatingSystem-23c1e7dfb45d904f",
+      "relatedSpdxElement": "SPDXRef-Package-c1d4029824045f75",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-OperatingSystem-23c1e7dfb45d904f",
+      "relationshipType": "DESCRIBES"
+    }
+  ]
+}

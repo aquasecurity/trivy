@@ -1,250 +1,378 @@
 package local
 
 import (
+	"cmp"
 	"context"
 	"crypto/sha256"
-	"encoding/json"
 	"errors"
 	"io/fs"
+	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
-	"sync"
 
-	"github.com/opencontainers/go-digest"
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/samber/lo"
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
-	"github.com/aquasecurity/trivy/pkg/syncx"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
+
+const artifactVersion = 0
+
+var _ Walker = (*walker.FS)(nil)
+
+type Walker interface {
+	Walk(root string, opt walker.Option, fn walker.WalkFunc) error
+}
 
 type Artifact struct {
 	rootPath       string
+	logger         *log.Logger
 	cache          cache.ArtifactCache
-	walker         walker.FS
+	walker         Walker
 	analyzer       analyzer.AnalyzerGroup
 	handlerManager handler.Manager
 
 	artifactOption artifact.Option
+
+	isClean      bool                  // whether git repository is clean (for caching)
+	repoMetadata artifact.RepoMetadata // git repository metadata
 }
 
-func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
+func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.Option) (artifact.Artifact, error) {
 	handlerManager, err := handler.NewManager(opt)
 	if err != nil {
 		return nil, xerrors.Errorf("handler initialize error: %w", err)
 	}
 
-	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
-		Group:                opt.AnalyzerGroup,
-		Slow:                 opt.Slow,
-		FilePatterns:         opt.FilePatterns,
-		DisabledAnalyzers:    opt.DisabledAnalyzers,
-		SecretScannerOption:  opt.SecretScannerOption,
-		LicenseScannerOption: opt.LicenseScannerOption,
-	})
+	a, err := analyzer.NewAnalyzerGroup(opt.AnalyzerOptions())
 	if err != nil {
 		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}
 
-	return Artifact{
-		rootPath:       filepath.Clean(rootPath),
+	opt.Type = cmp.Or(opt.Type, types.TypeFilesystem)
+	prefix := lo.Ternary(opt.Type == types.TypeRepository, "repo", "fs")
+
+	art := Artifact{
+		rootPath:       filepath.ToSlash(filepath.Clean(rootPath)),
+		logger:         log.WithPrefix(prefix),
 		cache:          c,
-		walker:         walker.NewFS(buildPathsToSkip(rootPath, opt.SkipFiles), buildPathsToSkip(rootPath, opt.SkipDirs), opt.Slow),
+		walker:         w,
 		analyzer:       a,
 		handlerManager: handlerManager,
-
 		artifactOption: opt,
-	}, nil
+	}
+
+	art.logger.Debug("Analyzing...", log.String("root", art.rootPath),
+		lo.Ternary(opt.Original != "", log.String("original", opt.Original), log.Nil))
+
+	// Check if the directory is a git repository and extract metadata
+	if art.isClean, art.repoMetadata, err = extractGitInfo(art.rootPath); err == nil {
+		// If git info is detected, change artifact type to repository
+		art.artifactOption.Type = types.TypeRepository
+		if art.isClean {
+			art.logger.Debug("Using the latest commit hash for calculating cache key",
+				log.String("commit_hash", art.repoMetadata.Commit))
+		} else {
+			art.logger.Debug("Repository is dirty, random cache key will be used")
+		}
+	} else if !errors.Is(err, git.ErrRepositoryNotExists) {
+		// Only log if the file path is a git repository
+		art.logger.Debug("Random cache key will be used", log.Err(err))
+	}
+
+	return art, nil
 }
 
-// buildPathsToSkip builds correct patch for skipDirs and skipFiles
-func buildPathsToSkip(base string, paths []string) []string {
-	var relativePaths []string
-	absBase, err := filepath.Abs(base)
+// extractGitInfo extracts git repository information including clean status and metadata
+// Returns clean status (for caching), metadata, and error
+func extractGitInfo(dir string) (bool, artifact.RepoMetadata, error) {
+	var metadata artifact.RepoMetadata
+
+	repo, err := git.PlainOpen(dir)
 	if err != nil {
-		log.Logger.Warnf("Failed to get an absolute path of %s: %s", base, err)
-		return nil
+		return false, metadata, xerrors.Errorf("failed to open git repository: %w", err)
 	}
-	for _, path := range paths {
-		// Supports three types of flag specification.
-		// All of them are converted into the relative path from the root directory.
-		// 1. Relative skip dirs/files from the root directory
-		//     The specified dirs and files will be used as is.
-		//       e.g. $ trivy fs --skip-dirs bar ./foo
-		//     The skip dir from the root directory will be `bar/`.
-		// 2. Relative skip dirs/files from the working directory
-		//     The specified dirs and files wll be converted to the relative path from the root directory.
-		//       e.g. $ trivy fs --skip-dirs ./foo/bar ./foo
-		//     The skip dir will be converted to `bar/`.
-		// 3. Absolute skip dirs/files
-		//     The specified dirs and files wll be converted to the relative path from the root directory.
-		//       e.g. $ trivy fs --skip-dirs /bar/foo/baz ./foo
-		//     When the working directory is
-		//       3.1 /bar: the skip dir will be converted to `baz/`.
-		//       3.2 /hoge : the skip dir will be converted to `../../bar/foo/baz/`.
 
-		absSkipPath, err := filepath.Abs(path)
-		if err != nil {
-			log.Logger.Warnf("Failed to get an absolute path of %s: %s", base, err)
-			continue
-		}
-		rel, err := filepath.Rel(absBase, absSkipPath)
-		if err != nil {
-			log.Logger.Warnf("Failed to get a relative path from %s to %s: %s", base, path, err)
-			continue
-		}
-
-		var relPath string
-		switch {
-		case !filepath.IsAbs(path) && strings.HasPrefix(rel, ".."):
-			// #1: Use the path as is
-			relPath = path
-		case !filepath.IsAbs(path) && !strings.HasPrefix(rel, ".."):
-			// #2: Use the relative path from the root directory
-			relPath = rel
-		case filepath.IsAbs(path):
-			// #3: Use the relative path from the root directory
-			relPath = rel
-		}
-		relPath = filepath.ToSlash(relPath)
-		relativePaths = append(relativePaths, relPath)
+	// Get HEAD commit
+	head, err := repo.Head()
+	if err != nil {
+		return false, metadata, xerrors.Errorf("failed to get HEAD: %w", err)
 	}
-	return relativePaths
+
+	commit, err := repo.CommitObject(head.Hash())
+	if err != nil {
+		return false, metadata, xerrors.Errorf("failed to get commit object: %w", err)
+	}
+
+	// Extract basic commit metadata
+	metadata.Commit = head.Hash().String()
+	metadata.CommitMsg = strings.TrimSpace(commit.Message)
+	metadata.Author = commit.Author.String()
+	metadata.Committer = commit.Committer.String()
+
+	// Get branch name
+	if head.Name().IsBranch() {
+		metadata.Branch = head.Name().Short()
+	}
+
+	// Get all tag names that point to HEAD
+	if tags, err := repo.Tags(); err == nil {
+		var headTags []string
+		_ = tags.ForEach(func(tag *plumbing.Reference) error {
+			if tag.Hash() == head.Hash() {
+				headTags = append(headTags, tag.Name().Short())
+			}
+			return nil
+		})
+		metadata.Tags = headTags
+	}
+
+	// Get repository URL - prefer upstream, fallback to origin
+	remoteConfig, err := repo.Remote("upstream")
+	if err != nil {
+		remoteConfig, err = repo.Remote("origin")
+	}
+	if err == nil && len(remoteConfig.Config().URLs) > 0 {
+		metadata.RepoURL = sanitizeRemoteURL(remoteConfig.Config().URLs[0])
+	}
+
+	// Check if repository is clean for caching purposes
+	worktree, err := repo.Worktree()
+	if err != nil {
+		return false, metadata, xerrors.Errorf("failed to get worktree: %w", err)
+	}
+
+	status, err := worktree.Status()
+	if err != nil {
+		return false, metadata, xerrors.Errorf("failed to get status: %w", err)
+	}
+
+	// Return clean status and metadata
+	return status.IsClean(), metadata, nil
 }
 
-func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) {
-	var wg sync.WaitGroup
+func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
+	// Calculate cache key
+	cacheKey, err := a.calcCacheKey()
+	if err != nil {
+		return artifact.Reference{}, xerrors.Errorf("failed to calculate a cache key: %w", err)
+	}
+
+	// Check if the cache exists only when it's a clean git repository
+	if a.isClean && a.repoMetadata.Commit != "" {
+		_, missingBlobs, err := a.cache.MissingBlobs(ctx, cacheKey, []string{cacheKey})
+		if err != nil {
+			return artifact.Reference{}, xerrors.Errorf("unable to get missing blob: %w", err)
+		}
+
+		if len(missingBlobs) == 0 {
+			// Cache hit
+			a.logger.DebugContext(ctx, "Cache hit", log.String("key", cacheKey))
+			return artifact.Reference{
+				Name:         cmp.Or(a.artifactOption.Original, a.rootPath),
+				Type:         a.artifactOption.Type,
+				ID:           cacheKey,
+				BlobIDs:      []string{cacheKey},
+				RepoMetadata: a.repoMetadata,
+			}, nil
+		}
+	}
+
+	// `errgroup` cancels the context after Wait returns, so it can’t be use later.
+	// We need a separate context specifically for Analyze.
+	eg, egCtx := errgroup.WithContext(ctx)
 	result := analyzer.NewAnalysisResult()
-	limit := semaphore.New(a.artifactOption.Slow)
-	opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
+	limit := semaphore.New(a.artifactOption.Parallel)
+	opts := analyzer.AnalysisOptions{
+		Offline:      a.artifactOption.Offline,
+		FileChecksum: a.artifactOption.FileChecksum,
+	}
 
 	// Prepare filesystem for post analysis
-	files := new(syncx.Map[analyzer.Type, *mapfs.FS])
-
-	err := a.walker.Walk(a.rootPath, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-		dir := a.rootPath
-
-		// When the directory is the same as the filePath, a file was given
-		// instead of a directory, rewrite the file path and directory in this case.
-		if filePath == "." {
-			dir, filePath = filepath.Split(a.rootPath)
-		}
-
-		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, dir, filePath, info, opener, nil, opts); err != nil {
-			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
-		}
-
-		// Build filesystem for post analysis
-		if err := a.buildFS(dir, filePath, info, files); err != nil {
-			return xerrors.Errorf("failed to build filesystem: %w", err)
-		}
-
-		return nil
-	})
+	composite, err := a.analyzer.PostAnalyzerFS()
 	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("walk filesystem: %w", err)
+		return artifact.Reference{}, xerrors.Errorf("failed to prepare filesystem for post analysis: %w", err)
+	}
+	defer composite.Cleanup()
+
+	// Use static paths instead of traversing the filesystem when all analyzers implement StaticPathAnalyzer
+	// so that we can analyze files faster
+	if paths, canUseStaticPaths := a.analyzer.StaticPaths(a.artifactOption.DisabledAnalyzers); canUseStaticPaths {
+		// Analyze files in static paths
+		a.logger.Debug("Analyzing files in static paths")
+		if err = a.analyzeWithStaticPaths(egCtx, eg, limit, result, composite, opts, paths); err != nil {
+			return artifact.Reference{}, xerrors.Errorf("analyze with static paths: %w", err)
+		}
+	} else {
+		// Analyze files by traversing the root directory
+		if err = a.analyzeWithRootDir(egCtx, eg, limit, result, composite, opts); err != nil {
+			return artifact.Reference{}, xerrors.Errorf("analyze with traversal: %w", err)
+		}
 	}
 
 	// Wait for all the goroutine to finish.
-	wg.Wait()
+	if err = eg.Wait(); err != nil {
+		return artifact.Reference{}, xerrors.Errorf("analyze error: %w", err)
+	}
 
 	// Post-analysis
-	if err = a.analyzer.PostAnalyze(ctx, files, result, opts); err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("post analysis error: %w", err)
+	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
+		return artifact.Reference{}, xerrors.Errorf("post analysis error: %w", err)
 	}
 
 	// Sort the analysis result for consistent results
 	result.Sort()
 
 	blobInfo := types.BlobInfo{
-		SchemaVersion:   types.BlobJSONSchemaVersion,
-		OS:              result.OS,
-		Repository:      result.Repository,
-		PackageInfos:    result.PackageInfos,
-		Applications:    result.Applications,
-		Secrets:         result.Secrets,
-		Licenses:        result.Licenses,
-		CustomResources: result.CustomResources,
+		SchemaVersion:     types.BlobJSONSchemaVersion,
+		OS:                result.OS,
+		Repository:        result.Repository,
+		PackageInfos:      result.PackageInfos,
+		Applications:      result.Applications,
+		Misconfigurations: result.Misconfigurations,
+		Secrets:           result.Secrets,
+		Licenses:          result.Licenses,
+		CustomResources:   result.CustomResources,
+
+		// For Red Hat
+		BuildInfo: result.BuildInfo,
 	}
 
 	if err = a.handlerManager.PostHandle(ctx, result, &blobInfo); err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed to call hooks: %w", err)
+		return artifact.Reference{}, xerrors.Errorf("failed to call hooks: %w", err)
 	}
 
-	cacheKey, err := a.calcCacheKey(blobInfo)
-	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed to calculate a cache key: %w", err)
-	}
-
-	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
+	if err = a.cache.PutBlob(ctx, cacheKey, blobInfo); err != nil {
+		return artifact.Reference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 
 	// get hostname
 	var hostName string
 	b, err := os.ReadFile(filepath.Join(a.rootPath, "etc", "hostname"))
-	if err == nil && string(b) != "" {
+	if err == nil && len(b) != 0 {
 		hostName = strings.TrimSpace(string(b))
 	} else {
-		// To slash for Windows
-		hostName = filepath.ToSlash(a.rootPath)
+		target := cmp.Or(a.artifactOption.Original, a.rootPath)
+		hostName = filepath.ToSlash(target) // To slash for Windows
 	}
 
-	return types.ArtifactReference{
-		Name:    hostName,
-		Type:    types.ArtifactFilesystem,
-		ID:      cacheKey, // use a cache key as pseudo artifact ID
-		BlobIDs: []string{cacheKey},
+	return artifact.Reference{
+		Name:         hostName,
+		Type:         a.artifactOption.Type,
+		ID:           cacheKey, // use a cache key as pseudo artifact ID
+		BlobIDs:      []string{cacheKey},
+		RepoMetadata: a.repoMetadata,
 	}, nil
 }
 
-func (a Artifact) Clean(reference types.ArtifactReference) error {
-	return a.cache.DeleteBlobs(reference.BlobIDs)
+func (a Artifact) analyzeWithRootDir(ctx context.Context, eg *errgroup.Group, limit *semaphore.Weighted,
+	result *analyzer.AnalysisResult, composite *analyzer.CompositeFS, opts analyzer.AnalysisOptions) error {
+
+	root := a.rootPath
+	relativePath := ""
+
+	// When the root path is a file, rewrite the root path and relative path
+	if fsutils.FileExists(a.rootPath) {
+		root, relativePath = path.Split(a.rootPath)
+	}
+	return a.analyzeWithTraversal(ctx, root, relativePath, eg, limit, result, composite, opts)
 }
 
-func (a Artifact) calcCacheKey(blobInfo types.BlobInfo) (string, error) {
-	// calculate hash of JSON and use it as pseudo artifactID and blobID
-	h := sha256.New()
-	if err := json.NewEncoder(h).Encode(blobInfo); err != nil {
-		return "", xerrors.Errorf("json error: %w", err)
+// analyzeWithStaticPaths analyzes files using static paths from analyzers
+func (a Artifact) analyzeWithStaticPaths(ctx context.Context, eg *errgroup.Group, limit *semaphore.Weighted,
+	result *analyzer.AnalysisResult, composite *analyzer.CompositeFS, opts analyzer.AnalysisOptions,
+	staticPaths []string) error {
+
+	// Process each static path
+	for _, relativePath := range staticPaths {
+		if err := a.analyzeWithTraversal(ctx, a.rootPath, relativePath, eg, limit, result, composite, opts); errors.Is(err, fs.ErrNotExist) {
+			continue
+		} else if err != nil {
+			return xerrors.Errorf("analyze with traversal: %w", err)
+		}
 	}
 
-	d := digest.NewDigest(digest.SHA256, h)
-	cacheKey, err := cache.CalcKey(d.String(), a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
-	if err != nil {
-		return "", xerrors.Errorf("cache key: %w", err)
-	}
-
-	return cacheKey, nil
+	return nil
 }
 
-// buildFS creates filesystem for post analysis
-func (a Artifact) buildFS(dir, filePath string, info os.FileInfo, files *syncx.Map[analyzer.Type, *mapfs.FS]) error {
-	// Get all post-analyzers that want to analyze the file
-	atypes := a.analyzer.RequiredPostAnalyzers(filePath, info)
-	if len(atypes) == 0 {
+// analyzeWithTraversal analyzes files by traversing the entire filesystem
+func (a Artifact) analyzeWithTraversal(ctx context.Context, root, relativePath string, eg *errgroup.Group, limit *semaphore.Weighted,
+	result *analyzer.AnalysisResult, composite *analyzer.CompositeFS, opts analyzer.AnalysisOptions) error {
+
+	return a.walker.Walk(filepath.Join(root, relativePath), a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+		filePath = path.Join(relativePath, filePath)
+		if err := a.analyzer.AnalyzeFile(ctx, eg, limit, result, root, filePath, info, opener, nil, opts); err != nil {
+			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
+		}
+
+		// Skip post analysis if the file is not required
+		analyzerTypes := a.analyzer.RequiredPostAnalyzers(filePath, info)
+		if len(analyzerTypes) == 0 {
+			return nil
+		}
+
+		// Build filesystem for post analysis
+		if err := composite.CreateLink(analyzerTypes, root, filePath, filepath.Join(root, filePath)); err != nil {
+			return xerrors.Errorf("failed to create link: %w", err)
+		}
+
+		return nil
+	})
+}
+
+func (a Artifact) Clean(reference artifact.Reference) error {
+	// Don't delete cache if it's a clean git repository
+	if a.isClean && a.repoMetadata.Commit != "" {
 		return nil
 	}
+	return a.cache.DeleteBlobs(context.TODO(), reference.BlobIDs)
+}
 
-	// Create fs.FS for each post-analyzer that wants to analyze the current file
-	for _, at := range atypes {
-		mfs, _ := files.LoadOrStore(at, mapfs.New())
-		if d := filepath.Dir(filePath); d != "." {
-			if err := mfs.MkdirAll(d, os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
-				return xerrors.Errorf("mapfs mkdir error: %w", err)
-			}
-		}
-		if err := mfs.WriteFile(filePath, filepath.Join(dir, filePath)); err != nil {
-			return xerrors.Errorf("mapfs write error: %w", err)
-		}
+func (a Artifact) calcCacheKey() (string, error) {
+	// If this is a clean git repository, use the commit hash as cache key
+	if a.isClean && a.repoMetadata.Commit != "" {
+		return cache.CalcKey(a.repoMetadata.Commit, artifactVersion, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
 	}
-	return nil
+
+	// For non-git repositories or dirty git repositories, use UUID as cache key
+	h := sha256.New()
+	if _, err := h.Write([]byte(uuid.New().String())); err != nil {
+		return "", xerrors.Errorf("sha256 calculation error: %w", err)
+	}
+
+	// Format as sha256 digest
+	d := digest.NewDigest(digest.SHA256, h)
+	return d.String(), nil
+}
+
+// sanitizeRemoteURL removes credentials (userinfo) from URLs.
+func sanitizeRemoteURL(gitUrl string) string {
+	// Only attempt sanitization for URLs with an explicit scheme.
+	if !strings.Contains(gitUrl, "://") {
+		return gitUrl
+	}
+
+	// Try URL parsing first.
+	if u, err := url.Parse(gitUrl); err == nil {
+		// Clear userinfo (username:password)
+		u.User = nil
+		gitUrl = u.String()
+	}
+
+	return gitUrl
 }

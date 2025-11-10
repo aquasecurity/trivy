@@ -8,14 +8,14 @@ import (
 	"path/filepath"
 	"strings"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 const version = 1
@@ -36,34 +36,70 @@ var (
 		"usr/src/wordpress",
 	}
 
-	acceptedExtensions = []string{
-		".asp", ".aspx", ".bas", ".bat", ".b", ".c", ".cue", ".cgi", ".cs", ".css", ".fish", ".html", ".h", ".ini",
-		".java", ".js", ".jsx", ".markdown", ".md", ".py", ".php", ".pl", ".r", ".rb", ".sh", ".sql", ".ts",
-		".tsx", ".txt", ".vue", ".zsh",
-	}
+	acceptedExtensions = set.NewCaseInsensitive(
+		".asp",
+		".aspx",
+		".bas",
+		".bat",
+		".b",
+		".c",
+		".cue",
+		".cgi",
+		".cs",
+		".css",
+		".fish",
+		".html",
+		".h",
+		".ini",
+		".java",
+		".js",
+		".jsx",
+		".markdown",
+		".md",
+		".py",
+		".php",
+		".pl",
+		".r",
+		".rb",
+		".sh",
+		".sql",
+		".ts",
+		".tsx",
+		".txt",
+		".vue",
+		".zsh",
+	)
 
-	acceptedFileNames = []string{
-		"license", "licence", "copyright", // nolint: misspell
-	}
+	acceptedFileNames = set.NewCaseInsensitive(
+		"license",
+		"licence",
+		"copyright",
+	)
 )
 
 func init() {
-	analyzer.RegisterAnalyzer(licenseFileAnalyzer{})
+	analyzer.RegisterAnalyzer(newLicenseFileAnalyzer())
 }
 
 // licenseFileAnalyzer is an analyzer for file headers and license files
-type licenseFileAnalyzer struct{}
+type licenseFileAnalyzer struct {
+	classifierConfidenceLevel float64
+}
 
-func (a licenseFileAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	log.Logger.Debugf("License scanning: %s", input.FilePath)
+func newLicenseFileAnalyzer() *licenseFileAnalyzer {
+	return &licenseFileAnalyzer{}
+}
+
+func (a *licenseFileAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	ctx = log.WithContextPrefix(ctx, "license")
+	log.DebugContext(ctx, "License scanning", log.FilePath(input.FilePath))
 
 	// need files to be text based, readable files
 	readable, err := isHumanReadable(input.Content, input.Info.Size())
 	if err != nil || !readable {
 		return nil, nil
 	}
-
-	lf, err := licensing.Classify(input.FilePath, input.Content)
+	lf, err := licensing.Classify(input.FilePath, input.Content, a.classifierConfidenceLevel)
 	if err != nil {
 		return nil, xerrors.Errorf("license classification error: %w", err)
 	} else if len(lf.Findings) == 0 {
@@ -75,22 +111,25 @@ func (a licenseFileAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	}, nil
 }
 
-func (a licenseFileAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a *licenseFileAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
+	a.classifierConfidenceLevel = opt.LicenseScannerOption.ClassifierConfidenceLevel
+	return nil
+}
+
+func (a *licenseFileAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	for _, skipDir := range skipDirs {
 		if strings.Contains(filePath, skipDir) {
 			return false
 		}
 	}
-	ext := strings.ToLower(filepath.Ext(filePath))
-	if slices.Contains(acceptedExtensions, ext) {
+	if acceptedExtensions.Contains(filepath.Ext(filePath)) {
 		return true
 	}
 
-	baseName := strings.ToLower(filepath.Base(filePath))
-	return slices.Contains(acceptedFileNames, baseName)
+	return acceptedFileNames.Contains(filepath.Base(filePath))
 }
 
-func isHumanReadable(content dio.ReadSeekerAt, fileSize int64) (bool, error) {
+func isHumanReadable(content xio.ReadSeekerAt, fileSize int64) (bool, error) {
 	headSize := int(math.Min(float64(fileSize), 300))
 	head := make([]byte, headSize)
 	if _, err := content.Read(head); err != nil {
@@ -110,10 +149,10 @@ func isHumanReadable(content dio.ReadSeekerAt, fileSize int64) (bool, error) {
 	return true, nil
 }
 
-func (a licenseFileAnalyzer) Type() analyzer.Type {
+func (a *licenseFileAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeLicenseFile
 }
 
-func (a licenseFileAnalyzer) Version() int {
+func (a *licenseFileAnalyzer) Version() int {
 	return version
 }

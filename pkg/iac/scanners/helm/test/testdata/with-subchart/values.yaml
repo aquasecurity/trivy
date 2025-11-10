@@ -1,0 +1,2 @@
+nginx:
+  readOnlyFs: true

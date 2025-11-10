@@ -1,17 +1,14 @@
 package debian
 
 import (
-	"context"
 	"os"
 	"testing"
-
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func Test_debianOSAnalyzer_Analyze(t *testing.T) {
@@ -26,7 +23,7 @@ func Test_debianOSAnalyzer_Analyze(t *testing.T) {
 			inputFile: "testdata/debian_9/etc/debian_version",
 			want: &analyzer.AnalysisResult{
 				OS: types.OS{
-					Family: aos.Debian,
+					Family: types.Debian,
 					Name:   "9.8",
 				},
 			},
@@ -36,7 +33,7 @@ func Test_debianOSAnalyzer_Analyze(t *testing.T) {
 			inputFile: "testdata/debian_sid/etc/debian_version",
 			want: &analyzer.AnalysisResult{
 				OS: types.OS{
-					Family: aos.Debian,
+					Family: types.Debian,
 					Name:   "buster/sid",
 				},
 			},
@@ -54,19 +51,17 @@ func Test_debianOSAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			ctx := context.Background()
+			ctx := t.Context()
 
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: "etc/debian_version",
 				Content:  f,
 			})
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
-			} else {
-				require.NoError(t, err)
 			}
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

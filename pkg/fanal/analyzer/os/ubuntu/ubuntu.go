@@ -4,13 +4,13 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"slices"
 	"strings"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -42,13 +42,13 @@ func (a ubuntuOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 		if isUbuntu && strings.HasPrefix(line, "DISTRIB_RELEASE=") {
 			return &analyzer.AnalysisResult{
 				OS: types.OS{
-					Family: aos.Ubuntu,
+					Family: types.Ubuntu,
 					Name:   strings.TrimSpace(line[16:]),
 				},
 			}, nil
 		}
 	}
-	return nil, xerrors.Errorf("ubuntu: %w", aos.AnalyzeOSError)
+	return nil, xerrors.Errorf("ubuntu: %w", fos.AnalyzeOSError)
 }
 
 func (a ubuntuOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
@@ -61,4 +61,9 @@ func (a ubuntuOSAnalyzer) Type() analyzer.Type {
 
 func (a ubuntuOSAnalyzer) Version() int {
 	return version
+}
+
+// StaticPaths returns the static paths of the ubuntu analyzer
+func (a ubuntuOSAnalyzer) StaticPaths() []string {
+	return requiredFiles
 }

@@ -1,25 +1,26 @@
 package table
 
 import (
+	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"os"
 	"runtime"
+	"slices"
 	"strings"
-	"sync"
 
 	"github.com/fatih/color"
-	"golang.org/x/exp/slices"
-
-	"github.com/aquasecurity/tml"
 
 	"github.com/aquasecurity/table"
+	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var (
-	SeverityColor = []func(a ...interface{}) string{
+	SeverityColor = []func(a ...any) string{
 		color.New(color.FgCyan).SprintFunc(),   // UNKNOWN
 		color.New(color.FgBlue).SprintFunc(),   // LOW
 		color.New(color.FgYellow).SprintFunc(), // MEDIUM
@@ -30,71 +31,112 @@ var (
 
 // Writer implements Writer and output in tabular form
 type Writer struct {
+	// Use one buffer for all renderers
+	buf *bytes.Buffer
+
+	summaryRenderer       *summaryRenderer
+	vulnerabilityRenderer Renderer
+	misconfigRenderer     Renderer
+	secretRenderer        Renderer
+	pkgLicenseRenderer    Renderer
+	fileLicenseRenderer   Renderer
+
+	options Options
+}
+
+type Options struct {
+	Scanners   types.Scanners
 	Severities []dbTypes.Severity
 	Output     io.Writer
 
 	// Show dependency origin tree
 	Tree bool
 
-	// We have to show a message once about using the '-format json' subcommand to get the full pkgPath
-	ShowMessageOnce *sync.Once
+	// Show suppressed findings
+	ShowSuppressed bool
+
+	// Show/hide summary/detailed tables
+	TableModes []types.TableMode
 
 	// For misconfigurations
 	IncludeNonFailures bool
 	Trace              bool
+	RenderCause        []ftypes.ConfigType
 
 	// For licenses
 	LicenseRiskThreshold int
 	IgnoredLicenses      []string
 }
 
+func NewWriter(options Options) *Writer {
+	buf := bytes.NewBuffer([]byte{})
+	isTerminal := IsOutputToTerminal(options.Output)
+	return &Writer{
+		buf: buf,
+
+		summaryRenderer:       NewSummaryRenderer(buf, isTerminal, options.Scanners),
+		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, isTerminal, options.Tree, options.ShowSuppressed, options.Severities),
+		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, isTerminal, options.RenderCause),
+		secretRenderer:        NewSecretRenderer(buf, isTerminal, options.Severities),
+		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, isTerminal, options.Severities),
+		fileLicenseRenderer:   NewFileLicenseRenderer(buf, isTerminal, options.Severities),
+		options:               options,
+	}
+}
+
 type Renderer interface {
-	Render() string
+	Render(result types.Result)
 }
 
 // Write writes the result on standard output
-func (tw Writer) Write(report types.Report) error {
-	for _, result := range report.Results {
-		// Not display a table of custom resources
-		if result.Class == types.ClassCustom {
-			continue
-		}
-		tw.write(result)
+func (tw *Writer) Write(_ context.Context, report types.Report) error {
+	if slices.Contains(tw.options.TableModes, types.Summary) {
+		tw.summaryRenderer.Render(report)
 	}
+
+	if slices.Contains(tw.options.TableModes, types.Detailed) {
+		for _, result := range report.Results {
+			// Not display a table of custom resources
+			if result.Class == types.ClassCustom {
+				continue
+			}
+			tw.render(result)
+		}
+	}
+
+	tw.flush()
 	return nil
 }
 
-func (tw Writer) write(result types.Result) {
+func (tw *Writer) flush() {
+	_, _ = fmt.Fprint(tw.options.Output, tw.buf.String())
+	tw.buf.Reset()
+}
+
+func (tw *Writer) render(result types.Result) {
 	if result.IsEmpty() && result.Class != types.ClassOSPkg {
 		return
 	}
 
-	var renderer Renderer
-	switch {
+	switch result.Class {
 	// vulnerability
-	case result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg:
-		renderer = NewVulnerabilityRenderer(result, tw.isOutputToTerminal(), tw.Tree, tw.Severities)
+	case types.ClassOSPkg, types.ClassLangPkg:
+		tw.vulnerabilityRenderer.Render(result)
 	// misconfiguration
-	case result.Class == types.ClassConfig:
-		renderer = NewMisconfigRenderer(result, tw.Severities, tw.Trace, tw.IncludeNonFailures, tw.isOutputToTerminal())
+	case types.ClassConfig:
+		tw.misconfigRenderer.Render(result)
 	// secret
-	case result.Class == types.ClassSecret:
-		renderer = NewSecretRenderer(result.Target, result.Secrets, tw.isOutputToTerminal(), tw.Severities)
+	case types.ClassSecret:
+		tw.secretRenderer.Render(result)
 	// package license
-	case result.Class == types.ClassLicense:
-		renderer = NewPkgLicenseRenderer(result, tw.isOutputToTerminal(), tw.Severities)
+	case types.ClassLicense:
+		tw.pkgLicenseRenderer.Render(result)
 	// file license
-	case result.Class == types.ClassLicenseFile:
-		renderer = NewFileLicenseRenderer(result, tw.isOutputToTerminal(), tw.Severities)
+	case types.ClassLicenseFile:
+		tw.fileLicenseRenderer.Render(result)
 	default:
 		return
 	}
-
-	_, _ = fmt.Fprint(tw.Output, renderer.Render())
-}
-
-func (tw Writer) isOutputToTerminal() bool {
-	return IsOutputToTerminal(tw.Output)
 }
 
 func newTableWriter(output io.Writer, isTerminal bool) *table.Table {

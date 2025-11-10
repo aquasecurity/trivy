@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/ruby/bundler"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/ruby/bundler"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -21,8 +21,8 @@ const version = 1
 
 type bundlerLibraryAnalyzer struct{}
 
-func (a bundlerLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	res, err := language.Analyze(types.Bundler, input.FilePath, input.Content, bundler.NewParser())
+func (a bundlerLibraryAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	res, err := language.Analyze(ctx, types.Bundler, input.FilePath, input.Content, bundler.NewParser())
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse Gemfile.lock: %w", err)
 	}

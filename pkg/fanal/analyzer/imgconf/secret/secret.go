@@ -1,6 +1,7 @@
 package secret
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 
@@ -48,11 +49,11 @@ func (a *secretAnalyzer) Analyze(_ context.Context, input analyzer.ConfigAnalysi
 
 	result := a.scanner.Scan(secret.ScanArgs{
 		FilePath: "config.json",
-		Content:  b,
+		Content:  bytes.NewReader(b),
 	})
 
 	if len(result.Findings) == 0 {
-		log.Logger.Debug("No secrets found in container image config")
+		log.Debug("No secrets found in container image config")
 		return nil, nil
 	}
 

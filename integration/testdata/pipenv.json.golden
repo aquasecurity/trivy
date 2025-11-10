@@ -1,19 +1,9 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/pipenv",
-  "ArtifactType": "filesystem",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/pipenv",
+  "ArtifactType": "repository",
   "Results": [
     {
       "Target": "Pipfile.lock",
@@ -22,8 +12,11 @@
       "Packages": [
         {
           "Name": "werkzeug",
+          "Identifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11.1",
+            "UID": "390fc5ac777dc4e0"
+          },
           "Version": "0.11.1",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 19,
@@ -36,9 +29,13 @@
         {
           "VulnerabilityID": "CVE-2019-14806",
           "PkgName": "werkzeug",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11.1",
+            "UID": "390fc5ac777dc4e0"
+          },
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.15.3",
-          "Layer": {},
+          "Status": "fixed",
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14806",
           "DataSource": {
@@ -52,6 +49,12 @@
           "CweIDs": [
             "CWE-331"
           ],
+          "VendorSeverity": {
+            "ghsa": 3,
+            "nvd": 3,
+            "redhat": 2,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -82,9 +85,13 @@
         {
           "VulnerabilityID": "CVE-2020-28724",
           "PkgName": "werkzeug",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11.1",
+            "UID": "390fc5ac777dc4e0"
+          },
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.11.6",
-          "Layer": {},
+          "Status": "fixed",
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-28724",
           "DataSource": {
@@ -98,6 +105,12 @@
           "CweIDs": [
             "CWE-601"
           ],
+          "VendorSeverity": {
+            "ghsa": 2,
+            "nvd": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:N",

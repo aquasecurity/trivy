@@ -1,7 +1,6 @@
 package licensing
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -53,8 +52,8 @@ func Test_licenseAnalyzer_Analyze(t *testing.T) {
 			fi, err := f.Stat()
 			require.NoError(t, err)
 
-			a := licenseFileAnalyzer{}
-			got, err := a.Analyze(context.TODO(), analyzer.AnalysisInput{
+			a := newLicenseFileAnalyzer()
+			got, err := a.Analyze(t.Context(), analyzer.AnalysisInput{
 				FilePath: tt.filePath,
 				Content:  f,
 				Info:     fi,

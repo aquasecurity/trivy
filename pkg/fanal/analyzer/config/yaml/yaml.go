@@ -1,61 +1,36 @@
 package yaml
 
 import (
-	"context"
-	"io"
 	"os"
 	"path/filepath"
 
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
+)
+
+const (
+	analyzerType = analyzer.TypeYAML
+	version      = 1
 )
 
 func init() {
-	analyzer.RegisterAnalyzer(&yamlConfigAnalyzer{})
+	analyzer.RegisterPostAnalyzer(analyzerType, newYAMLConfigAnalyzer)
 }
 
-const version = 1
+// yamlConfigAnalyzer analyzes YAML files
+type yamlConfigAnalyzer struct {
+	*config.Analyzer
+}
 
-var requiredExts = []string{".yaml", ".yml"}
-
-type yamlConfigAnalyzer struct{}
-
-func (a yamlConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	b, err := io.ReadAll(input.Content)
+func newYAMLConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+	a, err := config.NewAnalyzer(analyzerType, version, detection.FileTypeYAML, opts)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to read %s: %w", input.FilePath, err)
+		return nil, err
 	}
-
-	return &analyzer.AnalysisResult{
-		Files: map[types.HandlerType][]types.File{
-			// it will be passed to misconfig post handler
-			types.MisconfPostHandler: {
-				{
-					Type:    types.YAML,
-					Path:    input.FilePath,
-					Content: b,
-				},
-			},
-		},
-	}, nil
+	return &yamlConfigAnalyzer{Analyzer: a}, nil
 }
 
-func (a yamlConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	ext := filepath.Ext(filePath)
-	for _, required := range requiredExts {
-		if ext == required {
-			return true
-		}
-	}
-	return false
-}
-
-func (yamlConfigAnalyzer) Type() analyzer.Type {
-	return analyzer.TypeYaml
-}
-
-func (yamlConfigAnalyzer) Version() int {
-	return version
+func (*yamlConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	return filepath.Ext(filePath) == ".yaml" || filepath.Ext(filePath) == ".yml"
 }

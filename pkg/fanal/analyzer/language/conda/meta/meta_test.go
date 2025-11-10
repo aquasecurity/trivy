@@ -1,7 +1,6 @@
 package meta
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -27,7 +26,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.CondaPkg,
 						FilePath: "testdata/pip-22.2.2-py38h06a4308_0.json",
-						Libraries: []types.Package{
+						Packages: types.Packages{
 							{
 								Name:     "pip",
 								Version:  "22.2.2",
@@ -55,7 +54,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 
 			a := metaAnalyzer{}
-			ctx := context.Background()
+			ctx := t.Context()
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Info:     stat,
@@ -67,7 +66,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 				return
 			}
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

@@ -1,8 +1,12 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:b4b4762f4769903a61d4605927079c4e60d007d9b12f65c39714e5311fa3d0ca",
   "ArtifactName": "testdata/fixtures/images/ubi-7.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 215162880,
     "OS": {
       "Family": "redhat",
       "Name": "7.7"
@@ -12,6 +16,10 @@
       "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac",
       "sha256:ecb0311889b3478bc9b62660fa9391d5ebf8da4c6ae143cb33434873668f9e36"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:ubi-7"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:ubi-7",
     "ImageConfig": {
       "architecture": "amd64",
       "created": "2019-09-02T12:56:43.939095Z",
@@ -67,7 +75,19 @@
         },
         "ArgsEscaped": true
       }
-    }
+    },
+    "Layers": [
+      {
+        "Size": 215142400,
+        "Digest": "sha256:7b1c937e0f6794db2535be6e4cb6d60a0b668ef78c2576611a3fb9c97a95ccdf",
+        "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
+      },
+      {
+        "Size": 20480,
+        "Digest": "sha256:bff3b73cbcc496de1de4ea51df88b7249169d0b6eb7d677169eaf90b8a92240e",
+        "DiffID": "sha256:ecb0311889b3478bc9b62660fa9391d5ebf8da4c6ae143cb33434873668f9e36"
+      }
+    ]
   },
   "Results": [
     {
@@ -79,7 +99,12 @@
           "VulnerabilityID": "CVE-2019-18276",
           "PkgID": "bash@4.2.46-33.el7.x86_64",
           "PkgName": "bash",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/redhat/bash@4.2.46-33.el7?arch=x86_64\u0026distro=redhat-7.7",
+            "UID": "f5b786381193ad1b"
+          },
           "InstalledVersion": "4.2.46-33.el7",
+          "Status": "will_not_fix",
           "Layer": {
             "Digest": "sha256:7b1c937e0f6794db2535be6e4cb6d60a0b668ef78c2576611a3fb9c97a95ccdf",
             "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
@@ -92,6 +117,14 @@
           "CweIDs": [
             "CWE-273"
           ],
+          "VendorSeverity": {
+            "cbl-mariner": 3,
+            "nvd": 3,
+            "oracle-oval": 1,
+            "photon": 3,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",

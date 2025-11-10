@@ -1,16 +1,18 @@
 package photon
 
 import (
+	"context"
 	"time"
 
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/photon"
+	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/scan/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -18,55 +20,37 @@ var (
 	eolDates = map[string]time.Time{
 		"1.0": time.Date(2022, 2, 28, 23, 59, 59, 0, time.UTC),
 		"2.0": time.Date(2022, 12, 31, 23, 59, 59, 0, time.UTC),
-		// The following versions don't have the EOL dates yet.
-		// See https://blogs.vmware.com/vsphere/2022/01/photon-1-x-end-of-support-announcement.html
-		"3.0": time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
-		"4.0": time.Date(2025, 12, 31, 23, 59, 59, 0, time.UTC),
+		"3.0": time.Date(2024, 3, 31, 23, 59, 59, 0, time.UTC),
+		"4.0": time.Date(2026, 3, 31, 23, 59, 59, 0, time.UTC),
+		// The following version don't have the EOL dates yet.
+		// https://blogs.vmware.com/cloud-foundation/2023/05/02/announcing-photon-os-5-0-general-availability/
+		"5.0": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
 	}
 )
-
-type options struct {
-	clock clock.Clock
-}
-
-type option func(*options)
-
-func WithClock(clock clock.Clock) option {
-	return func(opts *options) {
-		opts.clock = clock
-	}
-}
 
 // Scanner implements the Photon scanner
 type Scanner struct {
 	vs photon.VulnSrc
-	*options
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner(opts ...option) *Scanner {
-	o := &options{
-		clock: clock.RealClock{},
-	}
-
-	for _, opt := range opts {
-		opt(o)
-	}
+func NewScanner() *Scanner {
 	return &Scanner{
-		vs:      photon.NewVulnSrc(),
-		options: o,
+		vs: photon.NewVulnSrc(),
 	}
 }
 
 // Detect scans and returns vulnerabilities using photon scanner
-func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Photon Linux vulnerabilities...")
-	log.Logger.Debugf("Photon Linux: os version: %s", osVer)
-	log.Logger.Debugf("Photon Linux: the number of packages: %d", len(pkgs))
+func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+	log.InfoContext(ctx, "Detecting vulnerabilities...", log.String("os_version", osVer),
+		log.Int("pkg_num", len(pkgs)))
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := s.vs.Get(osVer, pkg.SrcName)
+		advisories, err := s.vs.Get(db.GetParams{
+			Release: osVer,
+			PkgName: pkg.SrcName,
+		})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Photon Linux advisory: %w", err)
 		}
@@ -80,7 +64,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				PkgID:            pkg.ID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
-				Ref:              pkg.Ref,
+				PkgIdentifier:    pkg.Identifier,
 				Layer:            pkg.Layer,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,
@@ -94,12 +78,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 	return vulns, nil
 }
 
-// IsSupportedVersion checks if the OS version reached end-of-support.
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
-	eol, ok := eolDates[osVer]
-	if !ok {
-		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
-		return false
-	}
-	return s.clock.Now().Before(eol)
+// IsSupportedVersion checks if the version is supported.
+func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
+	return osver.Supported(ctx, eolDates, osFamily, osVer)
 }

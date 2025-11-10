@@ -1,19 +1,9 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/yarn",
-  "ArtifactType": "filesystem",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/yarn",
+  "ArtifactType": "repository",
   "Results": [
     {
       "Target": "yarn.lock",
@@ -21,10 +11,33 @@
       "Type": "yarn",
       "Packages": [
         {
+          "ID": "integration@1.0.0",
+          "Name": "integration",
+          "Identifier": {
+            "PURL": "pkg:npm/integration@1.0.0",
+            "UID": "830dfbb17accac93"
+          },
+          "Version": "1.0.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "root",
+          "DependsOn": [
+            "jquery@3.2.1"
+          ]
+        },
+        {
           "ID": "jquery@3.2.1",
           "Name": "jquery",
+          "Identifier": {
+            "PURL": "pkg:npm/jquery@3.2.1",
+            "UID": "eab2410537cf8504"
+          },
           "Version": "3.2.1",
-          "Layer": {},
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
           "Locations": [
             {
               "StartLine": 10,
@@ -36,11 +49,15 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-11358",
-          "PkgId": "jquery@3.2.1",
+          "PkgID": "jquery@3.2.1",
           "PkgName": "jquery",
+          "PkgIdentifier": {
+            "PURL": "pkg:npm/jquery@3.2.1",
+            "UID": "eab2410537cf8504"
+          },
           "InstalledVersion": "3.2.1",
           "FixedVersion": "3.4.0",
-          "Layer": {},
+          "Status": "fixed",
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11358",
           "DataSource": {
@@ -54,6 +71,18 @@
           "CweIDs": [
             "CWE-79"
           ],
+          "VendorSeverity": {
+            "alma": 2,
+            "amazon": 2,
+            "arch-linux": 2,
+            "ghsa": 2,
+            "nodejs-security-wg": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "redhat": 2,
+            "ruby-advisory-db": 2,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",

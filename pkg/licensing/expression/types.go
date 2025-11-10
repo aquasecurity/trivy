@@ -2,34 +2,19 @@ package expression
 
 import (
 	"fmt"
-
-	"golang.org/x/exp/slices"
-
-	"github.com/aquasecurity/trivy/pkg/licensing"
+	"slices"
 )
 
-var versioned = []string{
-	licensing.AGPL10,
-	licensing.AGPL30,
-	licensing.GFDL11WithInvariants,
-	licensing.GFDL11NoInvariants,
-	licensing.GFDL11,
-	licensing.GFDL12WithInvariants,
-	licensing.GFDL12NoInvariants,
-	licensing.GFDL12,
-	licensing.GFDL13WithInvariants,
-	licensing.GFDL13NoInvariants,
-	licensing.GFDL13,
-	licensing.GPL10,
-	licensing.GPL20,
-	licensing.GPL30,
-	licensing.LGPL20,
-	licensing.LGPL21,
-	licensing.LGPL30,
-}
+var (
+	TokenIdent = Token{token: IDENT, literal: "IDENT"}
+	TokenAnd   = Token{token: AND, literal: "AND"}
+	TokenOR    = Token{token: OR, literal: "OR"}
+	TokenWith  = Token{token: WITH, literal: "WITH"}
+)
 
 type Expression interface {
 	String() string
+	IsSPDXExpression() bool
 }
 
 type Token struct {
@@ -38,30 +23,50 @@ type Token struct {
 }
 
 type SimpleExpr struct {
-	license string
-	hasPlus bool
+	License string
+	HasPlus bool
 }
 
 func (s SimpleExpr) String() string {
-	if slices.Contains(versioned, s.license) {
-		if s.hasPlus {
+	if slices.Contains(GnuLicenses, s.License) {
+		if s.HasPlus {
 			// e.g. AGPL-1.0-or-later
-			return s.license + "-or-later"
+			return s.License + "-or-later"
 		}
 		// e.g. GPL-1.0-only
-		return s.license + "-only"
+		return s.License + "-only"
 	}
 
-	if s.hasPlus {
-		return s.license + "+"
+	if s.HasPlus {
+		return s.License + "+"
 	}
-	return s.license
+	return s.License
+}
+
+func (s SimpleExpr) IsSPDXExpression() bool {
+	return ValidateSPDXLicense(s.String())
 }
 
 type CompoundExpr struct {
 	left        Expression
 	conjunction Token
 	right       Expression
+}
+
+func NewCompoundExpr(left Expression, conjunction Token, right Expression) CompoundExpr {
+	return CompoundExpr{left: left, conjunction: conjunction, right: right}
+}
+
+func (c CompoundExpr) Conjunction() Token {
+	return c.conjunction
+}
+
+func (c CompoundExpr) Left() Expression {
+	return c.left
+}
+
+func (c CompoundExpr) Right() Expression {
+	return c.right
 }
 
 func (c CompoundExpr) String() string {
@@ -80,4 +85,12 @@ func (c CompoundExpr) String() string {
 		}
 	}
 	return fmt.Sprintf("%s %s %s", left, c.conjunction.literal, right)
+}
+
+func (c CompoundExpr) IsSPDXExpression() bool {
+	if c.conjunction.token == WITH {
+		// e.g. A WITH B
+		return c.left.IsSPDXExpression() && ValidateSPDXException(c.right.String())
+	}
+	return c.left.IsSPDXExpression() && c.right.IsSPDXExpression()
 }

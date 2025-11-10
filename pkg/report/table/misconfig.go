@@ -3,16 +3,16 @@ package table
 import (
 	"bytes"
 	"fmt"
+	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/fatih/color"
-
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 
 	"github.com/aquasecurity/tml"
-
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -25,66 +25,71 @@ const (
 
 type misconfigRenderer struct {
 	w                  *bytes.Buffer
-	result             types.Result
 	severities         []dbTypes.Severity
 	trace              bool
 	includeNonFailures bool
 	width              int
 	ansi               bool
+	renderCause        []ftypes.ConfigType
 }
 
-func NewMisconfigRenderer(result types.Result, severities []dbTypes.Severity, trace, includeNonFailures bool, ansi bool) *misconfigRenderer {
-	width, _, err := terminal.GetSize(0)
+func NewMisconfigRenderer(buf *bytes.Buffer, severities []dbTypes.Severity, trace, includeNonFailures, ansi bool, renderCause []ftypes.ConfigType) *misconfigRenderer {
+	width, _, err := term.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
 	}
 	if !ansi {
 		tml.DisableFormatting()
 	}
+
 	return &misconfigRenderer{
-		w:                  bytes.NewBuffer([]byte{}),
-		result:             result,
+		w:                  buf,
 		severities:         severities,
 		trace:              trace,
 		includeNonFailures: includeNonFailures,
 		width:              width,
 		ansi:               ansi,
+		renderCause:        renderCause,
 	}
 }
 
-func (r *misconfigRenderer) Render() string {
-	target := fmt.Sprintf("%s (%s)", r.result.Target, r.result.Type)
+func (r *misconfigRenderer) Render(result types.Result) {
+	// Trivy doesn't currently support showing suppressed misconfigs
+	// So just skip this result
+	if len(result.Misconfigurations) == 0 {
+		return
+	}
+	target := fmt.Sprintf("%s (%s)", result.Target, result.Type)
 	RenderTarget(r.w, target, r.ansi)
 
-	total, summaries := summarize(r.severities, r.countSeverities())
+	total, summaries := summarize(r.severities, r.countSeverities(result.Misconfigurations))
 
-	summary := r.result.MisconfSummary
-	r.printf("Tests: %d (SUCCESSES: %d, FAILURES: %d, EXCEPTIONS: %d)\n",
-		summary.Successes+summary.Failures+summary.Exceptions, summary.Successes, summary.Failures, summary.Exceptions)
+	summary := result.MisconfSummary
+	r.printf("Tests: %d (SUCCESSES: %d, FAILURES: %d)\n",
+		summary.Successes+summary.Failures, summary.Successes, summary.Failures)
 	r.printf("Failures: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 
-	for _, m := range r.result.Misconfigurations {
-		r.renderSingle(m)
+	for _, m := range result.Misconfigurations {
+		r.renderSingle(result.Target, result.Type, m)
 	}
 
 	// For debugging
 	if r.trace {
-		r.outputTrace()
+		r.outputTrace(result.Target, result.Misconfigurations)
 	}
-	return r.w.String()
 }
 
-func (r *misconfigRenderer) countSeverities() map[string]int {
-	severityCount := map[string]int{}
-	for _, misconf := range r.result.Misconfigurations {
-		if misconf.Status == types.StatusFailure {
+func (r *misconfigRenderer) countSeverities(misconfigs []types.DetectedMisconfiguration) map[string]int {
+	severityCount := make(map[string]int)
+	for _, misconf := range misconfigs {
+		if misconf.Status == types.MisconfStatusFailure {
 			severityCount[misconf.Severity]++
 		}
 	}
 	return severityCount
 }
 
-func (r *misconfigRenderer) printf(format string, args ...interface{}) {
+func (r *misconfigRenderer) printf(format string, args ...any) {
 	// nolint
 	_ = tml.Fprintf(r.w, format, args...)
 }
@@ -102,38 +107,38 @@ func (r *misconfigRenderer) printSingleDivider() {
 	r.printf("<dim>%s\r\n", strings.Repeat("─", r.width))
 }
 
-func (r *misconfigRenderer) renderSingle(misconf types.DetectedMisconfiguration) {
+func (r *misconfigRenderer) renderSingle(target string, typ ftypes.TargetType, misconf types.DetectedMisconfiguration) {
 	r.renderSummary(misconf)
-	r.renderCode(misconf)
+	r.renderCode(target, misconf)
+	r.renderMisconfCause(typ, misconf)
 	r.printf("\r\n\r\n")
 }
 
 func (r *misconfigRenderer) renderSummary(misconf types.DetectedMisconfiguration) {
-
 	// show pass/fail/exception unless we are only showing failures
 	if r.includeNonFailures {
 		switch misconf.Status {
-		case types.StatusPassed:
+		case types.MisconfStatusPassed:
 			r.printf("<green><bold>%s: ", misconf.Status)
-		case types.StatusFailure:
+		case types.MisconfStatusFailure:
 			r.printf("<red><bold>%s: ", misconf.Status)
-		case types.StatusException:
+		case types.MisconfStatusException:
 			r.printf("<yellow><bold>%s: ", misconf.Status)
 		}
 	}
 
-	// severity
+	// ID & severity
 	switch misconf.Severity {
 	case severityCritical:
-		r.printf("<red><bold>%s: ", misconf.Severity)
+		r.printf("%s <red><bold>(%s): ", misconf.AVDID, misconf.Severity)
 	case severityHigh:
-		r.printf("<red>%s: ", misconf.Severity)
+		r.printf("%s <red>(%s): ", misconf.AVDID, misconf.Severity)
 	case severityMedium:
-		r.printf("<yellow>%s: ", misconf.Severity)
+		r.printf("%s <yellow>(%s): ", misconf.AVDID, misconf.Severity)
 	case severityLow:
-		r.printf("%s: ", misconf.Severity)
+		r.printf("%s (%s): ", misconf.AVDID, misconf.Severity)
 	default:
-		r.printf("<blue>%s: ", misconf.Severity)
+		r.printf("%s <blue>(%s): ", misconf.AVDID, misconf.Severity)
 	}
 
 	// heading
@@ -151,7 +156,7 @@ func (r *misconfigRenderer) renderSummary(misconf types.DetectedMisconfiguration
 	r.printSingleDivider()
 }
 
-func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
+func (r *misconfigRenderer) renderCode(target string, misconf types.DetectedMisconfiguration) {
 	// highlight code if we can...
 	if lines := misconf.CauseMetadata.Code.Lines; len(lines) > 0 {
 
@@ -162,12 +167,28 @@ func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
 				lineInfo = tml.Sprintf("%s<blue>-%d", lineInfo, misconf.CauseMetadata.EndLine)
 			}
 		}
-		r.printf(" <blue>%s%s\r\n", r.result.Target, lineInfo)
+		r.printf(" <blue>%s%s\r\n", target, lineInfo)
+		for i, occ := range misconf.CauseMetadata.Occurrences {
+			lineInfo := fmt.Sprintf("%d-%d", occ.Location.StartLine, occ.Location.EndLine)
+			if occ.Location.StartLine >= occ.Location.EndLine {
+				lineInfo = strconv.Itoa(occ.Location.StartLine)
+			}
+
+			r.printf(
+				" %s<dim>via </dim><italic>%s<dim>:%s (%s)\n",
+				strings.Repeat(" ", i+2),
+				occ.Filename,
+				lineInfo,
+				occ.Resource,
+			)
+		}
+
 		r.printSingleDivider()
 		for i, line := range lines {
-			if line.Truncated {
-				r.printf("<dim>%4s   ", strings.Repeat(".", len(fmt.Sprintf("%d", line.Number))))
-			} else if line.IsCause {
+			switch {
+			case line.Truncated:
+				r.printf("<dim>%4s   ", strings.Repeat(".", len(strconv.Itoa(line.Number))))
+			case line.IsCause:
 				r.printf("<red>%4d ", line.Number)
 				switch {
 				case (line.FirstCause && line.LastCause) || len(lines) == 1:
@@ -179,9 +200,10 @@ func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
 				default:
 					r.printf("<red>│ ")
 				}
-			} else {
+			default:
 				r.printf("<dim>%4d   ", line.Number)
 			}
+
 			if r.ansi {
 				r.printf("%s\r\n", line.Highlighted)
 			} else {
@@ -192,23 +214,44 @@ func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
 	}
 }
 
-func (r *misconfigRenderer) outputTrace() {
+func (r *misconfigRenderer) renderMisconfCause(typ ftypes.TargetType, misconf types.DetectedMisconfiguration) {
+	if !slices.Contains(r.renderCause, typ) {
+		return
+	}
+
+	cause := misconf.CauseMetadata.RenderedCause
+	if cause.Raw == "" {
+		return
+	}
+
+	content := cause.Raw
+	if cause.Highlighted != "" {
+		content = cause.Highlighted
+	}
+
+	r.printf("<dim>%s\r\n", "Rendered cause:")
+	r.printSingleDivider()
+	r.println(content)
+	r.printSingleDivider()
+}
+
+func (r *misconfigRenderer) outputTrace(target string, misconfigs []types.DetectedMisconfiguration) {
 	blue := color.New(color.FgBlue).SprintFunc()
 	green := color.New(color.FgGreen).SprintfFunc()
 	red := color.New(color.FgRed).SprintfFunc()
 
-	for _, misconf := range r.result.Misconfigurations {
+	for _, misconf := range misconfigs {
 		if len(misconf.Traces) == 0 {
 			continue
 		}
 
 		c := green
-		if misconf.Status == types.StatusFailure {
+		if misconf.Status == types.MisconfStatusFailure {
 			c = red
 		}
 
 		r.println(c("\nID: %s", misconf.ID))
-		r.println(c("File: %s", r.result.Target))
+		r.println(c("File: %s", target))
 		r.println(c("Namespace: %s", misconf.Namespace))
 		r.println(c("Query: %s", misconf.Query))
 		r.println(c("Message: %s", misconf.Message))

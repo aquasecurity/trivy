@@ -29,6 +29,7 @@ resources:
 rbac:
   create: true
   pspEnabled: false
+  pspAnnotations: {}
 
 podSecurityContext:
   runAsUser: 65534
@@ -76,7 +77,7 @@ trivy:
   gitHubToken: ""
 
   # Docker registry credentials
-  # See also: https://aquasecurity.github.io/trivy/dev/advanced/private-registries/docker-hub/
+  # See also: https://trivy.dev/dev/advanced/private-registries/docker-hub/
   #
   # Either
   # Directly in this file
@@ -114,6 +115,7 @@ trivy:
       enabled: false
       url: ""  # e.g. redis://redis.redis.svc:6379
       ttl: ""  # e.g 3600s, 24h
+      tls: false
   serviceAccount:
     annotations: {}
       # eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME
@@ -134,6 +136,8 @@ service:
   type: ClusterIP
   # port Kubernetes service port
   port: 4954
+  # sessionAffinity Kubernetes service session affinity
+  sessionAffinity: ClientIP
 
 ingress:
   enabled: false

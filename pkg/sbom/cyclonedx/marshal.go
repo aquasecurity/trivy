@@ -1,325 +1,440 @@
 package cyclonedx
 
 import (
+	"cmp"
+	"context"
 	"fmt"
+	"net/url"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
-	"github.com/google/uuid"
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/digest"
+	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/purl"
-	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 const (
-	ToolVendor = "aquasecurity"
-	ToolName   = "trivy"
-	Namespace  = ToolVendor + ":" + ToolName + ":"
-
-	PropertySchemaVersion = "SchemaVersion"
-	PropertyType          = "Type"
-	PropertyClass         = "Class"
-
-	// Image properties
-	PropertySize       = "Size"
-	PropertyImageID    = "ImageID"
-	PropertyRepoDigest = "RepoDigest"
-	PropertyDiffID     = "DiffID"
-	PropertyRepoTag    = "RepoTag"
-
-	// Package properties
-	PropertyPkgID           = "PkgID"
-	PropertyPkgType         = "PkgType"
-	PropertySrcName         = "SrcName"
-	PropertySrcVersion      = "SrcVersion"
-	PropertySrcRelease      = "SrcRelease"
-	PropertySrcEpoch        = "SrcEpoch"
-	PropertyModularitylabel = "Modularitylabel"
-	PropertyFilePath        = "FilePath"
-	PropertyLayerDigest     = "LayerDigest"
-	PropertyLayerDiffID     = "LayerDiffID"
+	ToolVendor       = "aquasecurity"
+	ToolName         = "trivy"
+	ToolManufacturer = "Aqua Security Software Ltd."
+	Namespace        = ToolVendor + ":" + ToolName + ":"
 
 	// https://json-schema.org/understanding-json-schema/reference/string.html#dates-and-times
 	timeLayout = "2006-01-02T15:04:05+00:00"
 )
 
-var (
-	ErrInvalidBOMLink = xerrors.New("invalid bomLink format error")
-)
-
 type Marshaler struct {
-	appVersion string // Trivy version
-	clock      clock.Clock
-	newUUID    newUUID
+	appVersion   string // Trivy version
+	bom          *core.BOM
+	componentIDs map[uuid.UUID]string
+
+	logger *log.Logger
 }
 
-type newUUID func() uuid.UUID
-
-type marshalOption func(*Marshaler)
-
-func WithClock(clock clock.Clock) marshalOption {
-	return func(opts *Marshaler) {
-		opts.clock = clock
-	}
-}
-
-func WithNewUUID(newUUID newUUID) marshalOption {
-	return func(opts *Marshaler) {
-		opts.newUUID = newUUID
-	}
-}
-
-func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
-	e := &Marshaler{
+func NewMarshaler(version string) Marshaler {
+	return Marshaler{
 		appVersion: version,
-		clock:      clock.RealClock{},
-		newUUID:    uuid.New,
+		logger:     log.WithPrefix(log.PrefixCycloneDX),
 	}
-
-	for _, opt := range opts {
-		opt(e)
-	}
-
-	return e
 }
 
-// Marshal converts the Trivy report to the CycloneDX format
-func (e *Marshaler) Marshal(report types.Report) (*cdx.BOM, error) {
-	bom := cdx.NewBOM()
-	bom.SerialNumber = e.newUUID().URN()
-	metadataComponent, err := e.reportToCdxComponent(report)
+// MarshalReport converts the Trivy report to the CycloneDX format
+func (m *Marshaler) MarshalReport(ctx context.Context, report types.Report) (*cdx.BOM, error) {
+	// Convert into an intermediate representation
+	bom, err := sbomio.NewEncoder(sbomio.WithBOMRef()).Encode(report)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse metadata component: %w", err)
+		return nil, xerrors.Errorf("failed to marshal report: %w", err)
 	}
 
-	bom.Metadata = e.cdxMetadata()
-	bom.Metadata.Component = metadataComponent
-
-	bom.Components, bom.Dependencies, bom.Vulnerabilities, err = e.marshalComponents(report, bom.Metadata.Component.BOMRef)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to parse components: %w", err)
-	}
-
-	return bom, nil
+	return m.Marshal(ctx, bom)
 }
 
-// MarshalVulnerabilities converts the Trivy report to the CycloneDX format only with vulnerabilities.
-// The output refers to another CycloneDX SBOM.
-func (e *Marshaler) MarshalVulnerabilities(report types.Report) (*cdx.BOM, error) {
-	vulnMap := map[string]cdx.Vulnerability{}
-	for _, result := range report.Results {
-		for _, vuln := range result.Vulnerabilities {
-			ref, err := externalRef(report.CycloneDX.SerialNumber, vuln.Ref)
-			if err != nil {
-				return nil, err
-			}
-			if v, ok := vulnMap[vuln.VulnerabilityID]; ok {
-				*v.Affects = append(*v.Affects, cdxAffects(ref, vuln.InstalledVersion))
-			} else {
-				vulnMap[vuln.VulnerabilityID] = toCdxVulnerability(ref, vuln)
-			}
-		}
-	}
-	vulns := maps.Values(vulnMap)
-	sort.Slice(vulns, func(i, j int) bool {
-		return vulns[i].ID > vulns[j].ID
-	})
+// Marshal converts the Trivy component to the CycloneDX format
+func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*cdx.BOM, error) {
+	m.bom = bom
+	m.componentIDs = make(map[uuid.UUID]string, len(m.bom.Components()))
 
-	bom := cdx.NewBOM()
-	bom.Metadata = e.cdxMetadata()
+	cdxBOM := cdx.NewBOM()
+	cdxBOM.SerialNumber = uuid.New().URN()
+	cdxBOM.Metadata = m.Metadata(ctx)
 
-	// Fill the detected vulnerabilities
-	bom.Vulnerabilities = &vulns
-
-	// Use the original component as is
-	bom.Metadata.Component = &cdx.Component{
-		Name:    report.CycloneDX.Metadata.Component.Name,
-		Version: report.CycloneDX.Metadata.Component.Version,
-		Type:    cdx.ComponentType(report.CycloneDX.Metadata.Component.Type),
+	var err error
+	if cdxBOM.Metadata.Component, err = m.MarshalRoot(); err != nil {
+		return nil, xerrors.Errorf("failed to marshal component: %w", err)
 	}
 
-	// Overwrite the bom ref as it must be the BOM ref of the original CycloneDX.
-	// e.g.
-	//  "metadata" : {
-	//    "timestamp" : "2022-07-02T00:00:00Z",
-	//    "component" : {
-	//      "name" : "Acme Product",
-	//      "version": "2.4.0",
-	//      "type" : "application",
-	//      "bom-ref" : "urn:cdx:f08a6ccd-4dce-4759-bd84-c626675d60a7/1"
-	//    }
-	//  },
-	if report.CycloneDX.SerialNumber != "" { // bomRef is optional field - https://cyclonedx.org/docs/1.4/json/#metadata_component_bom-ref
-		bom.Metadata.Component.BOMRef = fmt.Sprintf("%s/%d", report.CycloneDX.SerialNumber, report.CycloneDX.Version)
+	if cdxBOM.Components, err = m.marshalComponents(); err != nil {
+		return nil, xerrors.Errorf("failed to marshal components: %w", err)
 	}
-	return bom, nil
+
+	cdxBOM.Dependencies = m.marshalDependencies()
+	cdxBOM.Vulnerabilities = m.marshalVulnerabilities()
+
+	return cdxBOM, nil
 }
 
-func (e *Marshaler) cdxMetadata() *cdx.Metadata {
+func (m *Marshaler) Metadata(ctx context.Context) *cdx.Metadata {
 	return &cdx.Metadata{
-		Timestamp: e.clock.Now().UTC().Format(timeLayout),
-		Tools: &[]cdx.Tool{
-			{
-				Vendor:  ToolVendor,
-				Name:    ToolName,
-				Version: e.appVersion,
+		Timestamp: clock.Now(ctx).UTC().Format(timeLayout),
+		Tools: &cdx.ToolsChoice{
+			Components: &[]cdx.Component{
+				{
+					Type:         cdx.ComponentTypeApplication,
+					Group:        ToolVendor,
+					Name:         ToolName,
+					Version:      m.appVersion,
+					Manufacturer: &cdx.OrganizationalEntity{Name: ToolManufacturer},
+				},
 			},
 		},
 	}
 }
 
-func externalRef(bomLink string, bomRef string) (string, error) {
-	// bomLink is optional field: https://cyclonedx.org/docs/1.4/json/#vulnerabilities_items_bom-ref
-	if bomLink == "" {
-		return bomRef, nil
+func (m *Marshaler) MarshalRoot() (*cdx.Component, error) {
+	root := m.bom.Root()
+	// Since we reuse the scanned SBOM, the root component (metadata.component) can be empty.
+	if root == nil {
+		m.logger.Debug("Root component not found")
+		return nil, nil
 	}
-	if !strings.HasPrefix(bomLink, "urn:uuid:") {
-		return "", xerrors.Errorf("%q: %w", bomLink, ErrInvalidBOMLink)
-	}
-	return fmt.Sprintf("%s/%d#%s", strings.Replace(bomLink, "uuid", "cdx", 1), cdx.BOMFileFormatJSON, bomRef), nil
+	return m.MarshalComponent(root)
 }
 
-func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
-	components := make([]cdx.Component, 0) // To export an empty array in JSON
+func (m *Marshaler) MarshalComponent(component *core.Component) (*cdx.Component, error) {
+	componentType, err := m.componentType(component.Type)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get cdx component type: %w", err)
+	}
+
+	cdxComponent := &cdx.Component{
+		BOMRef:     component.PkgIdentifier.BOMRef,
+		Type:       componentType,
+		Name:       component.Name,
+		Group:      component.Group,
+		Version:    component.Version,
+		PackageURL: m.PackageURL(component.PkgIdentifier.PURL),
+		Supplier:   m.Supplier(component.Supplier),
+		Hashes:     m.Hashes(component.Files),
+		Licenses:   m.Licenses(component.Licenses),
+		Properties: m.Properties(component.Properties),
+	}
+	m.componentIDs[component.ID()] = cdxComponent.BOMRef
+
+	return cdxComponent, nil
+}
+
+func (m *Marshaler) marshalComponents() (*[]cdx.Component, error) {
+	var cdxComponents []cdx.Component
+	for _, component := range m.bom.Components() {
+		if component.Root {
+			continue
+		}
+		c, err := m.MarshalComponent(component)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to marshal component: %w", err)
+		}
+		cdxComponents = append(cdxComponents, *c)
+	}
+
+	// CycloneDX requires an empty slice rather than a nil slice
+	if len(cdxComponents) == 0 {
+		return &[]cdx.Component{}, nil
+	}
+
+	// Sort components by BOM-Ref
+	sort.Slice(cdxComponents, func(i, j int) bool {
+		return cdxComponents[i].BOMRef < cdxComponents[j].BOMRef
+	})
+	return &cdxComponents, nil
+}
+
+func (m *Marshaler) marshalDependencies() *[]cdx.Dependency {
 	var dependencies []cdx.Dependency
-	metadataDependencies := make([]string, 0) // To export an empty array in JSON
-	libraryUniqMap := map[string]struct{}{}
-	vulnMap := map[string]cdx.Vulnerability{}
-	for _, result := range r.Results {
-		bomRefMap := map[string]string{}
-		var componentDependencies []string
-		for _, pkg := range result.Packages {
-			pkgComponent, err := pkgToCdxComponent(result.Type, r.Metadata, pkg)
-			if err != nil {
-				return nil, nil, nil, xerrors.Errorf("failed to parse pkg: %w", err)
-			}
-			pkgID := packageID(result.Target, pkg.Name, utils.FormatVersion(pkg), pkg.FilePath)
-			if _, ok := bomRefMap[pkgID]; !ok {
-				bomRefMap[pkgID] = pkgComponent.BOMRef
-				componentDependencies = append(componentDependencies, pkgComponent.BOMRef)
-			}
-
-			// When multiple lock files have the same dependency with the same name and version,
-			// "bom-ref" (PURL technically) of Library components may conflict.
-			// In that case, only one Library component will be added and
-			// some Application components will refer to the same component.
-			// e.g.
-			//    Application component (/app1/package-lock.json)
-			//    |
-			//    |    Application component (/app2/package-lock.json)
-			//    |    |
-			//    └----┴----> Library component (npm package, express-4.17.3)
-			//
-			if _, ok := libraryUniqMap[pkgComponent.BOMRef]; !ok {
-				libraryUniqMap[pkgComponent.BOMRef] = struct{}{}
-
-				// For components
-				// ref. https://cyclonedx.org/use-cases/#inventory
-				//
-				// TODO: All packages are flattened at the moment. We should construct dependency tree.
-				components = append(components, pkgComponent)
-			}
+	for key, rels := range m.bom.Relationships() {
+		ref, ok := m.componentIDs[key]
+		if !ok {
+			continue
 		}
 
-		for _, vuln := range result.Vulnerabilities {
-			// Take a bom-ref
-			pkgID := packageID(result.Target, vuln.PkgName, vuln.InstalledVersion, vuln.PkgPath)
-			ref := bomRefMap[pkgID]
-			if v, ok := vulnMap[vuln.VulnerabilityID]; ok {
-				// If a vulnerability depends on multiple packages,
-				// it will be commonised into a single vulnerability.
-				//   Vulnerability component (CVE-2020-26247)
-				//     -> Library component (nokogiri /srv/app1/vendor/bundle/ruby/3.0.0/specifications/nokogiri-1.10.0.gemspec)
-				//     -> Library component (nokogiri /srv/app2/vendor/bundle/ruby/3.0.0/specifications/nokogiri-1.10.0.gemspec)
-				*v.Affects = append(*v.Affects, cdxAffects(ref, vuln.InstalledVersion))
+		deps := lo.FilterMap(rels, func(rel core.Relationship, _ int) (string, bool) {
+			d, ok := m.componentIDs[rel.Dependency]
+			return d, ok
+		})
+		sort.Strings(deps)
+
+		dependencies = append(dependencies, cdx.Dependency{
+			Ref:          ref,
+			Dependencies: &deps,
+		})
+	}
+
+	// Sort dependencies by BOM-Ref
+	sort.Slice(dependencies, func(i, j int) bool {
+		return dependencies[i].Ref < dependencies[j].Ref
+	})
+	return &dependencies
+}
+
+func (m *Marshaler) marshalVulnerabilities() *[]cdx.Vulnerability {
+	vulns := make(map[string]*cdx.Vulnerability)
+	for id, vv := range m.bom.Vulnerabilities() {
+		bomRef := m.componentIDs[id]
+		for _, v := range vv {
+			// If the same vulnerability affects multiple packages, those packages will be aggregated into one vulnerability.
+			//   Vulnerability component (CVE-2020-26247)
+			//     -> Library component (nokogiri /srv/app1/vendor/bundle/ruby/3.0.0/specifications/nokogiri-1.10.0.gemspec)
+			//     -> Library component (nokogiri /srv/app2/vendor/bundle/ruby/3.0.0/specifications/nokogiri-1.10.0.gemspec)
+			if vuln, ok := vulns[v.ID]; ok {
+				*vuln.Affects = append(*vuln.Affects, m.affects(bomRef, v.InstalledVersion))
+				if v.FixedVersion != "" {
+					// new recommendation
+					rec := fmt.Sprintf("Upgrade %s to version %s", v.PkgName, v.FixedVersion)
+					// previous recommendations
+					recs := strings.Split(vuln.Recommendation, "; ")
+					if !slices.Contains(recs, rec) {
+						recs = append(recs, rec)
+						slices.Sort(recs)
+						vuln.Recommendation = strings.Join(recs, "; ")
+					}
+				}
 			} else {
-				vulnMap[vuln.VulnerabilityID] = toCdxVulnerability(ref, vuln)
+				vulns[v.ID] = m.marshalVulnerability(bomRef, v)
 			}
-		}
-
-		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg ||
-			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar || result.Type == ftypes.CondaPkg {
-			// If a package is language-specific package that isn't associated with a lock file,
-			// it will be a dependency of a component under "metadata".
-			// e.g.
-			//   Container component (alpine:3.15) ----------------------- #1
-			//     -> Library component (npm package, express-4.17.3) ---- #2
-			//     -> Library component (python package, django-4.0.2) --- #2
-			//     -> etc.
-			// ref. https://cyclonedx.org/use-cases/#inventory
-
-			// Dependency graph from #1 to #2
-			metadataDependencies = append(metadataDependencies, componentDependencies...)
-		} else if result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg {
-			// If a package is OS package, it will be a dependency of "Operating System" component.
-			// e.g.
-			//   Container component (alpine:3.15) --------------------- #1
-			//     -> Operating System Component (Alpine Linux 3.15) --- #2
-			//       -> Library component (bash-4.12) ------------------ #3
-			//       -> Library component (vim-8.2)   ------------------ #3
-			//       -> etc.
-			//
-			// Else if a package is language-specific package associated with a lock file,
-			// it will be a dependency of "Application" component.
-			// e.g.
-			//   Container component (alpine:3.15) ------------------------ #1
-			//     -> Application component (/app/package-lock.json) ------ #2
-			//       -> Library component (npm package, express-4.17.3) --- #3
-			//       -> Library component (npm package, lodash-4.17.21) --- #3
-			//       -> etc.
-
-			resultComponent := e.resultToCdxComponent(result, r.Metadata.OS)
-			components = append(components, resultComponent)
-
-			// Dependency graph from #2 to #3
-			dependencies = append(dependencies,
-				cdx.Dependency{
-					Ref:          resultComponent.BOMRef,
-					Dependencies: &componentDependencies,
-				},
-			)
-
-			// Dependency graph from #1 to #2
-			metadataDependencies = append(metadataDependencies, resultComponent.BOMRef)
 		}
 	}
-	vulns := maps.Values(vulnMap)
-	sort.Slice(vulns, func(i, j int) bool {
-		return vulns[i].ID > vulns[j].ID
+
+	vulnList := lo.MapToSlice(vulns, func(_ string, value *cdx.Vulnerability) cdx.Vulnerability {
+		sort.Slice(*value.Affects, func(i, j int) bool {
+			return (*value.Affects)[i].Ref < (*value.Affects)[j].Ref
+		})
+		return *value
+	})
+	sort.Slice(vulnList, func(i, j int) bool {
+		return vulnList[i].ID < vulnList[j].ID
+	})
+	return &vulnList
+}
+
+// componentType converts the Trivy component type to the CycloneDX component type
+func (*Marshaler) componentType(t core.ComponentType) (cdx.ComponentType, error) {
+	switch t {
+	case core.TypeContainerImage, core.TypeVM:
+		return cdx.ComponentTypeContainer, nil
+	case core.TypeApplication, core.TypeFilesystem, core.TypeRepository:
+		return cdx.ComponentTypeApplication, nil
+	case core.TypeLibrary:
+		return cdx.ComponentTypeLibrary, nil
+	case core.TypeOS:
+		return cdx.ComponentTypeOS, nil
+	case core.TypePlatform:
+		return cdx.ComponentTypePlatform, nil
+	}
+	return "", xerrors.Errorf("unknown component type: %s", t)
+}
+
+func (*Marshaler) PackageURL(p *packageurl.PackageURL) string {
+	if p == nil {
+		return ""
+	}
+	return p.String()
+}
+
+func (*Marshaler) Supplier(supplier string) *cdx.OrganizationalEntity {
+	if supplier == "" {
+		return nil
+	}
+	return &cdx.OrganizationalEntity{
+		Name: supplier,
+	}
+}
+
+func (m *Marshaler) Hashes(files []core.File) *[]cdx.Hash {
+	digests := lo.FlatMap(files, func(file core.File, _ int) []digest.Digest {
+		return file.Digests
+	})
+	if len(digests) == 0 {
+		return nil
+	}
+
+	var cdxHashes []cdx.Hash
+	for _, d := range digests {
+		var alg cdx.HashAlgorithm
+		switch d.Algorithm() {
+		case digest.SHA1:
+			alg = cdx.HashAlgoSHA1
+		case digest.SHA256:
+			alg = cdx.HashAlgoSHA256
+		case digest.SHA512:
+			alg = cdx.HashAlgoSHA512
+		case digest.MD5:
+			alg = cdx.HashAlgoMD5
+		default:
+			m.logger.Debug("Unable to convert algorithm to CycloneDX format", log.Any("alg", d.Algorithm()))
+			continue
+		}
+
+		cdxHashes = append(cdxHashes, cdx.Hash{
+			Algorithm: alg,
+			Value:     d.Encoded(),
+		})
+	}
+	return &cdxHashes
+}
+
+func (m *Marshaler) Licenses(licenses []string) *cdx.Licenses {
+	licenses = lo.Compact(licenses)
+	if len(licenses) == 0 {
+		return nil
+	}
+	return m.normalizeLicenses(licenses)
+}
+
+func (m *Marshaler) normalizeLicenses(licenses []string) *cdx.Licenses {
+	expressions := lo.Map(licenses, func(license string, _ int) expression.Expression {
+		return m.normalizeLicense(license)
+	})
+	// Check if all licenses are valid SPDX expressions
+	allValidSPDX := lo.EveryBy(expressions, func(expr expression.Expression) bool {
+		return expr.IsSPDXExpression()
 	})
 
-	dependencies = append(dependencies,
-		cdx.Dependency{
-			Ref:          bomRef,
-			Dependencies: &metadataDependencies,
+	// Check if at least one is a CompoundExpr
+	hasCompoundExpr := lo.ContainsBy(expressions, func(expr expression.Expression) bool {
+		_, isCompound := expr.(expression.CompoundExpr)
+		return isCompound
+	})
+
+	// If all are valid SPDX AND at least one contains CompoundExpr, combine into single Expression
+	if allValidSPDX && hasCompoundExpr {
+		exprStrs := lo.Map(expressions, func(expr expression.Expression, _ int) string {
+			return expr.String()
+		})
+		return &cdx.Licenses{{Expression: strings.Join(exprStrs, " AND ")}}
+	}
+
+	// Otherwise use individual LicenseChoice entries with license.id or license.name
+	choices := lo.Map(expressions, func(expr expression.Expression, _ int) cdx.LicenseChoice {
+		if s, ok := expr.(expression.SimpleExpr); ok && s.IsSPDXExpression() {
+			// Use license.id for valid SPDX ID (e.g., "MIT", "Apache-2.0")
+			return cdx.LicenseChoice{License: &cdx.License{ID: s.String()}}
+		}
+		// Use license.name for everything else (invalid SPDX ID, SPDX expression, etc.)
+		return cdx.LicenseChoice{License: &cdx.License{Name: expr.String()}}
+	})
+	return lo.ToPtr(cdx.Licenses(choices))
+}
+
+func (m *Marshaler) normalizeLicense(license string) expression.Expression {
+	// Save text license as licenseChoice.license.name
+	if after, ok := strings.CutPrefix(license, licensing.LicenseTextPrefix); ok {
+		return expression.SimpleExpr{
+			License: after,
+		}
+	}
+
+	// e.g. GPL-3.0-with-autoconf-exception
+	license = strings.ReplaceAll(license, "-with-", " WITH ")
+	license = strings.ReplaceAll(license, "-WITH-", " WITH ")
+
+	normalizedLicenses, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX)
+	if err != nil {
+		// Not fail on the invalid license
+		m.logger.Warn("Unable to marshal SPDX licenses", log.String("license", license))
+		return expression.SimpleExpr{License: license}
+	}
+
+	return normalizedLicenses
+}
+
+func (*Marshaler) Properties(properties []core.Property) *[]cdx.Property {
+	cdxProps := make([]cdx.Property, 0, len(properties))
+	for _, property := range properties {
+		namespace := cmp.Or(property.Namespace, Namespace)
+
+		// External property preserves original name, Trivy property gets namespace prefix
+		name := lo.Ternary(property.External, property.Name, namespace+property.Name)
+
+		cdxProps = append(cdxProps, cdx.Property{
+			Name:  name,
+			Value: property.Value,
+		})
+	}
+	sort.Slice(cdxProps, func(i, j int) bool {
+		if cdxProps[i].Name != cdxProps[j].Name {
+			return cdxProps[i].Name < cdxProps[j].Name
+		}
+		return cdxProps[i].Value < cdxProps[j].Value
+	})
+	return &cdxProps
+}
+
+func (*Marshaler) affects(ref, version string) cdx.Affects {
+	return cdx.Affects{
+		Ref: ref,
+		Range: &[]cdx.AffectedVersions{
+			{
+				Version: version,
+				Status:  cdx.VulnerabilityStatusAffected,
+				// "AffectedVersions.Range" is not included, because it does not exist in DetectedVulnerability.
+			},
 		},
-	)
-	return &components, &dependencies, &vulns, nil
+	}
 }
 
-func packageID(target, pkgName, pkgVersion, pkgFilePath string) string {
-	return fmt.Sprintf("%s/%s/%s/%s", target, pkgName, pkgVersion, pkgFilePath)
+func (*Marshaler) advisories(refs []string) *[]cdx.Advisory {
+	refs = lo.Uniq(refs)
+	advs := lo.FilterMap(refs, func(ref string, _ int) (cdx.Advisory, bool) {
+		// There are cases when `ref` contains extra info
+		// But we need to use only URL.
+		// cf. https://github.com/aquasecurity/trivy/issues/6801
+		ref = trimNonUrlInfo(ref)
+		return cdx.Advisory{URL: ref}, ref != ""
+	})
+
+	// cyclonedx converts link to empty `[]cdx.Advisory` to `null`
+	// `bom-1.5.schema.json` doesn't support this - `Invalid type. Expected: array, given: null`
+	// we need to explicitly set `nil` for empty `refs` slice
+	if len(advs) == 0 {
+		return nil
+	}
+
+	return &advs
 }
 
-func toCdxVulnerability(bomRef string, vuln types.DetectedVulnerability) cdx.Vulnerability {
-	v := cdx.Vulnerability{
-		ID:          vuln.VulnerabilityID,
-		Source:      cdxSource(vuln.DataSource),
-		Ratings:     cdxRatings(vuln),
-		CWEs:        cwes(vuln.CweIDs),
+// trimNonUrlInfo returns first valid URL.
+func trimNonUrlInfo(ref string) string {
+	ss := strings.SplitSeq(ref, " ")
+	for s := range ss {
+		if u, err := url.Parse(s); err == nil && u.Scheme != "" && u.Host != "" {
+			return s
+		}
+	}
+	return ""
+}
+
+func (m *Marshaler) marshalVulnerability(bomRef string, vuln core.Vulnerability) *cdx.Vulnerability {
+	v := &cdx.Vulnerability{
+		ID:          vuln.ID,
+		Source:      m.source(vuln.DataSource),
+		Ratings:     m.ratings(vuln),
+		CWEs:        m.cwes(vuln.CweIDs),
 		Description: vuln.Description,
-		Advisories:  cdxAdvisories(vuln.References),
+		Advisories:  m.advisories(append([]string{vuln.PrimaryURL}, vuln.References...)),
 	}
 	if vuln.FixedVersion != "" {
 		v.Recommendation = fmt.Sprintf("Upgrade %s to version %s", vuln.PkgName, vuln.FixedVersion)
@@ -331,200 +446,23 @@ func toCdxVulnerability(bomRef string, vuln types.DetectedVulnerability) cdx.Vul
 		v.Updated = vuln.LastModifiedDate.Format(timeLayout)
 	}
 
-	v.Affects = &[]cdx.Affects{cdxAffects(bomRef, vuln.InstalledVersion)}
+	v.Affects = &[]cdx.Affects{m.affects(bomRef, vuln.InstalledVersion)}
 
 	return v
 }
 
-func (e *Marshaler) reportToCdxComponent(r types.Report) (*cdx.Component, error) {
-	component := &cdx.Component{
-		Name: r.ArtifactName,
-	}
-
-	properties := []cdx.Property{
-		cdxProperty(PropertySchemaVersion, strconv.Itoa(r.SchemaVersion)),
-	}
-
-	if r.Metadata.Size != 0 {
-		properties = appendProperties(properties, PropertySize, strconv.FormatInt(r.Metadata.Size, 10))
-	}
-
-	switch r.ArtifactType {
-	case ftypes.ArtifactContainerImage:
-		component.Type = cdx.ComponentTypeContainer
-		p, err := purl.NewPackageURL(purl.TypeOCI, r.Metadata, ftypes.Package{})
-		if err != nil {
-			return nil, xerrors.Errorf("failed to new package url for oci: %w", err)
-		}
-		properties = appendProperties(properties, PropertyImageID, r.Metadata.ImageID)
-
-		if p.Type == "" {
-			component.BOMRef = e.newUUID().String()
-		} else {
-			component.BOMRef = p.ToString()
-			component.PackageURL = p.ToString()
-		}
-	case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository:
-		component.Type = cdx.ComponentTypeApplication
-		component.BOMRef = e.newUUID().String()
-	}
-
-	for _, d := range r.Metadata.RepoDigests {
-		properties = appendProperties(properties, PropertyRepoDigest, d)
-	}
-	for _, d := range r.Metadata.DiffIDs {
-		properties = appendProperties(properties, PropertyDiffID, d)
-	}
-	for _, t := range r.Metadata.RepoTags {
-		properties = appendProperties(properties, PropertyRepoTag, t)
-	}
-
-	component.Properties = &properties
-
-	return component, nil
-}
-
-func (e *Marshaler) resultToCdxComponent(r types.Result, osFound *ftypes.OS) cdx.Component {
-	component := cdx.Component{
-		Name: r.Target,
-		Properties: &[]cdx.Property{
-			cdxProperty(PropertyType, r.Type),
-			cdxProperty(PropertyClass, string(r.Class)),
-		},
-	}
-
-	switch r.Class {
-	case types.ClassOSPkg:
-		// UUID needs to be generated since Operating System Component cannot generate PURL.
-		// https://cyclonedx.org/use-cases/#known-vulnerabilities
-		component.BOMRef = e.newUUID().String()
-		if osFound != nil {
-			component.Name = osFound.Family
-			component.Version = osFound.Name
-		}
-		component.Type = cdx.ComponentTypeOS
-	case types.ClassLangPkg:
-		// UUID needs to be generated since Application Component cannot generate PURL.
-		// https://cyclonedx.org/use-cases/#known-vulnerabilities
-		component.BOMRef = e.newUUID().String()
-		component.Type = cdx.ComponentTypeApplication
-	case types.ClassConfig:
-		// TODO: Config support
-		component.BOMRef = e.newUUID().String()
-		component.Type = cdx.ComponentTypeFile
-	}
-
-	return component
-}
-
-func pkgToCdxComponent(pkgType string, meta types.Metadata, pkg ftypes.Package) (cdx.Component, error) {
-	pu, err := purl.NewPackageURL(pkgType, meta, pkg)
-	if err != nil {
-		return cdx.Component{}, xerrors.Errorf("failed to new package purl: %w", err)
-	}
-	properties := cdxProperties(pkgType, pkg)
-	component := cdx.Component{
-		Type:       cdx.ComponentTypeLibrary,
-		Name:       pkg.Name,
-		Version:    pu.Version,
-		BOMRef:     pu.BOMRef(),
-		PackageURL: pu.ToString(),
-		Properties: properties,
-	}
-
-	if len(pkg.Licenses) != 0 {
-		choices := lo.Map(pkg.Licenses, func(license string, i int) cdx.LicenseChoice {
-			return cdx.LicenseChoice{Expression: license}
-		})
-		component.Licenses = lo.ToPtr(cdx.Licenses(choices))
-	}
-
-	return component, nil
-}
-
-func cdxProperties(pkgType string, pkg ftypes.Package) *[]cdx.Property {
-	props := []struct {
-		name  string
-		value string
-	}{
-		{
-			PropertyPkgID,
-			pkg.ID,
-		},
-		{
-			PropertyPkgType,
-			pkgType,
-		},
-		{
-			PropertyFilePath,
-			pkg.FilePath,
-		},
-		{
-			PropertySrcName,
-			pkg.SrcName,
-		},
-		{
-			PropertySrcVersion,
-			pkg.SrcVersion,
-		},
-		{
-			PropertySrcRelease,
-			pkg.SrcRelease,
-		},
-		{
-			PropertySrcEpoch,
-			strconv.Itoa(pkg.SrcEpoch),
-		},
-		{
-			PropertyModularitylabel,
-			pkg.Modularitylabel,
-		},
-		{
-			PropertyLayerDigest,
-			pkg.Layer.Digest,
-		},
-		{
-			PropertyLayerDiffID,
-			pkg.Layer.DiffID,
-		},
-	}
-
-	var properties []cdx.Property
-	for _, prop := range props {
-		properties = appendProperties(properties, prop.name, prop.value)
-	}
-	if len(properties) == 0 {
+func (*Marshaler) source(source *dtypes.DataSource) *cdx.Source {
+	if source == nil {
 		return nil
 	}
 
-	return &properties
-}
-
-func appendProperties(properties []cdx.Property, key, value string) []cdx.Property {
-	if value == "" || (key == PropertySrcEpoch && value == "0") {
-		return properties
-	}
-	return append(properties, cdxProperty(key, value))
-}
-
-func cdxProperty(key, value string) cdx.Property {
-	return cdx.Property{
-		Name:  Namespace + key,
-		Value: value,
+	return &cdx.Source{
+		Name: string(source.ID),
+		URL:  source.URL,
 	}
 }
 
-func cdxAdvisories(refs []string) *[]cdx.Advisory {
-	var advs []cdx.Advisory
-	for _, ref := range refs {
-		advs = append(advs, cdx.Advisory{
-			URL: ref,
-		})
-	}
-	return &advs
-}
-
-func cwes(cweIDs []string) *[]int {
+func (m *Marshaler) cwes(cweIDs []string) *[]int {
 	// to skip cdx.Vulnerability.CWEs when generating json
 	// we should return 'clear' nil without 'type' interface part
 	if cweIDs == nil {
@@ -534,7 +472,7 @@ func cwes(cweIDs []string) *[]int {
 	for _, cweID := range cweIDs {
 		number, err := strconv.Atoi(strings.TrimPrefix(strings.ToLower(cweID), "cwe-"))
 		if err != nil {
-			log.Logger.Debugf("cwe id parse error: %s", err)
+			m.logger.Debug("CWE-ID parse error", log.Err(err))
 			continue
 		}
 		ret = append(ret, number)
@@ -542,23 +480,23 @@ func cwes(cweIDs []string) *[]int {
 	return &ret
 }
 
-func cdxRatings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRating {
-	rates := make([]cdx.VulnerabilityRating, 0) // To export an empty array in JSON
-	for sourceID, severity := range vulnerability.VendorSeverity {
+func (m *Marshaler) ratings(vuln core.Vulnerability) *[]cdx.VulnerabilityRating {
+	rates := make([]cdx.VulnerabilityRating, 0) // nolint:gocritic // To export an empty array in JSON
+	for sourceID, severity := range vuln.VendorSeverity {
 		// When the vendor also provides CVSS score/vector
-		if cvss, ok := vulnerability.CVSS[sourceID]; ok {
+		if cvss, ok := vuln.CVSS[sourceID]; ok {
 			if cvss.V2Score != 0 || cvss.V2Vector != "" {
-				rates = append(rates, cdxRatingV2(sourceID, severity, cvss))
+				rates = append(rates, m.ratingV2(sourceID, severity, cvss))
 			}
 			if cvss.V3Score != 0 || cvss.V3Vector != "" {
-				rates = append(rates, cdxRatingV3(sourceID, severity, cvss))
+				rates = append(rates, m.ratingV3(sourceID, severity, cvss))
 			}
 		} else { // When the vendor provides only severity
 			rate := cdx.VulnerabilityRating{
 				Source: &cdx.Source{
 					Name: string(sourceID),
 				},
-				Severity: toCDXSeverity(severity),
+				Severity: m.severity(severity),
 			}
 			rates = append(rates, rate)
 		}
@@ -580,13 +518,13 @@ func cdxRatings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityR
 	return &rates
 }
 
-func cdxRatingV2(sourceID dtypes.SourceID, severity dtypes.Severity, cvss dtypes.CVSS) cdx.VulnerabilityRating {
-	cdxSeverity := toCDXSeverity(severity)
+func (m *Marshaler) ratingV2(sourceID dtypes.SourceID, severity dtypes.Severity, cvss dtypes.CVSS) cdx.VulnerabilityRating {
+	cdxSeverity := m.severity(severity)
 
 	// Trivy keeps only CVSSv3 severity for NVD.
 	// The CVSSv2 severity must be calculated according to CVSSv2 score.
 	if sourceID == vulnerability.NVD {
-		cdxSeverity = nvdSeverityV2(cvss.V2Score)
+		cdxSeverity = m.nvdSeverityV2(cvss.V2Score)
 	}
 	return cdx.VulnerabilityRating{
 		Source: &cdx.Source{
@@ -599,27 +537,14 @@ func cdxRatingV2(sourceID dtypes.SourceID, severity dtypes.Severity, cvss dtypes
 	}
 }
 
-func nvdSeverityV2(score float64) cdx.Severity {
-	// cf. https://nvd.nist.gov/vuln-metrics/cvss
-	switch {
-	case score < 4.0:
-		return cdx.SeverityInfo
-	case 4.0 <= score && score < 7.0:
-		return cdx.SeverityMedium
-	case 7.0 <= score:
-		return cdx.SeverityHigh
-	}
-	return cdx.SeverityUnknown
-}
-
-func cdxRatingV3(sourceID dtypes.SourceID, severity dtypes.Severity, cvss dtypes.CVSS) cdx.VulnerabilityRating {
+func (m *Marshaler) ratingV3(sourceID dtypes.SourceID, severity dtypes.Severity, cvss dtypes.CVSS) cdx.VulnerabilityRating {
 	rate := cdx.VulnerabilityRating{
 		Source: &cdx.Source{
 			Name: string(sourceID),
 		},
 		Score:    &cvss.V3Score,
 		Method:   cdx.ScoringMethodCVSSv3,
-		Severity: toCDXSeverity(severity),
+		Severity: m.severity(severity),
 		Vector:   cvss.V3Vector,
 	}
 	if strings.HasPrefix(cvss.V3Vector, "CVSS:3.1") {
@@ -628,7 +553,8 @@ func cdxRatingV3(sourceID dtypes.SourceID, severity dtypes.Severity, cvss dtypes
 	return rate
 }
 
-func toCDXSeverity(s dtypes.Severity) cdx.Severity {
+// severity converts the Trivy severity to the CycloneDX severity
+func (*Marshaler) severity(s dtypes.Severity) cdx.Severity {
 	switch s {
 	case dtypes.SeverityLow:
 		return cdx.SeverityLow
@@ -643,26 +569,15 @@ func toCDXSeverity(s dtypes.Severity) cdx.Severity {
 	}
 }
 
-func cdxSource(source *dtypes.DataSource) *cdx.Source {
-	if source == nil {
-		return nil
+func (*Marshaler) nvdSeverityV2(score float64) cdx.Severity {
+	// cf. https://nvd.nist.gov/vuln-metrics/cvss
+	switch {
+	case score < 4.0:
+		return cdx.SeverityInfo
+	case 4.0 <= score && score < 7.0:
+		return cdx.SeverityMedium
+	case 7.0 <= score:
+		return cdx.SeverityHigh
 	}
-
-	return &cdx.Source{
-		Name: string(source.ID),
-		URL:  source.URL,
-	}
-}
-
-func cdxAffects(ref, version string) cdx.Affects {
-	return cdx.Affects{
-		Ref: ref,
-		Range: &[]cdx.AffectedVersions{
-			{
-				Version: version,
-				Status:  cdx.VulnerabilityStatusAffected,
-				// "AffectedVersions.Range" is not included, because it does not exist in DetectedVulnerability.
-			},
-		},
-	}
+	return cdx.SeverityUnknown
 }

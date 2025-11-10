@@ -1,7 +1,7 @@
 
 Deployment/metrics-server (kubernetes)
 ======================================
-Tests: 1 (SUCCESSES: 1, FAILURES: 0, EXCEPTIONS: 0)
+Tests: 1 (SUCCESSES: 1, FAILURES: 0)
 Failures: 0 ()
 
 MEDIUM: Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.allowPrivilegeEscalation' to false
@@ -27,7 +27,7 @@ See https://avd.aquasec.com/misconfig/ksv001
 
 Deployment/metrics-server (kubernetes)
 ======================================
-Tests: 1 (SUCCESSES: 1, FAILURES: 0, EXCEPTIONS: 0)
+Tests: 1 (SUCCESSES: 1, FAILURES: 0)
 Failures: 0 ()
 
 LOW: Container 'metrics-server' of Deployment 'metrics-server' should add 'ALL' to 'securityContext.capabilities.drop'

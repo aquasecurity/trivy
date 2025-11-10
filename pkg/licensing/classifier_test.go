@@ -4,12 +4,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/licensing"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 )
 
 func TestClassifier_FullClassify(t *testing.T) {
@@ -71,7 +70,7 @@ func TestClassifier_FullClassify(t *testing.T) {
 			require.NoError(t, err)
 			defer contentFile.Close()
 
-			got, err := licensing.Classify(tt.filePath, contentFile)
+			got, err := licensing.Classify(tt.filePath, contentFile, 0.9)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})

@@ -14,3 +14,11 @@
               - 0.11.6
             VulnerableVersions:
               - < 0.11.6
+    - bucket: setuptools
+      pairs:
+        - key: CVE-2022-40897
+          value:
+            PatchedVersions:
+              - 65.5.1
+            VulnerableVersions:
+              - < 65.5.1

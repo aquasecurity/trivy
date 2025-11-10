@@ -11,7 +11,7 @@ import (
 	slsa "github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/common"
 	"github.com/samber/lo"
 	"github.com/sigstore/rekor/pkg/generated/models"
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/pkg/attestation"
 )
@@ -50,15 +50,18 @@ var (
 			Data: &cyclonedx.BOM{
 				BOMFormat:    cyclonedx.BOMFormat,
 				SerialNumber: "urn:uuid:6453fd82-71f4-47c8-ad12-01775619c443",
-				SpecVersion:  cyclonedx.SpecVersion1_4,
+				SpecVersion:  cyclonedx.SpecVersion1_5,
 				Version:      1,
 				Metadata: &cyclonedx.Metadata{
 					Timestamp: "2022-09-15T13:53:49+00:00",
-					Tools: &[]cyclonedx.Tool{
-						{
-							Vendor:  "aquasecurity",
-							Name:    "trivy",
-							Version: "dev",
+					Tools: &cyclonedx.ToolsChoice{
+						Components: &[]cyclonedx.Component{
+							{
+								Type:    cyclonedx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+							},
 						},
 					},
 					Component: &cyclonedx.Component{
@@ -67,11 +70,26 @@ var (
 						Name:       "alpine:3.16",
 						PackageURL: "pkg:oci/alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad?repository_url=index.docker.io%2Flibrary%2Falpine\u0026arch=amd64",
 						Properties: &[]cyclonedx.Property{
-							{Name: "aquasecurity:trivy:SchemaVersion", Value: "2"},
-							{Name: "aquasecurity:trivy:ImageID", Value: "sha256:9c6f0724472873bb50a2ae67a9e7adcb57673a183cea8b06eb778dca859181b5"},
-							{Name: "aquasecurity:trivy:RepoDigest", Value: "alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad"},
-							{Name: "aquasecurity:trivy:DiffID", Value: "sha256:994393dc58e7931862558d06e46aa2bb17487044f670f310dffe1d24e4d1eec7"},
-							{Name: "aquasecurity:trivy:RepoTag", Value: "alpine:3.16"},
+							{
+								Name:  "aquasecurity:trivy:SchemaVersion",
+								Value: "2",
+							},
+							{
+								Name:  "aquasecurity:trivy:ImageID",
+								Value: "sha256:9c6f0724472873bb50a2ae67a9e7adcb57673a183cea8b06eb778dca859181b5",
+							},
+							{
+								Name:  "aquasecurity:trivy:RepoDigest",
+								Value: "alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad",
+							},
+							{
+								Name:  "aquasecurity:trivy:DiffID",
+								Value: "sha256:994393dc58e7931862558d06e46aa2bb17487044f670f310dffe1d24e4d1eec7",
+							},
+							{
+								Name:  "aquasecurity:trivy:RepoTag",
+								Value: "alpine:3.16",
+							},
 						},
 					},
 				},
@@ -82,8 +100,14 @@ var (
 						Name:    "alpine",
 						Version: "3.16.2",
 						Properties: &[]cyclonedx.Property{
-							{Name: "aquasecurity:trivy:Type", Value: "alpine"},
-							{Name: "aquasecurity:trivy:Class", Value: "os-pkgs"},
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "alpine",
+							},
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "os-pkgs",
+							},
 						},
 					},
 					{
@@ -96,16 +120,28 @@ var (
 						},
 						PackageURL: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.2",
 						Properties: &[]cyclonedx.Property{
-							{Name: "aquasecurity:trivy:PkgType", Value: "alpine"},
-							{Name: "aquasecurity:trivy:SrcName", Value: "musl"},
-							{Name: "aquasecurity:trivy:SrcVersion", Value: "1.2.3-r0"},
-							{Name: "aquasecurity:trivy:LayerDiffID", Value: "sha256:994393dc58e7931862558d06e46aa2bb17487044f670f310dffe1d24e4d1eec7"},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "alpine",
+							},
+							{
+								Name:  "aquasecurity:trivy:SrcName",
+								Value: "musl",
+							},
+							{
+								Name:  "aquasecurity:trivy:SrcVersion",
+								Value: "1.2.3-r0",
+							},
+							{
+								Name:  "aquasecurity:trivy:LayerDiffID",
+								Value: "sha256:994393dc58e7931862558d06e46aa2bb17487044f670f310dffe1d24e4d1eec7",
+							},
 						},
 					},
 				},
 				Dependencies: &[]cyclonedx.Dependency{
 					{
-						Ref: "pkg:oci/alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad?repository_url=index.docker.io%2Flibrary%2Falpine&6arch=amd64",
+						Ref: "pkg:oci/alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad?repository_url=index.docker.io%2Flibrary%2Falpine&arch=amd64",
 						Dependencies: &[]string{
 							"fad4eb97-3d2a-4499-ace7-2c94444148a7",
 						},
@@ -138,15 +174,18 @@ var (
 			Data: &cyclonedx.BOM{
 				BOMFormat:    cyclonedx.BOMFormat,
 				SerialNumber: "urn:uuid:8b16c9a3-e957-4c85-b43d-7dd05ea0421c",
-				SpecVersion:  cyclonedx.SpecVersion1_4,
+				SpecVersion:  cyclonedx.SpecVersion1_5,
 				Version:      1,
 				Metadata: &cyclonedx.Metadata{
 					Timestamp: "2022-10-21T09:50:08+00:00",
-					Tools: &[]cyclonedx.Tool{
-						{
-							Vendor:  "aquasecurity",
-							Name:    "trivy",
-							Version: "dev",
+					Tools: &cyclonedx.ToolsChoice{
+						Components: &[]cyclonedx.Component{
+							{
+								Type:    cyclonedx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+							},
 						},
 					},
 					Component: &cyclonedx.Component{
@@ -154,7 +193,10 @@ var (
 						Type:   cyclonedx.ComponentTypeApplication,
 						Name:   "go.mod",
 						Properties: &[]cyclonedx.Property{
-							{Name: "aquasecurity:trivy:SchemaVersion", Value: "2"},
+							{
+								Name:  "aquasecurity:trivy:SchemaVersion",
+								Value: "2",
+							},
 						},
 					},
 				},
@@ -164,8 +206,14 @@ var (
 						Type:   cyclonedx.ComponentTypeApplication,
 						Name:   "go.mod",
 						Properties: &[]cyclonedx.Property{
-							{Name: "aquasecurity:trivy:Type", Value: "gomod"},
-							{Name: "aquasecurity:trivy:Class", Value: "lang-pkgs"},
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "gomod",
+							},
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "lang-pkgs",
+							},
 						},
 					},
 					{
@@ -175,7 +223,10 @@ var (
 						Version:    "1.5.0",
 						PackageURL: "pkg:golang/github.com/spf13/cobra@1.5.0",
 						Properties: &[]cyclonedx.Property{
-							{Name: "aquasecurity:trivy:PkgType", Value: "gomod"},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "gomod",
+							},
 						},
 					},
 				},
@@ -205,7 +256,7 @@ var (
 		Predicate: &attestation.CosignPredicate{
 			Data: &cyclonedx.BOM{
 				BOMFormat:   cyclonedx.BOMFormat,
-				SpecVersion: cyclonedx.SpecVersion1_4,
+				SpecVersion: cyclonedx.SpecVersion1_5,
 				Version:     2,
 			},
 		},
@@ -220,7 +271,7 @@ var (
 			IntegratedTime: lo.ToPtr(int64(1661476639)),
 			LogID:          lo.ToPtr("c0d23d6ad406973f9559f3ba2d1ca01f84147d8ffc5b8445c224f98b9591801d"),
 			LogIndex:       lo.ToPtr(int64(3280165)),
-			Verification:   nil, // TODO
+			Verification:   nil,
 		},
 		"392f8ecba72f4326eb624a7403756250b5f2ad58842a99d1653cd6f147f4ce9eda2da350bd908a55": {
 			Attestation: &models.LogEntryAnonAttestation{
@@ -230,7 +281,7 @@ var (
 			IntegratedTime: lo.ToPtr(int64(1661476639)),
 			LogID:          lo.ToPtr("c0d23d6ad406973f9559f3ba2d1ca01f84147d8ffc5b8445c224f98b9591801d"),
 			LogIndex:       lo.ToPtr(int64(3280165)),
-			Verification:   nil, // TODO
+			Verification:   nil,
 		},
 		"24296fb24b8ad77aa715cdfd264ce34c4d544375d7bd7cd029bf5a48ef25217a13fdba562e0889ca": {
 			Attestation: &models.LogEntryAnonAttestation{
@@ -240,7 +291,7 @@ var (
 			IntegratedTime: lo.ToPtr(int64(1664451604)),
 			LogID:          lo.ToPtr("c0d23d6ad406973f9559f3ba2d1ca01f84147d8ffc5b8445c224f98b9591801d"),
 			LogIndex:       lo.ToPtr(int64(4215471)),
-			Verification:   nil, // TODO
+			Verification:   nil,
 		},
 		"24296fb24b8ad77a8d47be2e40bfe910f0ffc842e86b5685dd85d1c903ef78bb6362125816426fe9": {
 			Attestation: &models.LogEntryAnonAttestation{
@@ -250,7 +301,7 @@ var (
 			IntegratedTime: lo.ToPtr(int64(1661476639)),
 			LogID:          lo.ToPtr("c0d23d6ad406973f9559f3ba2d1ca01f84147d8ffc5b8445c224f98b9591801d"),
 			LogIndex:       lo.ToPtr(int64(3280165)),
-			Verification:   nil, // TODO
+			Verification:   nil,
 		},
 	}
 )
@@ -265,32 +316,32 @@ func NewServer(t *testing.T) *Server {
 		case "/api/v1/index/retrieve":
 			var params models.SearchIndex
 			err := json.NewDecoder(r.Body).Decode(&params)
-			require.NoError(t, err)
+			assert.NoError(t, err)
 
 			if res, ok := indexRes[params.Hash]; ok {
 				w.Header().Set("Content-Type", "application/json")
 				err = json.NewEncoder(w).Encode(res)
-				require.NoError(t, err)
+				assert.NoError(t, err)
 			} else {
 				http.Error(w, "something wrong", http.StatusNotFound)
 			}
 		case "/api/v1/log/entries/retrieve":
 			var params models.SearchLogQuery
 			err := json.NewDecoder(r.Body).Decode(&params)
-			require.NoError(t, err)
+			assert.NoError(t, err)
 
 			resEntries := models.LogEntry{}
 			for _, uuid := range params.EntryUUIDs {
-				if e, ok := entries[uuid]; !ok {
+				e, ok := entries[uuid]
+				if !ok {
 					http.Error(w, "no such uuid", http.StatusNotFound)
 					return
-				} else {
-					resEntries[uuid] = e
 				}
+				resEntries[uuid] = e
 			}
 			w.Header().Set("Content-Type", "application/json")
 			err = json.NewEncoder(w).Encode([]models.LogEntry{resEntries})
-			require.NoError(t, err)
+			assert.NoError(t, err)
 		}
 		return
 	}))

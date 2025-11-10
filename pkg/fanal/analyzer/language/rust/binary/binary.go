@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/rust/binary"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/rust/binary"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -22,16 +22,14 @@ const version = 1
 
 type rustBinaryLibraryAnalyzer struct{}
 
-func (a rustBinaryLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	p := binary.NewParser()
-	libs, deps, err := p.Parse(input.Content)
+func (a rustBinaryLibraryAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	res, err := language.Analyze(ctx, types.RustBinary, input.FilePath, input.Content, binary.NewParser())
 	if errors.Is(err, binary.ErrUnrecognizedExe) || errors.Is(err, binary.ErrNonRustBinary) {
 		return nil, nil
 	} else if err != nil {
 		return nil, xerrors.Errorf("rust binary parse error: %w", err)
 	}
-
-	return language.ToAnalysisResult(types.RustBinary, input.FilePath, "", libs, deps), nil
+	return res, nil
 }
 
 func (a rustBinaryLibraryAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {

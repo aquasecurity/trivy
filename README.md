@@ -21,7 +21,6 @@ Targets (what Trivy can scan):
 - Git Repository (remote)
 - Virtual Machine Image
 - Kubernetes
-- AWS
 
 Scanners (what Trivy can find there):
 
@@ -30,6 +29,8 @@ Scanners (what Trivy can find there):
 - IaC issues and misconfigurations
 - Sensitive information and secrets
 - Software licenses
+
+Trivy supports most popular programming languages, operating systems, and platforms. For a complete list, see the [Scanning Coverage] page.
 
 To learn more, go to the [Trivy homepage][homepage] for feature highlights, or to the [Documentation site][docs] for detailed information.
 
@@ -76,7 +77,7 @@ https://user-images.githubusercontent.com/1161307/171013513-95f18734-233d-45d3-a
 </details>
 
 ```bash
-trivy fs --scanners vuln,secret,config myproject/
+trivy fs --scanners vuln,secret,misconfig myproject/
 ```
 
 <details>
@@ -103,11 +104,20 @@ trivy k8s --report summary cluster
 
 `tri` is pronounced like **tri**gger, `vy` is pronounced like en**vy**.
 
----
+## Want more? Check out Aqua
+
+If you liked Trivy, you will love Aqua which builds on top of Trivy to provide even more enhanced capabilities for a complete security management offering.  
+You can find a high level comparison table specific to Trivy users [here](https://trivy.dev/latest/commercial/compare/).
+In addition check out the <https://aquasec.com> website for more information about our products and services.
+If you'd like to contact Aqua or request a demo, please use this form: <https://www.aquasec.com/demo>
+
+## Community
 
 Trivy is an [Aqua Security][aquasec] open source project.  
 Learn about our open source work and portfolio [here][oss].  
 Contact us about any matter by opening a GitHub Discussion [here][discussions]
+
+Please ensure to abide by our [Code of Conduct][code-of-conduct] during all interactions.
 
 [test]: https://github.com/aquasecurity/trivy/actions/workflows/test.yaml
 [test-img]: https://github.com/aquasecurity/trivy/actions/workflows/test.yaml/badge.svg
@@ -120,11 +130,13 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 [license]: https://github.com/aquasecurity/trivy/blob/main/LICENSE
 [license-img]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 [homepage]: https://trivy.dev
-[docs]: https://aquasecurity.github.io/trivy
+[docs]: https://trivy.dev/latest/docs/
 [pronunciation]: #how-to-pronounce-the-name-trivy
+[code-of-conduct]: https://github.com/aquasecurity/community/blob/main/CODE_OF_CONDUCT.md
 
-[Installation]:https://aquasecurity.github.io/trivy/latest/getting-started/installation/
-[Ecosystem]: https://aquasecurity.github.io/trivy/latest/ecosystem/
+[Installation]:https://trivy.dev/latest/getting-started/installation/
+[Ecosystem]: https://trivy.dev/latest/ecosystem/
+[Scanning Coverage]: https://trivy.dev/latest/docs/coverage/
 
 [alpine]: https://ariadne.space/2021/06/08/the-vulnerability-remediation-lifecycle-of-alpine-containers/
 [rego]: https://www.openpolicyagent.org/docs/latest/#rego

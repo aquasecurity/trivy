@@ -12,7 +12,8 @@ import (
 	"github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/vm"
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/disk"
@@ -23,6 +24,8 @@ import (
 // If vm type vmdk max cache memory size 64 MB
 const storageFILECacheSize = 1024
 
+const imageFileArtifactVersion = 0
+
 // ImageFile represents an local VM image file
 type ImageFile struct {
 	Storage
@@ -32,11 +35,18 @@ type ImageFile struct {
 	reader   *io.SectionReader
 }
 
-func newFile(filePath string, storage Storage) (*ImageFile, error) {
+func newFile(filePath string, storage Storage) (imgFile *ImageFile, err error) {
 	f, err := os.Open(filePath)
 	if err != nil {
 		return nil, xerrors.Errorf("file open error: %w", err)
 	}
+
+	// Close file on error
+	defer func() {
+		if err != nil && f != nil {
+			f.Close()
+		}
+	}()
 
 	c, err := lru.New[string, []byte](storageFILECacheSize)
 	if err != nil {
@@ -49,8 +59,9 @@ func newFile(filePath string, storage Storage) (*ImageFile, error) {
 			return nil, err
 		}
 
-		log.Logger.Debugf("VM image not detected: %s", err)
-		log.Logger.Debugf("Assume raw image")
+		logger := log.WithPrefix("vm")
+		logger.Debug("VM image not detected", log.Err(err))
+		logger.Debug("Assume raw image")
 		fi, err := f.Stat()
 		if err != nil {
 			return nil, xerrors.Errorf("file stat error: %w", err)
@@ -67,24 +78,24 @@ func newFile(filePath string, storage Storage) (*ImageFile, error) {
 	}, nil
 }
 
-func (a *ImageFile) Inspect(ctx context.Context) (types.ArtifactReference, error) {
+func (a *ImageFile) Inspect(ctx context.Context) (artifact.Reference, error) {
 	blobInfo, err := a.Analyze(ctx, a.reader)
 	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("inspection error: %w", err)
+		return artifact.Reference{}, xerrors.Errorf("inspection error: %w", err)
 	}
 
 	cacheKey, err := a.calcCacheKey(blobInfo)
 	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("cache calculation error: %w", err)
+		return artifact.Reference{}, xerrors.Errorf("cache calculation error: %w", err)
 	}
 
-	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
+	if err = a.cache.PutBlob(ctx, cacheKey, blobInfo); err != nil {
+		return artifact.Reference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 
-	return types.ArtifactReference{
+	return artifact.Reference{
 		Name:    a.filePath,
-		Type:    types.ArtifactVM,
+		Type:    types.TypeVM,
 		ID:      cacheKey, // use a cache key as pseudo artifact ID
 		BlobIDs: []string{cacheKey},
 	}, nil
@@ -98,7 +109,7 @@ func (a *ImageFile) calcCacheKey(blobInfo types.BlobInfo) (string, error) {
 	}
 
 	d := digest.NewDigest(digest.SHA256, h)
-	cacheKey, err := cache.CalcKey(d.String(), a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
+	cacheKey, err := cache.CalcKey(d.String(), imageFileArtifactVersion, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
 	if err != nil {
 		return "", xerrors.Errorf("cache key: %w", err)
 	}
@@ -106,7 +117,7 @@ func (a *ImageFile) calcCacheKey(blobInfo types.BlobInfo) (string, error) {
 	return cacheKey, nil
 }
 
-func (a *ImageFile) Clean(reference types.ArtifactReference) error {
+func (a *ImageFile) Clean(reference artifact.Reference) error {
 	_ = a.file.Close()
-	return a.cache.DeleteBlobs(reference.BlobIDs)
+	return a.cache.DeleteBlobs(context.TODO(), reference.BlobIDs)
 }

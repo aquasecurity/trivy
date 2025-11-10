@@ -7,16 +7,19 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestScanFlagGroup_ToOptions(t *testing.T) {
 	type fields struct {
-		skipDirs    []string
-		skipFiles   []string
-		offlineScan bool
-		scanners    string
+		skipDirs         []string
+		skipFiles        []string
+		offlineScan      bool
+		scanners         string
+		distro           string
+		skipVersionCheck bool
 	}
 	tests := []struct {
 		name      string
@@ -38,23 +41,13 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			name: "happy path for configs",
 			args: []string{"alpine:latest"},
 			fields: fields{
-				scanners: "config",
+				scanners: "misconfig",
 			},
 			want: flag.ScanOptions{
 				Target:   "alpine:latest",
 				Scanners: types.Scanners{types.MisconfigScanner},
 			},
 			assertion: require.NoError,
-		},
-		{
-			name: "with wrong scanner",
-			fields: fields{
-				scanners: "vuln,WRONG-CHECK",
-			},
-			want: flag.ScanOptions{},
-			assertion: func(t require.TestingT, err error, msgs ...interface{}) {
-				require.ErrorContains(t, err, "unknown scanner: WRONG-CHECK")
-			},
 		},
 		{
 			name:      "without target (args)",
@@ -115,27 +108,62 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			},
 			assertion: require.NoError,
 		},
+		{
+			name: "happy path `distro` flag",
+			fields: fields{
+				distro: "alpine/3.20",
+			},
+			want: flag.ScanOptions{
+				Distro: ftypes.OS{
+					Family: "alpine",
+					Name:   "3.20",
+				},
+			},
+			assertion: require.NoError,
+		},
+		{
+			name: "sad distro flag",
+			fields: fields{
+				distro: "sad",
+			},
+			assertion: require.Error,
+		},
+		{
+			name: "skip version check flag",
+			fields: fields{
+				skipVersionCheck: true,
+			},
+			want: flag.ScanOptions{
+				SkipVersionCheck: true,
+			},
+			assertion: require.NoError,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			viper.Set(flag.SkipDirsFlag.ConfigName, tt.fields.skipDirs)
-			viper.Set(flag.SkipFilesFlag.ConfigName, tt.fields.skipFiles)
-			viper.Set(flag.OfflineScanFlag.ConfigName, tt.fields.offlineScan)
-			viper.Set(flag.ScannersFlag.ConfigName, tt.fields.scanners)
+			t.Cleanup(viper.Reset)
+			setSliceValue(flag.SkipDirsFlag.ConfigName, tt.fields.skipDirs)
+			setSliceValue(flag.SkipFilesFlag.ConfigName, tt.fields.skipFiles)
+			setValue(flag.OfflineScanFlag.ConfigName, tt.fields.offlineScan)
+			setValue(flag.ScannersFlag.ConfigName, tt.fields.scanners)
+			setValue(flag.DistroFlag.ConfigName, tt.fields.distro)
+			setValue(flag.SkipVersionCheckFlag.ConfigName, tt.fields.skipVersionCheck)
 
 			// Assert options
 			f := &flag.ScanFlagGroup{
-				SkipDirs:    &flag.SkipDirsFlag,
-				SkipFiles:   &flag.SkipFilesFlag,
-				OfflineScan: &flag.OfflineScanFlag,
-				Scanners:    &flag.ScannersFlag,
+				SkipDirs:         flag.SkipDirsFlag.Clone(),
+				SkipFiles:        flag.SkipFilesFlag.Clone(),
+				OfflineScan:      flag.OfflineScanFlag.Clone(),
+				Scanners:         flag.ScannersFlag.Clone(),
+				DistroFlag:       flag.DistroFlag.Clone(),
+				SkipVersionCheck: flag.SkipVersionCheckFlag.Clone(),
 			}
 
-			got, err := f.ToOptions(tt.args)
+			flags := flag.Flags{f}
+			got, err := flags.ToOptions(tt.args)
 			tt.assertion(t, err)
-			assert.Equalf(t, tt.want, got, "ToOptions()")
+			assert.Equal(t, tt.want, got.ScanOptions)
 		})
-
 	}
 }

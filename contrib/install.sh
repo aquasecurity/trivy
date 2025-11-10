@@ -75,10 +75,12 @@ get_binaries() {
     linux/ppc64le) BINARIES="trivy" ;;
     linux/arm64) BINARIES="trivy" ;;
     linux/armv7) BINARIES="trivy" ;;
+    linux/s390x) BINARIES="trivy" ;;
     openbsd/386) BINARIES="trivy" ;;
     openbsd/amd64) BINARIES="trivy" ;;
     openbsd/arm64) BINARIES="trivy" ;;
     openbsd/armv7) BINARIES="trivy" ;;
+    windows/amd64) BINARIES="trivy" ;;
     *)
       log_crit "platform $PLATFORM is not supported.  Make sure this script is up-to-date and file request at https://github.com/${PREFIX}/issues/new"
       exit 1
@@ -102,6 +104,9 @@ tag_to_version() {
 }
 adjust_format() {
   # change format (tar.gz or zip) based on OS
+  case ${OS} in
+    windows) FORMAT=zip ;;
+  esac
   true
 }
 adjust_os() {
@@ -111,7 +116,8 @@ adjust_os() {
     amd64) OS=64bit ;;
     arm) OS=ARM ;;
     arm64) OS=ARM64 ;;
-    ppc64le) OS=PPC64LE ;;
+    ppc64le) OS=Linux ;;
+    s390x) OS=Linux ;;
     darwin) OS=macOS ;;
     dragonfly) OS=DragonFlyBSD ;;
     freebsd) OS=FreeBSD ;;
@@ -127,8 +133,10 @@ adjust_arch() {
     386) ARCH=32bit ;;
     amd64) ARCH=64bit ;;
     arm) ARCH=ARM ;;
+    armv7) ARCH=ARM ;;
     arm64) ARCH=ARM64 ;;
-    ppc64le) OS=PPC64LE ;;
+    ppc64le) ARCH=PPC64LE ;;
+    s390x) ARCH=s390x ;;
     darwin) ARCH=macOS ;;
     dragonfly) ARCH=DragonFlyBSD ;;
     freebsd) ARCH=FreeBSD ;;
@@ -217,6 +225,7 @@ uname_arch() {
     armv5*) arch="armv5" ;;
     armv6*) arch="armv6" ;;
     armv7*) arch="armv7" ;;
+    s390*) arch="s390x" ;;
   esac
   echo ${arch}
 }

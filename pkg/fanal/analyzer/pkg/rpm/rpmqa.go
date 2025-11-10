@@ -4,14 +4,15 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"slices"
+	"strconv"
 	"strings"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
@@ -44,12 +45,13 @@ func (a rpmqaPkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 	}, nil
 }
 
-func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r io.ReadSeekerAt) ([]types.Package, error) {
+func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r xio.ReadSeekerAt) ([]types.Package, error) {
 	var pkgs []types.Package
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		line := scanner.Text()
 		var name, ver, rel, sourceRpm, arch string
+		var epoch int
 		// %{NAME}\t%{VERSION}-%{RELEASE}\t%{INSTALLTIME}\t%{BUILDTIME}\t%{VENDOR}\t(none)\t%{SIZE}\t%{ARCH}\t%{EPOCHNUM}\t%{SOURCERPM}
 		s := strings.Split(line, "\t")
 		if len(s) != 10 {
@@ -68,16 +70,21 @@ func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r io.ReadSeekerAt) ([]types.Package
 		if err != nil {
 			return nil, xerrors.Errorf("failed to split source rpm: %w", err)
 		}
-		pkg := types.Package{
+		epoch, err = strconv.Atoi(s[8])
+		if err != nil {
+			return nil, xerrors.Errorf("failed to parse epoch number (%s): %w", s[8], err)
+		}
+		pkgs = append(pkgs, types.Package{
 			Name:       name,
 			Version:    ver,
+			Epoch:      epoch,
 			Release:    rel,
 			Arch:       arch,
 			SrcName:    srcName,
+			SrcEpoch:   epoch,
 			SrcVersion: srcVer,
 			SrcRelease: srcRel,
-		}
-		pkgs = append(pkgs, pkg)
+		})
 	}
 	return pkgs, nil
 }
@@ -92,4 +99,8 @@ func (a rpmqaPkgAnalyzer) Type() analyzer.Type {
 
 func (a rpmqaPkgAnalyzer) Version() int {
 	return versionRpmqa
+}
+
+func (a rpmqaPkgAnalyzer) StaticPaths() []string {
+	return requiredRpmqaFiles
 }

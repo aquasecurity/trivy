@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
 	dimage "github.com/docker/docker/api/types/image"
+	"github.com/docker/docker/client"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
+	dockerspec "github.com/moby/docker-image-spec/specs-go/v1"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -29,7 +29,7 @@ var mu sync.Mutex
 
 type opener func() (v1.Image, error)
 
-type imageSave func(context.Context, []string) (io.ReadCloser, error)
+type imageSave func(context.Context, []string, ...client.ImageSaveOption) (io.ReadCloser, error)
 
 func imageOpener(ctx context.Context, ref string, f *os.File, imageSave imageSave) opener {
 	return func() (v1.Image, error) {
@@ -61,7 +61,7 @@ func imageOpener(ctx context.Context, ref string, f *os.File, imageSave imageSav
 type image struct {
 	v1.Image
 	opener  opener
-	inspect types.ImageInspect
+	inspect dimage.InspectResponse
 	history []v1.History
 }
 
@@ -110,18 +110,27 @@ func (img *image) ConfigFile() (*v1.ConfigFile, error) {
 		return nil, xerrors.Errorf("unable to get diff IDs: %w", err)
 	}
 
-	created, err := time.Parse(time.RFC3339Nano, img.inspect.Created)
-	if err != nil {
-		return nil, xerrors.Errorf("failed parsing created %s: %w", img.inspect.Created, err)
+	var created v1.Time
+	// `Created` field can be empty. Skip parsing to avoid error.
+	// cf. https://github.com/moby/moby/blob/8e96db1c328d0467b015768e42a62c0f834970bb/api/types/types.go#L76-L77
+	if img.inspect.Created != "" {
+		var t time.Time
+		t, err = time.Parse(time.RFC3339Nano, img.inspect.Created)
+		if err != nil {
+			return nil, xerrors.Errorf("failed parsing created %s: %w", img.inspect.Created, err)
+		}
+		created = v1.Time{
+			Time: t,
+		}
 	}
 
 	return &v1.ConfigFile{
 		Architecture:  img.inspect.Architecture,
 		Author:        img.inspect.Author,
 		Container:     img.inspect.Container,
-		Created:       v1.Time{Time: created},
+		Created:       created,
 		DockerVersion: img.inspect.DockerVersion,
-		Config:        img.imageConfig(img.inspect.Config),
+		Config:        img.imageConfig(lo.FromPtr(img.inspect.Config)),
 		History:       img.history,
 		OS:            img.inspect.Os,
 		RootFS: v1.RootFS{
@@ -132,7 +141,7 @@ func (img *image) ConfigFile() (*v1.ConfigFile, error) {
 }
 
 func (img *image) configFile() (*v1.ConfigFile, error) {
-	log.Logger.Debug("Saving the container image to a local file to obtain the image config...")
+	log.Debug("Saving the container image to a local file to obtain the image config...")
 
 	// Need to fall back into expensive operations like "docker save"
 	// because the config file cannot be generated properly from container engine API for some reason.
@@ -176,34 +185,33 @@ func (img *image) diffIDs() ([]v1.Hash, error) {
 	return diffIDs, nil
 }
 
-func (img *image) imageConfig(config *container.Config) v1.Config {
-	if config == nil {
-		return v1.Config{}
+func (img *image) imageConfig(config dockerspec.DockerOCIImageConfig) v1.Config {
+	c := v1.Config{
+		// OCI-compliant fields
+		User:        config.User,
+		Cmd:         config.Cmd,
+		Entrypoint:  config.Entrypoint,
+		Env:         config.Env,
+		Labels:      config.Labels,
+		WorkingDir:  config.WorkingDir,
+		StopSignal:  config.StopSignal,
+		ArgsEscaped: config.ArgsEscaped,
+		OnBuild:     config.OnBuild,
+		Shell:       config.Shell,
 	}
 
-	c := v1.Config{
-		AttachStderr:    config.AttachStderr,
-		AttachStdin:     config.AttachStdin,
-		AttachStdout:    config.AttachStdout,
-		Cmd:             config.Cmd,
-		Domainname:      config.Domainname,
-		Entrypoint:      config.Entrypoint,
-		Env:             config.Env,
-		Hostname:        config.Hostname,
-		Image:           config.Image,
-		Labels:          config.Labels,
-		OnBuild:         config.OnBuild,
-		OpenStdin:       config.OpenStdin,
-		StdinOnce:       config.StdinOnce,
-		Tty:             config.Tty,
-		User:            config.User,
-		Volumes:         config.Volumes,
-		WorkingDir:      config.WorkingDir,
-		ArgsEscaped:     config.ArgsEscaped,
-		NetworkDisabled: config.NetworkDisabled,
-		MacAddress:      config.MacAddress,
-		StopSignal:      config.StopSignal,
-		Shell:           config.Shell,
+	if len(config.ExposedPorts) > 0 {
+		c.ExposedPorts = make(map[string]struct{}) //nolint: gocritic
+		for port := range config.ExposedPorts {
+			c.ExposedPorts[port] = struct{}{}
+		}
+	}
+
+	if len(config.Volumes) > 0 {
+		c.Volumes = make(map[string]struct{}) //nolint: gocritic
+		for volume := range config.Volumes {
+			c.Volumes[volume] = struct{}{}
+		}
 	}
 
 	if config.Healthcheck != nil {
@@ -213,13 +221,6 @@ func (img *image) imageConfig(config *container.Config) v1.Config {
 			Timeout:     config.Healthcheck.Timeout,
 			StartPeriod: config.Healthcheck.StartPeriod,
 			Retries:     config.Healthcheck.Retries,
-		}
-	}
-
-	if len(config.ExposedPorts) > 0 {
-		c.ExposedPorts = map[string]struct{}{}
-		for port := range c.ExposedPorts {
-			c.ExposedPorts[port] = struct{}{}
 		}
 	}
 

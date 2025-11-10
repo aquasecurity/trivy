@@ -1,8 +1,12 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:1d4bc53b38b27a97aca270bea3abf3e9ea14964d02c71d2c93cd7bc53b74d660",
   "ArtifactName": "testdata/fixtures/images/photon-30.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 34946560,
     "OS": {
       "Family": "photon",
       "Name": "3.0"
@@ -11,6 +15,10 @@
     "DiffIDs": [
       "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:photon-30"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:photon-30",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "ed27e7f1fbd8ef9d3ea89947f682907e9a65a8e51bbe2e0eba60db6e69213848",
@@ -54,7 +62,14 @@
         },
         "ArgsEscaped": true
       }
-    }
+    },
+    "Layers": [
+      {
+        "Size": 34946560,
+        "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
+        "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
+      }
+    ]
   },
   "Results": [
     {
@@ -66,8 +81,13 @@
           "VulnerabilityID": "CVE-2019-18276",
           "PkgID": "bash@4.4.18-1.ph3.x86_64",
           "PkgName": "bash",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/photon/bash@4.4.18-1.ph3?arch=x86_64\u0026distro=photon-3.0",
+            "UID": "a092142482df7886"
+          },
           "InstalledVersion": "4.4.18-1.ph3",
           "FixedVersion": "4.4.18-2.ph3",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
             "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
@@ -85,6 +105,14 @@
           "CweIDs": [
             "CWE-273"
           ],
+          "VendorSeverity": {
+            "cbl-mariner": 3,
+            "nvd": 3,
+            "oracle-oval": 1,
+            "photon": 3,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -117,8 +145,13 @@
           "VulnerabilityID": "CVE-2019-5481",
           "PkgID": "curl@7.61.1-4.ph3.x86_64",
           "PkgName": "curl",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/photon/curl@7.61.1-4.ph3?arch=x86_64\u0026distro=photon-3.0",
+            "UID": "1f44492024a630e8"
+          },
           "InstalledVersion": "7.61.1-4.ph3",
           "FixedVersion": "7.61.1-5.ph3",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
             "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
@@ -136,6 +169,15 @@
           "CweIDs": [
             "CWE-415"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "arch-linux": 2,
+            "nvd": 4,
+            "oracle-oval": 2,
+            "photon": 4,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -175,8 +217,13 @@
           "VulnerabilityID": "CVE-2019-5481",
           "PkgID": "curl-libs@7.61.1-4.ph3.x86_64",
           "PkgName": "curl-libs",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/photon/curl-libs@7.61.1-4.ph3?arch=x86_64\u0026distro=photon-3.0",
+            "UID": "434cc417a46529a9"
+          },
           "InstalledVersion": "7.61.1-4.ph3",
           "FixedVersion": "7.61.1-5.ph3",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
             "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
@@ -194,6 +241,15 @@
           "CweIDs": [
             "CWE-415"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "arch-linux": 2,
+            "nvd": 4,
+            "oracle-oval": 2,
+            "photon": 4,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",

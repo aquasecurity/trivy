@@ -12,6 +12,61 @@
 
 Your scan may time out. Java takes a particularly long time to scan. Try increasing the value of the ---timeout option such as `--timeout 15m`.
 
+### Unable to initialize an image scanner
+
+!!! error
+    ```bash
+    $ trivy image ...
+    ...
+    2024-01-19T08:15:33.288Z	FATAL	image scan error: scan error: unable to initialize a scanner: unable to initialize an image scanner: 4 errors occurred:
+	* docker error: unable to inspect the image (ContainerImageName): Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+	* containerd error: containerd socket not found: /run/containerd/containerd.sock
+	* podman error: unable to initialize Podman client: no podman socket found: stat podman/podman.sock: no such file or directory
+	* remote error: GET https://index.docker.io/v2/ContainerImageName: MANIFEST_UNKNOWN: manifest unknown; unknown tag=0.1
+    ```
+    
+It means Trivy is unable to find the container image in the following places:
+
+* Docker Engine
+* containerd
+* Podman
+* A remote registry
+
+Please see error messages for details of each error.
+
+Common mistakes include the following, depending on where you are pulling images from:
+
+#### Common
+- Typos in the image name
+    - Common mistake :)
+- Forgetting to specify the registry
+    - By default, it is considered to be Docker Hub ( `index.docker.io` ).
+
+#### Docker Engine
+- Incorrect Docker host
+    - If the Docker daemon's socket path is not `/var/run/docker.sock`, you need to specify the `--docker-host` flag or the `DOCKER_HOST` environment variable.
+      The same applies when using TCP; you must specify the correct host address.
+
+#### containerd
+- Incorrect containerd address
+    - If you are using a non-default path, you need to specify the `CONTAINERD_ADDRESS` environment variable.
+      Please refer to [this documentation](../target/container_image.md#containerd).
+- Incorrect namespace
+    - If you are using a non-default namespace, you need to specify the `CONTAINERD_NAMESPACE` environment variable.
+      Please refer to [this documentation](../target/container_image.md#containerd).
+    - 
+#### Podman
+- Podman socket configuration
+    - You need to enable the Podman socket. Please refer to [this documentation](../target/container_image.md#podman).
+
+#### Container Registry
+- Unauthenticated
+    - If you are using a private container registry, you need to authenticate. Please refer to [this documentation](../advanced/private-registries/index.md).
+- Using a proxy
+    - If you are using a proxy within your network, you need to correctly set the `HTTP_PROXY`, `HTTPS_PROXY`, etc., environment variables.
+- Use of a self-signed certificate in the registry
+    - Because certificate verification will fail, you need to either trust that certificate or use the `--insecure` flag (not recommended in production).
+
 ### Certification
 
 !!! error
@@ -23,21 +78,35 @@ Your scan may time out. Java takes a particularly long time to scan. Try increas
 $ TRIVY_INSECURE=true trivy image [YOUR_IMAGE]
 ```
 
+On Unix systems other than macOS, you can specify the location of your certificate using `SSL_CERT_FILE` or `SSL_CERT_DIR` environment variables.
+
+```
+$ SSL_CERT_FILE=/path/to/cert trivy image [YOUR_IMAGE]
+```
+
+```
+$ SSL_CERT_DIR=/path/to/certs trivy image [YOUR_IMAGE]
+```
+
 ### GitHub Rate limiting
+Trivy uses GitHub API for [VEX repositories](../supply-chain/vex/repo.md).
 
 !!! error
     ``` bash
-    $ trivy image ...
+    $ trivy image --vex repo ...
     ...
     API rate limit exceeded for xxx.xxx.xxx.xxx.
     ```
 
-Specify GITHUB_TOKEN for authentication
-https://developer.github.com/v3/#rate-limiting
+Specify GITHUB_TOKEN for [authentication](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28)
 
 ```
-$ GITHUB_TOKEN=XXXXXXXXXX trivy alpine:3.10
+$ GITHUB_TOKEN=XXXXXXXXXX trivy image --vex repo [YOUR_IMAGE]
 ```
+
+!!! note
+    `GITHUB_TOKEN` doesn't help with the rate limit for the vulnerability database and other assets.
+    See https://github.com/aquasecurity/trivy/discussions/8009
 
 ### Unable to open JAR files
 
@@ -56,14 +125,68 @@ $ trivy image --download-java-db-only
 $ trivy image [YOUR_JAVA_IMAGE]
 ```
 
-### Running in parallel takes same time as series run
-When running trivy on multiple images simultaneously, it will take same time as running trivy in series.
-This is because of a limitation of boltdb.
-> Bolt obtains a file lock on the data file so multiple processes cannot open the same database at the same time. Opening an already open Bolt database will cause it to hang until the other process closes it.
+### Cache lock errors
 
-Reference : [boltdb: Opening a database][boltdb].
+!!! error
+    ```
+    cache may be in use by another process
+    ```
 
-[boltdb]: https://github.com/boltdb/bolt#opening-a-database
+Trivy's vulnerability database is opened in read-only mode, so it does not cause lock issues. Lock errors occur only when using filesystem cache for scan cache storage.
+
+Filesystem cache uses BoltDB internally, which creates file locks to prevent data corruption. As stated in the BoltDB documentation:
+
+> Please note that Bolt obtains a file lock on the data file so multiple processes cannot open the same database at the same time. Opening an already open Bolt database will cause it to hang until the other process closes it.
+
+Reference: [BoltDB README](https://github.com/boltdb/bolt#opening-a-database)
+
+If you're using memory cache (default for some commands like `fs`, `rootfs`, `config`, and `sbom`) or external cache (Redis), you will not encounter lock errors. Lock issues only occur when using filesystem cache with multiple concurrent processes.
+See [Cache Backend](../configuration/cache.md#scan-cache-backend) for more details.
+
+These errors occur when:
+
+- Multiple Trivy processes try to use the same filesystem cache directory simultaneously
+- A previous Trivy process did not shut down cleanly
+- Trivy server is running with filesystem cache and holding a lock on the cache
+
+#### Solutions
+
+**Solution 1: Use memory cache or Redis cache** (Recommended)
+
+Memory cache is the default for some commands (e.g., `fs`, `rootfs`, `config`, `sbom`). For other commands like image scanning, you can use `--cache-backend memory` to enable concurrent execution:
+
+```bash
+$ trivy image --cache-backend memory debian:11 &
+$ trivy image --cache-backend memory debian:12 &
+```
+
+Note that memory cache does not persist scan results, so subsequent scans will take longer as layers need to be scanned again each time.
+
+For server mode or persistent cache with concurrent access, use Redis cache:
+
+```bash
+$ trivy server --cache-backend redis://localhost:6379
+```
+
+**Solution 2: Terminate conflicting processes**
+
+If you need to use filesystem cache, check for running Trivy processes and terminate them:
+
+```bash
+$ ps aux | grep trivy
+$ kill [process_id]
+```
+
+**Solution 3: Use different cache directories**
+
+If you must run multiple Trivy processes with filesystem cache, specify different cache directories for each process:
+
+```bash
+$ trivy image --cache-dir /tmp/trivy-cache-1 debian:11 &
+$ trivy image --cache-dir /tmp/trivy-cache-2 debian:12 &
+```
+
+Note that each cache directory will download its own copy of the vulnerability database and other scan assets, which will increase network traffic and storage usage.
 
 ### Multiple Trivy servers
 
@@ -99,13 +222,41 @@ $ TMPDIR=/my/custom/path trivy repo ...
     write /tmp/fanal-3323732142: no space left on device
     ```
 
-Trivy uses the `/tmp` directory during image scan, if the image is large or `/tmp` is of insufficient size then the scan fails You can set the `TMPDIR` environment variable to use redirect trivy to use a directory with adequate storage.
+Trivy uses a temporary directory during image scans.
+The directory path would be determined as follows:
 
-Try:
+- On Unix systems: Use `$TMPDIR` if non-empty, else `/tmp`.
+- On Windows: Uses GetTempPath, returning the first non-empty value from `%TMP%`, `%TEMP%`, `%USERPROFILE%`, or the Windows directory.
+
+See [this documentation](https://golang.org/pkg/os/#TempDir) for more details.
+
+If the image is large or the temporary directory has insufficient space, the scan will fail.
+You can configure the directory path to redirect Trivy to a directory with adequate storage.
+On Unix systems, you can set the `$TMPDIR` environment variable.
 
 ```
 $ TMPDIR=/my/custom/path trivy image ...
 ```
+
+When scanning images from a container registry, Trivy processes each layer by streaming, loading only the necessary files for the scan into memory and discarding unnecessary files.
+If a layer contains large files that are necessary for the scan (such as JAR files or binary files), Trivy saves them to a temporary directory (e.g. $TMPDIR) on local storage to avoid increased memory consumption.
+Although these files are deleted after the scan is complete, they can temporarily increase disk consumption and potentially exhaust storage.
+In such cases, there are currently three workarounds:
+
+1. Use a temporary directory with sufficient capacity
+ 
+    This is the same as explained above.
+ 
+2. Specify a small value for `--parallel`
+ 
+    By default, multiple layers are processed in parallel.
+    If each layer contains large files, disk space may be consumed rapidly.
+    By specifying a small value such as `--parallel 1`, parallelism is reduced, which can mitigate the issue.
+
+3. Specify `--skip-files` or `--skip-dirs`
+ 
+    If the container image contains large files that do not need to be scanned, you can skip their processing by specifying --skip-files or --skip-dirs. 
+    For more details, please refer to [this documentation](../configuration/skipping.md).
 
 ## DB
 ### Old DB schema
@@ -120,10 +271,7 @@ Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database o
 !!! error
     FATAL failed to download vulnerability DB
 
-If trivy is running behind corporate firewall, you have to add the following urls to your allowlist.
-
-- ghcr.io
-- pkg-containers.githubusercontent.com
+If Trivy is running behind corporate firewall, refer to the necessary connectivity requirements as described [here][network].
 
 ### Denied
 
@@ -137,6 +285,11 @@ Please remove the token and try downloading the DB again.
 docker logout ghcr.io
 ```
 
+or
+
+```shell
+unset GITHUB_TOKEN
+```
 
 ## Homebrew
 ### Scope error
@@ -178,14 +331,34 @@ $ brew install aquasecurity/trivy/trivy
 ```
 
 
+## Debugging
+### HTTP Request/Response Tracing
+
+For debugging network issues, connection problems, or authentication failures, you can enable HTTP request/response tracing using the `--trace-http` flag.
+
+!!! danger "Security Warning"
+    While Trivy attempts to redact known sensitive information such as authentication headers and common secrets, the `--trace-http` flag may still expose sensitive data in HTTP requests and responses.
+    
+    **Never use this flag in production environments or CI/CD pipelines.**
+    This flag is automatically disabled in CI environments for security.
+
+```bash
+# Enable HTTP tracing for debugging registry issues
+$ trivy image --trace-http registry.example.com/my-image:latest
+
+# HTTP tracing with other debugging options
+$ trivy image --trace-http --debug --insecure my-image:tag
+```
+
 ## Others
 ### Unknown error
 
-Try again with `--reset` option:
+Try again after running `trivy clean --all`:
 
 ```
-$ trivy image --reset
+$ trivy clean --all
 ```
 
 [air-gapped]: ../advanced/air-gap.md
-[redis-cache]: ../../vulnerability/examples/cache/#cache-backend
+[network]: ../advanced/air-gap.md#connectivity-requirements
+[redis-cache]: ../configuration/cache.md#redis

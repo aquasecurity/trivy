@@ -2,7 +2,7 @@ package parallel_test
 
 import (
 	"context"
-	"math"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,21 +14,21 @@ import (
 func TestPipeline_Do(t *testing.T) {
 	type field struct {
 		numWorkers int
-		items      []float64
-		onItem     func(float64) (float64, error)
+		items      []int
+		onItem     func(context.Context, int) (int, error)
 	}
 	type testCase struct {
 		name    string
 		field   field
-		want    float64
-		wantErr bool
+		want    int
+		wantErr require.ErrorAssertionFunc
 	}
 	tests := []testCase{
 		{
 			name: "pow",
 			field: field{
 				numWorkers: 5,
-				items: []float64{
+				items: []int{
 					1,
 					2,
 					3,
@@ -40,42 +40,73 @@ func TestPipeline_Do(t *testing.T) {
 					9,
 					10,
 				},
-				onItem: func(f float64) (float64, error) {
-					return math.Pow(f, 2), nil
+				onItem: func(_ context.Context, i int) (int, error) {
+					return i * i, nil
 				},
 			},
-			want: 385,
+			want:    385,
+			wantErr: require.NoError,
 		},
 		{
-			name: "ceil",
+			name: "double",
 			field: field{
 				numWorkers: 3,
-				items: []float64{
-					1.1,
-					2.2,
-					3.3,
-					4.4,
-					5.5,
-					-1.1,
-					-2.2,
-					-3.3,
+				items: []int{
+					1,
+					2,
+					3,
+					4,
+					5,
+					-1,
+					-2,
+					-3,
 				},
-				onItem: func(f float64) (float64, error) {
-					return math.Round(f), nil
+				onItem: func(_ context.Context, i int) (int, error) {
+					return i * 2, nil
 				},
 			},
-			want: 10,
+			want:    18,
+			wantErr: require.NoError,
+		},
+		{
+			name: "error in series",
+			field: field{
+				numWorkers: 1,
+				items: []int{
+					1,
+					2,
+					3,
+				},
+				onItem: func(_ context.Context, _ int) (int, error) {
+					return 0, errors.New("error")
+				},
+			},
+			wantErr: require.Error,
+		},
+		{
+			name: "error in parallel",
+			field: field{
+				numWorkers: 3,
+				items: []int{
+					1,
+					2,
+				},
+				onItem: func(_ context.Context, _ int) (int, error) {
+					return 0, errors.New("error")
+				},
+			},
+			wantErr: require.Error,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var got float64
-			p := parallel.NewPipeline(tt.field.numWorkers, false, tt.field.items, tt.field.onItem, func(f float64) error {
+			var got int
+			p := parallel.NewPipeline(tt.field.numWorkers, false, tt.field.items, tt.field.onItem, func(f int) error {
 				got += f
 				return nil
 			})
-			err := p.Do(context.Background())
-			require.NoError(t, err)
+			err := p.Do(t.Context())
+			tt.wantErr(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

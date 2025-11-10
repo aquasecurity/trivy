@@ -1,31 +1,94 @@
 package language
 
 import (
-	"strings"
+	"context"
+	"io"
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-func Analyze(fileType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Parser) (*analyzer.AnalysisResult, error) {
-	parsedLibs, parsedDependencies, err := parser.Parse(r)
+type Parser interface {
+	// Parse parses the dependency file
+	Parse(_ context.Context, r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error)
+}
+
+// Analyze returns an analysis result of the lock file
+func Analyze(ctx context.Context, fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser) (*analyzer.AnalysisResult, error) {
+	app, err := Parse(ctx, fileType, filePath, r, parser)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
+	}
+
+	if app == nil {
+		return nil, nil
+	}
+
+	return &analyzer.AnalysisResult{Applications: []types.Application{*app}}, nil
+}
+
+// AnalyzePackage returns an analysis result of the package file other than lock files
+func AnalyzePackage(ctx context.Context, fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*analyzer.AnalysisResult, error) {
+	app, err := ParsePackage(ctx, fileType, filePath, r, parser, checksum)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
+	}
+
+	if app == nil {
+		return nil, nil
+	}
+
+	return &analyzer.AnalysisResult{Applications: []types.Application{*app}}, nil
+}
+
+// Parse returns a parsed result of the lock file
+func Parse(ctx context.Context, fileType types.LangType, filePath string, r io.Reader, parser Parser) (*types.Application, error) {
+	rr, err := xio.NewReadSeekerAt(r)
+	if err != nil {
+		return nil, xerrors.Errorf("reader error: %w", err)
+	}
+	parsedPkgs, parsedDependencies, err := parser.Parse(ctx, rr)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}
 
 	// The file path of each library should be empty in case of dependency list such as lock file
 	// since they all will be the same path.
-	return ToAnalysisResult(fileType, filePath, "", parsedLibs, parsedDependencies), nil
+	return toApplication(fileType, filePath, "", nil, parsedPkgs, parsedDependencies), nil
 }
 
-func ToApplication(fileType, filePath, libFilePath string, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *types.Application {
-	if len(libs) == 0 {
+// ParsePackage returns a parsed result of the package file
+func ParsePackage(ctx context.Context, fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*types.Application, error) {
+	parsedPkgs, parsedDependencies, err := parser.Parse(ctx, r)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
+	}
+
+	// The reader is not passed if the checksum is not necessarily calculated.
+	if !checksum {
+		r = nil
+	}
+
+	// The file path of each library should be empty in case of dependency list such as lock file
+	// since they all will be the same path.
+	return toApplication(fileType, filePath, filePath, r, parsedPkgs, parsedDependencies), nil
+}
+
+func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.ReadSeekerAt, pkgs []types.Package, depGraph []types.Dependency) *types.Application {
+	if len(pkgs) == 0 {
 		return nil
+	}
+
+	// Calculate the file digest when one of `spdx` formats is selected
+	d, err := calculateDigest(r)
+	if err != nil {
+		log.Warn("Unable to get checksum", log.FilePath(filePath), log.Err(err))
 	}
 
 	deps := make(map[string][]string)
@@ -33,47 +96,44 @@ func ToApplication(fileType, filePath, libFilePath string, libs []godeptypes.Lib
 		deps[dep.ID] = dep.DependsOn
 	}
 
-	var pkgs []types.Package
-	for _, lib := range libs {
-		var licenses []string
-		if lib.License != "" {
-			licenses = strings.Split(lib.License, ",")
-			for i, license := range licenses {
-				licenses[i] = licensing.Normalize(strings.TrimSpace(license))
-			}
+	for i, pkg := range pkgs {
+		// This file path is populated for virtual file paths within archives, such as nested JAR files.
+		if pkg.FilePath == "" {
+			pkgs[i].FilePath = libFilePath
 		}
-		var locs []types.Location
-		for _, loc := range lib.Locations {
-			l := types.Location{
-				StartLine: loc.StartLine,
-				EndLine:   loc.EndLine,
-			}
-			locs = append(locs, l)
+		pkgs[i].DependsOn = deps[pkg.ID]
+		pkgs[i].Digest = d
+		pkgs[i].Indirect = isIndirect(pkg.Relationship) // For backward compatibility
+
+		for j, license := range pkg.Licenses {
+			pkgs[i].Licenses[j] = licensing.Normalize(license)
 		}
-		pkgs = append(pkgs, types.Package{
-			ID:        lib.ID,
-			Name:      lib.Name,
-			Version:   lib.Version,
-			FilePath:  libFilePath,
-			Indirect:  lib.Indirect,
-			Licenses:  licenses,
-			DependsOn: deps[lib.ID],
-			Locations: locs,
-		})
 	}
 
 	return &types.Application{
-		Type:      fileType,
-		FilePath:  filePath,
-		Libraries: pkgs,
+		Type:     fileType,
+		FilePath: filePath,
+		Packages: pkgs,
 	}
 }
 
-func ToAnalysisResult(fileType, filePath, libFilePath string, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *analyzer.AnalysisResult {
-	app := ToApplication(fileType, filePath, libFilePath, libs, depGraph)
-	if app == nil {
-		return nil
+func calculateDigest(r xio.ReadSeekerAt) (digest.Digest, error) {
+	if r == nil {
+		return "", nil
+	}
+	// return reader to start after it has been read in analyzer
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return "", xerrors.Errorf("unable to seek: %w", err)
 	}
 
-	return &analyzer.AnalysisResult{Applications: []types.Application{*app}}
+	return digest.CalcSHA1(r)
+}
+
+func isIndirect(rel types.Relationship) bool {
+	switch rel {
+	case types.RelationshipIndirect:
+		return true
+	default:
+		return false
+	}
 }

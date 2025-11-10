@@ -3,24 +3,25 @@ package types
 import (
 	"fmt"
 	"sort"
+
+	"github.com/samber/lo"
 )
 
 type Misconfiguration struct {
-	FileType   string         `json:",omitempty"`
-	FilePath   string         `json:",omitempty"`
-	Successes  MisconfResults `json:",omitempty"`
-	Warnings   MisconfResults `json:",omitempty"`
-	Failures   MisconfResults `json:",omitempty"`
-	Exceptions MisconfResults `json:",omitempty"`
-	Layer      Layer          `json:",omitempty"`
+	FileType  ConfigType     `json:",omitempty"`
+	FilePath  string         `json:",omitempty"`
+	Successes MisconfResults `json:",omitempty"`
+	Warnings  MisconfResults `json:",omitempty"`
+	Failures  MisconfResults `json:",omitempty"`
+	Layer     Layer          `json:",omitzero"`
 }
 
 type MisconfResult struct {
 	Namespace      string `json:",omitempty"`
 	Query          string `json:",omitempty"`
 	Message        string `json:",omitempty"`
-	PolicyMetadata `json:",omitempty"`
-	CauseMetadata  `json:",omitempty"`
+	PolicyMetadata `json:",omitzero"`
+	CauseMetadata  `json:",omitzero"`
 
 	// For debugging
 	Traces []string `json:",omitempty"`
@@ -29,12 +30,25 @@ type MisconfResult struct {
 type MisconfResults []MisconfResult
 
 type CauseMetadata struct {
-	Resource  string `json:",omitempty"`
-	Provider  string `json:",omitempty"`
-	Service   string `json:",omitempty"`
-	StartLine int    `json:",omitempty"`
-	EndLine   int    `json:",omitempty"`
-	Code      Code   `json:",omitempty"`
+	Resource      string        `json:",omitempty"`
+	Provider      string        `json:",omitempty"`
+	Service       string        `json:",omitempty"`
+	StartLine     int           `json:",omitempty"`
+	EndLine       int           `json:",omitempty"`
+	Code          Code          `json:",omitzero"`
+	Occurrences   []Occurrence  `json:",omitempty"`
+	RenderedCause RenderedCause `json:",omitzero"`
+}
+
+type Occurrence struct {
+	Resource string `json:",omitempty"`
+	Filename string `json:",omitempty"`
+	Location Location
+}
+
+type RenderedCause struct {
+	Raw         string `json:",omitempty"`
+	Highlighted string `json:",omitempty"`
 }
 
 type Code struct {
@@ -53,7 +67,8 @@ type Line struct {
 }
 
 type PolicyMetadata struct {
-	ID                 string   `json:",omitempty"`
+	ID string `json:",omitempty"`
+	// Deprecated: Use the ID field instead.
 	AVDID              string   `json:",omitempty"`
 	Type               string   `json:",omitempty"`
 	Title              string   `json:",omitempty"`
@@ -84,10 +99,14 @@ func (r MisconfResults) Less(i, j int) bool {
 	switch {
 	case r[i].Type != r[j].Type:
 		return r[i].Type < r[j].Type
+	case r[i].AVDID != r[j].AVDID:
+		return r[i].AVDID < r[j].AVDID
 	case r[i].ID != r[j].ID:
 		return r[i].ID < r[j].ID
 	case r[i].Severity != r[j].Severity:
 		return r[i].Severity < r[j].Severity
+	case r[i].Resource != r[j].Resource:
+		return r[i].Resource < r[j].Resource
 	}
 	return r[i].Message < r[j].Message
 }
@@ -97,12 +116,13 @@ func ToMisconfigurations(misconfs map[string]Misconfiguration) []Misconfiguratio
 	for _, misconf := range misconfs {
 		// Remove duplicates
 		misconf.Successes = uniqueResults(misconf.Successes)
+		misconf.Warnings = uniqueResults(misconf.Warnings)
+		misconf.Failures = uniqueResults(misconf.Failures)
 
 		// Sort results
 		sort.Sort(misconf.Successes)
 		sort.Sort(misconf.Warnings)
 		sort.Sort(misconf.Failures)
-		sort.Sort(misconf.Exceptions)
 
 		results = append(results, misconf)
 	}
@@ -119,15 +139,11 @@ func ToMisconfigurations(misconfs map[string]Misconfiguration) []Misconfiguratio
 }
 
 func uniqueResults(results []MisconfResult) []MisconfResult {
-	uniq := map[string]MisconfResult{}
-	for _, result := range results {
-		key := fmt.Sprintf("%s::%s::%s", result.ID, result.Namespace, result.Message)
-		uniq[key] = result
+	if len(results) == 0 {
+		return results
 	}
-
-	var uniqResults []MisconfResult
-	for _, s := range uniq {
-		uniqResults = append(uniqResults, s)
-	}
-	return uniqResults
+	return lo.UniqBy(results, func(result MisconfResult) string {
+		return fmt.Sprintf("ID: %s, Namespace: %s, Messsage: %s, Cause: %v",
+			result.ID, result.Namespace, result.Message, result.CauseMetadata)
+	})
 }

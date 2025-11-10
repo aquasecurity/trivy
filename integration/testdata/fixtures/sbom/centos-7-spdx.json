@@ -8,7 +8,7 @@
 		]
 	},
 	"dataLicense": "CC0-1.0",
-	"documentNamespace": "http://aquasecurity.github.io/trivy/container_image/integration/testdata/fixtures/images/centos-7.tar.gz-2906855d-5098-4a22-9a72-4f7099ea3d66",
+	"documentNamespace": "http://trivy.dev/container_image/integration/testdata/fixtures/images/centos-7.tar.gz-2906855d-5098-4a22-9a72-4f7099ea3d66",
 	"name": "integration/testdata/fixtures/images/centos-7.tar.gz",
 	"packages": [
 		{
@@ -16,7 +16,9 @@
 			"attributionTexts": [
 				"SchemaVersion: 2",
 				"ImageID: sha256:f1cb7c7d58b73eac859c395882eec49d50651244e342cd6c68a5c7809785f427",
-				"DiffID: sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
+				"DiffID: sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a",
+				"RepoTag: ghcr.io/aquasecurity/trivy-test-images:centos-7",
+				"Reference: ghcr.io/aquasecurity/trivy-test-images:centos-7"
 			],
 			"filesAnalyzed": false,
 			"name": "integration/testdata/fixtures/images/centos-7.tar.gz"
@@ -58,7 +60,7 @@
 			"externalRefs": [
 				{
 					"referenceCategory": "PACKAGE-MANAGER",
-					"referenceLocator": "pkg:rpm/centos/openssl-libs@1:1.0.2k-16.el7?arch=x86_64\u0026distro=centos-7.6.1810",
+					"referenceLocator": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026epoch=1\u0026distro=centos-7.6.1810",
 					"referenceType": "purl"
 				}
 			],
@@ -67,13 +69,13 @@
 			"licenseDeclared": "OpenSSL",
 			"name": "openssl-libs",
 			"sourceInfo": "built package from: openssl-libs 1:1.0.2k-16.el7",
-			"versionInfo": "1.0.2k"
+			"versionInfo": "1:1.0.2k-19.el7"
 		}
 	],
 	"relationships": [
 		{
 			"relatedSpdxElement": "SPDXRef-ContainerImage-dd5cad897c6263",
-			"relationshipType": "DESCRIBE",
+			"relationshipType": "DESCRIBES",
 			"spdxElementId": "SPDXRef-DOCUMENT"
 		},
 		{

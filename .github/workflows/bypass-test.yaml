@@ -1,0 +1,35 @@
+# This workflow is used to bypass the required status checks.
+# cf. https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/troubleshooting-required-status-checks
+name: Test
+on:
+  push:
+    paths:
+      - '**.md'
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'LICENSE'
+      - '.release-please-manifest.json'
+      - 'helm/trivy/Chart.yaml'
+  pull_request:
+    paths:
+      - '**.md'
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'LICENSE'
+      - '.release-please-manifest.json'
+      - 'helm/trivy/Chart.yaml'
+jobs:
+  test:
+    name: Test
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - run: 'echo "No test required"'
+
+  integration:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    steps:
+      - run: 'echo "No test required"'

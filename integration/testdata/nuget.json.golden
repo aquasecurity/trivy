@@ -1,19 +1,9 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/nuget",
-  "ArtifactType": "filesystem",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/nuget",
+  "ArtifactType": "repository",
   "Results": [
     {
       "Target": "packages.lock.json",
@@ -23,20 +13,28 @@
         {
           "ID": "Newtonsoft.Json@12.0.3",
           "Name": "Newtonsoft.Json",
+          "Identifier": {
+            "PURL": "pkg:nuget/Newtonsoft.Json@12.0.3",
+            "UID": "1cec16ca9d4718aa"
+          },
           "Version": "12.0.3",
-          "Layer": {},
+          "Relationship": "direct",
           "Locations": [
             {
               "StartLine": 5,
               "EndLine": 10
             }
-         ]
+          ]
         },
         {
           "ID": "NuGet.Frameworks@5.7.0",
           "Name": "NuGet.Frameworks",
+          "Identifier": {
+            "PURL": "pkg:nuget/NuGet.Frameworks@5.7.0",
+            "UID": "ed284c615e250d47"
+          },
           "Version": "5.7.0",
-          "Layer": {},
+          "Relationship": "direct",
           "DependsOn": [
             "Newtonsoft.Json@12.0.3"
           ],
@@ -45,17 +43,21 @@
               "StartLine": 11,
               "EndLine": 19
             }
-         ]
+          ]
         }
       ],
       "Vulnerabilities": [
         {
           "VulnerabilityID": "GHSA-5crp-9r3c-p9vr",
-          "PkgName": "Newtonsoft.Json",
           "PkgID": "Newtonsoft.Json@12.0.3",
+          "PkgName": "Newtonsoft.Json",
+          "PkgIdentifier": {
+            "PURL": "pkg:nuget/Newtonsoft.Json@12.0.3",
+            "UID": "1cec16ca9d4718aa"
+          },
           "InstalledVersion": "12.0.3",
           "FixedVersion": "13.0.1",
-          "Layer": {},
+          "Status": "fixed",
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://github.com/advisories/GHSA-5crp-9r3c-p9vr",
           "DataSource": {
@@ -69,6 +71,9 @@
           "CweIDs": [
             "CWE-755"
           ],
+          "VendorSeverity": {
+            "ghsa": 3
+          },
           "CVSS": {
             "ghsa": {
               "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",

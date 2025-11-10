@@ -1,9 +1,10 @@
 # Community References
 Below is a list of additional resources from the community.
 
-## Vulnderability Scanning
+## Vulnerability Scanning
 
 - [Detecting Spring4Shell with Trivy and Grype](https://youtu.be/mOfBcpJWwSs)
+- [Scan OS of your EC2 instances with Trivy](https://pabis.eu/blog/2023-05-01-Scan-Instances-With-Trivy.html)
 
 ## CI/CD Pipelines
 
@@ -15,7 +16,7 @@ Below is a list of additional resources from the community.
 ## Misconfiguration Scanning
 
 - [Identifying Misconfigurations in your Terraform](https://youtu.be/cps1V5fOHtE)
-- [How to write custom policies for Trivy](https://blog.ediri.io/how-to-write-custom-policies-for-trivy)
+- [How to write custom checks for Trivy](https://blog.ediri.io/how-to-write-custom-policies-for-trivy)
 
 ## SBOM, Attestation & related
 

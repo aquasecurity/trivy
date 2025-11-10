@@ -1,65 +1,36 @@
 package json
 
 import (
-	"context"
-	"io"
 	"os"
 	"path/filepath"
 
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
+)
+
+const (
+	analyzerType = analyzer.TypeJSON
+	version      = 1
 )
 
 func init() {
-	analyzer.RegisterAnalyzer(&jsonConfigAnalyzer{})
+	analyzer.RegisterPostAnalyzer(analyzerType, newJSONConfigAnalyzer)
 }
 
-const version = 1
+// jsonConfigAnalyzer analyzes JSON files
+type jsonConfigAnalyzer struct {
+	*config.Analyzer
+}
 
-var (
-	requiredExt   = ".json"
-	excludedFiles = []string{types.NpmPkgLock, types.NuGetPkgsLock, types.NuGetPkgsConfig}
-)
-
-type jsonConfigAnalyzer struct{}
-
-func (a jsonConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	b, err := io.ReadAll(input.Content)
+func newJSONConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+	a, err := config.NewAnalyzer(analyzerType, version, detection.FileTypeJSON, opts)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to read %s: %w", input.FilePath, err)
+		return nil, err
 	}
-
-	return &analyzer.AnalysisResult{
-		Files: map[types.HandlerType][]types.File{
-			// It will be passed to misconfig post handler
-			types.MisconfPostHandler: {
-				{
-					Type:    types.JSON,
-					Path:    input.FilePath,
-					Content: b,
-				},
-			},
-		},
-	}, nil
+	return &jsonConfigAnalyzer{Analyzer: a}, nil
 }
 
-func (a jsonConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	filename := filepath.Base(filePath)
-	for _, excludedFile := range excludedFiles {
-		if filename == excludedFile {
-			return false
-		}
-	}
-
-	return filepath.Ext(filePath) == requiredExt
-}
-
-func (jsonConfigAnalyzer) Type() analyzer.Type {
-	return analyzer.TypeJSON
-}
-
-func (jsonConfigAnalyzer) Version() int {
-	return version
+func (*jsonConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	return filepath.Ext(filePath) == ".json"
 }

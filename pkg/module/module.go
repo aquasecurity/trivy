@@ -3,27 +3,26 @@ package module
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sync"
 
-	"github.com/mailru/easyjson"
 	"github.com/samber/lo"
 	"github.com/tetratelabs/wazero"
 	"github.com/tetratelabs/wazero/api"
 	wasi "github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/log"
 	tapi "github.com/aquasecurity/trivy/pkg/module/api"
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
-	"github.com/aquasecurity/trivy/pkg/scanner/post"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 var (
@@ -33,64 +32,49 @@ var (
 		"warn":  logWarn,
 		"error": logError,
 	}
-
-	RelativeDir = filepath.Join(".trivy", "modules")
-
-	DefaultDir = dir()
 )
 
 // logDebug is defined as an api.GoModuleFunc for lower overhead vs reflection.
 func logDebug(_ context.Context, mod api.Module, params []uint64) {
 	offset, size := uint32(params[0]), uint32(params[1])
-
 	buf := readMemory(mod.Memory(), offset, size)
 	if buf != nil {
-		log.Logger.Debug(string(buf))
+		log.Debug(string(buf))
 	}
-
-	return
 }
 
 // logInfo is defined as an api.GoModuleFunc for lower overhead vs reflection.
 func logInfo(_ context.Context, mod api.Module, params []uint64) {
 	offset, size := uint32(params[0]), uint32(params[1])
-
 	buf := readMemory(mod.Memory(), offset, size)
 	if buf != nil {
-		log.Logger.Info(string(buf))
+		log.Info(string(buf))
 	}
-
-	return
 }
 
 // logWarn is defined as an api.GoModuleFunc for lower overhead vs reflection.
 func logWarn(_ context.Context, mod api.Module, params []uint64) {
 	offset, size := uint32(params[0]), uint32(params[1])
-
 	buf := readMemory(mod.Memory(), offset, size)
 	if buf != nil {
-		log.Logger.Warn(string(buf))
+		log.Warn(string(buf))
 	}
-
-	return
 }
 
 // logError is defined as an api.GoModuleFunc for lower overhead vs reflection.
 func logError(_ context.Context, mod api.Module, params []uint64) {
 	offset, size := uint32(params[0]), uint32(params[1])
-
 	buf := readMemory(mod.Memory(), offset, size)
 	if buf != nil {
-		log.Logger.Error(string(buf))
+		log.Error(string(buf))
 	}
-
-	return
 }
 
 func readMemory(mem api.Memory, offset, size uint32) []byte {
 	buf, ok := mem.Read(offset, size)
 	if !ok {
-		log.Logger.Errorf("Memory.Read(%d, %d) out of range", offset, size)
+		log.Error("Memory.Read() out of range",
+			log.Int("offset", int(offset)), log.Int("size", int(size)))
 		return nil
 	}
 	return buf
@@ -130,7 +114,7 @@ func (m *Manager) loadModules(ctx context.Context) error {
 	if os.IsNotExist(err) {
 		return nil
 	}
-	log.Logger.Debugf("Module dir: %s", m.dir)
+	log.Debug("Module dir", log.String("dir", m.dir))
 
 	err = filepath.Walk(m.dir, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
@@ -144,7 +128,7 @@ func (m *Manager) loadModules(ctx context.Context) error {
 			return xerrors.Errorf("failed to get a relative path: %w", err)
 		}
 
-		log.Logger.Infof("Reading %s...", rel)
+		log.Info("Reading a module...", log.String("path", rel))
 		wasmCode, err := os.ReadFile(path)
 		if err != nil {
 			return xerrors.Errorf("file read error: %w", err)
@@ -153,6 +137,9 @@ func (m *Manager) loadModules(ctx context.Context) error {
 		p, err := newWASMPlugin(ctx, m.cache, wasmCode)
 		if err != nil {
 			return xerrors.Errorf("WASM module init error %s: %w", rel, err)
+		} else if p == nil {
+			// Skip if nil => mismatch of API version etc.
+			return nil
 		}
 
 		// Skip Loading WASM modules if not in the list of enable modules flag.
@@ -160,9 +147,8 @@ func (m *Manager) loadModules(ctx context.Context) error {
 			return nil
 		}
 
-		log.Logger.Infof("%s loaded", rel)
+		log.Info("Module loaded", log.String("path", rel))
 		m.modules = append(m.modules, p)
-
 		return nil
 	})
 	if err != nil {
@@ -181,7 +167,7 @@ func (m *Manager) Register() {
 func (m *Manager) Deregister() {
 	for _, mod := range m.modules {
 		analyzer.DeregisterAnalyzer(analyzer.Type(mod.Name()))
-		post.DeregisterPostScanner(mod.Name())
+		extension.DeregisterHook(mod.Name())
 	}
 }
 
@@ -195,6 +181,8 @@ func splitPtrSize(u uint64) (uint32, uint32) {
 	return ptr, size
 }
 
+// ptrSizeToString reads the memory pointed by ptrSize, converting it to string.
+// IMPORTANT: If the WASM function allocated this string, the caller must free it (using freePtr).
 func ptrSizeToString(mem api.Memory, ptrSize uint64) (string, error) {
 	ptr, size := splitPtrSize(ptrSize)
 	buf := readMemory(mem, ptr, size)
@@ -204,7 +192,8 @@ func ptrSizeToString(mem api.Memory, ptrSize uint64) (string, error) {
 	return string(buf), nil
 }
 
-// stringToPtr returns a pointer and size pair for the given string in a way compatible with WebAssembly numeric types.
+// stringToPtrSize returns a pointer and size pair for the given string in a way compatible with WebAssembly numeric types.
+// The caller is responsible for calling free at some point if needed.
 func stringToPtrSize(ctx context.Context, s string, mod api.Module, malloc api.Function) (uint64, uint64, error) {
 	size := uint64(len(s))
 	results, err := malloc.Call(ctx, size)
@@ -218,10 +207,23 @@ func stringToPtrSize(ctx context.Context, s string, mod api.Module, malloc api.F
 		return 0, 0, xerrors.Errorf("Memory.Write(%d, %d) out of range of memory size %d",
 			ptr, size, mod.Memory().Size())
 	}
-
 	return ptr, size, nil
 }
 
+func freePtr(ctx context.Context, freeFn api.Function, ptrSize uint64) {
+	if ptrSize == 0 || freeFn == nil {
+		return
+	}
+	ptr, size := splitPtrSize(ptrSize)
+	if ptr == 0 {
+		return
+	}
+	// We're ignoring the error result to avoid overshadowing any preceding error.
+	_, _ = freeFn.Call(ctx, uint64(ptr), uint64(size))
+}
+
+// unmarshal reads memory at ptrSize, unmarshals JSON into v, but does not free automatically.
+// The caller must ensure the pointer is freed if needed.
 func unmarshal(mem api.Memory, ptrSize uint64, v any) error {
 	ptr, size := splitPtrSize(ptrSize)
 	buf := readMemory(mem, ptr, size)
@@ -231,12 +233,13 @@ func unmarshal(mem api.Memory, ptrSize uint64, v any) error {
 	if err := json.Unmarshal(buf, v); err != nil {
 		return xerrors.Errorf("unmarshal error: %w", err)
 	}
-
 	return nil
 }
 
-func marshal(ctx context.Context, m api.Module, malloc api.Function, v easyjson.Marshaler) (uint64, uint64, error) {
-	b, err := easyjson.Marshal(v)
+// marshal JSON-encodes v, calls malloc, writes the data into memory, and returns ptr+size in 64-bit.
+// The caller must free that pointer if the WASM side expects it freed.
+func marshal(ctx context.Context, m api.Module, malloc api.Function, v any) (uint64, uint64, error) {
+	b, err := json.Marshal(v)
 	if err != nil {
 		return 0, 0, xerrors.Errorf("marshal error: %w", err)
 	}
@@ -246,16 +249,15 @@ func marshal(ctx context.Context, m api.Module, malloc api.Function, v easyjson.
 	if err != nil {
 		return 0, 0, xerrors.Errorf("malloc error: %w", err)
 	}
-
-	// The pointer is a linear memory offset, which is where we write the marshaled value.
 	ptr := results[0]
 	if !m.Memory().Write(uint32(ptr), b) {
 		return 0, 0, xerrors.Errorf("Memory.Write(%d, %d) out of range of memory size %d",
 			ptr, size, m.Memory().Size())
 	}
-
 	return ptr, size, nil
 }
+
+var _ extension.ScanHook = (*wasmModule)(nil)
 
 type wasmModule struct {
 	mod   api.Module
@@ -273,13 +275,13 @@ type wasmModule struct {
 	// Exported functions
 	analyze  api.Function
 	postScan api.Function
-	malloc   api.Function // TinyGo specific
-	free     api.Function // TinyGo specific
+	malloc   api.Function // Exported by Trivy Wasm SDK
+	free     api.Function // Exported by Trivy Wasm SDK
 }
 
 func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []byte) (*wasmModule, error) {
 	mf := &memFS{}
-	config := wazero.NewModuleConfig().WithStdout(os.Stdout).WithFS(mf)
+	config := wazero.NewModuleConfig().WithStdout(os.Stdout).WithFS(mf).WithStartFunctions("_initialize")
 
 	// Create an empty namespace so that multiple modules will not conflict
 	r := wazero.NewRuntimeWithConfig(ctx, wazero.NewRuntimeConfig().WithCompilationCache(ccache))
@@ -312,19 +314,17 @@ func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []b
 		return nil, xerrors.Errorf("module compile error: %w", err)
 	}
 
-	// InstantiateModule runs the "_start" function which is what TinyGo compiles "main" to.
+	// InstantiateModule runs the "_initialize" function
 	mod, err := r.InstantiateModule(ctx, compiled, config)
 	if err != nil {
 		return nil, xerrors.Errorf("module init error: %w", err)
 	}
 
-	// These are undocumented, but exported. See tinygo-org/tinygo#2788
-	// TODO: improve TinyGo specific code
 	malloc := mod.ExportedFunction("malloc")
 	free := mod.ExportedFunction("free")
 
 	// Get a module name
-	name, err := moduleName(ctx, mod)
+	name, err := moduleName(ctx, mod, free)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get a module name: %w", err)
 	}
@@ -342,8 +342,9 @@ func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []b
 	}
 
 	if apiVersion != tapi.Version {
-		log.Logger.Infof("Ignore %s@v%d module due to API version mismatch, got: %d, want: %d",
-			name, version, apiVersion, tapi.Version)
+		log.Info("Ignore the module due to API version mismatch",
+			log.String("module", fmt.Sprintf("%s@v%d", name, version)),
+			log.Int("got", apiVersion), log.Int("want", tapi.Version))
 		return nil, nil
 	}
 
@@ -370,7 +371,7 @@ func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []b
 	var requiredFiles []*regexp.Regexp
 	if isAnalyzer {
 		// Get required files
-		requiredFiles, err = moduleRequiredFiles(ctx, mod)
+		requiredFiles, err = moduleRequiredFiles(ctx, mod, free)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get required files: %w", err)
 		}
@@ -379,7 +380,7 @@ func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []b
 	var postScanSpec serialize.PostScanSpec
 	if isPostScanner {
 		// This spec defines how the module works in post scanning like INSERT, UPDATE and DELETE.
-		postScanSpec, err = modulePostScanSpec(ctx, mod)
+		postScanSpec, err = modulePostScanSpec(ctx, mod, free)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get a post scan spec: %w", err)
 		}
@@ -404,14 +405,15 @@ func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []b
 }
 
 func (m *wasmModule) Register() {
-	log.Logger.Infof("Registering WASM module: %s@v%d", m.name, m.version)
+	logger := log.With(log.String("name", m.name), log.Int("version", m.version))
+	logger.Info("Registering WASM module")
 	if m.isAnalyzer {
-		log.Logger.Debugf("Registering custom analyzer in %s@v%d", m.name, m.version)
+		logger.Debug("Registering custom analyzer")
 		analyzer.RegisterAnalyzer(m)
 	}
 	if m.isPostScanner {
-		log.Logger.Debugf("Registering custom post scanner in %s@v%d", m.name, m.version)
-		post.RegisterPostScanner(m)
+		logger.Debug("Registering custom post scanner")
+		extension.RegisterHook(m)
 	}
 }
 
@@ -442,7 +444,7 @@ func (m *wasmModule) Required(filePath string, _ os.FileInfo) bool {
 
 func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	filePath := "/" + filepath.ToSlash(input.FilePath)
-	log.Logger.Debugf("Module %s: analyzing %s...", m.name, filePath)
+	log.Debug("Module analyzing...", log.String("module", m.name), log.FilePath(filePath))
 
 	// Wasm module instances are not Goroutine safe, so we take look here since Analyze might be called concurrently.
 	// TODO: This is temporary solution and we could improve the Analyze performance by having module instance pool.
@@ -453,12 +455,14 @@ func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 		return nil, err
 	}
 
+	// 1. Convert filePath -> WASM memory
 	inputPtr, inputSize, err := stringToPtrSize(ctx, filePath, m.mod, m.malloc)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to write string to memory: %w", err)
 	}
 	defer m.free.Call(ctx, inputPtr) // nolint: errcheck
 
+	// 2. Call analyze
 	analyzeRes, err := m.analyze.Call(ctx, inputPtr, inputSize)
 	if err != nil {
 		return nil, xerrors.Errorf("analyze error: %w", err)
@@ -466,27 +470,35 @@ func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 		return nil, xerrors.New("invalid signature: analyze")
 	}
 
+	// 3. The returned pointer/size from analyze must be freed after reading
+	resultPtrSize := analyzeRes[0]
+	defer freePtr(ctx, m.free, resultPtrSize)
+
+	// 4. Unmarshal the returned data
 	var result analyzer.AnalysisResult
-	if err = unmarshal(m.mod.Memory(), analyzeRes[0], &result); err != nil {
+	if err = unmarshal(m.mod.Memory(), resultPtrSize, &result); err != nil {
 		return nil, xerrors.Errorf("invalid return value: %w", err)
 	}
 
 	return &result, nil
 }
 
-// PostScan performs post scanning
-// e.g. Remove a vulnerability, change severity, etc.
+func (m *wasmModule) PreScan(_ context.Context, _ *types.ScanTarget, _ types.ScanOptions) error {
+	// TODO: Implement
+	return nil
+}
+
 func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types.Results, error) {
 	// Find custom resources
-	var custom serialize.Result
+	var custom types.Result
 	for _, result := range results {
 		if result.Class == types.ClassCustom {
-			custom = serialize.Result(result)
+			custom = result
 			break
 		}
 	}
 
-	arg := serialize.Results{custom}
+	arg := types.Results{custom}
 	switch m.postScanSpec.Action {
 	case tapi.ActionUpdate, tapi.ActionDelete:
 		// Pass the relevant results to the module
@@ -507,8 +519,13 @@ func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types
 		return nil, xerrors.New("invalid signature: post_scan")
 	}
 
+	// The returned pointer/size from post_scan must be freed after reading
+	postScanPtrSize := analyzeRes[0]
+	defer freePtr(ctx, m.free, postScanPtrSize)
+
+	// Unmarshal the result
 	var got types.Results
-	if err = unmarshal(m.mod.Memory(), analyzeRes[0], &got); err != nil {
+	if err = unmarshal(m.mod.Memory(), postScanPtrSize, &got); err != nil {
 		return nil, xerrors.Errorf("post scan unmarshal error: %w", err)
 	}
 
@@ -526,8 +543,8 @@ func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types
 	return results, nil
 }
 
-func findIDs(ids []string, results types.Results) serialize.Results {
-	var filtered serialize.Results
+func findIDs(ids []string, results types.Results) types.Results {
+	var filtered types.Results
 	for _, result := range results {
 		if result.Class == types.ClassCustom {
 			continue
@@ -539,7 +556,7 @@ func findIDs(ids []string, results types.Results) serialize.Results {
 			return slices.Contains(ids, m.ID)
 		})
 		if len(vulns) > 0 || len(misconfs) > 0 {
-			filtered = append(filtered, serialize.Result{
+			filtered = append(filtered, types.Result{
 				Target:            result.Target,
 				Class:             result.Class,
 				Type:              result.Type,
@@ -618,7 +635,7 @@ func deleteResults(gotResults, results types.Results) {
 	}
 }
 
-func moduleName(ctx context.Context, mod api.Module) (string, error) {
+func moduleName(ctx context.Context, mod api.Module, freeFn api.Function) (string, error) {
 	nameFunc := mod.ExportedFunction("name")
 	if nameFunc == nil {
 		return "", xerrors.New("name() must be exported")
@@ -631,7 +648,10 @@ func moduleName(ctx context.Context, mod api.Module) (string, error) {
 		return "", xerrors.New("invalid signature: name()")
 	}
 
-	name, err := ptrSizeToString(mod.Memory(), nameRes[0])
+	ptrSize := nameRes[0]
+	defer freePtr(ctx, freeFn, ptrSize)
+
+	name, err := ptrSizeToString(mod.Memory(), ptrSize)
 	if err != nil {
 		return "", xerrors.Errorf("invalid return value: %w", err)
 	}
@@ -650,7 +670,7 @@ func moduleVersion(ctx context.Context, mod api.Module) (int, error) {
 	} else if len(versionRes) != 1 {
 		return 0, xerrors.New("invalid signature: version")
 	}
-
+	// version is an int, not a pointer
 	return int(uint32(versionRes[0])), nil
 }
 
@@ -666,11 +686,11 @@ func moduleAPIVersion(ctx context.Context, mod api.Module) (int, error) {
 	} else if len(versionRes) != 1 {
 		return 0, xerrors.New("invalid signature: api_version")
 	}
-
+	// not a pointer
 	return int(uint32(versionRes[0])), nil
 }
 
-func moduleRequiredFiles(ctx context.Context, mod api.Module) ([]*regexp.Regexp, error) {
+func moduleRequiredFiles(ctx context.Context, mod api.Module, freeFn api.Function) ([]*regexp.Regexp, error) {
 	requiredFilesFunc := mod.ExportedFunction("required")
 	if requiredFilesFunc == nil {
 		return nil, xerrors.New("required() must be exported")
@@ -680,11 +700,14 @@ func moduleRequiredFiles(ctx context.Context, mod api.Module) ([]*regexp.Regexp,
 	if err != nil {
 		return nil, xerrors.Errorf("wasm function required() invocation error: %w", err)
 	} else if len(requiredFilesRes) != 1 {
-		return nil, xerrors.New("invalid signature: required_files")
+		return nil, xerrors.New("invalid signature: required")
 	}
 
-	var fileRegexps serialize.StringSlice
-	if err = unmarshal(mod.Memory(), requiredFilesRes[0], &fileRegexps); err != nil {
+	ptrSize := requiredFilesRes[0]
+	defer freePtr(ctx, freeFn, ptrSize)
+
+	var fileRegexps []string
+	if err = unmarshal(mod.Memory(), ptrSize, &fileRegexps); err != nil {
 		return nil, xerrors.Errorf("invalid return value: %w", err)
 	}
 
@@ -713,7 +736,6 @@ func isType(ctx context.Context, mod api.Module, name string) (bool, error) {
 	if isFunc == nil {
 		return false, xerrors.Errorf("%s() must be exported", name)
 	}
-
 	isRes, err := isFunc.Call(ctx)
 	if err != nil {
 		return false, xerrors.Errorf("wasm function %s() invocation error: %w", name, err)
@@ -724,11 +746,7 @@ func isType(ctx context.Context, mod api.Module, name string) (bool, error) {
 	return isRes[0] > 0, nil
 }
 
-func dir() string {
-	return filepath.Join(fsutils.HomeDir(), RelativeDir)
-}
-
-func modulePostScanSpec(ctx context.Context, mod api.Module) (serialize.PostScanSpec, error) {
+func modulePostScanSpec(ctx context.Context, mod api.Module, freeFn api.Function) (serialize.PostScanSpec, error) {
 	postScanSpecFunc := mod.ExportedFunction("post_scan_spec")
 	if postScanSpecFunc == nil {
 		return serialize.PostScanSpec{}, xerrors.New("post_scan_spec() must be exported")
@@ -741,8 +759,11 @@ func modulePostScanSpec(ctx context.Context, mod api.Module) (serialize.PostScan
 		return serialize.PostScanSpec{}, xerrors.New("invalid signature: post_scan_spec")
 	}
 
+	ptrSize := postScanSpecRes[0]
+	defer freePtr(ctx, freeFn, ptrSize)
+
 	var spec serialize.PostScanSpec
-	if err = unmarshal(mod.Memory(), postScanSpecRes[0], &spec); err != nil {
+	if err = unmarshal(mod.Memory(), ptrSize, &spec); err != nil {
 		return serialize.PostScanSpec{}, xerrors.Errorf("invalid return value: %w", err)
 	}
 

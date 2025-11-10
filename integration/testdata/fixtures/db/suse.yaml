@@ -1,0 +1,19 @@
+- bucket: "SUSE Linux Enterprise 15-SP3"
+  pairs:
+    - bucket: libopenssl1_1
+      pairs:
+        - key: "SUSE-SU-2022:2251-1"
+          value:
+            FixedVersion: 1.1.1d-150200.11.48.1
+    - bucket: openssl-1_1
+      pairs:
+        - key: "SUSE-SU-2022:2251-1"
+          value:
+            FixedVersion: 1.1.1d-150200.11.48.1
+- bucket: "SUSE Linux Enterprise Micro 5.3"
+  pairs:
+    - bucket: libopenssl1_1
+      pairs:
+        - key: "SUSE-SU-2023:0311-1"
+          value:
+            FixedVersion: 1.1.1l-150400.7.22.1

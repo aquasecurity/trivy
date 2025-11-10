@@ -9,8 +9,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func tryDockerDaemon(imageName string, ref name.Reference) (types.Image, func(), error) {
-	img, cleanup, err := daemon.DockerImage(ref)
+func tryDockerDaemon(ctx context.Context, imageName string, ref name.Reference, opt types.ImageOptions) (types.Image, func(), error) {
+	img, cleanup, err := daemon.DockerImage(ctx, ref, opt.DockerOptions.Host)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -21,19 +21,19 @@ func tryDockerDaemon(imageName string, ref name.Reference) (types.Image, func(),
 
 }
 
-func tryPodmanDaemon(ref string) (types.Image, func(), error) {
-	img, cleanup, err := daemon.PodmanImage(ref)
+func tryPodmanDaemon(ctx context.Context, imageName string, _ name.Reference, opts types.ImageOptions) (types.Image, func(), error) {
+	img, cleanup, err := daemon.PodmanImage(ctx, imageName, opts.PodmanOptions.Host)
 	if err != nil {
 		return nil, nil, err
 	}
 	return daemonImage{
 		Image: img,
-		name:  ref,
+		name:  imageName,
 	}, cleanup, nil
 }
 
-func tryContainerdDaemon(ctx context.Context, imageName string) (types.Image, func(), error) {
-	img, cleanup, err := daemon.ContainerdImage(ctx, imageName)
+func tryContainerdDaemon(ctx context.Context, imageName string, _ name.Reference, opts types.ImageOptions) (types.Image, func(), error) {
+	img, cleanup, err := daemon.ContainerdImage(ctx, imageName, opts)
 	if err != nil {
 		return nil, cleanup, err
 	}

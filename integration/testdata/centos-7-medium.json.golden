@@ -1,8 +1,12 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:8af996fb4a61e515887a173fdea3d5111c90c76e9f8247b3f668b17ab8215946",
   "ArtifactName": "testdata/fixtures/images/centos-7.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 209451008,
     "OS": {
       "Family": "centos",
       "Name": "7.6.1810"
@@ -11,6 +15,10 @@
     "DiffIDs": [
       "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:centos-7"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:centos-7",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "cc6043a787f6d1c7ae3e121ebdf1c4478186336aa7274871780a0a7bcc3a061a",
@@ -56,7 +64,14 @@
         },
         "ArgsEscaped": true
       }
-    }
+    },
+    "Layers": [
+      {
+        "Size": 209451008,
+        "Digest": "sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b",
+        "DiffID": "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
+      }
+    ]
   },
   "Results": [
     {
@@ -71,8 +86,13 @@
           ],
           "PkgID": "openssl-libs@1.0.2k-16.el7.x86_64",
           "PkgName": "openssl-libs",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026distro=centos-7.6.1810\u0026epoch=1",
+            "UID": "20f09cdcea6545a2"
+          },
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b",
             "DiffID": "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
@@ -85,6 +105,14 @@
           "CweIDs": [
             "CWE-203"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "arch-linux": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",

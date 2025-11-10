@@ -1,18 +1,25 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:6c3688715cb42ea1466b96eb45b39d8afc9f8cdcf723df8464fb26391711a7db",
   "ArtifactName": "testdata/fixtures/images/distroless-base.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 18503680,
     "OS": {
       "Family": "debian",
-      "Name": "9.9",
-      "EOSL": true
+      "Name": "9.9"
     },
     "ImageID": "sha256:7f04a8d247173b1f2546d22913af637bbab4e7411e00ae6207da8d94c445750d",
     "DiffIDs": [
       "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
       "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:distroless-base"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:distroless-base",
     "ImageConfig": {
       "architecture": "amd64",
       "author": "Bazel",
@@ -43,7 +50,19 @@
           "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt"
         ]
       }
-    }
+    },
+    "Layers": [
+      {
+        "Size": 3061760,
+        "Digest": "sha256:e8d8785a314f385d3675a017f4e2df1707c528c06e7a7989663fdab4900bd8ff",
+        "DiffID": "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"
+      },
+      {
+        "Size": 15441920,
+        "Digest": "sha256:e005d777a298a3529b1c8cf890883359e050cc966089ce84fea4d17b111907db",
+        "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+      }
+    ]
   },
   "Results": [
     {
@@ -55,7 +74,12 @@
           "VulnerabilityID": "CVE-2019-1551",
           "PkgID": "libssl1.1@1.1.0k-1~deb9u1",
           "PkgName": "libssl1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/libssl1.1@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9",
+            "UID": "96b92444b87304a5"
+          },
           "InstalledVersion": "1.1.0k-1~deb9u1",
+          "Status": "affected",
           "Layer": {
             "Digest": "sha256:e005d777a298a3529b1c8cf890883359e050cc966089ce84fea4d17b111907db",
             "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
@@ -73,6 +97,14 @@
           "CweIDs": [
             "CWE-200"
           ],
+          "VendorSeverity": {
+            "amazon": 1,
+            "nvd": 2,
+            "oracle-oval": 1,
+            "photon": 2,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -127,8 +159,13 @@
           ],
           "PkgID": "libssl1.1@1.1.0k-1~deb9u1",
           "PkgName": "libssl1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/libssl1.1@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9",
+            "UID": "96b92444b87304a5"
+          },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "FixedVersion": "1.1.0l-1~deb9u1",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:e005d777a298a3529b1c8cf890883359e050cc966089ce84fea4d17b111907db",
             "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
@@ -147,6 +184,14 @@
             "CWE-327",
             "CWE-203"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "nvd": 1,
+            "oracle-oval": 2,
+            "photon": 1,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -205,7 +250,12 @@
           "VulnerabilityID": "CVE-2019-1551",
           "PkgID": "openssl@1.1.0k-1~deb9u1",
           "PkgName": "openssl",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/openssl@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9",
+            "UID": "ed86402b9a8c2be6"
+          },
           "InstalledVersion": "1.1.0k-1~deb9u1",
+          "Status": "affected",
           "Layer": {
             "Digest": "sha256:e005d777a298a3529b1c8cf890883359e050cc966089ce84fea4d17b111907db",
             "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
@@ -223,6 +273,14 @@
           "CweIDs": [
             "CWE-200"
           ],
+          "VendorSeverity": {
+            "amazon": 1,
+            "nvd": 2,
+            "oracle-oval": 1,
+            "photon": 2,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -277,8 +335,13 @@
           ],
           "PkgID": "openssl@1.1.0k-1~deb9u1",
           "PkgName": "openssl",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/openssl@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9",
+            "UID": "ed86402b9a8c2be6"
+          },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "FixedVersion": "1.1.0l-1~deb9u1",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:e005d777a298a3529b1c8cf890883359e050cc966089ce84fea4d17b111907db",
             "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
@@ -297,6 +360,14 @@
             "CWE-327",
             "CWE-203"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "nvd": 1,
+            "oracle-oval": 2,
+            "photon": 1,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",

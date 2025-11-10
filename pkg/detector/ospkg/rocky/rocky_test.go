@@ -6,12 +6,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	fake "k8s.io/utils/clock/testing"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/internal/dbtest"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rocky"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -30,8 +30,11 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/rocky.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				"testdata/fixtures/rocky.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "8.5",
 				pkgs: []ftypes.Package{
@@ -40,7 +43,7 @@ func TestScanner_Detect(t *testing.T) {
 						Epoch:           0,
 						Version:         "4.18.0",
 						Release:         "348.el8.0.3",
-						Arch:            "x86_64",
+						Arch:            "aarch64",
 						SrcName:         "kernel",
 						SrcEpoch:        0,
 						SrcVersion:      "4.18.0",
@@ -56,7 +59,7 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "bpftool",
 					VulnerabilityID:  "CVE-2021-20317",
 					InstalledVersion: "4.18.0-348.el8.0.3",
-					FixedVersion:     "4.18.0-348.2.1.el8_5",
+					FixedVersion:     "5.18.0-348.2.1.el8_5",
 					Layer:            ftypes.Layer{},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Rocky,
@@ -67,8 +70,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "skip modular package",
-			fixtures: []string{"testdata/fixtures/modular.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "skip modular package",
+			fixtures: []string{
+				"testdata/fixtures/modular.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "8.5",
 				pkgs: []ftypes.Package{
@@ -91,8 +97,11 @@ func TestScanner_Detect(t *testing.T) {
 			want: nil,
 		},
 		{
-			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "Get returns an error",
+			fixtures: []string{
+				"testdata/fixtures/invalid.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "8.5",
 				pkgs: []ftypes.Package{
@@ -113,13 +122,12 @@ func TestScanner_Detect(t *testing.T) {
 			defer db.Close()
 
 			s := rocky.NewScanner()
-			got, err := s.Detect(tt.args.osVer, nil, tt.args.pkgs)
+			got, err := s.Detect(t.Context(), tt.args.osVer, nil, tt.args.pkgs)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -127,7 +135,7 @@ func TestScanner_Detect(t *testing.T) {
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
 	type args struct {
-		osFamily string
+		osFamily ftypes.OSType
 		osVer    string
 	}
 	tests := []struct {
@@ -155,19 +163,20 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			want: false,
 		},
 		{
-			name: "unknown",
+			name: "latest",
 			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
 			args: args{
 				osFamily: "rocky",
-				osVer:    "unknown",
+				osVer:    "999.0",
 			},
-			want: false,
+			want: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := rocky.NewScanner(rocky.WithClock(fake.NewFakeClock(tt.now)))
-			got := s.IsSupportedVersion(tt.args.osFamily, tt.args.osVer)
+			ctx := clock.With(t.Context(), tt.now)
+			s := rocky.NewScanner()
+			got := s.IsSupportedVersion(ctx, tt.args.osFamily, tt.args.osVer)
 			assert.Equal(t, tt.want, got)
 		})
 	}

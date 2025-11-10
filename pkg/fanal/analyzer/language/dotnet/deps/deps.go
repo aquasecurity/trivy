@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	core "github.com/aquasecurity/go-dep-parser/pkg/dotnet/core_deps"
+	core "github.com/aquasecurity/trivy/pkg/dependency/parser/dotnet/core_deps"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -24,9 +24,9 @@ const (
 
 type depsLibraryAnalyzer struct{}
 
-func (a depsLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a depsLibraryAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	parser := core.NewParser()
-	res, err := language.Analyze(types.DotNetCore, input.FilePath, input.Content, parser)
+	res, err := language.Analyze(ctx, types.DotNetCore, input.FilePath, input.Content, parser)
 	if err != nil {
 		return nil, xerrors.Errorf(".Net Core dependencies analysis error: %w", err)
 	}

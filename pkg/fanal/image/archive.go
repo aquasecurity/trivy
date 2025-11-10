@@ -53,12 +53,22 @@ func (img archiveImage) ID() (string, error) {
 	return ID(img)
 }
 
-// RepoTags returns empty as an archive doesn't support RepoTags
-func (archiveImage) RepoTags() []string {
+// RepoTags returns the repository tags stored in the Docker archive's manifest.json
+// For OCI layouts, this returns nil as the ref.name annotation is unreliable.
+func (img archiveImage) RepoTags() []string {
+	// Check if the underlying image is a Docker archive
+	if da, ok := img.Image.(dockerArchive); ok {
+		return da.repoTags
+	}
+	// For OCI layout, return nil as org.opencontainers.image.ref.name is unreliable
 	return nil
 }
 
-// RepoDigests returns empty as an archive doesn't support RepoDigests
+// RepoDigests returns nil as both Docker and OCI archives do not contain RepoDigests.
+// RepoDigests are registry-specific metadata representing the manifest digest as stored in a registry.
+// Archives only export image content and RepoTags, not RepoDigests.
+// Note: While digest information may exist in OCI index.json annotations,
+// these annotations are tool-specific and cannot be reliably used as RepoDigests.
 func (archiveImage) RepoDigests() []string {
 	return nil
 }

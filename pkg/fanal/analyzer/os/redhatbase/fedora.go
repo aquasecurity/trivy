@@ -4,15 +4,14 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"slices"
 	"strings"
-
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 
 	"golang.org/x/xerrors"
 
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 const fedoraAnalyzerVersion = 1
@@ -35,15 +34,18 @@ func (a fedoraOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 		switch strings.ToLower(result[1]) {
 		case "fedora", "fedora linux":
 			return &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.Fedora, Name: result[2]},
+				OS: types.OS{
+					Family: types.Fedora,
+					Name:   result[2],
+				},
 			}, nil
 		}
 	}
-	return nil, xerrors.Errorf("fedora: %w", aos.AnalyzeOSError)
+	return nil, xerrors.Errorf("fedora: %w", fos.AnalyzeOSError)
 }
 
 func (a fedoraOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return utils.StringInSlice(filePath, a.requiredFiles())
+	return slices.Contains(a.requiredFiles(), filePath)
 }
 
 func (a fedoraOSAnalyzer) requiredFiles() []string {
@@ -59,4 +61,9 @@ func (a fedoraOSAnalyzer) Type() analyzer.Type {
 
 func (a fedoraOSAnalyzer) Version() int {
 	return fedoraAnalyzerVersion
+}
+
+// StaticPaths returns the static paths of the fedora analyzer
+func (a fedoraOSAnalyzer) StaticPaths() []string {
+	return a.requiredFiles()
 }

@@ -1,0 +1,31 @@
+{
+  "lockfileVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "buntest",
+    },
+    "my-app": {
+      "name": "my-app",
+      "version": "1.0.0",
+      "dependencies": {
+        "lodash": "4.17.21",
+      },
+    },
+    "my-lib": {
+      "name": "my-lib",
+      "version": "1.0.0",
+      "dependencies": {
+        "chalk": "5.0.1",
+      },
+    },
+  },
+  "packages": {
+    "chalk": ["chalk@5.0.1", "", {}, "sha512-Fo07WOYGqMfCWHOzSXOt2CxDbC6skS/jO9ynEcmpANMoPrD+W1r1K6Vx7iNm+AQmETU1Xr2t+n8nzkV9t6xh3w=="],
+
+    "lodash": ["lodash@4.17.21", "", {}, "sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg=="],
+
+    "my-app": ["my-app@workspace:my-app"],
+
+    "my-lib": ["my-lib@workspace:my-lib"],
+  }
+}

@@ -12,7 +12,7 @@ They provide a way to extend the core feature set of Trivy, but without updating
 
 - They can be added and removed from a Trivy installation without impacting the core Trivy tool.
 - They can be written in any programming language supporting WebAssembly.
-  - It supports only [TinyGo][tinygo] at the moment.
+  - It supports only Go at the moment.
 
 You can write your own detection logic.
 
@@ -47,8 +47,8 @@ Trivy adheres to the XDG specification, so the location depends on whether XDG_D
 Trivy will now search XDG_DATA_HOME for the location of the Trivy modules cache.
 The preference order is as follows:
 
-- XDG_DATA_HOME if set and .trivy/plugins exists within the XDG_DATA_HOME dir
-- $HOME/.trivy/plugins
+- XDG_DATA_HOME if set and .trivy/modules exists within the XDG_DATA_HOME dir
+- $HOME/.trivy/modules
 
 For example, to download the WebAssembly module, you can execute the following command:
 
@@ -94,9 +94,9 @@ $ trivy module uninstall ghcr.io/aquasecurity/trivy-module-spring4shell
 ```
 
 ## Building Modules
-It supports TinyGo only at the moment.
+It supports Go only at the moment.
 
-### TinyGo
+### Go
 Trivy provides Go SDK including three interfaces.
 Your own module needs to implement either or both `Analyzer` and `PostScanner` in addition to `Module`.
 
@@ -113,7 +113,7 @@ type Analyzer interface {
 
 type PostScanner interface {
     PostScanSpec() serialize.PostScanSpec
-    PostScan(serialize.Results) (serialize.Results, error)
+    PostScan(types.Results) (types.Results, error)
 }
 ```
 
@@ -137,10 +137,21 @@ $ go mod init github.com/aquasecurity/trivy-module-wordpress
 ```go
 package main
 
+import (
+    "github.com/aquasecurity/trivy/pkg/module/wasm"
+)
+
 const (
     version = 1
     name = "wordpress-module"
 )
+
+// main is required for Go to compile the Wasm module
+func main() {}  
+
+func init() {
+	wasm.RegisterModule(WordpressModule{})
+}
 
 type WordpressModule struct{
 	// Cannot define fields as modules can't keep state.
@@ -203,7 +214,7 @@ func (WordpressModule) Analyze(filePath string) (*serialize.AnalysisResult, erro
     }
 	
     return &serialize.AnalysisResult{
-        CustomResources: []serialize.CustomResource{
+        CustomResources: []ftypes.CustomResource{
             {
                 Type:     typeWPVersion,
                 FilePath: filePath,
@@ -246,7 +257,7 @@ func (WordpressModule) PostScanSpec() serialize.PostScanSpec {
     }
 }
 
-func (WordpressModule) PostScan(results serialize.Results) (serialize.Results, error) {
+func (WordpressModule) PostScan(results types.Results) (types.Results, error) {
     // e.g. results
     // [
     //   {
@@ -288,7 +299,7 @@ func (WordpressModule) PostScan(results serialize.Results) (serialize.Results, e
 
     if vulnerable {
         // Add CVE-2020-36326
-        results = append(results, serialize.Result{
+        results = append(results, types.Result{
             Target: wpPath,
             Class:  types.ClassLangPkg,
 			Type:   "wordpress",
@@ -318,17 +329,17 @@ In the `Delete` action, `PostScan` needs to return results you want to delete.
 If `PostScan` returns an empty, Trivy will not delete anything.
 
 #### Build
-Follow [the install guide][tinygo-installation] and install TinyGo.
+Follow [the install guide][go-installation] and install Go.
 
 ```bash
-$ tinygo build -o wordpress.wasm -scheduler=none -target=wasi --no-debug wordpress.go
+$ GOOS=wasip1 GOARCH=wasm go build -o wordpress.wasm -buildmode=c-shared wordpress.go
 ```
 
 Put the built binary to the module directory that is under the home directory by default.
 
 ```bash
 $ mkdir -p ~/.trivy/modules
-$ cp spring4shell.wasm ~/.trivy/modules
+$ cp wordpress.wasm ~/.trivy/modules
 ```
 
 ## Distribute Your Module
@@ -347,12 +358,11 @@ Digest: sha256:6416d0199d66ce52ced19f01d75454b22692ff3aa7737e45f7a189880840424f
 
 [regexp]: https://github.com/google/re2/wiki/Syntax
 
-[tinygo]: https://tinygo.org/
 [spring4shell]: https://blog.aquasec.com/zero-day-rce-vulnerability-spring4shell
 [wazero]: https://github.com/tetratelabs/wazero
 
 [trivy-module-spring4shell]: https://github.com/aquasecurity/trivy/tree/main/examples/module/spring4shell
 [trivy-module-wordpress]: https://github.com/aquasecurity/trivy-module-wordpress
 
-[tinygo-installation]: https://tinygo.org/getting-started/install/
+[go-installation]: https://go.dev/doc/install
 [oras]: https://oras.land/cli/

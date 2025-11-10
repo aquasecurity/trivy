@@ -1,7 +1,6 @@
 Thank you for taking interest in contributing to Trivy!
 
-1. Every Pull Request should have an associated bug or feature issue unless you are fixing a trivial documentation issue.
-1. Please add the associated Issue link in the PR description.
+1. Every Pull Request should have an associated GitHub issue link in the PR description. Note that issues are created by Trivy maintainers based on feedback provided in a GitHub discussion. Please refer to the [issue](./issue.md) and [discussion](./discussion.md) pages for explanation about this process. If you think your change is trivial enough, you can skip the issue and instead add justification and explanation in the PR description.
 1. Your PR is more likely to be accepted if it focuses on just one change.
 1. There's no need to add or tag reviewers.
 1. If a reviewer commented on your code or asked for changes, please remember to respond with comment. Do not mark discussion as resolved. It's up to reviewer to mark it resolved (in case if suggested fix addresses problem properly). PRs with unresolved issues should not be merged (even if the comment is unclear or requires no action from your side).
@@ -9,11 +8,86 @@ Thank you for taking interest in contributing to Trivy!
 1. Your PR is more likely to be accepted if it includes tests (We have not historically been very strict about tests, but we would like to improve this!).
 1. If your PR affects the user experience in some way, please update the README.md and the CLI help accordingly.
 
-### Title
+## Development
+Install the necessary tools for development by following their respective installation instructions.
+
+- [Go](https://go.dev/doc/install)
+- [Mage](https://magefile.org/)
+
+### Build
+After making changes to the Go source code, build the project with the following command:
+
+```shell
+$ mage build
+$ ./trivy -h
+```
+
+### Lint
+You must pass the linter checks:
+
+```shell
+$ mage lint:run
+```
+
+Additionally, you need to have run `go mod tidy`, so execute the following command as well:
+
+```shell
+$ mage tidy
+```
+
+To autofix linters use the following command:
+```shell
+$ mage lint:fix
+```
+
+### Unit tests
+Your PR must pass all the unit tests. You can test it as below.
+
+```
+$ mage test:unit
+```
+
+### Integration tests
+Your PR must pass all the integration tests. You can test it as below.
+
+```
+$ mage test:integration
+```
+
+### Protocol Buffers
+If you update protobuf files (`.proto`), you need to regenerate the Go code:
+
+```shell
+$ mage protoc:generate
+```
+
+You can also format and lint protobuf files:
+
+```shell
+$ mage protoc:fmt     # Format protobuf files
+$ mage protoc:lint    # Lint protobuf files
+$ mage protoc:breaking # Check for breaking changes against main branch
+```
+
+### Documentation
+If you update CLI flags, you need to generate the CLI references.
+The test will fail if they are not up-to-date.
+
+```shell
+$ mage docs:generate
+```
+
+You can build the documents as below and view it at http://localhost:8000.
+
+```
+$ mage docs:serve
+```
+
+## Title
 It is not that strict, but we use the title conventions in this repository.
 Each commit message doesn't have to follow the conventions as long as it is clear and descriptive since it will be squashed and merged.
 
-#### Format of the title
+### Format of the title
 
 ```
 <type>(<scope>): <subject>
@@ -54,6 +128,7 @@ mode:
 - server
 - aws
 - vm
+- plugin
 
 os:
 
@@ -61,7 +136,7 @@ os:
 - redhat
 - alma
 - rocky
-- mariner
+- azure
 - oracle
 - debian
 - ubuntu
@@ -82,6 +157,7 @@ language:
 - go
 - elixir
 - dart
+- julia
 
 vuln:
 
@@ -118,14 +194,23 @@ others:
 - helm
 - report
 - db
+- parser
 - deps
 
 The `<scope>` can be empty (e.g. if the change is a global or difficult to assign to a single component), in which case the parentheses are omitted.
 
-#### Example titles
+**Breaking changes**
+
+A PR, introducing a breaking API change, needs to append a `!` after the type/scope.
+
+### Example titles
 
 ```
 feat(alma): add support for AlmaLinux
+```
+
+```
+feat(vuln)!: delete the existing CLI flag
 ```
 
 ```
@@ -143,33 +228,15 @@ chore(deps): bump go.uber.org/zap from 1.19.1 to 1.20.0
 **NOTE**: please do not use `chore(deps): update fanal` and something like that if you add new features or fix bugs in Trivy-related projects.
 The PR title should describe what the PR adds or fixes even though it just updates the dependency in Trivy.
 
-### Unit tests
-Your PR must pass all the unit tests. You can test it as below.
+## Commits
 
-```
-$ make test
-```
-
-### Integration tests
-Your PR must pass all the integration tests. You can test it as below.
-
-```
-$ make test-integration
-```
-
-### Documentation
-You can build the documents as below and view it at http://localhost:8000.
-
-```
-$ make mkdocs-serve
-```
 
 ## Understand where your pull request belongs
 
 Trivy is composed of several repositories that work together:
 
 - [Trivy](https://github.com/aquasecurity/trivy) is the client-side, user-facing, command line tool.
-- [vuln-list](https://github.com/aquasecurity/vuln-list) is a vulnerabilities database, aggregated from different sources, and normalized for easy consumption. Think of this as the "server" side of the trivy command line tool. **There should be no pull requests to this repo**
+- [vuln-list](https://github.com/aquasecurity/vuln-list) is a vulnerability database, aggregated from different sources, and normalized for easy consumption. Think of this as the "server" side of the trivy command line tool. **There should be no pull requests to this repo**
 - [vuln-list-update](https://github.com/aquasecurity/vuln-list-update) is the code that maintains the vuln-list database.
 - [trivy-db](https://github.com/aquasecurity/trivy-db) maintains the vulnerability database pulled by Trivy CLI.
 - [go-dep-parser](https://github.com/aquasecurity/go-dep-parser) is a library for parsing lock files such as package-lock.json and Gemfile.lock.

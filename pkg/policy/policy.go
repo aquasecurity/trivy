@@ -8,18 +8,17 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/open-policy-agent/opa/bundle"
-
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/oci"
-
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/oci"
 )
 
 const (
-	bundleVersion    = 0 // Latest released MAJOR version for defsec
-	bundleRepository = "ghcr.io/aquasecurity/defsec"
+	BundleVersion    = 1 // Latest released MAJOR version for trivy-checks
+	BundleRepository = "mirror.gcr.io/aquasec/trivy-checks"
 	policyMediaType  = "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip"
 	updateInterval   = 24 * time.Hour
 )
@@ -37,31 +36,38 @@ func WithOCIArtifact(art *oci.Artifact) Option {
 }
 
 // WithClock takes a clock
-func WithClock(clock clock.Clock) Option {
+func WithClock(c clock.Clock) Option {
 	return func(opts *options) {
-		opts.clock = clock
+		opts.clock = c
 	}
 }
 
 // Option is a functional option
 type Option func(*options)
 
-// Client implements policy operations
+// Client implements check operations
 type Client struct {
 	*options
-	policyDir string
-	quiet     bool
-	insecure  bool
+	policyDir       string
+	checkBundleRepo string
+	quiet           bool
 }
 
-// Metadata holds default policy metadata
+// Metadata holds default check metadata
 type Metadata struct {
 	Digest       string
 	DownloadedAt time.Time
 }
 
-// NewClient is the factory method for policy client
-func NewClient(cacheDir string, quiet bool, opts ...Option) (*Client, error) {
+func (m Metadata) String() string {
+	return fmt.Sprintf(`Check Bundle:
+  Digest: %s
+  DownloadedAt: %s
+`, m.Digest, m.DownloadedAt.UTC())
+}
+
+// NewClient is the factory method for check client
+func NewClient(cacheDir string, quiet bool, checkBundleRepo string, opts ...Option) (*Client, error) {
 	o := &options{
 		clock: clock.RealClock{},
 	}
@@ -70,80 +76,60 @@ func NewClient(cacheDir string, quiet bool, opts ...Option) (*Client, error) {
 		opt(o)
 	}
 
+	if checkBundleRepo == "" {
+		checkBundleRepo = fmt.Sprintf("%s:%d", BundleRepository, BundleVersion)
+	}
+
 	return &Client{
-		options:   o,
-		policyDir: filepath.Join(cacheDir, "policy"),
-		quiet:     quiet,
+		options:         o,
+		policyDir:       filepath.Join(cacheDir, "policy"),
+		checkBundleRepo: checkBundleRepo,
+		quiet:           quiet,
 	}, nil
 }
 
-func (c *Client) populateOCIArtifact() error {
+func (c *Client) populateOCIArtifact(ctx context.Context, registryOpts types.RegistryOptions) {
 	if c.artifact == nil {
-		repo := fmt.Sprintf("%s:%d", bundleRepository, bundleVersion)
-		art, err := oci.NewArtifact(repo, policyMediaType, c.quiet, c.insecure)
-		if err != nil {
-			return xerrors.Errorf("OCI artifact error: %w", err)
-		}
-		c.artifact = art
+		log.DebugContext(ctx, "Loading check bundle", log.String("repository", c.checkBundleRepo))
+		c.artifact = oci.NewArtifact(c.checkBundleRepo, registryOpts)
 	}
-	return nil
 }
 
-// DownloadBuiltinPolicies download default policies from GitHub Pages
-func (c *Client) DownloadBuiltinPolicies(ctx context.Context) error {
-	if err := c.populateOCIArtifact(); err != nil {
-		return xerrors.Errorf("OPA bundle error: %w", err)
-	}
+// DownloadBuiltinChecks download default policies from GitHub Pages
+func (c *Client) DownloadBuiltinChecks(ctx context.Context, registryOpts types.RegistryOptions) error {
+	c.populateOCIArtifact(ctx, registryOpts)
 
 	dst := c.contentDir()
-	if err := c.artifact.Download(ctx, dst); err != nil {
+	if err := c.artifact.Download(ctx, dst, oci.DownloadOption{
+		MediaType: policyMediaType,
+		Quiet:     c.quiet,
+	},
+	); err != nil {
 		return xerrors.Errorf("download error: %w", err)
 	}
 
-	digest, err := c.artifact.Digest()
+	digest, err := c.artifact.Digest(ctx)
 	if err != nil {
 		return xerrors.Errorf("digest error: %w", err)
 	}
-	log.Logger.Debugf("Digest of the built-in policies: %s", digest)
+	log.DebugContext(ctx, "Digest of the built-in checks", log.String("digest", digest))
 
 	// Update metadata.json with the new digest and the current date
 	if err = c.updateMetadata(digest, c.clock.Now()); err != nil {
-		return xerrors.Errorf("unable to update the policy metadata: %w", err)
+		return xerrors.Errorf("unable to update the check metadata: %w", err)
 	}
 
 	return nil
 }
 
-// LoadBuiltinPolicies loads default policies
-func (c *Client) LoadBuiltinPolicies() ([]string, error) {
-	f, err := os.Open(c.manifestPath())
-	if err != nil {
-		return nil, xerrors.Errorf("manifest file open error (%s): %w", c.manifestPath(), err)
-	}
-	defer f.Close()
-
-	var manifest bundle.Manifest
-	if err = json.NewDecoder(f).Decode(&manifest); err != nil {
-		return nil, xerrors.Errorf("json decode error (%s): %w", c.manifestPath(), err)
-	}
-
-	// If the "roots" field is not included in the manifest it defaults to [""]
-	// which means that ALL data and policy must come from the bundle.
-	if manifest.Roots == nil || len(*manifest.Roots) == 0 {
-		return []string{c.contentDir()}, nil
-	}
-
-	var policyPaths []string
-	for _, root := range *manifest.Roots {
-		policyPaths = append(policyPaths, filepath.Join(c.contentDir(), root))
-	}
-
-	return policyPaths, nil
+// LoadBuiltinChecks loads default policies
+func (c *Client) LoadBuiltinChecks() string {
+	return c.contentDir()
 }
 
-// NeedsUpdate returns if the default policy should be updated
-func (c *Client) NeedsUpdate() (bool, error) {
-	meta, err := c.GetMetadata()
+// NeedsUpdate returns if the default check should be updated
+func (c *Client) NeedsUpdate(ctx context.Context, registryOpts types.RegistryOptions) (bool, error) {
+	meta, err := c.GetMetadata(ctx)
 	if err != nil {
 		return true, nil
 	}
@@ -153,11 +139,8 @@ func (c *Client) NeedsUpdate() (bool, error) {
 		return false, nil
 	}
 
-	if err = c.populateOCIArtifact(); err != nil {
-		return false, xerrors.Errorf("OPA bundle error: %w", err)
-	}
-
-	digest, err := c.artifact.Digest()
+	c.populateOCIArtifact(ctx, registryOpts)
+	digest, err := c.artifact.Digest(ctx)
 	if err != nil {
 		return false, xerrors.Errorf("digest error: %w", err)
 	}
@@ -170,7 +153,7 @@ func (c *Client) NeedsUpdate() (bool, error) {
 	// Otherwise, if there are no updates in the remote registry,
 	// the digest will be fetched every time even after this.
 	if err = c.updateMetadata(meta.Digest, time.Now()); err != nil {
-		return false, xerrors.Errorf("unable to update the policy metadata: %w", err)
+		return false, xerrors.Errorf("unable to update the check metadata: %w", err)
 	}
 
 	return false, nil
@@ -184,14 +167,10 @@ func (c *Client) metadataPath() string {
 	return filepath.Join(c.policyDir, "metadata.json")
 }
 
-func (c *Client) manifestPath() string {
-	return filepath.Join(c.contentDir(), bundle.ManifestExt)
-}
-
 func (c *Client) updateMetadata(digest string, now time.Time) error {
 	f, err := os.Create(c.metadataPath())
 	if err != nil {
-		return xerrors.Errorf("failed to open a policy manifest: %w", err)
+		return xerrors.Errorf("failed to open checks bundle metadata: %w", err)
 	}
 	defer f.Close()
 
@@ -207,19 +186,26 @@ func (c *Client) updateMetadata(digest string, now time.Time) error {
 	return nil
 }
 
-func (c *Client) GetMetadata() (*Metadata, error) {
+func (c *Client) GetMetadata(ctx context.Context) (*Metadata, error) {
 	f, err := os.Open(c.metadataPath())
 	if err != nil {
-		log.Logger.Debugf("Failed to open the policy metadata: %s", err)
+		log.DebugContext(ctx, "Failed to open the check metadata", log.Err(err))
 		return nil, err
 	}
 	defer f.Close()
 
 	var meta Metadata
 	if err = json.NewDecoder(f).Decode(&meta); err != nil {
-		log.Logger.Warnf("Policy metadata decode error: %s", err)
+		log.WarnContext(ctx, "Check metadata decode error", log.Err(err))
 		return nil, err
 	}
 
 	return &meta, nil
+}
+
+func (c *Client) Clear() error {
+	if err := os.RemoveAll(c.policyDir); err != nil {
+		return xerrors.Errorf("failed to remove check bundle: %w", err)
+	}
+	return nil
 }

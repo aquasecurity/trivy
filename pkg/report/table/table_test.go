@@ -8,339 +8,234 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/report/table"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func TestReportWriter_Table(t *testing.T) {
+func TestWriter_Write(t *testing.T) {
 	testCases := []struct {
 		name               string
+		scanners           types.Scanners
+		tableModes         []types.TableMode
 		results            types.Results
-		expectedOutput     string
+		wantOutput         string
 		includeNonFailures bool
 	}{
 		{
-			name: "happy path full",
+			name: "vulnerability and custom resource",
+			scanners: types.Scanners{
+				types.VulnerabilityScanner,
+			},
+			tableModes: types.SupportedTableModes,
 			results: types.Results{
 				{
 					Target: "test",
+					Type:   ftypes.Jar,
 					Class:  types.ClassLangPkg,
-					Vulnerabilities: []types.DetectedVulnerability{
-						{
-							VulnerabilityID:  "CVE-2020-0001",
-							PkgName:          "foo",
-							InstalledVersion: "1.2.3",
-							FixedVersion:     "3.4.5",
-							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
-							Vulnerability: dbTypes.Vulnerability{
-								Title:       "foobar",
-								Description: "baz",
-								Severity:    "HIGH",
-							},
-						},
-					},
-				},
-			},
-			expectedOutput: `
-test ()
-=======
-Total: 1 (MEDIUM: 0, HIGH: 1)
-
-┌─────────┬───────────────┬──────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
-│ Library │ Vulnerability │ Severity │ Installed Version │ Fixed Version │                   Title                   │
-├─────────┼───────────────┼──────────┼───────────────────┼───────────────┼───────────────────────────────────────────┤
-│ foo     │ CVE-2020-0001 │ HIGH     │ 1.2.3             │ 3.4.5         │ foobar                                    │
-│         │               │          │                   │               │ https://avd.aquasec.com/nvd/cve-2020-0001 │
-└─────────┴───────────────┴──────────┴───────────────────┴───────────────┴───────────────────────────────────────────┘
-`,
-		},
-		{
-			name: "happy path with filePath in result",
-			results: types.Results{
-				{
-					Target: "test",
-					Class:  types.ClassLangPkg,
-					Vulnerabilities: []types.DetectedVulnerability{
-						{
-							VulnerabilityID:  "CVE-2020-0001",
-							PkgName:          "foo",
-							PkgPath:          "foo/bar",
-							InstalledVersion: "1.2.3",
-							FixedVersion:     "3.4.5",
-							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
-							Vulnerability: dbTypes.Vulnerability{
-								Title:       "foobar",
-								Description: "baz",
-								Severity:    "HIGH",
-							},
-						},
-					},
-				},
-			},
-			expectedOutput: `
-test ()
-=======
-Total: 1 (MEDIUM: 0, HIGH: 1)
-
-┌───────────┬───────────────┬──────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
-│  Library  │ Vulnerability │ Severity │ Installed Version │ Fixed Version │                   Title                   │
-├───────────┼───────────────┼──────────┼───────────────────┼───────────────┼───────────────────────────────────────────┤
-│ foo (bar) │ CVE-2020-0001 │ HIGH     │ 1.2.3             │ 3.4.5         │ foobar                                    │
-│           │               │          │                   │               │ https://avd.aquasec.com/nvd/cve-2020-0001 │
-└───────────┴───────────────┴──────────┴───────────────────┴───────────────┴───────────────────────────────────────────┘
-`,
-		},
-		{
-			name: "no title for vuln and missing primary link",
-			results: types.Results{
-				{
-					Target: "test",
-					Class:  types.ClassLangPkg,
-					Vulnerabilities: []types.DetectedVulnerability{
-						{
-							VulnerabilityID:  "CVE-2020-0001",
-							PkgName:          "foo",
-							InstalledVersion: "1.2.3",
-							FixedVersion:     "3.4.5",
-							Vulnerability: dbTypes.Vulnerability{
-								Description: "foobar",
-								Severity:    "HIGH",
-							},
-						},
-					},
-				},
-			},
-			expectedOutput: `
-test ()
-=======
-Total: 1 (MEDIUM: 0, HIGH: 1)
-
-┌─────────┬───────────────┬──────────┬───────────────────┬───────────────┬────────┐
-│ Library │ Vulnerability │ Severity │ Installed Version │ Fixed Version │ Title  │
-├─────────┼───────────────┼──────────┼───────────────────┼───────────────┼────────┤
-│ foo     │ CVE-2020-0001 │ HIGH     │ 1.2.3             │ 3.4.5         │ foobar │
-└─────────┴───────────────┴──────────┴───────────────────┴───────────────┴────────┘
-`,
-		},
-		{
-			name: "long title for vuln",
-			results: types.Results{
-				{
-					Target: "test",
-					Class:  types.ClassLangPkg,
-					Vulnerabilities: []types.DetectedVulnerability{
-						{
-							VulnerabilityID:  "CVE-2020-1234",
-							PkgName:          "foo",
-							InstalledVersion: "1.2.3",
-							FixedVersion:     "3.4.5",
-							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-1234",
-							Vulnerability: dbTypes.Vulnerability{
-								Title:       "a b c d e f g h i j k l m n o p q r s t u v",
-								Description: "foobar",
-								Severity:    "HIGH",
-							},
-						},
-					},
-				},
-			},
-			expectedOutput: `
-test ()
-=======
-Total: 1 (MEDIUM: 0, HIGH: 1)
-
-┌─────────┬───────────────┬──────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
-│ Library │ Vulnerability │ Severity │ Installed Version │ Fixed Version │                   Title                   │
-├─────────┼───────────────┼──────────┼───────────────────┼───────────────┼───────────────────────────────────────────┤
-│ foo     │ CVE-2020-1234 │ HIGH     │ 1.2.3             │ 3.4.5         │ a b c d e f g h i j k l...                │
-│         │               │          │                   │               │ https://avd.aquasec.com/nvd/cve-2020-1234 │
-└─────────┴───────────────┴──────────┴───────────────────┴───────────────┴───────────────────────────────────────────┘
-`,
-		},
-		{
-			name:           "no vulns",
-			expectedOutput: ``,
-		},
-		{
-			name: "happy path with vulnerability origin graph with direct dependency info",
-			results: types.Results{
-				{
-					Target: "package-lock.json",
-					Class:  types.ClassLangPkg,
-					Type:   "npm",
 					Packages: []ftypes.Package{
 						{
-							ID:       "node-fetch@1.7.3",
-							Name:     "node-fetch",
-							Version:  "1.7.3",
-							Indirect: true,
-						},
-						{
-							ID:       "isomorphic-fetch@2.2.1",
-							Name:     "isomorphic-fetch",
-							Version:  "2.2.1",
-							Indirect: true,
-							DependsOn: []string{
-								"node-fetch@1.7.3",
-							},
-						},
-						{
-							ID:       "fbjs@0.8.18",
-							Name:     "fbjs",
-							Version:  "0.8.18",
-							Indirect: true,
-							DependsOn: []string{
-								"isomorphic-fetch@2.2.1",
-							},
-						},
-						{
-							ID:      "sanitize-html@1.20.0",
-							Name:    "sanitize-html",
-							Version: "1.20.0",
-						},
-						{
-							ID:      "styled-components@3.1.3",
-							Name:    "styled-components",
-							Version: "3.1.3",
-							DependsOn: []string{
-								"fbjs@0.8.18",
-							},
+							Name:     "foo",
+							Version:  "1.2.3",
+							FilePath: "test.jar",
 						},
 					},
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
-							VulnerabilityID: "CVE-2022-0235",
-							PkgID:           "node-fetch@1.7.3",
-							PkgName:         "node-fetch",
+							VulnerabilityID:  "CVE-2020-0001",
+							PkgName:          "foo",
+							InstalledVersion: "1.2.3",
+							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
+							Status:           dbTypes.StatusWillNotFix,
+							PkgPath:          "test.jar",
 							Vulnerability: dbTypes.Vulnerability{
 								Title:       "foobar",
 								Description: "baz",
 								Severity:    "HIGH",
 							},
-							InstalledVersion: "1.7.3",
-							FixedVersion:     "2.6.7, 3.1.1",
 						},
+					},
+					CustomResources: []ftypes.CustomResource{
 						{
-							VulnerabilityID: "CVE-2021-26539",
-							PkgID:           "sanitize-html@1.20.0",
-							PkgName:         "sanitize-html",
-							Vulnerability: dbTypes.Vulnerability{
-								Title:       "foobar",
-								Description: "baz",
-								Severity:    "MEDIUM",
-							},
-							InstalledVersion: "1.20.0",
-							FixedVersion:     "2.3.1",
+							Type: "test",
+							Data: "test",
 						},
 					},
 				},
 			},
-			expectedOutput: `
-package-lock.json (npm)
-=======================
-Total: 2 (MEDIUM: 1, HIGH: 1)
+			wantOutput: `
+Report Summary
 
-┌───────────────┬────────────────┬──────────┬───────────────────┬───────────────┬────────┐
-│    Library    │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │ Title  │
-├───────────────┼────────────────┼──────────┼───────────────────┼───────────────┼────────┤
-│ node-fetch    │ CVE-2022-0235  │ HIGH     │ 1.7.3             │ 2.6.7, 3.1.1  │ foobar │
-├───────────────┼────────────────┼──────────┼───────────────────┼───────────────┤        │
-│ sanitize-html │ CVE-2021-26539 │ MEDIUM   │ 1.20.0            │ 2.3.1         │        │
-└───────────────┴────────────────┴──────────┴───────────────────┴───────────────┴────────┘
+┌──────────┬──────┬─────────────────┐
+│  Target  │ Type │ Vulnerabilities │
+├──────────┼──────┼─────────────────┤
+│ test.jar │ jar  │        1        │
+└──────────┴──────┴─────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
 
-Dependency Origin Tree (Reversed)
-=================================
-package-lock.json
-├── node-fetch@1.7.3, (MEDIUM: 0, HIGH: 1)
-│   └── ...(omitted)...
-│       └── styled-components@3.1.3
-└── sanitize-html@1.20.0, (MEDIUM: 1, HIGH: 0)
+
+test (jar)
+==========
+Total: 1 (MEDIUM: 0, HIGH: 1)
+
+┌────────────────┬───────────────┬──────────┬──────────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
+│    Library     │ Vulnerability │ Severity │    Status    │ Installed Version │ Fixed Version │                   Title                   │
+├────────────────┼───────────────┼──────────┼──────────────┼───────────────────┼───────────────┼───────────────────────────────────────────┤
+│ foo (test.jar) │ CVE-2020-0001 │ HIGH     │ will_not_fix │ 1.2.3             │               │ foobar                                    │
+│                │               │          │              │                   │               │ https://avd.aquasec.com/nvd/cve-2020-0001 │
+└────────────────┴───────────────┴──────────┴──────────────┴───────────────────┴───────────────┴───────────────────────────────────────────┘
 `,
 		},
 		{
-			name: "happy path with vulnerability origin graph without direct dependency info",
+			name: "no vulns",
+			scanners: types.Scanners{
+				types.VulnerabilityScanner,
+			},
+			tableModes: types.SupportedTableModes,
 			results: types.Results{
 				{
-					Target: "package-lock.json",
+					Target: "test",
 					Class:  types.ClassLangPkg,
-					Type:   "npm",
+					Type:   ftypes.Jar,
 					Packages: []ftypes.Package{
 						{
-							ID:       "node-fetch@1.7.3",
-							Name:     "node-fetch",
-							Version:  "1.7.3",
-							Indirect: true,
+							Name:     "foo",
+							Version:  "1.2.3",
+							FilePath: "test.jar",
 						},
+					},
+				},
+			},
+			wantOutput: `
+Report Summary
+
+┌──────────┬──────┬─────────────────┐
+│  Target  │ Type │ Vulnerabilities │
+├──────────┼──────┼─────────────────┤
+│ test.jar │ jar  │        0        │
+└──────────┴──────┴─────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+`,
+		},
+		{
+			name: "no summary",
+			scanners: types.Scanners{
+				types.VulnerabilityScanner,
+			},
+			tableModes: []types.TableMode{
+				types.Detailed,
+			},
+			results: types.Results{
+				{
+					Target: "test",
+					Class:  types.ClassLangPkg,
+					Type:   ftypes.Jar,
+					Packages: []ftypes.Package{
 						{
-							ID:       "isomorphic-fetch@2.2.1",
-							Name:     "isomorphic-fetch",
-							Version:  "2.2.1",
-							Indirect: true,
-							DependsOn: []string{
-								"node-fetch@1.7.3",
-							},
+							Name:     "foo",
+							Version:  "1.2.3",
+							FilePath: "test.jar",
 						},
+					},
+				},
+			},
+			wantOutput: ``,
+		},
+		{
+			name: "no detailed",
+			scanners: types.Scanners{
+				types.VulnerabilityScanner,
+			},
+			tableModes: []types.TableMode{
+				types.Summary,
+			},
+			results: types.Results{
+				{
+					Target: "test",
+					Type:   ftypes.Jar,
+					Class:  types.ClassLangPkg,
+					Packages: []ftypes.Package{
 						{
-							ID:       "fbjs@0.8.18",
-							Name:     "fbjs",
-							Version:  "0.8.18",
-							Indirect: true,
-							DependsOn: []string{
-								"isomorphic-fetch@2.2.1",
-							},
-						},
-						{
-							ID:       "styled-components@3.1.3",
-							Name:     "styled-components",
-							Version:  "3.1.3",
-							Indirect: true,
-							DependsOn: []string{
-								"fbjs@0.8.18",
-							},
+							Name:     "foo",
+							Version:  "1.2.3",
+							FilePath: "test.jar",
 						},
 					},
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
-							VulnerabilityID: "CVE-2022-0235",
-							PkgID:           "node-fetch@1.7.3",
-							PkgName:         "node-fetch",
+							VulnerabilityID:  "CVE-2020-0001",
+							PkgName:          "foo",
+							InstalledVersion: "1.2.3",
+							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
+							Status:           dbTypes.StatusWillNotFix,
+							PkgPath:          "test.jar",
 							Vulnerability: dbTypes.Vulnerability{
 								Title:       "foobar",
 								Description: "baz",
 								Severity:    "HIGH",
 							},
-							InstalledVersion: "1.7.3",
-							FixedVersion:     "2.6.7, 3.1.1",
 						},
 					},
 				},
 			},
-			expectedOutput: `
-package-lock.json (npm)
-=======================
-Total: 1 (MEDIUM: 0, HIGH: 1)
+			wantOutput: `
+Report Summary
 
-┌────────────┬───────────────┬──────────┬───────────────────┬───────────────┬────────┐
-│  Library   │ Vulnerability │ Severity │ Installed Version │ Fixed Version │ Title  │
-├────────────┼───────────────┼──────────┼───────────────────┼───────────────┼────────┤
-│ node-fetch │ CVE-2022-0235 │ HIGH     │ 1.7.3             │ 2.6.7, 3.1.1  │ foobar │
-└────────────┴───────────────┴──────────┴───────────────────┴───────────────┴────────┘
+┌──────────┬──────┬─────────────────┐
+│  Target  │ Type │ Vulnerabilities │
+├──────────┼──────┼─────────────────┤
+│ test.jar │ jar  │        1        │
+└──────────┴──────┴─────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
 
-Dependency Origin Tree (Reversed)
-=================================
-package-lock.json
-└── node-fetch@1.7.3, (MEDIUM: 0, HIGH: 1)
-    └── ...(omitted)...
-        └── styled-components@3.1.3
 `,
+		},
+		{
+			name: "no tables",
+			scanners: types.Scanners{
+				types.VulnerabilityScanner,
+			},
+			tableModes: []types.TableMode{},
+			results: types.Results{
+				{
+					Target: "test",
+					Class:  types.ClassLangPkg,
+					Type:   ftypes.Jar,
+					Packages: []ftypes.Package{
+						{
+							Name:     "foo",
+							Version:  "1.2.3",
+							FilePath: "test.jar",
+						},
+					},
+				},
+			},
+			wantOutput: ``,
+		},
+		{
+			name: "no scanners",
+			results: types.Results{
+				{
+					Target: "test",
+					Class:  types.ClassLangPkg,
+					Type:   ftypes.Jar,
+				},
+			},
+			wantOutput: ``,
 		},
 	}
 
+	t.Setenv("TRIVY_DISABLE_VEX_NOTICE", "1")
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tableWritten := bytes.Buffer{}
-			err := report.Write(types.Report{Results: tc.results}, report.Option{
-				Format:             report.FormatTable,
+			writer := table.NewWriter(table.Options{
 				Output:             &tableWritten,
 				Tree:               true,
 				IncludeNonFailures: tc.includeNonFailures,
@@ -348,9 +243,11 @@ package-lock.json
 					dbTypes.SeverityHigh,
 					dbTypes.SeverityMedium,
 				},
+				Scanners:   tc.scanners,
+				TableModes: tc.tableModes,
 			})
-			assert.NoError(t, err)
-			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
+			_ = writer.Write(t.Context(), types.Report{Results: tc.results})
+			assert.Equal(t, tc.wantOutput, tableWritten.String(), tc.name)
 		})
 	}
 }

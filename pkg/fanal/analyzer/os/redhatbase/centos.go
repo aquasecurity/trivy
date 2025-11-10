@@ -4,15 +4,14 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"slices"
 	"strings"
-
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 
 	"golang.org/x/xerrors"
 
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 const centosAnalyzerVersion = 1
@@ -35,16 +34,19 @@ func (a centOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 		switch strings.ToLower(result[1]) {
 		case "centos", "centos linux":
 			return &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.CentOS, Name: result[2]},
+				OS: types.OS{
+					Family: types.CentOS,
+					Name:   result[2],
+				},
 			}, nil
 		}
 	}
 
-	return nil, xerrors.Errorf("centos: %w", aos.AnalyzeOSError)
+	return nil, xerrors.Errorf("centos: %w", fos.AnalyzeOSError)
 }
 
 func (a centOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return utils.StringInSlice(filePath, a.requiredFiles())
+	return slices.Contains(a.requiredFiles(), filePath)
 }
 
 func (a centOSAnalyzer) requiredFiles() []string {
@@ -57,4 +59,9 @@ func (a centOSAnalyzer) Type() analyzer.Type {
 
 func (a centOSAnalyzer) Version() int {
 	return centosAnalyzerVersion
+}
+
+// StaticPaths returns the static paths of the centos analyzer
+func (a centOSAnalyzer) StaticPaths() []string {
+	return a.requiredFiles()
 }

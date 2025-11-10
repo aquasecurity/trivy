@@ -1,32 +1,28 @@
 package jar
 
 import (
-	"context"
-	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/javadb"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 
 	_ "modernc.org/sqlite"
 )
 
-const (
-	defaultJavaDBRepository = "ghcr.io/aquasecurity/trivy-java-db"
-)
-
 func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputFile string
-		want      *analyzer.AnalysisResult
-		wantErr   string
+		name            string
+		inputFile       string
+		includeChecksum bool
+		want            *analyzer.AnalysisResult
 	}{
 		{
 			name:      "happy path (WAR file)",
@@ -36,40 +32,40 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Jar,
 						FilePath: "testdata/test.war",
-						Libraries: []types.Package{
+						Packages: types.Packages{
 							{
 								Name:     "org.glassfish:javax.el",
-								FilePath: "testdata/test.war",
+								FilePath: "testdata/test.war/WEB-INF/lib/javax.el-3.0.0.jar",
 								Version:  "3.0.0",
 							},
 							{
 								Name:     "com.fasterxml.jackson.core:jackson-databind",
-								FilePath: "testdata/test.war",
+								FilePath: "testdata/test.war/WEB-INF/lib/jackson-databind-2.9.10.6.jar",
 								Version:  "2.9.10.6",
 							},
 							{
 								Name:     "com.fasterxml.jackson.core:jackson-annotations",
-								FilePath: "testdata/test.war",
+								FilePath: "testdata/test.war/WEB-INF/lib/jackson-annotations-2.9.10.jar",
 								Version:  "2.9.10",
 							},
 							{
 								Name:     "com.fasterxml.jackson.core:jackson-core",
-								FilePath: "testdata/test.war",
+								FilePath: "testdata/test.war/WEB-INF/lib/jackson-core-2.9.10.jar",
 								Version:  "2.9.10",
 							},
 							{
 								Name:     "org.slf4j:slf4j-api",
-								FilePath: "testdata/test.war",
+								FilePath: "testdata/test.war/WEB-INF/lib/slf4j-api-1.7.30.jar",
 								Version:  "1.7.30",
 							},
 							{
 								Name:     "com.cronutils:cron-utils",
-								FilePath: "testdata/test.war",
+								FilePath: "testdata/test.war/WEB-INF/lib/cron-utils-9.1.2.jar",
 								Version:  "9.1.2",
 							},
 							{
 								Name:     "org.apache.commons:commons-lang3",
-								FilePath: "testdata/test.war",
+								FilePath: "testdata/test.war/WEB-INF/lib/commons-lang3-3.11.jar",
 								Version:  "3.11",
 							},
 							{
@@ -83,18 +79,20 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "happy path (PAR file)",
-			inputFile: "testdata/test.par",
+			name:            "happy path (PAR file)",
+			inputFile:       "testdata/test.par",
+			includeChecksum: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.Jar,
 						FilePath: "testdata/test.par",
-						Libraries: []types.Package{
+						Packages: types.Packages{
 							{
 								Name:     "com.fasterxml.jackson.core:jackson-core",
-								FilePath: "testdata/test.par",
+								FilePath: "testdata/test.par/lib/jackson-core-2.9.10.jar",
 								Version:  "2.9.10",
+								Digest:   "sha1:d40913470259cfba6dcc90f96bcaa9bcff1b72e0",
 							},
 						},
 					},
@@ -109,7 +107,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Jar,
 						FilePath: "testdata/test.jar",
-						Libraries: []types.Package{
+						Packages: types.Packages{
 							{
 								Name:     "org.apache.tomcat.embed:tomcat-embed-websocket",
 								FilePath: "testdata/test.jar",
@@ -123,33 +121,31 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 		{
 			name:      "sad path",
 			inputFile: "testdata/test.txt",
-			wantErr:   "not a valid zip file",
+			want:      &analyzer.AnalysisResult{},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// init java-trivy-db with skip update
-			javadb.Init("testdata", defaultJavaDBRepository, true, false, false)
+			repo, err := name.NewTag(javadb.DefaultGHCRRepository)
+			require.NoError(t, err)
+			javadb.Init("testdata", []name.Reference{repo}, true, false, types.RegistryOptions{Insecure: false})
 
-			a := javaLibraryAnalyzer{slow: true}
-			ctx := context.Background()
+			a := javaLibraryAnalyzer{}
+			ctx := t.Context()
 
 			mfs := mapfs.New()
-			err := mfs.MkdirAll(filepath.Dir(tt.inputFile), os.ModePerm)
-			assert.NoError(t, err)
+			err = mfs.MkdirAll(filepath.Dir(tt.inputFile), os.ModePerm)
+			require.NoError(t, err)
 			err = mfs.WriteFile(tt.inputFile, tt.inputFile)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
-				FS: mfs,
+				FS:      mfs,
+				Options: analyzer.AnalysisOptions{FileChecksum: tt.includeChecksum},
 			})
 
-			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
-				return
-			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

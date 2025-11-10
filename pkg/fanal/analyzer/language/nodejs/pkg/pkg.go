@@ -5,13 +5,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
@@ -23,20 +21,29 @@ const (
 	requiredFile = "package.json"
 )
 
-type nodePkgLibraryAnalyzer struct{}
+type parser struct{}
 
-// Analyze analyzes package.json for node packages
-func (a nodePkgLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (*parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
 	p := packagejson.NewParser()
-	pkg, err := p.Parse(input.Content)
+	pkg, err := p.Parse(r)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to parse %s: %w", input.FilePath, err)
+		return nil, nil, err
 	}
-
+	// skip packages without name/version
+	if pkg.Package.ID == "" {
+		return nil, nil, nil
+	}
 	// package.json may contain version range in `dependencies` fields
 	// e.g.   "devDependencies": { "mocha": "^5.2.0", }
 	// so we get only information about project
-	return language.ToAnalysisResult(types.NodePkg, input.FilePath, input.FilePath, []godeptypes.Library{pkg.Library}, nil), nil
+	return []types.Package{pkg.Package}, nil, nil
+}
+
+type nodePkgLibraryAnalyzer struct{}
+
+// Analyze analyzes package.json for node packages
+func (a nodePkgLibraryAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	return language.AnalyzePackage(ctx, types.NodePkg, input.FilePath, input.Content, &parser{}, input.Options.FileChecksum)
 }
 
 func (a nodePkgLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {

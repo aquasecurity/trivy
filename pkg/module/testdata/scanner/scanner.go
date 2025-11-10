@@ -1,5 +1,5 @@
-//go:generate tinygo build -o scanner.wasm -scheduler=none -target=wasi --no-debug scanner.go
-//go:build tinygo.wasm
+//go:generate go build -o scanner.wasm -buildmode=c-shared scanner.go
+//go:build wasip1
 
 package main
 
@@ -7,6 +7,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/module/api"
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
 	"github.com/aquasecurity/trivy/pkg/module/wasm"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
@@ -14,7 +15,9 @@ const (
 	moduleName    = "scanner"
 )
 
-func main() {
+func main() {}
+
+func init() {
 	wasm.RegisterModule(PostScannerModule{})
 }
 
@@ -34,6 +37,6 @@ func (PostScannerModule) PostScanSpec() serialize.PostScanSpec {
 	}
 }
 
-func (PostScannerModule) PostScan(_ serialize.Results) (serialize.Results, error) {
+func (PostScannerModule) PostScan(_ types.Results) (types.Results, error) {
 	return nil, nil
 }

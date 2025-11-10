@@ -4,12 +4,10 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"slices"
 	"strings"
 
-	"golang.org/x/exp/slices"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -22,12 +20,15 @@ const version = 1
 var requiredFiles = []string{
 	"etc/os-release",
 	"usr/lib/os-release",
+	"aarch64-bottlerocket-linux-gnu/sys-root/usr/lib/os-release",
+	"x86_64-bottlerocket-linux-gnu/sys-root/usr/lib/os-release",
 }
 
 type osReleaseAnalyzer struct{}
 
 func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	var id, versionID string
+	var family types.OSType
+	var versionID string
 	scanner := bufio.NewScanner(input.Content)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -40,37 +41,76 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 
 		switch key {
 		case "ID":
-			id = strings.Trim(value, `"'`)
+			id := strings.Trim(value, `"'`)
+			family = idToOSFamily(id)
 		case "VERSION_ID":
 			versionID = strings.Trim(value, `"'`)
 		default:
 			continue
 		}
 
-		var family string
-		switch id {
-		case "alpine":
-			family = aos.Alpine
-		case "opensuse-tumbleweed":
-			family = aos.OpenSUSETumbleweed
-		case "opensuse-leap", "opensuse": // opensuse for leap:42, opensuse-leap for leap:15
-			family = aos.OpenSUSELeap
-		case "sles":
-			family = aos.SLES
-		case "photon":
-			family = aos.Photon
-		case "wolfi":
-			family = aos.Wolfi
-		}
-
 		if family != "" && versionID != "" {
 			return &analyzer.AnalysisResult{
-				OS: types.OS{Family: family, Name: versionID},
+				OS: types.OS{
+					Family: family,
+					Name:   versionID,
+				},
 			}, nil
 		}
 	}
 
 	return nil, nil
+}
+
+//nolint:gocyclo
+func idToOSFamily(id string) types.OSType {
+	switch id {
+	case "rhel":
+		return types.RedHat
+	case "centos":
+		return types.CentOS
+	case "rocky":
+		return types.Rocky
+	case "almalinux":
+		return types.Alma
+	case "ol":
+		return types.Oracle
+	case "fedora":
+		return types.Fedora
+	case "alpine":
+		return types.Alpine
+	case "bottlerocket":
+		return types.Bottlerocket
+	case "opensuse-tumbleweed":
+		return types.OpenSUSETumbleweed
+	case "opensuse-leap", "opensuse": // opensuse for leap:42, opensuse-leap for leap:15
+		return types.OpenSUSELeap
+	case "sles":
+		return types.SLES
+	// There are various rebrands of SLE Micro, there is also one brief (and reverted rebrand)
+	// for SLE Micro 6.0. which was called "SL Micro 6.0" until very short before release
+	// and there is a "SLE Micro for Rancher" rebrand, which is used by SUSEs K8S based offerings.
+	case "sle-micro", "sl-micro", "sle-micro-rancher":
+		return types.SLEMicro
+	case "photon":
+		return types.Photon
+	case "wolfi":
+		return types.Wolfi
+	case "chainguard":
+		return types.Chainguard
+	case "azurelinux":
+		return types.Azure
+	case "mariner":
+		return types.CBLMariner
+	case "echo":
+		return types.Echo
+	case "minimos":
+		return types.MinimOS
+	case "coreos":
+		return types.CoreOS
+	}
+	// This OS is not supported for this analyzer.
+	return ""
 }
 
 func (a osReleaseAnalyzer) Required(filePath string, _ os.FileInfo) bool {
@@ -83,4 +123,9 @@ func (a osReleaseAnalyzer) Type() analyzer.Type {
 
 func (a osReleaseAnalyzer) Version() int {
 	return version
+}
+
+// StaticPaths returns the static paths of the os-release analyzer
+func (a osReleaseAnalyzer) StaticPaths() []string {
+	return requiredFiles
 }

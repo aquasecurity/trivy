@@ -1,0 +1,427 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:e2daaea6-d96f-4b84-960c-0d72c348cd23",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2023-09-29T06:25:00+00:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "dev"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "pkg:k8s/k8s.io%2Fkubernetes@1.27.4",
+      "type": "platform",
+      "name": "k8s.io/kubernetes",
+      "version": "1.27.4",
+      "purl": "pkg:k8s/k8s.io%2Fkubernetes@1.27.4",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:resource:Name",
+          "value": "minikube"
+        },
+        {
+          "name": "aquasecurity:trivy:resource:Type",
+          "value": "cluster"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "5262e708-f1a3-4fca-a1c3-0a8384f7f4a5",
+      "type": "operating-system",
+      "name": "ubuntu",
+      "version": "22.04.2",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "os-pkgs"
+        },
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "ubuntu"
+        }
+      ]
+    },
+    {
+      "bom-ref": "a62abb1f-cb38-4fde-90f3-2bda3b87ddb2",
+      "type": "application",
+      "name": "node-core-components"
+    },
+    {
+      "bom-ref": "a6350ac3-52f6-4c5f-a3e3-184b9a634bef",
+      "type": "platform",
+      "name": "minikube",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Architecture",
+          "value": "arm64"
+        },
+        {
+          "name": "aquasecurity:trivy:HostName",
+          "value": "minikube"
+        },
+        {
+          "name": "aquasecurity:trivy:KernelVersion",
+          "value": "5.15.49-linuxkit-pr"
+        },
+        {
+          "name": "aquasecurity:trivy:NodeRole",
+          "value": "master"
+        },
+        {
+          "name": "aquasecurity:trivy:OperatingSystem",
+          "value": "linux"
+        },
+        {
+          "name": "aquasecurity:trivy:resource:Name",
+          "value": "minikube"
+        },
+        {
+          "name": "aquasecurity:trivy:resource:Type",
+          "value": "node"
+        }
+      ]
+    },
+    {
+      "bom-ref": "b19a88a3-017d-4e70-a73a-75f48696ec0f",
+      "type": "application",
+      "name": "kube-dns",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:resource:Name",
+          "value": "coredns-5d78c9869d-nd92n"
+        }
+      ]
+    },
+    {
+      "bom-ref": "b1c502c9-3c6e-43af-822b-1cb55c6c6ff3",
+      "type": "application",
+      "name": "go.etcd.io/etcd/v3",
+      "version": "3.5.7-0",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:resource:Name",
+          "value": "etcd-minikube"
+        },
+        {
+          "name": "aquasecurity:trivy:resource:Type",
+          "value": "controlPlane"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/docker@24.0.4",
+      "type": "application",
+      "name": "docker",
+      "version": "24.0.4",
+      "purl": "pkg:golang/docker@24.0.4",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:resource:Name",
+          "value": "docker"
+        },
+        {
+          "name": "aquasecurity:trivy:resource:Type",
+          "value": "node"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:k8s/k8s.io%2Fapiserver@1.27.4",
+      "type": "application",
+      "name": "k8s.io/apiserver",
+      "version": "1.27.4",
+      "purl": "pkg:k8s/k8s.io%2Fapiserver@1.27.4",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:resource:Name",
+          "value": "kube-apiserver-minikube"
+        },
+        {
+          "name": "aquasecurity:trivy:resource:Type",
+          "value": "controlPlane"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:k8s/k8s.io%2Fcontroller-manager@1.27.4",
+      "type": "application",
+      "name": "k8s.io/controller-manager",
+      "version": "1.27.4",
+      "purl": "pkg:k8s/k8s.io%2Fcontroller-manager@1.27.4",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:resource:Name",
+          "value": "kube-controller-manager-minikube"
+        },
+        {
+          "name": "aquasecurity:trivy:resource:Type",
+          "value": "controlPlane"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:k8s/k8s.io%2Fkube-proxy@1.27.4",
+      "type": "application",
+      "name": "k8s.io/kube-proxy",
+      "version": "1.27.4",
+      "purl": "pkg:k8s/k8s.io%2Fkube-proxy@1.27.4",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:resource:Name",
+          "value": "kube-proxy-4wftc"
+        },
+        {
+          "name": "aquasecurity:trivy:resource:Type",
+          "value": "node"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:k8s/k8s.io%2Fkube-scheduler@1.27.4",
+      "type": "application",
+      "name": "k8s.io/kube-scheduler",
+      "version": "1.27.4",
+      "purl": "pkg:k8s/k8s.io%2Fkube-scheduler@1.27.4",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:resource:Name",
+          "value": "kube-scheduler-minikube"
+        },
+        {
+          "name": "aquasecurity:trivy:resource:Type",
+          "value": "controlPlane"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:k8s/k8s.io%2Fkubelet@1.27.4",
+      "type": "application",
+      "name": "k8s.io/kubelet",
+      "version": "1.27.4",
+      "purl": "pkg:k8s/k8s.io%2Fkubelet@1.27.4",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:resource:Name",
+          "value": "k8s.io/kubelet"
+        },
+        {
+          "name": "aquasecurity:trivy:resource:Type",
+          "value": "node"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:oci/coredns@sha256%3Aa0ead06651cf580044aeb0a0feba63591858fb2e43ade8c9dea45a6a89ae7e5e?repository_url=registry.k8s.io%2Fcoredns%2Fcoredns",
+      "type": "container",
+      "name": "registry.k8s.io/coredns/coredns",
+      "version": "sha256:a0ead06651cf580044aeb0a0feba63591858fb2e43ade8c9dea45a6a89ae7e5e",
+      "purl": "pkg:oci/coredns@sha256%3Aa0ead06651cf580044aeb0a0feba63591858fb2e43ade8c9dea45a6a89ae7e5e?repository_url=registry.k8s.io%2Fcoredns%2Fcoredns",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "registry.k8s.io/coredns/coredns:1.10.1"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "oci"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:oci/etcd@sha256%3A51eae8381dcb1078289fa7b4f3df2630cdc18d09fb56f8e56b41c40e191d6c83?repository_url=registry.k8s.io%2Fetcd",
+      "type": "container",
+      "name": "registry.k8s.io/etcd",
+      "version": "sha256:51eae8381dcb1078289fa7b4f3df2630cdc18d09fb56f8e56b41c40e191d6c83",
+      "purl": "pkg:oci/etcd@sha256%3A51eae8381dcb1078289fa7b4f3df2630cdc18d09fb56f8e56b41c40e191d6c83?repository_url=registry.k8s.io%2Fetcd",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "registry.k8s.io/etcd:3.5.7-0"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "oci"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:oci/kube-apiserver@sha256%3A697cd88d94f7f2ef42144cb3072b016dcb2e9251f0e7d41a7fede557e555452d?repository_url=registry.k8s.io%2Fkube-apiserver",
+      "type": "container",
+      "name": "registry.k8s.io/kube-apiserver",
+      "version": "sha256:697cd88d94f7f2ef42144cb3072b016dcb2e9251f0e7d41a7fede557e555452d",
+      "purl": "pkg:oci/kube-apiserver@sha256%3A697cd88d94f7f2ef42144cb3072b016dcb2e9251f0e7d41a7fede557e555452d?repository_url=registry.k8s.io%2Fkube-apiserver",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "registry.k8s.io/kube-apiserver:1.27.4"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "oci"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:oci/kube-controller-manager@sha256%3A6286e500782ad6d0b37a1b8be57fc73f597dc931dfc73ff18ce534059803b265?repository_url=registry.k8s.io%2Fkube-controller-manager",
+      "type": "container",
+      "name": "registry.k8s.io/kube-controller-manager",
+      "version": "sha256:6286e500782ad6d0b37a1b8be57fc73f597dc931dfc73ff18ce534059803b265",
+      "purl": "pkg:oci/kube-controller-manager@sha256%3A6286e500782ad6d0b37a1b8be57fc73f597dc931dfc73ff18ce534059803b265?repository_url=registry.k8s.io%2Fkube-controller-manager",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "registry.k8s.io/kube-controller-manager:1.27.4"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "oci"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:oci/kube-proxy@sha256%3A4bcb707da9898d2625f5d4edc6d0c96519a24f16db914fc673aa8f97e41dbabf?repository_url=registry.k8s.io%2Fkube-proxy",
+      "type": "container",
+      "name": "registry.k8s.io/kube-proxy",
+      "version": "sha256:4bcb707da9898d2625f5d4edc6d0c96519a24f16db914fc673aa8f97e41dbabf",
+      "purl": "pkg:oci/kube-proxy@sha256%3A4bcb707da9898d2625f5d4edc6d0c96519a24f16db914fc673aa8f97e41dbabf?repository_url=registry.k8s.io%2Fkube-proxy",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "registry.k8s.io/kube-proxy:1.27.4"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "oci"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:oci/kube-scheduler@sha256%3A5897d7a97d23dce25cbf36fcd6e919180a8ef904bf5156583ffdb6a733ab04af?repository_url=registry.k8s.io%2Fkube-scheduler",
+      "type": "container",
+      "name": "registry.k8s.io/kube-scheduler",
+      "version": "sha256:5897d7a97d23dce25cbf36fcd6e919180a8ef904bf5156583ffdb6a733ab04af",
+      "purl": "pkg:oci/kube-scheduler@sha256%3A5897d7a97d23dce25cbf36fcd6e919180a8ef904bf5156583ffdb6a733ab04af?repository_url=registry.k8s.io%2Fkube-scheduler",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "registry.k8s.io/kube-scheduler:1.27.4"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "oci"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "5262e708-f1a3-4fca-a1c3-0a8384f7f4a5",
+      "dependsOn": []
+    },
+    {
+      "ref": "a62abb1f-cb38-4fde-90f3-2bda3b87ddb2",
+      "dependsOn": [
+        "pkg:golang/docker@24.0.4",
+        "pkg:k8s/k8s.io%2Fkubelet@1.27.4"
+      ]
+    },
+    {
+      "ref": "a6350ac3-52f6-4c5f-a3e3-184b9a634bef",
+      "dependsOn": [
+        "5262e708-f1a3-4fca-a1c3-0a8384f7f4a5",
+        "a62abb1f-cb38-4fde-90f3-2bda3b87ddb2"
+      ]
+    },
+    {
+      "ref": "b19a88a3-017d-4e70-a73a-75f48696ec0f",
+      "dependsOn": [
+        "pkg:oci/coredns@sha256%3Aa0ead06651cf580044aeb0a0feba63591858fb2e43ade8c9dea45a6a89ae7e5e?repository_url=registry.k8s.io%2Fcoredns%2Fcoredns"
+      ]
+    },
+    {
+      "ref": "b1c502c9-3c6e-43af-822b-1cb55c6c6ff3",
+      "dependsOn": [
+        "pkg:oci/etcd@sha256%3A51eae8381dcb1078289fa7b4f3df2630cdc18d09fb56f8e56b41c40e191d6c83?repository_url=registry.k8s.io%2Fetcd"
+      ]
+    },
+    {
+      "ref": "pkg:golang/docker@24.0.4",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:k8s/k8s.io%2Fapiserver@1.27.4",
+      "dependsOn": [
+        "pkg:oci/kube-apiserver@sha256%3A697cd88d94f7f2ef42144cb3072b016dcb2e9251f0e7d41a7fede557e555452d?repository_url=registry.k8s.io%2Fkube-apiserver"
+      ]
+    },
+    {
+      "ref": "pkg:k8s/k8s.io%2Fcontroller-manager@1.27.4",
+      "dependsOn": [
+        "pkg:oci/kube-controller-manager@sha256%3A6286e500782ad6d0b37a1b8be57fc73f597dc931dfc73ff18ce534059803b265?repository_url=registry.k8s.io%2Fkube-controller-manager"
+      ]
+    },
+    {
+      "ref": "pkg:k8s/k8s.io%2Fkube-proxy@1.27.4",
+      "dependsOn": [
+        "pkg:oci/kube-proxy@sha256%3A4bcb707da9898d2625f5d4edc6d0c96519a24f16db914fc673aa8f97e41dbabf?repository_url=registry.k8s.io%2Fkube-proxy"
+      ]
+    },
+    {
+      "ref": "pkg:k8s/k8s.io%2Fkube-scheduler@1.27.4",
+      "dependsOn": [
+        "pkg:oci/kube-scheduler@sha256%3A5897d7a97d23dce25cbf36fcd6e919180a8ef904bf5156583ffdb6a733ab04af?repository_url=registry.k8s.io%2Fkube-scheduler"
+      ]
+    },
+    {
+      "ref": "pkg:k8s/k8s.io%2Fkubelet@1.27.4",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:k8s/k8s.io%2Fkubernetes@1.27.4",
+      "dependsOn": [
+        "a6350ac3-52f6-4c5f-a3e3-184b9a634bef",
+        "b19a88a3-017d-4e70-a73a-75f48696ec0f",
+        "b1c502c9-3c6e-43af-822b-1cb55c6c6ff3",
+        "pkg:k8s/k8s.io%2Fapiserver@1.27.4",
+        "pkg:k8s/k8s.io%2Fcontroller-manager@1.27.4",
+        "pkg:k8s/k8s.io%2Fkube-proxy@1.27.4",
+        "pkg:k8s/k8s.io%2Fkube-scheduler@1.27.4"
+      ]
+    },
+    {
+      "ref": "pkg:oci/coredns@sha256%3Aa0ead06651cf580044aeb0a0feba63591858fb2e43ade8c9dea45a6a89ae7e5e?repository_url=registry.k8s.io%2Fcoredns%2Fcoredns",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:oci/etcd@sha256%3A51eae8381dcb1078289fa7b4f3df2630cdc18d09fb56f8e56b41c40e191d6c83?repository_url=registry.k8s.io%2Fetcd",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:oci/kube-apiserver@sha256%3A697cd88d94f7f2ef42144cb3072b016dcb2e9251f0e7d41a7fede557e555452d?repository_url=registry.k8s.io%2Fkube-apiserver",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:oci/kube-controller-manager@sha256%3A6286e500782ad6d0b37a1b8be57fc73f597dc931dfc73ff18ce534059803b265?repository_url=registry.k8s.io%2Fkube-controller-manager",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:oci/kube-proxy@sha256%3A4bcb707da9898d2625f5d4edc6d0c96519a24f16db914fc673aa8f97e41dbabf?repository_url=registry.k8s.io%2Fkube-proxy",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:oci/kube-scheduler@sha256%3A5897d7a97d23dce25cbf36fcd6e919180a8ef904bf5156583ffdb6a733ab04af?repository_url=registry.k8s.io%2Fkube-scheduler",
+      "dependsOn": []
+    }
+  ],
+  "vulnerabilities": []
+}

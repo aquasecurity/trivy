@@ -5,7 +5,7 @@ This module provides a more in-depth investigation of Spring4Shell detection.
 ## Set up
 
 ```
-$ tinygo build -o spring4shell.wasm -scheduler=none -target=wasi --no-debug spring4shell.go 
+$ GOOS=wasip1 GOARCH=wasm go build -o spring4shell.wasm -buildmode=c-shared spring4shell.go 
 $ mkdir -p ~/.trivy/modules
 $ cp spring4shell.wasm ~/.trivy/modules
 ```

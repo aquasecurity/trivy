@@ -2,9 +2,11 @@ package report
 
 import (
 	"bytes"
+	"context"
 	"encoding/xml"
 	"html"
 	"io"
+	"maps"
 	"os"
 	"strings"
 	"text/template"
@@ -18,7 +20,7 @@ import (
 )
 
 // CustomTemplateFuncMap is used to overwrite existing functions for testing.
-var CustomTemplateFuncMap = map[string]interface{}{}
+var CustomTemplateFuncMap = make(map[string]any)
 
 // TemplateWriter write result in custom format defined by user's template
 type TemplateWriter struct {
@@ -27,20 +29,19 @@ type TemplateWriter struct {
 }
 
 // NewTemplateWriter is the factory method to return TemplateWriter object
-func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter, error) {
-	if strings.HasPrefix(outputTemplate, "@") {
-		buf, err := os.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
+func NewTemplateWriter(output io.Writer, outputTemplate, appVersion string) (*TemplateWriter, error) {
+	if after, ok := strings.CutPrefix(outputTemplate, "@"); ok {
+		buf, err := os.ReadFile(after)
 		if err != nil {
 			return nil, xerrors.Errorf("error retrieving template from path: %w", err)
 		}
 		outputTemplate = string(buf)
 	}
-	var templateFuncMap template.FuncMap
-	templateFuncMap = sprig.GenericFuncMap()
+	var templateFuncMap template.FuncMap = sprig.GenericFuncMap()
 	templateFuncMap["escapeXML"] = func(input string) string {
 		escaped := &bytes.Buffer{}
 		if err := xml.EscapeText(escaped, []byte(input)); err != nil {
-			log.Logger.Error("error while escapeString to XML: %s", err)
+			log.Error("Error while escapeString to XML", log.Err(err))
 			return input
 		}
 		return escaped.String()
@@ -51,28 +52,31 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 		}
 		return input
 	}
-	templateFuncMap["escapeString"] = func(input string) string {
-		return html.EscapeString(input)
-	}
+	templateFuncMap["escapeString"] = html.EscapeString
 	templateFuncMap["sourceID"] = func(input string) dbTypes.SourceID {
 		return dbTypes.SourceID(input)
 	}
+	templateFuncMap["appVersion"] = func() string {
+		return appVersion
+	}
 
 	// Overwrite functions
-	for k, v := range CustomTemplateFuncMap {
-		templateFuncMap[k] = v
-	}
+	maps.Copy(templateFuncMap, CustomTemplateFuncMap)
 
 	tmpl, err := template.New("output template").Funcs(templateFuncMap).Parse(outputTemplate)
 	if err != nil {
 		return nil, xerrors.Errorf("error parsing template: %w", err)
 	}
-	return &TemplateWriter{Output: output, Template: tmpl}, nil
+	return &TemplateWriter{
+		Output:   output,
+		Template: tmpl,
+	}, nil
 }
 
 // Write writes result
-func (tw TemplateWriter) Write(report types.Report) error {
+func (tw TemplateWriter) Write(_ context.Context, report types.Report) error {
 	err := tw.Template.Execute(tw.Output, report)
+
 	if err != nil {
 		return xerrors.Errorf("failed to write with template: %w", err)
 	}

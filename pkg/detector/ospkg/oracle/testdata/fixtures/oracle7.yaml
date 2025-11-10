@@ -5,8 +5,42 @@
         - key: CVE-2020-8177
           value:
             FixedVersion: "7.29.0-59.0.1.el7_9.1"
+            Entries:
+              - FixedVersion: "7.29.0-59.0.1.el7_9.1"
+                Arches:
+                  - x86_64
+                  - aarch64
     - bucket: glibc
       pairs:
         - key: CVE-2017-1000364
           value:
             FixedVersion: "2:2.17-157.ksplice1.el7_3.4"
+            Entries:
+              - FixedVersion: "2:2.17-157.ksplice1.el7_3.4"
+                Arches:
+                  - x86_64
+                  - aarch64
+    - bucket: gnutls
+      pairs:
+        - key: CVE-2021-20232
+          value:
+            FixedVersion: "3.6.16-4.el8"
+            Entries:
+              - FixedVersion: "10:3.6.16-4.0.1.el8_fips"
+                Arches:
+                  - x86_64
+              - FixedVersion: "3.6.16-4.el8"
+                Arches:
+                  - x86_64
+    - bucket: rsyslog
+      pairs:
+        - key: CVE-2022-24903
+          value:
+            FixedVersion: "8.24.0-57.0.1.el7_9.3"
+            Entries:
+              - FixedVersion: "8.24.0-57.0.1.el7_9.3"
+                Arches:
+                  - x86_64
+              - FixedVersion: "8.24.0-57.0.4.el7_9.3"
+                Arches:
+                  - aarch64

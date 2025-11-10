@@ -1,16 +1,27 @@
 package types
 
 import (
+	"sort"
 	"time"
 
-	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
+)
 
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+// ArtifactType represents a type of artifact
+type ArtifactType string
+
+const (
+	TypeContainerImage ArtifactType = "container_image"
+	TypeFilesystem     ArtifactType = "filesystem"
+	TypeRepository     ArtifactType = "repository"
+	TypeCycloneDX      ArtifactType = "cyclonedx"
+	TypeSPDX           ArtifactType = "spdx"
+	TypeAWSAccount     ArtifactType = "aws_account"
+	TypeVM             ArtifactType = "vm"
 )
 
 type OS struct {
-	Family string
+	Family OSType
 	Name   string
 	Eosl   bool `json:"EOSL,omitempty"`
 
@@ -18,122 +29,78 @@ type OS struct {
 	Extended bool `json:"extended,omitempty"`
 }
 
+func (o *OS) String() string {
+	s := string(o.Family)
+	if o.Name != "" {
+		s += "/" + o.Name
+	}
+	return s
+}
+
 func (o *OS) Detected() bool {
 	return o.Family != ""
 }
 
+// Normalize normalizes OS family names for backward compatibility
+func (o *OS) Normalize() {
+	if alias, ok := OSTypeAliases[o.Family]; ok {
+		o.Family = alias
+	}
+}
+
 // Merge merges OS version and enhanced security maintenance programs
-func (o *OS) Merge(new OS) {
-	if lo.IsEmpty(new) {
+func (o *OS) Merge(newOS OS) {
+	if lo.IsEmpty(newOS) {
 		return
 	}
 
-	switch {
+	switch o.Family {
 	// OLE also has /etc/redhat-release and it detects OLE as RHEL by mistake.
 	// In that case, OS must be overwritten with the content of /etc/oracle-release.
 	// There is the same problem between Debian and Ubuntu.
-	case o.Family == aos.RedHat, o.Family == aos.Debian:
-		*o = new
+	case RedHat, Debian:
+		*o = newOS
 	default:
 		if o.Family == "" {
-			o.Family = new.Family
+			o.Family = newOS.Family
 		}
 		if o.Name == "" {
-			o.Name = new.Name
+			o.Name = newOS.Name
 		}
 		// Ubuntu has ESM program: https://ubuntu.com/security/esm
 		// OS version and esm status are stored in different files.
 		// We have to merge OS version after parsing these files.
-		if o.Extended || new.Extended {
+		if o.Extended || newOS.Extended {
 			o.Extended = true
 		}
 	}
+	// When merging layers, there are cases when a layer contains an OS with an old name:
+	//   - Cache contains a layer derived from an old version of Trivy.
+	//   - `client` uses an old version of Trivy, but `server` is a new version of Trivy (for `client/server` mode).
+	// So we need to normalize the OS name for backward compatibility.
+	o.Normalize()
 }
 
 type Repository struct {
-	Family  string `json:",omitempty"`
+	Family  OSType `json:",omitempty"`
 	Release string `json:",omitempty"`
 }
 
 type Layer struct {
+	Size      int64  `json:",omitempty"`
 	Digest    string `json:",omitempty"`
 	DiffID    string `json:",omitempty"`
 	CreatedBy string `json:",omitempty"`
 }
 
-type Package struct {
-	ID         string   `json:",omitempty"`
-	Name       string   `json:",omitempty"`
-	Version    string   `json:",omitempty"`
-	Release    string   `json:",omitempty"`
-	Epoch      int      `json:",omitempty"`
-	Arch       string   `json:",omitempty"`
-	SrcName    string   `json:",omitempty"`
-	SrcVersion string   `json:",omitempty"`
-	SrcRelease string   `json:",omitempty"`
-	SrcEpoch   int      `json:",omitempty"`
-	Licenses   []string `json:",omitempty"`
-	Maintainer string   `json:",omitempty"`
+type Layers []Layer
 
-	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
-	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
-
-	Ref      string `json:",omitempty"` // identifier which can be used to reference the component elsewhere
-	Indirect bool   `json:",omitempty"` // this package is direct dependency of the project or not
-
-	// Dependencies of this package
-	// Note:　it may have interdependencies, which may lead to infinite loops.
-	DependsOn []string `json:",omitempty"`
-
-	Layer Layer `json:",omitempty"`
-
-	// Each package metadata have the file path, while the package from lock files does not have.
-	FilePath string `json:",omitempty"`
-
-	// lines from the lock file where the dependency is written
-	Locations []Location `json:",omitempty"`
-}
-
-type Location struct {
-	StartLine int `json:",omitempty"`
-	EndLine   int `json:",omitempty"`
-}
-
-// BuildInfo represents information under /root/buildinfo in RHEL
-type BuildInfo struct {
-	ContentSets []string `json:",omitempty"`
-	Nvr         string   `json:",omitempty"`
-	Arch        string   `json:",omitempty"`
-}
-
-func (pkg *Package) Empty() bool {
-	return pkg.Name == "" || pkg.Version == ""
-}
-
-type Packages []Package
-
-func (pkgs Packages) Len() int {
-	return len(pkgs)
-}
-
-func (pkgs Packages) Swap(i, j int) {
-	pkgs[i], pkgs[j] = pkgs[j], pkgs[i]
-}
-
-func (pkgs Packages) Less(i, j int) bool {
-	switch {
-	case pkgs[i].Name != pkgs[j].Name:
-		return pkgs[i].Name < pkgs[j].Name
-	case pkgs[i].Version != pkgs[j].Version:
-		return pkgs[i].Version < pkgs[j].Version
+func (lm Layers) TotalSize() int64 {
+	var totalSize int64
+	for _, layer := range lm {
+		totalSize += layer.Size
 	}
-	return pkgs[i].FilePath < pkgs[j].FilePath
-}
-
-type SrcPackage struct {
-	Name        string   `json:"name"`
-	Version     string   `json:"version"`
-	BinaryNames []string `json:"binaryNames"`
+	return totalSize
 }
 
 type PackageInfo struct {
@@ -143,52 +110,40 @@ type PackageInfo struct {
 
 type Application struct {
 	// e.g. bundler and pipenv
-	Type string
+	Type LangType
 
 	// Lock files have the file path here, while each package metadata do not have
 	FilePath string `json:",omitempty"`
 
-	// Libraries is a list of lang-specific packages
-	Libraries []Package
+	// Packages is a list of lang-specific packages
+	Packages Packages
+}
+
+type Applications []Application
+
+func (apps Applications) Len() int {
+	return len(apps)
+}
+
+func (apps Applications) Swap(i, j int) {
+	apps[i], apps[j] = apps[j], apps[i]
+}
+
+func (apps Applications) Less(i, j int) bool {
+	switch {
+	case apps[i].Type != apps[j].Type:
+		return apps[i].Type < apps[j].Type
+	case apps[i].FilePath != apps[j].FilePath:
+		return apps[i].FilePath < apps[j].FilePath
+	default:
+		return len(apps[i].Packages) < len(apps[j].Packages)
+	}
 }
 
 type File struct {
 	Type    string
 	Path    string
 	Content []byte
-}
-
-// ArtifactType represents a type of artifact
-type ArtifactType string
-
-const (
-	ArtifactContainerImage   ArtifactType = "container_image"
-	ArtifactFilesystem       ArtifactType = "filesystem"
-	ArtifactRemoteRepository ArtifactType = "repository"
-	ArtifactCycloneDX        ArtifactType = "cyclonedx"
-	ArtifactSPDX             ArtifactType = "spdx"
-	ArtifactAWSAccount       ArtifactType = "aws_account"
-	ArtifactVM               ArtifactType = "vm"
-)
-
-// ArtifactReference represents a reference of container image, local filesystem and repository
-type ArtifactReference struct {
-	Name          string // image name, tar file name, directory or repository name
-	Type          ArtifactType
-	ID            string
-	BlobIDs       []string
-	ImageMetadata ImageMetadata
-
-	// SBOM
-	CycloneDX *CycloneDX
-}
-
-type ImageMetadata struct {
-	ID          string   // image ID
-	DiffIDs     []string // uncompressed layer IDs
-	RepoTags    []string
-	RepoDigests []string
-	ConfigFile  v1.ConfigFile
 }
 
 // ArtifactInfo is stored in cache
@@ -213,7 +168,8 @@ type ArtifactInfo struct {
 type BlobInfo struct {
 	SchemaVersion int
 
-	// Layer information
+	// Layer info
+	Size          int64    `json:",omitempty"`
 	Digest        string   `json:",omitempty"`
 	DiffID        string   `json:",omitempty"`
 	CreatedBy     string   `json:",omitempty"`
@@ -221,7 +177,7 @@ type BlobInfo struct {
 	WhiteoutFiles []string `json:",omitempty"`
 
 	// Analysis result
-	OS                OS                 `json:",omitempty"`
+	OS                OS                 `json:",omitzero"`
 	Repository        *Repository        `json:",omitempty"`
 	PackageInfos      []PackageInfo      `json:",omitempty"`
 	Applications      []Application      `json:",omitempty"`
@@ -239,15 +195,24 @@ type BlobInfo struct {
 	CustomResources []CustomResource `json:",omitempty"`
 }
 
-// ArtifactDetail is generated by applying blobs
+func (b BlobInfo) Layer() Layer {
+	return Layer{
+		Size:      b.Size,
+		Digest:    b.Digest,
+		DiffID:    b.DiffID,
+		CreatedBy: b.CreatedBy,
+	}
+}
+
+// ArtifactDetail represents the analysis result.
 type ArtifactDetail struct {
-	OS                OS                 `json:",omitempty"`
+	OS                OS                 `json:",omitzero"`
 	Repository        *Repository        `json:",omitempty"`
 	Packages          Packages           `json:",omitempty"`
-	Applications      []Application      `json:",omitempty"`
+	Applications      Applications       `json:",omitempty"`
 	Misconfigurations []Misconfiguration `json:",omitempty"`
-	Secrets           []Secret           `json:",omitempty"`
-	Licenses          []LicenseFile      `json:",omitempty"`
+	Secrets           Secrets            `json:",omitempty"`
+	Licenses          LicenseFiles       `json:",omitempty"`
 
 	// ImageConfig has information from container image config
 	ImageConfig ImageConfigDetail
@@ -255,6 +220,50 @@ type ArtifactDetail struct {
 	// CustomResources hold analysis results from custom analyzers.
 	// It is for extensibility and not used in OSS.
 	CustomResources []CustomResource `json:",omitempty"`
+
+	Layers Layers `json:",omitzero"`
+}
+
+// Sort sorts packages and applications in ArtifactDetail
+func (a *ArtifactDetail) Sort() {
+	sort.Sort(a.Packages)
+	sort.Sort(a.Applications)
+	sort.Sort(a.Secrets)
+	sort.Sort(a.Licenses)
+	// Misconfigurations will be sorted later
+}
+
+type Secrets []Secret
+
+func (s Secrets) Len() int {
+	return len(s)
+}
+
+func (s Secrets) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s Secrets) Less(i, j int) bool {
+	return s[i].FilePath < s[j].FilePath
+}
+
+type LicenseFiles []LicenseFile
+
+func (l LicenseFiles) Len() int {
+	return len(l)
+}
+
+func (l LicenseFiles) Swap(i, j int) {
+	l[i], l[j] = l[j], l[i]
+}
+
+func (l LicenseFiles) Less(i, j int) bool {
+	switch {
+	case l[i].Type != l[j].Type:
+		return l[i].Type < l[j].Type
+	default:
+		return l[i].FilePath < l[j].FilePath
+	}
 }
 
 // ImageConfigDetail has information from container image config
@@ -269,31 +278,11 @@ type ImageConfigDetail struct {
 	Secret *Secret `json:",omitempty"`
 }
 
-// ToBlobInfo is used to store a merged layer in cache.
-func (a *ArtifactDetail) ToBlobInfo() BlobInfo {
-	return BlobInfo{
-		SchemaVersion: BlobJSONSchemaVersion,
-		OS:            a.OS,
-		Repository:    a.Repository,
-		PackageInfos: []PackageInfo{
-			{
-				FilePath: "merged", // Set a dummy file path
-				Packages: a.Packages,
-			},
-		},
-		Applications:      a.Applications,
-		Misconfigurations: a.Misconfigurations,
-		Secrets:           a.Secrets,
-		Licenses:          a.Licenses,
-		CustomResources:   a.CustomResources,
-	}
-}
-
 // CustomResource holds the analysis result from a custom analyzer.
 // It is for extensibility and not used in OSS.
 type CustomResource struct {
 	Type     string
 	FilePath string
 	Layer    Layer
-	Data     interface{}
+	Data     any
 }

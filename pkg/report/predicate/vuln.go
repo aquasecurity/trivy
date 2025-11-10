@@ -1,6 +1,7 @@
 package predicate
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -24,10 +25,10 @@ type CosignVulnPredicate struct {
 }
 
 type Invocation struct {
-	Parameters interface{} `json:"parameters"`
-	URI        string      `json:"uri"`
-	EventID    string      `json:"event_id"`
-	BuilderID  string      `json:"builder.id"`
+	Parameters any    `json:"parameters"`
+	URI        string `json:"uri"`
+	EventID    string `json:"event_id"`
+	BuilderID  string `json:"builder.id"`
 }
 
 type DB struct {
@@ -59,8 +60,7 @@ func NewVulnWriter(output io.Writer, version string) VulnWriter {
 	}
 }
 
-func (w VulnWriter) Write(report types.Report) error {
-
+func (w VulnWriter) Write(ctx context.Context, report types.Report) error {
 	predicate := CosignVulnPredicate{}
 
 	purl := packageurl.NewPackageURL("github", "aquasecurity", "trivy", w.version, nil, "")
@@ -70,7 +70,7 @@ func (w VulnWriter) Write(report types.Report) error {
 		Result:  report,
 	}
 
-	now := clock.Now()
+	now := clock.Now(ctx)
 	predicate.Metadata = Metadata{
 		ScanStartedOn:  now,
 		ScanFinishedOn: now,

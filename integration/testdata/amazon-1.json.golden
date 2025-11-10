@@ -1,8 +1,12 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:5a0fd7bb415c9b52d1bb909e40b9f498a89a5572724bd107d26ead4a25f203e1",
   "ArtifactName": "testdata/fixtures/images/amazon-1.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 172655616,
     "OS": {
       "Family": "amazon",
       "Name": "AMI release 2018.03"
@@ -11,6 +15,10 @@
     "DiffIDs": [
       "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:amazon-1"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:amazon-1",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "ef1b126795001e9b4bdc14a01180e4d8146282d279f53e05adfaa8195ecda20e",
@@ -44,7 +52,14 @@
         "Image": "sha256:8db654f611aca1693ac658bd981ee35e4b6517e6ef74fa608c4b3b3595a986c8",
         "ArgsEscaped": true
       }
-    }
+    },
+    "Layers": [
+      {
+        "Size": 172655616,
+        "Digest": "sha256:105ff6bf468b1422ad7c47ea9d63eae82f875c93310cb8d34551951e754ef43b",
+        "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+      }
+    ]
   },
   "Results": [
     {
@@ -56,8 +71,13 @@
           "VulnerabilityID": "CVE-2019-5481",
           "PkgID": "curl@7.61.1-11.91.amzn1.x86_64",
           "PkgName": "curl",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/amazon/curl@7.61.1-11.91.amzn1?arch=x86_64\u0026distro=amazon-AMI+release+2018.03",
+            "UID": "9fafb1be522b1e7"
+          },
           "InstalledVersion": "7.61.1-11.91.amzn1",
           "FixedVersion": "7.61.1-12.93.amzn1",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:105ff6bf468b1422ad7c47ea9d63eae82f875c93310cb8d34551951e754ef43b",
             "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
@@ -75,6 +95,15 @@
           "CweIDs": [
             "CWE-415"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "arch-linux": 2,
+            "nvd": 4,
+            "oracle-oval": 2,
+            "photon": 4,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",

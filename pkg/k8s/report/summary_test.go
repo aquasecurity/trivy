@@ -20,7 +20,6 @@ func TestReport_ColumnHeading(t *testing.T) {
 	tests := []struct {
 		name             string
 		scanners         types.Scanners
-		components       []string
 		availableColumns []string
 		want             []string
 	}{
@@ -28,10 +27,6 @@ func TestReport_ColumnHeading(t *testing.T) {
 			name:             "filter workload columns",
 			scanners:         allScanners,
 			availableColumns: WorkloadColumns(),
-			components: []string{
-				workloadComponent,
-				infraComponent,
-			},
 			want: []string{
 				NamespaceColumn,
 				ResourceColumn,
@@ -43,7 +38,6 @@ func TestReport_ColumnHeading(t *testing.T) {
 		{
 			name:             "filter rbac columns",
 			scanners:         allScanners,
-			components:       []string{},
 			availableColumns: RoleColumns(),
 			want: []string{
 				NamespaceColumn,
@@ -52,26 +46,20 @@ func TestReport_ColumnHeading(t *testing.T) {
 			},
 		},
 		{
-			name:     "filter infra columns",
-			scanners: allScanners,
-			components: []string{
-				workloadComponent,
-				infraComponent,
-			},
+			name:             "filter infra columns",
+			scanners:         allScanners,
 			availableColumns: InfraColumns(),
 			want: []string{
 				NamespaceColumn,
 				ResourceColumn,
-				InfraAssessmentColumn,
+				VulnerabilitiesColumn,
+				MisconfigurationsColumn,
+				SecretsColumn,
 			},
 		},
 		{
-			name:     "config column only",
-			scanners: types.Scanners{types.MisconfigScanner},
-			components: []string{
-				workloadComponent,
-				infraComponent,
-			},
+			name:             "config column only",
+			scanners:         types.Scanners{types.MisconfigScanner},
 			availableColumns: WorkloadColumns(),
 			want: []string{
 				NamespaceColumn,
@@ -82,7 +70,6 @@ func TestReport_ColumnHeading(t *testing.T) {
 		{
 			name:             "secret column only",
 			scanners:         types.Scanners{types.SecretScanner},
-			components:       []string{},
 			availableColumns: WorkloadColumns(),
 			want: []string{
 				NamespaceColumn,
@@ -93,7 +80,6 @@ func TestReport_ColumnHeading(t *testing.T) {
 		{
 			name:             "vuln column only",
 			scanners:         types.Scanners{types.VulnerabilityScanner},
-			components:       []string{},
 			availableColumns: WorkloadColumns(),
 			want: []string{
 				NamespaceColumn,
@@ -105,8 +91,8 @@ func TestReport_ColumnHeading(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			column := ColumnHeading(tt.scanners, tt.components, tt.availableColumns)
-			if !assert.Equal(t, column, tt.want) {
+			column := ColumnHeading(tt.scanners, tt.availableColumns)
+			if !assert.Equal(t, tt.want, column) {
 				t.Error(fmt.Errorf("TestReport_ColumnHeading want %v got %v", tt.want, column))
 			}
 		})

@@ -1,0 +1,98 @@
+name: Cache test assets
+# This workflow runs on the main branch to create caches that can be accessed by PRs.
+# GitHub Actions cache isolation restricts access:
+# - PRs can only restore caches from: current branch, base branch, and default branch (main)
+# - PRs cannot restore caches from sibling branches or other PR branches
+# - By creating caches on the main branch, all PRs can benefit from shared cache
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test-images:
+    name: Cache test images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Set up Go
+        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
+
+      - name: Generate image list digest
+        id: image-digest
+        run: |
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags += ["containerd"] | .Tags |= sort' | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Restore and save test images cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: integration/testdata/fixtures/images
+          key: cache-test-images-${{ steps.image-digest.outputs.digest }}
+
+      - name: Download test images
+        run: mage test:fixtureContainerImages
+
+  test-vm-images:
+    name: Cache test VM images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Set up Go
+        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
+
+      - name: Generate image list digest
+        id: image-digest
+        run: |
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_VM_IMAGES)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags |= sort' | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Restore and save test VM images cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: integration/testdata/fixtures/vm-images
+          key: cache-test-vm-images-${{ steps.image-digest.outputs.digest }}
+
+      - name: Download test VM images
+        run: mage test:fixtureVMImages
+
+  lint-cache:
+    name: Cache lint results
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Set up Go
+        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Run golangci-lint for caching
+        uses: golangci/golangci-lint-action@4afd733a84b1f43292c63897423277bb7f4313a9 # v8.0.0
+        with:
+          version: v2.4
+          args: --verbose
+        env:
+          GOEXPERIMENT: jsonv2

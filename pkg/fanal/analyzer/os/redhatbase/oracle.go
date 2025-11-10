@@ -4,15 +4,13 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"slices"
 	"strings"
-
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 
 	"golang.org/x/xerrors"
 
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -33,15 +31,18 @@ func (a oracleOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 			return nil, xerrors.New("oracle: invalid oracle-release")
 		}
 		return &analyzer.AnalysisResult{
-			OS: types.OS{Family: aos.Oracle, Name: result[2]},
+			OS: types.OS{
+				Family: types.Oracle,
+				Name:   result[2],
+			},
 		}, nil
 	}
 
-	return nil, xerrors.Errorf("oracle: %w", aos.AnalyzeOSError)
+	return nil, xerrors.Errorf("oracle: %w", fos.AnalyzeOSError)
 }
 
 func (a oracleOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return utils.StringInSlice(filePath, a.requiredFiles())
+	return slices.Contains(a.requiredFiles(), filePath)
 }
 
 func (a oracleOSAnalyzer) requiredFiles() []string {
@@ -54,4 +55,9 @@ func (a oracleOSAnalyzer) Type() analyzer.Type {
 
 func (a oracleOSAnalyzer) Version() int {
 	return oracleAnalyzerVersion
+}
+
+// StaticPaths returns the static paths of the oracle analyzer
+func (a oracleOSAnalyzer) StaticPaths() []string {
+	return a.requiredFiles()
 }

@@ -5,134 +5,294 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/scanner"
-	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/applier"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	artimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
+	artlocal "github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact/repo"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
+	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+	"github.com/aquasecurity/trivy/pkg/rpc/client"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
+	"github.com/aquasecurity/trivy/pkg/scan/local"
+	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
-// imageStandaloneScanner initializes a container image scanner in standalone mode
-// $ trivy image alpine:3.15
-func imageStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS, conf.ArtifactOption.Platform)
-	if err != nil {
-		return scanner.Scanner{}, nil, err
-	}
-	s, cleanup, err := initializeDockerScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
-		dockerOpt, conf.ArtifactOption)
-	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a docker scanner: %w", err)
-	}
-	return s, cleanup, nil
+// newArtifactFunc is a function that creates an artifact with its cleanup function.
+// It takes an artifact cache (either local or remote) and returns the artifact, cleanup function, and any error.
+type newArtifactFunc func(cache.ArtifactCache) (artifact.Artifact, func(), error)
+
+////////////////////////////////////////
+// Standalone Mode Scanner Functions  //
+////////////////////////////////////////
+
+// imageStandaloneScanService scans container images from registries
+// Target: Container image (e.g., alpine:3.15, gcr.io/project/image:tag)
+// Mode: Standalone (local scanning without server)
+func imageStandaloneScanService(ctx context.Context, conf ScannerConfig) (scan.Service, func(), error) {
+	return createLocalService(conf, func(c cache.ArtifactCache) (artifact.Artifact, func(), error) {
+		img, cleanupImage, err := image.NewContainerImage(ctx, conf.Target, conf.ArtifactOption.ImageOption)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("unable to initialize container image: %w", err)
+		}
+
+		art, err := artimage.NewArtifact(img, c, conf.ArtifactOption)
+		if err != nil {
+			cleanupImage()
+			return nil, nil, xerrors.Errorf("unable to initialize artifact: %w", err)
+		}
+		return art, cleanupImage, nil
+	})
 }
 
-// archiveStandaloneScanner initializes an image archive scanner in standalone mode
-// $ trivy image --input alpine.tar
-func archiveStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, err := initializeArchiveScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
-	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
-	}
-	return s, func() {}, nil
+// archiveStandaloneScanService scans container image archives
+// Target: Image archive file (e.g., alpine.tar created by 'docker save')
+// Mode: Standalone (local scanning without server)
+func archiveStandaloneScanService(_ context.Context, conf ScannerConfig) (scan.Service, func(), error) {
+	return createLocalService(conf, func(c cache.ArtifactCache) (artifact.Artifact, func(), error) {
+		img, err := image.NewArchiveImage(conf.Target)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("unable to initialize archive image: %w", err)
+		}
+
+		art, err := artimage.NewArtifact(img, c, conf.ArtifactOption)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("unable to initialize artifact: %w", err)
+		}
+		return art, func() {}, nil
+	})
 }
 
-// imageRemoteScanner initializes a container image scanner in client/server mode
-// $ trivy image --server localhost:4954 alpine:3.15
-func imageRemoteScanner(ctx context.Context, conf ScannerConfig) (
-	scanner.Scanner, func(), error) {
-	// Scan an image in Docker Engine, Docker Registry, etc.
-	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS, conf.ArtifactOption.Platform)
-	if err != nil {
-		return scanner.Scanner{}, nil, err
-	}
-
-	s, cleanup, err := initializeRemoteDockerScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption,
-		dockerOpt, conf.ArtifactOption)
-	if err != nil {
-		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the docker scanner: %w", err)
-	}
-	return s, cleanup, nil
+// filesystemStandaloneScanService scans local filesystems and directories
+// Target: Local directory or file path (e.g., /path/to/project, .)
+// Mode: Standalone (local scanning without server)
+func filesystemStandaloneScanService(_ context.Context, conf ScannerConfig) (scan.Service, func(), error) {
+	return createLocalService(conf, func(c cache.ArtifactCache) (artifact.Artifact, func(), error) {
+		fs := walker.NewFS()
+		art, err := artlocal.NewArtifact(conf.Target, c, fs, conf.ArtifactOption)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("unable to initialize filesystem artifact: %w", err)
+		}
+		return art, func() {}, nil
+	})
 }
 
-// archiveRemoteScanner initializes an image archive scanner in client/server mode
-// $ trivy image --server localhost:4954 --input alpine.tar
-func archiveRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	// Scan tar file
-	s, err := initializeRemoteArchiveScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption, conf.ArtifactOption)
-	if err != nil {
-		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
-	}
-	return s, func() {}, nil
+// repositoryStandaloneScanService scans git repositories
+// Target: Git repository URL or local path (e.g., https://github.com/example/repo, .)
+// Mode: Standalone (local scanning without server)
+func repositoryStandaloneScanService(_ context.Context, conf ScannerConfig) (scan.Service, func(), error) {
+	return createLocalService(conf, func(c cache.ArtifactCache) (artifact.Artifact, func(), error) {
+		fs := walker.NewFS()
+		art, cleanupArtifact, err := repo.NewArtifact(conf.Target, c, fs, conf.ArtifactOption)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("unable to initialize repository artifact: %w", err)
+		}
+		return art, cleanupArtifact, nil
+	})
 }
 
-// filesystemStandaloneScanner initializes a filesystem scanner in standalone mode
-func filesystemStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeFilesystemScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
-	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a filesystem scanner: %w", err)
-	}
-	return s, cleanup, nil
+// sbomStandaloneScanService scans SBOM files
+// Target: SBOM file path (e.g., sbom.json, sbom.spdx, bom.xml)
+// Mode: Standalone (local scanning without server)
+func sbomStandaloneScanService(_ context.Context, conf ScannerConfig) (scan.Service, func(), error) {
+	return createLocalService(conf, func(c cache.ArtifactCache) (artifact.Artifact, func(), error) {
+		art, err := sbom.NewArtifact(conf.Target, c, conf.ArtifactOption)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("unable to initialize SBOM artifact: %w", err)
+		}
+		return art, func() {}, nil
+	})
 }
 
-// filesystemRemoteScanner initializes a filesystem scanner in client/server mode
-func filesystemRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeRemoteFilesystemScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption, conf.ArtifactOption)
-	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a filesystem scanner: %w", err)
-	}
-	return s, cleanup, nil
+// vmStandaloneScanService scans virtual machine images
+// Target: VM image file or AMI ID (e.g., disk.vmdk, ami-1234567890abcdef0)
+// Mode: Standalone (local scanning without server)
+func vmStandaloneScanService(_ context.Context, conf ScannerConfig) (scan.Service, func(), error) {
+	return createLocalService(conf, func(c cache.ArtifactCache) (artifact.Artifact, func(), error) {
+		walkerVM := walker.NewVM()
+		art, err := vm.NewArtifact(conf.Target, c, walkerVM, conf.ArtifactOption)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("unable to initialize VM artifact: %w", err)
+		}
+		return art, func() {}, nil
+	})
 }
 
-// repositoryStandaloneScanner initializes a repository scanner in standalone mode
-func repositoryStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeRepositoryScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
-	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a repository scanner: %w", err)
-	}
-	return s, cleanup, nil
+//////////////////////////////////////////
+// Client/Server Mode Scanner Functions //
+//////////////////////////////////////////
+
+// imageRemoteScanService scans container images via Trivy server
+// Target: Container image (e.g., alpine:3.15, gcr.io/project/image:tag)
+// Mode: Client/Server (sends image data to Trivy server for scanning)
+func imageRemoteScanService(ctx context.Context, conf ScannerConfig) (scan.Service, func(), error) {
+	return createRemoteService(ctx, conf, func(c cache.ArtifactCache) (artifact.Artifact, func(), error) {
+		img, cleanupImage, err := image.NewContainerImage(ctx, conf.Target, conf.ArtifactOption.ImageOption)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("unable to initialize container image: %w", err)
+		}
+
+		art, err := artimage.NewArtifact(img, c, conf.ArtifactOption)
+		if err != nil {
+			cleanupImage()
+			return nil, nil, xerrors.Errorf("unable to initialize artifact: %w", err)
+		}
+		return art, cleanupImage, nil
+	})
 }
 
-// repositoryRemoteScanner initializes a repository scanner in client/server mode
-func repositoryRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeRemoteRepositoryScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption,
-		conf.ArtifactOption)
-	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a repository scanner: %w", err)
-	}
-	return s, cleanup, nil
+// archiveRemoteScanService scans container image archives via Trivy server
+// Target: Image archive file (e.g., alpine.tar created by 'docker save')
+// Mode: Client/Server (sends archive to Trivy server for scanning)
+func archiveRemoteScanService(ctx context.Context, conf ScannerConfig) (scan.Service, func(), error) {
+	return createRemoteService(ctx, conf, func(c cache.ArtifactCache) (artifact.Artifact, func(), error) {
+		img, err := image.NewArchiveImage(conf.Target)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("unable to initialize archive image: %w", err)
+		}
+
+		art, err := artimage.NewArtifact(img, c, conf.ArtifactOption)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("unable to initialize artifact: %w", err)
+		}
+		return art, func() {}, nil
+	})
 }
 
-// sbomStandaloneScanner initializes a SBOM scanner in standalone mode
-func sbomStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeSBOMScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
-	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a cycloneDX scanner: %w", err)
-	}
-	return s, cleanup, nil
+// filesystemRemoteScanService scans filesystems via Trivy server
+// Target: Local directory or file path (e.g., /path/to/project, .)
+// Mode: Client/Server (sends filesystem data to Trivy server for scanning)
+func filesystemRemoteScanService(ctx context.Context, conf ScannerConfig) (scan.Service, func(), error) {
+	return createRemoteService(ctx, conf, func(c cache.ArtifactCache) (artifact.Artifact, func(), error) {
+		fs := walker.NewFS()
+		art, err := artlocal.NewArtifact(conf.Target, c, fs, conf.ArtifactOption)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("unable to initialize filesystem artifact: %w", err)
+		}
+		return art, func() {}, nil
+	})
 }
 
-// sbomRemoteScanner initializes a SBOM scanner in client/server mode
-func sbomRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeRemoteSBOMScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption, conf.ArtifactOption)
-	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a cycloneDX scanner: %w", err)
-	}
-	return s, cleanup, nil
+// repositoryRemoteScanService scans git repositories via Trivy server
+// Target: Git repository URL or local path (e.g., https://github.com/example/repo, .)
+// Mode: Client/Server (sends repository data to Trivy server for scanning)
+func repositoryRemoteScanService(ctx context.Context, conf ScannerConfig) (scan.Service, func(), error) {
+	return createRemoteService(ctx, conf, func(c cache.ArtifactCache) (artifact.Artifact, func(), error) {
+		fs := walker.NewFS()
+		art, cleanupArtifact, err := repo.NewArtifact(conf.Target, c, fs, conf.ArtifactOption)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("unable to initialize repository artifact: %w", err)
+		}
+		return art, cleanupArtifact, nil
+	})
 }
 
-// vmStandaloneScanner initializes a VM scanner in standalone mode
-func vmStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeVMScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
-		conf.ArtifactOption)
-	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a vm scanner: %w", err)
-	}
-	return s, cleanup, nil
+// sbomRemoteScanService scans SBOM files via Trivy server
+// Target: SBOM file path (e.g., sbom.json, sbom.spdx, bom.xml)
+// Mode: Client/Server (sends SBOM to Trivy server for scanning)
+func sbomRemoteScanService(ctx context.Context, conf ScannerConfig) (scan.Service, func(), error) {
+	return createRemoteService(ctx, conf, func(c cache.ArtifactCache) (artifact.Artifact, func(), error) {
+		art, err := sbom.NewArtifact(conf.Target, c, conf.ArtifactOption)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("unable to initialize SBOM artifact: %w", err)
+		}
+		return art, func() {}, nil
+	})
 }
 
-// vmRemoteScanner initializes a VM scanner in client/server mode
-func vmRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeRemoteVMScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption, conf.ArtifactOption)
+// vmRemoteScanService scans virtual machine images via Trivy server
+// Target: VM image file or AMI ID (e.g., disk.vmdk, ami-1234567890abcdef0)
+// Mode: Client/Server (sends VM image data to Trivy server for scanning)
+func vmRemoteScanService(ctx context.Context, conf ScannerConfig) (scan.Service, func(), error) {
+	return createRemoteService(ctx, conf, func(c cache.ArtifactCache) (artifact.Artifact, func(), error) {
+		walkerVM := walker.NewVM()
+		art, err := vm.NewArtifact(conf.Target, c, walkerVM, conf.ArtifactOption)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("unable to initialize VM artifact: %w", err)
+		}
+		return art, func() {}, nil
+	})
+}
+
+// createLocalService creates a local scanning service using manual dependency injection.
+// This replaces the previous Wire-based code generation with explicit dependency management.
+//
+// Dependency injection process:
+// 1. Initialize cache (for storing analysis results)
+// 2. Create artifact using the provided factory function
+// 3. Manually inject dependencies into the local service:
+//   - Applier: Merges layers and applies analysis results
+//   - OS Scanner: Detects OS packages and vulnerabilities
+//   - Language Scanner: Detects language-specific packages and vulnerabilities
+//   - Vulnerability Client: Fetches vulnerability information from the database
+//
+// The function returns:
+//   - scan.Service: The configured scanning service with all dependencies injected
+//   - cleanup function: Must be called to properly release resources
+//   - error: If any initialization fails
+//
+// Dependency injection graph (all manually wired):
+//
+//	Cache → Applier → LocalService → Artifact → ScanService
+//	      ↘ OS Scanner ↗
+//	      ↘ Lang Scanner ↗
+//	      ↘ Vuln Client ↗
+func createLocalService(conf ScannerConfig, newArtifact newArtifactFunc) (scan.Service, func(), error) {
+	c, cleanupCache, err := cache.New(conf.CacheOptions)
 	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a vm scanner: %w", err)
+		return scan.Service{}, nil, xerrors.Errorf("unable to initialize cache: %w", err)
 	}
-	return s, cleanup, nil
+
+	app := applier.NewApplier(c)
+	osScanner := ospkg.NewScanner()
+	langScanner := langpkg.NewScanner()
+	vulnClient := vulnerability.NewClient(db.Config{})
+	service := local.NewService(app, osScanner, langScanner, vulnClient)
+
+	art, cleanupArtifact, err := newArtifact(c)
+	if err != nil {
+		cleanupCache()
+		return scan.Service{}, nil, xerrors.Errorf("unable to initialize artifact: %w", err)
+	}
+
+	return scan.NewService(service, art), func() {
+		cleanupArtifact()
+		cleanupCache()
+	}, nil
+}
+
+// createRemoteService creates a remote scanning service using manual dependency injection.
+// This replaces the previous Wire-based code generation with explicit dependency management.
+//
+// Dependency injection process:
+// 1. Initialize remote cache (for caching results on server side)
+// 2. Create artifact using the provided factory function
+// 3. Manually inject the RPC client service to communicate with the server
+//
+// The function returns:
+//   - scan.Service: The configured scanning service with all dependencies injected
+//   - cleanup function: Must be called to properly release resources
+//   - error: If any initialization fails
+//
+// Dependency injection graph (all manually wired):
+//
+//	RemoteCache → Artifact → ClientService → ScanService
+//	                        ↗
+//	           Trivy Server (handles scanning logic)
+func createRemoteService(ctx context.Context, conf ScannerConfig, newArtifact newArtifactFunc) (scan.Service, func(), error) {
+	remoteCache := cache.NewRemoteCache(ctx, conf.RemoteCacheOptions)
+
+	art, cleanupArtifact, err := newArtifact(remoteCache)
+	if err != nil {
+		return scan.Service{}, nil, err
+	}
+
+	service := client.NewService(conf.ServerOption)
+	return scan.NewService(service, art), cleanupArtifact, nil
 }

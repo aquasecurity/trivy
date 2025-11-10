@@ -4,20 +4,18 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 type fakeHook struct{}
 
-func (h fakeHook) Handle(ctx context.Context, result *analyzer.AnalysisResult, info *types.BlobInfo) error {
+func (h fakeHook) Handle(_ context.Context, _ *analyzer.AnalysisResult, info *types.BlobInfo) error {
 	info.DiffID = "fake"
 	return nil
 }
@@ -49,7 +47,7 @@ func TestManager_Versions(t *testing.T) {
 		{
 			name:    "disable hooks",
 			disable: []types.HandlerType{"fake"},
-			want:    map[string]int{},
+			want:    make(map[string]int),
 		},
 	}
 
@@ -101,7 +99,7 @@ func TestManager_CallHooks(t *testing.T) {
 			})
 			require.NoError(t, err)
 
-			err = m.PostHandle(context.TODO(), nil, &blob)
+			err = m.PostHandle(t.Context(), nil, &blob)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, blob)
 		})

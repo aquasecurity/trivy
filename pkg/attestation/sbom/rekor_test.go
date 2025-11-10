@@ -1,7 +1,6 @@
 package sbom_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -22,7 +21,7 @@ func TestRekor_RetrieveSBOM(t *testing.T) {
 		{
 			name:   "happy path",
 			digest: "sha256:5891b5b522d5df086d0ff0b110fbd9d21bb4fc7163af34d08286a2e846f6be03",
-			want:   `{"bomFormat":"CycloneDX","specVersion":"1.4","version":2}`,
+			want:   `{"bomFormat":"CycloneDX","specVersion":"1.5","version":2}`,
 		},
 		{
 			name:    "404",
@@ -31,7 +30,7 @@ func TestRekor_RetrieveSBOM(t *testing.T) {
 		},
 	}
 
-	require.NoError(t, log.InitLogger(false, true))
+	log.InitLogger(false, true)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ts := rekortest.NewServer(t)
@@ -41,7 +40,7 @@ func TestRekor_RetrieveSBOM(t *testing.T) {
 			rc, err := sbom.NewRekor(ts.URL())
 			require.NoError(t, err)
 
-			got, err := rc.RetrieveSBOM(context.Background(), tt.digest)
+			got, err := rc.RetrieveSBOM(t.Context(), tt.digest)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return

@@ -1,14 +1,14 @@
 package ubuntu
 
 import (
-	"context"
 	"os"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func Test_ubuntuESMAnalyzer_Analyze(t *testing.T) {
@@ -47,7 +47,7 @@ func Test_ubuntuESMAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			ctx := context.Background()
+			ctx := t.Context()
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.filePath,
 				Content:  f,

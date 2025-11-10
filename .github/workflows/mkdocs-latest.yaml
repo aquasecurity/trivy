@@ -14,16 +14,17 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout main
-        uses: actions/checkout@v3
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0
           persist-credentials: true
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
         with:
           python-version: 3.x
       - name: Install dependencies
         run: |
-          pip install git+https://${GH_TOKEN}@github.com/squidfunk/mkdocs-material-insiders.git
+          python -m pip install --upgrade pip setuptools wheel
+          pip install git+https://${GH_TOKEN}@github.com/squidfunk/mkdocs-material-insiders.git@9.5.44-insiders-4.53.14
           pip install -r docs/build/requirements.txt
         env:
           GH_TOKEN: ${{ secrets.MKDOCS_AQUA_BOT }}

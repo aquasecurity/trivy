@@ -9,7 +9,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/internal/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -23,7 +23,7 @@ func TestDriver_Detect(t *testing.T) {
 	tests := []struct {
 		name     string
 		fixtures []string
-		libType  string
+		libType  ftypes.LangType
 		args     args
 		want     []types.DetectedVulnerability
 		wantErr  string
@@ -155,7 +155,58 @@ func TestDriver_Detect(t *testing.T) {
 				pkgName: "symfony/symfony",
 				pkgVer:  "5.1.5",
 			},
-			wantErr: "failed to unmarshal advisory JSON",
+			wantErr: "json unmarshal error",
+		},
+		{
+			name: "duplicated version in advisory",
+			fixtures: []string{
+				"testdata/fixtures/pip.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "Django",
+				pkgVer:  "4.2.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2023-36053",
+					PkgName:          "Django",
+					InstalledVersion: "4.2.1",
+					FixedVersion:     "4.2.3",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.GHSA,
+						Name: "GitHub Security Advisory Pip",
+						URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip",
+					},
+				},
+			},
+		},
+		{
+			name: "Custom data for vulnerability",
+			fixtures: []string{
+				"testdata/fixtures/go-custom-data.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.GoBinary,
+			args: args{
+				pkgName: "github.com/docker/docker",
+				pkgVer:  "23.0.14",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "GHSA-v23v-6jw2-98fq",
+					PkgName:          "github.com/docker/docker",
+					InstalledVersion: "23.0.14",
+					FixedVersion:     "23.0.15, 26.1.5, 27.1.1, 25.0.6",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.GHSA,
+						Name: "GitHub Security Advisory Go",
+						URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Ago",
+					},
+					Custom: map[string]any{"Severity": 2.0},
+				},
+			},
 		},
 	}
 	for _, tt := range tests {
@@ -164,18 +215,17 @@ func TestDriver_Detect(t *testing.T) {
 			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()
 
-			driver, err := library.NewDriver(tt.libType)
-			require.NoError(t, err)
+			driver, ok := library.NewDriver(tt.libType)
+			require.True(t, ok)
 
 			got, err := driver.DetectVulnerabilities("", tt.args.pkgName, tt.args.pkgVer)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 
 			// Compare
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

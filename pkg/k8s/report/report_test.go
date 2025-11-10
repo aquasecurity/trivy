@@ -1,15 +1,11 @@
 package report
 
 import (
-	"bytes"
-	"regexp"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -18,42 +14,53 @@ var (
 		Namespace: "default",
 		Kind:      "Deploy",
 		Name:      "orion",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "123",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
+			},
+		},
 		Results: types.Results{
 			{
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						ID:       "ID100",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
 						ID:       "ID101",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
 					{
 						ID:       "ID102",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
 					{
 						ID:       "ID103",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "CRITICAL",
 					},
 					{
 						ID:       "ID104",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "UNKNOWN",
 					},
 					{
 						ID:       "ID105",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
 						ID:       "ID106",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
 				},
@@ -65,6 +72,17 @@ var (
 		Namespace: "default",
 		Kind:      "Deploy",
 		Name:      "orion",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "123",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
+			},
+		},
 		Results: types.Results{
 			{
 				Vulnerabilities: []types.DetectedVulnerability{
@@ -100,8 +118,60 @@ var (
 			},
 		},
 	}
+	deployOrionWithThirdVulns = Resource{
+		Namespace: "default",
+		Kind:      "Deploy",
+		Name:      "orion",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "123",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
+			},
+		},
+		Results: types.Results{
+			{},
+			{},
+			{
+				Vulnerabilities: []types.DetectedVulnerability{
+					{
+						VulnerabilityID: "CVE-2022-1111",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "LOW"},
+					},
+					{
+						VulnerabilityID: "CVE-2022-2222",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "MEDIUM"},
+					},
+					{
+						VulnerabilityID: "CVE-2022-3333",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "HIGH"},
+					},
+					{
+						VulnerabilityID: "CVE-2022-4444",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "CRITICAL"},
+					},
+					{
+						VulnerabilityID: "CVE-2022-5555",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "UNKNOWN"},
+					},
+					{
+						VulnerabilityID: "CVE-2022-6666",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "CRITICAL"},
+					},
+					{
+						VulnerabilityID: "CVE-2022-7777",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "MEDIUM"},
+					},
+				},
+			},
+		},
+	}
 
-	deployOrionWithBothVulnsAndMisconfigs = Resource{
+	orionDeployWithAnotherMisconfig = Resource{
 		Namespace: "default",
 		Kind:      "Deploy",
 		Name:      "orion",
@@ -109,38 +179,164 @@ var (
 			{
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
+						ID:       "ID201",
+						Status:   types.MisconfStatusFailure,
+						Severity: "HIGH",
+					},
+				},
+			},
+		},
+	}
+
+	image1WithVulns = Resource{
+		Namespace: "default",
+		Kind:      "Pod",
+		Name:      "multi-image-pod",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "image1",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
+			},
+		},
+		Results: types.Results{
+			{
+				Vulnerabilities: []types.DetectedVulnerability{
+					{
+						VulnerabilityID: "CVE-2022-1111",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "LOW"},
+					},
+				},
+			},
+		},
+	}
+
+	image2WithVulns = Resource{
+		Namespace: "default",
+		Kind:      "Pod",
+		Name:      "multi-image-pod",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "image2",
+				RepoTags: []string{
+					"alpine:3.17.3",
+				},
+				RepoDigests: []string{
+					"alpine@sha256:124c7d2707904eea7431fffe91522a01e5a861a624ee31d03372cc1d138a3126",
+				},
+			},
+		},
+		Results: types.Results{
+			{
+				Vulnerabilities: []types.DetectedVulnerability{
+					{
+						VulnerabilityID: "CVE-2022-2222",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "MEDIUM"},
+					},
+				},
+			},
+		},
+	}
+
+	multiImagePodWithVulns = Resource{
+		Namespace: "default",
+		Kind:      "Pod",
+		Name:      "multi-image-pod",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "image1",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
+			},
+			{
+				ImageID: "image2",
+				RepoTags: []string{
+					"alpine:3.17.3",
+				},
+				RepoDigests: []string{
+					"alpine@sha256:124c7d2707904eea7431fffe91522a01e5a861a624ee31d03372cc1d138a3126",
+				},
+			},
+		},
+		Results: types.Results{
+			{
+				Vulnerabilities: []types.DetectedVulnerability{
+					{
+						VulnerabilityID: "CVE-2022-1111",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "LOW"},
+					},
+				},
+			},
+			{
+				Vulnerabilities: []types.DetectedVulnerability{
+					{
+						VulnerabilityID: "CVE-2022-2222",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "MEDIUM"},
+					},
+				},
+			},
+		},
+	}
+
+	deployOrionWithBothVulnsAndMisconfigs = Resource{
+		Namespace: "default",
+		Kind:      "Deploy",
+		Name:      "orion",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "123",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
+			},
+		},
+		Results: types.Results{
+			{
+				Misconfigurations: []types.DetectedMisconfiguration{
+					{
 						ID:       "ID100",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
 						ID:       "ID101",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
 					{
 						ID:       "ID102",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
 					{
 						ID:       "ID103",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "CRITICAL",
 					},
 					{
 						ID:       "ID104",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "UNKNOWN",
 					},
 					{
 						ID:       "ID105",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
 						ID:       "ID106",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
 				},
@@ -184,6 +380,17 @@ var (
 		Namespace: "default",
 		Kind:      "Cronjob",
 		Name:      "hello",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "123",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
+			},
+		},
 		Results: types.Results{
 			{Vulnerabilities: []types.DetectedVulnerability{{VulnerabilityID: "CVE-2020-9999"}}},
 		},
@@ -193,6 +400,17 @@ var (
 		Namespace: "default",
 		Kind:      "Pod",
 		Name:      "prometheus",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "123",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
+			},
+		},
 		Results: types.Results{
 			{Misconfigurations: []types.DetectedMisconfiguration{{ID: "ID100"}}},
 		},
@@ -207,7 +425,7 @@ var (
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						ID:       "ID100",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
 				},
@@ -221,7 +439,7 @@ var (
 		Name:      "lua",
 		Results: types.Results{
 			{
-				Secrets: []ftypes.SecretFinding{
+				Secrets: []types.DetectedSecret{
 					{
 						RuleID:   "secret1",
 						Severity: "CRITICAL",
@@ -244,28 +462,28 @@ var (
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						ID:       "KSV-ID100",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
 						ID:       "KSV-ID101",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
 					{
 						ID:       "KSV-ID102",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
 
 					{
 						ID:       "KCV-ID100",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
 						ID:       "KCV-ID101",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
 				},
@@ -275,6 +493,10 @@ var (
 )
 
 func TestReport_consolidate(t *testing.T) {
+	concatenatedResource := orionDeployWithAnotherMisconfig
+	concatenatedResource.Results[0].Misconfigurations = append(concatenatedResource.Results[0].Misconfigurations,
+		deployOrionWithMisconfigs.Results[0].Misconfigurations...)
+
 	tests := []struct {
 		name             string
 		report           Report
@@ -283,11 +505,9 @@ func TestReport_consolidate(t *testing.T) {
 		{
 			name: "report with both misconfigs and vulnerabilities",
 			report: Report{
-				Vulnerabilities: []Resource{
+				Resources: []Resource{
 					deployOrionWithVulns,
 					cronjobHelloWithVulns,
-				},
-				Misconfigurations: []Resource{
 					deployOrionWithMisconfigs,
 					podPrometheusWithMisconfigs,
 				},
@@ -301,7 +521,7 @@ func TestReport_consolidate(t *testing.T) {
 		{
 			name: "report with only misconfigurations",
 			report: Report{
-				Misconfigurations: []Resource{
+				Resources: []Resource{
 					deployOrionWithMisconfigs,
 					podPrometheusWithMisconfigs,
 				},
@@ -314,7 +534,7 @@ func TestReport_consolidate(t *testing.T) {
 		{
 			name: "report with only vulnerabilities",
 			report: Report{
-				Vulnerabilities: []Resource{
+				Resources: []Resource{
 					deployOrionWithVulns,
 					cronjobHelloWithVulns,
 				},
@@ -324,11 +544,51 @@ func TestReport_consolidate(t *testing.T) {
 				"default/cronjob/hello": cronjobHelloWithVulns,
 			},
 		},
+		{
+			name: "report with vulnerabilities in the third result",
+			report: Report{
+				Resources: []Resource{
+					deployOrionWithThirdVulns,
+				},
+			},
+			expectedFindings: map[string]Resource{
+				"default/deploy/orion": deployOrionWithThirdVulns,
+			},
+		},
+		{
+			name: "report with misconfigs in image and pod",
+			report: Report{
+				Resources: []Resource{
+					deployOrionWithMisconfigs,
+					orionDeployWithAnotherMisconfig,
+				},
+			},
+			expectedFindings: map[string]Resource{
+				"default/deploy/orion": concatenatedResource,
+			},
+		},
+		{
+			name: "report with multi image pod containing vulnerabilities",
+			report: Report{
+				Resources: []Resource{
+					image1WithVulns,
+					image2WithVulns,
+				},
+			},
+			expectedFindings: map[string]Resource{
+				"default/pod/multi-image-pod": multiImagePodWithVulns,
+			},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			consolidateReport := tt.report.consolidate()
+
+			if len(consolidateReport.Findings) != len(tt.expectedFindings) {
+				t.Errorf("expected %d findings, got %d", len(tt.expectedFindings), len(consolidateReport.Findings))
+			}
+
 			for _, f := range consolidateReport.Findings {
 				key := f.fullname()
 
@@ -382,11 +642,9 @@ func TestResourceFailed(t *testing.T) {
 		{
 			name: "report with both misconfigs and vulnerabilities",
 			report: Report{
-				Vulnerabilities: []Resource{
+				Resources: []Resource{
 					deployOrionWithVulns,
 					cronjobHelloWithVulns,
-				},
-				Misconfigurations: []Resource{
 					deployOrionWithMisconfigs,
 					podPrometheusWithMisconfigs,
 				},
@@ -396,7 +654,7 @@ func TestResourceFailed(t *testing.T) {
 		{
 			name: "report with only misconfigurations",
 			report: Report{
-				Misconfigurations: []Resource{
+				Resources: []Resource{
 					deployOrionWithMisconfigs,
 					podPrometheusWithMisconfigs,
 				},
@@ -406,7 +664,7 @@ func TestResourceFailed(t *testing.T) {
 		{
 			name: "report with only vulnerabilities",
 			report: Report{
-				Vulnerabilities: []Resource{
+				Resources: []Resource{
 					deployOrionWithVulns,
 					cronjobHelloWithVulns,
 				},
@@ -464,7 +722,7 @@ func Test_rbacResource(t *testing.T) {
 
 func Test_separateMisconfigReports(t *testing.T) {
 	k8sReport := Report{
-		Misconfigurations: []Resource{
+		Resources: []Resource{
 			{Kind: "Role"},
 			{Kind: "Deployment"},
 			{Kind: "StatefulSet"},
@@ -483,7 +741,6 @@ func Test_separateMisconfigReports(t *testing.T) {
 		name            string
 		k8sReport       Report
 		scanners        types.Scanners
-		components      []string
 		expectedReports []Report
 	}{
 		{
@@ -493,41 +750,31 @@ func Test_separateMisconfigReports(t *testing.T) {
 				types.MisconfigScanner,
 				types.RBACScanner,
 			},
-			components: []string{
-				workloadComponent,
-				infraComponent,
-			},
 			expectedReports: []Report{
 				// the order matter for the test
 				{
-					Misconfigurations: []Resource{
+					Resources: []Resource{
 						{Kind: "Deployment"},
 						{Kind: "StatefulSet"},
-						{Kind: "Pod"},
 					},
 				},
-				{Misconfigurations: []Resource{{Kind: "Role"}}},
-				{Misconfigurations: []Resource{{Kind: "Pod"}}},
+				{Resources: []Resource{{Kind: "Pod"}}},
+				{Resources: []Resource{{Kind: "Role"}}},
 			},
 		},
 		{
 			name:      "Config and Infra for the same resource",
 			k8sReport: k8sReport,
 			scanners:  types.Scanners{types.MisconfigScanner},
-			components: []string{
-				workloadComponent,
-				infraComponent,
-			},
 			expectedReports: []Report{
 				// the order matter for the test
 				{
-					Misconfigurations: []Resource{
+					Resources: []Resource{
 						{Kind: "Deployment"},
 						{Kind: "StatefulSet"},
-						{Kind: "Pod"},
 					},
 				},
-				{Misconfigurations: []Resource{{Kind: "Pod"}}},
+				{Resources: []Resource{{Kind: "Pod"}}},
 			},
 		},
 		{
@@ -535,31 +782,43 @@ func Test_separateMisconfigReports(t *testing.T) {
 			k8sReport: k8sReport,
 			scanners:  types.Scanners{types.RBACScanner},
 			expectedReports: []Report{
-				{Misconfigurations: []Resource{{Kind: "Role"}}},
+				{Resources: []Resource{{Kind: "Role"}}},
 			},
 		},
 		{
-			name:       "Config Report Only",
-			k8sReport:  k8sReport,
-			scanners:   types.Scanners{types.MisconfigScanner},
-			components: []string{workloadComponent},
+			name:      "Config Report Only",
+			k8sReport: k8sReport,
+			scanners:  types.Scanners{types.MisconfigScanner},
 			expectedReports: []Report{
 				{
-					Misconfigurations: []Resource{
+					Resources: []Resource{
 						{Kind: "Deployment"},
 						{Kind: "StatefulSet"},
+					},
+				},
+				{
+					Resources: []Resource{
 						{Kind: "Pod"},
 					},
 				},
 			},
 		},
 		{
-			name:       "Infra Report Only",
-			k8sReport:  k8sReport,
-			scanners:   types.Scanners{types.MisconfigScanner},
-			components: []string{infraComponent},
+			name:      "Infra Report Only",
+			k8sReport: k8sReport,
+			scanners:  types.Scanners{types.MisconfigScanner},
 			expectedReports: []Report{
-				{Misconfigurations: []Resource{{Kind: "Pod"}}},
+				{
+					Resources: []Resource{
+						{Kind: "Deployment"},
+						{Kind: "StatefulSet"},
+					},
+				},
+				{
+					Resources: []Resource{
+						{Kind: "Pod"},
+					},
+				},
 			},
 		},
 
@@ -568,238 +827,15 @@ func Test_separateMisconfigReports(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			reports := separateMisconfigReports(tt.k8sReport, tt.scanners, tt.components)
-			assert.Equal(t, len(tt.expectedReports), len(reports))
+			reports := SeparateMisconfigReports(tt.k8sReport, tt.scanners)
+			assert.Len(t, reports, len(tt.expectedReports))
 
 			for i := range reports {
-				assert.Equal(t, len(tt.expectedReports[i].Misconfigurations), len(reports[i].report.Misconfigurations))
-				for j, m := range tt.expectedReports[i].Misconfigurations {
-					assert.Equal(t, m.Kind, reports[i].report.Misconfigurations[j].Kind)
+				assert.Len(t, reports[i].Report.Resources, len(tt.expectedReports[i].Resources))
+				for j, m := range tt.expectedReports[i].Resources {
+					assert.Equal(t, m.Kind, reports[i].Report.Resources[j].Kind)
 				}
 			}
 		})
 	}
-}
-
-func TestReportWrite_Summary(t *testing.T) {
-	allSeverities := []dbTypes.Severity{
-		dbTypes.SeverityUnknown,
-		dbTypes.SeverityLow,
-		dbTypes.SeverityMedium,
-		dbTypes.SeverityHigh,
-		dbTypes.SeverityCritical,
-	}
-
-	tests := []struct {
-		name           string
-		report         Report
-		opt            Option
-		scanners       types.Scanners
-		components     []string
-		severities     []dbTypes.Severity
-		expectedOutput string
-	}{
-		{
-			name: "Only config, all serverities",
-			report: Report{
-				ClusterName:       "test",
-				Misconfigurations: []Resource{deployOrionWithMisconfigs},
-			},
-			scanners:   types.Scanners{types.MisconfigScanner},
-			components: []string{workloadComponent},
-			severities: allSeverities,
-			expectedOutput: `Summary Report for test
-=======================
-
-Workload Assessment
-┌───────────┬──────────────┬───────────────────┐
-│ Namespace │   Resource   │ Misconfigurations │
-│           │              ├───┬───┬───┬───┬───┤
-│           │              │ C │ H │ M │ L │ U │
-├───────────┼──────────────┼───┼───┼───┼───┼───┤
-│ default   │ Deploy/orion │ 1 │ 2 │ 1 │ 2 │ 1 │
-└───────────┴──────────────┴───┴───┴───┴───┴───┘
-Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
-		},
-		{
-			name: "Only vuln, all serverities",
-			report: Report{
-				ClusterName:     "test",
-				Vulnerabilities: []Resource{deployOrionWithVulns},
-			},
-			scanners:   types.Scanners{types.VulnerabilityScanner},
-			severities: allSeverities,
-			expectedOutput: `Summary Report for test
-=======================
-
-Workload Assessment
-┌───────────┬──────────────┬───────────────────┐
-│ Namespace │   Resource   │  Vulnerabilities  │
-│           │              ├───┬───┬───┬───┬───┤
-│           │              │ C │ H │ M │ L │ U │
-├───────────┼──────────────┼───┼───┼───┼───┼───┤
-│ default   │ Deploy/orion │ 2 │ 1 │ 2 │ 1 │ 1 │
-└───────────┴──────────────┴───┴───┴───┴───┴───┘
-Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
-		},
-		{
-			name: "Only rbac, all serverities",
-			report: Report{
-				ClusterName:       "test",
-				Misconfigurations: []Resource{roleWithMisconfig},
-			},
-			scanners:   types.Scanners{types.RBACScanner},
-			severities: allSeverities,
-			expectedOutput: `Summary Report for test
-=======================
-
-RBAC Assessment
-┌───────────┬─────────────────────────────────────────────────────┬───────────────────┐
-│ Namespace │                      Resource                       │  RBAC Assessment  │
-│           │                                                     ├───┬───┬───┬───┬───┤
-│           │                                                     │ C │ H │ M │ L │ U │
-├───────────┼─────────────────────────────────────────────────────┼───┼───┼───┼───┼───┤
-│ default   │ Role/system::leader-locking-kube-controller-manager │   │   │ 1 │   │   │
-└───────────┴─────────────────────────────────────────────────────┴───┴───┴───┴───┴───┘
-Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
-		},
-		{
-			name: "Only secret, all serverities",
-			report: Report{
-				ClusterName:     "test",
-				Vulnerabilities: []Resource{deployLuaWithSecrets},
-			},
-			scanners:   types.Scanners{types.SecretScanner},
-			severities: allSeverities,
-			expectedOutput: `Summary Report for test
-=======================
-
-Workload Assessment
-┌───────────┬────────────┬───────────────────┐
-│ Namespace │  Resource  │      Secrets      │
-│           │            ├───┬───┬───┬───┬───┤
-│           │            │ C │ H │ M │ L │ U │
-├───────────┼────────────┼───┼───┼───┼───┼───┤
-│ default   │ Deploy/lua │ 1 │   │ 1 │   │   │
-└───────────┴────────────┴───┴───┴───┴───┴───┘
-Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
-		},
-		{
-			name: "apiserver, only infra and serverities",
-			report: Report{
-				ClusterName:       "test",
-				Misconfigurations: []Resource{apiseverPodWithMisconfigAndInfra},
-			},
-			scanners:   types.Scanners{types.MisconfigScanner},
-			components: []string{infraComponent},
-			severities: allSeverities,
-			expectedOutput: `Summary Report for test
-=======================
-
-Infra Assessment
-┌─────────────┬────────────────────┬─────────────────────────────┐
-│  Namespace  │      Resource      │ Kubernetes Infra Assessment │
-│             │                    ├─────┬─────┬─────┬─────┬─────┤
-│             │                    │  C  │  H  │  M  │  L  │  U  │
-├─────────────┼────────────────────┼─────┼─────┼─────┼─────┼─────┤
-│ kube-system │ Pod/kube-apiserver │     │     │ 1   │ 1   │     │
-└─────────────┴────────────────────┴─────┴─────┴─────┴─────┴─────┘
-Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
-		},
-		{
-			name: "apiserver, vuln,config,secret and serverities",
-			report: Report{
-				ClusterName:       "test",
-				Misconfigurations: []Resource{apiseverPodWithMisconfigAndInfra},
-			},
-			scanners: types.Scanners{
-				types.VulnerabilityScanner,
-				types.MisconfigScanner,
-				types.SecretScanner,
-			},
-			components: []string{workloadComponent},
-			severities: allSeverities,
-			expectedOutput: `Summary Report for test
-=======================
-
-Workload Assessment
-┌─────────────┬────────────────────┬───────────────────┬───────────────────┬───────────────────┐
-│  Namespace  │      Resource      │  Vulnerabilities  │ Misconfigurations │      Secrets      │
-│             │                    ├───┬───┬───┬───┬───┼───┬───┬───┬───┬───┼───┬───┬───┬───┬───┤
-│             │                    │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │
-├─────────────┼────────────────────┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┤
-│ kube-system │ Pod/kube-apiserver │   │   │   │   │   │   │ 1 │ 1 │ 1 │   │   │   │   │   │   │
-└─────────────┴────────────────────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
-		},
-		{
-			name: "apiserver, all scanners and serverities",
-			report: Report{
-				ClusterName:       "test",
-				Misconfigurations: []Resource{apiseverPodWithMisconfigAndInfra},
-			},
-			scanners: types.Scanners{
-				types.MisconfigScanner,
-				types.VulnerabilityScanner,
-				types.RBACScanner,
-				types.SecretScanner,
-			},
-			components: []string{
-				workloadComponent,
-				infraComponent,
-			},
-			severities: allSeverities,
-			expectedOutput: `Summary Report for test
-=======================
-
-Workload Assessment
-┌─────────────┬────────────────────┬───────────────────┬───────────────────┬───────────────────┐
-│  Namespace  │      Resource      │  Vulnerabilities  │ Misconfigurations │      Secrets      │
-│             │                    ├───┬───┬───┬───┬───┼───┬───┬───┬───┬───┼───┬───┬───┬───┬───┤
-│             │                    │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │
-├─────────────┼────────────────────┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┤
-│ kube-system │ Pod/kube-apiserver │   │   │   │   │   │   │ 1 │ 1 │ 1 │   │   │   │   │   │   │
-└─────────────┴────────────────────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
-
-
-Infra Assessment
-┌─────────────┬────────────────────┬─────────────────────────────┐
-│  Namespace  │      Resource      │ Kubernetes Infra Assessment │
-│             │                    ├─────┬─────┬─────┬─────┬─────┤
-│             │                    │  C  │  H  │  M  │  L  │  U  │
-├─────────────┼────────────────────┼─────┼─────┼─────┼─────┼─────┤
-│ kube-system │ Pod/kube-apiserver │     │     │ 1   │ 1   │     │
-└─────────────┴────────────────────┴─────┴─────┴─────┴─────┴─────┘
-Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
-		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			output := bytes.Buffer{}
-
-			opt := Option{
-				Format:     "table",
-				Report:     "summary",
-				Output:     &output,
-				Scanners:   tc.scanners,
-				Severities: tc.severities,
-				Components: tc.components,
-			}
-
-			Write(tc.report, opt)
-
-			assert.Equal(t, tc.expectedOutput, stripAnsi(output.String()), tc.name)
-		})
-	}
-
-}
-
-const ansi = "[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))"
-
-var ansiRegexp = regexp.MustCompile(ansi)
-
-func stripAnsi(str string) string {
-	return strings.TrimSpace(ansiRegexp.ReplaceAllString(str, ""))
 }

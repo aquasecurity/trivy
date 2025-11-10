@@ -6,36 +6,16 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const (
 	xdgDataHome = "XDG_DATA_HOME"
 )
-
-var cacheDir string
-
-// DefaultCacheDir returns/creates the cache-dir to be used for trivy operations
-func DefaultCacheDir() string {
-	tmpDir, err := os.UserCacheDir()
-	if err != nil {
-		tmpDir = os.TempDir()
-	}
-	return filepath.Join(tmpDir, "trivy")
-}
-
-// CacheDir returns the directory used for caching
-func CacheDir() string {
-	return cacheDir
-}
-
-// SetCacheDir sets the trivy cacheDir
-func SetCacheDir(dir string) {
-	cacheDir = dir
-}
 
 func HomeDir() string {
 	dataHome := os.Getenv(xdgDataHome)
@@ -45,6 +25,10 @@ func HomeDir() string {
 
 	homeDir, _ := os.UserHomeDir()
 	return homeDir
+}
+
+func TrivyHomeDir() string {
+	return filepath.Join(HomeDir(), ".trivy")
 }
 
 // CopyFile copies the file content from scr to dst
@@ -74,15 +58,18 @@ func CopyFile(src, dst string) (int64, error) {
 }
 
 func DirExists(path string) bool {
-	if f, err := os.Stat(path); os.IsNotExist(err) || !f.IsDir() {
-		return false
-	}
-	return true
+	f, err := os.Stat(path)
+	return err == nil && f.IsDir()
+}
+
+func FileExists(filename string) bool {
+	f, err := os.Stat(filename)
+	return err == nil && !f.IsDir()
 }
 
 type WalkDirRequiredFunc func(path string, d fs.DirEntry) bool
 
-type WalkDirFunc func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error
+type WalkDirFunc func(path string, d fs.DirEntry, r io.Reader) error
 
 func WalkDir(fsys fs.FS, root string, required WalkDirRequiredFunc, fn WalkDirFunc) error {
 	return fs.WalkDir(fsys, root, func(path string, d fs.DirEntry, err error) error {
@@ -96,13 +83,23 @@ func WalkDir(fsys fs.FS, root string, required WalkDirRequiredFunc, fn WalkDirFu
 		if err != nil {
 			return xerrors.Errorf("file open error: %w", err)
 		}
-
-		file, ok := f.(dio.ReadSeekCloserAt)
-		if !ok {
-			return xerrors.Errorf("type assertion error: %w", err)
-		}
 		defer f.Close()
 
-		return fn(path, d, file)
+		if err = fn(path, d, f); err != nil {
+			log.Debug("Walk error", log.FilePath(path), log.Err(err))
+		}
+		return nil
 	})
+}
+
+func RequiredExt(exts ...string) WalkDirRequiredFunc {
+	return func(filePath string, _ fs.DirEntry) bool {
+		return slices.Contains(exts, filepath.Ext(filePath))
+	}
+}
+
+func RequiredFile(fileNames ...string) WalkDirRequiredFunc {
+	return func(filePath string, _ fs.DirEntry) bool {
+		return slices.Contains(fileNames, filepath.Base(filePath))
+	}
 }

@@ -1,10 +1,8 @@
 package npm
 
 import (
-	"context"
 	"os"
 	"sort"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,16 +14,15 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	_ = log.InitLogger(false, true)
+	log.InitLogger(false, true)
 	os.Exit(m.Run())
 }
 
 func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name    string
-		dir     string
-		want    *analyzer.AnalysisResult
-		wantErr string
+		name string
+		dir  string
+		want *analyzer.AnalysisResult
 	}{
 		{
 			name: "with node_modules",
@@ -35,16 +32,57 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Npm,
 						FilePath: "package-lock.json",
-						Libraries: []types.Package{
+						Packages: types.Packages{
 							{
-								ID:       "array-flatten@1.1.1",
-								Name:     "array-flatten",
-								Version:  "1.1.1",
-								Indirect: true,
+								ID:       "@babel/parser@7.23.6",
+								Name:     "@babel/parser",
+								Version:  "7.23.6",
+								Licenses: []string{"MIT"},
 								Locations: []types.Location{
 									{
-										StartLine: 12,
+										StartLine: 6,
+										EndLine:   10,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/@babel/parser/-/parser-7.23.6.tgz",
+									},
+								},
+							},
+							{
+								ID:      "ansi-colors@3.2.3",
+								Name:    "ansi-colors",
+								Version: "3.2.3",
+								Dev:     true,
+								Locations: []types.Location{
+									{
+										StartLine: 11,
 										EndLine:   16,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/ansi-colors/-/ansi-colors-3.2.3.tgz",
+									},
+								},
+							},
+							{
+								ID:      "array-flatten@1.1.1",
+								Name:    "array-flatten",
+								Version: "1.1.1",
+								Locations: []types.Location{
+									{
+										StartLine: 17,
+										EndLine:   21,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/array-flatten/-/array-flatten-1.1.1.tgz",
 									},
 								},
 							},
@@ -52,13 +90,18 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:        "body-parser@1.18.3",
 								Name:      "body-parser",
 								Version:   "1.18.3",
-								Indirect:  true,
 								DependsOn: []string{"debug@2.6.9"},
 								Licenses:  []string{"MIT"},
 								Locations: []types.Location{
 									{
-										StartLine: 17,
-										EndLine:   39,
+										StartLine: 22,
+										EndLine:   44,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/body-parser/-/body-parser-1.18.3.tgz",
 									},
 								},
 							},
@@ -66,17 +109,22 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:        "debug@2.6.9",
 								Name:      "debug",
 								Version:   "2.6.9",
-								Indirect:  true,
 								DependsOn: []string{"ms@2.0.0"},
 								Licenses:  []string{"MIT"},
 								Locations: []types.Location{
 									{
-										StartLine: 25,
-										EndLine:   32,
+										StartLine: 30,
+										EndLine:   37,
 									},
 									{
-										StartLine: 48,
-										EndLine:   55,
+										StartLine: 53,
+										EndLine:   60,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
 									},
 								},
 							},
@@ -84,13 +132,18 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:        "express@4.16.4",
 								Name:      "express",
 								Version:   "4.16.4",
-								Indirect:  true,
 								DependsOn: []string{"debug@2.6.9"},
 								Licenses:  []string{"MIT"},
 								Locations: []types.Location{
 									{
-										StartLine: 40,
-										EndLine:   62,
+										StartLine: 45,
+										EndLine:   67,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/express/-/express-4.16.4.tgz",
 									},
 								},
 							},
@@ -98,16 +151,21 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:       "ms@2.0.0",
 								Name:     "ms",
 								Version:  "2.0.0",
-								Indirect: true,
 								Licenses: []string{"MIT"},
 								Locations: []types.Location{
 									{
-										StartLine: 33,
-										EndLine:   37,
+										StartLine: 38,
+										EndLine:   42,
 									},
 									{
-										StartLine: 56,
-										EndLine:   60,
+										StartLine: 61,
+										EndLine:   65,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
 									},
 								},
 							},
@@ -115,12 +173,17 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:       "ms@2.1.1",
 								Name:     "ms",
 								Version:  "2.1.1",
-								Indirect: true,
 								Licenses: []string{"MIT"},
 								Locations: []types.Location{
 									{
-										StartLine: 63,
-										EndLine:   67,
+										StartLine: 68,
+										EndLine:   72,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/ms/-/ms-2.1.1.tgz",
 									},
 								},
 							},
@@ -137,16 +200,21 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Npm,
 						FilePath: "package-lock.json",
-						Libraries: []types.Package{
+						Packages: types.Packages{
 							{
-								ID:       "ms@2.1.1",
-								Name:     "ms",
-								Version:  "2.1.1",
-								Indirect: true,
+								ID:      "ms@2.1.1",
+								Name:    "ms",
+								Version: "2.1.1",
 								Locations: []types.Location{
 									{
 										StartLine: 6,
 										EndLine:   10,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/ms/-/ms-2.1.1.tgz",
 									},
 								},
 							},
@@ -156,9 +224,9 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:    "sad path",
-			dir:     "testdata/sad",
-			wantErr: "unable to parse",
+			name: "sad path",
+			dir:  "testdata/sad",
+			want: &analyzer.AnalysisResult{},
 		},
 	}
 	for _, tt := range tests {
@@ -166,39 +234,17 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 			a, err := newNpmLibraryAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 
-			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
+			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{
 				FS: os.DirFS(tt.dir),
 			})
 
-			if tt.wantErr != "" {
-				assert.ErrorContains(t, err, tt.wantErr)
-				return
+			require.NoError(t, err)
+			if len(got.Applications) > 0 {
+				sort.Sort(got.Applications[0].Packages)
 			}
-
-			assert.NoError(t, err)
-			sortPkgs(got.Applications[0].Libraries)
 			assert.Equal(t, tt.want, got)
 		})
 	}
-}
-
-func sortPkgs(libs []types.Package) {
-	sort.Slice(libs, func(i, j int) bool {
-		ret := strings.Compare(libs[i].Name, libs[j].Name)
-		if ret == 0 {
-			return libs[i].Version < libs[j].Version
-		}
-		return ret < 0
-	})
-	for _, lib := range libs {
-		sortLocations(lib.Locations)
-	}
-}
-
-func sortLocations(locs []types.Location) {
-	sort.Slice(locs, func(i, j int) bool {
-		return locs[i].StartLine < locs[j].StartLine
-	})
 }
 
 func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
@@ -218,8 +264,18 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
+			name:     "package.json with `/` in name",
+			filePath: "npm/node_modules/@babel/parser/package.json",
+			want:     true,
+		},
+		{
 			name:     "sad path",
-			filePath: "npm/node_modules/package.json",
+			filePath: "npm/package.json",
+			want:     false,
+		},
+		{
+			name:     "lock file in node_modules",
+			filePath: "npm/node_modules/html2canvas/package-lock.json",
 			want:     false,
 		},
 	}

@@ -1,7 +1,9 @@
 package flag
 
 import (
-	"github.com/aquasecurity/trivy/pkg/module"
+	"path/filepath"
+
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 // e.g. config yaml
@@ -11,17 +13,17 @@ import (
 //     - spring4shell
 
 var (
-	ModuleDirFlag = Flag{
+	ModuleDirFlag = Flag[string]{
 		Name:       "module-dir",
 		ConfigName: "module.dir",
-		Value:      module.DefaultDir,
+		Default:    filepath.Join(fsutils.HomeDir(), ".trivy", "modules"),
 		Usage:      "specify directory to the wasm modules that will be loaded",
 		Persistent: true,
 	}
-	EnableModulesFlag = Flag{
+	EnableModulesFlag = Flag[[]string]{
 		Name:       "enable-modules",
 		ConfigName: "module.enable-modules",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "[EXPERIMENTAL] module names to enable",
 		Persistent: true,
 	}
@@ -29,8 +31,8 @@ var (
 
 // ModuleFlagGroup defines flags for modules
 type ModuleFlagGroup struct {
-	Dir            *Flag
-	EnabledModules *Flag
+	Dir            *Flag[string]
+	EnabledModules *Flag[[]string]
 }
 
 type ModuleOptions struct {
@@ -40,8 +42,8 @@ type ModuleOptions struct {
 
 func NewModuleFlagGroup() *ModuleFlagGroup {
 	return &ModuleFlagGroup{
-		Dir:            &ModuleDirFlag,
-		EnabledModules: &EnableModulesFlag,
+		Dir:            ModuleDirFlag.Clone(),
+		EnabledModules: EnableModulesFlag.Clone(),
 	}
 }
 
@@ -49,16 +51,17 @@ func (f *ModuleFlagGroup) Name() string {
 	return "Module"
 }
 
-func (f *ModuleFlagGroup) Flags() []*Flag {
-	return []*Flag{
+func (f *ModuleFlagGroup) Flags() []Flagger {
+	return []Flagger{
 		f.Dir,
 		f.EnabledModules,
 	}
 }
 
-func (f *ModuleFlagGroup) ToOptions() ModuleOptions {
-	return ModuleOptions{
-		ModuleDir:      getString(f.Dir),
-		EnabledModules: getStringSlice(f.EnabledModules),
+func (f *ModuleFlagGroup) ToOptions(opts *Options) error {
+	opts.ModuleOptions = ModuleOptions{
+		ModuleDir:      f.Dir.Value(),
+		EnabledModules: f.EnabledModules.Value(),
 	}
+	return nil
 }

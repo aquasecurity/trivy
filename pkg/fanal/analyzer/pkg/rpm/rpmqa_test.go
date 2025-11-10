@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -20,7 +21,8 @@ func TestParseMarinerDistrolessManifest(t *testing.T) {
 			name: "happy path",
 			content: `mariner-release	2.0-12.cm2	1653816591	1653753130	Microsoft Corporation	(none)	580	noarch	0	mariner-release-2.0-12.cm2.src.rpm
 filesystem	1.1-9.cm2	1653816591	1653628924	Microsoft Corporation	(none)	7596	x86_64	0	filesystem-1.1-9.cm2.src.rpm
-glibc	2.35-2.cm2	1653816591	1653628955	Microsoft Corporation	(none)	10855265	x86_64	0	glibc-2.35-2.cm2.src.rpm`,
+glibc	2.35-2.cm2	1653816591	1653628955	Microsoft Corporation	(none)	10855265	x86_64	0	glibc-2.35-2.cm2.src.rpm
+ca-certificates-base	3.0.0-8.azl3	1748892790	1735838940	Microsoft Corporation	(none)	130628	noarch	1	ca-certificates-3.0.0-8.azl3.src.rpm`,
 			wantPkgs: []types.Package{
 				{
 					Name:       "mariner-release",
@@ -49,6 +51,17 @@ glibc	2.35-2.cm2	1653816591	1653628955	Microsoft Corporation	(none)	10855265	x86
 					SrcVersion: "2.35",
 					SrcRelease: "2.cm2",
 				},
+				{
+					Name:       "ca-certificates-base",
+					Version:    "3.0.0",
+					Epoch:      1,
+					Release:    "8.azl3",
+					Arch:       "noarch",
+					SrcName:    "ca-certificates",
+					SrcEpoch:   1,
+					SrcVersion: "3.0.0",
+					SrcRelease: "8.azl3",
+				},
 			},
 		},
 		{
@@ -63,10 +76,10 @@ glibc	2.35-2.cm2	1653816591	1653628955	Microsoft Corporation	(none)	10855265	x86
 			a := rpmqaPkgAnalyzer{}
 			result, err := a.parseRpmqaManifest(strings.NewReader(test.content))
 			if test.wantErr != "" {
-				assert.NotNil(t, err)
+				require.Error(t, err)
 				assert.Equal(t, test.wantErr, err.Error())
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, test.wantPkgs, result)
 			}
 		})

@@ -1,5 +1,9 @@
 package analyzer
 
+import (
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
+)
+
 type Type string
 
 const (
@@ -9,6 +13,7 @@ const (
 	TypeOSRelease  Type = "os-release"
 	TypeAlpine     Type = "alpine"
 	TypeAmazon     Type = "amazon"
+	TypeAzure      Type = "azurelinux"
 	TypeCBLMariner Type = "cbl-mariner"
 	TypeDebian     Type = "debian"
 	TypePhoton     Type = "photon"
@@ -21,13 +26,16 @@ const (
 	TypeSUSE       Type = "suse"
 	TypeUbuntu     Type = "ubuntu"
 	TypeUbuntuESM  Type = "ubuntu-esm"
+	TypeCoreOS     Type = "coreos"
 
 	// OS Package
-	TypeApk         Type = "apk"
-	TypeDpkg        Type = "dpkg"
-	TypeDpkgLicense Type = "dpkg-license" // For analyzing licenses
-	TypeRpm         Type = "rpm"
-	TypeRpmqa       Type = "rpmqa"
+	TypeApk                   Type = "apk"
+	TypeBottlerocketInventory Type = "bottlerocket-inventory"
+	TypeDpkg                  Type = "dpkg"
+	TypeDpkgLicense           Type = "dpkg-license" // For analyzing licenses
+	TypeRpm                   Type = "rpm"
+	TypeRpmArchive            Type = "rpm-archive"
+	TypeRpmqa                 Type = "rpmqa"
 
 	// OS Package Repository
 	TypeApkRepo Type = "apk-repo"
@@ -45,31 +53,38 @@ const (
 	TypeCargo      Type = "cargo"
 
 	// PHP
-	TypeComposer Type = "composer"
+	TypeComposer       Type = "composer"
+	TypeComposerVendor Type = "composer-vendor"
 
 	// Java
 	TypeJar        Type = "jar"
 	TypePom        Type = "pom"
 	TypeGradleLock Type = "gradle-lockfile"
+	TypeSbtLock    Type = "sbt-lockfile"
 
 	// Node.js
 	TypeNpmPkgLock Type = "npm"
 	TypeNodePkg    Type = "node-pkg"
 	TypeYarn       Type = "yarn"
 	TypePnpm       Type = "pnpm"
+	TypeBun        Type = "bun"
 
 	// .NET
-	TypeNuget      Type = "nuget"
-	TypeDotNetCore Type = "dotnet-core"
+	TypeNuget         Type = "nuget"
+	TypeDotNetCore    Type = "dotnet-core"
+	TypePackagesProps Type = "packages-props"
 
 	// Conda
 	TypeCondaPkg Type = "conda-pkg"
+	TypeCondaEnv Type = "conda-environment"
 
 	// Python
-	TypePythonPkg Type = "python-pkg"
-	TypePip       Type = "pip"
-	TypePipenv    Type = "pipenv"
-	TypePoetry    Type = "poetry"
+	TypePythonPkg    Type = "python-pkg"
+	TypePythonPkgEgg Type = "python-egg"
+	TypePip          Type = "pip"
+	TypePipenv       Type = "pipenv"
+	TypePoetry       Type = "poetry"
+	TypeUv           Type = "uv"
 
 	// Go
 	TypeGoBinary Type = "gobinary"
@@ -82,15 +97,20 @@ const (
 	TypeMixLock Type = "mix-lock"
 
 	// Swift
+	TypeSwift     Type = "swift"
 	TypeCocoaPods Type = "cocoapods"
 
 	// Dart
 	TypePubSpecLock Type = "pubspec-lock"
 
+	// Julia
+	TypeJulia Type = "julia"
+
 	// ============
 	// Non-packaged
 	// ============
 	TypeExecutable Type = "executable"
+	TypeSBOM       Type = "sbom"
 
 	// ============
 	// Image Config
@@ -102,12 +122,16 @@ const (
 	// =================
 	// Structured Config
 	// =================
-	TypeYaml           Type = "yaml"
-	TypeJSON           Type = "json"
-	TypeDockerfile     Type = "dockerfile"
-	TypeTerraform      Type = "terraform"
-	TypeCloudFormation Type = "cloudFormation"
-	TypeHelm           Type = "helm"
+	TypeAzureARM              Type = Type(detection.FileTypeAzureARM)
+	TypeCloudFormation        Type = Type(detection.FileTypeCloudFormation)
+	TypeDockerfile            Type = Type(detection.FileTypeDockerfile)
+	TypeHelm                  Type = Type(detection.FileTypeHelm)
+	TypeKubernetes            Type = Type(detection.FileTypeKubernetes)
+	TypeTerraform             Type = Type(detection.FileTypeTerraform)
+	TypeTerraformPlanJSON     Type = Type(detection.FileTypeTerraformPlanJSON)
+	TypeTerraformPlanSnapshot Type = Type(detection.FileTypeTerraformPlanSnapshot)
+	TypeYAML                  Type = Type(detection.FileTypeYAML)
+	TypeJSON                  Type = Type(detection.FileTypeJSON)
 
 	// ========
 	// License
@@ -133,6 +157,7 @@ var (
 		TypeAlpine,
 		TypeAmazon,
 		TypeCBLMariner,
+		TypeCoreOS,
 		TypeDebian,
 		TypePhoton,
 		TypeCentOS,
@@ -143,12 +168,15 @@ var (
 		TypeRedHatBase,
 		TypeSUSE,
 		TypeUbuntu,
+		TypeUbuntuESM,
 		TypeApk,
+		TypeBottlerocketInventory,
 		TypeDpkg,
 		TypeDpkgLicense,
 		TypeRpm,
 		TypeRpmqa,
 		TypeApkRepo,
+		TypeApkCommand,
 	}
 
 	// TypeLanguages has all language analyzers
@@ -157,27 +185,37 @@ var (
 		TypeGemSpec,
 		TypeCargo,
 		TypeComposer,
+		TypeComposerVendor,
 		TypeJar,
 		TypePom,
 		TypeGradleLock,
+		TypeSbtLock,
 		TypeNpmPkgLock,
 		TypeNodePkg,
 		TypeYarn,
 		TypePnpm,
+		TypeBun,
 		TypeNuget,
 		TypeDotNetCore,
+		TypePackagesProps,
 		TypeCondaPkg,
+		TypeCondaEnv,
 		TypePythonPkg,
+		TypePythonPkgEgg,
 		TypePip,
 		TypePipenv,
 		TypePoetry,
+		TypeUv,
 		TypeGoBinary,
 		TypeGoMod,
 		TypeRustBinary,
 		TypeConanLock,
 		TypeCocoaPods,
+		TypeSwift,
 		TypePubSpecLock,
 		TypeMixLock,
+		TypeJulia,
+		TypeSBOM,
 	}
 
 	// TypeLockfiles has all lock file analyzers
@@ -186,16 +224,22 @@ var (
 		TypeNpmPkgLock,
 		TypeYarn,
 		TypePnpm,
+		TypeBun,
 		TypePip,
 		TypePipenv,
 		TypePoetry,
+		TypeUv,
 		TypeGoMod,
 		TypePom,
 		TypeConanLock,
 		TypeGradleLock,
+		TypeSbtLock,
 		TypeCocoaPods,
+		TypeSwift,
 		TypePubSpecLock,
 		TypeMixLock,
+		TypeCondaEnv,
+		TypeComposer,
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages
@@ -207,15 +251,20 @@ var (
 		TypeGoBinary,
 		TypeJar,
 		TypeRustBinary,
+		TypeComposerVendor,
 	}
 
 	// TypeConfigFiles has all config file analyzers
 	TypeConfigFiles = []Type{
-		TypeYaml,
-		TypeJSON,
-		TypeDockerfile,
-		TypeTerraform,
+		TypeAzureARM,
 		TypeCloudFormation,
+		TypeDockerfile,
 		TypeHelm,
+		TypeKubernetes,
+		TypeTerraform,
+		TypeTerraformPlanJSON,
+		TypeTerraformPlanSnapshot,
+		TypeYAML,
+		TypeJSON,
 	}
 )

@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare/bitnami"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/maven"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
@@ -19,68 +22,84 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-var ErrSBOMSupportOnly = xerrors.New("SBOM support only")
-
 // NewDriver returns a driver according to the library type
-func NewDriver(libType string) (Driver, error) {
-	var ecosystem dbTypes.Ecosystem
+func NewDriver(libType ftypes.LangType) (Driver, bool) {
+	var eco ecosystem.Type
 	var comparer compare.Comparer
 
 	switch libType {
 	case ftypes.Bundler, ftypes.GemSpec:
-		ecosystem = vulnerability.RubyGems
+		eco = ecosystem.RubyGems
 		comparer = rubygems.Comparer{}
 	case ftypes.RustBinary, ftypes.Cargo:
-		ecosystem = vulnerability.Cargo
+		eco = ecosystem.Cargo
 		comparer = compare.GenericComparer{}
-	case ftypes.Composer:
-		ecosystem = vulnerability.Composer
+	case ftypes.Composer, ftypes.ComposerVendor:
+		eco = ecosystem.Composer
 		comparer = compare.GenericComparer{}
 	case ftypes.GoBinary, ftypes.GoModule:
-		ecosystem = vulnerability.Go
+		eco = ecosystem.Go
 		comparer = compare.GenericComparer{}
-	case ftypes.Jar, ftypes.Pom, ftypes.Gradle:
-		ecosystem = vulnerability.Maven
+	case ftypes.Jar, ftypes.Pom, ftypes.Gradle, ftypes.Sbt:
+		eco = ecosystem.Maven
 		comparer = maven.Comparer{}
-	case ftypes.Npm, ftypes.Yarn, ftypes.Pnpm, ftypes.NodePkg, ftypes.JavaScript:
-		ecosystem = vulnerability.Npm
+	case ftypes.Npm, ftypes.Yarn, ftypes.Pnpm, ftypes.Bun, ftypes.NodePkg, ftypes.JavaScript:
+		eco = ecosystem.Npm
 		comparer = npm.Comparer{}
-	case ftypes.NuGet, ftypes.DotNetCore:
-		ecosystem = vulnerability.NuGet
+	case ftypes.NuGet, ftypes.DotNetCore, ftypes.PackagesProps:
+		eco = ecosystem.NuGet
 		comparer = compare.GenericComparer{}
-	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg:
-		ecosystem = vulnerability.Pip
+	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg, ftypes.Uv:
+		eco = ecosystem.Pip
 		comparer = pep440.Comparer{}
 	case ftypes.Pub:
-		ecosystem = vulnerability.Pub
+		eco = ecosystem.Pub
 		comparer = compare.GenericComparer{}
 	case ftypes.Hex:
-		ecosystem = vulnerability.Erlang
+		eco = ecosystem.Erlang
 		comparer = compare.GenericComparer{}
 	case ftypes.Conan:
-		ecosystem = vulnerability.Conan
+		eco = ecosystem.Conan
 		// Only semver can be used for version ranges
 		// https://docs.conan.io/en/latest/versioning/version_ranges.html
 		comparer = compare.GenericComparer{}
+	case ftypes.Swift:
+		// Swift uses semver
+		// https://www.swift.org/package-manager/#importing-dependencies
+		eco = ecosystem.Swift
+		comparer = compare.GenericComparer{}
 	case ftypes.Cocoapods:
-		log.Logger.Warn("CocoaPods is supported for SBOM, not for vulnerability scanning")
-		return Driver{}, ErrSBOMSupportOnly
-	case ftypes.CondaPkg:
-		log.Logger.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
-		return Driver{}, ErrSBOMSupportOnly
+		// CocoaPods uses RubyGems version specifiers
+		// https://guides.cocoapods.org/making/making-a-cocoapod.html#cocoapods-versioning-specifics
+		eco = ecosystem.Cocoapods
+		comparer = rubygems.Comparer{}
+	case ftypes.CondaPkg, ftypes.CondaEnv:
+		log.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
+		return Driver{}, false
+	case ftypes.Bitnami:
+		eco = ecosystem.Bitnami
+		comparer = bitnami.Comparer{}
+	case ftypes.K8sUpstream:
+		eco = ecosystem.Kubernetes
+		comparer = compare.GenericComparer{}
+	case ftypes.Julia:
+		log.Warn("Julia is supported for SBOM, not for vulnerability scanning")
+		return Driver{}, false
 	default:
-		return Driver{}, xerrors.Errorf("unsupported type %s", libType)
+		log.Warn("The library type is not supported for vulnerability scanning",
+			log.String("type", string(libType)))
+		return Driver{}, false
 	}
 	return Driver{
-		ecosystem: ecosystem,
+		ecosystem: eco,
 		comparer:  comparer,
 		dbc:       db.Config{},
-	}, nil
+	}, true
 }
 
 // Driver represents security advisories for each programming language
 type Driver struct {
-	ecosystem dbTypes.Ecosystem
+	ecosystem ecosystem.Type
 	comparer  compare.Comparer
 	dbc       db.Config
 }
@@ -115,6 +134,7 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 			InstalledVersion: pkgVer,
 			FixedVersion:     createFixedVersions(adv),
 			DataSource:       adv.DataSource,
+			Custom:           adv.Custom,
 		}
 		vulns = append(vulns, vuln)
 	}
@@ -124,12 +144,12 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 
 func createFixedVersions(advisory dbTypes.Advisory) string {
 	if len(advisory.PatchedVersions) != 0 {
-		return strings.Join(advisory.PatchedVersions, ", ")
+		return joinFixedVersions(advisory.PatchedVersions)
 	}
 
 	var fixedVersions []string
 	for _, version := range advisory.VulnerableVersions {
-		for _, s := range strings.Split(version, ",") {
+		for s := range strings.SplitSeq(version, ",") {
 			s = strings.TrimSpace(s)
 			if !strings.HasPrefix(s, "<=") && strings.HasPrefix(s, "<") {
 				s = strings.TrimPrefix(s, "<")
@@ -137,5 +157,9 @@ func createFixedVersions(advisory dbTypes.Advisory) string {
 			}
 		}
 	}
-	return strings.Join(fixedVersions, ", ")
+	return joinFixedVersions(fixedVersions)
+}
+
+func joinFixedVersions(fixedVersions []string) string {
+	return strings.Join(lo.Uniq(fixedVersions), ", ")
 }

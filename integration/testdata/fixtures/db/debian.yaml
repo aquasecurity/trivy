@@ -5,6 +5,7 @@
         - key: CVE-2019-18276
           value:
             Severity: 1.0
+            Status: 7 # changed for test
     - bucket: openssl
       pairs:
         - key: CVE-2019-1551

@@ -4,19 +4,19 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // To make sure SecretAnalyzer implements analyzer.Initializer
@@ -34,16 +34,39 @@ var (
 		"Pipfile.lock",
 		"Gemfile.lock",
 	}
-	skipDirs = []string{".git", "node_modules"}
+	skipDirs = []string{
+		".git",
+		"node_modules",
+	}
 	skipExts = []string{
-		".jpg", ".png", ".gif", ".doc", ".pdf", ".bin", ".svg", ".socket", ".deb", ".rpm",
-		".zip", ".gz", ".gzip", ".tar", ".pyc",
+		".jpg",
+		".png",
+		".gif",
+		".doc",
+		".pdf",
+		".bin",
+		".svg",
+		".socket",
+		".deb",
+		".rpm",
+		".zip",
+		".gz",
+		".gzip",
+		".tar",
+	}
+
+	allowedBinaries = []string{
+		".pyc",
 	}
 )
 
 func init() {
 	// The scanner will be initialized later via InitScanner()
 	analyzer.RegisterAnalyzer(NewSecretAnalyzer(secret.Scanner{}, ""))
+}
+
+func allowedBinary(filename string) bool {
+	return slices.Contains(allowedBinaries, filepath.Ext(filename))
 }
 
 // SecretAnalyzer is an analyzer for secrets
@@ -79,16 +102,13 @@ func (a *SecretAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
 func (a *SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	// Do not scan binaries
 	binary, err := utils.IsBinary(input.Content, input.Info.Size())
-	if binary || err != nil {
+	if err != nil || (binary && !allowedBinary(input.FilePath)) {
 		return nil, nil
 	}
 
-	content, err := io.ReadAll(input.Content)
-	if err != nil {
-		return nil, xerrors.Errorf("read error %s: %w", input.FilePath, err)
+	if size := input.Info.Size(); size > 10485760 { // 10MB
+		log.WithPrefix("secret").Warn("The size of the scanned file is too large. It is recommended to use `--skip-files` for this file to avoid high memory consumption.", log.FilePath(input.FilePath), log.Int64("size (MB)", size/1048576))
 	}
-
-	content = bytes.ReplaceAll(content, []byte("\r"), []byte(""))
 
 	filePath := input.FilePath
 	// Files extracted from the image have an empty input.Dir.
@@ -98,9 +118,19 @@ func (a *SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 		filePath = fmt.Sprintf("/%s", filePath)
 	}
 
+	reader := input.Content
+	if binary {
+		content, err := utils.ExtractPrintableBytes(input.Content)
+		if err != nil {
+			return nil, xerrors.Errorf("binary read error %s: %w", input.FilePath, err)
+		}
+		reader = bytes.NewReader(content)
+	}
+
 	result := a.scanner.Scan(secret.ScanArgs{
 		FilePath: filePath,
-		Content:  content,
+		Content:  reader,
+		Binary:   binary,
 	})
 
 	if len(result.Findings) == 0 {

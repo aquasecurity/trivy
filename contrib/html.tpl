@@ -85,7 +85,7 @@
     <h1>{{- escapeXML ( index . 0 ).Target }} - Trivy Report - {{ now }}</h1>
     <table>
     {{- range . }}
-      <tr class="group-header"><th colspan="6">{{ escapeXML .Type }}</th></tr>
+      <tr class="group-header"><th colspan="6">{{ .Type | toString | escapeXML }}</th></tr>
       {{- if (eq (len .Vulnerabilities) 0) }}
       <tr><th colspan="6">No Vulnerabilities found</th></tr>
       {{- else }}
@@ -128,7 +128,7 @@
         <td>{{ escapeXML .ID }}</td>
         <td class="misconf-check">{{ escapeXML .Title }}</td>
         <td class="severity">{{ escapeXML .Severity }}</td>
-        <td class="link" data-more-links="off"  style="white-space:normal;"">
+        <td class="link" data-more-links="off"  style="white-space:normal;">
           {{ escapeXML .Message }}
           <br>
             <a href={{ escapeXML .PrimaryURL | printf "%q" }}>{{ escapeXML .PrimaryURL }}</a>

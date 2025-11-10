@@ -1,7 +1,6 @@
 package secret
 
 import (
-	"context"
 	"testing"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -67,7 +66,8 @@ func Test_secretAnalyzer_Analyze(t *testing.T) {
 									},
 								},
 							},
-							Match: "  \"secret=****************************************\"",
+							Match:  "  \"secret=****************************************\"",
+							Offset: 231,
 						},
 					},
 				},
@@ -95,11 +95,11 @@ func Test_secretAnalyzer_Analyze(t *testing.T) {
 			a, err := newSecretAnalyzer(analyzer.ConfigAnalyzerOptions{})
 			require.NoError(t, err)
 
-			got, err := a.Analyze(context.Background(), analyzer.ConfigAnalysisInput{
+			got, err := a.Analyze(t.Context(), analyzer.ConfigAnalysisInput{
 				Config: tt.config,
 			})
 			if tt.wantErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 				return
 			}
 			require.NoError(t, err)

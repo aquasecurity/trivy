@@ -23,7 +23,7 @@ $ trivy fs ~/src/github.com/aquasecurity/trivy-ci-test/Pipfile.lock
 ### Vulnerabilities
 It is enabled by default.
 Trivy will look for vulnerabilities based on lock files such as Gemfile.lock and package-lock.json.
-See [here](../vulnerability/scanning.md) for the detail.
+See [here](../scanner/vulnerability.md) for the detail.
 
 ```
 $ trivy fs ~/src/github.com/aquasecurity/trivy-ci-test
@@ -65,16 +65,16 @@ Total: 10 (UNKNOWN: 2, LOW: 0, MEDIUM: 6, HIGH: 2, CRITICAL: 0)
 </details>
 
 ### Misconfigurations
-It is disabled by default and can be enabled with `--scanners config`.
-See [here](../misconfiguration/scanning.md) for the detail.
+It is disabled by default and can be enabled with `--scanners misconfig`.
+See [here](../scanner/misconfiguration/index.md) for the detail.
 
 ```shell
-$ trivy fs --scanners config /path/to/project
+$ trivy fs --scanners misconfig /path/to/project
 ```
 
 ### Secrets
 It is enabled by default.
-See [here](../secret/scanning.md) for the detail.
+See [here](../scanner/secret.md) for the detail.
 
 ```shell
 $ trivy fs /path/to/project
@@ -82,7 +82,7 @@ $ trivy fs /path/to/project
 
 ### Licenses
 It is disabled by default.
-See [here](../licenses/scanning.md) for the detail.
+See [here](../scanner/license.md) for the detail.
 
 ```shell
 $ trivy fs --scanners license /path/to/project
@@ -90,4 +90,14 @@ $ trivy fs --scanners license /path/to/project
 
 ## SBOM generation
 Trivy can generate SBOM for local projects.
-See [here](../sbom/index.md) for the detail.
+See [here](../supply-chain/sbom.md) for the detail.
+
+## Scan Cache
+When scanning local projects, it doesn't use the cache by default.
+However, when the local project is a git repository with clean status and the cache backend other than the memory one is enabled, it stores analysis results, using the latest commit hash as the key.
+
+```shell
+$ trivy fs --cache-backend fs /path/to/git/repo
+```
+
+More details are available in the [cache documentation](../configuration/cache.md#scan-cache-backend).

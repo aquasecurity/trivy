@@ -1,13 +1,16 @@
 package report
 
 import (
+	"context"
+	"fmt"
 	"io"
-	"sync"
+	"strings"
 
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type TableWriter struct {
@@ -15,6 +18,8 @@ type TableWriter struct {
 	Output        io.Writer
 	Severities    []dbTypes.Severity
 	ColumnHeading []string
+
+	TableMode []types.TableMode // For `--report all` only
 }
 
 const (
@@ -24,11 +29,14 @@ const (
 	MisconfigurationsColumn = "Misconfigurations"
 	SecretsColumn           = "Secrets"
 	RbacAssessmentColumn    = "RBAC Assessment"
-	InfraAssessmentColumn   = "Kubernetes Infra Assessment"
 )
 
 func WorkloadColumns() []string {
-	return []string{VulnerabilitiesColumn, MisconfigurationsColumn, SecretsColumn}
+	return []string{
+		VulnerabilitiesColumn,
+		MisconfigurationsColumn,
+		SecretsColumn,
+	}
 }
 
 func RoleColumns() []string {
@@ -36,30 +44,34 @@ func RoleColumns() []string {
 }
 
 func InfraColumns() []string {
-	return []string{InfraAssessmentColumn}
+	return []string{
+		VulnerabilitiesColumn,
+		MisconfigurationsColumn,
+		SecretsColumn,
+	}
 }
 
-func (tw TableWriter) Write(report Report) error {
+func (tw TableWriter) Write(ctx context.Context, report Report) error {
 	switch tw.Report {
-	case allReport:
-		t := pkgReport.Writer{Output: tw.Output, Severities: tw.Severities, ShowMessageOnce: &sync.Once{}}
-		for _, r := range report.Vulnerabilities {
+	case AllReport:
+		t := pkgReport.NewWriter(pkgReport.Options{
+			Output:     tw.Output,
+			Severities: tw.Severities,
+			// k8s has its own summary report, so we only need to show the detailed tables here
+			TableModes: []types.TableMode{
+				types.Detailed,
+			},
+		})
+		for i, r := range report.Resources {
 			if r.Report.Results.Failed() {
-				err := t.Write(r.Report)
+				updateTargetContext(&report.Resources[i])
+				err := t.Write(ctx, r.Report)
 				if err != nil {
 					return err
 				}
 			}
 		}
-		for _, r := range report.Misconfigurations {
-			if r.Report.Results.Failed() {
-				err := t.Write(r.Report)
-				if err != nil {
-					return err
-				}
-			}
-		}
-	case summaryReport:
+	case SummaryReport:
 		writer := NewSummaryWriter(tw.Output, tw.Severities, tw.ColumnHeading)
 		return writer.Write(report)
 	default:
@@ -67,4 +79,15 @@ func (tw TableWriter) Write(report Report) error {
 	}
 
 	return nil
+}
+
+// updateTargetContext add context namespace, kind and name to the target
+func updateTargetContext(r *Resource) {
+	targetName := fmt.Sprintf("namespace: %s, %s: %s", r.Namespace, strings.ToLower(r.Kind), r.Name)
+	if r.Kind == "NodeComponents" || r.Kind == "NodeInfo" {
+		targetName = fmt.Sprintf("node: %s", r.Name)
+	}
+	for i := range r.Report.Results {
+		r.Report.Results[i].Target = targetName
+	}
 }

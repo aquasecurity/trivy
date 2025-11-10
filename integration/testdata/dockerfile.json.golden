@@ -1,28 +1,17 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/dockerfile",
-  "ArtifactType": "filesystem",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/dockerfile",
+  "ArtifactType": "repository",
   "Results": [
     {
       "Target": "Dockerfile",
       "Class": "config",
       "Type": "dockerfile",
       "MisconfSummary": {
-        "Successes": 23,
-        "Failures": 1,
-        "Exceptions": 0
+        "Successes": 26,
+        "Failures": 1
       },
       "Misconfigurations": [
         {
@@ -42,13 +31,9 @@
             "https://avd.aquasec.com/misconfig/ds002"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Dockerfile",
-            "Service": "general",
-            "Code": {
-              "Lines": null
-            }
+            "Service": "general"
           }
         }
       ]

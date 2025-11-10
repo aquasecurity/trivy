@@ -11,7 +11,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/syncx"
+	xsync "github.com/aquasecurity/trivy/pkg/x/sync"
 )
 
 var separator = "/"
@@ -21,14 +21,14 @@ var separator = "/"
 // - a virtual file
 // - a virtual dir
 type file struct {
-	path  string // underlying file path
-	data  []byte // virtual file, only either of 'path' or 'data' has a value.
-	stat  fileStat
-	files syncx.Map[string, *file]
+	underlyingPath string // underlying file path
+	data           []byte // virtual file, only either of 'path' or 'data' has a value.
+	stat           fileStat
+	files          xsync.Map[string, *file]
 }
 
 func (f *file) isVirtual() bool {
-	return len(f.data) != 0 || f.stat.IsDir()
+	return f.underlyingPath == ""
 }
 
 func (f *file) Open(name string) (fs.File, error) {
@@ -55,18 +55,18 @@ func (f *file) open() (fs.File, error) {
 			return nil, xerrors.Errorf("read dir error: %w", err)
 		}
 		return &mapDir{
-			path:     f.path,
+			path:     f.underlyingPath,
 			fileStat: f.stat,
 			entry:    entries,
 		}, nil
-	case len(f.data) != 0: // Virtual file
+	case f.isVirtual(): // Virtual file
 		return &openMapFile{
 			path:   f.stat.name,
 			file:   f,
 			offset: 0,
 		}, nil
 	default: // Real file
-		return os.Open(f.path)
+		return os.Open(f.underlyingPath)
 	}
 }
 
@@ -140,7 +140,7 @@ func (f *file) ReadDir(name string) ([]fs.DirEntry, error) {
 				entries = append(entries, &value.stat)
 			} else {
 				var fi os.FileInfo
-				fi, err = os.Stat(value.path)
+				fi, err = os.Stat(value.underlyingPath)
 				if err != nil {
 					return false
 				}
@@ -176,24 +176,24 @@ func (f *file) MkdirAll(path string, perm fs.FileMode) error {
 		return nil
 	}
 
-	sub, ok := f.files.Load(parts[0])
-	if ok && !sub.stat.IsDir() {
-		return fs.ErrExist
-	} else if !ok {
-		if perm&fs.ModeDir == 0 {
-			perm |= fs.ModeDir
-		}
+	if perm&fs.ModeDir == 0 {
+		perm |= fs.ModeDir
+	}
 
-		sub = &file{
-			stat: fileStat{
-				name:    parts[0],
-				size:    0x100,
-				modTime: time.Now(),
-				mode:    perm,
-			},
-			files: syncx.Map[string, *file]{},
-		}
-		f.files.Store(parts[0], sub)
+	sub := &file{
+		stat: fileStat{
+			name:    parts[0],
+			size:    0x100,
+			modTime: time.Now(),
+			mode:    perm,
+		},
+		files: xsync.Map[string, *file]{},
+	}
+
+	// Create the directory when the key is not present
+	sub, loaded := f.files.LoadOrStore(parts[0], sub)
+	if loaded && !sub.stat.IsDir() {
+		return fs.ErrExist
 	}
 
 	if len(parts) == 1 {
@@ -208,7 +208,7 @@ func (f *file) WriteFile(path, underlyingPath string) error {
 
 	if len(parts) == 1 {
 		f.files.Store(parts[0], &file{
-			path: underlyingPath,
+			underlyingPath: underlyingPath,
 		})
 		return nil
 	}
@@ -254,21 +254,21 @@ func (f *file) glob(pattern string) ([]string, error) {
 
 	var err error
 	f.files.Range(func(name string, sub *file) bool {
-		if ok, err := filepath.Match(parts[0], name); err != nil {
+		var ok bool
+		ok, err = filepath.Match(parts[0], name)
+		if err != nil {
 			return false
 		} else if ok {
 			if len(parts) == 1 {
 				entries = append(entries, name)
 			} else {
-				subEntries, err := sub.glob(strings.Join(parts[1:], separator))
+				var subEntries []string
+				subEntries, err = sub.glob(strings.Join(parts[1:], separator))
 				if err != nil {
 					return false
 				}
 				for _, sub := range subEntries {
-					entries = append(entries, strings.Join([]string{
-						name,
-						sub,
-					}, separator))
+					entries = append(entries, name+separator+sub)
 				}
 			}
 		}
@@ -345,7 +345,7 @@ func (f *openMapFile) ReadAt(b []byte, offset int64) (int, error) {
 	return n, nil
 }
 
-// A mapDir is a directory fs.File (so also an fs.ReadDirFile) open for reading.
+// A mapDir is a directory fs.File (so also fs.ReadDirFile) open for reading.
 type mapDir struct {
 	path string
 	fileStat

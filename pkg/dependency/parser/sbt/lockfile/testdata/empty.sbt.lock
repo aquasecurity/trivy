@@ -1,0 +1,10 @@
+{
+  "lockVersion": 1,
+  "timestamp": "2024-06-05T13:41:10.992Z",
+  "configurations": [
+    "compile",
+    "runtime",
+    "test"
+  ],
+  "dependencies": []
+}

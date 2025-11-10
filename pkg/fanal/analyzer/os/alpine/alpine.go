@@ -4,13 +4,12 @@ import (
 	"bufio"
 	"context"
 	"os"
-
-	"golang.org/x/exp/slices"
+	"slices"
 
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -29,10 +28,13 @@ func (a alpineOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 	for scanner.Scan() {
 		line := scanner.Text()
 		return &analyzer.AnalysisResult{
-			OS: types.OS{Family: aos.Alpine, Name: line},
+			OS: types.OS{
+				Family: types.Alpine,
+				Name:   line,
+			},
 		}, nil
 	}
-	return nil, xerrors.Errorf("alpine: %w", aos.AnalyzeOSError)
+	return nil, xerrors.Errorf("alpine: %w", fos.AnalyzeOSError)
 }
 
 func (a alpineOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
@@ -45,4 +47,9 @@ func (a alpineOSAnalyzer) Type() analyzer.Type {
 
 func (a alpineOSAnalyzer) Version() int {
 	return version
+}
+
+// StaticPaths returns the static paths of the alpine analyzer
+func (a alpineOSAnalyzer) StaticPaths() []string {
+	return requiredFiles
 }

@@ -452,19 +452,19 @@ yydefault:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line parser.go.y:34
 		{
-			yyVAL.expr = SimpleExpr{license: yyDollar[1].token.literal}
+			yyVAL.expr = SimpleExpr{License: yyDollar[1].token.literal}
 		}
 	case 3:
 		yyDollar = yyS[yypt-2 : yypt+1]
 //line parser.go.y:38
 		{
-			yyVAL.expr = SimpleExpr{license: yyDollar[1].expr.String() + " " + yyDollar[2].token.literal}
+			yyVAL.expr = SimpleExpr{License: yyDollar[1].expr.String() + " " + yyDollar[2].token.literal}
 		}
 	case 4:
 		yyDollar = yyS[yypt-2 : yypt+1]
 //line parser.go.y:44
 		{
-			yyVAL.expr = SimpleExpr{license: yyDollar[1].expr.String(), hasPlus: true}
+			yyVAL.expr = SimpleExpr{License: yyDollar[1].expr.String(), HasPlus: true}
 		}
 	case 5:
 		yyDollar = yyS[yypt-1 : yypt+1]

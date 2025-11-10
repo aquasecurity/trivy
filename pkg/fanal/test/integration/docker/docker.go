@@ -6,14 +6,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"os/exec"
 
+	"github.com/docker/docker/api/types/image"
+	apiregistry "github.com/docker/docker/api/types/registry"
 	"github.com/docker/docker/client"
-
-	"github.com/docker/docker/api/types"
 )
 
 type RegistryConfig struct {
@@ -22,8 +21,8 @@ type RegistryConfig struct {
 	Password string
 }
 
-func (c RegistryConfig) GetAuthConfig() types.AuthConfig {
-	return types.AuthConfig{
+func (c RegistryConfig) GetAuthConfig() apiregistry.AuthConfig {
+	return apiregistry.AuthConfig{
 		Username:      c.Username,
 		Password:      c.Password,
 		ServerAddress: c.URL.Host,
@@ -31,7 +30,7 @@ func (c RegistryConfig) GetAuthConfig() types.AuthConfig {
 }
 
 func (c RegistryConfig) GetRegistryAuth() (string, error) {
-	authConfig := types.AuthConfig{
+	authConfig := apiregistry.AuthConfig{
 		Username: c.Username,
 		Password: c.Password,
 	}
@@ -43,7 +42,7 @@ func (c RegistryConfig) GetRegistryAuth() (string, error) {
 }
 
 func (c RegistryConfig) GetBasicAuthorization() string {
-	return fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", c.Username, c.Password))))
+	return fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString(fmt.Appendf(nil, "%s:%s", c.Username, c.Password)))
 }
 
 type Docker struct {
@@ -73,7 +72,7 @@ func (d Docker) Logout(conf RegistryConfig) error {
 // ReplicateImage tags the given imagePath and pushes it to the given dest registry.
 func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, dest RegistryConfig) error {
 	// remove existing Image if any
-	_, _ = d.cli.ImageRemove(ctx, imageRef, types.ImageRemoveOptions{
+	_, _ = d.cli.ImageRemove(ctx, imageRef, image.RemoveOptions{
 		Force:         true,
 		PruneChildren: true,
 	})
@@ -82,13 +81,14 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 	if err != nil {
 		return err
 	}
+	defer testfile.Close()
 
 	// load image into docker engine
-	resp, err := d.cli.ImageLoad(ctx, testfile, true)
+	resp, err := d.cli.ImageLoad(ctx, testfile, client.ImageLoadWithQuiet(true))
 	if err != nil {
 		return err
 	}
-	if _, err := io.Copy(ioutil.Discard, resp.Body); err != nil {
+	if _, err := io.Copy(io.Discard, resp.Body); err != nil {
 		return err
 	}
 	defer resp.Body.Close()
@@ -99,11 +99,11 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 		return err
 	}
 	defer func() {
-		_, _ = d.cli.ImageRemove(ctx, imageRef, types.ImageRemoveOptions{
+		_, _ = d.cli.ImageRemove(ctx, imageRef, image.RemoveOptions{
 			Force:         true,
 			PruneChildren: true,
 		})
-		_, _ = d.cli.ImageRemove(ctx, targetImageRef, types.ImageRemoveOptions{
+		_, _ = d.cli.ImageRemove(ctx, targetImageRef, image.RemoveOptions{
 			Force:         true,
 			PruneChildren: true,
 		})
@@ -114,13 +114,15 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 		return err
 	}
 
-	pushOut, err := d.cli.ImagePush(ctx, targetImageRef, types.ImagePushOptions{RegistryAuth: auth})
+	pushOut, err := d.cli.ImagePush(ctx, targetImageRef, image.PushOptions{
+		RegistryAuth: auth,
+	})
 	if err != nil {
 		return err
 	}
 	defer pushOut.Close()
 
-	if _, err = io.Copy(ioutil.Discard, pushOut); err != nil {
+	if _, err = io.Copy(io.Discard, pushOut); err != nil {
 		return err
 	}
 	return nil

@@ -1,50 +1,75 @@
 package flag
 
-import "time"
+import "github.com/aquasecurity/trivy/pkg/cloud"
 
 var (
-	cloudUpdateCacheFlag = Flag{
-		Name:       "update-cache",
-		ConfigName: "cloud.update-cache",
-		Value:      false,
-		Usage:      "Update the cache for the applicable cloud provider instead of using cached results.",
+	CloudTokenFlag = Flag[string]{
+		Name:       "token",
+		ConfigName: "cloud.token",
+		Usage:      "Token used to athenticate with Trivy Cloud platform",
 	}
-	cloudMaxCacheAgeFlag = Flag{
-		Name:       "max-cache-age",
-		ConfigName: "cloud.max-cache-age",
-		Value:      time.Hour * 24,
-		Usage:      "The maximum age of the cloud cache. Cached data will be requeried from the cloud provider if it is older than this.",
+
+	CloudApiUrlFlag = Flag[string]{
+		Name:       "api-url",
+		ConfigName: "cloud.api-url",
+		Default:    cloud.DefaultApiUrl,
+		Usage:      "API URL for Trivy Cloud platform",
+	}
+
+	CloudTrivyServerUrlFlag = Flag[string]{
+		Name:       "trivy-server-url",
+		ConfigName: "cloud.trivy_server_url",
+		Default:    cloud.DefaultTrivyServerUrl,
+		Usage:      "Trivy Server URL for Trivy Cloud platform",
 	}
 )
 
 type CloudFlagGroup struct {
-	UpdateCache *Flag
-	MaxCacheAge *Flag
-}
-
-type CloudOptions struct {
-	MaxCacheAge time.Duration
-	UpdateCache bool
+	CloudToken          *Flag[string]
+	CloudApiUrl         *Flag[string]
+	CloudTrivyServerUrl *Flag[string]
 }
 
 func NewCloudFlagGroup() *CloudFlagGroup {
 	return &CloudFlagGroup{
-		UpdateCache: &cloudUpdateCacheFlag,
-		MaxCacheAge: &cloudMaxCacheAgeFlag,
+		CloudToken:          CloudTokenFlag.Clone(),
+		CloudApiUrl:         CloudApiUrlFlag.Clone(),
+		CloudTrivyServerUrl: CloudTrivyServerUrlFlag.Clone(),
 	}
 }
 
 func (f *CloudFlagGroup) Name() string {
-	return "Cloud"
+	return "Trivy Cloud"
 }
 
-func (f *CloudFlagGroup) Flags() []*Flag {
-	return []*Flag{f.UpdateCache, f.MaxCacheAge}
-}
-
-func (f *CloudFlagGroup) ToOptions() CloudOptions {
-	return CloudOptions{
-		UpdateCache: getBool(f.UpdateCache),
-		MaxCacheAge: getDuration(f.MaxCacheAge),
+func (f *CloudFlagGroup) Flags() []Flagger {
+	return []Flagger{
+		f.CloudToken,
+		f.CloudApiUrl,
+		f.CloudTrivyServerUrl,
 	}
+}
+
+// CloudLoginCredentials is the credentials used to authenticate with Trivy Cloud platform
+// In the future this would likely have more information stored for refresh tokens, etc
+type CloudLoginCredentials struct {
+	Token string
+}
+
+type CloudOptions struct {
+	LoginCredentials CloudLoginCredentials
+	ApiUrl           string
+	TrivyServerUrl   string
+}
+
+// ToOptions converts the flags to options
+func (f *CloudFlagGroup) ToOptions(opts *Options) error {
+	opts.CloudOptions = CloudOptions{
+		LoginCredentials: CloudLoginCredentials{
+			Token: f.CloudToken.Value(),
+		},
+		ApiUrl:         f.CloudApiUrl.Value(),
+		TrivyServerUrl: f.CloudTrivyServerUrl.Value(),
+	}
+	return nil
 }

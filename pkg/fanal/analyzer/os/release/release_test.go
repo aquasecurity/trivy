@@ -1,7 +1,6 @@
 package release
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -9,7 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -22,52 +20,233 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 		wantErr   string
 	}{
 		{
+			name:      "Fedora",
+			inputFile: "testdata/fedora",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Fedora,
+					Name:   "42",
+				},
+			},
+		},
+		{
+			name:      "Red Hat Enterprise Linux",
+			inputFile: "testdata/rhel",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.RedHat,
+					Name:   "9.4",
+				},
+			},
+		},
+		{
+			name:      "CentOS",
+			inputFile: "testdata/centos",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.CentOS,
+					Name:   "7",
+				},
+			},
+		},
+		{
+			name:      "Rocky Linux",
+			inputFile: "testdata/rocky",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Rocky,
+					Name:   "9.3",
+				},
+			},
+		},
+		{
+			name:      "AlmaLinux",
+			inputFile: "testdata/alma",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Alma,
+					Name:   "9.4",
+				},
+			},
+		},
+		{
+			name:      "Oracle Linux",
+			inputFile: "testdata/oracle",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Oracle,
+					Name:   "8.10",
+				},
+			},
+		},
+		{
 			name:      "alpine",
 			inputFile: "testdata/alpine",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.Alpine, Name: "3.15.4"},
+				OS: types.OS{
+					Family: types.Alpine,
+					Name:   "3.15.4",
+				},
 			},
 		},
 		{
 			name:      "openSUSE-leap 15.2.1",
 			inputFile: "testdata/opensuseleap-15.2.1",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.OpenSUSELeap, Name: "15.2.1"},
+				OS: types.OS{
+					Family: types.OpenSUSELeap,
+					Name:   "15.2.1",
+				},
 			},
 		},
 		{
 			name:      "openSUSE-leap 42.3",
 			inputFile: "testdata/opensuseleap-42.3",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.OpenSUSELeap, Name: "42.3"},
+				OS: types.OS{
+					Family: types.OpenSUSELeap,
+					Name:   "42.3",
+				},
 			},
 		},
 		{
 			name:      "openSUSE-tumbleweed",
 			inputFile: "testdata/opensusetumbleweed",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.OpenSUSETumbleweed, Name: "20220412"},
+				OS: types.OS{
+					Family: types.OpenSUSETumbleweed,
+					Name:   "20220412",
+				},
 			},
 		},
 		{
 			name:      "SUSE Linux Enterprise Server",
 			inputFile: "testdata/sles",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.SLES, Name: "15.3"},
+				OS: types.OS{
+					Family: types.SLES,
+					Name:   "15.3",
+				},
+			},
+		},
+		{
+			name:      "SUSE Linux Enterprise Micro",
+			inputFile: "testdata/slemicro",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.SLEMicro,
+					Name:   "5.3",
+				},
+			},
+		},
+		{
+			name:      "SUSE Linux Enterprise Micro 6.0",
+			inputFile: "testdata/slemicro6.0",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.SLEMicro,
+					Name:   "6.0",
+				},
+			},
+		},
+		{
+			name:      "SUSE Linux Enterprise Micro 5.4 for Rancher",
+			inputFile: "testdata/slemicro-rancher",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.SLEMicro,
+					Name:   "5.4",
+				},
 			},
 		},
 		{
 			name:      "Photon OS",
 			inputFile: "testdata/photon",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.Photon, Name: "4.0"},
+				OS: types.OS{
+					Family: types.Photon,
+					Name:   "4.0",
+				},
 			},
 		},
 		{
 			name:      "Photon OS",
 			inputFile: "testdata/photon",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.Photon, Name: "4.0"},
+				OS: types.OS{
+					Family: types.Photon,
+					Name:   "4.0",
+				},
+			},
+		},
+		{
+			name:      "Azure Linux",
+			inputFile: "testdata/azurelinux-3.0",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Azure,
+					Name:   "3.0",
+				},
+			},
+		},
+		{
+			name:      "Mariner 2.0",
+			inputFile: "testdata/mariner-2.0",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.CBLMariner,
+					Name:   "2.0",
+				},
+			},
+		},
+		{
+			name:      "Mariner 1.0",
+			inputFile: "testdata/mariner-1.0",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.CBLMariner,
+					Name:   "1.0",
+				},
+			},
+		},
+		{
+			name:      "Echo",
+			inputFile: "testdata/echo",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Echo,
+					Name:   "1",
+				},
+			},
+		},
+		{
+			name:      "MinimOS",
+			inputFile: "testdata/minimos",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.MinimOS,
+					Name:   "20241031",
+				},
+			},
+		},
+		{
+			name:      "Bottlerocket",
+			inputFile: "testdata/bottlerocket",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Bottlerocket,
+					Name:   "1.34.0",
+				},
+			},
+		},
+		{
+			name:      "CoreOS",
+			inputFile: "testdata/coreos",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.CoreOS,
+					Name:   "3.15.4",
+				},
 			},
 		},
 		{
@@ -94,18 +273,18 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			a := osReleaseAnalyzer{}
-			res, err := a.Analyze(context.Background(), analyzer.AnalysisInput{
+			res, err := a.Analyze(t.Context(), analyzer.AnalysisInput{
 				FilePath: "etc/os-release",
 				Content:  f,
 			})
 
 			if tt.wantErr != "" {
-				assert.Error(t, err)
+				require.Error(t, err)
 				assert.Equal(t, tt.wantErr, err.Error())
 				return
 			}
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, res)
 		})
 	}

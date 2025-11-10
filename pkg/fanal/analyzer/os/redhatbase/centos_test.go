@@ -1,7 +1,6 @@
 package redhatbase
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -36,22 +35,19 @@ func Test_centosOSAnalyzer_Analyze(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			a := centOSAnalyzer{}
 			f, err := os.Open(tt.inputFile)
-			defer f.Close()
-
 			require.NoError(t, err)
-			ctx := context.Background()
+			defer f.Close()
+			ctx := t.Context()
 
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: "etc/centos-release",
 				Content:  f,
 			})
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
-			} else {
-				require.NoError(t, err)
 			}
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

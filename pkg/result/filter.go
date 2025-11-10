@@ -1,25 +1,21 @@
 package result
 
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
+	"slices"
 	"sort"
-	"strings"
-	"time"
 
+	"github.com/open-policy-agent/opa/v1/ast"
+	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/samber/lo"
-
-	"github.com/open-policy-agent/opa/rego"
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/vex"
 )
 
 const (
@@ -27,187 +23,294 @@ const (
 	DefaultIgnoreFile = ".trivyignore"
 )
 
-// Filter filters out the vulnerabilities
-func Filter(ctx context.Context, result *types.Result, severities []dbTypes.Severity, ignoreUnfixed, includeNonFailures bool,
-	ignoreFile, policyFile string, ignoreLicenses []string) error {
-	ignoredIDs := getIgnoredIDs(ignoreFile)
+type FilterOptions struct {
+	Severities         []dbTypes.Severity
+	IgnoreStatuses     []dbTypes.Status
+	IncludeNonFailures bool
+	IgnoreFile         string
+	PolicyFile         string
+	IgnoreLicenses     []string
+	CacheDir           string
+	VEXSources         []vex.Source
+}
 
-	filteredVulns := filterVulnerabilities(result.Vulnerabilities, severities, ignoreUnfixed, ignoredIDs)
-	misconfSummary, filteredMisconfs := filterMisconfigurations(result.Misconfigurations, severities, includeNonFailures, ignoredIDs)
-	result.Secrets = filterSecrets(result.Secrets, severities, ignoredIDs)
-	result.Licenses = filterLicenses(result.Licenses, severities, ignoreLicenses)
+// Filter filters out the report
+func Filter(ctx context.Context, report types.Report, opts FilterOptions) error {
+	ignoreConf, err := ParseIgnoreFile(ctx, opts.IgnoreFile)
+	if err != nil {
+		return xerrors.Errorf("%s error: %w", opts.IgnoreFile, err)
+	}
 
-	if policyFile != "" {
-		var err error
-		filteredVulns, filteredMisconfs, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, policyFile)
-		if err != nil {
-			return xerrors.Errorf("failed to apply the policy: %w", err)
+	for i := range report.Results {
+		if err = FilterResult(ctx, &report.Results[i], ignoreConf, opts); err != nil {
+			return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
 	}
-	sort.Sort(types.BySeverity(filteredVulns))
 
-	result.Vulnerabilities = filteredVulns
-	result.Misconfigurations = filteredMisconfs
-	result.MisconfSummary = misconfSummary
+	// Filter out vulnerabilities based on the given VEX document.
+	if err = vex.Filter(ctx, &report, vex.Options{
+		CacheDir: opts.CacheDir,
+		Sources:  opts.VEXSources,
+	}); err != nil {
+		return xerrors.Errorf("VEX error: %w", err)
+	}
 
 	return nil
 }
 
-func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbTypes.Severity,
-	ignoreUnfixed bool, ignoredIDs []string) []types.DetectedVulnerability {
+// FilterResult filters out the result
+func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreConfig, opt FilterOptions) error {
+	// Convert dbTypes.Severity to string
+	severities := lo.Map(opt.Severities, func(s dbTypes.Severity, _ int) string {
+		return s.String()
+	})
+
+	filterVulnerabilities(result, severities, opt.IgnoreStatuses, ignoreConf)
+	filterMisconfigurations(result, severities, opt.IncludeNonFailures, ignoreConf)
+	filterSecrets(result, severities, ignoreConf)
+	filterLicenses(result, severities, opt.IgnoreLicenses, ignoreConf)
+
+	if opt.PolicyFile != "" {
+		policyFile := filepath.ToSlash(filepath.Clean(opt.PolicyFile))
+		if err := applyPolicy(ctx, result, policyFile); err != nil {
+			return xerrors.Errorf("failed to apply the policy: %w", err)
+		}
+	}
+	sort.Sort(types.BySeverity(result.Vulnerabilities))
+
+	return nil
+}
+
+func filterVulnerabilities(result *types.Result, severities []string, ignoreStatuses []dbTypes.Status, ignoreConfig IgnoreConfig) {
 	uniqVulns := make(map[string]types.DetectedVulnerability)
-	for _, vuln := range vulns {
+	for _, vuln := range result.Vulnerabilities {
 		if vuln.Severity == "" {
 			vuln.Severity = dbTypes.SeverityUnknown.String()
 		}
-		// Filter vulnerabilities by severity
-		for _, s := range severities {
-			if s.String() != vuln.Severity {
-				continue
-			}
 
-			// Ignore unfixed vulnerabilities
-			if ignoreUnfixed && vuln.FixedVersion == "" {
-				continue
-			} else if slices.Contains(ignoredIDs, vuln.VulnerabilityID) {
-				continue
-			}
-
-			// Check if there is a duplicate vulnerability
-			key := fmt.Sprintf("%s/%s/%s/%s", vuln.VulnerabilityID, vuln.PkgName, vuln.InstalledVersion, vuln.PkgPath)
-			if old, ok := uniqVulns[key]; ok && !shouldOverwrite(old, vuln) {
-				continue
-			}
-			uniqVulns[key] = vuln
-			break
+		switch {
+		// Filter by severity
+		case !slices.Contains(severities, vuln.Severity):
+			continue
+		// Filter by status
+		case slices.Contains(ignoreStatuses, vuln.Status):
+			continue
 		}
+
+		// Filter by ignore file
+		if f := ignoreConfig.MatchVulnerability(vuln.VulnerabilityID, result.Target, vuln.PkgPath, vuln.PkgIdentifier.PURL); f != nil {
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(vuln, types.FindingStatusIgnored, f.Statement, ignoreConfig.FilePath))
+			continue
+		}
+
+		// Check if there is a duplicate vulnerability
+		key := fmt.Sprintf("%s/%s/%s/%s", vuln.VulnerabilityID, vuln.PkgName, vuln.InstalledVersion, vuln.PkgPath)
+		if old, ok := uniqVulns[key]; ok && !shouldOverwrite(old, vuln) {
+			continue
+		}
+		uniqVulns[key] = vuln
 	}
-	return maps.Values(uniqVulns)
+
+	// Override the detected vulnerabilities
+	result.Vulnerabilities = lo.Values(uniqVulns)
+	if len(result.Vulnerabilities) == 0 {
+		result.Vulnerabilities = nil
+	}
 }
 
-func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severities []dbTypes.Severity,
-	includeNonFailures bool, ignoredIDs []string) (*types.MisconfSummary, []types.DetectedMisconfiguration) {
+func filterMisconfigurations(result *types.Result, severities []string, includeNonFailures bool,
+	ignoreConfig IgnoreConfig) {
 	var filtered []types.DetectedMisconfiguration
-	summary := new(types.MisconfSummary)
+	result.MisconfSummary = new(types.MisconfSummary)
 
-	for _, misconf := range misconfs {
-		// Filter misconfigurations by severity
-		for _, s := range severities {
-			if s.String() == misconf.Severity {
-				if slices.Contains(ignoredIDs, misconf.ID) || slices.Contains(ignoredIDs, misconf.AVDID) {
-					continue
-				}
-
-				// Count successes, failures, and exceptions
-				summarize(misconf.Status, summary)
-
-				if misconf.Status != types.StatusFailure && !includeNonFailures {
-					continue
-				}
-				filtered = append(filtered, misconf)
-				break
-			}
+	for _, misconf := range result.Misconfigurations {
+		// Filter by severity
+		if !slices.Contains(severities, misconf.Severity) {
+			continue
 		}
+
+		// Filter by ignore file
+		if f := ignoreConfig.MatchMisconfiguration(misconf.ID, misconf.AVDID, result.Target); f != nil {
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(misconf, types.FindingStatusIgnored, f.Statement, ignoreConfig.FilePath))
+			continue
+		}
+
+		// Count successes and failures
+		updateMisconfSummary(misconf.Status, result.MisconfSummary)
+
+		if misconf.Status != types.MisconfStatusFailure && !includeNonFailures {
+			continue
+		}
+		filtered = append(filtered, misconf)
 	}
 
-	if summary.Empty() {
-		return nil, nil
+	result.Misconfigurations = filtered
+	if result.MisconfSummary.Empty() {
+		result.Misconfigurations = nil
+		result.MisconfSummary = nil
+	}
+}
+
+func filterSecrets(result *types.Result, severities []string, ignoreConfig IgnoreConfig) {
+	var filtered []types.DetectedSecret
+	for _, secret := range result.Secrets {
+		if !slices.Contains(severities, secret.Severity) {
+			// Filter by severity
+			continue
+		} else if f := ignoreConfig.MatchSecret(secret.RuleID, result.Target); f != nil {
+			// Filter by ignore file
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(secret, types.FindingStatusIgnored, f.Statement, ignoreConfig.FilePath))
+			continue
+		}
+		filtered = append(filtered, secret)
+	}
+	result.Secrets = filtered
+}
+
+func filterLicenses(result *types.Result, severities, ignoreLicenseNames []string, ignoreConfig IgnoreConfig) {
+	// Merge ignore license names into ignored findings
+	var ignoreLicenses IgnoreConfig
+	for _, licenseName := range ignoreLicenseNames {
+		ignoreLicenses.Licenses = append(ignoreLicenses.Licenses, IgnoreFinding{
+			ID: licenseName,
+		})
 	}
 
-	return summary, filtered
-}
-
-func filterSecrets(secrets []ftypes.SecretFinding, severities []dbTypes.Severity,
-	ignoredIDs []string) []ftypes.SecretFinding {
-	var filtered []ftypes.SecretFinding
-	for _, secret := range secrets {
-		// Filter secrets by severity
-		for _, s := range severities {
-			if s.String() == secret.Severity {
-				if slices.Contains(ignoredIDs, secret.RuleID) {
-					continue
-				}
-				filtered = append(filtered, secret)
-				break
-			}
+	var filtered []types.DetectedLicense
+	for _, l := range result.Licenses {
+		// Filter by severity
+		if !slices.Contains(severities, l.Severity) {
+			continue
 		}
+
+		// Filter by `--ignored-licenses`
+		if f := ignoreLicenses.MatchLicense(l.Name, l.FilePath); f != nil {
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(l, types.FindingStatusIgnored, "", "--ignored-licenses"))
+			continue
+		}
+
+		// Filter by ignore file
+		if f := ignoreConfig.MatchLicense(l.Name, l.FilePath); f != nil {
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(l, types.FindingStatusIgnored, f.Statement, ignoreConfig.FilePath))
+			continue
+		}
+
+		filtered = append(filtered, l)
 	}
-	return filtered
+	result.Licenses = filtered
 }
 
-func filterLicenses(licenses []types.DetectedLicense, severities []dbTypes.Severity, ignoredLicenses []string) []types.DetectedLicense {
-	return lo.Filter(licenses, func(l types.DetectedLicense, _ int) bool {
-		// Skip the license if it is included in ignored licenses.
-		if slices.Contains(ignoredLicenses, l.Name) {
-			return false
-		}
-
-		// Filter secrets by severity
-		for _, s := range severities {
-			if s.String() == l.Severity {
-				return true
-			}
-		}
-		return false
-	})
-}
-
-func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {
+func updateMisconfSummary(status types.MisconfStatus, summary *types.MisconfSummary) {
 	switch status {
-	case types.StatusFailure:
+	case types.MisconfStatusFailure:
 		summary.Failures++
-	case types.StatusPassed:
+	case types.MisconfStatusPassed:
 		summary.Successes++
-	case types.StatusException:
-		summary.Exceptions++
 	}
 }
 
-func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
-	policyFile string) ([]types.DetectedVulnerability, []types.DetectedMisconfiguration, error) {
+func applyPolicy(ctx context.Context, result *types.Result, policyFile string) error {
 	policy, err := os.ReadFile(policyFile)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("unable to read the policy file: %w", err)
+		return xerrors.Errorf("unable to read the policy file: %w", err)
 	}
 
 	query, err := rego.New(
 		rego.Query("data.trivy.ignore"),
 		rego.Module("lib.rego", module),
 		rego.Module("trivy.rego", string(policy)),
+		rego.SetRegoVersion(ast.RegoV0),
 	).PrepareForEval(ctx)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("unable to prepare for eval: %w", err)
+		return xerrors.Errorf("unable to prepare for eval: %w", err)
 	}
 
 	// Vulnerabilities
-	var filteredVulns []types.DetectedVulnerability
-	for _, vuln := range vulns {
-		ignored, err := evaluate(ctx, query, vuln)
-		if err != nil {
-			return nil, nil, err
-		}
-		if ignored {
-			continue
-		}
-		filteredVulns = append(filteredVulns, vuln)
+	filteredVulns, modifiedVulns, err := filterFindingsByRego(ctx, query, result.Vulnerabilities, policyFile)
+	if err != nil {
+		return err
 	}
+	result.Vulnerabilities = filteredVulns
+	result.ModifiedFindings = append(result.ModifiedFindings, modifiedVulns...)
 
 	// Misconfigurations
-	var filteredMisconfs []types.DetectedMisconfiguration
-	for _, misconf := range misconfs {
-		ignored, err := evaluate(ctx, query, misconf)
+	filteredMisconfs, modifiedMisconfs, err := filterFindingsByRego(ctx, query, result.Misconfigurations, policyFile)
+	if err != nil {
+		return err
+	}
+
+	for _, m := range modifiedMisconfs {
+		misconf, ok := m.Finding.(types.DetectedMisconfiguration)
+		if !ok {
+			continue
+		}
+		switch misconf.Status {
+		case types.MisconfStatusFailure:
+			result.MisconfSummary.Failures--
+		case types.MisconfStatusPassed:
+			result.MisconfSummary.Successes--
+		}
+	}
+
+	result.Misconfigurations = filteredMisconfs
+	result.ModifiedFindings = append(result.ModifiedFindings, modifiedMisconfs...)
+
+	// Secrets
+	filteredSecrets, modifiedSecrets, err := filterFindingsByRego(ctx, query, result.Secrets, policyFile)
+	if err != nil {
+		return err
+	}
+	result.Secrets = filteredSecrets
+	result.ModifiedFindings = append(result.ModifiedFindings, modifiedSecrets...)
+
+	// Licenses
+	filteredLicenses, modifiedLicenses, err := filterFindingsByRego(ctx, query, result.Licenses, policyFile)
+	if err != nil {
+		return err
+	}
+	result.Licenses = filteredLicenses
+	result.ModifiedFindings = append(result.ModifiedFindings, modifiedLicenses...)
+	return nil
+}
+
+func filterFindingsByRego[T types.Finding](
+	ctx context.Context, query rego.PreparedEvalQuery, findings []T, policyFile string,
+) ([]T, []types.ModifiedFinding, error) {
+	var filtered []T
+	var modified []types.ModifiedFinding
+
+	for _, finding := range findings {
+		ignored, err := evaluate(ctx, query, finding)
 		if err != nil {
 			return nil, nil, err
 		}
 		if ignored {
+			modified = append(modified,
+				types.NewModifiedFinding(finding, types.FindingStatusIgnored, "Filtered by Rego", policyFile))
 			continue
 		}
-		filteredMisconfs = append(filteredMisconfs, misconf)
+		filtered = append(filtered, finding)
 	}
-	return filteredVulns, filteredMisconfs, nil
+	return filtered, modified, nil
 }
-func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input interface{}) (bool, error) {
-	results, err := query.Eval(ctx, rego.EvalInput(input))
+
+func evaluate[T types.Finding](ctx context.Context, query rego.PreparedEvalQuery, finding T) (bool, error) {
+	type regoInput struct {
+		Data T      `json:",inline"`
+		Type string `json:"Type"`
+	}
+
+	ri := regoInput{
+		Data: finding,
+		Type: string(finding.FindingType()),
+	}
+
+	results, err := query.Eval(ctx, rego.EvalInput(ri))
 	if err != nil {
 		return false, xerrors.Errorf("unable to evaluate the policy: %w", err)
 	} else if len(results) == 0 {
@@ -222,56 +325,7 @@ func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input interface
 	return ignore, nil
 }
 
-func getIgnoredIDs(ignoreFile string) []string {
-	f, err := os.Open(ignoreFile)
-	if err != nil {
-		// trivy must work even if no .trivyignore exist
-		return nil
-	}
-	log.Logger.Debugf("Found an ignore file %s", ignoreFile)
-
-	var ignoredIDs []string
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		line := scanner.Text()
-		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, "#") || line == "" {
-			continue
-		}
-		// Process all fields
-		fields := strings.Fields(line)
-		if len(fields) > 1 {
-			exp, err := getExpirationDate(fields)
-			if err != nil {
-				log.Logger.Warnf("Error while parsing expiration date in .trivyignore file: %s", err)
-				continue
-			}
-			if !exp.IsZero() {
-				now := time.Now()
-				if exp.Before(now) {
-					continue
-				}
-			}
-		}
-		ignoredIDs = append(ignoredIDs, fields[0])
-	}
-
-	log.Logger.Debugf("These IDs will be ignored: %q", ignoredIDs)
-
-	return ignoredIDs
-}
-
-func getExpirationDate(fields []string) (time.Time, error) {
-	for _, field := range fields {
-		if strings.HasPrefix(field, "exp:") {
-			return time.Parse("2006-01-02", strings.TrimPrefix(field, "exp:"))
-		}
-	}
-
-	return time.Time{}, nil
-}
-
-func shouldOverwrite(old, new types.DetectedVulnerability) bool {
+func shouldOverwrite(oldVuln, newVuln types.DetectedVulnerability) bool {
 	// The same vulnerability must be picked always.
-	return old.FixedVersion < new.FixedVersion
+	return oldVuln.FixedVersion < newVuln.FixedVersion
 }
