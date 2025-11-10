@@ -2,7 +2,6 @@ package parser
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"regexp"
 	"slices"
@@ -10,6 +9,7 @@ import (
 
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/dockerfile"
 )
@@ -19,7 +19,7 @@ var unknownFlagRe = regexp.MustCompile(`unknown flag:\s+([^\s]+)`)
 func Parse(_ context.Context, r io.Reader, path string) ([]*dockerfile.Dockerfile, error) {
 	parsed, err := parser.Parse(r)
 	if err != nil {
-		return nil, fmt.Errorf("dockerfile parse error: %w", err)
+		return nil, xerrors.Errorf("dockerfile parse error: %w", err)
 	}
 
 	var (
@@ -34,7 +34,7 @@ func Parse(_ context.Context, r io.Reader, path string) ([]*dockerfile.Dockerfil
 
 		instr, err := parseInstruction(child)
 		if err != nil {
-			return nil, fmt.Errorf("parse dockerfile instruction: %w", err)
+			return nil, xerrors.Errorf("parse dockerfile instruction: %w", err)
 		}
 
 		if _, ok := instr.(*instructions.Stage); ok {
@@ -103,14 +103,14 @@ func parseInstruction(child *parser.Node) (any, error) {
 		}
 
 		if lastErr != nil && err.Error() == lastErr.Error() {
-			return nil, fmt.Errorf("cannot parse instruction after removing unsupported flags: %w", err)
+			return nil, xerrors.Errorf("cannot parse instruction after removing unsupported flags: %w", err)
 		}
 
 		lastErr = err
 
 		flagName := extractUnknownFlag(err.Error())
 		if flagName == "" {
-			return nil, fmt.Errorf("cannot extract unknown flag from error: %w", err)
+			return nil, xerrors.Errorf("cannot extract unknown flag from error: %w", err)
 		}
 
 		child.Flags = slices.DeleteFunc(child.Flags, func(flag string) bool {
