@@ -350,7 +350,7 @@ func Test_effectiveRepositories(t *testing.T) {
 							{
 								ID:              "r2",
 								URL:             "https://example.com/repo2",
-								ReleasesEnabled: "false",
+								ReleasesEnabled: "invalid", // invalid value treated as false
 								// SnapshotsEnabled: "true", Snapshot field is not explicitly set.
 							},
 						},
