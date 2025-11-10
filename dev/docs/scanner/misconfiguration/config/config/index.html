@@ -8851,7 +8851,7 @@ You can configure this limit using the <code>--rego-error-limit</code> flag.</p>
 <p>This flag controls the maximum number of compile errors Trivy will tolerate before stopping the compilation.</p>
 <p>If the number of compile errors exceeds this limit, Trivy will terminate the scan.
 You can set <code>--rego-error-limit 0</code> to enforce strict checking and disallow any compile errors.</p>
-<p>The default value is defined internally via <a href="https://github.com/aquasecurity/trivy/tree/d70d994d8882a6e7a8b0c9a9b08524a2cae32ea4pkg/iac/rego/scanner.go">CompileErrorLimit</a>.</p>
+<p>The default value is defined internally via <a href="https://github.com/aquasecurity/trivy/tree/14ecdb56965c98440a191ef51c85728335a2f120pkg/iac/rego/scanner.go">CompileErrorLimit</a>.</p>
 <h3 id="private-terraform-registries">Private Terraform registries<a class="headerlink" href="#private-terraform-registries" title="Permanent link">&para;</a></h3>
 <p>Trivy can download Terraform code from private registries.
 To pass credentials you must use the <code>TF_TOKEN_</code> environment variables.
