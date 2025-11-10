@@ -601,7 +601,7 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 				"If your scanning is slow, please try '--scanners %s' to disable secret scanning",
 				strings.Join(xstrings.ToStringSlice(nonSecrets), ",")))
 		}
-		// e.g. https://trivy.dev/latest/docs/scanner/secret/#recommendation
+		// e.g. https://trivy.dev/docs/latest/scanner/secret/#recommendation
 		logger.Info(fmt.Sprintf("Please see %s for faster secret detection", doc.URL("/docs/scanner/secret/", "recommendation")))
 	} else {
 		opts.SecretConfigPath = ""
