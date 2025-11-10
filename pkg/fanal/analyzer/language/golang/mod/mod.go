@@ -53,6 +53,9 @@ type gomodAnalyzer struct {
 
 	licenseClassifierConfidenceLevel float64
 
+	// For testing: if set, use this instead of actual GOPATH
+	gopathFS fs.FS
+
 	logger *log.Logger
 }
 
@@ -142,7 +145,7 @@ func (a *gomodAnalyzer) fillAdditionalData(ctx context.Context, fsys fs.FS, apps
 	var modSearchDirs []searchDir
 
 	// $GOPATH/pkg/mod
-	if gopath, err := newGOPATH(); err != nil {
+	if gopath, err := newGOPATH(a.gopathFS); err != nil {
 		a.logger.Debug("GOPATH not found. Run 'go mod download' or 'go mod tidy' for identifying dependency graph and licenses", log.Err(err))
 	} else {
 		modSearchDirs = append(modSearchDirs, gopath)
@@ -413,10 +416,15 @@ type searchDir interface {
 }
 
 type gopathDir struct {
-	root string
+	root fs.FS // $GOPATH/pkg/mod as fs.FS (can be os.DirFS or test fixture)
 }
 
-func newGOPATH() (searchDir, error) {
+func newGOPATH(gopathFS fs.FS) (searchDir, error) {
+	// For testing
+	if gopathFS != nil {
+		return &gopathDir{root: gopathFS}, nil
+	}
+
 	gopath := cmp.Or(os.Getenv("GOPATH"), build.Default.GOPATH)
 
 	// $GOPATH/pkg/mod
@@ -424,7 +432,7 @@ func newGOPATH() (searchDir, error) {
 	if !fsutils.DirExists(modPath) {
 		return nil, xerrors.Errorf("GOPATH not found: %s", modPath)
 	}
-	return &gopathDir{root: modPath}, nil
+	return &gopathDir{root: os.DirFS(modPath)}, nil
 }
 
 // Resolve resolves the module directory for a given package.
@@ -437,9 +445,7 @@ func (d *gopathDir) Resolve(pkg types.Package) (fs.FS, error) {
 	// e.g. github.com/aquasecurity/go-dep-parser@v1.0.0
 	modDirName := fmt.Sprintf("%s@%s", name, pkg.Version)
 
-	// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v1.0.0
-	modDir := filepath.Join(d.root, modDirName)
-	return os.DirFS(modDir), nil
+	return fs.Sub(d.root, modDirName)
 }
 
 type vendorDir struct {

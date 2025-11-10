@@ -1,0 +1,5 @@
+Test case with invalid go.mod file.
+This tests error handling for malformed go.mod files.
+
+-- go.mod --
+invalid
