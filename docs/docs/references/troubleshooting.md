@@ -78,7 +78,7 @@ Common mistakes include the following, depending on where you are pulling images
 $ TRIVY_INSECURE=true trivy image [YOUR_IMAGE]
 ```
 
-Alternatively, you can specify the location of your certificate using `SSL_CERT_FILE` or `SSL_CERT_DIR` environment variables.
+On Unix systems other than macOS, you can specify the location of your certificate using `SSL_CERT_FILE` or `SSL_CERT_DIR` environment variables.
 
 ```
 $ SSL_CERT_FILE=/path/to/cert trivy image [YOUR_IMAGE]
