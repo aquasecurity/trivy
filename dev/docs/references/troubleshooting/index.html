@@ -9213,7 +9213,7 @@ analyze<span class="w"> </span>error:<span class="w"> </span>timeout:<span class
 <p><code>TRIVY_INSECURE</code> can be used to allow insecure connections to a container registry when using SSL.</p>
 <div class="highlight"><pre><span></span><code>$ TRIVY_INSECURE=true trivy image [YOUR_IMAGE]
 </code></pre></div>
-<p>Alternatively, you can specify the location of your certificate using <code>SSL_CERT_FILE</code> or <code>SSL_CERT_DIR</code> environment variables.</p>
+<p>On Unix systems other than macOS, you can specify the location of your certificate using <code>SSL_CERT_FILE</code> or <code>SSL_CERT_DIR</code> environment variables.</p>
 <div class="highlight"><pre><span></span><code>$ SSL_CERT_FILE=/path/to/cert trivy image [YOUR_IMAGE]
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>$ SSL_CERT_DIR=/path/to/certs trivy image [YOUR_IMAGE]
