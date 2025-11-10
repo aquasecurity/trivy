@@ -43,7 +43,7 @@ func Test_ReadSettings(t *testing.T) {
 							{
 								ID:               "mycompany-internal-releases",
 								URL:              "https://mycompany.example.com/repository/internal-releases",
-								ReleasesEnabled:  "true",
+								ReleasesEnabled:  "",
 								SnapshotsEnabled: "false",
 							},
 							{
@@ -342,16 +342,16 @@ func Test_effectiveRepositories(t *testing.T) {
 						ID: "p1",
 						Repositories: []pomRepository{
 							{
-								ID:               "r1",
-								URL:              "https://example.com/repo1",
-								ReleasesEnabled:  "true",
+								ID:  "r1",
+								URL: "https://example.com/repo1",
+								// ReleasesEnabled:  "true", Release field is not explicitly set.
 								SnapshotsEnabled: "false",
 							},
 							{
-								ID:               "r2",
-								URL:              "https://example.com/repo2",
-								ReleasesEnabled:  "false",
-								SnapshotsEnabled: "true",
+								ID:              "r2",
+								URL:             "https://example.com/repo2",
+								ReleasesEnabled: "invalid", // invalid value treated as false
+								// SnapshotsEnabled: "true", Snapshot field is not explicitly set.
 							},
 						},
 					},
