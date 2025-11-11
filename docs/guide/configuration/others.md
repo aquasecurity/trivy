@@ -118,6 +118,17 @@ The following example will fail when a critical vulnerability is found or the OS
 $ trivy image --exit-code 1 --exit-on-eol 1 --severity CRITICAL alpine:3.16.3
 ```
 
+## No Color
+|     Scanner      | Supported |
+|:----------------:|:---------:|
+|  Vulnerability   |     ✓     |
+| Misconfiguration |     ✓     |
+|      Secret      |     ✓     |
+|     License      |     ✓     |
+
+By default, `Trivy` uses color output in the terminal.
+Use the `--no-color` option if you don't want to use color output.
+
 ## Mirror Registries
 
 !!! warning "EXPERIMENTAL"
