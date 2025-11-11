@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"slices"
@@ -53,6 +54,10 @@ type gomodAnalyzer struct {
 
 	licenseClassifierConfidenceLevel float64
 
+	// gopathFS represents the $GOPATH directory as an fs.FS.
+	// It should contain the "pkg/mod" subdirectory structure.
+	gopathFS fs.FS
+
 	logger *log.Logger
 }
 
@@ -62,6 +67,7 @@ func newGoModAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, erro
 		sumParser:                        sum.NewParser(),
 		leafModParser:                    mod.NewParser(false, false), // Don't detect stdlib for non-root go.mod files
 		licenseClassifierConfidenceLevel: opt.LicenseScannerOption.ClassifierConfidenceLevel,
+		gopathFS:                         os.DirFS(cmp.Or(os.Getenv("GOPATH"), build.Default.GOPATH)),
 		logger:                           log.WithPrefix("golang"),
 	}, nil
 }
@@ -142,7 +148,7 @@ func (a *gomodAnalyzer) fillAdditionalData(ctx context.Context, fsys fs.FS, apps
 	var modSearchDirs []searchDir
 
 	// $GOPATH/pkg/mod
-	if gopath, err := newGOPATH(); err != nil {
+	if gopath, err := newGOPATH(a.gopathFS); err != nil {
 		a.logger.Debug("GOPATH not found. Run 'go mod download' or 'go mod tidy' for identifying dependency graph and licenses", log.Err(err))
 	} else {
 		modSearchDirs = append(modSearchDirs, gopath)
@@ -413,18 +419,26 @@ type searchDir interface {
 }
 
 type gopathDir struct {
-	root string
+	root fs.FS // $GOPATH/pkg/mod as fs.FS (can be os.DirFS or test fixture)
 }
 
-func newGOPATH() (searchDir, error) {
-	gopath := cmp.Or(os.Getenv("GOPATH"), build.Default.GOPATH)
-
+func newGOPATH(gopathFS fs.FS) (searchDir, error) {
 	// $GOPATH/pkg/mod
-	modPath := filepath.Join(gopath, "pkg", "mod")
-	if !fsutils.DirExists(modPath) {
-		return nil, xerrors.Errorf("GOPATH not found: %s", modPath)
+	// Use path.Join instead of filepath.Join because fs.FS always uses forward slashes,
+	// regardless of the operating system.
+	modFS, err := fs.Sub(gopathFS, path.Join("pkg", "mod"))
+	if err != nil {
+		return nil, xerrors.Errorf("failed to access $GOPATH/pkg/mod: %w", err)
 	}
-	return &gopathDir{root: modPath}, nil
+
+	// Check if the directory exists.
+	// fs.Sub doesn't return an error for non-existent directories,
+	// so we need to explicitly verify the directory exists.
+	if _, err := fs.Stat(modFS, "."); err != nil {
+		return nil, xerrors.Errorf("$GOPATH/pkg/mod does not exist: %w", err)
+	}
+
+	return &gopathDir{root: modFS}, nil
 }
 
 // Resolve resolves the module directory for a given package.
@@ -437,9 +451,7 @@ func (d *gopathDir) Resolve(pkg types.Package) (fs.FS, error) {
 	// e.g. github.com/aquasecurity/go-dep-parser@v1.0.0
 	modDirName := fmt.Sprintf("%s@%s", name, pkg.Version)
 
-	// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v1.0.0
-	modDir := filepath.Join(d.root, modDirName)
-	return os.DirFS(modDir), nil
+	return fs.Sub(d.root, modDirName)
 }
 
 type vendorDir struct {
@@ -451,8 +463,16 @@ func newVendorDir(fsys fs.FS, modPath string) (vendorDir, error) {
 	vendor := filepath.Join(filepath.Dir(modPath), "vendor")
 	sub, err := fs.Sub(fsys, vendor)
 	if err != nil {
-		return vendorDir{}, xerrors.Errorf("vendor directory not found: %w", err)
+		return vendorDir{}, xerrors.Errorf("failed to access vendor directory: %w", err)
 	}
+
+	// Check if the directory exists.
+	// fs.Sub doesn't return an error for non-existent directories,
+	// so we need to explicitly verify the directory exists.
+	if _, err := fs.Stat(sub, "."); err != nil {
+		return vendorDir{}, xerrors.Errorf("vendor directory does not exist: %w", err)
+	}
+
 	return vendorDir{root: sub}, nil
 }
 

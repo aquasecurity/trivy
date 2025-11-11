@@ -1,3 +1,17 @@
+Test case with go.mod, go.sum, and GOPATH pkg/mod dependencies.
+This tests the happy path where all dependencies can be resolved from GOPATH.
+
+-- go.mod --
+module github.com/org/repo
+
+go 1.17
+
+require github.com/aquasecurity/go-dep-parser v0.0.0-20211110174639-8257534ffed3
+
+require golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
+
+replace github.com/aquasecurity/go-dep-parser => github.com/aquasecurity/go-dep-parser v0.0.0-20220406074731-71021a481237
+-- go.sum --
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d h1:U+s90UTSYgptZMwQh2aRr3LuazLJIa+Pg3Kc1ylSYVY=
