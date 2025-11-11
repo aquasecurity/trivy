@@ -49,6 +49,12 @@ var (
 		Persistent:    true,
 		TelemetrySafe: true,
 	}
+	CaCertFlag = Flag[string]{
+		Name:       "cacert",
+		ConfigName: "cacert",
+		Usage:      "Path to PEM-encoded CA certificate bundle",
+		Persistent: true,
+	}
 	TimeoutFlag = Flag[time.Duration]{
 		Name:          "timeout",
 		ConfigName:    "timeout",
@@ -87,6 +93,7 @@ type GlobalFlagGroup struct {
 	Quiet                 *Flag[bool]
 	Debug                 *Flag[bool]
 	Insecure              *Flag[bool]
+	CaCert                *Flag[string]
 	Timeout               *Flag[time.Duration]
 	CacheDir              *Flag[string]
 	GenerateDefaultConfig *Flag[bool]
@@ -100,6 +107,7 @@ type GlobalOptions struct {
 	Quiet                 bool
 	Debug                 bool
 	Insecure              bool
+	CaCertPath            string
 	Timeout               time.Duration
 	CacheDir              string
 	GenerateDefaultConfig bool
@@ -113,6 +121,7 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 		Quiet:                 QuietFlag.Clone(),
 		Debug:                 DebugFlag.Clone(),
 		Insecure:              InsecureFlag.Clone(),
+		CaCert:                CaCertFlag.Clone(),
 		Timeout:               TimeoutFlag.Clone(),
 		CacheDir:              CacheDirFlag.Clone(),
 		GenerateDefaultConfig: GenerateDefaultConfigFlag.Clone(),
@@ -131,6 +140,7 @@ func (f *GlobalFlagGroup) Flags() []Flagger {
 		f.Quiet,
 		f.Debug,
 		f.Insecure,
+		f.CaCert,
 		f.Timeout,
 		f.CacheDir,
 		f.GenerateDefaultConfig,
@@ -165,6 +175,7 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 		Quiet:                 f.Quiet.Value(),
 		Debug:                 f.Debug.Value(),
 		Insecure:              insecure,
+		CaCertPath:            f.CaCert.Value(),
 		Timeout:               f.Timeout.Value(),
 		CacheDir:              f.CacheDir.Value(),
 		GenerateDefaultConfig: f.GenerateDefaultConfig.Value(),
