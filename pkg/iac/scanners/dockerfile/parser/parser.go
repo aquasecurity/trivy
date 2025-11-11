@@ -3,7 +3,6 @@ package parser
 import (
 	"context"
 	"io"
-	"regexp"
 	"slices"
 	"strings"
 
@@ -13,8 +12,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/dockerfile"
 )
-
-var unknownFlagRe = regexp.MustCompile(`unknown flag:\s+([^\s]+)`)
 
 func Parse(_ context.Context, r io.Reader, path string) ([]*dockerfile.Dockerfile, error) {
 	parsed, err := parser.Parse(r)
@@ -120,11 +117,13 @@ func parseInstruction(child *parser.Node) (any, error) {
 }
 
 func extractUnknownFlag(errMsg string) string {
-	matches := unknownFlagRe.FindStringSubmatch(errMsg)
-	if len(matches) > 1 {
-		return matches[1]
+	after, ok := strings.CutPrefix(errMsg, "unknown flag: ")
+	if !ok {
+		return ""
 	}
-	return ""
+
+	flagName, _, _ := strings.Cut(after, " ")
+	return flagName
 }
 
 func originalFromHeredoc(node *parser.Node) string {
