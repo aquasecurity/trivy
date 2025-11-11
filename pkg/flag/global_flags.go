@@ -52,7 +52,7 @@ var (
 	CaCertFlag = Flag[string]{
 		Name:       "cacert",
 		ConfigName: "cacert",
-		Usage:      "Path to PEM-encoded CA certificate bundle",
+		Usage:      "Path to PEM-encoded CA certificate file",
 		Persistent: true,
 	}
 	TimeoutFlag = Flag[time.Duration]{
