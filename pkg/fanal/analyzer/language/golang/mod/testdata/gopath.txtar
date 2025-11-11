@@ -1,7 +1,8 @@
-GOPATH/pkg/mod directory containing cached Go module dependencies.
+GOPATH directory structure containing pkg/mod with cached Go module dependencies.
 This is used as a shared test fixture across multiple test cases.
+All file paths must include the "pkg/mod/" prefix to properly represent the GOPATH structure.
 
--- github.com/!burnt!sushi/toml@v0.3.1/COPYING --
+-- pkg/mod/github.com/!burnt!sushi/toml@v0.3.1/COPYING --
 The MIT License (MIT)
 
 Copyright (c) 2013 TOML authors
@@ -23,7 +24,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
--- github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237/LICENSE --
+-- pkg/mod/github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237/LICENSE --
 MIT License
 
 Copyright (c) 2019 Teppei Fukuda
@@ -45,7 +46,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
--- github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237/go.mod --
+-- pkg/mod/github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237/go.mod --
 module github.com/aquasecurity/go-dep-parser
 
 go 1.18
@@ -77,7 +78,7 @@ require (
 	go.uber.org/multierr v1.6.0 // indirect
 	golang.org/x/text v0.3.8 // indirect
 )
--- github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd/go.mod --
+-- pkg/mod/github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd/go.mod --
 module github.com/aquasecurity/go-dep-parser
 
 go 1.18
@@ -109,7 +110,7 @@ require (
 	go.uber.org/multierr v1.6.0 // indirect
 	golang.org/x/text v0.3.8 // indirect
 )
--- github.com/aquasecurity/go-dep-parser@v0.0.1/go.mod --
+-- pkg/mod/github.com/aquasecurity/go-dep-parser@v0.0.1/go.mod --
 module github.com/aquasecurity/go-dep-parser
 
 go 1.18
@@ -117,5 +118,5 @@ go 1.18
 require (
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 )
--- github.com/sad/sad@v0.0.1/go.mod --
+-- pkg/mod/github.com/sad/sad@v0.0.1/go.mod --
 wrong
