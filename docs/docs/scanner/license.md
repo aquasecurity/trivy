@@ -2,7 +2,7 @@
 
 Trivy scans any container image for license files and offers an opinionated view on the risk associated with the license.
 
-License are classified using the [Google License Classification][google-license-classification] -
+Licenses are classified using the [Google License Classification][google-license-classification] -
 
  - Forbidden
  - Restricted 
@@ -33,7 +33,7 @@ To configure the confidence level, you can use `--license-confidence-level`. Thi
 |       Standard        |   ✅   |   ✅    | ✅[^1][^2]  | ✅[^1][^2]  |  ✅   |
 | Full (--license-full) |   ✅   |   ✅    |     ✅      |     ✅      |  -   |
 
-License checking classifies the identified licenses and map the classification to severity.
+License checking classifies the identified licenses and maps the classification to severity.
 
 | Classification | Severity |
 | -------------- | -------- |
@@ -136,7 +136,7 @@ Total: 6 (UNKNOWN: 4, HIGH: 0, CRITICAL: 2)
 
 ## Configuration
 
-Trivy has number of configuration flags for use with license scanning;
+Trivy has a number of configuration flags for use with license scanning:
                                  
 ### Ignored Licenses
 
@@ -353,7 +353,7 @@ license:
     - "text://Text of Apache Software Foundation License"
 ```
 
-But a text license can by large. So for these cases Trivy supports using `regex` in license classification.
+But a text license can be large. So for these cases, Trivy supports using `regex` in license classification.
 For example:
 ```yaml
 license:

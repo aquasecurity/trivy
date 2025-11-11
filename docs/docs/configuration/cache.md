@@ -86,7 +86,7 @@ If you want to use TLS with Redis, you can enable it by specifying the `--redis-
 $ trivy server --cache-backend redis://localhost:6379 --redis-tls
 ```
 
-Trivy also supports for connecting to Redis with your certificates.
+Trivy also supports connecting to Redis with your certificates.
 You need to specify `--redis-ca` , `--redis-cert` , and `--redis-key` options.
 
 ```

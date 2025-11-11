@@ -103,7 +103,7 @@ $ helm install my-release . \
 
 ## Storage
 
-This chart uses a PersistentVolumeClaim to reduce the number of database downloads between POD restarts or updates. The storageclass should have the reclaim policy  `Retain`.
+This chart uses a PersistentVolumeClaim to reduce the number of database downloads between POD restarts or updates. The storageclass should have the reclaim policy `Retain`.
 
 ## Caching
 

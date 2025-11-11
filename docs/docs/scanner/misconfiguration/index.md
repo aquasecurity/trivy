@@ -406,7 +406,7 @@ Ensure required tags are set on AWS resources
 ```
 
 ## External connectivity
-Trivy needs to connect to the internet to download the checks bundle. If you are running Trivy in an air-gapped environment, or an tightly controlled network, please refer to the [Advanced Network Scenarios document](../../advanced/air-gap.md).
+Trivy needs to connect to the internet to download the checks bundle. If you are running Trivy in an air-gapped environment, or a tightly controlled network, please refer to the [Advanced Network Scenarios document](../../advanced/air-gap.md).
 
 ## Configuration
 More misconfiguration scanning specific configurations can be found [here](../misconfiguration/config/config.md).
