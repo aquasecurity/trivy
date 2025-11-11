@@ -130,10 +130,10 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, targetKind TargetKi
 
 	// Set the default HTTP transport
 	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
-		Insecure:   cliOptions.Insecure,
-		CaCertPath: cliOptions.CaCertPath,
-		Timeout:    cliOptions.Timeout,
-		TraceHTTP:  cliOptions.TraceHTTP,
+		Insecure:  cliOptions.Insecure,
+		CaCerts:   cliOptions.CaCerts,
+		Timeout:   cliOptions.Timeout,
+		TraceHTTP: cliOptions.TraceHTTP,
 	}))
 
 	r.versionChecker = notification.NewVersionChecker(string(targetKind), &cliOptions)

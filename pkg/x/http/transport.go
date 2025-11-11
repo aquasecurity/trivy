@@ -8,11 +8,9 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"os"
 	"sync"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
@@ -31,11 +29,11 @@ func WithTransport(ctx context.Context, tr http.RoundTripper) context.Context {
 
 // Options configures the transport settings
 type Options struct {
-	Insecure   bool
-	Timeout    time.Duration
-	CaCertPath string
-	UserAgent  string
-	TraceHTTP  bool
+	Insecure  bool
+	Timeout   time.Duration
+	CaCerts   *x509.CertPool
+	UserAgent string
+	TraceHTTP bool
 }
 
 // SetDefaultTransport sets the default transport configuration
@@ -73,10 +71,10 @@ func NewTransport(opts Options) http.RoundTripper {
 	tr.DialContext = d.DialContext
 
 	// Configure TLS only when needed.
-	if pool := loadRootCAs(opts.CaCertPath); pool != nil || opts.Insecure {
+	if opts.CaCerts != nil || opts.Insecure {
 		tr.TLSClientConfig = &tls.Config{
 			InsecureSkipVerify: opts.Insecure,
-			RootCAs:            pool,
+			RootCAs:            opts.CaCerts,
 		}
 	}
 
@@ -90,28 +88,4 @@ func NewTransport(opts Options) http.RoundTripper {
 	}
 
 	return NewUserAgent(transport, userAgent)
-}
-
-// loadRootCAs builds a cert pool from the system pool and the provided PEM bundle.
-// Returns nil if caCertPath is empty or on failure.
-func loadRootCAs(caCertPath string) *x509.CertPool {
-	if caCertPath == "" {
-		return nil
-	}
-
-	rootCAs, err := x509.SystemCertPool()
-	if err != nil || rootCAs == nil {
-		rootCAs = x509.NewCertPool()
-	}
-
-	pem, err := os.ReadFile(caCertPath)
-	if err != nil {
-		log.Error("Failed to read CA bundle", log.Err(err), log.FilePath(caCertPath))
-		return nil
-	}
-	if ok := rootCAs.AppendCertsFromPEM(pem); !ok {
-		log.Error("Failed to append CA bundle", log.FilePath(caCertPath))
-		return nil
-	}
-	return rootCAs
 }
