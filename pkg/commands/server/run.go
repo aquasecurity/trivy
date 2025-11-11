@@ -21,8 +21,9 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 
 	// Set the default HTTP transport
 	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
-		Insecure: opts.Insecure,
-		Timeout:  opts.Timeout,
+		Insecure:   opts.Insecure,
+		CaCertPath: opts.CaCertPath,
+		Timeout:    opts.Timeout,
 	}))
 
 	// configure cache dir
