@@ -99,7 +99,7 @@ func parseInstruction(child *parser.Node) (any, error) {
 
 		flagName := extractUnknownFlag(err.Error())
 		if flagName == "" {
-			return nil, xerrors.Errorf("cannot extract unknown flag from error: %w", err)
+			return nil, xerrors.Errorf("parse instruction %q: %w", child.Value, err)
 		}
 
 		filtered := slices.DeleteFunc(child.Flags, func(flag string) bool {
