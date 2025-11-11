@@ -93,7 +93,7 @@ func NewTransport(opts Options) http.RoundTripper {
 }
 
 // loadRootCAs builds a cert pool from the system pool and the provided PEM bundle.
-// Returns nil if empty or on failure.
+// Returns nil if caCertPath is empty or on failure.
 func loadRootCAs(caCertPath string) *x509.CertPool {
 	if caCertPath == "" {
 		return nil
