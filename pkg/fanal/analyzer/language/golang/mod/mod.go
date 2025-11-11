@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"slices"
@@ -423,7 +424,9 @@ type gopathDir struct {
 
 func newGOPATH(gopathFS fs.FS) (searchDir, error) {
 	// $GOPATH/pkg/mod
-	modFS, err := fs.Sub(gopathFS, filepath.Join("pkg", "mod"))
+	// Use path.Join instead of filepath.Join because fs.FS always uses forward slashes,
+	// regardless of the operating system.
+	modFS, err := fs.Sub(gopathFS, path.Join("pkg", "mod"))
 	if err != nil {
 		return nil, xerrors.Errorf("failed to access $GOPATH/pkg/mod: %w", err)
 	}
