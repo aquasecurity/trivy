@@ -8676,7 +8676,7 @@ You're not viewing the latest version of the documentation.
 
 <h1 id="license-scanning">License Scanning<a class="headerlink" href="#license-scanning" title="Permanent link">&para;</a></h1>
 <p>Trivy scans any container image for license files and offers an opinionated view on the risk associated with the license.</p>
-<p>License are classified using the <a href="https://opensource.google/documentation/reference/thirdparty/licenses">Google License Classification</a> -</p>
+<p>Licenses are classified using the <a href="https://opensource.google/documentation/reference/thirdparty/licenses">Google License Classification</a> -</p>
 <ul>
 <li>Forbidden</li>
 <li>Restricted </li>
@@ -8731,7 +8731,7 @@ To configure the confidence level, you can use <code>--license-confidence-level<
 </tr>
 </tbody>
 </table>
-<p>License checking classifies the identified licenses and map the classification to severity.</p>
+<p>License checking classifies the identified licenses and maps the classification to severity.</p>
 <table>
 <thead>
 <tr>
@@ -8853,7 +8853,7 @@ Total:<span class="w"> </span><span class="m">6</span><span class="w"> </span><s
 └────────────────┴──────────┴──────────────┴──────────────────────────────────────────────────────────────┘
 </code></pre></div>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
-<p>Trivy has number of configuration flags for use with license scanning;</p>
+<p>Trivy has a number of configuration flags for use with license scanning:</p>
 <h3 id="ignored-licenses">Ignored Licenses<a class="headerlink" href="#ignored-licenses" title="Permanent link">&para;</a></h3>
 <p>Trivy license scanning can ignore licenses that are identified to explicitly remove them from the results using the <code>--ignored-licenses</code> flag;</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--scanners<span class="w"> </span>license<span class="w"> </span>--ignored-licenses<span class="w"> </span>MPL-2.0,MIT<span class="w"> </span>--severity<span class="w"> </span>HIGH<span class="w"> </span>grafana/grafana:latest
@@ -9052,7 +9052,7 @@ For example:
 <span class="w">  </span><span class="nt">forbidden</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;text://Text</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">Apache</span><span class="nv"> </span><span class="s">Software</span><span class="nv"> </span><span class="s">Foundation</span><span class="nv"> </span><span class="s">License&quot;</span>
 </code></pre></div></p>
-<p>But a text license can by large. So for these cases Trivy supports using <code>regex</code> in license classification.
+<p>But a text license can be large. So for these cases, Trivy supports using <code>regex</code> in license classification.
 For example:
 <div class="highlight"><pre><span></span><code><span class="nt">license</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">forbidden</span><span class="p">:</span>

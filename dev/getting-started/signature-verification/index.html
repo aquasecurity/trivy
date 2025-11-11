@@ -8531,7 +8531,7 @@ The following checks were performed on each of these signatures:
 <h2 id="verifying-binary">Verifying binary<a class="headerlink" href="#verifying-binary" title="Permanent link">&para;</a></h2>
 <p>Download the required tarball, associated signature and certificate files from the <a href="https://github.com/aquasecurity/trivy/releases">GitHub Release</a>.</p>
 <p>Use the following command for keyless verification:</p>
-<div class="highlight"><pre><span></span><code>cosign<span class="w"> </span>verify-blob<span class="w"> </span>&lt;path<span class="w"> </span>to<span class="w"> </span>binray&gt;<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>cosign<span class="w"> </span>verify-blob<span class="w"> </span>&lt;path<span class="w"> </span>to<span class="w"> </span>binary&gt;<span class="w"> </span><span class="se">\</span>
 --certificate<span class="w"> </span>&lt;path<span class="w"> </span>to<span class="w"> </span>cert&gt;<span class="w"> </span><span class="se">\</span>
 --signature<span class="w"> </span>&lt;path<span class="w"> </span>to<span class="w"> </span>sig&gt;<span class="w"> </span><span class="se">\</span>
 --certificate-identity-regexp<span class="w"> </span><span class="s1">&#39;https://github\.com/aquasecurity/trivy/\.github/workflows/.+&#39;</span><span class="w"> </span><span class="se">\</span>

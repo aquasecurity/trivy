@@ -8719,8 +8719,8 @@ You're not viewing the latest version of the documentation.
 
 
 <h1 id="connectivity-and-network-considerations">Connectivity and Network considerations<a class="headerlink" href="#connectivity-and-network-considerations" title="Permanent link">&para;</a></h1>
-<p>Trivy requires internet connectivity in order to function normally. If your organizations blocks or restricts network traffic, that could prevent Trivy from working correctly.
-This document explains Trivy's network connectivity requirements, and how to configure Trivy to work in restricted networks environments, including completely air-gapped environments.</p>
+<p>Trivy requires internet connectivity in order to function normally. If your organization blocks or restricts network traffic, that could prevent Trivy from working correctly.
+This document explains Trivy's network connectivity requirements, and how to configure Trivy to work in restricted network environments, including completely air-gapped environments.</p>
 <p>The following table lists all external resources that are required by Trivy:</p>
 <table>
 <thead>
@@ -8796,7 +8796,7 @@ This document explains Trivy's network connectivity requirements, and how to con
 <p>Checks Bundle is embedded in the Trivy binary (at build time), and will be used as a fallback if the external database is not available. This means that you can still scan for misconfigurations in an air-gapped environment using the database from the time of the Trivy release you are using.</p>
 <h2 id="vex-hub">VEX Hub<a class="headerlink" href="#vex-hub" title="Permanent link">&para;</a></h2>
 <h3 id="connectivity-requirements_1">Connectivity Requirements<a class="headerlink" href="#connectivity-requirements_1" title="Permanent link">&para;</a></h3>
-<p>VEX Hub is hosted as at <a href="https://github.com/aquasecurity/vexhub">https://github.com/aquasecurity/vexhub</a>.</p>
+<p>VEX Hub is hosted at <a href="https://github.com/aquasecurity/vexhub">https://github.com/aquasecurity/vexhub</a>.</p>
 <p>Trivy is fetching VEX Hub GitHub Repository directly using simple HTTPS requests.</p>
 <p>The following hosts are known to be used by GitHub's services:</p>
 <ul>
@@ -8807,7 +8807,7 @@ This document explains Trivy's network connectivity requirements, and how to con
 <h3 id="self-hosting_1">Self-hosting<a class="headerlink" href="#self-hosting_1" title="Permanent link">&para;</a></h3>
 <p>You can host a copy of VEX Hub on your own internal server. Please refer to the <a href="../self-hosting/#vex-hub">self-hosting document</a> for a detailed guide.</p>
 <h2 id="maven-central-remote-repositories">Maven Central / Remote Repositories<a class="headerlink" href="#maven-central-remote-repositories" title="Permanent link">&para;</a></h2>
-<p>Trivy might call out to Maven central or other remote repositories to fetch in order to correctly identify Java packages during a vulnerability scan.</p>
+<p>Trivy might call out to Maven Central or other remote repositories in order to correctly identify Java packages during a vulnerability scan.</p>
 <h3 id="connectivity-requirements_2">Connectivity requirements<a class="headerlink" href="#connectivity-requirements_2" title="Permanent link">&para;</a></h3>
 <p>Trivy might attempt to connect (over HTTPS) to the following URLs:</p>
 <ul>

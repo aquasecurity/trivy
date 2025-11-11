@@ -8638,7 +8638,7 @@ It supports three types of backends for this cache: </p>
 <p class="admonition-title">Note</p>
 <p>Internally, this backend uses <a href="https://github.com/etcd-io/bbolt">BoltDB</a>, which has an important limitation: only one process can access the cache at a time.
 Subsequent processes attempting to access the cache will be locked.
-For more details on this limitation, refer to the <a href="https://trivy.dev/v0.67.0-75-g0487d8efd/docs/references/troubleshooting/#running-in-parallel-takes-same-time-as-series-run">troubleshooting guide</a>.</p>
+For more details on this limitation, refer to the <a href="https://trivy.dev/v0.67.0-79-g2c3aca519/docs/references/troubleshooting/#running-in-parallel-takes-same-time-as-series-run">troubleshooting guide</a>.</p>
 </div>
 <h3 id="memory">Memory<a class="headerlink" href="#memory" title="Permanent link">&para;</a></h3>
 <p>The memory backend stores analysis results in memory, which means the cache is discarded when the process ends.
@@ -8656,7 +8656,7 @@ You can set up Trivy to use a Redis backend with a command like this:</p>
 <p>If you want to use TLS with Redis, you can enable it by specifying the <code>--redis-tls</code> flag.</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>server<span class="w"> </span>--cache-backend<span class="w"> </span>redis://localhost:6379<span class="w"> </span>--redis-tls
 </code></pre></div>
-<p>Trivy also supports for connecting to Redis with your certificates.
+<p>Trivy also supports connecting to Redis with your certificates.
 You need to specify <code>--redis-ca</code> , <code>--redis-cert</code> , and <code>--redis-key</code> options.</p>
 <div class="highlight"><pre><span></span><code>$ trivy server --cache-backend redis://localhost:6379 \
   --redis-ca /path/to/ca-cert.pem \

@@ -9434,7 +9434,7 @@ and the results returned. If the image is not found in Podman, then Trivy will
 search in Containerd. If the image is not found there either, the scan will
 fail and no more image sources will be searched.</p>
 <h3 id="docker-engine">Docker Engine<a class="headerlink" href="#docker-engine" title="Permanent link">&para;</a></h3>
-<p>Trivy tries to looks for the specified image in your local Docker Engine.
+<p>Trivy tries to look for the specified image in your local Docker Engine.
 It will be skipped if Docker Engine is not running locally.</p>
 <p>If your docker socket is not the default path, you can override it via <code>DOCKER_HOST</code>.</p>
 <h3 id="containerd">containerd<a class="headerlink" href="#containerd" title="Permanent link">&para;</a></h3>
@@ -9442,7 +9442,7 @@ It will be skipped if Docker Engine is not running locally.</p>
 <p class="admonition-title">EXPERIMENTAL</p>
 <p>This feature might change without preserving backwards compatibility.</p>
 </div>
-<p>Trivy tries to looks for the specified image in your local <a href="https://containerd.io/">containerd</a>.
+<p>Trivy tries to look for the specified image in your local <a href="https://containerd.io/">containerd</a>.
 It will be skipped if containerd is not running locally.</p>
 <p>Specify your image name in containerd running locally.</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>nerdctl<span class="w"> </span>images

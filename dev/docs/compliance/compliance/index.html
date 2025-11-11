@@ -8950,10 +8950,10 @@ You're not viewing the latest version of the documentation.
 <li><code>trivy image</code></li>
 <li><code>trivy k8s</code></li>
 </ul>
-<p>Add the <code>--compliance</code> flag to the command line, and set it's value to desired report.
+<p>Add the <code>--compliance</code> flag to the command line, and set its value to the desired report.
 For example: <code>trivy k8s cluster --compliance k8s-nsa</code> (see below for built-in and custom reports)</p>
 <h3 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h3>
-<p>The following flags are compatible with <code>--compliance</code> flag and allows customizing it's output:</p>
+<p>The following flags are compatible with the <code>--compliance</code> flag and allow customizing its output:</p>
 <table>
 <thead>
 <tr>
@@ -8981,8 +8981,8 @@ For example: <code>trivy k8s cluster --compliance k8s-nsa</code> (see below for 
 </tbody>
 </table>
 <h2 id="built-in-compliance">Built-in compliance<a class="headerlink" href="#built-in-compliance" title="Permanent link">&para;</a></h2>
-<p>Trivy has a number of built-in compliance reports that you can asses right out of the box.
-to specify a built-in compliance report, select it by ID like <code>trivy --compliance &lt;compliance_id&gt;</code>.</p>
+<p>Trivy has a number of built-in compliance reports that you can assess right out of the box.
+To specify a built-in compliance report, select it by ID like <code>trivy --compliance &lt;compliance_id&gt;</code>.</p>
 <p>For the list of built-in compliance reports, please see the relevant section:</p>
 <ul>
 <li><a href="../../target/container_image/#compliance">Docker compliance</a></li>
@@ -9162,7 +9162,7 @@ under command file</p>
 <h2 id="custom-compliance">Custom compliance<a class="headerlink" href="#custom-compliance" title="Permanent link">&para;</a></h2>
 <p>You can create your own custom compliance report. A compliance report is a simple YAML document in the following format:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">spec</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;k8s-myreport&quot;</span><span class="w"> </span><span class="c1"># report unique identifier. this should not container spaces.</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;k8s-myreport&quot;</span><span class="w"> </span><span class="c1"># report unique identifier. this should not contain spaces.</span>
 <span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;My</span><span class="nv"> </span><span class="s">custom</span><span class="nv"> </span><span class="s">Kubernetes</span><span class="nv"> </span><span class="s">report&quot;</span><span class="w"> </span><span class="c1"># report title. Any one-line title.</span>
 <span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Describe</span><span class="nv"> </span><span class="s">your</span><span class="nv"> </span><span class="s">report&quot;</span><span class="w"> </span><span class="c1"># description of the report. Any text.</span>
 <span class="w">  </span><span class="nt">relatedResources </span><span class="p">:</span>
