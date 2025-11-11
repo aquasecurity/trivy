@@ -91,28 +91,25 @@ func Parse(_ context.Context, r io.Reader, path string) ([]*dockerfile.Dockerfil
 }
 
 func parseInstruction(child *parser.Node) (any, error) {
-	var lastErr error
-
 	for {
 		instr, err := instructions.ParseInstruction(child)
 		if err == nil {
 			return instr, nil
 		}
 
-		if lastErr != nil && err.Error() == lastErr.Error() {
-			return nil, xerrors.Errorf("cannot parse instruction after removing unsupported flags: %w", err)
-		}
-
-		lastErr = err
-
 		flagName := extractUnknownFlag(err.Error())
 		if flagName == "" {
 			return nil, xerrors.Errorf("cannot extract unknown flag from error: %w", err)
 		}
 
-		child.Flags = slices.DeleteFunc(child.Flags, func(flag string) bool {
+		filtered := slices.DeleteFunc(child.Flags, func(flag string) bool {
 			return strings.HasPrefix(flag, flagName)
 		})
+
+		if len(filtered) == len(child.Flags) {
+			return nil, xerrors.Errorf("cannot remove unknown flag %q from flags %v", flagName, child.Flags)
+		}
+		child.Flags = filtered
 	}
 }
 
