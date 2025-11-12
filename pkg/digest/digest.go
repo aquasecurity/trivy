@@ -3,6 +3,7 @@ package digest
 import (
 	"crypto/sha1" // nolint
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"hash"
 	"io"
@@ -73,7 +74,7 @@ func CalcSHA1(r io.ReadSeeker) (Digest, error) {
 // CalcSHA256 calculates the SHA256 hash of the given data
 func CalcSHA256(data []byte) Digest {
 	h := sha256.Sum256(data)
-	return NewDigestFromString(SHA256, fmt.Sprintf("%x", h))
+	return NewDigestFromString(SHA256, hex.EncodeToString(h[:]))
 }
 
 // CalcSHA256FromReader calculates the SHA256 hash from a reader

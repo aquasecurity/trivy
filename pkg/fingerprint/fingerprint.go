@@ -46,21 +46,23 @@ func fillVulnerabilities(artifactID, target string, vulns []types.DetectedVulner
 //
 // Example: For a vulnerability in lodash@4.17.0 found in app/package.json of sha256:abc123,
 // the fingerprint would be SHA256("sha256:abc123:app/package.json:lodash@4.17.0:CVE-2021-1234")
-// resulting in a 64-character hexadecimal string.
+// resulting in "sha256:..." format.
 func generateVulnFingerprint(artifactID, target string, vuln *types.DetectedVulnerability) string {
 	data := fmt.Sprintf("%s:%s:%s:%s",
 		artifactID,
 		target,
 		vuln.PkgID,
 		vuln.VulnerabilityID)
-	return digest.CalcSHA256([]byte(data)).Encoded()
+	return digest.CalcSHA256([]byte(data)).String()
 }
 
 // fillMisconfigurations will generate and assign fingerprints to all misconfigurations.
 // TODO: Implement when misconfiguration fingerprints are needed.
 // The implementation should follow the same pattern as fillVulnerabilities,
 // creating deterministic fingerprints based on artifactID, target, and misconfiguration-specific identifiers.
-func fillMisconfigurations(artifactID, target string, misconfs []types.DetectedMisconfiguration) {
+//
+//nolint:unused // Placeholder for future implementation
+func fillMisconfigurations(_, _ string, _ []types.DetectedMisconfiguration) {
 	// Future implementation
 	// for i := range misconfs {
 	//     misconfs[i].Fingerprint = generateMisconfigFingerprint(artifactID, target, &misconfs[i])
@@ -71,7 +73,9 @@ func fillMisconfigurations(artifactID, target string, misconfs []types.DetectedM
 // TODO: Implement when secret fingerprints are needed.
 // The implementation should follow the same pattern as fillVulnerabilities,
 // creating deterministic fingerprints based on artifactID, target, and secret-specific identifiers.
-func fillSecrets(artifactID, target string, secrets []types.DetectedSecret) {
+//
+//nolint:unused // Placeholder for future implementation
+func fillSecrets(_, _ string, _ []types.DetectedSecret) {
 	// Future implementation
 	// for i := range secrets {
 	//     secrets[i].Fingerprint = generateSecretFingerprint(artifactID, target, &secrets[i])
@@ -82,7 +86,9 @@ func fillSecrets(artifactID, target string, secrets []types.DetectedSecret) {
 // TODO: Implement when license fingerprints are needed.
 // The implementation should follow the same pattern as fillVulnerabilities,
 // creating deterministic fingerprints based on artifactID, target, and license-specific identifiers.
-func fillLicenses(artifactID, target string, licenses []types.DetectedLicense) {
+//
+//nolint:unused // Placeholder for future implementation
+func fillLicenses(_, _ string, _ []types.DetectedLicense) {
 	// Future implementation
 	// for i := range licenses {
 	//     licenses[i].Fingerprint = generateLicenseFingerprint(artifactID, target, &licenses[i])
