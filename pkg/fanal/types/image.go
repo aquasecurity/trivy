@@ -89,7 +89,7 @@ type RegistryOptions struct {
 
 	// SSL/TLS
 	Insecure bool
-	CaCerts  *x509.CertPool
+	CACerts  *x509.CertPool
 
 	// Architecture
 	Platform Platform

@@ -22,7 +22,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	// Set the default HTTP transport
 	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
 		Insecure: opts.Insecure,
-		CaCerts:  opts.CaCerts,
+		CACerts:  opts.CACerts,
 		Timeout:  opts.Timeout,
 	}))
 

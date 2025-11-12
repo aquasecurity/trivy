@@ -51,7 +51,7 @@ var (
 		Persistent:    true,
 		TelemetrySafe: true,
 	}
-	CaCertFlag = Flag[string]{
+	CACertFlag = Flag[string]{
 		Name:       "cacert",
 		ConfigName: "cacert",
 		Usage:      "Path to PEM-encoded CA certificate file",
@@ -95,7 +95,7 @@ type GlobalFlagGroup struct {
 	Quiet                 *Flag[bool]
 	Debug                 *Flag[bool]
 	Insecure              *Flag[bool]
-	CaCert                *Flag[string]
+	CACert                *Flag[string]
 	Timeout               *Flag[time.Duration]
 	CacheDir              *Flag[string]
 	GenerateDefaultConfig *Flag[bool]
@@ -109,7 +109,7 @@ type GlobalOptions struct {
 	Quiet                 bool
 	Debug                 bool
 	Insecure              bool
-	CaCerts               *x509.CertPool
+	CACerts               *x509.CertPool
 	Timeout               time.Duration
 	CacheDir              string
 	GenerateDefaultConfig bool
@@ -123,7 +123,7 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 		Quiet:                 QuietFlag.Clone(),
 		Debug:                 DebugFlag.Clone(),
 		Insecure:              InsecureFlag.Clone(),
-		CaCert:                CaCertFlag.Clone(),
+		CACert:                CACertFlag.Clone(),
 		Timeout:               TimeoutFlag.Clone(),
 		CacheDir:              CacheDirFlag.Clone(),
 		GenerateDefaultConfig: GenerateDefaultConfigFlag.Clone(),
@@ -142,7 +142,7 @@ func (f *GlobalFlagGroup) Flags() []Flagger {
 		f.Quiet,
 		f.Debug,
 		f.Insecure,
-		f.CaCert,
+		f.CACert,
 		f.Timeout,
 		f.CacheDir,
 		f.GenerateDefaultConfig,
@@ -168,7 +168,7 @@ func (f *GlobalFlagGroup) Bind(cmd *cobra.Command) error {
 func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 	// Keep TRIVY_NON_SSL for backward compatibility
 	insecure := f.Insecure.Value() || os.Getenv("TRIVY_NON_SSL") != ""
-	caCerts, err := loadRootCAs(f.CaCert.Value())
+	caCerts, err := loadRootCAs(f.CACert.Value())
 	if err != nil {
 		return xerrors.Errorf("failed to load root CA certificates: %w", err)
 	}
@@ -181,7 +181,7 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 		Quiet:                 f.Quiet.Value(),
 		Debug:                 f.Debug.Value(),
 		Insecure:              insecure,
-		CaCerts:               caCerts,
+		CACerts:               caCerts,
 		Timeout:               f.Timeout.Value(),
 		CacheDir:              f.CacheDir.Value(),
 		GenerateDefaultConfig: f.GenerateDefaultConfig.Value(),

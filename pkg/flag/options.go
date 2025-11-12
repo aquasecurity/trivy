@@ -514,7 +514,7 @@ func (o *Options) RegistryOpts() ftypes.RegistryOptions {
 		Credentials:     o.Credentials,
 		RegistryToken:   o.RegistryToken,
 		Insecure:        o.Insecure,
-		CaCerts:         o.CaCerts,
+		CACerts:         o.CACerts,
 		Platform:        o.Platform,
 		AWSRegion:       o.AWSOptions.Region,
 		RegistryMirrors: o.RegistryMirrors,

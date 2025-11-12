@@ -31,7 +31,7 @@ func WithTransport(ctx context.Context, tr http.RoundTripper) context.Context {
 type Options struct {
 	Insecure  bool
 	Timeout   time.Duration
-	CaCerts   *x509.CertPool
+	CACerts   *x509.CertPool
 	UserAgent string
 	TraceHTTP bool
 }
@@ -71,10 +71,10 @@ func NewTransport(opts Options) http.RoundTripper {
 	tr.DialContext = d.DialContext
 
 	// Configure TLS only when needed.
-	if opts.CaCerts != nil || opts.Insecure {
+	if opts.CACerts != nil || opts.Insecure {
 		tr.TLSClientConfig = &tls.Config{
 			InsecureSkipVerify: opts.Insecure,
-			RootCAs:            opts.CaCerts,
+			RootCAs:            opts.CACerts,
 		}
 	}
 
