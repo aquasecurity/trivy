@@ -13,6 +13,12 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
   $ trivy repo https://github.com/knqyf263/trivy-ci-test
   # Scan your local git repository
   $ trivy repo /path/to/your/repository
+  # Scan your current working directory (local git repository)
+  $ trivy repo .
+  # Scan a specific branch of a remote repository
+  $ trivy repo --branch develop https://github.com/knqyf263/trivy-ci-test
+  # Scan a repository at a specific commit
+  $ trivy repo --commit <commit-hash> https://github.com/knqyf263/trivy-ci-test
 ```
 
 ### Options
