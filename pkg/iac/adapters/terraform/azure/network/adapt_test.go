@@ -85,6 +85,7 @@ func Test_Adapt(t *testing.T) {
 				NetworkWatcherFlowLogs: []network.NetworkWatcherFlowLog{
 					{
 						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						RetentionPolicy: network.RetentionPolicy{
 							Metadata: iacTypes.NewTestMetadata(),
 							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
@@ -92,6 +93,7 @@ func Test_Adapt(t *testing.T) {
 						},
 					},
 				},
+				NetworkInterfaces: []network.NetworkInterface{},
 			},
 		},
 		{
@@ -117,6 +119,7 @@ func Test_Adapt(t *testing.T) {
 						},
 					},
 				},
+				NetworkInterfaces: []network.NetworkInterface{},
 			},
 		},
 	}
@@ -148,6 +151,7 @@ func Test_adaptWatcherLog(t *testing.T) {
 `,
 			expected: network.NetworkWatcherFlowLog{
 				Metadata: iacTypes.NewTestMetadata(),
+				Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				RetentionPolicy: network.RetentionPolicy{
 					Metadata: iacTypes.NewTestMetadata(),
 					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
@@ -165,6 +169,7 @@ func Test_adaptWatcherLog(t *testing.T) {
 `,
 			expected: network.NetworkWatcherFlowLog{
 				Metadata: iacTypes.NewTestMetadata(),
+				Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				RetentionPolicy: network.RetentionPolicy{
 					Metadata: iacTypes.NewTestMetadata(),
 					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),

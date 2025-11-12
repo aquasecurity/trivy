@@ -35,6 +35,7 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: network.Network{
 				NetworkWatcherFlowLogs: []network.NetworkWatcherFlowLog{{
+					Enabled: types.BoolTest(true),
 					RetentionPolicy: network.RetentionPolicy{
 						Days:    types.IntTest(0),
 						Enabled: types.BoolTest(false),
@@ -46,6 +47,7 @@ func TestAdapt(t *testing.T) {
 						SourceAddresses:      []types.StringValue{types.StringTest("")},
 					}},
 				}},
+				NetworkInterfaces: []network.NetworkInterface{},
 			},
 		},
 		{
@@ -96,6 +98,7 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: network.Network{
 				NetworkWatcherFlowLogs: []network.NetworkWatcherFlowLog{{
+					Enabled: types.BoolTest(true),
 					RetentionPolicy: network.RetentionPolicy{
 						Days:    types.IntTest(100),
 						Enabled: types.BoolTest(true),
@@ -145,6 +148,7 @@ func TestAdapt(t *testing.T) {
 						},
 					}},
 				}},
+				NetworkInterfaces: []network.NetworkInterface{},
 			},
 		},
 	}

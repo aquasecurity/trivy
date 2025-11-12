@@ -20,6 +20,7 @@ func Adapt(modules terraform.Modules) network.Network {
 			groups:  make(map[string]network.SecurityGroup),
 		}).adaptSecurityGroups(),
 		NetworkWatcherFlowLogs: adaptWatcherLogs(modules),
+		NetworkInterfaces:       adaptNetworkInterfaces(modules),
 	}
 }
 
@@ -90,6 +91,7 @@ func (a *adapter) adaptSecurityGroup(resource *terraform.Block) {
 func adaptWatcherLog(resource *terraform.Block) network.NetworkWatcherFlowLog {
 	flowLog := network.NetworkWatcherFlowLog{
 		Metadata: resource.GetMetadata(),
+		Enabled:  resource.GetAttribute("enabled").AsBoolValueOrDefault(true, resource),
 		RetentionPolicy: network.RetentionPolicy{
 			Metadata: resource.GetMetadata(),
 			Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
@@ -108,4 +110,58 @@ func adaptWatcherLog(resource *terraform.Block) network.NetworkWatcherFlowLog {
 	}
 
 	return flowLog
+}
+
+func adaptNetworkInterfaces(modules terraform.Modules) []network.NetworkInterface {
+	var networkInterfaces []network.NetworkInterface
+
+	for _, module := range modules {
+		for _, resource := range module.GetResourcesByType("azurerm_network_interface") {
+			networkInterfaces = append(networkInterfaces, adaptNetworkInterface(resource, modules))
+		}
+	}
+
+	return networkInterfaces
+}
+
+func adaptNetworkInterface(resource *terraform.Block, modules terraform.Modules) network.NetworkInterface {
+	ni := network.NetworkInterface{
+		Metadata:           resource.GetMetadata(),
+		EnableIPForwarding: resource.GetAttribute("enable_ip_forwarding").AsBoolValueOrDefault(false, resource),
+		HasPublicIP:        iacTypes.BoolDefault(false, resource.GetMetadata()),
+		PublicIPAddress:    iacTypes.StringDefault("", resource.GetMetadata()),
+		SecurityGroups:     nil,
+		SubnetID:           iacTypes.StringDefault("", resource.GetMetadata()),
+	}
+
+	if nsgAttr := resource.GetAttribute("network_security_group_id"); nsgAttr.IsNotNil() {
+		if referencedNSG, err := modules.GetReferencedBlock(nsgAttr, resource); err == nil {
+			ni.SecurityGroups = []network.SecurityGroup{adaptSecurityGroupFromBlock(referencedNSG)}
+		}
+	}
+
+	ipConfigs := resource.GetBlocks("ip_configuration")
+	if len(ipConfigs) > 0 {
+		ipConfig := ipConfigs[0]
+		if subnetAttr := ipConfig.GetAttribute("subnet_id"); subnetAttr.IsNotNil() {
+			ni.SubnetID = subnetAttr.AsStringValueOrDefault("", ipConfig)
+		}
+
+		if publicIPAttr := ipConfig.GetAttribute("public_ip_address_id"); publicIPAttr.IsNotNil() {
+			ni.HasPublicIP = iacTypes.Bool(true, publicIPAttr.GetMetadata())
+		}
+	}
+
+	return ni
+}
+
+func adaptSecurityGroupFromBlock(resource *terraform.Block) network.SecurityGroup {
+	var rules []network.SecurityGroupRule
+	for _, ruleBlock := range resource.GetBlocks("security_rule") {
+		rules = append(rules, AdaptSGRule(ruleBlock))
+	}
+	return network.SecurityGroup{
+		Metadata: resource.GetMetadata(),
+		Rules:    rules,
+	}
 }

@@ -8,6 +8,7 @@ import (
 type Network struct {
 	SecurityGroups         []SecurityGroup
 	NetworkWatcherFlowLogs []NetworkWatcherFlowLog
+	NetworkInterfaces      []NetworkInterface
 }
 
 type SecurityGroup struct {
@@ -28,6 +29,7 @@ type SecurityGroupRule struct {
 
 type NetworkWatcherFlowLog struct {
 	Metadata        iacTypes.Metadata
+	Enabled         iacTypes.BoolValue
 	RetentionPolicy RetentionPolicy
 }
 
@@ -35,4 +37,13 @@ type RetentionPolicy struct {
 	Metadata iacTypes.Metadata
 	Enabled  iacTypes.BoolValue
 	Days     iacTypes.IntValue
+}
+
+type NetworkInterface struct {
+	Metadata           iacTypes.Metadata
+	EnableIPForwarding iacTypes.BoolValue
+	HasPublicIP        iacTypes.BoolValue
+	PublicIPAddress    iacTypes.StringValue
+	SecurityGroups     []SecurityGroup
+	SubnetID           iacTypes.StringValue
 }

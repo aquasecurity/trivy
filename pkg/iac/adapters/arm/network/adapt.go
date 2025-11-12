@@ -15,6 +15,7 @@ func Adapt(deployment azure.Deployment) network.Network {
 	return network.Network{
 		SecurityGroups:         adaptSecurityGroups(deployment),
 		NetworkWatcherFlowLogs: adaptNetworkWatcherFlowLogs(deployment),
+		NetworkInterfaces:       adaptNetworkInterfaces(deployment),
 	}
 }
 
@@ -99,12 +100,65 @@ func adaptNetworkWatcherFlowLogs(deployment azure.Deployment) (flowLogs []networ
 }
 
 func adaptNetworkWatcherFlowLog(resource azure.Resource) network.NetworkWatcherFlowLog {
+	enabled := resource.Properties.GetMapValue("enabled").AsBoolValue(true, resource.Metadata)
+	retentionPolicy := resource.Properties.GetMapValue("retentionPolicy")
+	
 	return network.NetworkWatcherFlowLog{
 		Metadata: resource.Metadata,
+		Enabled:  enabled,
 		RetentionPolicy: network.RetentionPolicy{
 			Metadata: resource.Metadata,
-			Enabled:  resource.Properties.GetMapValue("retentionPolicy").GetMapValue("enabled").AsBoolValue(false, resource.Metadata),
-			Days:     resource.Properties.GetMapValue("retentionPolicy").GetMapValue("days").AsIntValue(0, resource.Metadata),
+			Enabled:  retentionPolicy.GetMapValue("enabled").AsBoolValue(false, resource.Metadata),
+			Days:     retentionPolicy.GetMapValue("days").AsIntValue(0, resource.Metadata),
 		},
 	}
+}
+
+func adaptNetworkInterfaces(deployment azure.Deployment) []network.NetworkInterface {
+	var networkInterfaces []network.NetworkInterface
+	
+	for _, resource := range deployment.GetResourcesByType("Microsoft.Network/networkInterfaces") {
+		networkInterfaces = append(networkInterfaces, adaptNetworkInterface(resource, deployment))
+	}
+	
+	return networkInterfaces
+}
+
+func adaptNetworkInterface(resource azure.Resource, deployment azure.Deployment) network.NetworkInterface {
+	ni := network.NetworkInterface{
+		Metadata:           resource.Metadata,
+		EnableIPForwarding: resource.Properties.GetMapValue("enableIPForwarding").AsBoolValue(false, resource.Metadata),
+		HasPublicIP:        iacTypes.BoolDefault(false, resource.Metadata),
+		PublicIPAddress:    iacTypes.StringDefault("", resource.Metadata),
+		SecurityGroups:     nil,
+		SubnetID:           iacTypes.StringDefault("", resource.Metadata),
+	}
+
+	ipConfigs := resource.Properties.GetMapValue("ipConfigurations").AsList()
+	if len(ipConfigs) > 0 {
+		ipConfig := ipConfigs[0]
+		if !ipConfig.IsNull() {
+			if subnetID := ipConfig.GetMapValue("subnet").GetMapValue("id").AsStringValue("", resource.Metadata); subnetID.Value() != "" {
+				ni.SubnetID = subnetID
+			}
+			if publicIP := ipConfig.GetMapValue("publicIPAddress"); publicIP.IsNotNil() {
+				ni.HasPublicIP = iacTypes.Bool(true, resource.Metadata)
+				if publicIPID := publicIP.GetMapValue("id").AsStringValue("", resource.Metadata); publicIPID.Value() != "" {
+					ni.PublicIPAddress = publicIPID
+				}
+			}
+		}
+	}
+
+	if nsgID := resource.Properties.GetMapValue("networkSecurityGroup").GetMapValue("id").AsStringValue("", resource.Metadata); nsgID.Value() != "" {
+		// Try to find the referenced NSG in the deployment
+		for _, nsgResource := range deployment.GetResourcesByType("Microsoft.Network/networkSecurityGroups") {
+			if nsgResource.ID() == nsgID.Value() {
+				ni.SecurityGroups = []network.SecurityGroup{adaptSecurityGroup(nsgResource, deployment)}
+				break
+			}
+		}
+	}
+
+	return ni
 }
