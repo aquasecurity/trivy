@@ -506,6 +506,8 @@ require (
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
 
+replace github.com/aquasecurity/trivy-db => /home/mbauman/trivy-db
+
 tool (
 	github.com/bufbuild/buf/cmd/buf
 	github.com/knqyf263/labeler
