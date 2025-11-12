@@ -40,7 +40,7 @@ func adaptFunctionApp(resource azure.Resource) appservice.FunctionApp {
 func adaptService(resource azure.Resource) appservice.Service {
 	siteConfig := resource.Properties.GetMapValue("siteConfig")
 	httpsOnly := resource.Properties.GetMapValue("httpsOnly").AsBoolValue(false, resource.Properties.GetMetadata())
-	
+
 	enableHTTP2Val := iacTypes.Bool(false, resource.Metadata)
 	// minTlsVersion can be at root level (legacy) or in siteConfig (official)
 	minTLSVersionVal := resource.Properties.GetMapValue("minTlsVersion").AsStringValue("", resource.Properties.GetMetadata())
