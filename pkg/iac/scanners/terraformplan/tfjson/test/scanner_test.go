@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
-	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson"
 )
 
@@ -27,13 +26,20 @@ func Test_Scanning_Plan(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, results)
 
-	var failedResults scan.Results
-	for _, r := range results {
-		if r.Status() == scan.StatusFailed {
-			failedResults = append(failedResults, r)
-		}
+	var got []string
+	for _, r := range results.GetFailed() {
+		got = append(got, r.Rule().ID)
 	}
 
-	assert.Len(t, failedResults, 8)
-
+	expected := []string{
+		"AVD-AWS-0093",
+		"AVD-AWS-0086",
+		"AVD-AWS-0132",
+		"AVD-AWS-0094",
+		"AVD-AWS-0087",
+		"AVD-AWS-0091",
+		"AVD-AWS-0099",
+		"AVD-AWS-0124",
+	}
+	assert.ElementsMatch(t, expected, got)
 }

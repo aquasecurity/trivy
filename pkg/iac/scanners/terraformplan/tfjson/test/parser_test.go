@@ -1,6 +1,7 @@
 package json
 
 import (
+	"io/fs"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,8 +15,63 @@ func Test_Parse_Plan_File(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.NotNil(t, planFile)
-	fs, err := planFile.ToFS()
+	fsys, err := planFile.ToFS()
+	require.NoError(t, err)
+	assert.NotNil(t, fsys)
+
+	b, err := fs.ReadFile(fsys, parser.TerraformMainFile)
 	require.NoError(t, err)
 
-	assert.NotNil(t, fs)
+	expected := `resource "aws_s3_bucket" "planbucket" {
+  bucket = "tfsec-plan-testing"
+  force_destroy = false
+  logging {
+    target_bucket = "arn:aws:s3:::iac-tfsec-dev"
+  }
+  versioning {
+    enabled = true
+    mfa_delete = false
+  }
+}
+
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
+  bucket = aws_s3_bucket.planbucket.id
+  rule {
+    bucket_key_enabled = true
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = ""
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+
+resource "aws_security_group" "sg" {
+  description = "Managed by Terraform"
+  name = "sg"
+  revoke_rules_on_delete = false
+  tags = {
+    Name = "blah"
+  }
+  tags_all = {
+    Name = "blah"
+  }
+  ingress {
+    cidr_blocks = [
+      "0.0.0.0/0",
+    ]
+    description = ""
+    from_port = 80
+    ipv6_cidr_blocks = []
+    prefix_list_ids = []
+    protocol = "tcp"
+    security_groups = []
+    self = false
+    to_port = 80
+  }
+}
+`
+
+	assert.Equal(t, expected, string(b))
 }

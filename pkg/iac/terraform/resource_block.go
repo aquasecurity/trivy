@@ -1,12 +1,9 @@
 package terraform
 
 import (
-	"bytes"
 	"fmt"
+	"sort"
 	"strings"
-	"text/template"
-
-	"github.com/samber/lo"
 )
 
 type PlanReference struct {
@@ -35,62 +32,56 @@ func (pb *PlanBlock) GetOrCreateBlock(name string) *PlanBlock {
 	return newChildBlock
 }
 
-func (rb *PlanBlock) ToHCL() string {
-	tmpl := template.New("resource").Funcs(template.FuncMap{
-		"RenderValue": renderTemplateValue,
-	})
+func (pb *PlanBlock) ToHCL() string {
+	return pb.render("")
+}
 
-	tmpl = lo.Must(tmpl.Parse(resourceTemplate))
-	tmpl = lo.Must(tmpl.Parse(blocksTemplate))
+func (b *PlanBlock) render(indent string) string {
+	var sb strings.Builder
 
-	var res bytes.Buffer
-	if err := tmpl.Execute(&res, map[string]any{
-		"BlockType":  rb.BlockType,
-		"Type":       rb.Type,
-		"Name":       rb.Name,
-		"Attributes": rb.Attributes,
-		"Blocks":     rb.Blocks,
-	}); err != nil {
-		return ""
+	sb.WriteString(indent)
+	if b.BlockType != "" && b.Type != "" && b.Name != "" {
+		sb.WriteString(fmt.Sprintf("%s \"%s\" \"%s\" {\n", b.BlockType, b.Type, b.Name))
+	} else {
+		sb.WriteString(fmt.Sprintf("%s {\n", b.Name))
 	}
-	return res.String()
+
+	keys := make([]string, 0, len(b.Attributes))
+	for k := range b.Attributes {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		value := b.Attributes[key]
+		if value == nil {
+			continue
+		}
+		sb.WriteString(renderAttributeLine(key, value, indent+"  "))
+	}
+
+	for _, child := range b.Blocks {
+		sb.WriteString(child.render(indent + "  "))
+	}
+
+	sb.WriteString(indent)
+	sb.WriteString("}\n")
+
+	return sb.String()
 }
 
-var resourceTemplate = `{{ .BlockType }} "{{ .Type }}" "{{ .Name }}" {
-{{- range $name, $value := .Attributes }}
-  {{- if $value }}
-  {{ $name }} {{ RenderValue $value }}
-  {{- end }}
-{{- end }}
-
-{{- template "renderBlocks" .Blocks }}
-}`
-
-var blocksTemplate = `{{ define "renderBlocks" }}
-{{- range . }}
-{{ .Name }} {
-{{- range $name, $value := .Attributes }}
-  {{- if $value }}
-  {{ $name }} {{ RenderValue $value }}
-  {{- end }}
-{{- end }}
-
-{{- template "renderBlocks" .Blocks }}
+func renderAttributeLine(key string, val any, indent string) string {
+	return fmt.Sprintf("%s%s = %s\n", indent, key, renderAttributeValue(val, indent))
 }
-{{- end }}
-{{- end }}`
 
-func renderTemplateValue(val any) string {
+func renderAttributeValue(val any, indent string) string {
 	switch t := val.(type) {
 	case map[string]any:
-		return fmt.Sprintf("= %s", renderMap(t))
+		return renderMap(t, indent)
 	case []any:
-		if isMapSlice(t) {
-			return renderSlice(t)
-		}
-		return fmt.Sprintf("= %s", renderSlice(t))
+		return renderSlice(t, indent)
 	default:
-		return fmt.Sprintf("= %s", renderPrimitive(val))
+		return renderPrimitive(val)
 	}
 }
 
@@ -100,14 +91,52 @@ func renderPrimitive(val any) string {
 		return fmt.Sprintf("%v", t.Value)
 	case string:
 		return parseStringPrimitive(t)
-	case map[string]any:
-		return renderMap(t)
-	case []any:
-		return renderSlice(t)
 	default:
 		return fmt.Sprintf("%#v", t)
 	}
+}
 
+func renderSlice(vals []any, indent string) string {
+	if len(vals) == 0 {
+		return "[]"
+	}
+
+	var sb strings.Builder
+	sb.WriteString("[\n")
+	for _, v := range vals {
+		sb.WriteString(indent)
+		sb.WriteString("  ")
+		sb.WriteString(renderPrimitive(v))
+		sb.WriteString(",\n")
+	}
+	sb.WriteString(indent)
+	sb.WriteString("]")
+	return sb.String()
+}
+
+func renderMap(val map[string]any, indent string) string {
+	if len(val) == 0 {
+		return "{}"
+	}
+
+	keys := make([]string, 0, len(val))
+	for k := range val {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	var sb strings.Builder
+	sb.WriteString("{\n")
+	for _, k := range keys {
+		v := val[k]
+		if v == nil {
+			continue
+		}
+		sb.WriteString(renderAttributeLine(k, v, indent+"  "))
+	}
+	sb.WriteString(indent)
+	sb.WriteString("}")
+	return sb.String()
 }
 
 func parseStringPrimitive(input string) string {
@@ -121,57 +150,6 @@ func parseStringPrimitive(input string) string {
 		`, input)
 	}
 	return fmt.Sprintf("%q", input)
-}
-
-func isMapSlice(vars []any) bool {
-	if len(vars) == 0 {
-		return false
-	}
-	val := vars[0]
-	switch val.(type) {
-	case map[string]any:
-		return true
-	default:
-		return false
-	}
-}
-
-func renderSlice(vals []any) string {
-	if len(vals) == 0 {
-		return "[]"
-	}
-
-	val := vals[0]
-
-	switch t := val.(type) {
-	// if vals[0] is a map[string]interface this is a block, so render it as a map
-	case map[string]any:
-		return renderMap(t)
-	// otherwise its going to be just a list of primitives
-	default:
-		result := "[\n"
-		for _, v := range vals {
-			result = fmt.Sprintf("%s\t%v,\n", result, renderPrimitive(v))
-		}
-		result = fmt.Sprintf("%s]", result)
-		return result
-	}
-}
-
-func renderMap(val map[string]any) string {
-	if len(val) == 0 {
-		return "{}"
-	}
-
-	result := "{\n"
-	for k, v := range val {
-		if v == nil {
-			continue
-		}
-		result = fmt.Sprintf("%s\t%s = %s\n", result, k, renderPrimitive(v))
-	}
-	result = fmt.Sprintf("%s}", result)
-	return result
 }
 
 func escapeSpecialSequences(input string) string {
