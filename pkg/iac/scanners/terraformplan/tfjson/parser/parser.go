@@ -62,7 +62,7 @@ func (p *PlanFile) ToFS() (fs.FS, error) {
 	for _, r := range resources {
 		fileResources = append(fileResources, r.ToHCL())
 	}
-	fileContent := strings.Join(fileResources, "\n\n")
+	fileContent := strings.Join(fileResources, "\n")
 
 	rootFS := mapfs.New()
 	if err := rootFS.WriteVirtualFile(TerraformMainFile, []byte(fileContent), os.ModePerm); err != nil {

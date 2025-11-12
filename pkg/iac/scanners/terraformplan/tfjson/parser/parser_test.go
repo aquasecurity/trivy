@@ -1,4 +1,4 @@
-package json
+package parser_test
 
 import (
 	"io/fs"
@@ -11,10 +11,10 @@ import (
 )
 
 func Test_Parse_Plan_File(t *testing.T) {
-	planFile, err := parser.New().ParseFile("testdata/plan.json")
+	planFile, err := parser.New().ParseFile("../testdata/plan.json")
 	require.NoError(t, err)
-
 	assert.NotNil(t, planFile)
+
 	fsys, err := planFile.ToFS()
 	require.NoError(t, err)
 	assert.NotNil(t, fsys)
@@ -34,7 +34,6 @@ func Test_Parse_Plan_File(t *testing.T) {
   }
 }
 
-
 resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
   bucket = aws_s3_bucket.planbucket.id
   rule {
@@ -45,7 +44,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
     }
   }
 }
-
 
 resource "aws_security_group" "sg" {
   description = "Managed by Terraform"
