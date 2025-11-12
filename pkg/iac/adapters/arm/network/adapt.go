@@ -141,7 +141,7 @@ func adaptNetworkInterface(resource azure.Resource, deployment azure.Deployment)
 			if subnetID := ipConfig.GetMapValue("subnet").GetMapValue("id").AsStringValue("", resource.Metadata); subnetID.Value() != "" {
 				ni.SubnetID = subnetID
 			}
-			if publicIP := ipConfig.GetMapValue("publicIPAddress"); publicIP.IsNotNil() {
+			if publicIP := ipConfig.GetMapValue("publicIPAddress"); !publicIP.IsNull() {
 				ni.HasPublicIP = iacTypes.Bool(true, resource.Metadata)
 				if publicIPID := publicIP.GetMapValue("id").AsStringValue("", resource.Metadata); publicIPID.Value() != "" {
 					ni.PublicIPAddress = publicIPID
