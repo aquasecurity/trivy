@@ -3,6 +3,7 @@ package mod
 import (
 	"sort"
 	"testing"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -345,6 +346,8 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 
 			// Set GOPATH fs.FS for testing
 			ma := a.(*gomodAnalyzer)
+			// Use empty fs.FS to simulate no GOPATH scenario
+			ma.gopathFS = fstest.MapFS{}
 			if tt.gopath {
 				ma.gopathFS = gopathFS
 			}
