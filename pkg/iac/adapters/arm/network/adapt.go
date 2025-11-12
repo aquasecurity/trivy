@@ -150,15 +150,8 @@ func adaptNetworkInterface(resource azure.Resource, deployment azure.Deployment)
 		}
 	}
 
-	if nsgID := resource.Properties.GetMapValue("networkSecurityGroup").GetMapValue("id").AsStringValue("", resource.Metadata); nsgID.Value() != "" {
-		// Try to find the referenced NSG in the deployment
-		for _, nsgResource := range deployment.GetResourcesByType("Microsoft.Network/networkSecurityGroups") {
-			if nsgResource.ID() == nsgID.Value() {
-				ni.SecurityGroups = []network.SecurityGroup{adaptSecurityGroup(nsgResource, deployment)}
-				break
-			}
-		}
-	}
+	// Note: SecurityGroups are not resolved for ARM templates as related resource search
+	// is not yet implemented for ARM (parser cannot evaluate expressions/references)
 
 	return ni
 }
