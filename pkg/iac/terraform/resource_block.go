@@ -17,28 +17,22 @@ type PlanBlock struct {
 	Type       string
 	Name       string
 	BlockType  string
-	Blocks     []PlanBlock
+	Blocks     []*PlanBlock
 	Attributes map[string]any
 }
 
-// TODO: unused
-func NewPlanBlock(blockType, resourceType, resourceName string) *PlanBlock {
-	if blockType == "managed" {
-		blockType = "resource"
+func (pb *PlanBlock) GetOrCreateBlock(name string) *PlanBlock {
+	for _, cb := range pb.Blocks {
+		if cb.Name == name {
+			return cb
+		}
 	}
-
-	return &PlanBlock{
-		Type:       resourceType,
-		Name:       resourceName,
-		BlockType:  blockType,
-		Blocks:     []PlanBlock{},
+	newChildBlock := &PlanBlock{
+		Name:       name,
 		Attributes: make(map[string]any),
 	}
-}
-
-func (rb *PlanBlock) HasAttribute(attribute string) bool {
-	_, exists := rb.Attributes[attribute]
-	return exists
+	pb.Blocks = append(pb.Blocks, newChildBlock)
+	return newChildBlock
 }
 
 func (rb *PlanBlock) ToHCL() string {

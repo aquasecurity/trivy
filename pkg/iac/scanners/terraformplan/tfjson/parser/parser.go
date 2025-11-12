@@ -9,12 +9,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/samber/lo"
-
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
+
+const TerraformMainFile = "main.tf"
 
 type Parser struct {
 	logger *log.Logger
@@ -53,7 +53,7 @@ func (p *Parser) Parse(reader io.Reader) (*PlanFile, error) {
 }
 
 func (p *PlanFile) ToFS() (fs.FS, error) {
-	resources, err := getResources(p.PlannedValues.RootModule, p.ResourceChanges, p.Configuration)
+	resources, err := buildPlanBlocks(p.PlannedValues.RootModule, p.ResourceChanges, p.Configuration)
 	if err != nil {
 		return nil, err
 	}
@@ -65,41 +65,28 @@ func (p *PlanFile) ToFS() (fs.FS, error) {
 	fileContent := strings.Join(fileResources, "\n\n")
 
 	rootFS := mapfs.New()
-	if err := rootFS.WriteVirtualFile("main.tf", []byte(fileContent), os.ModePerm); err != nil {
+	if err := rootFS.WriteVirtualFile(TerraformMainFile, []byte(fileContent), os.ModePerm); err != nil {
 		return nil, err
 	}
 	return rootFS, nil
-
 }
 
-func getResources(module Module, resourceChanges []ResourceChange, configuration Configuration) ([]terraform.PlanBlock, error) {
-	var resources []terraform.PlanBlock
+func buildPlanBlocks(module Module, resourceChanges []ResourceChange, configuration Configuration) ([]*terraform.PlanBlock, error) {
+	var resources []*terraform.PlanBlock
 	for _, r := range module.Resources {
-		resourceName := r.Name
-		if strings.HasPrefix(r.Address, "module.") {
-			hashable := strings.TrimSuffix(strings.Split(r.Address, fmt.Sprintf(".%s.", r.Type))[0], ".data")
-			/* #nosec */
-			hash := fmt.Sprintf("%x", md5.Sum([]byte(hashable)))
-			resourceName = fmt.Sprintf("%s_%s", r.Name, hash)
-		}
-
-		resourceConfig := getConfiguration(r.Address, configuration.RootModule)
-		schema := make(BlockSchema)
-		if resourceConfig != nil {
-			schema = schemaForBlock(r, resourceConfig.Expressions)
-		}
-
+		resourceExprs := getConfiguration(r.Address, configuration.RootModule)
+		schema := schemaForBlock(r, resourceExprs)
 		changes := getValues(r.Address, resourceChanges)
 		resource := decodeBlock(schema, changes.After)
 		// fill top-level block fileds
-		resource.BlockType = lo.Ternary(r.Mode == "managed", "resource", r.Mode)
+		resource.BlockType = r.BlockType()
 		resource.Type = r.Type
-		resource.Name = resourceName
+		resource.Name = moduleResourceName(r.Address, r.Type, r.Name)
 		resources = append(resources, resource)
 	}
 
 	for _, m := range module.ChildModules {
-		cr, err := getResources(m.Module, resourceChanges, configuration)
+		cr, err := buildPlanBlocks(m.Module, resourceChanges, configuration)
 		if err != nil {
 			return nil, err
 		}
@@ -109,46 +96,71 @@ func getResources(module Module, resourceChanges []ResourceChange, configuration
 	return resources, nil
 }
 
-func decodeBlock(schema BlockSchema, rawBlock map[string]any) terraform.PlanBlock {
-	block := terraform.PlanBlock{
+func decodeBlock(schema BlockSchema, rawBlock map[string]any) *terraform.PlanBlock {
+	block := &terraform.PlanBlock{
 		Attributes: make(map[string]any),
 	}
 
 	for k, child := range rawBlock {
-		childSchema := schema[k]
-		switch t := child.(type) {
-		case []any:
-			if childSchema != nil {
-				switch childSchema.Type {
-				case Attribute:
-					block.Attributes[k] = decodeAttribute(childSchema, child)
-				case Block:
-					nestedBlocks := decodeNestedBlocks(childSchema, k, t)
-					block.Blocks = append(block.Blocks, nestedBlocks...)
-				}
-			} else {
-				// just attribute
-				block.Attributes[k] = t
-			}
-		default:
-			if childSchema != nil {
-				switch childSchema.Type {
-				case Attribute:
-					block.Attributes[k] = decodeAttribute(childSchema, child)
-				case Block:
-					nestedBlocks := decodeNestedBlocks(childSchema, k, []any{child})
-					block.Blocks = append(block.Blocks, nestedBlocks...)
-				}
-			} else {
-				block.Attributes[k] = child
-			}
-		}
+		handleChild(block, k, child, schema[k])
 	}
+
+	populateReferences(schema, block)
 	return block
 }
 
-func decodeNestedBlocks(schema *SchemaNode, name string, v []any) []terraform.PlanBlock {
-	nestedBlocks := make([]terraform.PlanBlock, 0, len(v))
+func handleChild(block *terraform.PlanBlock, k string, child any, schema *SchemaNode) {
+	switch {
+	case schema == nil:
+		appendBlockOrAttribute(block, k, child)
+	case schema.Type == AttributeNode:
+		appendBlockOrAttribute(block, k, decodeAttribute(schema, child))
+	case schema.Type == BlockNode:
+		nestedBlocks := decodeNestedBlocks(schema, k, normalizeToSlice(child))
+		block.Blocks = append(block.Blocks, nestedBlocks...)
+	}
+}
+
+func normalizeToSlice(v any) []any {
+	if s, ok := v.([]any); ok {
+		return s
+	}
+	return []any{v}
+}
+
+func appendBlockOrAttribute(block *terraform.PlanBlock, name string, value any) {
+	if s, ok := value.([]any); ok && len(s) > 0 {
+		if m, ok := s[0].(map[string]any); ok {
+			block.Blocks = append(block.Blocks, &terraform.PlanBlock{
+				Name:       name,
+				Attributes: m,
+			})
+			return
+		}
+	}
+	block.Attributes[name] = value
+}
+
+func populateReferences(schema BlockSchema, block *terraform.PlanBlock) {
+	for k, childNodeSchema := range schema {
+		switch childNodeSchema.Type {
+		case BlockNode:
+			cb := block.GetOrCreateBlock(k)
+			for _, childrenBlockChema := range childNodeSchema.Children {
+				populateReferences(childrenBlockChema, cb)
+			}
+		case AttributeNode:
+			if ref, ok := childNodeSchema.Value.(terraform.PlanReference); ok {
+				if _, exists := block.Attributes[k]; !exists {
+					block.Attributes[k] = ref
+				}
+			}
+		}
+	}
+}
+
+func decodeNestedBlocks(schema *SchemaNode, name string, v []any) []*terraform.PlanBlock {
+	nestedBlocks := make([]*terraform.PlanBlock, 0, len(v))
 	for i, el := range v {
 		m, ok := el.(map[string]any)
 		if !ok {
@@ -177,69 +189,88 @@ func decodeAttribute(schema *SchemaNode, rawAttr any) any {
 	return rawAttr
 }
 
-func unpackConfigurationValue(val any, r Resource) (any, bool) {
-	if t, ok := val.(map[string]any); ok {
-		for k, v := range t {
-			switch k {
-			case "references":
-				reference := v.([]any)[0].(string)
-				if strings.HasPrefix(r.Address, "module.") {
-					hashable := strings.TrimSuffix(strings.Split(r.Address, fmt.Sprintf(".%s.", r.Type))[0], ".data")
-					/* #nosec */
-					hash := fmt.Sprintf("%x", md5.Sum([]byte(hashable)))
-
-					parts := strings.Split(reference, ".")
-					var rejoin []string
-
-					name := parts[1]
-					remainder := parts[2:]
-					if parts[0] == "data" {
-						rejoin = append(rejoin, parts[:2]...)
-						name = parts[2]
-						remainder = parts[3:]
-					} else {
-						rejoin = append(rejoin, parts[:1]...)
-					}
-
-					rejoin = append(rejoin, fmt.Sprintf("%s_%s", name, hash))
-					rejoin = append(rejoin, remainder...)
-
-					reference = strings.Join(rejoin, ".")
-				}
-				return terraform.PlanReference{Value: reference}, false
-			case "constant_value":
-				return v, false
+func unpackConfigurationValue(val map[string]any, r Resource) any {
+	for k, v := range val {
+		switch k {
+		case "references":
+			s, ok := v.([]any)
+			if !ok || len(s) == 0 {
+				return terraform.PlanReference{}
 			}
-		}
-	}
 
-	return nil, false
-}
-
-func getConfiguration(address string, configuration ConfigurationModule) *ConfigurationResource {
-
-	workingAddress := address
-	var moduleParts []string
-	for strings.HasPrefix(workingAddress, "module.") {
-		workingAddressParts := strings.Split(workingAddress, ".")
-		moduleParts = append(moduleParts, workingAddressParts[1])
-		workingAddress = strings.Join(workingAddressParts[2:], ".")
-	}
-
-	workingModule := configuration
-	for _, moduleName := range moduleParts {
-		if module, ok := workingModule.ModuleCalls[moduleName]; ok {
-			workingModule = module.Module
-		}
-	}
-
-	for _, resource := range workingModule.Resources {
-		if resource.Address == workingAddress {
-			return &resource
+			ref, ok := s[0].(string)
+			if !ok {
+				return terraform.PlanReference{}
+			}
+			return parseAttributeReference(r.Address, r.Type, ref)
+		case "constant_value":
+			return v
 		}
 	}
 
 	return nil
+}
+
+// parseAttributeReference parses an attribute reference string and returns
+// a PlanReference. The reference may point to another resource and is adjusted
+// according to Terraform address rules.
+func parseAttributeReference(rAddress, rType, reference string) terraform.PlanReference {
+	parts := strings.Split(reference, ".")
+	nameIdx := 1
+	if parts[0] == "data" {
+		nameIdx = 2
+	}
+	parts[nameIdx] = moduleResourceName(rAddress, rType, parts[nameIdx])
+	reference = strings.Join(parts, ".")
+	return terraform.PlanReference{Value: reference}
+}
+
+// moduleResourceName returns the resource name with a module hash if the resource
+// is inside a Terraform module. Otherwise, it returns the original name.
+func moduleResourceName(rAddress, rType, name string) string {
+	if !strings.HasPrefix(rAddress, "module.") {
+		return name
+	}
+
+	hashable := strings.TrimSuffix(strings.Split(rAddress, fmt.Sprintf(".%s.", rType))[0], ".data")
+	/* #nosec */
+	hash := fmt.Sprintf("%x", md5.Sum([]byte(hashable)))
+	return fmt.Sprintf("%s_%s", name, hash)
+}
+
+func getConfiguration(address string, configuration ConfigurationModule) ResourceExpressions {
+	moduleParts, resourceAddress := splitModuleAddress(address)
+
+	for _, moduleName := range moduleParts {
+		if module, ok := configuration.ModuleCalls[moduleName]; ok {
+			configuration = module.Module
+		}
+	}
+
+	for _, resource := range configuration.Resources {
+		if resource.Address == resourceAddress {
+			return resource.Expressions
+		}
+	}
+
+	return make(ResourceExpressions)
+}
+
+// splitModuleAddress splits a Terraform address into module parts and the final resource address.
+// For example: "module.network.module.subnet.aws_subnet.this[0]" =>
+// moduleParts: ["network", "subnet"], resourceAddress: "aws_subnet.this[0]"
+func splitModuleAddress(address string) (moduleParts []string, resourceAddress string) {
+	resourceAddress = address
+	for strings.HasPrefix(resourceAddress, "module.") {
+		parts := strings.Split(resourceAddress, ".")
+		if len(parts) > 3 {
+			moduleParts = append(moduleParts, parts[1])
+			resourceAddress = strings.Join(parts[2:], ".")
+		} else {
+			break
+		}
+	}
+	return
 }
 
 func getValues(address string, resourceChange []ResourceChange) *ResourceChange {
@@ -254,19 +285,27 @@ func getValues(address string, resourceChange []ResourceChange) *ResourceChange 
 type NodeType = int
 
 const (
-	Attribute NodeType = iota
-	Block
+	AttributeNode NodeType = iota
+	BlockNode
 )
 
 type BlockSchema = map[string]*SchemaNode
 
+// SchemaNode represents a node in the Terraform resource schema.
 type SchemaNode struct {
-	Type     NodeType
-	Children []BlockSchema // only for blocks
-	Value    any           // only for attributes, maybe null
+	// Type specifies whether the node is a Block or an Attribute.
+	Type NodeType
+
+	// Only used for Block nodes, contains nested BlockSchemas.
+	Children []BlockSchema
+
+	// Only used for Attribute nodes.
+	// Can be nil, a raw Go value (number, bool, string), or a PlanReference
+	// if the attribute refers to another resource.
+	Value any
 }
 
-func schemaForBlock(r Resource, expressions map[string]any) BlockSchema {
+func schemaForBlock(r Resource, expressions ResourceExpressions) BlockSchema {
 	schema := make(map[string]*SchemaNode)
 	for n, expr := range expressions {
 		nodeSchema := schemaForExpression(r, expr)
@@ -283,15 +322,15 @@ func schemaForExpression(r Resource, expr any) *SchemaNode {
 		attrKeys := []string{"constant_value", "references"}
 		for _, k := range attrKeys {
 			if _, exists := v[k]; exists {
-				attrVal, _ := unpackConfigurationValue(v, r)
+				attrVal := unpackConfigurationValue(v, r)
 				return &SchemaNode{
-					Type:  Attribute,
+					Type:  AttributeNode,
 					Value: attrVal,
 				}
 			}
 		}
 		return &SchemaNode{
-			Type:     Block,
+			Type:     BlockNode,
 			Children: []BlockSchema{schemaForBlock(r, v)},
 		}
 	case []any:
@@ -302,7 +341,7 @@ func schemaForExpression(r Resource, expr any) *SchemaNode {
 			}
 		}
 		return &SchemaNode{
-			Type:     Block,
+			Type:     BlockNode,
 			Children: children,
 		}
 	}

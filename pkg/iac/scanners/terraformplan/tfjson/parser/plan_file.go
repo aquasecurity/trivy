@@ -10,14 +10,23 @@ type Resource struct {
 	SchemaVersion int    `json:"schema_version"`
 }
 
+func (r Resource) BlockType() string {
+	if r.Mode == "managed" {
+		return "resource"
+	}
+	return r.Mode
+}
+
 type ResourceChange struct {
 	Resource
 	Change `json:"change"`
 }
 
+type ResourceExpressions map[string]any
+
 type ConfigurationResource struct {
 	Resource
-	Expressions map[string]any `json:"expressions"`
+	Expressions ResourceExpressions `json:"expressions"`
 }
 
 type Change struct {
