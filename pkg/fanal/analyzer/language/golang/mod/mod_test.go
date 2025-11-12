@@ -3,6 +3,7 @@ package mod
 import (
 	"sort"
 	"testing"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -335,11 +336,6 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 	// Load GOPATH fixture once as fs.FS (represents $GOPATH/pkg/mod)
 	gopathFS := testutil.TxtarToFS(t, gopathFixture)
 
-	// We will use GOPATH dir as fs got from txtar in test case if needed.
-	// So, unset GOPATH env to avoid interference.
-	// e.g. when PC contains actual GOPATH modules
-	t.Setenv("GOPATH", "non-existent-path")
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Load test case txtar as fs.FS
@@ -350,6 +346,8 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 
 			// Set GOPATH fs.FS for testing
 			ma := a.(*gomodAnalyzer)
+			// Use empty fs.FS to simulate no GOPATH scenario
+			ma.gopathFS = fstest.MapFS{}
 			if tt.gopath {
 				ma.gopathFS = gopathFS
 			}
