@@ -22,6 +22,9 @@ debug: false
 # Same as '--insecure'
 insecure: false
 
+# Same as '--no-color'
+no-color: false
+
 # Same as '--quiet'
 quiet: false
 
