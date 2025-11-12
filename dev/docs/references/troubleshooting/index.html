@@ -9213,11 +9213,23 @@ analyze<span class="w"> </span>error:<span class="w"> </span>timeout:<span class
 <p><code>TRIVY_INSECURE</code> can be used to allow insecure connections to a container registry when using SSL.</p>
 <div class="highlight"><pre><span></span><code>$ TRIVY_INSECURE=true trivy image [YOUR_IMAGE]
 </code></pre></div>
-<p>On Unix systems other than macOS, you can specify the location of your certificate using <code>SSL_CERT_FILE</code> or <code>SSL_CERT_DIR</code> environment variables.</p>
-<div class="highlight"><pre><span></span><code>$ SSL_CERT_FILE=/path/to/cert trivy image [YOUR_IMAGE]
+<p>If you need to trust a custom CA certificate, you can provide a PEM-encoded bundle.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Unix (except macOS)</label><label for="__tabbed_1_2">All systems</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>You can specify the location of your certificate using the <code>SSL_CERT_FILE</code> or <code>SSL_CERT_DIR</code> environment variables.</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span><span class="nv">SSL_CERT_FILE</span><span class="o">=</span>/path/to/ca.pem<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span><span class="o">[</span>YOUR_IMAGE<span class="o">]</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>$ SSL_CERT_DIR=/path/to/certs trivy image [YOUR_IMAGE]
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span><span class="nv">SSL_CERT_DIR</span><span class="o">=</span>/path/to/certs<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span><span class="o">[</span>YOUR_IMAGE<span class="o">]</span>
 </code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Use the <code>--cacert</code> flag to point Trivy to a PEM-encoded CA certificate file, regardless of the operating system.</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--cacert<span class="w"> </span>/path/to/ca.pem<span class="w"> </span><span class="o">[</span>YOUR_IMAGE<span class="o">]</span>
+</code></pre></div>
+</div>
+</div>
+</div>
 <h3 id="github-rate-limiting">GitHub Rate limiting<a class="headerlink" href="#github-rate-limiting" title="Permanent link">&para;</a></h3>
 <p>Trivy uses GitHub API for <a href="../../supply-chain/vex/repo/">VEX repositories</a>.</p>
 <div class="admonition error">
