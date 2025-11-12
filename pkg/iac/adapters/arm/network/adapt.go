@@ -102,7 +102,7 @@ func adaptNetworkWatcherFlowLogs(deployment azure.Deployment) (flowLogs []networ
 func adaptNetworkWatcherFlowLog(resource azure.Resource) network.NetworkWatcherFlowLog {
 	enabled := resource.Properties.GetMapValue("enabled").AsBoolValue(true, resource.Metadata)
 	retentionPolicy := resource.Properties.GetMapValue("retentionPolicy")
-	
+
 	return network.NetworkWatcherFlowLog{
 		Metadata: resource.Metadata,
 		Enabled:  enabled,
