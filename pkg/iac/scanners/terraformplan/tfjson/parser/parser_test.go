@@ -10,7 +10,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson/parser"
 )
 
-func Test_Parse_Plan_File(t *testing.T) {
+func TestParser_ParseFile(t *testing.T) {
 	planFile, err := parser.New().ParseFile("../testdata/plan.json")
 	require.NoError(t, err)
 	assert.NotNil(t, planFile)

@@ -2,6 +2,7 @@ package terraform
 
 import (
 	"fmt"
+	"io"
 	"sort"
 	"strings"
 )
@@ -32,18 +33,47 @@ func (pb *PlanBlock) GetOrCreateBlock(name string) *PlanBlock {
 	return newChildBlock
 }
 
-func (pb *PlanBlock) ToHCL() string {
-	return pb.render("")
+func (pb *PlanBlock) ToHCL(w io.Writer) {
+	r := &hclRenderer{
+		w:      w,
+		indent: "",
+	}
+	r.renderBlock(pb)
 }
 
-func (b *PlanBlock) render(indent string) string {
-	var sb strings.Builder
+type hclRenderer struct {
+	w      io.Writer
+	indent string
+}
 
-	sb.WriteString(indent)
+func (r *hclRenderer) write(s string) {
+	fmt.Fprint(r.w, s)
+}
+
+func (r *hclRenderer) writeln(s string) {
+	fmt.Fprintln(r.w, s)
+}
+
+func (r *hclRenderer) writef(format string, args ...any) {
+	fmt.Fprintf(r.w, format, args...)
+}
+
+func (r *hclRenderer) incIndent() {
+	r.indent += "  "
+}
+
+func (r *hclRenderer) decIndent() {
+	if len(r.indent) >= 2 {
+		r.indent = r.indent[:len(r.indent)-2]
+	}
+}
+
+func (r *hclRenderer) renderBlock(b *PlanBlock) {
+	r.write(r.indent)
 	if b.BlockType != "" && b.Type != "" && b.Name != "" {
-		sb.WriteString(fmt.Sprintf("%s \"%s\" \"%s\" {\n", b.BlockType, b.Type, b.Name))
+		r.writef("%s \"%s\" \"%s\" {\n", b.BlockType, b.Type, b.Name)
 	} else {
-		sb.WriteString(fmt.Sprintf("%s {\n", b.Name))
+		r.writef("%s {\n", b.Name)
 	}
 
 	keys := make([]string, 0, len(b.Attributes))
@@ -57,66 +87,72 @@ func (b *PlanBlock) render(indent string) string {
 		if value == nil {
 			continue
 		}
-		sb.WriteString(renderAttributeLine(key, value, indent+"  "))
+		r.renderAttributeLine(key, value)
 	}
 
+	sort.Slice(b.Blocks, func(i, j int) bool {
+		return b.Blocks[i].Name < b.Blocks[j].Name
+	})
+
+	r.incIndent()
 	for _, child := range b.Blocks {
-		sb.WriteString(child.render(indent + "  "))
+		r.renderBlock(child)
 	}
-
-	sb.WriteString(indent)
-	sb.WriteString("}\n")
-
-	return sb.String()
+	r.decIndent()
+	r.writeln(r.indent + "}")
 }
 
-func renderAttributeLine(key string, val any, indent string) string {
-	return fmt.Sprintf("%s%s = %s\n", indent, key, renderAttributeValue(val, indent))
+func (r *hclRenderer) renderAttributeLine(key string, val any) {
+	r.write(fmt.Sprintf("%s%s = ", r.indent+"  ", key))
+	r.renderAttributeValue(val)
+	r.writeln("")
 }
 
-func renderAttributeValue(val any, indent string) string {
+func (r *hclRenderer) renderAttributeValue(val any) {
 	switch t := val.(type) {
 	case map[string]any:
-		return renderMap(t, indent)
+		r.renderMap(t)
 	case []any:
-		return renderSlice(t, indent)
+		r.renderSlice(t)
 	default:
-		return renderPrimitive(val)
+		renderPrimitive(r.w, val)
 	}
 }
 
-func renderPrimitive(val any) string {
+func renderPrimitive(w io.Writer, val any) {
 	switch t := val.(type) {
 	case PlanReference:
-		return fmt.Sprintf("%v", t.Value)
+		fmt.Fprint(w, t.Value)
 	case string:
-		return parseStringPrimitive(t)
+		fmt.Fprint(w, parseStringPrimitive(t))
 	default:
-		return fmt.Sprintf("%#v", t)
+		fmt.Fprintf(w, "%#v", t)
 	}
 }
 
-func renderSlice(vals []any, indent string) string {
+func (r *hclRenderer) renderSlice(vals []any) {
 	if len(vals) == 0 {
-		return "[]"
+		r.write("[]")
+		return
 	}
 
-	var sb strings.Builder
-	sb.WriteString("[\n")
+	r.writeln("[")
+
+	r.incIndent()
+	defer r.decIndent()
+
 	for _, v := range vals {
-		sb.WriteString(indent)
-		sb.WriteString("  ")
-		sb.WriteString(renderPrimitive(v))
-		sb.WriteString(",\n")
+		r.write(r.indent + "  ")
+		renderPrimitive(r.w, v)
+		r.writeln(",")
 	}
-	sb.WriteString(indent)
-	sb.WriteString("]")
-	return sb.String()
+	r.write(r.indent + "]")
 }
 
-func renderMap(val map[string]any, indent string) string {
+func (r *hclRenderer) renderMap(val map[string]any) {
 	if len(val) == 0 {
-		return "{}"
+		r.write("{}")
+		return
 	}
 
 	keys := make([]string, 0, len(val))
@@ -125,29 +161,25 @@ func renderMap(val map[string]any, indent string) string {
 	}
 	sort.Strings(keys)
 
-	var sb strings.Builder
-	sb.WriteString("{\n")
+	r.writeln("{")
+	r.incIndent()
+	defer r.decIndent()
+
 	for _, k := range keys {
 		v := val[k]
 		if v == nil {
 			continue
 		}
-		sb.WriteString(renderAttributeLine(k, v, indent+"  "))
+
+		r.renderAttributeLine(k, v)
 	}
-	sb.WriteString(indent)
-	sb.WriteString("}")
-	return sb.String()
+	r.write(r.indent + "}")
 }
 
 func parseStringPrimitive(input string) string {
-	// we must escape templating
-	// ref: https://developer.hashicorp.com/terraform/language/expressions/strings#escape-sequences-1
 	input = escapeSpecialSequences(input)
 	if strings.Contains(input, "\n") {
-		return fmt.Sprintf(`<<EOF
-		%s
-		EOF
-		`, input)
+		return fmt.Sprintf("<<EOF\n%s\nEOF", input)
 	}
 	return fmt.Sprintf("%q", input)
 }

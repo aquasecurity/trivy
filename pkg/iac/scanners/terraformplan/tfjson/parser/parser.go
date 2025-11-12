@@ -58,17 +58,20 @@ func (p *PlanFile) ToFS() (fs.FS, error) {
 		return nil, err
 	}
 
-	fileResources := make([]string, 0, len(resources))
-	for _, r := range resources {
-		fileResources = append(fileResources, r.ToHCL())
+	var sb strings.Builder
+	for i, r := range resources {
+		if i > 0 {
+			sb.WriteByte('\n')
+		}
+		r.ToHCL(&sb)
 	}
-	fileContent := strings.Join(fileResources, "\n")
 
-	rootFS := mapfs.New()
-	if err := rootFS.WriteVirtualFile(TerraformMainFile, []byte(fileContent), os.ModePerm); err != nil {
+	content := sb.String()
+	fsys := mapfs.New()
+	if err := fsys.WriteVirtualFile(TerraformMainFile, []byte(content), os.ModePerm); err != nil {
 		return nil, err
 	}
-	return rootFS, nil
+	return fsys, nil
 }
 
 func buildPlanBlocks(module Module, resourceChanges []ResourceChange, configuration Configuration) ([]*terraform.PlanBlock, error) {
