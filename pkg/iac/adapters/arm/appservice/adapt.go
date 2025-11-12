@@ -38,9 +38,31 @@ func adaptFunctionApp(resource azure.Resource) appservice.FunctionApp {
 }
 
 func adaptService(resource azure.Resource) appservice.Service {
+	siteConfig := resource.Properties.GetMapValue("siteConfig")
+	httpsOnly := resource.Properties.GetMapValue("httpsOnly").AsBoolValue(false, resource.Properties.GetMetadata())
+	
+	enableHTTP2Val := iacTypes.Bool(false, resource.Metadata)
+	// minTlsVersion can be at root level (legacy) or in siteConfig (official)
+	minTLSVersionVal := resource.Properties.GetMapValue("minTlsVersion").AsStringValue("", resource.Properties.GetMetadata())
+	phpVersionVal := iacTypes.String("", resource.Metadata)
+	pythonVersionVal := iacTypes.String("", resource.Metadata)
+	ftpsStateVal := iacTypes.String("", resource.Metadata)
+	
+	if siteConfig.IsNotNil() {
+		enableHTTP2Val = siteConfig.GetMapValue("http2Enabled").AsBoolValue(false, siteConfig.GetMetadata())
+		// Prefer siteConfig.minTlsVersion if it exists (official location)
+		if siteConfigMinTLS := siteConfig.GetMapValue("minTlsVersion"); siteConfigMinTLS.IsNotNil() {
+			minTLSVersionVal = siteConfigMinTLS.AsStringValue("", siteConfig.GetMetadata())
+		}
+		phpVersionVal = siteConfig.GetMapValue("phpVersion").AsStringValue("", siteConfig.GetMetadata())
+		pythonVersionVal = siteConfig.GetMapValue("pythonVersion").AsStringValue("", siteConfig.GetMetadata())
+		ftpsStateVal = siteConfig.GetMapValue("ftpsState").AsStringValue("", siteConfig.GetMetadata())
+	}
+
 	return appservice.Service{
 		Metadata:         resource.Metadata,
 		EnableClientCert: resource.Properties.GetMapValue("clientCertEnabled").AsBoolValue(false, resource.Properties.GetMetadata()),
+		HTTPSOnly:        httpsOnly,
 		Identity: struct{ Type iacTypes.StringValue }{
 			Type: resource.Properties.GetMapValue("identity").GetMapValue("type").AsStringValue("", resource.Properties.GetMetadata()),
 		},
@@ -50,9 +72,15 @@ func adaptService(resource azure.Resource) appservice.Service {
 		Site: struct {
 			EnableHTTP2       iacTypes.BoolValue
 			MinimumTLSVersion iacTypes.StringValue
+			PHPVersion        iacTypes.StringValue
+			PythonVersion     iacTypes.StringValue
+			FTPSState         iacTypes.StringValue
 		}{
-			EnableHTTP2:       resource.Properties.GetMapValue("httpsOnly").AsBoolValue(false, resource.Properties.GetMetadata()),
-			MinimumTLSVersion: resource.Properties.GetMapValue("minTlsVersion").AsStringValue("", resource.Properties.GetMetadata()),
+			EnableHTTP2:       enableHTTP2Val,
+			MinimumTLSVersion: minTLSVersionVal,
+			PHPVersion:        phpVersionVal,
+			PythonVersion:     pythonVersionVal,
+			FTPSState:         ftpsStateVal,
 		},
 	}
 }

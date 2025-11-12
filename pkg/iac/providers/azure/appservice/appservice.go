@@ -12,6 +12,7 @@ type AppService struct {
 type Service struct {
 	Metadata         iacTypes.Metadata
 	EnableClientCert iacTypes.BoolValue
+	HTTPSOnly        iacTypes.BoolValue
 	Identity         struct {
 		Type iacTypes.StringValue
 	}
@@ -21,6 +22,9 @@ type Service struct {
 	Site struct {
 		EnableHTTP2       iacTypes.BoolValue
 		MinimumTLSVersion iacTypes.StringValue
+		PHPVersion        iacTypes.StringValue
+		PythonVersion     iacTypes.StringValue
+		FTPSState         iacTypes.StringValue
 	}
 }
 

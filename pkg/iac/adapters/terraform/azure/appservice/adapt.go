@@ -39,6 +39,9 @@ func adaptService(resource *terraform.Block) appservice.Service {
 	enableClientCertAttr := resource.GetAttribute("client_cert_enabled")
 	enableClientCertVal := enableClientCertAttr.AsBoolValueOrDefault(false, resource)
 
+	httpsOnlyAttr := resource.GetAttribute("https_only")
+	httpsOnlyVal := httpsOnlyAttr.AsBoolValueOrDefault(false, resource)
+
 	identityBlock := resource.GetBlock("identity")
 	typeVal := iacTypes.String("", resource.GetMetadata())
 	if identityBlock.IsNotNil() {
@@ -56,17 +59,30 @@ func adaptService(resource *terraform.Block) appservice.Service {
 	siteBlock := resource.GetBlock("site_config")
 	enableHTTP2Val := iacTypes.Bool(false, resource.GetMetadata())
 	minTLSVersionVal := iacTypes.String("1.2", resource.GetMetadata())
+	phpVersionVal := iacTypes.String("", resource.GetMetadata())
+	pythonVersionVal := iacTypes.String("", resource.GetMetadata())
+	ftpsStateVal := iacTypes.String("", resource.GetMetadata())
 	if siteBlock.IsNotNil() {
 		enableHTTP2Attr := siteBlock.GetAttribute("http2_enabled")
 		enableHTTP2Val = enableHTTP2Attr.AsBoolValueOrDefault(false, siteBlock)
 
 		minTLSVersionAttr := siteBlock.GetAttribute("min_tls_version")
 		minTLSVersionVal = minTLSVersionAttr.AsStringValueOrDefault("1.2", siteBlock)
+
+		phpVersionAttr := siteBlock.GetAttribute("php_version")
+		phpVersionVal = phpVersionAttr.AsStringValueOrDefault("", siteBlock)
+
+		pythonVersionAttr := siteBlock.GetAttribute("python_version")
+		pythonVersionVal = pythonVersionAttr.AsStringValueOrDefault("", siteBlock)
+
+		ftpsStateAttr := siteBlock.GetAttribute("ftps_state")
+		ftpsStateVal = ftpsStateAttr.AsStringValueOrDefault("", siteBlock)
 	}
 
 	return appservice.Service{
 		Metadata:         resource.GetMetadata(),
 		EnableClientCert: enableClientCertVal,
+		HTTPSOnly:        httpsOnlyVal,
 		Identity: struct{ Type iacTypes.StringValue }{
 			Type: typeVal,
 		},
@@ -76,9 +92,15 @@ func adaptService(resource *terraform.Block) appservice.Service {
 		Site: struct {
 			EnableHTTP2       iacTypes.BoolValue
 			MinimumTLSVersion iacTypes.StringValue
+			PHPVersion        iacTypes.StringValue
+			PythonVersion     iacTypes.StringValue
+			FTPSState         iacTypes.StringValue
 		}{
 			EnableHTTP2:       enableHTTP2Val,
 			MinimumTLSVersion: minTLSVersionVal,
+			PHPVersion:        phpVersionVal,
+			PythonVersion:     pythonVersionVal,
+			FTPSState:         ftpsStateVal,
 		},
 	}
 }
