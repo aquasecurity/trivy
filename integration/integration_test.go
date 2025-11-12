@@ -505,7 +505,7 @@ func overrideFingerprint(t *testing.T, want, got *types.Report) {
 	for i, result := range got.Results {
 		for j, vuln := range result.Vulnerabilities {
 			assert.NotEmptyf(t, vuln.Fingerprint, "Fingerprint is empty: %s", vuln.VulnerabilityID)
-			assert.Lenf(t, vuln.Fingerprint, 64, "Fingerprint should be 64 characters: %s", vuln.VulnerabilityID)
+			assert.Lenf(t, vuln.Fingerprint, 71, "Fingerprint should be 71 characters (sha256: + 64 hex chars): %s", vuln.VulnerabilityID)
 			// Do not compare Fingerprint as the artifactID varies between tests
 			got.Results[i].Vulnerabilities[j].Fingerprint = ""
 		}
