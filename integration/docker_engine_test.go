@@ -283,7 +283,7 @@ func TestDockerEngine(t *testing.T) {
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				// Image config fields were removed
-				override: overrideFuncs(overrideUID, overrideDockerRemovedFields, func(t *testing.T, want, got *types.Report) {
+				override: overrideFuncs(overrideUID, overrideFingerprint, overrideDockerRemovedFields, func(t *testing.T, want, got *types.Report) {
 					// Override ArtifactName to match the archive file path
 					got.ArtifactName = tt.input
 

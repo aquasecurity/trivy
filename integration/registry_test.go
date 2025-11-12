@@ -250,7 +250,7 @@ func TestRegistry(t *testing.T) {
 			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-				override: overrideFuncs(overrideUID, func(t *testing.T, want, got *types.Report) {
+				override: overrideFuncs(overrideUID, overrideFingerprint, func(t *testing.T, want, got *types.Report) {
 					// Exclude ArtifactID from comparison because registry tests use random ports
 					// (e.g., localhost:54321/alpine:3.10), which causes RepoTags and the calculated
 					// Artifact ID to vary on each test run.
