@@ -20,7 +20,7 @@ func Adapt(modules terraform.Modules) network.Network {
 			groups:  make(map[string]network.SecurityGroup),
 		}).adaptSecurityGroups(),
 		NetworkWatcherFlowLogs: adaptWatcherLogs(modules),
-		NetworkInterfaces:       adaptNetworkInterfaces(modules),
+		NetworkInterfaces:      adaptNetworkInterfaces(modules),
 	}
 }
 

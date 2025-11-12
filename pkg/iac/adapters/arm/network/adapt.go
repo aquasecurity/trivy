@@ -15,7 +15,7 @@ func Adapt(deployment azure.Deployment) network.Network {
 	return network.Network{
 		SecurityGroups:         adaptSecurityGroups(deployment),
 		NetworkWatcherFlowLogs: adaptNetworkWatcherFlowLogs(deployment),
-		NetworkInterfaces:       adaptNetworkInterfaces(deployment),
+		NetworkInterfaces:      adaptNetworkInterfaces(deployment),
 	}
 }
 
@@ -124,7 +124,7 @@ func adaptNetworkInterfaces(deployment azure.Deployment) []network.NetworkInterf
 	return networkInterfaces
 }
 
-func adaptNetworkInterface(resource azure.Resource, deployment azure.Deployment) network.NetworkInterface {
+func adaptNetworkInterface(resource azure.Resource, _ azure.Deployment) network.NetworkInterface {
 	ni := network.NetworkInterface{
 		Metadata:           resource.Metadata,
 		EnableIPForwarding: resource.Properties.GetMapValue("enableIPForwarding").AsBoolValue(false, resource.Metadata),
