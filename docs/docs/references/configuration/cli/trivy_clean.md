@@ -35,6 +35,7 @@ trivy clean [flags]
 ### Options inherited from parent commands
 
 ```
+      --cacert string             Path to PEM-encoded CA certificate file
       --cache-dir string          cache directory (default "/path/to/cache")
   -c, --config string             config path (default "trivy.yaml")
   -d, --debug                     debug mode

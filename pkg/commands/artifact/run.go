@@ -131,6 +131,7 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, targetKind TargetKi
 	// Set the default HTTP transport
 	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
 		Insecure:  cliOptions.Insecure,
+		CACerts:   cliOptions.CACerts,
 		Timeout:   cliOptions.Timeout,
 		TraceHTTP: cliOptions.TraceHTTP,
 	}))

@@ -29,6 +29,7 @@ trivy [global flags] command [flags] target
 ### Options
 
 ```
+      --cacert string             Path to PEM-encoded CA certificate file
       --cache-dir string          cache directory (default "/path/to/cache")
   -c, --config string             config path (default "trivy.yaml")
   -d, --debug                     debug mode
