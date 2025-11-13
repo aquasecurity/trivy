@@ -39,14 +39,13 @@ func adaptFunctionApp(resource azure.Resource) appservice.FunctionApp {
 
 func adaptService(resource azure.Resource) appservice.Service {
 	siteConfig := resource.Properties.GetMapValue("siteConfig")
-	httpsOnly := resource.Properties.GetMapValue("httpsOnly").AsBoolValue(false, resource.Properties.GetMetadata())
-
-	enableHTTP2Val := iacTypes.Bool(false, resource.Metadata)
-	// minTlsVersion can be at root level (legacy) or in siteConfig (official)
-	minTLSVersionVal := resource.Properties.GetMapValue("minTlsVersion").AsStringValue("", resource.Properties.GetMetadata())
-	phpVersionVal := iacTypes.String("", resource.Metadata)
-	pythonVersionVal := iacTypes.String("", resource.Metadata)
-	ftpsStateVal := iacTypes.String("", resource.Metadata)
+	return appservice.Service{
+	  Metadata:         resource.Metadata,
+	  ...
+	  Site: Site{
+	    EnableHTTP2: siteConfig.GetMapValue("http2Enabled").AsBoolValue(false, siteConfig.GetMetadata())
+	  }
+	}
 	
 	if !siteConfig.IsNull() {
 		enableHTTP2Val = siteConfig.GetMapValue("http2Enabled").AsBoolValue(false, siteConfig.GetMetadata())
