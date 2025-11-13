@@ -6,7 +6,7 @@
 
 ### Does Trivy support X?
 
-Check out the [Scanning coverage page](../docs/coverage/index.md).
+Check out the [Scanning coverage page](../guide/coverage/index.md).
 
 ### Is there a paid version of Trivy?
 
@@ -16,10 +16,10 @@ In addition check out the <https://aquasec.com> website for more information abo
 If you'd like to contact Aqua or request a demo, please use this form: <https://www.aquasec.com/demo>
 
 ### How to generate multiple reports?
-See [here](../docs/configuration/reporting.md#converting).
+See [here](../guide/configuration/reporting.md#converting).
 
 ### How to run Trivy under air-gapped environment?
-See [here](../docs/advanced/air-gap.md).
+See [here](../guide/advanced/air-gap.md).
 
 ### Why `trivy fs` and `trivy repo` does not scan JAR files for vulnerabilities?
-See [here](../docs/target/repository.md#rationale).
+See [here](../guide/target/repository.md#rationale).
