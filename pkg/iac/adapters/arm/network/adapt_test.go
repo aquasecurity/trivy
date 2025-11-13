@@ -35,7 +35,7 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: network.Network{
 				NetworkWatcherFlowLogs: []network.NetworkWatcherFlowLog{{
-					Enabled: types.BoolTest(true),
+					Enabled: types.BoolTest(false),
 					RetentionPolicy: network.RetentionPolicy{
 						Days:    types.IntTest(0),
 						Enabled: types.BoolTest(false),
@@ -98,7 +98,7 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: network.Network{
 				NetworkWatcherFlowLogs: []network.NetworkWatcherFlowLog{{
-					Enabled: types.BoolTest(true),
+					Enabled: types.BoolTest(false),
 					RetentionPolicy: network.RetentionPolicy{
 						Days:    types.IntTest(100),
 						Enabled: types.BoolTest(true),

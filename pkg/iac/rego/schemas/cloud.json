@@ -4721,34 +4721,6 @@
         }
       }
     },
-    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.compute.NetworkInterface": {
-      "type": "object",
-      "properties": {
-        "__defsec_metadata": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
-        },
-        "haspublicip": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
-        },
-        "publicipaddress": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
-        },
-        "securitygroups": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.network.SecurityGroup"
-          }
-        },
-        "subnetid": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
-        }
-      }
-    },
     "github.com.aquasecurity.trivy.pkg.iac.providers.azure.compute.OSProfileLinuxConfig": {
       "type": "object",
       "properties": {
@@ -4777,7 +4749,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.compute.NetworkInterface"
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.network.NetworkInterface"
           }
         }
       }
