@@ -19,13 +19,15 @@ type Service struct {
 	Authentication struct {
 		Enabled iacTypes.BoolValue
 	}
-	Site struct {
-		EnableHTTP2       iacTypes.BoolValue
-		MinimumTLSVersion iacTypes.StringValue
-		PHPVersion        iacTypes.StringValue
-		PythonVersion     iacTypes.StringValue
-		FTPSState         iacTypes.StringValue
-	}
+	Site Site
+}
+
+type Site struct {
+	EnableHTTP2       iacTypes.BoolValue
+	MinimumTLSVersion iacTypes.StringValue
+	PHPVersion        iacTypes.StringValue
+	PythonVersion     iacTypes.StringValue
+	FTPSState         iacTypes.StringValue
 }
 
 type FunctionApp struct {

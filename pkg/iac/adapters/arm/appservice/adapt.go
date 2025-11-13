@@ -38,15 +38,15 @@ func adaptFunctionApp(resource azure.Resource) appservice.FunctionApp {
 }
 
 func adaptService(resource azure.Resource) appservice.Service {
+	httpsOnly := resource.Properties.GetMapValue("httpsOnly").AsBoolValue(false, resource.Properties.GetMetadata())
+
 	siteConfig := resource.Properties.GetMapValue("siteConfig")
-	return appservice.Service{
-	  Metadata:         resource.Metadata,
-	  ...
-	  Site: Site{
-	    EnableHTTP2: siteConfig.GetMapValue("http2Enabled").AsBoolValue(false, siteConfig.GetMetadata())
-	  }
-	}
-	
+	enableHTTP2Val := iacTypes.Bool(false, resource.Properties.GetMetadata())
+	minTLSVersionVal := iacTypes.String("1.2", resource.Properties.GetMetadata())
+	phpVersionVal := iacTypes.String("", resource.Properties.GetMetadata())
+	pythonVersionVal := iacTypes.String("", resource.Properties.GetMetadata())
+	ftpsStateVal := iacTypes.String("", resource.Properties.GetMetadata())
+
 	if !siteConfig.IsNull() {
 		enableHTTP2Val = siteConfig.GetMapValue("http2Enabled").AsBoolValue(false, siteConfig.GetMetadata())
 		// Prefer siteConfig.minTlsVersion if it exists (official location)
@@ -68,13 +68,7 @@ func adaptService(resource azure.Resource) appservice.Service {
 		Authentication: struct{ Enabled iacTypes.BoolValue }{
 			Enabled: resource.Properties.GetMapValue("siteAuthSettings").GetMapValue("enabled").AsBoolValue(false, resource.Properties.GetMetadata()),
 		},
-		Site: struct {
-			EnableHTTP2       iacTypes.BoolValue
-			MinimumTLSVersion iacTypes.StringValue
-			PHPVersion        iacTypes.StringValue
-			PythonVersion     iacTypes.StringValue
-			FTPSState         iacTypes.StringValue
-		}{
+		Site: appservice.Site{
 			EnableHTTP2:       enableHTTP2Val,
 			MinimumTLSVersion: minTLSVersionVal,
 			PHPVersion:        phpVersionVal,

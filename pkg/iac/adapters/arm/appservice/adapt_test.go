@@ -66,13 +66,7 @@ func TestAdapt(t *testing.T) {
 					Authentication: struct{ Enabled types.BoolValue }{
 						Enabled: types.BoolTest(true),
 					},
-					Site: struct {
-						EnableHTTP2       types.BoolValue
-						MinimumTLSVersion types.StringValue
-						PHPVersion        types.StringValue
-						PythonVersion     types.StringValue
-						FTPSState         types.StringValue
-					}{
+					Site: appservice.Site{
 						EnableHTTP2:       types.BoolTest(true),
 						MinimumTLSVersion: types.StringTest("1.2"),
 						PHPVersion:        types.StringTest("8.1"),

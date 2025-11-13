@@ -48,13 +48,7 @@ func Test_adaptService(t *testing.T) {
 				Authentication: struct{ Enabled iacTypes.BoolValue }{
 					Enabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				},
-				Site: struct {
-					EnableHTTP2       iacTypes.BoolValue
-					MinimumTLSVersion iacTypes.StringValue
-					PHPVersion        iacTypes.StringValue
-					PythonVersion     iacTypes.StringValue
-					FTPSState         iacTypes.StringValue
-				}{
+				Site: appservice.Site{
 					EnableHTTP2:       iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 					MinimumTLSVersion: iacTypes.String("1.0", iacTypes.NewTestMetadata()),
 					PHPVersion:        iacTypes.String("", iacTypes.NewTestMetadata()),
@@ -78,13 +72,7 @@ func Test_adaptService(t *testing.T) {
 				Authentication: struct{ Enabled iacTypes.BoolValue }{
 					Enabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				},
-				Site: struct {
-					EnableHTTP2       iacTypes.BoolValue
-					MinimumTLSVersion iacTypes.StringValue
-					PHPVersion        iacTypes.StringValue
-					PythonVersion     iacTypes.StringValue
-					FTPSState         iacTypes.StringValue
-				}{
+				Site: appservice.Site{
 					EnableHTTP2:       iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					MinimumTLSVersion: iacTypes.String("1.2", iacTypes.NewTestMetadata()),
 					PHPVersion:        iacTypes.String("", iacTypes.NewTestMetadata()),
