@@ -142,8 +142,8 @@ func adaptWindowsVM(resource *terraform.Block, modules terraform.Modules) comput
 	}
 }
 
-func resolveNetworkInterfaces(resource *terraform.Block, modules terraform.Modules) []compute.NetworkInterface {
-	var networkInterfaces []compute.NetworkInterface
+func resolveNetworkInterfaces(resource *terraform.Block, modules terraform.Modules) []network.NetworkInterface {
+	var networkInterfaces []network.NetworkInterface
 
 	nicIDsAttr := resource.GetAttribute("network_interface_ids")
 	if nicIDsAttr.IsNil() {
@@ -152,51 +152,22 @@ func resolveNetworkInterfaces(resource *terraform.Block, modules terraform.Modul
 
 	for _, nicIDVal := range nicIDsAttr.AsStringValues() {
 		if referencedNIC, err := modules.GetReferencedBlock(nicIDsAttr, resource); err == nil {
-			ni := adaptNetworkInterface(referencedNIC, modules)
+			ni := anetwork.AdaptNetworkInterface(referencedNIC, modules)
 			networkInterfaces = append(networkInterfaces, ni)
 			continue
 		}
 
-		networkInterfaces = append(networkInterfaces, compute.NetworkInterface{
-			Metadata:        iacTypes.NewUnmanagedMetadata(),
-			SubnetID:        iacTypes.StringDefault("", nicIDVal.GetMetadata()),
-			SecurityGroups:  nil,
-			HasPublicIP:     iacTypes.BoolDefault(false, nicIDVal.GetMetadata()),
-			PublicIPAddress: iacTypes.StringDefault("", nicIDVal.GetMetadata()),
+		networkInterfaces = append(networkInterfaces, network.NetworkInterface{
+			Metadata:           iacTypes.NewUnmanagedMetadata(),
+			EnableIPForwarding: iacTypes.BoolDefault(false, nicIDVal.GetMetadata()),
+			SubnetID:           iacTypes.StringDefault("", nicIDVal.GetMetadata()),
+			SecurityGroups:     nil,
+			HasPublicIP:        iacTypes.BoolDefault(false, nicIDVal.GetMetadata()),
+			PublicIPAddress:    iacTypes.StringDefault("", nicIDVal.GetMetadata()),
 		})
 	}
 
 	return networkInterfaces
-}
-
-func adaptNetworkInterface(resource *terraform.Block, modules terraform.Modules) compute.NetworkInterface {
-	ni := compute.NetworkInterface{
-		Metadata:        resource.GetMetadata(),
-		SubnetID:        iacTypes.StringDefault("", resource.GetMetadata()),
-		SecurityGroups:  nil,
-		HasPublicIP:     iacTypes.BoolDefault(false, resource.GetMetadata()),
-		PublicIPAddress: iacTypes.StringDefault("", resource.GetMetadata()),
-	}
-
-	if nsgAttr := resource.GetAttribute("network_security_group_id"); nsgAttr.IsNotNil() {
-		if referencedNSG, err := modules.GetReferencedBlock(nsgAttr, resource); err == nil {
-			ni.SecurityGroups = []network.SecurityGroup{adaptSecurityGroupFromBlock(referencedNSG)}
-		}
-	}
-
-	ipConfigs := resource.GetBlocks("ip_configuration")
-	if len(ipConfigs) > 0 {
-		ipConfig := ipConfigs[0]
-		if subnetAttr := ipConfig.GetAttribute("subnet_id"); subnetAttr.IsNotNil() {
-			ni.SubnetID = subnetAttr.AsStringValueOrDefault("", ipConfig)
-		}
-
-		if publicIPAttr := ipConfig.GetAttribute("public_ip_address_id"); publicIPAttr.IsNotNil() {
-			ni.HasPublicIP = iacTypes.Bool(true, publicIPAttr.GetMetadata())
-		}
-	}
-
-	return ni
 }
 
 func adaptSecurityGroupFromBlock(resource *terraform.Block) network.SecurityGroup {

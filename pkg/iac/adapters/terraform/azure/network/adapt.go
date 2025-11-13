@@ -117,14 +117,14 @@ func adaptNetworkInterfaces(modules terraform.Modules) []network.NetworkInterfac
 
 	for _, module := range modules {
 		for _, resource := range module.GetResourcesByType("azurerm_network_interface") {
-			networkInterfaces = append(networkInterfaces, adaptNetworkInterface(resource, modules))
+			networkInterfaces = append(networkInterfaces, AdaptNetworkInterface(resource, modules))
 		}
 	}
 
 	return networkInterfaces
 }
 
-func adaptNetworkInterface(resource *terraform.Block, modules terraform.Modules) network.NetworkInterface {
+func AdaptNetworkInterface(resource *terraform.Block, modules terraform.Modules) network.NetworkInterface {
 	ni := network.NetworkInterface{
 		Metadata:           resource.GetMetadata(),
 		EnableIPForwarding: resource.GetAttribute("enable_ip_forwarding").AsBoolValueOrDefault(false, resource),

@@ -5,6 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/adaptertest"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/compute"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -116,20 +117,22 @@ func TestAdapt(t *testing.T) {
 				LinuxVirtualMachines: []compute.LinuxVirtualMachine{{
 					VirtualMachine: compute.VirtualMachine{
 						CustomData: types.StringTest("test"),
-						NetworkInterfaces: []compute.NetworkInterface{
+						NetworkInterfaces: []network.NetworkInterface{
 							{
-								Metadata:        types.NewTestMetadata(),
-								SubnetID:        types.StringTest(""),
-								SecurityGroups:  nil,
-								HasPublicIP:     types.BoolTest(false),
-								PublicIPAddress: types.StringTest(""),
+								Metadata:           types.NewTestMetadata(),
+								EnableIPForwarding: types.BoolTest(false),
+								SubnetID:           types.StringTest(""),
+								SecurityGroups:     nil,
+								HasPublicIP:        types.BoolTest(false),
+								PublicIPAddress:    types.StringTest(""),
 							},
 							{
-								Metadata:        types.NewTestMetadata(),
-								SubnetID:        types.StringTest(""),
-								SecurityGroups:  nil,
-								HasPublicIP:     types.BoolTest(false),
-								PublicIPAddress: types.StringTest(""),
+								Metadata:           types.NewTestMetadata(),
+								EnableIPForwarding: types.BoolTest(false),
+								SubnetID:           types.StringTest(""),
+								SecurityGroups:     nil,
+								HasPublicIP:        types.BoolTest(false),
+								PublicIPAddress:    types.StringTest(""),
 							},
 						},
 					},
@@ -140,20 +143,22 @@ func TestAdapt(t *testing.T) {
 				WindowsVirtualMachines: []compute.WindowsVirtualMachine{{
 					VirtualMachine: compute.VirtualMachine{
 						CustomData: types.StringTest("test"),
-						NetworkInterfaces: []compute.NetworkInterface{
+						NetworkInterfaces: []network.NetworkInterface{
 							{
-								Metadata:        types.NewTestMetadata(),
-								SubnetID:        types.StringTest(""),
-								SecurityGroups:  nil,
-								HasPublicIP:     types.BoolTest(false),
-								PublicIPAddress: types.StringTest(""),
+								Metadata:           types.NewTestMetadata(),
+								EnableIPForwarding: types.BoolTest(false),
+								SubnetID:           types.StringTest(""),
+								SecurityGroups:     nil,
+								HasPublicIP:        types.BoolTest(false),
+								PublicIPAddress:    types.StringTest(""),
 							},
 							{
-								Metadata:        types.NewTestMetadata(),
-								SubnetID:        types.StringTest(""),
-								SecurityGroups:  nil,
-								HasPublicIP:     types.BoolTest(false),
-								PublicIPAddress: types.StringTest(""),
+								Metadata:           types.NewTestMetadata(),
+								EnableIPForwarding: types.BoolTest(false),
+								SubnetID:           types.StringTest(""),
+								SecurityGroups:     nil,
+								HasPublicIP:        types.BoolTest(false),
+								PublicIPAddress:    types.StringTest(""),
 							},
 						},
 					},

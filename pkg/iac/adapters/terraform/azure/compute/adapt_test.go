@@ -192,11 +192,12 @@ resource "azurerm_network_security_group" "example" {
 				VirtualMachine: compute.VirtualMachine{
 					Metadata:   iacTypes.NewTestMetadata(),
 					CustomData: iacTypes.String("", iacTypes.NewTestMetadata()),
-					NetworkInterfaces: []compute.NetworkInterface{
+					NetworkInterfaces: []network.NetworkInterface{
 						{
-							Metadata:        iacTypes.NewTestMetadata(),
-							HasPublicIP:     iacTypes.BoolTest(true),
-							PublicIPAddress: iacTypes.String("", iacTypes.NewTestMetadata()),
+							Metadata:           iacTypes.NewTestMetadata(),
+							EnableIPForwarding: iacTypes.BoolDefault(false, iacTypes.NewTestMetadata()),
+							HasPublicIP:        iacTypes.BoolTest(true),
+							PublicIPAddress:    iacTypes.String("", iacTypes.NewTestMetadata()),
 							SecurityGroups: []network.SecurityGroup{
 								{
 									Rules: []network.SecurityGroupRule{
@@ -329,20 +330,22 @@ resource "azurerm_windows_virtual_machine" "example" {
 				VirtualMachine: compute.VirtualMachine{
 					Metadata:   iacTypes.NewTestMetadata(),
 					CustomData: iacTypes.String("", iacTypes.NewTestMetadata()),
-					NetworkInterfaces: []compute.NetworkInterface{
+					NetworkInterfaces: []network.NetworkInterface{
 						{
-							Metadata:        iacTypes.NewTestMetadata(),
-							SubnetID:        iacTypes.String("", iacTypes.NewTestMetadata()),
-							SecurityGroups:  nil,
-							HasPublicIP:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							PublicIPAddress: iacTypes.String("", iacTypes.NewTestMetadata()),
+							Metadata:           iacTypes.NewTestMetadata(),
+							EnableIPForwarding: iacTypes.BoolDefault(false, iacTypes.NewTestMetadata()),
+							SubnetID:           iacTypes.String("", iacTypes.NewTestMetadata()),
+							SecurityGroups:     nil,
+							HasPublicIP:        iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							PublicIPAddress:    iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
 						{
-							Metadata:        iacTypes.NewTestMetadata(),
-							SubnetID:        iacTypes.String("", iacTypes.NewTestMetadata()),
-							SecurityGroups:  nil,
-							HasPublicIP:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							PublicIPAddress: iacTypes.String("", iacTypes.NewTestMetadata()),
+							Metadata:           iacTypes.NewTestMetadata(),
+							EnableIPForwarding: iacTypes.BoolDefault(false, iacTypes.NewTestMetadata()),
+							SubnetID:           iacTypes.String("", iacTypes.NewTestMetadata()),
+							SecurityGroups:     nil,
+							HasPublicIP:        iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							PublicIPAddress:    iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
 					},
 				},
