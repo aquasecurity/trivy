@@ -4528,13 +4528,17 @@
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
         },
+        "httpsonly": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
+        },
         "identity": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.appservice.Service.Identity"
         },
         "site": {
           "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.appservice.Service.Site"
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.appservice.Site"
         }
       }
     },
@@ -4556,14 +4560,26 @@
         }
       }
     },
-    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.appservice.Service.Site": {
+    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.appservice.Site": {
       "type": "object",
       "properties": {
         "enablehttp2": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
         },
+        "ftpsstate": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
         "minimumtlsversion": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "phpversion": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "pythonversion": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         }

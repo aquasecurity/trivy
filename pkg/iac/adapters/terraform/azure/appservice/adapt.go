@@ -36,58 +36,33 @@ func adaptFunctionApps(modules terraform.Modules) []appservice.FunctionApp {
 }
 
 func adaptService(resource *terraform.Block) appservice.Service {
-	enableClientCertAttr := resource.GetAttribute("client_cert_enabled")
-	enableClientCertVal := enableClientCertAttr.AsBoolValueOrDefault(false, resource)
-
-	httpsOnlyAttr := resource.GetAttribute("https_only")
-	httpsOnlyVal := httpsOnlyAttr.AsBoolValueOrDefault(false, resource)
-
-	identityBlock := resource.GetBlock("identity")
-	typeVal := iacTypes.String("", resource.GetMetadata())
-	if identityBlock.IsNotNil() {
-		typeAttr := identityBlock.GetAttribute("type")
-		typeVal = typeAttr.AsStringValueOrDefault("", identityBlock)
-	}
-
-	authBlock := resource.GetBlock("auth_settings")
-	enabledVal := iacTypes.Bool(false, resource.GetMetadata())
-	if authBlock.IsNotNil() {
-		enabledAttr := authBlock.GetAttribute("enabled")
-		enabledVal = enabledAttr.AsBoolValueOrDefault(false, authBlock)
-	}
-
 	siteBlock := resource.GetBlock("site_config")
 	enableHTTP2Val := iacTypes.Bool(false, resource.GetMetadata())
 	minTLSVersionVal := iacTypes.String("1.2", resource.GetMetadata())
 	phpVersionVal := iacTypes.String("", resource.GetMetadata())
 	pythonVersionVal := iacTypes.String("", resource.GetMetadata())
 	ftpsStateVal := iacTypes.String("", resource.GetMetadata())
-	if siteBlock.IsNotNil() {
-		enableHTTP2Attr := siteBlock.GetAttribute("http2_enabled")
-		enableHTTP2Val = enableHTTP2Attr.AsBoolValueOrDefault(false, siteBlock)
 
-		minTLSVersionAttr := siteBlock.GetAttribute("min_tls_version")
-		minTLSVersionVal = minTLSVersionAttr.AsStringValueOrDefault("1.2", siteBlock)
-
-		phpVersionAttr := siteBlock.GetAttribute("php_version")
-		phpVersionVal = phpVersionAttr.AsStringValueOrDefault("", siteBlock)
-
-		pythonVersionAttr := siteBlock.GetAttribute("python_version")
-		pythonVersionVal = pythonVersionAttr.AsStringValueOrDefault("", siteBlock)
-
-		ftpsStateAttr := siteBlock.GetAttribute("ftps_state")
-		ftpsStateVal = ftpsStateAttr.AsStringValueOrDefault("", siteBlock)
+	if !siteBlock.IsNil() {
+		enableHTTP2Val = siteBlock.GetAttribute("http2_enabled").AsBoolValueOrDefault(false, siteBlock)
+		minTLSVersionVal = siteBlock.GetAttribute("min_tls_version").AsStringValueOrDefault("1.2", siteBlock)
+		phpVersionVal = siteBlock.GetAttribute("php_version").AsStringValueOrDefault("", siteBlock)
+		pythonVersionVal = siteBlock.GetAttribute("python_version").AsStringValueOrDefault("", siteBlock)
+		ftpsStateVal = siteBlock.GetAttribute("ftps_state").AsStringValueOrDefault("", siteBlock)
 	}
+
+	identityBlock := resource.GetBlock("identity")
+	authBlock := resource.GetBlock("auth_settings")
 
 	return appservice.Service{
 		Metadata:         resource.GetMetadata(),
-		EnableClientCert: enableClientCertVal,
-		HTTPSOnly:        httpsOnlyVal,
+		EnableClientCert: resource.GetAttribute("client_cert_enabled").AsBoolValueOrDefault(false, resource),
+		HTTPSOnly:        resource.GetAttribute("https_only").AsBoolValueOrDefault(false, resource),
 		Identity: struct{ Type iacTypes.StringValue }{
-			Type: typeVal,
+			Type: identityBlock.GetAttribute("type").AsStringValueOrDefault("", identityBlock),
 		},
 		Authentication: struct{ Enabled iacTypes.BoolValue }{
-			Enabled: enabledVal,
+			Enabled: authBlock.GetAttribute("enabled").AsBoolValueOrDefault(false, authBlock),
 		},
 		Site: appservice.Site{
 			EnableHTTP2:       enableHTTP2Val,
@@ -100,11 +75,8 @@ func adaptService(resource *terraform.Block) appservice.Service {
 }
 
 func adaptFunctionApp(resource *terraform.Block) appservice.FunctionApp {
-	HTTPSOnlyAttr := resource.GetAttribute("https_only")
-	HTTPSOnlyVal := HTTPSOnlyAttr.AsBoolValueOrDefault(false, resource)
-
 	return appservice.FunctionApp{
 		Metadata:  resource.GetMetadata(),
-		HTTPSOnly: HTTPSOnlyVal,
+		HTTPSOnly: resource.GetAttribute("https_only").AsBoolValueOrDefault(false, resource),
 	}
 }
