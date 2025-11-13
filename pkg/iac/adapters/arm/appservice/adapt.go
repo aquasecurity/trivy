@@ -48,7 +48,7 @@ func adaptService(resource azure.Resource) appservice.Service {
 	ftpsStateVal := iacTypes.String("", resource.Properties.GetMetadata())
 
 	if !siteConfig.IsNull() {
-		enableHTTP2Val = siteConfig.GetMapValue("http2Enabled").AsBoolValue(false, siteConfig.GetMetadata())
+		enableHTTP2Val = siteConfig.GetMapValue("http20Enabled").AsBoolValue(false, siteConfig.GetMetadata())
 		// Prefer siteConfig.minTlsVersion if it exists (official location)
 		if siteConfigMinTLS := siteConfig.GetMapValue("minTlsVersion"); !siteConfigMinTLS.IsNull() {
 			minTLSVersionVal = siteConfigMinTLS.AsStringValue("", siteConfig.GetMetadata())

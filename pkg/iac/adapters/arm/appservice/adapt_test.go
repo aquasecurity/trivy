@@ -46,7 +46,7 @@ func TestAdapt(t *testing.T) {
         },
         "minTlsVersion": "1.3",
         "siteConfig": {
-          "http2Enabled": true,
+          "http20Enabled": true,
           "minTlsVersion": "1.2",
           "phpVersion": "8.1",
           "pythonVersion": "3.11",
