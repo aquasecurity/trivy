@@ -9,7 +9,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -22,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
 	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
 	"github.com/aquasecurity/trivy/pkg/set"
