@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"github.com/samber/lo"
+	lom "github.com/samber/lo/mutable"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -87,16 +88,19 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 			log.String("provided", options.Distro.String()))
 		detail.OS = options.Distro
 
-		// Override OS package PURLs to update the distro,
+		// Override OS packages PURL to update the distro,
 		// preserving the correlation between the OS and package PURLs.
-		for i := range detail.Packages {
-			p, pErr := purl.New(detail.OS.Family, types.Metadata{OS: &detail.OS}, detail.Packages[i])
+		lom.Map(detail.Packages, func(pkg ftypes.Package) ftypes.Package {
+			p, pErr := purl.New(detail.OS.Family, types.Metadata{OS: &detail.OS}, pkg)
 			if pErr != nil {
 				log.Error("Failed to create PackageURL", log.Err(err))
-				continue
+				return pkg
 			}
-			detail.Packages[i].Identifier.PURL = p.Unwrap()
-		}
+
+			pkg.Identifier.PURL = p.Unwrap()
+			return pkg
+		})
+
 	}
 
 	target := types.ScanTarget{
