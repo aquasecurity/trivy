@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -85,6 +86,17 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 		log.Info("Overriding detected OS with provided distro", log.String("detected", detail.OS.String()),
 			log.String("provided", options.Distro.String()))
 		detail.OS = options.Distro
+
+		// Override OS package PURLs to update the distro,
+		// preserving the correlation between the OS and package PURLs.
+		for i := range detail.Packages {
+			p, pErr := purl.New(detail.OS.Family, types.Metadata{OS: &detail.OS}, detail.Packages[i])
+			if pErr != nil {
+				log.Error("Failed to create PackageURL", log.Err(err))
+				continue
+			}
+			detail.Packages[i].Identifier.PURL = p.Unwrap()
+		}
 	}
 
 	target := types.ScanTarget{
