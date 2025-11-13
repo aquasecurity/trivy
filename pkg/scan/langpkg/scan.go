@@ -17,6 +17,7 @@ var (
 	PkgTargets = map[ftypes.LangType]string{
 		ftypes.PythonPkg:   "Python",
 		ftypes.CondaPkg:    "Conda",
+		ftypes.Julia:       "Julia",
 		ftypes.GemSpec:     "Ruby",
 		ftypes.NodePkg:     "Node.js",
 		ftypes.Jar:         "Java",
