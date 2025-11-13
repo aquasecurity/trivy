@@ -125,9 +125,17 @@ func adaptNetworkInterfaces(modules terraform.Modules) []network.NetworkInterfac
 }
 
 func AdaptNetworkInterface(resource *terraform.Block, modules terraform.Modules) network.NetworkInterface {
+	// Support both ip_forwarding_enabled (new) and enable_ip_forwarding (old) attributes
+	var enableIPForwarding iacTypes.BoolValue
+	if ipForwardingEnabledAttr := resource.GetAttribute("ip_forwarding_enabled"); ipForwardingEnabledAttr.IsNotNil() {
+		enableIPForwarding = ipForwardingEnabledAttr.AsBoolValueOrDefault(false, resource)
+	} else {
+		enableIPForwarding = resource.GetAttribute("enable_ip_forwarding").AsBoolValueOrDefault(false, resource)
+	}
+
 	ni := network.NetworkInterface{
 		Metadata:           resource.GetMetadata(),
-		EnableIPForwarding: resource.GetAttribute("enable_ip_forwarding").AsBoolValueOrDefault(false, resource),
+		EnableIPForwarding: enableIPForwarding,
 		HasPublicIP:        iacTypes.BoolDefault(false, resource.GetMetadata()),
 		PublicIPAddress:    iacTypes.StringDefault("", resource.GetMetadata()),
 		SecurityGroups:     nil,
