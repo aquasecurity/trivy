@@ -89,9 +89,17 @@ func (a *adapter) adaptSecurityGroup(resource *terraform.Block) {
 }
 
 func adaptWatcherLog(resource *terraform.Block) network.NetworkWatcherFlowLog {
+	enabledAttr := resource.GetAttribute("enabled")
+	var enabledVal iacTypes.BoolValue
+	if enabledAttr.IsNil() || !enabledAttr.IsResolvable() || !enabledAttr.IsBool() {
+		enabledVal = iacTypes.BoolUnresolvable(resource.GetMetadata())
+	} else {
+		enabledVal = iacTypes.BoolExplicit(enabledAttr.IsTrue(), enabledAttr.GetMetadata())
+	}
+
 	flowLog := network.NetworkWatcherFlowLog{
 		Metadata: resource.GetMetadata(),
-		Enabled:  resource.GetAttribute("enabled").AsBoolValueOrDefault(true, resource),
+		Enabled:  enabledVal,
 		RetentionPolicy: network.RetentionPolicy{
 			Metadata: resource.GetMetadata(),
 			Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
