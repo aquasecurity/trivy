@@ -1,0 +1,7 @@
+- bucket: data-source
+  pairs:
+    - key: Red Hat
+      value:
+        ID: "redhat-oval"
+        Name: "Red Hat OVAL v2"
+        URL: "https://www.redhat.com/security/data/oval/v2/"
