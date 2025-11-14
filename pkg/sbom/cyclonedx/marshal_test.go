@@ -2428,3 +2428,97 @@ func TestMarshaler_Licenses(t *testing.T) {
 		})
 	}
 }
+
+/*
+TestMarshaler_DuplicateDependencies verifies that duplicate entries in the DependsOn slice
+are properly deduplicated when marshaling to CycloneDX format. This ensures compliance with
+the CycloneDX specification requirement that dependsOn arrays must contain unique values.
+See: https://github.com/CycloneDX/specification/blob/b1675deb462444fede77a8508dd4d1aca6d1704b/schema/bom-1.4.schema.json#L911
+*/
+func TestMarshaler_DuplicateDependencies(t *testing.T) {
+	clock.SetFakeTime(t)
+
+	inputReport := types.Report{
+		SchemaVersion: report.SchemaVersion,
+		ArtifactName:  "test-image",
+		ArtifactType:  ftypes.TypeContainerImage,
+		Results: types.Results{
+			{
+				Target: "test",
+				Class:  types.ClassLangPkg,
+				Type:   ftypes.Jar,
+				Packages: []ftypes.Package{
+					{
+						ID:      "pkg-a@1.0.0",
+						Name:    "pkg-a",
+						Version: "1.0.0",
+						Identifier: ftypes.PkgIdentifier{
+							UID: "A",
+							PURL: &packageurl.PackageURL{
+								Type:    packageurl.TypeMaven,
+								Name:    "pkg-a",
+								Version: "1.0.0",
+							},
+						},
+						DependsOn: []string{
+							"pkg-b@1.0.0",
+							"pkg-b@1.0.0",
+							"pkg-c@1.0.0",
+							"pkg-b@1.0.0",
+							"pkg-c@1.0.0",
+						},
+					},
+					{
+						ID:      "pkg-b@1.0.0",
+						Name:    "pkg-b",
+						Version: "1.0.0",
+						Identifier: ftypes.PkgIdentifier{
+							UID: "B",
+							PURL: &packageurl.PackageURL{
+								Type:    packageurl.TypeMaven,
+								Name:    "pkg-b",
+								Version: "1.0.0",
+							},
+						},
+					},
+					{
+						ID:      "pkg-c@1.0.0",
+						Name:    "pkg-c",
+						Version: "1.0.0",
+						Identifier: ftypes.PkgIdentifier{
+							UID: "C",
+							PURL: &packageurl.PackageURL{
+								Type:    packageurl.TypeMaven,
+								Name:    "pkg-c",
+								Version: "1.0.0",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	marshaler := cyclonedx.NewMarshaler("dev")
+	bom, err := marshaler.MarshalReport(clock.NewContext(), inputReport)
+	require.NoError(t, err)
+
+	require.NotNil(t, bom.Dependencies)
+	deps := *bom.Dependencies
+
+	var pkgADeps *cdx.Dependency
+	for i := range deps {
+		if deps[i].Ref == "pkg:maven/pkg-a@1.0.0" {
+			pkgADeps = &deps[i]
+			break
+		}
+	}
+
+	require.NotNil(t, pkgADeps, "pkg-a dependency not found")
+	require.NotNil(t, pkgADeps.Dependencies, "pkg-a dependencies is nil")
+
+	actualDeps := *pkgADeps.Dependencies
+	assert.Len(t, actualDeps, 2, "expected 2 unique dependencies, got %d", len(actualDeps))
+	assert.Contains(t, actualDeps, "pkg:maven/pkg-b@1.0.0")
+	assert.Contains(t, actualDeps, "pkg:maven/pkg-c@1.0.0")
+}

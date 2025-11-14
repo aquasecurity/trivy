@@ -175,6 +175,7 @@ func (m *Marshaler) marshalDependencies() *[]cdx.Dependency {
 			d, ok := m.componentIDs[rel.Dependency]
 			return d, ok
 		})
+		deps = lo.Uniq(deps)
 		sort.Strings(deps)
 
 		dependencies = append(dependencies, cdx.Dependency{
