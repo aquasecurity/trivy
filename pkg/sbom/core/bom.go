@@ -361,9 +361,14 @@ func (b *BOM) Parents() map[uuid.UUID][]uuid.UUID {
 // bomRef returns BOMRef for CycloneDX
 // When multiple lock files have the same dependency with the same name and version, PURL in the BOM can conflict.
 // In that case, PURL cannot be used as a unique identifier, and UUIDv4 be used for BOMRef.
+// For SPDX files, SPDXID is used to maintain uniqueness when packages have the same PURL.
 func (b *BOM) bomRef(c *Component) string {
 	if c.PkgIdentifier.BOMRef != "" {
 		return c.PkgIdentifier.BOMRef
+	}
+	// Use SPDXID if available (from SPDX files) to maintain uniqueness
+	if c.PkgIdentifier.SPDXID != "" {
+		return c.PkgIdentifier.SPDXID
 	}
 	// Return the UUID of the component if the PURL is not present.
 	if c.PkgIdentifier.PURL == nil {
