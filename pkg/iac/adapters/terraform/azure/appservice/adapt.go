@@ -54,15 +54,25 @@ func adaptService(resource *terraform.Block) appservice.Service {
 	identityBlock := resource.GetBlock("identity")
 	authBlock := resource.GetBlock("auth_settings")
 
+	identityTypeVal := iacTypes.String("", resource.GetMetadata())
+	if !identityBlock.IsNil() {
+		identityTypeVal = identityBlock.GetAttribute("type").AsStringValueOrDefault("", identityBlock)
+	}
+
+	authEnabledVal := iacTypes.Bool(false, resource.GetMetadata())
+	if !authBlock.IsNil() {
+		authEnabledVal = authBlock.GetAttribute("enabled").AsBoolValueOrDefault(false, authBlock)
+	}
+
 	return appservice.Service{
 		Metadata:         resource.GetMetadata(),
 		EnableClientCert: resource.GetAttribute("client_cert_enabled").AsBoolValueOrDefault(false, resource),
 		HTTPSOnly:        resource.GetAttribute("https_only").AsBoolValueOrDefault(false, resource),
 		Identity: struct{ Type iacTypes.StringValue }{
-			Type: identityBlock.GetAttribute("type").AsStringValueOrDefault("", identityBlock),
+			Type: identityTypeVal,
 		},
 		Authentication: struct{ Enabled iacTypes.BoolValue }{
-			Enabled: authBlock.GetAttribute("enabled").AsBoolValueOrDefault(false, authBlock),
+			Enabled: authEnabledVal,
 		},
 		Site: appservice.Site{
 			EnableHTTP2:       enableHTTP2Val,
