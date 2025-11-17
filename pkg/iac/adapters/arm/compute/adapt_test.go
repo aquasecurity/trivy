@@ -118,22 +118,8 @@ func TestAdapt(t *testing.T) {
 					VirtualMachine: compute.VirtualMachine{
 						CustomData: types.StringTest("test"),
 						NetworkInterfaces: []network.NetworkInterface{
-							{
-								Metadata:           types.NewUnmanagedMetadata(),
-								EnableIPForwarding: types.BoolTest(false),
-								SubnetID:           types.StringTest(""),
-								SecurityGroups:     nil,
-								HasPublicIP:        types.BoolTest(false),
-								PublicIPAddress:    types.StringTest(""),
-							},
-							{
-								Metadata:           types.NewUnmanagedMetadata(),
-								EnableIPForwarding: types.BoolTest(false),
-								SubnetID:           types.StringTest(""),
-								SecurityGroups:     nil,
-								HasPublicIP:        types.BoolTest(false),
-								PublicIPAddress:    types.StringTest(""),
-							},
+							{},
+							{},
 						},
 					},
 					OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
@@ -144,22 +130,8 @@ func TestAdapt(t *testing.T) {
 					VirtualMachine: compute.VirtualMachine{
 						CustomData: types.StringTest("test"),
 						NetworkInterfaces: []network.NetworkInterface{
-							{
-								Metadata:           types.NewUnmanagedMetadata(),
-								EnableIPForwarding: types.BoolTest(false),
-								SubnetID:           types.StringTest(""),
-								SecurityGroups:     nil,
-								HasPublicIP:        types.BoolTest(false),
-								PublicIPAddress:    types.StringTest(""),
-							},
-							{
-								Metadata:           types.NewUnmanagedMetadata(),
-								EnableIPForwarding: types.BoolTest(false),
-								SubnetID:           types.StringTest(""),
-								SecurityGroups:     nil,
-								HasPublicIP:        types.BoolTest(false),
-								PublicIPAddress:    types.StringTest(""),
-							},
+							{},
+							{},
 						},
 					},
 				}},
