@@ -113,7 +113,7 @@ func adaptWatcherLog(resource *terraform.Block) network.NetworkWatcherFlowLog {
 }
 
 func adaptNetworkInterfaces(modules terraform.Modules) []network.NetworkInterface {
-	var networkInterfaces []network.NetworkInterface
+	networkInterfaces := make([]network.NetworkInterface, 0)
 
 	for _, module := range modules {
 		for _, resource := range module.GetResourcesByType("azurerm_network_interface") {
