@@ -41,6 +41,7 @@ func Test_Adapt(t *testing.T) {
 		   resource "azurerm_network_watcher_flow_log" "example" {
 			resource_group_name  = azurerm_resource_group.example.name
 			name                 = "example-log"
+			enabled              = true
 		  
 			retention_policy {
 			  enabled = true
@@ -143,6 +144,7 @@ func Test_adaptWatcherLog(t *testing.T) {
 			name: "defined",
 			terraform: `
 			resource "azurerm_network_watcher_flow_log" "watcher" {		
+				enabled = true
 				retention_policy {
 					enabled = true
 					days = 90
@@ -169,7 +171,7 @@ func Test_adaptWatcherLog(t *testing.T) {
 `,
 			expected: network.NetworkWatcherFlowLog{
 				Metadata: iacTypes.NewTestMetadata(),
-				Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				RetentionPolicy: network.RetentionPolicy{
 					Metadata: iacTypes.NewTestMetadata(),
 					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
