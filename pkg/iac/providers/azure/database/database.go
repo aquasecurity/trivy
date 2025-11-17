@@ -13,7 +13,7 @@ type Database struct {
 }
 
 type MariaDBServer struct {
-	Metadata                iacTypes.Metadata
+	Metadata iacTypes.Metadata
 	Server
 	GeoRedundantBackupEnabled iacTypes.BoolValue
 }
@@ -24,11 +24,11 @@ type MySQLServer struct {
 }
 
 type PostgreSQLServer struct {
-	Metadata                iacTypes.Metadata
+	Metadata iacTypes.Metadata
 	Server
-	Config                  PostgresSQLConfig
+	Config                    PostgresSQLConfig
 	GeoRedundantBackupEnabled iacTypes.BoolValue
-	ThreatDetectionPolicy   ThreatDetectionPolicy
+	ThreatDetectionPolicy     ThreatDetectionPolicy
 }
 
 type PostgresSQLConfig struct {
@@ -36,7 +36,7 @@ type PostgresSQLConfig struct {
 	LogCheckpoints       iacTypes.BoolValue
 	ConnectionThrottling iacTypes.BoolValue
 	LogConnections       iacTypes.BoolValue
-	LogDisconnections   iacTypes.BoolValue
+	LogDisconnections    iacTypes.BoolValue
 }
 
 type Server struct {
@@ -48,11 +48,11 @@ type Server struct {
 }
 
 type MSSQLServer struct {
-	Metadata                  iacTypes.Metadata
+	Metadata iacTypes.Metadata
 	Server
-	ExtendedAuditingPolicies []ExtendedAuditingPolicy
-	SecurityAlertPolicies    []SecurityAlertPolicy
-	AdministratorLogin       iacTypes.StringValue
+	ExtendedAuditingPolicies      []ExtendedAuditingPolicy
+	SecurityAlertPolicies         []SecurityAlertPolicy
+	AdministratorLogin            iacTypes.StringValue
 	ActiveDirectoryAdministrators []ActiveDirectoryAdministrator
 }
 
