@@ -48,7 +48,7 @@ func adaptService(resource azure.Resource) appservice.Service {
 
 	siteConfig := resource.Properties.GetMapValue("siteConfig")
 	enableHTTP2Val := iacTypes.Bool(false, resource.Properties.GetMetadata())
-	minTLSVersionVal := iacTypes.String("1.2", resource.Properties.GetMetadata())
+	minTLSVersionVal := iacTypes.String("", resource.Properties.GetMetadata())
 	phpVersionVal := iacTypes.String("", resource.Properties.GetMetadata())
 	pythonVersionVal := iacTypes.String("", resource.Properties.GetMetadata())
 	ftpsStateVal := iacTypes.String("", resource.Properties.GetMetadata())
