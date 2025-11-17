@@ -115,7 +115,7 @@ func adaptNetworkWatcherFlowLog(resource azure.Resource) network.NetworkWatcherF
 }
 
 func adaptNetworkInterfaces(deployment azure.Deployment) []network.NetworkInterface {
-	var networkInterfaces []network.NetworkInterface
+	networkInterfaces := []network.NetworkInterface{}
 
 	for _, resource := range deployment.GetResourcesByType("Microsoft.Network/networkInterfaces") {
 		networkInterfaces = append(networkInterfaces, adaptNetworkInterface(resource, deployment))
