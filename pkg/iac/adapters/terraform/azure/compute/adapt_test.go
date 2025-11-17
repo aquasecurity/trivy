@@ -149,13 +149,6 @@ resource "azurerm_linux_virtual_machine" "example" {
 	}
 }
 
-resource "azurerm_public_ip" "example" {
-  name                = "acceptanceTestPublicIp1"
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
-  allocation_method   = "Static"
-}
-
 resource "azurerm_network_interface" "example" {
   name                = "example-nic"
   location            = azurerm_resource_group.example.location
@@ -163,7 +156,7 @@ resource "azurerm_network_interface" "example" {
 
   ip_configuration {
     name                 = "internal"
-		public_ip_address_id = azurerm_public_ip.example.id
+		public_ip_address_id = "test-public-ip-id"
   }
 
 	network_security_group_id = azurerm_network_security_group.example.id
@@ -197,7 +190,16 @@ resource "azurerm_network_security_group" "example" {
 							Metadata:           iacTypes.NewTestMetadata(),
 							EnableIPForwarding: iacTypes.BoolDefault(false, iacTypes.NewTestMetadata()),
 							HasPublicIP:        iacTypes.BoolTest(true),
-							PublicIPAddress:    iacTypes.String("", iacTypes.NewTestMetadata()),
+							PublicIPAddress:    iacTypes.String("test-public-ip-id", iacTypes.NewTestMetadata()),
+							IPConfigurations: []network.IPConfiguration{
+								{
+									Metadata:        iacTypes.NewTestMetadata(),
+									HasPublicIP:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+									PublicIPAddress: iacTypes.String("test-public-ip-id", iacTypes.NewTestMetadata()),
+									SubnetID:        iacTypes.String("", iacTypes.NewTestMetadata()),
+									Primary:         iacTypes.BoolDefault(false, iacTypes.NewTestMetadata()),
+								},
+							},
 							SecurityGroups: []network.SecurityGroup{
 								{
 									Rules: []network.SecurityGroupRule{
