@@ -164,6 +164,7 @@ func resolveNetworkInterfaces(resource *terraform.Block, modules terraform.Modul
 			SecurityGroups:     nil,
 			HasPublicIP:        iacTypes.BoolDefault(false, nicIDVal.GetMetadata()),
 			PublicIPAddress:    iacTypes.StringDefault("", nicIDVal.GetMetadata()),
+			IPConfigurations:   nil,
 		})
 	}
 

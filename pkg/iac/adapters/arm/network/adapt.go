@@ -135,18 +135,53 @@ func adaptNetworkInterface(resource azure.Resource, _ azure.Deployment) network.
 	}
 
 	ipConfigs := resource.Properties.GetMapValue("ipConfigurations").AsList()
-	if len(ipConfigs) > 0 {
-		ipConfig := ipConfigs[0]
-		if !ipConfig.IsNull() {
-			if subnetID := ipConfig.GetMapValue("subnet").GetMapValue("id").AsStringValue("", resource.Metadata); subnetID.Value() != "" {
+	ni.IPConfigurations = make([]network.IPConfiguration, 0, len(ipConfigs))
+	
+	var primaryConfigSet bool
+	
+	for _, ipConfig := range ipConfigs {
+		if ipConfig.IsNull() {
+			continue
+		}
+		
+		ipConfigMeta := resource.Metadata
+		subnetID := ipConfig.GetMapValue("subnet").GetMapValue("id").AsStringValue("", resource.Metadata)
+		publicIP := ipConfig.GetMapValue("publicIPAddress")
+		hasPublicIP := iacTypes.BoolDefault(false, ipConfigMeta)
+		publicIPAddress := iacTypes.StringDefault("", ipConfigMeta)
+		primary := ipConfig.GetMapValue("primary").AsBoolValue(false, ipConfigMeta)
+		
+		if !publicIP.IsNull() {
+			hasPublicIP = iacTypes.Bool(true, ipConfigMeta)
+			if publicIPID := publicIP.GetMapValue("id").AsStringValue("", resource.Metadata); publicIPID.Value() != "" {
+				publicIPAddress = publicIPID
+			}
+		}
+		
+		ipConfiguration := network.IPConfiguration{
+			Metadata:        ipConfigMeta,
+			HasPublicIP:     hasPublicIP,
+			PublicIPAddress: publicIPAddress,
+			SubnetID:        subnetID,
+			Primary:         primary,
+		}
+		
+		ni.IPConfigurations = append(ni.IPConfigurations, ipConfiguration)
+		
+		// For backward compatibility, populate the single-value fields with the primary configuration
+		// If no primary is set, use the first configuration
+		isPrimary := primary.Value() || (len(ni.IPConfigurations) == 1 && !primaryConfigSet && primary.GetMetadata().IsDefault())
+		if isPrimary && !primaryConfigSet {
+			if subnetID.Value() != "" {
 				ni.SubnetID = subnetID
 			}
-			if publicIP := ipConfig.GetMapValue("publicIPAddress"); !publicIP.IsNull() {
-				ni.HasPublicIP = iacTypes.Bool(true, resource.Metadata)
-				if publicIPID := publicIP.GetMapValue("id").AsStringValue("", resource.Metadata); publicIPID.Value() != "" {
-					ni.PublicIPAddress = publicIPID
+			if hasPublicIP.Value() {
+				ni.HasPublicIP = hasPublicIP
+				if publicIPAddress.Value() != "" {
+					ni.PublicIPAddress = publicIPAddress
 				}
 			}
+			primaryConfigSet = true
 		}
 	}
 

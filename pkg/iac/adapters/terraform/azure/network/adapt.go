@@ -157,14 +157,54 @@ func AdaptNetworkInterface(resource *terraform.Block, modules terraform.Modules)
 	}
 
 	ipConfigs := resource.GetBlocks("ip_configuration")
-	if len(ipConfigs) > 0 {
-		ipConfig := ipConfigs[0]
+	ni.IPConfigurations = make([]network.IPConfiguration, 0, len(ipConfigs))
+	
+	var primaryConfigSet bool
+	
+	for _, ipConfig := range ipConfigs {
+		ipConfigMeta := ipConfig.GetMetadata()
+		subnetID := iacTypes.StringDefault("", ipConfigMeta)
+		hasPublicIP := iacTypes.BoolDefault(false, ipConfigMeta)
+		publicIPAddress := iacTypes.StringDefault("", ipConfigMeta)
+		primary := iacTypes.BoolDefault(false, ipConfigMeta)
+		
 		if subnetAttr := ipConfig.GetAttribute("subnet_id"); subnetAttr.IsNotNil() {
-			ni.SubnetID = subnetAttr.AsStringValueOrDefault("", ipConfig)
+			subnetID = subnetAttr.AsStringValueOrDefault("", ipConfig)
 		}
-
+		
 		if publicIPAttr := ipConfig.GetAttribute("public_ip_address_id"); publicIPAttr.IsNotNil() {
-			ni.HasPublicIP = iacTypes.Bool(true, publicIPAttr.GetMetadata())
+			hasPublicIP = iacTypes.Bool(true, publicIPAttr.GetMetadata())
+			publicIPAddress = publicIPAttr.AsStringValueOrDefault("", ipConfig)
+		}
+		
+		if primaryAttr := ipConfig.GetAttribute("primary"); primaryAttr.IsNotNil() {
+			primary = primaryAttr.AsBoolValueOrDefault(false, ipConfig)
+		}
+		
+		ipConfiguration := network.IPConfiguration{
+			Metadata:        ipConfigMeta,
+			HasPublicIP:     hasPublicIP,
+			PublicIPAddress: publicIPAddress,
+			SubnetID:        subnetID,
+			Primary:         primary,
+		}
+		
+		ni.IPConfigurations = append(ni.IPConfigurations, ipConfiguration)
+		
+		// For backward compatibility, populate the single-value fields with the primary configuration
+		// If no primary is set, use the first configuration
+		isPrimary := primary.Value() || (len(ni.IPConfigurations) == 1 && !primaryConfigSet && primary.GetMetadata().IsDefault())
+		if isPrimary && !primaryConfigSet {
+			if subnetID.Value() != "" {
+				ni.SubnetID = subnetID
+			}
+			if hasPublicIP.Value() {
+				ni.HasPublicIP = hasPublicIP
+				if publicIPAddress.Value() != "" {
+					ni.PublicIPAddress = publicIPAddress
+				}
+			}
+			primaryConfigSet = true
 		}
 	}
 

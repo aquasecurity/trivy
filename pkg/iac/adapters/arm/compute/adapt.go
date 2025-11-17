@@ -114,6 +114,7 @@ func extractNetworkInterfaces(networkProfile azure.Value, metadata iacTypes.Meta
 				SecurityGroups:     nil,
 				HasPublicIP:        iacTypes.BoolDefault(false, unmanagedMetadata),
 				PublicIPAddress:    iacTypes.StringDefault("", unmanagedMetadata),
+				IPConfigurations:   nil,
 			}
 			networkInterfaces = append(networkInterfaces, networkInterface)
 		}

@@ -46,4 +46,13 @@ type NetworkInterface struct {
 	PublicIPAddress    iacTypes.StringValue
 	SecurityGroups     []SecurityGroup
 	SubnetID           iacTypes.StringValue
+	IPConfigurations   []IPConfiguration
+}
+
+type IPConfiguration struct {
+	Metadata        iacTypes.Metadata
+	HasPublicIP     iacTypes.BoolValue
+	PublicIPAddress iacTypes.StringValue
+	SubnetID        iacTypes.StringValue
+	Primary         iacTypes.BoolValue
 }
