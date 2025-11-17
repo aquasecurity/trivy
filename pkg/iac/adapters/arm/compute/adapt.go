@@ -104,13 +104,16 @@ func extractNetworkInterfaces(networkProfile azure.Value, metadata iacTypes.Meta
 			// Create a minimal NetworkInterface object with the ID information
 			// In ARM templates, we don't have direct access to subnet details like in Terraform
 			// EnableIPForwarding is not available from the VM's networkProfile, so it defaults to false
+			// Since we only have a reference to the network interface (not the full resource),
+			// we mark it as unmanaged so that Rego policies can skip it using isManaged() checks
+			unmanagedMetadata := iacTypes.NewUnmanagedMetadata()
 			networkInterface := network.NetworkInterface{
-				Metadata:           nicID.GetMetadata(),
-				EnableIPForwarding: iacTypes.BoolDefault(false, nicID.GetMetadata()),
-				SubnetID:           iacTypes.StringDefault("", nicID.GetMetadata()),
+				Metadata:           unmanagedMetadata,
+				EnableIPForwarding: iacTypes.BoolDefault(false, unmanagedMetadata),
+				SubnetID:           iacTypes.StringDefault("", unmanagedMetadata),
 				SecurityGroups:     nil,
-				HasPublicIP:        iacTypes.BoolDefault(false, nicID.GetMetadata()),
-				PublicIPAddress:    iacTypes.StringDefault("", nicID.GetMetadata()),
+				HasPublicIP:        iacTypes.BoolDefault(false, unmanagedMetadata),
+				PublicIPAddress:    iacTypes.StringDefault("", unmanagedMetadata),
 			}
 			networkInterfaces = append(networkInterfaces, networkInterface)
 		}

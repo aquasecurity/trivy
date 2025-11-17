@@ -119,7 +119,7 @@ func TestAdapt(t *testing.T) {
 						CustomData: types.StringTest("test"),
 						NetworkInterfaces: []network.NetworkInterface{
 							{
-								Metadata:           types.NewTestMetadata(),
+								Metadata:           types.NewUnmanagedMetadata(),
 								EnableIPForwarding: types.BoolTest(false),
 								SubnetID:           types.StringTest(""),
 								SecurityGroups:     nil,
@@ -127,7 +127,7 @@ func TestAdapt(t *testing.T) {
 								PublicIPAddress:    types.StringTest(""),
 							},
 							{
-								Metadata:           types.NewTestMetadata(),
+								Metadata:           types.NewUnmanagedMetadata(),
 								EnableIPForwarding: types.BoolTest(false),
 								SubnetID:           types.StringTest(""),
 								SecurityGroups:     nil,
@@ -145,7 +145,7 @@ func TestAdapt(t *testing.T) {
 						CustomData: types.StringTest("test"),
 						NetworkInterfaces: []network.NetworkInterface{
 							{
-								Metadata:           types.NewTestMetadata(),
+								Metadata:           types.NewUnmanagedMetadata(),
 								EnableIPForwarding: types.BoolTest(false),
 								SubnetID:           types.StringTest(""),
 								SecurityGroups:     nil,
@@ -153,7 +153,7 @@ func TestAdapt(t *testing.T) {
 								PublicIPAddress:    types.StringTest(""),
 							},
 							{
-								Metadata:           types.NewTestMetadata(),
+								Metadata:           types.NewUnmanagedMetadata(),
 								EnableIPForwarding: types.BoolTest(false),
 								SubnetID:           types.StringTest(""),
 								SecurityGroups:     nil,
