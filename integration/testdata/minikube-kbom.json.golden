@@ -40,6 +40,7 @@
             "Name": "Official Kubernetes CVE Feed",
             "URL": "https://kubernetes.io/docs/reference/issues-security/official-cve-feed/index.json"
           },
+          "Fingerprint": "sha256:65f2ed2ea3842a48189cbecd06b84ffa5b0eefc79e81032dcf99ce4e8d9fde46",
           "Title": "Bypass of seccomp profile enforcement ",
           "Description": "A security issue was discovered in Kubelet that allows pods to bypass the seccomp profile enforcement...",
           "Severity": "LOW",

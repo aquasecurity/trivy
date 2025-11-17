@@ -97,6 +97,7 @@
             "Name": "SUSE CVRF",
             "URL": "https://ftp.suse.com/pub/projects/security/cvrf/"
           },
+          "Fingerprint": "sha256:20fab639050347334f826ff7d076eb534ae2291198f36c46914e3291f2e60320",
           "Title": "Security update for openssl-1_1",
           "Description": "This update for openssl-1_1 fixes the following issues:\n\nSecurity issue fixed:\n\n- CVE-2019-1551: Fixed an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli (bsc#1158809).                             \n\nVarious FIPS related improvements were done:\n\n- FIPS: Backport SSH KDF to openssl (jsc#SLE-8789, bsc#1157775).\n- Port FIPS patches from SLE-12 (bsc#1158101).\n- Use SHA-2 in the RSA pairwise consistency check (bsc#1155346).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
           "Severity": "MEDIUM",
@@ -130,6 +131,7 @@
             "Name": "SUSE CVRF",
             "URL": "https://ftp.suse.com/pub/projects/security/cvrf/"
           },
+          "Fingerprint": "sha256:af7aebe9d7dd2e4d00a9495e5417b647dba0aac27bb49fdf9bc86f76fab8273d",
           "Title": "Security update for openssl-1_1",
           "Description": "This update for openssl-1_1 fixes the following issues:\n\nSecurity issue fixed:\n\n- CVE-2019-1551: Fixed an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli (bsc#1158809).                             \n\nVarious FIPS related improvements were done:\n\n- FIPS: Backport SSH KDF to openssl (jsc#SLE-8789, bsc#1157775).\n- Port FIPS patches from SLE-12 (bsc#1158101).\n- Use SHA-2 in the RSA pairwise consistency check (bsc#1155346).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
           "Severity": "MEDIUM",
