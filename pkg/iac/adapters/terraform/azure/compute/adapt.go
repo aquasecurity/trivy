@@ -170,14 +170,3 @@ func resolveNetworkInterfaces(resource *terraform.Block, modules terraform.Modul
 
 	return networkInterfaces
 }
-
-func adaptSecurityGroupFromBlock(resource *terraform.Block) network.SecurityGroup {
-	var rules []network.SecurityGroupRule
-	for _, ruleBlock := range resource.GetBlocks("security_rule") {
-		rules = append(rules, anetwork.AdaptSGRule(ruleBlock))
-	}
-	return network.SecurityGroup{
-		Metadata: resource.GetMetadata(),
-		Rules:    rules,
-	}
-}

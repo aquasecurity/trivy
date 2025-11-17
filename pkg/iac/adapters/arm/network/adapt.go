@@ -116,11 +116,11 @@ func adaptNetworkWatcherFlowLog(resource azure.Resource) network.NetworkWatcherF
 
 func adaptNetworkInterfaces(deployment azure.Deployment) []network.NetworkInterface {
 	var networkInterfaces []network.NetworkInterface
-	
+
 	for _, resource := range deployment.GetResourcesByType("Microsoft.Network/networkInterfaces") {
 		networkInterfaces = append(networkInterfaces, adaptNetworkInterface(resource, deployment))
 	}
-	
+
 	return networkInterfaces
 }
 
@@ -136,28 +136,28 @@ func adaptNetworkInterface(resource azure.Resource, _ azure.Deployment) network.
 
 	ipConfigs := resource.Properties.GetMapValue("ipConfigurations").AsList()
 	ni.IPConfigurations = make([]network.IPConfiguration, 0, len(ipConfigs))
-	
+
 	var primaryConfigSet bool
-	
+
 	for _, ipConfig := range ipConfigs {
 		if ipConfig.IsNull() {
 			continue
 		}
-		
+
 		ipConfigMeta := resource.Metadata
 		subnetID := ipConfig.GetMapValue("subnet").GetMapValue("id").AsStringValue("", resource.Metadata)
 		publicIP := ipConfig.GetMapValue("publicIPAddress")
 		hasPublicIP := iacTypes.BoolDefault(false, ipConfigMeta)
 		publicIPAddress := iacTypes.StringDefault("", ipConfigMeta)
 		primary := ipConfig.GetMapValue("primary").AsBoolValue(false, ipConfigMeta)
-		
+
 		if !publicIP.IsNull() {
 			hasPublicIP = iacTypes.Bool(true, ipConfigMeta)
 			if publicIPID := publicIP.GetMapValue("id").AsStringValue("", resource.Metadata); publicIPID.Value() != "" {
 				publicIPAddress = publicIPID
 			}
 		}
-		
+
 		ipConfiguration := network.IPConfiguration{
 			Metadata:        ipConfigMeta,
 			HasPublicIP:     hasPublicIP,
@@ -165,9 +165,9 @@ func adaptNetworkInterface(resource azure.Resource, _ azure.Deployment) network.
 			SubnetID:        subnetID,
 			Primary:         primary,
 		}
-		
+
 		ni.IPConfigurations = append(ni.IPConfigurations, ipConfiguration)
-		
+
 		// For backward compatibility, populate the single-value fields with the primary configuration
 		// If no primary is set, use the first configuration
 		isPrimary := primary.Value() || (len(ni.IPConfigurations) == 1 && !primaryConfigSet && primary.GetMetadata().IsDefault())
