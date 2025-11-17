@@ -423,9 +423,9 @@ func (a *postgresqlAdapter) adaptPostgreSQLServer(resource *terraform.Block, mod
 			EnablePublicNetworkAccess: publicAccessVal,
 			FirewallRules:             firewallRules,
 		},
-		Config:                  config,
+		Config:                    config,
 		GeoRedundantBackupEnabled: geoRedundantBackupVal,
-		ThreatDetectionPolicy:   threatDetectionPolicy,
+		ThreatDetectionPolicy:     threatDetectionPolicy,
 	}
 }
 
@@ -544,7 +544,7 @@ func adaptCosmosDBAccount(resource *terraform.Block) database.CosmosDBAccount {
 	tagsAttr := resource.GetAttribute("tags")
 	var tagsVal iacTypes.MapValue
 	if tagsAttr.IsNil() {
-		tagsVal = iacTypes.MapDefault(map[string]string{}, resource.GetMetadata())
+		tagsVal = iacTypes.MapDefault(make(map[string]string), resource.GetMetadata())
 	} else {
 		tagsVal = tagsAttr.AsMapValue()
 	}
