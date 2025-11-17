@@ -12,6 +12,7 @@ func Adapt(modules terraform.Modules) database.Database {
 		alertPolicyIDs:    modules.GetChildResourceIDMapByType("azurerm_mssql_server_security_alert_policy"),
 		auditingPolicyIDs: modules.GetChildResourceIDMapByType("azurerm_mssql_server_extended_auditing_policy", "azurerm_mssql_database_extended_auditing_policy"),
 		firewallIDs:       modules.GetChildResourceIDMapByType("azurerm_sql_firewall_rule", "azurerm_mssql_firewall_rule"),
+		adAdminIDs:        modules.GetChildResourceIDMapByType("azurerm_sql_active_directory_administrator"),
 	}
 
 	mysqlAdapter := mysqlAdapter{
@@ -31,6 +32,7 @@ func Adapt(modules terraform.Modules) database.Database {
 		MariaDBServers:    mariaDBAdapter.adaptMariaDBServers(modules),
 		MySQLServers:      mysqlAdapter.adaptMySQLServers(modules),
 		PostgreSQLServers: postgresqlAdapter.adaptPostgreSQLServers(modules),
+		CosmosDBAccounts:  adaptCosmosDBAccounts(modules),
 	}
 }
 
@@ -38,6 +40,7 @@ type mssqlAdapter struct {
 	alertPolicyIDs    terraform.ResourceIDResolutions
 	auditingPolicyIDs terraform.ResourceIDResolutions
 	firewallIDs       terraform.ResourceIDResolutions
+	adAdminIDs        terraform.ResourceIDResolutions
 }
 
 type mysqlAdapter struct {
@@ -75,8 +78,10 @@ func (a *mssqlAdapter) adaptMSSQLServers(modules terraform.Modules) []database.M
 				EnablePublicNetworkAccess: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 				FirewallRules:             nil,
 			},
-			ExtendedAuditingPolicies: nil,
-			SecurityAlertPolicies:    nil,
+			ExtendedAuditingPolicies:      nil,
+			SecurityAlertPolicies:         nil,
+			AdministratorLogin:            iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+			ActiveDirectoryAdministrators: nil,
 		}
 		for _, policy := range orphanResources {
 			orphanage.SecurityAlertPolicies = append(orphanage.SecurityAlertPolicies, adaptMSSQLSecurityAlertPolicy(policy))
@@ -113,6 +118,30 @@ func (a *mssqlAdapter) adaptMSSQLServers(modules terraform.Modules) []database.M
 		}
 		for _, policy := range orphanResources {
 			orphanage.FirewallRules = append(orphanage.FirewallRules, adaptFirewallRule(policy))
+		}
+		mssqlServers = append(mssqlServers, orphanage)
+
+	}
+
+	orphanResources = modules.GetResourceByIDs(a.adAdminIDs.Orphans()...)
+
+	if len(orphanResources) > 0 {
+		orphanage := database.MSSQLServer{
+			Metadata: iacTypes.NewUnmanagedMetadata(),
+			Server: database.Server{
+				Metadata:                  iacTypes.NewUnmanagedMetadata(),
+				EnableSSLEnforcement:      iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+				MinimumTLSVersion:         iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+				EnablePublicNetworkAccess: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+				FirewallRules:             nil,
+			},
+			ExtendedAuditingPolicies:      nil,
+			SecurityAlertPolicies:         nil,
+			AdministratorLogin:            iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+			ActiveDirectoryAdministrators: nil,
+		}
+		for _, adAdmin := range orphanResources {
+			orphanage.ActiveDirectoryAdministrators = append(orphanage.ActiveDirectoryAdministrators, adaptActiveDirectoryAdministrator(adAdmin))
 		}
 		mssqlServers = append(mssqlServers, orphanage)
 
@@ -171,6 +200,7 @@ func (a *mariaDBAdapter) adaptMariaDBServers(modules terraform.Modules) []databa
 				EnablePublicNetworkAccess: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 				FirewallRules:             nil,
 			},
+			GeoRedundantBackupEnabled: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 		}
 		for _, policy := range orphanResources {
 			orphanage.FirewallRules = append(orphanage.FirewallRules, adaptFirewallRule(policy))
@@ -207,6 +237,12 @@ func (a *postgresqlAdapter) adaptPostgreSQLServers(modules terraform.Modules) []
 				LogCheckpoints:       iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 				ConnectionThrottling: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 				LogConnections:       iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+				LogDisconnections:    iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+			},
+			GeoRedundantBackupEnabled: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+			ThreatDetectionPolicy: database.ThreatDetectionPolicy{
+				Metadata: iacTypes.NewUnmanagedMetadata(),
+				Enabled:  iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 			},
 		}
 		for _, policy := range orphanResources {
@@ -264,6 +300,16 @@ func (a *mssqlAdapter) adaptMSSQLServer(resource *terraform.Block, module *terra
 		firewallRules = append(firewallRules, adaptFirewallRule(firewallBlock))
 	}
 
+	administratorLoginAttr := resource.GetAttribute("administrator_login")
+	administratorLoginVal := administratorLoginAttr.AsStringValueOrDefault("", resource)
+
+	adAdminBlocks := module.GetReferencingResources(resource, "azurerm_sql_active_directory_administrator", "server_name")
+	var adAdmins []database.ActiveDirectoryAdministrator
+	for _, adAdminBlock := range adAdminBlocks {
+		a.adAdminIDs.Resolve(adAdminBlock.ID())
+		adAdmins = append(adAdmins, adaptActiveDirectoryAdministrator(adAdminBlock))
+	}
+
 	return database.MSSQLServer{
 		Metadata: resource.GetMetadata(),
 		Server: database.Server{
@@ -273,8 +319,10 @@ func (a *mssqlAdapter) adaptMSSQLServer(resource *terraform.Block, module *terra
 			EnablePublicNetworkAccess: publicAccessVal,
 			FirewallRules:             firewallRules,
 		},
-		ExtendedAuditingPolicies: auditingPolicies,
-		SecurityAlertPolicies:    alertPolicies,
+		ExtendedAuditingPolicies:      auditingPolicies,
+		SecurityAlertPolicies:         alertPolicies,
+		AdministratorLogin:            administratorLoginVal,
+		ActiveDirectoryAdministrators: adAdmins,
 	}
 }
 
@@ -323,6 +371,9 @@ func (a *mariaDBAdapter) adaptMariaDBServer(resource *terraform.Block, module *t
 		firewallRules = append(firewallRules, adaptFirewallRule(firewallBlock))
 	}
 
+	geoRedundantBackupAttr := resource.GetAttribute("geo_redundant_backup_enabled")
+	geoRedundantBackupVal := geoRedundantBackupAttr.AsBoolValueOrDefault(false, resource)
+
 	return database.MariaDBServer{
 		Metadata: resource.GetMetadata(),
 		Server: database.Server{
@@ -332,6 +383,7 @@ func (a *mariaDBAdapter) adaptMariaDBServer(resource *terraform.Block, module *t
 			EnablePublicNetworkAccess: publicAccessVal,
 			FirewallRules:             firewallRules,
 		},
+		GeoRedundantBackupEnabled: geoRedundantBackupVal,
 	}
 }
 
@@ -356,6 +408,12 @@ func (a *postgresqlAdapter) adaptPostgreSQLServer(resource *terraform.Block, mod
 	configBlocks := module.GetReferencingResources(resource, "azurerm_postgresql_configuration", "server_name")
 	config := adaptPostgreSQLConfig(resource, configBlocks)
 
+	geoRedundantBackupAttr := resource.GetAttribute("geo_redundant_backup_enabled")
+	geoRedundantBackupVal := geoRedundantBackupAttr.AsBoolValueOrDefault(false, resource)
+
+	threatDetectionBlock := resource.GetBlock("threat_detection_policy")
+	threatDetectionPolicy := adaptThreatDetectionPolicy(threatDetectionBlock, resource.GetMetadata())
+
 	return database.PostgreSQLServer{
 		Metadata: resource.GetMetadata(),
 		Server: database.Server{
@@ -365,7 +423,9 @@ func (a *postgresqlAdapter) adaptPostgreSQLServer(resource *terraform.Block, mod
 			EnablePublicNetworkAccess: publicAccessVal,
 			FirewallRules:             firewallRules,
 		},
-		Config: config,
+		Config:                  config,
+		GeoRedundantBackupEnabled: geoRedundantBackupVal,
+		ThreatDetectionPolicy:   threatDetectionPolicy,
 	}
 }
 
@@ -375,6 +435,7 @@ func adaptPostgreSQLConfig(resource *terraform.Block, configBlocks []*terraform.
 		LogCheckpoints:       iacTypes.BoolDefault(false, resource.GetMetadata()),
 		ConnectionThrottling: iacTypes.BoolDefault(false, resource.GetMetadata()),
 		LogConnections:       iacTypes.BoolDefault(false, resource.GetMetadata()),
+		LogDisconnections:    iacTypes.BoolDefault(false, resource.GetMetadata()),
 	}
 
 	for _, configBlock := range configBlocks {
@@ -390,6 +451,9 @@ func adaptPostgreSQLConfig(resource *terraform.Block, configBlocks []*terraform.
 		}
 		if nameAttr.Equals("log_connections") {
 			config.LogConnections = iacTypes.Bool(valAttr.Equals("on"), valAttr.GetMetadata())
+		}
+		if nameAttr.Equals("log_disconnections") {
+			config.LogDisconnections = iacTypes.Bool(valAttr.Equals("on"), valAttr.GetMetadata())
 		}
 	}
 
@@ -433,5 +497,61 @@ func adaptMSSQLExtendedAuditingPolicy(resource *terraform.Block) database.Extend
 	return database.ExtendedAuditingPolicy{
 		Metadata:        resource.GetMetadata(),
 		RetentionInDays: retentionInDaysVal,
+	}
+}
+
+func adaptActiveDirectoryAdministrator(resource *terraform.Block) database.ActiveDirectoryAdministrator {
+	loginAttr := resource.GetAttribute("login")
+	loginVal := loginAttr.AsStringValueOrDefault("", resource)
+
+	return database.ActiveDirectoryAdministrator{
+		Metadata: resource.GetMetadata(),
+		Login:    loginVal,
+	}
+}
+
+func adaptThreatDetectionPolicy(block *terraform.Block, defaultMetadata iacTypes.Metadata) database.ThreatDetectionPolicy {
+	if block.IsNil() {
+		return database.ThreatDetectionPolicy{
+			Metadata: defaultMetadata,
+			Enabled:  iacTypes.BoolDefault(false, defaultMetadata),
+		}
+	}
+
+	enabledAttr := block.GetAttribute("enabled")
+	enabledVal := enabledAttr.AsBoolValueOrDefault(false, block)
+
+	return database.ThreatDetectionPolicy{
+		Metadata: block.GetMetadata(),
+		Enabled:  enabledVal,
+	}
+}
+
+func adaptCosmosDBAccounts(modules terraform.Modules) []database.CosmosDBAccount {
+	var cosmosDBAccounts []database.CosmosDBAccount
+	for _, module := range modules {
+		for _, resource := range module.GetResourcesByType("azurerm_cosmosdb_account") {
+			cosmosDBAccounts = append(cosmosDBAccounts, adaptCosmosDBAccount(resource))
+		}
+	}
+	return cosmosDBAccounts
+}
+
+func adaptCosmosDBAccount(resource *terraform.Block) database.CosmosDBAccount {
+	ipRangeFilterAttr := resource.GetAttribute("ip_range_filter")
+	ipRangeFilterVal := ipRangeFilterAttr.AsStringValueOrDefault("", resource)
+
+	tagsAttr := resource.GetAttribute("tags")
+	var tagsVal iacTypes.MapValue
+	if tagsAttr.IsNil() {
+		tagsVal = iacTypes.MapDefault(map[string]string{}, resource.GetMetadata())
+	} else {
+		tagsVal = tagsAttr.AsMapValue()
+	}
+
+	return database.CosmosDBAccount{
+		Metadata:      resource.GetMetadata(),
+		IPRangeFilter: ipRangeFilterVal,
+		Tags:          tagsVal,
 	}
 }
