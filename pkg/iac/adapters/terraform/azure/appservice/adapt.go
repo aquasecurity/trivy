@@ -21,6 +21,9 @@ func adaptServices(modules terraform.Modules) []appservice.Service {
 			services = append(services, adaptService(resource))
 		}
 	}
+	if services == nil {
+		return []appservice.Service{}
+	}
 	return services
 }
 
@@ -31,6 +34,9 @@ func adaptFunctionApps(modules terraform.Modules) []appservice.FunctionApp {
 		for _, resource := range module.GetResourcesByType("azurerm_function_app") {
 			functionApps = append(functionApps, adaptFunctionApp(resource))
 		}
+	}
+	if functionApps == nil {
+		return []appservice.FunctionApp{}
 	}
 	return functionApps
 }

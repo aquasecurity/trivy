@@ -19,6 +19,9 @@ func adaptFunctionApps(deployment azure.Deployment) []appservice.FunctionApp {
 	for _, resource := range deployment.GetResourcesByType("Microsoft.Web/sites") {
 		functionApps = append(functionApps, adaptFunctionApp(resource))
 	}
+	if functionApps == nil {
+		return []appservice.FunctionApp{}
+	}
 	return functionApps
 }
 
@@ -26,6 +29,9 @@ func adaptServices(deployment azure.Deployment) []appservice.Service {
 	var services []appservice.Service
 	for _, resource := range deployment.GetResourcesByType("Microsoft.Web/sites") {
 		services = append(services, adaptService(resource))
+	}
+	if services == nil {
+		return []appservice.Service{}
 	}
 	return services
 }
