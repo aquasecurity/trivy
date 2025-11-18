@@ -217,6 +217,14 @@ jobs:
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
+    # The go-build (GOCACHE env) directory requires a large amount of free disk space.
+    - name: Free up disk space
+      if: matrix.operating-system == 'ubuntu-latest'
+      run: |
+        df -h
+        sudo rm -rf /usr/local/lib/android
+        sudo rm -rf /usr/share/dotnet
+        df -h
     - name: Checkout
       uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
@@ -243,3 +251,8 @@ jobs:
       with:
         version: v2.1.0
         args: build --snapshot --clean --timeout 90m ${{ steps.goreleaser_id.outputs.id }}
+
+    - name: Check free space after GoReleaser
+      run: |
+        df -h
+        du -sh $(go env GOCACHE)
