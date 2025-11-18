@@ -243,7 +243,7 @@ func TestSBOMEquivalence(t *testing.T) {
 
 			// Run "trivy sbom"
 			runTest(t, osArgs, tt.golden, types.Format(tt.args.format), runOptions{
-				override: overrideFuncs(overrideSBOMReport, overrideUID, tt.override),
+				override: overrideFuncs(overrideSBOMReport, overrideUID, overrideFingerprint, tt.override),
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})

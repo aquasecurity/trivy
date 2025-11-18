@@ -89,6 +89,7 @@
             "Name": "Amazon Linux Security Center",
             "URL": "https://alas.aws.amazon.com/"
           },
+          "Fingerprint": "sha256:4b87e2eef59ac046b40959211c0a4c52437e121ee2fedb34552c3bbf5ae51842",
           "Title": "curl: double free due to subsequent call of realloc()",
           "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
           "Severity": "MEDIUM",
@@ -161,6 +162,7 @@
             "Name": "Amazon Linux Security Center",
             "URL": "https://alas.aws.amazon.com/"
           },
+          "Fingerprint": "sha256:b489925a382f52a2f2e1a58e0e68b1c78ada14ccc2927003d2ac6de327d3aa31",
           "Title": "curl: TFTP receive heap buffer overflow in tftp_receive_packet() function",
           "Description": "A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution in libcurl versions 7.19.4 through 7.64.1.",
           "Severity": "LOW",

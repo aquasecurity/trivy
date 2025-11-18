@@ -98,6 +98,7 @@
             "Name": "Oracle Linux OVAL definitions",
             "URL": "https://linux.oracle.com/security/oval/"
           },
+          "Fingerprint": "sha256:6b218febe29fe60b77e69f6473825cf7d94ac09603d635af21b281a08b0dc1b0",
           "Title": "curl: SMTP end-of-response out-of-bounds read",
           "Description": "libcurl versions from 7.34.0 to before 7.64.0 are vulnerable to a heap out-of-bounds read in the code handling the end-of-response for SMTP. If the buffer passed to `smtp_endofresp()` isn't NUL terminated and contains no character ending the parsed number, and `len` is set to 5, then the `strtol()` call reads beyond the allocated buffer. The read contents will not be returned to the caller.",
           "Severity": "MEDIUM",
@@ -169,6 +170,7 @@
             "Name": "Oracle Linux OVAL definitions",
             "URL": "https://linux.oracle.com/security/oval/"
           },
+          "Fingerprint": "sha256:6a1430f0c4d3c46a331ce7517353e3c41b50c653176ab2a78f1d8a56f3f77c45",
           "Title": "curl: TFTP receive heap buffer overflow in tftp_receive_packet() function",
           "Description": "A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution in libcurl versions 7.19.4 through 7.64.1.",
           "Severity": "MEDIUM",

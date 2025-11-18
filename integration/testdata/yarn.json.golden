@@ -65,6 +65,7 @@
             "Name": "GitHub Security Advisory Npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
+          "Fingerprint": "sha256:23bbddd3e1db8191a5b07ecf31200cab4d339681264b902ac86b334501d10d8f",
           "Title": "jquery: Prototype pollution in object's prototype leading to denial of service, remote code execution, or property injection",
           "Description": "jQuery before 3.4.0, as used in Drupal, Backdrop CMS, and other products, mishandles jQuery.extend(true, {}, ...) because of Object.prototype pollution. If an unsanitized source object contained an enumerable __proto__ property, it could extend the native Object.prototype.",
           "Severity": "MEDIUM",

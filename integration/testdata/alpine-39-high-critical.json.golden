@@ -90,6 +90,7 @@
             "Name": "Alpine Secdb",
             "URL": "https://secdb.alpinelinux.org/"
           },
+          "Fingerprint": "sha256:294b2f8c416dd7b50971286b95e1f2685d7daf3c18957237fa7dc666178b6183",
           "Description": "musl libc through 1.1.23 has an x87 floating-point stack adjustment imbalance, related to the math/i386/ directory. In some cases, use of this library could introduce out-of-bounds writes that are not present in an application's source code.",
           "Severity": "CRITICAL",
           "CweIDs": [
@@ -136,6 +137,7 @@
             "Name": "Alpine Secdb",
             "URL": "https://secdb.alpinelinux.org/"
           },
+          "Fingerprint": "sha256:fae2ab3e458f1237c8202860ac513a204cdc999c3283eba49665d0f1b3b79856",
           "Description": "musl libc through 1.1.23 has an x87 floating-point stack adjustment imbalance, related to the math/i386/ directory. In some cases, use of this library could introduce out-of-bounds writes that are not present in an application's source code.",
           "Severity": "CRITICAL",
           "CweIDs": [

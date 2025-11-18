@@ -51,6 +51,7 @@
             "Name": "GitHub Security Advisory Pub",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apub"
           },
+          "Fingerprint": "sha256:0ec48cdcd118d8d131695d33df58c350289079a51fcfd6e9e53d48c3b5b623cc",
           "Title": "http before 0.13.3 vulnerable to header injection",
           "Description": "An issue was discovered in the http package before 0.13.3 for Dart. If the attacker controls the HTTP method and the app is using Request directly, it's possible to achieve CRLF injection in an HTTP request via HTTP header injection. This issue has been addressed in commit abb2bb182 by validating request methods.",
           "Severity": "MEDIUM",

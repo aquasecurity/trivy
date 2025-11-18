@@ -78,6 +78,7 @@
             "Name": "GitHub Security Advisory Pip",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
           },
+          "Fingerprint": "sha256:aa64e889de7c75491704abe3a427c786acb12261fbffaaa93547c2e67d13c344",
           "Title": "python-werkzeug: insufficient debugger PIN randomness vulnerability",
           "Description": "Pallets Werkzeug before 0.15.3, when used with Docker, has insufficient debugger PIN randomness because Docker containers share the same machine id.",
           "Severity": "HIGH",
@@ -135,6 +136,7 @@
             "Name": "GitHub Security Advisory Pip",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
           },
+          "Fingerprint": "sha256:18bbe0c4a1942e5d43645bba04a0067358adccbaa71922ba4d269c78100cd018",
           "Title": "python-werkzeug: open redirect via double slash in the URL",
           "Description": "Open redirect vulnerability in werkzeug before 0.11.6 via a double slash in the URL.",
           "Severity": "MEDIUM",
