@@ -25,7 +25,7 @@ $ ./trivy -h
 Or if you want to use [delve](https://github.com/go-delve/delve) for debugging, build with the following command:
 
 ```shell
-$ mage build:debug
+$ mage build:dev
 $ dlv exec ./trivy-debug -h
 ```
 
