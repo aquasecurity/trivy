@@ -9,20 +9,27 @@ type AppService struct {
 	FunctionApps []FunctionApp
 }
 
+type Identity struct {
+	Metadata iacTypes.Metadata
+	Type     iacTypes.StringValue
+}
+
+type Authentication struct {
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
+}
+
 type Service struct {
 	Metadata         iacTypes.Metadata
 	EnableClientCert iacTypes.BoolValue
 	HTTPSOnly        iacTypes.BoolValue
-	Identity         struct {
-		Type iacTypes.StringValue
-	}
-	Authentication struct {
-		Enabled iacTypes.BoolValue
-	}
-	Site Site
+	Identity         Identity
+	Authentication   Authentication
+	Site             Site
 }
 
 type Site struct {
+	Metadata          iacTypes.Metadata
 	EnableHTTP2       iacTypes.BoolValue
 	MinimumTLSVersion iacTypes.StringValue
 	PHPVersion        iacTypes.StringValue

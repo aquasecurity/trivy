@@ -25,8 +25,8 @@ func TestAdapt(t *testing.T) {
   ]
 }`,
 			expected: appservice.AppService{
-				FunctionApps: []appservice.FunctionApp{{}},
 				Services:     []appservice.Service{{}},
+				FunctionApps: []appservice.FunctionApp{{}},
 			},
 		},
 		{
@@ -60,10 +60,10 @@ func TestAdapt(t *testing.T) {
 				Services: []appservice.Service{{
 					EnableClientCert: types.BoolTest(true),
 					HTTPSOnly:        types.BoolTest(true),
-					Identity: struct{ Type types.StringValue }{
+					Identity: appservice.Identity{
 						Type: types.StringTest("SystemAssigned"),
 					},
-					Authentication: struct{ Enabled types.BoolValue }{
+					Authentication: appservice.Authentication{
 						Enabled: types.BoolTest(true),
 					},
 					Site: appservice.Site{
@@ -86,5 +86,4 @@ func TestAdapt(t *testing.T) {
 			adaptertest.AdaptAndCompare(t, tt.source, tt.expected, Adapt)
 		})
 	}
-
 }
