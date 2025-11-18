@@ -221,13 +221,11 @@ jobs:
     - name: Free up disk space
       if: matrix.operating-system == 'ubuntu-latest'
       run: |
-        df -h
         sudo rm -rf /usr/local/lib/android
         sudo rm -rf /usr/share/dotnet
         sudo rm -rf /opt/ghc
         sudo rm -rf /opt/hostedtoolcache/CodeQL
         sudo docker image prune --all --force
-        df -h
     - name: Checkout
       uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
@@ -247,20 +245,10 @@ jobs:
           echo "id=--id build-macos --id build-bsd" >> $GITHUB_OUTPUT
         else
           echo "id=--id build-linux" >> $GITHUB_OUTPUT
-        fi
-
-    - name: Check free space before GoReleaser
-      run: |
-        df -h
-        du -sh $(go env GOCACHE)        
+        fi 
 
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@e435ccd777264be153ace6237001ef4d979d3a7a # v6.4.0
       with:
         version: v2.1.0
         args: build --snapshot --clean --timeout 90m ${{ steps.goreleaser_id.outputs.id }}
-
-    - name: Check free space after GoReleaser
-      run: |
-        df -h
-        du -sh $(go env GOCACHE)
