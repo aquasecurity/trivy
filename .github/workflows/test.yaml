@@ -247,7 +247,7 @@ jobs:
           echo "id=--id build-macos --id build-bsd" >> $GITHUB_OUTPUT
         else
           echo "id=--id build-linux" >> $GITHUB_OUTPUT
-        fi 
+        fi
 
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@e435ccd777264be153ace6237001ef4d979d3a7a # v6.4.0
