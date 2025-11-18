@@ -224,6 +224,9 @@ jobs:
         df -h
         sudo rm -rf /usr/local/lib/android
         sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /opt/ghc
+        sudo rm -rf /opt/hostedtoolcache/CodeQL
+        sudo docker image prune --all --force
         df -h
     - name: Checkout
       uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
