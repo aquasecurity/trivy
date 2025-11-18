@@ -427,20 +427,6 @@ func Label() error {
 
 type Docs mg.Namespace
 
-// Prepare CSS
-func (Docs) Css() error {
-	const (
-		homepageSass = "docs/assets/css/trivy_v1_styles.scss"
-	)
-	homepageCss := strings.TrimSuffix(homepageSass, ".scss") + ".min.css"
-	if updated, err := target.Path(homepageCss, homepageSass); err != nil {
-		return err
-	} else if !updated {
-		return nil
-	}
-	return sh.Run("sass", "--no-source-map", "--style=compressed", homepageSass, homepageCss)
-}
-
 // Prepare python requirements
 func (Docs) Pip() error {
 	const (

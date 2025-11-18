@@ -16,7 +16,7 @@ Use one of the official Trivy images:
 | AWS Elastic Container Registry (ECR) | `public.ecr.aws/aquasecurity/trivy` | https://gallery.ecr.aws/aquasecurity/trivy |
 
 !!! Tip
-    It is advisable to mount a persistent [cache dir](../docs/configuration/cache.md) on the host into the Trivy container.
+    It is advisable to mount a persistent [cache dir](../guide/configuration/cache.md) on the host into the Trivy container.
 
 !!! Tip
     For scanning container images with Trivy, mount the container engine socket from the host into the Trivy container.
