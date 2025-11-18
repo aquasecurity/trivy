@@ -18,8 +18,15 @@ Install the necessary tools for development by following their respective instal
 After making changes to the Go source code, build the project with the following command:
 
 ```shell
-$ mage build
+$ mage build:prod
 $ ./trivy -h
+```
+
+Or if you want to use [delve](https://github.com/go-delve/delve) for debugging, build with the following command:
+
+```shell
+$ mage build:debug
+$ dlv exec ./trivy-debug -h
 ```
 
 ### Lint

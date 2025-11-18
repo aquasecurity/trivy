@@ -47,12 +47,17 @@ func version() (string, error) {
 	return strings.TrimPrefix(ver, "v"), nil
 }
 
-func buildLdflags() (string, error) {
+func buildLdflags(debug bool) (string, error) {
 	ver, err := version()
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("-s -w -X=github.com/aquasecurity/trivy/pkg/version/app.ver=%s", ver), nil
+
+	if debug {
+		return fmt.Sprintf("-X=github.com/aquasecurity/trivy/pkg/version/app.ver=%s", ver), nil
+	} else {
+		return fmt.Sprintf("-s -w -X=github.com/aquasecurity/trivy/pkg/version/app.ver=%s", ver), nil
+	}
 }
 
 type Tool mg.Namespace
@@ -374,15 +379,33 @@ func Tidy() error {
 	return sh.RunV("go", "mod", "tidy")
 }
 
-// Build builds Trivy
-func Build() error {
+type Build mg.Namespace
+
+// Prod build Trivy without debug symbols
+func (b Build) Prod() error {
+	fmt.Println("Building Trivy production binary")
+	return build(false)
+}
+
+// Dev build Trivy with debug symbols
+func (b Build) Dev() error {
+	fmt.Println("Building Trivy debug binary")
+	return build(true)
+}
+
+func build(debug bool) error {
 	if updated, err := target.Dir("trivy", "pkg", "cmd"); err != nil {
 		return err
 	} else if !updated {
 		return nil
 	}
 
-	ldflags, err := buildLdflags()
+	execName := "trivy"
+	if debug {
+		execName = "trivy-debug"
+	}
+
+	ldflags, err := buildLdflags(debug)
 	if err != nil {
 		return err
 	}
@@ -390,12 +413,13 @@ func Build() error {
 	if err != nil {
 		return err
 	}
-	return sh.RunWith(ENV, "go", "build", "-ldflags", ldflags, filepath.Join(wd, "cmd", "trivy"))
+	return sh.RunWith(ENV, "go", "build", "-o", execName, "-ldflags", ldflags,
+		filepath.Join(wd, "cmd", "trivy"))
 }
 
 // Install installs Trivy
 func Install() error {
-	ldflags, err := buildLdflags()
+	ldflags, err := buildLdflags(false)
 	if err != nil {
 		return err
 	}
