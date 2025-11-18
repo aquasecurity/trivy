@@ -16,7 +16,7 @@ Some scanners run on the client side, even in client/server mode.
 |     License      |         Server          |
 
 !!! note
-    Scanning of misconfigurations and licenses is performed on the client side (as in standalone mode).
+    Scanning of misconfigurations and secrets is performed on the client side (as in standalone mode).
     Otherwise, the client would need to send files to the server that may contain sensitive information.
 
 ## Server
