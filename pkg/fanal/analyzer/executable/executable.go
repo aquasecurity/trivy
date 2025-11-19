@@ -28,7 +28,7 @@ func (a executableAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisIn
 		return nil, nil
 	}
 
-	dig, err := digest.CalcSHA256(input.Content)
+	dig, err := digest.CalcSHA256FromReader(input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("sha256 error: %w", err)
 	}

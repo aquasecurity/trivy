@@ -43,7 +43,7 @@ func (*parser) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]types.Package, 
 			if err != nil {
 				// Show log once per file
 				once.Do(func() {
-					// e.g. https://trivy.dev/latest/docs/coverage/os/conda/#license_1
+					// e.g. https://trivy.dev/docs/latest/coverage/os/conda/#license_1
 					log.WithPrefix("conda").Debug(fmt.Sprintf("License not found. See %s for details.", doc.URL("docs/coverage/os/conda/", "license_1")),
 						log.String("pkg", pkg.Name), log.Err(err))
 				})

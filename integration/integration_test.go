@@ -498,6 +498,25 @@ func overrideUID(t *testing.T, want, got *types.Report) {
 	}
 }
 
+// overrideFingerprint only checks for the presence of the fingerprint and clears it;
+// the fingerprint is calculated from artifactID, target, pkgID, and vulnerabilityID,
+// but may not match as the artifactID can vary depending on the scanning context.
+func overrideFingerprint(t *testing.T, want, got *types.Report) {
+	for i, result := range got.Results {
+		for j, vuln := range result.Vulnerabilities {
+			assert.NotEmptyf(t, vuln.Fingerprint, "Fingerprint is empty: %s", vuln.VulnerabilityID)
+			assert.Lenf(t, vuln.Fingerprint, 71, "Fingerprint should be 71 characters (sha256: + 64 hex chars): %s", vuln.VulnerabilityID)
+			// Do not compare Fingerprint as the artifactID varies between tests
+			got.Results[i].Vulnerabilities[j].Fingerprint = ""
+		}
+	}
+	for i, result := range want.Results {
+		for j := range result.Vulnerabilities {
+			want.Results[i].Vulnerabilities[j].Fingerprint = ""
+		}
+	}
+}
+
 // overrideDockerRemovedFields clears image config fields that were removed from Docker API
 // cf. https://github.com/moby/moby/blob/d0ad1357a141c795e1e0490e3fed00ddabcb91b9/docs/api/version-history.md
 func overrideDockerRemovedFields(_ *testing.T, want, got *types.Report) {

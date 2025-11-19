@@ -81,10 +81,8 @@ func Test_adaptInstances(t *testing.T) {
 						IsDefault: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 					CanIPForward:                iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					OSLoginEnabled:              iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					EnableProjectSSHKeyBlocking: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 					EnableSerialPort:            iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-
 					BootDisks: []compute.Disk{
 						{
 							Metadata: iacTypes.NewTestMetadata(),
@@ -152,6 +150,26 @@ func Test_adaptInstances(t *testing.T) {
 					OSLoginEnabled:              iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 					EnableProjectSSHKeyBlocking: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					EnableSerialPort:            iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				},
+			},
+		},
+		{
+			name: "handles metadata values in various formats",
+			terraform: `resource "google_compute_instance" "example" {
+	name = "test"
+
+	metadata = {
+		enable-oslogin = "True"
+		block-project-ssh-keys = 1
+		serial-port-enable = "yes"
+	}
+}`,
+			expected: []compute.Instance{
+				{
+					Name:                        iacTypes.StringTest("test"),
+					OSLoginEnabled:              iacTypes.BoolTest(true),
+					EnableSerialPort:            iacTypes.BoolTest(true),
+					EnableProjectSSHKeyBlocking: iacTypes.BoolTest(true),
 				},
 			},
 		},

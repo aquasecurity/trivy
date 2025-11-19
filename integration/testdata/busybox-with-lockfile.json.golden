@@ -93,6 +93,7 @@
             "Name": "RustSec Advisory Database",
             "URL": "https://github.com/RustSec/advisory-db"
           },
+          "Fingerprint": "sha256:bfae72d3823b3bfdea9a6be46c5615a187df54835c8d0884e4e228be9ccea9df",
           "Title": "Uncontrolled recursion leads to abort in HTML serialization",
           "Description": "An issue was discovered in the ammonia crate before 2.1.0 for Rust. There is uncontrolled recursion during HTML DOM tree serialization.",
           "Severity": "HIGH",
@@ -139,6 +140,7 @@
             "Name": "RustSec Advisory Database",
             "URL": "https://github.com/RustSec/advisory-db"
           },
+          "Fingerprint": "sha256:88b962523a98404a7807da75a3d208735778884a634ea21067683084a258c0bc",
           "Title": "Incorrect handling of embedded SVG and MathML leads to mutation XSS",
           "Description": "An issue was discovered in the ammonia crate before 3.1.0 for Rust. XSS can occur because the parsing differences for HTML, SVG, and MathML are mishandled, a similar issue to CVE-2020-26870.",
           "Severity": "MEDIUM",

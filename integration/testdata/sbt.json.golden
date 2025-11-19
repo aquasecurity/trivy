@@ -28,6 +28,7 @@
             "Name": "GitHub Security Advisory Maven",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven"
           },
+          "Fingerprint": "sha256:5041dfe19323df2a9efd7b1330da7e17d55b6a3e7677fb33f456cdba6fa1c130",
           "Title": "jackson-databind: Serialization gadgets in anteros-core",
           "Description": "FasterXML jackson-databind 2.x before 2.9.10.4 mishandles the interaction between serialization gadgets and typing, related to br.com.anteros.dbcp.AnterosDBCPConfig (aka anteros-core).",
           "Severity": "CRITICAL",
@@ -93,6 +94,7 @@
             "Name": "GitLab Advisory Database Community",
             "URL": "https://gitlab.com/gitlab-org/advisories-community"
           },
+          "Fingerprint": "sha256:bccb32c5dccac94eda00dcd6c75ef35b85bb9aa07503c4b717295f49f00146af",
           "Title": "jackson-databind: mishandles the interaction between serialization gadgets and typing, related to javax.swing",
           "Description": "A flaw was found in jackson-databind before 2.9.10.7. FasterXML mishandles the interaction between serialization gadgets and typing. The highest threat from this vulnerability is to data confidentiality and integrity as well as system availability.",
           "Severity": "HIGH",

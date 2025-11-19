@@ -1,6 +1,6 @@
 # Custom Compliance Spec
 
-Trivy supports several different compliance specs. The details on compliance scanning with Trivy are provided in the [compliance documentation](../../docs/compliance/compliance.md).
+Trivy supports several different compliance specs. The details on compliance scanning with Trivy are provided in the [compliance documentation](../../guide/compliance/compliance.md).
 All of the Compliance Specs currently available in Trivy can be found in the `trivy-checks/pkg/specs/compliance/` directory ([Link](https://github.com/aquasecurity/trivy-checks/tree/main/pkg/specs/compliance)).
 
 New checks are based on the custom compliance report detailed in the [main documentation.](./compliance.md#custom-compliance)
