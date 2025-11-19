@@ -43,7 +43,9 @@ func adaptSecurityGroupRules(deployment azure.Deployment) (rules []network.Secur
 
 func adaptSecurityGroupRule(resource azure.Resource) network.SecurityGroupRule {
 	sourceAddressPrefixes := resource.Properties.GetMapValue("sourceAddressPrefixes").AsStringValuesList("")
-	sourceAddressPrefixes = append(sourceAddressPrefixes, resource.Properties.GetMapValue("sourceAddressPrefix").AsStringValue("", resource.Metadata))
+	if prefix := resource.Properties.GetMapValue("sourceAddressPrefix").AsStringValue("", resource.Metadata); prefix.IsNotEmpty() {
+		sourceAddressPrefixes = append(sourceAddressPrefixes, prefix)
+	}
 
 	var sourcePortRanges []common.PortRange
 	for _, portRange := range resource.Properties.GetMapValue("sourcePortRanges").AsList() {
@@ -57,7 +59,9 @@ func adaptSecurityGroupRule(resource azure.Resource) network.SecurityGroupRule {
 	}
 
 	destinationAddressPrefixes := resource.Properties.GetMapValue("destinationAddressPrefixes").AsStringValuesList("")
-	destinationAddressPrefixes = append(destinationAddressPrefixes, resource.Properties.GetMapValue("destinationAddressPrefix").AsStringValue("", resource.Metadata))
+	if prefix := resource.Properties.GetMapValue("destinationAddressPrefix").AsStringValue("", resource.Metadata); prefix.IsNotEmpty() {
+		destinationAddressPrefixes = append(destinationAddressPrefixes, prefix)
+	}
 
 	var destinationPortRanges []common.PortRange
 	for _, portRange := range resource.Properties.GetMapValue("destinationPortRanges").AsList() {
@@ -115,12 +119,10 @@ func adaptNetworkWatcherFlowLog(resource azure.Resource) network.NetworkWatcherF
 }
 
 func adaptNetworkInterfaces(deployment azure.Deployment) []network.NetworkInterface {
-	var networkInterfaces = make([]network.NetworkInterface, 0)
-
+	var networkInterfaces []network.NetworkInterface
 	for _, resource := range deployment.GetResourcesByType("Microsoft.Network/networkInterfaces") {
 		networkInterfaces = append(networkInterfaces, adaptNetworkInterface(resource, deployment))
 	}
-
 	return networkInterfaces
 }
 
@@ -130,63 +132,29 @@ func adaptNetworkInterface(resource azure.Resource, _ azure.Deployment) network.
 		EnableIPForwarding: resource.Properties.GetMapValue("enableIPForwarding").AsBoolValue(false, resource.Metadata),
 		HasPublicIP:        iacTypes.BoolDefault(false, resource.Metadata),
 		PublicIPAddress:    iacTypes.StringDefault("", resource.Metadata),
-		SecurityGroups:     nil,
 		SubnetID:           iacTypes.StringDefault("", resource.Metadata),
 	}
 
 	ipConfigs := resource.Properties.GetMapValue("ipConfigurations").AsList()
 	ni.IPConfigurations = make([]network.IPConfiguration, 0, len(ipConfigs))
 
-	var primaryConfigSet bool
-
 	for _, ipConfig := range ipConfigs {
 		if ipConfig.IsNull() {
 			continue
 		}
-
-		ipConfigMeta := resource.Metadata
-		subnetID := ipConfig.GetMapValue("subnet").GetMapValue("id").AsStringValue("", resource.Metadata)
-		publicIP := ipConfig.GetMapValue("publicIPAddress")
-		hasPublicIP := iacTypes.BoolDefault(false, ipConfigMeta)
-		publicIPAddress := iacTypes.StringDefault("", ipConfigMeta)
-		primary := ipConfig.GetMapValue("primary").AsBoolValue(false, ipConfigMeta)
-
-		if !publicIP.IsNull() {
-			hasPublicIP = iacTypes.Bool(true, ipConfigMeta)
-			if publicIPID := publicIP.GetMapValue("id").AsStringValue("", resource.Metadata); publicIPID.Value() != "" {
-				publicIPAddress = publicIPID
-			}
-		}
-
-		ipConfiguration := network.IPConfiguration{
-			Metadata:        ipConfigMeta,
-			HasPublicIP:     hasPublicIP,
-			PublicIPAddress: publicIPAddress,
-			SubnetID:        subnetID,
-			Primary:         primary,
-		}
-
-		ni.IPConfigurations = append(ni.IPConfigurations, ipConfiguration)
-
-		// For backward compatibility, populate the single-value fields with the primary configuration
-		// If no primary is set, use the first configuration
-		isPrimary := primary.Value() || (len(ni.IPConfigurations) == 1 && !primaryConfigSet && primary.GetMetadata().IsDefault())
-		if isPrimary && !primaryConfigSet {
-			if subnetID.Value() != "" {
-				ni.SubnetID = subnetID
-			}
-			if hasPublicIP.Value() {
-				ni.HasPublicIP = hasPublicIP
-				if publicIPAddress.Value() != "" {
-					ni.PublicIPAddress = publicIPAddress
-				}
-			}
-			primaryConfigSet = true
-		}
+		ipConfigProps := ipConfig.GetMapValue("properties")
+		ni.IPConfigurations = append(ni.IPConfigurations, network.IPConfiguration{
+			Metadata: resource.Metadata,
+			PublicIPAddress: ipConfigProps.GetMapValue("publicIPAddress").
+				GetMapValue("id").AsStringValue("", resource.Metadata),
+			SubnetID: ipConfigProps.GetMapValue("subnet").
+				GetMapValue("id").AsStringValue("", resource.Metadata),
+			Primary: ipConfigProps.GetMapValue("primary").AsBoolValue(false, resource.Metadata),
+		})
 	}
+	ni.Setup()
 
 	// Note: SecurityGroups are not resolved for ARM templates as related resource search
 	// is not yet implemented for ARM (parser cannot evaluate expressions/references)
-
 	return ni
 }

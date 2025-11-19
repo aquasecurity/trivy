@@ -143,13 +143,12 @@ func adaptWindowsVM(resource *terraform.Block, modules terraform.Modules) comput
 }
 
 func resolveNetworkInterfaces(resource *terraform.Block, modules terraform.Modules) []network.NetworkInterface {
-	var networkInterfaces []network.NetworkInterface
-
 	nicIDsAttr := resource.GetAttribute("network_interface_ids")
 	if nicIDsAttr.IsNil() {
-		return networkInterfaces
+		return nil
 	}
 
+	var networkInterfaces []network.NetworkInterface
 	for _, nicIDVal := range nicIDsAttr.AsStringValues() {
 		if referencedNIC, err := modules.GetReferencedBlock(nicIDsAttr, resource); err == nil {
 			ni := anetwork.AdaptNetworkInterface(referencedNIC, modules)
@@ -161,10 +160,8 @@ func resolveNetworkInterfaces(resource *terraform.Block, modules terraform.Modul
 			Metadata:           iacTypes.NewUnmanagedMetadata(),
 			EnableIPForwarding: iacTypes.BoolDefault(false, nicIDVal.GetMetadata()),
 			SubnetID:           iacTypes.StringDefault("", nicIDVal.GetMetadata()),
-			SecurityGroups:     nil,
 			HasPublicIP:        iacTypes.BoolDefault(false, nicIDVal.GetMetadata()),
 			PublicIPAddress:    iacTypes.StringDefault("", nicIDVal.GetMetadata()),
-			IPConfigurations:   nil,
 		})
 	}
 

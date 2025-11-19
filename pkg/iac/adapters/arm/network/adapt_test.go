@@ -35,19 +35,11 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: network.Network{
 				NetworkWatcherFlowLogs: []network.NetworkWatcherFlowLog{{
-					Enabled: types.BoolTest(false),
-					RetentionPolicy: network.RetentionPolicy{
-						Days:    types.IntTest(0),
-						Enabled: types.BoolTest(false),
-					},
+					RetentionPolicy: network.RetentionPolicy{},
 				}},
 				SecurityGroups: []network.SecurityGroup{{
-					Rules: []network.SecurityGroupRule{{
-						DestinationAddresses: []types.StringValue{types.StringTest("")},
-						SourceAddresses:      []types.StringValue{types.StringTest("")},
-					}},
+					Rules: []network.SecurityGroupRule{{}},
 				}},
-				NetworkInterfaces: []network.NetworkInterface{},
 			},
 		},
 		{
@@ -98,7 +90,6 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: network.Network{
 				NetworkWatcherFlowLogs: []network.NetworkWatcherFlowLog{{
-					Enabled: types.BoolTest(false),
 					RetentionPolicy: network.RetentionPolicy{
 						Days:    types.IntTest(100),
 						Enabled: types.BoolTest(true),
@@ -148,7 +139,71 @@ func TestAdapt(t *testing.T) {
 						},
 					}},
 				}},
-				NetworkInterfaces: []network.NetworkInterface{},
+			},
+		},
+		{
+			name: "network interface with ip configurations",
+			source: `{
+			"resources": [
+				{
+					"type": "Microsoft.Network/networkInterfaces",
+					"properties": {
+						"enableIPForwarding": true,
+						"ipConfigurations": [
+							{
+								"name": "primary-ip",
+								"properties": {
+									"primary": true,
+									"subnet": {
+										"id": "/subscriptions/abc/resourceGroups/rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/subnet-primary"
+									},
+									"publicIPAddress": {
+										"id": "/subscriptions/abc/resourceGroups/rg/providers/Microsoft.Network/publicIPAddresses/pip-primary"
+									}
+								}
+							},
+							{
+								"name": "secondary-ip",
+								"properties": {
+									"primary": false,
+									"subnet": {
+										"id": "/subscriptions/abc/resourceGroups/rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/subnet-secondary"
+									}
+								}
+							}
+						]
+					}
+				}
+			]
+		}`,
+			expected: network.Network{
+				NetworkInterfaces: []network.NetworkInterface{
+					{
+						EnableIPForwarding: types.BoolTest(true),
+
+						// backward compatibility — filled from primary config
+						SubnetID:        types.StringTest("/subscriptions/abc/resourceGroups/rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/subnet-primary"),
+						HasPublicIP:     types.BoolTest(true),
+						PublicIPAddress: types.StringTest("/subscriptions/abc/resourceGroups/rg/providers/Microsoft.Network/publicIPAddresses/pip-primary"),
+
+						IPConfigurations: []network.IPConfiguration{
+							{
+								Primary: types.BoolTest(true),
+								SubnetID: types.StringTest(
+									"/subscriptions/abc/resourceGroups/rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/subnet-primary",
+								),
+								HasPublicIP:     types.BoolTest(true),
+								PublicIPAddress: types.StringTest("/subscriptions/abc/resourceGroups/rg/providers/Microsoft.Network/publicIPAddresses/pip-primary"),
+							},
+							{
+								Primary:         types.BoolTest(false),
+								SubnetID:        types.StringTest("/subscriptions/abc/resourceGroups/rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/subnet-secondary"),
+								HasPublicIP:     types.BoolTest(false),
+								PublicIPAddress: types.StringTest(""),
+							},
+						},
+					},
+				},
 			},
 		},
 	}

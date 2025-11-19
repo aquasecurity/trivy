@@ -106,19 +106,10 @@ func extractNetworkInterfaces(networkProfile azure.Value, metadata iacTypes.Meta
 			// EnableIPForwarding is not available from the VM's networkProfile, so it defaults to false
 			// Since we only have a reference to the network interface (not the full resource),
 			// we mark it as unmanaged so that Rego policies can skip it using isManaged() checks
-			unmanagedMetadata := iacTypes.NewUnmanagedMetadata()
-			networkInterface := network.NetworkInterface{
-				Metadata:           unmanagedMetadata,
-				EnableIPForwarding: iacTypes.BoolDefault(false, unmanagedMetadata),
-				SubnetID:           iacTypes.StringDefault("", unmanagedMetadata),
-				SecurityGroups:     nil,
-				HasPublicIP:        iacTypes.BoolDefault(false, unmanagedMetadata),
-				PublicIPAddress:    iacTypes.StringDefault("", unmanagedMetadata),
-				IPConfigurations:   nil,
-			}
-			networkInterfaces = append(networkInterfaces, networkInterface)
+			networkInterfaces = append(networkInterfaces, network.NetworkInterface{
+				Metadata: iacTypes.NewUnmanagedMetadata(),
+			})
 		}
 	}
-
 	return networkInterfaces
 }

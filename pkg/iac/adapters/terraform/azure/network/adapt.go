@@ -2,6 +2,7 @@ package network
 
 import (
 	"github.com/google/uuid"
+	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
@@ -113,7 +114,7 @@ func adaptWatcherLog(resource *terraform.Block) network.NetworkWatcherFlowLog {
 }
 
 func adaptNetworkInterfaces(modules terraform.Modules) []network.NetworkInterface {
-	var networkInterfaces = make([]network.NetworkInterface, 0)
+	var networkInterfaces []network.NetworkInterface
 
 	for _, module := range modules {
 		for _, resource := range module.GetResourcesByType("azurerm_network_interface") {
@@ -151,65 +152,26 @@ func AdaptNetworkInterface(resource *terraform.Block, modules terraform.Modules)
 	ipConfigs := resource.GetBlocks("ip_configuration")
 	ni.IPConfigurations = make([]network.IPConfiguration, 0, len(ipConfigs))
 
-	var primaryConfigSet bool
-
 	for _, ipConfig := range ipConfigs {
-		ipConfigMeta := ipConfig.GetMetadata()
-		subnetID := iacTypes.StringDefault("", ipConfigMeta)
-		hasPublicIP := iacTypes.BoolDefault(false, ipConfigMeta)
-		publicIPAddress := iacTypes.StringDefault("", ipConfigMeta)
-		primary := iacTypes.BoolDefault(false, ipConfigMeta)
-
-		if subnetAttr := ipConfig.GetAttribute("subnet_id"); subnetAttr.IsNotNil() {
-			subnetID = subnetAttr.AsStringValueOrDefault("", ipConfig)
-		}
-
-		if publicIPAttr := ipConfig.GetAttribute("public_ip_address_id"); publicIPAttr.IsNotNil() {
-			hasPublicIP = iacTypes.Bool(true, publicIPAttr.GetMetadata())
-			publicIPAddress = publicIPAttr.AsStringValueOrDefault("", ipConfig)
-		}
-
-		if primaryAttr := ipConfig.GetAttribute("primary"); primaryAttr.IsNotNil() {
-			primary = primaryAttr.AsBoolValueOrDefault(false, ipConfig)
-		}
-
 		ipConfiguration := network.IPConfiguration{
-			Metadata:        ipConfigMeta,
-			HasPublicIP:     hasPublicIP,
-			PublicIPAddress: publicIPAddress,
-			SubnetID:        subnetID,
-			Primary:         primary,
+			Metadata:        ipConfig.GetMetadata(),
+			PublicIPAddress: ipConfig.GetAttribute("public_ip_address_id").AsStringValueOrDefault("", ipConfig),
+			SubnetID:        ipConfig.GetAttribute("subnet_id").AsStringValueOrDefault("", ipConfig),
+			Primary:         ipConfig.GetAttribute("primary").AsBoolValueOrDefault(false, ipConfig),
 		}
-
 		ni.IPConfigurations = append(ni.IPConfigurations, ipConfiguration)
-
-		// For backward compatibility, populate the single-value fields with the primary configuration
-		// If no primary is set, use the first configuration
-		isPrimary := primary.Value() || (len(ni.IPConfigurations) == 1 && !primaryConfigSet && primary.GetMetadata().IsDefault())
-		if isPrimary && !primaryConfigSet {
-			if subnetID.Value() != "" {
-				ni.SubnetID = subnetID
-			}
-			if hasPublicIP.Value() {
-				ni.HasPublicIP = hasPublicIP
-				if publicIPAddress.Value() != "" {
-					ni.PublicIPAddress = publicIPAddress
-				}
-			}
-			primaryConfigSet = true
-		}
 	}
-
+	ni.Setup()
 	return ni
 }
 
 func adaptSecurityGroupFromBlock(resource *terraform.Block) network.SecurityGroup {
-	var rules []network.SecurityGroupRule
-	for _, ruleBlock := range resource.GetBlocks("security_rule") {
-		rules = append(rules, AdaptSGRule(ruleBlock))
-	}
 	return network.SecurityGroup{
 		Metadata: resource.GetMetadata(),
-		Rules:    rules,
+		Rules: lo.Map(resource.GetBlocks("security_rule"),
+			func(b *terraform.Block, _ int) network.SecurityGroupRule {
+				return AdaptSGRule(b)
+			},
+		),
 	}
 }

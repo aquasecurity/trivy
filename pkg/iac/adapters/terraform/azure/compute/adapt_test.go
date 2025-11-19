@@ -29,10 +29,8 @@ resource "azurerm_managed_disk" "example" {
 	}
 }`,
 			expected: compute.ManagedDisk{
-				Metadata: iacTypes.NewTestMetadata(),
 				Encryption: compute.Encryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					Enabled: iacTypes.BoolTest(false),
 				},
 			},
 		},
@@ -42,10 +40,8 @@ resource "azurerm_managed_disk" "example" {
 resource "azurerm_managed_disk" "example" {
 }`,
 			expected: compute.ManagedDisk{
-				Metadata: iacTypes.NewTestMetadata(),
 				Encryption: compute.Encryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					Enabled: iacTypes.BoolTest(true),
 				},
 			},
 		},
@@ -86,14 +82,10 @@ resource "azurerm_virtual_machine" "example" {
 }
 `,
 			expected: compute.LinuxVirtualMachine{
-				Metadata: iacTypes.NewTestMetadata(),
-				VirtualMachine: compute.VirtualMachine{
-					Metadata:   iacTypes.NewTestMetadata(),
-					CustomData: iacTypes.String("", iacTypes.NewTestMetadata()),
-				},
+				Metadata:       iacTypes.NewTestMetadata(),
+				VirtualMachine: compute.VirtualMachine{},
 				OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
-					Metadata:                      iacTypes.NewTestMetadata(),
-					DisablePasswordAuthentication: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					DisablePasswordAuthentication: iacTypes.BoolTest(true),
 				},
 			},
 		},
@@ -112,17 +104,11 @@ export DATABASE_PASSWORD=\"SomeSortOfPassword\"
 	}
 }`,
 			expected: compute.LinuxVirtualMachine{
-				Metadata: iacTypes.NewTestMetadata(),
 				VirtualMachine: compute.VirtualMachine{
-					Metadata: iacTypes.NewTestMetadata(),
-					CustomData: iacTypes.String(
-						`export DATABASE_PASSWORD=\"SomeSortOfPassword\"
-`, iacTypes.NewTestMetadata()),
+					CustomData: iacTypes.StringTest(
+						"export DATABASE_PASSWORD=\\\"SomeSortOfPassword\\\"\n"),
 				},
-				OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
-					Metadata:                      iacTypes.NewTestMetadata(),
-					DisablePasswordAuthentication: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				},
+				OSProfileLinuxConfig: compute.OSProfileLinuxConfig{},
 			},
 		},
 		{
@@ -181,23 +167,15 @@ resource "azurerm_network_security_group" "example" {
 }
 `,
 			expected: compute.LinuxVirtualMachine{
-				Metadata: iacTypes.NewTestMetadata(),
 				VirtualMachine: compute.VirtualMachine{
-					Metadata:   iacTypes.NewTestMetadata(),
-					CustomData: iacTypes.String("", iacTypes.NewTestMetadata()),
 					NetworkInterfaces: []network.NetworkInterface{
 						{
-							Metadata:           iacTypes.NewTestMetadata(),
-							EnableIPForwarding: iacTypes.BoolDefault(false, iacTypes.NewTestMetadata()),
-							HasPublicIP:        iacTypes.BoolTest(true),
-							PublicIPAddress:    iacTypes.String("test-public-ip-id", iacTypes.NewTestMetadata()),
+							HasPublicIP:     iacTypes.BoolTest(true),
+							PublicIPAddress: iacTypes.StringTest("test-public-ip-id"),
 							IPConfigurations: []network.IPConfiguration{
 								{
-									Metadata:        iacTypes.NewTestMetadata(),
-									HasPublicIP:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-									PublicIPAddress: iacTypes.String("test-public-ip-id", iacTypes.NewTestMetadata()),
-									SubnetID:        iacTypes.String("", iacTypes.NewTestMetadata()),
-									Primary:         iacTypes.BoolDefault(false, iacTypes.NewTestMetadata()),
+									HasPublicIP:     iacTypes.BoolTest(true),
+									PublicIPAddress: iacTypes.StringTest("test-public-ip-id"),
 								},
 							},
 							SecurityGroups: []network.SecurityGroup{
@@ -218,8 +196,7 @@ resource "azurerm_network_security_group" "example" {
 					},
 				},
 				OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
-					Metadata:                      iacTypes.NewTestMetadata(),
-					DisablePasswordAuthentication: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					DisablePasswordAuthentication: iacTypes.BoolTest(true),
 				},
 			},
 		},
@@ -240,16 +217,11 @@ resource "azurerm_linux_virtual_machine" "example" {
 	}
 }`,
 			expected: compute.LinuxVirtualMachine{
-				Metadata: iacTypes.NewTestMetadata(),
 				VirtualMachine: compute.VirtualMachine{
-					Metadata:   iacTypes.NewTestMetadata(),
-					CustomData: iacTypes.String("", iacTypes.NewTestMetadata()),
 					// Empty array in Terraform is parsed as nil
-					NetworkInterfaces: nil,
 				},
 				OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
-					Metadata:                      iacTypes.NewTestMetadata(),
-					DisablePasswordAuthentication: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					DisablePasswordAuthentication: iacTypes.BoolTest(true),
 				},
 			},
 		},
@@ -284,11 +256,8 @@ export DATABASE_PASSWORD=\"SomeSortOfPassword\"
 	}
 }`,
 			expected: compute.WindowsVirtualMachine{
-				Metadata: iacTypes.NewTestMetadata(),
 				VirtualMachine: compute.VirtualMachine{
-					Metadata: iacTypes.NewTestMetadata(),
-					CustomData: iacTypes.String(`export DATABASE_PASSWORD=\"SomeSortOfPassword\"
-`, iacTypes.NewTestMetadata()),
+					CustomData: iacTypes.StringTest("export DATABASE_PASSWORD=\\\"SomeSortOfPassword\\\"\n"),
 				},
 			},
 		},
@@ -302,11 +271,8 @@ export GREETING="Hello there"
 	EOF
 	}`,
 			expected: compute.WindowsVirtualMachine{
-				Metadata: iacTypes.NewTestMetadata(),
 				VirtualMachine: compute.VirtualMachine{
-					Metadata: iacTypes.NewTestMetadata(),
-					CustomData: iacTypes.String(`export GREETING="Hello there"
-`, iacTypes.NewTestMetadata()),
+					CustomData: iacTypes.StringTest("export GREETING=\"Hello there\"\n"),
 				},
 			},
 		},
@@ -328,27 +294,10 @@ resource "azurerm_windows_virtual_machine" "example" {
 	}
 }`,
 			expected: compute.WindowsVirtualMachine{
-				Metadata: iacTypes.NewTestMetadata(),
 				VirtualMachine: compute.VirtualMachine{
-					Metadata:   iacTypes.NewTestMetadata(),
-					CustomData: iacTypes.String("", iacTypes.NewTestMetadata()),
 					NetworkInterfaces: []network.NetworkInterface{
-						{
-							Metadata:           iacTypes.NewTestMetadata(),
-							EnableIPForwarding: iacTypes.BoolDefault(false, iacTypes.NewTestMetadata()),
-							SubnetID:           iacTypes.String("", iacTypes.NewTestMetadata()),
-							SecurityGroups:     nil,
-							HasPublicIP:        iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							PublicIPAddress:    iacTypes.String("", iacTypes.NewTestMetadata()),
-						},
-						{
-							Metadata:           iacTypes.NewTestMetadata(),
-							EnableIPForwarding: iacTypes.BoolDefault(false, iacTypes.NewTestMetadata()),
-							SubnetID:           iacTypes.String("", iacTypes.NewTestMetadata()),
-							SecurityGroups:     nil,
-							HasPublicIP:        iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							PublicIPAddress:    iacTypes.String("", iacTypes.NewTestMetadata()),
-						},
+						{},
+						{},
 					},
 				},
 			},

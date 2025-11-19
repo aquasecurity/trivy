@@ -52,75 +52,109 @@ func Test_Adapt(t *testing.T) {
 			expected: network.Network{
 				SecurityGroups: []network.SecurityGroup{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Rules: []network.SecurityGroupRule{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
-								Outbound: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-								Allow:    iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+								Allow: iacTypes.BoolTest(true),
 								SourceAddresses: []iacTypes.StringValue{
-									iacTypes.String("4.53.160.75", iacTypes.NewTestMetadata()),
+									iacTypes.StringTest("4.53.160.75"),
 								},
 								DestinationAddresses: []iacTypes.StringValue{
-									iacTypes.String("*", iacTypes.NewTestMetadata()),
+									iacTypes.StringTest("*"),
 								},
 								SourcePorts: []common.PortRange{
 									{
-										Metadata: iacTypes.NewTestMetadata(),
-										Start:    iacTypes.IntTest(0),
-										End:      iacTypes.IntTest(65535),
+										Start: iacTypes.IntTest(0),
+										End:   iacTypes.IntTest(65535),
 									},
 								},
 								DestinationPorts: []common.PortRange{
 									{
-										Metadata: iacTypes.NewTestMetadata(),
-										Start:    iacTypes.IntTest(3389),
-										End:      iacTypes.IntTest(3389),
+										Start: iacTypes.IntTest(3389),
+										End:   iacTypes.IntTest(3389),
 									},
 								},
-								Protocol: iacTypes.String("TCP", iacTypes.NewTestMetadata()),
+								Protocol: iacTypes.StringTest("TCP"),
 							},
 						},
 					},
 				},
 				NetworkWatcherFlowLogs: []network.NetworkWatcherFlowLog{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						Enabled: iacTypes.BoolTest(true),
 						RetentionPolicy: network.RetentionPolicy{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							Days:     iacTypes.Int(7, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(true),
+							Days:    iacTypes.IntTest(7),
 						},
 					},
 				},
-				NetworkInterfaces: []network.NetworkInterface{},
 			},
 		},
 		{
 			name: "defaults",
-			terraform: `
-		   resource "azurerm_network_security_group" "example" {
-			 name                = "tf-appsecuritygroup"
-			 security_rule {
-			 }
-		   }
+			terraform: `resource "azurerm_network_security_group" "example" {
+	name = "tf-appsecuritygroup"
+	security_rule {}
+}
 `,
 			expected: network.Network{
 				SecurityGroups: []network.SecurityGroup{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Rules: []network.SecurityGroupRule{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
-								Outbound: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-								Allow:    iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-								Protocol: iacTypes.String("", iacTypes.NewTestMetadata()),
+								Allow: iacTypes.BoolTest(true),
 							},
 						},
 					},
 				},
-				NetworkInterfaces: []network.NetworkInterface{},
+			},
+		},
+		{
+			name: "network interface",
+			terraform: `resource "azurerm_network_interface" "example" {
+	name                = "example-nic"
+	location            = "eastus"
+	resource_group_name = "example-rg"
+
+	ip_configuration {
+		name = "primary-ip"
+		primary = true
+		subnet_id = "subnet-primary-id"
+		public_ip_address_id = "public-ip-primary-id"
+	}
+
+	ip_configuration {
+		name = "secondary-ip"
+		subnet_id = "subnet-secondary-id"
+	}
+}
+`,
+			expected: network.Network{
+				NetworkInterfaces: []network.NetworkInterface{
+					{
+						Metadata: iacTypes.NewTestMetadata(),
+						// legacy fields filled from primary
+						SubnetID:        iacTypes.String("subnet-primary-id", iacTypes.NewTestMetadata()),
+						HasPublicIP:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						PublicIPAddress: iacTypes.String("public-ip-primary-id", iacTypes.NewTestMetadata()),
+
+						IPConfigurations: []network.IPConfiguration{
+							{
+								Metadata:        iacTypes.NewTestMetadata(),
+								SubnetID:        iacTypes.String("subnet-primary-id", iacTypes.NewTestMetadata()),
+								Primary:         iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+								HasPublicIP:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+								PublicIPAddress: iacTypes.String("public-ip-primary-id", iacTypes.NewTestMetadata()),
+							},
+							{
+								Metadata:        iacTypes.NewTestMetadata(),
+								SubnetID:        iacTypes.String("subnet-secondary-id", iacTypes.NewTestMetadata()),
+								Primary:         iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+								HasPublicIP:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+								PublicIPAddress: iacTypes.String("", iacTypes.NewTestMetadata()),
+							},
+						},
+					},
+				},
 			},
 		},
 	}
@@ -152,12 +186,10 @@ func Test_adaptWatcherLog(t *testing.T) {
 			}
 `,
 			expected: network.NetworkWatcherFlowLog{
-				Metadata: iacTypes.NewTestMetadata(),
-				Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				Enabled: iacTypes.BoolTest(true),
 				RetentionPolicy: network.RetentionPolicy{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					Days:     iacTypes.Int(90, iacTypes.NewTestMetadata()),
+					Enabled: iacTypes.BoolTest(true),
+					Days:    iacTypes.IntTest(90),
 				},
 			},
 		},
@@ -170,12 +202,10 @@ func Test_adaptWatcherLog(t *testing.T) {
 			}
 `,
 			expected: network.NetworkWatcherFlowLog{
-				Metadata: iacTypes.NewTestMetadata(),
-				Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				Enabled: iacTypes.BoolTest(false),
 				RetentionPolicy: network.RetentionPolicy{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					Days:     iacTypes.Int(0, iacTypes.NewTestMetadata()),
+					Enabled: iacTypes.BoolTest(false),
+					Days:    iacTypes.IntTest(0),
 				},
 			},
 		},
