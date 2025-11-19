@@ -40,20 +40,16 @@ func Test_adaptService(t *testing.T) {
 			}
 `,
 			expected: appservice.Service{
-				Metadata:         iacTypes.NewTestMetadata(),
-				EnableClientCert: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				Identity: struct{ Type iacTypes.StringValue }{
-					Type: iacTypes.String("UserAssigned", iacTypes.NewTestMetadata()),
+				EnableClientCert: iacTypes.BoolTest(true),
+				Identity: appservice.Identity{
+					Type: iacTypes.StringTest("UserAssigned"),
 				},
-				Authentication: struct{ Enabled iacTypes.BoolValue }{
-					Enabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				Authentication: appservice.Authentication{
+					Enabled: iacTypes.BoolTest(true),
 				},
-				Site: struct {
-					EnableHTTP2       iacTypes.BoolValue
-					MinimumTLSVersion iacTypes.StringValue
-				}{
-					EnableHTTP2:       iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					MinimumTLSVersion: iacTypes.String("1.0", iacTypes.NewTestMetadata()),
+				Site: appservice.Site{
+					EnableHTTP2:       iacTypes.BoolTest(true),
+					MinimumTLSVersion: iacTypes.StringTest("1.0"),
 				},
 			},
 		},
@@ -64,20 +60,8 @@ func Test_adaptService(t *testing.T) {
 			}
 `,
 			expected: appservice.Service{
-				Metadata:         iacTypes.NewTestMetadata(),
-				EnableClientCert: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				Identity: struct{ Type iacTypes.StringValue }{
-					Type: iacTypes.String("", iacTypes.NewTestMetadata()),
-				},
-				Authentication: struct{ Enabled iacTypes.BoolValue }{
-					Enabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				},
-				Site: struct {
-					EnableHTTP2       iacTypes.BoolValue
-					MinimumTLSVersion iacTypes.StringValue
-				}{
-					EnableHTTP2:       iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					MinimumTLSVersion: iacTypes.String("1.2", iacTypes.NewTestMetadata()),
+				Site: appservice.Site{
+					MinimumTLSVersion: iacTypes.StringTest("1.2"),
 				},
 			},
 		},
@@ -107,8 +91,7 @@ func Test_adaptFunctionApp(t *testing.T) {
 			}
 `,
 			expected: appservice.FunctionApp{
-				Metadata:  iacTypes.NewTestMetadata(),
-				HTTPSOnly: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				HTTPSOnly: iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -118,8 +101,7 @@ func Test_adaptFunctionApp(t *testing.T) {
 			}
 `,
 			expected: appservice.FunctionApp{
-				Metadata:  iacTypes.NewTestMetadata(),
-				HTTPSOnly: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				HTTPSOnly: iacTypes.BoolTest(false),
 			},
 		},
 	}
