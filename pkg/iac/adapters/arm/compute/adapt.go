@@ -94,22 +94,6 @@ func adaptLinuxVirtualMachine(resource azure.Resource) compute.LinuxVirtualMachi
 
 }
 
-func extractNetworkInterfaces(networkProfile azure.Value, metadata iacTypes.Metadata) []network.NetworkInterface {
-	var networkInterfaces []network.NetworkInterface
-
-	nicsArray := networkProfile.GetMapValue("networkInterfaces").AsList()
-	for _, nic := range nicsArray {
-		nicID := nic.GetMapValue("id").AsStringValue("", metadata)
-		if nicID.Value() != "" {
-			// Create a minimal NetworkInterface object with the ID information
-			// In ARM templates, we don't have direct access to subnet details like in Terraform
-			// EnableIPForwarding is not available from the VM's networkProfile, so it defaults to false
-			// Since we only have a reference to the network interface (not the full resource),
-			// we mark it as unmanaged so that Rego policies can skip it using isManaged() checks
-			networkInterfaces = append(networkInterfaces, network.NetworkInterface{
-				Metadata: iacTypes.NewUnmanagedMetadata(),
-			})
-		}
-	}
-	return networkInterfaces
+func extractNetworkInterfaces(_ azure.Value, _ iacTypes.Metadata) []network.NetworkInterface {
+	return nil
 }

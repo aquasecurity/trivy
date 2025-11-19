@@ -5,7 +5,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/adaptertest"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/compute"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -117,10 +116,6 @@ func TestAdapt(t *testing.T) {
 				LinuxVirtualMachines: []compute.LinuxVirtualMachine{{
 					VirtualMachine: compute.VirtualMachine{
 						CustomData: types.StringTest("test"),
-						NetworkInterfaces: []network.NetworkInterface{
-							{},
-							{},
-						},
 					},
 					OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
 						DisablePasswordAuthentication: types.BoolTest(false),
@@ -129,10 +124,6 @@ func TestAdapt(t *testing.T) {
 				WindowsVirtualMachines: []compute.WindowsVirtualMachine{{
 					VirtualMachine: compute.VirtualMachine{
 						CustomData: types.StringTest("test"),
-						NetworkInterfaces: []network.NetworkInterface{
-							{},
-							{},
-						},
 					},
 				}},
 			},
