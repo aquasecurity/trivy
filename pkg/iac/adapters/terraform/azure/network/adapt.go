@@ -101,15 +101,14 @@ func adaptWatcherLog(resource *terraform.Block) network.NetworkWatcherFlowLog {
 	}
 
 	if retentionPolicyBlock := resource.GetBlock("retention_policy"); retentionPolicyBlock.IsNotNil() {
-		flowLog.RetentionPolicy.Metadata = retentionPolicyBlock.GetMetadata()
-
-		enabledAttr := retentionPolicyBlock.GetAttribute("enabled")
-		flowLog.RetentionPolicy.Enabled = enabledAttr.AsBoolValueOrDefault(false, retentionPolicyBlock)
-
-		daysAttr := retentionPolicyBlock.GetAttribute("days")
-		flowLog.RetentionPolicy.Days = daysAttr.AsIntValueOrDefault(0, retentionPolicyBlock)
+		flowLog.RetentionPolicy = network.RetentionPolicy{
+			Metadata: retentionPolicyBlock.GetMetadata(),
+			Enabled: retentionPolicyBlock.GetAttribute("enabled").
+				AsBoolValueOrDefault(false, retentionPolicyBlock),
+			Days: retentionPolicyBlock.GetAttribute("days").
+				AsIntValueOrDefault(0, retentionPolicyBlock),
+		}
 	}
-
 	return flowLog
 }
 
@@ -126,21 +125,14 @@ func adaptNetworkInterfaces(modules terraform.Modules) []network.NetworkInterfac
 }
 
 func AdaptNetworkInterface(resource *terraform.Block, modules terraform.Modules) network.NetworkInterface {
-	// Support both ip_forwarding_enabled (new) and enable_ip_forwarding (old) attributes
-	var enableIPForwarding iacTypes.BoolValue
-	if ipForwardingEnabledAttr := resource.GetAttribute("ip_forwarding_enabled"); ipForwardingEnabledAttr.IsNotNil() {
-		enableIPForwarding = ipForwardingEnabledAttr.AsBoolValueOrDefault(false, resource)
-	} else {
-		enableIPForwarding = resource.GetAttribute("enable_ip_forwarding").AsBoolValueOrDefault(false, resource)
-	}
-
 	ni := network.NetworkInterface{
-		Metadata:           resource.GetMetadata(),
-		EnableIPForwarding: enableIPForwarding,
-		HasPublicIP:        iacTypes.BoolDefault(false, resource.GetMetadata()),
-		PublicIPAddress:    iacTypes.StringDefault("", resource.GetMetadata()),
-		SecurityGroups:     nil,
-		SubnetID:           iacTypes.StringDefault("", resource.GetMetadata()),
+		Metadata: resource.GetMetadata(),
+		// Support both ip_forwarding_enabled (new) and enable_ip_forwarding (old) attributes
+		EnableIPForwarding: resource.GetFirstAttributeOf("ip_forwarding_enabled", "enable_ip_forwarding").
+			AsBoolValueOrDefault(false, resource),
+		HasPublicIP:     iacTypes.BoolDefault(false, resource.GetMetadata()),
+		PublicIPAddress: iacTypes.StringDefault("", resource.GetMetadata()),
+		SubnetID:        iacTypes.StringDefault("", resource.GetMetadata()),
 	}
 
 	if nsgAttr := resource.GetAttribute("network_security_group_id"); nsgAttr.IsNotNil() {
@@ -151,16 +143,15 @@ func AdaptNetworkInterface(resource *terraform.Block, modules terraform.Modules)
 
 	ipConfigs := resource.GetBlocks("ip_configuration")
 	ni.IPConfigurations = make([]network.IPConfiguration, 0, len(ipConfigs))
-
 	for _, ipConfig := range ipConfigs {
-		ipConfiguration := network.IPConfiguration{
+		ni.IPConfigurations = append(ni.IPConfigurations, network.IPConfiguration{
 			Metadata:        ipConfig.GetMetadata(),
 			PublicIPAddress: ipConfig.GetAttribute("public_ip_address_id").AsStringValueOrDefault("", ipConfig),
 			SubnetID:        ipConfig.GetAttribute("subnet_id").AsStringValueOrDefault("", ipConfig),
 			Primary:         ipConfig.GetAttribute("primary").AsBoolValueOrDefault(false, ipConfig),
-		}
-		ni.IPConfigurations = append(ni.IPConfigurations, ipConfiguration)
+		})
 	}
+
 	ni.Setup()
 	return ni
 }
