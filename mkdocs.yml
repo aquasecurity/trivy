@@ -40,187 +40,187 @@ nav:
           - Additional Resources: tutorials/additional-resources/references.md
           - Community References: tutorials/additional-resources/community.md
           - CKS Reference: tutorials/additional-resources/cks.md
-  - Docs:
-      - Overview: docs/index.md
+  - User Guide:
+      - Overview: guide/index.md
       - Target:
-          - Container Image: docs/target/container_image.md
-          - Filesystem: docs/target/filesystem.md
-          - Rootfs: docs/target/rootfs.md
-          - Code Repository: docs/target/repository.md
-          - Virtual Machine Image: docs/target/vm.md
-          - Kubernetes: docs/target/kubernetes.md
-          - SBOM: docs/target/sbom.md
+          - Container Image: guide/target/container_image.md
+          - Filesystem: guide/target/filesystem.md
+          - Rootfs: guide/target/rootfs.md
+          - Code Repository: guide/target/repository.md
+          - Virtual Machine Image: guide/target/vm.md
+          - Kubernetes: guide/target/kubernetes.md
+          - SBOM: guide/target/sbom.md
       - Scanner:
-          - Vulnerability: docs/scanner/vulnerability.md
+          - Vulnerability: guide/scanner/vulnerability.md
           - Misconfiguration:
-              - Overview: docs/scanner/misconfiguration/index.md
-              - Configuration: docs/scanner/misconfiguration/config/config.md
+              - Overview: guide/scanner/misconfiguration/index.md
+              - Configuration: guide/scanner/misconfiguration/config/config.md
               - Policy:
-                  - Built-in Checks: docs/scanner/misconfiguration/check/builtin.md
+                  - Built-in Checks: guide/scanner/misconfiguration/check/builtin.md
               - Custom Checks:
-                  - Overview: docs/scanner/misconfiguration/custom/index.md
-                  - Data: docs/scanner/misconfiguration/custom/data.md
-                  - Combine: docs/scanner/misconfiguration/custom/combine.md
-                  - Selectors: docs/scanner/misconfiguration/custom/selectors.md
-                  - Schemas: docs/scanner/misconfiguration/custom/schema.md
-                  - Testing: docs/scanner/misconfiguration/custom/testing.md
-                  - Debugging Policies: docs/scanner/misconfiguration/custom/debug.md
-                  - Contribute Checks: docs/scanner/misconfiguration/custom/contribute-checks.md
-          - Secret: docs/scanner/secret.md
-          - License: docs/scanner/license.md
+                  - Overview: guide/scanner/misconfiguration/custom/index.md
+                  - Data: guide/scanner/misconfiguration/custom/data.md
+                  - Combine: guide/scanner/misconfiguration/custom/combine.md
+                  - Selectors: guide/scanner/misconfiguration/custom/selectors.md
+                  - Schemas: guide/scanner/misconfiguration/custom/schema.md
+                  - Testing: guide/scanner/misconfiguration/custom/testing.md
+                  - Debugging Policies: guide/scanner/misconfiguration/custom/debug.md
+                  - Contribute Checks: guide/scanner/misconfiguration/custom/contribute-checks.md
+          - Secret: guide/scanner/secret.md
+          - License: guide/scanner/license.md
       - Coverage:
-          - Overview: docs/coverage/index.md
+          - Overview: guide/coverage/index.md
           - OS:
-              - Overview: docs/coverage/os/index.md
-              - AlmaLinux: docs/coverage/os/alma.md
-              - Alpine Linux: docs/coverage/os/alpine.md
-              - Amazon Linux: docs/coverage/os/amazon.md
-              - Azure Linux (CBL-Mariner): docs/coverage/os/azure.md
-              - Bottlerocket: docs/coverage/os/bottlerocket.md
-              - CentOS: docs/coverage/os/centos.md
-              - Chainguard: docs/coverage/os/chainguard.md
-              - CoreOS: docs/coverage/os/coreos.md
-              - Debian: docs/coverage/os/debian.md
-              - Echo: docs/coverage/os/echo.md
-              - MinimOS: docs/coverage/os/minimos.md
-              - Oracle Linux: docs/coverage/os/oracle.md
-              - Photon OS: docs/coverage/os/photon.md
-              - Red Hat: docs/coverage/os/rhel.md
-              - Rocky Linux: docs/coverage/os/rocky.md
-              - SUSE: docs/coverage/os/suse.md
-              - Ubuntu: docs/coverage/os/ubuntu.md
-              - Wolfi: docs/coverage/os/wolfi.md
-              - Google Distroless (Images): docs/coverage/os/google-distroless.md
+              - Overview: guide/coverage/os/index.md
+              - AlmaLinux: guide/coverage/os/alma.md
+              - Alpine Linux: guide/coverage/os/alpine.md
+              - Amazon Linux: guide/coverage/os/amazon.md
+              - Azure Linux (CBL-Mariner): guide/coverage/os/azure.md
+              - Bottlerocket: guide/coverage/os/bottlerocket.md
+              - CentOS: guide/coverage/os/centos.md
+              - Chainguard: guide/coverage/os/chainguard.md
+              - CoreOS: guide/coverage/os/coreos.md
+              - Debian: guide/coverage/os/debian.md
+              - Echo: guide/coverage/os/echo.md
+              - MinimOS: guide/coverage/os/minimos.md
+              - Oracle Linux: guide/coverage/os/oracle.md
+              - Photon OS: guide/coverage/os/photon.md
+              - Red Hat: guide/coverage/os/rhel.md
+              - Rocky Linux: guide/coverage/os/rocky.md
+              - SUSE: guide/coverage/os/suse.md
+              - Ubuntu: guide/coverage/os/ubuntu.md
+              - Wolfi: guide/coverage/os/wolfi.md
+              - Google Distroless (Images): guide/coverage/os/google-distroless.md
           - Language:
-              - Overview: docs/coverage/language/index.md
-              - C/C++: docs/coverage/language/c.md
-              - Dart: docs/coverage/language/dart.md
-              - .NET: docs/coverage/language/dotnet.md
-              - Elixir: docs/coverage/language/elixir.md
-              - Go: docs/coverage/language/golang.md
-              - Java: docs/coverage/language/java.md
-              - Node.js: docs/coverage/language/nodejs.md
-              - PHP: docs/coverage/language/php.md
-              - Python: docs/coverage/language/python.md
-              - Ruby: docs/coverage/language/ruby.md
-              - Rust: docs/coverage/language/rust.md
-              - Swift: docs/coverage/language/swift.md
-              - Julia: docs/coverage/language/julia.md
+              - Overview: guide/coverage/language/index.md
+              - C/C++: guide/coverage/language/c.md
+              - Dart: guide/coverage/language/dart.md
+              - .NET: guide/coverage/language/dotnet.md
+              - Elixir: guide/coverage/language/elixir.md
+              - Go: guide/coverage/language/golang.md
+              - Java: guide/coverage/language/java.md
+              - Node.js: guide/coverage/language/nodejs.md
+              - PHP: guide/coverage/language/php.md
+              - Python: guide/coverage/language/python.md
+              - Ruby: guide/coverage/language/ruby.md
+              - Rust: guide/coverage/language/rust.md
+              - Swift: guide/coverage/language/swift.md
+              - Julia: guide/coverage/language/julia.md
           - IaC:
-              - Overview: docs/coverage/iac/index.md
-              - Azure ARM Template: docs/coverage/iac/azure-arm.md
-              - CloudFormation: docs/coverage/iac/cloudformation.md
-              - Docker: docs/coverage/iac/docker.md
-              - Helm: docs/coverage/iac/helm.md
-              - Kubernetes: docs/coverage/iac/kubernetes.md
-              - Terraform: docs/coverage/iac/terraform.md
+              - Overview: guide/coverage/iac/index.md
+              - Azure ARM Template: guide/coverage/iac/azure-arm.md
+              - CloudFormation: guide/coverage/iac/cloudformation.md
+              - Docker: guide/coverage/iac/docker.md
+              - Helm: guide/coverage/iac/helm.md
+              - Kubernetes: guide/coverage/iac/kubernetes.md
+              - Terraform: guide/coverage/iac/terraform.md
           - Others:
-              - Overview: docs/coverage/others/index.md
-              - Bitnami Images: docs/coverage/others/bitnami.md
-              - Conda: docs/coverage/others/conda.md
-              - Root.io Images: docs/coverage/others/rootio.md
-              - Seal Security: docs/coverage/others/seal.md
-              - RPM Archives: docs/coverage/others/rpm.md
-          - Kubernetes: docs/coverage/kubernetes.md
+              - Overview: guide/coverage/others/index.md
+              - Bitnami Images: guide/coverage/others/bitnami.md
+              - Conda: guide/coverage/others/conda.md
+              - Root.io Images: guide/coverage/others/rootio.md
+              - Seal Security: guide/coverage/others/seal.md
+              - RPM Archives: guide/coverage/others/rpm.md
+          - Kubernetes: guide/coverage/kubernetes.md
       - Configuration:
-          - Overview: docs/configuration/index.md
-          - Filtering: docs/configuration/filtering.md
-          - Selecting Files: docs/configuration/skipping.md
-          - Reporting: docs/configuration/reporting.md
-          - Cache: docs/configuration/cache.md
-          - Databases: docs/configuration/db.md
-          - Others: docs/configuration/others.md
+          - Overview: guide/configuration/index.md
+          - Filtering: guide/configuration/filtering.md
+          - Selecting Files: guide/configuration/skipping.md
+          - Reporting: guide/configuration/reporting.md
+          - Cache: guide/configuration/cache.md
+          - Databases: guide/configuration/db.md
+          - Others: guide/configuration/others.md
       - Supply Chain:
-          - SBOM: docs/supply-chain/sbom.md
+          - SBOM: guide/supply-chain/sbom.md
           - Attestation:
-              - SBOM: docs/supply-chain/attestation/sbom.md
-              - Cosign Vulnerability Scan Record: docs/supply-chain/attestation/vuln.md
-              - SBOM Attestation in Rekor: docs/supply-chain/attestation/rekor.md
+              - SBOM: guide/supply-chain/attestation/sbom.md
+              - Cosign Vulnerability Scan Record: guide/supply-chain/attestation/vuln.md
+              - SBOM Attestation in Rekor: guide/supply-chain/attestation/rekor.md
           - VEX:
-              - Overview: docs/supply-chain/vex/index.md
-              - VEX Repository: docs/supply-chain/vex/repo.md
-              - Local VEX Files: docs/supply-chain/vex/file.md
-              - VEX SBOM Reference: docs/supply-chain/vex/sbom-ref.md
-              - VEX Attestation: docs/supply-chain/vex/oci.md
+              - Overview: guide/supply-chain/vex/index.md
+              - VEX Repository: guide/supply-chain/vex/repo.md
+              - Local VEX Files: guide/supply-chain/vex/file.md
+              - VEX SBOM Reference: guide/supply-chain/vex/sbom-ref.md
+              - VEX Attestation: guide/supply-chain/vex/oci.md
       - Compliance:
-          - Built-in Compliance:  docs/compliance/compliance.md
-          - Custom Compliance: docs/compliance/contrib-compliance.md
+          - Built-in Compliance:  guide/compliance/compliance.md
+          - Custom Compliance: guide/compliance/contrib-compliance.md
       - Plugins:
-          - Overview: docs/plugin/index.md
-          - User guide: docs/plugin/user-guide.md
-          - Developer guide: docs/plugin/developer-guide.md
+          - Overview: guide/plugin/index.md
+          - User guide: guide/plugin/user-guide.md
+          - Developer guide: guide/plugin/developer-guide.md
       - Advanced:
-          - Modules: docs/advanced/modules.md
-          - Connectivity and Network considerations: docs/advanced/air-gap.md
-          - Self-Hosting Trivy's Databases: docs/advanced/self-hosting.md
+          - Modules: guide/advanced/modules.md
+          - Connectivity and Network considerations: guide/advanced/air-gap.md
+          - Self-Hosting Trivy's Databases: guide/advanced/self-hosting.md
           - Container Image:
-              - Embed in Dockerfile: docs/advanced/container/embed-in-dockerfile.md
-              - Unpacked container image filesystem: docs/advanced/container/unpacked-filesystem.md
+              - Embed in Dockerfile: guide/advanced/container/embed-in-dockerfile.md
+              - Unpacked container image filesystem: guide/advanced/container/unpacked-filesystem.md
               - Private Docker Registries:
-                  - Overview: docs/advanced/private-registries/index.md
-                  - Docker Hub: docs/advanced/private-registries/docker-hub.md
-                  - AWS ECR (Elastic Container Registry): docs/advanced/private-registries/ecr.md
-                  - GCR (Google Container Registry): docs/advanced/private-registries/gcr.md
-                  - ACR (Azure Container Registry): docs/advanced/private-registries/acr.md
-                  - Self-Hosted: docs/advanced/private-registries/self.md
-          - Usage Telemetry: docs/advanced/telemetry.md
+                  - Overview: guide/advanced/private-registries/index.md
+                  - Docker Hub: guide/advanced/private-registries/docker-hub.md
+                  - AWS ECR (Elastic Container Registry): guide/advanced/private-registries/ecr.md
+                  - GCR (Google Container Registry): guide/advanced/private-registries/gcr.md
+                  - ACR (Azure Container Registry): guide/advanced/private-registries/acr.md
+                  - Self-Hosted: guide/advanced/private-registries/self.md
+          - Usage Telemetry: guide/advanced/telemetry.md
       - References:
           - Configuration:
               - CLI:
-                  - Overview: docs/references/configuration/cli/trivy.md
-                  - Clean: docs/references/configuration/cli/trivy_clean.md
+                  - Overview: guide/references/configuration/cli/trivy.md
+                  - Clean: guide/references/configuration/cli/trivy_clean.md
                   - Cloud:
-                      - Cloud: docs/references/configuration/cli/trivy_cloud.md                      
-                      - Cloud Config: docs/references/configuration/cli/trivy_cloud_config.md 
-                      - Cloud Config Edit: docs/references/configuration/cli/trivy_cloud_config_edit.md 
-                      - Cloud Config List: docs/references/configuration/cli/trivy_cloud_config_list.md
-                      - Cloud Config Set: docs/references/configuration/cli/trivy_cloud_config_set.md
-                      - Cloud Config Unset: docs/references/configuration/cli/trivy_cloud_config_unset.md
-                      - Cloud Config Get: docs/references/configuration/cli/trivy_cloud_config_get.md
-                  - Config: docs/references/configuration/cli/trivy_config.md
-                  - Convert: docs/references/configuration/cli/trivy_convert.md
-                  - Filesystem: docs/references/configuration/cli/trivy_filesystem.md
-                  - Image: docs/references/configuration/cli/trivy_image.md
-                  - Kubernetes: docs/references/configuration/cli/trivy_kubernetes.md
-                  - Login: docs/references/configuration/cli/trivy_login.md
-                  - Logout: docs/references/configuration/cli/trivy_logout.md
+                      - Cloud: guide/references/configuration/cli/trivy_cloud.md                      
+                      - Cloud Config: guide/references/configuration/cli/trivy_cloud_config.md 
+                      - Cloud Config Edit: guide/references/configuration/cli/trivy_cloud_config_edit.md 
+                      - Cloud Config List: guide/references/configuration/cli/trivy_cloud_config_list.md
+                      - Cloud Config Set: guide/references/configuration/cli/trivy_cloud_config_set.md
+                      - Cloud Config Unset: guide/references/configuration/cli/trivy_cloud_config_unset.md
+                      - Cloud Config Get: guide/references/configuration/cli/trivy_cloud_config_get.md
+                  - Config: guide/references/configuration/cli/trivy_config.md
+                  - Convert: guide/references/configuration/cli/trivy_convert.md
+                  - Filesystem: guide/references/configuration/cli/trivy_filesystem.md
+                  - Image: guide/references/configuration/cli/trivy_image.md
+                  - Kubernetes: guide/references/configuration/cli/trivy_kubernetes.md
+                  - Login: guide/references/configuration/cli/trivy_login.md
+                  - Logout: guide/references/configuration/cli/trivy_logout.md
                   - Module:
-                      - Module: docs/references/configuration/cli/trivy_module.md
-                      - Module Install: docs/references/configuration/cli/trivy_module_install.md
-                      - Module Uninstall: docs/references/configuration/cli/trivy_module_uninstall.md
+                      - Module: guide/references/configuration/cli/trivy_module.md
+                      - Module Install: guide/references/configuration/cli/trivy_module_install.md
+                      - Module Uninstall: guide/references/configuration/cli/trivy_module_uninstall.md
                   - Plugin:
-                      - Plugin: docs/references/configuration/cli/trivy_plugin.md
-                      - Plugin Info: docs/references/configuration/cli/trivy_plugin_info.md
-                      - Plugin Install: docs/references/configuration/cli/trivy_plugin_install.md
-                      - Plugin List: docs/references/configuration/cli/trivy_plugin_list.md
-                      - Plugin Run: docs/references/configuration/cli/trivy_plugin_run.md
-                      - Plugin Uninstall: docs/references/configuration/cli/trivy_plugin_uninstall.md
-                      - Plugin Update: docs/references/configuration/cli/trivy_plugin_update.md
-                      - Plugin Upgrade: docs/references/configuration/cli/trivy_plugin_upgrade.md
-                      - Plugin Search: docs/references/configuration/cli/trivy_plugin_search.md
+                      - Plugin: guide/references/configuration/cli/trivy_plugin.md
+                      - Plugin Info: guide/references/configuration/cli/trivy_plugin_info.md
+                      - Plugin Install: guide/references/configuration/cli/trivy_plugin_install.md
+                      - Plugin List: guide/references/configuration/cli/trivy_plugin_list.md
+                      - Plugin Run: guide/references/configuration/cli/trivy_plugin_run.md
+                      - Plugin Uninstall: guide/references/configuration/cli/trivy_plugin_uninstall.md
+                      - Plugin Update: guide/references/configuration/cli/trivy_plugin_update.md
+                      - Plugin Upgrade: guide/references/configuration/cli/trivy_plugin_upgrade.md
+                      - Plugin Search: guide/references/configuration/cli/trivy_plugin_search.md
                   - Registry:
-                        - Registry: docs/references/configuration/cli/trivy_registry.md
-                        - Registry Login: docs/references/configuration/cli/trivy_registry_login.md
-                        - Registry Logout: docs/references/configuration/cli/trivy_registry_logout.md
-                  - Repository: docs/references/configuration/cli/trivy_repository.md
-                  - Rootfs: docs/references/configuration/cli/trivy_rootfs.md
-                  - SBOM: docs/references/configuration/cli/trivy_sbom.md
-                  - Server: docs/references/configuration/cli/trivy_server.md
-                  - Version: docs/references/configuration/cli/trivy_version.md
+                        - Registry: guide/references/configuration/cli/trivy_registry.md
+                        - Registry Login: guide/references/configuration/cli/trivy_registry_login.md
+                        - Registry Logout: guide/references/configuration/cli/trivy_registry_logout.md
+                  - Repository: guide/references/configuration/cli/trivy_repository.md
+                  - Rootfs: guide/references/configuration/cli/trivy_rootfs.md
+                  - SBOM: guide/references/configuration/cli/trivy_sbom.md
+                  - Server: guide/references/configuration/cli/trivy_server.md
+                  - Version: guide/references/configuration/cli/trivy_version.md
                   - VEX:
-                      - VEX: docs/references/configuration/cli/trivy_vex.md
-                      - VEX Download: docs/references/configuration/cli/trivy_vex_repo_download.md
-                      - VEX Init: docs/references/configuration/cli/trivy_vex_repo_init.md
-                      - VEX List: docs/references/configuration/cli/trivy_vex_repo_list.md
-                      - VEX Repo: docs/references/configuration/cli/trivy_vex_repo.md
-                  - VM: docs/references/configuration/cli/trivy_vm.md
-              - Config file: docs/references/configuration/config-file.md
+                      - VEX: guide/references/configuration/cli/trivy_vex.md
+                      - VEX Download: guide/references/configuration/cli/trivy_vex_repo_download.md
+                      - VEX Init: guide/references/configuration/cli/trivy_vex_repo_init.md
+                      - VEX List: guide/references/configuration/cli/trivy_vex_repo_list.md
+                      - VEX Repo: guide/references/configuration/cli/trivy_vex_repo.md
+                  - VM: guide/references/configuration/cli/trivy_vm.md
+              - Config file: guide/references/configuration/config-file.md
           - Modes:
-              - Standalone: docs/references/modes/standalone.md
-              - Client/Server: docs/references/modes/client-server.md
-          - Troubleshooting: docs/references/troubleshooting.md
-          - Terminology: docs/references/terminology.md
-          - Abbreviations: docs/references/abbreviations.md
+              - Standalone: guide/references/modes/standalone.md
+              - Client/Server: guide/references/modes/client-server.md
+          - Troubleshooting: guide/references/troubleshooting.md
+          - Terminology: guide/references/terminology.md
+          - Abbreviations: guide/references/abbreviations.md
   - Ecosystem: 
     - Overview: ecosystem/index.md
     - CI/CD: ecosystem/cicd.md
@@ -248,7 +248,6 @@ nav:
   - Enterprise:
       - Comparison: commercial/compare.md
       - Contact Us: commercial/contact.md
-  - Partners: partners.md
 theme:
   name: material
   custom_dir: docs/overrides

@@ -122,6 +122,7 @@
             "Name": "Ubuntu CVE Tracker",
             "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
           },
+          "Fingerprint": "sha256:3c6011602650271fbca4f60c65fa4d645ac120eda6d795daff77eb375b7906a5",
           "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
           "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
           "Severity": "MEDIUM",
@@ -193,6 +194,7 @@
             "Name": "Ubuntu CVE Tracker",
             "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
           },
+          "Fingerprint": "sha256:80978831d19a7e127e628d949a2c1b4baf2056414c20dd9998ffe351950b75e4",
           "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
           "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
           "Severity": "MEDIUM",
@@ -264,6 +266,7 @@
             "Name": "Ubuntu CVE Tracker",
             "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
           },
+          "Fingerprint": "sha256:e25514120e2898fc5f15127980590681a6fb0c456804ecaad641fed404a63fe3",
           "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
           "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
           "Severity": "MEDIUM",
@@ -335,6 +338,7 @@
             "Name": "Ubuntu CVE Tracker",
             "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
           },
+          "Fingerprint": "sha256:5a234eae518954cb5f92cd1afbf9021e8e82874442d9188508907a913cd51183",
           "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
           "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
           "Severity": "MEDIUM",

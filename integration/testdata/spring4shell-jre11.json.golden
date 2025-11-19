@@ -270,6 +270,7 @@
             "Name": "GitHub Security Advisory Maven",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven"
           },
+          "Fingerprint": "sha256:cf84a68b74dc2edf3ffe5f8c5bc3b401b54272268c332d9a041dde1d8c90e25b",
           "Title": "spring-framework: RCE via Data Binding on JDK 9+",
           "Description": "A Spring MVC or Spring WebFlux application running on JDK 9+ may be vulnerable to remote code execution (RCE) via data binding. The specific exploit requires the application to run on Tomcat as a WAR deployment. If the application is deployed as a Spring Boot executable jar, i.e. the default, it is not vulnerable to the exploit. However, the nature of the vulnerability is more general, and there may be other ways to exploit it.",
           "Severity": "CRITICAL",

@@ -64,6 +64,7 @@
             "Name": "GitHub Security Advisory Pip",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
           },
+          "Fingerprint": "sha256:384f3c3504a17ae835c015e5cab33befe675700289119a47182dd7102165eb2c",
           "Title": "python-werkzeug: insufficient debugger PIN randomness vulnerability",
           "Description": "Pallets Werkzeug before 0.15.3, when used with Docker, has insufficient debugger PIN randomness because Docker containers share the same machine id.",
           "Severity": "HIGH",

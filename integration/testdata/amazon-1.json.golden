@@ -89,6 +89,7 @@
             "Name": "Amazon Linux Security Center",
             "URL": "https://alas.aws.amazon.com/"
           },
+          "Fingerprint": "sha256:6d5df637f78490e5091381186a322db8c42a7018fb2cfae27aaa084906e65f02",
           "Title": "curl: double free due to subsequent call of realloc()",
           "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
           "Severity": "MEDIUM",

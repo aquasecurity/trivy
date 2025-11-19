@@ -99,6 +99,7 @@
           },
           "SeveritySource": "redhat",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1559",
+          "Fingerprint": "sha256:638871deb7cddea2771313ab3cff2b012e60f6c4346567d35bd9ceee1d9226c3",
           "Title": "openssl: 0-byte record padding oracle",
           "Description": "If an application encounters a fatal protocol error and then calls SSL_shutdown() twice (once to send a close_notify, and once to receive one) then OpenSSL can respond differently to the calling application if a 0 byte record is received with invalid padding compared to if a 0 byte record is received with an invalid MAC. If the application then behaves differently based on that in a way that is detectable to the remote peer, then this amounts to a padding oracle that could be used to decrypt data. In order for this to be exploitable \"non-stitched\" ciphersuites must be in use. Stitched ciphersuites are optimised implementations of certain commonly used ciphersuites. Also the application must call SSL_shutdown() twice even if a protocol error has occurred (applications should not do this but some do anyway). Fixed in OpenSSL 1.0.2r (Affected 1.0.2-1.0.2q).",
           "Severity": "MEDIUM",

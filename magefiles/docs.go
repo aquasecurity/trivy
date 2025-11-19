@@ -38,13 +38,13 @@ func main() {
 	allFlagGroups := getAllFlags()
 
 	cmd.DisableAutoGenTag = true
-	if err := doc.GenMarkdownTree(cmd, "./docs/docs/references/configuration/cli"); err != nil {
+	if err := doc.GenMarkdownTree(cmd, "./docs/guide/references/configuration/cli"); err != nil {
 		log.Fatal("Fatal error", log.Err(err))
 	}
-	if err := generateConfigDocs("./docs/docs/references/configuration/config-file.md", allFlagGroups); err != nil {
+	if err := generateConfigDocs("./docs/guide/references/configuration/config-file.md", allFlagGroups); err != nil {
 		log.Fatal("Fatal error in config file generation", log.Err(err))
 	}
-	if err := generateTelemetryFlagDocs("./docs/docs/advanced/telemetry-flags.md", allFlagGroups); err != nil {
+	if err := generateTelemetryFlagDocs("./docs/guide/advanced/telemetry-flags.md", allFlagGroups); err != nil {
 		log.Fatal("Fatal error in telemetry docs generation", log.Err(err))
 	}
 }

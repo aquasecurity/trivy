@@ -40,3 +40,19 @@ jobs:
       - name: Deploy the latest documents from manual trigger
         if: ${{ github.event.inputs.version != '' }}
         run: mike deploy --push --update-aliases ${{ github.event.inputs.version }} latest
+
+  # This workflow is used to trigger the trivy-www deployment
+  trigger-trivy-www-deploy: 
+    needs: deploy
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Trigger update_version workflow in trivy-telemetry
+        env:
+          # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
+          # This allows triggering workflows in other repositories
+          GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+        run: |
+          gh workflow run build-docs.yml \
+            --repo ${{ github.repository_owner }}/trivy-www \
+            --ref main \
+            --field from_version=${{ github.ref_name }}

@@ -176,8 +176,10 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 		account.NetworkRules = append(account.NetworkRules, adaptNetworkRule(networkBlock))
 	}
 
-	httpsOnlyAttr := resource.GetAttribute("enable_https_traffic_only")
-	account.EnforceHTTPS = httpsOnlyAttr.AsBoolValueOrDefault(true, resource)
+	account.EnforceHTTPS = resource.GetFirstAttributeOf(
+		"enable_https_traffic_only",
+		"https_traffic_only_enabled", // provider above version 4
+	).AsBoolValueOrDefault(true, resource)
 
 	// Adapt blob properties
 	blobPropertiesBlock := resource.GetBlock("blob_properties")

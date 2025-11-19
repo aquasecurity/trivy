@@ -25,8 +25,7 @@ func Test_adaptProjectMetadata(t *testing.T) {
 			  }
 `,
 			expected: compute.ProjectMetadata{
-				Metadata:      iacTypes.NewTestMetadata(),
-				EnableOSLogin: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				EnableOSLogin: iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -38,8 +37,21 @@ func Test_adaptProjectMetadata(t *testing.T) {
 			  }
 `,
 			expected: compute.ProjectMetadata{
-				Metadata:      iacTypes.NewTestMetadata(),
-				EnableOSLogin: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				EnableOSLogin: iacTypes.BoolTest(false),
+			},
+		},
+		{
+			name: "handles metadata values in various formats",
+			terraform: `resource "google_compute_project_metadata" "example" {
+	metadata = {
+		enable-oslogin = "TRUE"
+		block-project-ssh-keys = 1
+		serial-port-enable = "yes"
+	}
+}
+`,
+			expected: compute.ProjectMetadata{
+				EnableOSLogin: iacTypes.BoolTest(true),
 			},
 		},
 	}

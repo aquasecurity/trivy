@@ -72,6 +72,7 @@
             "Name": "CBL-Mariner Vulnerability Data",
             "URL": "https://github.com/microsoft/CBL-MarinerVulnerabilityData"
           },
+          "Fingerprint": "sha256:734110094f55c15456105c9c03b2a591208a8675c5f37f89e1ee1ac67feb639f",
           "Title": "CVE-2022-0261 affecting package vim 8.2.4081",
           "Description": "Heap-based Buffer Overflow in GitHub repository vim/vim prior to 8.2.",
           "Severity": "HIGH",
@@ -110,6 +111,7 @@
             "Name": "CBL-Mariner Vulnerability Data",
             "URL": "https://github.com/microsoft/CBL-MarinerVulnerabilityData"
           },
+          "Fingerprint": "sha256:82a2bac425b237b1470e50583c70c71974812e56d734774897201c0a80256d82",
           "Title": "vim: heap-based read buffer overflow in compile_get_env()",
           "Description": "vim is vulnerable to Heap-based Buffer Overflow",
           "Severity": "LOW",

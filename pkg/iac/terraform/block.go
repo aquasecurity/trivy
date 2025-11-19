@@ -16,6 +16,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/terraform/context"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 type Block struct {
@@ -137,6 +138,9 @@ func (b *Block) Reference() Reference {
 }
 
 func (b *Block) GetMetadata() iacTypes.Metadata {
+	if b.IsNil() {
+		return iacTypes.NewUnmanagedMetadata()
+	}
 	return b.metadata
 }
 
@@ -303,11 +307,18 @@ func (b *Block) GetAttributes() []*Attribute {
 }
 
 func (b *Block) GetAttribute(name string) *Attribute {
-	if b == nil || b.hclBlock == nil {
+	return b.GetFirstAttributeOf(name)
+}
+
+func (b *Block) GetFirstAttributeOf(names ...string) *Attribute {
+	if b == nil || b.hclBlock == nil || len(names) == 0 {
 		return nil
 	}
+
+	nameSet := set.New(names...)
+
 	for _, attr := range b.attributes {
-		if attr.Name() == name {
+		if ok := nameSet.Contains(attr.Name()); ok {
 			return attr
 		}
 	}

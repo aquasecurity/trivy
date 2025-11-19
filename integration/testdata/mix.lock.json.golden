@@ -180,6 +180,7 @@
             "Name": "GitHub Security Advisory Erlang",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Aerlang"
           },
+          "Fingerprint": "sha256:1bb1e08039e33e804cc2999cb56244081c7a90c486e8337344d4f0263f1c28dc",
           "Title": "Phoenix before 1.6.14 mishandles check_origin wildcarding",
           "Description": "socket/transport.ex in Phoenix before 1.6.14 mishandles check_origin wildcarding. NOTE: LiveView applications are unaffected by default because of the presence of a LiveView CSRF token.",
           "Severity": "HIGH",

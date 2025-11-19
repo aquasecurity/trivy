@@ -72,6 +72,7 @@
             "Name": "GitHub Security Advisory Composer",
             "URL": "https://github.com/advisories?query=type%%3Areviewed+ecosystem%%3Acomposer"
           },
+          "Fingerprint": "sha256:59ce4eb8bdfe3bbdf3187ec7d5fd51beb0ce398c8377a3be0d811b002df8ec0b",
           "Title": "Improper Input Validation in guzzlehttp/psr7",
           "Description": "### Impact\nIn proper header parsing. An attacker could sneak in a new line character and pass untrusted values. \n\n### Patches\nThe issue is patched in 1.8.4 and 2.1.1.\n\n### Workarounds\nThere are no known workarounds.\n",
           "Severity": "HIGH",

@@ -130,7 +130,8 @@ func TestScanner_ScanArtifact(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 								},
-								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2020-9999",
+								PrimaryURL:  "https://avd.aquasec.com/nvd/cve-2020-9999",
+								Fingerprint: "sha256:36d448cc18b4acd7ccc868fc1865f7dc97694d1e7e4fa55cfabec91990866926", // hash(sha256:574abdaf07824449b1277ec1e7e67659cc869bbf97fd95447812b55644350a21:../fanal/test/testdata/alpine-311.tar.gz (alpine 3.11.5):musl@1.1.24-r2:CVE-2020-9999)
 								PkgIdentifier: ftypes.PkgIdentifier{
 									UID: "dfd35f110ec8c525",
 									PURL: &packageurl.PackageURL{
@@ -166,7 +167,8 @@ func TestScanner_ScanArtifact(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 								},
-								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2020-9999",
+								PrimaryURL:  "https://avd.aquasec.com/nvd/cve-2020-9999",
+								Fingerprint: "sha256:5b28a2608ccc60c031066a4809cdb5c4ed7eb331e1136b413883c562a7e7aa55", // hash(sha256:574abdaf07824449b1277ec1e7e67659cc869bbf97fd95447812b55644350a21:../fanal/test/testdata/alpine-311.tar.gz (alpine 3.11.5):musl-utils@1.1.24-r2:CVE-2020-9999)
 								PkgIdentifier: ftypes.PkgIdentifier{
 									UID: "989eac0ec741e708",
 									PURL: &packageurl.PackageURL{

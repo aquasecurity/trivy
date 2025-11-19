@@ -16,7 +16,7 @@ The following information could be collected:
 ### Captured scan options
 The following flags will be included with their value:
 
---8<-- "./docs/docs/advanced/telemetry-flags.md"
+--8<-- "./docs/guide/advanced/telemetry-flags.md"
 
 
 ## Privacy

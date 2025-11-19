@@ -54,6 +54,7 @@
           "FixedVersion": "2.29.1, 2.39.1, 2.42.0",
           "Status": "fixed",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-3215",
+          "Fingerprint": "sha256:5e6d347d902170f39ce0bb9c580cadecc025cbd132fa3a99e171ec1fdaba6a91",
           "Title": "SwiftNIO vulnerable to Improper Neutralization of CRLF Sequences in HTTP Headers ('HTTP Response Splitting')",
           "Description": "`NIOHTTP1` and projects using it for generating HTTP responses, including SwiftNIO, can be subject to a HTTP Response Injection attack...",
           "Severity": "MEDIUM",

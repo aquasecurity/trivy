@@ -79,6 +79,7 @@
             "DiffID": "sha256:89da7cc836da4b53ab1ceb572576458c005e7e444b8bb79abda196668a2f0c92"
           },
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-24765",
+          "Fingerprint": "sha256:07e9315f491c021347b65547ff629f3f2e8179f1b8ff646070390c4919e1a837",
           "Title": "Git for Windows is a fork of Git containing Windows-specific patches.  ...",
           "Description": "Git for Windows is a fork of Git containing Windows-specific patches.",
           "Severity": "MEDIUM",
