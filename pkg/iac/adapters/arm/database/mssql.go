@@ -16,7 +16,7 @@ func adaptMSSQLServers(deployment azure2.Deployment) (msSQlServers []database.MS
 func adaptMSSQLServer(resource azure2.Resource, deployment azure2.Deployment) database.MSSQLServer {
 	properties := resource.Properties
 	administratorLogin := properties.GetMapValue("administratorLogin").AsStringValue("", resource.Metadata)
-	
+
 	// Support for azureadAdministrator block (ARM uses administrators property)
 	var adAdmins []database.ActiveDirectoryAdministrator
 	administrators := properties.GetMapValue("administrators")

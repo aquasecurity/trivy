@@ -21,7 +21,7 @@ func adaptPostgreSQLServer(resource azure.Resource, deployment azure.Deployment)
 	properties := resource.Properties
 	geoRedundantBackup := properties.GetMapValue("storageProfile").GetMapValue("geoRedundantBackup")
 	geoRedundantBackupEnabled := geoRedundantBackup.AsStringValue("Disabled", resource.Metadata)
-	
+
 	threatDetectionPolicy := adaptThreatDetectionPolicy(resource, deployment)
 
 	return database.PostgreSQLServer{
@@ -35,7 +35,7 @@ func adaptPostgreSQLServer(resource azure.Resource, deployment azure.Deployment)
 		},
 		Config:                    adaptPostgreSQLConfiguration(resource, deployment),
 		GeoRedundantBackupEnabled: iacTypes.Bool(geoRedundantBackupEnabled.EqualTo("Enabled"), geoRedundantBackup.GetMetadata()),
-		ThreatDetectionPolicy:      threatDetectionPolicy,
+		ThreatDetectionPolicy:     threatDetectionPolicy,
 	}
 }
 
@@ -52,44 +52,45 @@ func adaptPostgreSQLConfiguration(resource azure.Resource, deployment azure.Depl
 	}
 
 	for _, configuration := range deployment.GetResourcesByType("Microsoft.DBforPostgreSQL/servers/configurations") {
-		if strings.HasPrefix(configuration.Name.AsString(), parent) {
-			val := configuration.Properties.GetMapValue("value")
-			if strings.HasSuffix(configuration.Name.AsString(), "log_checkpoints") {
-				config.LogCheckpoints = val.AsBoolValue(false, configuration.Metadata)
-				continue
-			}
-			if strings.HasSuffix(configuration.Name.AsString(), "log_connections") {
-				config.LogConnections = val.AsBoolValue(false, configuration.Metadata)
-				continue
-			}
-			if strings.HasSuffix(configuration.Name.AsString(), "connection_throttling") {
-				config.ConnectionThrottling = val.AsBoolValue(false, configuration.Metadata)
-				continue
-			}
-			if strings.HasSuffix(configuration.Name.AsString(), "log_disconnections") {
-				config.LogDisconnections = val.AsBoolValue(false, configuration.Metadata)
-				continue
-			}
+		if !strings.HasPrefix(configuration.Name.AsString(), parent) {
+			continue
+		}
+		val := configuration.Properties.GetMapValue("value")
+		if strings.HasSuffix(configuration.Name.AsString(), "log_checkpoints") {
+			config.LogCheckpoints = val.AsBoolValue(false, configuration.Metadata)
+			continue
+		}
+		if strings.HasSuffix(configuration.Name.AsString(), "log_connections") {
+			config.LogConnections = val.AsBoolValue(false, configuration.Metadata)
+			continue
+		}
+		if strings.HasSuffix(configuration.Name.AsString(), "connection_throttling") {
+			config.ConnectionThrottling = val.AsBoolValue(false, configuration.Metadata)
+			continue
+		}
+		if strings.HasSuffix(configuration.Name.AsString(), "log_disconnections") {
+			config.LogDisconnections = val.AsBoolValue(false, configuration.Metadata)
+			continue
 		}
 	}
 
 	return config
 }
 
-func adaptThreatDetectionPolicy(resource azure.Resource, deployment azure.Deployment) database.ThreatDetectionPolicy {
+func adaptThreatDetectionPolicy(resource azure.Resource, _ azure.Deployment) database.ThreatDetectionPolicy {
 	// Threat detection policy is typically configured via securityAlertPolicies in ARM
 	// For PostgreSQL, it may be in properties or as a separate resource
 	properties := resource.Properties
 	threatDetectionEnabled := properties.GetMapValue("threatDetectionPolicy").GetMapValue("state")
-	
-	if threatDetectionEnabled.IsNil() {
+
+	if threatDetectionEnabled.Kind == azure.KindNull {
 		// Try alternative property paths
 		threatDetectionEnabled = properties.GetMapValue("securityAlertPolicy").GetMapValue("state")
 	}
-	
+
 	enabled := false
 	metadata := resource.Metadata
-	if !threatDetectionEnabled.IsNil() {
+	if threatDetectionEnabled.Kind != azure.KindNull {
 		state := threatDetectionEnabled.AsStringValue("Disabled", resource.Metadata)
 		enabled = state.EqualTo("Enabled")
 		metadata = threatDetectionEnabled.GetMetadata()
