@@ -9,10 +9,11 @@ import (
 func Adapt(modules terraform.Modules) database.Database {
 
 	mssqlAdapter := mssqlAdapter{
-		alertPolicyIDs:    modules.GetChildResourceIDMapByType("azurerm_mssql_server_security_alert_policy"),
-		auditingPolicyIDs: modules.GetChildResourceIDMapByType("azurerm_mssql_server_extended_auditing_policy", "azurerm_mssql_database_extended_auditing_policy"),
-		firewallIDs:       modules.GetChildResourceIDMapByType("azurerm_sql_firewall_rule", "azurerm_mssql_firewall_rule"),
-		adAdminIDs:        modules.GetChildResourceIDMapByType("azurerm_sql_active_directory_administrator"),
+		alertPolicyIDs: modules.GetChildResourceIDMapByType("azurerm_mssql_server_security_alert_policy"),
+		auditingPolicyIDs: modules.GetChildResourceIDMapByType("azurerm_mssql_server_extended_auditing_policy",
+			"azurerm_mssql_database_extended_auditing_policy"),
+		firewallIDs: modules.GetChildResourceIDMapByType("azurerm_sql_firewall_rule", "azurerm_mssql_firewall_rule"),
+		adAdminIDs:  modules.GetChildResourceIDMapByType("azurerm_sql_active_directory_administrator"),
 	}
 
 	mysqlAdapter := mysqlAdapter{
@@ -265,11 +266,9 @@ func (a *mssqlAdapter) adaptMSSQLServer(resource *terraform.Block, module *terra
 
 	if resource.TypeLabel() == "azurerm_mssql_server" {
 		minTLSVersionAttr := resource.GetAttribute("minimum_tls_version")
-		minTLSVersionVal = minTLSVersionAttr.AsStringValueOrDefault("", resource)
-
+		minTLSVersionVal = minTLSVersionAttr.AsStringValueOrDefault("1.2", resource)
 		publicAccessAttr := resource.GetAttribute("public_network_access_enabled")
 		publicAccessVal = publicAccessAttr.AsBoolValueOrDefault(true, resource)
-
 	}
 
 	alertPolicyBlocks := module.GetReferencingResources(resource, "azurerm_mssql_server_security_alert_policy", "server_name")
@@ -299,9 +298,6 @@ func (a *mssqlAdapter) adaptMSSQLServer(resource *terraform.Block, module *terra
 		firewallRules = append(firewallRules, adaptFirewallRule(firewallBlock))
 	}
 
-	administratorLoginAttr := resource.GetAttribute("administrator_login")
-	administratorLoginVal := administratorLoginAttr.AsStringValueOrDefault("", resource)
-
 	adAdminBlocks := module.GetReferencingResources(resource, "azurerm_sql_active_directory_administrator", "server_name")
 	var adAdmins []database.ActiveDirectoryAdministrator
 	for _, adAdminBlock := range adAdminBlocks {
@@ -318,9 +314,10 @@ func (a *mssqlAdapter) adaptMSSQLServer(resource *terraform.Block, module *terra
 			EnablePublicNetworkAccess: publicAccessVal,
 			FirewallRules:             firewallRules,
 		},
-		ExtendedAuditingPolicies:      auditingPolicies,
-		SecurityAlertPolicies:         alertPolicies,
-		AdministratorLogin:            administratorLoginVal,
+		ExtendedAuditingPolicies: auditingPolicies,
+		SecurityAlertPolicies:    alertPolicies,
+		AdministratorLogin: resource.GetAttribute("administrator_login").
+			AsStringValueOrDefault("", resource),
 		ActiveDirectoryAdministrators: adAdmins,
 	}
 }
@@ -332,7 +329,7 @@ func (a *mysqlAdapter) adaptMySQLServer(resource *terraform.Block, module *terra
 	enableSSLEnforcementVal := enableSSLEnforcementAttr.AsBoolValueOrDefault(false, resource)
 
 	minTLSVersionAttr := resource.GetAttribute("ssl_minimal_tls_version_enforced")
-	minTLSVersionVal := minTLSVersionAttr.AsStringValueOrDefault("TLSEnforcementDisabled", resource)
+	minTLSVersionVal := minTLSVersionAttr.AsStringValueOrDefault("TLS1_2", resource)
 
 	publicAccessAttr := resource.GetAttribute("public_network_access_enabled")
 	publicAccessVal := publicAccessAttr.AsBoolValueOrDefault(true, resource)
@@ -358,45 +355,30 @@ func (a *mysqlAdapter) adaptMySQLServer(resource *terraform.Block, module *terra
 func (a *mariaDBAdapter) adaptMariaDBServer(resource *terraform.Block, module *terraform.Module) database.MariaDBServer {
 	var firewallRules []database.FirewallRule
 
-	enableSSLEnforcementAttr := resource.GetAttribute("ssl_enforcement_enabled")
-	enableSSLEnforcementVal := enableSSLEnforcementAttr.AsBoolValueOrDefault(false, resource)
-
-	publicAccessAttr := resource.GetAttribute("public_network_access_enabled")
-	publicAccessVal := publicAccessAttr.AsBoolValueOrDefault(true, resource)
-
 	firewallRuleBlocks := module.GetReferencingResources(resource, "azurerm_mariadb_firewall_rule", "server_name")
 	for _, firewallBlock := range firewallRuleBlocks {
 		a.firewallIDs.Resolve(firewallBlock.ID())
 		firewallRules = append(firewallRules, adaptFirewallRule(firewallBlock))
 	}
 
-	geoRedundantBackupAttr := resource.GetAttribute("geo_redundant_backup_enabled")
-	geoRedundantBackupVal := geoRedundantBackupAttr.AsBoolValueOrDefault(false, resource)
-
 	return database.MariaDBServer{
 		Metadata: resource.GetMetadata(),
 		Server: database.Server{
-			Metadata:                  resource.GetMetadata(),
-			EnableSSLEnforcement:      enableSSLEnforcementVal,
-			MinimumTLSVersion:         iacTypes.StringDefault("", resource.GetMetadata()),
-			EnablePublicNetworkAccess: publicAccessVal,
-			FirewallRules:             firewallRules,
+			Metadata: resource.GetMetadata(),
+			EnableSSLEnforcement: resource.GetAttribute("ssl_enforcement_enabled").
+				AsBoolValueOrDefault(false, resource),
+			MinimumTLSVersion: iacTypes.StringDefault("", resource.GetMetadata()),
+			EnablePublicNetworkAccess: resource.GetAttribute("public_network_access_enabled").
+				AsBoolValueOrDefault(true, resource),
+			FirewallRules: firewallRules,
 		},
-		GeoRedundantBackupEnabled: geoRedundantBackupVal,
+		GeoRedundantBackupEnabled: resource.GetAttribute("geo_redundant_backup_enabled").
+			AsBoolValueOrDefault(false, resource),
 	}
 }
 
 func (a *postgresqlAdapter) adaptPostgreSQLServer(resource *terraform.Block, module *terraform.Module) database.PostgreSQLServer {
 	var firewallRules []database.FirewallRule
-
-	enableSSLEnforcementAttr := resource.GetAttribute("ssl_enforcement_enabled")
-	enableSSLEnforcementVal := enableSSLEnforcementAttr.AsBoolValueOrDefault(false, resource)
-
-	minTLSVersionAttr := resource.GetAttribute("ssl_minimal_tls_version_enforced")
-	minTLSVersionVal := minTLSVersionAttr.AsStringValueOrDefault("TLSEnforcementDisabled", resource)
-
-	publicAccessAttr := resource.GetAttribute("public_network_access_enabled")
-	publicAccessVal := publicAccessAttr.AsBoolValueOrDefault(true, resource)
 
 	firewallRuleBlocks := module.GetReferencingResources(resource, "azurerm_postgresql_firewall_rule", "server_name")
 	for _, firewallBlock := range firewallRuleBlocks {
@@ -407,24 +389,25 @@ func (a *postgresqlAdapter) adaptPostgreSQLServer(resource *terraform.Block, mod
 	configBlocks := module.GetReferencingResources(resource, "azurerm_postgresql_configuration", "server_name")
 	config := adaptPostgreSQLConfig(resource, configBlocks)
 
-	geoRedundantBackupAttr := resource.GetAttribute("geo_redundant_backup_enabled")
-	geoRedundantBackupVal := geoRedundantBackupAttr.AsBoolValueOrDefault(false, resource)
-
 	threatDetectionBlock := resource.GetBlock("threat_detection_policy")
 	threatDetectionPolicy := adaptThreatDetectionPolicy(threatDetectionBlock, resource.GetMetadata())
 
 	return database.PostgreSQLServer{
 		Metadata: resource.GetMetadata(),
 		Server: database.Server{
-			Metadata:                  resource.GetMetadata(),
-			EnableSSLEnforcement:      enableSSLEnforcementVal,
-			MinimumTLSVersion:         minTLSVersionVal,
-			EnablePublicNetworkAccess: publicAccessVal,
-			FirewallRules:             firewallRules,
+			Metadata: resource.GetMetadata(),
+			EnableSSLEnforcement: resource.GetAttribute("ssl_enforcement_enabled").
+				AsBoolValueOrDefault(false, resource),
+			MinimumTLSVersion: resource.GetAttribute("ssl_minimal_tls_version_enforced").
+				AsStringValueOrDefault("TLS1_2", resource),
+			EnablePublicNetworkAccess: resource.GetAttribute("public_network_access_enabled").
+				AsBoolValueOrDefault(true, resource),
+			FirewallRules: firewallRules,
 		},
-		Config:                    config,
-		GeoRedundantBackupEnabled: geoRedundantBackupVal,
-		ThreatDetectionPolicy:     threatDetectionPolicy,
+		Config: config,
+		GeoRedundantBackupEnabled: resource.GetAttribute("geo_redundant_backup_enabled").
+			AsBoolValueOrDefault(false, resource),
+		ThreatDetectionPolicy: threatDetectionPolicy,
 	}
 }
 
@@ -517,11 +500,8 @@ func adaptThreatDetectionPolicy(block *terraform.Block, defaultMetadata iacTypes
 		}
 	}
 
-	enabledAttr := block.GetAttribute("enabled")
-	enabledVal := enabledAttr.AsBoolValueOrDefault(false, block)
-
 	return database.ThreatDetectionPolicy{
 		Metadata: block.GetMetadata(),
-		Enabled:  enabledVal,
+		Enabled:  block.GetAttribute("enabled").AsBoolValueOrDefault(false, block),
 	}
 }
