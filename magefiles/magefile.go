@@ -252,10 +252,20 @@ func (t Test) K8s() error {
 		return fmt.Errorf("can't create environment for limited user: %w", err)
 	}
 
+	// wait for all pods are running correctly
+	err = sh.RunWithV(ENV, "kubectl", "wait", "--for=condition=Ready", "pod", "--all", "--all-namespaces", "--timeout=300s")
+	if err != nil {
+		return fmt.Errorf("can't wait for the pods: %w", err)
+	}
+
 	// print all resources for info
 	err = sh.RunWithV(ENV, "kubectl", "get", "all", "-A")
 	if err != nil {
-		return err
+		return fmt.Errorf("can't get workloads: %w", err)
+	}
+	err = sh.RunWithV(ENV, "kubectl", "get", "cm", "-A")
+	if err != nil {
+		return fmt.Errorf("can't get configmaps: %w", err)
 	}
 
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=k8s_integration", "./integration/...")
