@@ -4443,6 +4443,10 @@
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.container.Container"
         },
+        "cosmosdb": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.cosmosdb.CosmosDB"
+        },
         "database": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.database.Database"
@@ -4940,20 +4944,7 @@
         }
       }
     },
-    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.database.ActiveDirectoryAdministrator": {
-      "type": "object",
-      "properties": {
-        "__defsec_metadata": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
-        },
-        "login": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
-        }
-      }
-    },
-    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.database.CosmosDBAccount": {
+    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.cosmosdb.Account": {
       "type": "object",
       "properties": {
         "__defsec_metadata": {
@@ -4970,16 +4961,34 @@
         }
       }
     },
-    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.database.Database": {
+    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.cosmosdb.CosmosDB": {
       "type": "object",
       "properties": {
-        "cosmosdbaccounts": {
+        "accounts": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.database.CosmosDBAccount"
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.cosmosdb.Account"
           }
+        }
+      }
+    },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.database.ActiveDirectoryAdministrator": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
         },
+        "login": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        }
+      }
+    },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.database.Database": {
+      "type": "object",
+      "properties": {
         "mariadbservers": {
           "type": "array",
           "items": {
@@ -5084,10 +5093,6 @@
         "__defsec_metadata": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
-        },
-        "georedundantbackupenabled": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
         },
         "server": {
           "type": "object",
