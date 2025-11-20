@@ -297,8 +297,15 @@ func (a *mssqlAdapter) adaptMSSQLServer(resource *terraform.Block, module *terra
 		firewallRules = append(firewallRules, adaptFirewallRule(firewallBlock))
 	}
 
-	adAdminBlocks := module.GetReferencingResources(resource, "azurerm_sql_active_directory_administrator", "server_name")
+	// Support for new azuread_administrator block (azurerm provider v3+)
 	var adAdmins []database.ActiveDirectoryAdministrator
+	azureadAdminBlock := resource.GetBlock("azuread_administrator")
+	if azureadAdminBlock.IsNotNil() {
+		adAdmins = append(adAdmins, adaptAzureADAdministratorBlock(azureadAdminBlock))
+	}
+
+	// Support for deprecated azurerm_sql_active_directory_administrator resource (backward compatibility)
+	adAdminBlocks := module.GetReferencingResources(resource, "azurerm_sql_active_directory_administrator", "server_name")
 	for _, adAdminBlock := range adAdminBlocks {
 		a.adAdminIDs.Resolve(adAdminBlock.ID())
 		adAdmins = append(adAdmins, adaptActiveDirectoryAdministrator(adAdminBlock))
@@ -313,10 +320,9 @@ func (a *mssqlAdapter) adaptMSSQLServer(resource *terraform.Block, module *terra
 			EnablePublicNetworkAccess: publicAccessVal,
 			FirewallRules:             firewallRules,
 		},
-		ExtendedAuditingPolicies: auditingPolicies,
-		SecurityAlertPolicies:    alertPolicies,
-		AdministratorLogin: resource.GetAttribute("administrator_login").
-			AsStringValueOrDefault("", resource),
+		ExtendedAuditingPolicies:      auditingPolicies,
+		SecurityAlertPolicies:         alertPolicies,
+		AdministratorLogin:            resource.GetAttribute("administrator_login").AsStringValueOrDefault("", resource),
 		ActiveDirectoryAdministrators: adAdmins,
 	}
 }
@@ -485,6 +491,21 @@ func adaptActiveDirectoryAdministrator(resource *terraform.Block) database.Activ
 
 	return database.ActiveDirectoryAdministrator{
 		Metadata: resource.GetMetadata(),
+		Login:    loginVal,
+	}
+}
+
+func adaptAzureADAdministratorBlock(block *terraform.Block) database.ActiveDirectoryAdministrator {
+	// The azuread_administrator block uses login_username attribute
+	loginAttr := block.GetAttribute("login_username")
+	if loginAttr.IsNil() {
+		// Fallback to login if login_username is not present
+		loginAttr = block.GetAttribute("login")
+	}
+	loginVal := loginAttr.AsStringValueOrDefault("", block)
+
+	return database.ActiveDirectoryAdministrator{
+		Metadata: block.GetMetadata(),
 		Login:    loginVal,
 	}
 }
