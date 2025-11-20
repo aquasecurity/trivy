@@ -90,7 +90,7 @@ func IsSPDXJSON(r io.ReadSeeker) (bool, error) {
 
 	var spdxBom spdxHeader
 	if err := json.NewDecoder(r).Decode(&spdxBom); err == nil {
-		if strings.HasPrefix(spdxBom.SpdxID, "SPDX") {
+		if spdxBom.SpdxID == "SPDXRef-DOCUMENT" {
 			return true, nil
 		}
 	}
@@ -181,7 +181,7 @@ func decodeAttestationFormat(r io.ReadSeeker) (Format, bool) {
 
 	// Check SPDX
 	if s.PredicateType == in_toto.PredicateSPDX {
-		if spdxID, ok := m["SPDXID"].(string); ok && strings.HasPrefix(spdxID, "SPDX") {
+		if spdxID, ok := m["SPDXID"].(string); ok && spdxID == "SPDXRef-DOCUMENT" {
 			return FormatAttestSPDXJSON, true
 		}
 	}
