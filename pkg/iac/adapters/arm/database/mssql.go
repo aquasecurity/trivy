@@ -20,7 +20,7 @@ func adaptMSSQLServer(resource azure2.Resource, deployment azure2.Deployment) da
 	// Support for azureadAdministrator block (ARM uses administrators property)
 	var adAdmins []database.ActiveDirectoryAdministrator
 	administrators := properties.GetMapValue("administrators")
-	if !administrators.IsNil() {
+	if administrators.Kind != azure2.KindNull {
 		login := administrators.GetMapValue("login").AsStringValue("", administrators.GetMetadata())
 		if !login.IsEmpty() {
 			adAdmins = append(adAdmins, database.ActiveDirectoryAdministrator{
