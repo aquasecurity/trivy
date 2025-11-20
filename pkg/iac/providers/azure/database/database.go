@@ -9,7 +9,6 @@ type Database struct {
 	MariaDBServers    []MariaDBServer
 	MySQLServers      []MySQLServer
 	PostgreSQLServers []PostgreSQLServer
-	CosmosDBAccounts  []CosmosDBAccount
 }
 
 type MariaDBServer struct {
@@ -82,10 +81,4 @@ type ThreatDetectionPolicy struct {
 type ActiveDirectoryAdministrator struct {
 	Metadata iacTypes.Metadata
 	Login    iacTypes.StringValue
-}
-
-type CosmosDBAccount struct {
-	Metadata      iacTypes.Metadata
-	IPRangeFilter iacTypes.StringValue
-	Tags          iacTypes.MapValue
 }

@@ -32,7 +32,6 @@ func Adapt(modules terraform.Modules) database.Database {
 		MariaDBServers:    mariaDBAdapter.adaptMariaDBServers(modules),
 		MySQLServers:      mysqlAdapter.adaptMySQLServers(modules),
 		PostgreSQLServers: postgresqlAdapter.adaptPostgreSQLServers(modules),
-		CosmosDBAccounts:  adaptCosmosDBAccounts(modules),
 	}
 }
 
@@ -524,34 +523,5 @@ func adaptThreatDetectionPolicy(block *terraform.Block, defaultMetadata iacTypes
 	return database.ThreatDetectionPolicy{
 		Metadata: block.GetMetadata(),
 		Enabled:  enabledVal,
-	}
-}
-
-func adaptCosmosDBAccounts(modules terraform.Modules) []database.CosmosDBAccount {
-	var cosmosDBAccounts []database.CosmosDBAccount
-	for _, module := range modules {
-		for _, resource := range module.GetResourcesByType("azurerm_cosmosdb_account") {
-			cosmosDBAccounts = append(cosmosDBAccounts, adaptCosmosDBAccount(resource))
-		}
-	}
-	return cosmosDBAccounts
-}
-
-func adaptCosmosDBAccount(resource *terraform.Block) database.CosmosDBAccount {
-	ipRangeFilterAttr := resource.GetAttribute("ip_range_filter")
-	ipRangeFilterVal := ipRangeFilterAttr.AsStringValueOrDefault("", resource)
-
-	tagsAttr := resource.GetAttribute("tags")
-	var tagsVal iacTypes.MapValue
-	if tagsAttr.IsNil() {
-		tagsVal = iacTypes.MapDefault(make(map[string]string), resource.GetMetadata())
-	} else {
-		tagsVal = tagsAttr.AsMapValue()
-	}
-
-	return database.CosmosDBAccount{
-		Metadata:      resource.GetMetadata(),
-		IPRangeFilter: ipRangeFilterVal,
-		Tags:          tagsVal,
 	}
 }
