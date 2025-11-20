@@ -390,6 +390,14 @@ data "aws_iam_policy_document" "this" {
 }`,
 			assertLength: 0,
 		},
+		{
+			name: "ignore marker value is unknown",
+			source: `#trivy:ignore:*[bucket=mybucket-bucket1]
+resource "aws_s3_bucket" "test" {
+  bucket = "mybucket-${each.key}"
+}`,
+			assertLength: 1,
+		},
 	}
 
 	for _, tc := range testCases {
