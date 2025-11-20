@@ -2229,56 +2229,6 @@ You're not viewing the latest version of the documentation.
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#expiration-date_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Expiration Date
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Expiration Date">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#ignoring-by-attributes_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Ignoring by attributes
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ignoring-module-issues_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Ignoring module issues
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#support-for-wildcards_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Support for Wildcards
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -8694,56 +8644,6 @@ You're not viewing the latest version of the documentation.
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#expiration-date_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Expiration Date
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Expiration Date">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#ignoring-by-attributes_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Ignoring by attributes
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ignoring-module-issues_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Ignoring module issues
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#support-for-wildcards_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Support for Wildcards
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -8808,7 +8708,7 @@ You can configure this limit using the <code>--rego-error-limit</code> flag.</p>
 <p>This flag controls the maximum number of compile errors Trivy will tolerate before stopping the compilation.</p>
 <p>If the number of compile errors exceeds this limit, Trivy will terminate the scan.
 You can set <code>--rego-error-limit 0</code> to enforce strict checking and disallow any compile errors.</p>
-<p>The default value is defined internally via <a href="https://github.com/aquasecurity/trivy/tree/9da33b5aed1269f5fdcfc5b34ba3df59ca86e51bpkg/iac/rego/scanner.go">CompileErrorLimit</a>.</p>
+<p>The default value is defined internally via <a href="https://github.com/aquasecurity/trivy/tree/5c42cc590b852bd6a6d7d0aff9a4133b5cd4205apkg/iac/rego/scanner.go">CompileErrorLimit</a>.</p>
 <h3 id="private-terraform-registries">Private Terraform registries<a class="headerlink" href="#private-terraform-registries" title="Permanent link">&para;</a></h3>
 <p>Trivy can download Terraform code from private registries.
 To pass credentials you must use the <code>TF_TOKEN_</code> environment variables.
@@ -9035,100 +8935,6 @@ Long ID would look like the following: <code>aws-s3-enable-logging</code>.</p>
 <span class="p">}</span>
 </code></pre></div></p>
 <h4 id="support-for-wildcards">Support for Wildcards<a class="headerlink" href="#support-for-wildcards" title="Permanent link">&para;</a></h4>
-<p>You can use wildcards in the <code>ws</code> (workspace) and <code>ignore</code> sections of the ignore rules.</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># trivy:ignore:aws-s3-*:ws:dev-*</span>
-</code></pre></div>
-<p>This example ignores all checks starting with <code>aws-s3-</code> for workspaces matching the pattern <code>dev-*</code>.</p>
-<h3 id="expiration-date_1">Expiration Date<a class="headerlink" href="#expiration-date_1" title="Permanent link">&para;</a></h3>
-<p>You can specify the expiration date of the ignore rule in <code>yyyy-mm-dd</code> format. This is a useful feature when you want to make sure that an ignored issue is not forgotten and worth revisiting in the future. For example:
-<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:aws-s3-enable-logging:exp:2024-03-10</span>
-<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_s3_bucket&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="na">bucket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test&quot;</span>
-<span class="p">}</span>
-</code></pre></div></p>
-<p>The <code>aws-s3-enable-logging</code> check will be ignored until <code>2024-03-10</code> until the ignore rule expires.</p>
-<h4 id="ignoring-by-attributes_1">Ignoring by attributes<a class="headerlink" href="#ignoring-by-attributes_1" title="Permanent link">&para;</a></h4>
-<p>You can ignore a resource by its attribute value. This is useful when using the <code>for-each</code> meta-argument. For example:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">locals</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="na">ports</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;3306&quot;, &quot;5432&quot;</span><span class="p">]</span>
-<span class="p">}</span>
-
-<span class="c1">#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=3306]</span>
-<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_security_group_rule&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="na">for_each</span><span class="w">                 </span><span class="o">=</span><span class="w"> </span><span class="nf">toset</span><span class="p">(</span><span class="nv">local.ports</span><span class="p">)</span>
-<span class="w">  </span><span class="na">type</span><span class="w">                     </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;ingress&quot;</span>
-<span class="w">  </span><span class="na">from_port</span><span class="w">                </span><span class="o">=</span><span class="w"> </span><span class="nv">each.key</span>
-<span class="w">  </span><span class="na">to_port</span><span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="nv">each.key</span>
-<span class="w">  </span><span class="na">protocol</span><span class="w">                 </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;TCP&quot;</span>
-<span class="w">  </span><span class="na">cidr_blocks</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;0.0.0.0/0&quot;</span><span class="p">]</span>
-<span class="w">  </span><span class="na">security_group_id</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_security_group.example.id</span>
-<span class="w">  </span><span class="na">source_security_group_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_security_group.example.id</span>
-<span class="p">}</span>
-</code></pre></div>
-<p>The <code>aws-ec2-no-public-ingress-sgr</code> check will be ignored only for the <code>aws_security_group_rule</code> resource with port number <code>5432</code>. It is important to note that the ignore rule should not enclose the attribute value in quotes, despite the fact that the port is represented as a string.</p>
-<p>If you want to ignore multiple resources on different attributes, you can specify multiple ignore rules:</p>
-<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=3306]</span>
-<span class="c1">#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=5432]</span>
-</code></pre></div>
-<p>You can also ignore a resource on multiple attributes in the same rule:
-<div class="highlight"><pre><span></span><code><span class="nb">locals</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nb">rules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nb">first</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="na">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span>
-<span class="w">      </span><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;ingress&quot;</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nb">second</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="na">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span>
-<span class="w">      </span><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;egress&quot;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-
-<span class="c1">#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=1000,type=egress]</span>
-<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_security_group_rule&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nb">for_each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">for</span><span class="w"> </span><span class="err">k</span><span class="p">,</span><span class="w"> </span><span class="err">v</span><span class="w"> </span><span class="err">in</span><span class="w"> </span><span class="nv">local.rules</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="na">k</span><span class="w"> </span><span class="o">=</span><span class="err">&gt;</span><span class="w"> </span><span class="err">v</span><span class="w"> </span><span class="p">}</span>
-
-<span class="w">  </span><span class="na">type</span><span class="w">                     </span><span class="o">=</span><span class="w"> </span><span class="nv">each.value.type</span>
-<span class="w">  </span><span class="na">from_port</span><span class="w">                </span><span class="o">=</span><span class="w"> </span><span class="nv">each.value.port</span>
-<span class="w">  </span><span class="na">to_port</span><span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="nv">each.value.port</span>
-<span class="w">  </span><span class="na">protocol</span><span class="w">                 </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;TCP&quot;</span>
-<span class="w">  </span><span class="na">cidr_blocks</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;0.0.0.0/0&quot;</span><span class="p">]</span>
-<span class="w">  </span><span class="na">security_group_id</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_security_group.example.id</span>
-<span class="w">  </span><span class="na">source_security_group_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_security_group.example.id</span>
-<span class="p">}</span>
-</code></pre></div></p>
-<p>Checks can also be ignored by nested attributes:</p>
-<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:*[logging_config.prefix=myprefix]</span>
-<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_cloudfront_distribution&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nb">logging_config</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="na">include_cookies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">false</span>
-<span class="w">    </span><span class="na">bucket</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;mylogs.s3.amazonaws.com&quot;</span>
-<span class="w">    </span><span class="na">prefix</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;myprefix&quot;</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
-<h4 id="ignoring-module-issues_1">Ignoring module issues<a class="headerlink" href="#ignoring-module-issues_1" title="Permanent link">&para;</a></h4>
-<p>Issues in third-party modules cannot be ignored using the method described above, because you may not have access to modify the module source code. In such a situation you can add ignore rules above the module block, for example:</p>
-<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:aws-s3-enable-logging</span>
-<span class="kr">module</span><span class="w"> </span><span class="nv">&quot;s3_bucket&quot;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;terraform-aws-modules/s3-bucket/aws&quot;</span>
-
-<span class="w">  </span><span class="na">bucket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;my-s3-bucket&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-<p>An example of ignoring checks for a specific bucket in a module:
-<div class="highlight"><pre><span></span><code><span class="nb">locals</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="na">bucket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;test1&quot;, &quot;test2&quot;</span><span class="p">]</span>
-<span class="p">}</span>
-
-<span class="c1">#trivy:ignore:*[bucket=test1]</span>
-<span class="kr">module</span><span class="w"> </span><span class="nv">&quot;s3_bucket&quot;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="na">for_each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">toset</span><span class="p">(</span><span class="nv">local.bucket</span><span class="p">)</span>
-<span class="w">  </span><span class="na">source</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;terraform-aws-modules/s3-bucket/aws&quot;</span>
-<span class="w">  </span><span class="na">bucket</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nv">each.value</span>
-<span class="p">}</span>
-</code></pre></div></p>
-<h4 id="support-for-wildcards_1">Support for Wildcards<a class="headerlink" href="#support-for-wildcards_1" title="Permanent link">&para;</a></h4>
 <p>You can use wildcards in the <code>ws</code> (workspace) and <code>ignore</code> sections of the ignore rules.</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># trivy:ignore:aws-s3-*:ws:dev-*</span>
 </code></pre></div>
