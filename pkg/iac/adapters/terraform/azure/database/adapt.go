@@ -191,17 +191,16 @@ func (a *mariaDBAdapter) adaptMariaDBServers(modules terraform.Modules) []databa
 	orphanResources := modules.GetResourceByIDs(a.firewallIDs.Orphans()...)
 
 	if len(orphanResources) > 0 {
-		orphanage := database.MariaDBServer{
-			Metadata: iacTypes.NewUnmanagedMetadata(),
-			Server: database.Server{
-				Metadata:                  iacTypes.NewUnmanagedMetadata(),
-				EnableSSLEnforcement:      iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
-				MinimumTLSVersion:         iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
-				EnablePublicNetworkAccess: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
-				FirewallRules:             nil,
-			},
-			GeoRedundantBackupEnabled: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
-		}
+	orphanage := database.MariaDBServer{
+		Metadata: iacTypes.NewUnmanagedMetadata(),
+		Server: database.Server{
+			Metadata:                  iacTypes.NewUnmanagedMetadata(),
+			EnableSSLEnforcement:      iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+			MinimumTLSVersion:         iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+			EnablePublicNetworkAccess: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+			FirewallRules:             nil,
+		},
+	}
 		for _, policy := range orphanResources {
 			orphanage.FirewallRules = append(orphanage.FirewallRules, adaptFirewallRule(policy))
 		}
@@ -372,8 +371,6 @@ func (a *mariaDBAdapter) adaptMariaDBServer(resource *terraform.Block, module *t
 				AsBoolValueOrDefault(true, resource),
 			FirewallRules: firewallRules,
 		},
-		GeoRedundantBackupEnabled: resource.GetAttribute("geo_redundant_backup_enabled").
-			AsBoolValueOrDefault(false, resource),
 	}
 }
 

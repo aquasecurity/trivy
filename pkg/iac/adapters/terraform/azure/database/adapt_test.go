@@ -82,7 +82,6 @@ func Test_Adapt(t *testing.T) {
 							ConnectionThrottling: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 							LogDisconnections:    iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
-						GeoRedundantBackupEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						ThreatDetectionPolicy: database.ThreatDetectionPolicy{
 							Metadata: iacTypes.NewTestMetadata(),
 							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
@@ -127,7 +126,6 @@ func Test_Adapt(t *testing.T) {
 								},
 							},
 						},
-						GeoRedundantBackupEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},
 			},

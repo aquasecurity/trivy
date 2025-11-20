@@ -14,7 +14,6 @@ type Database struct {
 type MariaDBServer struct {
 	Metadata iacTypes.Metadata
 	Server
-	GeoRedundantBackupEnabled iacTypes.BoolValue
 }
 
 type MySQLServer struct {
