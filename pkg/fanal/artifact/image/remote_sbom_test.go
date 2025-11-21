@@ -1,25 +1,26 @@
 package image_test
 
 import (
-	"net/http"
-	"net/http/httptest"
+	"fmt"
 	"net/url"
 	"os"
 	"testing"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	fakei "github.com/google/go-containerregistry/pkg/v1/fake"
-	typesv1 "github.com/google/go-containerregistry/pkg/v1/types"
 	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/cachetest"
+	"github.com/aquasecurity/trivy/internal/registrytest"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	image2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/oci"
 	"github.com/aquasecurity/trivy/pkg/rekortest"
+	"github.com/aquasecurity/trivy/pkg/sbom"
 )
 
 func TestMain(m *testing.M) {
@@ -31,7 +32,7 @@ type fakeImage struct {
 	name        string
 	repoDigests []string
 	v1.Image
-	types.ImageExtension
+	ftypes.ImageExtension
 }
 
 func (f fakeImage) ID() (string, error) {
@@ -46,47 +47,42 @@ func (f fakeImage) RepoDigests() []string {
 	return f.repoDigests
 }
 
+func (f fakeImage) RepoTags() []string {
+	return nil
+}
+
 func TestArtifact_InspectRekorAttestation(t *testing.T) {
-	type fields struct {
-		imageName   string
-		repoDigests []string
-	}
 	tests := []struct {
 		name        string
-		fields      fields
-		artifactOpt artifact.Option
+		imageName   string
+		repoDigests []string
 		wantBlobs   []cachetest.WantBlob
 		want        artifact.Reference
 		wantErr     string
 	}{
 		{
-			name: "happy path",
-			fields: fields{
-				imageName: "test/image:10",
-				repoDigests: []string{
-					"test/image@sha256:782143e39f1e7a04e3f6da2d88b1c057e5657363c4f90679f3e8a071b7619e02",
-				},
-			},
-			artifactOpt: artifact.Option{
-				SBOMSources: []string{"rekor"},
+			name:      "happy path",
+			imageName: "test/image:10",
+			repoDigests: []string{
+				"test/image@sha256:782143e39f1e7a04e3f6da2d88b1c057e5657363c4f90679f3e8a071b7619e02",
 			},
 			wantBlobs: []cachetest.WantBlob{
 				{
 					ID: "sha256:066b9998617ffb7dfe0a3219ac5c3efc1008a6223606fcf474e7d5c965e4e8da",
-					BlobInfo: types.BlobInfo{
-						SchemaVersion: types.BlobJSONSchemaVersion,
-						OS: types.OS{
+					BlobInfo: ftypes.BlobInfo{
+						SchemaVersion: ftypes.BlobJSONSchemaVersion,
+						OS: ftypes.OS{
 							Family: "alpine",
 							Name:   "3.16.2",
 						},
-						PackageInfos: []types.PackageInfo{
+						PackageInfos: []ftypes.PackageInfo{
 							{
-								Packages: types.Packages{
+								Packages: ftypes.Packages{
 									{
 										ID:      "musl@1.2.3-r0",
 										Name:    "musl",
 										Version: "1.2.3-r0",
-										Identifier: types.PkgIdentifier{
+										Identifier: ftypes.PkgIdentifier{
 											PURL: &packageurl.PackageURL{
 												Type:      packageurl.TypeApk,
 												Namespace: "alpine",
@@ -104,7 +100,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 										SrcName:    "musl",
 										SrcVersion: "1.2.3-r0",
 										Licenses:   []string{"MIT"},
-										Layer: types.Layer{
+										Layer: ftypes.Layer{
 											DiffID: "sha256:994393dc58e7931862558d06e46aa2bb17487044f670f310dffe1d24e4d1eec7",
 										},
 									},
@@ -116,7 +112,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			},
 			want: artifact.Reference{
 				Name: "test/image:10",
-				Type: types.TypeCycloneDX,
+				Type: ftypes.TypeCycloneDX,
 				ID:   "sha256:066b9998617ffb7dfe0a3219ac5c3efc1008a6223606fcf474e7d5c965e4e8da",
 				BlobIDs: []string{
 					"sha256:066b9998617ffb7dfe0a3219ac5c3efc1008a6223606fcf474e7d5c965e4e8da",
@@ -136,40 +132,34 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			},
 		},
 		{
-			name: "error",
-			fields: fields{
-				imageName: "test/image:10",
-				repoDigests: []string{
-					"test/image@sha256:123456e39f1e7a04e3f6da2d88b1c057e5657363c4f90679f3e8a071b7619e02",
-				},
-			},
-			artifactOpt: artifact.Option{
-				SBOMSources: []string{"rekor"},
+			name:      "attestation not found",
+			imageName: "test/image:10",
+			repoDigests: []string{
+				"test/image@sha256:123456e39f1e7a04e3f6da2d88b1c057e5657363c4f90679f3e8a071b7619e02",
 			},
 			wantErr: "remote SBOM fetching error",
 		},
 	}
 
-	log.InitLogger(false, true)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ts := rekortest.NewServer(t)
 			defer ts.Close()
 
-			// Set the testing URL
-			tt.artifactOpt.RekorURL = ts.URL()
-
 			c := cachetest.NewCache(t, nil)
 
 			fi := &fakei.FakeImage{}
 			fi.ConfigFileReturns(&v1.ConfigFile{}, nil)
 
 			img := &fakeImage{
-				name:        tt.fields.imageName,
-				repoDigests: tt.fields.repoDigests,
+				name:        tt.imageName,
+				repoDigests: tt.repoDigests,
 				Image:       fi,
 			}
-			a, err := image2.NewArtifact(img, c, tt.artifactOpt)
+			a, err := image2.NewArtifact(img, c, artifact.Option{
+				SBOMSources: []string{"rekor"},
+				RekorURL:    ts.URL(),
+			})
 			require.NoError(t, err)
 
 			got, err := a.Inspect(t.Context())
@@ -177,156 +167,155 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
+			require.NoError(t, err)
 			defer a.Clean(got)
 
-			require.NoError(t, err, tt.name)
 			got.BOM = nil
 			assert.Equal(t, tt.want, got)
-
 			cachetest.AssertBlobs(t, c, tt.wantBlobs)
 		})
 	}
 }
 
-func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.URL.Path {
-		case "/v2":
-			_, err := w.Write([]byte("ok"))
-			assert.NoError(t, err)
-		case "/v2/test/image/referrers/sha256:782143e39f1e7a04e3f6da2d88b1c057e5657363c4f90679f3e8a071b7619e02":
-			w.Header().Set("Content-Type", string(typesv1.OCIImageIndex))
-			http.ServeFile(w, r, "testdata/index.json")
-		case "/v2/test/image/manifests/sha256:37c89af4907fa0af078aeba12d6f18dc0c63937c010030baaaa88e958f0719a5":
-			http.ServeFile(w, r, "testdata/manifest.json")
-		case "/v2/test/image/blobs/sha256:9e05dda2a2dcdd526c9204be8645ae48742861c27f093bf496a6397834acecf2":
-			http.ServeFile(w, r, "testdata/cyclonedx.json")
-		}
-	}))
-	defer ts.Close()
-
-	u, err := url.Parse(ts.URL)
-	require.NoError(t, err)
-	registry := u.Host
-
-	type fields struct {
-		imageName   string
-		repoDigests []string
-	}
-
-	tests := []struct {
-		name        string
-		fields      fields
-		artifactOpt artifact.Option
-		wantBlobs   []cachetest.WantBlob
-		want        artifact.Reference
-		wantErr     string
-	}{
-		{
-			name: "happy path",
-			fields: fields{
-				imageName: registry + "/test/image:10",
-				repoDigests: []string{
-					registry + "/test/image@sha256:782143e39f1e7a04e3f6da2d88b1c057e5657363c4f90679f3e8a071b7619e02",
-				},
-			},
-			artifactOpt: artifact.Option{
-				SBOMSources: []string{"oci"},
-			},
-			wantBlobs: []cachetest.WantBlob{
+// Common test data for CycloneDX SBOM (used by OCI referrer tests)
+var wantBlobsCycloneDX = []cachetest.WantBlob{
+	{
+		ID: "sha256:2171d8ccf798e94d09aca9c6abf15d28abd3236def1caa4a394b6f0a69c4266d",
+		BlobInfo: ftypes.BlobInfo{
+			SchemaVersion: ftypes.BlobJSONSchemaVersion,
+			Applications: []ftypes.Application{
 				{
-					ID: "sha256:2171d8ccf798e94d09aca9c6abf15d28abd3236def1caa4a394b6f0a69c4266d",
-					BlobInfo: types.BlobInfo{
-						SchemaVersion: types.BlobJSONSchemaVersion,
-						Applications: []types.Application{
-							{
-								Type: types.GoBinary,
-								Packages: types.Packages{
-									{
-										ID:      "github.com/opencontainers/go-digest@v1.0.0",
-										Name:    "github.com/opencontainers/go-digest",
-										Version: "v1.0.0",
-										Identifier: types.PkgIdentifier{
-											PURL: &packageurl.PackageURL{
-												Type:      packageurl.TypeGolang,
-												Namespace: "github.com/opencontainers",
-												Name:      "go-digest",
-												Version:   "v1.0.0",
-											},
-											BOMRef: "pkg:golang/github.com/opencontainers/go-digest@v1.0.0",
-										},
-									},
-									{
-										ID:      "golang.org/x/sync@v0.1.0",
-										Name:    "golang.org/x/sync",
-										Version: "v0.1.0",
-										Identifier: types.PkgIdentifier{
-											PURL: &packageurl.PackageURL{
-												Type:      packageurl.TypeGolang,
-												Namespace: "golang.org/x",
-												Name:      "sync",
-												Version:   "v0.1.0",
-											},
-											BOMRef: "pkg:golang/golang.org/x/sync@v0.1.0",
-										},
-									},
+					Type: ftypes.GoBinary,
+					Packages: ftypes.Packages{
+						{
+							ID:      "github.com/opencontainers/go-digest@v1.0.0",
+							Name:    "github.com/opencontainers/go-digest",
+							Version: "v1.0.0",
+							Identifier: ftypes.PkgIdentifier{
+								PURL: &packageurl.PackageURL{
+									Type:      packageurl.TypeGolang,
+									Namespace: "github.com/opencontainers",
+									Name:      "go-digest",
+									Version:   "v1.0.0",
 								},
+								BOMRef: "pkg:golang/github.com/opencontainers/go-digest@v1.0.0",
+							},
+						},
+						{
+							ID:      "golang.org/x/sync@v0.1.0",
+							Name:    "golang.org/x/sync",
+							Version: "v0.1.0",
+							Identifier: ftypes.PkgIdentifier{
+								PURL: &packageurl.PackageURL{
+									Type:      packageurl.TypeGolang,
+									Namespace: "golang.org/x",
+									Name:      "sync",
+									Version:   "v0.1.0",
+								},
+								BOMRef: "pkg:golang/golang.org/x/sync@v0.1.0",
 							},
 						},
 					},
 				},
 			},
-			want: artifact.Reference{
-				Name: registry + "/test/image:10",
-				Type: types.TypeCycloneDX,
-				ID:   "sha256:2171d8ccf798e94d09aca9c6abf15d28abd3236def1caa4a394b6f0a69c4266d",
-				BlobIDs: []string{
-					"sha256:2171d8ccf798e94d09aca9c6abf15d28abd3236def1caa4a394b6f0a69c4266d",
-				},
+		},
+	},
+}
+
+func TestArtifact_InspectOCIReferrerSBOM(t *testing.T) {
+	// Start a test registry with referrers support
+	ts := registrytest.NewServer(t)
+	defer ts.Close()
+
+	u, err := url.Parse(ts.URL)
+	require.NoError(t, err)
+	registryHost := u.Host
+
+	tests := []struct {
+		name      string
+		setup     func(t *testing.T) (imageName string, repoDigests []string)
+		wantType  ftypes.ArtifactType
+		wantID    string
+		wantBlobs []cachetest.WantBlob
+	}{
+		{
+			name: "CycloneDX SBOM",
+			setup: func(t *testing.T) (string, []string) {
+				ref, subjectDesc := registrytest.PushRandomImage(t, registryHost, "test/cyclonedx", "latest")
+
+				sbomContent, err := os.ReadFile("testdata/cyclonedx.json")
+				require.NoError(t, err)
+
+				registrytest.PushReferrer(t, registryHost, "test/cyclonedx", subjectDesc, oci.CycloneDXArtifactType, sbomContent)
+
+				return ref.String(),
+					[]string{fmt.Sprintf("%s/test/cyclonedx@%s", registryHost, subjectDesc.Digest.String())}
 			},
+			wantType:  ftypes.TypeCycloneDX,
+			wantID:    "sha256:2171d8ccf798e94d09aca9c6abf15d28abd3236def1caa4a394b6f0a69c4266d",
+			wantBlobs: wantBlobsCycloneDX,
 		},
 		{
-			name: "404",
-			fields: fields{
-				imageName: registry + "/test/image:unknown",
-				repoDigests: []string{
-					registry + "/test/image@sha256:123456e39f1e7a04e3f6da2d88b1c057e5657363c4f90679f3e8a071b7619e02",
-				},
+			name: "Sigstore bundle",
+			setup: func(t *testing.T) (string, []string) {
+				ref, subjectDesc := registrytest.PushRandomImage(t, registryHost, "test/sigstore", "latest")
+
+				bundleContent, err := os.ReadFile("testdata/sigstore-bundle.json")
+				require.NoError(t, err)
+
+				registrytest.PushReferrer(t, registryHost, "test/sigstore", subjectDesc, sbom.SigstoreBundleMediaType, bundleContent)
+
+				return ref.String(),
+					[]string{fmt.Sprintf("%s/test/sigstore@%s", registryHost, subjectDesc.Digest.String())}
 			},
-			artifactOpt: artifact.Option{
-				SBOMSources: []string{"oci"},
+			wantType:  ftypes.TypeCycloneDX,
+			wantID:    "sha256:2171d8ccf798e94d09aca9c6abf15d28abd3236def1caa4a394b6f0a69c4266d",
+			wantBlobs: wantBlobsCycloneDX,
+		},
+		{
+			name: "no referrers",
+			setup: func(t *testing.T) (string, []string) {
+				// Push image without any referrers
+				ref, subjectDesc := registrytest.PushRandomImage(t, registryHost, "test/no-referrers", "latest")
+
+				return ref.String(),
+					[]string{fmt.Sprintf("%s/test/no-referrers@%s", registryHost, subjectDesc.Digest.String())}
 			},
-			wantErr: "unable to get manifest",
+			// Falls back to normal image scanning when no referrers found
+			wantType: ftypes.TypeContainerImage,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			imageName, repoDigests := tt.setup(t)
+
 			c := cachetest.NewCache(t, nil)
 
 			fi := &fakei.FakeImage{}
 			fi.ConfigFileReturns(&v1.ConfigFile{}, nil)
 
 			img := &fakeImage{
-				name:        tt.fields.imageName,
-				repoDigests: tt.fields.repoDigests,
+				name:        imageName,
+				repoDigests: repoDigests,
 				Image:       fi,
 			}
-			a, err := image2.NewArtifact(img, c, tt.artifactOpt)
+			a, err := image2.NewArtifact(img, c, artifact.Option{
+				SBOMSources: []string{"oci"},
+			})
 			require.NoError(t, err)
 
 			got, err := a.Inspect(t.Context())
-			if tt.wantErr != "" {
-				assert.ErrorContains(t, err, tt.wantErr)
-				return
-			}
+			require.NoError(t, err)
 			defer a.Clean(got)
 
-			require.NoError(t, err, tt.name)
-			got.BOM = nil
-			assert.Equal(t, tt.want, got)
-
-			cachetest.AssertBlobs(t, c, tt.wantBlobs)
+			assert.Equal(t, tt.wantType, got.Type)
+			if tt.wantID != "" {
+				assert.Equal(t, tt.wantID, got.ID)
+			}
+			if tt.wantBlobs != nil {
+				cachetest.AssertBlobs(t, c, tt.wantBlobs)
+			}
 		})
 	}
 }

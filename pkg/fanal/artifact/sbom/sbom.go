@@ -77,11 +77,11 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 
 	var artifactType types.ArtifactType
 	switch format {
-	case sbom.FormatCycloneDXJSON, sbom.FormatCycloneDXXML, sbom.FormatAttestCycloneDXJSON, sbom.FormatLegacyCosignAttestCycloneDXJSON:
+	case sbom.FormatCycloneDXJSON, sbom.FormatCycloneDXXML, sbom.FormatAttestCycloneDXJSON,
+		sbom.FormatLegacyCosignAttestCycloneDXJSON, sbom.FormatSigstoreBundleCycloneDXJSON:
 		artifactType = types.TypeCycloneDX
-	case sbom.FormatSPDXTV, sbom.FormatSPDXJSON, sbom.FormatAttestSPDXJSON:
+	case sbom.FormatSPDXTV, sbom.FormatSPDXJSON, sbom.FormatAttestSPDXJSON, sbom.FormatSigstoreBundleSPDXJSON:
 		artifactType = types.TypeSPDX
-
 	}
 
 	return artifact.Reference{
