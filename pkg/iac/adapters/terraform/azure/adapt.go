@@ -5,6 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/azure/authorization"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/azure/compute"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/azure/container"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/azure/cosmosdb"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/azure/database"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/azure/datafactory"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/azure/datalake"
@@ -24,6 +25,7 @@ func Adapt(modules terraform.Modules) azure.Azure {
 		Authorization:  authorization.Adapt(modules),
 		Compute:        compute.Adapt(modules),
 		Container:      container.Adapt(modules),
+		CosmosDB:       cosmosdb.Adapt(modules),
 		Database:       database.Adapt(modules),
 		DataFactory:    datafactory.Adapt(modules),
 		DataLake:       datalake.Adapt(modules),

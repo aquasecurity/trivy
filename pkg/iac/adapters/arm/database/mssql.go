@@ -14,18 +14,36 @@ func adaptMSSQLServers(deployment azure2.Deployment) (msSQlServers []database.MS
 }
 
 func adaptMSSQLServer(resource azure2.Resource, deployment azure2.Deployment) database.MSSQLServer {
+	properties := resource.Properties
+	administratorLogin := properties.GetMapValue("administratorLogin").AsStringValue("", resource.Metadata)
+
+	// Support for azureadAdministrator block (ARM uses administrators property)
+	var adAdmins []database.ActiveDirectoryAdministrator
+	administrators := properties.GetMapValue("administrators")
+	if administrators.Kind != azure2.KindNull {
+		login := administrators.GetMapValue("login").AsStringValue("", administrators.GetMetadata())
+		if !login.IsEmpty() {
+			adAdmins = append(adAdmins, database.ActiveDirectoryAdministrator{
+				Metadata: administrators.GetMetadata(),
+				Login:    login,
+			})
+		}
+	}
+
 	return database.MSSQLServer{
 		Metadata: resource.Metadata,
 		Server: database.Server{
 			Metadata: resource.Metadata,
 			// TODO: this property doesn't exist.
-			EnableSSLEnforcement:      resource.Properties.GetMapValue("sslEnforcement").AsBoolValue(false, resource.Metadata),
-			MinimumTLSVersion:         resource.Properties.GetMapValue("minimalTlsVersion").AsStringValue("TLSEnforcementDisabled", resource.Metadata),
-			EnablePublicNetworkAccess: resource.Properties.GetMapValue("publicNetworkAccess").AsBoolValue(false, resource.Metadata),
+			EnableSSLEnforcement:      properties.GetMapValue("sslEnforcement").AsBoolValue(false, resource.Metadata),
+			MinimumTLSVersion:         properties.GetMapValue("minimalTlsVersion").AsStringValue("TLSEnforcementDisabled", resource.Metadata),
+			EnablePublicNetworkAccess: properties.GetMapValue("publicNetworkAccess").AsBoolValue(false, resource.Metadata),
 			FirewallRules:             addFirewallRule(resource),
 		},
-		ExtendedAuditingPolicies: adaptExtendedAuditingPolicies(resource, deployment),
-		SecurityAlertPolicies:    adaptSecurityAlertPolicies(resource, deployment),
+		ExtendedAuditingPolicies:      adaptExtendedAuditingPolicies(resource, deployment),
+		SecurityAlertPolicies:         adaptSecurityAlertPolicies(resource, deployment),
+		AdministratorLogin:            administratorLogin,
+		ActiveDirectoryAdministrators: adAdmins,
 	}
 }
 

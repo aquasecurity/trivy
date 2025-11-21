@@ -5,6 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/authorization"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/compute"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/container"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/cosmosdb"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/database"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/datafactory"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/datalake"
@@ -21,6 +22,7 @@ type Azure struct {
 	Authorization  authorization.Authorization
 	Compute        compute.Compute
 	Container      container.Container
+	CosmosDB       cosmosdb.CosmosDB
 	Database       database.Database
 	DataFactory    datafactory.DataFactory
 	DataLake       datalake.DataLake
