@@ -79,6 +79,31 @@ func TestDriver_Detect(t *testing.T) {
 			},
 		},
 		{
+			name: "julia package",
+			fixtures: []string{
+				"testdata/fixtures/julia.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.Julia,
+			args: args{
+				pkgName: "HTTP",
+				pkgVer:  "1.10.16",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2025-52479",
+					PkgName:          "HTTP",
+					InstalledVersion: "1.10.16",
+					FixedVersion:     "1.10.17",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Julia,
+						Name: "Julia Ecosystem Security Advisories",
+						URL:  "https://github.com/JuliaLang/SecurityAdvisories.jl",
+					},
+				},
+			},
+		},
+		{
 			name:     "non-prefixed buckets",
 			fixtures: []string{"testdata/fixtures/php-without-prefix.yaml"},
 			libType:  ftypes.Composer,

@@ -30,3 +30,8 @@
         ID: "ghsa"
         Name: "GitHub Security Advisory Go"
         URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Ago"
+    - key: "julia::Julia Ecosystem Security Advisories"
+      value:
+        ID: "julia"
+        Name: "Julia Ecosystem Security Advisories"
+        URL: "https://github.com/JuliaLang/SecurityAdvisories.jl"
