@@ -1,15 +1,19 @@
-## trivy login
+## trivy login status
 
-Log in to Trivy Pro
+Check the login status of Trivy Pro
+
+### Synopsis
+
+Checks if the user is logged in to Trivy Pro by checking the token in the keyring and the validating against the API.
 
 ```
-trivy login [flags]
+trivy login status [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help                          help for login
+  -h, --help                          help for status
       --pro-api-url string            API URL for Trivy Pro platform, requires the token to be provided to have an effect (default "https://api.trivy.dev")
       --pro-app-url string            App URL for Trivy Pro platform, requires the token to be provided to have an effect (default "https://app.trivy.dev")
       --pro-server-scanning           Use server-side image scanning in Trivy Pro platform, requires the token to be provided to have an effect (default true)
@@ -35,6 +39,5 @@ trivy login [flags]
 
 ### SEE ALSO
 
-* [trivy](trivy.md)	 - Unified security scanner
-* [trivy login status](trivy_login_status.md)	 - Check the login status of Trivy Pro
+* [trivy login](trivy_login.md)	 - Log in to Trivy Pro
 
