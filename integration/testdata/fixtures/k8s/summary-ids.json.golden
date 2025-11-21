@@ -157,6 +157,10 @@
     "KSV030",
     "KSV030",
     "KSV036",
+    "KSV037",
+    "KSV037",
+    "KSV037",
+    "KSV037",
     "KSV041",
     "KSV041",
     "KSV041",
@@ -281,10 +285,6 @@
     "KSV118",
     "KSV118",
     "KSV119",
-    "KSV122",
-    "no-user-pods-in-system-namespace",
-    "no-user-pods-in-system-namespace",
-    "no-user-pods-in-system-namespace",
-    "no-user-pods-in-system-namespace"
+    "KSV122"
   ]
 }
