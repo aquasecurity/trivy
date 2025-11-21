@@ -1,20 +1,9 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/helm_testchart",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "templates/deployment.yaml",
@@ -42,7 +31,6 @@
             "https://avd.aquasec.com/misconfig/ksv001"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -150,8 +138,7 @@
                   "LastCause": false
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -171,7 +158,6 @@
             "https://avd.aquasec.com/misconfig/ksv020"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -279,8 +265,7 @@
                   "LastCause": false
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -300,7 +285,6 @@
             "https://avd.aquasec.com/misconfig/ksv030"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -408,8 +392,7 @@
                   "LastCause": false
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -429,7 +412,6 @@
             "https://avd.aquasec.com/misconfig/ksv104"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -537,8 +519,7 @@
                   "LastCause": false
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -558,14 +539,23 @@
             "https://avd.aquasec.com/misconfig/ksv105"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
-            "StartLine": 30,
+            "StartLine": 29,
             "EndLine": 36,
             "Code": {
               "Lines": [
+                {
+                  "Number": 29,
+                  "Content": "          securityContext:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "          \u001b[38;5;33msecurityContext\u001b[0m:",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
                 {
                   "Number": 30,
                   "Content": "            capabilities:",
@@ -573,7 +563,7 @@
                   "Annotation": "",
                   "Truncated": false,
                   "Highlighted": "            \u001b[38;5;33mcapabilities\u001b[0m:",
-                  "FirstCause": true,
+                  "FirstCause": false,
                   "LastCause": false
                 },
                 {
@@ -637,8 +627,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -658,14 +647,23 @@
             "https://avd.aquasec.com/misconfig/ksv110"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
-            "StartLine": 5,
+            "StartLine": 4,
             "EndLine": 11,
             "Code": {
               "Lines": [
+                {
+                  "Number": 4,
+                  "Content": "metadata:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mmetadata\u001b[0m:",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
                 {
                   "Number": 5,
                   "Content": "  name: testchart",
@@ -673,7 +671,7 @@
                   "Annotation": "",
                   "Truncated": false,
                   "Highlighted": "  \u001b[38;5;33mname\u001b[0m: testchart",
-                  "FirstCause": true,
+                  "FirstCause": false,
                   "LastCause": false
                 },
                 {
@@ -737,8 +735,7 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
@@ -759,14 +756,9 @@
             "https://avd.aquasec.com/misconfig/ksv117"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
-            "Service": "general",
-            "Code": {
-              "Lines": null
-            },
-            "RenderedCause": {}
+            "Service": "general"
           }
         },
         {
@@ -786,14 +778,23 @@
             "https://avd.aquasec.com/misconfig/ksv118"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
-            "StartLine": 24,
+            "StartLine": 23,
             "EndLine": 57,
             "Code": {
               "Lines": [
+                {
+                  "Number": 23,
+                  "Content": "    spec:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "    \u001b[38;5;33mspec\u001b[0m:",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
                 {
                   "Number": 24,
                   "Content": "      serviceAccountName: testchart",
@@ -801,7 +802,7 @@
                   "Annotation": "",
                   "Truncated": false,
                   "Highlighted": "      \u001b[38;5;33mserviceAccountName\u001b[0m: testchart",
-                  "FirstCause": true,
+                  "FirstCause": false,
                   "LastCause": false
                 },
                 {
@@ -872,20 +873,10 @@
                   "Truncated": false,
                   "Highlighted": "              \u001b[38;5;33mdrop\u001b[0m:",
                   "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 32,
-                  "Content": "              - ALL",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "Highlighted": "              - ALL",
-                  "FirstCause": false,
                   "LastCause": true
                 },
                 {
-                  "Number": 33,
+                  "Number": 32,
                   "Content": "",
                   "IsCause": false,
                   "Annotation": "",
@@ -894,8 +885,7 @@
                   "LastCause": false
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         }
       ]

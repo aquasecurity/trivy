@@ -1,20 +1,9 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/poetry",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "poetry.lock",
@@ -32,8 +21,7 @@
           "Relationship": "direct",
           "DependsOn": [
             "colorama@0.4.6"
-          ],
-          "Layer": {}
+          ]
         },
         {
           "ID": "werkzeug@0.14",
@@ -43,8 +31,7 @@
             "UID": "d14d05cca13c7a6b"
           },
           "Version": "0.14",
-          "Relationship": "direct",
-          "Layer": {}
+          "Relationship": "direct"
         },
         {
           "ID": "colorama@0.4.6",
@@ -55,8 +42,7 @@
           },
           "Version": "0.4.6",
           "Indirect": true,
-          "Relationship": "indirect",
-          "Layer": {}
+          "Relationship": "indirect"
         }
       ],
       "Vulnerabilities": [
@@ -71,7 +57,6 @@
           "InstalledVersion": "0.14",
           "FixedVersion": "0.15.3",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14806",
           "DataSource": {
@@ -79,6 +64,7 @@
             "Name": "GitHub Security Advisory Pip",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
           },
+          "Fingerprint": "sha256:384f3c3504a17ae835c015e5cab33befe675700289119a47182dd7102165eb2c",
           "Title": "python-werkzeug: insufficient debugger PIN randomness vulnerability",
           "Description": "Pallets Werkzeug before 0.15.3, when used with Docker, has insufficient debugger PIN randomness because Docker containers share the same machine id.",
           "Severity": "HIGH",

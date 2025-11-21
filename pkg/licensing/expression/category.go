@@ -373,36 +373,24 @@ var (
 	}
 )
 
-var spdxLicenses = set.New[string]()
+var spdxLicenses = set.NewCaseInsensitive()
+
+//go:embed licenses.json
+var licenses []byte
 
 var initSpdxLicenses = sync.OnceFunc(func() {
 	if spdxLicenses.Size() > 0 {
 		return
 	}
 
-	licenseSlices := [][]string{
-		ForbiddenLicenses,
-		RestrictedLicenses,
-		ReciprocalLicenses,
-		NoticeLicenses,
-		PermissiveLicenses,
-		UnencumberedLicenses,
+	var lics []string
+	if err := json.Unmarshal(licenses, &lics); err != nil {
+		log.WithPrefix(log.PrefixSPDX).Warn("Unable to parse SPDX license file", log.Err(err))
+		return
 	}
 
-	for _, licenseSlice := range licenseSlices {
-		spdxLicenses.Append(licenseSlice...)
-	}
-
-	// Save GNU licenses with "-or-later" and `"-only" suffixes
-	for _, l := range GnuLicenses {
-		license := SimpleExpr{
-			License: l,
-		}
-		spdxLicenses.Append(license.String())
-
-		license.HasPlus = true
-		spdxLicenses.Append(license.String())
-	}
+	// SPDX license list is case-insensitive.
+	spdxLicenses.Append(lics...)
 })
 
 //go:embed exceptions.json

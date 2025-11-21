@@ -11,11 +11,11 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-	"sync"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/samber/lo"
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
@@ -82,6 +82,8 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 
 	// Check if the directory is a git repository and extract metadata
 	if art.isClean, art.repoMetadata, err = extractGitInfo(art.rootPath); err == nil {
+		// If git info is detected, change artifact type to repository
+		art.artifactOption.Type = types.TypeRepository
 		if art.isClean {
 			art.logger.Debug("Using the latest commit hash for calculating cache key",
 				log.String("commit_hash", art.repoMetadata.Commit))
@@ -173,7 +175,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 
 	// Check if the cache exists only when it's a clean git repository
 	if a.isClean && a.repoMetadata.Commit != "" {
-		_, missingBlobs, err := a.cache.MissingBlobs(cacheKey, []string{cacheKey})
+		_, missingBlobs, err := a.cache.MissingBlobs(ctx, cacheKey, []string{cacheKey})
 		if err != nil {
 			return artifact.Reference{}, xerrors.Errorf("unable to get missing blob: %w", err)
 		}
@@ -191,7 +193,9 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 		}
 	}
 
-	var wg sync.WaitGroup
+	// `errgroup` cancels the context after Wait returns, so it can’t be use later.
+	// We need a separate context specifically for Analyze.
+	eg, egCtx := errgroup.WithContext(ctx)
 	result := analyzer.NewAnalysisResult()
 	limit := semaphore.New(a.artifactOption.Parallel)
 	opts := analyzer.AnalysisOptions{
@@ -211,18 +215,20 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	if paths, canUseStaticPaths := a.analyzer.StaticPaths(a.artifactOption.DisabledAnalyzers); canUseStaticPaths {
 		// Analyze files in static paths
 		a.logger.Debug("Analyzing files in static paths")
-		if err = a.analyzeWithStaticPaths(ctx, &wg, limit, result, composite, opts, paths); err != nil {
+		if err = a.analyzeWithStaticPaths(egCtx, eg, limit, result, composite, opts, paths); err != nil {
 			return artifact.Reference{}, xerrors.Errorf("analyze with static paths: %w", err)
 		}
 	} else {
 		// Analyze files by traversing the root directory
-		if err = a.analyzeWithRootDir(ctx, &wg, limit, result, composite, opts); err != nil {
+		if err = a.analyzeWithRootDir(egCtx, eg, limit, result, composite, opts); err != nil {
 			return artifact.Reference{}, xerrors.Errorf("analyze with traversal: %w", err)
 		}
 	}
 
 	// Wait for all the goroutine to finish.
-	wg.Wait()
+	if err = eg.Wait(); err != nil {
+		return artifact.Reference{}, xerrors.Errorf("analyze error: %w", err)
+	}
 
 	// Post-analysis
 	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
@@ -251,7 +257,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 		return artifact.Reference{}, xerrors.Errorf("failed to call hooks: %w", err)
 	}
 
-	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
+	if err = a.cache.PutBlob(ctx, cacheKey, blobInfo); err != nil {
 		return artifact.Reference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 
@@ -274,7 +280,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	}, nil
 }
 
-func (a Artifact) analyzeWithRootDir(ctx context.Context, wg *sync.WaitGroup, limit *semaphore.Weighted,
+func (a Artifact) analyzeWithRootDir(ctx context.Context, eg *errgroup.Group, limit *semaphore.Weighted,
 	result *analyzer.AnalysisResult, composite *analyzer.CompositeFS, opts analyzer.AnalysisOptions) error {
 
 	root := a.rootPath
@@ -284,17 +290,17 @@ func (a Artifact) analyzeWithRootDir(ctx context.Context, wg *sync.WaitGroup, li
 	if fsutils.FileExists(a.rootPath) {
 		root, relativePath = path.Split(a.rootPath)
 	}
-	return a.analyzeWithTraversal(ctx, root, relativePath, wg, limit, result, composite, opts)
+	return a.analyzeWithTraversal(ctx, root, relativePath, eg, limit, result, composite, opts)
 }
 
 // analyzeWithStaticPaths analyzes files using static paths from analyzers
-func (a Artifact) analyzeWithStaticPaths(ctx context.Context, wg *sync.WaitGroup, limit *semaphore.Weighted,
+func (a Artifact) analyzeWithStaticPaths(ctx context.Context, eg *errgroup.Group, limit *semaphore.Weighted,
 	result *analyzer.AnalysisResult, composite *analyzer.CompositeFS, opts analyzer.AnalysisOptions,
 	staticPaths []string) error {
 
 	// Process each static path
 	for _, relativePath := range staticPaths {
-		if err := a.analyzeWithTraversal(ctx, a.rootPath, relativePath, wg, limit, result, composite, opts); errors.Is(err, fs.ErrNotExist) {
+		if err := a.analyzeWithTraversal(ctx, a.rootPath, relativePath, eg, limit, result, composite, opts); errors.Is(err, fs.ErrNotExist) {
 			continue
 		} else if err != nil {
 			return xerrors.Errorf("analyze with traversal: %w", err)
@@ -305,12 +311,12 @@ func (a Artifact) analyzeWithStaticPaths(ctx context.Context, wg *sync.WaitGroup
 }
 
 // analyzeWithTraversal analyzes files by traversing the entire filesystem
-func (a Artifact) analyzeWithTraversal(ctx context.Context, root, relativePath string, wg *sync.WaitGroup, limit *semaphore.Weighted,
+func (a Artifact) analyzeWithTraversal(ctx context.Context, root, relativePath string, eg *errgroup.Group, limit *semaphore.Weighted,
 	result *analyzer.AnalysisResult, composite *analyzer.CompositeFS, opts analyzer.AnalysisOptions) error {
 
 	return a.walker.Walk(filepath.Join(root, relativePath), a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		filePath = path.Join(relativePath, filePath)
-		if err := a.analyzer.AnalyzeFile(ctx, wg, limit, result, root, filePath, info, opener, nil, opts); err != nil {
+		if err := a.analyzer.AnalyzeFile(ctx, eg, limit, result, root, filePath, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
 		}
 
@@ -334,7 +340,7 @@ func (a Artifact) Clean(reference artifact.Reference) error {
 	if a.isClean && a.repoMetadata.Commit != "" {
 		return nil
 	}
-	return a.cache.DeleteBlobs(reference.BlobIDs)
+	return a.cache.DeleteBlobs(context.TODO(), reference.BlobIDs)
 }
 
 func (a Artifact) calcCacheKey() (string, error) {

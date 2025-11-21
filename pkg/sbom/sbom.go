@@ -28,6 +28,7 @@ const (
 	FormatSPDXTV              Format = "spdx-tv"
 	FormatSPDXXML             Format = "spdx-xml"
 	FormatAttestCycloneDXJSON Format = "attest-cyclonedx-json"
+	FormatAttestSPDXJSON      Format = "attest-spdx-json"
 	FormatUnknown             Format = "unknown"
 
 	// FormatLegacyCosignAttestCycloneDXJSON is used to support the older format of CycloneDX JSON Attestation
@@ -89,7 +90,7 @@ func IsSPDXJSON(r io.ReadSeeker) (bool, error) {
 
 	var spdxBom spdxHeader
 	if err := json.NewDecoder(r).Decode(&spdxBom); err == nil {
-		if strings.HasPrefix(spdxBom.SpdxID, "SPDX") {
+		if spdxBom.SpdxID == "SPDXRef-DOCUMENT" {
 			return true, nil
 		}
 	}
@@ -145,8 +146,8 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
 	}
 
-	// Try in-toto attestation
-	format, ok := decodeAttestCycloneDXJSONFormat(r)
+	// Try in-toto attestation (CycloneDX or SPDX)
+	format, ok := decodeAttestationFormat(r)
 	if ok {
 		return format, nil
 	}
@@ -154,14 +155,10 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 	return FormatUnknown, nil
 }
 
-func decodeAttestCycloneDXJSONFormat(r io.ReadSeeker) (Format, bool) {
+func decodeAttestationFormat(r io.ReadSeeker) (Format, bool) {
 	var s attestation.Statement
 
 	if err := json.NewDecoder(r).Decode(&s); err != nil {
-		return "", false
-	}
-
-	if s.PredicateType != in_toto.PredicateCycloneDX && s.PredicateType != PredicateCycloneDXBeforeV05 {
 		return "", false
 	}
 
@@ -174,11 +171,22 @@ func decodeAttestCycloneDXJSONFormat(r io.ReadSeeker) (Format, bool) {
 		return "", false
 	}
 
-	if _, ok := m["Data"]; ok {
-		return FormatLegacyCosignAttestCycloneDXJSON, true
+	// Check CycloneDX
+	if s.PredicateType == in_toto.PredicateCycloneDX || s.PredicateType == PredicateCycloneDXBeforeV05 {
+		if _, ok := m["Data"]; ok {
+			return FormatLegacyCosignAttestCycloneDXJSON, true
+		}
+		return FormatAttestCycloneDXJSON, true
 	}
 
-	return FormatAttestCycloneDXJSON, true
+	// Check SPDX
+	if s.PredicateType == in_toto.PredicateSPDX {
+		if spdxID, ok := m["SPDXID"].(string); ok && spdxID == "SPDXRef-DOCUMENT" {
+			return FormatAttestSPDXJSON, true
+		}
+	}
+
+	return "", false
 }
 
 func Decode(ctx context.Context, f io.Reader, format Format) (types.SBOM, error) {
@@ -212,6 +220,15 @@ func Decode(ctx context.Context, f io.Reader, format Format) (types.SBOM, error)
 			Predicate: &attestation.CosignPredicate{
 				Data: &cyclonedx.BOM{BOM: bom},
 			},
+		}
+		decoder = json.NewDecoder(f)
+	case FormatAttestSPDXJSON:
+		// dsse envelope
+		//   => in-toto attestation
+		//     => SPDX JSON
+		bom = core.NewBOM(core.Options{})
+		v = &attestation.Statement{
+			Predicate: &spdx.SPDX{BOM: bom},
 		}
 		decoder = json.NewDecoder(f)
 	case FormatSPDXJSON:

@@ -2,20 +2,21 @@ package parser
 
 import (
 	"context"
-	"fmt"
 	"io"
+	"slices"
 	"strings"
 
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/dockerfile"
 )
 
-func Parse(_ context.Context, r io.Reader, path string) (any, error) {
+func Parse(_ context.Context, r io.Reader, path string) ([]*dockerfile.Dockerfile, error) {
 	parsed, err := parser.Parse(r)
 	if err != nil {
-		return nil, fmt.Errorf("dockerfile parse error: %w", err)
+		return nil, xerrors.Errorf("dockerfile parse error: %w", err)
 	}
 
 	var (
@@ -28,9 +29,9 @@ func Parse(_ context.Context, r io.Reader, path string) (any, error) {
 	for _, child := range parsed.AST.Children {
 		child.Value = strings.ToLower(child.Value)
 
-		instr, err := instructions.ParseInstruction(child)
+		instr, err := parseInstruction(child)
 		if err != nil {
-			return nil, fmt.Errorf("parse dockerfile instruction: %w", err)
+			return nil, xerrors.Errorf("parse dockerfile instruction: %w", err)
 		}
 
 		if _, ok := instr.(*instructions.Stage); ok {
@@ -86,7 +87,40 @@ func Parse(_ context.Context, r io.Reader, path string) (any, error) {
 		parsedFile.Stages = append(parsedFile.Stages, stage)
 	}
 
-	return &parsedFile, nil
+	return []*dockerfile.Dockerfile{&parsedFile}, nil
+}
+
+func parseInstruction(child *parser.Node) (any, error) {
+	for {
+		instr, err := instructions.ParseInstruction(child)
+		if err == nil {
+			return instr, nil
+		}
+
+		flagName := extractUnknownFlag(err.Error())
+		if flagName == "" {
+			return nil, xerrors.Errorf("parse instruction %q: %w", child.Value, err)
+		}
+
+		filtered := slices.DeleteFunc(child.Flags, func(flag string) bool {
+			return strings.HasPrefix(flag, flagName)
+		})
+
+		if len(filtered) == len(child.Flags) {
+			return nil, xerrors.Errorf("cannot remove unknown flag %q from flags %v", flagName, child.Flags)
+		}
+		child.Flags = filtered
+	}
+}
+
+func extractUnknownFlag(errMsg string) string {
+	after, ok := strings.CutPrefix(errMsg, "unknown flag: ")
+	if !ok {
+		return ""
+	}
+
+	flagName, _, _ := strings.Cut(after, " ")
+	return flagName
 }
 
 func originalFromHeredoc(node *parser.Node) string {

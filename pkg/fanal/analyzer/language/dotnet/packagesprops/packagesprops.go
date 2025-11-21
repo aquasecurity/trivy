@@ -24,9 +24,9 @@ const (
 
 type packagesPropsAnalyzer struct{}
 
-func (a packagesPropsAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a packagesPropsAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	parser := props.NewParser()
-	res, err := language.Analyze(types.PackagesProps, input.FilePath, input.Content, parser)
+	res, err := language.Analyze(ctx, types.PackagesProps, input.FilePath, input.Content, parser)
 	if err != nil {
 		return nil, xerrors.Errorf("*Packages.props dependencies analysis error: %w", err)
 	}

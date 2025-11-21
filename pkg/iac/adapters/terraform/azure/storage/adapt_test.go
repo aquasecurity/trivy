@@ -24,11 +24,28 @@ func Test_Adapt(t *testing.T) {
 			expected: storage.Storage{
 				Accounts: []storage.Account{
 					{
-						PublicNetworkAccess: iacTypes.BoolTest(true),
-						MinimumTLSVersion:   iacTypes.StringTest(minimumTlsVersionOneTwo),
-						EnforceHTTPS:        iacTypes.BoolTest(true),
+						PublicNetworkAccess:             iacTypes.BoolTest(true),
+						MinimumTLSVersion:               iacTypes.StringTest(minimumTlsVersionOneTwo),
+						EnforceHTTPS:                    iacTypes.BoolTest(true),
+						AccountReplicationType:          iacTypes.StringTest(""),
+						InfrastructureEncryptionEnabled: iacTypes.BoolTest(false),
+						BlobProperties: storage.BlobProperties{
+							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+								Days: iacTypes.IntTest(7),
+							},
+						},
+						CustomerManagedKey: storage.CustomerManagedKey{
+							KeyVaultKeyId:          iacTypes.StringTest(""),
+							UserAssignedIdentityId: iacTypes.StringTest(""),
+						},
 					},
-					{},
+					{
+						BlobProperties: storage.BlobProperties{
+							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+								Days: iacTypes.IntTest(7),
+							},
+						},
+					},
 				},
 			},
 		},
@@ -104,6 +121,24 @@ func Test_Adapt(t *testing.T) {
 						QueueProperties: storage.QueueProperties{
 							Metadata:      iacTypes.NewTestMetadata(),
 							EnableLogging: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Logging: storage.QueueLogging{
+								Delete:              iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+								Read:                iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+								Write:               iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+								Version:             iacTypes.String("1.0", iacTypes.NewTestMetadata()),
+								RetentionPolicyDays: iacTypes.Int(10, iacTypes.NewTestMetadata()),
+							},
+						},
+						AccountReplicationType:          iacTypes.StringTest(""),
+						InfrastructureEncryptionEnabled: iacTypes.BoolTest(false),
+						BlobProperties: storage.BlobProperties{
+							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+								Days: iacTypes.IntTest(7),
+							},
+						},
+						CustomerManagedKey: storage.CustomerManagedKey{
+							KeyVaultKeyId:          iacTypes.StringTest(""),
+							UserAssignedIdentityId: iacTypes.StringTest(""),
 						},
 						Containers: []storage.Container{
 							{
@@ -119,7 +154,18 @@ func Test_Adapt(t *testing.T) {
 							Metadata:      iacTypes.NewUnmanagedMetadata(),
 							EnableLogging: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 						},
-						MinimumTLSVersion: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+						MinimumTLSVersion:               iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+						AccountReplicationType:          iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+						InfrastructureEncryptionEnabled: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+						BlobProperties: storage.BlobProperties{
+							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+								Days: iacTypes.IntDefault(7, iacTypes.NewUnmanagedMetadata()),
+							},
+						},
+						CustomerManagedKey: storage.CustomerManagedKey{
+							KeyVaultKeyId:          iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+							UserAssignedIdentityId: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+						},
 					},
 				},
 			},
@@ -154,7 +200,18 @@ func Test_Adapt(t *testing.T) {
 							Metadata:      iacTypes.NewUnmanagedMetadata(),
 							EnableLogging: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 						},
-						MinimumTLSVersion: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+						MinimumTLSVersion:               iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+						AccountReplicationType:          iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+						InfrastructureEncryptionEnabled: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+						BlobProperties: storage.BlobProperties{
+							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+								Days: iacTypes.IntDefault(7, iacTypes.NewUnmanagedMetadata()),
+							},
+						},
+						CustomerManagedKey: storage.CustomerManagedKey{
+							KeyVaultKeyId:          iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+							UserAssignedIdentityId: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+						},
 						Containers: []storage.Container{
 							{
 								Metadata:     iacTypes.NewTestMetadata(),

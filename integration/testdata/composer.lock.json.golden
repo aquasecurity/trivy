@@ -1,20 +1,9 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/composer",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "composer.lock",
@@ -36,7 +25,6 @@
           "DependsOn": [
             "guzzlehttp/psr7@1.8.3"
           ],
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 9,
@@ -57,7 +45,6 @@
           ],
           "Indirect": true,
           "Relationship": "indirect",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 130,
@@ -78,7 +65,6 @@
           "InstalledVersion": "1.8.3",
           "FixedVersion": "1.8.4",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-24775",
           "DataSource": {
@@ -86,6 +72,7 @@
             "Name": "GitHub Security Advisory Composer",
             "URL": "https://github.com/advisories?query=type%%3Areviewed+ecosystem%%3Acomposer"
           },
+          "Fingerprint": "sha256:59ce4eb8bdfe3bbdf3187ec7d5fd51beb0ce398c8377a3be0d811b002df8ec0b",
           "Title": "Improper Input Validation in guzzlehttp/psr7",
           "Description": "### Impact\nIn proper header parsing. An attacker could sneak in a new line character and pass untrusted values. \n\n### Patches\nThe issue is patched in 1.8.4 and 2.1.1.\n\n### Workarounds\nThere are no known workarounds.\n",
           "Severity": "HIGH",

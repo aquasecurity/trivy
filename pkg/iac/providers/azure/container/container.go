@@ -15,6 +15,9 @@ type KubernetesCluster struct {
 	APIServerAuthorizedIPRanges []iacTypes.StringValue
 	AddonProfile                AddonProfile
 	RoleBasedAccessControl      RoleBasedAccessControl
+	AzurePolicyEnabled          iacTypes.BoolValue
+	DiskEncryptionSetID         iacTypes.StringValue
+	AgentPools                  []AgentPool
 }
 
 type RoleBasedAccessControl struct {
@@ -23,8 +26,9 @@ type RoleBasedAccessControl struct {
 }
 
 type AddonProfile struct {
-	Metadata iacTypes.Metadata
-	OMSAgent OMSAgent
+	Metadata    iacTypes.Metadata
+	OMSAgent    OMSAgent
+	AzurePolicy AzurePolicy
 }
 
 type OMSAgent struct {
@@ -32,7 +36,18 @@ type OMSAgent struct {
 	Enabled  iacTypes.BoolValue
 }
 
+type AzurePolicy struct {
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
+}
+
 type NetworkProfile struct {
 	Metadata      iacTypes.Metadata
 	NetworkPolicy iacTypes.StringValue // "", "calico", "azure"
+}
+
+type AgentPool struct {
+	Metadata            iacTypes.Metadata
+	DiskEncryptionSetID iacTypes.StringValue
+	NodeType            iacTypes.StringValue // "VirtualMachineScaleSets" or others
 }

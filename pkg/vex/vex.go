@@ -75,7 +75,7 @@ func Filter(ctx context.Context, report *types.Report, opts Options) error {
 	}
 
 	// NOTE: This method call has a side effect on the report
-	bom, err := sbomio.NewEncoder(core.Options{Parents: true}).Encode(*report)
+	bom, err := sbomio.NewEncoder(sbomio.WithParents(), sbomio.ForceRegenerate()).Encode(*report)
 	if err != nil {
 		return xerrors.Errorf("unable to encode the SBOM: %w", err)
 	}
@@ -192,8 +192,8 @@ func reachRoot(leaf *core.Component, components map[uuid.UUID]*core.Component, p
 			return false
 		case c.Root:
 			return true
-		case len(parents[c.ID()]) == 0:
-			// Should never reach here as all components other than the root should have at least one parent.
+		case lo.Every(lo.Keys(visited), parents[c.ID()]):
+			// Should never go here, since all components except the root must have at least one parent and be related to the root component.
 			// If it does, it means the component tree is not connected due to a bug in the SBOM generation.
 			// In this case, so as not to filter out all the vulnerabilities accidentally, return true for fail-safe.
 			return true

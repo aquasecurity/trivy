@@ -56,6 +56,20 @@ var (
 			},
 		},
 	}
+	baseFilesPackage = ftypes.Package{
+		ID:      "base-files@5.3",
+		Name:    "base-files",
+		Version: "5.3",
+		Identifier: ftypes.PkgIdentifier{
+			UID: "07",
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeDebian,
+				Namespace: "debian",
+				Name:      "base-files",
+				Version:   "5.3",
+			},
+		},
+	}
 	goModulePackage = ftypes.Package{
 		ID:           "github.com/aquasecurity/go-module@v1.0.0",
 		Name:         "github.com/aquasecurity/go-module",
@@ -540,6 +554,38 @@ repositories:
 			}, fmt.Sprintf("%s/debian@%s", strings.TrimPrefix(tr.URL, "http://"), d.String())),
 		},
 		{
+			name: "infinity loop for OS packages",
+			args: args{
+				// - oci:debian?tag=12
+				//     - pkg:deb/debian/bash@5.3
+				//        - pkg:deb/debian/base-files@5.3
+				//     - pkg:deb/debian/base-files@5.3
+				//        - pkg:deb/debian/bash@5.3
+				report: imageReport([]types.Result{
+					infinityLoopOSPackagesResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{
+							vuln3,
+						},
+					}),
+				}),
+				opts: vex.Options{
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/openvex-multiple.json",
+						},
+					},
+				},
+			},
+			want: imageReport([]types.Result{
+				infinityLoopOSPackagesResult(types.Result{
+					Vulnerabilities: []types.DetectedVulnerability{
+						vuln3,
+					},
+				}),
+			}),
+		},
+		{
 			name: "unknown format",
 			args: args{
 				report: &types.Report{},
@@ -619,13 +665,18 @@ func createCycloneDXBOMWithSpringComponent() *core.BOM {
 	bom := core.NewBOM(core.Options{})
 	bom.SerialNumber = "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79"
 	bom.Version = 1
+	pkgIdentifier := ftypes.PkgIdentifier{
+		// Components got from scanned SBOM files don't have UID
+		BOMRef: springPackage.Identifier.BOMRef,
+		PURL:   springPackage.Identifier.PURL,
+	}
 	// Add the spring component to match vuln1's BOM-Ref
 	springComponent := &core.Component{
 		Type:          core.TypeLibrary,
 		Name:          springPackage.Identifier.PURL.Name,
 		Group:         springPackage.Identifier.PURL.Namespace,
 		Version:       springPackage.Version,
-		PkgIdentifier: springPackage.Identifier,
+		PkgIdentifier: pkgIdentifier,
 	}
 	bom.AddComponent(springComponent)
 	return bom
@@ -654,6 +705,24 @@ func bashResult(result types.Result) types.Result {
 	return result
 }
 
+func infinityLoopOSPackagesResult(result types.Result) types.Result {
+	result.Type = ftypes.Debian
+	result.Class = types.ClassOSPkg
+
+	bashPkg := clonePackage(bashPackage)
+	baseFilesPkg := clonePackage(baseFilesPackage)
+
+	bashPkg.DependsOn = []string{baseFilesPkg.ID}
+	baseFilesPkg.DependsOn = []string{bashPkg.ID}
+
+	result.Packages = []ftypes.Package{
+		bashPkg,
+		baseFilesPkg,
+	}
+
+	return result
+}
+
 func goSinglePathResult(result types.Result) types.Result {
 	result.Type = ftypes.GoModule
 	result.Class = types.ClassLangPkg
@@ -679,11 +748,11 @@ func goMultiPathResult(result types.Result) types.Result {
 	result.Type = ftypes.GoModule
 	result.Class = types.ClassLangPkg
 
-	// - pkg:golang/github.com/aquasecurity/go-module@v2.0.0
-	//     - pkg:golang/github.com/aquasecurity/go-direct1@v3.0.0
+	// - pkg:golang/github.com/aquasecurity/go-module@v1.0.0
+	//     - pkg:golang/github.com/aquasecurity/go-direct1@v2.0.0
 	//         - pkg:golang/github.com/aquasecurity/go-transitive@v5.0.0
-	//     - pkg:golang/github.com/aquasecurity/go-direct2@v4.0.0
-	//         - pkg:golang/github.com/aquasecurity/go-transitive@v5.0.0
+	//     - pkg:golang/github.com/aquasecurity/go-direct2@v3.0.0
+	//         - pkg:golang/github.com/aquasecurity/go-transitive@v4.0.0
 	goModule := clonePackage(goModulePackage)
 	goDirect1 := clonePackage(goDirectPackage1)
 	goDirect2 := clonePackage(goDirectPackage2)

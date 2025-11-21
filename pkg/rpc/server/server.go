@@ -122,32 +122,33 @@ func NewCacheServer(c cache.Cache) *CacheServer {
 }
 
 // PutArtifact puts the artifacts in cache
-func (s *CacheServer) PutArtifact(_ context.Context, in *rpcCache.PutArtifactRequest) (*emptypb.Empty, error) {
+func (s *CacheServer) PutArtifact(ctx context.Context, in *rpcCache.PutArtifactRequest) (*emptypb.Empty, error) {
 	if in.ArtifactInfo == nil {
 		return nil, teeError(xerrors.Errorf("empty image info"))
 	}
 	imageInfo := rpc.ConvertFromRPCPutArtifactRequest(in)
-	if err := s.cache.PutArtifact(in.ArtifactId, imageInfo); err != nil {
+	if err := s.cache.PutArtifact(ctx, in.ArtifactId, imageInfo); err != nil {
 		return nil, teeError(xerrors.Errorf("unable to store image info in cache: %w", err))
 	}
 	return &emptypb.Empty{}, nil
 }
 
 // PutBlob puts the blobs in cache
-func (s *CacheServer) PutBlob(_ context.Context, in *rpcCache.PutBlobRequest) (*emptypb.Empty, error) {
+func (s *CacheServer) PutBlob(ctx context.Context, in *rpcCache.PutBlobRequest) (*emptypb.Empty, error) {
 	if in.BlobInfo == nil {
 		return nil, teeError(xerrors.Errorf("empty layer info"))
 	}
 	layerInfo := rpc.ConvertFromRPCPutBlobRequest(in)
-	if err := s.cache.PutBlob(in.DiffId, layerInfo); err != nil {
+	if err := s.cache.PutBlob(ctx, in.DiffId, layerInfo); err != nil {
 		return nil, teeError(xerrors.Errorf("unable to store layer info in cache: %w", err))
 	}
 	return &emptypb.Empty{}, nil
 }
 
 // MissingBlobs returns missing blobs from cache
-func (s *CacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBlobsRequest) (*rpcCache.MissingBlobsResponse, error) {
-	missingArtifact, blobIDs, err := s.cache.MissingBlobs(in.ArtifactId, in.BlobIds)
+func (s *CacheServer) MissingBlobs(ctx context.Context, in *rpcCache.MissingBlobsRequest) (*rpcCache.MissingBlobsResponse, error) {
+	missingArtifact, blobIDs, err := s.cache.MissingBlobs(ctx, in.ArtifactId, in.BlobIds)
+
 	if err != nil {
 		return nil, teeError(xerrors.Errorf("failed to get missing blobs: %w", err))
 	}
@@ -158,9 +159,9 @@ func (s *CacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBlobsR
 }
 
 // DeleteBlobs removes blobs by IDs
-func (s *CacheServer) DeleteBlobs(_ context.Context, in *rpcCache.DeleteBlobsRequest) (*emptypb.Empty, error) {
+func (s *CacheServer) DeleteBlobs(ctx context.Context, in *rpcCache.DeleteBlobsRequest) (*emptypb.Empty, error) {
 	blobIDs := rpc.ConvertFromDeleteBlobsRequest(in)
-	if err := s.cache.DeleteBlobs(blobIDs); err != nil {
+	if err := s.cache.DeleteBlobs(ctx, blobIDs); err != nil {
 		return nil, teeError(xerrors.Errorf("failed to remove a blobs: %w", err))
 	}
 	return &emptypb.Empty{}, nil

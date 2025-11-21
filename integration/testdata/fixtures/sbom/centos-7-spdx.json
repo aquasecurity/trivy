@@ -16,7 +16,9 @@
 			"attributionTexts": [
 				"SchemaVersion: 2",
 				"ImageID: sha256:f1cb7c7d58b73eac859c395882eec49d50651244e342cd6c68a5c7809785f427",
-				"DiffID: sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
+				"DiffID: sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a",
+				"RepoTag: ghcr.io/aquasecurity/trivy-test-images:centos-7",
+				"Reference: ghcr.io/aquasecurity/trivy-test-images:centos-7"
 			],
 			"filesAnalyzed": false,
 			"name": "integration/testdata/fixtures/images/centos-7.tar.gz"
@@ -73,7 +75,7 @@
 	"relationships": [
 		{
 			"relatedSpdxElement": "SPDXRef-ContainerImage-dd5cad897c6263",
-			"relationshipType": "DESCRIBE",
+			"relationshipType": "DESCRIBES",
 			"spdxElementId": "SPDXRef-DOCUMENT"
 		},
 		{

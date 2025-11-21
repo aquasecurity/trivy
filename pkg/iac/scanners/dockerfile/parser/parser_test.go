@@ -18,12 +18,11 @@ RUN make /app
 CMD python /app/app.py
 `
 
-	res, err := parser.Parse(t.Context(), strings.NewReader(input), "Dockerfile")
+	dfs, err := parser.Parse(t.Context(), strings.NewReader(input), "Dockerfile")
 	require.NoError(t, err)
+	require.Len(t, dfs, 1)
 
-	df, ok := res.(*dockerfile.Dockerfile)
-	require.True(t, ok)
-
+	df := dfs[0]
 	assert.Len(t, df.Stages, 1)
 
 	assert.Equal(t, "ubuntu:18.04", df.Stages[0].Name)
@@ -57,6 +56,75 @@ CMD python /app/app.py
 	assert.Equal(t, "Dockerfile", commands[3].Path)
 	assert.Equal(t, 4, commands[3].StartLine)
 	assert.Equal(t, 4, commands[3].EndLine)
+}
+
+func TestParserUnknownFlags(t *testing.T) {
+	input := `FROM ubuntu:18.04
+COPY --foo --chown=1 --bar=./test . /app
+RUN --baz --baz --network=host make /app
+ONBUILD RUN --foo make /app
+CMD python /app/app.py
+`
+	dfs, err := parser.Parse(t.Context(), strings.NewReader(input), "Dockerfile")
+	require.NoError(t, err)
+	require.Len(t, dfs, 1)
+
+	expected := &dockerfile.Dockerfile{
+		Stages: []dockerfile.Stage{
+			{
+				Name: "ubuntu:18.04",
+				Commands: []dockerfile.Command{
+					{
+						Cmd:       "from",
+						Value:     []string{"ubuntu:18.04"},
+						Flags:     []string{},
+						Original:  "FROM ubuntu:18.04",
+						Path:      "Dockerfile",
+						StartLine: 1,
+						EndLine:   1,
+					},
+					{
+						Cmd:       "copy",
+						Value:     []string{".", "/app"},
+						Flags:     []string{"--chown=1"},
+						Original:  "COPY --foo --chown=1 --bar=./test . /app",
+						Path:      "Dockerfile",
+						StartLine: 2,
+						EndLine:   2,
+					},
+					{
+						Cmd:       "run",
+						Value:     []string{"make /app"},
+						Flags:     []string{"--network=host"},
+						Original:  "RUN --baz --baz --network=host make /app",
+						Path:      "Dockerfile",
+						StartLine: 3,
+						EndLine:   3,
+					},
+					{
+						Cmd:       "onbuild",
+						SubCmd:    "RUN",
+						Value:     []string{"make /app"},
+						Flags:     []string{},
+						Original:  "ONBUILD RUN --foo make /app",
+						Path:      "Dockerfile",
+						StartLine: 4,
+						EndLine:   4,
+					},
+					{
+						Cmd:       "cmd",
+						Value:     []string{"python /app/app.py"},
+						Flags:     []string{},
+						Original:  "CMD python /app/app.py",
+						Path:      "Dockerfile",
+						StartLine: 5,
+						EndLine:   5,
+					},
+				},
+			},
+		},
+	}
+	assert.Equal(t, expected, dfs[0])
 }
 
 func Test_ParseHeredocs(t *testing.T) {
@@ -102,11 +170,12 @@ EOF`,
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			res, err := parser.Parse(t.Context(), strings.NewReader(tt.src), "Dockerfile")
+			dfs, err := parser.Parse(t.Context(), strings.NewReader(tt.src), "Dockerfile")
 			require.NoError(t, err)
+			require.Len(t, dfs, 1)
 
-			df, ok := res.(*dockerfile.Dockerfile)
-			require.True(t, ok)
+			df := dfs[0]
+			require.Len(t, df.Stages, 1)
 
 			cmd := df.Stages[0].Commands[0]
 

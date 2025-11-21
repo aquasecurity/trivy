@@ -18,4 +18,46 @@
             <username>test-user-only</username>
         </server>
     </servers>
+    <profiles>
+        <profile>
+            <id>mycompany-global</id>
+            <repositories>
+                <repository>
+                    <id>mycompany-internal-releases</id>
+                    <url>https://mycompany.example.com/repository/internal-releases</url>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>mycompany-global-releases</id>
+                    <url>https://mycompany.example.com/repository/global-releases</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+        <profile>
+            <id>default</id>
+            <repositories>
+                <repository>
+                    <id>mycompany-default-releases</id>
+                    <url>https://mycompany.example.com/repository/default-releases</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+    </profiles>
 </settings>

@@ -15,8 +15,7 @@ import (
 const defaultCheck = `package defsec.abcdefg
 
 __rego_metadata__ := {
-	"id": "TEST123",
-	"avd_id": "AVD-TEST-0123",
+	"id": "TEST-0123",
 	"title": "Buckets should not be evil",
 	"short_code": "no-evil-buckets",
 	"severity": "CRITICAL",
@@ -74,7 +73,7 @@ func Test_TerraformScanner(t *testing.T) {
 # schemas:
 #   - input: schema["cloud"]
 # custom:
-#   avd_id: AVD-TEST-0123
+#   id: TEST-0123
 #   severity: CRITICAL
 #   short_code: very-bad-misconfig
 #   recommended_action: "Fix the s3 bucket"
@@ -106,7 +105,7 @@ deny[cause] {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			b, _ := os.ReadFile(tc.inputFile)
-			fs := testutil.CreateFS(t, map[string]string{
+			fs := testutil.CreateFS(map[string]string{
 				"/code/main.tfplan.json": string(b),
 				"/rules/test.rego":       tc.check,
 			})
@@ -121,7 +120,7 @@ deny[cause] {
 
 			failure := results.GetFailed()[0]
 
-			assert.Equal(t, "AVD-TEST-0123", failure.Rule().AVDID)
+			assert.Equal(t, "TEST-0123", failure.Rule().ID)
 		})
 	}
 }

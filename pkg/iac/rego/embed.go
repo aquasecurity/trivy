@@ -41,6 +41,7 @@ func RegisterRegoRules(modules map[string]*ast.Module) {
 		WithCapabilities(nil).
 		WithUseTypeCheckAnnotations(true)
 
+	compiler.SetErrorLimit(CompileErrorLimit)
 	compiler.Compile(modules)
 	if compiler.Failed() {
 		// we should panic as the embedded rego policies are syntactically incorrect...

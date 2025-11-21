@@ -22,6 +22,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/redhat"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rocky"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rootio"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/seal"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/suse"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/ubuntu"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/wolfi"
@@ -63,6 +64,7 @@ var (
 	// and environment detection. They are tried before standard OS-specific drivers.
 	providers = []driver.Provider{
 		rootio.Provider,
+		seal.Provider,
 	}
 )
 

@@ -105,6 +105,8 @@ func (f *Flag[T]) Parse() error {
 
 	v := f.parse()
 	if v == nil {
+		// parse() should have already handled defaults,
+		// so if it returns nil, use the zero value
 		f.value = lo.Empty[T]()
 		return nil
 	}
@@ -148,7 +150,17 @@ func (f *Flag[T]) parse() any {
 			return v
 		}
 	}
-	return viper.Get(f.ConfigName)
+
+	v = viper.Get(f.ConfigName)
+
+	// For config-only flags (f.Name == ""), manually handle default values
+	// since we can't use viper.SetDefault due to the IsSet() bug
+	// See: https://github.com/spf13/viper/discussions/1766
+	if v == nil && f.Name == "" && !reflect.ValueOf(f.Default).IsZero() {
+		return f.Default
+	}
+
+	return v
 }
 
 // cast converts the value to the type of the flag.
@@ -311,7 +323,10 @@ func (f *Flag[T]) Bind(cmd *cobra.Command) error {
 		return nil
 	} else if f.Name == "" {
 		// This flag is available only in trivy.yaml
-		viper.SetDefault(f.ConfigName, f.Default)
+		// NOTE: viper.SetDefault is not used here to avoid the bug where IsSet()
+		// always returns true after SetDefault is called. Defaults are handled
+		// manually in the parse() method instead.
+		// See: https://github.com/spf13/viper/discussions/1766
 		return nil
 	}
 
@@ -391,6 +406,7 @@ type Options struct {
 	RemoteOptions
 	RepoOptions
 	ReportOptions
+	CloudOptions
 	ScanOptions
 	SecretOptions
 	VulnerabilityOptions
@@ -498,6 +514,7 @@ func (o *Options) RegistryOpts() ftypes.RegistryOptions {
 		Credentials:     o.Credentials,
 		RegistryToken:   o.RegistryToken,
 		Insecure:        o.Insecure,
+		CACerts:         o.CACerts,
 		Platform:        o.Platform,
 		AWSRegion:       o.AWSOptions.Region,
 		RegistryMirrors: o.RegistryMirrors,
@@ -579,10 +596,23 @@ func (o *Options) GetUsedFlags() []Flagger {
 	return o.usedFlags
 }
 
-func (o *Options) outputPluginWriter(ctx context.Context) (io.Writer, func() error, error) {
+func (o *Options) outputPluginWriter(ctx context.Context) (writer io.Writer, cleanup func() error, err error) {
 	pluginName := strings.TrimPrefix(o.Output, "plugin=")
 
 	pr, pw := io.Pipe()
+
+	// Close pipes on error
+	defer func() {
+		if err != nil {
+			if pr != nil {
+				pr.Close()
+			}
+			if pw != nil {
+				pw.Close()
+			}
+		}
+	}()
+
 	wait, err := plugin.Start(ctx, pluginName, plugin.Options{
 		Args:  o.OutputPluginArgs,
 		Stdin: pr,
@@ -591,7 +621,7 @@ func (o *Options) outputPluginWriter(ctx context.Context) (io.Writer, func() err
 		return nil, nil, xerrors.Errorf("plugin start: %w", err)
 	}
 
-	cleanup := func() error {
+	cleanup = func() error {
 		if err = pw.Close(); err != nil {
 			return xerrors.Errorf("failed to close pipe: %w", err)
 		}

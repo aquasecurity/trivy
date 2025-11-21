@@ -60,6 +60,7 @@ type ScannerOption struct {
 	DisableEmbeddedPolicies  bool
 	DisableEmbeddedLibraries bool
 	IncludeDeprecatedChecks  bool
+	RegoErrorLimit           int
 
 	HelmValues              []string
 	HelmValueFiles          []string
@@ -234,6 +235,10 @@ func initRegoOptions(opt ScannerOption) ([]options.ScannerOption, error) {
 		rego.WithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
 		rego.WithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
 		rego.WithTrivyVersion(app.Version()),
+	}
+
+	if opt.RegoErrorLimit >= 0 {
+		opts = append(opts, rego.WithRegoErrorLimits(opt.RegoErrorLimit))
 	}
 
 	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)
@@ -478,6 +483,7 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 
 		query := fmt.Sprintf("data.%s.%s", result.RegoNamespace(), result.RegoRule())
 
+		// TODO: use the ID field
 		ruleID := result.Rule().AVDID
 		if result.RegoNamespace() != "" && len(result.Rule().Aliases) > 0 {
 			ruleID = result.Rule().Aliases[0]

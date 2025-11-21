@@ -52,9 +52,7 @@ const (
 	TargetK8s            TargetKind = "k8s"
 )
 
-var (
-	SkipScan = errors.New("skip subsequent processes")
-)
+var SkipScan = errors.New("skip subsequent processes")
 
 // InitializeScanService defines the initialize function signature of scan service
 type InitializeScanService func(context.Context, ScannerConfig) (scan.Service, func(), error)
@@ -116,15 +114,24 @@ func WithInitializeService(f InitializeScanService) RunnerOption {
 
 // NewRunner initializes Runner that provides scanning functionalities.
 // It is possible to return SkipScan and it must be handled by caller.
-func NewRunner(ctx context.Context, cliOptions flag.Options, targetKind TargetKind, opts ...RunnerOption) (Runner, error) {
+func NewRunner(ctx context.Context, cliOptions flag.Options, targetKind TargetKind, opts ...RunnerOption) (_ Runner, err error) {
 	r := &runner{}
 	for _, opt := range opts {
 		opt(r)
 	}
 
+	defer func() {
+		if err != nil {
+			if cErr := r.Close(ctx); cErr != nil {
+				log.ErrorContext(ctx, "failed to close runner: %s", cErr)
+			}
+		}
+	}()
+
 	// Set the default HTTP transport
 	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
 		Insecure:  cliOptions.Insecure,
+		CACerts:   cliOptions.CACerts,
 		Timeout:   cliOptions.Timeout,
 		TraceHTTP: cliOptions.TraceHTTP,
 	}))
@@ -171,8 +178,10 @@ func (r *runner) Close(ctx context.Context) error {
 		}
 	}
 
-	if err := r.module.Close(ctx); err != nil {
-		errs = multierror.Append(errs, err)
+	if r.module != nil {
+		if err := r.module.Close(ctx); err != nil {
+			errs = multierror.Append(errs, err)
+		}
 	}
 
 	// silently check if there is notifications
@@ -367,13 +376,6 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
 	defer cancel()
 
-	defer func() {
-		if errors.Is(err, context.DeadlineExceeded) {
-			// e.g. https://trivy.dev/latest/docs/configuration/
-			log.WarnContext(ctx, fmt.Sprintf("Provide a higher timeout value, see %s", doc.URL("/docs/configuration/", "")))
-		}
-	}()
-
 	if opts.GenerateDefaultConfig {
 		log.Info("Writing the default config to trivy-default.yaml...")
 
@@ -466,7 +468,7 @@ func checkOptions(ctx context.Context, opts flag.Options, targetKind TargetKind)
 	if opts.ServerAddr != "" && opts.Scanners.AnyEnabled(types.MisconfigScanner, types.SecretScanner) {
 		log.WarnContext(ctx,
 			fmt.Sprintf(
-				"Trivy runs in client/server mode, but misconfiguration and license scanning will be done on the client side, see %s",
+				"Trivy runs in client/server mode, but misconfiguration and secret scanning will be done on the client side, see %s",
 				doc.URL("/docs/references/modes/client-server", ""),
 			),
 		)
@@ -600,7 +602,7 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 				"If your scanning is slow, please try '--scanners %s' to disable secret scanning",
 				strings.Join(xstrings.ToStringSlice(nonSecrets), ",")))
 		}
-		// e.g. https://trivy.dev/latest/docs/scanner/secret/#recommendation
+		// e.g. https://trivy.dev/docs/latest/scanner/secret/#recommendation
 		logger.Info(fmt.Sprintf("Please see %s for faster secret detection", doc.URL("/docs/scanner/secret/", "recommendation")))
 	} else {
 		opts.SecretConfigPath = ""
@@ -749,6 +751,7 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 		DisableEmbeddedPolicies:  disableEmbedded,
 		DisableEmbeddedLibraries: disableEmbedded,
 		IncludeDeprecatedChecks:  opts.IncludeDeprecatedChecks,
+		RegoErrorLimit:           opts.RegoOptions.ErrorLimit,
 		TfExcludeDownloaded:      opts.TfExcludeDownloaded,
 		RawConfigScanners:        opts.RawConfigScanners,
 		FilePatterns:             opts.FilePatterns,

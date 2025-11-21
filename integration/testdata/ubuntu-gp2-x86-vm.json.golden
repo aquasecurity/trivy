@@ -3,6 +3,7 @@
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "disk.img",
   "ArtifactType": "vm",
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "Metadata": {
     "OS": {
       "Family": "ubuntu",

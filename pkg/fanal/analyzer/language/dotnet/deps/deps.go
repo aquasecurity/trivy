@@ -24,9 +24,9 @@ const (
 
 type depsLibraryAnalyzer struct{}
 
-func (a depsLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a depsLibraryAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	parser := core.NewParser()
-	res, err := language.Analyze(types.DotNetCore, input.FilePath, input.Content, parser)
+	res, err := language.Analyze(ctx, types.DotNetCore, input.FilePath, input.Content, parser)
 	if err != nil {
 		return nil, xerrors.Errorf(".Net Core dependencies analysis error: %w", err)
 	}

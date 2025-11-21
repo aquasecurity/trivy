@@ -32,7 +32,18 @@ func TestAdapt(t *testing.T) {
 						Bypass:         []types.StringValue{types.StringTest("AzureServices")},
 						AllowByDefault: types.BoolTest(true),
 					}},
-					PublicNetworkAccess: types.BoolTest(true),
+					PublicNetworkAccess:             types.BoolTest(true),
+					AccountReplicationType:          types.StringTest(""),
+					InfrastructureEncryptionEnabled: types.BoolTest(false),
+					BlobProperties: storage.BlobProperties{
+						DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+							Days: types.IntTest(0),
+						},
+					},
+					CustomerManagedKey: storage.CustomerManagedKey{
+						KeyVaultKeyId:          types.StringTest(""),
+						UserAssignedIdentityId: types.StringTest(""),
+					},
 				}},
 			},
 		},
@@ -57,9 +68,11 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: storage.Storage{
 				Accounts: []storage.Account{{
-					MinimumTLSVersion:   types.StringTest("TLS1_2"),
-					EnforceHTTPS:        types.BoolTest(true),
-					PublicNetworkAccess: types.BoolTest(false),
+					MinimumTLSVersion:               types.StringTest("TLS1_2"),
+					EnforceHTTPS:                    types.BoolTest(true),
+					PublicNetworkAccess:             types.BoolTest(false),
+					AccountReplicationType:          types.StringTest(""),
+					InfrastructureEncryptionEnabled: types.BoolTest(false),
 					NetworkRules: []storage.NetworkRule{{
 						Bypass: []types.StringValue{
 							types.StringTest("Logging"),
@@ -67,6 +80,15 @@ func TestAdapt(t *testing.T) {
 						},
 						AllowByDefault: types.BoolTest(true),
 					}},
+					BlobProperties: storage.BlobProperties{
+						DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+							Days: types.IntTest(0),
+						},
+					},
+					CustomerManagedKey: storage.CustomerManagedKey{
+						KeyVaultKeyId:          types.StringTest(""),
+						UserAssignedIdentityId: types.StringTest(""),
+					},
 				}},
 			},
 		},

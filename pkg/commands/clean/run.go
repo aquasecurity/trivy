@@ -71,7 +71,7 @@ func cleanScanCache(ctx context.Context, opts flag.Options) error {
 	}
 	defer cleanup()
 
-	if err = c.Clear(); err != nil {
+	if err = c.Clear(ctx); err != nil {
 		return xerrors.Errorf("clear scan cache: %w", err)
 	}
 	return nil

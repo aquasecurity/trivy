@@ -1,6 +1,8 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:8ac64b751688d0e2577befd47be60baea54f7294bee6deeb0288b580daf6ca52",
   "ArtifactName": "testdata/fixtures/images/spring4shell-jre8.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -21,6 +23,10 @@
       "sha256:77b2d158369254d5055183f5483f8b6661170857b61768d1d95d18c2ec1714b6",
       "sha256:eb769943b91f10a0418f2fc3b4a4fde6c6293be60c37293fcc0fa319edaf27a5"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:spring4shell-jre8"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:spring4shell-jre8",
     "ImageConfig": {
       "architecture": "amd64",
       "created": "2022-06-06T13:51:57.120019Z",
@@ -264,6 +270,7 @@
             "Name": "GitHub Security Advisory Maven",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven"
           },
+          "Fingerprint": "sha256:8e22111721ea457f88428647e12e4eaf9eb1a9f37bfd809796390baf262685ff",
           "Title": "spring-framework: RCE via Data Binding on JDK 9+",
           "Description": "A Spring MVC or Spring WebFlux application running on JDK 9+ may be vulnerable to remote code execution (RCE) via data binding. The specific exploit requires the application to run on Tomcat as a WAR deployment. If the application is deployed as a Spring Boot executable jar, i.e. the default, it is not vulnerable to the exploit. However, the nature of the vulnerability is more general, and there may be other ways to exploit it.",
           "Severity": "LOW",
@@ -304,15 +311,6 @@
       "Class": "custom",
       "CustomResources": [
         {
-          "Type": "spring4shell/java-major-version",
-          "FilePath": "/usr/local/openjdk-8/release",
-          "Layer": {
-            "Digest": "sha256:d7b564a873af313eb2dbcb1ed0d393c57543e3666bdedcbe5d75841d72b1f791",
-            "DiffID": "sha256:ba40706eccba610401e4942e29f50bdf36807f8638942ce20805b359ae3ac1c1"
-          },
-          "Data": "1.8.0_322"
-        },
-        {
           "Type": "spring4shell/tomcat-version",
           "FilePath": "/usr/local/tomcat/RELEASE-NOTES",
           "Layer": {
@@ -320,6 +318,15 @@
             "DiffID": "sha256:85595543df2b1115a18284a8ef62d0b235c4bc29e3d33b55f89b54ee1eadf4c6"
           },
           "Data": "8.5.77"
+        },
+        {
+          "Type": "spring4shell/java-major-version",
+          "FilePath": "/usr/local/openjdk-8/release",
+          "Layer": {
+            "Digest": "sha256:d7b564a873af313eb2dbcb1ed0d393c57543e3666bdedcbe5d75841d72b1f791",
+            "DiffID": "sha256:ba40706eccba610401e4942e29f50bdf36807f8638942ce20805b359ae3ac1c1"
+          },
+          "Data": "1.8.0_322"
         }
       ]
     }

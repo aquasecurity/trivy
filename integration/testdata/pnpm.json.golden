@@ -1,20 +1,9 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/pnpm",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "pnpm-lock.yaml",
@@ -32,8 +21,7 @@
           "Licenses": [
             "MIT"
           ],
-          "Relationship": "direct",
-          "Layer": {}
+          "Relationship": "direct"
         },
         {
           "ID": "lodash@4.17.4",
@@ -46,8 +34,7 @@
           "Licenses": [
             "MIT"
           ],
-          "Relationship": "direct",
-          "Layer": {}
+          "Relationship": "direct"
         }
       ],
       "Vulnerabilities": [
@@ -62,7 +49,6 @@
           "InstalledVersion": "3.3.9",
           "FixedVersion": "3.4.0",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11358",
           "DataSource": {
@@ -70,6 +56,7 @@
             "Name": "GitHub Security Advisory Npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
+          "Fingerprint": "sha256:b224983d08f6952e8e045d27f01129e92af0c21d1b26ca2e60dd7f5a5e20541c",
           "Title": "jquery: Prototype pollution in object's prototype leading to denial of service, remote code execution, or property injection",
           "Description": "jQuery before 3.4.0, as used in Drupal, Backdrop CMS, and other products, mishandles jQuery.extend(true, {}, ...) because of Object.prototype pollution. If an unsanitized source object contained an enumerable __proto__ property, it could extend the native Object.prototype.",
           "Severity": "MEDIUM",
@@ -195,7 +182,6 @@
           "InstalledVersion": "4.17.4",
           "FixedVersion": "4.17.12",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-10744",
           "DataSource": {
@@ -203,6 +189,7 @@
             "Name": "GitHub Security Advisory Npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
+          "Fingerprint": "sha256:3621fc78d65c2c488364cb190536be9cc41896291bf1a3d8c1874a392a5c9e40",
           "Title": "nodejs-lodash: prototype pollution in defaultsDeep function leading to modifying properties",
           "Description": "Versions of lodash lower than 4.17.12 are vulnerable to Prototype Pollution. The function defaultsDeep could be tricked into adding or modifying properties of Object.prototype using a constructor payload.",
           "Severity": "CRITICAL",
