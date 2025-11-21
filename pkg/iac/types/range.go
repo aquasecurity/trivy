@@ -149,3 +149,8 @@ func (r Range) Includes(other Range) bool {
 func (r Range) Covers(other Range) bool {
 	return r.startLine <= other.startLine && r.endLine >= other.endLine
 }
+
+// Match returns true if 'r' exactly matches 'other'.
+func (r Range) Match(other Range) bool {
+	return r.startLine == other.startLine && r.endLine == other.endLine
+}

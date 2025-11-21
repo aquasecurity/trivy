@@ -33,6 +33,7 @@ type Result struct {
 	traces           []string
 	fsPath           string
 	renderedCause    RenderedCause
+	causePath        string
 }
 
 func (r Result) RegoNamespace() string {
@@ -108,6 +109,10 @@ type RenderedCause struct {
 
 func (r *Result) WithRenderedCause(cause RenderedCause) {
 	r.renderedCause = cause
+}
+
+func (r *Result) WithCausePath(p string) {
+	r.causePath = p
 }
 
 func (r *Result) AbsolutePath(fsRoot string, metadata iacTypes.Metadata) string {
