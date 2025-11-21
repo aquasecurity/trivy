@@ -31,6 +31,14 @@ const (
 	FormatAttestSPDXJSON      Format = "attest-spdx-json"
 	FormatUnknown             Format = "unknown"
 
+	// FormatSigstoreBundleCycloneDXJSON is used for Sigstore bundle format containing CycloneDX SBOM attestation.
+	// This format is produced by Cosign v3+ with the new bundle format.
+	// ref. https://github.com/sigstore/cosign/blob/main/specs/BUNDLE_SPEC.md
+	FormatSigstoreBundleCycloneDXJSON Format = "sigstore-bundle-cyclonedx-json"
+
+	// FormatSigstoreBundleSPDXJSON is used for Sigstore bundle format containing SPDX SBOM attestation.
+	FormatSigstoreBundleSPDXJSON Format = "sigstore-bundle-spdx-json"
+
 	// FormatLegacyCosignAttestCycloneDXJSON is used to support the older format of CycloneDX JSON Attestation
 	// produced by the Cosign V1.
 	// ref. https://github.com/sigstore/cosign/pull/2718
@@ -40,6 +48,10 @@ const (
 	// This is necessary for backward-compatible SBOM detection.
 	// ref. https://github.com/in-toto/in-toto-golang/pull/188
 	PredicateCycloneDXBeforeV05 = "https://cyclonedx.org/schema"
+
+	// SigstoreBundleMediaType is the media type for Sigstore bundles v0.3
+	// ref. https://github.com/sigstore/protobuf-specs/blob/main/protos/sigstore_bundle.proto
+	SigstoreBundleMediaType = "application/vnd.dev.sigstore.bundle.v0.3+json"
 )
 
 var ErrUnknownFormat = xerrors.New("Unknown SBOM format")
@@ -54,6 +66,13 @@ type cdxHeader struct {
 
 type spdxHeader struct {
 	SpdxID string `json:"SPDXID"`
+}
+
+// sigstoreBundle represents the structure of a Sigstore bundle
+// ref. https://github.com/sigstore/cosign/blob/main/specs/BUNDLE_SPEC.md
+type sigstoreBundle struct {
+	MediaType    string          `json:"mediaType"`
+	DSSEEnvelope json.RawMessage `json:"dsseEnvelope"`
 }
 
 func IsCycloneDXJSON(r io.ReadSeeker) (bool, error) {
@@ -152,6 +171,16 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 		return format, nil
 	}
 
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
+	}
+
+	// Try Sigstore bundle
+	format, ok = decodeSigstoreBundleFormat(r)
+	if ok {
+		return format, nil
+	}
+
 	return FormatUnknown, nil
 }
 
@@ -184,6 +213,41 @@ func decodeAttestationFormat(r io.ReadSeeker) (Format, bool) {
 		if spdxID, ok := m["SPDXID"].(string); ok && spdxID == "SPDXRef-DOCUMENT" {
 			return FormatAttestSPDXJSON, true
 		}
+	}
+
+	return "", false
+}
+
+func decodeSigstoreBundleFormat(r io.ReadSeeker) (Format, bool) {
+	var bundle sigstoreBundle
+	if err := json.NewDecoder(r).Decode(&bundle); err != nil {
+		return "", false
+	}
+
+	// Check if the media type indicates a Sigstore bundle
+	if bundle.MediaType != SigstoreBundleMediaType {
+		return "", false
+	}
+
+	if bundle.DSSEEnvelope == nil {
+		return "", false
+	}
+
+	// Parse the DSSE envelope to determine the SBOM format
+	var s attestation.Statement
+	if err := json.Unmarshal(bundle.DSSEEnvelope, &s); err != nil {
+		return "", false
+	}
+
+	if s.Predicate == nil {
+		return "", false
+	}
+
+	switch s.PredicateType {
+	case in_toto.PredicateCycloneDX, PredicateCycloneDXBeforeV05:
+		return FormatSigstoreBundleCycloneDXJSON, true
+	case in_toto.PredicateSPDX:
+		return FormatSigstoreBundleSPDXJSON, true
 	}
 
 	return "", false
@@ -229,6 +293,30 @@ func Decode(ctx context.Context, f io.Reader, format Format) (types.SBOM, error)
 		bom = core.NewBOM(core.Options{})
 		v = &attestation.Statement{
 			Predicate: &spdx.SPDX{BOM: bom},
+		}
+		decoder = json.NewDecoder(f)
+	case FormatSigstoreBundleCycloneDXJSON:
+		// Sigstore bundle
+		//   => dsse envelope
+		//     => in-toto attestation
+		//       => CycloneDX JSON
+		bom = core.NewBOM(core.Options{GenerateBOMRef: true})
+		v = &attestation.SigstoreBundle{
+			DSSEEnvelope: attestation.Statement{
+				Predicate: &cyclonedx.BOM{BOM: bom},
+			},
+		}
+		decoder = json.NewDecoder(f)
+	case FormatSigstoreBundleSPDXJSON:
+		// Sigstore bundle
+		//   => dsse envelope
+		//     => in-toto attestation
+		//       => SPDX JSON
+		bom = core.NewBOM(core.Options{})
+		v = &attestation.SigstoreBundle{
+			DSSEEnvelope: attestation.Statement{
+				Predicate: &spdx.SPDX{BOM: bom},
+			},
 		}
 		decoder = json.NewDecoder(f)
 	case FormatSPDXJSON:
