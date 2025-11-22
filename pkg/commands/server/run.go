@@ -17,7 +17,7 @@ import (
 
 // Run runs the scan
 func Run(ctx context.Context, opts flag.Options) (err error) {
-	log.InitLogger(opts.Debug, opts.Quiet)
+	log.InitLogger(opts.Debug, opts.Quiet, opts.NoColor)
 
 	// Set the default HTTP transport
 	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
