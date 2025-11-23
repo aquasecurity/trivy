@@ -106,7 +106,7 @@ func NewExprValue(value string, metadata types.Metadata) Value {
 	}
 }
 
-func (v *Value) GetMetadata() types.Metadata {
+func (v Value) GetMetadata() types.Metadata {
 	return lo.FromPtr(v.metadata)
 }
 

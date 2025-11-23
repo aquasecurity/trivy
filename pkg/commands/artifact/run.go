@@ -468,7 +468,7 @@ func checkOptions(ctx context.Context, opts flag.Options, targetKind TargetKind)
 	if opts.ServerAddr != "" && opts.Scanners.AnyEnabled(types.MisconfigScanner, types.SecretScanner) {
 		log.WarnContext(ctx,
 			fmt.Sprintf(
-				"Trivy runs in client/server mode, but misconfiguration and license scanning will be done on the client side, see %s",
+				"Trivy runs in client/server mode, but misconfiguration and secret scanning will be done on the client side, see %s",
 				doc.URL("/docs/references/modes/client-server", ""),
 			),
 		)

@@ -2,6 +2,7 @@ package compute
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/compute"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -93,25 +94,6 @@ func adaptLinuxVirtualMachine(resource azure.Resource) compute.LinuxVirtualMachi
 
 }
 
-func extractNetworkInterfaces(networkProfile azure.Value, metadata iacTypes.Metadata) []compute.NetworkInterface {
-	var networkInterfaces []compute.NetworkInterface
-
-	nicsArray := networkProfile.GetMapValue("networkInterfaces").AsList()
-	for _, nic := range nicsArray {
-		nicID := nic.GetMapValue("id").AsStringValue("", metadata)
-		if nicID.Value() != "" {
-			// Create a minimal NetworkInterface object with the ID information
-			// In ARM templates, we don't have direct access to subnet details like in Terraform
-			networkInterface := compute.NetworkInterface{
-				Metadata:        nicID.GetMetadata(),
-				SubnetID:        iacTypes.StringDefault("", nicID.GetMetadata()),
-				SecurityGroups:  nil,
-				HasPublicIP:     iacTypes.BoolDefault(false, nicID.GetMetadata()),
-				PublicIPAddress: iacTypes.StringDefault("", nicID.GetMetadata()),
-			}
-			networkInterfaces = append(networkInterfaces, networkInterface)
-		}
-	}
-
-	return networkInterfaces
+func extractNetworkInterfaces(_ azure.Value, _ iacTypes.Metadata) []network.NetworkInterface {
+	return nil
 }

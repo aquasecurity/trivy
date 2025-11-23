@@ -2,6 +2,7 @@ package network
 
 import (
 	"github.com/google/uuid"
+	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
@@ -20,6 +21,7 @@ func Adapt(modules terraform.Modules) network.Network {
 			groups:  make(map[string]network.SecurityGroup),
 		}).adaptSecurityGroups(),
 		NetworkWatcherFlowLogs: adaptWatcherLogs(modules),
+		NetworkInterfaces:      adaptNetworkInterfaces(modules),
 	}
 }
 
@@ -90,6 +92,7 @@ func (a *adapter) adaptSecurityGroup(resource *terraform.Block) {
 func adaptWatcherLog(resource *terraform.Block) network.NetworkWatcherFlowLog {
 	flowLog := network.NetworkWatcherFlowLog{
 		Metadata: resource.GetMetadata(),
+		Enabled:  resource.GetAttribute("enabled").AsBoolValueOrDefault(false, resource),
 		RetentionPolicy: network.RetentionPolicy{
 			Metadata: resource.GetMetadata(),
 			Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
@@ -98,14 +101,68 @@ func adaptWatcherLog(resource *terraform.Block) network.NetworkWatcherFlowLog {
 	}
 
 	if retentionPolicyBlock := resource.GetBlock("retention_policy"); retentionPolicyBlock.IsNotNil() {
-		flowLog.RetentionPolicy.Metadata = retentionPolicyBlock.GetMetadata()
+		flowLog.RetentionPolicy = network.RetentionPolicy{
+			Metadata: retentionPolicyBlock.GetMetadata(),
+			Enabled: retentionPolicyBlock.GetAttribute("enabled").
+				AsBoolValueOrDefault(false, retentionPolicyBlock),
+			Days: retentionPolicyBlock.GetAttribute("days").
+				AsIntValueOrDefault(0, retentionPolicyBlock),
+		}
+	}
+	return flowLog
+}
 
-		enabledAttr := retentionPolicyBlock.GetAttribute("enabled")
-		flowLog.RetentionPolicy.Enabled = enabledAttr.AsBoolValueOrDefault(false, retentionPolicyBlock)
+func adaptNetworkInterfaces(modules terraform.Modules) []network.NetworkInterface {
+	var networkInterfaces []network.NetworkInterface
 
-		daysAttr := retentionPolicyBlock.GetAttribute("days")
-		flowLog.RetentionPolicy.Days = daysAttr.AsIntValueOrDefault(0, retentionPolicyBlock)
+	for _, module := range modules {
+		for _, resource := range module.GetResourcesByType("azurerm_network_interface") {
+			networkInterfaces = append(networkInterfaces, AdaptNetworkInterface(resource, modules))
+		}
 	}
 
-	return flowLog
+	return networkInterfaces
+}
+
+func AdaptNetworkInterface(resource *terraform.Block, modules terraform.Modules) network.NetworkInterface {
+	ni := network.NetworkInterface{
+		Metadata: resource.GetMetadata(),
+		// Support both ip_forwarding_enabled (new) and enable_ip_forwarding (old) attributes
+		EnableIPForwarding: resource.GetFirstAttributeOf("ip_forwarding_enabled", "enable_ip_forwarding").
+			AsBoolValueOrDefault(false, resource),
+		HasPublicIP:     iacTypes.BoolDefault(false, resource.GetMetadata()),
+		PublicIPAddress: iacTypes.StringDefault("", resource.GetMetadata()),
+		SubnetID:        iacTypes.StringDefault("", resource.GetMetadata()),
+	}
+
+	if nsgAttr := resource.GetAttribute("network_security_group_id"); nsgAttr.IsNotNil() {
+		if referencedNSG, err := modules.GetReferencedBlock(nsgAttr, resource); err == nil {
+			ni.SecurityGroups = []network.SecurityGroup{adaptSecurityGroupFromBlock(referencedNSG)}
+		}
+	}
+
+	ipConfigs := resource.GetBlocks("ip_configuration")
+	ni.IPConfigurations = make([]network.IPConfiguration, 0, len(ipConfigs))
+	for _, ipConfig := range ipConfigs {
+		ni.IPConfigurations = append(ni.IPConfigurations, network.IPConfiguration{
+			Metadata:        ipConfig.GetMetadata(),
+			PublicIPAddress: ipConfig.GetAttribute("public_ip_address_id").AsStringValueOrDefault("", ipConfig),
+			SubnetID:        ipConfig.GetAttribute("subnet_id").AsStringValueOrDefault("", ipConfig),
+			Primary:         ipConfig.GetAttribute("primary").AsBoolValueOrDefault(false, ipConfig),
+		})
+	}
+
+	ni.Setup()
+	return ni
+}
+
+func adaptSecurityGroupFromBlock(resource *terraform.Block) network.SecurityGroup {
+	return network.SecurityGroup{
+		Metadata: resource.GetMetadata(),
+		Rules: lo.Map(resource.GetBlocks("security_rule"),
+			func(b *terraform.Block, _ int) network.SecurityGroupRule {
+				return AdaptSGRule(b)
+			},
+		),
+	}
 }
