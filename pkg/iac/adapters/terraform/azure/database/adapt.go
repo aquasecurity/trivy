@@ -497,12 +497,7 @@ func adaptActiveDirectoryAdministrator(resource *terraform.Block) database.Activ
 
 func adaptAzureADAdministratorBlock(block *terraform.Block) database.ActiveDirectoryAdministrator {
 	// The azuread_administrator block uses login_username attribute
-	loginAttr := block.GetAttribute("login_username")
-	if loginAttr.IsNil() {
-		// Fallback to login if login_username is not present
-		loginAttr = block.GetAttribute("login")
-	}
-	loginVal := loginAttr.AsStringValueOrDefault("", block)
+	loginVal := block.GetFirstAttributeOf("login_username", "login").AsStringValueOrDefault("", block)
 
 	return database.ActiveDirectoryAdministrator{
 		Metadata: block.GetMetadata(),
