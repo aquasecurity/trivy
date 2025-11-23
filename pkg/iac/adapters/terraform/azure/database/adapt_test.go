@@ -80,11 +80,77 @@ func Test_Adapt(t *testing.T) {
 							LogConnections:       iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 							LogCheckpoints:       iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 							ConnectionThrottling: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							LogDisconnections:    iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
+					},
+				},
+			},
+		},
+		{
+			name: "postgresql with geo redundant backup and threat detection",
+			terraform: `
+			resource "azurerm_postgresql_server" "example" {
+				name                = "example"
+			  
+				public_network_access_enabled    = true
+				ssl_enforcement_enabled          = true
+				ssl_minimal_tls_version_enforced = "TLS1_2"
+				geo_redundant_backup_enabled     = true
+				
+				threat_detection_policy {
+					enabled = true
+				}
+			  }
+			`,
+			expected: database.Database{
+				PostgreSQLServers: []database.PostgreSQLServer{
+					{
+						Metadata: iacTypes.NewTestMetadata(),
+						Server: database.Server{
+							Metadata:                  iacTypes.NewTestMetadata(),
+							EnableSSLEnforcement:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							MinimumTLSVersion:         iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
+							EnablePublicNetworkAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						},
+						GeoRedundantBackupEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						ThreatDetectionPolicy: database.ThreatDetectionPolicy{
 							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "postgresql with log disconnections",
+			terraform: `
+			resource "azurerm_postgresql_server" "example" {
+				name                = "example"
+			  
+				public_network_access_enabled    = true
+				ssl_enforcement_enabled          = true
+				ssl_minimal_tls_version_enforced = "TLS1_2"
+			  }
+
+			  resource "azurerm_postgresql_configuration" "example" {
+				name                = "log_disconnections"
+				resource_group_name = azurerm_resource_group.example.name
+				server_name         = azurerm_postgresql_server.example.name
+				value               = "on"
+			  }
+			`,
+			expected: database.Database{
+				PostgreSQLServers: []database.PostgreSQLServer{
+					{
+						Metadata: iacTypes.NewTestMetadata(),
+						Server: database.Server{
+							Metadata:                  iacTypes.NewTestMetadata(),
+							EnableSSLEnforcement:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							MinimumTLSVersion:         iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
+							EnablePublicNetworkAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						},
+						Config: database.PostgresSQLConfig{
+							Metadata:          iacTypes.NewTestMetadata(),
+							LogDisconnections: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						},
 					},
 				},
@@ -236,8 +302,6 @@ func Test_Adapt(t *testing.T) {
 								EmailAccountAdmins: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 							},
 						},
-						AdministratorLogin:            iacTypes.String("", iacTypes.NewTestMetadata()),
-						ActiveDirectoryAdministrators: nil,
 					},
 				},
 			},

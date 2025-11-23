@@ -310,4 +310,3 @@ resource "azurerm_cosmosdb_account" "example" {
 	assert.Equal(t, 7, account.IPRangeFilter[1].GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 7, account.IPRangeFilter[1].GetMetadata().Range().GetEndLine())
 }
-
