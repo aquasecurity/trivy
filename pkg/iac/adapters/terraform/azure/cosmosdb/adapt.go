@@ -1,8 +1,6 @@
 package cosmosdb
 
 import (
-	"strings"
-
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/cosmosdb"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -36,21 +34,11 @@ func adaptCosmosDBAccount(resource *terraform.Block) cosmosdb.Account {
 
 	// ip_range_filter is a list of strings in Terraform
 	ipRangeFilterAttr := resource.GetAttribute("ip_range_filter")
-	var ipRangeFilterVal iacTypes.StringValue
+	var ipRangeFilterVal []iacTypes.StringValue
 	if ipRangeFilterAttr.IsNil() {
-		ipRangeFilterVal = iacTypes.StringDefault("", resource.GetMetadata())
+		ipRangeFilterVal = []iacTypes.StringValue{}
 	} else {
-		// Handle as list of strings and join with commas
-		ipRanges := ipRangeFilterAttr.AsStringValues()
-		if len(ipRanges) == 0 {
-			ipRangeFilterVal = iacTypes.StringDefault("", resource.GetMetadata())
-		} else {
-			var ranges []string
-			for _, r := range ipRanges {
-				ranges = append(ranges, r.Value())
-			}
-			ipRangeFilterVal = iacTypes.String(strings.Join(ranges, ","), ipRangeFilterAttr.GetMetadata())
-		}
+		ipRangeFilterVal = ipRangeFilterAttr.AsStringValues()
 	}
 
 	return cosmosdb.Account{
