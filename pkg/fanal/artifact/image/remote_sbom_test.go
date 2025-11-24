@@ -23,7 +23,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	log.InitLogger(false, true)
+	log.InitLogger(false, true, true)
 	os.Exit(m.Run())
 }
 
@@ -150,7 +150,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 		},
 	}
 
-	log.InitLogger(false, true)
+	log.InitLogger(false, true, true)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ts := rekortest.NewServer(t)

@@ -215,7 +215,7 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				return err
 			}
 			// Initialize logger
-			log.InitLogger(opts.Debug, opts.Quiet)
+			log.InitLogger(opts.Debug, opts.Quiet, opts.NoColor)
 
 			return cloud.CheckTrivyCloudStatus(cmd)
 		},

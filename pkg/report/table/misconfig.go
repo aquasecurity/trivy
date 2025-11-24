@@ -31,9 +31,10 @@ type misconfigRenderer struct {
 	width              int
 	ansi               bool
 	renderCause        []ftypes.ConfigType
+	noColor            bool
 }
 
-func NewMisconfigRenderer(buf *bytes.Buffer, severities []dbTypes.Severity, trace, includeNonFailures, ansi bool, renderCause []ftypes.ConfigType) *misconfigRenderer {
+func NewMisconfigRenderer(buf *bytes.Buffer, severities []dbTypes.Severity, trace, includeNonFailures, ansi, noColor bool, renderCause []ftypes.ConfigType) *misconfigRenderer {
 	width, _, err := term.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
@@ -50,6 +51,7 @@ func NewMisconfigRenderer(buf *bytes.Buffer, severities []dbTypes.Severity, trac
 		width:              width,
 		ansi:               ansi,
 		renderCause:        renderCause,
+		noColor:            noColor,
 	}
 }
 
@@ -60,7 +62,7 @@ func (r *misconfigRenderer) Render(result types.Result) {
 		return
 	}
 	target := fmt.Sprintf("%s (%s)", result.Target, result.Type)
-	RenderTarget(r.w, target, r.ansi)
+	RenderTarget(r.w, target, r.ansi, r.noColor)
 
 	total, summaries := summarize(r.severities, r.countSeverities(result.Misconfigurations))
 

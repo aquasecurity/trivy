@@ -456,7 +456,7 @@ resource "aws_s3_bucket" "this" {
 				dbTypes.SeverityCritical,
 			}
 			buf := bytes.NewBuffer([]byte{})
-			renderer := table.NewMisconfigRenderer(buf, severities, false, tt.args.includeNonFailures, false, tt.args.renderCause)
+			renderer := table.NewMisconfigRenderer(buf, severities, false, tt.args.includeNonFailures, false, true, tt.args.renderCause)
 			renderer.Render(tt.input)
 			assert.Equal(t, tt.want, strings.ReplaceAll(buf.String(), "\r\n", "\n"))
 		})
