@@ -504,7 +504,7 @@ require (
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
 
-replace github.com/aquasecurity/trivy-db => github.com/mbauman/trivy-db v0.0.0-20251125074902-fe7f044b3aea
+replace github.com/aquasecurity/trivy-db => github.com/mbauman/trivy-db v0.0.0-20251125120919-02389015ecf1
 
 tool (
 	github.com/bufbuild/buf/cmd/buf

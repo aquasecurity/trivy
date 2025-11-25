@@ -884,8 +884,8 @@ github.com/mattn/go-shellwords v1.0.12/go.mod h1:EZzvwXDESEeg03EKmM+RmDnNOPKG4lL
 github.com/mattn/go-sqlite3 v1.14.22/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxUwlHK0RXw+Y=
 github.com/mattn/go-sqlite3 v1.14.24 h1:tpSp2G2KyMnnQu99ngJ47EIkWVmliIizyZBfPrBWDRM=
 github.com/mattn/go-sqlite3 v1.14.24/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxUwlHK0RXw+Y=
-github.com/mbauman/trivy-db v0.0.0-20251125074902-fe7f044b3aea h1:nq7/1egHOE3KwMk1pukdYqCb5ZC2t0NFJF10FH7gcvI=
-github.com/mbauman/trivy-db v0.0.0-20251125074902-fe7f044b3aea/go.mod h1:KL/C38wFKTREFgKSShT3DEmjNYSNXoYQ96wtQXRbnM8=
+github.com/mbauman/trivy-db v0.0.0-20251125120919-02389015ecf1 h1:kcKHujDjTWaiYWeRpZ6w+ox9XyyaJ0fOHj6+xY0y1/o=
+github.com/mbauman/trivy-db v0.0.0-20251125120919-02389015ecf1/go.mod h1:KL/C38wFKTREFgKSShT3DEmjNYSNXoYQ96wtQXRbnM8=
 github.com/miekg/dns v1.1.58 h1:ca2Hdkz+cDg/7eNF6V56jjzuZ4aCAE+DbVkILdQWG/4=
 github.com/miekg/dns v1.1.58/go.mod h1:Ypv+3b/KadlvW9vJfXOTf300O4UqaHFzFCuHz+rPkBY=
 github.com/miekg/pkcs11 v1.1.1 h1:Ugu9pdy6vAYku5DEpVWVFPYnzV+bxB+iRdbuFSu7TvU=
