@@ -104,7 +104,6 @@ func TestDriver_Detect(t *testing.T) {
 						URL:  "https://github.com/JuliaLang/SecurityAdvisories.jl",
 					},
 					VendorIDs: []string{
-						"GHSA-4g68-4pxg-mw93",
 						"JLSEC-2025-1",
 					},
 				},
