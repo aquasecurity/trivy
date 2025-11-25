@@ -129,6 +129,7 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  adv.VulnerabilityID,
+			VendorIDs:        adv.VendorIDs, // Any vendors have specific IDs, e.g. GHSA, JLSEC
 			PkgID:            pkgID,
 			PkgName:          pkgName,
 			InstalledVersion: pkgVer,

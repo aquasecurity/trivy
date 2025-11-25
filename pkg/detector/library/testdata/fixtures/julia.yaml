@@ -8,3 +8,6 @@
               - 1.10.17
             VulnerableVersions:
               - "<1.10.17"
+            VendorIDs:
+              - "GHSA-4g68-4pxg-mw93"
+              - "JLSEC-2025-1"
