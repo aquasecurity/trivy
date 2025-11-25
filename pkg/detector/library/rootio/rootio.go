@@ -12,11 +12,8 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/rootio"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
-	"github.com/aquasecurity/trivy/pkg/detector/library/compare/bitnami"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/maven"
-	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
-	"github.com/aquasecurity/trivy/pkg/detector/library/compare/rubygems"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -40,18 +37,10 @@ func NewScanner(eco ecosystem.Type) Scanner {
 // comparer returns the appropriate comparer for each ecosystem
 func comparer(eco ecosystem.Type) compare.Comparer {
 	switch eco {
-	case ecosystem.RubyGems:
-		return rubygems.Comparer{}
 	case ecosystem.Pip:
 		return pep440.Comparer{}
-	case ecosystem.Npm:
-		return npm.Comparer{}
 	case ecosystem.Maven:
 		return maven.Comparer{}
-	case ecosystem.Bitnami:
-		return bitnami.Comparer{}
-	case ecosystem.Cocoapods:
-		return rubygems.Comparer{} // CocoaPods uses RubyGems version specifiers
 	default:
 		// Default to generic semver comparison
 		return compare.GenericComparer{}
