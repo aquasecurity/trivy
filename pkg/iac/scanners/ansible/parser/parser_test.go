@@ -555,7 +555,7 @@ name: mycol
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fsys := testutil.CreateFS(t, tt.files)
+			fsys := testutil.CreateFS(tt.files)
 			dir := cmp.Or(tt.dir, ".")
 			p := parser.New(fsys, dir, tt.opts...)
 			project, err := p.Parse()
@@ -894,7 +894,7 @@ bucket: "from-role"
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fsys := testutil.CreateFS(t, tt.files)
+			fsys := testutil.CreateFS(tt.files)
 			p := parser.New(fsys, ".", tt.opts...)
 			project, err := p.Parse()
 			require.NoError(t, err)

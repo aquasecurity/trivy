@@ -39,7 +39,7 @@ all_var: allvalue
 `,
 	}
 
-	fsys := testutil.CreateFS(t, files)
+	fsys := testutil.CreateFS(files)
 	rootSrc := fsutils.NewFileSource(fsys, ".")
 	sources := inventory.InventoryVarsSources(rootSrc)
 	got := inventory.LoadVars(sources)

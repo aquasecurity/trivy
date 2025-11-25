@@ -64,7 +64,7 @@ foo: 10
 `,
 	}
 
-	fsys := testutil.CreateFS(t, files)
+	fsys := testutil.CreateFS(files)
 	inv := inventory.LoadAuto(fsys, inventory.LoadOptions{
 		Sources: []string{"dev", "common"},
 	})
@@ -134,7 +134,7 @@ group1:
     bar: 10
 `,
 	}
-	fsys := testutil.CreateFS(t, files)
+	fsys := testutil.CreateFS(files)
 
 	opts := inventory.LoadOptions{
 		Sources: []string{"dev", tmpFile.Name()},
