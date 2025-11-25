@@ -4957,10 +4957,6 @@
             "type": "object",
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
           }
-        },
-        "tags": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.MapValue"
         }
       }
     },

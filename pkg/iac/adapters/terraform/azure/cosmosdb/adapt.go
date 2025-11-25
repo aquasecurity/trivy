@@ -25,15 +25,6 @@ func adaptCosmosDBAccounts(modules terraform.Modules) []cosmosdb.Account {
 }
 
 func adaptCosmosDBAccount(resource *terraform.Block) cosmosdb.Account {
-
-	tagsAttr := resource.GetAttribute("tags")
-	var tagsVal iacTypes.MapValue
-	if tagsAttr.IsNil() {
-		tagsVal = iacTypes.MapDefault(make(map[string]string), resource.GetMetadata())
-	} else {
-		tagsVal = tagsAttr.AsMapValue()
-	}
-
 	// ip_range_filter is a list of strings in Terraform
 	ipRangeFilterAttr := resource.GetAttribute("ip_range_filter")
 	var ipRangeFilterVal []iacTypes.StringValue
@@ -51,6 +42,5 @@ func adaptCosmosDBAccount(resource *terraform.Block) cosmosdb.Account {
 	return cosmosdb.Account{
 		Metadata:      resource.GetMetadata(),
 		IPRangeFilter: ipRangeFilterVal,
-		Tags:          tagsVal,
 	}
 }

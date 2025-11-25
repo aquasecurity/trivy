@@ -9,5 +9,4 @@ type CosmosDB struct {
 type Account struct {
 	Metadata      iacTypes.Metadata
 	IPRangeFilter []iacTypes.StringValue
-	Tags          iacTypes.MapValue
 }
