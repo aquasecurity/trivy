@@ -189,6 +189,7 @@ trivy image [flags] IMAGE_NAME
                                             - chainguard
                                             - bitnami
                                             - govulndb
+                                            - julia
                                             - echo
                                             - minimos
                                             - rootio

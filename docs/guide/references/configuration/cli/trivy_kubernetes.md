@@ -177,6 +177,7 @@ trivy kubernetes [flags] [CONTEXT]
                                             - chainguard
                                             - bitnami
                                             - govulndb
+                                            - julia
                                             - echo
                                             - minimos
                                             - rootio
