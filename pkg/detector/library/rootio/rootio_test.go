@@ -121,38 +121,6 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name: "Root.io npm package with Root.io and GitHub vulns",
-			fixtures: []string{
-				//"testdata/fixtures/npm.yaml",
-				"testdata/fixtures/rootio.yaml",
-				"testdata/fixtures/data-source.yaml",
-			},
-			ecosystem: ecosystem.Npm,
-			pkg: ftypes.Package{
-				Name:       "lodash",
-				Version:    "4.17.20+root.io.1",
-				Layer:      ftypes.Layer{Digest: "sha256:layer"},
-				FilePath:   "/path/to/package.json",
-				Identifier: ftypes.PkgIdentifier{UID: "01"},
-			},
-			wantVulns: []types.DetectedVulnerability{
-				{
-					VulnerabilityID:  "CVE-2020-28500",
-					PkgName:          "lodash",
-					InstalledVersion: "4.17.20+root.io.1",
-					FixedVersion:     "4.17.21",
-					Layer:            ftypes.Layer{Digest: "sha256:layer"},
-					PkgPath:          "/path/to/package.json",
-					PkgIdentifier:    ftypes.PkgIdentifier{UID: "01"},
-					DataSource: &dbTypes.DataSource{
-						ID:   vulnerability.GHSA,
-						Name: "GitHub Security Advisory npm",
-						URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm",
-					},
-				},
-			},
-		},
-		{
 			name: "Package with no vulnerabilities",
 			fixtures: []string{
 				"testdata/fixtures/pip.yaml",

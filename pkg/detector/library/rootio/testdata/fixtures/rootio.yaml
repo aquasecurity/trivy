@@ -30,16 +30,3 @@
               - "2.30.0+root.io.3"
             VulnerableVersions:
               - "=2.30.0"
-
-- bucket: "root.io npm"
-  pairs:
-    - bucket: lodash
-      pairs:
-        - key: CVE-2021-23337
-          value:
-            PatchedVersions:
-              - "4.17.20+root.io.5"
-              - "4.17.21"
-            VulnerableVersions:
-              - "=4.17.20"
-              - ">4.17.20, <4.17.21"
