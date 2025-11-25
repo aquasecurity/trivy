@@ -138,9 +138,6 @@ func (b *Block) Reference() Reference {
 }
 
 func (b *Block) GetMetadata() iacTypes.Metadata {
-	if b.IsNil() {
-		return iacTypes.NewUnmanagedMetadata()
-	}
 	return b.metadata
 }
 

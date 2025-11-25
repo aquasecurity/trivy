@@ -14,15 +14,7 @@ type Compute struct {
 type VirtualMachine struct {
 	Metadata          iacTypes.Metadata
 	CustomData        iacTypes.StringValue // NOT base64 encoded
-	NetworkInterfaces []NetworkInterface
-}
-
-type NetworkInterface struct {
-	Metadata        iacTypes.Metadata
-	SubnetID        iacTypes.StringValue
-	SecurityGroups  []network.SecurityGroup
-	HasPublicIP     iacTypes.BoolValue
-	PublicIPAddress iacTypes.StringValue
+	NetworkInterfaces []network.NetworkInterface
 }
 
 type LinuxVirtualMachine struct {
