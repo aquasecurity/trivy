@@ -20,16 +20,12 @@ type Parser struct {
 type Option func(p *Parser)
 
 // WithStrict returns a Parser option that enables strict parsing mode.
-// For example, unknown flags cause an error when strict is true, otherwise they are ignored.
-func WithStrict(yes bool) Option {
+// By default, the Parser runs in non-strict mode, where unknown flags are ignored.
+// Calling this option ensures that unknown flags cause an error.
+func WithStrict() Option {
 	return func(p *Parser) {
-		p.strict = yes
+		p.strict = true
 	}
-}
-
-func Parse(ctx context.Context, r io.Reader, path string) ([]*dockerfile.Dockerfile, error) {
-	p := NewParser()
-	return p.Parse(ctx, r, path)
 }
 
 func NewParser(opts ...Option) *Parser {
