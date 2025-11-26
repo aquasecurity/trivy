@@ -267,7 +267,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				}
 				// Store the blob info in the cache to test cache hit
-				cacheKey := "sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c"
+				cacheKey := "sha256:1587f4be90cf95b3e1b733512d674301f5fe4200055f10efa4dbf0d5e590d32d"
 				err := c.PutBlob(t.Context(), cacheKey, blobInfo)
 				require.NoError(t, err)
 			},
