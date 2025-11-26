@@ -17,8 +17,8 @@ COPY . /app
 RUN make /app
 CMD python /app/app.py
 `
-
-	dfs, err := parser.Parse(t.Context(), strings.NewReader(input), "Dockerfile")
+	p := parser.NewParser()
+	dfs, err := p.Parse(t.Context(), strings.NewReader(input), "Dockerfile")
 	require.NoError(t, err)
 	require.Len(t, dfs, 1)
 
@@ -65,7 +65,8 @@ RUN --baz --baz --network=host make /app
 ONBUILD RUN --foo make /app
 CMD python /app/app.py
 `
-	dfs, err := parser.Parse(t.Context(), strings.NewReader(input), "Dockerfile")
+	p := parser.NewParser()
+	dfs, err := p.Parse(t.Context(), strings.NewReader(input), "Dockerfile")
 	require.NoError(t, err)
 	require.Len(t, dfs, 1)
 
@@ -170,7 +171,8 @@ EOF`,
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			dfs, err := parser.Parse(t.Context(), strings.NewReader(tt.src), "Dockerfile")
+			p := parser.NewParser()
+			dfs, err := p.Parse(t.Context(), strings.NewReader(tt.src), "Dockerfile")
 			require.NoError(t, err)
 			require.Len(t, dfs, 1)
 

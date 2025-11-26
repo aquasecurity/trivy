@@ -13,7 +13,30 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/dockerfile"
 )
 
-func Parse(_ context.Context, r io.Reader, path string) ([]*dockerfile.Dockerfile, error) {
+type Parser struct {
+	strict bool
+}
+
+type Option func(p *Parser)
+
+// WithStrict returns a Parser option that enables strict parsing mode.
+// By default, the Parser runs in non-strict mode, where unknown flags are ignored.
+// Calling this option ensures that unknown flags cause an error.
+func WithStrict() Option {
+	return func(p *Parser) {
+		p.strict = true
+	}
+}
+
+func NewParser(opts ...Option) *Parser {
+	p := &Parser{}
+	for _, opt := range opts {
+		opt(p)
+	}
+	return p
+}
+
+func (p *Parser) Parse(_ context.Context, r io.Reader, path string) ([]*dockerfile.Dockerfile, error) {
 	parsed, err := parser.Parse(r)
 	if err != nil {
 		return nil, xerrors.Errorf("dockerfile parse error: %w", err)
@@ -29,7 +52,7 @@ func Parse(_ context.Context, r io.Reader, path string) ([]*dockerfile.Dockerfil
 	for _, child := range parsed.AST.Children {
 		child.Value = strings.ToLower(child.Value)
 
-		instr, err := parseInstruction(child)
+		instr, err := p.parseInstruction(child)
 		if err != nil {
 			return nil, xerrors.Errorf("parse dockerfile instruction: %w", err)
 		}
@@ -90,11 +113,13 @@ func Parse(_ context.Context, r io.Reader, path string) ([]*dockerfile.Dockerfil
 	return []*dockerfile.Dockerfile{&parsedFile}, nil
 }
 
-func parseInstruction(child *parser.Node) (any, error) {
+func (p *Parser) parseInstruction(child *parser.Node) (any, error) {
 	for {
 		instr, err := instructions.ParseInstruction(child)
 		if err == nil {
 			return instr, nil
+		} else if p.strict {
+			return nil, xerrors.Errorf("parse instruction %q: %w", child.Value, err)
 		}
 
 		flagName := extractUnknownFlag(err.Error())
