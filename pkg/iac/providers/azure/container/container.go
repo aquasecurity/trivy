@@ -15,7 +15,6 @@ type KubernetesCluster struct {
 	APIServerAuthorizedIPRanges []iacTypes.StringValue
 	AddonProfile                AddonProfile
 	RoleBasedAccessControl      RoleBasedAccessControl
-	AzurePolicyEnabled          iacTypes.BoolValue
 	DiskEncryptionSetID         iacTypes.StringValue
 	AgentPools                  []AgentPool
 }
