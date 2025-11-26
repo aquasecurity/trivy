@@ -45,14 +45,11 @@ trivy [global flags] command [flags] target
 ### SEE ALSO
 
 * [trivy clean](trivy_clean.md)	 - Remove cached files
-* [trivy cloud](trivy_cloud.md)	 - Control Trivy Cloud platform integration settings
 * [trivy config](trivy_config.md)	 - Scan config files for misconfigurations
 * [trivy convert](trivy_convert.md)	 - Convert Trivy JSON report into a different format
 * [trivy filesystem](trivy_filesystem.md)	 - Scan local filesystem
 * [trivy image](trivy_image.md)	 - Scan a container image
 * [trivy kubernetes](trivy_kubernetes.md)	 - [EXPERIMENTAL] Scan kubernetes cluster
-* [trivy login](trivy_login.md)	 - Log in to the Trivy Cloud platform
-* [trivy logout](trivy_logout.md)	 - Log out of Trivy Cloud platform
 * [trivy module](trivy_module.md)	 - Manage modules
 * [trivy plugin](trivy_plugin.md)	 - Manage plugins
 * [trivy registry](trivy_registry.md)	 - Manage registry authentication
