@@ -174,3 +174,4 @@ Ansible scanning has several limitations and does not support the following:
 - Loops: `loop`, `with_<lookup>`, etc.
 - Patterns in a play’s hosts field
 - Host ranges in inventory, e.g., `www[01:50:2].example.com`
+- Only supports the following services: AWS S3. If you have other services or clouds that you would like to see support for, please open a discussion in the Trivy project.
