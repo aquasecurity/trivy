@@ -10,9 +10,9 @@ pkg/scanner/     @knqyf263 @DmitriyLewen
 # Misconfiguration scanning
 docs/guide/scanner/misconfiguration/  @simar7 @nikpivkin
 docs/guide/target/aws.md              @simar7 @nikpivkin
-pkg/fanal/analyzer/config/           @simar7 @nikpivkin
-pkg/cloud/                           @simar7 @nikpivkin
-pkg/iac/                             @simar7 @nikpivkin
+pkg/fanal/analyzer/config/            @simar7 @nikpivkin
+pkg/config/aws/                       @simar7 @nikpivkin
+pkg/iac/                              @simar7 @nikpivkin
 
 # Helm chart
 helm/trivy/ @afdesk @simar7
