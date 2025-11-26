@@ -233,6 +233,107 @@ func Test_Adapt(t *testing.T) {
 			},
 		},
 		{
+			name: "postgresql flexible server",
+			terraform: `
+			resource "azurerm_postgresql_flexible_server" "example" {
+				name                = "example-flexible"
+			  
+				public_network_access_enabled    = true
+				require_secure_transport         = true
+				tls_version                      = "TLS1_2"
+			  }
+
+			  resource "azurerm_postgresql_flexible_server_configuration" "example" {
+				name      = "log_connections"
+				server_id = azurerm_postgresql_flexible_server.example.id
+				value     = "on"
+			  }
+
+			  resource "azurerm_postgresql_flexible_server_configuration" "example2" {
+				name      = "log_checkpoints"
+				server_id = azurerm_postgresql_flexible_server.example.id
+				value     = "on"
+			  }
+
+			  resource "azurerm_postgresql_flexible_server_firewall_rule" "example" {
+				name             = "office"
+				server_id        = azurerm_postgresql_flexible_server.example.id
+				start_ip_address = "40.112.8.12"
+				end_ip_address   = "40.112.8.12"
+			  }
+`,
+			expected: database.Database{
+				PostgreSQLServers: []database.PostgreSQLServer{
+					{
+						Metadata: iacTypes.NewTestMetadata(),
+						Server: database.Server{
+							Metadata:                  iacTypes.NewTestMetadata(),
+							EnableSSLEnforcement:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							MinimumTLSVersion:         iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
+							EnablePublicNetworkAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							FirewallRules: []database.FirewallRule{
+								{
+									Metadata: iacTypes.NewTestMetadata(),
+									StartIP:  iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
+									EndIP:    iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
+								},
+							},
+						},
+						Config: database.PostgresSQLConfig{
+							Metadata:       iacTypes.NewTestMetadata(),
+							LogConnections: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							LogCheckpoints: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "mysql flexible server",
+			terraform: `
+			resource "azurerm_mysql_flexible_server" "example" {
+				name                = "example-flexible"
+			  
+				public_network_access_enabled = true
+				require_secure_transport      = true
+				tls_version                   = "TLS1_2"
+			  }
+
+			  resource "azurerm_mysql_flexible_server_firewall_rule" "example" {
+				name             = "office"
+				server_id        = azurerm_mysql_flexible_server.example.id
+				start_ip_address = "40.112.8.12"
+				end_ip_address   = "40.112.8.12"
+			  }
+
+			  resource "azurerm_mysql_flexible_server_configuration" "example" {
+				name      = "interactive_timeout"
+				server_id = azurerm_mysql_flexible_server.example.id
+				value     = "600"
+			  }
+			`,
+			expected: database.Database{
+				MySQLServers: []database.MySQLServer{
+					{
+						Metadata: iacTypes.NewTestMetadata(),
+						Server: database.Server{
+							Metadata:                  iacTypes.NewTestMetadata(),
+							EnableSSLEnforcement:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							MinimumTLSVersion:         iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
+							EnablePublicNetworkAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							FirewallRules: []database.FirewallRule{
+								{
+									Metadata: iacTypes.NewTestMetadata(),
+									StartIP:  iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
+									EndIP:    iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "ms sql",
 			terraform: `
 			resource "azurerm_mssql_server" "example" {

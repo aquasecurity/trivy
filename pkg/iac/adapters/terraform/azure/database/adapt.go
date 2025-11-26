@@ -17,7 +17,8 @@ func Adapt(modules terraform.Modules) database.Database {
 	}
 
 	mysqlAdapter := mysqlAdapter{
-		firewallIDs: modules.GetChildResourceIDMapByType("azurerm_mysql_firewall_rule"),
+		firewallIDs: modules.GetChildResourceIDMapByType("azurerm_mysql_firewall_rule", "azurerm_mysql_flexible_server_firewall_rule"),
+		configIDs:   modules.GetChildResourceIDMapByType("azurerm_mysql_flexible_server_configuration"),
 	}
 
 	mariaDBAdapter := mariaDBAdapter{
@@ -25,7 +26,8 @@ func Adapt(modules terraform.Modules) database.Database {
 	}
 
 	postgresqlAdapter := postgresqlAdapter{
-		firewallIDs: modules.GetChildResourceIDMapByType("azurerm_postgresql_firewall_rule"),
+		firewallIDs: modules.GetChildResourceIDMapByType("azurerm_postgresql_firewall_rule", "azurerm_postgresql_flexible_server_firewall_rule"),
+		configIDs:   modules.GetChildResourceIDMapByType("azurerm_postgresql_configuration", "azurerm_postgresql_flexible_server_configuration"),
 	}
 
 	return database.Database{
@@ -45,6 +47,7 @@ type mssqlAdapter struct {
 
 type mysqlAdapter struct {
 	firewallIDs terraform.ResourceIDResolutions
+	configIDs   terraform.ResourceIDResolutions
 }
 
 type mariaDBAdapter struct {
@@ -53,6 +56,7 @@ type mariaDBAdapter struct {
 
 type postgresqlAdapter struct {
 	firewallIDs terraform.ResourceIDResolutions
+	configIDs   terraform.ResourceIDResolutions
 }
 
 func (a *mssqlAdapter) adaptMSSQLServers(modules terraform.Modules) []database.MSSQLServer {
@@ -152,8 +156,13 @@ func (a *mssqlAdapter) adaptMSSQLServers(modules terraform.Modules) []database.M
 func (a *mysqlAdapter) adaptMySQLServers(modules terraform.Modules) []database.MySQLServer {
 	var mySQLServers []database.MySQLServer
 	for _, module := range modules {
+		// Support legacy azurerm_mysql_server
 		for _, resource := range module.GetResourcesByType("azurerm_mysql_server") {
 			mySQLServers = append(mySQLServers, a.adaptMySQLServer(resource, module))
+		}
+		// Support new azurerm_mysql_flexible_server
+		for _, resource := range module.GetResourcesByType("azurerm_mysql_flexible_server") {
+			mySQLServers = append(mySQLServers, a.adaptMySQLFlexibleServer(resource, module))
 		}
 	}
 
@@ -214,8 +223,13 @@ func (a *mariaDBAdapter) adaptMariaDBServers(modules terraform.Modules) []databa
 func (a *postgresqlAdapter) adaptPostgreSQLServers(modules terraform.Modules) []database.PostgreSQLServer {
 	var postgreSQLServers []database.PostgreSQLServer
 	for _, module := range modules {
+		// Support legacy azurerm_postgresql_server
 		for _, resource := range module.GetResourcesByType("azurerm_postgresql_server") {
 			postgreSQLServers = append(postgreSQLServers, a.adaptPostgreSQLServer(resource, module))
+		}
+		// Support new azurerm_postgresql_flexible_server
+		for _, resource := range module.GetResourcesByType("azurerm_postgresql_flexible_server") {
+			postgreSQLServers = append(postgreSQLServers, a.adaptPostgreSQLFlexibleServer(resource, module))
 		}
 	}
 
@@ -249,6 +263,28 @@ func (a *postgresqlAdapter) adaptPostgreSQLServers(modules terraform.Modules) []
 		}
 		postgreSQLServers = append(postgreSQLServers, orphanage)
 
+	}
+
+	// Handle orphan PostgreSQL configurations
+	orphanConfigResources := modules.GetResourceByIDs(a.configIDs.Orphans()...)
+	if len(orphanConfigResources) > 0 {
+		orphanage := database.PostgreSQLServer{
+			Metadata: iacTypes.NewUnmanagedMetadata(),
+			Server: database.Server{
+				Metadata:                  iacTypes.NewUnmanagedMetadata(),
+				EnableSSLEnforcement:      iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+				MinimumTLSVersion:         iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+				EnablePublicNetworkAccess: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+				FirewallRules:             nil,
+			},
+			Config:                    adaptPostgreSQLConfig(nil, orphanConfigResources),
+			GeoRedundantBackupEnabled: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+			ThreatDetectionPolicy: database.ThreatDetectionPolicy{
+				Metadata: iacTypes.NewUnmanagedMetadata(),
+				Enabled:  iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+			},
+		}
+		postgreSQLServers = append(postgreSQLServers, orphanage)
 	}
 
 	return postgreSQLServers
@@ -357,6 +393,49 @@ func (a *mysqlAdapter) adaptMySQLServer(resource *terraform.Block, module *terra
 	}
 }
 
+func (a *mysqlAdapter) adaptMySQLFlexibleServer(resource *terraform.Block, module *terraform.Module) database.MySQLServer {
+	var firewallRules []database.FirewallRule
+
+	// Flexible server may use different attribute names
+	// Try both require_secure_transport and ssl_enforcement_enabled for compatibility
+	enableSSLEnforcementVal := resource.GetFirstAttributeOf("require_secure_transport", "ssl_enforcement_enabled").
+		AsBoolValueOrDefault(false, resource)
+
+	// Flexible servers may use tls_version instead of ssl_minimal_tls_version_enforced
+	// Check both possible attribute names
+	minTLSVersionVal := resource.GetFirstAttributeOf("tls_version", "ssl_minimal_tls_version_enforced").
+		AsStringValueOrDefault("TLS1_2", resource)
+
+	publicAccessAttr := resource.GetAttribute("public_network_access_enabled")
+	publicAccessVal := publicAccessAttr.AsBoolValueOrDefault(true, resource)
+
+	// Flexible server firewall rules use server_id instead of server_name
+	firewallRuleBlocks := module.GetReferencingResources(resource, "azurerm_mysql_flexible_server_firewall_rule", "server_id")
+	for _, firewallBlock := range firewallRuleBlocks {
+		a.firewallIDs.Resolve(firewallBlock.ID())
+		firewallRules = append(firewallRules, adaptFirewallRule(firewallBlock))
+	}
+
+	// MySQL Flexible Server configurations (new standalone resource)
+	configBlocks := module.GetReferencingResources(resource, "azurerm_mysql_flexible_server_configuration", "server_id")
+	// Note: MySQL flexible server configurations are parsed but not stored in the current database.MySQLServer type
+	// They are tracked to avoid orphan detection
+	for _, configBlock := range configBlocks {
+		a.configIDs.Resolve(configBlock.ID())
+	}
+
+	return database.MySQLServer{
+		Metadata: resource.GetMetadata(),
+		Server: database.Server{
+			Metadata:                  resource.GetMetadata(),
+			EnableSSLEnforcement:      enableSSLEnforcementVal,
+			MinimumTLSVersion:         minTLSVersionVal,
+			EnablePublicNetworkAccess: publicAccessVal,
+			FirewallRules:             firewallRules,
+		},
+	}
+}
+
 func (a *mariaDBAdapter) adaptMariaDBServer(resource *terraform.Block, module *terraform.Module) database.MariaDBServer {
 	var firewallRules []database.FirewallRule
 
@@ -391,6 +470,9 @@ func (a *postgresqlAdapter) adaptPostgreSQLServer(resource *terraform.Block, mod
 
 	configBlocks := module.GetReferencingResources(resource, "azurerm_postgresql_configuration", "server_name")
 	config := adaptPostgreSQLConfig(resource, configBlocks)
+	for _, configBlock := range configBlocks {
+		a.configIDs.Resolve(configBlock.ID())
+	}
 
 	threatDetectionBlock := resource.GetBlock("threat_detection_policy")
 	threatDetectionPolicy := adaptThreatDetectionPolicy(threatDetectionBlock, resource.GetMetadata())
@@ -414,13 +496,67 @@ func (a *postgresqlAdapter) adaptPostgreSQLServer(resource *terraform.Block, mod
 	}
 }
 
+func (a *postgresqlAdapter) adaptPostgreSQLFlexibleServer(resource *terraform.Block, module *terraform.Module) database.PostgreSQLServer {
+	var firewallRules []database.FirewallRule
+
+	// Flexible server firewall rules use server_id instead of server_name
+	firewallRuleBlocks := module.GetReferencingResources(resource, "azurerm_postgresql_flexible_server_firewall_rule", "server_id")
+	for _, firewallBlock := range firewallRuleBlocks {
+		a.firewallIDs.Resolve(firewallBlock.ID())
+		firewallRules = append(firewallRules, adaptFirewallRule(firewallBlock))
+	}
+
+	// Flexible server configurations use server_id instead of server_name
+	configBlocks := module.GetReferencingResources(resource, "azurerm_postgresql_flexible_server_configuration", "server_id")
+	config := adaptPostgreSQLConfig(resource, configBlocks)
+	for _, configBlock := range configBlocks {
+		a.configIDs.Resolve(configBlock.ID())
+	}
+
+	threatDetectionBlock := resource.GetBlock("threat_detection_policy")
+	threatDetectionPolicy := adaptThreatDetectionPolicy(threatDetectionBlock, resource.GetMetadata())
+
+	// Flexible servers may use require_secure_transport instead of ssl_enforcement_enabled
+	// Try both attribute names for backward compatibility
+	enableSSLEnforcementVal := resource.GetFirstAttributeOf("require_secure_transport", "ssl_enforcement_enabled").
+		AsBoolValueOrDefault(false, resource)
+
+	// Flexible servers may use different attribute names for TLS version
+	// Check both possible attribute names
+	minTLSVersionVal := resource.GetFirstAttributeOf("tls_version", "ssl_minimal_tls_version_enforced").
+		AsStringValueOrDefault("TLS1_2", resource)
+
+	return database.PostgreSQLServer{
+		Metadata: resource.GetMetadata(),
+		Server: database.Server{
+			Metadata:             resource.GetMetadata(),
+			EnableSSLEnforcement: enableSSLEnforcementVal,
+			MinimumTLSVersion:    minTLSVersionVal,
+			EnablePublicNetworkAccess: resource.GetAttribute("public_network_access_enabled").
+				AsBoolValueOrDefault(true, resource),
+			FirewallRules: firewallRules,
+		},
+		Config: config,
+		GeoRedundantBackupEnabled: resource.GetAttribute("geo_redundant_backup_enabled").
+			AsBoolValueOrDefault(false, resource),
+		ThreatDetectionPolicy: threatDetectionPolicy,
+	}
+}
+
 func adaptPostgreSQLConfig(resource *terraform.Block, configBlocks []*terraform.Block) database.PostgresSQLConfig {
+	var defaultMetadata iacTypes.Metadata
+	if resource != nil {
+		defaultMetadata = resource.GetMetadata()
+	} else {
+		defaultMetadata = iacTypes.NewUnmanagedMetadata()
+	}
+
 	config := database.PostgresSQLConfig{
-		Metadata:             resource.GetMetadata(),
-		LogCheckpoints:       iacTypes.BoolDefault(false, resource.GetMetadata()),
-		ConnectionThrottling: iacTypes.BoolDefault(false, resource.GetMetadata()),
-		LogConnections:       iacTypes.BoolDefault(false, resource.GetMetadata()),
-		LogDisconnections:    iacTypes.BoolDefault(false, resource.GetMetadata()),
+		Metadata:             defaultMetadata,
+		LogCheckpoints:       iacTypes.BoolDefault(false, defaultMetadata),
+		ConnectionThrottling: iacTypes.BoolDefault(false, defaultMetadata),
+		LogConnections:       iacTypes.BoolDefault(false, defaultMetadata),
+		LogDisconnections:    iacTypes.BoolDefault(false, defaultMetadata),
 	}
 
 	for _, configBlock := range configBlocks {
