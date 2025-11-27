@@ -48,31 +48,20 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: container.KubernetesCluster{
-				Metadata: iacTypes.NewTestMetadata(),
 				NetworkProfile: container.NetworkProfile{
-					Metadata:      iacTypes.NewTestMetadata(),
-					NetworkPolicy: iacTypes.String("calico", iacTypes.NewTestMetadata()),
+					NetworkPolicy: iacTypes.StringTest("calico"),
 				},
-				EnablePrivateCluster: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				EnablePrivateCluster: iacTypes.BoolTest(true),
 				APIServerAuthorizedIPRanges: []iacTypes.StringValue{
-					iacTypes.String("1.2.3.4/32", iacTypes.NewTestMetadata()),
+					iacTypes.StringTest("1.2.3.4/32"),
 				},
-				AzurePolicyEnabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				DiskEncryptionSetID: iacTypes.String("", iacTypes.NewTestMetadata()),
 				AddonProfile: container.AddonProfile{
-					Metadata: iacTypes.NewTestMetadata(),
 					OMSAgent: container.OMSAgent{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					},
-					AzurePolicy: container.AzurePolicy{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						Enabled: iacTypes.BoolTest(true),
 					},
 				},
 				RoleBasedAccessControl: container.RoleBasedAccessControl{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					Enabled: iacTypes.BoolTest(true),
 				},
 			},
 		},
@@ -84,28 +73,9 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: container.KubernetesCluster{
-				Metadata: iacTypes.NewTestMetadata(),
-				NetworkProfile: container.NetworkProfile{
-					Metadata:      iacTypes.NewTestMetadata(),
-					NetworkPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
-				},
-				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				AzurePolicyEnabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				DiskEncryptionSetID:  iacTypes.String("", iacTypes.NewTestMetadata()),
-				AddonProfile: container.AddonProfile{
-					Metadata: iacTypes.NewTestMetadata(),
-					OMSAgent: container.OMSAgent{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
-					AzurePolicy: container.AzurePolicy{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
-				},
+				AddonProfile: container.AddonProfile{},
 				RoleBasedAccessControl: container.RoleBasedAccessControl{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					Enabled: iacTypes.BoolTest(true),
 				},
 			},
 		},
@@ -115,31 +85,7 @@ func Test_adaptCluster(t *testing.T) {
 			resource "azurerm_kubernetes_cluster" "example" {
 			}
 `,
-			expected: container.KubernetesCluster{
-				Metadata: iacTypes.NewTestMetadata(),
-				NetworkProfile: container.NetworkProfile{
-					Metadata:      iacTypes.NewTestMetadata(),
-					NetworkPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
-				},
-				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				AzurePolicyEnabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				DiskEncryptionSetID:  iacTypes.String("", iacTypes.NewTestMetadata()),
-				AddonProfile: container.AddonProfile{
-					Metadata: iacTypes.NewTestMetadata(),
-					OMSAgent: container.OMSAgent{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
-					AzurePolicy: container.AzurePolicy{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
-				},
-				RoleBasedAccessControl: container.RoleBasedAccessControl{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				},
-			},
+			expected: container.KubernetesCluster{},
 		},
 		{
 			name: "rbac off with k8s rbac on",
@@ -153,28 +99,8 @@ resource "azurerm_kubernetes_cluster" "misreporting_example" {
  }
 `,
 			expected: container.KubernetesCluster{
-				Metadata: iacTypes.NewTestMetadata(),
-				NetworkProfile: container.NetworkProfile{
-					Metadata:      iacTypes.NewTestMetadata(),
-					NetworkPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
-				},
-				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				AzurePolicyEnabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				DiskEncryptionSetID:  iacTypes.String("", iacTypes.NewTestMetadata()),
-				AddonProfile: container.AddonProfile{
-					Metadata: iacTypes.NewTestMetadata(),
-					OMSAgent: container.OMSAgent{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
-					AzurePolicy: container.AzurePolicy{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
-				},
 				RoleBasedAccessControl: container.RoleBasedAccessControl{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					Enabled: iacTypes.BoolTest(true),
 				},
 			},
 		},
@@ -186,28 +112,10 @@ resource "azurerm_kubernetes_cluster" "misreporting_example" {
 			}
 `,
 			expected: container.KubernetesCluster{
-				Metadata: iacTypes.NewTestMetadata(),
-				NetworkProfile: container.NetworkProfile{
-					Metadata:      iacTypes.NewTestMetadata(),
-					NetworkPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
-				},
-				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				AzurePolicyEnabled:   iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				DiskEncryptionSetID:  iacTypes.String("", iacTypes.NewTestMetadata()),
 				AddonProfile: container.AddonProfile{
-					Metadata: iacTypes.NewTestMetadata(),
-					OMSAgent: container.OMSAgent{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
 					AzurePolicy: container.AzurePolicy{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						Enabled: iacTypes.BoolTest(true),
 					},
-				},
-				RoleBasedAccessControl: container.RoleBasedAccessControl{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -223,28 +131,10 @@ resource "azurerm_kubernetes_cluster" "misreporting_example" {
 			}
 `,
 			expected: container.KubernetesCluster{
-				Metadata: iacTypes.NewTestMetadata(),
-				NetworkProfile: container.NetworkProfile{
-					Metadata:      iacTypes.NewTestMetadata(),
-					NetworkPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
-				},
-				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				AzurePolicyEnabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				DiskEncryptionSetID:  iacTypes.String("", iacTypes.NewTestMetadata()),
 				AddonProfile: container.AddonProfile{
-					Metadata: iacTypes.NewTestMetadata(),
-					OMSAgent: container.OMSAgent{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
 					AzurePolicy: container.AzurePolicy{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						Enabled: iacTypes.BoolTest(true),
 					},
-				},
-				RoleBasedAccessControl: container.RoleBasedAccessControl{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -252,33 +142,11 @@ resource "azurerm_kubernetes_cluster" "misreporting_example" {
 			name: "disk encryption set defined",
 			terraform: `
 			resource "azurerm_kubernetes_cluster" "example" {
-				disk_encryption_set_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.Compute/diskEncryptionSets/example-des"
+				disk_encryption_set_id = "test-id"
 			}
 `,
 			expected: container.KubernetesCluster{
-				Metadata: iacTypes.NewTestMetadata(),
-				NetworkProfile: container.NetworkProfile{
-					Metadata:      iacTypes.NewTestMetadata(),
-					NetworkPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
-				},
-				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				AzurePolicyEnabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				DiskEncryptionSetID:  iacTypes.String("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.Compute/diskEncryptionSets/example-des", iacTypes.NewTestMetadata()),
-				AddonProfile: container.AddonProfile{
-					Metadata: iacTypes.NewTestMetadata(),
-					OMSAgent: container.OMSAgent{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
-					AzurePolicy: container.AzurePolicy{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
-				},
-				RoleBasedAccessControl: container.RoleBasedAccessControl{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				},
+				DiskEncryptionSetID: iacTypes.StringTest("test-id"),
 			},
 		},
 		{
@@ -290,40 +158,16 @@ resource "azurerm_kubernetes_cluster" "misreporting_example" {
 					node_count = 1
 					vm_size = "Standard_DS2_v2"
 					type = "VirtualMachineScaleSets"
-					disk_encryption_set_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.Compute/diskEncryptionSets/node-pool-des"
+					disk_encryption_set_id = "test-id"
 				}
 			}
 `,
 			expected: container.KubernetesCluster{
-				Metadata: iacTypes.NewTestMetadata(),
-				NetworkProfile: container.NetworkProfile{
-					Metadata:      iacTypes.NewTestMetadata(),
-					NetworkPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
-				},
-				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				AzurePolicyEnabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				DiskEncryptionSetID:  iacTypes.String("", iacTypes.NewTestMetadata()),
 				AgentPools: []container.AgentPool{
 					{
-						Metadata:            iacTypes.NewTestMetadata(),
-						DiskEncryptionSetID: iacTypes.String("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.Compute/diskEncryptionSets/node-pool-des", iacTypes.NewTestMetadata()),
-						NodeType:            iacTypes.String("VirtualMachineScaleSets", iacTypes.NewTestMetadata()),
+						DiskEncryptionSetID: iacTypes.StringTest("test-id"),
+						NodeType:            iacTypes.StringTest("VirtualMachineScaleSets"),
 					},
-				},
-				AddonProfile: container.AddonProfile{
-					Metadata: iacTypes.NewTestMetadata(),
-					OMSAgent: container.OMSAgent{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
-					AzurePolicy: container.AzurePolicy{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
-				},
-				RoleBasedAccessControl: container.RoleBasedAccessControl{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				},
 			},
 		},
