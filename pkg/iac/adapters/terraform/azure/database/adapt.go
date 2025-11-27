@@ -333,14 +333,14 @@ func (a *mssqlAdapter) adaptMSSQLServer(resource *terraform.Block, module *terra
 		firewallRules = append(firewallRules, adaptFirewallRule(firewallBlock))
 	}
 
-	// Support for new azuread_administrator block (azurerm provider v3+)
+	// Support for deprecated azuread_administrator block (backward compatibility)
 	var adAdmins []database.ActiveDirectoryAdministrator
 	azureadAdminBlock := resource.GetBlock("azuread_administrator")
 	if azureadAdminBlock.IsNotNil() {
 		adAdmins = append(adAdmins, adaptAzureADAdministratorBlock(azureadAdminBlock))
 	}
 
-	// Support for deprecated azurerm_sql_active_directory_administrator resource (backward compatibility)
+	// Support for azurerm_sql_active_directory_administrator resource (preferred method)
 	adAdminBlocks := module.GetReferencingResources(resource, "azurerm_sql_active_directory_administrator", "server_name")
 	for _, adAdminBlock := range adAdminBlocks {
 		a.adAdminIDs.Resolve(adAdminBlock.ID())
