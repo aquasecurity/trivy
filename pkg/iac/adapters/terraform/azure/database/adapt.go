@@ -528,8 +528,10 @@ func (a *postgresqlAdapter) adaptPostgreSQLFlexibleServer(resource *terraform.Bl
 		a.configIDs.Resolve(configBlock.ID())
 	}
 
+	// Threat Detection is not configurable via Terraform for PostgreSQL Flexible Server
+	// It can only be configured via Azure CLI, so we mark it as unmanaged to avoid false positives
 	threatDetectionBlock := resource.GetBlock("threat_detection_policy")
-	threatDetectionPolicy := adaptThreatDetectionPolicy(threatDetectionBlock, resource.GetMetadata())
+	threatDetectionPolicy := adaptThreatDetectionPolicy(threatDetectionBlock, iacTypes.NewUnmanagedMetadata())
 
 	// Flexible servers may use require_secure_transport instead of ssl_enforcement_enabled
 	// Try both attribute names for backward compatibility

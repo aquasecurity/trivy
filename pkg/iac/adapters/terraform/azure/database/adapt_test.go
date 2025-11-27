@@ -284,6 +284,12 @@ func Test_Adapt(t *testing.T) {
 							LogConnections: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 							LogCheckpoints: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						},
+						// Threat Detection is not configurable via Terraform for PostgreSQL Flexible Server
+						// It can only be configured via Azure CLI, so it's marked as unmanaged
+						ThreatDetectionPolicy: database.ThreatDetectionPolicy{
+							Metadata: iacTypes.NewUnmanagedMetadata(),
+							Enabled:  iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+						},
 					},
 				},
 			},
