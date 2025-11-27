@@ -396,16 +396,6 @@ func (a *mysqlAdapter) adaptMySQLServer(resource *terraform.Block, module *terra
 func (a *mysqlAdapter) adaptMySQLFlexibleServer(resource *terraform.Block, module *terraform.Module) database.MySQLServer {
 	var firewallRules []database.FirewallRule
 
-	// Flexible server may use different attribute names
-	// Try both require_secure_transport and ssl_enforcement_enabled for compatibility
-	enableSSLEnforcementVal := resource.GetFirstAttributeOf("require_secure_transport", "ssl_enforcement_enabled").
-		AsBoolValueOrDefault(false, resource)
-
-	// Flexible servers may use tls_version instead of ssl_minimal_tls_version_enforced
-	// Check both possible attribute names
-	minTLSVersionVal := resource.GetFirstAttributeOf("tls_version", "ssl_minimal_tls_version_enforced").
-		AsStringValueOrDefault("TLS1_2", resource)
-
 	publicAccessAttr := resource.GetAttribute("public_network_access_enabled")
 	publicAccessVal := publicAccessAttr.AsBoolValueOrDefault(true, resource)
 
@@ -417,11 +407,36 @@ func (a *mysqlAdapter) adaptMySQLFlexibleServer(resource *terraform.Block, modul
 	}
 
 	// MySQL Flexible Server configurations (new standalone resource)
+	// TLS settings are configured through azurerm_mysql_flexible_server_configuration resources
+	// Each configuration resource manages a single parameter specified in the name attribute
+	// By default, the server enforces secure connections using TLS 1.2
 	configBlocks := module.GetReferencingResources(resource, "azurerm_mysql_flexible_server_configuration", "server_id")
-	// Note: MySQL flexible server configurations are parsed but not stored in the current database.MySQLServer type
-	// They are tracked to avoid orphan detection
+	
+	// Default values: TLS 1.2 is enforced by default, SSL enforcement defaults to false if not configured
+	enableSSLEnforcementVal := iacTypes.BoolDefault(false, resource.GetMetadata())
+	minTLSVersionVal := iacTypes.StringDefault("TLS1_2", resource.GetMetadata())
+
+	// Extract TLS settings from configuration resources
 	for _, configBlock := range configBlocks {
 		a.configIDs.Resolve(configBlock.ID())
+		
+		nameAttr := configBlock.GetAttribute("name")
+		valAttr := configBlock.GetAttribute("value")
+		
+		// Check for require_secure_transport configuration
+		if nameAttr.Equals("require_secure_transport") {
+			// Value can be "ON"/"OFF" or "1"/"0" or boolean strings
+			valStr := valAttr.AsStringValueOrDefault("", configBlock).Value()
+			enableSSLEnforcementVal = iacTypes.Bool(
+				valStr == "ON" || valStr == "1" || valStr == "true" || valStr == "True",
+				valAttr.GetMetadata(),
+			)
+		}
+		
+		// Check for tls_version configuration
+		if nameAttr.Equals("tls_version") {
+			minTLSVersionVal = valAttr.AsStringValueOrDefault("TLS1_2", configBlock)
+		}
 	}
 
 	return database.MySQLServer{

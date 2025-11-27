@@ -295,8 +295,6 @@ func Test_Adapt(t *testing.T) {
 				name                = "example-flexible"
 			  
 				public_network_access_enabled = true
-				require_secure_transport      = true
-				tls_version                   = "TLS1_2"
 			  }
 
 			  resource "azurerm_mysql_flexible_server_firewall_rule" "example" {
@@ -306,10 +304,71 @@ func Test_Adapt(t *testing.T) {
 				end_ip_address   = "40.112.8.12"
 			  }
 
-			  resource "azurerm_mysql_flexible_server_configuration" "example" {
+			  resource "azurerm_mysql_flexible_server_configuration" "require_secure_transport" {
+				name      = "require_secure_transport"
+				server_id = azurerm_mysql_flexible_server.example.id
+				value     = "ON"
+			  }
+
+			  resource "azurerm_mysql_flexible_server_configuration" "tls_version" {
+				name      = "tls_version"
+				server_id = azurerm_mysql_flexible_server.example.id
+				value     = "TLS1_2"
+			  }
+
+			  resource "azurerm_mysql_flexible_server_configuration" "interactive_timeout" {
 				name      = "interactive_timeout"
 				server_id = azurerm_mysql_flexible_server.example.id
 				value     = "600"
+			  }
+			`,
+			expected: database.Database{
+				MySQLServers: []database.MySQLServer{
+					{
+						Metadata: iacTypes.NewTestMetadata(),
+						Server: database.Server{
+							Metadata:                  iacTypes.NewTestMetadata(),
+							EnableSSLEnforcement:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							MinimumTLSVersion:         iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
+							EnablePublicNetworkAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							FirewallRules: []database.FirewallRule{
+								{
+									Metadata: iacTypes.NewTestMetadata(),
+									StartIP:  iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
+									EndIP:    iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "mysql flexible server with configuration resources",
+			terraform: `
+			resource "azurerm_mysql_flexible_server" "example" {
+				name                = "example-flexible"
+			  
+				public_network_access_enabled = true
+			  }
+
+			  resource "azurerm_mysql_flexible_server_firewall_rule" "example" {
+				name             = "office"
+				server_id        = azurerm_mysql_flexible_server.example.id
+				start_ip_address = "40.112.8.12"
+				end_ip_address   = "40.112.8.12"
+			  }
+
+			  resource "azurerm_mysql_flexible_server_configuration" "require_secure_transport" {
+				name      = "require_secure_transport"
+				server_id = azurerm_mysql_flexible_server.example.id
+				value     = "ON"
+			  }
+
+			  resource "azurerm_mysql_flexible_server_configuration" "tls_version" {
+				name      = "tls_version"
+				server_id = azurerm_mysql_flexible_server.example.id
+				value     = "TLS1_2"
 			  }
 			`,
 			expected: database.Database{
