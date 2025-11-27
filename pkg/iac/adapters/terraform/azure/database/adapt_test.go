@@ -61,25 +61,21 @@ func Test_Adapt(t *testing.T) {
 			expected: database.Database{
 				PostgreSQLServers: []database.PostgreSQLServer{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Server: database.Server{
-							Metadata:                  iacTypes.NewTestMetadata(),
-							EnableSSLEnforcement:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							MinimumTLSVersion:         iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
-							EnablePublicNetworkAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							EnableSSLEnforcement:      iacTypes.BoolTest(true),
+							MinimumTLSVersion:         iacTypes.StringTest("TLS1_2"),
+							EnablePublicNetworkAccess: iacTypes.BoolTest(true),
 							FirewallRules: []database.FirewallRule{
 								{
-									Metadata: iacTypes.NewTestMetadata(),
-									StartIP:  iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
-									EndIP:    iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
+									StartIP: iacTypes.StringTest("40.112.8.12"),
+									EndIP:   iacTypes.StringTest("40.112.8.12"),
 								},
 							},
 						},
 						Config: database.PostgresSQLConfig{
-							Metadata:             iacTypes.NewTestMetadata(),
-							LogConnections:       iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							LogCheckpoints:       iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							ConnectionThrottling: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							LogConnections:       iacTypes.BoolTest(true),
+							LogCheckpoints:       iacTypes.BoolTest(true),
+							ConnectionThrottling: iacTypes.BoolTest(true),
 						},
 					},
 				},
@@ -104,17 +100,14 @@ func Test_Adapt(t *testing.T) {
 			expected: database.Database{
 				PostgreSQLServers: []database.PostgreSQLServer{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Server: database.Server{
-							Metadata:                  iacTypes.NewTestMetadata(),
-							EnableSSLEnforcement:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							MinimumTLSVersion:         iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
-							EnablePublicNetworkAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							EnableSSLEnforcement:      iacTypes.BoolTest(true),
+							MinimumTLSVersion:         iacTypes.StringTest("TLS1_2"),
+							EnablePublicNetworkAccess: iacTypes.BoolTest(true),
 						},
-						GeoRedundantBackupEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						GeoRedundantBackupEnabled: iacTypes.BoolTest(true),
 						ThreatDetectionPolicy: database.ThreatDetectionPolicy{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(true),
 						},
 					},
 				},
@@ -141,16 +134,13 @@ func Test_Adapt(t *testing.T) {
 			expected: database.Database{
 				PostgreSQLServers: []database.PostgreSQLServer{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Server: database.Server{
-							Metadata:                  iacTypes.NewTestMetadata(),
-							EnableSSLEnforcement:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							MinimumTLSVersion:         iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
-							EnablePublicNetworkAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							EnableSSLEnforcement:      iacTypes.BoolTest(true),
+							MinimumTLSVersion:         iacTypes.StringTest("TLS1_2"),
+							EnablePublicNetworkAccess: iacTypes.BoolTest(true),
 						},
 						Config: database.PostgresSQLConfig{
-							Metadata:          iacTypes.NewTestMetadata(),
-							LogDisconnections: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							LogDisconnections: iacTypes.BoolTest(true),
 						},
 					},
 				},
@@ -178,17 +168,12 @@ func Test_Adapt(t *testing.T) {
 			expected: database.Database{
 				MariaDBServers: []database.MariaDBServer{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Server: database.Server{
-							Metadata:                  iacTypes.NewTestMetadata(),
-							EnableSSLEnforcement:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							MinimumTLSVersion:         iacTypes.String("", iacTypes.NewTestMetadata()),
-							EnablePublicNetworkAccess: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							EnableSSLEnforcement: iacTypes.BoolTest(true),
 							FirewallRules: []database.FirewallRule{
 								{
-									Metadata: iacTypes.NewTestMetadata(),
-									StartIP:  iacTypes.String("40.112.0.0", iacTypes.NewTestMetadata()),
-									EndIP:    iacTypes.String("40.112.255.255", iacTypes.NewTestMetadata()),
+									StartIP: iacTypes.StringTest("40.112.0.0"),
+									EndIP:   iacTypes.StringTest("40.112.255.255"),
 								},
 							},
 						},
@@ -214,17 +199,14 @@ func Test_Adapt(t *testing.T) {
 			expected: database.Database{
 				MySQLServers: []database.MySQLServer{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Server: database.Server{
-							Metadata:                  iacTypes.NewTestMetadata(),
-							EnableSSLEnforcement:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							MinimumTLSVersion:         iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
-							EnablePublicNetworkAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							EnableSSLEnforcement:      iacTypes.BoolTest(true),
+							MinimumTLSVersion:         iacTypes.StringTest("TLS1_2"),
+							EnablePublicNetworkAccess: iacTypes.BoolTest(true),
 							FirewallRules: []database.FirewallRule{
 								{
-									Metadata: iacTypes.NewTestMetadata(),
-									StartIP:  iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
-									EndIP:    iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
+									StartIP: iacTypes.StringTest("40.112.8.12"),
+									EndIP:   iacTypes.StringTest("40.112.8.12"),
 								},
 							},
 						},
@@ -275,31 +257,24 @@ func Test_Adapt(t *testing.T) {
 			expected: database.Database{
 				PostgreSQLServers: []database.PostgreSQLServer{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Server: database.Server{
-							Metadata:                  iacTypes.NewTestMetadata(),
-							EnableSSLEnforcement:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							MinimumTLSVersion:         iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
-							EnablePublicNetworkAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							EnableSSLEnforcement:      iacTypes.BoolTest(true),
+							MinimumTLSVersion:         iacTypes.StringTest("TLS1_2"),
+							EnablePublicNetworkAccess: iacTypes.BoolTest(true),
 							FirewallRules: []database.FirewallRule{
 								{
-									Metadata: iacTypes.NewTestMetadata(),
-									StartIP:  iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
-									EndIP:    iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
+									StartIP: iacTypes.StringTest("40.112.8.12"),
+									EndIP:   iacTypes.StringTest("40.112.8.12"),
 								},
 							},
 						},
 						Config: database.PostgresSQLConfig{
-							Metadata:       iacTypes.NewTestMetadata(),
-							LogConnections: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							LogCheckpoints: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							LogConnections: iacTypes.BoolTest(true),
+							LogCheckpoints: iacTypes.BoolTest(true),
 						},
 						// Threat Detection is not configurable via Terraform for PostgreSQL Flexible Server
 						// It can only be configured via Azure CLI, so it's marked as unmanaged
-						ThreatDetectionPolicy: database.ThreatDetectionPolicy{
-							Metadata: iacTypes.NewUnmanagedMetadata(),
-							Enabled:  iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
-						},
+						ThreatDetectionPolicy: database.ThreatDetectionPolicy{},
 					},
 				},
 			},
@@ -335,29 +310,21 @@ func Test_Adapt(t *testing.T) {
 			expected: database.Database{
 				PostgreSQLServers: []database.PostgreSQLServer{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Server: database.Server{
-							Metadata:                  iacTypes.NewTestMetadata(),
-							EnableSSLEnforcement:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							MinimumTLSVersion:         iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
-							EnablePublicNetworkAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							EnableSSLEnforcement:      iacTypes.BoolTest(true),
+							MinimumTLSVersion:         iacTypes.StringTest("TLS1_2"),
+							EnablePublicNetworkAccess: iacTypes.BoolTest(true),
 							FirewallRules: []database.FirewallRule{
 								{
-									Metadata: iacTypes.NewTestMetadata(),
-									StartIP:  iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
-									EndIP:    iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
+									StartIP: iacTypes.StringTest("40.112.8.12"),
+									EndIP:   iacTypes.StringTest("40.112.8.12"),
 								},
 							},
 						},
-						Config: database.PostgresSQLConfig{
-							Metadata: iacTypes.NewTestMetadata(),
-						},
+						Config: database.PostgresSQLConfig{},
 						// Threat Detection is not configurable via Terraform for PostgreSQL Flexible Server
 						// It can only be configured via Azure CLI, so it's marked as unmanaged
-						ThreatDetectionPolicy: database.ThreatDetectionPolicy{
-							Metadata: iacTypes.NewUnmanagedMetadata(),
-							Enabled:  iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
-						},
+						ThreatDetectionPolicy: database.ThreatDetectionPolicy{},
 					},
 				},
 			},
@@ -399,17 +366,14 @@ func Test_Adapt(t *testing.T) {
 			expected: database.Database{
 				MySQLServers: []database.MySQLServer{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Server: database.Server{
-							Metadata:                  iacTypes.NewTestMetadata(),
-							EnableSSLEnforcement:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							MinimumTLSVersion:         iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
-							EnablePublicNetworkAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							EnableSSLEnforcement:      iacTypes.BoolTest(true),
+							MinimumTLSVersion:         iacTypes.StringTest("TLS1_2"),
+							EnablePublicNetworkAccess: iacTypes.BoolTest(true),
 							FirewallRules: []database.FirewallRule{
 								{
-									Metadata: iacTypes.NewTestMetadata(),
-									StartIP:  iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
-									EndIP:    iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
+									StartIP: iacTypes.StringTest("40.112.8.12"),
+									EndIP:   iacTypes.StringTest("40.112.8.12"),
 								},
 							},
 						},
@@ -448,17 +412,14 @@ func Test_Adapt(t *testing.T) {
 			expected: database.Database{
 				MySQLServers: []database.MySQLServer{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Server: database.Server{
-							Metadata:                  iacTypes.NewTestMetadata(),
-							EnableSSLEnforcement:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							MinimumTLSVersion:         iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
-							EnablePublicNetworkAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							EnableSSLEnforcement:      iacTypes.BoolTest(true),
+							MinimumTLSVersion:         iacTypes.StringTest("TLS1_2"),
+							EnablePublicNetworkAccess: iacTypes.BoolTest(true),
 							FirewallRules: []database.FirewallRule{
 								{
-									Metadata: iacTypes.NewTestMetadata(),
-									StartIP:  iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
-									EndIP:    iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
+									StartIP: iacTypes.StringTest("40.112.8.12"),
+									EndIP:   iacTypes.StringTest("40.112.8.12"),
 								},
 							},
 						},
@@ -503,37 +464,30 @@ func Test_Adapt(t *testing.T) {
 			expected: database.Database{
 				MSSQLServers: []database.MSSQLServer{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Server: database.Server{
-							Metadata:                  iacTypes.NewTestMetadata(),
-							MinimumTLSVersion:         iacTypes.String("1.2", iacTypes.NewTestMetadata()),
-							EnablePublicNetworkAccess: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							EnableSSLEnforcement:      iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							MinimumTLSVersion: iacTypes.StringTest("1.2"),
 							FirewallRules: []database.FirewallRule{
 								{
-									Metadata: iacTypes.NewTestMetadata(),
-									StartIP:  iacTypes.String("10.0.17.62", iacTypes.NewTestMetadata()),
-									EndIP:    iacTypes.String("10.0.17.62", iacTypes.NewTestMetadata()),
+									StartIP: iacTypes.StringTest("10.0.17.62"),
+									EndIP:   iacTypes.StringTest("10.0.17.62"),
 								},
 							},
 						},
 						ExtendedAuditingPolicies: []database.ExtendedAuditingPolicy{
 							{
-								Metadata:        iacTypes.NewTestMetadata(),
-								RetentionInDays: iacTypes.Int(6, iacTypes.NewTestMetadata()),
+								RetentionInDays: iacTypes.IntTest(6),
 							},
 						},
 						SecurityAlertPolicies: []database.SecurityAlertPolicy{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
 								EmailAddresses: []iacTypes.StringValue{
-									iacTypes.String("example@example.com", iacTypes.NewTestMetadata()),
+									iacTypes.StringTest("example@example.com"),
 								},
 								DisabledAlerts: []iacTypes.StringValue{
-									iacTypes.String("Sql_Injection", iacTypes.NewTestMetadata()),
-									iacTypes.String("Data_Exfiltration", iacTypes.NewTestMetadata()),
+									iacTypes.StringTest("Sql_Injection"),
+									iacTypes.StringTest("Data_Exfiltration"),
 								},
-								EmailAccountAdmins: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+								EmailAccountAdmins: iacTypes.BoolTest(true),
 							},
 						},
 					},
