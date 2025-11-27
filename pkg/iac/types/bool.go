@@ -127,9 +127,9 @@ func ctyToBool(val cty.Value) (bool, bool) {
 		return val.True(), true
 	case cty.String:
 		switch strings.ToLower(val.AsString()) {
-		case "true", "yes", "y", "1":
+		case "true", "yes", "y", "1", "on":
 			return true, true
-		case "false", "no", "n", "0":
+		case "false", "no", "n", "0", "off":
 			return false, true
 		}
 	case cty.Number:

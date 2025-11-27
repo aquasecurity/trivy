@@ -411,40 +411,14 @@ func (a *mysqlAdapter) adaptMySQLFlexibleServer(resource *terraform.Block, modul
 	// Each configuration resource manages a single parameter specified in the name attribute
 	// By default, the server enforces secure connections using TLS 1.2
 	configBlocks := module.GetReferencingResources(resource, "azurerm_mysql_flexible_server_configuration", "server_id")
-	
-	// Default values: TLS 1.2 is enforced by default, SSL enforcement defaults to false if not configured
-	enableSSLEnforcementVal := iacTypes.BoolDefault(false, resource.GetMetadata())
-	minTLSVersionVal := iacTypes.StringDefault("TLS1_2", resource.GetMetadata())
-
-	// Extract TLS settings from configuration resources
-	for _, configBlock := range configBlocks {
-		a.configIDs.Resolve(configBlock.ID())
-		
-		nameAttr := configBlock.GetAttribute("name")
-		valAttr := configBlock.GetAttribute("value")
-		
-		// Check for require_secure_transport configuration
-		if nameAttr.Equals("require_secure_transport") {
-			// Value can be "ON"/"OFF" or "1"/"0" or boolean strings
-			valStr := valAttr.AsStringValueOrDefault("", configBlock).Value()
-			enableSSLEnforcementVal = iacTypes.Bool(
-				valStr == "ON" || valStr == "1" || valStr == "true" || valStr == "True",
-				valAttr.GetMetadata(),
-			)
-		}
-		
-		// Check for tls_version configuration
-		if nameAttr.Equals("tls_version") {
-			minTLSVersionVal = valAttr.AsStringValueOrDefault("TLS1_2", configBlock)
-		}
-	}
+	params := parseServerParameters(configBlocks, resource.GetMetadata())
 
 	return database.MySQLServer{
 		Metadata: resource.GetMetadata(),
 		Server: database.Server{
 			Metadata:                  resource.GetMetadata(),
-			EnableSSLEnforcement:      enableSSLEnforcementVal,
-			MinimumTLSVersion:         minTLSVersionVal,
+			EnableSSLEnforcement:      params.requireSecureTransport,
+			MinimumTLSVersion:         params.tlsVersion,
 			EnablePublicNetworkAccess: publicAccessVal,
 			FirewallRules:             firewallRules,
 		},
@@ -536,38 +510,15 @@ func (a *postgresqlAdapter) adaptPostgreSQLFlexibleServer(resource *terraform.Bl
 	// It can only be configured via Azure CLI, so we mark it as unmanaged to avoid false positives
 	threatDetectionBlock := resource.GetBlock("threat_detection_policy")
 	threatDetectionPolicy := adaptThreatDetectionPolicy(threatDetectionBlock, iacTypes.NewUnmanagedMetadata())
-	
-	// Default values: TLS 1.2 is enforced by default, SSL enforcement defaults to false if not configured
-	enableSSLEnforcementVal := iacTypes.BoolDefault(false, resource.GetMetadata())
-	minTLSVersionVal := iacTypes.StringDefault("TLS1_2", resource.GetMetadata())
 
-	// Extract TLS settings from configuration resources
-	for _, configBlock := range configBlocks {
-		nameAttr := configBlock.GetAttribute("name")
-		valAttr := configBlock.GetAttribute("value")
-
-		// Check for require_secure_transport configuration
-		if nameAttr.Equals("require_secure_transport") {
-			// Value can be "ON"/"OFF" or "1"/"0" or boolean strings
-			valStr := valAttr.AsStringValueOrDefault("", configBlock).Value()
-			enableSSLEnforcementVal = iacTypes.Bool(
-				valStr == "ON" || valStr == "1" || valStr == "true" || valStr == "True",
-				valAttr.GetMetadata(),
-			)
-		}
-
-		// Check for tls_version configuration
-		if nameAttr.Equals("tls_version") {
-			minTLSVersionVal = valAttr.AsStringValueOrDefault("TLS1_2", configBlock)
-		}
-	}
+	params := parseServerParameters(configBlocks, resource.GetMetadata())
 
 	return database.PostgreSQLServer{
 		Metadata: resource.GetMetadata(),
 		Server: database.Server{
 			Metadata:             resource.GetMetadata(),
-			EnableSSLEnforcement: enableSSLEnforcementVal,
-			MinimumTLSVersion:    minTLSVersionVal,
+			EnableSSLEnforcement: params.requireSecureTransport,
+			MinimumTLSVersion:    params.tlsVersion,
 			EnablePublicNetworkAccess: resource.GetAttribute("public_network_access_enabled").
 				AsBoolValueOrDefault(true, resource),
 			FirewallRules: firewallRules,
@@ -689,4 +640,34 @@ func adaptThreatDetectionPolicy(block *terraform.Block, defaultMetadata iacTypes
 		Metadata: block.GetMetadata(),
 		Enabled:  block.GetAttribute("enabled").AsBoolValueOrDefault(false, block),
 	}
+}
+
+// serverParameters represents server configuration parameters that are common
+// to both MySQL and PostgreSQL flexible servers in Azure.
+type serverParameters struct {
+	requireSecureTransport iacTypes.BoolValue
+	tlsVersion             iacTypes.StringValue
+}
+
+// parseServerParameters parses a list of server configurations to extract
+// server parameters for MySQL and PostgreSQL flexible servers.
+func parseServerParameters(configs []*terraform.Block, resourceMetadata iacTypes.Metadata) serverParameters {
+	// https://learn.microsoft.com/en-us/azure/mysql/flexible-server/overview#enterprise-grade-security-compliance-and-privacy
+	params := serverParameters{
+		requireSecureTransport: iacTypes.BoolDefault(true, resourceMetadata),
+		tlsVersion:             iacTypes.StringDefault("TLS1.2", resourceMetadata),
+	}
+
+	for _, config := range configs {
+		nameAttr := config.GetAttribute("name")
+		valAttr := config.GetAttribute("value")
+		switch {
+		case nameAttr.Equals("require_secure_transport"):
+			params.requireSecureTransport, _ = iacTypes.BoolFromCtyValue(valAttr.Value(), valAttr.GetMetadata())
+		case nameAttr.Equals("tls_version"):
+			params.tlsVersion = valAttr.AsStringValueOrDefault("TLS1_2", config)
+		}
+	}
+
+	return params
 }
