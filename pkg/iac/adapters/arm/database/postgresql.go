@@ -77,23 +77,24 @@ func adaptPostgreSQLConfiguration(resource azure.Resource, deployment azure.Depl
 	return config
 }
 
-func adaptThreatDetectionPolicy(resource azure.Resource, _ azure.Deployment) database.ThreatDetectionPolicy {
-	// Threat detection policy is typically configured via securityAlertPolicies in ARM
-	// For PostgreSQL, it may be in properties or as a separate resource
-	properties := resource.Properties
-	threatDetectionEnabled := properties.GetMapValue("threatDetectionPolicy").GetMapValue("state")
-
-	if threatDetectionEnabled.Kind == azure.KindNull {
-		// Try alternative property paths
-		threatDetectionEnabled = properties.GetMapValue("securityAlertPolicy").GetMapValue("state")
-	}
+func adaptThreatDetectionPolicy(resource azure.Resource, deployment azure.Deployment) database.ThreatDetectionPolicy {
+	// Threat detection policy is configured via Microsoft.DBforPostgreSQL/servers/securityAlertPolicies
+	// This is a separate child resource, not a property of the server resource
+	parent := fmt.Sprintf("%s/", resource.Name.AsString())
 
 	enabled := false
 	metadata := resource.Metadata
-	if threatDetectionEnabled.Kind != azure.KindNull {
-		state := threatDetectionEnabled.AsStringValue("Disabled", resource.Metadata)
+
+	// Look for security alert policy resources that belong to this server
+	for _, policy := range deployment.GetResourcesByType("Microsoft.DBforPostgreSQL/servers/securityAlertPolicies") {
+		if !strings.HasPrefix(policy.Name.AsString(), parent) {
+			continue
+		}
+		// Found the security alert policy for this server
+		state := policy.Properties.GetMapValue("state").AsStringValue("Disabled", policy.Metadata)
 		enabled = state.EqualTo("Enabled")
-		metadata = threatDetectionEnabled.GetMetadata()
+		metadata = policy.Properties.GetMapValue("state").GetMetadata()
+		break
 	}
 
 	return database.ThreatDetectionPolicy{
