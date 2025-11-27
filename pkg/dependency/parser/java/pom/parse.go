@@ -13,9 +13,11 @@ import (
 	"path/filepath"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/hashicorp/go-multierror"
+	"github.com/mitchellh/hashstructure/v2"
 	"github.com/samber/lo"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
@@ -133,12 +135,17 @@ func (p *Parser) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]ftypes.Packag
 
 	rootArt := root.artifact()
 	rootArt.Relationship = ftypes.RelationshipRoot
+	rootArt.FilePath = p.rootPath
 
 	return p.parseRoot(ctx, rootArt, set.New[string]())
 }
 
 // nolint: gocyclo
 func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.Set[string]) ([]ftypes.Package, []ftypes.Dependency, error) {
+	if root.FilePath == "" {
+		return nil, nil, xerrors.New("root file path should be filled")
+	}
+
 	// Prepare a queue for dependencies
 	queue := newArtifactQueue()
 
@@ -161,10 +168,11 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 		// Modules should be handled separately so that they can have independent dependencies.
 		// It means multi-module allows for duplicate dependencies.
 		if art.Module {
-			if uniqModules.Contains(art.String()) {
+			id := packageID(art.Name(), art.Version.String(), art.FilePath)
+			if uniqModules.Contains(id) {
 				continue
 			}
-			uniqModules.Append(art.String())
+			uniqModules.Append(id)
 
 			modulePkgs, moduleDeps, err := p.parseRoot(ctx, art, uniqModules)
 			if err != nil {
@@ -245,14 +253,14 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 			dependsOn := lo.Map(result.dependencies, func(a artifact, _ int) string {
 				return a.Name()
 			})
-			uniqDeps[packageID(art.Name(), art.Version.String())] = dependsOn
+			uniqDeps[packageID(art.Name(), art.Version.String(), root.FilePath)] = dependsOn
 		}
 	}
 
 	// Convert to []ftypes.Package and []ftypes.Dependency
 	for name, art := range uniqArtifacts {
 		pkg := ftypes.Package{
-			ID:           packageID(name, art.Version.String()),
+			ID:           packageID(name, art.Version.String(), root.FilePath),
 			Name:         name,
 			Version:      art.Version.String(),
 			Licenses:     art.Licenses,
@@ -264,7 +272,7 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 		// Convert dependency names into dependency IDs
 		dependsOn := lo.FilterMap(uniqDeps[pkg.ID], func(dependOnName string, _ int) (string, bool) {
 			ver := depVersion(dependOnName, uniqArtifacts)
-			return packageID(dependOnName, ver), ver != ""
+			return packageID(dependOnName, ver, root.FilePath), ver != ""
 		})
 
 		// `mvn` shows modules separately from the root package and does not show module nesting.
@@ -310,6 +318,7 @@ func (p *Parser) parseModule(ctx context.Context, currentPath, relativePath stri
 
 	moduleArtifact := module.artifact()
 	moduleArtifact.Module = true
+	moduleArtifact.FilePath = relativePath
 	moduleArtifact.Relationship = ftypes.RelationshipWorkspace
 
 	p.cache.put(moduleArtifact, result)
@@ -875,8 +884,19 @@ func parseMavenMetadata(r io.Reader) (*Metadata, error) {
 	return parsed, nil
 }
 
-func packageID(name, version string) string {
-	return dependency.ID(ftypes.Pom, name, version)
+func packageID(name, version, pomFilePath string) string {
+	v := map[string]any{
+		"gav":  dependency.ID(ftypes.Pom, name, version),
+		"path": pomFilePath,
+	}
+	h, err := hashstructure.Hash(v, hashstructure.FormatV2, &hashstructure.HashOptions{
+		ZeroNil:         true,
+		IgnoreZeroValue: true,
+	})
+	if err != nil {
+		log.Warn("Failed to calculate the pom.xml hash", log.String("name", name), log.String("version", version), log.Err(err))
+	}
+	return strconv.FormatUint(h, 16)
 }
 
 // cf. https://github.com/apache/maven/blob/259404701402230299fe05ee889ecdf1c9dae816/maven-artifact/src/main/java/org/apache/maven/artifact/DefaultArtifact.java#L482-L486
