@@ -239,17 +239,27 @@ func Test_Adapt(t *testing.T) {
 				name                = "example-flexible"
 			  
 				public_network_access_enabled    = true
-				require_secure_transport         = true
-				tls_version                      = "TLS1_2"
 			  }
 
-			  resource "azurerm_postgresql_flexible_server_configuration" "example" {
+			  resource "azurerm_postgresql_flexible_server_configuration" "require_secure_transport" {
+				name      = "require_secure_transport"
+				server_id = azurerm_postgresql_flexible_server.example.id
+				value     = "ON"
+			  }
+
+			  resource "azurerm_postgresql_flexible_server_configuration" "tls_version" {
+				name      = "tls_version"
+				server_id = azurerm_postgresql_flexible_server.example.id
+				value     = "TLS1_2"
+			  }
+
+			  resource "azurerm_postgresql_flexible_server_configuration" "log_connections" {
 				name      = "log_connections"
 				server_id = azurerm_postgresql_flexible_server.example.id
 				value     = "on"
 			  }
 
-			  resource "azurerm_postgresql_flexible_server_configuration" "example2" {
+			  resource "azurerm_postgresql_flexible_server_configuration" "log_checkpoints" {
 				name      = "log_checkpoints"
 				server_id = azurerm_postgresql_flexible_server.example.id
 				value     = "on"
@@ -283,6 +293,64 @@ func Test_Adapt(t *testing.T) {
 							Metadata:       iacTypes.NewTestMetadata(),
 							LogConnections: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 							LogCheckpoints: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						},
+						// Threat Detection is not configurable via Terraform for PostgreSQL Flexible Server
+						// It can only be configured via Azure CLI, so it's marked as unmanaged
+						ThreatDetectionPolicy: database.ThreatDetectionPolicy{
+							Metadata: iacTypes.NewUnmanagedMetadata(),
+							Enabled:  iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "postgresql flexible server with configuration resources",
+			terraform: `
+			resource "azurerm_postgresql_flexible_server" "example" {
+				name                = "example-flexible"
+			  
+				public_network_access_enabled = true
+			  }
+
+			  resource "azurerm_postgresql_flexible_server_firewall_rule" "example" {
+				name             = "office"
+				server_id        = azurerm_postgresql_flexible_server.example.id
+				start_ip_address = "40.112.8.12"
+				end_ip_address   = "40.112.8.12"
+			  }
+
+			  resource "azurerm_postgresql_flexible_server_configuration" "require_secure_transport" {
+				name      = "require_secure_transport"
+				server_id = azurerm_postgresql_flexible_server.example.id
+				value     = "ON"
+			  }
+
+			  resource "azurerm_postgresql_flexible_server_configuration" "tls_version" {
+				name      = "tls_version"
+				server_id = azurerm_postgresql_flexible_server.example.id
+				value     = "TLS1_2"
+			  }
+			`,
+			expected: database.Database{
+				PostgreSQLServers: []database.PostgreSQLServer{
+					{
+						Metadata: iacTypes.NewTestMetadata(),
+						Server: database.Server{
+							Metadata:                  iacTypes.NewTestMetadata(),
+							EnableSSLEnforcement:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							MinimumTLSVersion:         iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
+							EnablePublicNetworkAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							FirewallRules: []database.FirewallRule{
+								{
+									Metadata: iacTypes.NewTestMetadata(),
+									StartIP:  iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
+									EndIP:    iacTypes.String("40.112.8.12", iacTypes.NewTestMetadata()),
+								},
+							},
+						},
+						Config: database.PostgresSQLConfig{
+							Metadata: iacTypes.NewTestMetadata(),
 						},
 						// Threat Detection is not configurable via Terraform for PostgreSQL Flexible Server
 						// It can only be configured via Azure CLI, so it's marked as unmanaged

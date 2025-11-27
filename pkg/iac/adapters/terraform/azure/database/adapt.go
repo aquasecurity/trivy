@@ -521,6 +521,10 @@ func (a *postgresqlAdapter) adaptPostgreSQLFlexibleServer(resource *terraform.Bl
 		firewallRules = append(firewallRules, adaptFirewallRule(firewallBlock))
 	}
 
+	// PostgreSQL Flexible Server configurations (new standalone resource)
+	// TLS settings are configured through azurerm_postgresql_flexible_server_configuration resources
+	// Each configuration resource manages a single parameter specified in the name attribute
+	// By default, the server enforces secure connections using TLS 1.2
 	// Flexible server configurations use server_id instead of server_name
 	configBlocks := module.GetReferencingResources(resource, "azurerm_postgresql_flexible_server_configuration", "server_id")
 	config := adaptPostgreSQLConfig(resource, configBlocks)
@@ -532,16 +536,31 @@ func (a *postgresqlAdapter) adaptPostgreSQLFlexibleServer(resource *terraform.Bl
 	// It can only be configured via Azure CLI, so we mark it as unmanaged to avoid false positives
 	threatDetectionBlock := resource.GetBlock("threat_detection_policy")
 	threatDetectionPolicy := adaptThreatDetectionPolicy(threatDetectionBlock, iacTypes.NewUnmanagedMetadata())
+	
+	// Default values: TLS 1.2 is enforced by default, SSL enforcement defaults to false if not configured
+	enableSSLEnforcementVal := iacTypes.BoolDefault(false, resource.GetMetadata())
+	minTLSVersionVal := iacTypes.StringDefault("TLS1_2", resource.GetMetadata())
 
-	// Flexible servers may use require_secure_transport instead of ssl_enforcement_enabled
-	// Try both attribute names for backward compatibility
-	enableSSLEnforcementVal := resource.GetFirstAttributeOf("require_secure_transport", "ssl_enforcement_enabled").
-		AsBoolValueOrDefault(false, resource)
+	// Extract TLS settings from configuration resources
+	for _, configBlock := range configBlocks {
+		nameAttr := configBlock.GetAttribute("name")
+		valAttr := configBlock.GetAttribute("value")
 
-	// Flexible servers may use different attribute names for TLS version
-	// Check both possible attribute names
-	minTLSVersionVal := resource.GetFirstAttributeOf("tls_version", "ssl_minimal_tls_version_enforced").
-		AsStringValueOrDefault("TLS1_2", resource)
+		// Check for require_secure_transport configuration
+		if nameAttr.Equals("require_secure_transport") {
+			// Value can be "ON"/"OFF" or "1"/"0" or boolean strings
+			valStr := valAttr.AsStringValueOrDefault("", configBlock).Value()
+			enableSSLEnforcementVal = iacTypes.Bool(
+				valStr == "ON" || valStr == "1" || valStr == "true" || valStr == "True",
+				valAttr.GetMetadata(),
+			)
+		}
+
+		// Check for tls_version configuration
+		if nameAttr.Equals("tls_version") {
+			minTLSVersionVal = valAttr.AsStringValueOrDefault("TLS1_2", configBlock)
+		}
+	}
 
 	return database.PostgreSQLServer{
 		Metadata: resource.GetMetadata(),
