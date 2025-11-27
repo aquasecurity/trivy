@@ -469,7 +469,7 @@ func checkOptions(ctx context.Context, opts flag.Options, targetKind TargetKind)
 		log.WarnContext(ctx,
 			fmt.Sprintf(
 				"Trivy runs in client/server mode, but misconfiguration and secret scanning will be done on the client side, see %s",
-				doc.URL("/guide/references/modes/client-server", ""),
+				doc.URL("guide/references/modes/client-server", ""),
 			),
 		)
 	}
