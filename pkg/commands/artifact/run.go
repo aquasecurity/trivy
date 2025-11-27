@@ -469,7 +469,7 @@ func checkOptions(ctx context.Context, opts flag.Options, targetKind TargetKind)
 		log.WarnContext(ctx,
 			fmt.Sprintf(
 				"Trivy runs in client/server mode, but misconfiguration and secret scanning will be done on the client side, see %s",
-				doc.URL("/docs/references/modes/client-server", ""),
+				doc.URL("guide/references/modes/client-server", ""),
 			),
 		)
 	}
@@ -603,7 +603,7 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 				strings.Join(xstrings.ToStringSlice(nonSecrets), ",")))
 		}
 		// e.g. https://trivy.dev/docs/latest/scanner/secret/#recommendation
-		logger.Info(fmt.Sprintf("Please see %s for faster secret detection", doc.URL("/docs/scanner/secret/", "recommendation")))
+		logger.Info(fmt.Sprintf("Please see %s for faster secret detection", doc.URL("guide/scanner/secret/", "recommendation")))
 	} else {
 		opts.SecretConfigPath = ""
 	}
