@@ -453,6 +453,13 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 		}
 	}
 
+	for name, value := range pkg.Properties {
+		properties = append(properties, core.Property{
+			Name:  name,
+			Value: value,
+		})
+	}
+
 	var files []core.File
 	if pkg.FilePath != "" || pkg.Digest != "" {
 		files = append(files, core.File{

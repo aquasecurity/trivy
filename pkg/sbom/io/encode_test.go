@@ -122,6 +122,9 @@ func TestEncoder_Encode(t *testing.T) {
 										Version:   "2.13.4",
 									},
 								},
+								Properties: map[string]string{
+									"custom_property": "property value",
+								},
 							},
 							{
 								ID:       "com.fasterxml.jackson.core:jackson-databind:2.13.4",
@@ -357,6 +360,10 @@ func TestEncoder_Encode(t *testing.T) {
 						{
 							Name:  core.PropertyPkgType,
 							Value: "jar",
+						},
+						{
+							Name:  "custom_property",
+							Value: "property value",
 						},
 					},
 					PkgIdentifier: ftypes.PkgIdentifier{
