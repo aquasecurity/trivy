@@ -20,10 +20,11 @@ var (
 	eolDates = map[string]time.Time{
 		"1.0": time.Date(2022, 2, 28, 23, 59, 59, 0, time.UTC),
 		"2.0": time.Date(2022, 12, 31, 23, 59, 59, 0, time.UTC),
-		// The following versions don't have the EOL dates yet.
-		// See https://blogs.vmware.com/vsphere/2022/01/photon-1-x-end-of-support-announcement.html
-		"3.0": time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
-		"4.0": time.Date(2025, 12, 31, 23, 59, 59, 0, time.UTC),
+		"3.0": time.Date(2024, 3, 31, 23, 59, 59, 0, time.UTC),
+		"4.0": time.Date(2026, 3, 31, 23, 59, 59, 0, time.UTC),
+		// The following version don't have the EOL dates yet.
+		// https://blogs.vmware.com/cloud-foundation/2023/05/02/announcing-photon-os-5-0-general-availability/
+		"5.0": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
 	}
 )
 

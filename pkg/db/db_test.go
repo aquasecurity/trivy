@@ -240,20 +240,11 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			logger := log.New(log.NewHandler(out, &log.Options{Level: log.LevelDebug}))
 			log.SetDefault(logger)
 
-			dbDir := db.Dir(t.TempDir())
-			if tt.metadata != (metadata.Metadata{}) {
-				meta := metadata.NewClient(dbDir)
-				err := meta.Update(tt.metadata)
-				require.NoError(t, err)
-			}
-
-			if tt.dbFileExists {
-				err := db.Init(dbDir)
-				require.NoError(t, err)
-				t.Cleanup(func() {
-					require.NoError(t, db.Close())
-				})
-			}
+			// Initialize DB with metadata and optionally create DB file
+			dbDir := dbtest.InitWithMetadata(t, tt.metadata, tt.dbFileExists)
+			t.Cleanup(func() {
+				require.NoError(t, db.Close())
+			})
 
 			// Set a fake time
 			ctx := clock.With(t.Context(), time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC))

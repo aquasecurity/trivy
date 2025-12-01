@@ -8,7 +8,7 @@ DefectDojo can parse Trivy JSON reports. The parser supports deduplication and a
 ## SecObserve (Community)
 SecObserve can parse Trivy results as CycloneDX reports and provides an unified overview of vulnerabilities from different sources. Vulnerabilities can be evaluated with manual and rule based assessments.
 
-👉 Get it at: <https://github.com/MaibornWolff/SecObserve>
+👉 Get it at: <https://github.com/SecObserve/SecObserve>
 
 ## Scan2html (Community)
 A Trivy plugin that scans and outputs the results to an interactive html file.

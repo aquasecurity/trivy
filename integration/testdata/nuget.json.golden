@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000002",
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/nuget",
   "ArtifactType": "repository",
@@ -65,6 +65,7 @@
             "Name": "GitHub Security Advisory Nuget",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anuget"
           },
+          "Fingerprint": "sha256:dbba4d559d9826c440ebd1085313e0499718066bb7ea694fcd20ff8d63c51310",
           "Title": "Improper Handling of Exceptional Conditions in Newtonsoft.Json",
           "Description": "Newtonsoft.Json prior to version 13.0.1 is vulnerable to Insecure Defaults due to improper handling of expressions with high nesting level that lead to StackOverFlow exception or high CPU and RAM usage.",
           "Severity": "HIGH",

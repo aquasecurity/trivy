@@ -31,7 +31,7 @@ Download the required tarball, associated signature and certificate files from t
 Use the following command for keyless verification:
 
 ```shell
-cosign verify-blob <path to binray> \
+cosign verify-blob <path to binary> \
 --certificate <path to cert> \
 --signature <path to sig> \
 --certificate-identity-regexp 'https://github\.com/aquasecurity/trivy/\.github/workflows/.+' \

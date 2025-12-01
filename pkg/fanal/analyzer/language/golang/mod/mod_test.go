@@ -1,30 +1,31 @@
 package mod
 
 import (
-	"path/filepath"
 	"sort"
 	"testing"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
+
+const gopathFixture = "testdata/gopath.txtar"
 
 func Test_gomodAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name  string
-		files []string
-		want  *analyzer.AnalysisResult
+		name   string
+		txtar  string
+		gopath bool
+		want   *analyzer.AnalysisResult
 	}{
 		{
-			name: "happy",
-			files: []string{
-				"testdata/happy/mod",
-				"testdata/happy/sum",
-			},
+			name:   "happy",
+			txtar:  "testdata/happy.txtar",
+			gopath: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -74,10 +75,9 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "wrong go.mod from `pkg`",
-			files: []string{
-				"testdata/wrong-gomod-in-pkg/mod",
-			},
+			name:   "wrong go.mod from `pkg`",
+			txtar:  "testdata/wrong-gomod-in-pkg.txtar",
+			gopath: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -116,10 +116,9 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "no pkg dir found",
-			files: []string{
-				"testdata/no-pkg-found/mod",
-			},
+			name:   "no pkg dir found",
+			txtar:  "testdata/no-pkg-found.txtar",
+			gopath: false,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -179,11 +178,9 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "less than 1.17",
-			files: []string{
-				"testdata/merge/mod",
-				"testdata/merge/sum",
-			},
+			name:   "less than 1.17",
+			txtar:  "testdata/merge.txtar",
+			gopath: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -235,10 +232,9 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "no go.sum",
-			files: []string{
-				"testdata/merge/mod",
-			},
+			name:   "no go.sum",
+			txtar:  "testdata/no-go-sum.txtar",
+			gopath: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -278,18 +274,15 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "sad go.mod",
-			files: []string{
-				"testdata/sad/mod",
-			},
-			want: &analyzer.AnalysisResult{},
+			name:   "sad go.mod",
+			txtar:  "testdata/sad.txtar",
+			gopath: false,
+			want:   &analyzer.AnalysisResult{},
 		},
 		{
-			name: "deps from GOPATH and license from vendor dir",
-			files: []string{
-				"testdata/vendor-dir-exists/mod",
-				"testdata/vendor-dir-exists/vendor",
-			},
+			name:   "deps from GOPATH and license from vendor dir",
+			txtar:  "testdata/vendor-dir-exists.txtar",
+			gopath: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -339,28 +332,29 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 	}
+
+	// Load GOPATH fixture once as fs.FS (represents $GOPATH/pkg/mod)
+	gopathFS := testutil.TxtarToFS(t, gopathFixture)
+
 	for _, tt := range tests {
-		t.Setenv("GOPATH", "testdata")
 		t.Run(tt.name, func(t *testing.T) {
+			// Load test case txtar as fs.FS
+			fsys := testutil.TxtarToFS(t, tt.txtar)
+
 			a, err := newGoModAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 
-			mfs := mapfs.New()
-			for _, file := range tt.files {
-				// Since broken go.mod files bothers IDE, we should use other file names than "go.mod" and "go.sum".
-				switch filepath.Base(file) {
-				case "mod":
-					require.NoError(t, mfs.WriteFile("go.mod", file))
-				case "sum":
-					require.NoError(t, mfs.WriteFile("go.sum", file))
-				case "vendor":
-					require.NoError(t, mfs.CopyDir(file, "."))
-				}
+			// Set GOPATH fs.FS for testing
+			ma := a.(*gomodAnalyzer)
+			// Use empty fs.FS to simulate no GOPATH scenario
+			ma.gopathFS = fstest.MapFS{}
+			if tt.gopath {
+				ma.gopathFS = gopathFS
 			}
 
 			ctx := t.Context()
-			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
-				FS: mfs,
+			got, err := ma.PostAnalyze(ctx, analyzer.PostAnalysisInput{
+				FS: fsys,
 			})
 			require.NoError(t, err)
 
@@ -368,7 +362,6 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 				sort.Sort(got.Applications[0].Packages)
 				sort.Sort(tt.want.Applications[0].Packages)
 			}
-			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

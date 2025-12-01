@@ -15,6 +15,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/fanal/image/name"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -105,6 +106,10 @@ func (m *Decoder) decodeRoot(s *types.SBOM) error {
 			s.Metadata.DiffIDs = append(s.Metadata.DiffIDs, prop.Value)
 		case core.PropertyRepoTag:
 			s.Metadata.RepoTags = append(s.Metadata.RepoTags, prop.Value)
+		case core.PropertyReference:
+			if s.Metadata.Reference, err = name.ParseReference(prop.Value); err != nil {
+				m.logger.Warn("Failed to parse image reference", log.String("value", prop.Value), log.Err(err))
+			}
 		}
 	}
 	return nil

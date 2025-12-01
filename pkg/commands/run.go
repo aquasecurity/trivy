@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	troubleshootingDocPath = "/docs/references/troubleshooting/"
+	troubleshootingDocPath = "guide/references/troubleshooting/"
 	lockDocFragment        = "database-and-cache-lock-errors"
 	timeoutDocFragment     = "timeout"
 )

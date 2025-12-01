@@ -37,6 +37,7 @@ func getSession(domain, region string, option types.RegistryOptions) (aws.Config
 	// cf. https://github.com/aquasecurity/trivy/discussions/9429
 	client := awshttp.NewBuildableClient().WithTransportOptions(func(transport *http.Transport) {
 		transport.TLSClientConfig.InsecureSkipVerify = option.Insecure
+		transport.TLSClientConfig.RootCAs = option.CACerts
 	})
 	// create custom credential information if option is valid
 	if option.AWSSecretKey != "" && option.AWSAccessKey != "" && option.AWSRegion != "" {

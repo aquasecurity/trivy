@@ -5,7 +5,6 @@ import (
 	"debug/buildinfo"
 	"fmt"
 	"runtime/debug"
-	"slices"
 	"sort"
 	"strings"
 
@@ -18,12 +17,16 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 var (
 	ErrUnrecognizedExe = xerrors.New("unrecognized executable format")
 	ErrNonGoBinary     = xerrors.New("non go binary")
+
+	// defaultVersionPrefixes contains common prefixes used in -ldflags version keys
+	defaultVersionPrefixes = set.NewCaseInsensitive("main", "common", "version", "cmd")
 )
 
 // convertError detects buildinfo.errUnrecognizedFormat and convert to
@@ -187,15 +190,9 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 	// foundVersions doesn't contain duplicates. Versions are filled into first corresponding category.
 	// Possible elements(categories):
 	//   [0]: Versions using format `github.com/<module_owner>/<module_name>/cmd/**/*.<version>=x.x.x`
-	//   [1]: Versions that use prefixes from `defaultPrefixes`
+	//   [1]: Versions that use prefixes from `defaultVersionPrefixes`
 	//   [2]: Other versions
 	var foundVersions = make([][]string, 3)
-	defaultPrefixes := []string{
-		"main",
-		"common",
-		"version",
-		"cmd",
-	}
 	for key, val := range x {
 		// It's valid to set the -X flags with quotes so we trim any that might
 		// have been provided: Ex:
@@ -212,7 +209,7 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 			switch {
 			case strings.HasPrefix(key, name+"/cmd/"):
 				foundVersions[0] = append(foundVersions[0], val)
-			case slices.Contains(defaultPrefixes, strings.ToLower(versionPrefix(key))):
+			case defaultVersionPrefixes.Contains(versionPrefix(key)):
 				foundVersions[1] = append(foundVersions[1], val)
 			default:
 				foundVersions[2] = append(foundVersions[2], val)

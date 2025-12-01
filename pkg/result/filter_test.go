@@ -186,6 +186,27 @@ func TestFilter(t *testing.T) {
 			Category:   "restricted",
 			Confidence: 1,
 		}
+		license3 = types.DetectedLicense{
+			Name:       "mit AND GPL-2.0-or-later",
+			Severity:   dbTypes.SeverityLow.String(),
+			FilePath:   "usr/share/gcc/python/libstdcxx/v6/__init__.py",
+			Category:   "restricted",
+			Confidence: 1,
+		}
+		license4 = types.DetectedLicense{
+			Name:       "Apache-2.0 WITH LLVM-exception",
+			Severity:   dbTypes.SeverityLow.String(),
+			FilePath:   "usr/share/llvm/LICENSE.txt",
+			Category:   "restricted",
+			Confidence: 1,
+		}
+		license5 = types.DetectedLicense{
+			Name:       "GPL-3.0 WITH GCC-exception-3.1",
+			Severity:   dbTypes.SeverityLow.String(),
+			FilePath:   "usr/share/gcc/LICENSE.txt",
+			Category:   "restricted",
+			Confidence: 1,
+		}
 	)
 	type args struct {
 		report         types.Report
@@ -360,6 +381,13 @@ func TestFilter(t *testing.T) {
 								secret2,
 							},
 						},
+						{
+							Target: "LICENSE.txt",
+							Licenses: []types.DetectedLicense{
+								license1, // ignored
+								license3,
+							},
+						},
 					},
 				},
 				severities: []dbTypes.Severity{
@@ -431,6 +459,20 @@ func TestFilter(t *testing.T) {
 							},
 						},
 					},
+					{
+						Target: "LICENSE.txt",
+						Licenses: []types.DetectedLicense{
+							license3,
+						},
+						ModifiedFindings: []types.ModifiedFinding{
+							{
+								Type:    types.FindingTypeLicense,
+								Status:  types.FindingStatusIgnored,
+								Source:  "testdata/.trivyignore",
+								Finding: license1,
+							},
+						},
+					},
 				},
 			},
 		},
@@ -472,6 +514,9 @@ func TestFilter(t *testing.T) {
 							Licenses: []types.DetectedLicense{
 								license1, // ignored
 								license2,
+								license3, // ignored by combination for 2 licenses
+								license4, // ignored by WITH operator
+								license5, // not ignored (different exception)
 							},
 						},
 					},
@@ -565,6 +610,7 @@ func TestFilter(t *testing.T) {
 						Target: "LICENSE.txt",
 						Licenses: []types.DetectedLicense{
 							license2,
+							license5, // not ignored (different exception)
 						},
 						ModifiedFindings: []types.ModifiedFinding{
 							{
@@ -572,6 +618,19 @@ func TestFilter(t *testing.T) {
 								Status:  types.FindingStatusIgnored,
 								Source:  "testdata/.trivyignore.yaml",
 								Finding: license1,
+							},
+							{
+								Type:      types.FindingTypeLicense,
+								Status:    types.FindingStatusIgnored,
+								Source:    "testdata/.trivyignore.yaml",
+								Statement: "All license components are individually ignored",
+								Finding:   license3,
+							},
+							{
+								Type:    types.FindingTypeLicense,
+								Status:  types.FindingStatusIgnored,
+								Source:  "testdata/.trivyignore.yaml",
+								Finding: license4,
 							},
 						},
 					},

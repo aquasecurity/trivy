@@ -131,6 +131,7 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, targetKind TargetKi
 	// Set the default HTTP transport
 	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
 		Insecure:  cliOptions.Insecure,
+		CACerts:   cliOptions.CACerts,
 		Timeout:   cliOptions.Timeout,
 		TraceHTTP: cliOptions.TraceHTTP,
 	}))
@@ -467,8 +468,8 @@ func checkOptions(ctx context.Context, opts flag.Options, targetKind TargetKind)
 	if opts.ServerAddr != "" && opts.Scanners.AnyEnabled(types.MisconfigScanner, types.SecretScanner) {
 		log.WarnContext(ctx,
 			fmt.Sprintf(
-				"Trivy runs in client/server mode, but misconfiguration and license scanning will be done on the client side, see %s",
-				doc.URL("/docs/references/modes/client-server", ""),
+				"Trivy runs in client/server mode, but misconfiguration and secret scanning will be done on the client side, see %s",
+				doc.URL("guide/references/modes/client-server", ""),
 			),
 		)
 	}
@@ -601,8 +602,8 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 				"If your scanning is slow, please try '--scanners %s' to disable secret scanning",
 				strings.Join(xstrings.ToStringSlice(nonSecrets), ",")))
 		}
-		// e.g. https://trivy.dev/latest/docs/scanner/secret/#recommendation
-		logger.Info(fmt.Sprintf("Please see %s for faster secret detection", doc.URL("/docs/scanner/secret/", "recommendation")))
+		// e.g. https://trivy.dev/docs/latest/scanner/secret/#recommendation
+		logger.Info(fmt.Sprintf("Please see %s for faster secret detection", doc.URL("guide/scanner/secret/", "recommendation")))
 	} else {
 		opts.SecretConfigPath = ""
 	}
@@ -750,6 +751,7 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 		DisableEmbeddedPolicies:  disableEmbedded,
 		DisableEmbeddedLibraries: disableEmbedded,
 		IncludeDeprecatedChecks:  opts.IncludeDeprecatedChecks,
+		RegoErrorLimit:           opts.RegoOptions.ErrorLimit,
 		TfExcludeDownloaded:      opts.TfExcludeDownloaded,
 		RawConfigScanners:        opts.RawConfigScanners,
 		FilePatterns:             opts.FilePatterns,

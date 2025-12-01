@@ -70,6 +70,20 @@ var (
 			},
 		},
 	}
+	baseFiles2Package = ftypes.Package{
+		ID:      "base-files2@5.3",
+		Name:    "base-files2",
+		Version: "5.3",
+		Identifier: ftypes.PkgIdentifier{
+			UID: "08",
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeDebian,
+				Namespace: "debian",
+				Name:      "base-files2",
+				Version:   "5.3",
+			},
+		},
+	}
 	goModulePackage = ftypes.Package{
 		ID:           "github.com/aquasecurity/go-module@v1.0.0",
 		Name:         "github.com/aquasecurity/go-module",
@@ -572,7 +586,7 @@ repositories:
 					Sources: []vex.Source{
 						{
 							Type:     vex.TypeFile,
-							FilePath: "testdata/openvex-multiple.json",
+							FilePath: "testdata/openvex-oci.json",
 						},
 					},
 				},
@@ -582,6 +596,37 @@ repositories:
 					Vulnerabilities: []types.DetectedVulnerability{
 						vuln3,
 					},
+				}),
+			}),
+		},
+		{
+			name: "check one parent from multiple dependency paths",
+			args: args{
+				// - oci:debian?tag=12
+				//     - pkg:deb/debian/base-files@5.3
+				//        - pkg:deb/debian/bash@5.3
+				//     - pkg:deb/debian/base-files2@5.3
+				//        - pkg:deb/debian/bash@5.3
+				report: imageReport([]types.Result{
+					bashPackagesResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{
+							vuln3,
+						},
+					}),
+				}),
+				opts: vex.Options{
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/openvex-oci.json",
+						},
+					},
+				},
+			},
+			want: imageReport([]types.Result{
+				bashPackagesResult(types.Result{
+					Vulnerabilities:  []types.DetectedVulnerability{},
+					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln3, vulnerableCodeNotInExecutePath, "testdata/openvex-oci.json")},
 				}),
 			}),
 		},
@@ -702,6 +747,26 @@ func bashResult(result types.Result) types.Result {
 	result.Type = ftypes.Debian
 	result.Class = types.ClassOSPkg
 	result.Packages = []ftypes.Package{bashPackage}
+	return result
+}
+
+func bashPackagesResult(result types.Result) types.Result {
+	result.Type = ftypes.Debian
+	result.Class = types.ClassOSPkg
+
+	bashPkg := clonePackage(bashPackage)
+	baseFilesPkg := clonePackage(baseFilesPackage)
+	baseFiles2Pkg := clonePackage(baseFiles2Package)
+
+	baseFilesPkg.DependsOn = []string{bashPkg.ID}
+	baseFiles2Pkg.DependsOn = []string{bashPkg.ID}
+
+	result.Packages = []ftypes.Package{
+		bashPkg,
+		baseFilesPkg,
+		baseFiles2Pkg,
+	}
+
 	return result
 }
 

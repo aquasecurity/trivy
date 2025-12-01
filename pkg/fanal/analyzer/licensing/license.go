@@ -6,7 +6,6 @@ import (
 	"math"
 	"os"
 	"path/filepath"
-	"slices"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -15,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -36,7 +36,7 @@ var (
 		"usr/src/wordpress",
 	}
 
-	acceptedExtensions = []string{
+	acceptedExtensions = set.NewCaseInsensitive(
 		".asp",
 		".aspx",
 		".bas",
@@ -68,13 +68,13 @@ var (
 		".txt",
 		".vue",
 		".zsh",
-	}
+	)
 
-	acceptedFileNames = []string{
+	acceptedFileNames = set.NewCaseInsensitive(
 		"license",
 		"licence",
 		"copyright",
-	}
+	)
 )
 
 func init() {
@@ -122,13 +122,11 @@ func (a *licenseFileAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 			return false
 		}
 	}
-	ext := strings.ToLower(filepath.Ext(filePath))
-	if slices.Contains(acceptedExtensions, ext) {
+	if acceptedExtensions.Contains(filepath.Ext(filePath)) {
 		return true
 	}
 
-	baseName := strings.ToLower(filepath.Base(filePath))
-	return slices.Contains(acceptedFileNames, baseName)
+	return acceptedFileNames.Contains(filepath.Base(filePath))
 }
 
 func isHumanReadable(content xio.ReadSeekerAt, fileSize int64) (bool, error) {
