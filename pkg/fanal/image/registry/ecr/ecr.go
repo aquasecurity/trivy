@@ -79,11 +79,13 @@ func (e *ECR) CheckOptions(domain string, option types.RegistryOptions) (intf.Re
 // <registry-id>.dkr.ecr.<region>.amazonaws.com.cn
 // <registry-id>.dkr.ecr.<region>.sc2s.sgov.gov
 // <registry-id>.dkr.ecr.<region>.c2s.ic.gov
+// <registry-id>.dkr-ecr.<region>.on.aws
 // see
 // - https://docs.aws.amazon.com/general/latest/gr/ecr.html
 // - https://docs.amazonaws.cn/en_us/aws/latest/userguide/endpoints-arns.html
+// - https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr-requests.html
 // - https://github.com/boto/botocore/blob/1.34.51/botocore/data/endpoints.json
-var ecrEndpointMatch = regexp.MustCompile(`^[^.]+\.dkr\.ecr(?:-fips)?\.([^.]+)\.(?:amazonaws\.com(?:\.cn)?|sc2s\.sgov\.gov|c2s\.ic\.gov)$`)
+var ecrEndpointMatch = regexp.MustCompile(`^[^.]+\.dkr[.-]ecr(?:-fips)?\.([^.]+)\.(?:amazonaws\.com(?:\.cn)?|sc2s\.sgov\.gov|c2s\.ic\.gov|on\.aws)$`)
 
 func determineRegion(domain string) string {
 	matches := ecrEndpointMatch.FindStringSubmatch(domain)
