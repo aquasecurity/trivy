@@ -296,10 +296,6 @@ signs:
   signature: "${artifact}.sigstore.json"
   args:
     - "sign-blob"
-    # `use-signing-config` is enabled by default since Cosign v2.6.0, and we can't use the --oidc-issue flag with it.
-    # Therefore, we need to explicitly disable it.
-    - "--use-signing-config=false"
-    - "--oidc-issuer=https://token.actions.githubusercontent.com"
     - "--bundle=${signature}"
     - "${artifact}"
     - "--yes"
