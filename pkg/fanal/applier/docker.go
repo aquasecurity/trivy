@@ -3,6 +3,7 @@ package applier
 import (
 	"cmp"
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -235,6 +236,11 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		}
 	}
 
+	// Sort OS-matching packages first for deterministic deduplication
+	sort.Slice(mergedLayer.Packages, func(i, j int) bool {
+		return purlMatchesOS(mergedLayer.Packages[i], mergedLayer.OS.Family) &&
+			!purlMatchesOS(mergedLayer.Packages[j], mergedLayer.OS.Family)
+	})
 	// De-duplicate same debian packages from different dirs
 	// cf. https://github.com/aquasecurity/trivy/issues/8297
 	mergedLayer.Packages = xslices.ZeroToNil(lo.UniqBy(mergedLayer.Packages, func(pkg ftypes.Package) string {
@@ -342,4 +348,13 @@ func secretFindingsContains(findings []ftypes.SecretFinding, finding ftypes.Secr
 		}
 	}
 	return false
+}
+
+// Checks if a package's PURL namespace matches the detected OS family.
+// Used to ensure deterministic results when the same package is detected from multiple sources.
+func purlMatchesOS(pkg ftypes.Package, osFamily ftypes.OSType) bool {
+	if pkg.Identifier.PURL == nil || osFamily == "" {
+		return false
+	}
+	return pkg.Identifier.PURL.Namespace == string(osFamily)
 }
