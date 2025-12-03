@@ -105,8 +105,8 @@ require (
 	github.com/spf13/pflag v1.0.10
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
-	github.com/testcontainers/testcontainers-go v0.38.0
-	github.com/testcontainers/testcontainers-go/modules/localstack v0.38.0
+	github.com/testcontainers/testcontainers-go v0.40.0
+	github.com/testcontainers/testcontainers-go/modules/localstack v0.40.0
 	github.com/tetratelabs/wazero v1.10.1
 	github.com/twitchtv/twirp v8.1.3+incompatible
 	github.com/xeipuuv/gojsonschema v1.2.0
@@ -400,7 +400,7 @@ require (
 	github.com/segmentio/encoding v0.5.3 // indirect
 	github.com/sergi/go-diff v1.4.0 // indirect
 	github.com/shibumi/go-pathspec v1.3.0 // indirect
-	github.com/shirou/gopsutil/v4 v4.25.5 // indirect
+	github.com/shirou/gopsutil/v4 v4.25.6 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/sigstore/cosign/v2 v2.2.4 // indirect
 	github.com/sigstore/protobuf-specs v0.5.0 // indirect
