@@ -273,7 +273,7 @@ http_download_wget() {
   fi
 }
 http_download() {
-  log_debug`` "http_download $2"
+  log_debug "http_download $2"
   if is_command curl; then
     http_download_curl "$@"
     return
