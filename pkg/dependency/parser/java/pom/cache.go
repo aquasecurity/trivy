@@ -17,5 +17,5 @@ func (c pomCache) get(art artifact) *analysisResult {
 }
 
 func (c pomCache) key(art artifact) string {
-	return fmt.Sprintf("%s:%s", art.Name(), art.Version)
+	return fmt.Sprintf("%s:%s:%s", art.Name(), art.Version, art.RootFilePath)
 }
