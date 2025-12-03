@@ -35,9 +35,9 @@ type artifact struct {
 	Locations ftypes.Locations
 
 	// For correctly calculation package ID (hash),
-	// We need to store the file paths for root and module artifacts.
+	// We need to store the file paths for root or module artifacts.
 	// For other artifacts, it will be empty.
-	FilePath string
+	RootFilePath string
 }
 
 func newArtifact(groupID, artifactID, version string, licenses []string, props map[string]string) artifact {

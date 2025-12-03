@@ -125,7 +125,9 @@ func (p *Parser) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]ftypes.Packag
 	}
 
 	// Analyze root POM
-	result, err := p.analyze(ctx, root, analysisOptions{})
+	result, err := p.analyze(ctx, root, analysisOptions{
+		rootFilePath: p.rootPath,
+	})
 	if err != nil {
 		return nil, nil, xerrors.Errorf("analyze error (%s): %w", p.rootPath, err)
 	}
@@ -135,14 +137,14 @@ func (p *Parser) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]ftypes.Packag
 
 	rootArt := root.artifact()
 	rootArt.Relationship = ftypes.RelationshipRoot
-	rootArt.FilePath = p.rootPath
+	rootArt.RootFilePath = p.rootPath
 
 	return p.parseRoot(ctx, rootArt, set.New[string]())
 }
 
 // nolint: gocyclo
 func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.Set[string]) ([]ftypes.Package, []ftypes.Dependency, error) {
-	if root.FilePath == "" {
+	if root.RootFilePath == "" {
 		return nil, nil, xerrors.New("root file path should be filled")
 	}
 
@@ -168,7 +170,7 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 		// Modules should be handled separately so that they can have independent dependencies.
 		// It means multi-module allows for duplicate dependencies.
 		if art.Module {
-			id := packageID(art.Name(), art.Version.String(), art.FilePath)
+			id := packageID(art.Name(), art.Version.String(), art.RootFilePath)
 			if uniqModules.Contains(id) {
 				continue
 			}
@@ -253,14 +255,14 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 			dependsOn := lo.Map(result.dependencies, func(a artifact, _ int) string {
 				return a.Name()
 			})
-			uniqDeps[packageID(art.Name(), art.Version.String(), root.FilePath)] = dependsOn
+			uniqDeps[packageID(art.Name(), art.Version.String(), root.RootFilePath)] = dependsOn
 		}
 	}
 
 	// Convert to []ftypes.Package and []ftypes.Dependency
 	for name, art := range uniqArtifacts {
 		pkg := ftypes.Package{
-			ID:           packageID(name, art.Version.String(), root.FilePath),
+			ID:           packageID(name, art.Version.String(), root.RootFilePath),
 			Name:         name,
 			Version:      art.Version.String(),
 			Licenses:     art.Licenses,
@@ -272,7 +274,7 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 		// Convert dependency names into dependency IDs
 		dependsOn := lo.FilterMap(uniqDeps[pkg.ID], func(dependOnName string, _ int) (string, bool) {
 			ver := depVersion(dependOnName, uniqArtifacts)
-			return packageID(dependOnName, ver, root.FilePath), ver != ""
+			return packageID(dependOnName, ver, root.RootFilePath), ver != ""
 		})
 
 		// `mvn` shows modules separately from the root package and does not show module nesting.
@@ -311,14 +313,16 @@ func (p *Parser) parseModule(ctx context.Context, currentPath, relativePath stri
 		return artifact{}, xerrors.Errorf("unable to open the relative path: %w", err)
 	}
 
-	result, err := p.analyze(ctx, module, analysisOptions{})
+	result, err := p.analyze(ctx, module, analysisOptions{
+		rootFilePath: module.filePath,
+	})
 	if err != nil {
 		return artifact{}, xerrors.Errorf("analyze error: %w", err)
 	}
 
 	moduleArtifact := module.artifact()
 	moduleArtifact.Module = true
-	moduleArtifact.FilePath = relativePath
+	moduleArtifact.RootFilePath = module.filePath
 	moduleArtifact.Relationship = ftypes.RelationshipWorkspace
 
 	p.cache.put(moduleArtifact, result)
@@ -352,6 +356,7 @@ func (p *Parser) resolve(ctx context.Context, art artifact, rootDepManagement []
 	result, err := p.analyze(ctx, pomContent, analysisOptions{
 		exclusions:    art.Exclusions,
 		depManagement: rootDepManagement,
+		rootFilePath:  art.RootFilePath,
 	})
 	if err != nil {
 		return analysisResult{}, xerrors.Errorf("analyze error: %w", err)
@@ -373,6 +378,7 @@ type analysisResult struct {
 type analysisOptions struct {
 	exclusions    set.Set[string]
 	depManagement []pomDependency // from the root POM
+	rootFilePath  string          // File path of the root POM or module POM
 }
 
 func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (analysisResult, error) {
@@ -402,9 +408,12 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 	}
 	deps = p.filterDependencies(deps, opts.exclusions)
 
+	art := pom.artifact()
+	art.RootFilePath = opts.rootFilePath
+
 	return analysisResult{
 		filePath:             pom.filePath,
-		artifact:             pom.artifact(),
+		artifact:             art,
 		dependencies:         deps,
 		dependencyManagement: depManagement,
 		properties:           props,
