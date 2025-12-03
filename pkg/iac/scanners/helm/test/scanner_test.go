@@ -28,12 +28,12 @@ func TestScanner_ScanFS(t *testing.T) {
 			name:   "archived chart",
 			target: filepath.Join("testdata", "mysql-8.8.26.tar"),
 			assert: assertIds([]string{
-				"KSV001", "KSV003",
-				"KSV011", "KSV012", "KSV014",
-				"KSV015", "KSV016", "KSV018",
-				"KSV020", "KSV021", "KSV030",
-				"KSV104", "KSV106", "KSV0125",
-				"KSV004",
+				"KSV-0001", "KSV-0003",
+				"KSV-0011", "KSV-0012", "KSV-0014",
+				"KSV-0015", "KSV-0016", "KSV-0018",
+				"KSV-0020", "KSV-0021", "KSV-0030",
+				"KSV-0104", "KSV-0106", "KSV-0125",
+				"KSV-0004",
 			}),
 		},
 		{
@@ -41,19 +41,19 @@ func TestScanner_ScanFS(t *testing.T) {
 			target: filepath.Join("testdata", "testchart"),
 			assert: func(t *testing.T, results scan.Results) {
 				assertIds([]string{
-					"KSV001", "KSV003",
-					"KSV011", "KSV012", "KSV014",
-					"KSV015", "KSV016",
-					"KSV020", "KSV021", "KSV030",
-					"KSV104", "KSV106",
-					"KSV117", "KSV110", "KSV118",
-					"KSV004",
+					"KSV-0001", "KSV-0003",
+					"KSV-0011", "KSV-0012", "KSV-0014",
+					"KSV-0015", "KSV-0016",
+					"KSV-0020", "KSV-0021", "KSV-0030",
+					"KSV-0104", "KSV-0106",
+					"KSV-0117", "KSV-0110", "KSV-0118",
+					"KSV-0004",
 				})(t, results)
 
 				ignored := results.GetIgnored()
 				assert.Len(t, ignored, 1)
 
-				assert.Equal(t, "KSV018", ignored[0].Rule().ID)
+				assert.Equal(t, "KSV-0018", ignored[0].Rule().ID)
 				assert.Equal(t, "testchart/templates/deployment.yaml", ignored[0].Metadata().Range().GetFilename())
 			},
 		},
@@ -62,12 +62,12 @@ func TestScanner_ScanFS(t *testing.T) {
 			name:   "scanner with missing chart name can recover",
 			target: filepath.Join("testdata", "aws-cluster-autoscaler-bad.tar.gz"),
 			assert: assertIds([]string{
-				"KSV014", "KSV023", "KSV030",
-				"KSV104", "KSV003", "KSV018",
-				"KSV118", "KSV012", "KSV106",
-				"KSV016", "KSV001", "KSV011",
-				"KSV015", "KSV021", "KSV110", "KSV020",
-				"KSV004",
+				"KSV-0014", "KSV-0023", "KSV-0030",
+				"KSV-0104", "KSV-0003", "KSV-0018",
+				"KSV-0118", "KSV-0012", "KSV-0106",
+				"KSV-0016", "KSV-0001", "KSV-0011",
+				"KSV-0015", "KSV-0021", "KSV-0110", "KSV-0020",
+				"KSV-0004",
 			}),
 		},
 		{
@@ -96,12 +96,12 @@ deny[res] {
 }`)),
 			},
 			assert: assertIds([]string{
-				"KSV001", "KSV003",
-				"KSV011", "KSV012", "KSV014",
-				"KSV015", "KSV016", "KSV018",
-				"KSV020", "KSV021", "KSV030",
-				"KSV104", "KSV106", "USR-ID001",
-				"KSV004", "KSV0125",
+				"KSV-0001", "KSV-0003",
+				"KSV-0011", "KSV-0012", "KSV-0014",
+				"KSV-0015", "KSV-0016", "KSV-0018",
+				"KSV-0020", "KSV-0021", "KSV-0030",
+				"KSV-0104", "KSV-0106", "USR-ID001",
+				"KSV-0004", "KSV-0125",
 			}),
 		},
 		{
