@@ -1,6 +1,8 @@
 package npm
 
 import (
+	"strings"
+
 	"golang.org/x/xerrors"
 
 	npm "github.com/aquasecurity/go-npm-version/pkg"
@@ -11,9 +13,17 @@ import (
 // Comparer represents a comparer for npm
 type Comparer struct{}
 
+func normalizeVersion(ver string) string {
+	if idx := strings.Index(ver, "-canary"); idx != -1 {
+		return ver[:idx]
+	}
+	return ver
+}
+
 // IsVulnerable checks if the package version is vulnerable to the advisory.
 func (n Comparer) IsVulnerable(ver string, advisory dbTypes.Advisory) bool {
-	return compare.IsVulnerable(ver, advisory, n.MatchVersion)
+	normalizedVer := normalizeVersion(ver)
+	return compare.IsVulnerable(normalizedVer, advisory, n.MatchVersion)
 }
 
 // MatchVersion checks if the package version satisfies the given constraint.
