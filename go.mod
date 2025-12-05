@@ -24,7 +24,7 @@ require (
 	github.com/aquasecurity/testdocker v0.0.0-20250616060700-ba6845ac6d17
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-checks v1.11.3-0.20250604022615-9a7efa7c9169
-	github.com/aquasecurity/trivy-db v0.0.0-20250929072116-eba1ced2340a
+	github.com/aquasecurity/trivy-db v0.0.0-20251205093947-925515d35727
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
 	github.com/aquasecurity/trivy-kubernetes v0.9.1
 	github.com/aws/aws-sdk-go-v2 v1.40.0
@@ -503,8 +503,6 @@ require (
 	sigs.k8s.io/structured-merge-diff/v6 v6.3.0 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
-
-replace github.com/aquasecurity/trivy-db => github.com/mbauman/trivy-db v0.0.0-20251125120919-02389015ecf1
 
 tool (
 	github.com/bufbuild/buf/cmd/buf
