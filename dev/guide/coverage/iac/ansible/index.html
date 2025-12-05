@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://trivy.dev/dev/community/contribute/checks/service-support/">
+        <link rel="canonical" href="https://trivy.dev/dev/guide/coverage/iac/ansible/">
       
       
-        <link rel="prev" href="../overview/">
+        <link rel="prev" href="../">
       
       
-        <link rel="next" href="../../vulnerability-database/overview/">
+        <link rel="next" href="../azure-arm/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Add Service Support - Trivy</title>
+        <title>Ansible - Trivy</title>
       
     
     
@@ -75,9 +75,9 @@
 
 
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Trivy - Add Service Support" />
+<meta property="og:title" content="Trivy - Ansible" />
 <meta property="og:description" content="Trivy - All-in-one open source security scanner" />
-<meta property="og:url" content="https://trivy.dev/dev/community/contribute/checks/service-support/" />
+<meta property="og:url" content="https://trivy.dev/dev/guide/coverage/iac/ansible/" />
 <meta property="og:image" content="https://trivy.dev/devassets/images/illustrations/banner.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1080" />
@@ -104,7 +104,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#add-service-support" class="md-skip">
+        <a href="#ansible" class="md-skip">
           Skip to content
         </a>
       
@@ -155,7 +155,7 @@ You're not viewing the latest version of the documentation.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Add Service Support
+              Ansible
             
           </span>
         </div>
@@ -281,11 +281,13 @@ You're not viewing the latest version of the documentation.
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../../../guide/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../" class="md-tabs__link">
           
   
   User Guide
@@ -317,13 +319,11 @@ You're not viewing the latest version of the documentation.
         
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../../../principles/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../../../community/principles/" class="md-tabs__link">
           
   
   Contributing
@@ -1542,25 +1542,30 @@ You're not viewing the latest version of the documentation.
       
   
   
+    
   
   
+  
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -1577,7 +1582,7 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1595,7 +1600,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/" class="md-nav__link">
+      <a href="../../../" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1627,17 +1632,20 @@ You're not viewing the latest version of the documentation.
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
         
           
-          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -1672,7 +1680,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/target/container_image/" class="md-nav__link">
+      <a href="../../../target/container_image/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1699,7 +1707,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/target/filesystem/" class="md-nav__link">
+      <a href="../../../target/filesystem/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1726,7 +1734,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/target/rootfs/" class="md-nav__link">
+      <a href="../../../target/rootfs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1753,7 +1761,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/target/repository/" class="md-nav__link">
+      <a href="../../../target/repository/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1780,7 +1788,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/target/vm/" class="md-nav__link">
+      <a href="../../../target/vm/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1807,7 +1815,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/target/kubernetes/" class="md-nav__link">
+      <a href="../../../target/kubernetes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1834,7 +1842,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/target/sbom/" class="md-nav__link">
+      <a href="../../../target/sbom/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1874,17 +1882,20 @@ You're not viewing the latest version of the documentation.
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
         
           
-          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -1919,7 +1930,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/scanner/vulnerability/" class="md-nav__link">
+      <a href="../../../scanner/vulnerability/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1996,7 +2007,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/scanner/misconfiguration/" class="md-nav__link">
+      <a href="../../../scanner/misconfiguration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2023,7 +2034,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/scanner/misconfiguration/config/config/" class="md-nav__link">
+      <a href="../../../scanner/misconfiguration/config/config/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2100,7 +2111,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/scanner/misconfiguration/check/builtin/" class="md-nav__link">
+      <a href="../../../scanner/misconfiguration/check/builtin/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2185,7 +2196,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/scanner/misconfiguration/custom/" class="md-nav__link">
+      <a href="../../../scanner/misconfiguration/custom/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2212,7 +2223,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/scanner/misconfiguration/custom/data/" class="md-nav__link">
+      <a href="../../../scanner/misconfiguration/custom/data/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2239,7 +2250,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/scanner/misconfiguration/custom/combine/" class="md-nav__link">
+      <a href="../../../scanner/misconfiguration/custom/combine/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2266,7 +2277,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/scanner/misconfiguration/custom/selectors/" class="md-nav__link">
+      <a href="../../../scanner/misconfiguration/custom/selectors/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2293,7 +2304,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/scanner/misconfiguration/custom/schema/" class="md-nav__link">
+      <a href="../../../scanner/misconfiguration/custom/schema/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2320,7 +2331,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/scanner/misconfiguration/custom/testing/" class="md-nav__link">
+      <a href="../../../scanner/misconfiguration/custom/testing/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2347,7 +2358,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/scanner/misconfiguration/custom/debug/" class="md-nav__link">
+      <a href="../../../scanner/misconfiguration/custom/debug/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2374,7 +2385,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/scanner/misconfiguration/custom/contribute-checks/" class="md-nav__link">
+      <a href="../../../scanner/misconfiguration/custom/contribute-checks/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2417,7 +2428,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/scanner/secret/" class="md-nav__link">
+      <a href="../../../scanner/secret/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2444,7 +2455,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/scanner/license/" class="md-nav__link">
+      <a href="../../../scanner/license/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2476,25 +2487,30 @@ You're not viewing the latest version of the documentation.
                 
   
   
+    
   
   
+  
     
     
     
       
       
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
         
           
-          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -2511,7 +2527,7 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2529,7 +2545,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/" class="md-nav__link">
+      <a href="../../" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2606,7 +2622,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/" class="md-nav__link">
+      <a href="../../os/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2633,7 +2649,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/alma/" class="md-nav__link">
+      <a href="../../os/alma/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2660,7 +2676,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/alpine/" class="md-nav__link">
+      <a href="../../os/alpine/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2687,7 +2703,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/amazon/" class="md-nav__link">
+      <a href="../../os/amazon/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2714,7 +2730,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/azure/" class="md-nav__link">
+      <a href="../../os/azure/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2741,7 +2757,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/bottlerocket/" class="md-nav__link">
+      <a href="../../os/bottlerocket/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2768,7 +2784,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/centos/" class="md-nav__link">
+      <a href="../../os/centos/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2795,7 +2811,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/chainguard/" class="md-nav__link">
+      <a href="../../os/chainguard/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2822,7 +2838,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/coreos/" class="md-nav__link">
+      <a href="../../os/coreos/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2849,7 +2865,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/debian/" class="md-nav__link">
+      <a href="../../os/debian/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2876,7 +2892,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/echo/" class="md-nav__link">
+      <a href="../../os/echo/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2903,7 +2919,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/minimos/" class="md-nav__link">
+      <a href="../../os/minimos/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2930,7 +2946,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/oracle/" class="md-nav__link">
+      <a href="../../os/oracle/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2957,7 +2973,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/photon/" class="md-nav__link">
+      <a href="../../os/photon/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2984,7 +3000,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/rhel/" class="md-nav__link">
+      <a href="../../os/rhel/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3011,7 +3027,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/rocky/" class="md-nav__link">
+      <a href="../../os/rocky/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3038,7 +3054,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/suse/" class="md-nav__link">
+      <a href="../../os/suse/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3065,7 +3081,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/ubuntu/" class="md-nav__link">
+      <a href="../../os/ubuntu/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3092,7 +3108,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/wolfi/" class="md-nav__link">
+      <a href="../../os/wolfi/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3119,7 +3135,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/os/google-distroless/" class="md-nav__link">
+      <a href="../../os/google-distroless/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3204,7 +3220,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/language/" class="md-nav__link">
+      <a href="../../language/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3231,7 +3247,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/language/c/" class="md-nav__link">
+      <a href="../../language/c/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3258,7 +3274,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/language/dart/" class="md-nav__link">
+      <a href="../../language/dart/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3285,7 +3301,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/language/dotnet/" class="md-nav__link">
+      <a href="../../language/dotnet/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3312,7 +3328,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/language/elixir/" class="md-nav__link">
+      <a href="../../language/elixir/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3339,7 +3355,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/language/golang/" class="md-nav__link">
+      <a href="../../language/golang/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3366,7 +3382,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/language/java/" class="md-nav__link">
+      <a href="../../language/java/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3393,7 +3409,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/language/nodejs/" class="md-nav__link">
+      <a href="../../language/nodejs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3420,7 +3436,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/language/php/" class="md-nav__link">
+      <a href="../../language/php/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3447,7 +3463,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/language/python/" class="md-nav__link">
+      <a href="../../language/python/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3474,7 +3490,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/language/ruby/" class="md-nav__link">
+      <a href="../../language/ruby/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3501,7 +3517,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/language/rust/" class="md-nav__link">
+      <a href="../../language/rust/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3528,7 +3544,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/language/swift/" class="md-nav__link">
+      <a href="../../language/swift/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3555,7 +3571,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/language/julia/" class="md-nav__link">
+      <a href="../../language/julia/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3587,8 +3603,10 @@ You're not viewing the latest version of the documentation.
                 
   
   
+    
   
   
+  
     
     
     
@@ -3598,11 +3616,11 @@ You're not viewing the latest version of the documentation.
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4_4" checked>
         
           
           <label class="md-nav__link" for="__nav_4_4_4" id="__nav_4_4_4_label" tabindex="0">
@@ -3622,7 +3640,7 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_4_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_4_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4_4_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -3640,7 +3658,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/iac/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3664,10 +3682,36 @@ You're not viewing the latest version of the documentation.
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../../../guide/coverage/iac/ansible/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    
+  
+    Ansible
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -3682,6 +3726,109 @@ You're not viewing the latest version of the documentation.
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#misconfigurations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Misconfigurations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Misconfigurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#project-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project scanning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scanning-specific-playbooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scanning specific playbooks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using inventory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passing-extra-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Passing extra variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rendering-misconfiguration-snippet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rendering misconfiguration snippet
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -3694,7 +3841,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/iac/azure-arm/" class="md-nav__link">
+      <a href="../azure-arm/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3721,7 +3868,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/iac/cloudformation/" class="md-nav__link">
+      <a href="../cloudformation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3748,7 +3895,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/iac/docker/" class="md-nav__link">
+      <a href="../docker/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3775,7 +3922,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/iac/helm/" class="md-nav__link">
+      <a href="../helm/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3802,7 +3949,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/iac/kubernetes/" class="md-nav__link">
+      <a href="../kubernetes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3829,7 +3976,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/iac/terraform/" class="md-nav__link">
+      <a href="../terraform/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3914,7 +4061,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/others/" class="md-nav__link">
+      <a href="../../others/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3941,7 +4088,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/others/bitnami/" class="md-nav__link">
+      <a href="../../others/bitnami/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3968,7 +4115,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/others/conda/" class="md-nav__link">
+      <a href="../../others/conda/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3995,7 +4142,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/others/rootio/" class="md-nav__link">
+      <a href="../../others/rootio/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4022,7 +4169,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/others/seal/" class="md-nav__link">
+      <a href="../../others/seal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4049,7 +4196,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/others/rpm/" class="md-nav__link">
+      <a href="../../others/rpm/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4084,7 +4231,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/coverage/kubernetes/" class="md-nav__link">
+      <a href="../../kubernetes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4124,17 +4271,20 @@ You're not viewing the latest version of the documentation.
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
         
           
-          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -4169,7 +4319,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/configuration/" class="md-nav__link">
+      <a href="../../../configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4196,7 +4346,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/configuration/filtering/" class="md-nav__link">
+      <a href="../../../configuration/filtering/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4223,7 +4373,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/configuration/skipping/" class="md-nav__link">
+      <a href="../../../configuration/skipping/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4250,7 +4400,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/configuration/reporting/" class="md-nav__link">
+      <a href="../../../configuration/reporting/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4277,7 +4427,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/configuration/cache/" class="md-nav__link">
+      <a href="../../../configuration/cache/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4304,7 +4454,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/configuration/db/" class="md-nav__link">
+      <a href="../../../configuration/db/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4331,7 +4481,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/configuration/others/" class="md-nav__link">
+      <a href="../../../configuration/others/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4371,17 +4521,20 @@ You're not viewing the latest version of the documentation.
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
         
           
-          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -4416,7 +4569,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/supply-chain/sbom/" class="md-nav__link">
+      <a href="../../../supply-chain/sbom/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4493,7 +4646,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/supply-chain/attestation/sbom/" class="md-nav__link">
+      <a href="../../../supply-chain/attestation/sbom/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4520,7 +4673,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/supply-chain/attestation/vuln/" class="md-nav__link">
+      <a href="../../../supply-chain/attestation/vuln/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4547,7 +4700,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/supply-chain/attestation/rekor/" class="md-nav__link">
+      <a href="../../../supply-chain/attestation/rekor/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4632,7 +4785,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/supply-chain/vex/" class="md-nav__link">
+      <a href="../../../supply-chain/vex/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4659,7 +4812,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/supply-chain/vex/repo/" class="md-nav__link">
+      <a href="../../../supply-chain/vex/repo/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4686,7 +4839,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/supply-chain/vex/file/" class="md-nav__link">
+      <a href="../../../supply-chain/vex/file/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4713,7 +4866,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/supply-chain/vex/sbom-ref/" class="md-nav__link">
+      <a href="../../../supply-chain/vex/sbom-ref/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4740,7 +4893,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/supply-chain/vex/oci/" class="md-nav__link">
+      <a href="../../../supply-chain/vex/oci/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4788,17 +4941,20 @@ You're not viewing the latest version of the documentation.
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_7" >
         
           
-          <label class="md-nav__link" for="__nav_4_7" id="__nav_4_7_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_7" id="__nav_4_7_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -4833,7 +4989,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/compliance/compliance/" class="md-nav__link">
+      <a href="../../../compliance/compliance/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4860,7 +5016,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/compliance/contrib-compliance/" class="md-nav__link">
+      <a href="../../../compliance/contrib-compliance/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4900,17 +5056,20 @@ You're not viewing the latest version of the documentation.
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_8" >
         
           
-          <label class="md-nav__link" for="__nav_4_8" id="__nav_4_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_8" id="__nav_4_8_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -4945,7 +5104,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/plugin/" class="md-nav__link">
+      <a href="../../../plugin/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4972,7 +5131,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/plugin/user-guide/" class="md-nav__link">
+      <a href="../../../plugin/user-guide/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4999,7 +5158,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/plugin/developer-guide/" class="md-nav__link">
+      <a href="../../../plugin/developer-guide/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5039,17 +5198,20 @@ You're not viewing the latest version of the documentation.
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9" >
         
           
-          <label class="md-nav__link" for="__nav_4_9" id="__nav_4_9_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_9" id="__nav_4_9_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -5084,7 +5246,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/advanced/modules/" class="md-nav__link">
+      <a href="../../../advanced/modules/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5111,7 +5273,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/advanced/air-gap/" class="md-nav__link">
+      <a href="../../../advanced/air-gap/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5138,7 +5300,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/advanced/self-hosting/" class="md-nav__link">
+      <a href="../../../advanced/self-hosting/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5215,7 +5377,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/advanced/container/embed-in-dockerfile/" class="md-nav__link">
+      <a href="../../../advanced/container/embed-in-dockerfile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5242,7 +5404,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/advanced/container/unpacked-filesystem/" class="md-nav__link">
+      <a href="../../../advanced/container/unpacked-filesystem/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5319,7 +5481,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/advanced/private-registries/" class="md-nav__link">
+      <a href="../../../advanced/private-registries/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5346,7 +5508,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/advanced/private-registries/docker-hub/" class="md-nav__link">
+      <a href="../../../advanced/private-registries/docker-hub/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5373,7 +5535,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/advanced/private-registries/ecr/" class="md-nav__link">
+      <a href="../../../advanced/private-registries/ecr/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5400,7 +5562,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/advanced/private-registries/gcr/" class="md-nav__link">
+      <a href="../../../advanced/private-registries/gcr/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5427,7 +5589,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/advanced/private-registries/acr/" class="md-nav__link">
+      <a href="../../../advanced/private-registries/acr/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5454,7 +5616,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/advanced/private-registries/self/" class="md-nav__link">
+      <a href="../../../advanced/private-registries/self/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5497,7 +5659,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/advanced/telemetry/" class="md-nav__link">
+      <a href="../../../advanced/telemetry/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5537,17 +5699,20 @@ You're not viewing the latest version of the documentation.
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_10" >
         
           
-          <label class="md-nav__link" for="__nav_4_10" id="__nav_4_10_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_10" id="__nav_4_10_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -5682,7 +5847,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5709,7 +5874,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_clean/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_clean/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5736,7 +5901,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_config/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_config/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5763,7 +5928,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_convert/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_convert/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5790,7 +5955,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_filesystem/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_filesystem/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5817,7 +5982,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_image/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_image/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5844,7 +6009,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_kubernetes/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_kubernetes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5921,7 +6086,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_module/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_module/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5948,7 +6113,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_module_install/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_module_install/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5975,7 +6140,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_module_uninstall/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_module_uninstall/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6060,7 +6225,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_plugin/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_plugin/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6087,7 +6252,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_plugin_info/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_plugin_info/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6114,7 +6279,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_plugin_install/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_plugin_install/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6141,7 +6306,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_plugin_list/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_plugin_list/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6168,7 +6333,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_plugin_run/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_plugin_run/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6195,7 +6360,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_plugin_uninstall/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_plugin_uninstall/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6222,7 +6387,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_plugin_update/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_plugin_update/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6249,7 +6414,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_plugin_upgrade/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_plugin_upgrade/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6276,7 +6441,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_plugin_search/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_plugin_search/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6361,7 +6526,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_registry/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_registry/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6388,7 +6553,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_registry_login/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_registry_login/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6415,7 +6580,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_registry_logout/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_registry_logout/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6450,7 +6615,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_repository/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_repository/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6477,7 +6642,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_rootfs/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_rootfs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6504,7 +6669,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_sbom/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_sbom/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6531,7 +6696,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_server/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_server/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6558,7 +6723,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_version/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_version/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6635,7 +6800,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_vex/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_vex/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6662,7 +6827,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_vex_repo_download/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_vex_repo_download/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6689,7 +6854,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_vex_repo_init/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_vex_repo_init/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6716,7 +6881,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_vex_repo_list/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_vex_repo_list/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6743,7 +6908,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_vex_repo/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_vex_repo/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6778,7 +6943,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/cli/trivy_vm/" class="md-nav__link">
+      <a href="../../../references/configuration/cli/trivy_vm/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6813,7 +6978,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/configuration/config-file/" class="md-nav__link">
+      <a href="../../../references/configuration/config-file/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6898,7 +7063,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/modes/standalone/" class="md-nav__link">
+      <a href="../../../references/modes/standalone/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6925,7 +7090,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/modes/client-server/" class="md-nav__link">
+      <a href="../../../references/modes/client-server/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6960,7 +7125,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/troubleshooting/" class="md-nav__link">
+      <a href="../../../references/troubleshooting/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6987,7 +7152,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/terminology/" class="md-nav__link">
+      <a href="../../../references/terminology/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7014,7 +7179,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../../guide/references/abbreviations/" class="md-nav__link">
+      <a href="../../../references/abbreviations/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7245,30 +7410,25 @@ You're not viewing the latest version of the documentation.
       
   
   
-    
   
   
-  
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -7285,7 +7445,7 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -7303,7 +7463,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../principles/" class="md-nav__link">
+      <a href="../../../../community/principles/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7335,20 +7495,17 @@ You're not viewing the latest version of the documentation.
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_2" >
         
           
-          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -7383,7 +7540,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../issue/" class="md-nav__link">
+      <a href="../../../../community/contribute/issue/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7410,7 +7567,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../discussion/" class="md-nav__link">
+      <a href="../../../../community/contribute/discussion/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7437,7 +7594,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../pr/" class="md-nav__link">
+      <a href="../../../../community/contribute/pr/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7469,30 +7626,25 @@ You're not viewing the latest version of the documentation.
                 
   
   
-    
   
   
-  
     
     
     
       
       
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_3" >
         
           
-          
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_3" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -7509,7 +7661,7 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -7527,7 +7679,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../overview/" class="md-nav__link">
+      <a href="../../../../community/contribute/checks/overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7551,36 +7703,10 @@ You're not viewing the latest version of the documentation.
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    
-  
-    Add Service Support
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../../community/contribute/checks/service-support/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7595,87 +7721,6 @@ You're not viewing the latest version of the documentation.
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Prerequisites
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#adding-a-new-service-to-an-existing-provider" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Adding a new service to an existing provider
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Adding a new service to an existing provider">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#create-a-new-file-in-the-provider-directory" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Create a new file in the provider directory
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#update-adapters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Update Adapters
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#create-a-new-schema-for-your-provider" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Create a new Schema for your provider
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -7701,20 +7746,17 @@ You're not viewing the latest version of the documentation.
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_4" >
         
           
-          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -7749,7 +7791,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability-database/overview/" class="md-nav__link">
+      <a href="../../../../community/contribute/vulnerability-database/overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7776,7 +7818,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability-database/add-vulnerability-source/" class="md-nav__link">
+      <a href="../../../../community/contribute/vulnerability-database/add-vulnerability-source/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7816,20 +7858,17 @@ You're not viewing the latest version of the documentation.
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_5" >
         
           
-          <label class="md-nav__link" for="__nav_6_5" id="__nav_6_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6_5" id="__nav_6_5_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -7864,7 +7903,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../maintainer/pr-review/" class="md-nav__link">
+      <a href="../../../../community/maintainer/pr-review/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7891,7 +7930,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../maintainer/release-flow/" class="md-nav__link">
+      <a href="../../../../community/maintainer/release-flow/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7918,7 +7957,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../maintainer/backporting/" class="md-nav__link">
+      <a href="../../../../community/maintainer/backporting/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7945,7 +7984,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../maintainer/help-wanted/" class="md-nav__link">
+      <a href="../../../../community/maintainer/help-wanted/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -7972,7 +8011,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../../maintainer/triage/" class="md-nav__link">
+      <a href="../../../../community/maintainer/triage/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -8145,33 +8184,22 @@ You're not viewing the latest version of the documentation.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
+  <a href="#misconfigurations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Prerequisites
+        Misconfigurations
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#adding-a-new-service-to-an-existing-provider" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Adding a new service to an existing provider
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Adding a new service to an existing provider">
+    <nav class="md-nav" aria-label="Misconfigurations">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#create-a-new-file-in-the-provider-directory" class="md-nav__link">
+  <a href="#project-scanning" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Create a new file in the provider directory
+        Project scanning
       
     </span>
   </a>
@@ -8179,10 +8207,43 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#update-adapters" class="md-nav__link">
+  <a href="#scanning-specific-playbooks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Update Adapters
+        Scanning specific playbooks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using inventory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passing-extra-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Passing extra variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rendering-misconfiguration-snippet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rendering misconfiguration snippet
       
     </span>
   </a>
@@ -8195,10 +8256,10 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
-  <a href="#create-a-new-schema-for-your-provider" class="md-nav__link">
+  <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Create a new Schema for your provider
+        Limitations
       
     </span>
   </a>
@@ -8222,7 +8283,7 @@ You're not viewing the latest version of the documentation.
 
 
   
-    <a href="https://github.com/aquasecurity/trivy/blob/main/docs/community/contribute/checks/service-support.md" title="Edit this page" class="md-content__button md-icon">
+    <a href="https://github.com/aquasecurity/trivy/blob/main/docs/guide/coverage/iac/ansible.md" title="Edit this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -8230,48 +8291,145 @@ You're not viewing the latest version of the documentation.
   
 
 
-<h1 id="add-service-support">Add Service Support<a class="headerlink" href="#add-service-support" title="Permanent link">&para;</a></h1>
-<p>A service refers to a service by a cloud provider. This section details how to add a new service to an existing provider. All contributions need to be made to the <a href="https://github.com/aquasecurity/trivy/">trivy repository</a>.</p>
-<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
-<p>Before you begin, verify that the <a href="https://github.com/aquasecurity/trivy/tree/main/pkg/iac/providers">provider</a> does not already have the service that you plan to add.</p>
-<h2 id="adding-a-new-service-to-an-existing-provider">Adding a new service to an existing provider<a class="headerlink" href="#adding-a-new-service-to-an-existing-provider" title="Permanent link">&para;</a></h2>
-<p>Adding a new service involves two steps. The service will need a data structure to store information about the required resources that will be scanned. Additionally, the service will require one or more adapters to convert the scan targetes as input(s) into the aforementioned data structure.</p>
-<h3 id="create-a-new-file-in-the-provider-directory">Create a new file in the provider directory<a class="headerlink" href="#create-a-new-file-in-the-provider-directory" title="Permanent link">&para;</a></h3>
-<p>In this example, we are adding the CodeBuild service to the AWS provider.</p>
-<p>First, create a new directory and file for your new service under the provider directory: e.g. <a href="https://github.com/aquasecurity/trivy/blob/main/pkg/iac/providers/aws/codebuild/codebuild.go">aws/codebuild/codebuild.go</a></p>
-<p>The CodeBuild service will require a structure <code>struct</code> to hold the information on the input that is scanned. The input is the CodeBuild resource that a user configured and wants to scan for misconfiguration.</p>
-<div class="highlight"><pre><span></span><code>type CodeBuild struct {
-    Projects []Project
-}
+<h1 id="ansible">Ansible<a class="headerlink" href="#ansible" title="Permanent link">&para;</a></h1>
+<p>Trivy analyzes tasks in playbooks and roles for misconfigurations in cloud resources.</p>
+<div class="admonition warning">
+<p class="admonition-title">EXPERIMENTAL</p>
+<p>This feature might change without preserving backwards compatibility.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">LIMITATIONS</p>
+<p>Not all Ansible features are supported. See the <a href="#limitations">Limitations</a> section for a detailed list.</p>
+</div>
+<h2 id="misconfigurations">Misconfigurations<a class="headerlink" href="#misconfigurations" title="Permanent link">&para;</a></h2>
+<p>Trivy recursively scans directories starting from the root and detects Ansible projects by the presence of key files and folders:</p>
+<ul>
+<li><code>ansible.cfg</code>, <code>inventory</code>, <code>group_vars</code>, <code>host_vars</code>, <code>roles</code> and <code>playbooks</code></li>
+<li>YAML files that resemble playbooks</li>
+</ul>
+<p>For each project, Trivy performs the following steps:</p>
+<ul>
+<li><strong>Playbook discovery</strong> — determines entry points, i.e., playbooks that are not used as imports in other playbooks.</li>
+<li><strong>Task and variable resolution</strong> — Trivy resolves tasks and variables from plays, imports, and roles.</li>
+<li><strong>Module analysis</strong> — modules used in tasks are scanned for insecure configurations. Currently, only cloud resource modules are supported.</li>
+</ul>
+<h3 id="project-scanning">Project scanning<a class="headerlink" href="#project-scanning" title="Permanent link">&para;</a></h3>
+<p>The Ansible scanner is enabled by default. To run only this scanner, use the <code>--misconfig-scanners ansible</code> flag:</p>
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>conf<span class="w"> </span>--misconfig-scanners<span class="w"> </span>ansible<span class="w"> </span>.
 </code></pre></div>
-<p>The CodeBuild service manages <code>Project</code> resources. The <code>Project</code> struct has been added to hold information about each Project resources; <code>Project</code> Resources in turn manage <code>ArtifactSettings</code>:</p>
-<div class="highlight"><pre><span></span><code>type Project struct {
-    Metadata                  iacTypes.Metadata
-    ArtifactSettings          ArtifactSettings
-    SecondaryArtifactSettings []ArtifactSettings
-}
+<p>Example playbook:</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example playbook</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">  </span><span class="nt">connection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create S3 bucket</span>
+<span class="w">      </span><span class="nt">amazon.aws.s3_bucket</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">bucket_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="w">        </span><span class="nt">region</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">bucket_region</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="w">        </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">present</span>
+</code></pre></div>
+<p>Scan result:</p>
+<div class="highlight"><pre><span></span><code>AVD-AWS-0093<span class="w"> </span><span class="o">(</span>HIGH<span class="o">)</span>:<span class="w"> </span>Public<span class="w"> </span>access<span class="w"> </span>block<span class="w"> </span>does<span class="w"> </span>not<span class="w"> </span>restrict<span class="w"> </span>public<span class="w"> </span>buckets
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+S3<span class="w"> </span>buckets<span class="w"> </span>should<span class="w"> </span>restrict<span class="w"> </span>public<span class="w"> </span>policies<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>bucket.<span class="w"> </span>By<span class="w"> </span>enabling,<span class="w"> </span>the<span class="w"> </span>restrict_public_buckets,<span class="w"> </span>only<span class="w"> </span>the<span class="w"> </span>bucket<span class="w"> </span>owner<span class="w"> </span>and<span class="w"> </span>AWS<span class="w"> </span>Services<span class="w"> </span>can<span class="w"> </span>access<span class="w"> </span><span class="k">if</span><span class="w"> </span>it<span class="w"> </span>has<span class="w"> </span>a<span class="w"> </span>public<span class="w"> </span>policy.
 
-type ArtifactSettings struct {
-    Metadata          iacTypes.Metadata
-    EncryptionEnabled iacTypes.BoolValue
-}
+
+See<span class="w"> </span>https://avd.aquasec.com/misconfig/avd-aws-0093
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<span class="w"> </span>test.yaml:6-9
+<span class="w">   </span>via<span class="w"> </span>test.yaml:5-9<span class="w"> </span><span class="o">(</span>tasks<span class="o">)</span>
+<span class="w">    </span>via<span class="w"> </span>test.yaml:1-9<span class="w"> </span><span class="o">(</span>play<span class="o">)</span>
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<span class="w">   </span><span class="m">1</span><span class="w">   </span>-<span class="w"> </span>name:<span class="w"> </span>Example<span class="w"> </span>playbook
+<span class="w">   </span><span class="m">2</span><span class="w">     </span>hosts:<span class="w"> </span>localhost
+<span class="w">   </span><span class="m">3</span><span class="w">     </span>connection:<span class="w"> </span><span class="nb">local</span>
+<span class="w">   </span><span class="m">4</span><span class="w">     </span>tasks:
+<span class="w">   </span><span class="m">5</span><span class="w">       </span>-<span class="w"> </span>name:<span class="w"> </span>Create<span class="w"> </span>S3<span class="w"> </span>bucket
+<span class="w">   </span><span class="m">6</span><span class="w"> </span>┌<span class="w">       </span>amazon.aws.s3_bucket:
+<span class="w">   </span><span class="m">7</span><span class="w"> </span>│<span class="w">         </span>name:<span class="w"> </span><span class="s2">&quot;{{ bucket_name }}&quot;</span>
+<span class="w">   </span><span class="m">8</span><span class="w"> </span>│<span class="w">         </span>region:<span class="w"> </span><span class="s2">&quot;{{ bucket_region }}&quot;</span>
+<span class="w">   </span><span class="m">9</span><span class="w"> </span>└<span class="w">         </span>state:<span class="w"> </span>present
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 </code></pre></div>
-<p>The <code>iacTypes.Metadata</code> struct is embedded in all of the Trivy types and provides a common set of metadata for all resources. This includes the file and line number where the resource was defined and the name of the resource.</p>
-<p>A resource in this example <code>Project</code> can have a name and can optionally be encrypted. Instead of using raw string and bool types respectively, we use the trivy types <code>iacTypes.Metadata</code> and <code>iacTypes.BoolValue</code>. These types wrap the raw values and provide additional metadata about the value. For instance, whether it was set by the user and the file and line number where the resource was defined. </p>
-<p>Have a look at the other providers and services in the <a href="https://github.com/aquasecurity/trivy/tree/main/pkg/iac/providers"><code>iac/providers</code></a> directory in Trivy.</p>
-<p>Next you'll need to add a reference to your new service struct in the <a href="https://github.com/aquasecurity/trivy/blob/main/pkg/iac/providers/aws/aws.go">provider struct</a> at <code>pkg/iac/providers/aws/aws.go</code>:</p>
-<div class="highlight"><pre><span></span><code>type AWS struct {
-    ...
-    CodeBuild      codebuild.CodeBuild
-    ...
-}
+<p>If the project defines a collection (contains a <code>galaxy.yaml</code> file), Trivy can resolve roles using the full name <code>namespace.collection.role</code> within the project.</p>
+<p>Example <code>galaxy.yaml</code>:
+<div class="highlight"><pre><span></span><code><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myorg</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mycollection</span>
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
+</code></pre></div></p>
+<p>Project structure:
+<div class="highlight"><pre><span></span><code>roles/
+<span class="w">  </span>myrole/
+<span class="w">    </span>tasks/
+<span class="w">      </span>main.yml
+galaxy.yaml
+</code></pre></div></p>
+<p>Using the role in a playbook:
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Apply custom role</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run role from collection</span>
+<span class="w">      </span><span class="nt">include_role</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myorg.mycollection.myrole</span>
+</code></pre></div></p>
+<p>Trivy can correctly locate and analyze the <code>myrole</code> role via the full collection name.</p>
+<h3 id="scanning-specific-playbooks">Scanning specific playbooks<a class="headerlink" href="#scanning-specific-playbooks" title="Permanent link">&para;</a></h3>
+<p>To limit scanning to specific playbooks instead of automatically discovering them, use the <code>--ansible-playbook</code> flag (can be repeated) with the path to the playbook:</p>
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--ansible-playbook<span class="w"> </span>playbooks/main.yaml<span class="w"> </span>.
 </code></pre></div>
-<h3 id="update-adapters">Update Adapters<a class="headerlink" href="#update-adapters" title="Permanent link">&para;</a></h3>
-<p>Now you'll need to update all of the <a href="https://github.com/aquasecurity/trivy/tree/main/pkg/iac/adapters">adapters</a> which populate the struct of the provider that you have been using. Following the example above, if you want to add support for CodeBuild in Terraform, you'll need to update the Terraform AWS adapter as shown here: <a href="https://github.com/aquasecurity/trivy/blob/main/pkg/iac/adapters/terraform/aws/codebuild/adapt.go"><code>trivy/pkg/iac/adapters/terraform/aws/codebuild/adapt.go</code></a>.</p>
-<p>Another example for updating the adapters is provided in the <a href="https://github.com/aquasecurity/defsec/pull/1000/files">following PR.</a> Additionally, please refer to the respective Terraform documentation on the provider to which you are adding the service. For instance, the Terraform documentation for AWS CodeBuild is provided <a href="https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codebuild_project">here.</a></p>
-<h2 id="create-a-new-schema-for-your-provider">Create a new Schema for your provider<a class="headerlink" href="#create-a-new-schema-for-your-provider" title="Permanent link">&para;</a></h2>
-<p>Once the new service has been added to the provider, you need to create the schema for the service as part of the provider schema. </p>
-<p>This process has been automated with mage commands. In the Trivy root directory run <code>mage schema:generate</code> to generate the schema for your new service and <code>mage schema:verify</code>.</p>
+<h3 id="using-inventory">Using inventory<a class="headerlink" href="#using-inventory" title="Permanent link">&para;</a></h3>
+<p>By default, Trivy searches for inventory <a href="https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#how-to-build-your-inventory">in the default location</a>: <code>/etc/ansible/hosts</code>. If an <code>ansible.cfg</code> file exists at the project root, the inventory path is taken from it.</p>
+<p>To specify a custom inventory source, use the <code>--ansible-inventory</code> flag (same as Ansible’s <code>--inventory</code>). The flag can be repeated:</p>
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--ansible-inventory<span class="w"> </span>hosts.ini<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--ansible-inventory<span class="w"> </span>inventory<span class="w"> </span>.
+</code></pre></div>
+<h3 id="passing-extra-variables">Passing extra variables<a class="headerlink" href="#passing-extra-variables" title="Permanent link">&para;</a></h3>
+<p>To pass extra variables, use the <code>--ansible-extra-vars</code> flag (same as Ansible’s <code>--extra-vars</code>). The flag can be repeated:</p>
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--ansible-extra-vars<span class="w"> </span><span class="nv">region</span><span class="o">=</span>us-east-1<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--ansible-extra-vars<span class="w"> </span>@vars.json<span class="w"> </span>.
+</code></pre></div>
+<h3 id="rendering-misconfiguration-snippet">Rendering misconfiguration snippet<a class="headerlink" href="#rendering-misconfiguration-snippet" title="Permanent link">&para;</a></h3>
+<p>To display the rendered snippet, use the <code>--render-cause</code> flag.</p>
+<p>Example output for an S3 bucket task using the <code>amazon.aws.s3_bucket</code> module:</p>
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--render-cause<span class="w"> </span>ansible<span class="w"> </span>.
+...
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<span class="w"> </span><span class="m">447</span><span class="w">       </span>-<span class="w"> </span>name:<span class="w"> </span><span class="s2">&quot;Hetzner Cloud: Create Object Storage (S3 bucket) {{ hetzner_object_storage_name }}&quot;</span>
+<span class="w"> </span><span class="m">448</span><span class="w"> </span>┌<span class="w">       </span>amazon.aws.s3_bucket:
+<span class="w"> </span><span class="m">449</span><span class="w"> </span>│<span class="w">         </span>endpoint_url:<span class="w"> </span><span class="s2">&quot;{{ hetzner_object_storage_endpoint }}&quot;</span>
+<span class="w"> </span><span class="m">450</span><span class="w"> </span>│<span class="w">         </span>ceph:<span class="w"> </span><span class="nb">true</span>
+<span class="w"> </span><span class="m">451</span><span class="w"> </span>│<span class="w">         </span>aws_access_key:<span class="w"> </span><span class="s2">&quot;{{ hetzner_object_storage_access_key }}&quot;</span>
+<span class="w"> </span><span class="m">452</span><span class="w"> </span>│<span class="w">         </span>aws_secret_key:<span class="w"> </span><span class="s2">&quot;{{ hetzner_object_storage_secret_key }}&quot;</span>
+<span class="w"> </span><span class="m">453</span><span class="w"> </span>│<span class="w">         </span>name:<span class="w"> </span><span class="s2">&quot;{{ hetzner_object_storage_name }}&quot;</span>
+<span class="w"> </span><span class="m">454</span><span class="w"> </span>│<span class="w">         </span>region:<span class="w"> </span><span class="s2">&quot;{{ hetzner_object_storage_region }}&quot;</span>
+<span class="w"> </span><span class="m">455</span><span class="w"> </span>└<span class="w">         </span>requester_pays:<span class="w"> </span><span class="nb">false</span>
+<span class="w"> </span>...<span class="w">   </span>
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Rendered<span class="w"> </span>cause:
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+amazon.aws.s3_bucket:
+<span class="w">    </span>endpoint_url:<span class="w"> </span>https://us-east-1.your-objectstorage.com
+<span class="w">    </span>ceph:<span class="w"> </span><span class="nb">true</span>
+<span class="w">    </span>aws_access_key:<span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="w">    </span>aws_secret_key:<span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="w">    </span>name:<span class="w"> </span>test-pgcluster-backup
+<span class="w">    </span>region:<span class="w"> </span>us-east-1
+<span class="w">    </span>requester_pays:<span class="w"> </span><span class="nb">false</span>
+<span class="w">    </span>state:<span class="w"> </span>present
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+</code></pre></div>
+<h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
+<p>Ansible scanning has several limitations and does not support the following:</p>
+<ul>
+<li>Resolving remote collections</li>
+<li>Inventory, lookup, and filter plugins (except <code>dirname</code>)</li>
+<li>Setting facts (<code>set_fact</code>)</li>
+<li>Loops: <code>loop</code>, <code>with_&lt;lookup&gt;</code>, etc.</li>
+<li>Patterns in a play’s hosts field</li>
+<li>Host ranges in inventory, e.g., <code>www[01:50:2].example.com</code></li>
+<li>Only supports the following services: AWS S3. If you have other services or clouds that you would like to see support for, please open a discussion in the Trivy project.</li>
+</ul>
 
 
 
@@ -8305,7 +8463,7 @@ type ArtifactSettings struct {
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../overview/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview">
+          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -8322,13 +8480,13 @@ type ArtifactSettings struct {
         
         
           
-          <a href="../../vulnerability-database/overview/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview">
+          <a href="../azure-arm/" class="md-footer__link md-footer__link--next" aria-label="Next: Azure ARM Template">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Overview
+                Azure ARM Template
               </div>
             </div>
             <div class="md-footer__button md-icon">

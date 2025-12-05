@@ -3681,6 +3681,33 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
+      <a href="../../../../coverage/iac/ansible/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Ansible
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../../coverage/iac/azure-arm/" class="md-nav__link">
         
   
@@ -8230,7 +8257,10 @@ You're not viewing the latest version of the documentation.
   $ trivy vm ebs:${your_ebs_snapshot_id}
 </code></pre></div>
 <h3 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>      --aws-region string                 AWS region to scan
+<div class="highlight"><pre><span></span><code>      --ansible-extra-vars strings        set additional variables as key=value or @file (YAML/JSON)
+      --ansible-inventory strings         specify inventory host path or comma separated host list
+      --ansible-playbook strings          specify playbook file path(s) to scan
+      --aws-region string                 AWS region to scan
       --cache-backend string              [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default &quot;fs&quot;)
       --cache-ttl duration                cache TTL when using redis as cache backend
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default &quot;mirror.gcr.io/aquasec/trivy-checks:1&quot;)
@@ -8286,7 +8316,7 @@ You're not viewing the latest version of the documentation.
       --include-non-failures              include successes, available with &#39;--scanners misconfig&#39;
       --java-db-repository strings        OCI repository(ies) to retrieve trivy-java-db in order of priority (default [mirror.gcr.io/aquasec/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1])
       --list-all-pkgs                     output all packages in the JSON report regardless of vulnerability (default true)
-      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
+      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot,ansible])
       --module-dir string                 specify directory to the wasm modules that will be loaded (default &quot;$HOME/.trivy/modules&quot;)
       --no-progress                       suppress progress bar
       --offline-scan                      do not issue API requests to identify dependencies
@@ -8308,7 +8338,7 @@ You're not viewing the latest version of the documentation.
       --redis-key string                  redis key file location, if using redis as cache backend
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default &quot;https://rekor.sigstore.dev&quot;)
-      --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform)
+      --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform,ansible)
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (allowed values: oci,rekor)
       --scanners strings                  comma-separated list of what security issues to detect (allowed values: vuln,misconfig,secret,license) (default [vuln,secret])
       --secret-config string              specify a path to config file for secret scanning (default &quot;trivy-secret.yaml&quot;)

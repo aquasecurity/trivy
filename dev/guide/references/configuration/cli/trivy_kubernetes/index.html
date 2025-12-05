@@ -3681,6 +3681,33 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
+      <a href="../../../../coverage/iac/ansible/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Ansible
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../../coverage/iac/azure-arm/" class="md-nav__link">
         
   
@@ -8257,7 +8284,10 @@ You're not viewing the latest version of the documentation.
   $ trivy k8s kind-kind --report summary 
 </code></pre></div>
 <h3 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>      --burst int                         specify the maximum burst for throttle (default 10)
+<div class="highlight"><pre><span></span><code>      --ansible-extra-vars strings        set additional variables as key=value or @file (YAML/JSON)
+      --ansible-inventory strings         specify inventory host path or comma separated host list
+      --ansible-playbook strings          specify playbook file path(s) to scan
+      --burst int                         specify the maximum burst for throttle (default 10)
       --cache-backend string              [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default &quot;fs&quot;)
       --cache-ttl duration                cache TTL when using redis as cache backend
       --check-namespaces strings          Rego namespaces
@@ -8320,7 +8350,7 @@ You're not viewing the latest version of the documentation.
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --kubeconfig string                 specify the kubeconfig file path to use
       --list-all-pkgs                     output all packages in the JSON report regardless of vulnerability (default true)
-      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
+      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot,ansible])
       --no-progress                       suppress progress bar
       --node-collector-imageref string    indicate the image reference for the node-collector scan job (default &quot;ghcr.io/aquasecurity/node-collector:0.3.1&quot;)
       --node-collector-namespace string   specify the namespace in which the node-collector job should be deployed (default &quot;trivy-temp&quot;)
@@ -8348,7 +8378,7 @@ You're not viewing the latest version of the documentation.
       --registry-token string             registry token
       --rego-error-limit int              maximum number of compile errors allowed during Rego policy evaluation (default 10)
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default &quot;https://rekor.sigstore.dev&quot;)
-      --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform)
+      --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform,ansible)
       --report string                     specify a report format for the output (allowed values: all,summary) (default &quot;all&quot;)
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (allowed values: oci,rekor)
       --scanners strings                  comma-separated list of what security issues to detect (allowed values: vuln,misconfig,secret,rbac) (default [vuln,misconfig,secret,rbac])

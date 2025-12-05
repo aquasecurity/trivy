@@ -3681,6 +3681,33 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
+      <a href="../../../coverage/iac/ansible/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Ansible
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../coverage/iac/azure-arm/" class="md-nav__link">
         
   
@@ -8497,7 +8524,7 @@ You're not viewing the latest version of the documentation.
 <h1 id="config-file">Config file<a class="headerlink" href="#config-file" title="Permanent link">&para;</a></h1>
 <p>Trivy can be customized by tweaking a <code>trivy.yaml</code> file.
 The config path can be overridden by the <code>--config</code> flag.</p>
-<p>An example is <a href="https://github.com/aquasecurity/trivy/tree/v0.67.0-108-g15a5465ad/examples/trivy-conf/trivy.yaml">here</a>.</p>
+<p>An example is <a href="https://github.com/aquasecurity/trivy/tree/v0.68.1-4-g9275e1532/examples/trivy-conf/trivy.yaml">here</a>.</p>
 <p>These samples contain default values for flags.</p>
 <h2 id="global-options">Global options<a class="headerlink" href="#global-options" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="c1"># Same as &#39;--cacert&#39;</span>
@@ -8846,7 +8873,17 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 <span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0BSD</span>
 </code></pre></div>
 <h2 id="misconfiguration-options">Misconfiguration options<a class="headerlink" href="#misconfiguration-options" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="nt">misconfiguration</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">ansible</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Same as &#39;--ansible-extra-vars&#39;</span>
+<span class="w">  </span><span class="nt">extra-vars</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--ansible-inventory&#39;</span>
+<span class="w">  </span><span class="nt">inventories</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--ansible-playbook&#39;</span>
+<span class="w">  </span><span class="nt">playbooks</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+
+<span class="nt">misconfiguration</span><span class="p">:</span>
 <span class="w">  </span><span class="c1"># Same as &#39;--checks-bundle-repository&#39;</span>
 <span class="w">  </span><span class="nt">checks-bundle-repository</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;mirror.gcr.io/aquasec/trivy-checks:1&quot;</span>
 
@@ -8895,6 +8932,7 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 <span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">terraform</span>
 <span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">terraformplan-json</span>
 <span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">terraformplan-snapshot</span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ansible</span>
 
 <span class="w">  </span><span class="nt">terraform</span><span class="p">:</span>
 <span class="w">    </span><span class="c1"># Same as &#39;--tf-exclude-downloaded-modules&#39;</span>
