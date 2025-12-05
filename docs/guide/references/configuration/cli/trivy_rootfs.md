@@ -172,6 +172,7 @@ trivy rootfs [flags] ROOTDIR
                                             - chainguard
                                             - bitnami
                                             - govulndb
+                                            - julia
                                             - echo
                                             - minimos
                                             - rootio

@@ -171,6 +171,7 @@ trivy filesystem [flags] PATH
                                             - chainguard
                                             - bitnami
                                             - govulndb
+                                            - julia
                                             - echo
                                             - minimos
                                             - rootio

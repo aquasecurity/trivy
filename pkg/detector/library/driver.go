@@ -83,8 +83,8 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 		eco = ecosystem.Kubernetes
 		comparer = compare.GenericComparer{}
 	case ftypes.Julia:
-		log.Warn("Julia is supported for SBOM, not for vulnerability scanning")
-		return Driver{}, false
+		eco = ecosystem.Julia
+		comparer = compare.GenericComparer{}
 	default:
 		log.Warn("The library type is not supported for vulnerability scanning",
 			log.String("type", string(libType)))
@@ -129,6 +129,7 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  adv.VulnerabilityID,
+			VendorIDs:        adv.VendorIDs, // Any vendors have specific IDs, e.g. GHSA, JLSEC
 			PkgID:            pkgID,
 			PkgName:          pkgName,
 			InstalledVersion: pkgVer,

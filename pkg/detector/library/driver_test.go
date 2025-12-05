@@ -66,7 +66,10 @@ func TestDriver_Detect(t *testing.T) {
 			},
 			want: []types.DetectedVulnerability{
 				{
-					VulnerabilityID:  "CVE-2022-21235",
+					VulnerabilityID: "CVE-2022-21235",
+					VendorIDs: []string{
+						"GHSA-6635-c626-vj4r",
+					},
 					PkgName:          "github.com/Masterminds/vcs",
 					InstalledVersion: "v1.13.1",
 					FixedVersion:     "v1.13.2",
@@ -74,6 +77,34 @@ func TestDriver_Detect(t *testing.T) {
 						ID:   vulnerability.GLAD,
 						Name: "GitLab Advisory Database Community",
 						URL:  "https://gitlab.com/gitlab-org/advisories-community",
+					},
+				},
+			},
+		},
+		{
+			name: "julia package",
+			fixtures: []string{
+				"testdata/fixtures/julia.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.Julia,
+			args: args{
+				pkgName: "HTTP",
+				pkgVer:  "1.10.16",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2025-52479",
+					PkgName:          "HTTP",
+					InstalledVersion: "1.10.16",
+					FixedVersion:     "1.10.17",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Julia,
+						Name: "Julia Ecosystem Security Advisories",
+						URL:  "https://github.com/JuliaLang/SecurityAdvisories.jl",
+					},
+					VendorIDs: []string{
+						"JLSEC-2025-1",
 					},
 				},
 			},

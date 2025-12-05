@@ -170,6 +170,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
                                             - chainguard
                                             - bitnami
                                             - govulndb
+                                            - julia
                                             - echo
                                             - minimos
                                             - rootio

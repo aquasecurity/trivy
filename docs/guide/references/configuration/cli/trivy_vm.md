@@ -156,6 +156,7 @@ trivy vm [flags] VM_IMAGE
                                             - chainguard
                                             - bitnami
                                             - govulndb
+                                            - julia
                                             - echo
                                             - minimos
                                             - rootio
