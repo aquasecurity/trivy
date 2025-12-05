@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.69.0](https://github.com/aquasecurity/trivy/compare/v0.68.1...v0.69.0) (2025-12-05)
+
+
+### Features
+
+* **julia:** enable vulnerability scanning for the Julia language ecosystem ([#9800](https://github.com/aquasecurity/trivy/issues/9800)) ([c2f82ad](https://github.com/aquasecurity/trivy/commit/c2f82add3a59a509f581cc245630ce29e801de6a))
+* **misconf:** initial ansible scanning support ([#9332](https://github.com/aquasecurity/trivy/issues/9332)) ([9275e15](https://github.com/aquasecurity/trivy/commit/9275e1532b11c5f1842f334660303a7ebf46a2c6))
+* **misconf:** Update Azure Database schema ([#9811](https://github.com/aquasecurity/trivy/issues/9811)) ([48dfede](https://github.com/aquasecurity/trivy/commit/48dfedeb1e13d1654e2b9239f403d847af353e2e))
+
 ## [0.68.1](https://github.com/aquasecurity/trivy/compare/v0.68.0...v0.68.1) (2025-12-03)
 
 
