@@ -108,6 +108,7 @@ nav:
               - Julia: guide/coverage/language/julia.md
           - IaC:
               - Overview: guide/coverage/iac/index.md
+              - Ansible: guide/coverage/iac/ansible.md
               - Azure ARM Template: guide/coverage/iac/azure-arm.md
               - CloudFormation: guide/coverage/iac/cloudformation.md
               - Docker: guide/coverage/iac/docker.md
