@@ -14,7 +14,6 @@ import (
 // Comparer represents a comparer for npm
 type Comparer struct{}
 
-
 // normalizeConstraintString splits a constraint string that has multiple OR ranges
 // separated by spaces into properly formatted ranges joined with " || ".
 //
