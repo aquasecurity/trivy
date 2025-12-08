@@ -142,6 +142,39 @@ func TestNpmComparer_IsVulnerable(t *testing.T) {
 			},
 			want: false,
 		},
+		{
+			name: "space-separated OR ranges (trivy-db format)",
+			args: args{
+				currentVersion: "15.0.4-canary.30",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=14.3.0-canary.77, <15.0.5 >=15.1.0-canary.0, <15.1.9"},
+					PatchedVersions:    []string{">=15.0.5 <15.1.0-canary.0", ">=15.1.9"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "space-separated OR ranges - not vulnerable (patched version)",
+			args: args{
+				currentVersion: "15.0.5",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=14.3.0-canary.77, <15.0.5 >=15.1.0-canary.0, <15.1.9"},
+					PatchedVersions:    []string{">=15.0.5 <15.1.0-canary.0", ">=15.1.9"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "space-separated OR ranges - matches second range",
+			args: args{
+				currentVersion: "15.1.5-canary.10",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=14.3.0-canary.77, <15.0.5 >=15.1.0-canary.0, <15.1.9"},
+					PatchedVersions:    []string{">=15.0.5 <15.1.0-canary.0", ">=15.1.9"},
+				},
+			},
+			want: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
