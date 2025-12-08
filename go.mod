@@ -2,6 +2,8 @@ module github.com/aquasecurity/trivy
 
 go 1.25
 
+toolchain go1.25.5
+
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.20.0
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.13.1
