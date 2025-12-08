@@ -896,7 +896,7 @@ func parseMavenMetadata(r io.Reader) (*Metadata, error) {
 func packageID(name, version, pomFilePath string) string {
 	v := map[string]any{
 		"gav":  dependency.ID(ftypes.Pom, name, version),
-		"path": pomFilePath,
+		"path": filepath.ToSlash(pomFilePath),
 	}
 	h, err := hashstructure.Hash(v, hashstructure.FormatV2, &hashstructure.HashOptions{
 		ZeroNil:         true,
