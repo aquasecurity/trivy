@@ -379,6 +379,16 @@ license:
 ## Misconfiguration options
 
 ```yaml
+ansible:
+  # Same as '--ansible-extra-vars'
+  extra-vars: []
+
+  # Same as '--ansible-inventory'
+  inventories: []
+
+  # Same as '--ansible-playbook'
+  playbooks: []
+
 misconfiguration:
   # Same as '--checks-bundle-repository'
   checks-bundle-repository: "mirror.gcr.io/aquasec/trivy-checks:1"
@@ -428,6 +438,7 @@ misconfiguration:
    - terraform
    - terraformplan-json
    - terraformplan-snapshot
+   - ansible
 
   terraform:
     # Same as '--tf-exclude-downloaded-modules'

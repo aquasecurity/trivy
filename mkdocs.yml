@@ -99,15 +99,16 @@ nav:
               - Elixir: guide/coverage/language/elixir.md
               - Go: guide/coverage/language/golang.md
               - Java: guide/coverage/language/java.md
+              - Julia: guide/coverage/language/julia.md
               - Node.js: guide/coverage/language/nodejs.md
               - PHP: guide/coverage/language/php.md
               - Python: guide/coverage/language/python.md
               - Ruby: guide/coverage/language/ruby.md
               - Rust: guide/coverage/language/rust.md
               - Swift: guide/coverage/language/swift.md
-              - Julia: guide/coverage/language/julia.md
           - IaC:
               - Overview: guide/coverage/iac/index.md
+              - Ansible: guide/coverage/iac/ansible.md
               - Azure ARM Template: guide/coverage/iac/azure-arm.md
               - CloudFormation: guide/coverage/iac/cloudformation.md
               - Docker: guide/coverage/iac/docker.md

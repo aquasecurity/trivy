@@ -23,7 +23,7 @@ import (
 
 var (
 	disabledChecks = set.New("AVD-DS-0007", "AVD-DS-0016")
-	reason         = "See " + doc.URL("docs/target/container_image", "disabled-checks")
+	reason         = "See " + doc.URL("guide/target/container_image", "disabled-checks")
 )
 
 const analyzerVersion = 1

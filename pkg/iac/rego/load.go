@@ -272,7 +272,7 @@ func (s *Scanner) handleModulesMetadata(path string, module *ast.Module) {
 		s.logger.Warn(
 			"Module has legacy input format - please update to use annotations",
 			log.FilePath(module.Package.Location.File),
-			log.String("details", doc.URL("/docs/scanner/misconfiguration/custom", "input")),
+			log.String("details", doc.URL("guide/scanner/misconfiguration/custom", "input")),
 		)
 	}
 
@@ -280,7 +280,7 @@ func (s *Scanner) handleModulesMetadata(path string, module *ast.Module) {
 		s.logger.Warn(
 			"Module has legacy metadata format - please update to use annotations",
 			log.FilePath(module.Package.Location.File),
-			log.String("details", doc.URL("/docs/scanner/misconfiguration/custom", "metadata")),
+			log.String("details", doc.URL("guide/scanner/misconfiguration/custom", "metadata")),
 		)
 		return
 	}
