@@ -42,26 +42,7 @@ func NormalizeConstraintString(constraint string, comparerType ComparerType) str
 		}
 		currentRange.WriteString(part)
 
-		var shouldSplit bool
-
-		if comparerType == ComparerTypeMaven {
-			if i < len(parts)-1 {
-				nextIsGreaterOp := greaterOpPattern.MatchString(parts[i+1])
-				if nextIsGreaterOp {
-					isLessOp := strings.HasPrefix(part, "<") || strings.HasPrefix(part, "<=")
-					endsWithBracket := strings.HasSuffix(part, ")") || strings.HasSuffix(part, "]")
-					isVersion := !operatorPattern.MatchString(part)
-					prevIsLessOp := i > 0 && (strings.HasPrefix(parts[i-1], "<") || strings.HasPrefix(parts[i-1], "<="))
-					prevPrevEndsWithComma := i > 1 && strings.HasSuffix(parts[i-2], ",")
-					shouldSplit = isLessOp || endsWithBracket || (isVersion && prevIsLessOp && prevPrevEndsWithComma)
-				}
-			}
-		} else {
-			if !strings.HasSuffix(part, ",") && i < len(parts)-1 {
-				shouldSplit = greaterOpPattern.MatchString(parts[i+1])
-			}
-		}
-
+		shouldSplit := shouldSplitRange(comparerType, i, part, parts, operatorPattern, greaterOpPattern)
 		if shouldSplit {
 			ranges = append(ranges, strings.TrimSpace(currentRange.String()))
 			currentRange.Reset()
@@ -79,3 +60,34 @@ func NormalizeConstraintString(constraint string, comparerType ComparerType) str
 	return strings.Join(ranges, " || ")
 }
 
+func shouldSplitRange(comparerType ComparerType, i int, part string, parts []string, operatorPattern, greaterOpPattern *regexp.Regexp) bool {
+	if comparerType == ComparerTypeMaven {
+		return shouldSplitMaven(i, part, parts, operatorPattern, greaterOpPattern)
+	}
+	return shouldSplitStandard(i, part, parts, greaterOpPattern)
+}
+
+func shouldSplitMaven(i int, part string, parts []string, operatorPattern, greaterOpPattern *regexp.Regexp) bool {
+	if i >= len(parts)-1 {
+		return false
+	}
+	if !greaterOpPattern.MatchString(parts[i+1]) {
+		return false
+	}
+	isLessOp := strings.HasPrefix(part, "<") || strings.HasPrefix(part, "<=")
+	endsWithBracket := strings.HasSuffix(part, ")") || strings.HasSuffix(part, "]")
+	if isLessOp || endsWithBracket {
+		return true
+	}
+	isVersion := !operatorPattern.MatchString(part)
+	prevIsLessOp := i > 0 && (strings.HasPrefix(parts[i-1], "<") || strings.HasPrefix(parts[i-1], "<="))
+	prevPrevEndsWithComma := i > 1 && strings.HasSuffix(parts[i-2], ",")
+	return isVersion && prevIsLessOp && prevPrevEndsWithComma
+}
+
+func shouldSplitStandard(i int, part string, parts []string, greaterOpPattern *regexp.Regexp) bool {
+	if strings.HasSuffix(part, ",") || i >= len(parts)-1 {
+		return false
+	}
+	return greaterOpPattern.MatchString(parts[i+1])
+}

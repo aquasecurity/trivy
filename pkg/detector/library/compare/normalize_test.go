@@ -280,7 +280,7 @@ func TestNormalizeConstraintString_EdgeCases(t *testing.T) {
 			comparer:   ComparerTypeNPM,
 			// This is an edge case - trailing comma means it's still part of AND group
 			// So it won't split. This is actually correct behavior.
-			want:       ">=1.0.0, <2.0.0, >=2.0.0, <3.0.0",
+			want: ">=1.0.0, <2.0.0, >=2.0.0, <3.0.0",
 		},
 		{
 			name:       "multiple spaces",
@@ -305,4 +305,3 @@ func TestNormalizeConstraintString_EdgeCases(t *testing.T) {
 		})
 	}
 }
-
