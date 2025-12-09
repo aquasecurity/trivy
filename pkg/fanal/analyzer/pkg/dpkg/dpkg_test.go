@@ -1420,9 +1420,45 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "md5sums",
-			testFiles: map[string]string{"./testdata/tar.md5sums": "var/lib/dpkg/info/tar.md5sums"},
+			name: "md5sums",
+			testFiles: map[string]string{
+				"./testdata/tar-status":  "var/lib/dpkg/status",
+				"./testdata/tar.md5sums": "var/lib/dpkg/info/tar.md5sums",
+			},
 			want: &analyzer.AnalysisResult{
+				PackageInfos: []types.PackageInfo{
+					{
+						FilePath: "var/lib/dpkg/status",
+						Packages: types.Packages{
+							{
+								ID:         "tar@1.29b-2",
+								Name:       "tar",
+								Version:    "1.29b",
+								Release:    "2",
+								Arch:       "amd64",
+								SrcName:    "tar",
+								SrcVersion: "1.29b",
+								SrcRelease: "2",
+								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								InstalledFiles: []string{
+									"/usr/bin/tar",
+									"/usr/lib/mime/packages/tar",
+									"/usr/sbin/rmt-tar",
+									"/usr/sbin/tarcat",
+									"/usr/share/doc/tar/AUTHORS",
+									"/usr/share/doc/tar/NEWS.gz",
+									"/usr/share/doc/tar/README.Debian",
+									"/usr/share/doc/tar/THANKS.gz",
+									"/usr/share/doc/tar/changelog.Debian.gz",
+									"/usr/share/doc/tar/copyright",
+									"/usr/share/man/man1/tar.1.gz",
+									"/usr/share/man/man1/tarcat.1.gz",
+									"/usr/share/man/man8/rmt-tar.8.gz",
+								},
+							},
+						},
+					},
+				},
 				SystemInstalledFiles: []string{
 					"/usr/bin/tar",
 					"/usr/lib/mime/packages/tar",
@@ -1477,6 +1513,7 @@ func Test_isThirdPartyPackage(t *testing.T) {
 		want       bool
 	}{
 		{"third-party (Docker)", "Docker <support@docker.com>", true},
+		{"third-party (GitHub - exact match)", "GitHub", true},
 		{"official (Ubuntu)", "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>", false},
 	}
 	for _, tt := range tests {

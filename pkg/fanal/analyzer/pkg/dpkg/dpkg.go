@@ -58,7 +58,7 @@ var (
 	// thirdPartyMaintainerPatterns contains patterns that indicate a package is from a third-party repository.
 	// Packages with maintainers matching these patterns will NOT have their InstalledFiles tracked,
 	// allowing language scanners to properly analyze files installed by those packages.
-	// See https://github.com/aquasecurity/trivy/issues/1886 for background discussion.
+	// See https://github.com/aquasecurity/trivy/issues/9916 for more details.
 	thirdPartyMaintainerPatterns = []string{
 		// Container & orchestration
 		"support@docker.com", // Docker
@@ -68,6 +68,7 @@ var (
 		"Google Cloud CLI Authors", // Google Cloud SDK
 		"sapmachine@sap.com",       // SAP Machine JDK
 		"@hashicorp.com",           // HashiCorp (Terraform, Vault, Consul, etc.)
+		"@microsoft.com",           // Microsoft (VS Code, Azure CLI, .NET, etc.)
 
 		// Databases
 		"@mongodb.com",                 // MongoDB
@@ -146,15 +147,6 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		return nil, xerrors.Errorf("dpkg walk error: %w", err)
 	}
 
-	// Build a map of package name to maintainer for quick lookup
-	pkgMaintainers := make(map[string]string)
-	for _, pkgInfo := range packageInfos {
-		for _, pkg := range pkgInfo.Packages {
-			pkgMaintainers[pkg.Name] = pkg.Maintainer
-			pkgMaintainers[pkg.Name+":"+pkg.Arch] = pkg.Maintainer
-		}
-	}
-
 	// Map packages to their respective files.
 	// Third-party packages will NOT have their InstalledFiles populated to avoid filtering out
 	// language packages (npm, pip, etc.) installed by those third-party OS packages.
@@ -174,25 +166,8 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 			}
 
 			packageInfos[i].Packages[j].InstalledFiles = installedFiles
-			// Remove from packageFiles so we don't add them again below
-			delete(packageFiles, pkg.Name)
-			delete(packageFiles, pkg.Name+":"+pkg.Arch)
 			systemInstalledFiles = append(systemInstalledFiles, installedFiles...)
 		}
-	}
-
-	// Add files for packages that have md5sums but no status entry (e.g., distroless images)
-	// or packages whose maintainer info is unknown. If we can find the maintainer info,
-	// check if it's a third-party package; otherwise, default to including the files.
-	for pkgName, files := range packageFiles {
-		maintainer := pkgMaintainers[pkgName]
-		if isThirdPartyPackage(maintainer) {
-			a.logger.Debug("Third-party package detected (md5sums only)",
-				log.String("package", pkgName),
-				log.String("maintainer", maintainer))
-			continue
-		}
-		systemInstalledFiles = append(systemInstalledFiles, files...)
 	}
 
 	return &analyzer.AnalysisResult{
@@ -439,22 +414,16 @@ func (a dpkgAnalyzer) isMd5SumsFile(dir, fileName string) bool {
 // isThirdPartyPackage checks if a package is from a third-party repository
 // by examining the Maintainer field against known third-party patterns.
 //
-// This function is used to determine whether to track InstalledFiles for a package.
-// Third-party packages (e.g., Docker, GitHub CLI, NVIDIA CUDA) will NOT have their
-// InstalledFiles tracked, allowing language package scanners to properly analyze
-// files installed by those packages.
+// Unlike RPM which has a dedicated "Vendor" field, dpkg packages don't have a reliable
+// way to identify their origin. We use a heuristic approach based on maintainer patterns.
+// See https://github.com/aquasecurity/trivy/issues/9916 for more details.
 func isThirdPartyPackage(maintainer string) bool {
-	for _, pattern := range thirdPartyMaintainerPatterns {
-		if strings.Contains(maintainer, pattern) {
-			return true
-		}
+	if slices.Contains(thirdPartyMaintainerExact, maintainer) {
+		return true
 	}
-	for _, exact := range thirdPartyMaintainerExact {
-		if maintainer == exact {
-			return true
-		}
-	}
-	return false
+	return slices.ContainsFunc(thirdPartyMaintainerPatterns, func(pattern string) bool {
+		return strings.Contains(maintainer, pattern)
+	})
 }
 
 func (a dpkgAnalyzer) Type() analyzer.Type {
