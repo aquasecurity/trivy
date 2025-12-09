@@ -175,6 +175,28 @@ func TestNpmComparer_IsVulnerable(t *testing.T) {
 			},
 			want: true,
 		},
+		{
+			name: "complex space-separated OR ranges with multiple pre-release formats",
+			args: args{
+				currentVersion: "2.1.0-beta.5",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=1.0.0-alpha.1, <2.0.0 >=2.0.0-beta.1, <2.1.0 >=2.1.0-rc.1, <2.2.0"},
+					PatchedVersions:    []string{">=2.0.0, <2.0.0-beta.1", ">=2.1.0, <2.1.0-rc.1", ">=2.2.0"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "complex space-separated OR ranges - matches third range with rc",
+			args: args{
+				currentVersion: "2.1.5-rc.3",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=1.0.0-alpha.1, <2.0.0 >=2.0.0-beta.1, <2.1.0 >=2.1.0-rc.1, <2.2.0"},
+					PatchedVersions:    []string{">=2.0.0, <2.0.0-beta.1", ">=2.1.0, <2.1.0-rc.1", ">=2.2.0"},
+				},
+			},
+			want: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -23,7 +23,9 @@ func (n Comparer) matchVersion(currentVersion, constraint string) (bool, error) 
 		return false, xerrors.Errorf("bitnami version error (%s): %s", currentVersion, err)
 	}
 
-	c, err := version.NewConstraints(constraint)
+	normalizedConstraint := compare.NormalizeConstraintString(constraint)
+
+	c, err := version.NewConstraints(normalizedConstraint)
 	if err != nil {
 		return false, xerrors.Errorf("bitnami constraint error (%s): %s", constraint, err)
 	}
