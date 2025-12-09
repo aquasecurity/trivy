@@ -193,7 +193,7 @@ func init() {
 				return true
 			}
 		}
-		helmFileExtensions := []string{".yaml", ".tpl"}
+		helmFileExtensions := []string{".yml", ".yaml", ".tpl"}
 		ext := filepath.Ext(filepath.Base(name))
 		for _, expected := range helmFileExtensions {
 			if strings.EqualFold(ext, expected) {
