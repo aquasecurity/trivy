@@ -66,8 +66,8 @@ jobs:
       - name: Generate test fixtures
         run: |
           mage test:GenerateModules
-          mage rpm:Fixtures
-          mage gittest:Fixtures
+          mage rpm:fixtures
+          mage gittest:fixtures
 
       - name: Run unit tests
         run: mage test:unit
