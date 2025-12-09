@@ -3531,6 +3531,23 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="composer.lock">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#development-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Development dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -8131,6 +8148,23 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="composer.lock">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#development-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Development dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -8207,7 +8241,7 @@ You're not viewing the latest version of the documentation.
 <td>Composer</td>
 <td>composer.lock</td>
 <td style="text-align: center;">✓</td>
-<td style="text-align: center;">Excluded</td>
+<td style="text-align: center;"><a href="#development-dependencies">Excluded</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
@@ -8226,6 +8260,10 @@ You're not viewing the latest version of the documentation.
 <p>Trivy also supports dependency trees; however, to display an accurate tree, it needs to know whether each package is a direct dependency of the project.
 Since this information is not included in <code>composer.lock</code>, Trivy parses <code>composer.json</code>, which should be located next to <code>composer.lock</code>.
 If you want to see the dependency tree, please ensure that <code>composer.json</code> is present.</p>
+<h3 id="development-dependencies">Development dependencies<a class="headerlink" href="#development-dependencies" title="Permanent link">&para;</a></h3>
+<p>By default, Trivy doesn't report development dependencies (<code>packages-dev</code> in <code>composer.lock</code>).
+Use the <code>--include-dev-deps</code> flag to include them.</p>
+<p>To correctly identify direct development dependencies, Trivy parses <code>require-dev</code> from <code>composer.json</code>, which should be located next to <code>composer.lock</code>.</p>
 <h2 id="installedjson">installed.json<a class="headerlink" href="#installedjson" title="Permanent link">&para;</a></h2>
 <p>Trivy also supports dependency detection for <code>installed.json</code> files. By default, you can find this file at <code>path_to_app/vendor/composer/installed.json</code>.</p>
 
