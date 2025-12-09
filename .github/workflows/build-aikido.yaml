@@ -4,7 +4,7 @@ on:
 
 jobs:
   goreleaser:
-    runs-on: ubuntu-latest-4-cores
+    runs-on: ubuntu-latest
     permissions:
       contents: write
 

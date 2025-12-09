@@ -211,12 +211,22 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
-        operating-system: [ubuntu-latest-4-cores, windows-latest, macos-latest]
+        operating-system: [ubuntu-latest, windows-latest, macos-latest]
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
     - name: Checkout
       uses: actions/checkout@v4.1.6
+
+    - name: Free up disk space
+      if: matrix.operating-system == 'ubuntu-latest'
+      run: |
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /usr/local/lib/android
+        sudo rm -rf /opt/ghc
+        sudo rm -rf /opt/hostedtoolcache/CodeQL
+        sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+        df -h
 
     - name: Set up Go
       uses: actions/setup-go@v5
