@@ -47,11 +47,10 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	pkgs := make(map[string]ftypes.Package)
 	foundDeps := make(map[string][]string)
 
-	// Process production packages first
-	p.parsePackages(lockFile.Packages, false, pkgs, foundDeps)
-
-	// Process dev packages (skip if already in prod - prod takes precedence)
-	p.parsePackages(lockFile.PackagesDev, true, pkgs, foundDeps)
+	// Production packages are parsed first to ensure they take precedence
+	// when the same package exists in both "packages" and "packages-dev".
+	p.parseProdPackages(lockFile, pkgs, foundDeps)
+	p.parseDevPackages(lockFile, pkgs, foundDeps)
 
 	// fill deps versions
 	var deps ftypes.Dependencies
@@ -78,9 +77,20 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	return pkgSlice, deps, nil
 }
 
+// parseProdPackages parses packages from the "packages" field in composer.lock.
+func (p *Parser) parseProdPackages(lockFile LockFile, pkgs map[string]ftypes.Package, foundDeps map[string][]string) {
+	p.parsePackages(lockFile.Packages, false, pkgs, foundDeps)
+}
+
+// parseDevPackages parses packages from the "packages-dev" field in composer.lock.
+// Packages already present in pkgs (i.e., production packages) are skipped.
+func (p *Parser) parseDevPackages(lockFile LockFile, pkgs map[string]ftypes.Package, foundDeps map[string][]string) {
+	p.parsePackages(lockFile.PackagesDev, true, pkgs, foundDeps)
+}
+
 func (p *Parser) parsePackages(lockPkgs []packageInfo, isDev bool, pkgs map[string]ftypes.Package, foundDeps map[string][]string) {
 	for _, lpkg := range lockPkgs {
-		// Skip if already exists as prod package (prod takes precedence)
+		// Skip if the package already exists (production packages take precedence over dev packages)
 		if _, ok := pkgs[lpkg.Name]; ok {
 			continue
 		}
