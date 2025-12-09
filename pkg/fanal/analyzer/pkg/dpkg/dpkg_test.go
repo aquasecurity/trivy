@@ -1470,6 +1470,22 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 	}
 }
 
+func Test_isThirdPartyPackage(t *testing.T) {
+	tests := []struct {
+		name       string
+		maintainer string
+		want       bool
+	}{
+		{"third-party (Docker)", "Docker <support@docker.com>", true},
+		{"official (Ubuntu)", "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, isThirdPartyPackage(tt.maintainer))
+		})
+	}
+}
+
 func Test_dpkgAnalyzer_Required(t *testing.T) {
 	tests := []struct {
 		name     string
