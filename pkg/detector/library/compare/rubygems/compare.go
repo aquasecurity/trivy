@@ -23,7 +23,7 @@ func (r Comparer) matchVersion(currentVersion, constraint string) (bool, error) 
 		return false, xerrors.Errorf("RubyGems version error (%s): %s", currentVersion, err)
 	}
 
-	normalizedConstraint := compare.NormalizeConstraintString(constraint)
+	normalizedConstraint := compare.NormalizeConstraintString(constraint, compare.ComparerTypeRubyGems)
 
 	c, err := gem.NewConstraints(normalizedConstraint)
 	if err != nil {

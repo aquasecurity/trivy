@@ -23,7 +23,7 @@ func (n Comparer) matchVersion(currentVersion, constraint string) (bool, error) 
 		return false, xerrors.Errorf("python version error (%s): %s", currentVersion, err)
 	}
 
-	normalizedConstraint := compare.NormalizeConstraintString(constraint)
+	normalizedConstraint := compare.NormalizeConstraintString(constraint, compare.ComparerTypePEP440)
 
 	c, err := version.NewSpecifiers(normalizedConstraint, version.WithPreRelease(true))
 	if err != nil {

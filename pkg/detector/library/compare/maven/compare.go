@@ -1,9 +1,6 @@
 package maven
 
 import (
-	"regexp"
-	"strings"
-
 	version "github.com/masahiro331/go-mvn-version"
 	"golang.org/x/xerrors"
 
@@ -13,51 +10,6 @@ import (
 
 // Comparer represents a comparer for maven
 type Comparer struct{}
-
-// normalizeConstraintString splits a constraint string that has multiple OR ranges
-// separated by spaces into properly formatted ranges joined with " || ".
-//
-// Expected format from trivy-db: ">=X <Y >=Z <W ..."
-// - Space (between complete ranges) = OR between ranges
-//
-// The go-mvn-version library expects OR groups to be separated by "||", not spaces.
-// Example: ">=1.0.0 <2.0.0 >=2.0.0 <3.0.0" -> ">=1.0.0 <2.0.0 || >=2.0.0 <3.0.0"
-func normalizeConstraintString(constraint string) string {
-	if strings.Contains(constraint, "||") {
-		return constraint
-	}
-
-	// Maven operators: >=, <=, >, <, =, ==, !=, and also parentheses ( and [
-	operatorPattern := regexp.MustCompile(`^\s*(>=|<=|>|<|==|!=|=|\(|\[)`)
-	var ranges []string
-	var currentRange strings.Builder
-	parts := strings.Fields(constraint)
-
-	for i, part := range parts {
-		if currentRange.Len() > 0 {
-			currentRange.WriteString(" ")
-		}
-		currentRange.WriteString(part)
-
-		if i < len(parts)-1 {
-			nextIsNewConstraint := operatorPattern.MatchString(parts[i+1])
-			if nextIsNewConstraint {
-				ranges = append(ranges, strings.TrimSpace(currentRange.String()))
-				currentRange.Reset()
-			}
-		}
-	}
-
-	if currentRange.Len() > 0 {
-		ranges = append(ranges, strings.TrimSpace(currentRange.String()))
-	}
-
-	if len(ranges) <= 1 {
-		return constraint
-	}
-
-	return strings.Join(ranges, " || ")
-}
 
 // IsVulnerable checks if the package version is vulnerable to the advisory.
 func (n Comparer) IsVulnerable(ver string, advisory dbTypes.Advisory) bool {
@@ -71,7 +23,7 @@ func (n Comparer) matchVersion(currentVersion, constraint string) (bool, error) 
 		return false, xerrors.Errorf("maven version error (%s): %s", currentVersion, err)
 	}
 
-	normalizedConstraint := normalizeConstraintString(constraint)
+	normalizedConstraint := compare.NormalizeConstraintString(constraint, compare.ComparerTypeMaven)
 
 	c, err := version.NewComparer(normalizedConstraint)
 	if err != nil {

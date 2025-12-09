@@ -5,27 +5,33 @@ import (
 	"strings"
 )
 
-// NormalizeConstraintString splits a constraint string that has multiple OR ranges
-// separated by spaces into properly formatted ranges joined with " || ".
+// ComparerType identifies the type of comparer for constraint normalization
+type ComparerType int
+
+const (
+	ComparerTypeNPM ComparerType = iota
+	ComparerTypePEP440
+	ComparerTypeRubyGems
+	ComparerTypeBitnami
+	ComparerTypeMaven
+)
+
+// NormalizeConstraintString converts space-separated OR ranges to ||-separated format.
 //
-// Expected format from trivy-db: ">=X, <Y >=Z, <W ..."
-// - Comma (,) = AND within a range
-// - Space (between complete ranges) = OR between ranges
+// Constraints format:
+//   - Comma (,) = AND within a range
+//   - Space between ranges = OR between ranges
+//   - Maven supports both comma and space for AND
 //
-// The constraint parsing libraries (go-npm-version, go-pep440-version, go-gem-version,
-// bitnami/go-version) expect OR groups to be separated by "||", not spaces.
 // Example: ">=1.0.0, <2.0.0 >=2.0.0, <3.0.0" -> ">=1.0.0, <2.0.0 || >=2.0.0, <3.0.0"
-//
-// This function normalizes space-separated OR groups to ||-separated groups
-// to ensure proper parsing by these libraries.
-func NormalizeConstraintString(constraint string) string {
-	// If the constraint already contains "||", assume it's already normalized
-	if strings.Contains(constraint, "||") {
+func NormalizeConstraintString(constraint string, comparerType ComparerType) string {
+	constraint = strings.TrimSpace(constraint)
+	if constraint == "" || strings.Contains(constraint, "||") {
 		return constraint
 	}
 
-	// Pattern to match constraint operators at the start of a token
-	operatorPattern := regexp.MustCompile(`^\s*(>=|<=|>|<|==|!=|=|~|\^)`)
+	operatorPattern := regexp.MustCompile(`^\s*(>=|<=|>|<|==|!=|=|~|\^|\(|\[)`)
+	greaterOpPattern := regexp.MustCompile(`^\s*(>=|>|\(|\[)`)
 	var ranges []string
 	var currentRange strings.Builder
 	parts := strings.Fields(constraint)
@@ -36,28 +42,40 @@ func NormalizeConstraintString(constraint string) string {
 		}
 		currentRange.WriteString(part)
 
-		// If this part doesn't end with a comma (not part of an AND group)
-		// and the next part starts with an operator, we've reached the end of a range
-		if !strings.HasSuffix(part, ",") && i < len(parts)-1 {
-			nextIsNewConstraint := operatorPattern.MatchString(parts[i+1])
-			if nextIsNewConstraint {
-				ranges = append(ranges, strings.TrimSpace(currentRange.String()))
-				currentRange.Reset()
+		var shouldSplit bool
+
+		if comparerType == ComparerTypeMaven {
+			if i < len(parts)-1 {
+				nextIsGreaterOp := greaterOpPattern.MatchString(parts[i+1])
+				if nextIsGreaterOp {
+					isLessOp := strings.HasPrefix(part, "<") || strings.HasPrefix(part, "<=")
+					endsWithBracket := strings.HasSuffix(part, ")") || strings.HasSuffix(part, "]")
+					isVersion := !operatorPattern.MatchString(part)
+					prevIsLessOp := i > 0 && (strings.HasPrefix(parts[i-1], "<") || strings.HasPrefix(parts[i-1], "<="))
+					prevPrevEndsWithComma := i > 1 && strings.HasSuffix(parts[i-2], ",")
+					shouldSplit = isLessOp || endsWithBracket || (isVersion && prevIsLessOp && prevPrevEndsWithComma)
+				}
 			}
+		} else {
+			if !strings.HasSuffix(part, ",") && i < len(parts)-1 {
+				shouldSplit = greaterOpPattern.MatchString(parts[i+1])
+			}
+		}
+
+		if shouldSplit {
+			ranges = append(ranges, strings.TrimSpace(currentRange.String()))
+			currentRange.Reset()
 		}
 	}
 
-	// Add the last range if any
 	if currentRange.Len() > 0 {
 		ranges = append(ranges, strings.TrimSpace(currentRange.String()))
 	}
 
-	// If we only have one range, return the original constraint
 	if len(ranges) <= 1 {
 		return constraint
 	}
 
-	// Join ranges with " || "
 	return strings.Join(ranges, " || ")
 }
 

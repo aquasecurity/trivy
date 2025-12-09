@@ -183,6 +183,28 @@ func TestComparer_IsVulnerable(t *testing.T) {
 			},
 			want: true,
 		},
+		{
+			name: "comma-separated AND constraint should not be split (regression test)",
+			args: args{
+				currentVersion: "2.13.1",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">= 2.0.0, <= 2.9.10.3"},
+					PatchedVersions:    []string{">= 2.9.10.4"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "comma-separated AND constraint - actually vulnerable",
+			args: args{
+				currentVersion: "2.9.10.2",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">= 2.0.0, <= 2.9.10.3"},
+					PatchedVersions:    []string{">= 2.9.10.4"},
+				},
+			},
+			want: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
