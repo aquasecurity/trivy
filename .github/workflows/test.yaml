@@ -235,8 +235,6 @@ jobs:
         sudo rm -rf /usr/local/lib/node_modules
         sudo rm -rf /usr/local/share/swift
         sudo rm -rf /usr/local/lib/ruby
-        go clean -cache -modcache -testcache
-        df -h
 
     - name: Set up Go
       uses: actions/setup-go@v5
