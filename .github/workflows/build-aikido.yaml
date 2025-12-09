@@ -14,11 +14,35 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf "$HOME/.cache"
+          sudo rm -rf /opt/hostedtoolcache
+          sudo rm -rf /usr/local/share/powershell
+          sudo rm -rf /usr/local/share/chromium
+          sudo rm -rf /usr/local/share/firefox
+          sudo rm -rf /usr/local/lib/node_modules
+          sudo rm -rf /usr/local/share/swift
+          sudo rm -rf /usr/local/lib/ruby
+          go clean -cache -modcache -testcache
+          df -h
+
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
           cache: false
+
+      - name: Clean Go caches before build
+        run: |
+          go clean -cache -modcache -testcache
+          df -h
 
       - name: Install tools
         run: go install tool

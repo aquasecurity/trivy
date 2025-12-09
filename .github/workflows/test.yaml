@@ -226,6 +226,16 @@ jobs:
         sudo rm -rf /opt/ghc
         sudo rm -rf /opt/hostedtoolcache/CodeQL
         sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+        sudo rm -rf /usr/local/share/boost
+        sudo rm -rf "$HOME/.cache"
+        sudo rm -rf /opt/hostedtoolcache
+        sudo rm -rf /usr/local/share/powershell
+        sudo rm -rf /usr/local/share/chromium
+        sudo rm -rf /usr/local/share/firefox
+        sudo rm -rf /usr/local/lib/node_modules
+        sudo rm -rf /usr/local/share/swift
+        sudo rm -rf /usr/local/lib/ruby
+        go clean -cache -modcache -testcache
         df -h
 
     - name: Set up Go
@@ -233,6 +243,12 @@ jobs:
       with:
         go-version-file: go.mod
         cache: false
+
+    - name: Clean Go caches before build
+      if: matrix.operating-system == 'ubuntu-latest'
+      run: |
+        go clean -cache -modcache -testcache
+        df -h
 
     - name: Determine GoReleaser ID
       id: goreleaser_id
