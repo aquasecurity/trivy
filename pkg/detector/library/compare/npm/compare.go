@@ -4,9 +4,9 @@ import (
 	"regexp"
 	"strings"
 
-	npm "github.com/aquasecurity/go-npm-version/pkg"
 	"golang.org/x/xerrors"
 
+	npm "github.com/aquasecurity/go-npm-version/pkg"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 )
