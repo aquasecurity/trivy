@@ -106,7 +106,7 @@ func (a composerAnalyzer) parseComposerLock(ctx context.Context, path string, r 
 func (a composerAnalyzer) mergeComposerJson(fsys fs.FS, dir string, app *types.Application) error {
 	// Parse composer.json to identify the direct dependencies
 	path := filepath.Join(dir, types.ComposerJson)
-	p, err := a.parseComposerJson(fsys, path)
+	cj, err := a.parseComposerJson(fsys, path)
 	if errors.Is(err, fs.ErrNotExist) {
 		// Assume all the packages are direct dependencies as it cannot identify them from composer.lock
 		log.Debug("Unable to determine the direct dependencies, composer.json not found", log.FilePath(path))
@@ -117,7 +117,9 @@ func (a composerAnalyzer) mergeComposerJson(fsys fs.FS, dir string, app *types.A
 
 	for i, pkg := range app.Packages {
 		// Identify the direct/transitive dependencies
-		if _, ok := p[pkg.Name]; ok {
+		if _, ok := cj.Require[pkg.Name]; ok {
+			app.Packages[i].Relationship = types.RelationshipDirect
+		} else if _, ok := cj.RequireDev[pkg.Name]; ok {
 			app.Packages[i].Relationship = types.RelationshipDirect
 		} else {
 			app.Packages[i].Indirect = true
@@ -129,21 +131,22 @@ func (a composerAnalyzer) mergeComposerJson(fsys fs.FS, dir string, app *types.A
 }
 
 type composerJson struct {
-	Require map[string]string `json:"require"`
+	Require    map[string]string `json:"require"`
+	RequireDev map[string]string `json:"require-dev"`
 }
 
-func (a composerAnalyzer) parseComposerJson(fsys fs.FS, path string) (map[string]string, error) {
+func (a composerAnalyzer) parseComposerJson(fsys fs.FS, path string) (composerJson, error) {
 	// Parse composer.json
 	f, err := fsys.Open(path)
 	if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
+		return composerJson{}, xerrors.Errorf("file open error: %w", err)
 	}
 	defer func() { _ = f.Close() }()
 
-	jsonFile := composerJson{}
+	var jsonFile composerJson
 	err = json.NewDecoder(f).Decode(&jsonFile)
 	if err != nil {
-		return nil, xerrors.Errorf("json decode error: %w", err)
+		return composerJson{}, xerrors.Errorf("json decode error: %w", err)
 	}
-	return jsonFile.Require, nil
+	return jsonFile, nil
 }

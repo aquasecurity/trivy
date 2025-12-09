@@ -17,7 +17,8 @@ import (
 )
 
 type LockFile struct {
-	Packages []packageInfo `json:"packages"`
+	Packages    []packageInfo `json:"packages"`
+	PackagesDev []packageInfo `json:"packages-dev"`
 }
 type packageInfo struct {
 	Name    string            `json:"name"`
@@ -45,30 +46,12 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 
 	pkgs := make(map[string]ftypes.Package)
 	foundDeps := make(map[string][]string)
-	for _, lpkg := range lockFile.Packages {
-		pkg := ftypes.Package{
-			ID:           dependency.ID(ftypes.Composer, lpkg.Name, lpkg.Version),
-			Name:         lpkg.Name,
-			Version:      lpkg.Version,
-			Relationship: ftypes.RelationshipUnknown, // composer.lock file doesn't have info about direct/indirect dependencies
-			Licenses:     licenses(lpkg.License),
-			Locations:    []ftypes.Location{ftypes.Location(lpkg.Location)},
-		}
-		pkgs[pkg.Name] = pkg
 
-		var dependsOn []string
-		for depName := range lpkg.Require {
-			// Require field includes required php version, skip this
-			// Also skip PHP extensions
-			if depName == "php" || strings.HasPrefix(depName, "ext") {
-				continue
-			}
-			dependsOn = append(dependsOn, depName) // field uses range of versions, so later we will fill in the versions from the packages
-		}
-		if len(dependsOn) > 0 {
-			foundDeps[pkg.ID] = dependsOn
-		}
-	}
+	// Process production packages first
+	p.parsePackages(lockFile.Packages, false, pkgs, foundDeps)
+
+	// Process dev packages (skip if already in prod - prod takes precedence)
+	p.parsePackages(lockFile.PackagesDev, true, pkgs, foundDeps)
 
 	// fill deps versions
 	var deps ftypes.Dependencies
@@ -93,6 +76,39 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	sort.Sort(deps)
 
 	return pkgSlice, deps, nil
+}
+
+func (p *Parser) parsePackages(lockPkgs []packageInfo, isDev bool, pkgs map[string]ftypes.Package, foundDeps map[string][]string) {
+	for _, lpkg := range lockPkgs {
+		// Skip if already exists as prod package (prod takes precedence)
+		if _, ok := pkgs[lpkg.Name]; ok {
+			continue
+		}
+
+		pkg := ftypes.Package{
+			ID:           dependency.ID(ftypes.Composer, lpkg.Name, lpkg.Version),
+			Name:         lpkg.Name,
+			Version:      lpkg.Version,
+			Relationship: ftypes.RelationshipUnknown, // composer.lock file doesn't have info about direct/indirect dependencies
+			Licenses:     licenses(lpkg.License),
+			Locations:    []ftypes.Location{ftypes.Location(lpkg.Location)},
+			Dev:          isDev,
+		}
+		pkgs[pkg.Name] = pkg
+
+		var dependsOn []string
+		for depName := range lpkg.Require {
+			// Require field includes required php version, skip this
+			// Also skip PHP extensions
+			if depName == "php" || strings.HasPrefix(depName, "ext") {
+				continue
+			}
+			dependsOn = append(dependsOn, depName) // field uses range of versions, so later we will fill in the versions from the packages
+		}
+		if len(dependsOn) > 0 {
+			foundDeps[pkg.ID] = dependsOn
+		}
+	}
 }
 
 // licenses returns slice of licenses from string, string with separators (`or`, `and`, etc.) or string array
