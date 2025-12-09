@@ -20,6 +20,15 @@ jobs:
           go-version-file: go.mod
           cache: false
 
+      - name: Install tools
+        run: go install tool
+
+      - name: Generate test fixtures
+        run: |
+          mage test:GenerateModules
+          mage rpm:fixtures
+          mage gittest:fixtures
+
       - name: Run Go tests
         run: |
           go test ./...
