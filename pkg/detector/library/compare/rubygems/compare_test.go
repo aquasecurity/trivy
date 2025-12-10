@@ -91,6 +91,61 @@ func TestRubyGemsComparer_IsVulnerable(t *testing.T) {
 			},
 			want: false,
 		},
+		{
+			name: "space-separated OR ranges (trivy-db format)",
+			args: args{
+				currentVersion: "1.5.0",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{">=1.0.0, <2.0.0 >=2.0.0, <3.0.0"},
+					PatchedVersions:    []string{">=3.0.0"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "space-separated OR ranges - not vulnerable (patched version)",
+			args: args{
+				currentVersion: "3.0.0",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{">=1.0.0, <2.0.0 >=2.0.0, <3.0.0"},
+					PatchedVersions:    []string{">=3.0.0"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "space-separated OR ranges - matches second range",
+			args: args{
+				currentVersion: "2.5.0",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{">=1.0.0, <2.0.0 >=2.0.0, <3.0.0"},
+					PatchedVersions:    []string{">=2.0.0 <2.0.0", ">=3.0.0"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "complex space-separated OR ranges with pre-release versions",
+			args: args{
+				currentVersion: "2.1.0.beta.5",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{">=1.0.0.alpha.1, <2.0.0 >=2.0.0.beta.1, <2.1.0 >=2.1.0.rc.1, <2.2.0"},
+					PatchedVersions:    []string{">=2.0.0, <2.0.0.beta.1", ">=2.1.0, <2.1.0.rc.1", ">=2.2.0"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "complex space-separated OR ranges - matches third range with rc",
+			args: args{
+				currentVersion: "2.1.5.rc.3",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{">=1.0.0.alpha.1, <2.0.0 >=2.0.0.beta.1, <2.1.0 >=2.1.0.rc.1, <2.2.0"},
+					PatchedVersions:    []string{">=2.0.0, <2.0.0.beta.1", ">=2.1.0, <2.1.0.rc.1", ">=2.2.0"},
+				},
+			},
+			want: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

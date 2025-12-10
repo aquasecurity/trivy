@@ -128,6 +128,83 @@ func TestComparer_IsVulnerable(t *testing.T) {
 			},
 			want: true,
 		},
+		{
+			name: "space-separated OR ranges (trivy-db format)",
+			args: args{
+				currentVersion: "2.0.0",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=1.7.0 <1.7.16 >=1.8.0 <1.8.8 >=2.0.0 <2.0.8"},
+					PatchedVersions:    []string{">=1.7.16 <1.8.0", ">=1.8.8 <2.0.0", ">=2.0.8"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "space-separated OR ranges - not vulnerable (patched version)",
+			args: args{
+				currentVersion: "2.0.8",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=1.7.0 <1.7.16 >=1.8.0 <1.8.8 >=2.0.0 <2.0.8"},
+					PatchedVersions:    []string{">=1.7.16 <1.8.0", ">=1.8.8 <2.0.0", ">=2.0.8"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "complex space-separated OR ranges with milestone versions (.M)",
+			args: args{
+				currentVersion: "9.0.0.M2",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=9.0.0.M1 <9.0.5 >=9.0.5.M1 <9.0.37 >=9.1.0.M1 <9.1.0"},
+					PatchedVersions:    []string{">=9.0.5, <9.0.5.M1", ">=9.0.37, <9.1.0.M1", ">=9.1.0"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "complex space-separated OR ranges - matches second range with milestone",
+			args: args{
+				currentVersion: "9.0.10.M5",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=9.0.0.M1 <9.0.5 >=9.0.5.M1 <9.0.37 >=9.1.0.M1 <9.1.0"},
+					PatchedVersions:    []string{">=9.0.5, <9.0.5.M1", ">=9.0.37, <9.1.0.M1", ">=9.1.0"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "complex space-separated OR ranges with alpha/beta/rc versions",
+			args: args{
+				currentVersion: "2.1.0-beta-5",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=1.0.0-alpha-1 <2.0.0 >=2.0.0-beta-1 <2.1.0 >=2.1.0-rc-1 <2.2.0"},
+					PatchedVersions:    []string{">=2.0.0, <2.0.0-beta-1", ">=2.1.0, <2.1.0-rc-1", ">=2.2.0"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "comma-separated AND constraint should not be split (regression test)",
+			args: args{
+				currentVersion: "2.13.1",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">= 2.0.0, <= 2.9.10.3"},
+					PatchedVersions:    []string{">= 2.9.10.4"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "comma-separated AND constraint - actually vulnerable",
+			args: args{
+				currentVersion: "2.9.10.2",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">= 2.0.0, <= 2.9.10.3"},
+					PatchedVersions:    []string{">= 2.9.10.4"},
+				},
+			},
+			want: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -23,7 +23,9 @@ func (n Comparer) matchVersion(currentVersion, constraint string) (bool, error) 
 		return false, xerrors.Errorf("maven version error (%s): %s", currentVersion, err)
 	}
 
-	c, err := version.NewComparer(constraint)
+	normalizedConstraint := compare.NormalizeConstraintString(constraint, compare.ComparerTypeMaven)
+
+	c, err := version.NewComparer(normalizedConstraint)
 	if err != nil {
 		return false, xerrors.Errorf("maven constraint error (%s): %s", constraint, err)
 	}

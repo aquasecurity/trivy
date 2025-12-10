@@ -23,7 +23,9 @@ func (n Comparer) MatchVersion(currentVersion, constraint string) (bool, error) 
 		return false, xerrors.Errorf("npm version error (%s): %s", currentVersion, err)
 	}
 
-	c, err := npm.NewConstraints(constraint, npm.WithPreRelease(true))
+	normalizedConstraint := compare.NormalizeConstraintString(constraint, compare.ComparerTypeNPM)
+
+	c, err := npm.NewConstraints(normalizedConstraint, npm.WithPreRelease(true))
 	if err != nil {
 		return false, xerrors.Errorf("npm constraint error (%s): %s", constraint, err)
 	}
