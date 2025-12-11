@@ -106,7 +106,7 @@
           "PkgName": "e2fsprogs",
           "PkgIdentifier": {
             "PURL": "pkg:deb/ubuntu/e2fsprogs@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04",
-            "UID": "f43bbfe1f933f718"
+            "UID": "eddde4dbdb2df58c"
           },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
@@ -178,7 +178,7 @@
           "PkgName": "libcom-err2",
           "PkgIdentifier": {
             "PURL": "pkg:deb/ubuntu/libcom-err2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04",
-            "UID": "e7d11d906afeb678"
+            "UID": "87ee4bdeca236f23"
           },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
@@ -250,7 +250,7 @@
           "PkgName": "libext2fs2",
           "PkgIdentifier": {
             "PURL": "pkg:deb/ubuntu/libext2fs2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04",
-            "UID": "19d89bf66d83962e"
+            "UID": "f5dac6a49dfab96c"
           },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
@@ -322,7 +322,7 @@
           "PkgName": "libss2",
           "PkgIdentifier": {
             "PURL": "pkg:deb/ubuntu/libss2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04",
-            "UID": "231804324b8f13c6"
+            "UID": "119f1602425ea3a0"
           },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",

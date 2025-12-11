@@ -85,7 +85,7 @@
           "PkgName": "bash",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64\u0026distro=centos-7.6.1810",
-            "UID": "64aff37eb11b9c25"
+            "UID": "1e73732cad16e536"
           },
           "InstalledVersion": "4.2.46-31.el7",
           "Status": "will_not_fix",
@@ -147,7 +147,7 @@
           "PkgName": "openssl-libs",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026distro=centos-7.6.1810\u0026epoch=1",
-            "UID": "20f09cdcea6545a2"
+            "UID": "74d0a3456f5c43a3"
           },
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",
@@ -242,7 +242,7 @@
           "PkgName": "openssl-libs",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026distro=centos-7.6.1810\u0026epoch=1",
-            "UID": "20f09cdcea6545a2"
+            "UID": "74d0a3456f5c43a3"
           },
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",
