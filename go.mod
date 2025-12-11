@@ -512,3 +512,5 @@ tool (
 	golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize
 	sigs.k8s.io/kind
 )
+
+replace github.com/aquasecurity/trivy-db => github.com/urimils/trivy-db v0.0.0-20251205093947-925515d35727
