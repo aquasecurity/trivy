@@ -1,6 +1,7 @@
 package cyclonedx_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -2427,4 +2428,187 @@ func TestMarshaler_Licenses(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+/*
+TestMarshaler_DuplicateDependencies verifies that duplicate entries in the DependsOn slice
+are properly deduplicated when marshaling to CycloneDX format. This ensures compliance with
+the CycloneDX specification requirement that dependsOn arrays must contain unique values.
+See: https://github.com/CycloneDX/specification/blob/b1675deb462444fede77a8508dd4d1aca6d1704b/schema/bom-1.4.schema.json#L911
+*/
+func TestMarshaler_DuplicateDependencies(t *testing.T) {
+	ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 0, time.UTC))
+
+	inputReport := types.Report{
+		SchemaVersion: report.SchemaVersion,
+		ArtifactName:  "test-image",
+		ArtifactType:  ftypes.TypeContainerImage,
+		Results: types.Results{
+			{
+				Target: "test",
+				Class:  types.ClassLangPkg,
+				Type:   ftypes.Jar,
+				Packages: []ftypes.Package{
+					{
+						ID:      "pkg-a@1.0.0",
+						Name:    "pkg-a",
+						Version: "1.0.0",
+						Identifier: ftypes.PkgIdentifier{
+							UID: "A",
+							PURL: &packageurl.PackageURL{
+								Type:    packageurl.TypeMaven,
+								Name:    "pkg-a",
+								Version: "1.0.0",
+							},
+						},
+						DependsOn: []string{
+							"pkg-b@1.0.0",
+							"pkg-b@1.0.0",
+							"pkg-c@1.0.0",
+							"pkg-b@1.0.0",
+							"pkg-c@1.0.0",
+						},
+					},
+					{
+						ID:      "pkg-b@1.0.0",
+						Name:    "pkg-b",
+						Version: "1.0.0",
+						Identifier: ftypes.PkgIdentifier{
+							UID: "B",
+							PURL: &packageurl.PackageURL{
+								Type:    packageurl.TypeMaven,
+								Name:    "pkg-b",
+								Version: "1.0.0",
+							},
+						},
+					},
+					{
+						ID:      "pkg-c@1.0.0",
+						Name:    "pkg-c",
+						Version: "1.0.0",
+						Identifier: ftypes.PkgIdentifier{
+							UID: "C",
+							PURL: &packageurl.PackageURL{
+								Type:    packageurl.TypeMaven,
+								Name:    "pkg-c",
+								Version: "1.0.0",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	marshaler := cyclonedx.NewMarshaler("dev")
+	bom, err := marshaler.MarshalReport(ctx, inputReport)
+	require.NoError(t, err)
+
+	require.NotNil(t, bom.Dependencies)
+	deps := *bom.Dependencies
+
+	var pkgADeps *cdx.Dependency
+	for i := range deps {
+		if deps[i].Ref == "pkg:maven/pkg-a@1.0.0" {
+			pkgADeps = &deps[i]
+			break
+		}
+	}
+
+	require.NotNil(t, pkgADeps, "pkg-a dependency not found")
+	require.NotNil(t, pkgADeps.Dependencies, "pkg-a dependencies is nil")
+
+	actualDeps := *pkgADeps.Dependencies
+	assert.Len(t, actualDeps, 2, "expected 2 unique dependencies, got %d", len(actualDeps))
+	assert.Contains(t, actualDeps, "pkg:maven/pkg-b@1.0.0")
+	assert.Contains(t, actualDeps, "pkg:maven/pkg-c@1.0.0")
+}
+
+/*
+TestMarshaler_SPDXIDUniqueness verifies that packages with the same PURL but different SPDXIDs
+are treated as unique packages when converting from SPDX to CycloneDX format. This ensures that
+SPDXID is preserved and used as a unique identifier when multiple packages share the same PURL.
+*/
+func TestMarshaler_SPDXIDUniqueness(t *testing.T) {
+	ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 0, time.UTC))
+
+	inputReport := types.Report{
+		SchemaVersion: report.SchemaVersion,
+		ArtifactName:  "test-spdx",
+		ArtifactType:  ftypes.TypeContainerImage,
+		Results: types.Results{
+			{
+				Target: "test",
+				Class:  types.ClassLangPkg,
+				Type:   ftypes.Jar,
+				Packages: []ftypes.Package{
+					{
+						ID:      "org.postgresql:pljava@1.6.6",
+						Name:    "org.postgresql:pljava",
+						Version: "1.6.6",
+						Identifier: ftypes.PkgIdentifier{
+							UID: "A",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeMaven,
+								Namespace: "org.postgresql",
+								Name:      "pljava",
+								Version:   "1.6.6",
+							},
+							SPDXID: "SPDXRef-Package-81b064a6dd4b165f",
+						},
+					},
+					{
+						ID:      "org.postgresql:pljava@1.6.6",
+						Name:    "org.postgresql:pljava",
+						Version: "1.6.6",
+						Identifier: ftypes.PkgIdentifier{
+							UID: "B",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeMaven,
+								Namespace: "org.postgresql",
+								Name:      "pljava",
+								Version:   "1.6.6",
+							},
+							SPDXID: "SPDXRef-Package-200e4c8a9fedcdb5",
+						},
+					},
+					{
+						ID:      "org.postgresql:pljava@1.6.6",
+						Name:    "org.postgresql:pljava",
+						Version: "1.6.6",
+						Identifier: ftypes.PkgIdentifier{
+							UID: "C",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeMaven,
+								Namespace: "org.postgresql",
+								Name:      "pljava",
+								Version:   "1.6.6",
+							},
+							SPDXID: "SPDXRef-Package-c30a860d16f62e1b",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	marshaler := cyclonedx.NewMarshaler("dev")
+	bom, err := marshaler.MarshalReport(ctx, inputReport)
+	require.NoError(t, err)
+
+	require.NotNil(t, bom.Components)
+	components := *bom.Components
+
+	// Verify that all three packages are present with their unique SPDXIDs
+	assert.Len(t, components, 3, "expected 3 unique components with different SPDXIDs")
+
+	// Verify each component has the correct SPDXID as its BOMRef
+	bomRefs := make([]string, len(components))
+	for i, c := range components {
+		bomRefs[i] = c.BOMRef
+	}
+
+	assert.Contains(t, bomRefs, "SPDXRef-Package-81b064a6dd4b165f")
+	assert.Contains(t, bomRefs, "SPDXRef-Package-200e4c8a9fedcdb5")
+	assert.Contains(t, bomRefs, "SPDXRef-Package-c30a860d16f62e1b")
 }
