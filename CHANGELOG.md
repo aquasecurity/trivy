@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.69.0](https://github.com/aquasecurity/trivy/compare/v0.68.1...v0.69.0) (2025-12-12)
+
+
+### Features
+
+* **cloudformation:** add support for Fn::ForEach ([#9508](https://github.com/aquasecurity/trivy/issues/9508)) ([d65b504](https://github.com/aquasecurity/trivy/commit/d65b504cb24a4d71f054bfbd6a872b58385bb0d3))
+* **debian:** detect third-party packages using maintainer list ([#9917](https://github.com/aquasecurity/trivy/issues/9917)) ([effc1c0](https://github.com/aquasecurity/trivy/commit/effc1c0d4d46e01efa896f53ccc72eb87d175d91))
+* **helm:** add sslCertDir parameter ([#9697](https://github.com/aquasecurity/trivy/issues/9697)) ([879e4fc](https://github.com/aquasecurity/trivy/commit/879e4fca12b53010e3b6a22fcb9c6e2b8eefad96))
+* **julia:** enable vulnerability scanning for the Julia language ecosystem ([#9800](https://github.com/aquasecurity/trivy/issues/9800)) ([c2f82ad](https://github.com/aquasecurity/trivy/commit/c2f82add3a59a509f581cc245630ce29e801de6a))
+* **misconf:** initial ansible scanning support ([#9332](https://github.com/aquasecurity/trivy/issues/9332)) ([9275e15](https://github.com/aquasecurity/trivy/commit/9275e1532b11c5f1842f334660303a7ebf46a2c6))
+* **misconf:** Update Azure Database schema ([#9811](https://github.com/aquasecurity/trivy/issues/9811)) ([48dfede](https://github.com/aquasecurity/trivy/commit/48dfedeb1e13d1654e2b9239f403d847af353e2e))
+* **php:** add support for dev dependencies in Composer ([#9910](https://github.com/aquasecurity/trivy/issues/9910)) ([56b59e8](https://github.com/aquasecurity/trivy/commit/56b59e8abbb891564bf03608b8150bceaeb60ded))
+
+
+### Bug Fixes
+
+* **misconf:** respect .yml files when Helm charts are detected ([#9912](https://github.com/aquasecurity/trivy/issues/9912)) ([18ecf75](https://github.com/aquasecurity/trivy/commit/18ecf75176a1cadcf20e088a991af899e96fe40b))
+* remove trailing tab in statefulset template ([#9889](https://github.com/aquasecurity/trivy/issues/9889)) ([9db123c](https://github.com/aquasecurity/trivy/commit/9db123ccf80e55b30bee53db7163b9fd9a38bd75))
+* **vex:** add CVE-2025-66564 as not_affected into Trivy VEX file ([#9924](https://github.com/aquasecurity/trivy/issues/9924)) ([335cc99](https://github.com/aquasecurity/trivy/commit/335cc993fa76cddf2e263cb8e09d0cbbb0b98a09))
+
 ## [0.68.1](https://github.com/aquasecurity/trivy/compare/v0.68.0...v0.68.1) (2025-12-03)
 
 
