@@ -848,11 +848,11 @@ var builtinRules = []Rule{
 		Keywords:        []string{"dockerc"},
 	},
 	{
-		ID:       "symfony-secret",
+		ID:       "symfony-default-secret",
 		Category: CategorySymfony,
-		Title:    "Symfony Secret",
+		Title:    "Symfony Default Secret",
 		Severity: "HIGH",
-		Regex:    MustCompile(`ThisTokenIsNotSoSecretChangeIt`),
-		Keywords: []string{"ThisTokenIsNotSoSecretChangeIt"},
+		Regex:    MustCompile(`ThisTokenIsNotSoSecretChangeIt|ThisEzPlatformTokenIsNotSoSecret_PleaseChangeIt`),
+		Keywords: []string{"ThisTokenIsNotSoSecretChangeIt", "ThisEzPlatformTokenIsNotSoSecret_PleaseChangeIt"},
 	},
 }

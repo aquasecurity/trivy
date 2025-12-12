@@ -971,6 +971,28 @@ func TestSecretScanner(t *testing.T) {
 		},
 		Offset: 123,
 	}
+	wantFindingSymfonySecret := types.SecretFinding{
+		RuleID:    "symfony-default-secret",
+		Category:  secret.CategorySymfony,
+		Title:     "Symfony Default Secret",
+		Severity:  "HIGH",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "APP_SECRET=********************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "APP_SECRET=********************************",
+					Highlighted: "APP_SECRET=********************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+		Offset: 11,
+	}
 	wantMultiLine := types.SecretFinding{
 		RuleID:    "multi-line-secret",
 		Category:  "general",
@@ -1255,6 +1277,15 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "jwt-secret.txt"),
 				Findings: []types.SecretFinding{wantFindingJWT},
+			},
+		},
+		{
+			name:          "find Symfony default secret",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "symfony-secret.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "symfony-secret.txt"),
+				Findings: []types.SecretFinding{wantFindingSymfonySecret},
 			},
 		},
 		{
