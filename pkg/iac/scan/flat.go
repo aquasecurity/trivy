@@ -37,7 +37,7 @@ type FlatRange struct {
 }
 
 func (r Results) Flatten() []FlatResult {
-	var results []FlatResult
+	results := make([]FlatResult, 0, len(r))
 	for _, original := range r {
 		results = append(results, original.Flatten())
 	}
@@ -55,7 +55,6 @@ func (r *Result) Flatten() FlatResult {
 
 	return FlatResult{
 		Deprecated:      r.rule.Deprecated,
-		RuleID:          r.rule.AVDID,
 		LongID:          r.Rule().LongID(),
 		RuleSummary:     r.rule.Summary,
 		RuleProvider:    r.rule.Provider,
