@@ -72,7 +72,7 @@
           "PkgName": "openssl-libs",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/alma/openssl-libs@1.1.1k-4.el8?arch=x86_64\u0026distro=alma-8.5\u0026epoch=1",
-            "UID": "3f965238234faa63"
+            "UID": "3ff1aff39832f37f"
           },
           "InstalledVersion": "1:1.1.1k-4.el8",
           "FixedVersion": "1:1.1.1k-5.el8_5",

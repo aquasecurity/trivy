@@ -176,6 +176,22 @@ type BuildInfo struct {
 	Arch        string   `json:",omitempty"`
 }
 
+// RepositoryClass indicates the class of repository from which the package was distributed.
+type RepositoryClass string
+
+const (
+	RepositoryClassUnknown    RepositoryClass = ""            // Unknown or not set
+	RepositoryClassOfficial   RepositoryClass = "official"    // Official OS repository (Debian, Ubuntu, Red Hat, etc.)
+	RepositoryClassThirdParty RepositoryClass = "third-party" // Third-party repository (Docker, NVIDIA, etc.)
+)
+
+// PackageRepository indicates where the package was distributed from.
+type PackageRepository struct {
+	Class RepositoryClass `json:",omitempty"`
+	// Future: Add Name field for specific repository identification (e.g., "epel", "docker")
+	// Name string `json:",omitempty"`
+}
+
 type Package struct {
 	ID                 string        `json:",omitempty"`
 	Name               string        `json:",omitempty"`
@@ -195,6 +211,9 @@ type Package struct {
 
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
+
+	// Repository indicates where the package was distributed from.
+	Repository PackageRepository `json:",omitzero"`
 
 	Indirect     bool         `json:",omitempty"` // Deprecated: Use relationship. Kept for backward compatibility.
 	Relationship Relationship `json:",omitempty"`

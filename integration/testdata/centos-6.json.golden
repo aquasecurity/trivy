@@ -95,7 +95,7 @@
           "PkgName": "glibc",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/centos/glibc@2.12-1.212.el6?arch=x86_64\u0026distro=centos-6.10",
-            "UID": "24b11591bb7262c4"
+            "UID": "8a375d9a81c8ed09"
           },
           "InstalledVersion": "2.12-1.212.el6",
           "Status": "end_of_life",
@@ -153,7 +153,7 @@
           "PkgName": "openssl",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/centos/openssl@1.0.1e-57.el6?arch=x86_64\u0026distro=centos-6.10",
-            "UID": "935959fd0ed81eb9"
+            "UID": "3250412c84ceb835"
           },
           "InstalledVersion": "1.0.1e-57.el6",
           "FixedVersion": "1.0.1e-58.el6_10",
