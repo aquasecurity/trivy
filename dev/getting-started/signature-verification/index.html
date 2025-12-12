@@ -8212,13 +8212,19 @@ The following checks were performed on each of these signatures:
    ....
 </code></pre></div>
 <h2 id="verifying-binary">Verifying binary<a class="headerlink" href="#verifying-binary" title="Permanent link">&para;</a></h2>
-<p>Download the required tarball, associated signature and certificate files from the <a href="https://github.com/aquasecurity/trivy/releases">GitHub Release</a>.</p>
+<p>Since Trivy v0.68.1, GitHub Releases provide <a href="https://docs.sigstore.dev/cosign/bundle/">sigstore signature bundles</a>. Separate <code>.sig</code> and certificate (<code>.pem</code>) files are no longer published.</p>
+<p>Download the required tarball and its associated <code>.sigstore.json</code> bundle file from the <a href="https://github.com/aquasecurity/trivy/releases">GitHub Release</a>.</p>
 <p>Use the following command for keyless verification:</p>
-<div class="highlight"><pre><span></span><code>cosign<span class="w"> </span>verify-blob<span class="w"> </span>&lt;path<span class="w"> </span>to<span class="w"> </span>binary&gt;<span class="w"> </span><span class="se">\</span>
---certificate<span class="w"> </span>&lt;path<span class="w"> </span>to<span class="w"> </span>cert&gt;<span class="w"> </span><span class="se">\</span>
---signature<span class="w"> </span>&lt;path<span class="w"> </span>to<span class="w"> </span>sig&gt;<span class="w"> </span><span class="se">\</span>
---certificate-identity-regexp<span class="w"> </span><span class="s1">&#39;https://github\.com/aquasecurity/trivy/\.github/workflows/.+&#39;</span><span class="w"> </span><span class="se">\</span>
---certificate-oidc-issuer<span class="w"> </span><span class="s2">&quot;https://token.actions.githubusercontent.com&quot;</span>
+<div class="highlight"><pre><span></span><code>cosign<span class="w"> </span>verify-blob-attestation<span class="w"> </span>&lt;path<span class="w"> </span>to<span class="w"> </span>tarball&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--bundle<span class="w"> </span>&lt;path<span class="w"> </span>to<span class="w"> </span>tarball&gt;.sigstore.json<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--certificate-oidc-issuer<span class="o">=</span>https://token.actions.githubusercontent.com<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--certificate-identity<span class="w"> </span><span class="s1">&#39;https://github.com/aquasecurity/trivy/.github/workflows/reusable-release.yaml@refs/tags/&lt;release tag&gt;&#39;</span>
+</code></pre></div>
+<p>Example for <code>trivy_0.68.1_Linux-64bit.tar.gz</code>:</p>
+<div class="highlight"><pre><span></span><code>cosign<span class="w"> </span>verify-blob-attestation<span class="w"> </span>trivy_0.68.1_Linux-64bit.tar.gz<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--bundle<span class="w"> </span>trivy_0.68.1_Linux-64bit.tar.gz.sigstore.json<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--certificate-oidc-issuer<span class="o">=</span>https://token.actions.githubusercontent.com<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--certificate-identity<span class="w"> </span><span class="s1">&#39;https://github.com/aquasecurity/trivy/.github/workflows/reusable-release.yaml@refs/tags/v0.68.1&#39;</span>
 </code></pre></div>
 <p>You should get the following output</p>
 <div class="highlight"><pre><span></span><code>Verified OK
