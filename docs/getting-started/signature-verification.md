@@ -26,16 +26,26 @@ The following checks were performed on each of these signatures:
 
 ## Verifying binary
 
-Download the required tarball, associated signature and certificate files from the [GitHub Release](https://github.com/aquasecurity/trivy/releases).
+Since Trivy v0.68.1, GitHub Releases provide [sigstore signature bundles](https://docs.sigstore.dev/cosign/bundle/). Separate `.sig` and certificate (`.pem`) files are no longer published.
+
+Download the required tarball and its associated `.sigstore.json` bundle file from the [GitHub Release](https://github.com/aquasecurity/trivy/releases).
 
 Use the following command for keyless verification:
 
 ```shell
-cosign verify-blob <path to binary> \
---certificate <path to cert> \
---signature <path to sig> \
---certificate-identity-regexp 'https://github\.com/aquasecurity/trivy/\.github/workflows/.+' \
---certificate-oidc-issuer "https://token.actions.githubusercontent.com"
+cosign verify-blob-attestation <path to tarball> \
+    --bundle <path to tarball>.sigstore.json \
+    --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
+    --certificate-identity 'https://github.com/aquasecurity/trivy/.github/workflows/reusable-release.yaml@refs/tags/<release tag>'
+```
+
+Example for `trivy_0.68.1_Linux-64bit.tar.gz`:
+
+```shell
+cosign verify-blob-attestation trivy_0.68.1_Linux-64bit.tar.gz \
+    --bundle trivy_0.68.1_Linux-64bit.tar.gz.sigstore.json \
+    --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
+    --certificate-identity 'https://github.com/aquasecurity/trivy/.github/workflows/reusable-release.yaml@refs/tags/v0.68.1'
 ```
 
 You should get the following output
