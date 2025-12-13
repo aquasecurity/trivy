@@ -401,6 +401,7 @@ type Options struct {
 	MisconfOptions
 	ModuleOptions
 	PackageOptions
+	ProOptions
 	RegistryOptions
 	RegoOptions
 	RemoteOptions
