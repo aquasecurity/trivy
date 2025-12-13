@@ -428,6 +428,11 @@ func fillPkgFieldsFromComponentProps(props []core.Property, pkg *ftypes.Package)
 			buildInfo.Nvr = prop.Value
 		case core.PropertyArch:
 			buildInfo.Arch = prop.Value
+		default:
+			if pkg.Properties == nil {
+				pkg.Properties = make(map[string]string)
+			}
+			pkg.Properties[prop.Name] = prop.Value
 		}
 	}
 
