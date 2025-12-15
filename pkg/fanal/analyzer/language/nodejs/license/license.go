@@ -7,10 +7,10 @@ import (
 	"path"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
