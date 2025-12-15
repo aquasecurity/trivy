@@ -148,6 +148,7 @@ func (a bunLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[strin
 			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
 		}
 
+		language.NormalizeLicenses(pkg.Licenses)
 		licenses[pkg.ID] = pkg.Licenses
 		return nil
 	})

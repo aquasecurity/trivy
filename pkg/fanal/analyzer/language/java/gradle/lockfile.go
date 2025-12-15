@@ -77,6 +77,7 @@ func (a gradleLockAnalyzer) PostAnalyze(ctx context.Context, input analyzer.Post
 				app.Packages[i].Licenses = lo.Map(pom.Licenses.License, func(license License, _ int) string {
 					return license.Name
 				})
+				language.NormalizeLicenses(app.Packages[i].Licenses)
 			}
 
 			// File child deps from pom file

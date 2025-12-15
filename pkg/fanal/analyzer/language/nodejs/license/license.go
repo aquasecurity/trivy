@@ -7,6 +7,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
@@ -40,6 +41,7 @@ func (l *License) Traverse(fsys fs.FS, root string) (map[string][]string, error)
 
 		ok, licenseFileName := IsLicenseRefToFile(pkg.Licenses)
 		if !ok {
+			language.NormalizeLicenses(pkg.Licenses)
 			licenses[pkg.ID] = pkg.Licenses
 			return nil
 		}
@@ -52,7 +54,9 @@ func (l *License) Traverse(fsys fs.FS, root string) (map[string][]string, error)
 			return xerrors.Errorf("unable to classify the license: %w", err)
 		} else if len(findings) > 0 {
 			// License found
-			licenses[pkg.ID] = findings.Names()
+			ll := findings.Names()
+			language.NormalizeLicenses(ll)
+			licenses[pkg.ID] = ll
 		} else {
 			l.logger.Debug("The license file was not found or the license could not be classified",
 				log.String("license_file", licenseFilePath))

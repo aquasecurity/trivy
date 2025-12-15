@@ -40,7 +40,7 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 									},
 								},
 								Licenses: []string{
-									"Eclipse Public License 1.0",
+									"EPL-1.0",
 								},
 								DependsOn: []string{
 									"org.hamcrest:hamcrest-core:1.3",

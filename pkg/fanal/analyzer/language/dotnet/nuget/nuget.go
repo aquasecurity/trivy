@@ -90,6 +90,7 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.P
 				if err != nil && !errors.Is(err, fs.ErrNotExist) {
 					return xerrors.Errorf("license find error: %w", err)
 				}
+				language.NormalizeLicenses(license)
 				foundLicenses[lib.ID] = license
 			}
 

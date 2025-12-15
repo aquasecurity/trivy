@@ -71,6 +71,7 @@ func (a conanLockAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostA
 				app.Packages[i].Licenses = []string{
 					license,
 				}
+				language.NormalizeLicenses(app.Packages[i].Licenses)
 			}
 		}
 
