@@ -57,6 +57,12 @@ var (
 		Usage:         "[EXPERIMENTAL] show dependency origin tree of vulnerable packages",
 		TelemetrySafe: true,
 	}
+	FileTreeFlag = Flag[bool]{
+		Name:          "file-tree",
+		ConfigName:    "file-tree",
+		Usage:         "[EXPERIMENTAL] show file name dependency origin tree of vulnerable packages",
+		TelemetrySafe: true,
+	}
 	ListAllPkgsFlag = Flag[bool]{
 		Name:          "list-all-pkgs",
 		ConfigName:    "list-all-pkgs",
@@ -134,6 +140,7 @@ type ReportFlagGroup struct {
 	ReportFormat    *Flag[string]
 	Template        *Flag[string]
 	DependencyTree  *Flag[bool]
+	FileTree        *Flag[bool]
 	ListAllPkgs     *Flag[bool]
 	IgnoreFile      *Flag[string]
 	IgnorePolicy    *Flag[string]
@@ -152,6 +159,7 @@ type ReportOptions struct {
 	ReportFormat     string
 	Template         string
 	DependencyTree   bool
+	FileTree         bool
 	ListAllPkgs      bool
 	IgnoreFile       string
 	ExitCode         int
@@ -171,6 +179,7 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		ReportFormat:    ReportFormatFlag.Clone(),
 		Template:        TemplateFlag.Clone(),
 		DependencyTree:  DependencyTreeFlag.Clone(),
+		FileTree:        FileTreeFlag.Clone(),
 		ListAllPkgs:     ListAllPkgsFlag.Clone(),
 		IgnoreFile:      IgnoreFileFlag.Clone(),
 		IgnorePolicy:    IgnorePolicyFlag.Clone(),
@@ -195,6 +204,7 @@ func (f *ReportFlagGroup) Flags() []Flagger {
 		f.ReportFormat,
 		f.Template,
 		f.DependencyTree,
+		f.FileTree,
 		f.ListAllPkgs,
 		f.IgnoreFile,
 		f.IgnorePolicy,
@@ -213,6 +223,7 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 	format := types.Format(f.Format.Value())
 	template := f.Template.Value()
 	dependencyTree := f.DependencyTree.Value()
+	fileTree := f.FileTree.Value()
 	listAllPkgs := f.ListAllPkgs.Value()
 	tableModes := f.TableMode.Value()
 
@@ -245,6 +256,15 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 		}
 	}
 
+	// "--file-tree" option is available only with "--format table".
+	if fileTree {
+		log.Info(`"--file-tree" shows the file names where dependents of vulnerable packages are referenced. ` +
+			`It supports limited package managers. Please see the document for the detail.`)
+		if format != types.FormatTable {
+			log.Warn(`"--file-tree" can be used only with "--format table".`)
+		}
+	}
+
 	// "--table-mode" option is available only with "--format table".
 	if viper.IsSet(TableModeFlag.ConfigName) && format != types.FormatTable {
 		return xerrors.New(`"--table-mode" can be used only with "--format table".`)
@@ -272,6 +292,7 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 		ReportFormat:     f.ReportFormat.Value(),
 		Template:         template,
 		DependencyTree:   dependencyTree,
+		FileTree:         fileTree,
 		ListAllPkgs:      listAllPkgs,
 		IgnoreFile:       f.IgnoreFile.Value(),
 		ExitCode:         f.ExitCode.Value(),
