@@ -41,7 +41,7 @@ func Test_adaptService(t *testing.T) {
 `,
 			expected: appservice.AppService{
 				Services: []appservice.Service{{
-					Platform:         iacTypes.StringTest("generic"),
+					Resource:         iacTypes.StringTest("azurerm_app_service"),
 					EnableClientCert: iacTypes.BoolTest(true),
 					Identity: appservice.Identity{
 						Type: iacTypes.StringTest("UserAssigned"),
@@ -64,7 +64,7 @@ func Test_adaptService(t *testing.T) {
 `,
 			expected: appservice.AppService{
 				Services: []appservice.Service{{
-					Platform: iacTypes.StringTest("generic"),
+					Resource: iacTypes.StringTest("azurerm_app_service"),
 					Site: appservice.Site{
 						MinimumTLSVersion: iacTypes.StringTest("1.2"),
 					},
@@ -78,7 +78,7 @@ func Test_adaptService(t *testing.T) {
 }`,
 			expected: appservice.AppService{
 				Services: []appservice.Service{{
-					Platform: iacTypes.StringTest("windows"),
+					Resource: iacTypes.StringTest("azurerm_windows_web_app"),
 					Site: appservice.Site{
 						MinimumTLSVersion: iacTypes.StringTest("1.2"),
 						FTPSState:         iacTypes.StringTest("Disabled"),
@@ -113,7 +113,7 @@ func Test_adaptService(t *testing.T) {
 `,
 			expected: appservice.AppService{
 				Services: []appservice.Service{{
-					Platform:         iacTypes.StringTest("windows"),
+					Resource:         iacTypes.StringTest("azurerm_windows_web_app"),
 					HTTPSOnly:        iacTypes.BoolTest(true),
 					EnableClientCert: iacTypes.BoolTest(true),
 					Identity: appservice.Identity{

@@ -37,7 +37,7 @@ func adaptFunctionApps(modules terraform.Modules) []appservice.FunctionApp {
 func adaptService(resource *terraform.Block) appservice.Service {
 	service := appservice.Service{
 		Metadata:         resource.GetMetadata(),
-		Platform:         types.String("generic", resource.GetMetadata()),
+		Resource:         types.String(resource.TypeLabel(), resource.GetMetadata()),
 		EnableClientCert: resource.GetAttribute("client_cert_enabled").AsBoolValueOrDefault(false, resource),
 		HTTPSOnly:        resource.GetAttribute("https_only").AsBoolValueOrDefault(false, resource),
 		Site: appservice.Site{
@@ -84,6 +84,7 @@ func adaptFunctionApp(resource *terraform.Block) appservice.FunctionApp {
 func adaptWebApp(resource *terraform.Block) appservice.Service {
 	service := appservice.Service{
 		Metadata:         resource.GetMetadata(),
+		Resource:         types.String(resource.TypeLabel(), resource.GetMetadata()),
 		EnableClientCert: resource.GetAttribute("client_certificate_enabled").AsBoolValueOrDefault(false, resource),
 		HTTPSOnly:        resource.GetAttribute("https_only").AsBoolValueOrDefault(false, resource),
 		Site: appservice.Site{
@@ -91,13 +92,6 @@ func adaptWebApp(resource *terraform.Block) appservice.Service {
 			FTPSState:         types.StringDefault("Disabled", resource.GetMetadata()),
 			MinimumTLSVersion: types.StringDefault("1.2", resource.GetMetadata()),
 		},
-	}
-
-	switch resource.TypeLabel() {
-	case "azurerm_linux_web_app":
-		service.Platform = types.String("linux", resource.GetMetadata())
-	case "azurerm_windows_web_app":
-		service.Platform = types.String("windows", resource.GetMetadata())
 	}
 
 	if identityBlock := resource.GetBlock("identity"); identityBlock.IsNotNil() {
