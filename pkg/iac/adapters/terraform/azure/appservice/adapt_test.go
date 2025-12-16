@@ -170,6 +170,18 @@ func Test_adaptFunctionApp(t *testing.T) {
 				HTTPSOnly: iacTypes.BoolTest(false),
 			},
 		},
+		{
+			name: "os-specific resource",
+			terraform: `
+			resource "azurerm_windows_function_app" "my_example" {
+				name                       = "test-azure-functions"
+				https_only                 = true
+			}
+`,
+			expected: appservice.FunctionApp{
+				HTTPSOnly: iacTypes.BoolTest(true),
+			},
+		},
 	}
 
 	for _, test := range tests {

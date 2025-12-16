@@ -26,7 +26,9 @@ func adaptServices(modules terraform.Modules) []appservice.Service {
 
 func adaptFunctionApps(modules terraform.Modules) []appservice.FunctionApp {
 	var functionApps []appservice.FunctionApp
-	for _, resource := range modules.GetResourcesByType("azurerm_function_app") {
+	for _, resource := range modules.GetResourcesByType(
+		"azurerm_function_app", "azurerm_linux_function_app", "azurerm_windows_function_app",
+	) {
 		functionApps = append(functionApps, adaptFunctionApp(resource))
 	}
 	return functionApps
