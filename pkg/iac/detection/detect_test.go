@@ -246,6 +246,7 @@ Resources:
 			r:    nil,
 			expected: []FileType{
 				FileTypeYAML,
+				FileTypeHelm,
 				FileTypeAnsible,
 			},
 		},
@@ -276,6 +277,7 @@ spec:
 			expected: []FileType{
 				FileTypeKubernetes,
 				FileTypeYAML,
+				FileTypeHelm,
 				FileTypeAnsible,
 			},
 		},
@@ -342,6 +344,7 @@ spec:
 			r:    nil,
 			expected: []FileType{
 				FileTypeYAML,
+				FileTypeHelm,
 				FileTypeAnsible,
 			},
 		},
@@ -351,6 +354,7 @@ spec:
 			r:    nil,
 			expected: []FileType{
 				FileTypeYAML,
+				FileTypeHelm,
 			},
 		},
 		{
@@ -384,6 +388,7 @@ data:
 			expected: []FileType{
 				FileTypeKubernetes,
 				FileTypeYAML,
+				FileTypeHelm,
 				FileTypeAnsible,
 			},
 		},
@@ -413,6 +418,7 @@ rules:
 			expected: []FileType{
 				FileTypeKubernetes,
 				FileTypeYAML,
+				FileTypeHelm,
 				FileTypeAnsible,
 			},
 		},

@@ -78,6 +78,7 @@ func TestGetAccessToken(t *testing.T) {
 			got, err := GetAccessToken(t.Context(), tt.opts)
 
 			if tt.errorContains != "" {
+				require.ErrorContains(t, err, tt.errorContains)
 				return
 			}
 

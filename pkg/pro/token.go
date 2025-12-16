@@ -3,6 +3,7 @@ package pro
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -112,7 +113,7 @@ func SaveToken(_ context.Context, opts flag.Options, token string) error {
 func GetTokenFromKeyring() (string, error) {
 	tokenBody, err := keyring.Get(KeyringService, KeyringAccount)
 	if err != nil {
-		if err != keyring.ErrNotFound {
+		if errors.Is(err, keyring.ErrNotFound) {
 			return "", xerrors.Errorf("failed to get token from keyring: %w", err)
 		}
 		return "", err
