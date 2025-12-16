@@ -249,6 +249,7 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 				Licenses:     result.artifact.Licenses,
 				Relationship: art.Relationship,
 				Locations:    art.Locations,
+				FilePath:     result.filePath,
 			}
 
 			// save only dependency names
@@ -269,6 +270,7 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 			Licenses:     art.Licenses,
 			Relationship: art.Relationship,
 			Locations:    art.Locations,
+			FilePath:     art.FilePath,
 		}
 		pkgs = append(pkgs, pkg)
 

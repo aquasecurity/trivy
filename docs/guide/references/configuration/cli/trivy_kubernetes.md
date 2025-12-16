@@ -65,6 +65,7 @@ trivy kubernetes [flags] [CONTEXT]
       --exclude-owned                     exclude resources that have an owner reference
       --exit-code int                     specify exit code when any security issues are found
       --file-patterns strings             specify config file patterns
+      --file-tree                         [EXPERIMENTAL] show file name dependency origin tree of vulnerable packages
   -f, --format string                     format (allowed values: table,json,cyclonedx) (default "table")
       --helm-api-versions strings         Available API versions used for Capabilities.APIVersions. This flag is the same as the api-versions flag of the helm template command. (can specify multiple or separate values with commas: policy/v1/PodDisruptionBudget,apps/v1/Deployment)
       --helm-kube-version string          Kubernetes version used for Capabilities.KubeVersion. This flag is the same as the kube-version flag of the helm template command.
