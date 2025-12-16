@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.68.1](https://github.com/aquasecurity/trivy/compare/v0.68.0...v0.68.1) (2025-12-16)
+
+
+### Bug Fixes
+
+* update cosing settings for GoReleaser after bumping cosing to v3 [backport: release/v0.68] ([#9870](https://github.com/aquasecurity/trivy/issues/9870)) ([cdd7e97](https://github.com/aquasecurity/trivy/commit/cdd7e97c47fefe2ffdddf6fd2b600122c9dd439d))
+
 ## [0.68.0](https://github.com/aquasecurity/trivy/compare/v0.67.0...v0.68.0) (2025-12-02)
 
 
