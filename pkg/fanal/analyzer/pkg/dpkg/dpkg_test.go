@@ -1574,6 +1574,43 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:      "third-party package",
+			testFiles: map[string]string{"./testdata/dpkg-third-party": "var/lib/dpkg/status"},
+			want: &analyzer.AnalysisResult{
+				PackageInfos: []types.PackageInfo{
+					{
+						FilePath: "var/lib/dpkg/status",
+						Packages: []types.Package{
+							{
+								ID:         "apt@1.6.3ubuntu0.1",
+								Name:       "apt",
+								Version:    "1.6.3ubuntu0.1",
+								SrcName:    "apt",
+								SrcVersion: "1.6.3ubuntu0.1",
+								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
+								Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
+							},
+							{
+								ID:         "docker-ce@5:20.10.7~3-0~debian-buster",
+								Name:       "docker-ce",
+								Version:    "20.10.7~3-0~debian",
+								Release:    "buster",
+								Epoch:      5,
+								SrcName:    "docker-ce",
+								SrcVersion: "20.10.7~3-0~debian",
+								SrcRelease: "buster",
+								SrcEpoch:   5,
+								Maintainer: "Docker <support@docker.com>",
+								Arch:       "amd64",
+								Repository: types.PackageRepository{Class: types.RepositoryClassThirdParty},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
