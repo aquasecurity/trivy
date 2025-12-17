@@ -273,9 +273,10 @@ This feature might change without preserving backwards compatibility.
 
 Similar to the `--dependency-tree` flag, the `--file-tree` flag builds a dependency tree to show the origin of a vulnerability.
 The key difference being that the `--file-tree` flag will show the file name where the dependency is referenced and attempt to trace all packages back to the root project.
+
 This flag is only available with the `--format table` flag.
 
-The following languages are currently known to work well, other language can be used but be missing filename metadata:
+The following languages are currently known to work well, other languages can be used but may be missing filename metadata:
 
 | Language | File                                       |
 |----------|--------------------------------------------|
@@ -287,7 +288,11 @@ An example of this is shown bellow
 
 ```shell
 trivy fs --severity HIGH,CRITICAL --file-tree --scanners vuln /path/to/project  
+```
 
+<details>
+<summary>Sample Output</summary>
+```shell
 pom.xml (pom)
 
 Total: 1 (HIGH: 1, CRITICAL: 0)
@@ -315,6 +320,7 @@ io.quarkus:quarkus-test-grpc:999-SNAPSHOT, (Root)
             └── com.google.protobuf:protobuf-java:3.25.1, (HIGH: 1, CRITICAL: 0)
 
 ```
+</details>
 
 ### JSON
 
