@@ -1,3 +1,6 @@
+Test data for valid dpkg status file parsing.
+
+-- var/lib/dpkg/status --
 Package: fdisk
 Status: install ok installed
 Priority: important

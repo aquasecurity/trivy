@@ -1,3 +1,6 @@
+Test data for corrupted dpkg status file parsing.
+
+-- var/lib/dpkg/status --
 Package: libpam-runtime
 Status: install ok installed
 Priority: required

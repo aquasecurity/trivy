@@ -1,31 +1,27 @@
 package dpkg
 
 import (
-	"os"
-	"path/filepath"
 	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
 func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name string
-		// testFiles contains path in testdata and path in OS
-		// e.g. tar.md5sums => var/lib/dpkg/info/tar.md5sums
-		testFiles map[string]string
-		want      *analyzer.AnalysisResult
-		wantErr   bool
+		name    string
+		txtar   string
+		want    *analyzer.AnalysisResult
+		wantErr bool
 	}{
 		{
-			name:      "valid",
-			testFiles: map[string]string{"./testdata/dpkg": "var/lib/dpkg/status"},
+			name:  "valid",
+			txtar: "testdata/valid.txtar",
 			want: &analyzer.AnalysisResult{
 				PackageInfos: []types.PackageInfo{
 					{
@@ -1305,8 +1301,8 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "corrupsed",
-			testFiles: map[string]string{"./testdata/corrupsed": "var/lib/dpkg/status"},
+			name:  "corrupsed",
+			txtar: "testdata/corrupsed.txtar",
 			want: &analyzer.AnalysisResult{
 				PackageInfos: []types.PackageInfo{
 					{
@@ -1363,8 +1359,8 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "only apt",
-			testFiles: map[string]string{"./testdata/dpkg_apt": "var/lib/dpkg/status"},
+			name:  "only apt",
+			txtar: "testdata/only-apt.txtar",
 			want: &analyzer.AnalysisResult{
 				PackageInfos: []types.PackageInfo{
 					{
@@ -1381,11 +1377,8 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path with digests",
-			testFiles: map[string]string{
-				"./testdata/digest-status":    "var/lib/dpkg/status",
-				"./testdata/digest-available": "var/lib/dpkg/available",
-			},
+			name:  "happy path with digests",
+			txtar: "testdata/digest.txtar",
 			want: &analyzer.AnalysisResult{
 				PackageInfos: []types.PackageInfo{
 					{
@@ -1420,11 +1413,8 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "md5sums",
-			testFiles: map[string]string{
-				"./testdata/tar-status":  "var/lib/dpkg/status",
-				"./testdata/tar.md5sums": "var/lib/dpkg/info/tar.md5sums",
-			},
+			name:  "md5sums",
+			txtar: "testdata/md5sums.txtar",
 			want: &analyzer.AnalysisResult{
 				PackageInfos: []types.PackageInfo{
 					{
@@ -1481,18 +1471,10 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			a, err := newDpkgAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
-			ctx := t.Context()
 
-			mfs := mapfs.New()
-			for testPath, osPath := range tt.testFiles {
-				err = mfs.MkdirAll(filepath.Dir(osPath), os.ModePerm)
-				require.NoError(t, err)
-				err = mfs.WriteFile(osPath, testPath)
-				require.NoError(t, err)
-			}
-
-			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
-				FS: mfs,
+			fsys := testutil.TxtarToFS(t, tt.txtar)
+			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{
+				FS: fsys,
 			})
 			require.NoError(t, err)
 

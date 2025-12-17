@@ -1,3 +1,6 @@
+Test data for single apt package.
+
+-- var/lib/dpkg/status --
 Package: apt
 Status: install ok installed
 Priority: important
