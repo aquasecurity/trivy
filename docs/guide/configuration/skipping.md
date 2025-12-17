@@ -68,6 +68,9 @@ image:
 You can customize which files Trivy scans and how it interprets them with the `--file-patterns` flag.
 A file pattern configuration takes the following form: `<analyzer>:<path>`, such that files matching the `<path>` will be processed with the respective `<analyzer>`.
 
+!!! Note
+    `--file-patterns` flag doesn't disable the default file detection behavior of Trivy. It only adds the file detection based on the specified patterns.
+
 For example:
 
 ```bash
