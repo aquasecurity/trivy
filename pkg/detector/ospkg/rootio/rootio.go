@@ -1,7 +1,6 @@
 package rootio
 
 import (
-	"cmp"
 	"context"
 	"strings"
 
@@ -104,9 +103,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 					Severity: adv.Severity.String(),
 				}
 
-				// Datasource contains BaseID + ID for root.io advisories,
-				// But baseOS (e.g. Debian) advisories use ID only.
-				vuln.SeveritySource = cmp.Or(adv.DataSource.BaseID, adv.DataSource.ID)
+				vuln.SeveritySource = adv.DataSource.ID
 			}
 
 			vulns = append(vulns, vuln)
