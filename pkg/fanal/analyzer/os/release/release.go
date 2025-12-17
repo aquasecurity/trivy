@@ -27,8 +27,7 @@ var requiredFiles = []string{
 type osReleaseAnalyzer struct{}
 
 func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	var family types.OSType
-	var versionID string
+	var id, osName, versionID string
 	scanner := bufio.NewScanner(input.Content)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -40,26 +39,31 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 		key, value := strings.TrimSpace(ss[0]), strings.TrimSpace(ss[1])
 
 		switch key {
+		case "NAME":
+			osName = strings.Trim(value, `"'`)
 		case "ID":
-			id := strings.Trim(value, `"'`)
-			family = idToOSFamily(id)
+			id = strings.Trim(value, `"'`)
 		case "VERSION_ID":
 			versionID = strings.Trim(value, `"'`)
 		default:
 			continue
 		}
-
-		if family != "" && versionID != "" {
-			return &analyzer.AnalysisResult{
-				OS: types.OS{
-					Family: family,
-					Name:   versionID,
-				},
-			}, nil
-		}
 	}
 
-	return nil, nil
+	// Determine OS family: ID is the primary source
+	family := idToOSFamily(id)
+	if family == "" || versionID == "" {
+		return nil, nil
+	}
+	// Refine OS family based on NAME field
+	family = refineOSFamily(family, osName)
+	return &analyzer.AnalysisResult{
+		OS: types.OS{
+			Family: family,
+			Name:   versionID,
+		},
+	}, nil
+
 }
 
 //nolint:gocyclo
@@ -111,6 +115,20 @@ func idToOSFamily(id string) types.OSType {
 	}
 	// This OS is not supported for this analyzer.
 	return ""
+}
+
+// refineOSFamily refines the OS family based on the NAME field.
+// This handles exceptional cases where the ID field doesn't provide enough specificity,
+// and we need to refine the detection using the NAME field.
+func refineOSFamily(family types.OSType, name string) types.OSType {
+	// CentOS: Distinguish between regular CentOS and CentOS Stream
+	// ID is "centos" for both, but NAME differs
+	if family == types.CentOS && name == "CentOS Stream" {
+		return types.CentOSStream
+	}
+
+	// Return family unchanged for normal cases
+	return family
 }
 
 func (a osReleaseAnalyzer) Required(filePath string, _ os.FileInfo) bool {

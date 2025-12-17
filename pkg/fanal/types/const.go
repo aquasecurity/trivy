@@ -45,6 +45,7 @@ const (
 	SLES               OSType = "sles"
 	Ubuntu             OSType = "ubuntu"
 	Wolfi              OSType = "wolfi"
+	CentOSStream       OSType = "CentOS Stream"
 )
 
 // OSTypeAliases is a map of aliases for operating systems.
