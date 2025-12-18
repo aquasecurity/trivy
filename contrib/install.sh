@@ -33,7 +33,14 @@ parse_args() {
   while getopts "b:c:dh?x" arg; do
     case "$arg" in
       b) BINDIR="$OPTARG" ;;
-      c) CLIENT="$OPTARG" ;;
+      c)
+        if printf '%s' "$OPTARG" | grep -Eq '^[A-Za-z0-9-]+$'; then
+          CLIENT="$OPTARG"
+        else
+          log_crit "invalid client identifier '${OPTARG}'; allowed characters are: letters, digits, and '-'"
+          exit 1
+        fi
+        ;;
       d) log_set_priority 10 ;;
       h | \?) usage "$0" ;;
       x) set -x ;;
