@@ -104,7 +104,6 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.
 		pkgs[i].DependsOn = deps[pkg.ID]
 		pkgs[i].Digest = d
 		pkgs[i].Indirect = isIndirect(pkg.Relationship) // For backward compatibility
-		NormalizeLicenses(pkgs[i].Licenses)
 
 		for j, license := range pkg.Licenses {
 			pkgs[i].Licenses[j] = licensing.Normalize(license)
@@ -136,11 +135,5 @@ func isIndirect(rel types.Relationship) bool {
 		return true
 	default:
 		return false
-	}
-}
-
-func NormalizeLicenses(licenses []string) {
-	for j, license := range licenses {
-		licenses[j] = licensing.Normalize(license)
 	}
 }

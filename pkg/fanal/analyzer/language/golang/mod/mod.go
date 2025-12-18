@@ -179,7 +179,6 @@ func (a *gomodAnalyzer) fillAdditionalData(ctx context.Context, fsys fs.FS, apps
 				return xerrors.Errorf("unable to collect license: %w", err)
 			} else {
 				// Fill licenses
-				language.NormalizeLicenses(licenseNames)
 				apps[i].Packages[j].Licenses = licenseNames
 			}
 

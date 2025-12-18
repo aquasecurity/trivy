@@ -7,7 +7,7 @@
     <authors>James Newton-King</authors>
     <owners>James Newton-King</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <license type="expression">mit</license>
+    <license type="expression">MIT</license>
     <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
     <icon>packageIcon.png</icon>
     <projectUrl>https://www.newtonsoft.com/json</projectUrl>

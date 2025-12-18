@@ -32,7 +32,7 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 							},
 						},
 						Licenses: []string{
-							"MIT",
+							"MIT License",
 						},
 					},
 					{
@@ -45,7 +45,7 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 							},
 						},
 						Licenses: []string{
-							"BSD-3-Clause",
+							"BSD License",
 						},
 					},
 					{
@@ -58,7 +58,7 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 							},
 						},
 						Licenses: []string{
-							"BSD-3-Clause",
+							"BSD License",
 						},
 					},
 					{

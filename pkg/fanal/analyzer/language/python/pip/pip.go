@@ -123,7 +123,6 @@ func (a pipLibraryAnalyzer) pkgLicense(ctx context.Context, pkgName, pkgVer, spD
 
 	// METADATA file contains info about only 1 package
 	// cf. https://github.com/aquasecurity/trivy/blob/e66dbb935764908f0b2b9a55cbfe6c107f101a31/pkg/dependency/parser/python/packaging/parse.go#L86-L92
-	language.NormalizeLicenses(metadataPkg[0].Licenses)
 	return metadataPkg[0].Licenses
 }
 
