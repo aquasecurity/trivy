@@ -8,8 +8,9 @@ usage() {
   cat <<EOF
 $this: download go binaries for aquasecurity/trivy
 
-Usage: $this [-b] bindir [-d] [tag]
+Usage: $this [-b] bindir [-c] client [-d] [tag]
   -b sets bindir or installation directory, Defaults to ./bin
+  -c sets client identifier for download tracking, Defaults to install-script
   -d turns on debug logging
   -x turns on verbose logging
    [tag] is a tag from
@@ -28,9 +29,11 @@ parse_args() {
   # over-ridden by flag below
 
   BINDIR=${BINDIR:-./bin}
-  while getopts "b:dh?x" arg; do
+  CLIENT=${CLIENT:-install-script}
+  while getopts "b:c:dh?x" arg; do
     case "$arg" in
       b) BINDIR="$OPTARG" ;;
+      c) CLIENT="$OPTARG" ;;
       d) log_set_priority 10 ;;
       h | \?) usage "$0" ;;
       x) set -x ;;
@@ -379,7 +382,7 @@ log_info "found version: ${VERSION} for ${TAG}/${OS}/${ARCH}"
 
 NAME=${PROJECT_NAME}_${VERSION}_${OS}-${ARCH}
 TARBALL=${NAME}.${FORMAT}
-TARBALL_URL="${GET_DOWNLOAD}?os=${OS}&arch=${ARCH}&version=${VERSION}&type=${FORMAT}&client=install-script"
+TARBALL_URL="${GET_DOWNLOAD}?os=${OS}&arch=${ARCH}&version=${VERSION}&type=${FORMAT}&client=${CLIENT}"
 CHECKSUM=${PROJECT_NAME}_${VERSION}_checksums.txt
 CHECKSUM_URL=${GITHUB_DOWNLOAD}/${TAG}/${CHECKSUM}
 
