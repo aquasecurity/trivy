@@ -18,6 +18,7 @@ import (
 
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -286,6 +287,7 @@ func (r *AnalysisResult) Merge(newResult *AnalysisResult) {
 	}
 
 	if len(newResult.Applications) > 0 {
+		normalizeApplicationsLicenses(newResult.Applications)
 		r.Applications = append(r.Applications, newResult.Applications...)
 	}
 
@@ -332,6 +334,21 @@ func belongToGroup(groupName Group, analyzerType Type, disabledAnalyzers []Type,
 	}
 
 	return true
+}
+
+func normalizeApplicationsLicenses(applications []types.Application) {
+	for i, app := range applications {
+		for j, pkg := range app.Packages {
+			applications[i].Packages[j].Licenses = normalizeLicenses(pkg.Licenses)
+		}
+	}
+}
+
+func normalizeLicenses(licenses []string) []string {
+	for i := range licenses {
+		licenses[i] = licensing.Normalize(licenses[i])
+	}
+	return licenses
 }
 
 const separator = ":"
