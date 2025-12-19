@@ -297,6 +297,19 @@ func TestAnalysisResult_Merge(t *testing.T) {
 								},
 							},
 						},
+						{
+							Type:     "gomod",
+							FilePath: "empty-license/go.mod",
+							Packages: types.Packages{
+								{
+									Name:    "github.com/empty/license",
+									Version: "v1.0.0",
+									Licenses: []string{
+										"",
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -313,6 +326,17 @@ func TestAnalysisResult_Merge(t *testing.T) {
 									"BSD-3-Clause",
 									"GPL-2.0-only",
 								},
+							},
+						},
+					},
+					{
+						Type:     "gomod",
+						FilePath: "empty-license/go.mod",
+						Packages: types.Packages{
+							{
+								Name:     "github.com/empty/license",
+								Version:  "v1.0.0",
+								Licenses: nil,
 							},
 						},
 					},
