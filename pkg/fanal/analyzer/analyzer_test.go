@@ -276,6 +276,49 @@ func TestAnalysisResult_Merge(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "normalize licenses for PackageInfos and Applications",
+			args: args{
+				new: &analyzer.AnalysisResult{
+					Applications: []types.Application{
+						{
+							Type:     "gomod",
+							FilePath: "go.mod",
+							Packages: types.Packages{
+								{
+									Name:    "github.com/example/package",
+									Version: "v1.0.0",
+									Licenses: []string{
+										"",
+										"BSD",
+										"GPL-2",
+										"GPL-2.0",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     "gomod",
+						FilePath: "go.mod",
+						Packages: types.Packages{
+							{
+								Name:    "github.com/example/package",
+								Version: "v1.0.0",
+								Licenses: []string{
+									"BSD-3-Clause",
+									"GPL-2.0-only",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
