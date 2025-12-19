@@ -352,7 +352,13 @@ func normalizeLicenses(licenses []string) []string {
 			normalized = append(normalized, l)
 		}
 	}
-	return lo.Uniq(normalized)
+	normalized = lo.Uniq(normalized)
+
+	if len(normalized) == 0 {
+		return nil
+	}
+
+	return normalized
 }
 
 const separator = ":"
