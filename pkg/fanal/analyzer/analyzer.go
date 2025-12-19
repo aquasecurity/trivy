@@ -345,10 +345,14 @@ func normalizeApplicationsLicenses(applications []types.Application) {
 }
 
 func normalizeLicenses(licenses []string) []string {
-	for i := range licenses {
-		licenses[i] = licensing.Normalize(licenses[i])
+	var normalized []string
+	for _, l := range licenses {
+		l = licensing.Normalize(l)
+		if l != "" {
+			normalized = append(normalized, l)
+		}
 	}
-	return licenses
+	return lo.Uniq(normalized)
 }
 
 const separator = ":"
