@@ -10,7 +10,7 @@ $this: download go binaries for aquasecurity/trivy
 
 Usage: $this [-b] bindir [-c] client [-d] [tag]
   -b sets bindir or installation directory, Defaults to ./bin
-  -c sets client identifier for download tracking, Defaults to install-script
+  -c sets client identifier for download tracking (letters, digits, and '-' characters are allowed), Defaults to install-script
   -d turns on debug logging
   -x turns on verbose logging
    [tag] is a tag from
