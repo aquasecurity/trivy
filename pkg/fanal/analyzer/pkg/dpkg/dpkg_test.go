@@ -1565,8 +1565,8 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "third-party package",
-			testFiles: map[string]string{"./testdata/dpkg-third-party": "var/lib/dpkg/status"},
+			name:  "third-party package",
+			txtar: "testdata/third-party.txtar",
 			want: &analyzer.AnalysisResult{
 				PackageInfos: []types.PackageInfo{
 					{
