@@ -47,6 +47,9 @@ func main() {
 	if err := generateTelemetryFlagDocs("./docs/guide/advanced/telemetry-flags.md", allFlagGroups); err != nil {
 		log.Fatal("Fatal error in telemetry docs generation", log.Err(err))
 	}
+	if err := generateConfigSchema(configSchemaPath, allFlagGroups); err != nil {
+		log.Fatal("Fatal error in config schema generation", log.Err(err))
+	}
 }
 
 // generateTelemetryFlagDocs updates the telemetry section in the documentation file
