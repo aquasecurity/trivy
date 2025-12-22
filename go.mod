@@ -135,6 +135,7 @@ require (
 
 require (
 	github.com/go-ini/ini v1.67.0
+	github.com/invopop/jsonschema v0.13.0
 	github.com/nikolalohinski/gonja/v2 v2.4.2
 )
 
@@ -317,7 +318,6 @@ require (
 	github.com/hashicorp/terraform-json v0.27.1 // indirect
 	github.com/huandu/xstrings v1.5.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/invopop/jsonschema v0.13.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/jdx/go-netrc v1.0.0 // indirect
 	github.com/jedisct1/go-minisign v0.0.0-20230811132847-661be99b8267 // indirect
