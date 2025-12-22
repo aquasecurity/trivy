@@ -84,7 +84,7 @@
           "PkgName": "libopenssl3",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/opensuse/libopenssl3@3.1.4-9.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607",
-            "UID": "f051425f385d2b99"
+            "UID": "f71b3dc2f2cc0d84"
           },
           "InstalledVersion": "3.1.4-9.1",
           "FixedVersion": "3.1.5-9.1",
