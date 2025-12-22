@@ -140,8 +140,12 @@ func (a rpmPkgAnalyzer) listPkgs(ctx context.Context, db RPMDB) (types.Packages,
 
 		// Check if the package is vendor-provided.
 		// If the package is not provided by vendor, the installed files should not be skipped.
+		repo := types.PackageRepository{
+			Class: types.RepositoryClassThirdParty,
+		}
 		var files []string
 		if packageProvidedByVendor(pkg) {
+			repo.Class = types.RepositoryClassOfficial
 			files, err = pkg.InstalledFileNames()
 			if err != nil {
 				return nil, nil, xerrors.Errorf("unable to get installed files: %w", err)
@@ -179,6 +183,7 @@ func (a rpmPkgAnalyzer) listPkgs(ctx context.Context, db RPMDB) (types.Packages,
 			Licenses:        licenses,
 			DependsOn:       pkg.Requires, // Will be replaced with package IDs
 			Maintainer:      pkg.Vendor,
+			Repository:      repo,
 			Digest:          d,
 			InstalledFiles:  files,
 		}
