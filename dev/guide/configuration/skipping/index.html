@@ -8255,8 +8255,12 @@ trivy<span class="w"> </span>config<span class="w"> </span>--skip-dirs<span clas
 <h2 id="customizing-file-handling">Customizing file handling<a class="headerlink" href="#customizing-file-handling" title="Permanent link">&para;</a></h2>
 <p>You can customize which files Trivy scans and how it interprets them with the <code>--file-patterns</code> flag.
 A file pattern configuration takes the following form: <code>&lt;analyzer&gt;:&lt;path&gt;</code>, such that files matching the <code>&lt;path&gt;</code> will be processed with the respective <code>&lt;analyzer&gt;</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>--file-patterns</code> flag doesn't disable the default file detection behavior of Trivy. It only adds the file detection based on the specified patterns.</p>
+</div>
 <p>For example:</p>
-<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>fs<span class="w"> </span>--file-patterns<span class="w"> </span><span class="s2">&quot;pip:.requirements-test.txt .&quot;</span>
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>fs<span class="w"> </span>--file-patterns<span class="w"> </span><span class="s2">&quot;pip:.requirements-test.txt&quot;</span><span class="w"> </span>.
 </code></pre></div>
 <p>This feature is relevant for the following scanners:</p>
 <table>
@@ -8285,15 +8289,15 @@ A file pattern configuration takes the following form: <code>&lt;analyzer&gt;:&l
 </tr>
 </tbody>
 </table>
-<p>The list of analyzers can be found <a href="https://github.com/aquasecurity/trivy/tree/718ec29ec65a88f87aeb69b0b0aac8f02f50caf7/pkg/fanal/analyzer/const.go">here</a>.
+<p>The list of analyzers can be found <a href="https://github.com/aquasecurity/trivy/tree/56f93a1bcf1d72593ad1b56e4849d05074f55559/pkg/fanal/analyzer/const.go">here</a>.
 Note that this flag is not applicable for parsers that accepts files of different extensions, for example the Terraform file parser which handles .tf and .tf.json files.</p>
 <p>The file path can use a <a href="https://pkg.go.dev/regexp/syntax">regular expression</a>. For example:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># interpret any file with .txt extension as a python pip requirements file</span>
-trivy<span class="w"> </span>fs<span class="w"> </span>--file-patterns<span class="w"> </span><span class="s2">&quot;pip:requirements-.*\.txt .</span>
+trivy<span class="w"> </span>fs<span class="w"> </span>--file-patterns<span class="w"> </span><span class="s2">&quot;pip:requirements-.*\.txt&quot;</span><span class="w"> </span>.
 </code></pre></div>
 <p>The flag can be repeated for specifying multiple file patterns. For example:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># look for Dockerfile called production.docker and a python pip requirements file called requirements-test.txt</span>
-trivy<span class="w"> </span>fs<span class="w"> </span>--scanners<span class="w"> </span>misconfig,vuln<span class="w"> </span>--file-patterns<span class="w"> </span><span class="s2">&quot;dockerfile:.production.docker&quot;</span><span class="w"> </span>--file-patterns<span class="w"> </span><span class="s2">&quot;pip:.requirements-test.txt .&quot;</span>
+trivy<span class="w"> </span>fs<span class="w"> </span>--scanners<span class="w"> </span>misconfig,vuln<span class="w"> </span>--file-patterns<span class="w"> </span><span class="s2">&quot;dockerfile:.production.docker&quot;</span><span class="w"> </span>--file-patterns<span class="w"> </span><span class="s2">&quot;pip:.requirements-test.txt&quot;</span><span class="w"> </span>.
 </code></pre></div>
 <h2 id="avoid-full-filesystem-traversal">Avoid full filesystem traversal<a class="headerlink" href="#avoid-full-filesystem-traversal" title="Permanent link">&para;</a></h2>
 <p>In specific scenarios Trivy can avoid traversing the entire filesystem, which makes scanning faster and more efficient.
