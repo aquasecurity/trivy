@@ -4,6 +4,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -41,7 +42,9 @@ func generateConfigSchema(outputPath string, allFlagGroups []flag.FlagGroup) err
 			if configName == "" || f.Hidden() {
 				continue
 			}
-			addFlagToSchema(root, f)
+			if err := addFlagToSchema(root, f); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -59,7 +62,7 @@ func generateConfigSchema(outputPath string, allFlagGroups []flag.FlagGroup) err
 }
 
 // addFlagToSchema adds a flag to the schema, creating nested objects as needed.
-func addFlagToSchema(root *jsonschema.Schema, f flag.Flagger) {
+func addFlagToSchema(root *jsonschema.Schema, f flag.Flagger) error {
 	configName := f.GetConfigName()
 	parts := strings.Split(configName, ".")
 
@@ -82,12 +85,20 @@ func addFlagToSchema(root *jsonschema.Schema, f flag.Flagger) {
 	}
 
 	// Add the leaf property
-	current.Properties.Set(leafName, schemaFromFlag(f))
+	schema, err := schemaFromFlag(f)
+	if err != nil {
+		return err
+	}
+	current.Properties.Set(leafName, schema)
+	return nil
 }
 
 // schemaFromFlag creates a JSON schema based on the flag's type, description, and allowed values.
-func schemaFromFlag(f flag.Flagger) *jsonschema.Schema {
-	schema := schemaFromFlagValue(f.GetDefaultValue())
+func schemaFromFlag(f flag.Flagger) (*jsonschema.Schema, error) {
+	schema, err := schemaFromFlagValue(f.GetDefaultValue())
+	if err != nil {
+		return nil, fmt.Errorf("flag %q: %w", f.GetConfigName(), err)
+	}
 
 	// Add description from Usage
 	if usage := f.GetUsage(); usage != "" {
@@ -102,27 +113,27 @@ func schemaFromFlag(f flag.Flagger) *jsonschema.Schema {
 		}
 	}
 
-	return schema
+	return schema, nil
 }
 
 // schemaFromFlagValue creates a JSON schema based on the flag's default value type.
-func schemaFromFlagValue(val any) *jsonschema.Schema {
+func schemaFromFlagValue(val any) (*jsonschema.Schema, error) {
 	switch val.(type) {
 	case string:
-		return &jsonschema.Schema{Type: schemaTypeString}
+		return &jsonschema.Schema{Type: schemaTypeString}, nil
 	case bool:
-		return &jsonschema.Schema{Type: schemaTypeBoolean}
+		return &jsonschema.Schema{Type: schemaTypeBoolean}, nil
 	case int:
-		return &jsonschema.Schema{Type: schemaTypeInteger}
+		return &jsonschema.Schema{Type: schemaTypeInteger}, nil
 	case float64:
-		return &jsonschema.Schema{Type: schemaTypeNumber}
+		return &jsonschema.Schema{Type: schemaTypeNumber}, nil
 	case []string:
 		return &jsonschema.Schema{
 			Type:  schemaTypeArray,
 			Items: &jsonschema.Schema{Type: schemaTypeString},
-		}
+		}, nil
 	case time.Duration:
-		return &jsonschema.Schema{Type: schemaTypeString}
+		return &jsonschema.Schema{Type: schemaTypeString}, nil
 	case map[string][]string:
 		return &jsonschema.Schema{
 			Type: schemaTypeObject,
@@ -130,9 +141,8 @@ func schemaFromFlagValue(val any) *jsonschema.Schema {
 				Type:  schemaTypeArray,
 				Items: &jsonschema.Schema{Type: schemaTypeString},
 			},
-		}
+		}, nil
 	default:
-		// Fallback for unknown types
-		return &jsonschema.Schema{}
+		return nil, fmt.Errorf("unknown type %T, please update schemaFromFlagValue()", val)
 	}
 }
