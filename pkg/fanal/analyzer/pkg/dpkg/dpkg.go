@@ -41,7 +41,7 @@ func newDpkgAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) 
 }
 
 const (
-	analyzerVersion = 5
+	analyzerVersion = 6
 
 	statusFile    = "var/lib/dpkg/status"
 	statusDir     = "var/lib/dpkg/status.d/"
@@ -54,6 +54,56 @@ const (
 var (
 	dpkgSrcCaptureRegexp      = regexp.MustCompile(`(?P<name>[^\s]*)( \((?P<version>.*)\))?`)
 	dpkgSrcCaptureRegexpNames = dpkgSrcCaptureRegexp.SubexpNames()
+
+	// thirdPartyMaintainerPatterns contains patterns that indicate a package is from a third-party repository.
+	// Packages with maintainers matching these patterns will NOT have their InstalledFiles tracked,
+	// allowing language scanners to properly analyze files installed by those packages.
+	// See https://github.com/aquasecurity/trivy/issues/9916 for more details.
+	thirdPartyMaintainerPatterns = []string{
+		// Container & orchestration
+		"support@docker.com", // Docker
+
+		// Cloud providers & infrastructure
+		"@nvidia.com",              // NVIDIA CUDA
+		"Google Cloud CLI Authors", // Google Cloud SDK
+		"sapmachine@sap.com",       // SAP Machine JDK
+		"@hashicorp.com",           // HashiCorp (Terraform, Vault, Consul, etc.)
+		"@microsoft.com",           // Microsoft (VS Code, Azure CLI, .NET, etc.)
+
+		// Databases
+		"@mongodb.com",                 // MongoDB
+		"developers@lists.mariadb.org", // MariaDB
+		"dev@couchdb.apache.org",       // Apache CouchDB
+		"info@elastic.co",              // Elastic (Elasticsearch, Kibana, etc.)
+
+		// Web servers & API gateways
+		"nginx-packaging@f5.com", // NGINX (from nginx.org, not Debian)
+		"@konghq.com",            // Kong
+		"@cloudflare.com",        // Cloudflare (cloudflared, WARP)
+
+		// Monitoring & observability
+		"support@influxdb.com", // InfluxData (InfluxDB, Telegraf)
+		"support@gitlab.com",   // GitLab
+		"contact@grafana.com",  // Grafana Labs
+		"@datadoghq.com",       // Datadog
+
+		// Language runtimes (third-party repos)
+		"@nodesource.com", // NodeSource (Node.js)
+
+		// Networking & VPN
+		"info@tailscale.com", // Tailscale
+
+		// Robotics
+		"@openrobotics.org",  // ROS (Robot Operating System)
+		"@osrfoundation.org", // ROS (Robot Operating System)
+	}
+
+	// thirdPartyMaintainerExact contains maintainer strings that require exact match.
+	// These are too short or generic for substring matching.
+	thirdPartyMaintainerExact = []string{
+		"GitHub",    // GitHub CLI
+		"HashiCorp", // HashiCorp (Terraform, Vault, Consul, etc.)
+	}
 )
 
 func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
@@ -82,7 +132,7 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 				return xerrors.Errorf("failed to parse %s file: %w", path, err)
 			}
 			packageFiles[strings.TrimSuffix(filepath.Base(path), md5sumsExtension)] = systemFiles
-			systemInstalledFiles = append(systemInstalledFiles, systemFiles...)
+			// Note: systemInstalledFiles will be populated later based on maintainer check
 			return nil
 		}
 		// parse status files
@@ -97,14 +147,26 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		return nil, xerrors.Errorf("dpkg walk error: %w", err)
 	}
 
-	// map the packages to their respective files
+	// Map packages to their respective files.
+	// Third-party packages will NOT have their InstalledFiles populated to avoid filtering out
+	// language packages (npm, pip, etc.) installed by those third-party OS packages.
 	for i, pkgInfo := range packageInfos {
 		for j, pkg := range pkgInfo.Packages {
 			installedFiles, found := packageFiles[pkg.Name]
 			if !found {
 				installedFiles = packageFiles[pkg.Name+":"+pkg.Arch]
 			}
+
+			// Skip InstalledFiles for third-party packages
+			if isThirdPartyPackage(pkg.Maintainer) {
+				a.logger.Debug("Third-party package detected",
+					log.String("package", pkg.Name),
+					log.String("maintainer", pkg.Maintainer))
+				continue
+			}
+
 			packageInfos[i].Packages[j].InstalledFiles = installedFiles
+			systemInstalledFiles = append(systemInstalledFiles, installedFiles...)
 		}
 	}
 
@@ -347,6 +409,21 @@ func (a dpkgAnalyzer) isMd5SumsFile(dir, fileName string) bool {
 	}
 
 	return strings.HasSuffix(fileName, md5sumsExtension)
+}
+
+// isThirdPartyPackage checks if a package is from a third-party repository
+// by examining the Maintainer field against known third-party patterns.
+//
+// Unlike RPM which has a dedicated "Vendor" field, dpkg packages don't have a reliable
+// way to identify their origin. We use a heuristic approach based on maintainer patterns.
+// See https://github.com/aquasecurity/trivy/issues/9916 for more details.
+func isThirdPartyPackage(maintainer string) bool {
+	if slices.Contains(thirdPartyMaintainerExact, maintainer) {
+		return true
+	}
+	return slices.ContainsFunc(thirdPartyMaintainerPatterns, func(pattern string) bool {
+		return strings.Contains(maintainer, pattern)
+	})
 }
 
 func (a dpkgAnalyzer) Type() analyzer.Type {
