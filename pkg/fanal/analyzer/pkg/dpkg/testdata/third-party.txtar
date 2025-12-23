@@ -1,3 +1,6 @@
+Test data for third-party package detection.
+
+-- var/lib/dpkg/status --
 Package: docker-ce
 Status: install ok installed
 Priority: optional
