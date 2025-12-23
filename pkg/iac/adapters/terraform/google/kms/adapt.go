@@ -2,6 +2,7 @@ package kms
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/kms"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
@@ -45,10 +46,12 @@ func adaptKey(resource *terraform.Block) kms.Key {
 		return key
 	}
 	rotationStr := rotationPeriodAttr.Value().AsString()
-	if rotationStr[len(rotationStr)-1:] != "s" {
+	secondsStr, ok := strings.CutSuffix(rotationStr, "s")
+	if !ok {
 		return key
 	}
-	seconds, err := strconv.Atoi(rotationStr[:len(rotationStr)-1])
+
+	seconds, err := strconv.Atoi(secondsStr)
 	if err != nil {
 		return key
 	}
