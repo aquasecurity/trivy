@@ -3,7 +3,7 @@
 Trivy can be customized by tweaking a `trivy.yaml` file.
 The config path can be overridden by the `--config` flag.
 
-An example is [here][example].
+An example is [here][example] and a [JSON Schema][schema] is also available.
 
 These samples contain default values for flags.
 ## Global options
@@ -668,4 +668,5 @@ vulnerability:
   vex: []
 
 ```
-[example]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/trivy-conf/trivy.yaml
+[example]: https://github.com/aquasecurity/trivy/blob/{{ git.tag }}/examples/trivy-conf/trivy.yaml
+[schema]: https://github.com/aquasecurity/trivy/blob/{{ git.tag }}/schema/trivy-config.json
