@@ -1711,6 +1711,7 @@ var (
 					URL:  "https://registry.npmjs.org/minimist/-/minimist-0.0.8.tgz",
 				},
 			},
+			Licenses: []string{"MIT"},
 			Locations: []ftypes.Location{
 				{
 					StartLine: 38,
