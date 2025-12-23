@@ -10,7 +10,6 @@ import (
 	"reflect"
 	"slices"
 	"strings"
-	"sync"
 
 	"github.com/docker/go-units"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -393,10 +392,9 @@ func (a Artifact) saveLayer(diffID string) (int64, error) {
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
 	layerKeyMap map[string]types.Layer, configFile *v1.ConfigFile) error {
 
-	var (
-		osFound   types.OS
-		osFoundMu sync.Mutex
-	)
+	// Merge OS info from layers in order
+	var osFound types.OS
+
 	p := parallel.NewPipeline(a.artifactOption.Parallel, false, layerKeys, func(ctx context.Context,
 		layerKey string) (any, error) {
 		layer := layerKeyMap[layerKey]
@@ -414,14 +412,14 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 		if err = a.cache.PutBlob(ctx, layerKey, layerInfo); err != nil {
 			return nil, xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
 		}
-		if lo.IsNotEmpty(layerInfo.OS) {
-			osFoundMu.Lock()
-			osFound = layerInfo.OS
-			osFoundMu.Unlock()
-		}
-		return nil, nil
+		return layerInfo.OS, nil
 
-	}, nil)
+	}, func(res any) error {
+		// To avoid race condition, merge OS info in the onResult function (main goroutine)
+		osInfo := res.(types.OS)
+		osFound.Merge(osInfo)
+		return nil
+	})
 
 	if err := p.Do(ctx); err != nil {
 		return xerrors.Errorf("pipeline error: %w", err)
