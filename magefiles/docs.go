@@ -22,7 +22,7 @@ const (
 		"The config path can be overridden by the `--config` flag.\n\n" +
 		"An example is [here][example] and a [JSON Schema][schema] is also available.\n\n" +
 		"These samples contain default values for flags."
-	footer = "[example]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/trivy-conf/trivy.yaml\n" +
+	footer = "[example]: https://github.com/aquasecurity/trivy/blob/{{ git.tag }}/examples/trivy-conf/trivy.yaml\n" +
 		"[schema]: https://github.com/aquasecurity/trivy/blob/{{ git.tag }}/schema/trivy-config.json"
 )
 

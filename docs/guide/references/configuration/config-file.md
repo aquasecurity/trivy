@@ -668,5 +668,5 @@ vulnerability:
   vex: []
 
 ```
-[example]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/trivy-conf/trivy.yaml
+[example]: https://github.com/aquasecurity/trivy/blob/{{ git.tag }}/examples/trivy-conf/trivy.yaml
 [schema]: https://github.com/aquasecurity/trivy/blob/{{ git.tag }}/schema/trivy-config.json
