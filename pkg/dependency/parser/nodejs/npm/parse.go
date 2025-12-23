@@ -140,6 +140,11 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 			savedPkg.Locations = append(savedPkg.Locations, ftypes.Location(pkg.Location))
 			sort.Sort(savedPkg.Locations)
 
+			// If for some reason license is missing in savedPkg, but exists in the current pkg, add it.
+			if len(savedPkg.Licenses) == 0 && pkg.License != "" {
+				savedPkg.Licenses = []string{pkg.License}
+			}
+
 			pkgs[pkgID] = savedPkg
 			continue
 		}
