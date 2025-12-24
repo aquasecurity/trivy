@@ -43,9 +43,7 @@ func Test_adaptProject(t *testing.T) {
 					{
 						EncryptionEnabled: iacTypes.BoolTest(true),
 					},
-					{
-						EncryptionEnabled: iacTypes.BoolTest(false),
-					},
+					{},
 				},
 			},
 		},

@@ -38,7 +38,6 @@ func Test_adaptTrail(t *testing.T) {
 				IsMultiRegion:             iacTypes.BoolTest(true),
 				KMSKeyID:                  iacTypes.StringTest("kms-key"),
 				CloudWatchLogsLogGroupArn: iacTypes.StringTest("abc"),
-				IsLogging:                 iacTypes.BoolTest(false),
 				BucketName:                iacTypes.StringTest("abcdefgh"),
 			},
 		},
@@ -49,13 +48,7 @@ func Test_adaptTrail(t *testing.T) {
 			}
 `,
 			expected: cloudtrail.Trail{
-				Name:                      iacTypes.StringTest(""),
-				EnableLogFileValidation:   iacTypes.BoolTest(false),
-				IsMultiRegion:             iacTypes.BoolTest(false),
-				KMSKeyID:                  iacTypes.StringTest(""),
-				BucketName:                iacTypes.StringTest(""),
-				CloudWatchLogsLogGroupArn: iacTypes.StringTest(""),
-				IsLogging:                 iacTypes.BoolTest(true),
+				IsLogging: iacTypes.BoolTest(true),
 			},
 		},
 	}

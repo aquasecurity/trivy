@@ -64,10 +64,7 @@ func Test_adaptLogProfile(t *testing.T) {
 			  }
 `,
 			expected: monitor.LogProfile{
-				RetentionPolicy: monitor.RetentionPolicy{
-					Enabled: iacTypes.BoolTest(false),
-					Days:    iacTypes.IntTest(0),
-				},
+				RetentionPolicy: monitor.RetentionPolicy{},
 			},
 		},
 	}

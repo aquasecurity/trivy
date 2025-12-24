@@ -61,7 +61,6 @@ func Test_adaptInstances(t *testing.T) {
 					NetworkInterfaces: []compute.NetworkInterface{
 						{
 							HasPublicIP: iacTypes.BoolTest(true),
-							NATIP:       iacTypes.StringTest(""),
 						},
 					},
 					ShieldedVM: compute.ShieldedVMConfig{
@@ -70,11 +69,9 @@ func Test_adaptInstances(t *testing.T) {
 						VTPMEnabled:                iacTypes.BoolTest(true),
 					},
 					ServiceAccount: compute.ServiceAccount{
-						Email: iacTypes.StringTest(""),
 						Scopes: []iacTypes.StringValue{
 							iacTypes.StringTest("cloud-platform"),
 						},
-						IsDefault: iacTypes.BoolTest(false),
 					},
 					CanIPForward:                iacTypes.BoolTest(true),
 					EnableProjectSSHKeyBlocking: iacTypes.BoolTest(true),
@@ -98,20 +95,9 @@ func Test_adaptInstances(t *testing.T) {
 `,
 			expected: []compute.Instance{
 				{
-					Name: iacTypes.StringTest(""),
-					ShieldedVM: compute.ShieldedVMConfig{
-						SecureBootEnabled:          iacTypes.BoolTest(false),
-						IntegrityMonitoringEnabled: iacTypes.BoolTest(false),
-						VTPMEnabled:                iacTypes.BoolTest(false),
-					},
-					ServiceAccount: compute.ServiceAccount{
-						Email:     iacTypes.StringTest(""),
-						IsDefault: iacTypes.BoolTest(false),
-					},
-					CanIPForward:                iacTypes.BoolTest(false),
-					OSLoginEnabled:              iacTypes.BoolTest(true),
-					EnableProjectSSHKeyBlocking: iacTypes.BoolTest(false),
-					EnableSerialPort:            iacTypes.BoolTest(false),
+					ShieldedVM:     compute.ShieldedVMConfig{},
+					ServiceAccount: compute.ServiceAccount{},
+					OSLoginEnabled: iacTypes.BoolTest(true),
 				},
 			},
 		},
@@ -124,20 +110,11 @@ func Test_adaptInstances(t *testing.T) {
 `,
 			expected: []compute.Instance{
 				{
-					Name: iacTypes.StringTest(""),
-					ShieldedVM: compute.ShieldedVMConfig{
-						SecureBootEnabled:          iacTypes.BoolTest(false),
-						IntegrityMonitoringEnabled: iacTypes.BoolTest(false),
-						VTPMEnabled:                iacTypes.BoolTest(false),
-					},
+					ShieldedVM: compute.ShieldedVMConfig{},
 					ServiceAccount: compute.ServiceAccount{
-						Email:     iacTypes.StringTest(""),
 						IsDefault: iacTypes.BoolTest(true),
 					},
-					CanIPForward:                iacTypes.BoolTest(false),
-					OSLoginEnabled:              iacTypes.BoolTest(true),
-					EnableProjectSSHKeyBlocking: iacTypes.BoolTest(false),
-					EnableSerialPort:            iacTypes.BoolTest(false),
+					OSLoginEnabled: iacTypes.BoolTest(true),
 				},
 			},
 		},

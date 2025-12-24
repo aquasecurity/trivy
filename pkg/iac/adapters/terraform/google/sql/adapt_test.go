@@ -42,7 +42,6 @@ func Test_Adapt(t *testing.T) {
 			expected: sql.SQL{
 				Instances: []sql.DatabaseInstance{
 					{
-						IsReplica:       iacTypes.BoolTest(false),
 						DatabaseVersion: iacTypes.StringTest("POSTGRES_12"),
 						Settings: sql.Settings{
 							Backups: sql.Backups{
@@ -52,17 +51,10 @@ func Test_Adapt(t *testing.T) {
 								LogMinDurationStatement:         iacTypes.IntTest(-1),
 								ContainedDatabaseAuthentication: iacTypes.BoolTest(true),
 								CrossDBOwnershipChaining:        iacTypes.BoolTest(true),
-								LocalInFile:                     iacTypes.BoolTest(false),
-								LogCheckpoints:                  iacTypes.BoolTest(false),
-								LogConnections:                  iacTypes.BoolTest(false),
-								LogDisconnections:               iacTypes.BoolTest(false),
-								LogLockWaits:                    iacTypes.BoolTest(false),
-								LogMinMessages:                  iacTypes.StringTest(""),
 								LogTempFileSize:                 iacTypes.IntTest(-1),
 							},
 							IPConfiguration: sql.IPConfiguration{
 								RequireTLS: iacTypes.BoolTest(true),
-								EnableIPv4: iacTypes.BoolTest(false),
 								SSLMode:    iacTypes.StringTest("TRUSTED_CLIENT_CERTIFICATE_REQUIRED"),
 								AuthorizedNetworks: []struct {
 									Name iacTypes.StringValue
@@ -170,25 +162,20 @@ resource "google_sql_database_instance" "backup_source_instance" {
 			expected: []sql.DatabaseInstance{
 				{
 					DatabaseVersion: iacTypes.StringTest("POSTGRES_11"),
-					IsReplica:       iacTypes.BoolTest(false),
 					Settings: sql.Settings{
 						Backups: sql.Backups{
 							Enabled: iacTypes.BoolTest(true),
 						},
 						Flags: sql.Flags{
 							LogConnections:                  iacTypes.BoolTest(true),
-							LogTempFileSize:                 iacTypes.IntTest(0),
 							LogCheckpoints:                  iacTypes.BoolTest(true),
 							LogDisconnections:               iacTypes.BoolTest(true),
 							LogLockWaits:                    iacTypes.BoolTest(true),
 							ContainedDatabaseAuthentication: iacTypes.BoolTest(true),
 							CrossDBOwnershipChaining:        iacTypes.BoolTest(true),
-							LocalInFile:                     iacTypes.BoolTest(false),
 							LogMinDurationStatement:         iacTypes.IntTest(-1),
-							LogMinMessages:                  iacTypes.StringTest(""),
 						},
 						IPConfiguration: sql.IPConfiguration{
-							EnableIPv4: iacTypes.BoolTest(false),
 							RequireTLS: iacTypes.BoolTest(true),
 						},
 					},

@@ -44,8 +44,7 @@ func Test_adaptDisks(t *testing.T) {
 				{
 					Name: iacTypes.StringTest("disk #2"),
 					Encryption: compute.DiskEncryption{
-						KMSKeyLink: iacTypes.StringTest(""),
-						RawKey:     iacTypes.BytesTest([]byte("b2ggbm8gdGhpcyBpcyBiYWQ")),
+						RawKey: iacTypes.BytesTest([]byte("b2ggbm8gdGhpcyBpcyBiYWQ")),
 					},
 				},
 			},

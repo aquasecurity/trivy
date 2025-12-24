@@ -44,11 +44,8 @@ func Test_adaptInstances(t *testing.T) {
 `,
 
 			expected: []computing.Instance{{
-				SecurityGroup: iacTypes.StringTest(""),
 				NetworkInterfaces: []computing.NetworkInterface{
-					{
-						NetworkID: iacTypes.StringTest(""),
-					},
+					{},
 				},
 			}},
 		},

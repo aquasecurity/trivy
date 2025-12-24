@@ -39,9 +39,7 @@ func Test_adaptConfigurationAggregrator(t *testing.T) {
 			resource "aws_config_configuration_aggregator" "example" {
 			}
 `,
-			expected: config.ConfigurationAggregrator{
-				SourceAllRegions: iacTypes.BoolTest(false),
-			},
+			expected: config.ConfigurationAggregrator{},
 		},
 	}
 

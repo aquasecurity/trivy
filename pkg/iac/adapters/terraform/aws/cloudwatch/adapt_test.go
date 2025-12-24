@@ -31,11 +31,8 @@ func Test_adaptLogGroups(t *testing.T) {
 `,
 			expected: []cloudwatch.LogGroup{
 				{
-					Arn:             iacTypes.StringTest(""),
-					Name:            iacTypes.StringTest("my-group"),
-					KMSKeyID:        iacTypes.StringTest("aws_kms_key.log_key"),
-					RetentionInDays: iacTypes.IntTest(0),
-					MetricFilters:   nil,
+					Name:     iacTypes.StringTest("my-group"),
+					KMSKeyID: iacTypes.StringTest("aws_kms_key.log_key"),
 				},
 			},
 		},
@@ -49,10 +46,8 @@ func Test_adaptLogGroups(t *testing.T) {
 `,
 			expected: []cloudwatch.LogGroup{
 				{
-					Arn:             iacTypes.StringTest(""),
-					Name:            iacTypes.StringTest("my-group"),
-					KMSKeyID:        iacTypes.StringTest("key-as-string"),
-					RetentionInDays: iacTypes.IntTest(0),
+					Name:     iacTypes.StringTest("my-group"),
+					KMSKeyID: iacTypes.StringTest("key-as-string"),
 				},
 			},
 		},
@@ -66,9 +61,7 @@ func Test_adaptLogGroups(t *testing.T) {
 `,
 			expected: []cloudwatch.LogGroup{
 				{
-					Arn:             iacTypes.StringTest(""),
 					Name:            iacTypes.StringTest("my-group"),
-					KMSKeyID:        iacTypes.StringTest(""),
 					RetentionInDays: iacTypes.IntTest(3),
 				},
 			},

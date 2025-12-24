@@ -51,9 +51,7 @@ export DATABASE_PASSWORD=\"SomeSortOfPassword\"
 			resource "cloudstack_instance" "web" {
 			}
 `,
-			expected: compute.Instance{
-				UserData: iacTypes.StringTest(""),
-			},
+			expected: compute.Instance{},
 		},
 	}
 

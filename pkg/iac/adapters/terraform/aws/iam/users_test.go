@@ -49,7 +49,6 @@ resource "aws_iam_user_policy" "policy" {
 						{
 							Name:     iacTypes.StringTest("test"),
 							Document: defaultPolicyDocuemnt(false),
-							Builtin:  iacTypes.BoolTest(false),
 						},
 					},
 				},
@@ -91,7 +90,6 @@ resource "aws_iam_user_policy_attachment" "test-attach" {
 						{
 							Name:     iacTypes.StringTest("test-policy"),
 							Document: defaultPolicyDocuemnt(false),
-							Builtin:  iacTypes.BoolTest(false),
 						},
 					},
 				},
@@ -113,8 +111,7 @@ resource "aws_iam_user" "lb" {
 `,
 			expected: []iam.User{
 				{
-					Name:     iacTypes.StringTest("loadbalafncer"),
-					Policies: nil,
+					Name: iacTypes.StringTest("loadbalafncer"),
 					AccessKeys: []iam.AccessKey{
 						{
 							Active: iacTypes.BoolTest(true),

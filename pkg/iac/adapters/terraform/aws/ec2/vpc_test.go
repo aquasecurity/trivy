@@ -93,21 +93,15 @@ resource "aws_default_security_group" "default" {
 			expected: ec2.EC2{
 				VPCs: []ec2.VPC{
 					{
-						IsDefault:       iacTypes.BoolTest(true),
-						ID:              iacTypes.StringTest(""),
-						FlowLogsEnabled: iacTypes.BoolTest(false),
+						IsDefault: iacTypes.BoolTest(true),
 					},
 					{
-						IsDefault:       iacTypes.BoolTest(false),
-						ID:              iacTypes.StringTest(""),
 						FlowLogsEnabled: iacTypes.BoolTest(true),
 					},
 				},
 				SecurityGroups: []ec2.SecurityGroup{
 					{
 						Description: iacTypes.StringTest("Allow inbound HTTP traffic"),
-						IsDefault:   iacTypes.BoolTest(false),
-						VPCID:       iacTypes.StringTest(""),
 						IngressRules: []ec2.SecurityGroupRule{
 							{
 
@@ -134,7 +128,6 @@ resource "aws_default_security_group" "default" {
 
 						EgressRules: []ec2.SecurityGroupRule{
 							{
-								Description: iacTypes.StringTest(""),
 								CIDRs: []iacTypes.StringValue{
 									iacTypes.StringTest("1.2.3.4/32"),
 								},
@@ -148,15 +141,11 @@ resource "aws_default_security_group" "default" {
 						IngressRules: []ec2.SecurityGroupRule{
 							{
 								Protocol: iacTypes.StringTest("-1"),
-								FromPort: iacTypes.IntTest(0),
-								ToPort:   iacTypes.IntTest(0),
 							},
 						},
 						EgressRules: []ec2.SecurityGroupRule{
 							{
 								Protocol: iacTypes.StringTest("-1"),
-								FromPort: iacTypes.IntTest(0),
-								ToPort:   iacTypes.IntTest(0),
 								CIDRs:    []iacTypes.StringValue{iacTypes.StringTest("0.0.0.0/0")},
 							},
 						},
@@ -176,7 +165,6 @@ resource "aws_default_security_group" "default" {
 								ToPort:   iacTypes.IntTest(22),
 							},
 						},
-						IsDefaultRule: iacTypes.BoolTest(false),
 					},
 				},
 			},
@@ -198,21 +186,17 @@ resource "aws_network_acl_rule" "example" {
 				SecurityGroups: []ec2.SecurityGroup{
 					{
 						Description: iacTypes.StringTest("Managed by Terraform"),
-						IsDefault:   iacTypes.BoolTest(false),
-						VPCID:       iacTypes.StringTest(""),
 						IngressRules: []ec2.SecurityGroupRule{
 							{
-								Description: iacTypes.StringTest(""),
-								FromPort:    iacTypes.IntTest(-1),
-								ToPort:      iacTypes.IntTest(-1),
+								FromPort: iacTypes.IntTest(-1),
+								ToPort:   iacTypes.IntTest(-1),
 							},
 						},
 
 						EgressRules: []ec2.SecurityGroupRule{
 							{
-								Description: iacTypes.StringTest(""),
-								FromPort:    iacTypes.IntTest(-1),
-								ToPort:      iacTypes.IntTest(-1),
+								FromPort: iacTypes.IntTest(-1),
+								ToPort:   iacTypes.IntTest(-1),
 							},
 						},
 					},
@@ -222,13 +206,10 @@ resource "aws_network_acl_rule" "example" {
 						Rules: []ec2.NetworkACLRule{
 							{
 								Type:     iacTypes.StringTest("ingress"),
-								Action:   iacTypes.StringTest(""),
-								Protocol: iacTypes.StringTest(""),
 								FromPort: iacTypes.IntTest(-1),
 								ToPort:   iacTypes.IntTest(-1),
 							},
 						},
-						IsDefaultRule: iacTypes.BoolTest(false),
 					},
 				},
 			},
@@ -249,8 +230,6 @@ resource "aws_flow_log" "this" {
 			expected: ec2.EC2{
 				VPCs: []ec2.VPC{
 					{
-						IsDefault:       iacTypes.BoolTest(false),
-						ID:              iacTypes.StringTest(""),
 						FlowLogsEnabled: iacTypes.BoolTest(true),
 					},
 				},

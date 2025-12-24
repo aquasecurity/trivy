@@ -36,9 +36,7 @@ func Test_adaptWorkspace(t *testing.T) {
 				managed_virtual_network_enabled	   = false
 			}
 `,
-			expected: synapse.Workspace{
-				EnableManagedVirtualNetwork: iacTypes.BoolTest(false),
-			},
+			expected: synapse.Workspace{},
 		},
 		{
 			name: "default",
@@ -46,9 +44,7 @@ func Test_adaptWorkspace(t *testing.T) {
 			resource "azurerm_synapse_workspace" "example" {
 			}
 `,
-			expected: synapse.Workspace{
-				EnableManagedVirtualNetwork: iacTypes.BoolTest(false),
-			},
+			expected: synapse.Workspace{},
 		},
 	}
 

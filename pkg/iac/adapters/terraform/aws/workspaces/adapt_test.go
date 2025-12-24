@@ -47,14 +47,10 @@ func Test_adaptWorkspace(t *testing.T) {
 `,
 			expected: workspaces.WorkSpace{
 				RootVolume: workspaces.Volume{
-					Encryption: workspaces.Encryption{
-						Enabled: iacTypes.BoolTest(false),
-					},
+					Encryption: workspaces.Encryption{},
 				},
 				UserVolume: workspaces.Volume{
-					Encryption: workspaces.Encryption{
-						Enabled: iacTypes.BoolTest(false),
-					},
+					Encryption: workspaces.Encryption{},
 				},
 			},
 		},

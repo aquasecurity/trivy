@@ -51,7 +51,6 @@ func Test_adaptCluster(t *testing.T) {
 					Secrets:  iacTypes.BoolTest(true),
 					KMSKeyID: iacTypes.StringTest("key-arn"),
 				},
-				PublicAccessEnabled: iacTypes.BoolTest(false),
 				PublicAccessCIDRs: []iacTypes.StringValue{
 					iacTypes.StringTest("10.2.0.0/8"),
 				},
@@ -64,19 +63,9 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: eks.Cluster{
-				Logging: eks.Logging{
-					API:               iacTypes.BoolTest(false),
-					Authenticator:     iacTypes.BoolTest(false),
-					Audit:             iacTypes.BoolTest(false),
-					Scheduler:         iacTypes.BoolTest(false),
-					ControllerManager: iacTypes.BoolTest(false),
-				},
-				Encryption: eks.Encryption{
-					Secrets:  iacTypes.BoolTest(false),
-					KMSKeyID: iacTypes.StringTest(""),
-				},
+				Logging:             eks.Logging{},
+				Encryption:          eks.Encryption{},
 				PublicAccessEnabled: iacTypes.BoolTest(true),
-				PublicAccessCIDRs:   nil,
 			},
 		},
 	}

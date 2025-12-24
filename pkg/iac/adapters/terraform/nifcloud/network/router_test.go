@@ -44,11 +44,8 @@ func Test_adaptRouters(t *testing.T) {
 `,
 
 			expected: []network.Router{{
-				SecurityGroup: iacTypes.StringTest(""),
 				NetworkInterfaces: []network.NetworkInterface{
-					{
-						NetworkID: iacTypes.StringTest(""),
-					},
+					{},
 				},
 			}},
 		},

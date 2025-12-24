@@ -28,9 +28,7 @@ func Test_adaptFactory(t *testing.T) {
 				public_network_enabled = false
 			  }
 `,
-			expected: datafactory.Factory{
-				EnablePublicNetwork: iacTypes.BoolTest(false),
-			},
+			expected: datafactory.Factory{},
 		},
 		{
 			name: "default",

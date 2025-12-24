@@ -43,7 +43,6 @@ func Test_adaptNASSecurityGroups(t *testing.T) {
 `,
 
 			expected: []nas.NASSecurityGroup{{
-				Description: iacTypes.StringTest(""),
 				CIDRs: []iacTypes.StringValue{
 					iacTypes.StringTest(""),
 				},

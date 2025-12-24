@@ -29,10 +29,8 @@ func Test_adaptCluster(t *testing.T) {
 `,
 			expected: dynamodb.DAXCluster{
 				ServerSideEncryption: dynamodb.ServerSideEncryption{
-					Enabled:  iacTypes.BoolTest(true),
-					KMSKeyID: iacTypes.StringTest(""),
+					Enabled: iacTypes.BoolTest(true),
 				},
-				PointInTimeRecovery: iacTypes.BoolTest(false),
 			},
 		},
 	}
@@ -90,7 +88,6 @@ func Test_adaptTable(t *testing.T) {
 					Enabled:  iacTypes.BoolTest(true),
 					KMSKeyID: iacTypes.StringTest(dynamodb.DefaultKMSKeyID),
 				},
-				PointInTimeRecovery: iacTypes.BoolTest(false),
 			},
 		},
 		{
@@ -113,7 +110,6 @@ func Test_adaptTable(t *testing.T) {
 					Enabled:  iacTypes.BoolTest(true),
 					KMSKeyID: iacTypes.StringTest("aws_kms_key.a"),
 				},
-				PointInTimeRecovery: iacTypes.BoolTest(false),
 			},
 		},
 	}

@@ -36,9 +36,7 @@ func Test_adaptStore(t *testing.T) {
 				encryption_state = "Disabled"
 			}
 `,
-			expected: datalake.Store{
-				EnableEncryption: iacTypes.BoolTest(false),
-			},
+			expected: datalake.Store{},
 		},
 		{
 			name: "enabled by default",

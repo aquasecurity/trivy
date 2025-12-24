@@ -30,10 +30,8 @@ func Test_adaptBroker(t *testing.T) {
 			  }
 `,
 			expected: mq.Broker{
-				PublicAccess: iacTypes.BoolTest(false),
 				Logging: mq.Logging{
-					General: iacTypes.BoolTest(false),
-					Audit:   iacTypes.BoolTest(true),
+					Audit: iacTypes.BoolTest(true),
 				},
 			},
 		},
@@ -52,7 +50,6 @@ func Test_adaptBroker(t *testing.T) {
 				PublicAccess: iacTypes.BoolTest(true),
 				Logging: mq.Logging{
 					General: iacTypes.BoolTest(true),
-					Audit:   iacTypes.BoolTest(false),
 				},
 			},
 		},
@@ -63,11 +60,7 @@ func Test_adaptBroker(t *testing.T) {
 			  }
 `,
 			expected: mq.Broker{
-				PublicAccess: iacTypes.BoolTest(false),
-				Logging: mq.Logging{
-					General: iacTypes.BoolTest(false),
-					Audit:   iacTypes.BoolTest(false),
-				},
+				Logging: mq.Logging{},
 			},
 		},
 	}

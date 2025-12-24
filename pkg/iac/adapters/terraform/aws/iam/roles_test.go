@@ -228,8 +228,7 @@ data "aws_iam_policy_document" "s3_policy" {
 					Name: iacTypes.StringTest("test_role"),
 					Policies: []iam.Policy{
 						{
-							Name:    iacTypes.StringTest("test_policy"),
-							Builtin: iacTypes.BoolTest(false),
+							Name: iacTypes.StringTest("test_policy"),
 							Document: func() iam.Document {
 								builder := iamgo.NewPolicyBuilder()
 								sb := iamgo.NewStatementBuilder()
@@ -347,7 +346,6 @@ data "aws_partition" "current" {}
 					Name: iacTypes.StringTest("test"),
 					Policies: []iam.Policy{
 						{
-							Name:     iacTypes.StringTest(""),
 							Document: iam.Document{},
 						},
 					},

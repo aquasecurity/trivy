@@ -40,8 +40,6 @@ func Test_adaptSSLPolicies(t *testing.T) {
 `,
 			expected: []compute.SSLPolicy{
 				{
-					Name:              iacTypes.StringTest(""),
-					Profile:           iacTypes.StringTest(""),
 					MinimumTLSVersion: iacTypes.StringTest("TLS_1_0"),
 				},
 			},

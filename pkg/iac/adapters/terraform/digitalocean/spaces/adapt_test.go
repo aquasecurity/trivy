@@ -63,13 +63,8 @@ func Test_adaptBuckets(t *testing.T) {
 `,
 			expected: []spaces.Bucket{
 				{
-					Name:         iacTypes.StringTest(""),
-					Objects:      nil,
-					ACL:          iacTypes.StringTest("private"),
-					ForceDestroy: iacTypes.BoolTest(false),
-					Versioning: spaces.Versioning{
-						Enabled: iacTypes.BoolTest(false),
-					},
+					ACL:        iacTypes.StringTest("private"),
+					Versioning: spaces.Versioning{},
 				},
 			},
 		},

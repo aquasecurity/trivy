@@ -102,14 +102,10 @@ func Test_adaptNetworks(t *testing.T) {
 `,
 			expected: []compute.Network{
 				{
-					Firewall: &compute.Firewall{
-						Name: iacTypes.StringTest(""),
-					},
+					Firewall: &compute.Firewall{},
 					Subnetworks: []compute.SubNetwork{
 						{
-							Name:           iacTypes.StringTest(""),
-							EnableFlowLogs: iacTypes.BoolTest(false),
-							Purpose:        iacTypes.StringTest("REGIONAL_MANAGED_PROXY"),
+							Purpose: iacTypes.StringTest("REGIONAL_MANAGED_PROXY"),
 						},
 					},
 				},
@@ -129,12 +125,10 @@ func Test_adaptNetworks(t *testing.T) {
 			`,
 			expected: []compute.Network{
 				{
-					Firewall: nil,
 					Subnetworks: []compute.SubNetwork{
 						{
 							Name:                  iacTypes.StringTest("test-subnetwork"),
 							Purpose:               iacTypes.StringTest("PRIVATE_RFC_1918"),
-							EnableFlowLogs:        iacTypes.BoolTest(false),
 							PrivateIPGoogleAccess: iacTypes.BoolTest(true),
 						},
 					},
@@ -162,8 +156,7 @@ func Test_adaptNetworks(t *testing.T) {
 									Protocol: iacTypes.StringTest("tcp"),
 									Ports: []common.PortRange{
 										{
-											Start: iacTypes.IntTest(0),
-											End:   iacTypes.IntTest(65535),
+											End: iacTypes.IntTest(65535),
 										},
 									},
 								},

@@ -43,7 +43,6 @@ func Test_adaptDBSecurityGroups(t *testing.T) {
 `,
 
 			expected: []rdb.DBSecurityGroup{{
-				Description: iacTypes.StringTest(""),
 				CIDRs: []iacTypes.StringValue{
 					iacTypes.StringTest(""),
 				},

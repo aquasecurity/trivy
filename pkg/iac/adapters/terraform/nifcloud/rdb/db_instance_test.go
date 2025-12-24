@@ -31,7 +31,6 @@ func Test_adaptDBInstances(t *testing.T) {
 				Engine:                    iacTypes.StringTest("MySQL"),
 				EngineVersion:             iacTypes.StringTest("5.7.15"),
 				NetworkID:                 iacTypes.StringTest("example-network"),
-				PublicAccess:              iacTypes.BoolTest(false),
 			}},
 		},
 		{
@@ -42,11 +41,8 @@ func Test_adaptDBInstances(t *testing.T) {
 `,
 
 			expected: []rdb.DBInstance{{
-				BackupRetentionPeriodDays: iacTypes.IntTest(0),
-				Engine:                    iacTypes.StringTest(""),
-				EngineVersion:             iacTypes.StringTest(""),
-				NetworkID:                 iacTypes.StringTest("net-COMMON_PRIVATE"),
-				PublicAccess:              iacTypes.BoolTest(true),
+				NetworkID:    iacTypes.StringTest("net-COMMON_PRIVATE"),
+				PublicAccess: iacTypes.BoolTest(true),
 			}},
 		},
 	}

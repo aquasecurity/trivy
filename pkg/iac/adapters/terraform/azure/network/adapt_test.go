@@ -63,8 +63,7 @@ func Test_Adapt(t *testing.T) {
 								},
 								SourcePorts: []common.PortRange{
 									{
-										Start: iacTypes.IntTest(0),
-										End:   iacTypes.IntTest(65535),
+										End: iacTypes.IntTest(65535),
 									},
 								},
 								DestinationPorts: []common.PortRange{
@@ -144,10 +143,7 @@ func Test_Adapt(t *testing.T) {
 								PublicIPAddress: iacTypes.StringTest("public-ip-primary-id"),
 							},
 							{
-								SubnetID:        iacTypes.StringTest("subnet-secondary-id"),
-								Primary:         iacTypes.BoolTest(false),
-								HasPublicIP:     iacTypes.BoolTest(false),
-								PublicIPAddress: iacTypes.StringTest(""),
+								SubnetID: iacTypes.StringTest("subnet-secondary-id"),
 							},
 						},
 					},
@@ -199,11 +195,7 @@ func Test_adaptWatcherLog(t *testing.T) {
 			}
 `,
 			expected: network.NetworkWatcherFlowLog{
-				Enabled: iacTypes.BoolTest(false),
-				RetentionPolicy: network.RetentionPolicy{
-					Enabled: iacTypes.BoolTest(false),
-					Days:    iacTypes.IntTest(0),
-				},
+				RetentionPolicy: network.RetentionPolicy{},
 			},
 		},
 	}

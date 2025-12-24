@@ -75,7 +75,6 @@ func Test_adaptRepository(t *testing.T) {
 			  }
 `,
 			expected: ecr.Repository{
-				ImageTagsImmutable: iacTypes.BoolTest(false),
 				ImageScanning: ecr.ImageScanning{
 					ScanOnPush: iacTypes.BoolTest(true),
 				},
@@ -85,7 +84,6 @@ func Test_adaptRepository(t *testing.T) {
 				},
 				Policies: []iam.Policy{
 					{
-						Name: iacTypes.StringTest(""),
 						Document: func() iam.Document {
 
 							builder := iamgo.NewPolicyBuilder()
@@ -117,7 +115,6 @@ func Test_adaptRepository(t *testing.T) {
 								Parsed: builder.Build(),
 							}
 						}(),
-						Builtin: iacTypes.BoolTest(false),
 					},
 				},
 			},
@@ -129,13 +126,9 @@ func Test_adaptRepository(t *testing.T) {
 			}
 `,
 			expected: ecr.Repository{
-				ImageTagsImmutable: iacTypes.BoolTest(false),
-				ImageScanning: ecr.ImageScanning{
-					ScanOnPush: iacTypes.BoolTest(false),
-				},
+				ImageScanning: ecr.ImageScanning{},
 				Encryption: ecr.Encryption{
-					Type:     iacTypes.StringTest("AES256"),
-					KMSKeyID: iacTypes.StringTest(""),
+					Type: iacTypes.StringTest("AES256"),
 				},
 			},
 		},

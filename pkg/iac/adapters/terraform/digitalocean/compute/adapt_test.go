@@ -32,7 +32,7 @@ func Test_adaptDroplets(t *testing.T) {
 			expected: []compute.Droplet{
 				{
 					SSHKeys: []iacTypes.StringValue{
-						iacTypes.StringTest(""),
+						iacTypes.StringUnresolvable(iacTypes.NewTestMetadata()),
 					},
 				},
 			},
@@ -129,10 +129,7 @@ func Test_adaptFirewalls(t *testing.T) {
 			}
 `,
 			expected: []compute.Firewall{
-				{
-					OutboundRules: []compute.OutboundFirewallRule(nil),
-					InboundRules:  []compute.InboundFirewallRule(nil),
-				},
+				{},
 			},
 		},
 	}
@@ -186,9 +183,7 @@ func Test_adaptLoadBalancers(t *testing.T) {
 			  }
 `,
 			expected: []compute.LoadBalancer{
-				{
-					ForwardingRules: nil,
-				},
+				{},
 			},
 		},
 	}
@@ -233,10 +228,7 @@ func Test_adaptKubernetesClusters(t *testing.T) {
 			}
 `,
 			expected: []compute.KubernetesCluster{
-				{
-					SurgeUpgrade: iacTypes.BoolTest(false),
-					AutoUpgrade:  iacTypes.BoolTest(false),
-				},
+				{},
 			},
 		},
 	}

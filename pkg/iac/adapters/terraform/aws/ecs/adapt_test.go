@@ -62,9 +62,7 @@ func Test_adaptClusterSettings(t *testing.T) {
 				}
 			}
 `,
-			expected: ecs.ClusterSettings{
-				ContainerInsightsEnabled: iacTypes.BoolTest(false),
-			},
+			expected: ecs.ClusterSettings{},
 		},
 		{
 			name: "defaults",
@@ -72,9 +70,7 @@ func Test_adaptClusterSettings(t *testing.T) {
 			resource "aws_ecs_cluster" "example" {
 			}
 `,
-			expected: ecs.ClusterSettings{
-				ContainerInsightsEnabled: iacTypes.BoolTest(false),
-			},
+			expected: ecs.ClusterSettings{},
 		},
 	}
 
@@ -132,12 +128,11 @@ func Test_adaptTaskDefinitionResource(t *testing.T) {
 				},
 				ContainerDefinitions: []ecs.ContainerDefinition{
 					{
-						Name:       iacTypes.StringTest("my_service"),
-						Image:      iacTypes.StringTest("my_image"),
-						CPU:        iacTypes.StringTest("2"),
-						Memory:     iacTypes.StringTest("256"),
-						Essential:  iacTypes.BoolTest(true),
-						Privileged: iacTypes.BoolTest(false),
+						Name:      iacTypes.StringTest("my_service"),
+						Image:     iacTypes.StringTest("my_image"),
+						CPU:       iacTypes.StringTest("2"),
+						Memory:    iacTypes.StringTest("256"),
+						Essential: iacTypes.BoolTest(true),
 						Environment: []ecs.EnvVar{
 							{
 								Name:  iacTypes.StringTest("ENVIRONMENT"),
@@ -163,13 +158,9 @@ func Test_adaptTaskDefinitionResource(t *testing.T) {
 			expected: ecs.TaskDefinition{
 				Volumes: []ecs.Volume{
 					{
-						EFSVolumeConfiguration: ecs.EFSVolumeConfiguration{
-
-							TransitEncryptionEnabled: iacTypes.BoolTest(false),
-						},
+						EFSVolumeConfiguration: ecs.EFSVolumeConfiguration{},
 					},
 				},
-				ContainerDefinitions: nil,
 			},
 		},
 	}

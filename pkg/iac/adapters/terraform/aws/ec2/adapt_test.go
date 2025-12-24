@@ -74,14 +74,8 @@ export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
 			expected: ec2.EC2{
 				Instances: []ec2.Instance{
 					{
-						MetadataOptions: ec2.MetadataOptions{
-							HttpTokens:   iacTypes.StringTest(""),
-							HttpEndpoint: iacTypes.StringTest(""),
-						},
-						UserData: iacTypes.StringTest(""),
-						RootBlockDevice: &ec2.BlockDevice{
-							Encrypted: iacTypes.BoolTest(false),
-						},
+						MetadataOptions: ec2.MetadataOptions{},
+						RootBlockDevice: &ec2.BlockDevice{},
 					},
 				},
 			},
@@ -119,9 +113,7 @@ resource "aws_instance" "this" {
 							HttpEndpoint: iacTypes.StringTest("disabled"),
 							HttpTokens:   iacTypes.StringTest("required"),
 						},
-						RootBlockDevice: &ec2.BlockDevice{
-							Encrypted: iacTypes.BoolTest(false),
-						},
+						RootBlockDevice: &ec2.BlockDevice{},
 					},
 				},
 			},
@@ -160,9 +152,7 @@ resource "aws_instance" "this" {
 							HttpEndpoint: iacTypes.StringTest("disabled"),
 							HttpTokens:   iacTypes.StringTest("required"),
 						},
-						RootBlockDevice: &ec2.BlockDevice{
-							Encrypted: iacTypes.BoolTest(false),
-						},
+						RootBlockDevice: &ec2.BlockDevice{},
 					},
 				},
 			},

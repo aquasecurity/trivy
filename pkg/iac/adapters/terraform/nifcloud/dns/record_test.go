@@ -35,10 +35,7 @@ func Test_adaptRecords(t *testing.T) {
 			}
 `,
 
-			expected: []dns.Record{{
-				Type:   iacTypes.StringTest(""),
-				Record: iacTypes.StringTest(""),
-			}},
+			expected: []dns.Record{{}},
 		},
 	}
 

@@ -35,8 +35,7 @@ func Test_adaptElasticLoadBalancers(t *testing.T) {
 			expected: []network.ElasticLoadBalancer{{
 				NetworkInterfaces: []network.NetworkInterface{
 					{
-						NetworkID:    iacTypes.StringTest("net-COMMON_PRIVATE"),
-						IsVipNetwork: iacTypes.BoolTest(false),
+						NetworkID: iacTypes.StringTest("net-COMMON_PRIVATE"),
 					},
 				},
 				Listeners: []network.ElasticLoadBalancerListener{
@@ -61,7 +60,6 @@ func Test_adaptElasticLoadBalancers(t *testing.T) {
 			expected: []network.ElasticLoadBalancer{{
 				NetworkInterfaces: []network.NetworkInterface{
 					{
-						NetworkID:    iacTypes.StringTest(""),
 						IsVipNetwork: iacTypes.BoolTest(true),
 					},
 				},

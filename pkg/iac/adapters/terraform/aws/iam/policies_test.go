@@ -59,7 +59,6 @@ func Test_adaptPolicies(t *testing.T) {
 				{
 					Name:     iacTypes.StringTest("test"),
 					Document: defaultPolicyDocuemnt(false),
-					Builtin:  iacTypes.BoolTest(false),
 				},
 			},
 		},
@@ -92,8 +91,7 @@ resource "aws_iam_policy" "this" {
 `,
 			expected: []iam.Policy{
 				{
-					Name:    iacTypes.StringTest("test-0"),
-					Builtin: iacTypes.BoolTest(false),
+					Name: iacTypes.StringTest("test-0"),
 					Document: iam.Document{
 						IsOffset: true,
 						HasRefs:  false,
@@ -140,8 +138,7 @@ resource "aws_iam_policy" "this" {
 }`,
 			expected: []iam.Policy{
 				{
-					Name:    iacTypes.StringTest("test-sqs1"),
-					Builtin: iacTypes.BoolTest(false),
+					Name: iacTypes.StringTest("test-sqs1"),
 					Document: iam.Document{
 						IsOffset: true,
 						HasRefs:  false,
@@ -190,8 +187,7 @@ resource "aws_iam_policy" "this" {
 }`,
 			expected: []iam.Policy{
 				{
-					Name:    iacTypes.StringTest("test-policy"),
-					Builtin: iacTypes.BoolTest(false),
+					Name: iacTypes.StringTest("test-policy"),
 					Document: func() iam.Document {
 						builder := iamgo.NewPolicyBuilder()
 						firstStatement := iamgo.NewStatementBuilder().

@@ -59,10 +59,7 @@ func Test_adaptVolume(t *testing.T) {
 			}
 `,
 			expected: ec2.Volume{
-				Encryption: ec2.Encryption{
-					Enabled:  iacTypes.BoolTest(false),
-					KMSKeyID: iacTypes.StringTest(""),
-				},
+				Encryption: ec2.Encryption{},
 			},
 		},
 	}

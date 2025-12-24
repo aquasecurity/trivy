@@ -59,7 +59,6 @@ func Test_Adapt(t *testing.T) {
 				Instances: []rds.Instance{
 					{
 						BackupRetentionPeriodDays: iacTypes.IntTest(5),
-						ReplicationSourceARN:      iacTypes.StringTest(""),
 						PerformanceInsights: rds.PerformanceInsights{
 							Enabled:  iacTypes.BoolTest(true),
 							KMSKeyID: iacTypes.StringTest("performance_key_1"),
@@ -68,7 +67,6 @@ func Test_Adapt(t *testing.T) {
 							EncryptStorage: iacTypes.BoolTest(true),
 							KMSKeyID:       iacTypes.StringTest("kms_key_2"),
 						},
-						PublicAccess:     iacTypes.BoolTest(false),
 						Engine:           iacTypes.StringTest(rds.EngineAurora),
 						StorageEncrypted: iacTypes.BoolTest(true),
 					},
@@ -77,10 +75,7 @@ func Test_Adapt(t *testing.T) {
 					{
 						BackupRetentionPeriodDays: iacTypes.IntTest(7),
 						ReplicationSourceARN:      iacTypes.StringTest("arn-of-a-source-db-cluster"),
-						PerformanceInsights: rds.PerformanceInsights{
-							Enabled:  iacTypes.BoolTest(false),
-							KMSKeyID: iacTypes.StringTest(""),
-						},
+						PerformanceInsights:       rds.PerformanceInsights{},
 						Encryption: rds.Encryption{
 							EncryptStorage: iacTypes.BoolTest(true),
 							KMSKeyID:       iacTypes.StringTest("kms_key_1"),
@@ -88,8 +83,6 @@ func Test_Adapt(t *testing.T) {
 						Instances: []rds.ClusterInstance{
 							{
 								Instance: rds.Instance{
-									BackupRetentionPeriodDays: iacTypes.IntTest(0),
-									ReplicationSourceARN:      iacTypes.StringTest(""),
 									PerformanceInsights: rds.PerformanceInsights{
 										Enabled:  iacTypes.BoolTest(true),
 										KMSKeyID: iacTypes.StringTest("performance_key_0"),
@@ -98,15 +91,13 @@ func Test_Adapt(t *testing.T) {
 										EncryptStorage: iacTypes.BoolTest(true),
 										KMSKeyID:       iacTypes.StringTest("kms_key_0"),
 									},
-									PublicAccess:     iacTypes.BoolTest(false),
 									Engine:           iacTypes.StringTest(rds.EngineAurora),
 									StorageEncrypted: iacTypes.BoolTest(true),
 								},
 								ClusterIdentifier: iacTypes.StringTest("aws_rds_cluster.example"),
 							},
 						},
-						PublicAccess: iacTypes.BoolTest(false),
-						Engine:       iacTypes.StringTest(rds.EngineAuroraMysql),
+						Engine: iacTypes.StringTest(rds.EngineAuroraMysql),
 						AvailabilityZones: iacTypes.StringValueList{
 							iacTypes.StringTest("us-west-2a"),
 							iacTypes.StringTest("us-west-2b"),
@@ -146,20 +137,10 @@ func Test_adaptInstance(t *testing.T) {
 			}
 `,
 			expected: rds.Instance{
-				BackupRetentionPeriodDays: iacTypes.IntTest(0),
-				ReplicationSourceARN:      iacTypes.StringTest(""),
-				PerformanceInsights: rds.PerformanceInsights{
-					Enabled:  iacTypes.BoolTest(false),
-					KMSKeyID: iacTypes.StringTest(""),
-				},
-				Encryption: rds.Encryption{
-					EncryptStorage: iacTypes.BoolTest(false),
-					KMSKeyID:       iacTypes.StringTest(""),
-				},
-				PublicAccess:     iacTypes.BoolTest(false),
-				Engine:           iacTypes.StringTest(rds.EngineAurora),
-				StorageEncrypted: iacTypes.BoolTest(true),
-				IAMAuthEnabled:   iacTypes.BoolTest(false),
+				PerformanceInsights: rds.PerformanceInsights{},
+				Encryption:          rds.Encryption{},
+				Engine:              iacTypes.StringTest(rds.EngineAurora),
+				StorageEncrypted:    iacTypes.BoolTest(true),
 			},
 		},
 	}
@@ -187,17 +168,9 @@ func Test_adaptCluster(t *testing.T) {
 `,
 			expected: rds.Cluster{
 				BackupRetentionPeriodDays: iacTypes.IntTest(1),
-				ReplicationSourceARN:      iacTypes.StringTest(""),
-				PerformanceInsights: rds.PerformanceInsights{
-					Enabled:  iacTypes.BoolTest(false),
-					KMSKeyID: iacTypes.StringTest(""),
-				},
-				Encryption: rds.Encryption{
-					EncryptStorage: iacTypes.BoolTest(false),
-					KMSKeyID:       iacTypes.StringTest(""),
-				},
-				PublicAccess: iacTypes.BoolTest(false),
-				Engine:       iacTypes.StringTest(rds.EngineAurora),
+				PerformanceInsights:       rds.PerformanceInsights{},
+				Encryption:                rds.Encryption{},
+				Engine:                    iacTypes.StringTest(rds.EngineAurora),
 			},
 		},
 	}

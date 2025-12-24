@@ -119,8 +119,6 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 							WorkloadMetadataConfig: gke.WorkloadMetadataConfig{
 								NodeMetadata: iacTypes.StringTest("GCE_METADATA"),
 							},
-							ServiceAccount:        iacTypes.StringTest(""),
-							EnableLegacyEndpoints: iacTypes.BoolTest(false),
 						},
 						AutoScaling: gke.AutoScaling{
 							Enabled: iacTypes.BoolTest(true),
@@ -144,8 +142,6 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 									WorkloadMetadataConfig: gke.WorkloadMetadataConfig{
 										NodeMetadata: iacTypes.StringTest("GCE_METADATA"),
 									},
-									ServiceAccount:        iacTypes.StringTest(""),
-									EnableLegacyEndpoints: iacTypes.BoolTest(false),
 								},
 							},
 						},
@@ -171,8 +167,6 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 							ClientCertificate: gke.ClientCertificate{
 								IssueCertificate: iacTypes.BoolTest(true),
 							},
-							Username: iacTypes.StringTest(""),
-							Password: iacTypes.StringTest(""),
 						},
 						EnableShieldedNodes: iacTypes.BoolTest(true),
 						EnableLegacyABAC:    iacTypes.BoolTest(true),
@@ -209,37 +203,23 @@ resource "google_container_cluster" "example" {
 							WorkloadMetadataConfig: gke.WorkloadMetadataConfig{
 								NodeMetadata: iacTypes.StringTest("GCE_METADATA"),
 							},
-							ServiceAccount:        iacTypes.StringTest("service-account"),
-							EnableLegacyEndpoints: iacTypes.BoolTest(false),
+							ServiceAccount: iacTypes.StringTest("service-account"),
 						},
 
-						IPAllocationPolicy: gke.IPAllocationPolicy{
-							Enabled: iacTypes.BoolTest(false),
-						},
+						IPAllocationPolicy: gke.IPAllocationPolicy{},
 						MasterAuthorizedNetworks: gke.MasterAuthorizedNetworks{
-							Enabled: iacTypes.BoolTest(false),
-							CIDRs:   []iacTypes.StringValue{},
+							CIDRs: []iacTypes.StringValue{},
 						},
-						NetworkPolicy: gke.NetworkPolicy{
-							Enabled: iacTypes.BoolTest(false),
-						},
-						DatapathProvider: iacTypes.StringTest("DATAPATH_PROVIDER_UNSPECIFIED"),
-						PrivateCluster: gke.PrivateCluster{
-							EnablePrivateNodes: iacTypes.BoolTest(false),
-						},
+						NetworkPolicy:     gke.NetworkPolicy{},
+						DatapathProvider:  iacTypes.StringTest("DATAPATH_PROVIDER_UNSPECIFIED"),
+						PrivateCluster:    gke.PrivateCluster{},
 						LoggingService:    iacTypes.StringTest("logging.googleapis.com/kubernetes"),
 						MonitoringService: iacTypes.StringTest("monitoring.googleapis.com/kubernetes"),
 						MasterAuth: gke.MasterAuth{
-							ClientCertificate: gke.ClientCertificate{
-								IssueCertificate: iacTypes.BoolTest(false),
-							},
-							Username: iacTypes.StringTest(""),
-							Password: iacTypes.StringTest(""),
+							ClientCertificate: gke.ClientCertificate{},
 						},
-						EnableShieldedNodes:   iacTypes.BoolTest(true),
-						EnableLegacyABAC:      iacTypes.BoolTest(false),
-						ResourceLabels:        iacTypes.MapTest(make(map[string]string)),
-						RemoveDefaultNodePool: iacTypes.BoolTest(false),
+						EnableShieldedNodes: iacTypes.BoolTest(true),
+						ResourceLabels:      iacTypes.MapTest(make(map[string]string)),
 					},
 				},
 			},

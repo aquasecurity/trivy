@@ -86,15 +86,9 @@ func Test_adaptCluster(t *testing.T) {
 				},
 				Logging: msk.Logging{
 					Broker: msk.BrokerLogging{
-						S3: msk.S3Logging{
-							Enabled: iacTypes.BoolTest(false),
-						},
-						Cloudwatch: msk.CloudwatchLogging{
-							Enabled: iacTypes.BoolTest(false),
-						},
-						Firehose: msk.FirehoseLogging{
-							Enabled: iacTypes.BoolTest(false),
-						},
+						S3:         msk.S3Logging{},
+						Cloudwatch: msk.CloudwatchLogging{},
+						Firehose:   msk.FirehoseLogging{},
 					},
 				},
 			},

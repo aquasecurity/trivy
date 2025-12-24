@@ -100,7 +100,6 @@ func Test_adaptWorkgroup(t *testing.T) {
 				Encryption: athena.EncryptionConfiguration{
 					Type: iacTypes.StringTest(athena.EncryptionTypeSSEKMS),
 				},
-				EnforceConfiguration: iacTypes.BoolTest(false),
 			},
 		},
 		{
@@ -138,7 +137,6 @@ func Test_adaptWorkgroup(t *testing.T) {
 				Encryption: athena.EncryptionConfiguration{
 					Type: iacTypes.StringTest(athena.EncryptionTypeNone),
 				},
-				EnforceConfiguration: iacTypes.BoolTest(false),
 			},
 		},
 	}

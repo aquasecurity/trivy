@@ -43,9 +43,7 @@ func TestFields(t *testing.T) {
 			expected: openstack.OpenStack{
 				Compute: openstack.Compute{
 					Instances: []openstack.Instance{
-						{
-							AdminPassword: iacTypes.StringTest(""),
-						},
+						{},
 					},
 				},
 			},
@@ -70,7 +68,6 @@ func TestFields(t *testing.T) {
 								Destination:     iacTypes.StringTest("10.10.10.1"),
 								Source:          iacTypes.StringTest("10.10.10.2"),
 								DestinationPort: iacTypes.StringTest("22"),
-								SourcePort:      iacTypes.StringTest(""),
 							},
 						},
 					},

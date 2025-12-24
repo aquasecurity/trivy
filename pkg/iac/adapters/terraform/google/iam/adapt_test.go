@@ -82,9 +82,8 @@ resource "google_iam_workload_identity_pool_provider" "example" {
 					{
 						Members: []iam.Member{
 							{
-								Member:                iacTypes.StringTest("user:alice@gmail.com"),
-								Role:                  iacTypes.StringTest("roles/editor"),
-								DefaultServiceAccount: iacTypes.BoolTest(false),
+								Member: iacTypes.StringTest("user:alice@gmail.com"),
+								Role:   iacTypes.StringTest("roles/editor"),
 							},
 						},
 						Bindings: []iam.Binding{
@@ -92,8 +91,7 @@ resource "google_iam_workload_identity_pool_provider" "example" {
 								Members: []iacTypes.StringValue{
 									iacTypes.StringTest("user:not-alice@gmail.com"),
 								},
-								Role:                          iacTypes.StringTest("roles/nothing"),
-								IncludesDefaultServiceAccount: iacTypes.BoolTest(false),
+								Role: iacTypes.StringTest("roles/nothing"),
 							},
 						},
 					},
@@ -102,17 +100,15 @@ resource "google_iam_workload_identity_pool_provider" "example" {
 					{
 						Members: []iam.Member{
 							{
-								Member:                iacTypes.StringTest("user:member@gmail.com"),
-								Role:                  iacTypes.StringTest("roles/whatever"),
-								DefaultServiceAccount: iacTypes.BoolTest(false),
+								Member: iacTypes.StringTest("user:member@gmail.com"),
+								Role:   iacTypes.StringTest("roles/whatever"),
 							},
 						},
 						Bindings: []iam.Binding{
 							{
 								Members: []iacTypes.StringValue{
 									iacTypes.StringTest("user:member_2@gmail.com")},
-								Role:                          iacTypes.StringTest("roles/browser"),
-								IncludesDefaultServiceAccount: iacTypes.BoolTest(false),
+								Role: iacTypes.StringTest("roles/browser"),
 							},
 						},
 					},
@@ -269,7 +265,6 @@ resource "google_project_iam_member" "project" {
 			expected: iam.IAM{
 				Projects: []iam.Project{
 					{
-						AutoCreateNetwork: iacTypes.BoolTest(false),
 						Members: []iam.Member{
 							{
 								Role:   iacTypes.StringTest("roles/editor"),
@@ -338,14 +333,12 @@ resource "google_folder_iam_audit_config" "folder_audit" {
 			expected: iam.IAM{
 				Projects: []iam.Project{
 					{
-						AutoCreateNetwork: iacTypes.BoolTest(false),
 						AuditConfigs: []iam.AuditConfig{
 							{
 								Service: iacTypes.StringTest("allServices"),
 								AuditLogConfigs: []iam.AuditLogConfig{
 									{
-										LogType:         iacTypes.StringTest("ADMIN_READ"),
-										ExemptedMembers: nil,
+										LogType: iacTypes.StringTest("ADMIN_READ"),
 									},
 									{
 										LogType: iacTypes.StringTest("DATA_WRITE"),
@@ -383,8 +376,7 @@ resource "google_folder_iam_audit_config" "folder_audit" {
 								Service: iacTypes.StringTest("compute.googleapis.com"),
 								AuditLogConfigs: []iam.AuditLogConfig{
 									{
-										LogType:         iacTypes.StringTest("ADMIN_READ"),
-										ExemptedMembers: nil,
+										LogType: iacTypes.StringTest("ADMIN_READ"),
 									},
 								},
 							},

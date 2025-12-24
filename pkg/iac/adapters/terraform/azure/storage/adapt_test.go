@@ -24,20 +24,15 @@ func Test_Adapt(t *testing.T) {
 			expected: storage.Storage{
 				Accounts: []storage.Account{
 					{
-						PublicNetworkAccess:             iacTypes.BoolTest(true),
-						MinimumTLSVersion:               iacTypes.StringTest(minimumTlsVersionOneTwo),
-						EnforceHTTPS:                    iacTypes.BoolTest(true),
-						AccountReplicationType:          iacTypes.StringTest(""),
-						InfrastructureEncryptionEnabled: iacTypes.BoolTest(false),
+						PublicNetworkAccess: iacTypes.BoolTest(true),
+						MinimumTLSVersion:   iacTypes.StringTest(minimumTlsVersionOneTwo),
+						EnforceHTTPS:        iacTypes.BoolTest(true),
 						BlobProperties: storage.BlobProperties{
 							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
 								Days: iacTypes.IntTest(7),
 							},
 						},
-						CustomerManagedKey: storage.CustomerManagedKey{
-							KeyVaultKeyId:          iacTypes.StringTest(""),
-							UserAssignedIdentityId: iacTypes.StringTest(""),
-						},
+						CustomerManagedKey: storage.CustomerManagedKey{},
 					},
 					{
 						BlobProperties: storage.BlobProperties{
@@ -97,16 +92,14 @@ func Test_Adapt(t *testing.T) {
 				Accounts: []storage.Account{
 
 					{
-						EnforceHTTPS:        iacTypes.BoolTest(true),
-						MinimumTLSVersion:   iacTypes.StringTest("TLS1_2"),
-						PublicNetworkAccess: iacTypes.BoolTest(false),
+						EnforceHTTPS:      iacTypes.BoolTest(true),
+						MinimumTLSVersion: iacTypes.StringTest("TLS1_2"),
 						NetworkRules: []storage.NetworkRule{
 							{
 								Bypass: []iacTypes.StringValue{
 									iacTypes.StringTest("Metrics"),
 									iacTypes.StringTest("AzureServices"),
 								},
-								AllowByDefault: iacTypes.BoolTest(false),
 							},
 							{
 								Bypass: []iacTypes.StringValue{
@@ -125,17 +118,12 @@ func Test_Adapt(t *testing.T) {
 								RetentionPolicyDays: iacTypes.IntTest(10),
 							},
 						},
-						AccountReplicationType:          iacTypes.StringTest(""),
-						InfrastructureEncryptionEnabled: iacTypes.BoolTest(false),
 						BlobProperties: storage.BlobProperties{
 							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
 								Days: iacTypes.IntTest(7),
 							},
 						},
-						CustomerManagedKey: storage.CustomerManagedKey{
-							KeyVaultKeyId:          iacTypes.StringTest(""),
-							UserAssignedIdentityId: iacTypes.StringTest(""),
-						},
+						CustomerManagedKey: storage.CustomerManagedKey{},
 						Containers: []storage.Container{
 							{
 								PublicAccess: iacTypes.StringTest("blob"),

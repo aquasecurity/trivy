@@ -70,19 +70,12 @@ func Test_Adapt(t *testing.T) {
 			expected: lambda.Lambda{
 				Functions: []lambda.Function{
 					{
-						Tracing: lambda.Tracing{
-							Mode: iacTypes.StringTest(""),
-						},
+						Tracing: lambda.Tracing{},
 					},
 					{
-						Tracing: lambda.Tracing{
-							Mode: iacTypes.StringTest(""),
-						},
+						Tracing: lambda.Tracing{},
 						Permissions: []lambda.Permission{
-							{
-								Principal: iacTypes.StringTest(""),
-								SourceARN: iacTypes.StringTest(""),
-							},
+							{},
 						},
 					},
 				},

@@ -70,13 +70,8 @@ func Test_adaptDistribution(t *testing.T) {
 			}
 `,
 			expected: cloudfront.Distribution{
-				WAFID: iacTypes.StringTest(""),
-				Logging: cloudfront.Logging{
-					Bucket: iacTypes.StringTest(""),
-				},
-				DefaultCacheBehaviour: cloudfront.CacheBehaviour{
-					ViewerProtocolPolicy: iacTypes.StringTest(""),
-				},
+				Logging:               cloudfront.Logging{},
+				DefaultCacheBehaviour: cloudfront.CacheBehaviour{},
 
 				ViewerCertificate: cloudfront.ViewerCertificate{
 					MinimumProtocolVersion: iacTypes.StringTest("TLSv1"),

@@ -44,12 +44,8 @@ func Test_adaptContact(t *testing.T) {
 			}
 `,
 			expected: securitycenter.Contact{
-				EnableAlertNotifications: iacTypes.BoolTest(false),
-				EnableAlertsToAdmins:     iacTypes.BoolTest(false),
-				Email:                    iacTypes.StringTest(""),
-				Phone:                    iacTypes.StringTest(""),
-				IsEnabled:                iacTypes.BoolValue{},
-				MinimalSeverity:          iacTypes.StringValue{},
+				IsEnabled:       iacTypes.BoolValue{},
+				MinimalSeverity: iacTypes.StringValue{},
 			},
 		},
 	}

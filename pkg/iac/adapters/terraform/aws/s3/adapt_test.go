@@ -217,7 +217,6 @@ func Test_Adapt(t *testing.T) {
 						},
 						BucketPolicies: []iam.Policy{
 							{
-								Name: iacTypes.StringTest(""),
 								Document: func() iam.Document {
 
 									builder := iamgo.NewPolicyBuilder()
@@ -235,7 +234,6 @@ func Test_Adapt(t *testing.T) {
 										HasRefs:  false,
 									}
 								}(),
-								Builtin: iacTypes.BoolTest(false),
 							},
 						},
 						Encryption: s3.Encryption{
@@ -318,11 +316,9 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
 			expected: s3.S3{
 				Buckets: []s3.Bucket{
 					{
-						Name: iacTypes.StringTest("test"),
-						Encryption: s3.Encryption{
-							Enabled: iacTypes.BoolTest(false),
-						},
-						ACL: iacTypes.StringTest("private"),
+						Name:       iacTypes.StringTest("test"),
+						Encryption: s3.Encryption{},
+						ACL:        iacTypes.StringTest("private"),
 					},
 				},
 			},

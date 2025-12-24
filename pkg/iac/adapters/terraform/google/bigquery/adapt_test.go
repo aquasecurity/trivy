@@ -36,17 +36,14 @@ func Test_Adapt(t *testing.T) {
 			expected: bigquery.BigQuery{
 				Datasets: []bigquery.Dataset{
 					{
-						ID: iacTypes.StringTest(""),
 						AccessGrants: []bigquery.AccessGrant{
 							{
 								Role:         iacTypes.StringTest("OWNER"),
-								Domain:       iacTypes.StringTest(""),
 								SpecialGroup: iacTypes.StringTest(bigquery.SpecialGroupAllAuthenticatedUsers),
 							},
 							{
-								Role:         iacTypes.StringTest("READER"),
-								Domain:       iacTypes.StringTest("hashicorp.com"),
-								SpecialGroup: iacTypes.StringTest(""),
+								Role:   iacTypes.StringTest("READER"),
+								Domain: iacTypes.StringTest("hashicorp.com"),
 							},
 						},
 					},
@@ -79,13 +76,8 @@ func Test_Adapt(t *testing.T) {
 			expected: bigquery.BigQuery{
 				Datasets: []bigquery.Dataset{
 					{
-						ID: iacTypes.StringTest(""),
 						AccessGrants: []bigquery.AccessGrant{
-							{
-								Role:         iacTypes.StringTest(""),
-								Domain:       iacTypes.StringTest(""),
-								SpecialGroup: iacTypes.StringTest(""),
-							},
+							{},
 						},
 					},
 				},

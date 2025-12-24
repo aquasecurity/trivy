@@ -37,9 +37,7 @@ func Test_adaptFileSystem(t *testing.T) {
 			resource "aws_efs_file_system" "example" {
 			  }
 `,
-			expected: efs.FileSystem{
-				Encrypted: iacTypes.BoolTest(false),
-			},
+			expected: efs.FileSystem{},
 		},
 	}
 

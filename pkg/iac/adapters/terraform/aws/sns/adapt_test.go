@@ -26,7 +26,6 @@ func Test_adaptTopic(t *testing.T) {
 			}
 `,
 			expected: sns.Topic{
-				ARN: iacTypes.StringTest(""),
 				Encryption: sns.Encryption{
 					KMSKeyID: iacTypes.StringTest("/blah"),
 				},
@@ -39,10 +38,7 @@ func Test_adaptTopic(t *testing.T) {
 			}
 `,
 			expected: sns.Topic{
-				ARN: iacTypes.StringTest(""),
-				Encryption: sns.Encryption{
-					KMSKeyID: iacTypes.StringTest(""),
-				},
+				Encryption: sns.Encryption{},
 			},
 		},
 	}

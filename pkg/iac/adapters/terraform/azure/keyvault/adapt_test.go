@@ -55,11 +55,7 @@ func Test_Adapt(t *testing.T) {
 			expected: keyvault.KeyVault{
 				Vaults: []keyvault.Vault{
 					{
-						EnablePurgeProtection:   iacTypes.BoolTest(false),
-						SoftDeleteRetentionDays: iacTypes.IntTest(0),
-						NetworkACLs: keyvault.NetworkACLs{
-							DefaultAction: iacTypes.StringTest(""),
-						},
+						NetworkACLs: keyvault.NetworkACLs{},
 					},
 				},
 			},
@@ -88,8 +84,7 @@ func Test_adaptSecret(t *testing.T) {
 			}
 `,
 			expected: keyvault.Secret{
-				ContentType: iacTypes.StringTest(""),
-				ExpiryDate:  iacTypes.TimeTest(time.Time{}),
+				ExpiryDate: iacTypes.TimeTest(time.Time{}),
 			},
 		},
 		{

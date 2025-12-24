@@ -22,13 +22,7 @@ resource "github_actions_environment_secret" "example" {
 }
 `,
 			expected: []github.EnvironmentSecret{
-				{
-					Environment:    iacTypes.StringTest(""),
-					SecretName:     iacTypes.StringTest(""),
-					PlainTextValue: iacTypes.StringTest(""),
-					EncryptedValue: iacTypes.StringTest(""),
-					Repository:     iacTypes.StringTest(""),
-				},
+				{},
 			},
 		},
 		{

@@ -29,9 +29,7 @@ resource "azurerm_managed_disk" "example" {
 	}
 }`,
 			expected: compute.ManagedDisk{
-				Encryption: compute.Encryption{
-					Enabled: iacTypes.BoolTest(false),
-				},
+				Encryption: compute.Encryption{},
 			},
 		},
 		{

@@ -45,7 +45,6 @@ func TestAdapt(t *testing.T) {
 			{
 				Name: iacTypes.StringTest("mys3bucket"),
 				Encryption: s3.Encryption{
-					Enabled:   iacTypes.BoolTest(false),
 					Algorithm: iacTypes.StringTest("aws:kms"),
 					KMSKeyId:  iacTypes.StringTest("arn:aws:kms:us-east-1:1234/5678example"),
 				},

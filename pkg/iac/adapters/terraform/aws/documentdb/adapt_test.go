@@ -55,11 +55,7 @@ func Test_adaptCluster(t *testing.T) {
 			resource "aws_docdb_cluster" "docdb" {
 			}
 `,
-			expected: documentdb.Cluster{
-				Identifier:       iacTypes.StringTest(""),
-				StorageEncrypted: iacTypes.BoolTest(false),
-				KMSKeyID:         iacTypes.StringTest(""),
-			},
+			expected: documentdb.Cluster{},
 		},
 	}
 

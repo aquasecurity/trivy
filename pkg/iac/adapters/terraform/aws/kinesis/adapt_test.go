@@ -41,8 +41,7 @@ func Test_adaptStream(t *testing.T) {
 `,
 			expected: kinesis.Stream{
 				Encryption: kinesis.Encryption{
-					Type:     iacTypes.StringTest("NONE"),
-					KMSKeyID: iacTypes.StringTest(""),
+					Type: iacTypes.StringTest("NONE"),
 				},
 			},
 		},

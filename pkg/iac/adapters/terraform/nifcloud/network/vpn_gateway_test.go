@@ -33,9 +33,7 @@ func Test_adaptVpnGateways(t *testing.T) {
 			}
 `,
 
-			expected: []network.VpnGateway{{
-				SecurityGroup: iacTypes.StringTest(""),
-			}},
+			expected: []network.VpnGateway{{}},
 		},
 	}
 

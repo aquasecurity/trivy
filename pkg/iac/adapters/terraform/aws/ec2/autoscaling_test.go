@@ -39,13 +39,9 @@ func Test_AdaptAutoscaling(t *testing.T) {
 			expected: ec2.EC2{
 				LaunchConfigurations: []ec2.LaunchConfiguration{
 					{
-						Name:              iacTypes.StringTest("web_config"),
-						AssociatePublicIP: iacTypes.BoolTest(false),
-						UserData:          iacTypes.StringTest("export EDITOR=vimacs"),
-						MetadataOptions: ec2.MetadataOptions{
-							HttpTokens:   iacTypes.StringTest(""),
-							HttpEndpoint: iacTypes.StringTest(""),
-						},
+						Name:            iacTypes.StringTest("web_config"),
+						UserData:        iacTypes.StringTest("export EDITOR=vimacs"),
+						MetadataOptions: ec2.MetadataOptions{},
 						RootBlockDevice: &ec2.BlockDevice{
 							Encrypted: iacTypes.BoolTest(true),
 						},
@@ -82,16 +78,12 @@ export AWS_DEFAULT_REGION=us-west-2
 			expected: ec2.EC2{
 				LaunchConfigurations: []ec2.LaunchConfiguration{
 					{
-						Name:              iacTypes.StringTest("web_config"),
-						AssociatePublicIP: iacTypes.BoolTest(false),
+						Name: iacTypes.StringTest("web_config"),
 						UserData: iacTypes.StringTest(`export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
 export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 export AWS_DEFAULT_REGION=us-west-2 
 `),
-						MetadataOptions: ec2.MetadataOptions{
-							HttpTokens:   iacTypes.StringTest(""),
-							HttpEndpoint: iacTypes.StringTest(""),
-						},
+						MetadataOptions: ec2.MetadataOptions{},
 						RootBlockDevice: &ec2.BlockDevice{
 							Encrypted: iacTypes.BoolTest(true),
 						},
@@ -117,10 +109,8 @@ export AWS_DEFAULT_REGION=us-west-2
 				LaunchTemplates: []ec2.LaunchTemplate{
 					{
 						Instance: ec2.Instance{
-							UserData: iacTypes.StringTest(""),
 							MetadataOptions: ec2.MetadataOptions{
-								HttpTokens:   iacTypes.StringTest("required"),
-								HttpEndpoint: iacTypes.StringTest(""),
+								HttpTokens: iacTypes.StringTest("required"),
 							},
 						},
 					},

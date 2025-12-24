@@ -44,11 +44,7 @@ func Test_adaptCluster(t *testing.T) {
 			terraform: `
 			resource "aws_elasticache_cluster" "example" {
 			}`,
-			expected: elasticache.Cluster{
-				Engine:                 iacTypes.StringTest(""),
-				NodeType:               iacTypes.StringTest(""),
-				SnapshotRetentionLimit: iacTypes.IntTest(0),
-			},
+			expected: elasticache.Cluster{},
 		},
 	}
 
@@ -88,10 +84,7 @@ func Test_adaptReplicationGroup(t *testing.T) {
 			resource "aws_elasticache_replication_group" "example" {
 		}
 `,
-			expected: elasticache.ReplicationGroup{
-				TransitEncryptionEnabled: iacTypes.BoolTest(false),
-				AtRestEncryptionEnabled:  iacTypes.BoolTest(false),
-			},
+			expected: elasticache.ReplicationGroup{},
 		},
 	}
 

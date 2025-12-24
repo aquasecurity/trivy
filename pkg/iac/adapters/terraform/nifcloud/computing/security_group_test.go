@@ -57,12 +57,8 @@ func Test_adaptSecurityGroups(t *testing.T) {
 `,
 
 			expected: []computing.SecurityGroup{{
-				Description: iacTypes.StringTest(""),
 				IngressRules: []computing.SecurityGroupRule{
-					{
-						CIDR:        iacTypes.StringTest(""),
-						Description: iacTypes.StringTest(""),
-					},
+					{},
 				},
 			}},
 		},

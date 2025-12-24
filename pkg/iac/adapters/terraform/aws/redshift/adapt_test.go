@@ -44,10 +44,8 @@ func Test_Adapt(t *testing.T) {
 			expected: redshift.Redshift{
 				Clusters: []redshift.Cluster{
 					{
-						ClusterIdentifier:   iacTypes.StringTest("tf-redshift-cluster"),
-						PubliclyAccessible:  iacTypes.BoolTest(false),
-						NumberOfNodes:       iacTypes.IntTest(1),
-						AllowVersionUpgrade: iacTypes.BoolTest(false),
+						ClusterIdentifier: iacTypes.StringTest("tf-redshift-cluster"),
+						NumberOfNodes:     iacTypes.IntTest(1),
 						EndPoint: redshift.EndPoint{
 							Port: iacTypes.IntTest(5440),
 						},
@@ -97,10 +95,8 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: redshift.Cluster{
-				ClusterIdentifier:   iacTypes.StringTest("tf-redshift-cluster"),
-				PubliclyAccessible:  iacTypes.BoolTest(false),
-				NumberOfNodes:       iacTypes.IntTest(1),
-				AllowVersionUpgrade: iacTypes.BoolTest(false),
+				ClusterIdentifier: iacTypes.StringTest("tf-redshift-cluster"),
+				NumberOfNodes:     iacTypes.IntTest(1),
 				EndPoint: redshift.EndPoint{
 					Port: iacTypes.IntTest(5440),
 				},
@@ -118,18 +114,13 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: redshift.Cluster{
-				ClusterIdentifier:   iacTypes.StringTest(""),
 				PubliclyAccessible:  iacTypes.BoolTest(true),
 				NumberOfNodes:       iacTypes.IntTest(1),
 				AllowVersionUpgrade: iacTypes.BoolTest(true),
 				EndPoint: redshift.EndPoint{
 					Port: iacTypes.IntTest(5439),
 				},
-				Encryption: redshift.Encryption{
-					Enabled:  iacTypes.BoolTest(false),
-					KMSKeyID: iacTypes.StringTest(""),
-				},
-				SubnetGroupName: iacTypes.StringTest(""),
+				Encryption: redshift.Encryption{},
 			},
 		},
 	}

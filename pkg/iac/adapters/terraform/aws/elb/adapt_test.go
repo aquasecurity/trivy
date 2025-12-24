@@ -75,10 +75,7 @@ func Test_Adapt(t *testing.T) {
 			expected: elb.ELB{
 				LoadBalancers: []elb.LoadBalancer{
 					{
-						Type:                    iacTypes.StringTest("application"),
-						DropInvalidHeaderFields: iacTypes.BoolTest(false),
-						Internal:                iacTypes.BoolTest(false),
-						Listeners:               nil,
+						Type: iacTypes.StringTest("application"),
 					},
 				},
 			},

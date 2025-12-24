@@ -74,20 +74,10 @@ func Test_adaptDomain(t *testing.T) {
 			expected: elasticsearch.Elasticsearch{
 				Domains: []elasticsearch.Domain{
 					{
-						DomainName: iacTypes.StringTest(""),
-						LogPublishing: elasticsearch.LogPublishing{
-							AuditEnabled: iacTypes.BoolTest(false),
-						},
-						TransitEncryption: elasticsearch.TransitEncryption{
-							Enabled: iacTypes.BoolTest(false),
-						},
-						AtRestEncryption: elasticsearch.AtRestEncryption{
-							Enabled: iacTypes.BoolTest(false),
-						},
-						Endpoint: elasticsearch.Endpoint{
-							EnforceHTTPS: iacTypes.BoolTest(false),
-							TLSPolicy:    iacTypes.StringTest(""),
-						},
+						LogPublishing:     elasticsearch.LogPublishing{},
+						TransitEncryption: elasticsearch.TransitEncryption{},
+						AtRestEncryption:  elasticsearch.AtRestEncryption{},
+						Endpoint:          elasticsearch.Endpoint{},
 					},
 				},
 			},

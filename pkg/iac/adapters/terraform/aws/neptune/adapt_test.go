@@ -42,11 +42,7 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: neptune.Cluster{
-				Logging: neptune.Logging{
-					Audit: iacTypes.BoolTest(false),
-				},
-				StorageEncrypted: iacTypes.BoolTest(false),
-				KMSKeyID:         iacTypes.StringTest(""),
+				Logging: neptune.Logging{},
 			},
 		},
 	}

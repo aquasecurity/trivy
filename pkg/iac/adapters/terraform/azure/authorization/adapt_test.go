@@ -145,10 +145,8 @@ func Test_adaptRoleAssignment(t *testing.T) {
 			}
 `,
 			expected: authorization.RoleAssignment{
-				RoleDefinitionId:   iacTypes.StringTest("/subscriptions/12345678-1234-1234-1234-123456789012/providers/Microsoft.Authorization/roleDefinitions/reader"),
-				RoleDefinitionName: iacTypes.StringTest(""),
-				PrincipalId:        iacTypes.StringTest("33333333-3333-3333-3333-333333333333"),
-				PrincipalType:      iacTypes.StringTest(""),
+				RoleDefinitionId: iacTypes.StringTest("/subscriptions/12345678-1234-1234-1234-123456789012/providers/Microsoft.Authorization/roleDefinitions/reader"),
+				PrincipalId:      iacTypes.StringTest("33333333-3333-3333-3333-333333333333"),
 			},
 		},
 	}
