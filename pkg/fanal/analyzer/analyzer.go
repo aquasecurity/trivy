@@ -21,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 var (
@@ -548,8 +549,8 @@ func (ag AnalyzerGroup) StaticPaths(disabled []Type) ([]string, bool) {
 
 	type analyzerType interface{ Type() Type }
 	allAnalyzers := append(
-		lo.Map(ag.analyzers, func(a analyzer, _ int) analyzerType { return a }),
-		lo.Map(ag.postAnalyzers, func(a PostAnalyzer, _ int) analyzerType { return a })...,
+		xslices.Map(ag.analyzers, func(a analyzer) analyzerType { return a }),
+		xslices.Map(ag.postAnalyzers, func(a PostAnalyzer) analyzerType { return a })...,
 	)
 
 	for _, a := range allAnalyzers {

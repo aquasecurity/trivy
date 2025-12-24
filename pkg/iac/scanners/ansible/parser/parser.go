@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/hashicorp/go-multierror"
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
@@ -20,6 +19,7 @@ import (
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 const (
@@ -133,7 +133,7 @@ func (p *Parser) Parse() (*AnsibleProject, error) {
 		return nil, err
 	}
 
-	playbookSources := lo.Map(p.playbooks, func(playbookPath string, _ int) fsutils.FileSource {
+	playbookSources := xslices.Map(p.playbooks, func(playbookPath string) fsutils.FileSource {
 		return p.rootSrc.Join(playbookPath)
 	})
 

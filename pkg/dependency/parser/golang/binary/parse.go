@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/mattn/go-shellwords"
-	"github.com/samber/lo"
 	"github.com/spf13/pflag"
 	"golang.org/x/mod/semver"
 	"golang.org/x/xerrors"
@@ -19,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 var (
@@ -121,7 +121,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			Relationship: ftypes.RelationshipRoot,
 		}
 
-		depIDs := lo.Map(pkgs, func(pkg ftypes.Package, _ int) string {
+		depIDs := xslices.Map(pkgs, func(pkg ftypes.Package) string {
 			return pkg.ID
 		})
 		sort.Strings(depIDs)

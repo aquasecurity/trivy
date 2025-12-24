@@ -10,7 +10,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	goversion "github.com/aquasecurity/go-version/pkg/version"
@@ -22,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func init() {
@@ -223,7 +223,7 @@ func (a pipLibraryAnalyzer) sortPythonDirs(entries []os.DirEntry) []string {
 	// Sort Python version
 	sort.Sort(goversion.Collection(pythonVers))
 
-	return lo.Map(pythonVers, func(v goversion.Version, _ int) string {
+	return xslices.Map(pythonVers, func(v goversion.Version) string {
 		return "python" + v.String()
 	})
 }

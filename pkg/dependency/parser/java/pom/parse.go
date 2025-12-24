@@ -27,6 +27,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 type options struct {
@@ -56,7 +57,7 @@ func WithDefaultRepo(repoURL string, releaseEnabled, snapshotEnabled bool) optio
 
 func WithSettingsRepos(repoURLs []string, releaseEnabled, snapshotEnabled bool) option {
 	return func(opts *options) {
-		opts.settingsRepos = lo.Map(repoURLs, func(repoURL string, _ int) repository {
+		opts.settingsRepos = xslices.Map(repoURLs, func(repoURL string) repository {
 			u, _ := url.Parse(repoURL)
 			return repository{
 				url:             *u,
@@ -209,7 +210,7 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 			}
 
 			// mark its dependencies as "direct"
-			result.dependencies = lo.Map(result.dependencies, func(dep artifact, _ int) artifact {
+			result.dependencies = xslices.Map(result.dependencies, func(dep artifact) artifact {
 				dep.Relationship = ftypes.RelationshipDirect
 				return dep
 			})
@@ -242,7 +243,7 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 
 			// save only dependency names
 			// version will be determined later
-			dependsOn := lo.Map(result.dependencies, func(a artifact, _ int) string {
+			dependsOn := xslices.Map(result.dependencies, func(a artifact) string {
 				return a.Name()
 			})
 			uniqDeps[packageID(art.Name(), art.Version.String())] = dependsOn

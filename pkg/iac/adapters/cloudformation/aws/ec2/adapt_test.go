@@ -253,7 +253,7 @@ Resources:
 						},
 					},
 				},
-				VPCs: []ec2.VPC{},
+				VPCs: nil,
 			},
 		},
 		{
@@ -298,7 +298,7 @@ Resources:
 						},
 					},
 				},
-				VPCs: []ec2.VPC{},
+				VPCs: nil,
 			},
 		},
 		{
@@ -354,7 +354,7 @@ Resources:
 						},
 					},
 				},
-				VPCs: []ec2.VPC{},
+				VPCs: nil,
 			},
 		},
 		{
@@ -383,7 +383,7 @@ Resources:
 						},
 					},
 				},
-				VPCs: []ec2.VPC{},
+				VPCs: nil,
 			},
 		},
 		{

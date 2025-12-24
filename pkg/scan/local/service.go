@@ -26,6 +26,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
@@ -247,7 +248,7 @@ func (s Service) secretsToResults(secrets []ftypes.Secret, options types.ScanOpt
 		results = append(results, types.Result{
 			Target: secret.FilePath,
 			Class:  types.ClassSecret,
-			Secrets: lo.Map(secret.Findings, func(secret ftypes.SecretFinding, _ int) types.DetectedSecret {
+			Secrets: xslices.Map(secret.Findings, func(secret ftypes.SecretFinding) types.DetectedSecret {
 				return types.DetectedSecret(secret)
 			}),
 		})
