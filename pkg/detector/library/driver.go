@@ -1,7 +1,6 @@
 package library
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/samber/lo"
@@ -114,8 +113,8 @@ func (d *Driver) Type() string {
 // It allows us to add a new data source with the ecosystem prefix (e.g. pip::new-data-source)
 // and detect vulnerabilities without specifying a specific bucket name.
 func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
-	// e.g. "pip::", "npm::"
-	prefix := fmt.Sprintf("%s::", d.ecosystem)
+	// Resolve prefix based on package name/version (e.g., "pip::" "npm::", or "seal-pip::")
+	prefix := resolveAdvisoryPrefix(d.ecosystem, pkgName, pkgVer)
 	advisories, err := d.dbc.GetAdvisories(prefix, vulnerability.NormalizePkgName(d.ecosystem, pkgName))
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s advisories: %w", d.ecosystem, err)
