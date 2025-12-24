@@ -26,8 +26,7 @@ func Test_adaptStore(t *testing.T) {
 			}
 `,
 			expected: datalake.Store{
-				Metadata:         iacTypes.NewTestMetadata(),
-				EnableEncryption: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				EnableEncryption: iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -38,8 +37,7 @@ func Test_adaptStore(t *testing.T) {
 			}
 `,
 			expected: datalake.Store{
-				Metadata:         iacTypes.NewTestMetadata(),
-				EnableEncryption: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				EnableEncryption: iacTypes.BoolTest(false),
 			},
 		},
 		{
@@ -49,8 +47,7 @@ func Test_adaptStore(t *testing.T) {
 			}
 `,
 			expected: datalake.Store{
-				Metadata:         iacTypes.NewTestMetadata(),
-				EnableEncryption: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				EnableEncryption: iacTypes.BoolTest(true),
 			},
 		},
 	}

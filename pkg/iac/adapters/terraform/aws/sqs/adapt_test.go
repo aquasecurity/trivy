@@ -39,12 +39,10 @@ func Test_Adapt(t *testing.T) {
 			expected: sqs.SQS{
 				Queues: []sqs.Queue{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
-						QueueURL: iacTypes.String("", iacTypes.NewTestMetadata()),
+						QueueURL: iacTypes.StringTest(""),
 						Encryption: sqs.Encryption{
-							Metadata:          iacTypes.NewTestMetadata(),
-							ManagedEncryption: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							KMSKeyID:          iacTypes.String("", iacTypes.NewTestMetadata()),
+							ManagedEncryption: iacTypes.BoolTest(false),
+							KMSKeyID:          iacTypes.StringTest(""),
 						},
 						Policies: func() []iam.Policy {
 							sb := iamgo.NewStatementBuilder()
@@ -58,13 +56,11 @@ func Test_Adapt(t *testing.T) {
 
 							return []iam.Policy{
 								{
-									Metadata: iacTypes.NewTestMetadata(),
-									Name:     iacTypes.StringDefault("", iacTypes.NewTestMetadata()),
+									Name: iacTypes.StringTest(""),
 									Document: iam.Document{
-										Metadata: iacTypes.NewTestMetadata(),
-										Parsed:   builder.Build(),
+										Parsed: builder.Build(),
 									},
-									Builtin: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+									Builtin: iacTypes.BoolTest(false),
 								},
 							}
 						}(),
@@ -81,12 +77,10 @@ func Test_Adapt(t *testing.T) {
 			expected: sqs.SQS{
 				Queues: []sqs.Queue{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
-						QueueURL: iacTypes.String("", iacTypes.NewTestMetadata()),
+						QueueURL: iacTypes.StringTest(""),
 						Encryption: sqs.Encryption{
-							Metadata:          iacTypes.NewTestMetadata(),
-							ManagedEncryption: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							KMSKeyID:          iacTypes.String("/blah", iacTypes.NewTestMetadata()),
+							ManagedEncryption: iacTypes.BoolTest(false),
+							KMSKeyID:          iacTypes.StringTest("/blah"),
 						},
 						Policies: nil,
 					},

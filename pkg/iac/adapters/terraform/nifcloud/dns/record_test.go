@@ -24,9 +24,8 @@ func Test_adaptRecords(t *testing.T) {
 			}
 `,
 			expected: []dns.Record{{
-				Metadata: iacTypes.NewTestMetadata(),
-				Type:     iacTypes.String("A", iacTypes.NewTestMetadata()),
-				Record:   iacTypes.String("example-record", iacTypes.NewTestMetadata()),
+				Type:   iacTypes.StringTest("A"),
+				Record: iacTypes.StringTest("example-record"),
 			}},
 		},
 		{
@@ -37,9 +36,8 @@ func Test_adaptRecords(t *testing.T) {
 `,
 
 			expected: []dns.Record{{
-				Metadata: iacTypes.NewTestMetadata(),
-				Type:     iacTypes.String("", iacTypes.NewTestMetadata()),
-				Record:   iacTypes.String("", iacTypes.NewTestMetadata()),
+				Type:   iacTypes.StringTest(""),
+				Record: iacTypes.StringTest(""),
 			}},
 		},
 	}

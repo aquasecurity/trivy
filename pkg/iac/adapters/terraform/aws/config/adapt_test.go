@@ -30,8 +30,7 @@ func Test_adaptConfigurationAggregrator(t *testing.T) {
 			}
 `,
 			expected: config.ConfigurationAggregrator{
-				Metadata:         iacTypes.NewTestMetadata(),
-				SourceAllRegions: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				SourceAllRegions: iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -41,8 +40,7 @@ func Test_adaptConfigurationAggregrator(t *testing.T) {
 			}
 `,
 			expected: config.ConfigurationAggregrator{
-				Metadata:         iacTypes.NewTestMetadata(),
-				SourceAllRegions: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				SourceAllRegions: iacTypes.BoolTest(false),
 			},
 		},
 	}

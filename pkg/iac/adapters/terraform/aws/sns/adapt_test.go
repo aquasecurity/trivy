@@ -26,11 +26,9 @@ func Test_adaptTopic(t *testing.T) {
 			}
 `,
 			expected: sns.Topic{
-				Metadata: iacTypes.NewTestMetadata(),
-				ARN:      iacTypes.String("", iacTypes.NewTestMetadata()),
+				ARN: iacTypes.StringTest(""),
 				Encryption: sns.Encryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					KMSKeyID: iacTypes.String("/blah", iacTypes.NewTestMetadata()),
+					KMSKeyID: iacTypes.StringTest("/blah"),
 				},
 			},
 		},
@@ -41,11 +39,9 @@ func Test_adaptTopic(t *testing.T) {
 			}
 `,
 			expected: sns.Topic{
-				Metadata: iacTypes.NewTestMetadata(),
-				ARN:      iacTypes.String("", iacTypes.NewTestMetadata()),
+				ARN: iacTypes.StringTest(""),
 				Encryption: sns.Encryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
+					KMSKeyID: iacTypes.StringTest(""),
 				},
 			},
 		},

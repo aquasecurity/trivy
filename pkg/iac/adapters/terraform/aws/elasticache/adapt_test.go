@@ -34,10 +34,9 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: elasticache.Cluster{
-				Metadata:               iacTypes.NewTestMetadata(),
-				Engine:                 iacTypes.String("redis", iacTypes.NewTestMetadata()),
-				NodeType:               iacTypes.String("cache.m4.large", iacTypes.NewTestMetadata()),
-				SnapshotRetentionLimit: iacTypes.Int(5, iacTypes.NewTestMetadata()),
+				Engine:                 iacTypes.StringTest("redis"),
+				NodeType:               iacTypes.StringTest("cache.m4.large"),
+				SnapshotRetentionLimit: iacTypes.IntTest(5),
 			},
 		},
 		{
@@ -46,10 +45,9 @@ func Test_adaptCluster(t *testing.T) {
 			resource "aws_elasticache_cluster" "example" {
 			}`,
 			expected: elasticache.Cluster{
-				Metadata:               iacTypes.NewTestMetadata(),
-				Engine:                 iacTypes.String("", iacTypes.NewTestMetadata()),
-				NodeType:               iacTypes.String("", iacTypes.NewTestMetadata()),
-				SnapshotRetentionLimit: iacTypes.Int(0, iacTypes.NewTestMetadata()),
+				Engine:                 iacTypes.StringTest(""),
+				NodeType:               iacTypes.StringTest(""),
+				SnapshotRetentionLimit: iacTypes.IntTest(0),
 			},
 		},
 	}
@@ -80,9 +78,8 @@ func Test_adaptReplicationGroup(t *testing.T) {
 		}
 `,
 			expected: elasticache.ReplicationGroup{
-				Metadata:                 iacTypes.NewTestMetadata(),
-				TransitEncryptionEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				AtRestEncryptionEnabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				TransitEncryptionEnabled: iacTypes.BoolTest(true),
+				AtRestEncryptionEnabled:  iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -92,9 +89,8 @@ func Test_adaptReplicationGroup(t *testing.T) {
 		}
 `,
 			expected: elasticache.ReplicationGroup{
-				Metadata:                 iacTypes.NewTestMetadata(),
-				TransitEncryptionEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				AtRestEncryptionEnabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				TransitEncryptionEnabled: iacTypes.BoolTest(false),
+				AtRestEncryptionEnabled:  iacTypes.BoolTest(false),
 			},
 		},
 	}
@@ -128,8 +124,7 @@ func Test_adaptSecurityGroup(t *testing.T) {
 			}			
 `,
 			expected: elasticache.SecurityGroup{
-				Metadata:    iacTypes.NewTestMetadata(),
-				Description: iacTypes.String("something", iacTypes.NewTestMetadata()),
+				Description: iacTypes.StringTest("something"),
 			},
 		},
 		{
@@ -144,8 +139,7 @@ func Test_adaptSecurityGroup(t *testing.T) {
 			}
 `,
 			expected: elasticache.SecurityGroup{
-				Metadata:    iacTypes.NewTestMetadata(),
-				Description: iacTypes.String("Managed by Terraform", iacTypes.NewTestMetadata()),
+				Description: iacTypes.StringTest("Managed by Terraform"),
 			},
 		},
 	}

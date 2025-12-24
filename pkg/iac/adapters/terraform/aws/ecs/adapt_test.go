@@ -31,8 +31,7 @@ func Test_adaptClusterSettings(t *testing.T) {
 			}
 `,
 			expected: ecs.ClusterSettings{
-				Metadata:                 iacTypes.NewTestMetadata(),
-				ContainerInsightsEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				ContainerInsightsEnabled: iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -48,8 +47,7 @@ func Test_adaptClusterSettings(t *testing.T) {
 			}
 `,
 			expected: ecs.ClusterSettings{
-				Metadata:                 iacTypes.NewTestMetadata(),
-				ContainerInsightsEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				ContainerInsightsEnabled: iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -65,8 +63,7 @@ func Test_adaptClusterSettings(t *testing.T) {
 			}
 `,
 			expected: ecs.ClusterSettings{
-				Metadata:                 iacTypes.NewTestMetadata(),
-				ContainerInsightsEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				ContainerInsightsEnabled: iacTypes.BoolTest(false),
 			},
 		},
 		{
@@ -76,8 +73,7 @@ func Test_adaptClusterSettings(t *testing.T) {
 			}
 `,
 			expected: ecs.ClusterSettings{
-				Metadata:                 iacTypes.NewTestMetadata(),
-				ContainerInsightsEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				ContainerInsightsEnabled: iacTypes.BoolTest(false),
 			},
 		},
 	}
@@ -127,25 +123,21 @@ func Test_adaptTaskDefinitionResource(t *testing.T) {
 			  }
 `,
 			expected: ecs.TaskDefinition{
-				Metadata: iacTypes.NewTestMetadata(),
 				Volumes: []ecs.Volume{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						EFSVolumeConfiguration: ecs.EFSVolumeConfiguration{
-							Metadata:                 iacTypes.NewTestMetadata(),
-							TransitEncryptionEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							TransitEncryptionEnabled: iacTypes.BoolTest(true),
 						},
 					},
 				},
 				ContainerDefinitions: []ecs.ContainerDefinition{
 					{
-						Metadata:   iacTypes.NewTestMetadata(),
-						Name:       iacTypes.String("my_service", iacTypes.NewTestMetadata()),
-						Image:      iacTypes.String("my_image", iacTypes.NewTestMetadata()),
-						CPU:        iacTypes.String("2", iacTypes.NewTestMetadata()),
-						Memory:     iacTypes.String("256", iacTypes.NewTestMetadata()),
-						Essential:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-						Privileged: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						Name:       iacTypes.StringTest("my_service"),
+						Image:      iacTypes.StringTest("my_image"),
+						CPU:        iacTypes.StringTest("2"),
+						Memory:     iacTypes.StringTest("256"),
+						Essential:  iacTypes.BoolTest(true),
+						Privileged: iacTypes.BoolTest(false),
 						Environment: []ecs.EnvVar{
 							{
 								Name:  iacTypes.StringTest("ENVIRONMENT"),
@@ -169,14 +161,11 @@ func Test_adaptTaskDefinitionResource(t *testing.T) {
 			  }
 `,
 			expected: ecs.TaskDefinition{
-				Metadata: iacTypes.NewTestMetadata(),
 				Volumes: []ecs.Volume{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						EFSVolumeConfiguration: ecs.EFSVolumeConfiguration{
 
-							Metadata:                 iacTypes.NewTestMetadata(),
-							TransitEncryptionEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							TransitEncryptionEnabled: iacTypes.BoolTest(false),
 						},
 					},
 				},

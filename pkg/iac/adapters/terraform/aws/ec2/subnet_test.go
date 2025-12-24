@@ -27,8 +27,7 @@ func Test_adaptSubnet(t *testing.T) {
 			}
 `,
 			expected: ec2.Subnet{
-				Metadata:            iacTypes.NewTestMetadata(),
-				MapPublicIpOnLaunch: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				MapPublicIpOnLaunch: iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -40,8 +39,7 @@ func Test_adaptSubnet(t *testing.T) {
 			}
 `,
 			expected: ec2.Subnet{
-				Metadata:            iacTypes.NewTestMetadata(),
-				MapPublicIpOnLaunch: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				MapPublicIpOnLaunch: iacTypes.BoolTest(false),
 			},
 		},
 		{
@@ -52,8 +50,7 @@ func Test_adaptSubnet(t *testing.T) {
 			}
 `,
 			expected: ec2.Subnet{
-				Metadata:            iacTypes.NewTestMetadata(),
-				MapPublicIpOnLaunch: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				MapPublicIpOnLaunch: iacTypes.BoolTest(false),
 			},
 		},
 	}

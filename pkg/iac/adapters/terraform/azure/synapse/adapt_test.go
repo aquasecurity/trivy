@@ -26,8 +26,7 @@ func Test_adaptWorkspace(t *testing.T) {
 			}
 `,
 			expected: synapse.Workspace{
-				Metadata:                    iacTypes.NewTestMetadata(),
-				EnableManagedVirtualNetwork: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				EnableManagedVirtualNetwork: iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -38,8 +37,7 @@ func Test_adaptWorkspace(t *testing.T) {
 			}
 `,
 			expected: synapse.Workspace{
-				Metadata:                    iacTypes.NewTestMetadata(),
-				EnableManagedVirtualNetwork: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				EnableManagedVirtualNetwork: iacTypes.BoolTest(false),
 			},
 		},
 		{
@@ -49,8 +47,7 @@ func Test_adaptWorkspace(t *testing.T) {
 			}
 `,
 			expected: synapse.Workspace{
-				Metadata:                    iacTypes.NewTestMetadata(),
-				EnableManagedVirtualNetwork: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				EnableManagedVirtualNetwork: iacTypes.BoolTest(false),
 			},
 		},
 	}

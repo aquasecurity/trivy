@@ -36,19 +36,15 @@ func Test_adaptProject(t *testing.T) {
 			}
 `,
 			expected: codebuild.Project{
-				Metadata: iacTypes.NewTestMetadata(),
 				ArtifactSettings: codebuild.ArtifactSettings{
-					Metadata:          iacTypes.NewTestMetadata(),
-					EncryptionEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					EncryptionEnabled: iacTypes.BoolTest(true),
 				},
 				SecondaryArtifactSettings: []codebuild.ArtifactSettings{
 					{
-						Metadata:          iacTypes.NewTestMetadata(),
-						EncryptionEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						EncryptionEnabled: iacTypes.BoolTest(true),
 					},
 					{
-						Metadata:          iacTypes.NewTestMetadata(),
-						EncryptionEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						EncryptionEnabled: iacTypes.BoolTest(false),
 					},
 				},
 			},
@@ -60,10 +56,8 @@ func Test_adaptProject(t *testing.T) {
 			}
 `,
 			expected: codebuild.Project{
-				Metadata: iacTypes.NewTestMetadata(),
 				ArtifactSettings: codebuild.ArtifactSettings{
-					Metadata:          iacTypes.NewTestMetadata(),
-					EncryptionEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					EncryptionEnabled: iacTypes.BoolTest(true),
 				},
 			},
 		},

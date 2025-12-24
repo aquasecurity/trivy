@@ -29,8 +29,7 @@ func TestFields(t *testing.T) {
 				Compute: openstack.Compute{
 					Instances: []openstack.Instance{
 						{
-							Metadata:      iacTypes.NewTestMetadata(),
-							AdminPassword: iacTypes.String("N0tSoS3cretP4ssw0rd", iacTypes.NewTestMetadata()),
+							AdminPassword: iacTypes.StringTest("N0tSoS3cretP4ssw0rd"),
 						},
 					},
 				},
@@ -45,8 +44,7 @@ func TestFields(t *testing.T) {
 				Compute: openstack.Compute{
 					Instances: []openstack.Instance{
 						{
-							Metadata:      iacTypes.NewTestMetadata(),
-							AdminPassword: iacTypes.String("", iacTypes.NewTestMetadata()),
+							AdminPassword: iacTypes.StringTest(""),
 						},
 					},
 				},
@@ -68,12 +66,11 @@ func TestFields(t *testing.T) {
 					Firewall: openstack.Firewall{
 						AllowRules: []openstack.FirewallRule{
 							{
-								Metadata:        iacTypes.NewTestMetadata(),
-								Enabled:         iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-								Destination:     iacTypes.String("10.10.10.1", iacTypes.NewTestMetadata()),
-								Source:          iacTypes.String("10.10.10.2", iacTypes.NewTestMetadata()),
-								DestinationPort: iacTypes.String("22", iacTypes.NewTestMetadata()),
-								SourcePort:      iacTypes.String("", iacTypes.NewTestMetadata()),
+								Enabled:         iacTypes.BoolTest(true),
+								Destination:     iacTypes.StringTest("10.10.10.1"),
+								Source:          iacTypes.StringTest("10.10.10.2"),
+								DestinationPort: iacTypes.StringTest("22"),
+								SourcePort:      iacTypes.StringTest(""),
 							},
 						},
 					},

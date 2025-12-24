@@ -29,8 +29,7 @@ func Test_adaptFactory(t *testing.T) {
 			  }
 `,
 			expected: datafactory.Factory{
-				Metadata:            iacTypes.NewTestMetadata(),
-				EnablePublicNetwork: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				EnablePublicNetwork: iacTypes.BoolTest(false),
 			},
 		},
 		{
@@ -41,8 +40,7 @@ func Test_adaptFactory(t *testing.T) {
 			  }
 `,
 			expected: datafactory.Factory{
-				Metadata:            iacTypes.NewTestMetadata(),
-				EnablePublicNetwork: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				EnablePublicNetwork: iacTypes.BoolTest(true),
 			},
 		},
 	}

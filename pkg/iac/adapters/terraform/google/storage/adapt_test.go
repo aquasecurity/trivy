@@ -48,40 +48,34 @@ func Test_Adapt(t *testing.T) {
 			expected: storage.Storage{
 				Buckets: []storage.Bucket{
 					{
-						Metadata:                       iacTypes.NewTestMetadata(),
-						Name:                           iacTypes.String("image-store.com", iacTypes.NewTestMetadata()),
-						Location:                       iacTypes.String("EU", iacTypes.NewTestMetadata()),
-						EnableUniformBucketLevelAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						Name:                           iacTypes.StringTest("image-store.com"),
+						Location:                       iacTypes.StringTest("EU"),
+						EnableUniformBucketLevelAccess: iacTypes.BoolTest(true),
 						Bindings: []iam.Binding{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
 								Members: []iacTypes.StringValue{
-									iacTypes.String("group:test@example.com", iacTypes.NewTestMetadata()),
+									iacTypes.StringTest("group:test@example.com"),
 								},
-								Role:                          iacTypes.String("roles/storage.admin #1", iacTypes.NewTestMetadata()),
-								IncludesDefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+								Role:                          iacTypes.StringTest("roles/storage.admin #1"),
+								IncludesDefaultServiceAccount: iacTypes.BoolTest(false),
 							},
 						},
 						Members: []iam.Member{
 							{
-								Metadata:              iacTypes.NewTestMetadata(),
-								Member:                iacTypes.String("serviceAccount:test@example.com", iacTypes.NewTestMetadata()),
-								Role:                  iacTypes.String("roles/storage.admin #2", iacTypes.NewTestMetadata()),
-								DefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+								Member:                iacTypes.StringTest("serviceAccount:test@example.com"),
+								Role:                  iacTypes.StringTest("roles/storage.admin #2"),
+								DefaultServiceAccount: iacTypes.BoolTest(false),
 							},
 						},
 						Encryption: storage.BucketEncryption{
-							Metadata:          iacTypes.NewTestMetadata(),
-							DefaultKMSKeyName: iacTypes.String("default-kms-key-name", iacTypes.NewTestMetadata()),
+							DefaultKMSKeyName: iacTypes.StringTest("default-kms-key-name"),
 						},
 						Logging: storage.BucketLogging{
-							Metadata:        iacTypes.NewTestMetadata(),
-							LogBucket:       iacTypes.String("", iacTypes.NewTestMetadata()),
-							LogObjectPrefix: iacTypes.String("", iacTypes.NewTestMetadata()),
+							LogBucket:       iacTypes.StringTest(""),
+							LogObjectPrefix: iacTypes.StringTest(""),
 						},
 						Versioning: storage.BucketVersioning{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(false),
 						},
 					},
 				},
@@ -103,37 +97,31 @@ func Test_Adapt(t *testing.T) {
 			expected: storage.Storage{
 				Buckets: []storage.Bucket{
 					{
-						Metadata:                       iacTypes.NewTestMetadata(),
-						Name:                           iacTypes.String("", iacTypes.NewTestMetadata()),
-						Location:                       iacTypes.String("", iacTypes.NewTestMetadata()),
-						EnableUniformBucketLevelAccess: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						Name:                           iacTypes.StringTest(""),
+						Location:                       iacTypes.StringTest(""),
+						EnableUniformBucketLevelAccess: iacTypes.BoolTest(false),
 						Bindings: []iam.Binding{
 							{
-								Metadata:                      iacTypes.NewTestMetadata(),
-								Role:                          iacTypes.String("", iacTypes.NewTestMetadata()),
-								IncludesDefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+								Role:                          iacTypes.StringTest(""),
+								IncludesDefaultServiceAccount: iacTypes.BoolTest(false),
 							},
 						},
 						Members: []iam.Member{
 							{
-								Metadata:              iacTypes.NewTestMetadata(),
-								Member:                iacTypes.String("", iacTypes.NewTestMetadata()),
-								Role:                  iacTypes.String("", iacTypes.NewTestMetadata()),
-								DefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+								Member:                iacTypes.StringTest(""),
+								Role:                  iacTypes.StringTest(""),
+								DefaultServiceAccount: iacTypes.BoolTest(false),
 							},
 						},
 						Encryption: storage.BucketEncryption{
-							Metadata:          iacTypes.NewTestMetadata(),
-							DefaultKMSKeyName: iacTypes.String("", iacTypes.NewTestMetadata()),
+							DefaultKMSKeyName: iacTypes.StringTest(""),
 						},
 						Logging: storage.BucketLogging{
-							Metadata:        iacTypes.NewTestMetadata(),
-							LogBucket:       iacTypes.String("", iacTypes.NewTestMetadata()),
-							LogObjectPrefix: iacTypes.String("", iacTypes.NewTestMetadata()),
+							LogBucket:       iacTypes.StringTest(""),
+							LogObjectPrefix: iacTypes.StringTest(""),
 						},
 						Versioning: storage.BucketVersioning{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(false),
 						},
 					},
 				},
@@ -157,24 +145,20 @@ func Test_Adapt(t *testing.T) {
 			expected: storage.Storage{
 				Buckets: []storage.Bucket{
 					{
-						Metadata:                       iacTypes.NewTestMetadata(),
-						Name:                           iacTypes.String("example-bucket", iacTypes.NewTestMetadata()),
-						Location:                       iacTypes.String("US", iacTypes.NewTestMetadata()),
-						EnableUniformBucketLevelAccess: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						Name:                           iacTypes.StringTest("example-bucket"),
+						Location:                       iacTypes.StringTest("US"),
+						EnableUniformBucketLevelAccess: iacTypes.BoolTest(false),
 						Members:                        nil,
 						Bindings:                       nil,
 						Encryption: storage.BucketEncryption{
-							Metadata:          iacTypes.NewTestMetadata(),
-							DefaultKMSKeyName: iacTypes.String("", iacTypes.NewTestMetadata()),
+							DefaultKMSKeyName: iacTypes.StringTest(""),
 						},
 						Logging: storage.BucketLogging{
-							Metadata:        iacTypes.NewTestMetadata(),
-							LogBucket:       iacTypes.String("access-logs-bucket", iacTypes.NewTestMetadata()),
-							LogObjectPrefix: iacTypes.String("", iacTypes.NewTestMetadata()),
+							LogBucket:       iacTypes.StringTest("access-logs-bucket"),
+							LogObjectPrefix: iacTypes.StringTest(""),
 						},
 						Versioning: storage.BucketVersioning{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(true),
 						},
 					},
 				},
@@ -195,24 +179,20 @@ func Test_Adapt(t *testing.T) {
 			expected: storage.Storage{
 				Buckets: []storage.Bucket{
 					{
-						Metadata:                       iacTypes.NewTestMetadata(),
-						Name:                           iacTypes.String("example-bucket", iacTypes.NewTestMetadata()),
-						Location:                       iacTypes.String("US", iacTypes.NewTestMetadata()),
-						EnableUniformBucketLevelAccess: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						Name:                           iacTypes.StringTest("example-bucket"),
+						Location:                       iacTypes.StringTest("US"),
+						EnableUniformBucketLevelAccess: iacTypes.BoolTest(false),
 						Members:                        nil,
 						Bindings:                       nil,
 						Encryption: storage.BucketEncryption{
-							Metadata:          iacTypes.NewTestMetadata(),
-							DefaultKMSKeyName: iacTypes.String("", iacTypes.NewTestMetadata()),
+							DefaultKMSKeyName: iacTypes.StringTest(""),
 						},
 						Logging: storage.BucketLogging{
-							Metadata:        iacTypes.NewTestMetadata(),
-							LogBucket:       iacTypes.String("access-logs-bucket", iacTypes.NewTestMetadata()),
-							LogObjectPrefix: iacTypes.String("access-logs/", iacTypes.NewTestMetadata()),
+							LogBucket:       iacTypes.StringTest("access-logs-bucket"),
+							LogObjectPrefix: iacTypes.StringTest("access-logs/"),
 						},
 						Versioning: storage.BucketVersioning{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(false),
 						},
 					},
 				},

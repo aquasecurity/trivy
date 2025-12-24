@@ -47,24 +47,19 @@ func Test_adaptDomain(t *testing.T) {
 			expected: elasticsearch.Elasticsearch{
 				Domains: []elasticsearch.Domain{
 					{
-						Metadata:   iacTypes.NewTestMetadata(),
-						DomainName: iacTypes.String("domain-foo", iacTypes.NewTestMetadata()),
+						DomainName: iacTypes.StringTest("domain-foo"),
 						LogPublishing: elasticsearch.LogPublishing{
-							Metadata:     iacTypes.NewTestMetadata(),
-							AuditEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							AuditEnabled: iacTypes.BoolTest(true),
 						},
 						TransitEncryption: elasticsearch.TransitEncryption{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(true),
 						},
 						AtRestEncryption: elasticsearch.AtRestEncryption{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(true),
 						},
 						Endpoint: elasticsearch.Endpoint{
-							Metadata:     iacTypes.NewTestMetadata(),
-							EnforceHTTPS: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							TLSPolicy:    iacTypes.String("Policy-Min-TLS-1-2-2019-07", iacTypes.NewTestMetadata()),
+							EnforceHTTPS: iacTypes.BoolTest(true),
+							TLSPolicy:    iacTypes.StringTest("Policy-Min-TLS-1-2-2019-07"),
 						},
 					},
 				},
@@ -79,24 +74,19 @@ func Test_adaptDomain(t *testing.T) {
 			expected: elasticsearch.Elasticsearch{
 				Domains: []elasticsearch.Domain{
 					{
-						Metadata:   iacTypes.NewTestMetadata(),
-						DomainName: iacTypes.String("", iacTypes.NewTestMetadata()),
+						DomainName: iacTypes.StringTest(""),
 						LogPublishing: elasticsearch.LogPublishing{
-							Metadata:     iacTypes.NewTestMetadata(),
-							AuditEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							AuditEnabled: iacTypes.BoolTest(false),
 						},
 						TransitEncryption: elasticsearch.TransitEncryption{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(false),
 						},
 						AtRestEncryption: elasticsearch.AtRestEncryption{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(false),
 						},
 						Endpoint: elasticsearch.Endpoint{
-							Metadata:     iacTypes.NewTestMetadata(),
-							EnforceHTTPS: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							TLSPolicy:    iacTypes.String("", iacTypes.NewTestMetadata()),
+							EnforceHTTPS: iacTypes.BoolTest(false),
+							TLSPolicy:    iacTypes.StringTest(""),
 						},
 					},
 				},
@@ -129,24 +119,19 @@ func Test_adaptDomain(t *testing.T) {
 			expected: elasticsearch.Elasticsearch{
 				Domains: []elasticsearch.Domain{
 					{
-						Metadata:   iacTypes.NewTestMetadata(),
-						DomainName: iacTypes.String("example", iacTypes.NewTestMetadata()),
+						DomainName: iacTypes.StringTest("example"),
 						LogPublishing: elasticsearch.LogPublishing{
-							Metadata:     iacTypes.NewTestMetadata(),
-							AuditEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							AuditEnabled: iacTypes.BoolTest(true),
 						},
 						TransitEncryption: elasticsearch.TransitEncryption{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(true),
 						},
 						AtRestEncryption: elasticsearch.AtRestEncryption{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(true),
 						},
 						Endpoint: elasticsearch.Endpoint{
-							Metadata:     iacTypes.NewTestMetadata(),
-							EnforceHTTPS: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							TLSPolicy:    iacTypes.String("Policy-Min-TLS-1-2-2019-07", iacTypes.NewTestMetadata()),
+							EnforceHTTPS: iacTypes.BoolTest(true),
+							TLSPolicy:    iacTypes.StringTest("Policy-Min-TLS-1-2-2019-07"),
 						},
 					},
 				},

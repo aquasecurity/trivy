@@ -131,26 +131,23 @@ func Test_Adapt(t *testing.T) {
 			expected: network.Network{
 				NetworkInterfaces: []network.NetworkInterface{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						// legacy fields filled from primary
-						SubnetID:        iacTypes.String("subnet-primary-id", iacTypes.NewTestMetadata()),
-						HasPublicIP:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-						PublicIPAddress: iacTypes.String("public-ip-primary-id", iacTypes.NewTestMetadata()),
+						SubnetID:        iacTypes.StringTest("subnet-primary-id"),
+						HasPublicIP:     iacTypes.BoolTest(true),
+						PublicIPAddress: iacTypes.StringTest("public-ip-primary-id"),
 
 						IPConfigurations: []network.IPConfiguration{
 							{
-								Metadata:        iacTypes.NewTestMetadata(),
-								SubnetID:        iacTypes.String("subnet-primary-id", iacTypes.NewTestMetadata()),
-								Primary:         iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-								HasPublicIP:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-								PublicIPAddress: iacTypes.String("public-ip-primary-id", iacTypes.NewTestMetadata()),
+								SubnetID:        iacTypes.StringTest("subnet-primary-id"),
+								Primary:         iacTypes.BoolTest(true),
+								HasPublicIP:     iacTypes.BoolTest(true),
+								PublicIPAddress: iacTypes.StringTest("public-ip-primary-id"),
 							},
 							{
-								Metadata:        iacTypes.NewTestMetadata(),
-								SubnetID:        iacTypes.String("subnet-secondary-id", iacTypes.NewTestMetadata()),
-								Primary:         iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-								HasPublicIP:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-								PublicIPAddress: iacTypes.String("", iacTypes.NewTestMetadata()),
+								SubnetID:        iacTypes.StringTest("subnet-secondary-id"),
+								Primary:         iacTypes.BoolTest(false),
+								HasPublicIP:     iacTypes.BoolTest(false),
+								PublicIPAddress: iacTypes.StringTest(""),
 							},
 						},
 					},

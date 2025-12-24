@@ -31,11 +31,10 @@ func Test_adaptLogGroups(t *testing.T) {
 `,
 			expected: []cloudwatch.LogGroup{
 				{
-					Metadata:        iacTypes.NewTestMetadata(),
-					Arn:             iacTypes.String("", iacTypes.NewTestMetadata()),
-					Name:            iacTypes.String("my-group", iacTypes.NewTestMetadata()),
-					KMSKeyID:        iacTypes.String("aws_kms_key.log_key", iacTypes.NewTestMetadata()),
-					RetentionInDays: iacTypes.Int(0, iacTypes.NewTestMetadata()),
+					Arn:             iacTypes.StringTest(""),
+					Name:            iacTypes.StringTest("my-group"),
+					KMSKeyID:        iacTypes.StringTest("aws_kms_key.log_key"),
+					RetentionInDays: iacTypes.IntTest(0),
 					MetricFilters:   nil,
 				},
 			},
@@ -50,11 +49,10 @@ func Test_adaptLogGroups(t *testing.T) {
 `,
 			expected: []cloudwatch.LogGroup{
 				{
-					Metadata:        iacTypes.NewTestMetadata(),
-					Arn:             iacTypes.String("", iacTypes.NewTestMetadata()),
-					Name:            iacTypes.String("my-group", iacTypes.NewTestMetadata()),
-					KMSKeyID:        iacTypes.String("key-as-string", iacTypes.NewTestMetadata()),
-					RetentionInDays: iacTypes.Int(0, iacTypes.NewTestMetadata()),
+					Arn:             iacTypes.StringTest(""),
+					Name:            iacTypes.StringTest("my-group"),
+					KMSKeyID:        iacTypes.StringTest("key-as-string"),
+					RetentionInDays: iacTypes.IntTest(0),
 				},
 			},
 		},
@@ -68,11 +66,10 @@ func Test_adaptLogGroups(t *testing.T) {
 `,
 			expected: []cloudwatch.LogGroup{
 				{
-					Metadata:        iacTypes.NewTestMetadata(),
-					Arn:             iacTypes.String("", iacTypes.NewTestMetadata()),
-					Name:            iacTypes.String("my-group", iacTypes.NewTestMetadata()),
-					KMSKeyID:        iacTypes.String("", iacTypes.NewTestMetadata()),
-					RetentionInDays: iacTypes.Int(3, iacTypes.NewTestMetadata()),
+					Arn:             iacTypes.StringTest(""),
+					Name:            iacTypes.StringTest("my-group"),
+					KMSKeyID:        iacTypes.StringTest(""),
+					RetentionInDays: iacTypes.IntTest(3),
 				},
 			},
 		},

@@ -28,13 +28,11 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: dynamodb.DAXCluster{
-				Metadata: iacTypes.NewTestMetadata(),
 				ServerSideEncryption: dynamodb.ServerSideEncryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
+					Enabled:  iacTypes.BoolTest(true),
+					KMSKeyID: iacTypes.StringTest(""),
 				},
-				PointInTimeRecovery: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				PointInTimeRecovery: iacTypes.BoolTest(false),
 			},
 		},
 	}
@@ -71,13 +69,11 @@ func Test_adaptTable(t *testing.T) {
 			}
 `,
 			expected: dynamodb.Table{
-				Metadata: iacTypes.NewTestMetadata(),
 				ServerSideEncryption: dynamodb.ServerSideEncryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					KMSKeyID: iacTypes.String("key-string", iacTypes.NewTestMetadata()),
+					Enabled:  iacTypes.BoolTest(true),
+					KMSKeyID: iacTypes.StringTest("key-string"),
 				},
-				PointInTimeRecovery: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				PointInTimeRecovery: iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -90,13 +86,11 @@ func Test_adaptTable(t *testing.T) {
 			  }
 `,
 			expected: dynamodb.Table{
-				Metadata: iacTypes.NewTestMetadata(),
 				ServerSideEncryption: dynamodb.ServerSideEncryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					KMSKeyID: iacTypes.String(dynamodb.DefaultKMSKeyID, iacTypes.NewTestMetadata()),
+					Enabled:  iacTypes.BoolTest(true),
+					KMSKeyID: iacTypes.StringTest(dynamodb.DefaultKMSKeyID),
 				},
-				PointInTimeRecovery: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				PointInTimeRecovery: iacTypes.BoolTest(false),
 			},
 		},
 		{
@@ -115,13 +109,11 @@ func Test_adaptTable(t *testing.T) {
 			  }
 `,
 			expected: dynamodb.Table{
-				Metadata: iacTypes.NewTestMetadata(),
 				ServerSideEncryption: dynamodb.ServerSideEncryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					KMSKeyID: iacTypes.String("aws_kms_key.a", iacTypes.NewTestMetadata()),
+					Enabled:  iacTypes.BoolTest(true),
+					KMSKeyID: iacTypes.StringTest("aws_kms_key.a"),
 				},
-				PointInTimeRecovery: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				PointInTimeRecovery: iacTypes.BoolTest(false),
 			},
 		},
 	}

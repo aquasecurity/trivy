@@ -28,8 +28,7 @@ func Test_adaptFileSystem(t *testing.T) {
 			  }
 `,
 			expected: efs.FileSystem{
-				Metadata:  iacTypes.NewTestMetadata(),
-				Encrypted: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				Encrypted: iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -39,8 +38,7 @@ func Test_adaptFileSystem(t *testing.T) {
 			  }
 `,
 			expected: efs.FileSystem{
-				Metadata:  iacTypes.NewTestMetadata(),
-				Encrypted: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				Encrypted: iacTypes.BoolTest(false),
 			},
 		},
 	}

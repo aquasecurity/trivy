@@ -37,12 +37,10 @@ func Test_Adapt(t *testing.T) {
 			expected: keyvault.KeyVault{
 				Vaults: []keyvault.Vault{
 					{
-						Metadata:                iacTypes.NewTestMetadata(),
-						EnablePurgeProtection:   iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-						SoftDeleteRetentionDays: iacTypes.Int(7, iacTypes.NewTestMetadata()),
+						EnablePurgeProtection:   iacTypes.BoolTest(true),
+						SoftDeleteRetentionDays: iacTypes.IntTest(7),
 						NetworkACLs: keyvault.NetworkACLs{
-							Metadata:      iacTypes.NewTestMetadata(),
-							DefaultAction: iacTypes.String("Deny", iacTypes.NewTestMetadata()),
+							DefaultAction: iacTypes.StringTest("Deny"),
 						},
 					},
 				},
@@ -57,12 +55,10 @@ func Test_Adapt(t *testing.T) {
 			expected: keyvault.KeyVault{
 				Vaults: []keyvault.Vault{
 					{
-						Metadata:                iacTypes.NewTestMetadata(),
-						EnablePurgeProtection:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						SoftDeleteRetentionDays: iacTypes.Int(0, iacTypes.NewTestMetadata()),
+						EnablePurgeProtection:   iacTypes.BoolTest(false),
+						SoftDeleteRetentionDays: iacTypes.IntTest(0),
 						NetworkACLs: keyvault.NetworkACLs{
-							Metadata:      iacTypes.NewTestMetadata(),
-							DefaultAction: iacTypes.String("", iacTypes.NewTestMetadata()),
+							DefaultAction: iacTypes.StringTest(""),
 						},
 					},
 				},
@@ -92,9 +88,8 @@ func Test_adaptSecret(t *testing.T) {
 			}
 `,
 			expected: keyvault.Secret{
-				Metadata:    iacTypes.NewTestMetadata(),
-				ContentType: iacTypes.String("", iacTypes.NewTestMetadata()),
-				ExpiryDate:  iacTypes.Time(time.Time{}, iacTypes.NewTestMetadata()),
+				ContentType: iacTypes.StringTest(""),
+				ExpiryDate:  iacTypes.TimeTest(time.Time{}),
 			},
 		},
 		{
@@ -106,12 +101,11 @@ func Test_adaptSecret(t *testing.T) {
 			}
 `,
 			expected: keyvault.Secret{
-				Metadata:    iacTypes.NewTestMetadata(),
-				ContentType: iacTypes.String("password", iacTypes.NewTestMetadata()),
-				ExpiryDate: iacTypes.Time(func(timeVal string) time.Time {
+				ContentType: iacTypes.StringTest("password"),
+				ExpiryDate: iacTypes.TimeTest(func(timeVal string) time.Time {
 					parsed, _ := time.Parse(time.RFC3339, timeVal)
 					return parsed
-				}("1982-12-31T00:00:00Z"), iacTypes.NewTestMetadata())},
+				}("1982-12-31T00:00:00Z"))},
 		},
 	}
 
@@ -139,11 +133,10 @@ func Test_adaptKey(t *testing.T) {
 			}
 `,
 			expected: keyvault.Key{
-				Metadata: iacTypes.NewTestMetadata(),
-				ExpiryDate: iacTypes.Time(func(timeVal string) time.Time {
+				ExpiryDate: iacTypes.TimeTest(func(timeVal string) time.Time {
 					parsed, _ := time.Parse(time.RFC3339, timeVal)
 					return parsed
-				}("1982-12-31T00:00:00Z"), iacTypes.NewTestMetadata()),
+				}("1982-12-31T00:00:00Z")),
 			},
 		},
 		{
@@ -153,8 +146,7 @@ func Test_adaptKey(t *testing.T) {
 			}
 `,
 			expected: keyvault.Key{
-				Metadata:   iacTypes.NewTestMetadata(),
-				ExpiryDate: iacTypes.Time(time.Time{}, iacTypes.NewTestMetadata()),
+				ExpiryDate: iacTypes.TimeTest(time.Time{}),
 			},
 		},
 		{
@@ -196,10 +188,7 @@ resource "azurerm_key_vault_key" "this" {
   expiration_date = time_offset.expiry.rfc3339
 }
 `,
-			expected: keyvault.Key{
-				Metadata:   iacTypes.NewTestMetadata(),
-				ExpiryDate: iacTypes.TimeUnresolvable(iacTypes.NewTestMetadata()),
-			},
+			expected: keyvault.Key{},
 		},
 	}
 
