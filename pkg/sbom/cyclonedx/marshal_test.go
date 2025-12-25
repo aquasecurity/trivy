@@ -615,6 +615,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000004",
 						Dependencies: &[]string{
+							"3ff14136-e09f-4df9-80ea-000000000005",
 							"pkg:gem/actioncontroller@7.0.0",
 						},
 					},
@@ -1181,6 +1182,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
 							"pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011&epoch=1",
+							"pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
 						},
 					},
 					{
