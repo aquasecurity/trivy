@@ -392,9 +392,7 @@ func (a Artifact) saveLayer(diffID string) (int64, error) {
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
 	layerKeyMap map[string]types.Layer, configFile *v1.ConfigFile) error {
 
-	// Merge OS info from layers in order
 	var osFound types.OS
-
 	p := parallel.NewPipeline(a.artifactOption.Parallel, false, layerKeys, func(ctx context.Context,
 		layerKey string) (any, error) {
 		layer := layerKeyMap[layerKey]
