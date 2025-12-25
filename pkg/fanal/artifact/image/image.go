@@ -410,12 +410,14 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 		if err = a.cache.PutBlob(ctx, layerKey, layerInfo); err != nil {
 			return nil, xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
 		}
-		if lo.IsNotEmpty(layerInfo.OS) {
-			osFound = layerInfo.OS
-		}
-		return nil, nil
+		return layerInfo.OS, nil
 
-	}, nil)
+	}, func(res any) error {
+		// To avoid race condition, merge OS info in the onResult function (main goroutine)
+		osInfo := res.(types.OS)
+		osFound.Merge(osInfo)
+		return nil
+	})
 
 	if err := p.Do(ctx); err != nil {
 		return xerrors.Errorf("pipeline error: %w", err)
