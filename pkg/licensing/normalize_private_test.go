@@ -3,8 +3,9 @@ package licensing
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 )
 
 // All map keys must be standardized to be matched
