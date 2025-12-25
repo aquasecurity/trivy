@@ -51,7 +51,7 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2024-13176", // Debian and Root.io contain this CVE
 					InstalledVersion: "3.0.15-1~deb12u1.root.io.0",
 					FixedVersion:     "3.0.15-1~deb12u1.root.io.1, 3.0.16-1~deb12u1",
-					SeveritySource:   vulnerability.Debian,
+					SeveritySource:   vulnerability.RootIO,
 					DataSource: &dbTypes.DataSource{
 						ID:     vulnerability.RootIO,
 						BaseID: vulnerability.Debian,
@@ -103,11 +103,15 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2023-44487",
 					InstalledVersion: "1.22.1-9+deb12u2.root.io.0",
 					FixedVersion:     "1.22.1-9+deb12u2.root.io.1",
+					SeveritySource:   vulnerability.RootIO,
 					DataSource: &dbTypes.DataSource{
 						ID:     vulnerability.RootIO,
 						BaseID: vulnerability.Ubuntu,
 						Name:   "Root.io Security Patches (ubuntu)",
 						URL:    "https://api.root.io/external/patch_feed",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
 					},
 				},
 			},

@@ -68,10 +68,13 @@ image:
 You can customize which files Trivy scans and how it interprets them with the `--file-patterns` flag.
 A file pattern configuration takes the following form: `<analyzer>:<path>`, such that files matching the `<path>` will be processed with the respective `<analyzer>`.
 
+!!! Note
+    `--file-patterns` flag doesn't disable the default file detection behavior of Trivy. It only adds the file detection based on the specified patterns.
+
 For example:
 
 ```bash
-trivy fs --file-patterns "pip:.requirements-test.txt ."
+trivy fs --file-patterns "pip:.requirements-test.txt" .
 ```
 
 This feature is relevant for the following scanners:
@@ -91,14 +94,14 @@ The file path can use a [regular expression](https://pkg.go.dev/regexp/syntax). 
 
 ```bash
 # interpret any file with .txt extension as a python pip requirements file
-trivy fs --file-patterns "pip:requirements-.*\.txt .
+trivy fs --file-patterns "pip:requirements-.*\.txt" .
 ```
 
 The flag can be repeated for specifying multiple file patterns. For example:
 
 ```bash
 # look for Dockerfile called production.docker and a python pip requirements file called requirements-test.txt
-trivy fs --scanners misconfig,vuln --file-patterns "dockerfile:.production.docker" --file-patterns "pip:.requirements-test.txt ."
+trivy fs --scanners misconfig,vuln --file-patterns "dockerfile:.production.docker" --file-patterns "pip:.requirements-test.txt" .
 ```
 
 [^1]: Only work with the [license-full](../scanner/license.md) flag

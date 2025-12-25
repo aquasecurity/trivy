@@ -9,7 +9,10 @@
     "Licenses": [
       "GPL-2.0-only"
     ],
-    "Maintainer": "Debian Adduser Developers \u003cadduser@packages.debian.org\u003e"
+    "Maintainer": "Debian Adduser Developers \u003cadduser@packages.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "apt@1.8.2",
@@ -22,7 +25,10 @@
       "GPL-2.0-or-later",
       "GPL-2.0-only"
     ],
-    "Maintainer": "APT Development Team \u003cdeity@lists.debian.org\u003e"
+    "Maintainer": "APT Development Team \u003cdeity@lists.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "base-files@10.3+deb10u1",
@@ -34,7 +40,10 @@
     "Licenses": [
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Santiago Vila \u003csanvila@debian.org\u003e"
+    "Maintainer": "Santiago Vila \u003csanvila@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "base-passwd@3.5.46",
@@ -47,7 +56,10 @@
       "GPL-2.0-only",
       "PD"
     ],
-    "Maintainer": "Colin Watson \u003ccjwatson@debian.org\u003e"
+    "Maintainer": "Colin Watson \u003ccjwatson@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "bash@5.0-4",
@@ -61,7 +73,10 @@
     "Licenses": [
       "GPL-3.0-only"
     ],
-    "Maintainer": "Matthias Klose \u003cdoko@debian.org\u003e"
+    "Maintainer": "Matthias Klose \u003cdoko@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "bsdutils@1:2.33.1-0.1",
@@ -90,7 +105,10 @@
       "LGPL-2.1-only",
       "LGPL-3.0-only"
     ],
-    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "coreutils@8.30-3",
@@ -104,7 +122,10 @@
     "Licenses": [
       "GPL-3.0-only"
     ],
-    "Maintainer": "Michael Stone \u003cmstone@debian.org\u003e"
+    "Maintainer": "Michael Stone \u003cmstone@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "dash@0.5.10.2-5",
@@ -118,7 +139,10 @@
     "Licenses": [
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Andrej Shadura \u003candrewsh@debian.org\u003e"
+    "Maintainer": "Andrej Shadura \u003candrewsh@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "debconf@1.5.71",
@@ -130,7 +154,10 @@
     "Licenses": [
       "BSD-2-Clause"
     ],
-    "Maintainer": "Debconf Developers \u003cdebconf-devel@lists.alioth.debian.org\u003e"
+    "Maintainer": "Debconf Developers \u003cdebconf-devel@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "debian-archive-keyring@2019.1",
@@ -142,7 +169,10 @@
     "Licenses": [
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Debian Release Team \u003cpackages@release.debian.org\u003e"
+    "Maintainer": "Debian Release Team \u003cpackages@release.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "debianutils@4.8.6.1",
@@ -154,7 +184,10 @@
     "Licenses": [
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Clint Adams \u003cclint@debian.org\u003e"
+    "Maintainer": "Clint Adams \u003cclint@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "diffutils@1:3.7-3",
@@ -171,7 +204,10 @@
       "GPL-2.0-or-later",
       "GFDL-1.3-or-later"
     ],
-    "Maintainer": "Santiago Vila \u003csanvila@debian.org\u003e"
+    "Maintainer": "Santiago Vila \u003csanvila@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "dpkg@1.19.7",
@@ -187,7 +223,10 @@
       "public-domain-s-s-d",
       "public-domain-md5"
     ],
-    "Maintainer": "Dpkg Developers \u003cdebian-dpkg@lists.debian.org\u003e"
+    "Maintainer": "Dpkg Developers \u003cdebian-dpkg@lists.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "e2fsprogs@1.44.5-1+deb10u1",
@@ -202,7 +241,10 @@
       "GPL-2.0-only",
       "LGPL-2.0-only"
     ],
-    "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e"
+    "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "fdisk@2.33.1-0.1",
@@ -230,7 +272,10 @@
       "LGPL-2.1-only",
       "LGPL-3.0-only"
     ],
-    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "findutils@4.6.0+git+20190209-2",
@@ -245,7 +290,10 @@
       "GPL-3.0-only",
       "GFDL-1.3-only"
     ],
-    "Maintainer": "Andreas Metzler \u003cametzler@debian.org\u003e"
+    "Maintainer": "Andreas Metzler \u003cametzler@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "gcc-8-base@8.3.0-6",
@@ -264,7 +312,10 @@
       "Artistic-2.0",
       "LGPL-2.0-or-later"
     ],
-    "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e"
+    "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "gpgv@2.2.12-1+deb10u1",
@@ -289,7 +340,10 @@
       "LGPL-3.0-only",
       "LGPL-2.1-only"
     ],
-    "Maintainer": "Debian GnuPG Maintainers \u003cpkg-gnupg-maint@lists.alioth.debian.org\u003e"
+    "Maintainer": "Debian GnuPG Maintainers \u003cpkg-gnupg-maint@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "grep@3.3-1",
@@ -304,7 +358,10 @@
       "GPL-3.0-or-later",
       "GPL-3.0-only"
     ],
-    "Maintainer": "Anibal Monsalve Salazar \u003canibal@debian.org\u003e"
+    "Maintainer": "Anibal Monsalve Salazar \u003canibal@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "gzip@1.9-3",
@@ -318,7 +375,10 @@
     "Licenses": [
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Bdale Garbee \u003cbdale@gag.com\u003e"
+    "Maintainer": "Bdale Garbee \u003cbdale@gag.com\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "hostname@3.21",
@@ -330,7 +390,10 @@
     "Licenses": [
       "GPL-2.0-only"
     ],
-    "Maintainer": "Michael Meskes \u003cmeskes@debian.org\u003e"
+    "Maintainer": "Michael Meskes \u003cmeskes@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "init-system-helpers@1.56+nmu1",
@@ -344,7 +407,10 @@
       "GPL-2.0-or-later",
       "GPL-2.0-only"
     ],
-    "Maintainer": "Debian systemd Maintainers \u003cpkg-systemd-maintainers@lists.alioth.debian.org\u003e"
+    "Maintainer": "Debian systemd Maintainers \u003cpkg-systemd-maintainers@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "iproute2@4.20.0-2",
@@ -358,7 +424,10 @@
     "Licenses": [
       "GPL-2.0-only"
     ],
-    "Maintainer": "Alexander Wirt \u003cformorer@debian.org\u003e"
+    "Maintainer": "Alexander Wirt \u003cformorer@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "iputils-ping@3:20180629-2",
@@ -374,7 +443,10 @@
     "Licenses": [
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Noah Meyerhans \u003cnoahm@debian.org\u003e"
+    "Maintainer": "Noah Meyerhans \u003cnoahm@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libacl1@2.2.53-4",
@@ -391,7 +463,10 @@
       "LGPL-2.0-or-later",
       "LGPL-2.1-only"
     ],
-    "Maintainer": "Guillem Jover \u003cguillem@debian.org\u003e"
+    "Maintainer": "Guillem Jover \u003cguillem@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libapt-pkg5.0@1.8.2",
@@ -404,7 +479,10 @@
       "GPL-2.0-or-later",
       "GPL-2.0-only"
     ],
-    "Maintainer": "APT Development Team \u003cdeity@lists.debian.org\u003e"
+    "Maintainer": "APT Development Team \u003cdeity@lists.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libattr1@1:2.4.48-4",
@@ -423,7 +501,10 @@
       "LGPL-2.0-or-later",
       "LGPL-2.1-only"
     ],
-    "Maintainer": "Guillem Jover \u003cguillem@debian.org\u003e"
+    "Maintainer": "Guillem Jover \u003cguillem@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libaudit-common@1:2.8.4-3",
@@ -441,7 +522,10 @@
       "LGPL-2.1-only",
       "GPL-1.0-only"
     ],
-    "Maintainer": "Laurent Bigonville \u003cbigon@debian.org\u003e"
+    "Maintainer": "Laurent Bigonville \u003cbigon@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libaudit1@1:2.8.4-3",
@@ -459,7 +543,10 @@
       "LGPL-2.1-only",
       "GPL-1.0-only"
     ],
-    "Maintainer": "Laurent Bigonville \u003cbigon@debian.org\u003e"
+    "Maintainer": "Laurent Bigonville \u003cbigon@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libblkid1@2.33.1-0.1",
@@ -487,7 +574,10 @@
       "LGPL-2.1-only",
       "LGPL-3.0-only"
     ],
-    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libbz2-1.0@1.0.6-9.2~deb10u1",
@@ -502,7 +592,10 @@
       "BSD-3-Clause",
       "GPL-2.0-only"
     ],
-    "Maintainer": "Anibal Monsalve Salazar \u003canibal@debian.org\u003e"
+    "Maintainer": "Anibal Monsalve Salazar \u003canibal@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libc-bin@2.28-10",
@@ -517,7 +610,10 @@
       "LGPL-2.1-only",
       "GPL-2.0-only"
     ],
-    "Maintainer": "GNU Libc Maintainers \u003cdebian-glibc@lists.debian.org\u003e"
+    "Maintainer": "GNU Libc Maintainers \u003cdebian-glibc@lists.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libc6@2.28-10",
@@ -532,7 +628,10 @@
       "LGPL-2.1-only",
       "GPL-2.0-only"
     ],
-    "Maintainer": "GNU Libc Maintainers \u003cdebian-glibc@lists.debian.org\u003e"
+    "Maintainer": "GNU Libc Maintainers \u003cdebian-glibc@lists.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libcap-ng0@0.7.9-2",
@@ -548,7 +647,10 @@
       "GPL-2.0-only",
       "GPL-3.0-only"
     ],
-    "Maintainer": "Pierre Chifflier \u003cpollux@debian.org\u003e"
+    "Maintainer": "Pierre Chifflier \u003cpollux@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libcap2@1:2.25-2",
@@ -566,7 +668,10 @@
       "GPL-2.0-only",
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Christian Kastner \u003cckk@debian.org\u003e"
+    "Maintainer": "Christian Kastner \u003cckk@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libcap2-bin@1:2.25-2",
@@ -584,7 +689,10 @@
       "GPL-2.0-only",
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Christian Kastner \u003cckk@debian.org\u003e"
+    "Maintainer": "Christian Kastner \u003cckk@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libcom-err2@1.44.5-1+deb10u1",
@@ -595,7 +703,10 @@
     "SrcName": "e2fsprogs",
     "SrcVersion": "1.44.5",
     "SrcRelease": "1+deb10u1",
-    "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e"
+    "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libdb5.3@5.3.28+dfsg1-0.5",
@@ -606,7 +717,10 @@
     "SrcName": "db5.3",
     "SrcVersion": "5.3.28+dfsg1",
     "SrcRelease": "0.5",
-    "Maintainer": "Debian Berkeley DB Team \u003cteam+bdb@tracker.debian.org\u003e"
+    "Maintainer": "Debian Berkeley DB Team \u003cteam+bdb@tracker.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libdebconfclient0@0.249",
@@ -615,7 +729,10 @@
     "Arch": "amd64",
     "SrcName": "cdebconf",
     "SrcVersion": "0.249",
-    "Maintainer": "Debian Install System Team \u003cdebian-boot@lists.debian.org\u003e"
+    "Maintainer": "Debian Install System Team \u003cdebian-boot@lists.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libelf1@0.176-1.1",
@@ -631,7 +748,10 @@
       "GPL-3.0-only",
       "LGPL-2.0-or-later"
     ],
-    "Maintainer": "Kurt Roeckx \u003ckurt@roeckx.be\u003e"
+    "Maintainer": "Kurt Roeckx \u003ckurt@roeckx.be\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libext2fs2@1.44.5-1+deb10u1",
@@ -646,7 +766,10 @@
       "GPL-2.0-only",
       "LGPL-2.0-only"
     ],
-    "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e"
+    "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libfdisk1@2.33.1-0.1",
@@ -674,7 +797,10 @@
       "LGPL-2.1-only",
       "LGPL-3.0-only"
     ],
-    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libffi6@3.2.1-9",
@@ -688,7 +814,10 @@
     "Licenses": [
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e"
+    "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libgcc1@1:8.3.0-6",
@@ -700,7 +829,10 @@
     "SrcName": "gcc-8",
     "SrcVersion": "8.3.0",
     "SrcRelease": "6",
-    "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e"
+    "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libgcrypt20@1.8.4-5",
@@ -715,7 +847,10 @@
       "LGPL-2.0-or-later",
       "GPL-2.0-only"
     ],
-    "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e"
+    "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libgmp10@2:6.1.2+dfsg-4",
@@ -734,7 +869,10 @@
       "GPL-3.0-only",
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Debian Science Team \u003cdebian-science-maintainers@lists.alioth.debian.org\u003e"
+    "Maintainer": "Debian Science Team \u003cdebian-science-maintainers@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libgnutls30@3.6.7-4",
@@ -758,7 +896,10 @@
       "Apache-2.0",
       "GPL-3.0-or-later"
     ],
-    "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e"
+    "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libgpg-error0@1.35-1",
@@ -777,7 +918,10 @@
       "LGPL-2.1-only",
       "GPL-3.0-only"
     ],
-    "Maintainer": "Debian GnuPG Maintainers \u003cpkg-gnupg-maint@lists.alioth.debian.org\u003e"
+    "Maintainer": "Debian GnuPG Maintainers \u003cpkg-gnupg-maint@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libhogweed4@3.4.1-1",
@@ -788,7 +932,10 @@
     "SrcName": "nettle",
     "SrcVersion": "3.4.1",
     "SrcRelease": "1",
-    "Maintainer": "Magnus Holmgren \u003cholmgren@debian.org\u003e"
+    "Maintainer": "Magnus Holmgren \u003cholmgren@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libidn2-0@2.0.5-1",
@@ -808,7 +955,10 @@
       "GPL-2.0-only",
       "LGPL-3.0-only"
     ],
-    "Maintainer": "Debian Libidn team \u003chelp-libidn@gnu.org\u003e"
+    "Maintainer": "Debian Libidn team \u003chelp-libidn@gnu.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "liblz4-1@1.8.3-1",
@@ -824,7 +974,10 @@
       "GPL-2.0-or-later",
       "GPL-2.0-only"
     ],
-    "Maintainer": "Nobuhiro Iwamatsu \u003ciwamatsu@debian.org\u003e"
+    "Maintainer": "Nobuhiro Iwamatsu \u003ciwamatsu@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "liblzma5@5.2.4-1",
@@ -852,7 +1005,10 @@
       "PD-debian",
       "GPL-3.0-only"
     ],
-    "Maintainer": "Jonathan Nieder \u003cjrnieder@gmail.com\u003e"
+    "Maintainer": "Jonathan Nieder \u003cjrnieder@gmail.com\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libmnl0@1.0.4-2",
@@ -868,7 +1024,10 @@
       "GPL-2.0-or-later",
       "GPL-2.0-only"
     ],
-    "Maintainer": "Anibal Monsalve Salazar \u003canibal@debian.org\u003e"
+    "Maintainer": "Anibal Monsalve Salazar \u003canibal@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libmount1@2.33.1-0.1",
@@ -896,7 +1055,10 @@
       "LGPL-2.1-only",
       "LGPL-3.0-only"
     ],
-    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libncursesw6@6.1+20181013-2+deb10u1",
@@ -907,7 +1069,10 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.1+20181013",
     "SrcRelease": "2+deb10u1",
-    "Maintainer": "Craig Small \u003ccsmall@debian.org\u003e"
+    "Maintainer": "Craig Small \u003ccsmall@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libnettle6@3.4.1-1",
@@ -929,7 +1094,10 @@
       "GPL-2.0-only",
       "GAP"
     ],
-    "Maintainer": "Magnus Holmgren \u003cholmgren@debian.org\u003e"
+    "Maintainer": "Magnus Holmgren \u003cholmgren@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libp11-kit0@0.23.15-2",
@@ -947,7 +1115,10 @@
       "ISC+IBM",
       "same-as-rest-of-p11kit"
     ],
-    "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e"
+    "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libpam-modules@1.3.1-5",
@@ -961,7 +1132,10 @@
     "Licenses": [
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e"
+    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libpam-modules-bin@1.3.1-5",
@@ -975,7 +1149,10 @@
     "Licenses": [
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e"
+    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libpam-runtime@1.3.1-5",
@@ -989,7 +1166,10 @@
     "Licenses": [
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e"
+    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libpam0g@1.3.1-5",
@@ -1003,7 +1183,10 @@
     "Licenses": [
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e"
+    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libpcre3@2:8.39-12",
@@ -1016,7 +1199,10 @@
     "SrcVersion": "8.39",
     "SrcRelease": "12",
     "SrcEpoch": 2,
-    "Maintainer": "Matthew Vernon \u003cmatthew@debian.org\u003e"
+    "Maintainer": "Matthew Vernon \u003cmatthew@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libseccomp2@2.3.3-4",
@@ -1030,7 +1216,10 @@
     "Licenses": [
       "LGPL-2.1-only"
     ],
-    "Maintainer": "Kees Cook \u003ckees@debian.org\u003e"
+    "Maintainer": "Kees Cook \u003ckees@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libselinux1@2.8-1+b1",
@@ -1045,7 +1234,10 @@
       "LGPL-2.1-only",
       "GPL-2.0-only"
     ],
-    "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e"
+    "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libsemanage-common@2.8-2",
@@ -1060,7 +1252,10 @@
       "LGPL-2.0-or-later",
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e"
+    "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libsemanage1@2.8-2",
@@ -1075,7 +1270,10 @@
       "LGPL-2.0-or-later",
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e"
+    "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libsepol1@2.8-1",
@@ -1090,7 +1288,10 @@
       "LGPL-2.0-or-later",
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e"
+    "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libsmartcols1@2.33.1-0.1",
@@ -1118,7 +1319,10 @@
       "LGPL-2.1-only",
       "LGPL-3.0-only"
     ],
-    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libss2@1.44.5-1+deb10u1",
@@ -1129,7 +1333,10 @@
     "SrcName": "e2fsprogs",
     "SrcVersion": "1.44.5",
     "SrcRelease": "1+deb10u1",
-    "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e"
+    "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libstdc++6@8.3.0-6",
@@ -1140,7 +1347,10 @@
     "SrcName": "gcc-8",
     "SrcVersion": "8.3.0",
     "SrcRelease": "6",
-    "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e"
+    "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libsystemd0@241-7~deb10u1",
@@ -1160,7 +1370,10 @@
       "public-domain",
       "LGPL-2.1-only"
     ],
-    "Maintainer": "Debian systemd Maintainers \u003cpkg-systemd-maintainers@lists.alioth.debian.org\u003e"
+    "Maintainer": "Debian systemd Maintainers \u003cpkg-systemd-maintainers@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libtasn1-6@4.13-3",
@@ -1177,7 +1390,10 @@
       "GPL-3.0-only",
       "GFDL-1.3-only"
     ],
-    "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e"
+    "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libtinfo6@6.1+20181013-2+deb10u1",
@@ -1188,7 +1404,10 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.1+20181013",
     "SrcRelease": "2+deb10u1",
-    "Maintainer": "Craig Small \u003ccsmall@debian.org\u003e"
+    "Maintainer": "Craig Small \u003ccsmall@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libudev1@241-7~deb10u1",
@@ -1208,7 +1427,10 @@
       "public-domain",
       "LGPL-2.1-only"
     ],
-    "Maintainer": "Debian systemd Maintainers \u003cpkg-systemd-maintainers@lists.alioth.debian.org\u003e"
+    "Maintainer": "Debian systemd Maintainers \u003cpkg-systemd-maintainers@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libunistring2@0.9.10-1",
@@ -1232,7 +1454,10 @@
       "GPL-2.0-only",
       "GFDL-1.2-only"
     ],
-    "Maintainer": "Jörg Frings-Fürst \u003cdebian@jff.email\u003e"
+    "Maintainer": "Jörg Frings-Fürst \u003cdebian@jff.email\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libuuid1@2.33.1-0.1",
@@ -1260,7 +1485,10 @@
       "LGPL-2.1-only",
       "LGPL-3.0-only"
     ],
-    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libxtables12@1.8.2-4",
@@ -1277,7 +1505,10 @@
       "GPL-2.0-or-later",
       "custom"
     ],
-    "Maintainer": "Debian Netfilter Packaging Team \u003cpkg-netfilter-team@lists.alioth.debian.org\u003e"
+    "Maintainer": "Debian Netfilter Packaging Team \u003cpkg-netfilter-team@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libzstd1@1.3.8+dfsg-3",
@@ -1295,7 +1526,10 @@
       "GPL-2.0-or-later",
       "MIT"
     ],
-    "Maintainer": "Debian Med Packaging Team \u003cdebian-med-packaging@lists.alioth.debian.org\u003e"
+    "Maintainer": "Debian Med Packaging Team \u003cdebian-med-packaging@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "login@1:4.5-1.1",
@@ -1311,7 +1545,10 @@
     "Licenses": [
       "GPL-2.0-only"
     ],
-    "Maintainer": "Shadow package maintainers \u003cpkg-shadow-devel@lists.alioth.debian.org\u003e"
+    "Maintainer": "Shadow package maintainers \u003cpkg-shadow-devel@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "mawk@1.3.3-17+b3",
@@ -1325,7 +1562,10 @@
     "Licenses": [
       "GPL-2.0-only"
     ],
-    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e"
+    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "mount@2.33.1-0.1",
@@ -1353,7 +1593,10 @@
       "LGPL-2.1-only",
       "LGPL-3.0-only"
     ],
-    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "ncurses-base@6.1+20181013-2+deb10u1",
@@ -1364,7 +1607,10 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.1+20181013",
     "SrcRelease": "2+deb10u1",
-    "Maintainer": "Craig Small \u003ccsmall@debian.org\u003e"
+    "Maintainer": "Craig Small \u003ccsmall@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "ncurses-bin@6.1+20181013-2+deb10u1",
@@ -1375,7 +1621,10 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.1+20181013",
     "SrcRelease": "2+deb10u1",
-    "Maintainer": "Craig Small \u003ccsmall@debian.org\u003e"
+    "Maintainer": "Craig Small \u003ccsmall@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "passwd@1:4.5-1.1",
@@ -1391,7 +1640,10 @@
     "Licenses": [
       "GPL-2.0-only"
     ],
-    "Maintainer": "Shadow package maintainers \u003cpkg-shadow-devel@lists.alioth.debian.org\u003e"
+    "Maintainer": "Shadow package maintainers \u003cpkg-shadow-devel@lists.alioth.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "perl-base@5.28.1-6",
@@ -1402,7 +1654,10 @@
     "SrcName": "perl",
     "SrcVersion": "5.28.1",
     "SrcRelease": "6",
-    "Maintainer": "Niko Tyni \u003cntyni@debian.org\u003e"
+    "Maintainer": "Niko Tyni \u003cntyni@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "sed@4.7-1",
@@ -1416,7 +1671,10 @@
     "Licenses": [
       "GPL-3.0-only"
     ],
-    "Maintainer": "Clint Adams \u003cclint@debian.org\u003e"
+    "Maintainer": "Clint Adams \u003cclint@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "sysvinit-utils@2.93-8",
@@ -1431,7 +1689,10 @@
       "GPL-2.0-or-later",
       "GPL-2.0-only"
     ],
-    "Maintainer": "Debian sysvinit maintainers \u003cdebian-init-diversity@chiark.greenend.org.uk\u003e"
+    "Maintainer": "Debian sysvinit maintainers \u003cdebian-init-diversity@chiark.greenend.org.uk\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "tar@1.30+dfsg-6",
@@ -1446,7 +1707,10 @@
       "GPL-3.0-only",
       "GPL-2.0-only"
     ],
-    "Maintainer": "Bdale Garbee \u003cbdale@gag.com\u003e"
+    "Maintainer": "Bdale Garbee \u003cbdale@gag.com\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "tzdata@2019b-0+deb10u1",
@@ -1457,7 +1721,10 @@
     "SrcName": "tzdata",
     "SrcVersion": "2019b",
     "SrcRelease": "0+deb10u1",
-    "Maintainer": "GNU Libc Maintainers \u003cdebian-glibc@lists.debian.org\u003e"
+    "Maintainer": "GNU Libc Maintainers \u003cdebian-glibc@lists.debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "util-linux@2.33.1-0.1",
@@ -1485,7 +1752,10 @@
       "LGPL-2.1-only",
       "LGPL-3.0-only"
     ],
-    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e"
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "zlib1g@1:1.2.11.dfsg-1",
@@ -1501,6 +1771,9 @@
     "Licenses": [
       "Zlib"
     ],
-    "Maintainer": "Mark Brown \u003cbroonie@debian.org\u003e"
+    "Maintainer": "Mark Brown \u003cbroonie@debian.org\u003e",
+    "Repository": {
+      "Class": "official"
+    }
   }
 ]

@@ -162,9 +162,15 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 				a.logger.Debug("Third-party package detected",
 					log.String("package", pkg.Name),
 					log.String("maintainer", pkg.Maintainer))
+				packageInfos[i].Packages[j].Repository = types.PackageRepository{
+					Class: types.RepositoryClassThirdParty,
+				}
 				continue
 			}
 
+			packageInfos[i].Packages[j].Repository = types.PackageRepository{
+				Class: types.RepositoryClassOfficial,
+			}
 			packageInfos[i].Packages[j].InstalledFiles = installedFiles
 			systemInstalledFiles = append(systemInstalledFiles, installedFiles...)
 		}

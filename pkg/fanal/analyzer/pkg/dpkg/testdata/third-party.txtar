@@ -1,0 +1,30 @@
+Test data for third-party package detection.
+
+-- var/lib/dpkg/status --
+Package: docker-ce
+Status: install ok installed
+Priority: optional
+Section: admin
+Installed-Size: 83560
+Maintainer: Docker <support@docker.com>
+Architecture: amd64
+Version: 5:20.10.7~3-0~debian-buster
+Replaces: docker, docker-ce
+Depends: containerd.io (>= 1.4.1), docker-ce-cli, iptables, libc6 (>= 2.8), libseccomp2 (>= 2.4.1), libc6 (>= 2.17), libdevmapper1.02.1 (>= 2:1.02.97)
+Recommends: ca-certificates, docker-ce-rootless-extras, git, pigz, xz-utils
+Description: Docker: the open-source application container engine
+ Docker is a product for you to build, ship and run any application as a
+ lightweight container.
+Homepage: https://www.docker.com
+
+Package: apt
+Status: install ok installed
+Priority: important
+Section: admin
+Installed-Size: 4148
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 1.6.3ubuntu0.1
+Depends: base-files (>= 7.2ubuntu5.6)
+Description: commandline package manager
+
