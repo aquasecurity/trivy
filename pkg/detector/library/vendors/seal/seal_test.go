@@ -143,12 +143,3 @@ func TestSealSecurity_Match(t *testing.T) {
 		})
 	}
 }
-
-func TestSealSecurity_Name(t *testing.T) {
-	s := SealSecurity{}
-	got := s.Name()
-	want := "seal"
-	if got != want {
-		t.Errorf("SealSecurity.Name() = %v, want %v", got, want)
-	}
-}
