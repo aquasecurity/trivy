@@ -1,4 +1,4 @@
-- bucket: "seal-pip::Seal Security Database"
+- bucket: "seal pip::Seal Security Database"
   pairs:
     - bucket: seal-django
       pairs:

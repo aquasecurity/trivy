@@ -13,11 +13,11 @@ import (
 // databases that should be used instead of the standard ecosystem advisories.
 //
 // When a package is identified as coming from a vendor, Trivy queries the
-// vendor-specific advisory bucket (e.g., "seal-pip::") rather than the
+// vendor-specific advisory bucket (e.g., "seal pip::") rather than the
 // standard ecosystem bucket (e.g., "pip::").
 type Vendor interface {
 	// Name returns the vendor identifier used in the advisory bucket prefix.
-	// For example, "seal" results in advisory queries to "seal-pip::", "seal-npm::", etc.
+	// For example, "seal" results in advisory queries to "seal pip::", "seal npm::", etc.
 	Name() string
 
 	// Match determines whether a package is provided by this vendor.
@@ -34,12 +34,12 @@ var vendors = []Vendor{
 }
 
 // resolveAdvisoryPrefix determines the advisory bucket prefix based on package info.
-// For vendor packages, it returns a vendor-specific prefix (e.g., "seal-pip::").
+// For vendor packages, it returns a vendor-specific prefix (e.g., "seal pip::").
 // For regular packages, it returns the standard ecosystem prefix (e.g., "pip::").
 func resolveAdvisoryPrefix(eco ecosystem.Type, pkgName, pkgVer string) string {
 	for _, v := range vendors {
 		if v.Match(eco, pkgName, pkgVer) {
-			return fmt.Sprintf("%s-%s::", v.Name(), eco)
+			return fmt.Sprintf("%s %s::", v.Name(), eco)
 		}
 	}
 	return fmt.Sprintf("%s::", eco)

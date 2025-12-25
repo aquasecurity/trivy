@@ -113,7 +113,7 @@ func (d *Driver) Type() string {
 // It allows us to add a new data source with the ecosystem prefix (e.g. pip::new-data-source)
 // and detect vulnerabilities without specifying a specific bucket name.
 func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
-	// Resolve prefix based on package name/version (e.g., "pip::" "npm::", or "seal-pip::")
+	// Resolve prefix based on package name/version (e.g., "pip::" "npm::", or "seal pip::")
 	prefix := resolveAdvisoryPrefix(d.ecosystem, pkgName, pkgVer)
 	advisories, err := d.dbc.GetAdvisories(prefix, vulnerability.NormalizePkgName(d.ecosystem, pkgName))
 	if err != nil {
