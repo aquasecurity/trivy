@@ -12,7 +12,6 @@ import (
 	"sync"
 
 	"github.com/samber/lo"
-	"github.com/samber/lo/it"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
@@ -340,21 +339,9 @@ func belongToGroup(groupName Group, analyzerType Type, disabledAnalyzers []Type,
 func normalizeApplicationsLicenses(applications []types.Application) {
 	for i, app := range applications {
 		for j, pkg := range app.Packages {
-			applications[i].Packages[j].Licenses = normalizeLicenses(pkg.Licenses)
+			applications[i].Packages[j].Licenses = licensing.NormalizeLicenses(pkg.Licenses)
 		}
 	}
-}
-
-func normalizeLicenses(licenses []string) []string {
-	seq := it.UniqMap(slices.Values(licenses), licensing.Normalize)
-	seq = it.Compact(seq)
-	normalized := slices.Collect(seq)
-
-	if len(normalized) == 0 {
-		return nil
-	}
-
-	return normalized
 }
 
 const separator = ":"
