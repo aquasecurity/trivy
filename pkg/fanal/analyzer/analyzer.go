@@ -12,6 +12,7 @@ import (
 	"sync"
 
 	"github.com/samber/lo"
+	"github.com/samber/lo/it"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
@@ -345,14 +346,9 @@ func normalizeApplicationsLicenses(applications []types.Application) {
 }
 
 func normalizeLicenses(licenses []string) []string {
-	var normalized []string
-	for _, l := range licenses {
-		l = licensing.Normalize(l)
-		if l != "" {
-			normalized = append(normalized, l)
-		}
-	}
-	normalized = lo.Uniq(normalized)
+	seq := it.UniqMap(slices.Values(licenses), licensing.Normalize)
+	seq = it.Compact(seq)
+	normalized := slices.Collect(seq)
 
 	if len(normalized) == 0 {
 		return nil
