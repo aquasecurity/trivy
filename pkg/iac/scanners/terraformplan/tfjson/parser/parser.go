@@ -93,22 +93,22 @@ func decodeBlock(schema BlockSchema, rawBlock map[string]any) *PlanBlock {
 		Attributes: make(map[string]any),
 	}
 
-	for k, child := range rawBlock {
-		handleChild(block, k, child, schema[k])
+	for name, child := range rawBlock {
+		decodeChildBlock(block, name, child, schema[name])
 	}
 
 	populateReferences(schema, block)
 	return block
 }
 
-func handleChild(block *PlanBlock, k string, child any, schema *SchemaNode) {
+func decodeChildBlock(block *PlanBlock, name string, child any, schema *SchemaNode) {
 	switch {
 	case schema == nil:
-		appendBlockOrAttribute(block, k, child)
+		appendBlockOrAttribute(block, name, child)
 	case schema.Type == AttributeNode:
-		appendBlockOrAttribute(block, k, decodeAttribute(schema, child))
+		appendBlockOrAttribute(block, name, decodeAttribute(schema, child))
 	case schema.Type == BlockNode:
-		nestedBlocks := decodeNestedBlocks(schema, k, normalizeToSlice(child))
+		nestedBlocks := decodeNestedBlocks(schema, name, normalizeToSlice(child))
 		block.Blocks = append(block.Blocks, nestedBlocks...)
 	}
 }
