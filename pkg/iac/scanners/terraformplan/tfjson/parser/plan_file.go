@@ -6,8 +6,6 @@ type Resource struct {
 	Mode          string `json:"mode"`
 	Type          string `json:"type"`
 	Name          string `json:"name"`
-	ProviderName  string `json:"provider_name"`
-	SchemaVersion int    `json:"schema_version"`
 }
 
 func (r Resource) BlockType() string {
@@ -30,8 +28,7 @@ type ConfigurationResource struct {
 }
 
 type Change struct {
-	Before map[string]any `json:"before"`
-	After  map[string]any `json:"after"`
+	After map[string]any `json:"after"`
 }
 
 type Module struct {
@@ -47,7 +44,6 @@ type ConfigurationModule struct {
 }
 
 type CallModule struct {
-	Source string              `json:"source"`
 	Module ConfigurationModule `json:"module"`
 }
 
@@ -60,9 +56,7 @@ type Configuration struct {
 }
 
 type PlanFile struct {
-	FormatVersion    string           `json:"format_version"`
-	TerraformVersion string           `json:"terraform_version"`
-	PlannedValues    PlannedValues    `json:"planned_values"`
-	ResourceChanges  []ResourceChange `json:"resource_changes"`
-	Configuration    Configuration    `json:"configuration"`
+	PlannedValues   PlannedValues    `json:"planned_values"`
+	ResourceChanges []ResourceChange `json:"resource_changes"`
+	Configuration   Configuration    `json:"configuration"`
 }
