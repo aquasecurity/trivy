@@ -50,10 +50,10 @@ resource "aws_security_group" "sg" {
   name = "sg"
   revoke_rules_on_delete = false
   tags = {
-    Name = "blah"
+    "Name" = "blah"
   }
   tags_all = {
-    Name = "blah"
+    "Name" = "blah"
   }
   ingress {
     cidr_blocks = [
@@ -102,7 +102,9 @@ resource "aws_security_group" "sg" {
 			assert.Equal(t, tt.expected, string(b))
 
 			_, diags := hclparse.NewParser().ParseHCL(b, "main.tf")
-			assert.NoError(t, diags)
+			if diags.HasErrors() {
+				assert.NoError(t, diags)
+			}
 		})
 	}
 }

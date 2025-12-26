@@ -93,22 +93,22 @@ func decodeBlock(schema BlockSchema, rawBlock map[string]any) *PlanBlock {
 		Attributes: make(map[string]any),
 	}
 
-	for name, child := range rawBlock {
-		decodeChildBlock(block, name, child, schema[name])
+	for key, child := range rawBlock {
+		decodeChildBlock(block, key, child, schema[key])
 	}
 
 	populateReferences(schema, block)
 	return block
 }
 
-func decodeChildBlock(block *PlanBlock, name string, child any, schema *SchemaNode) {
+func decodeChildBlock(block *PlanBlock, key string, child any, schema *SchemaNode) {
 	switch {
 	case schema == nil:
-		appendBlockOrAttribute(block, name, child)
+		appendBlockOrAttribute(block, key, child)
 	case schema.Type == AttributeNode:
-		appendBlockOrAttribute(block, name, decodeAttribute(schema, child))
+		appendBlockOrAttribute(block, key, decodeAttribute(schema, child))
 	case schema.Type == BlockNode:
-		nestedBlocks := decodeNestedBlocks(schema, name, normalizeToSlice(child))
+		nestedBlocks := decodeNestedBlocks(schema, key, normalizeToSlice(child))
 		block.Blocks = append(block.Blocks, nestedBlocks...)
 	}
 }
@@ -124,7 +124,7 @@ func appendBlockOrAttribute(block *PlanBlock, name string, value any) {
 	if s, ok := value.([]any); ok && len(s) > 0 {
 		if m, ok := s[0].(map[string]any); ok {
 			block.Blocks = append(block.Blocks, &PlanBlock{
-				Name:       name,
+				BlockType:  name,
 				Attributes: m,
 			})
 			return
@@ -151,7 +151,7 @@ func populateReferences(schema BlockSchema, block *PlanBlock) {
 	}
 }
 
-func decodeNestedBlocks(schema *SchemaNode, name string, v []any) []*PlanBlock {
+func decodeNestedBlocks(schema *SchemaNode, key string, v []any) []*PlanBlock {
 	nestedBlocks := make([]*PlanBlock, 0, len(v))
 	for i, el := range v {
 		m, ok := el.(map[string]any)
@@ -163,7 +163,7 @@ func decodeNestedBlocks(schema *SchemaNode, name string, v []any) []*PlanBlock {
 			nestedBlockSchema = schema.Children[i]
 		}
 		nestedBlock := decodeBlock(nestedBlockSchema, m)
-		nestedBlock.Name = name
+		nestedBlock.BlockType = key
 		nestedBlocks = append(nestedBlocks, nestedBlock)
 	}
 	return nestedBlocks

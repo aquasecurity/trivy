@@ -20,14 +20,14 @@ type PlanBlock struct {
 	Attributes map[string]any
 }
 
-func (pb *PlanBlock) GetOrCreateBlock(name string) *PlanBlock {
+func (pb *PlanBlock) GetOrCreateBlock(typ string) *PlanBlock {
 	for _, cb := range pb.Blocks {
-		if cb.Name == name {
+		if cb.BlockType == typ {
 			return cb
 		}
 	}
 	newChildBlock := &PlanBlock{
-		Name:       name,
+		BlockType:  typ,
 		Attributes: make(map[string]any),
 	}
 	pb.Blocks = append(pb.Blocks, newChildBlock)
@@ -72,9 +72,11 @@ func (r *hclRenderer) decIndent() {
 func (r *hclRenderer) renderBlock(b *PlanBlock) {
 	r.write(r.indent)
 	if b.BlockType != "" && b.Type != "" && b.Name != "" {
+		// top-level block
 		r.writef("%s \"%s\" \"%s\" {\n", b.BlockType, b.Type, b.Name)
 	} else {
-		r.writef("%s {\n", b.Name)
+		// child block
+		r.writef("%s {\n", b.BlockType)
 	}
 
 	keys := make([]string, 0, len(b.Attributes))
@@ -92,7 +94,7 @@ func (r *hclRenderer) renderBlock(b *PlanBlock) {
 	}
 
 	sort.Slice(b.Blocks, func(i, j int) bool {
-		return b.Blocks[i].Name < b.Blocks[j].Name
+		return b.Blocks[i].BlockType < b.Blocks[j].BlockType
 	})
 
 	r.incIndent()
