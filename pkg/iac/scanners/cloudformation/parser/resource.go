@@ -144,6 +144,10 @@ func (r *Resource) Range() iacTypes.Range {
 	return r.rng
 }
 
+func (r *Resource) Properties() map[string]*Property {
+	return r.properties
+}
+
 func (r *Resource) SourceFormat() SourceFormat {
 	return r.ctx.SourceFormat
 }
