@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.69.0](https://github.com/aquasecurity/trivy/compare/v0.68.1...v0.69.0) (2025-12-26)
+
+
+### Features
+
+* **cloudformation:** add support for Fn::ForEach ([#9508](https://github.com/aquasecurity/trivy/issues/9508)) ([d65b504](https://github.com/aquasecurity/trivy/commit/d65b504cb24a4d71f054bfbd6a872b58385bb0d3))
+* **debian:** detect third-party packages using maintainer list ([#9917](https://github.com/aquasecurity/trivy/issues/9917)) ([effc1c0](https://github.com/aquasecurity/trivy/commit/effc1c0d4d46e01efa896f53ccc72eb87d175d91))
+* **flag:** add JSON Schema for trivy.yaml configuration file ([#9971](https://github.com/aquasecurity/trivy/issues/9971)) ([4caf731](https://github.com/aquasecurity/trivy/commit/4caf7312b63f93024c188f243cda957d97b30a88))
+* **helm:** add sslCertDir parameter ([#9697](https://github.com/aquasecurity/trivy/issues/9697)) ([879e4fc](https://github.com/aquasecurity/trivy/commit/879e4fca12b53010e3b6a22fcb9c6e2b8eefad96))
+* **julia:** enable vulnerability scanning for the Julia language ecosystem ([#9800](https://github.com/aquasecurity/trivy/issues/9800)) ([c2f82ad](https://github.com/aquasecurity/trivy/commit/c2f82add3a59a509f581cc245630ce29e801de6a))
+* **misconf:** initial ansible scanning support ([#9332](https://github.com/aquasecurity/trivy/issues/9332)) ([9275e15](https://github.com/aquasecurity/trivy/commit/9275e1532b11c5f1842f334660303a7ebf46a2c6))
+* **misconf:** Update Azure Database schema ([#9811](https://github.com/aquasecurity/trivy/issues/9811)) ([48dfede](https://github.com/aquasecurity/trivy/commit/48dfedeb1e13d1654e2b9239f403d847af353e2e))
+* **php:** add support for dev dependencies in Composer ([#9910](https://github.com/aquasecurity/trivy/issues/9910)) ([56b59e8](https://github.com/aquasecurity/trivy/commit/56b59e8abbb891564bf03608b8150bceaeb60ded))
+* **rootio:** Update trivy db to support usage of Severity from root.io feed ([#9930](https://github.com/aquasecurity/trivy/issues/9930)) ([d3096e7](https://github.com/aquasecurity/trivy/commit/d3096e7617a6b5d6bc5beb2abce1b18a70c05c08))
+* **vuln:** skip vulnerability scanning for third-party packages in Debian/Ubuntu ([#9932](https://github.com/aquasecurity/trivy/issues/9932)) ([74819bf](https://github.com/aquasecurity/trivy/commit/74819bf45733eda0a8377c40d09a60daefe9210a))
+
+
+### Bug Fixes
+
+* **image:** race condition in image artifact inspection ([#9966](https://github.com/aquasecurity/trivy/issues/9966)) ([18acf4f](https://github.com/aquasecurity/trivy/commit/18acf4f71dfa0668b0fe8b0ffcafd960f88b46d1))
+* **misconf:** respect .yml files when Helm charts are detected ([#9912](https://github.com/aquasecurity/trivy/issues/9912)) ([18ecf75](https://github.com/aquasecurity/trivy/commit/18ecf75176a1cadcf20e088a991af899e96fe40b))
+* remove trailing tab in statefulset template ([#9889](https://github.com/aquasecurity/trivy/issues/9889)) ([9db123c](https://github.com/aquasecurity/trivy/commit/9db123ccf80e55b30bee53db7163b9fd9a38bd75))
+* **vex:** add CVE-2025-66564 as not_affected into Trivy VEX file ([#9924](https://github.com/aquasecurity/trivy/issues/9924)) ([335cc99](https://github.com/aquasecurity/trivy/commit/335cc993fa76cddf2e263cb8e09d0cbbb0b98a09))
+
+
+### Performance Improvements
+
+* **misconf:** optimize string concatenation in azure scanner ([#9969](https://github.com/aquasecurity/trivy/issues/9969)) ([10a50a7](https://github.com/aquasecurity/trivy/commit/10a50a7429dd18377747c54db53fc68c376135d7))
+
 ## [0.68.1](https://github.com/aquasecurity/trivy/compare/v0.68.0...v0.68.1) (2025-12-03)
 
 
