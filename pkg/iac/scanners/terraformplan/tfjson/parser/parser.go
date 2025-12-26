@@ -230,7 +230,7 @@ func moduleResourceName(rAddress, rType, name string) string {
 	return fmt.Sprintf("%s_%s", name, hex.EncodeToString(hash[:]))
 }
 
-func getConfiguration(address string, moduleAddress string, configuration ConfigurationModule) ResourceExpressions {
+func getConfiguration(address, moduleAddress string, configuration ConfigurationModule) ResourceExpressions {
 	resourceAddress, _ := strings.CutPrefix(address, moduleAddress)
 	for _, resource := range configuration.Resources {
 		if resource.Address == resourceAddress {
