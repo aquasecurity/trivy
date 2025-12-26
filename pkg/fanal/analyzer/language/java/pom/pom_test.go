@@ -30,17 +30,17 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/happy/pom.xml",
 						Packages: types.Packages{
 							{
-								ID:           "com.example:example:1.0.0",
+								ID:           "775be61e12255d4",
 								Name:         "com.example:example",
 								Version:      "1.0.0",
 								Licenses:     []string{"Apache-2.0"},
 								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
-									"com.example:example-api:2.0.0",
+									"3f5226c1cdc0f675",
 								},
 							},
 							{
-								ID:           "com.example:example-api:2.0.0",
+								ID:           "3f5226c1cdc0f675",
 								Name:         "com.example:example-api",
 								Version:      "2.0.0",
 								Relationship: types.RelationshipDirect,
@@ -67,17 +67,17 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "pom.xml",
 						Packages: types.Packages{
 							{
-								ID:           "com.example:example:1.0.0",
+								ID:           "775be61e12255d4",
 								Name:         "com.example:example",
 								Version:      "1.0.0",
 								Relationship: types.RelationshipRoot,
 								Licenses:     []string{"Apache-2.0"},
 								DependsOn: []string{
-									"com.example:example-api:2.0.0",
+									"3f5226c1cdc0f675",
 								},
 							},
 							{
-								ID:           "com.example:example-api:2.0.0",
+								ID:           "3f5226c1cdc0f675",
 								Name:         "com.example:example-api",
 								Version:      "2.0.0",
 								Relationship: types.RelationshipDirect,
@@ -103,18 +103,18 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/mark-as-dev/src/it/example/pom.xml",
 						Packages: types.Packages{
 							{
-								ID:           "com.example:example:1.0.0",
+								ID:           "c6140fc994cd756f",
 								Name:         "com.example:example",
 								Version:      "1.0.0",
 								Licenses:     []string{"Apache-2.0"},
 								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
-									"com.example:example-api:@example.version@",
+									"ea8c6bb9bc39e615",
 								},
 								Dev: true,
 							},
 							{
-								ID:           "com.example:example-api:@example.version@",
+								ID:           "ea8c6bb9bc39e615",
 								Name:         "com.example:example-api",
 								Version:      "@example.version@",
 								Relationship: types.RelationshipDirect,
@@ -141,14 +141,14 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/requirements/pom.xml",
 						Packages: types.Packages{
 							{
-								ID:           "com.example:example:2.0.0",
+								ID:           "729d323afdb92656",
 								Name:         "com.example:example",
 								Version:      "2.0.0",
 								Licenses:     []string{"Apache-2.0"},
 								Relationship: types.RelationshipRoot,
 							},
 							{
-								ID:           "org.example:example-api",
+								ID:           "fc45c7397922ff67",
 								Name:         "org.example:example-api",
 								Relationship: types.RelationshipDirect,
 								Locations: []types.Location{
