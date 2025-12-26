@@ -33,8 +33,7 @@ func Test_Adapt(t *testing.T) {
 			expected: ssm.SSM{
 				Secrets: []ssm.Secret{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
-						KMSKeyID: iacTypes.String("aws_kms_key.secrets", iacTypes.NewTestMetadata()),
+						KMSKeyID: iacTypes.StringTest("aws_kms_key.secrets"),
 					},
 				},
 			},
@@ -50,8 +49,7 @@ func Test_Adapt(t *testing.T) {
 			expected: ssm.SSM{
 				Secrets: []ssm.Secret{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
-						KMSKeyID: iacTypes.String("key_id", iacTypes.NewTestMetadata()),
+						KMSKeyID: iacTypes.StringTest("key_id"),
 					},
 				},
 			},
@@ -65,8 +63,7 @@ func Test_Adapt(t *testing.T) {
 			expected: ssm.SSM{
 				Secrets: []ssm.Secret{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
-						KMSKeyID: iacTypes.String("alias/aws/secretsmanager", iacTypes.NewTestMetadata()),
+						KMSKeyID: iacTypes.StringTest("alias/aws/secretsmanager"),
 					},
 				},
 			},

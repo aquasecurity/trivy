@@ -35,12 +35,10 @@ func Test_adaptRoleDefinition(t *testing.T) {
 			}
 `,
 			expected: authorization.RoleDefinition{
-				Metadata: iacTypes.NewTestMetadata(),
 				Permissions: []authorization.Permission{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Actions: []iacTypes.StringValue{
-							iacTypes.String("*", iacTypes.NewTestMetadata()),
+							iacTypes.StringTest("*"),
 						},
 					},
 				},
@@ -66,14 +64,11 @@ func Test_adaptRoleDefinition(t *testing.T) {
 			}
 `,
 			expected: authorization.RoleDefinition{
-				Metadata: iacTypes.NewTestMetadata(),
 				Permissions: []authorization.Permission{
-					{
-						Metadata: iacTypes.NewTestMetadata(),
-					},
+					{},
 				},
 				AssignableScopes: []iacTypes.StringValue{
-					iacTypes.String("/", iacTypes.NewTestMetadata()),
+					iacTypes.StringTest("/"),
 				},
 			},
 		},
@@ -134,11 +129,10 @@ func Test_adaptRoleAssignment(t *testing.T) {
 			}
 `,
 			expected: authorization.RoleAssignment{
-				Metadata:           iacTypes.NewTestMetadata(),
-				RoleDefinitionId:   iacTypes.String("/subscriptions/12345678-1234-1234-1234-123456789012/providers/Microsoft.Authorization/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635", iacTypes.NewTestMetadata()),
-				RoleDefinitionName: iacTypes.String("Owner", iacTypes.NewTestMetadata()),
-				PrincipalId:        iacTypes.String("11111111-1111-1111-1111-111111111111", iacTypes.NewTestMetadata()),
-				PrincipalType:      iacTypes.String("User", iacTypes.NewTestMetadata()),
+				RoleDefinitionId:   iacTypes.StringTest("/subscriptions/12345678-1234-1234-1234-123456789012/providers/Microsoft.Authorization/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635"),
+				RoleDefinitionName: iacTypes.StringTest("Owner"),
+				PrincipalId:        iacTypes.StringTest("11111111-1111-1111-1111-111111111111"),
+				PrincipalType:      iacTypes.StringTest("User"),
 			},
 		},
 		{
@@ -151,11 +145,8 @@ func Test_adaptRoleAssignment(t *testing.T) {
 			}
 `,
 			expected: authorization.RoleAssignment{
-				Metadata:           iacTypes.NewTestMetadata(),
-				RoleDefinitionId:   iacTypes.String("/subscriptions/12345678-1234-1234-1234-123456789012/providers/Microsoft.Authorization/roleDefinitions/reader", iacTypes.NewTestMetadata()),
-				RoleDefinitionName: iacTypes.String("", iacTypes.NewTestMetadata()),
-				PrincipalId:        iacTypes.String("33333333-3333-3333-3333-333333333333", iacTypes.NewTestMetadata()),
-				PrincipalType:      iacTypes.String("", iacTypes.NewTestMetadata()),
+				RoleDefinitionId: iacTypes.StringTest("/subscriptions/12345678-1234-1234-1234-123456789012/providers/Microsoft.Authorization/roleDefinitions/reader"),
+				PrincipalId:      iacTypes.StringTest("33333333-3333-3333-3333-333333333333"),
 			},
 		},
 	}

@@ -48,19 +48,16 @@ func Test_Adapt(t *testing.T) {
 			expected: elb.ELB{
 				LoadBalancers: []elb.LoadBalancer{
 					{
-						Metadata:                iacTypes.NewTestMetadata(),
-						Type:                    iacTypes.String("application", iacTypes.NewTestMetadata()),
-						DropInvalidHeaderFields: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-						Internal:                iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						Type:                    iacTypes.StringTest("application"),
+						DropInvalidHeaderFields: iacTypes.BoolTest(true),
+						Internal:                iacTypes.BoolTest(true),
 						Listeners: []elb.Listener{
 							{
-								Metadata:  iacTypes.NewTestMetadata(),
-								Protocol:  iacTypes.String("HTTPS", iacTypes.NewTestMetadata()),
-								TLSPolicy: iacTypes.String("ELBSecurityPolicy-TLS-1-1-2017-01", iacTypes.NewTestMetadata()),
+								Protocol:  iacTypes.StringTest("HTTPS"),
+								TLSPolicy: iacTypes.StringTest("ELBSecurityPolicy-TLS-1-1-2017-01"),
 								DefaultActions: []elb.Action{
 									{
-										Metadata: iacTypes.NewTestMetadata(),
-										Type:     iacTypes.String("forward", iacTypes.NewTestMetadata()),
+										Type: iacTypes.StringTest("forward"),
 									},
 								},
 							},
@@ -78,11 +75,7 @@ func Test_Adapt(t *testing.T) {
 			expected: elb.ELB{
 				LoadBalancers: []elb.LoadBalancer{
 					{
-						Metadata:                iacTypes.NewTestMetadata(),
-						Type:                    iacTypes.String("application", iacTypes.NewTestMetadata()),
-						DropInvalidHeaderFields: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						Internal:                iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						Listeners:               nil,
+						Type: iacTypes.StringTest("application"),
 					},
 				},
 			},

@@ -36,19 +36,17 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: documentdb.Cluster{
-				Metadata:   iacTypes.NewTestMetadata(),
-				Identifier: iacTypes.String("my-docdb-cluster", iacTypes.NewTestMetadata()),
-				KMSKeyID:   iacTypes.String("kms-key", iacTypes.NewTestMetadata()),
+				Identifier: iacTypes.StringTest("my-docdb-cluster"),
+				KMSKeyID:   iacTypes.StringTest("kms-key"),
 				EnabledLogExports: []iacTypes.StringValue{
-					iacTypes.String("audit", iacTypes.NewTestMetadata()),
+					iacTypes.StringTest("audit"),
 				},
 				Instances: []documentdb.Instance{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
-						KMSKeyID: iacTypes.String("kms-key#1", iacTypes.NewTestMetadata()),
+						KMSKeyID: iacTypes.StringTest("kms-key#1"),
 					},
 				},
-				StorageEncrypted: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				StorageEncrypted: iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -57,12 +55,7 @@ func Test_adaptCluster(t *testing.T) {
 			resource "aws_docdb_cluster" "docdb" {
 			}
 `,
-			expected: documentdb.Cluster{
-				Metadata:         iacTypes.NewTestMetadata(),
-				Identifier:       iacTypes.String("", iacTypes.NewTestMetadata()),
-				StorageEncrypted: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				KMSKeyID:         iacTypes.String("", iacTypes.NewTestMetadata()),
-			},
+			expected: documentdb.Cluster{},
 		},
 	}
 

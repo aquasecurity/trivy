@@ -28,13 +28,11 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: neptune.Cluster{
-				Metadata: iacTypes.NewTestMetadata(),
 				Logging: neptune.Logging{
-					Metadata: iacTypes.NewTestMetadata(),
-					Audit:    iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					Audit: iacTypes.BoolTest(true),
 				},
-				StorageEncrypted: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				KMSKeyID:         iacTypes.String("kms-key", iacTypes.NewTestMetadata()),
+				StorageEncrypted: iacTypes.BoolTest(true),
+				KMSKeyID:         iacTypes.StringTest("kms-key"),
 			},
 		},
 		{
@@ -44,13 +42,7 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: neptune.Cluster{
-				Metadata: iacTypes.NewTestMetadata(),
-				Logging: neptune.Logging{
-					Metadata: iacTypes.NewTestMetadata(),
-					Audit:    iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				},
-				StorageEncrypted: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				KMSKeyID:         iacTypes.String("", iacTypes.NewTestMetadata()),
+				Logging: neptune.Logging{},
 			},
 		},
 	}

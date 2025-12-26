@@ -30,12 +30,8 @@ func Test_adaptBroker(t *testing.T) {
 			  }
 `,
 			expected: mq.Broker{
-				Metadata:     iacTypes.NewTestMetadata(),
-				PublicAccess: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				Logging: mq.Logging{
-					Metadata: iacTypes.NewTestMetadata(),
-					General:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					Audit:    iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					Audit: iacTypes.BoolTest(true),
 				},
 			},
 		},
@@ -51,12 +47,9 @@ func Test_adaptBroker(t *testing.T) {
 			  }
 `,
 			expected: mq.Broker{
-				Metadata:     iacTypes.NewTestMetadata(),
-				PublicAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				PublicAccess: iacTypes.BoolTest(true),
 				Logging: mq.Logging{
-					Metadata: iacTypes.NewTestMetadata(),
-					General:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					Audit:    iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					General: iacTypes.BoolTest(true),
 				},
 			},
 		},
@@ -67,13 +60,7 @@ func Test_adaptBroker(t *testing.T) {
 			  }
 `,
 			expected: mq.Broker{
-				Metadata:     iacTypes.NewTestMetadata(),
-				PublicAccess: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				Logging: mq.Logging{
-					Metadata: iacTypes.NewTestMetadata(),
-					General:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					Audit:    iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				},
+				Logging: mq.Logging{},
 			},
 		},
 	}

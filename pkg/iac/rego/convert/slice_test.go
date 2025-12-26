@@ -26,8 +26,8 @@ func Test_SliceConversion(t *testing.T) {
 
 func Test_SliceTypesConversion(t *testing.T) {
 	input := []types.StringValue{
-		types.String("test1", types.NewTestMetadata()),
-		types.String("test2", types.NewTestMetadata()),
+		types.StringTest("test1"),
+		types.StringTest("test2"),
 	}
 	converted := SliceToRego(reflect.ValueOf(input))
 	assert.Equal(t, []any{

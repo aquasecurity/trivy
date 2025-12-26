@@ -33,11 +33,9 @@ func Test_adaptKeyRings(t *testing.T) {
 `,
 			expected: []kms.KeyRing{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
 					Keys: []kms.Key{
 						{
-							Metadata:              iacTypes.NewTestMetadata(),
-							RotationPeriodSeconds: iacTypes.Int(7776000, iacTypes.NewTestMetadata()),
+							RotationPeriodSeconds: iacTypes.IntTest(7776000),
 						},
 					},
 				},
@@ -52,9 +50,7 @@ func Test_adaptKeyRings(t *testing.T) {
 
 `,
 			expected: []kms.KeyRing{
-				{
-					Metadata: iacTypes.NewTestMetadata(),
-				},
+				{},
 			},
 		},
 		{
@@ -71,11 +67,9 @@ func Test_adaptKeyRings(t *testing.T) {
 `,
 			expected: []kms.KeyRing{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
 					Keys: []kms.Key{
 						{
-							Metadata:              iacTypes.NewTestMetadata(),
-							RotationPeriodSeconds: iacTypes.Int(-1, iacTypes.NewTestMetadata()),
+							RotationPeriodSeconds: iacTypes.IntTest(-1),
 						},
 					},
 				},

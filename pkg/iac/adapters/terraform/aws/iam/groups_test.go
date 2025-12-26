@@ -46,12 +46,10 @@ func Test_adaptGroups(t *testing.T) {
 			  `,
 			expected: []iam.Group{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Name:     iacTypes.String("developers", iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("developers"),
 					Policies: []iam.Policy{
 						{
-							Metadata: iacTypes.NewTestMetadata(),
-							Name:     iacTypes.String("my_developer_policy", iacTypes.NewTestMetadata()),
+							Name:     iacTypes.StringTest("my_developer_policy"),
 							Document: defaultPolicyDocuemnt(false),
 						},
 					},
@@ -89,12 +87,10 @@ resource "aws_iam_group_policy_attachment" "test-attach" {
 `,
 			expected: []iam.Group{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Name:     iacTypes.String("test-group", iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("test-group"),
 					Policies: []iam.Policy{
 						{
-							Metadata: iacTypes.NewTestMetadata(),
-							Name:     iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
+							Name:     iacTypes.StringTest("test-policy"),
 							Document: defaultPolicyDocuemnt(false),
 						},
 					},

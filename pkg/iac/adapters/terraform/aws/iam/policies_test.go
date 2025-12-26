@@ -24,7 +24,6 @@ func defaultPolicyDocuemnt(offset bool) iam.Document {
 
 	return iam.Document{
 		Parsed:   builder.Build(),
-		Metadata: iacTypes.NewTestMetadata(),
 		IsOffset: offset,
 		HasRefs:  false,
 	}
@@ -58,10 +57,8 @@ func Test_adaptPolicies(t *testing.T) {
 `,
 			expected: []iam.Policy{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Name:     iacTypes.String("test", iacTypes.NewTestMetadata()),
+					Name:     iacTypes.StringTest("test"),
 					Document: defaultPolicyDocuemnt(false),
-					Builtin:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -94,11 +91,8 @@ resource "aws_iam_policy" "this" {
 `,
 			expected: []iam.Policy{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Name:     iacTypes.String("test-0", iacTypes.NewTestMetadata()),
-					Builtin:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("test-0"),
 					Document: iam.Document{
-						Metadata: iacTypes.NewTestMetadata(),
 						IsOffset: true,
 						HasRefs:  false,
 						Parsed: func() iamgo.Document {
@@ -144,11 +138,8 @@ resource "aws_iam_policy" "this" {
 }`,
 			expected: []iam.Policy{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Name:     iacTypes.String("test-sqs1", iacTypes.NewTestMetadata()),
-					Builtin:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("test-sqs1"),
 					Document: iam.Document{
-						Metadata: iacTypes.NewTestMetadata(),
 						IsOffset: true,
 						HasRefs:  false,
 						Parsed: func() iamgo.Document {
@@ -196,8 +187,7 @@ resource "aws_iam_policy" "this" {
 }`,
 			expected: []iam.Policy{
 				{
-					Name:    iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
-					Builtin: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("test-policy"),
 					Document: func() iam.Document {
 						builder := iamgo.NewPolicyBuilder()
 						firstStatement := iamgo.NewStatementBuilder().
@@ -218,7 +208,6 @@ resource "aws_iam_policy" "this" {
 
 						return iam.Document{
 							Parsed:   builder.Build(),
-							Metadata: iacTypes.NewTestMetadata(),
 							IsOffset: true,
 							HasRefs:  false,
 						}
@@ -256,7 +245,7 @@ data "aws_iam_policy_document" "policy_source" {
 }`,
 			expected: []iam.Policy{
 				{
-					Name: iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("test-policy"),
 					Document: func() iam.Document {
 						builder := iamgo.NewPolicyBuilder().
 							WithStatement(
@@ -276,7 +265,6 @@ data "aws_iam_policy_document" "policy_source" {
 
 						return iam.Document{
 							Parsed:   builder.Build(),
-							Metadata: iacTypes.NewTestMetadata(),
 							IsOffset: true,
 							HasRefs:  false,
 						}
@@ -316,7 +304,7 @@ data "aws_iam_policy_document" "policy_source2" {
 `,
 			expected: []iam.Policy{
 				{
-					Name: iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("test-policy"),
 					Document: func() iam.Document {
 						builder := iamgo.NewPolicyBuilder().
 							WithStatement(
@@ -329,7 +317,6 @@ data "aws_iam_policy_document" "policy_source2" {
 
 						return iam.Document{
 							Parsed:   builder.Build(),
-							Metadata: iacTypes.NewTestMetadata(),
 							IsOffset: true,
 							HasRefs:  false,
 						}
@@ -362,7 +349,7 @@ data "aws_iam_policy_document" "policy" {
 `,
 			expected: []iam.Policy{
 				{
-					Name: iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("test-policy"),
 					Document: func() iam.Document {
 						builder := iamgo.NewPolicyBuilder().
 							WithStatement(
@@ -375,7 +362,6 @@ data "aws_iam_policy_document" "policy" {
 
 						return iam.Document{
 							Parsed:   builder.Build(),
-							Metadata: iacTypes.NewTestMetadata(),
 							IsOffset: true,
 							HasRefs:  false,
 						}
@@ -395,7 +381,7 @@ data "aws_iam_policy_document" "policy" {
 }`,
 			expected: []iam.Policy{
 				{
-					Name: iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("test-policy"),
 					Document: iam.Document{
 						IsOffset: true,
 					},
@@ -461,7 +447,6 @@ EOF
 
 						return iam.Document{
 							Parsed:   builder.Build(),
-							Metadata: iacTypes.NewTestMetadata(),
 							IsOffset: false,
 							HasRefs:  true,
 						}

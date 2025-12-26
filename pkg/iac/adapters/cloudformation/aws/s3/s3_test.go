@@ -140,7 +140,7 @@ Resources:
 					{
 						Name: types.StringTest("test-bucket"),
 						Encryption: s3.Encryption{
-							Enabled: types.BoolDefault(false, types.NewTestMetadata()),
+							Enabled: types.BoolTest(false),
 						},
 					},
 				},
@@ -165,7 +165,7 @@ Resources:
 					{
 						Name: types.StringTest("test-bucket"),
 						Encryption: s3.Encryption{
-							Enabled:   types.BoolDefault(false, types.NewTestMetadata()),
+							Enabled:   types.BoolTest(false),
 							KMSKeyId:  types.StringTest("alias/my-key"),
 							Algorithm: types.StringTest("aes256"),
 						},

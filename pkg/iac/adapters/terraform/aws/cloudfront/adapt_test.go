@@ -44,27 +44,22 @@ func Test_adaptDistribution(t *testing.T) {
 			}
 `,
 			expected: cloudfront.Distribution{
-				Metadata: iacTypes.NewTestMetadata(),
-				WAFID:    iacTypes.String("waf_id", iacTypes.NewTestMetadata()),
+				WAFID: iacTypes.StringTest("waf_id"),
 				Logging: cloudfront.Logging{
-					Metadata: iacTypes.NewTestMetadata(),
-					Bucket:   iacTypes.String("mylogs.s3.amazonaws.com", iacTypes.NewTestMetadata()),
+					Bucket: iacTypes.StringTest("mylogs.s3.amazonaws.com"),
 				},
 				DefaultCacheBehaviour: cloudfront.CacheBehaviour{
-					Metadata:             iacTypes.NewTestMetadata(),
-					ViewerProtocolPolicy: iacTypes.String("redirect-to-https", iacTypes.NewTestMetadata()),
+					ViewerProtocolPolicy: iacTypes.StringTest("redirect-to-https"),
 				},
 				OrdererCacheBehaviours: []cloudfront.CacheBehaviour{
 					{
-						Metadata:             iacTypes.NewTestMetadata(),
-						ViewerProtocolPolicy: iacTypes.String("redirect-to-https", iacTypes.NewTestMetadata()),
+						ViewerProtocolPolicy: iacTypes.StringTest("redirect-to-https"),
 					},
 				},
 				ViewerCertificate: cloudfront.ViewerCertificate{
-					Metadata:                     iacTypes.NewTestMetadata(),
-					MinimumProtocolVersion:       iacTypes.String("TLSv1.2_2021", iacTypes.NewTestMetadata()),
-					CloudfrontDefaultCertificate: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					SSLSupportMethod:             iacTypes.String("sni-only", iacTypes.NewTestMetadata()),
+					MinimumProtocolVersion:       iacTypes.StringTest("TLSv1.2_2021"),
+					CloudfrontDefaultCertificate: iacTypes.BoolTest(true),
+					SSLSupportMethod:             iacTypes.StringTest("sni-only"),
 				},
 			},
 		},
@@ -75,20 +70,11 @@ func Test_adaptDistribution(t *testing.T) {
 			}
 `,
 			expected: cloudfront.Distribution{
-				Metadata: iacTypes.NewTestMetadata(),
-				WAFID:    iacTypes.String("", iacTypes.NewTestMetadata()),
-				Logging: cloudfront.Logging{
-					Metadata: iacTypes.NewTestMetadata(),
-					Bucket:   iacTypes.String("", iacTypes.NewTestMetadata()),
-				},
-				DefaultCacheBehaviour: cloudfront.CacheBehaviour{
-					Metadata:             iacTypes.NewTestMetadata(),
-					ViewerProtocolPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
-				},
+				Logging:               cloudfront.Logging{},
+				DefaultCacheBehaviour: cloudfront.CacheBehaviour{},
 
 				ViewerCertificate: cloudfront.ViewerCertificate{
-					Metadata:               iacTypes.NewTestMetadata(),
-					MinimumProtocolVersion: iacTypes.String("TLSv1", iacTypes.NewTestMetadata()),
+					MinimumProtocolVersion: iacTypes.StringTest("TLSv1"),
 				},
 			},
 		},

@@ -65,6 +65,12 @@ func MapExplicit(value map[string]string, m Metadata) MapValue {
 	return b
 }
 
+func MapTest(value map[string]string) MapValue {
+	b := Map(value, NewTestMetadata())
+	b.BaseAttribute.metadata.isUnresolvable = true
+	return b
+}
+
 func (b MapValue) Value() map[string]string {
 	return b.value
 }
