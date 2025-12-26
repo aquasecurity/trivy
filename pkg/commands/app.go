@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -18,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/auth"
 	"github.com/aquasecurity/trivy/pkg/commands/clean"
 	"github.com/aquasecurity/trivy/pkg/commands/convert"
+	"github.com/aquasecurity/trivy/pkg/commands/pro"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -60,6 +62,7 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 	groupScanning   = "scanning"
 	groupManagement = "management"
 	groupUtility    = "utility"
+	groupPro        = "pro"
 	groupPlugin     = "plugin"
 )
 
@@ -80,6 +83,10 @@ func NewApp() *cobra.Command {
 		&cobra.Group{
 			ID:    groupUtility,
 			Title: "Utility Commands",
+		},
+		&cobra.Group{
+			ID:    groupPro,
+			Title: "Trivy Pro Commands",
 		},
 	)
 	rootCmd.SetCompletionCommandGroupID(groupUtility)
@@ -102,6 +109,8 @@ func NewApp() *cobra.Command {
 		NewCleanCommand(globalFlags),
 		NewRegistryCommand(globalFlags),
 		NewVEXCommand(globalFlags),
+		NewLoginCommand(globalFlags),
+		NewLogoutCommand(globalFlags),
 	)
 
 	if plugins := loadPluginCommands(); len(plugins) > 0 {
@@ -267,6 +276,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewScanFlagGroup(),
 		flag.NewSecretFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
+		flag.NewProFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -349,6 +359,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewScanFlagGroup(),
 		flag.NewSecretFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
+		flag.NewProFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -415,6 +426,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewScanFlagGroup(),
 		flag.NewSecretFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
+		flag.NewProFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -480,6 +492,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewSecretFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
 		flag.NewRepoFlagGroup(),
+		flag.NewProFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -702,6 +715,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewModuleFlagGroup(),
 		flag.NewRegistryFlagGroup(),
 		flag.NewRegoFlagGroup(),
+		flag.NewProFlagGroup(),
 		&flag.K8sFlagGroup{
 			// Keep only --k8s-version flag and disable others
 			K8sVersion: flag.K8sVersionFlag.Clone(),
@@ -990,11 +1004,11 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ExitOnEOL = nil // disable '--exit-on-eol'
 	reportFlagGroup.TableMode = nil // disable '--table-mode's
 	compliance := flag.ComplianceFlag.Clone()
-	var compliances string
+	var compliances strings.Builder
 	for _, val := range types.BuiltInK8sCompliances {
-		compliances += fmt.Sprintf("\n  - %s", val)
+		compliances.WriteString(fmt.Sprintf("\n  - %s", val))
 	}
-	compliance.Usage = fmt.Sprintf("%s\nBuilt-in compliance's:%s", compliance.Usage, compliances)
+	compliance.Usage = fmt.Sprintf("%s\nBuilt-in compliance's:%s", compliance.Usage, compliances.String())
 	reportFlagGroup.Compliance = compliance // override usage as the accepted values differ for each subcommand.
 
 	formatFlag := flag.FormatFlag.Clone()
@@ -1095,6 +1109,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewScanFlagGroup(),
 		flag.NewSecretFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
+		flag.NewProFlagGroup(),
 		&flag.AWSFlagGroup{
 			Region: &flag.Flag[string]{
 				Name:       "aws-region",
@@ -1410,6 +1425,67 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	)
 
 	cmd.AddCommand(repoCmd)
+	return cmd
+}
+
+func NewLoginCommand(_ *flag.GlobalFlagGroup) *cobra.Command {
+	loginFlags := &flag.Flags{
+		flag.NewProFlagGroup(),
+	}
+
+	cmd := &cobra.Command{
+		Use:     "login",
+		Short:   "Log in to Trivy Pro",
+		GroupID: groupPro,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := loginFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			opts, err := loginFlags.ToOptions(args)
+			if err != nil {
+				return err
+			}
+			return pro.Login(cmd.Context(), opts)
+		},
+	}
+
+	cmd.AddGroup(&cobra.Group{
+		ID:    groupPro,
+		Title: "Trivy Pro Commands",
+	})
+
+	statusCmd := &cobra.Command{
+		Use:     "status",
+		Short:   "Check the login status of Trivy Pro",
+		Long:    "Checks if the user is logged in to Trivy Pro by checking the token in the keyring and the validating against the API.",
+		GroupID: groupPro,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := loginFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			opts, err := loginFlags.ToOptions(args)
+			if err != nil {
+				return err
+			}
+			return pro.Status(cmd.Context(), opts)
+		}}
+
+	cmd.AddCommand(statusCmd)
+	loginFlags.AddFlags(cmd)
+	loginFlags.AddFlags(statusCmd)
+	return cmd
+}
+
+func NewLogoutCommand(_ *flag.GlobalFlagGroup) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "logout",
+		Short:   "Log out of Trivy Pro",
+		GroupID: groupPro,
+		RunE: func(_ *cobra.Command, _ []string) error {
+			return pro.Logout()
+		},
+	}
+
 	return cmd
 }
 
