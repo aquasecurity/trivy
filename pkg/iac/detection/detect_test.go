@@ -453,6 +453,30 @@ rules:
 			},
 		},
 		{
+			name: "Azure ARM resources defined as an object",
+			path: "test.json",
+			r: strings.NewReader(`{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "resources": {
+    "myacc": {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2025-06-01",
+      "name": "my-acc-test",
+      "location": "location",
+			"kind": "Storage"
+    }
+  }
+}`),
+			expected: []FileType{
+				FileTypeJSON,
+				FileTypeCloudFormation,
+				FileTypeAzureARM,
+				FileTypeAnsible,
+			},
+		},
+		{
 			name: "Azure ARM template with parameters",
 			path: "test.json",
 			r: strings.NewReader(`
