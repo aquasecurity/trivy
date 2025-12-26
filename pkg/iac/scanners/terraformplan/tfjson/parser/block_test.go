@@ -69,6 +69,60 @@ func Test_ToHcl(t *testing.T) {
 		expected string
 	}{
 		{
+			name: "empty block",
+			block: PlanBlock{
+				BlockType: "resource",
+				Type:      "aws_s3_bucket",
+				Name:      "empty",
+			},
+			expected: `resource "aws_s3_bucket" "empty" {
+}
+`,
+		},
+		{
+			name: "simple attributes",
+			block: PlanBlock{
+				BlockType: "resource",
+				Type:      "aws_instance",
+				Name:      "example",
+				Attributes: map[string]any{
+					"num":     3,
+					"boolean": true,
+					"str":     "test",
+				},
+			},
+			expected: `resource "aws_instance" "example" {
+  boolean = true
+  num = 3
+  str = "test"
+}
+`,
+		},
+		{
+			name: "nested blocks",
+			block: PlanBlock{
+				BlockType: "resource",
+				Type:      "aws_security_group",
+				Name:      "sg",
+				Blocks: []*PlanBlock{
+					{
+						BlockType: "ingress",
+						Attributes: map[string]any{
+							"from_port": 80,
+							"to_port":   80,
+						},
+					},
+				},
+			},
+			expected: `resource "aws_security_group" "sg" {
+  ingress {
+    from_port = 80
+    to_port = 80
+  }
+}
+`,
+		},
+		{
 			name: "map key doesn't valid identifier",
 			block: PlanBlock{
 				BlockType: "resource",
