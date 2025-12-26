@@ -81,6 +81,29 @@ func Test_adaptKeyRings(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "invalid rotation period",
+			terraform: `
+			resource "google_kms_key_ring" "keyring" {
+  name = "keyring-example"
+}
+			  
+resource "google_kms_crypto_key" "example-key" {
+  name     = "crypto-key-example"
+  key_ring = google_kms_key_ring.keyring.id
+	rotation_period = ""
+}
+`,
+			expected: []kms.KeyRing{
+				{
+					Keys: []kms.Key{
+						{
+							RotationPeriodSeconds: iacTypes.IntTest(-1),
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
