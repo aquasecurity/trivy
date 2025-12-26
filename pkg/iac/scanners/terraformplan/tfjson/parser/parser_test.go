@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -99,6 +100,9 @@ resource "aws_security_group" "sg" {
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.expected, string(b))
+
+			_, diags := hclparse.NewParser().ParseHCL(b, "main.tf")
+			assert.NoError(t, diags)
 		})
 	}
 }
