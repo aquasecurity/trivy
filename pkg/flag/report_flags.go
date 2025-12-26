@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/mattn/go-shellwords"
-	"github.com/samber/lo"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
@@ -16,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
@@ -304,7 +304,7 @@ func toSeverity(severity []string) []dbTypes.Severity {
 	if len(severity) == 0 {
 		return nil
 	}
-	severities := lo.Map(severity, func(s string, _ int) dbTypes.Severity {
+	severities := xslices.Map(severity, func(s string) dbTypes.Severity {
 		// Note that there is no need to check the error here
 		// since the severity value is already validated in the flag parser.
 		sev, _ := dbTypes.NewSeverity(s)

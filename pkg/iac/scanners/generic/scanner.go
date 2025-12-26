@@ -20,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func NewJsonScanner(opts ...options.ScannerOption) *GenericScanner[*identityMarshaler] {
@@ -183,7 +184,7 @@ func (s *GenericScanner[T]) applyIgnoreRules(fsys fs.FS, results scan.Results) e
 		return nil
 	}
 
-	uniqueFiles := lo.Uniq(lo.Map(results.GetFailed(), func(res scan.Result, _ int) string {
+	uniqueFiles := lo.Uniq(xslices.Map(results.GetFailed(), func(res scan.Result) string {
 		return res.Metadata().Range().GetFilename()
 	}))
 

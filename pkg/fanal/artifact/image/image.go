@@ -31,6 +31,7 @@ import (
 	trivyTypes "github.com/aquasecurity/trivy/pkg/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xos "github.com/aquasecurity/trivy/pkg/x/os"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 const artifactVersion = 1
@@ -540,9 +541,7 @@ func (a Artifact) diffIDs(configFile *v1.ConfigFile) []string {
 	if configFile == nil {
 		return nil
 	}
-	return lo.Map(configFile.RootFS.DiffIDs, func(diffID v1.Hash, _ int) string {
-		return diffID.String()
-	})
+	return xslices.Map(configFile.RootFS.DiffIDs, v1.Hash.String)
 }
 
 func (a Artifact) uncompressedLayer(diffID string) (string, io.ReadCloser, error) {

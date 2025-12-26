@@ -3,10 +3,9 @@ package secret
 import (
 	"fmt"
 
-	"github.com/samber/lo"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	iacRules "github.com/aquasecurity/trivy/pkg/iac/rules"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 var (
@@ -90,7 +89,7 @@ func GetBuiltinRules() []Rule {
 
 // This function is exported for trivy-plugin-aqua purposes only
 func GetSecretRulesMetadata() []iacRules.Check {
-	return lo.Map(builtinRules, func(rule Rule, _ int) iacRules.Check {
+	return xslices.Map(builtinRules, func(rule Rule) iacRules.Check {
 		return iacRules.Check{
 			Name:        rule.ID,
 			Description: rule.Title,

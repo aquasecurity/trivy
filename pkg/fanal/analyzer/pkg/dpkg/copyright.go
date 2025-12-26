@@ -10,13 +10,13 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func init() {
@@ -112,7 +112,7 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r xio.ReadSeekerAt) ([]types.Licens
 		}
 	}
 
-	return lo.Map(licenses, func(license string, _ int) types.LicenseFinding {
+	return xslices.Map(licenses, func(license string) types.LicenseFinding {
 		return types.LicenseFinding{Name: license}
 	}), nil
 

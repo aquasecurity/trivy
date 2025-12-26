@@ -5,12 +5,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/samber/lo"
-
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 var (
@@ -65,7 +64,7 @@ func (a artifact) Equal(o artifact) bool {
 
 func (a artifact) ToPOMLicenses() pomLicenses {
 	return pomLicenses{
-		License: lo.Map(a.Licenses, func(lic string, _ int) pomLicense {
+		License: xslices.Map(a.Licenses, func(lic string) pomLicense {
 			return pomLicense{Name: lic}
 		}),
 	}

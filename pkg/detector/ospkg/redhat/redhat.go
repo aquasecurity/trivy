@@ -10,7 +10,6 @@ import (
 	"time"
 
 	version "github.com/knqyf263/go-rpm-version"
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -21,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scan/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 var (
@@ -219,7 +219,7 @@ var genericSuffixPattern = regexp.MustCompile(`__\d+$`)
 //
 // cf. https://github.com/aquasecurity/trivy-db/issues/435
 func cleanContentSets(contentSets []string) []string {
-	return lo.Map(contentSets, func(cs string, _ int) string {
+	return xslices.Map(contentSets, func(cs string) string {
 		return genericSuffixPattern.ReplaceAllString(cs, "")
 	})
 }

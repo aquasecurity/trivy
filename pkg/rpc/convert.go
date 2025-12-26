@@ -15,6 +15,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 	"github.com/aquasecurity/trivy/rpc/cache"
 	"github.com/aquasecurity/trivy/rpc/common"
 	"github.com/aquasecurity/trivy/rpc/scanner"
@@ -508,7 +509,7 @@ func ConvertFromRPCDetectedSecrets(rpcFindings []*common.SecretFinding) []types.
 	if len(rpcFindings) == 0 {
 		return nil
 	}
-	return lo.Map(ConvertFromRPCSecretFindings(rpcFindings), func(s ftypes.SecretFinding, _ int) types.DetectedSecret {
+	return xslices.Map(ConvertFromRPCSecretFindings(rpcFindings), func(s ftypes.SecretFinding) types.DetectedSecret {
 		return types.DetectedSecret(s)
 	})
 }
@@ -1016,7 +1017,7 @@ func ConvertToMissingBlobsRequest(imageID string, layerIDs []string) *cache.Miss
 func ConvertToRPCScanResponse(response types.ScanResponse) *scanner.ScanResponse {
 	var rpcResults []*scanner.Result
 	for _, result := range response.Results {
-		secretFindings := lo.Map(result.Secrets, func(s types.DetectedSecret, _ int) ftypes.SecretFinding {
+		secretFindings := xslices.Map(result.Secrets, func(s types.DetectedSecret) ftypes.SecretFinding {
 			return ftypes.SecretFinding(s)
 		})
 		rpcResults = append(rpcResults, &scanner.Result{
@@ -1035,9 +1036,7 @@ func ConvertToRPCScanResponse(response types.ScanResponse) *scanner.ScanResponse
 	return &scanner.ScanResponse{
 		Os:      ConvertToRPCOS(response.OS),
 		Results: rpcResults,
-		Layers: lo.Map(response.Layers, func(layer ftypes.Layer, _ int) *common.Layer {
-			return ConvertToRPCLayer(layer)
-		}),
+		Layers:  xslices.Map(response.Layers, ConvertToRPCLayer),
 	}
 }
 
