@@ -46,7 +46,7 @@ func Test_ValueAsTime(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			val := NewValue(tt.val, types.NewTestMetadata())
 			got := val.AsTimeValue(types.NewTestMetadata()).Value()
-			assert.Equal(t, tt.expected, got)
+			assert.Equal(t, tt.expected, got.Time)
 		})
 	}
 }
