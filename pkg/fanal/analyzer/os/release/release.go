@@ -40,9 +40,18 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 		key, value := strings.TrimSpace(ss[0]), strings.TrimSpace(ss[1])
 
 		switch key {
+		case "NAME":
+			osName := strings.Trim(value, `"'`)
+			osFamily := nameToOSFamily(osName)
+			if osFamily != "" {
+				family = osFamily
+			}
 		case "ID":
 			id := strings.Trim(value, `"'`)
-			family = idToOSFamily(id)
+			// Only set from ID if family not already set from NAME
+			if family == "" {
+				family = idToOSFamily(id)
+			}
 		case "VERSION_ID":
 			versionID = strings.Trim(value, `"'`)
 		default:
@@ -110,6 +119,16 @@ func idToOSFamily(id string) types.OSType {
 		return types.CoreOS
 	}
 	// This OS is not supported for this analyzer.
+	return ""
+}
+
+// nameToOSFamily detects OS family from the NAME field.
+// This handles cases where NAME explicitly indicates a specific OS variant.
+func nameToOSFamily(name string) types.OSType {
+	switch name {
+	case "CentOS Stream":
+		return types.CentOSStream
+	}
 	return ""
 }
 
