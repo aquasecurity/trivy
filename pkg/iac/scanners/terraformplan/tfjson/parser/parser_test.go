@@ -11,18 +11,15 @@ import (
 )
 
 func TestParser_ParseFile(t *testing.T) {
-	planFile, err := parser.New().ParseFile("../testdata/plan.json")
-	require.NoError(t, err)
-	assert.NotNil(t, planFile)
-
-	fsys, err := planFile.ToFS()
-	require.NoError(t, err)
-	assert.NotNil(t, fsys)
-
-	b, err := fs.ReadFile(fsys, parser.TerraformMainFile)
-	require.NoError(t, err)
-
-	expected := `resource "aws_s3_bucket" "planbucket" {
+	tests := []struct {
+		name     string
+		path     string
+		expected string
+	}{
+		{
+			name: "simple case",
+			path: "../testdata/plan.json",
+			expected: `resource "aws_s3_bucket" "planbucket" {
   bucket = "tfsec-plan-testing"
   force_destroy = false
   logging {
@@ -69,7 +66,34 @@ resource "aws_security_group" "sg" {
     to_port = 80
   }
 }
-`
+`,
+		},
+		{
+			name: "with module call",
+			path: "../testdata/module_call.json",
+			expected: `resource "aws_s3_bucket" "main_c3bbddd8ef830639c0419b6b59b1fd80" {
+  bucket = "test"
+  force_destroy = false
+  region = "eu-west-1"
+}
+`,
+		},
+	}
 
-	assert.Equal(t, expected, string(b))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			planFile, err := parser.New().ParseFile(tt.path)
+			require.NoError(t, err)
+			assert.NotNil(t, planFile)
+
+			fsys, err := planFile.ToFS()
+			require.NoError(t, err)
+			assert.NotNil(t, fsys)
+
+			b, err := fs.ReadFile(fsys, parser.TerraformMainFile)
+			require.NoError(t, err)
+
+			assert.Equal(t, tt.expected, string(b))
+		})
+	}
 }
