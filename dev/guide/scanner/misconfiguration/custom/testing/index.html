@@ -8195,7 +8195,7 @@ test_add_denied {
 <p>To write tests for custom checks, you can refer to existing tests under [trivy-checks][trivy-checks].</p>
 <h2 id="go-testing">Go testing<a class="headerlink" href="#go-testing" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/aquasecurity/fanal">Fanal</a> which is a core library of Trivy can be imported as a Go library.
-You can scan config files in Go and test your custom checks using Go's testing methods, such as <a href="https://github.com/golang/go/wiki/TableDrivenTests">table-driven tests</a>.
+You can scan config files in Go and test your custom checks using Go's testing methods, such as <a href="https://go.dev/wiki/TableDrivenTests">table-driven tests</a>.
 This allows you to use the actual configuration file as input, making it easy to prepare test data and ensure that your custom checks work in practice.</p>
 <p>In particular, Dockerfile and HCL need to be converted to structural data as input, which may be different from the expected input format.</p>
 <div class="admonition tip">
