@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -171,7 +172,7 @@ func (r *hclRenderer) renderMap(val map[string]any) {
 			continue
 		}
 
-		r.renderAttributeLine(k, v)
+		r.renderAttributeLine(strconv.Quote(k), v)
 	}
 	r.write(r.indent + "}")
 }
