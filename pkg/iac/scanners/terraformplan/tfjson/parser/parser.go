@@ -9,7 +9,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
@@ -27,7 +26,6 @@ func New() *Parser {
 }
 
 func (p *Parser) ParseFile(filepath string) (*PlanFile, error) {
-
 	if _, err := os.Stat(filepath); err != nil {
 		return nil, err
 	}
@@ -41,7 +39,6 @@ func (p *Parser) ParseFile(filepath string) (*PlanFile, error) {
 }
 
 func (p *Parser) Parse(reader io.Reader) (*PlanFile, error) {
-
 	var planFile PlanFile
 
 	if err := json.NewDecoder(reader).Decode(&planFile); err != nil {
@@ -74,14 +71,14 @@ func (p *PlanFile) ToFS() (fs.FS, error) {
 	return fsys, nil
 }
 
-func buildPlanBlocks(module Module, resourceChanges []ResourceChange, configuration Configuration) ([]*terraform.PlanBlock, error) {
-	var resources []*terraform.PlanBlock
+func buildPlanBlocks(module Module, resourceChanges []ResourceChange, configuration Configuration) ([]*PlanBlock, error) {
+	var resources []*PlanBlock
 	for _, r := range module.Resources {
 		resourceExprs := getConfiguration(r.Address, configuration.RootModule)
 		schema := schemaForBlock(r, resourceExprs)
 		changes := getValues(r.Address, resourceChanges)
 		resource := decodeBlock(schema, changes.After)
-		// fill top-level block fileds
+		// fill top-level block fields
 		resource.BlockType = r.BlockType()
 		resource.Type = r.Type
 		resource.Name = moduleResourceName(r.Address, r.Type, r.Name)
@@ -99,8 +96,8 @@ func buildPlanBlocks(module Module, resourceChanges []ResourceChange, configurat
 	return resources, nil
 }
 
-func decodeBlock(schema BlockSchema, rawBlock map[string]any) *terraform.PlanBlock {
-	block := &terraform.PlanBlock{
+func decodeBlock(schema BlockSchema, rawBlock map[string]any) *PlanBlock {
+	block := &PlanBlock{
 		Attributes: make(map[string]any),
 	}
 
@@ -112,7 +109,7 @@ func decodeBlock(schema BlockSchema, rawBlock map[string]any) *terraform.PlanBlo
 	return block
 }
 
-func handleChild(block *terraform.PlanBlock, k string, child any, schema *SchemaNode) {
+func handleChild(block *PlanBlock, k string, child any, schema *SchemaNode) {
 	switch {
 	case schema == nil:
 		appendBlockOrAttribute(block, k, child)
@@ -131,10 +128,10 @@ func normalizeToSlice(v any) []any {
 	return []any{v}
 }
 
-func appendBlockOrAttribute(block *terraform.PlanBlock, name string, value any) {
+func appendBlockOrAttribute(block *PlanBlock, name string, value any) {
 	if s, ok := value.([]any); ok && len(s) > 0 {
 		if m, ok := s[0].(map[string]any); ok {
-			block.Blocks = append(block.Blocks, &terraform.PlanBlock{
+			block.Blocks = append(block.Blocks, &PlanBlock{
 				Name:       name,
 				Attributes: m,
 			})
@@ -144,7 +141,7 @@ func appendBlockOrAttribute(block *terraform.PlanBlock, name string, value any) 
 	block.Attributes[name] = value
 }
 
-func populateReferences(schema BlockSchema, block *terraform.PlanBlock) {
+func populateReferences(schema BlockSchema, block *PlanBlock) {
 	for k, childNodeSchema := range schema {
 		switch childNodeSchema.Type {
 		case BlockNode:
@@ -153,7 +150,7 @@ func populateReferences(schema BlockSchema, block *terraform.PlanBlock) {
 				populateReferences(childrenBlockChema, cb)
 			}
 		case AttributeNode:
-			if ref, ok := childNodeSchema.Value.(terraform.PlanReference); ok {
+			if ref, ok := childNodeSchema.Value.(PlanReference); ok {
 				if _, exists := block.Attributes[k]; !exists {
 					block.Attributes[k] = ref
 				}
@@ -162,8 +159,8 @@ func populateReferences(schema BlockSchema, block *terraform.PlanBlock) {
 	}
 }
 
-func decodeNestedBlocks(schema *SchemaNode, name string, v []any) []*terraform.PlanBlock {
-	nestedBlocks := make([]*terraform.PlanBlock, 0, len(v))
+func decodeNestedBlocks(schema *SchemaNode, name string, v []any) []*PlanBlock {
+	nestedBlocks := make([]*PlanBlock, 0, len(v))
 	for i, el := range v {
 		m, ok := el.(map[string]any)
 		if !ok {
@@ -198,12 +195,12 @@ func unpackConfigurationValue(val map[string]any, r Resource) any {
 		case "references":
 			s, ok := v.([]any)
 			if !ok || len(s) == 0 {
-				return terraform.PlanReference{}
+				return PlanReference{}
 			}
 
 			ref, ok := s[0].(string)
 			if !ok {
-				return terraform.PlanReference{}
+				return PlanReference{}
 			}
 			return parseAttributeReference(r.Address, r.Type, ref)
 		case "constant_value":
@@ -217,7 +214,7 @@ func unpackConfigurationValue(val map[string]any, r Resource) any {
 // parseAttributeReference parses an attribute reference string and returns
 // a PlanReference. The reference may point to another resource and is adjusted
 // according to Terraform address rules.
-func parseAttributeReference(rAddress, rType, reference string) terraform.PlanReference {
+func parseAttributeReference(rAddress, rType, reference string) PlanReference {
 	parts := strings.Split(reference, ".")
 	nameIdx := 1
 	if parts[0] == "data" {
@@ -225,7 +222,7 @@ func parseAttributeReference(rAddress, rType, reference string) terraform.PlanRe
 	}
 	parts[nameIdx] = moduleResourceName(rAddress, rType, parts[nameIdx])
 	reference = strings.Join(parts, ".")
-	return terraform.PlanReference{Value: reference}
+	return PlanReference{Value: reference}
 }
 
 // moduleResourceName returns the resource name with a module hash if the resource
