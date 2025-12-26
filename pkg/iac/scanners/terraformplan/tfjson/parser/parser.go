@@ -2,6 +2,7 @@ package parser
 
 import (
 	"crypto/md5" //#nosec
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -50,7 +51,7 @@ func (p *Parser) Parse(reader io.Reader) (*PlanFile, error) {
 }
 
 func (p *PlanFile) ToFS() (fs.FS, error) {
-	resources, err := buildPlanBlocks(p.PlannedValues.RootModule, p.ResourceChanges, p.Configuration)
+	resources, err := buildPlanBlocks(p.PlannedValues.RootModule, p.ResourceChanges, p.Configuration.RootModule)
 	if err != nil {
 		return nil, err
 	}
@@ -71,10 +72,10 @@ func (p *PlanFile) ToFS() (fs.FS, error) {
 	return fsys, nil
 }
 
-func buildPlanBlocks(module Module, resourceChanges []ResourceChange, configuration Configuration) ([]*PlanBlock, error) {
+func buildPlanBlocks(module Module, resourceChanges []ResourceChange, configuration ConfigurationModule) ([]*PlanBlock, error) {
 	var resources []*PlanBlock
 	for _, r := range module.Resources {
-		resourceExprs := getConfiguration(r.Address, configuration.RootModule)
+		resourceExprs := getConfiguration(r.Address, module.Address, configuration)
 		schema := schemaForBlock(r, resourceExprs)
 		changes := getValues(r.Address, resourceChanges)
 		resource := decodeBlock(schema, changes.After)
@@ -86,11 +87,15 @@ func buildPlanBlocks(module Module, resourceChanges []ResourceChange, configurat
 	}
 
 	for _, m := range module.ChildModules {
-		cr, err := buildPlanBlocks(m.Module, resourceChanges, configuration)
+		// The module name is always the last part of the address
+		parts := strings.Split(m.Address, ".")
+		moduleName := parts[len(parts)-1]
+		moduleCall := configuration.ModuleCalls[moduleName]
+		pb, err := buildPlanBlocks(m, resourceChanges, moduleCall.Module)
 		if err != nil {
 			return nil, err
 		}
-		resources = append(resources, cr...)
+		resources = append(resources, pb...)
 	}
 
 	return resources, nil
@@ -232,21 +237,14 @@ func moduleResourceName(rAddress, rType, name string) string {
 		return name
 	}
 
-	hashable := strings.TrimSuffix(strings.Split(rAddress, fmt.Sprintf(".%s.", rType))[0], ".data")
-	/* #nosec */
-	hash := fmt.Sprintf("%x", md5.Sum([]byte(hashable)))
-	return fmt.Sprintf("%s_%s", name, hash)
+	parts := strings.Split(rAddress, fmt.Sprintf(".%s.", rType))
+	moduleAddress := strings.TrimSuffix(parts[0], ".data")
+	hash := md5.Sum([]byte(moduleAddress)) // #nosec
+	return fmt.Sprintf("%s_%s", name, hex.EncodeToString(hash[:]))
 }
 
-func getConfiguration(address string, configuration ConfigurationModule) ResourceExpressions {
-	moduleParts, resourceAddress := splitModuleAddress(address)
-
-	for _, moduleName := range moduleParts {
-		if module, ok := configuration.ModuleCalls[moduleName]; ok {
-			configuration = module.Module
-		}
-	}
-
+func getConfiguration(address string, moduleAddress string, configuration ConfigurationModule) ResourceExpressions {
+	resourceAddress, _ := strings.CutPrefix(address, moduleAddress)
 	for _, resource := range configuration.Resources {
 		if resource.Address == resourceAddress {
 			return resource.Expressions
@@ -254,23 +252,6 @@ func getConfiguration(address string, configuration ConfigurationModule) Resourc
 	}
 
 	return make(ResourceExpressions)
-}
-
-// splitModuleAddress splits a Terraform address into module parts and the final resource address.
-// For example: "module.network.module.subnet.aws_subnet.this[0]" =>
-// moduleParts: ["network", "subnet"], resourceAddress: "aws_subnet.this[0]"
-func splitModuleAddress(address string) (moduleParts []string, resourceAddress string) {
-	resourceAddress = address
-	for strings.HasPrefix(resourceAddress, "module.") {
-		parts := strings.Split(resourceAddress, ".")
-		if len(parts) > 3 {
-			moduleParts = append(moduleParts, parts[1])
-			resourceAddress = strings.Join(parts[2:], ".")
-		} else {
-			break
-		}
-	}
-	return
 }
 
 func getValues(address string, resourceChange []ResourceChange) *ResourceChange {
@@ -319,6 +300,7 @@ func schemaForBlock(r Resource, expressions ResourceExpressions) BlockSchema {
 func schemaForExpression(r Resource, expr any) *SchemaNode {
 	switch v := expr.(type) {
 	case map[string]any:
+		// https://developer.hashicorp.com/terraform/internals/json-format#expression-representation
 		attrKeys := []string{"constant_value", "references"}
 		for _, k := range attrKeys {
 			if _, exists := v[k]; exists {
@@ -329,6 +311,7 @@ func schemaForExpression(r Resource, expr any) *SchemaNode {
 				}
 			}
 		}
+		// https://developer.hashicorp.com/terraform/internals/json-format#block-expressions-representation
 		return &SchemaNode{
 			Type:     BlockNode,
 			Children: []BlockSchema{schemaForBlock(r, v)},

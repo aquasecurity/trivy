@@ -35,12 +35,9 @@ type Change struct {
 }
 
 type Module struct {
-	Resources    []Resource    `json:"resources"`
-	ChildModules []ChildModule `json:"child_modules"`
-}
-
-type ChildModule struct {
-	Module
+	Resources    []Resource `json:"resources"`
+	ChildModules []Module   `json:"child_modules"`
+	// Omitted if the instance is in the root module.
 	Address string `json:"address"`
 }
 
@@ -52,11 +49,6 @@ type ConfigurationModule struct {
 type CallModule struct {
 	Source string              `json:"source"`
 	Module ConfigurationModule `json:"module"`
-}
-
-type ConfigurationChildModule struct {
-	ConfigurationModule
-	Address string `json:"address"`
 }
 
 type PlannedValues struct {

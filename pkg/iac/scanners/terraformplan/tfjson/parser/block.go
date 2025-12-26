@@ -8,7 +8,7 @@ import (
 )
 
 type PlanReference struct {
-	Value any
+	Value string
 }
 
 type PlanBlock struct {
