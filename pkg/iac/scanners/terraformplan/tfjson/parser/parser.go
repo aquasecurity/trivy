@@ -26,19 +26,6 @@ func New() *Parser {
 	}
 }
 
-func (p *Parser) ParseFile(filepath string) (*PlanFile, error) {
-	if _, err := os.Stat(filepath); err != nil {
-		return nil, err
-	}
-
-	reader, err := os.Open(filepath)
-	if err != nil {
-		return nil, err
-	}
-	defer reader.Close()
-	return p.Parse(reader)
-}
-
 func (p *Parser) Parse(reader io.Reader) (*PlanFile, error) {
 	var planFile PlanFile
 
@@ -61,7 +48,7 @@ func (p *PlanFile) ToFS() (fs.FS, error) {
 		if i > 0 {
 			sb.WriteByte('\n')
 		}
-		r.ToHCL(&sb)
+		r.toHCL(&sb)
 	}
 
 	content := sb.String()

@@ -1,7 +1,9 @@
 package parser_test
 
 import (
+	"bytes"
 	"io/fs"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -10,7 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson/parser"
 )
 
-func TestParser_ParseFile(t *testing.T) {
+func TestParser_Parse(t *testing.T) {
 	tests := []struct {
 		name     string
 		path     string
@@ -82,7 +84,10 @@ resource "aws_security_group" "sg" {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			planFile, err := parser.New().ParseFile(tt.path)
+			data, err := os.ReadFile(tt.path)
+			require.NoError(t, err)
+
+			planFile, err := parser.New().Parse(bytes.NewReader(data))
 			require.NoError(t, err)
 			assert.NotNil(t, planFile)
 

@@ -33,7 +33,7 @@ func (pb *PlanBlock) GetOrCreateBlock(name string) *PlanBlock {
 	return newChildBlock
 }
 
-func (pb *PlanBlock) ToHCL(w io.Writer) {
+func (pb *PlanBlock) toHCL(w io.Writer) {
 	r := &hclRenderer{
 		w:      w,
 		indent: "",
