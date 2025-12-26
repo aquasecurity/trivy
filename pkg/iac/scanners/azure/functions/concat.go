@@ -2,17 +2,18 @@ package functions
 
 import (
 	"fmt"
+	"strings"
 )
 
 func Concat(args ...any) any {
 
 	switch args[0].(type) {
 	case string:
-		var result string
+		var sb strings.Builder
 		for _, arg := range args {
-			result += fmt.Sprintf("%v", arg)
+			sb.WriteString(fmt.Sprintf("%v", arg))
 		}
-		return result
+		return sb.String()
 	case any:
 		var result []any
 		for _, arg := range args {

@@ -39,7 +39,6 @@ jobs:
         with:
           repository: ${{ github.repository_owner }}/trivy-repo
           path: trivy-repo
-          fetch-depth: 0
           token: ${{ secrets.ORG_REPO_TOKEN }}
 
       - name: Setup git settings
@@ -75,6 +74,7 @@ jobs:
         uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
         with:
           go-version-file: go.mod
+          check-latest: true # Ensure we use the latest Go patch version
           cache: false
 
       - name: Install Go tools

@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/cachetest"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -35,7 +36,7 @@ import (
 
 // Common blob IDs used across multiple test cases to reduce duplication
 const (
-	alpineBaseLayerID     = "sha256:be60f1fe61fc63ab50b10fe0779614e605a973a38cd7d2a02f3f20b081e56d4a"
+	alpineBaseLayerID     = "sha256:6c42077a82b21707f581759b12a99cc9a593ce35a0d7be4c19c01eb48bd5ba33"
 	alpineBaseLayerDiffID = "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"
 	alpineArtifactID      = "sha256:3c709d2a158be3a97051e10cd0e30f047225cb9505101feb3fadcd395c2e0408"
 	composerImageID       = "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72"
@@ -442,6 +443,9 @@ func TestArtifact_Inspect(t *testing.T) {
 					DiffIDs: []string{
 						alpineBaseLayerDiffID,
 					},
+					RepoTags:    []string{"alpine:3.11"},
+					RepoDigests: nil,
+					Reference:   testutil.MustParseReference(t, "alpine:3.11"),
 					ConfigFile: v1.ConfigFile{
 						Architecture:  "amd64",
 						Author:        "",
@@ -506,7 +510,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID: "sha256:f2a647dcf780c603f864e491dca1a042b1e98062b530c813681d1bb4a85bcb18",
+					ID: "sha256:75a461ca76eecc6cea981889d69aa1c2dd78c436108be8be1bbc29295520c7d4",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          3061760,
@@ -529,6 +533,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										SrcVersion: "9.9+deb9u9",
 										Maintainer: "Santiago Vila <sanvila@debian.org>",
 										Arch:       "amd64",
+										Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
 									},
 								},
 							},
@@ -543,6 +548,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										SrcVersion: "5.4",
 										Maintainer: "Marco d'Itri <md@linux.it>",
 										Arch:       "all",
+										Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
 									},
 								},
 							},
@@ -559,6 +565,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										SrcRelease: "0+deb9u1",
 										Maintainer: "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
 										Arch:       "all",
+										Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
 									},
 								},
 							},
@@ -594,7 +601,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:c988cc5a0b8f3dc542c15c303d9200dee47d4fbed0e498a5bfbf3b4bef7a5af7",
+					ID: "sha256:81afc1747d0fdec7a606c27570313634ae331fab6f13566b23d0f6b3e498c050",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          15441920,
@@ -615,6 +622,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										SrcRelease: "11+deb9u4",
 										Maintainer: "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
 										Arch:       "amd64",
+										Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
 									},
 								},
 							},
@@ -631,6 +639,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										SrcRelease: "1~deb9u1",
 										Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>",
 										Arch:       "amd64",
+										Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
 									},
 								},
 							},
@@ -647,6 +656,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										SrcRelease: "1~deb9u1",
 										Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>",
 										Arch:       "amd64",
+										Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
 									},
 								},
 							},
@@ -689,7 +699,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:05c19ffd5d898588400522070abd98c770b2965a7f4867d5c882c2a8783e40cc",
+					ID: "sha256:0778c3e388c54f736a3d6e74ed390a91fdb42c6809f8fb743d4f72acb41a5d6d",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          29696,
@@ -896,7 +906,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:c737743c0f8b35906650a02125f05c8b35916c0febf64984f4dfaacd0f72509d",
+					ID: "sha256:5a3e3f25fdc97a14d69d99c63dd640cd2d38af5b987b7a95084cce3d835970fb",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          6656,
@@ -1759,10 +1769,10 @@ func TestArtifact_Inspect(t *testing.T) {
 				Type: types.TypeContainerImage,
 				ID:   "sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b",
 				BlobIDs: []string{
-					"sha256:f2a647dcf780c603f864e491dca1a042b1e98062b530c813681d1bb4a85bcb18",
-					"sha256:c988cc5a0b8f3dc542c15c303d9200dee47d4fbed0e498a5bfbf3b4bef7a5af7",
-					"sha256:05c19ffd5d898588400522070abd98c770b2965a7f4867d5c882c2a8783e40cc",
-					"sha256:c737743c0f8b35906650a02125f05c8b35916c0febf64984f4dfaacd0f72509d",
+					"sha256:75a461ca76eecc6cea981889d69aa1c2dd78c436108be8be1bbc29295520c7d4",
+					"sha256:81afc1747d0fdec7a606c27570313634ae331fab6f13566b23d0f6b3e498c050",
+					"sha256:0778c3e388c54f736a3d6e74ed390a91fdb42c6809f8fb743d4f72acb41a5d6d",
+					"sha256:5a3e3f25fdc97a14d69d99c63dd640cd2d38af5b987b7a95084cce3d835970fb",
 				},
 				ImageMetadata: artifact.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
@@ -1772,6 +1782,9 @@ func TestArtifact_Inspect(t *testing.T) {
 						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 						"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
 					},
+					RepoTags:    []string{"vuln-image:latest"},
+					RepoDigests: nil,
+					Reference:   testutil.MustParseReference(t, "vuln-image:latest"),
 					ConfigFile: v1.ConfigFile{
 						Architecture:  "amd64",
 						Author:        "",
@@ -1867,7 +1880,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID: "sha256:48b4a983ef1ec8f0d19934ccf7fca3d2114466ad32207e16371620628f149984",
+					ID: "sha256:a83985cade3970577a9af328db9c88c0bf15cad40f7d2cf6d76e83882bc8146d",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          3061760,
@@ -1877,7 +1890,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:a4d2820bd2c076f6153a9053843d4a56d31147ce486ec5e4a2c0405cec506d6c",
+					ID: "sha256:b109622c2d106193db505762f1f3e78cf0035a69e559caf07c305c92ddb89356",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          15441920,
@@ -1887,7 +1900,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:c5fa5e736cee843c563c222963eb89fc775f0620020ff9d51d5e5db8ef62eec4",
+					ID: "sha256:115f689385cb66077c338c52f2c9d6f3018a18c89be7fe7d23f1645422d7d59d",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          29696,
@@ -1898,7 +1911,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:7e223b95d6d589cdb196e29ef6c6ac0acdd2c471350dd9880a420b4249f6e7bb",
+					ID: "sha256:60129d309cd4f16d69262106d6074f37c6d37f6c9089a9710ec96ae067716636",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          6656,
@@ -1914,10 +1927,10 @@ func TestArtifact_Inspect(t *testing.T) {
 				Type: types.TypeContainerImage,
 				ID:   "sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b",
 				BlobIDs: []string{
-					"sha256:48b4a983ef1ec8f0d19934ccf7fca3d2114466ad32207e16371620628f149984",
-					"sha256:a4d2820bd2c076f6153a9053843d4a56d31147ce486ec5e4a2c0405cec506d6c",
-					"sha256:c5fa5e736cee843c563c222963eb89fc775f0620020ff9d51d5e5db8ef62eec4",
-					"sha256:7e223b95d6d589cdb196e29ef6c6ac0acdd2c471350dd9880a420b4249f6e7bb",
+					"sha256:a83985cade3970577a9af328db9c88c0bf15cad40f7d2cf6d76e83882bc8146d",
+					"sha256:b109622c2d106193db505762f1f3e78cf0035a69e559caf07c305c92ddb89356",
+					"sha256:115f689385cb66077c338c52f2c9d6f3018a18c89be7fe7d23f1645422d7d59d",
+					"sha256:60129d309cd4f16d69262106d6074f37c6d37f6c9089a9710ec96ae067716636",
 				},
 				ImageMetadata: artifact.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
@@ -1927,6 +1940,9 @@ func TestArtifact_Inspect(t *testing.T) {
 						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 						"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
 					},
+					RepoTags:    []string{"vuln-image:latest"},
+					RepoDigests: nil,
+					Reference:   testutil.MustParseReference(t, "vuln-image:latest"),
 					ConfigFile: v1.ConfigFile{
 						Architecture:  "amd64",
 						Author:        "",

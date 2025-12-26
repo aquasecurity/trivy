@@ -2,6 +2,7 @@ package sum
 
 import (
 	"bufio"
+	"context"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -18,7 +19,7 @@ func NewParser() *Parser {
 }
 
 // Parse parses a go.sum file
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var pkgs []ftypes.Package
 	uniquePkgs := make(map[string]string)
 

@@ -3,6 +3,7 @@
 package integration
 
 import (
+	"cmp"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -37,14 +38,18 @@ type repoTestArgs struct {
 	tfExcludeDownloadedModules bool
 }
 
-// TestRepository tests `trivy repo` with the local code repositories
+// TestRepository tests `trivy repo` with the local code repositories.
+//
+// NOTE: This test CAN update golden files with the -update flag.
+// This is the canonical source for repository/filesystem scanning golden files.
+// Golden files generated here may be shared with other tests like TestRepositoryWithOverride,
+// TestConfiguration, and TestClientServerWithRedis (when scanning repositories).
 func TestRepository(t *testing.T) {
 	t.Setenv("NUGET_PACKAGES", t.TempDir())
 	tests := []struct {
-		name     string
-		args     repoTestArgs
-		golden   string
-		override func(t *testing.T, want, got *types.Report)
+		name   string
+		args   repoTestArgs
+		golden string
 	}{
 		{
 			name: "gomod",
@@ -52,7 +57,7 @@ func TestRepository(t *testing.T) {
 				scanner: types.VulnerabilityScanner,
 				input:   "testdata/fixtures/repo/gomod",
 			},
-			golden: "testdata/gomod.json.golden",
+			golden: goldenGoMod,
 		},
 		{
 			name: "gomod with skip files",
@@ -61,7 +66,7 @@ func TestRepository(t *testing.T) {
 				input:     "testdata/fixtures/repo/gomod",
 				skipFiles: []string{"testdata/fixtures/repo/gomod/submod2/go.mod"},
 			},
-			golden: "testdata/gomod-skip.json.golden",
+			golden: goldenGoModSkip,
 		},
 		{
 			name: "gomod with skip dirs",
@@ -70,7 +75,7 @@ func TestRepository(t *testing.T) {
 				input:    "testdata/fixtures/repo/gomod",
 				skipDirs: []string{"testdata/fixtures/repo/gomod/submod2"},
 			},
-			golden: "testdata/gomod-skip.json.golden",
+			golden: goldenGoModSkip,
 		},
 		{
 			name: "gomod in series",
@@ -79,7 +84,7 @@ func TestRepository(t *testing.T) {
 				input:    "testdata/fixtures/repo/gomod",
 				parallel: 1,
 			},
-			golden: "testdata/gomod.json.golden",
+			golden: goldenGoMod,
 		},
 		{
 			name: "gomod with local VEX file",
@@ -88,7 +93,7 @@ func TestRepository(t *testing.T) {
 				input:   "testdata/fixtures/repo/gomod",
 				vex:     "testdata/fixtures/vex/file/openvex.json",
 			},
-			golden: "testdata/gomod-vex.json.golden",
+			golden: goldenGoModVEX,
 		},
 		{
 			name: "gomod with VEX repository",
@@ -97,7 +102,7 @@ func TestRepository(t *testing.T) {
 				input:   "testdata/fixtures/repo/gomod",
 				vex:     "repo",
 			},
-			golden: "testdata/gomod-vex.json.golden",
+			golden: goldenGoModVEX,
 		},
 		{
 			name: "npm",
@@ -106,7 +111,7 @@ func TestRepository(t *testing.T) {
 				input:       "testdata/fixtures/repo/npm",
 				listAllPkgs: true,
 			},
-			golden: "testdata/npm.json.golden",
+			golden: goldenNPM,
 		},
 		{
 			name: "npm with severity from ubuntu",
@@ -118,7 +123,7 @@ func TestRepository(t *testing.T) {
 					"ubuntu",
 				},
 			},
-			golden: "testdata/npm-ubuntu-severity.json.golden",
+			golden: goldenNPMUbuntuSeverity,
 		},
 		{
 			name: "npm with dev deps",
@@ -128,7 +133,7 @@ func TestRepository(t *testing.T) {
 				listAllPkgs:    true,
 				includeDevDeps: true,
 			},
-			golden: "testdata/npm-with-dev.json.golden",
+			golden: goldenNPMWithDev,
 		},
 		{
 			name: "yarn",
@@ -137,7 +142,7 @@ func TestRepository(t *testing.T) {
 				input:       "testdata/fixtures/repo/yarn",
 				listAllPkgs: true,
 			},
-			golden: "testdata/yarn.json.golden",
+			golden: goldenYarn,
 		},
 		{
 			name: "pnpm",
@@ -146,7 +151,7 @@ func TestRepository(t *testing.T) {
 				input:       "testdata/fixtures/repo/pnpm",
 				listAllPkgs: true,
 			},
-			golden: "testdata/pnpm.json.golden",
+			golden: goldenPnpm,
 		},
 		{
 			name: "bun",
@@ -155,7 +160,7 @@ func TestRepository(t *testing.T) {
 				input:       "testdata/fixtures/repo/bun",
 				listAllPkgs: true,
 			},
-			golden: "testdata/bun.json.golden",
+			golden: goldenBun,
 		},
 		{
 			name: "pip",
@@ -164,7 +169,7 @@ func TestRepository(t *testing.T) {
 				listAllPkgs: true,
 				input:       "testdata/fixtures/repo/pip",
 			},
-			golden: "testdata/pip.json.golden",
+			golden: goldenPip,
 		},
 		{
 			name: "pipenv",
@@ -173,7 +178,7 @@ func TestRepository(t *testing.T) {
 				listAllPkgs: true,
 				input:       "testdata/fixtures/repo/pipenv",
 			},
-			golden: "testdata/pipenv.json.golden",
+			golden: goldenPipenv,
 		},
 		{
 			name: "poetry",
@@ -182,7 +187,7 @@ func TestRepository(t *testing.T) {
 				listAllPkgs: true,
 				input:       "testdata/fixtures/repo/poetry",
 			},
-			golden: "testdata/poetry.json.golden",
+			golden: goldenPoetry,
 		},
 		{
 			name: "uv",
@@ -191,7 +196,7 @@ func TestRepository(t *testing.T) {
 				listAllPkgs: true,
 				input:       "testdata/fixtures/repo/uv",
 			},
-			golden: "testdata/uv.json.golden",
+			golden: goldenUV,
 		},
 		{
 			name: "pom",
@@ -199,7 +204,7 @@ func TestRepository(t *testing.T) {
 				scanner: types.VulnerabilityScanner,
 				input:   "testdata/fixtures/repo/pom",
 			},
-			golden: "testdata/pom.json.golden",
+			golden: goldenPom,
 		},
 		{
 			name: "gradle",
@@ -207,7 +212,7 @@ func TestRepository(t *testing.T) {
 				scanner: types.VulnerabilityScanner,
 				input:   "testdata/fixtures/repo/gradle",
 			},
-			golden: "testdata/gradle.json.golden",
+			golden: goldenGradle,
 		},
 		{
 			name: "sbt",
@@ -215,7 +220,7 @@ func TestRepository(t *testing.T) {
 				scanner: types.VulnerabilityScanner,
 				input:   "testdata/fixtures/repo/sbt",
 			},
-			golden: "testdata/sbt.json.golden",
+			golden: goldenSBT,
 		},
 		{
 			name: "conan",
@@ -224,7 +229,7 @@ func TestRepository(t *testing.T) {
 				listAllPkgs: true,
 				input:       "testdata/fixtures/repo/conan",
 			},
-			golden: "testdata/conan.json.golden",
+			golden: goldenConan,
 		},
 		{
 			name: "nuget",
@@ -233,7 +238,7 @@ func TestRepository(t *testing.T) {
 				listAllPkgs: true,
 				input:       "testdata/fixtures/repo/nuget",
 			},
-			golden: "testdata/nuget.json.golden",
+			golden: goldenNuGet,
 		},
 		{
 			name: "dotnet",
@@ -242,7 +247,7 @@ func TestRepository(t *testing.T) {
 				listAllPkgs: true,
 				input:       "testdata/fixtures/repo/dotnet",
 			},
-			golden: "testdata/dotnet.json.golden",
+			golden: goldenDotNet,
 		},
 		{
 			name: "packages-props",
@@ -251,7 +256,7 @@ func TestRepository(t *testing.T) {
 				listAllPkgs: true,
 				input:       "testdata/fixtures/repo/packagesprops",
 			},
-			golden: "testdata/packagesprops.json.golden",
+			golden: goldenPackagesProps,
 		},
 		{
 			name: "swift",
@@ -260,7 +265,7 @@ func TestRepository(t *testing.T) {
 				listAllPkgs: true,
 				input:       "testdata/fixtures/repo/swift",
 			},
-			golden: "testdata/swift.json.golden",
+			golden: goldenSwift,
 		},
 		{
 			name: "cocoapods",
@@ -269,7 +274,7 @@ func TestRepository(t *testing.T) {
 				listAllPkgs: true,
 				input:       "testdata/fixtures/repo/cocoapods",
 			},
-			golden: "testdata/cocoapods.json.golden",
+			golden: goldenCocoaPods,
 		},
 		{
 			name: "pubspec.lock",
@@ -278,7 +283,7 @@ func TestRepository(t *testing.T) {
 				listAllPkgs: true,
 				input:       "testdata/fixtures/repo/pubspec",
 			},
-			golden: "testdata/pubspec.lock.json.golden",
+			golden: goldenPubspecLock,
 		},
 		{
 			name: "mix.lock",
@@ -287,7 +292,7 @@ func TestRepository(t *testing.T) {
 				listAllPkgs: true,
 				input:       "testdata/fixtures/repo/mixlock",
 			},
-			golden: "testdata/mix.lock.json.golden",
+			golden: goldenMixLock,
 		},
 		{
 			name: "composer.lock",
@@ -296,7 +301,7 @@ func TestRepository(t *testing.T) {
 				listAllPkgs: true,
 				input:       "testdata/fixtures/repo/composer",
 			},
-			golden: "testdata/composer.lock.json.golden",
+			golden: goldenComposerLock,
 		},
 		{
 			name: "cargo.lock",
@@ -305,19 +310,7 @@ func TestRepository(t *testing.T) {
 				listAllPkgs: true,
 				input:       "testdata/fixtures/repo/cargo",
 			},
-			golden: "testdata/cargo.lock.json.golden",
-		},
-		{
-			name: "multiple lockfiles",
-			args: repoTestArgs{
-				scanner: types.VulnerabilityScanner,
-				input:   "testdata/fixtures/repo/trivy-ci-test",
-			},
-			golden: "testdata/test-repo.json.golden",
-			override: func(_ *testing.T, want, _ *types.Report) {
-				// Clear all metadata as this is a local directory scan without git info
-				want.Metadata = types.Metadata{}
-			},
+			golden: goldenCargoLock,
 		},
 		{
 			name: "installed.json",
@@ -327,7 +320,7 @@ func TestRepository(t *testing.T) {
 				listAllPkgs: true,
 				input:       "testdata/fixtures/repo/composer-vendor",
 			},
-			golden: "testdata/composer.vendor.json.golden",
+			golden: goldenComposerVendor,
 		},
 		{
 			name: "dockerfile",
@@ -336,7 +329,7 @@ func TestRepository(t *testing.T) {
 				input:      "testdata/fixtures/repo/dockerfile",
 				namespaces: []string{"testing"},
 			},
-			golden: "testdata/dockerfile.json.golden",
+			golden: goldenDockerfile,
 		},
 		{
 			name: "dockerfile with custom file pattern",
@@ -346,7 +339,7 @@ func TestRepository(t *testing.T) {
 				namespaces:   []string{"testing"},
 				filePatterns: []string{"dockerfile:Customfile"},
 			},
-			golden: "testdata/dockerfile_file_pattern.json.golden",
+			golden: goldenDockerfileFilePattern,
 		},
 		{
 			name: "dockerfile with custom policies",
@@ -356,7 +349,7 @@ func TestRepository(t *testing.T) {
 				namespaces:  []string{"user"},
 				input:       "testdata/fixtures/repo/custom-policy",
 			},
-			golden: "testdata/dockerfile-custom-policies.json.golden",
+			golden: goldenDockerfileCustomPolicies,
 		},
 		{
 			name: "tarball helm chart scanning with builtin policies",
@@ -364,7 +357,7 @@ func TestRepository(t *testing.T) {
 				scanner: types.MisconfigScanner,
 				input:   "testdata/fixtures/repo/helm",
 			},
-			golden: "testdata/helm.json.golden",
+			golden: goldenHelm,
 		},
 		{
 			name: "helm chart directory scanning with builtin policies",
@@ -372,7 +365,7 @@ func TestRepository(t *testing.T) {
 				scanner: types.MisconfigScanner,
 				input:   "testdata/fixtures/repo/helm_testchart",
 			},
-			golden: "testdata/helm_testchart.json.golden",
+			golden: goldenHelmTestChart,
 		},
 		{
 			name: "helm chart directory scanning with value overrides using set",
@@ -381,7 +374,7 @@ func TestRepository(t *testing.T) {
 				input:   "testdata/fixtures/repo/helm_testchart",
 				helmSet: []string{"securityContext.runAsUser=0"},
 			},
-			golden: "testdata/helm_testchart.overridden.json.golden",
+			golden: goldenHelmTestChartOverridden,
 		},
 		{
 			name: "helm chart directory scanning with value overrides using value file",
@@ -390,7 +383,7 @@ func TestRepository(t *testing.T) {
 				input:          "testdata/fixtures/repo/helm_testchart",
 				helmValuesFile: []string{"testdata/fixtures/repo/helm_values/values.yaml"},
 			},
-			golden: "testdata/helm_testchart.overridden.json.golden",
+			golden: goldenHelmTestChartOverridden,
 		},
 		{
 			name: "helm chart directory scanning with builtin policies and non string Chart name",
@@ -398,7 +391,7 @@ func TestRepository(t *testing.T) {
 				scanner: types.MisconfigScanner,
 				input:   "testdata/fixtures/repo/helm_badname",
 			},
-			golden: "testdata/helm_badname.json.golden",
+			golden: goldenHelmBadName,
 		},
 		{
 			name: "terraform config with remote module",
@@ -406,7 +399,7 @@ func TestRepository(t *testing.T) {
 				scanner: types.MisconfigScanner,
 				input:   "testdata/fixtures/repo/terraform/remote-module",
 			},
-			golden: "testdata/terraform-remote-module.json.golden",
+			golden: goldenTerraformRemoteModule,
 		},
 		{
 			name: "terraform config with remote submodule",
@@ -414,7 +407,7 @@ func TestRepository(t *testing.T) {
 				scanner: types.MisconfigScanner,
 				input:   "testdata/fixtures/repo/terraform/remote-submodule",
 			},
-			golden: "testdata/terraform-remote-submodule.json.golden",
+			golden: goldenTerraformRemoteSubmodule,
 		},
 		{
 			name: "terraform config with remote module in child local module",
@@ -422,7 +415,7 @@ func TestRepository(t *testing.T) {
 				scanner: types.MisconfigScanner,
 				input:   "testdata/fixtures/repo/terraform/remote-module-in-child",
 			},
-			golden: "testdata/terraform-remote-module-in-child.json.golden",
+			golden: goldenTerraformRemoteModuleInChild,
 		},
 		{
 			name: "exclude misconfigurations for remote module",
@@ -431,7 +424,7 @@ func TestRepository(t *testing.T) {
 				input:                      "testdata/fixtures/repo/terraform/remote-module",
 				tfExcludeDownloadedModules: true,
 			},
-			golden: "testdata/terraform-exclude-misconfs-remote-module.json.golden",
+			golden: goldenTerraformExcludeMisconfigsRemoteModule,
 		},
 		{
 			name: "module from Terraform registry",
@@ -439,7 +432,7 @@ func TestRepository(t *testing.T) {
 				scanner: types.MisconfigScanner,
 				input:   "testdata/fixtures/repo/terraform/opentofu-registry",
 			},
-			golden: "testdata/terraform-terraform-registry.json.golden",
+			golden: goldenTerraformTerraformRegistry,
 		},
 		{
 			name: "module from OpenTofu registry",
@@ -447,7 +440,7 @@ func TestRepository(t *testing.T) {
 				scanner: types.MisconfigScanner,
 				input:   "testdata/fixtures/repo/terraform/opentofu-registry",
 			},
-			golden: "testdata/terraform-opentofu-registry.json.golden",
+			golden: goldenTerraformOpenTofuRegistry,
 		},
 		{
 			name: "secrets",
@@ -456,7 +449,7 @@ func TestRepository(t *testing.T) {
 				input:        "testdata/fixtures/repo/secrets",
 				secretConfig: "testdata/fixtures/repo/secrets/trivy-secret.yaml",
 			},
-			golden: "testdata/secrets.json.golden",
+			golden: goldenSecrets,
 		},
 		{
 			name: "conda generating CycloneDX SBOM",
@@ -465,7 +458,7 @@ func TestRepository(t *testing.T) {
 				format:  "cyclonedx",
 				input:   "testdata/fixtures/repo/conda",
 			},
-			golden: "testdata/conda-cyclonedx.json.golden",
+			golden: goldenCondaCycloneDX,
 		},
 		{
 			name: "conda environment.yaml generating CycloneDX SBOM",
@@ -474,7 +467,7 @@ func TestRepository(t *testing.T) {
 				format:  "cyclonedx",
 				input:   "testdata/fixtures/repo/conda-environment",
 			},
-			golden: "testdata/conda-environment-cyclonedx.json.golden",
+			golden: goldenCondaEnvironmentCycloneDX,
 		},
 		{
 			name: "pom.xml generating CycloneDX SBOM (with vulnerabilities)",
@@ -484,7 +477,7 @@ func TestRepository(t *testing.T) {
 				format:  "cyclonedx",
 				input:   "testdata/fixtures/repo/pom",
 			},
-			golden: "testdata/pom-cyclonedx.json.golden",
+			golden: goldenPomCycloneDX,
 		},
 		{
 			name: "conda generating SPDX SBOM",
@@ -493,34 +486,7 @@ func TestRepository(t *testing.T) {
 				format:  "spdx-json",
 				input:   "testdata/fixtures/repo/conda",
 			},
-			golden: "testdata/conda-spdx.json.golden",
-		},
-		{
-			name: "gomod with fs subcommand",
-			args: repoTestArgs{
-				command:   "fs",
-				scanner:   types.VulnerabilityScanner,
-				input:     "testdata/fixtures/repo/gomod",
-				skipFiles: []string{"testdata/fixtures/repo/gomod/submod2/go.mod"},
-			},
-			golden: "testdata/gomod-skip.json.golden",
-			override: func(_ *testing.T, want, _ *types.Report) {
-				want.ArtifactType = ftypes.TypeFilesystem
-			},
-		},
-		{
-			name: "dockerfile with fs subcommand and an alias scanner",
-			args: repoTestArgs{
-				command:     "fs",
-				scanner:     "config", // for backward compatibility
-				policyPaths: []string{"testdata/fixtures/repo/custom-policy/policy"},
-				namespaces:  []string{"user"},
-				input:       "testdata/fixtures/repo/custom-policy",
-			},
-			golden: "testdata/dockerfile-custom-policies.json.golden",
-			override: func(_ *testing.T, want, _ *types.Report) {
-				want.ArtifactType = ftypes.TypeFilesystem
-			},
+			golden: goldenCondaSPDX,
 		},
 		{
 			name: "julia generating SPDX SBOM",
@@ -529,7 +495,15 @@ func TestRepository(t *testing.T) {
 				format:  "spdx-json",
 				input:   "testdata/fixtures/repo/julia",
 			},
-			golden: "testdata/julia-spdx.json.golden",
+			golden: goldenJuliaSPDX,
+		},
+		{
+			name: "multiple lockfiles",
+			args: repoTestArgs{
+				scanner: types.VulnerabilityScanner,
+				input:   "https://github.com/knqyf263/trivy-ci-test",
+			},
+			golden: goldenTestRepo,
 		},
 	}
 
@@ -547,6 +521,73 @@ func TestRepository(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			command := cmp.Or(tt.args.command, "repo")
+			format := cmp.Or(tt.args.format, types.FormatJSON)
+
+			osArgs := buildArgs(t, cacheDir, command, format, tt.args)
+
+			runTest(t, osArgs, tt.golden, format, runOptions{
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+				override: nil, // Do not use overrides - golden files are generated from this test as the canonical source
+			})
+		})
+	}
+}
+
+// TestRepositoryWithOverride tests `trivy repo` with override functions for specific edge cases.
+//
+// IMPORTANT: Golden files used in this test cannot be updated with the -update flag
+// because the golden files are shared with TestRepository.
+// If golden files need to be updated, they should be generated from TestRepository.
+//
+// All golden files used in TestRepositoryWithOverride MUST also be used in TestRepository
+// to ensure they can be properly updated when needed.
+func TestRepositoryWithOverride(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestRepositoryWithOverride when -update flag is set. Golden files should be updated via TestRepository.")
+	}
+
+	t.Setenv("NUGET_PACKAGES", t.TempDir())
+	tests := []struct {
+		name     string
+		args     repoTestArgs
+		golden   string
+		override func(t *testing.T, want, got *types.Report)
+	}{
+		{
+			name: "gomod with fs subcommand",
+			args: repoTestArgs{
+				command:   "fs",
+				scanner:   types.VulnerabilityScanner,
+				input:     "testdata/fixtures/repo/gomod",
+				skipFiles: []string{"testdata/fixtures/repo/gomod/submod2/go.mod"},
+			},
+			golden: goldenGoModSkip,
+			override: func(_ *testing.T, want, _ *types.Report) {
+				want.ArtifactType = ftypes.TypeFilesystem
+			},
+		},
+		{
+			name: "dockerfile with fs subcommand and an alias scanner",
+			args: repoTestArgs{
+				command:     "fs",
+				scanner:     "config", // for backward compatibility
+				policyPaths: []string{"testdata/fixtures/repo/custom-policy/policy"},
+				namespaces:  []string{"user"},
+				input:       "testdata/fixtures/repo/custom-policy",
+			},
+			golden: goldenDockerfileCustomPolicies,
+			override: func(_ *testing.T, want, _ *types.Report) {
+				want.ArtifactType = ftypes.TypeFilesystem
+			},
+		},
+	}
+
+	// Set up testing DB
+	cacheDir := initDB(t)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			command := "repo"
 			if tt.args.command != "" {
 				command = tt.args.command
@@ -559,9 +600,9 @@ func TestRepository(t *testing.T) {
 
 			osArgs := buildArgs(t, cacheDir, command, format, tt.args)
 
-			runTest(t, osArgs, tt.golden, "", format, runOptions{
+			runTest(t, osArgs, tt.golden, format, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-				override: tt.override,
+				override: overrideFuncs(overrideUID, tt.override),
 			})
 		})
 	}

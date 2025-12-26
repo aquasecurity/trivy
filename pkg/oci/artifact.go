@@ -30,6 +30,9 @@ const (
 	CycloneDXArtifactType = "application/vnd.cyclonedx+json"
 	SPDXArtifactType      = "application/spdx+json"
 
+	// Sigstore bundle artifact type for Cosign attestations in "new bundle format" > 2.5.0
+	SigstoreBundleArtifactType = "application/vnd.dev.sigstore.bundle.v0.3+json"
+
 	// Media types
 	OCIImageManifest = "application/vnd.oci.image.manifest.v1+json"
 
@@ -40,6 +43,7 @@ const (
 var SupportedSBOMArtifactTypes = []string{
 	CycloneDXArtifactType,
 	SPDXArtifactType,
+	SigstoreBundleArtifactType,
 }
 
 // Option is a functional option
@@ -258,8 +262,8 @@ func shouldTryOtherRepo(err error) bool {
 	for _, diagnostic := range terr.Errors {
 		// For better user experience
 		if diagnostic.Code == transport.DeniedErrorCode || diagnostic.Code == transport.UnauthorizedErrorCode {
-			// e.g. https://trivy.dev/latest/docs/references/troubleshooting/#db
-			log.Warnf("See %s", doc.URL("/docs/references/troubleshooting/", "db"))
+			// e.g. https://trivy.dev/docs/latest/guide/references/troubleshooting/#db
+			log.Warnf("See %s", doc.URL("guide/references/troubleshooting/", "db"))
 			break
 		}
 	}

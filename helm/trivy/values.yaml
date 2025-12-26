@@ -128,6 +128,8 @@ trivy:
   existingSecret: ""
   # extraEnvVars to be set on the container
   extraEnvVars: {}
+  # sslCertDir can be used to override the system default locations for SSL certificate files directory, example: /ssl/certs
+  sslCertDir: ""
 
 service:
   # If specified, the name used for the Trivy service.

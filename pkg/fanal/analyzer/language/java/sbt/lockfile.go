@@ -22,10 +22,10 @@ const version = 1
 // sbtDependencyLockAnalyzer analyzes '*.sbt.lock'
 type sbtDependencyLockAnalyzer struct{}
 
-func (a sbtDependencyLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a sbtDependencyLockAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	parser := lockfile.NewParser()
 
-	res, err := language.Analyze(types.Sbt, input.FilePath, input.Content, parser)
+	res, err := language.Analyze(ctx, types.Sbt, input.FilePath, input.Content, parser)
 
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)

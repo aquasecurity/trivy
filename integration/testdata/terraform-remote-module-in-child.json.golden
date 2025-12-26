@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/terraform/remote-module-in-child",
   "ArtifactType": "repository",

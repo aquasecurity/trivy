@@ -26,6 +26,7 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+          check-latest: true # Ensure we use the latest Go patch version
 
       - name: go mod tidy
         run: |
@@ -80,6 +81,7 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+          check-latest: true # Ensure we use the latest Go patch version
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -113,6 +115,7 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+          check-latest: true # Ensure we use the latest Go patch version
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -132,6 +135,7 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+          check-latest: true # Ensure we use the latest Go patch version
 
       - name: Install tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -167,6 +171,7 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+          check-latest: true # Ensure we use the latest Go patch version
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -201,6 +206,7 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+          check-latest: true # Ensure we use the latest Go patch version
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -217,6 +223,17 @@ jobs:
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
+    # The go-build (GOCACHE env) directory requires a large amount of free disk space.
+    - name: Free up disk space
+      if: matrix.operating-system == 'ubuntu-latest'
+      run: |
+        sudo rm -rf /usr/local/lib/android
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /opt/ghc
+        sudo rm -rf /opt/hostedtoolcache/CodeQL
+        sudo docker image prune --all --force
+        df -h
+
     - name: Checkout
       uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
@@ -225,6 +242,7 @@ jobs:
       with:
         go-version-file: go.mod
         cache: false
+        check-latest: true # Ensure we use the latest Go patch version
 
     - name: Determine GoReleaser ID
       id: goreleaser_id

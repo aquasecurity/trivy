@@ -45,7 +45,7 @@ func newBunLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, e
 	}, nil
 }
 
-func (a bunLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a bunLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	// Parse bun.lock
 	required := func(path string, _ fs.DirEntry) bool {
 		return filepath.Base(path) == types.BunLock || input.FilePatterns.Match(path)
@@ -60,7 +60,7 @@ func (a bunLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 			licenses = make(map[string][]string)
 		}
 
-		app, err := a.parseBunLock(input.FS, filePath)
+		app, err := a.parseBunLock(ctx, input.FS, filePath)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
@@ -108,7 +108,7 @@ func (a bunLibraryAnalyzer) Version() int {
 	return version
 }
 
-func (a bunLibraryAnalyzer) parseBunLock(fsys fs.FS, filePath string) (*types.Application, error) {
+func (a bunLibraryAnalyzer) parseBunLock(ctx context.Context, fsys fs.FS, filePath string) (*types.Application, error) {
 	f, err := fsys.Open(filePath)
 	if err != nil {
 		return nil, xerrors.Errorf("file open error: %w", err)
@@ -121,7 +121,7 @@ func (a bunLibraryAnalyzer) parseBunLock(fsys fs.FS, filePath string) (*types.Ap
 	}
 
 	// parse bun.lock
-	return language.Parse(types.Bun, filePath, file, a.lockParser)
+	return language.Parse(ctx, types.Bun, filePath, file, a.lockParser)
 }
 
 func (a bunLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[string][]string, error) {

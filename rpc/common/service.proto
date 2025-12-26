@@ -69,6 +69,12 @@ message Location {
   int32 end_line = 2;
 }
 
+message BuildInfo {
+  repeated string content_sets = 1;
+  string nvr = 2;
+  string arch = 3;
+}
+
 message Misconfiguration {
   string file_type = 1;
   string file_path = 2;
@@ -113,7 +119,7 @@ message DetectedMisconfiguration {
   string status = 11;
   Layer layer = 12;
   CauseMetadata cause_metadata = 13;
-  string avd_id = 14;
+  string avd_id = 14 [deprecated = true];
   string query = 15;
 }
 

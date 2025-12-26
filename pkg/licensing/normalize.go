@@ -244,7 +244,6 @@ var mapping = map[string]expr.SimpleExpr{
 	"UNICODE-DFS-2016":     licence(expr.UnicodeDFS2016, false),
 	"UNICODE-TOU":          licence(expr.UnicodeTOU, false),
 	"UNLICENSE":            licence(expr.Unlicense, false),
-	"UNLICENSED":           licence(expr.Unlicense, false),
 	"UPL-1":                licence(expr.UPL10, false),
 	"UPL-1.0":              licence(expr.UPL10, false),
 	"W3C":                  licence(expr.W3C, false),

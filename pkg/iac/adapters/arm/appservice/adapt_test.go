@@ -25,8 +25,8 @@ func TestAdapt(t *testing.T) {
   ]
 }`,
 			expected: appservice.AppService{
-				FunctionApps: []appservice.FunctionApp{{}},
 				Services:     []appservice.Service{{}},
+				FunctionApps: []appservice.FunctionApp{{}},
 			},
 		},
 		{
@@ -44,7 +44,14 @@ func TestAdapt(t *testing.T) {
         "siteAuthSettings": {
           "enabled": true
         },
-        "minTlsVersion": "1.3"
+        "minTlsVersion": "1.3",
+        "siteConfig": {
+          "http20Enabled": true,
+          "minTlsVersion": "1.2",
+          "phpVersion": "8.1",
+          "pythonVersion": "3.11",
+          "ftpsState": "FtpsOnly"
+        }
       }
     }
   ]
@@ -52,18 +59,19 @@ func TestAdapt(t *testing.T) {
 			expected: appservice.AppService{
 				Services: []appservice.Service{{
 					EnableClientCert: types.BoolTest(true),
-					Identity: struct{ Type types.StringValue }{
+					HTTPSOnly:        types.BoolTest(true),
+					Identity: appservice.Identity{
 						Type: types.StringTest("SystemAssigned"),
 					},
-					Authentication: struct{ Enabled types.BoolValue }{
+					Authentication: appservice.Authentication{
 						Enabled: types.BoolTest(true),
 					},
-					Site: struct {
-						EnableHTTP2       types.BoolValue
-						MinimumTLSVersion types.StringValue
-					}{
+					Site: appservice.Site{
 						EnableHTTP2:       types.BoolTest(true),
-						MinimumTLSVersion: types.StringTest("1.3"),
+						MinimumTLSVersion: types.StringTest("1.2"),
+						PHPVersion:        types.StringTest("8.1"),
+						PythonVersion:     types.StringTest("3.11"),
+						FTPSState:         types.StringTest("FtpsOnly"),
 					},
 				}},
 				FunctionApps: []appservice.FunctionApp{{
@@ -78,5 +86,4 @@ func TestAdapt(t *testing.T) {
 			adaptertest.AdaptAndCompare(t, tt.source, tt.expected, Adapt)
 		})
 	}
-
 }

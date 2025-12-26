@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/internal/dbtest"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
@@ -23,6 +24,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scan/local"
 	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
 	tTypes "github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
@@ -53,8 +55,10 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			want: tTypes.Report{
 				SchemaVersion: 2,
 				CreatedAt:     time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC),
+				ArtifactID:    "sha256:574abdaf07824449b1277ec1e7e67659cc869bbf97fd95447812b55644350a21", // hash(ImageID:index.docker.io/library/alpine) from RepoTag alpine:3.11
 				ArtifactName:  "../fanal/test/testdata/alpine-311.tar.gz",
 				ArtifactType:  ftypes.TypeContainerImage,
+				ReportID:      "017b7d41-e09f-7000-80ea-000000000001",
 				Metadata: tTypes.Metadata{
 					Size: 5861888,
 					OS: &ftypes.OS{
@@ -67,12 +71,14 @@ func TestScanner_ScanArtifact(t *testing.T) {
 					DiffIDs: []string{
 						"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 					},
+					RepoTags: []string{"alpine:3.11"},
 					Layers: ftypes.Layers{
 						{
 							Size:   5861888,
 							DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 						},
 					},
+					Reference: testutil.MustParseReference(t, "alpine:3.11"),
 					ImageConfig: v1.ConfigFile{
 						Architecture:  "amd64",
 						Container:     "fb71ddde5f6411a82eb056a9190f0cc1c80d7f77a8509ee90a2054428edb0024",
@@ -124,7 +130,8 @@ func TestScanner_ScanArtifact(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 								},
-								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2020-9999",
+								PrimaryURL:  "https://avd.aquasec.com/nvd/cve-2020-9999",
+								Fingerprint: "sha256:36d448cc18b4acd7ccc868fc1865f7dc97694d1e7e4fa55cfabec91990866926", // hash(sha256:574abdaf07824449b1277ec1e7e67659cc869bbf97fd95447812b55644350a21:../fanal/test/testdata/alpine-311.tar.gz (alpine 3.11.5):musl@1.1.24-r2:CVE-2020-9999)
 								PkgIdentifier: ftypes.PkgIdentifier{
 									UID: "dfd35f110ec8c525",
 									PURL: &packageurl.PackageURL{
@@ -160,7 +167,8 @@ func TestScanner_ScanArtifact(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 								},
-								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2020-9999",
+								PrimaryURL:  "https://avd.aquasec.com/nvd/cve-2020-9999",
+								Fingerprint: "sha256:5b28a2608ccc60c031066a4809cdb5c4ed7eb331e1136b413883c562a7e7aa55", // hash(sha256:574abdaf07824449b1277ec1e7e67659cc869bbf97fd95447812b55644350a21:../fanal/test/testdata/alpine-311.tar.gz (alpine 3.11.5):musl-utils@1.1.24-r2:CVE-2020-9999)
 								PkgIdentifier: ftypes.PkgIdentifier{
 									UID: "989eac0ec741e708",
 									PURL: &packageurl.PackageURL{
@@ -208,6 +216,9 @@ func TestScanner_ScanArtifact(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Set fake UUID v7 for testing
+			uuid.SetFakeUUIDV7(t, "017b7d41-e09f-7000-80ea-%012d")
+
 			// Initialize DB
 			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()

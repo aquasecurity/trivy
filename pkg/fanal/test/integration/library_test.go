@@ -228,9 +228,28 @@ func commonChecks(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	checkLangPkgs(detail, t, tc)
 }
 
+// clearPackageDetailFields clears package detail fields to keep golden files manageable.
+// Fields cleared: Identifier (UID, PURL, BOMRef), Layer, InstalledFiles, DependsOn, Digest
+// Fields kept for comparison: ID, Name, Version, Epoch, Release, Arch, SrcName, SrcEpoch, SrcVersion, SrcRelease, Licenses, Maintainer, Modularitylabel, Indirect
+func clearPackageDetailFields(packages []types.Package) {
+	for i := range packages {
+		packages[i].Identifier = types.PkgIdentifier{} // Clear entire Identifier (UID, PURL, BOMRef)
+		packages[i].Layer = types.Layer{}
+		packages[i].InstalledFiles = nil
+		packages[i].DependsOn = nil
+		packages[i].Digest = ""
+	}
+}
+
 func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	// Sort OS packages for consistency
 	sort.Sort(detail.Packages)
+
+	// Clear package detail fields to keep golden files manageable in size.
+	// Cleared fields: Identifier.UID, Layer, InstalledFiles, DependsOn, Digest
+	// These fields are either too large (InstalledFiles, Layer) or not critical for comparison (UID, Digest, DependsOn).
+	// All other fields including ID, Name, Version, Licenses, Maintainer, etc. are compared.
+	clearPackageDetailFields(detail.Packages)
 
 	goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", tc.imageTag)
 
@@ -244,18 +263,14 @@ func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	data, err := os.ReadFile(goldenFile)
 	require.NoError(t, err, tc.name)
 
-	var expectedPkgs []types.Package
+	var expectedPkgs types.Packages
 	err = json.Unmarshal(data, &expectedPkgs)
 	require.NoError(t, err)
 
-	require.Len(t, expectedPkgs, len(detail.Packages), tc.name)
-	sort.Slice(expectedPkgs, func(i, j int) bool { return expectedPkgs[i].Name < expectedPkgs[j].Name })
 	sort.Sort(detail.Packages)
+	sort.Sort(expectedPkgs)
 
-	for i := 0; i < len(expectedPkgs); i++ {
-		require.Equal(t, expectedPkgs[i].Name, detail.Packages[i].Name, tc.name)
-		require.Equal(t, expectedPkgs[i].Version, detail.Packages[i].Version, tc.name)
-	}
+	assert.Equal(t, expectedPkgs, detail.Packages, tc.name)
 }
 
 func checkLangPkgs(detail types.ArtifactDetail, t *testing.T, tc testCase) {

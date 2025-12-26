@@ -1,20 +1,9 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/composer-vendor",
   "ArtifactType": "filesystem",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "installed.json",
@@ -36,7 +25,6 @@
             "psr/http-message@1.1",
             "ralouphie/getallheaders@3.0.3"
           ],
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 3,
@@ -55,7 +43,6 @@
           "Licenses": [
             "MIT"
           ],
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 116,
@@ -74,7 +61,6 @@
           "Licenses": [
             "MIT"
           ],
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 172,
@@ -95,7 +81,6 @@
           "InstalledVersion": "1.8.3",
           "FixedVersion": "1.8.4",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-24775",
           "DataSource": {
@@ -103,6 +88,7 @@
             "Name": "GitHub Security Advisory Composer",
             "URL": "https://github.com/advisories?query=type%%3Areviewed+ecosystem%%3Acomposer"
           },
+          "Fingerprint": "sha256:b6d44694486405fbbfd232d7722681bc06d79a81a79a2da11b5bc01364aa84fb",
           "Title": "Improper Input Validation in guzzlehttp/psr7",
           "Description": "### Impact\nIn proper header parsing. An attacker could sneak in a new line character and pass untrusted values. \n\n### Patches\nThe issue is patched in 1.8.4 and 2.1.1.\n\n### Workarounds\nThere are no known workarounds.\n",
           "Severity": "HIGH",

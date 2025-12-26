@@ -17,8 +17,7 @@ import (
 const defaultCheck = `package defsec.abcdefg
 
 __rego_metadata__ := {
-	"id": "TEST123",
-	"avd_id": "AVD-TEST-0123",
+	"id": "TEST-0123",
 	"title": "Buckets should not be evil",
 	"short_code": "no-evil-buckets",
 	"severity": "CRITICAL",
@@ -73,7 +72,7 @@ func TestScanner_ScanFS(t *testing.T) {
 				rego.WithPolicyReader(strings.NewReader(defaultCheck)),
 				rego.WithPolicyNamespaces("user"),
 			},
-			expected: []string{"TEST123"},
+			expected: []string{"TEST-0123"},
 		},
 		{
 			name:  "with templated plan json",
@@ -83,8 +82,7 @@ func TestScanner_ScanFS(t *testing.T) {
 # schemas:
 #   - input: schema["cloud"]
 # custom:
-#   id: TEST123
-#   avd_id: AVD-TEST-0123
+#   id: TEST-0123
 package user.foobar.ABC001
 
 deny[cause] {
@@ -94,7 +92,7 @@ deny[cause] {
 }`)),
 				rego.WithPolicyNamespaces("user"),
 			},
-			expected: []string{"TEST123"},
+			expected: []string{"TEST-0123"},
 		},
 		{
 			name:  "plan with arbitrary name",
@@ -103,7 +101,7 @@ deny[cause] {
 				rego.WithPolicyReader(strings.NewReader(defaultCheck)),
 				rego.WithPolicyNamespaces("user"),
 			},
-			expected: []string{"TEST123"},
+			expected: []string{"TEST-0123"},
 		},
 	}
 

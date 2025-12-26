@@ -1,20 +1,9 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/swift",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "Package.resolved",
@@ -29,7 +18,6 @@
             "UID": "863921f724d081f4"
           },
           "Version": "1.1.0",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 4,
@@ -45,7 +33,6 @@
             "UID": "e98d348b22b3c01"
           },
           "Version": "2.41.0",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 13,
@@ -66,8 +53,8 @@
           "InstalledVersion": "2.41.0",
           "FixedVersion": "2.29.1, 2.39.1, 2.42.0",
           "Status": "fixed",
-          "Layer": {},
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-3215",
+          "Fingerprint": "sha256:5e6d347d902170f39ce0bb9c580cadecc025cbd132fa3a99e171ec1fdaba6a91",
           "Title": "SwiftNIO vulnerable to Improper Neutralization of CRLF Sequences in HTTP Headers ('HTTP Response Splitting')",
           "Description": "`NIOHTTP1` and projects using it for generating HTTP responses, including SwiftNIO, can be subject to a HTTP Response Injection attack...",
           "Severity": "MEDIUM",

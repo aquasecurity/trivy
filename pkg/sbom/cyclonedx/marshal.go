@@ -56,8 +56,7 @@ func NewMarshaler(version string) Marshaler {
 // MarshalReport converts the Trivy report to the CycloneDX format
 func (m *Marshaler) MarshalReport(ctx context.Context, report types.Report) (*cdx.BOM, error) {
 	// Convert into an intermediate representation
-	opts := core.Options{GenerateBOMRef: true}
-	bom, err := sbomio.NewEncoder(opts).Encode(report)
+	bom, err := sbomio.NewEncoder(sbomio.WithBOMRef()).Encode(report)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to marshal report: %w", err)
 	}
@@ -107,7 +106,13 @@ func (m *Marshaler) Metadata(ctx context.Context) *cdx.Metadata {
 }
 
 func (m *Marshaler) MarshalRoot() (*cdx.Component, error) {
-	return m.MarshalComponent(m.bom.Root())
+	root := m.bom.Root()
+	// Since we reuse the scanned SBOM, the root component (metadata.component) can be empty.
+	if root == nil {
+		m.logger.Debug("Root component not found")
+		return nil, nil
+	}
+	return m.MarshalComponent(root)
 }
 
 func (m *Marshaler) MarshalComponent(component *core.Component) (*cdx.Component, error) {

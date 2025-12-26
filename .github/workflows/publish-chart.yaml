@@ -40,6 +40,9 @@ jobs:
       - name: Setup Chart Linting
         id: lint
         uses: helm/chart-testing-action@0d28d3144d3a25ea2cc349d6e59901c4ff469b3b # v2.7.0
+        with:
+          # v6.0.0 resolved the compatibility issue with Python > 3.13. may be removed after the action itself is updated
+          yamale_version: "6.0.0"
       - name: Setup Kubernetes cluster (KIND)
         uses: helm/kind-action@a1b0e391336a6ee6713a0583f8c6240d70863de3 # v1.12.0
         with:

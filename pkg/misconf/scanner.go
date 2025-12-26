@@ -21,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm"
 	cfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation"
 	cfparser "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
@@ -50,6 +51,7 @@ var enablediacTypes = map[detection.FileType]types.ConfigType{
 	detection.FileTypeTerraformPlanSnapshot: types.TerraformPlanSnapshot,
 	detection.FileTypeJSON:                  types.JSON,
 	detection.FileTypeYAML:                  types.YAML,
+	detection.FileTypeAnsible:               types.Ansible,
 }
 
 type ScannerOption struct {
@@ -60,6 +62,7 @@ type ScannerOption struct {
 	DisableEmbeddedPolicies  bool
 	DisableEmbeddedLibraries bool
 	IncludeDeprecatedChecks  bool
+	RegoErrorLimit           int
 
 	HelmValues              []string
 	HelmValueFiles          []string
@@ -75,6 +78,10 @@ type ScannerOption struct {
 
 	FilePatterns      []string
 	ConfigFileSchemas []*ConfigFileSchema
+
+	AnsiblePlaybooks   []string
+	AnsibleInventories []string
+	AnsibleExtraVars   map[string]any
 
 	SkipFiles []string
 	SkipDirs  []string
@@ -123,6 +130,8 @@ func NewScanner(t detection.FileType, opt ScannerOption) (*Scanner, error) {
 		scanner = generic.NewYamlScanner(opts...)
 	case detection.FileTypeJSON:
 		scanner = generic.NewJsonScanner(opts...)
+	case detection.FileTypeAnsible:
+		scanner = ansible.New(opts...)
 	default:
 		return nil, xerrors.Errorf("unknown file type: %s", t)
 	}
@@ -236,6 +245,10 @@ func initRegoOptions(opt ScannerOption) ([]options.ScannerOption, error) {
 		rego.WithTrivyVersion(app.Version()),
 	}
 
+	if opt.RegoErrorLimit >= 0 {
+		opts = append(opts, rego.WithRegoErrorLimits(opt.RegoErrorLimit))
+	}
+
 	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)
 	if err != nil {
 		return nil, err
@@ -303,6 +316,8 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 		return addTFOpts(opts, opt)
 	case detection.FileTypeCloudFormation:
 		return addCFOpts(opts, opt)
+	case detection.FileTypeAnsible:
+		return addAnsibleOpts(opts, opt), nil
 	default:
 		return opts, nil
 	}
@@ -381,6 +396,14 @@ func addHelmOpts(opts []options.ScannerOption, scannerOption ScannerOption) []op
 	}
 
 	return opts
+}
+
+func addAnsibleOpts(opts []options.ScannerOption, scannerOpt ScannerOption) []options.ScannerOption {
+	return append(opts,
+		ansible.WithPlaybooks(scannerOpt.AnsiblePlaybooks),
+		ansible.WithInventories(scannerOpt.AnsibleInventories),
+		ansible.WithExtraVars(scannerOpt.AnsibleExtraVars),
+	)
 }
 
 func createConfigFS(paths []string) (fs.FS, error) {
@@ -478,6 +501,7 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 
 		query := fmt.Sprintf("data.%s.%s", result.RegoNamespace(), result.RegoRule())
 
+		// TODO: use the ID field
 		ruleID := result.Rule().AVDID
 		if result.RegoNamespace() != "" && len(result.Rule().Aliases) > 0 {
 			ruleID = result.Rule().Aliases[0]

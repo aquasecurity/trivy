@@ -16,16 +16,18 @@ jobs:
         uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
         with:
           go-version-file: go.mod
+          cache: false
+          check-latest: true # Ensure we use the latest Go patch version
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
 
-      - name: Check if SPDX exceptions are up-to-date
+      - name: Check if SPDX license IDs and exceptions are up-to-date
         id: exceptions_check
         run: |
-          mage spdx:updateLicenseExceptions
+          mage spdx:updateLicenseEntries
           if [ -n "$(git status --porcelain)" ]; then
-            echo "Run 'mage spdx:updateLicenseExceptions' and push it"
+            echo "Run 'mage spdx:updateLicenseEntries' and push it"
             echo "send_notify=true" >> $GITHUB_OUTPUT
           fi
 

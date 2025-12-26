@@ -33,6 +33,8 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 		},
 		EnablePrivateCluster:        iacTypes.BoolDefault(false, resource.GetMetadata()),
 		APIServerAuthorizedIPRanges: nil,
+		DiskEncryptionSetID:         iacTypes.StringDefault("", resource.GetMetadata()),
+		AgentPools:                  []container.AgentPool{},
 		RoleBasedAccessControl: container.RoleBasedAccessControl{
 			Metadata: resource.GetMetadata(),
 			Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
@@ -40,6 +42,10 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 		AddonProfile: container.AddonProfile{
 			Metadata: resource.GetMetadata(),
 			OMSAgent: container.OMSAgent{
+				Metadata: resource.GetMetadata(),
+				Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
+			},
+			AzurePolicy: container.AzurePolicy{
 				Metadata: resource.GetMetadata(),
 				Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
 			},
@@ -64,18 +70,35 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 	addonProfileBlock := resource.GetBlock("addon_profile")
 	if addonProfileBlock.IsNotNil() {
 		cluster.AddonProfile.Metadata = addonProfileBlock.GetMetadata()
-		omsAgentBlock := addonProfileBlock.GetBlock("oms_agent")
-		if omsAgentBlock.IsNotNil() {
-			cluster.AddonProfile.OMSAgent.Metadata = omsAgentBlock.GetMetadata()
-			enabledAttr := omsAgentBlock.GetAttribute("enabled")
-			cluster.AddonProfile.OMSAgent.Enabled = enabledAttr.AsBoolValueOrDefault(false, omsAgentBlock)
+		if block := addonProfileBlock.GetBlock("oms_agent"); block.IsNotNil() {
+			cluster.AddonProfile.OMSAgent = container.OMSAgent{
+				Metadata: block.GetMetadata(),
+				Enabled:  block.GetAttribute("enabled").AsBoolValueOrDefault(false, block),
+			}
+		}
+
+		if block := addonProfileBlock.GetBlock("azure_policy"); block.IsNotNil() {
+			cluster.AddonProfile.AzurePolicy = container.AzurePolicy{
+				Metadata: block.GetMetadata(),
+				Enabled:  block.GetAttribute("enabled").AsBoolValueOrDefault(false, block),
+			}
 		}
 	}
 
 	// >= azurerm 2.97.0
-	if omsAgentBlock := resource.GetBlock("oms_agent"); omsAgentBlock.IsNotNil() {
-		cluster.AddonProfile.OMSAgent.Metadata = omsAgentBlock.GetMetadata()
-		cluster.AddonProfile.OMSAgent.Enabled = iacTypes.Bool(true, omsAgentBlock.GetMetadata())
+	if block := resource.GetBlock("oms_agent"); block.IsNotNil() {
+		cluster.AddonProfile.OMSAgent = container.OMSAgent{
+			Metadata: block.GetMetadata(),
+			Enabled:  iacTypes.Bool(true, block.GetMetadata()),
+		}
+	}
+
+	// azurerm >= 3.0.0 - new syntax for azure policy
+	if attr := resource.GetAttribute("azure_policy_enabled"); attr.IsNotNil() {
+		cluster.AddonProfile.AzurePolicy = container.AzurePolicy{
+			Metadata: attr.GetMetadata(),
+			Enabled:  attr.AsBoolValueOrDefault(false, resource),
+		}
 	}
 
 	// azurerm < 2.99.0
@@ -99,7 +122,31 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 				cluster.RoleBasedAccessControl.Enabled = enabledAttr.AsBoolValueOrDefault(false, block)
 			}
 		}
-
 	}
+
+	if diskEncryptionSetIDAttr := resource.GetAttribute("disk_encryption_set_id"); diskEncryptionSetIDAttr.IsNotNil() {
+		cluster.DiskEncryptionSetID = diskEncryptionSetIDAttr.AsStringValueOrDefault("", resource)
+	}
+
+	cluster.AgentPools = adaptAgentPools(resource)
+
 	return cluster
+}
+
+func adaptAgentPools(resource *terraform.Block) []container.AgentPool {
+	var pools []container.AgentPool
+
+	if defaultNodePoolBlock := resource.GetBlock("default_node_pool"); defaultNodePoolBlock.IsNotNil() {
+		pools = append(pools, adaptAgentPool(defaultNodePoolBlock))
+	}
+
+	return pools
+}
+
+func adaptAgentPool(block *terraform.Block) container.AgentPool {
+	return container.AgentPool{
+		Metadata:            block.GetMetadata(),
+		DiskEncryptionSetID: block.GetAttribute("disk_encryption_set_id").AsStringValueOrDefault("", block),
+		NodeType:            block.GetAttribute("type").AsStringValueOrDefault("VirtualMachineScaleSets", block),
+	}
 }

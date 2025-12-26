@@ -105,7 +105,9 @@ func (a Artifact) parseReferrer(ctx context.Context, repo string, desc v1.Descri
 		return artifact.Reference{}, xerrors.Errorf("SBOM download error: %w", err)
 	}
 
-	res, err := a.inspectSBOMFile(ctx, filepath.Join(tmpDir, fileName))
+	filePath := filepath.Join(tmpDir, fileName)
+
+	res, err := a.inspectSBOMFile(ctx, filePath)
 	if err != nil {
 		return res, xerrors.Errorf("SBOM error: %w", err)
 	}

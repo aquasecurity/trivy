@@ -7,13 +7,17 @@ import (
 	"testing"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// TestSBOM tests scanning SBOM files (CycloneDX, SPDX).
+//
+// NOTE: This test CAN update golden files with the -update flag because the golden files
+// used here are not shared with other tests. These SBOM-specific golden files are unique
+// to this test and should be updated here.
 func TestSBOM(t *testing.T) {
 	type args struct {
 		input        string
@@ -22,37 +26,10 @@ func TestSBOM(t *testing.T) {
 		scanners     string
 	}
 	tests := []struct {
-		name     string
-		args     args
-		golden   string
-		fakeUUID string
-		override OverrideFunc
+		name   string
+		args   args
+		golden string
 	}{
-		{
-			name: "centos7 cyclonedx",
-			args: args{
-				input:        "testdata/fixtures/sbom/centos-7-cyclonedx.json",
-				format:       "json",
-				artifactType: "cyclonedx",
-			},
-			golden: "testdata/centos-7.json.golden",
-			override: func(t *testing.T, want, got *types.Report) {
-				want.ArtifactName = "testdata/fixtures/sbom/centos-7-cyclonedx.json"
-				want.ArtifactType = ftypes.TypeCycloneDX
-
-				require.Len(t, got.Results, 1)
-				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-cyclonedx.json (centos 7.6.1810)"
-
-				require.Len(t, got.Results[0].Vulnerabilities, 3)
-				want.Results[0].Vulnerabilities[0].PkgIdentifier.BOMRef = "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810"
-				want.Results[0].Vulnerabilities[1].PkgIdentifier.BOMRef = "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"
-				want.Results[0].Vulnerabilities[2].PkgIdentifier.BOMRef = "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"
-
-				// SBOM file doesn't contain info about layers
-				want.Metadata.Size = 0
-				want.Metadata.Layers = nil
-			},
-		},
 		{
 			name: "fluentd-multiple-lockfiles cyclonedx",
 			args: args{
@@ -60,7 +37,7 @@ func TestSBOM(t *testing.T) {
 				format:       "json",
 				artifactType: "cyclonedx",
 			},
-			golden: "testdata/fluentd-multiple-lockfiles.json.golden",
+			golden: goldenFluentdMultipleLockfiles,
 		},
 		{
 			name: "scan SBOM into SBOM",
@@ -69,8 +46,7 @@ func TestSBOM(t *testing.T) {
 				format:       "cyclonedx",
 				artifactType: "cyclonedx",
 			},
-			fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-			golden:   "testdata/fluentd-multiple-lockfiles-short.cdx.json.golden",
+			golden: goldenFluentdMultipleLockfilesShortCDX,
 		},
 		{
 			name: "minikube KBOM",
@@ -79,72 +55,7 @@ func TestSBOM(t *testing.T) {
 				format:       "json",
 				artifactType: "cyclonedx",
 			},
-			golden: "testdata/minikube-kbom.json.golden",
-		},
-		{
-			name: "centos7 in in-toto attestation",
-			args: args{
-				input:        "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl",
-				format:       "json",
-				artifactType: "cyclonedx",
-			},
-			golden: "testdata/centos-7.json.golden",
-			override: func(t *testing.T, want, got *types.Report) {
-				want.ArtifactName = "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl"
-				want.ArtifactType = ftypes.TypeCycloneDX
-
-				require.Len(t, got.Results, 1)
-				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl (centos 7.6.1810)"
-
-				require.Len(t, got.Results[0].Vulnerabilities, 3)
-				want.Results[0].Vulnerabilities[0].PkgIdentifier.BOMRef = "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810"
-				want.Results[0].Vulnerabilities[1].PkgIdentifier.BOMRef = "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"
-				want.Results[0].Vulnerabilities[2].PkgIdentifier.BOMRef = "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"
-
-				// SBOM file doesn't contain info about layers
-				want.Metadata.Size = 0
-				want.Metadata.Layers = nil
-			},
-		},
-		{
-			name: "centos7 spdx tag-value",
-			args: args{
-				input:        "testdata/fixtures/sbom/centos-7-spdx.txt",
-				format:       "json",
-				artifactType: "spdx",
-			},
-			golden: "testdata/centos-7.json.golden",
-			override: func(t *testing.T, want, got *types.Report) {
-				want.ArtifactName = "testdata/fixtures/sbom/centos-7-spdx.txt"
-				want.ArtifactType = ftypes.TypeSPDX
-
-				require.Len(t, got.Results, 1)
-				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-spdx.txt (centos 7.6.1810)"
-
-				// SBOM file doesn't contain info about layers
-				want.Metadata.Size = 0
-				want.Metadata.Layers = nil
-			},
-		},
-		{
-			name: "centos7 spdx json",
-			args: args{
-				input:        "testdata/fixtures/sbom/centos-7-spdx.json",
-				format:       "json",
-				artifactType: "spdx",
-			},
-			golden: "testdata/centos-7.json.golden",
-			override: func(t *testing.T, want, got *types.Report) {
-				want.ArtifactName = "testdata/fixtures/sbom/centos-7-spdx.json"
-				want.ArtifactType = ftypes.TypeSPDX
-
-				require.Len(t, got.Results, 1)
-				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-spdx.json (centos 7.6.1810)"
-
-				// SBOM file doesn't contain info about layers
-				want.Metadata.Size = 0
-				want.Metadata.Layers = nil
-			},
+			golden: goldenMinikubeKBOM,
 		},
 		{
 			name: "license check cyclonedx json",
@@ -154,7 +65,7 @@ func TestSBOM(t *testing.T) {
 				artifactType: "cyclonedx",
 				scanners:     "license",
 			},
-			golden: "testdata/license-cyclonedx.json.golden",
+			golden: goldenLicenseCycloneDX,
 		},
 	}
 
@@ -169,9 +80,9 @@ func TestSBOM(t *testing.T) {
 			}
 
 			osArgs := []string{
+				"sbom",
 				"--cache-dir",
 				cacheDir,
-				"sbom",
 				"-q",
 				"--skip-db-update",
 				"--format",
@@ -179,73 +90,177 @@ func TestSBOM(t *testing.T) {
 				"--scanners",
 				scanners,
 				"--list-all-pkgs=false",
+				tt.args.input,
 			}
-
-			// Set up the output file
-			outputFile := filepath.Join(t.TempDir(), "output.json")
-			if *update {
-				outputFile = tt.golden
-			}
-
-			osArgs = append(osArgs, "--output", outputFile, tt.args.input)
 
 			// Run "trivy sbom"
-			runTest(t, osArgs, tt.golden, outputFile, types.Format(tt.args.format), runOptions{
-				override: overrideFuncs(overrideSBOMReport, overrideUID, tt.override),
-				fakeUUID: tt.fakeUUID,
+			runTest(t, osArgs, tt.golden, types.Format(tt.args.format), runOptions{
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+				override: nil, // Do not use overrides - golden files are generated from this test as the canonical source
+			})
+		})
+	}
+}
+
+// TestSBOMEquivalence tests that scanning an SBOM produces equivalent results to scanning the original artifact.
+//
+// This test verifies that scanning an image through SBOM:
+//
+//	trivy image centos:7 -f cyclonedx -o centos7.cdx.json && trivy sbom centos7.cdx.json
+//
+// produces the same vulnerability results as direct image scanning:
+//
+//	trivy image centos:7
+//
+// IMPORTANT: Golden files used in this test cannot be updated with the -update flag
+// because the golden files are shared with TestTar.
+// If golden files need to be updated, they should be generated from TestTar.
+//
+// All golden files used in TestSBOMEquivalence MUST also be used in TestTar
+// to ensure they can be properly updated when needed.
+func TestSBOMEquivalence(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestSBOMEquivalence when -update flag is set. Golden files should be updated via TestTar.")
+	}
+
+	type args struct {
+		input        string
+		format       string
+		artifactType string
+	}
+	tests := []struct {
+		name     string
+		args     args
+		golden   string
+		override OverrideFunc
+	}{
+		{
+			name: "centos7 cyclonedx",
+			args: args{
+				input:        "testdata/fixtures/sbom/centos-7-cyclonedx.json",
+				format:       "json",
+				artifactType: "cyclonedx",
+			},
+			golden: goldenCentOS7,
+			override: func(t *testing.T, want, got *types.Report) {
+				want.ArtifactName = "testdata/fixtures/sbom/centos-7-cyclonedx.json"
+				want.ArtifactType = ftypes.TypeCycloneDX
+
+				require.Len(t, got.Results, 1)
+				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-cyclonedx.json (centos 7.6.1810)"
+
+				require.Len(t, got.Results[0].Vulnerabilities, 3)
+				want.Results[0].Vulnerabilities[0].PkgIdentifier.BOMRef = "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810"
+				want.Results[0].Vulnerabilities[1].PkgIdentifier.BOMRef = "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"
+				want.Results[0].Vulnerabilities[2].PkgIdentifier.BOMRef = "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"
+
+				// ReportID uses v7 UUID with independent counter from v4 UUIDs used for SBOM components
+				want.ReportID = "017b7d41-e09f-7000-80ea-000000000001"
+			},
+		},
+		{
+			name: "centos7 spdx tag-value",
+			args: args{
+				input:        "testdata/fixtures/sbom/centos-7-spdx.txt",
+				format:       "json",
+				artifactType: "spdx",
+			},
+			golden: goldenCentOS7,
+			override: func(t *testing.T, want, got *types.Report) {
+				want.ArtifactName = "testdata/fixtures/sbom/centos-7-spdx.txt"
+				want.ArtifactType = ftypes.TypeSPDX
+
+				require.Len(t, got.Results, 1)
+				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-spdx.txt (centos 7.6.1810)"
+
+				// ReportID uses v7 UUID with independent counter from v4 UUIDs used for SBOM components
+				want.ReportID = "017b7d41-e09f-7000-80ea-000000000001"
+			},
+		},
+		{
+			name: "centos7 spdx json",
+			args: args{
+				input:        "testdata/fixtures/sbom/centos-7-spdx.json",
+				format:       "json",
+				artifactType: "spdx",
+			},
+			golden: goldenCentOS7,
+			override: func(t *testing.T, want, got *types.Report) {
+				want.ArtifactName = "testdata/fixtures/sbom/centos-7-spdx.json"
+				want.ArtifactType = ftypes.TypeSPDX
+
+				require.Len(t, got.Results, 1)
+				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-spdx.json (centos 7.6.1810)"
+
+				// ReportID uses v7 UUID with independent counter from v4 UUIDs used for SBOM components
+				want.ReportID = "017b7d41-e09f-7000-80ea-000000000001"
+			},
+		},
+		{
+			name: "centos7 in in-toto attestation",
+			args: args{
+				input:        "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl",
+				format:       "json",
+				artifactType: "cyclonedx",
+			},
+			golden: goldenCentOS7,
+			override: func(t *testing.T, want, got *types.Report) {
+				want.ArtifactName = "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl"
+				want.ArtifactType = ftypes.TypeCycloneDX
+
+				require.Len(t, got.Results, 1)
+				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl (centos 7.6.1810)"
+
+				require.Len(t, got.Results[0].Vulnerabilities, 3)
+				want.Results[0].Vulnerabilities[0].PkgIdentifier.BOMRef = "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810"
+				want.Results[0].Vulnerabilities[1].PkgIdentifier.BOMRef = "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"
+				want.Results[0].Vulnerabilities[2].PkgIdentifier.BOMRef = "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"
+
+				// ReportID uses v7 UUID with independent counter from v4 UUIDs used for SBOM components
+				want.ReportID = "017b7d41-e09f-7000-80ea-000000000001"
+			},
+		},
+	}
+
+	// Set up testing DB
+	cacheDir := initDB(t)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			osArgs := []string{
+				"sbom",
+				"--cache-dir",
+				cacheDir,
+				"-q",
+				"--skip-db-update",
+				"--format",
+				tt.args.format,
+				"--scanners",
+				"vuln",
+				"--list-all-pkgs=false",
+				tt.args.input,
+			}
+
+			// Run "trivy sbom"
+			runTest(t, osArgs, tt.golden, types.Format(tt.args.format), runOptions{
+				override: overrideFuncs(overrideSBOMReport, overrideUID, overrideFingerprint, tt.override),
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
 	}
 }
 
 func overrideSBOMReport(_ *testing.T, want, got *types.Report) {
-	want.Metadata.ImageID = ""
+	want.ArtifactID = ""
 	want.Metadata.ImageConfig = v1.ConfigFile{}
-	want.Metadata.DiffIDs = nil
+
+	// SBOM file doesn't contain info about layers
+	want.Metadata.Size = 0
+	want.Metadata.Layers = nil
 
 	// when running on Windows FS
 	got.ArtifactName = filepath.ToSlash(filepath.Clean(got.ArtifactName))
 	for i, result := range got.Results {
 		got.Results[i].Target = filepath.ToSlash(filepath.Clean(result.Target))
 	}
-}
-
-// TODO(teppei): merge into compareReports
-func compareSBOMReports(t *testing.T, wantFile, gotFile string, overrideWant types.Report) {
-	want := readReport(t, wantFile)
-
-	if overrideWant.ArtifactName != "" {
-		want.ArtifactName = overrideWant.ArtifactName
-	}
-	if overrideWant.ArtifactType != "" {
-		want.ArtifactType = overrideWant.ArtifactType
-	}
-	want.Metadata.ImageID = ""
-	want.Metadata.ImageConfig = v1.ConfigFile{}
-	want.Metadata.DiffIDs = nil
-	for i, result := range want.Results {
-		for j := range result.Vulnerabilities {
-			want.Results[i].Vulnerabilities[j].Layer.DiffID = ""
-		}
-	}
-
-	for i, result := range overrideWant.Results {
-		want.Results[i].Target = result.Target
-		for j, vuln := range result.Vulnerabilities {
-			if vuln.PkgIdentifier.PURL != nil {
-				want.Results[i].Vulnerabilities[j].PkgIdentifier.PURL = vuln.PkgIdentifier.PURL
-			}
-			if vuln.PkgIdentifier.BOMRef != "" {
-				want.Results[i].Vulnerabilities[j].PkgIdentifier.BOMRef = vuln.PkgIdentifier.BOMRef
-			}
-		}
-	}
-
-	got := readReport(t, gotFile)
-	// when running on Windows FS
-	got.ArtifactName = filepath.ToSlash(filepath.Clean(got.ArtifactName))
-	for i, result := range got.Results {
-		got.Results[i].Target = filepath.ToSlash(filepath.Clean(result.Target))
-	}
-	assert.Equal(t, want, got)
 }

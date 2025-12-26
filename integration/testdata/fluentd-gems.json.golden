@@ -1,6 +1,8 @@
 {
   "SchemaVersion": 2,
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:7a550fb73ac2bf3e1fe50c96a8a5ba699be62cbb09ba9bd982557e574c904b3d",
   "ArtifactName": "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -18,6 +20,10 @@
       "sha256:788c00e2cfc8f2a018ae4344ccf0b2c226ebd756d7effd1ce50eea1a4252cd89",
       "sha256:25165eb51d15842f870f97873e0a58409d5e860e6108e3dd829bd10e484c0065"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:fluentd-multiple-lockfiles"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:fluentd-multiple-lockfiles",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "232f3fc7ddffd71dc3ff52c6c0c3a5feea2f51acffd9b53850a8fc6f1a15319a",
@@ -148,7 +154,7 @@
           "PkgName": "libidn2-0",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/libidn2-0@2.0.5-1?arch=amd64\u0026distro=debian-10.2",
-            "UID": "14f80a7091a08e71"
+            "UID": "cd3028817db3f25a"
           },
           "InstalledVersion": "2.0.5-1",
           "FixedVersion": "2.0.5-1+deb10u1",
@@ -164,6 +170,7 @@
             "Name": "Debian Security Tracker",
             "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
           },
+          "Fingerprint": "sha256:45d3cfb43101cb3984ae8671cc6104e42b47a8ec1fa9c320295df4c661c708cc",
           "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
           "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
           "Severity": "CRITICAL",
@@ -236,6 +243,7 @@
             "Name": "GitHub Security Advisory RubyGems",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Arubygems"
           },
+          "Fingerprint": "sha256:0bf18943adff42d16e0d020edb1c408ccf61081e1cea6476005dd1018102d24a",
           "Title": "rubygem-activesupport: potentially unintended unmarshalling of user-provided objects in MemCacheStore and RedisCacheStore",
           "Description": "A deserialization of untrusted data vulnerability exists in rails \u003c 5.2.4.3, rails \u003c 6.0.3.1 that can allow an attacker to unmarshal user-provided objects in MemCacheStore and RedisCacheStore potentially resulting in an RCE.",
           "Severity": "HIGH",

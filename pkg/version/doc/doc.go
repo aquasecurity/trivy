@@ -15,10 +15,11 @@ const devVersion = "dev"
 // BaseURL returns the base URL for the versioned documentation
 func BaseURL(ver string) *url.URL {
 	ver = canonicalVersion(ver)
+	path := path.Join("docs", ver)
 	return &url.URL{
 		Scheme: "https",
 		Host:   "trivy.dev",
-		Path:   ver,
+		Path:   path,
 	}
 }
 

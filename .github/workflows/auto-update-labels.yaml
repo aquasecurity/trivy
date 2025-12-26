@@ -18,6 +18,7 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+          check-latest: true # Ensure we use the latest Go patch version
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action

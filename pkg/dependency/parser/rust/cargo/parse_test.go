@@ -382,7 +382,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(v.file)
 			require.NoError(t, err)
 
-			gotPkgs, gotDeps, err := NewParser().Parse(f)
+			gotPkgs, gotDeps, err := NewParser().Parse(t.Context(), f)
 
 			if !v.wantErr(t, err, fmt.Sprintf("Parse(%v)", v.file)) {
 				return
