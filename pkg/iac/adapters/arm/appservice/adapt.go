@@ -3,6 +3,7 @@ package appservice
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/appservice"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(deployment azure.Deployment) appservice.AppService {
@@ -44,6 +45,7 @@ func adaptService(resource azure.Resource) appservice.Service {
 	siteConfig := props.GetMapValue("siteConfig")
 	return appservice.Service{
 		Metadata:         resource.Metadata,
+		Resource:         types.String("Microsoft.Web/sites", resource.Metadata),
 		EnableClientCert: props.GetMapValue("clientCertEnabled").AsBoolValue(false, props.GetMetadata()),
 		HTTPSOnly:        props.GetMapValue("httpsOnly").AsBoolValue(false, props.GetMetadata()),
 		Identity: appservice.Identity{
