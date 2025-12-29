@@ -23,6 +23,7 @@ import (
 	tapi "github.com/aquasecurity/trivy/pkg/module/api"
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 var (
@@ -572,7 +573,7 @@ func updateResults(gotResults, results types.Results) {
 	for _, g := range gotResults {
 		for i, result := range results {
 			if g.Target == result.Target && g.Class == result.Class && g.Type == result.Type {
-				results[i].Vulnerabilities = lo.Map(result.Vulnerabilities, func(v types.DetectedVulnerability, _ int) types.DetectedVulnerability {
+				results[i].Vulnerabilities = xslices.Map(result.Vulnerabilities, func(v types.DetectedVulnerability) types.DetectedVulnerability {
 					// Update vulnerabilities in the existing result
 					for _, got := range g.Vulnerabilities {
 						if got.VulnerabilityID == v.VulnerabilityID && got.PkgName == v.PkgName &&
@@ -586,7 +587,7 @@ func updateResults(gotResults, results types.Results) {
 					return v
 				})
 
-				results[i].Misconfigurations = lo.Map(result.Misconfigurations, func(m types.DetectedMisconfiguration, _ int) types.DetectedMisconfiguration {
+				results[i].Misconfigurations = xslices.Map(result.Misconfigurations, func(m types.DetectedMisconfiguration) types.DetectedMisconfiguration {
 					// Update misconfigurations in the existing result
 					for _, got := range g.Misconfigurations {
 						if got.ID == m.ID &&

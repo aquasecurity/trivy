@@ -26,6 +26,7 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+          check-latest: true # Ensure we use the latest Go patch version
 
       - name: go mod tidy
         run: |
@@ -80,6 +81,7 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+          check-latest: true # Ensure we use the latest Go patch version
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -113,6 +115,7 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+          check-latest: true # Ensure we use the latest Go patch version
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -132,6 +135,7 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+          check-latest: true # Ensure we use the latest Go patch version
 
       - name: Install tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -167,6 +171,7 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+          check-latest: true # Ensure we use the latest Go patch version
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -201,6 +206,7 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+          check-latest: true # Ensure we use the latest Go patch version
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -236,6 +242,7 @@ jobs:
       with:
         go-version-file: go.mod
         cache: false
+        check-latest: true # Ensure we use the latest Go patch version
 
     - name: Determine GoReleaser ID
       id: goreleaser_id

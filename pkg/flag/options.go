@@ -233,6 +233,14 @@ func (f *Flag[T]) GetAliases() []Alias {
 	return f.Aliases
 }
 
+func (f *Flag[T]) GetUsage() string {
+	return f.Usage
+}
+
+func (f *Flag[T]) GetValues() []string {
+	return f.Values
+}
+
 func (f *Flag[T]) IsTelemetrySafe() bool {
 	return f.TelemetrySafe
 }
@@ -377,6 +385,8 @@ type Flagger interface {
 	GetConfigName() string
 	GetDefaultValue() any
 	GetAliases() []Alias
+	GetUsage() string
+	GetValues() []string
 	Hidden() bool
 	IsTelemetrySafe() bool
 	IsSet() bool

@@ -36,6 +36,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/version/app"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 
 	_ "embed"
 )
@@ -582,7 +583,7 @@ func NewCauseWithCode(underlying scan.Result, flat scan.FlatResult) types.CauseM
 
 		if code, err := underlying.GetCode(); err == nil {
 			cause.Code = types.Code{
-				Lines: lo.Map(code.Lines, func(l scan.Line, _ int) types.Line {
+				Lines: xslices.Map(code.Lines, func(l scan.Line) types.Line {
 					return types.Line{
 						Number:      l.Number,
 						Content:     l.Content,

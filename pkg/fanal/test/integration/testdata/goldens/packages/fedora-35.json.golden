@@ -11,7 +11,10 @@
     "Licenses": [
       "GPLv2"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "audit-libs@3.0.7-2.fc35.x86_64",
@@ -25,7 +28,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "basesystem@11-12.fc35.noarch",
@@ -39,7 +45,10 @@
     "Licenses": [
       "Public Domain"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "bash@5.1.8-2.fc35.x86_64",
@@ -53,7 +62,10 @@
     "Licenses": [
       "GPLv3+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "bzip2-libs@1.0.8-9.fc35.x86_64",
@@ -67,7 +79,10 @@
     "Licenses": [
       "BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "ca-certificates@2021.2.52-1.0.fc35.noarch",
@@ -81,7 +96,10 @@
     "Licenses": [
       "Public Domain"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "coreutils@8.32-31.fc35.x86_64",
@@ -95,7 +113,10 @@
     "Licenses": [
       "GPLv3+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "coreutils-common@8.32-31.fc35.x86_64",
@@ -109,7 +130,10 @@
     "Licenses": [
       "GPLv3+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "cracklib@2.9.6-27.fc35.x86_64",
@@ -123,7 +147,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "crypto-policies@20210819-1.gitd0fdcfb.fc35.noarch",
@@ -137,7 +164,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "curl@7.79.1-1.fc35.x86_64",
@@ -151,7 +181,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "cyrus-sasl-lib@2.1.27-13.fc35.x86_64",
@@ -165,7 +198,10 @@
     "Licenses": [
       "BSD with advertising"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "dnf@4.9.0-1.fc35.noarch",
@@ -179,7 +215,10 @@
     "Licenses": [
       "GPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "dnf-data@4.9.0-1.fc35.noarch",
@@ -193,7 +232,10 @@
     "Licenses": [
       "GPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "elfutils-default-yama-scope@0.186-1.fc35.noarch",
@@ -207,7 +249,10 @@
     "Licenses": [
       "GPLv2+ or LGPLv3+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "elfutils-libelf@0.186-1.fc35.x86_64",
@@ -221,7 +266,10 @@
     "Licenses": [
       "GPLv2+ or LGPLv3+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "elfutils-libs@0.186-1.fc35.x86_64",
@@ -235,7 +283,10 @@
     "Licenses": [
       "GPLv2+ or LGPLv3+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "expat@2.4.4-1.fc35.x86_64",
@@ -249,7 +300,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "fedora-gpg-keys@35-1.noarch",
@@ -263,7 +317,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "fedora-release-common@35-36.noarch",
@@ -277,7 +334,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "fedora-release-container@35-36.noarch",
@@ -291,7 +351,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "fedora-release-identity-container@35-36.noarch",
@@ -305,7 +368,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "fedora-repos@35-1.noarch",
@@ -319,7 +385,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "fedora-repos-modular@35-1.noarch",
@@ -333,7 +402,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "file-libs@5.40-9.fc35.x86_64",
@@ -347,7 +419,10 @@
     "Licenses": [
       "BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "filesystem@3.14-7.fc35.x86_64",
@@ -361,7 +436,10 @@
     "Licenses": [
       "Public Domain"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "gawk@5.1.0-4.fc35.x86_64",
@@ -375,7 +453,10 @@
     "Licenses": [
       "GPLv3+ and GPLv2+ and LGPLv2+ and BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "gdbm-libs@1.22-1.fc35.x86_64",
@@ -391,7 +472,10 @@
     "Licenses": [
       "GPLv3+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "glib2@2.70.4-1.fc35.x86_64",
@@ -405,7 +489,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "glibc@2.34-25.fc35.x86_64",
@@ -419,7 +506,10 @@
     "Licenses": [
       "LGPLv2+ and LGPLv2+ with exceptions and GPLv2+ and GPLv2+ with exceptions and BSD and Inner-Net and ISC and Public Domain and GFDL"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "glibc-common@2.34-25.fc35.x86_64",
@@ -433,7 +523,10 @@
     "Licenses": [
       "LGPLv2+ and LGPLv2+ with exceptions and GPLv2+ and GPLv2+ with exceptions and BSD and Inner-Net and ISC and Public Domain and GFDL"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "glibc-minimal-langpack@2.34-25.fc35.x86_64",
@@ -447,7 +540,10 @@
     "Licenses": [
       "LGPLv2+ and LGPLv2+ with exceptions and GPLv2+ and GPLv2+ with exceptions and BSD and Inner-Net and ISC and Public Domain and GFDL"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "gmp@6.2.0-7.fc35.x86_64",
@@ -463,7 +559,10 @@
     "Licenses": [
       "LGPLv3+ or GPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "gnupg2@2.3.4-1.fc35.x86_64",
@@ -477,7 +576,10 @@
     "Licenses": [
       "GPLv3+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "gnutls@3.7.2-2.fc35.x86_64",
@@ -491,7 +593,10 @@
     "Licenses": [
       "GPLv3+ and LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "gpg-pubkey@9867c58f-601c49ca.",
@@ -501,7 +606,10 @@
     "Arch": "None",
     "Licenses": [
       "pubkey"
-    ]
+    ],
+    "Repository": {
+      "Class": "third-party"
+    }
   },
   {
     "ID": "gpgme@1.15.1-6.fc35.x86_64",
@@ -515,7 +623,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "grep@3.6-4.fc35.x86_64",
@@ -529,7 +640,10 @@
     "Licenses": [
       "GPLv3+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "gzip@1.10-5.fc35.x86_64",
@@ -543,7 +657,10 @@
     "Licenses": [
       "GPLv3+ and GFDL"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "ima-evm-utils@1.3.2-3.fc35.x86_64",
@@ -557,7 +674,10 @@
     "Licenses": [
       "GPLv2"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "json-c@0.15-2.fc35.x86_64",
@@ -571,7 +691,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "keyutils-libs@1.6.1-3.fc35.x86_64",
@@ -585,7 +708,10 @@
     "Licenses": [
       "GPLv2+ and LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "krb5-libs@1.19.2-2.fc35.x86_64",
@@ -599,7 +725,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libacl@2.3.1-2.fc35.x86_64",
@@ -613,7 +742,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libarchive@3.5.2-2.fc35.x86_64",
@@ -627,7 +759,10 @@
     "Licenses": [
       "BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libassuan@2.5.5-3.fc35.x86_64",
@@ -641,7 +776,10 @@
     "Licenses": [
       "LGPLv2+ and GPLv3+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libattr@2.5.1-3.fc35.x86_64",
@@ -655,7 +793,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libblkid@2.37.4-1.fc35.x86_64",
@@ -669,7 +810,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libbrotli@1.0.9-6.fc35.x86_64",
@@ -683,7 +827,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libcap@2.48-3.fc35.x86_64",
@@ -697,7 +844,10 @@
     "Licenses": [
       "BSD or GPLv2"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libcap-ng@0.8.2-8.fc35.x86_64",
@@ -711,7 +861,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libcom_err@1.46.3-1.fc35.x86_64",
@@ -725,7 +878,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libcomps@0.1.18-1.fc35.x86_64",
@@ -739,7 +895,10 @@
     "Licenses": [
       "GPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libcurl@7.79.1-1.fc35.x86_64",
@@ -753,7 +912,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libdb@5.3.28-50.fc35.x86_64",
@@ -767,7 +929,10 @@
     "Licenses": [
       "BSD and LGPLv2 and Sleepycat"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libdnf@0.64.0-1.fc35.x86_64",
@@ -781,7 +946,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libeconf@0.4.0-2.fc35.x86_64",
@@ -795,7 +963,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libffi@3.1-29.fc35.x86_64",
@@ -809,7 +980,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libfsverity@1.4-6.fc35.x86_64",
@@ -823,7 +997,10 @@
     "Licenses": [
       "BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libgcc@11.2.1-9.fc35.x86_64",
@@ -837,7 +1014,10 @@
     "Licenses": [
       "GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libgcrypt@1.9.4-1.fc35.x86_64",
@@ -851,7 +1031,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libgomp@11.2.1-9.fc35.x86_64",
@@ -865,7 +1048,10 @@
     "Licenses": [
       "GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libgpg-error@1.43-1.fc35.x86_64",
@@ -879,7 +1065,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libidn2@2.3.2-3.fc35.x86_64",
@@ -893,7 +1082,10 @@
     "Licenses": [
       "(GPLv2+ or LGPLv3+) and GPLv3+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libksba@1.6.0-2.fc35.x86_64",
@@ -907,7 +1099,10 @@
     "Licenses": [
       "(LGPLv3+ or GPLv2+) and GPLv3+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libmodulemd@2.14.0-1.fc35.x86_64",
@@ -921,7 +1116,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libmount@2.37.4-1.fc35.x86_64",
@@ -935,7 +1133,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libnghttp2@1.45.1-1.fc35.x86_64",
@@ -949,7 +1150,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libnsl2@1.3.0-4.fc35.x86_64",
@@ -963,7 +1167,10 @@
     "Licenses": [
       "BSD and LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libpsl@0.21.1-4.fc35.x86_64",
@@ -977,7 +1184,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libpwquality@1.4.4-6.fc35.x86_64",
@@ -991,7 +1201,10 @@
     "Licenses": [
       "BSD or GPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "librepo@1.14.2-1.fc35.x86_64",
@@ -1005,7 +1218,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libreport-filesystem@2.15.2-6.fc35.noarch",
@@ -1019,7 +1235,10 @@
     "Licenses": [
       "GPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libselinux@3.3-1.fc35.x86_64",
@@ -1033,7 +1252,10 @@
     "Licenses": [
       "Public Domain"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libsemanage@3.3-1.fc35.x86_64",
@@ -1047,7 +1269,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libsepol@3.3-2.fc35.x86_64",
@@ -1061,7 +1286,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libsigsegv@2.13-3.fc35.x86_64",
@@ -1075,7 +1303,10 @@
     "Licenses": [
       "GPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libsmartcols@2.37.4-1.fc35.x86_64",
@@ -1089,7 +1320,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libsolv@0.7.19-3.fc35.x86_64",
@@ -1103,7 +1337,10 @@
     "Licenses": [
       "BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libssh@0.9.6-1.fc35.x86_64",
@@ -1117,7 +1354,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libssh-config@0.9.6-1.fc35.noarch",
@@ -1131,7 +1371,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libstdc++@11.2.1-9.fc35.x86_64",
@@ -1145,7 +1388,10 @@
     "Licenses": [
       "GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libtasn1@4.16.0-6.fc35.x86_64",
@@ -1159,7 +1405,10 @@
     "Licenses": [
       "GPLv3+ and LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libtirpc@1.3.2-1.fc35.x86_64",
@@ -1173,7 +1422,10 @@
     "Licenses": [
       "SISSL and BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libunistring@0.9.10-14.fc35.x86_64",
@@ -1187,7 +1439,10 @@
     "Licenses": [
       "GPLv2+ or LGPLv3+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libuuid@2.37.4-1.fc35.x86_64",
@@ -1201,7 +1456,10 @@
     "Licenses": [
       "BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libverto@0.3.2-2.fc35.x86_64",
@@ -1215,7 +1473,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libxcrypt@4.4.28-1.fc35.x86_64",
@@ -1229,7 +1490,10 @@
     "Licenses": [
       "LGPLv2+ and BSD and Public Domain"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libxml2@2.9.12-6.fc35.x86_64",
@@ -1243,7 +1507,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libyaml@0.2.5-6.fc35.x86_64",
@@ -1257,7 +1524,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "libzstd@1.5.2-1.fc35.x86_64",
@@ -1271,7 +1541,10 @@
     "Licenses": [
       "BSD and GPLv2"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "lua-libs@5.4.4-1.fc35.x86_64",
@@ -1285,7 +1558,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "lz4-libs@1.9.3-3.fc35.x86_64",
@@ -1299,7 +1575,10 @@
     "Licenses": [
       "GPLv2+ and BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "mpdecimal@2.5.1-2.fc35.x86_64",
@@ -1313,7 +1592,10 @@
     "Licenses": [
       "BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "mpfr@4.1.0-8.fc35.x86_64",
@@ -1327,7 +1609,10 @@
     "Licenses": [
       "LGPLv3+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "ncurses-base@6.2-8.20210508.fc35.noarch",
@@ -1341,7 +1626,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "ncurses-libs@6.2-8.20210508.fc35.x86_64",
@@ -1355,7 +1643,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "nettle@3.7.3-2.fc35.x86_64",
@@ -1369,7 +1660,10 @@
     "Licenses": [
       "LGPLv3+ or GPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "npth@1.6-7.fc35.x86_64",
@@ -1383,7 +1677,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "openldap@2.4.59-3.fc35.x86_64",
@@ -1397,7 +1694,10 @@
     "Licenses": [
       "OpenLDAP"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "openssl-libs@1.1.1l-2.fc35.x86_64",
@@ -1413,7 +1713,10 @@
     "Licenses": [
       "OpenSSL and ASL 2.0"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "p11-kit@0.23.22-4.fc35.x86_64",
@@ -1427,7 +1730,10 @@
     "Licenses": [
       "BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "p11-kit-trust@0.23.22-4.fc35.x86_64",
@@ -1441,7 +1747,10 @@
     "Licenses": [
       "BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "pam@1.5.2-7.fc35.x86_64",
@@ -1455,7 +1764,10 @@
     "Licenses": [
       "BSD and GPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "pcre@8.45-1.fc35.x86_64",
@@ -1469,7 +1781,10 @@
     "Licenses": [
       "BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "pcre2@10.39-1.fc35.x86_64",
@@ -1483,7 +1798,10 @@
     "Licenses": [
       "BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "pcre2-syntax@10.39-1.fc35.noarch",
@@ -1497,7 +1815,10 @@
     "Licenses": [
       "BSD"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "popt@1.18-6.fc35.x86_64",
@@ -1511,7 +1832,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "publicsuffix-list-dafsa@20210518-2.fc35.noarch",
@@ -1525,7 +1849,10 @@
     "Licenses": [
       "MPLv2.0"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "python-pip-wheel@21.2.3-4.fc35.noarch",
@@ -1539,7 +1866,10 @@
     "Licenses": [
       "MIT and Python and ASL 2.0 and BSD and ISC and LGPLv2 and MPLv2.0 and (ASL 2.0 or BSD)"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "python-setuptools-wheel@57.4.0-1.fc35.noarch",
@@ -1553,7 +1883,10 @@
     "Licenses": [
       "MIT and (BSD or ASL 2.0)"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "python3@3.10.2-1.fc35.x86_64",
@@ -1567,7 +1900,10 @@
     "Licenses": [
       "Python"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "python3-dnf@4.9.0-1.fc35.noarch",
@@ -1581,7 +1917,10 @@
     "Licenses": [
       "GPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "python3-gpg@1.15.1-6.fc35.x86_64",
@@ -1595,7 +1934,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "python3-hawkey@0.64.0-1.fc35.x86_64",
@@ -1609,7 +1951,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "python3-libcomps@0.1.18-1.fc35.x86_64",
@@ -1623,7 +1968,10 @@
     "Licenses": [
       "GPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "python3-libdnf@0.64.0-1.fc35.x86_64",
@@ -1637,7 +1985,10 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "python3-libs@3.10.2-1.fc35.x86_64",
@@ -1651,7 +2002,10 @@
     "Licenses": [
       "Python"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "python3-rpm@4.17.0-4.fc35.x86_64",
@@ -1665,7 +2019,10 @@
     "Licenses": [
       "GPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "readline@8.1-3.fc35.x86_64",
@@ -1679,7 +2036,10 @@
     "Licenses": [
       "GPLv3+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "rootfiles@8.1-30.fc35.noarch",
@@ -1693,7 +2053,10 @@
     "Licenses": [
       "Public Domain"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "rpm@4.17.0-4.fc35.x86_64",
@@ -1707,7 +2070,10 @@
     "Licenses": [
       "GPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "rpm-build-libs@4.17.0-4.fc35.x86_64",
@@ -1721,7 +2087,10 @@
     "Licenses": [
       "GPLv2+ and LGPLv2+ with exceptions"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "rpm-libs@4.17.0-4.fc35.x86_64",
@@ -1735,7 +2104,10 @@
     "Licenses": [
       "GPLv2+ and LGPLv2+ with exceptions"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "rpm-sign-libs@4.17.0-4.fc35.x86_64",
@@ -1749,7 +2121,10 @@
     "Licenses": [
       "GPLv2+ and LGPLv2+ with exceptions"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "sed@4.8-8.fc35.x86_64",
@@ -1763,7 +2138,10 @@
     "Licenses": [
       "GPLv3+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "setup@2.13.9.1-2.fc35.noarch",
@@ -1777,7 +2155,10 @@
     "Licenses": [
       "Public Domain"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "shadow-utils@4.9-9.fc35.x86_64",
@@ -1793,7 +2174,10 @@
     "Licenses": [
       "BSD and GPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "sqlite-libs@3.36.0-3.fc35.x86_64",
@@ -1807,7 +2191,10 @@
     "Licenses": [
       "Public Domain"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "sudo@1.9.7p2-2.fc35.x86_64",
@@ -1821,7 +2208,10 @@
     "Licenses": [
       "ISC"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "tar@1.34-2.fc35.x86_64",
@@ -1837,7 +2227,10 @@
     "Licenses": [
       "GPLv3+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "tpm2-tss@3.1.0-3.fc35.x86_64",
@@ -1851,7 +2244,10 @@
     "Licenses": [
       "BSD and TCGL"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "tzdata@2021e-1.fc35.noarch",
@@ -1865,7 +2261,10 @@
     "Licenses": [
       "Public Domain"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "vim-data@8.2.4386-1.fc35.noarch",
@@ -1881,7 +2280,10 @@
     "Licenses": [
       "Vim and MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "vim-minimal@8.2.4386-1.fc35.x86_64",
@@ -1897,7 +2299,10 @@
     "Licenses": [
       "Vim and MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "xz-libs@5.2.5-7.fc35.x86_64",
@@ -1911,7 +2316,10 @@
     "Licenses": [
       "Public Domain"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "yum@4.9.0-1.fc35.noarch",
@@ -1925,7 +2333,10 @@
     "Licenses": [
       "GPLv2+"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "zchunk-libs@1.1.15-2.fc35.x86_64",
@@ -1939,7 +2350,10 @@
     "Licenses": [
       "BSD and MIT"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   },
   {
     "ID": "zlib@1.2.11-30.fc35.x86_64",
@@ -1953,6 +2367,9 @@
     "Licenses": [
       "zlib and Boost"
     ],
-    "Maintainer": "Fedora Project"
+    "Maintainer": "Fedora Project",
+    "Repository": {
+      "Class": "official"
+    }
   }
 ]

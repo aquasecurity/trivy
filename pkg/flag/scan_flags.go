@@ -5,12 +5,12 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
@@ -46,7 +46,7 @@ var (
 			types.LicenseScanner,
 		}),
 		ValueNormalize: func(ss []string) []string {
-			return lo.Map(ss, func(s string, _ int) string {
+			return xslices.Map(ss, func(s string) string {
 				switch s {
 				case "vulnerability":
 					return string(types.VulnerabilityScanner)

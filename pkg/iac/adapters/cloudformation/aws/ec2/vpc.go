@@ -1,18 +1,17 @@
 package ec2
 
 import (
-	"github.com/samber/lo"
-
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/set"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func getVPCs(fctx parser.FileContext) []ec2.VPC {
 	vpcFlowLogs := getVpcGlowLogs(fctx)
-	return lo.Map(fctx.GetResourcesByType("AWS::EC2::VPC"),
-		func(resource *parser.Resource, _ int) ec2.VPC {
+	return xslices.Map(fctx.GetResourcesByType("AWS::EC2::VPC"),
+		func(resource *parser.Resource) ec2.VPC {
 			return ec2.VPC{
 				Metadata: resource.Metadata(),
 				// CloudFormation does not provide direct management for the default VPC

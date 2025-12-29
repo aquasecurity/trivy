@@ -16,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func init() {
@@ -100,7 +101,7 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r xio.ReadSeekerAt) ([]types.Licens
 	licenses = licensing.NormalizeLicenses(licenses)
 	licenses = lo.Uniq(licenses)
 
-	return lo.Map(licenses, func(license string, _ int) types.LicenseFinding {
+	return xslices.Map(licenses, func(license string) types.LicenseFinding {
 		return types.LicenseFinding{Name: license}
 	}), nil
 

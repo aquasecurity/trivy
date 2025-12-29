@@ -3,12 +3,12 @@ package parser
 import (
 	"testing"
 
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func TestResolvedTask_MarshalYAML(t *testing.T) {
@@ -96,7 +96,7 @@ func TestResolvedTasks_FilterByState(t *testing.T) {
 	}
 	filtered := resolved.FilterByState("absent")
 
-	names := lo.Map(filtered, func(t *ResolvedTask, _ int) string { return t.Name })
+	names := xslices.Map(filtered, func(t *ResolvedTask) string { return t.Name })
 	assert.ElementsMatch(t, []string{"task1", "task3", "task4"}, names)
 }
 
