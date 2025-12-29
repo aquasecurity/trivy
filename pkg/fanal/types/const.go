@@ -28,6 +28,7 @@ const (
 	Bottlerocket       OSType = "bottlerocket"
 	CBLMariner         OSType = "cbl-mariner"
 	CentOS             OSType = "centos"
+	CentOSStream       OSType = "centos-stream"
 	Chainguard         OSType = "chainguard"
 	CoreOS             OSType = "coreos"
 	Debian             OSType = "debian"
@@ -45,7 +46,6 @@ const (
 	SLES               OSType = "sles"
 	Ubuntu             OSType = "ubuntu"
 	Wolfi              OSType = "wolfi"
-	CentOSStream       OSType = "CentOS Stream"
 )
 
 // OSTypeAliases is a map of aliases for operating systems.
@@ -115,6 +115,7 @@ var (
 		Azure,
 		CBLMariner,
 		CentOS,
+		CentOSStream,
 		Chainguard,
 		CoreOS,
 		Debian,
