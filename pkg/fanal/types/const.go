@@ -28,6 +28,7 @@ const (
 	Bottlerocket       OSType = "bottlerocket"
 	CBLMariner         OSType = "cbl-mariner"
 	CentOS             OSType = "centos"
+	CentOSStream       OSType = "centos-stream"
 	Chainguard         OSType = "chainguard"
 	CoreOS             OSType = "coreos"
 	Debian             OSType = "debian"
@@ -114,6 +115,7 @@ var (
 		Azure,
 		CBLMariner,
 		CentOS,
+		CentOSStream,
 		Chainguard,
 		CoreOS,
 		Debian,
