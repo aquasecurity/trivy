@@ -21,6 +21,7 @@ type Authentication struct {
 
 type Service struct {
 	Metadata         iacTypes.Metadata
+	Resource         iacTypes.StringValue
 	EnableClientCert iacTypes.BoolValue
 	HTTPSOnly        iacTypes.BoolValue
 	Identity         Identity

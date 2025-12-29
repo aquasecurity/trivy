@@ -25,7 +25,9 @@ func TestAdapt(t *testing.T) {
   ]
 }`,
 			expected: appservice.AppService{
-				Services:     []appservice.Service{{}},
+				Services: []appservice.Service{{
+					Resource: types.StringTest("Microsoft.Web/sites"),
+				}},
 				FunctionApps: []appservice.FunctionApp{{}},
 			},
 		},
@@ -58,6 +60,7 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: appservice.AppService{
 				Services: []appservice.Service{{
+					Resource:         types.StringTest("Microsoft.Web/sites"),
 					EnableClientCert: types.BoolTest(true),
 					HTTPSOnly:        types.BoolTest(true),
 					Identity: appservice.Identity{
