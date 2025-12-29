@@ -348,7 +348,7 @@ func (m *Marshaler) normalizeLicense(license string) expression.Expression {
 	license = strings.ReplaceAll(license, "-with-", " WITH ")
 	license = strings.ReplaceAll(license, "-WITH-", " WITH ")
 
-	normalizedLicenses, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX)
+	normalizedLicenses, err := expression.Normalize(license, licensing.NormalizeLicenseExpression, expression.NormalizeForSPDX)
 	if err != nil {
 		// Not fail on the invalid license
 		m.logger.Warn("Unable to marshal SPDX licenses", log.String("license", license))
