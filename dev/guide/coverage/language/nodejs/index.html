@@ -8563,9 +8563,9 @@ See <a href="../">here</a> for the detail.</p>
 <p>Please make sure your lock file is up-to-date after modifying <code>package.json</code>.</p>
 </div>
 <h3 id="npm">npm<a class="headerlink" href="#npm" title="Permanent link">&para;</a></h3>
-<p>Trivy parses <code>package-lock.json</code>.
-To identify licenses, you need to download dependencies to <code>node_modules</code> beforehand.
-Trivy analyzes <code>node_modules</code> for licenses.</p>
+<p>Trivy parses <code>package-lock.json</code>.</p>
+<p>Trivy retrieves dependency license information from the lock file (starting with v2).
+If license information is missing, Trivy checks the <code>package.json</code> files from the <code>node_modules</code> folder.</p>
 <p>By default, Trivy doesn't report development dependencies. Use the <code>--include-dev-deps</code> flag to include them.</p>
 <h3 id="yarn">Yarn<a class="headerlink" href="#yarn" title="Permanent link">&para;</a></h3>
 <p>Trivy parses <code>yarn.lock</code>.</p>
