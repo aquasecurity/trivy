@@ -2,9 +2,11 @@ package pom
 
 import (
 	"encoding/xml"
+	"net/url"
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	"github.com/samber/lo"
 	"github.com/samber/lo/mutable"
@@ -16,6 +18,12 @@ type Server struct {
 	Username string `xml:"username"`
 	Password string `xml:"password"`
 }
+type Mirror struct {
+	ID       string `xml:"id"`
+	Name     string `xml:"name"`
+	URL      string `xml:"url"`
+	MirrorOf string `xml:"mirrorOf"`
+}
 
 type Profile struct {
 	ID              string          `xml:"id"`
@@ -25,6 +33,7 @@ type Profile struct {
 
 type settings struct {
 	LocalRepository string    `xml:"localRepository"`
+	Mirrors         []Mirror  `xml:"mirrors>mirror"`
 	Servers         []Server  `xml:"servers>server"`
 	Profiles        []Profile `xml:"profiles>profile"`
 	ActiveProfiles  []string  `xml:"activeProfiles>activeProfile"`
@@ -70,6 +79,8 @@ func readSettings() settings {
 		if s.LocalRepository == "" {
 			s.LocalRepository = globalSettings.LocalRepository
 		}
+		//merge Mirrors
+		s.Mirrors = append(s.Mirrors, globalSettings.Mirrors...)
 
 		// Maven servers
 		s.Servers = lo.UniqBy(append(s.Servers, globalSettings.Servers...), func(server Server) string {
@@ -108,6 +119,12 @@ func openSettings(filePath string) (settings, error) {
 
 func expandAllEnvPlaceholders(s *settings) {
 	s.LocalRepository = evaluateVariable(s.LocalRepository, nil, nil)
+	for i, mirror := range s.Mirrors {
+		s.Mirrors[i].ID = evaluateVariable(mirror.ID, nil, nil)
+		s.Mirrors[i].Name = evaluateVariable(mirror.Name, nil, nil)
+		s.Mirrors[i].URL = evaluateVariable(mirror.URL, nil, nil)
+		s.Mirrors[i].MirrorOf = evaluateVariable(mirror.MirrorOf, nil, nil)
+	}
 	for i, server := range s.Servers {
 		s.Servers[i].ID = evaluateVariable(server.ID, nil, nil)
 		s.Servers[i].Username = evaluateVariable(server.Username, nil, nil)
@@ -125,4 +142,54 @@ func expandAllEnvPlaceholders(s *settings) {
 	for i, activeProfile := range s.ActiveProfiles {
 		s.ActiveProfiles[i] = evaluateVariable(activeProfile, nil, nil)
 	}
+}
+func (s settings) ResolveMirror(repoID, repoURL string) string {
+	for _, mirror := range s.Mirrors {
+		if s.isMirrorMatch(mirror, repoID, repoURL) {
+			return mirror.URL
+		}
+	}
+	return repoURL
+}
+func (s settings) isMirrorMatch(mirror Mirror, repoID, repoURL string) bool {
+	patterns := strings.Split(mirror.MirrorOf, ",")
+	matches := false
+
+	for _, pattern := range patterns {
+		pattern = strings.TrimSpace(pattern)
+		if strings.HasPrefix(pattern, "!") {
+			if pattern[1:] == repoID {
+				return false
+			}
+			continue
+		}
+		if pattern == "*" {
+			matches = true
+			continue
+		}
+		if pattern == "external:*" {
+			if s.isExternalRepo(repoURL) {
+				matches = true
+			}
+			continue
+		}
+		if pattern == repoID {
+			matches = true
+		}
+	}
+	return matches
+}
+func (s settings) isExternalRepo(rawURL string) bool {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return true
+	}
+	if u.Scheme == "file" {
+		return false
+	}
+	hostname := u.Hostname()
+	if hostname == "localhost" || hostname == "127.0.0.1" || hostname == "::1" {
+		return false
+	}
+	return true
 }

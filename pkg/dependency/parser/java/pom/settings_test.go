@@ -473,3 +473,69 @@ func mustParseURL(t *testing.T, s string) url.URL {
 	require.NoError(t, err)
 	return *u
 }
+
+func TestSettings_ResolveMirror(t *testing.T) {
+	tests := []struct {
+		name    string
+		mirrors []Mirror
+		repoID  string
+		repoURL string
+		wantURL string
+	}{
+		{
+			name: "exact match",
+			mirrors: []Mirror{
+				{ID: "m1", MirrorOf: "central", URL: "https://mirror.com/maven2"},
+			},
+			repoID:  "central",
+			repoURL: "https://repo1.maven.org/maven2",
+			wantURL: "https://mirror.com/maven2",
+		},
+		{
+			name: "wildcard match (*)",
+			mirrors: []Mirror{
+				{ID: "m2", MirrorOf: "*", URL: "https://mirror.com/all"},
+			},
+			repoID:  "any-repo",
+			repoURL: "https://original.com/repo",
+			wantURL: "https://mirror.com/all",
+		},
+		{
+			name: "exclusion rule (!repo)",
+			mirrors: []Mirror{
+				{ID: "m3", MirrorOf: "*,!my-internal", URL: "https://mirror.com/all"},
+			},
+			repoID:  "my-internal",
+			repoURL: "https://internal.com/repo",
+			wantURL: "https://internal.com/repo", // Should NOT be mirrored
+		},
+		{
+			name: "external:* match (internet url)",
+			mirrors: []Mirror{
+				{ID: "m4", MirrorOf: "external:*", URL: "https://mirror.com/ext"},
+			},
+			repoID:  "some-repo",
+			repoURL: "https://github.com/foo/bar",
+			wantURL: "https://mirror.com/ext",
+		},
+		{
+			name: "external:* no match (localhost)",
+			mirrors: []Mirror{
+				{ID: "m4", MirrorOf: "external:*", URL: "https://mirror.com/ext"},
+			},
+			repoID:  "local-repo",
+			repoURL: "http://localhost:8081/repo",
+			wantURL: "http://localhost:8081/repo", // Should NOT be mirrored
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := settings{
+				Mirrors: tt.mirrors,
+			}
+			got := s.ResolveMirror(tt.repoID, tt.repoURL)
+			require.Equal(t, tt.wantURL, got)
+		})
+	}
+}
