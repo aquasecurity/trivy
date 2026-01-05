@@ -87,6 +87,12 @@ func BytesUnresolvable(m Metadata) BytesValue {
 	return b
 }
 
+func BytesTest(value []byte) BytesValue {
+	b := Bytes(value, NewTestMetadata())
+	b.BaseAttribute.metadata.isUnresolvable = true
+	return b
+}
+
 func (b BytesValue) ToRego() any {
 	m := b.metadata.ToRego().(map[string]any)
 	m["value"] = string(b.Value())

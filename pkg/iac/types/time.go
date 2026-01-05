@@ -66,6 +66,10 @@ func TimeUnresolvable(m Metadata) TimeValue {
 	return b
 }
 
+func TimeTest(value time.Time) TimeValue {
+	return Time(value, NewTestMetadata())
+}
+
 func (t TimeValue) Value() time.Time {
 	return t.value
 }

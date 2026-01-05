@@ -76,10 +76,10 @@ func TestAdapt(t *testing.T) {
 					EnablePurgeProtection:   types.BoolTest(true),
 					SoftDeleteRetentionDays: types.IntTest(50),
 					Keys: []keyvault.Key{{
-						ExpiryDate: types.Time(time.Unix(20, 0), types.NewTestMetadata()),
+						ExpiryDate: types.TimeTest(time.Unix(20, 0)),
 					}},
 					Secrets: []keyvault.Secret{{
-						ExpiryDate:  types.Time(time.Unix(20, 0), types.NewTestMetadata()),
+						ExpiryDate:  types.TimeTest(time.Unix(20, 0)),
 						ContentType: types.StringTest("text/plain"),
 					}},
 				}},

@@ -24,7 +24,6 @@ data "aws_ami" "example" {
 			expected: ec2.EC2{
 				RequestedAMIs: []ec2.RequestedAMI{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Owners: iacTypes.StringValueList{
 							iacTypes.StringTest("amazon"),
 						}},
@@ -40,7 +39,6 @@ data "aws_ami" "example" {
 			expected: ec2.EC2{
 				RequestedAMIs: []ec2.RequestedAMI{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Owners: iacTypes.StringValueList{
 							iacTypes.StringTest("amazon"),
 							iacTypes.StringTest("badguys"),
@@ -57,9 +55,7 @@ data "aws_ami" "example" {
 }`,
 			expected: ec2.EC2{
 				RequestedAMIs: []ec2.RequestedAMI{
-					{
-						Metadata: iacTypes.NewTestMetadata(),
-					},
+					{},
 				},
 			},
 		},

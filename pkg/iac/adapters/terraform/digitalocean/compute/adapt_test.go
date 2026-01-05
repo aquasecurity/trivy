@@ -31,9 +31,8 @@ func Test_adaptDroplets(t *testing.T) {
 `,
 			expected: []compute.Droplet{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
 					SSHKeys: []iacTypes.StringValue{
-						iacTypes.String("", iacTypes.NewTestMetadata()),
+						iacTypes.StringUnresolvable(iacTypes.NewTestMetadata()),
 					},
 				},
 			},
@@ -51,9 +50,8 @@ func Test_adaptDroplets(t *testing.T) {
 `,
 			expected: []compute.Droplet{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
 					SSHKeys: []iacTypes.StringValue{
-						iacTypes.String("my-ssh-key", iacTypes.NewTestMetadata()),
+						iacTypes.StringTest("my-ssh-key"),
 					},
 				},
 			},
@@ -65,9 +63,7 @@ func Test_adaptDroplets(t *testing.T) {
 			}
 `,
 			expected: []compute.Droplet{
-				{
-					Metadata: iacTypes.NewTestMetadata(),
-				},
+				{},
 			},
 		},
 	}
@@ -108,21 +104,18 @@ func Test_adaptFirewalls(t *testing.T) {
 `,
 			expected: []compute.Firewall{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
 					OutboundRules: []compute.OutboundFirewallRule{
 						{
-							Metadata: iacTypes.NewTestMetadata(),
 							DestinationAddresses: []iacTypes.StringValue{
-								iacTypes.String("192.168.1.0/24", iacTypes.NewTestMetadata()),
+								iacTypes.StringTest("192.168.1.0/24"),
 							},
 						},
 					},
 					InboundRules: []compute.InboundFirewallRule{
 						{
-							Metadata: iacTypes.NewTestMetadata(),
 							SourceAddresses: []iacTypes.StringValue{
-								iacTypes.String("192.168.1.0/24", iacTypes.NewTestMetadata()),
-								iacTypes.String("fc00::/7", iacTypes.NewTestMetadata()),
+								iacTypes.StringTest("192.168.1.0/24"),
+								iacTypes.StringTest("fc00::/7"),
 							},
 						},
 					},
@@ -136,11 +129,7 @@ func Test_adaptFirewalls(t *testing.T) {
 			}
 `,
 			expected: []compute.Firewall{
-				{
-					Metadata:      iacTypes.NewTestMetadata(),
-					OutboundRules: []compute.OutboundFirewallRule(nil),
-					InboundRules:  []compute.InboundFirewallRule(nil),
-				},
+				{},
 			},
 		},
 	}
@@ -178,12 +167,10 @@ func Test_adaptLoadBalancers(t *testing.T) {
 `,
 			expected: []compute.LoadBalancer{
 				{
-					Metadata:            iacTypes.NewTestMetadata(),
-					RedirectHttpToHttps: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					RedirectHttpToHttps: iacTypes.BoolTest(true),
 					ForwardingRules: []compute.ForwardingRule{
 						{
-							Metadata:      iacTypes.NewTestMetadata(),
-							EntryProtocol: iacTypes.String("https", iacTypes.NewTestMetadata()),
+							EntryProtocol: iacTypes.StringTest("https"),
 						},
 					},
 				},
@@ -196,10 +183,7 @@ func Test_adaptLoadBalancers(t *testing.T) {
 			  }
 `,
 			expected: []compute.LoadBalancer{
-				{
-					Metadata:        iacTypes.NewTestMetadata(),
-					ForwardingRules: nil,
-				},
+				{},
 			},
 		},
 	}
@@ -232,9 +216,8 @@ func Test_adaptKubernetesClusters(t *testing.T) {
 `,
 			expected: []compute.KubernetesCluster{
 				{
-					Metadata:     iacTypes.NewTestMetadata(),
-					SurgeUpgrade: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					AutoUpgrade:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					SurgeUpgrade: iacTypes.BoolTest(true),
+					AutoUpgrade:  iacTypes.BoolTest(true),
 				},
 			},
 		},
@@ -245,11 +228,7 @@ func Test_adaptKubernetesClusters(t *testing.T) {
 			}
 `,
 			expected: []compute.KubernetesCluster{
-				{
-					Metadata:     iacTypes.NewTestMetadata(),
-					SurgeUpgrade: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					AutoUpgrade:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				},
+				{},
 			},
 		},
 	}

@@ -44,20 +44,17 @@ resource "google_dns_managed_zone" "example" {
 			expected: dns.DNS{
 				ManagedZones: []dns.ManagedZone{
 					{
-						Metadata:   iacTypes.NewTestMetadata(),
-						Visibility: iacTypes.String("public", iacTypes.NewTestMetadata()),
+						Visibility: iacTypes.StringTest("public"),
 						DNSSec: dns.DNSSec{
-							Enabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(true),
 							DefaultKeySpecs: []dns.KeySpecs{
 								{
-									Metadata:  iacTypes.NewTestMetadata(),
-									Algorithm: iacTypes.String("rsasha1", iacTypes.NewTestMetadata()),
-									KeyType:   iacTypes.String("keySigning", iacTypes.NewTestMetadata()),
+									Algorithm: iacTypes.StringTest("rsasha1"),
+									KeyType:   iacTypes.StringTest("keySigning"),
 								},
 								{
-									Metadata:  iacTypes.NewTestMetadata(),
-									Algorithm: iacTypes.String("rsasha1", iacTypes.NewTestMetadata()),
-									KeyType:   iacTypes.String("zoneSigning", iacTypes.NewTestMetadata()),
+									Algorithm: iacTypes.StringTest("rsasha1"),
+									KeyType:   iacTypes.StringTest("zoneSigning"),
 								},
 							},
 						},

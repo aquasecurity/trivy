@@ -36,20 +36,14 @@ func Test_Adapt(t *testing.T) {
 			expected: bigquery.BigQuery{
 				Datasets: []bigquery.Dataset{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
-						ID:       iacTypes.String("", iacTypes.NewTestMetadata()),
 						AccessGrants: []bigquery.AccessGrant{
 							{
-								Metadata:     iacTypes.NewTestMetadata(),
-								Role:         iacTypes.String("OWNER", iacTypes.NewTestMetadata()),
-								Domain:       iacTypes.String("", iacTypes.NewTestMetadata()),
-								SpecialGroup: iacTypes.String(bigquery.SpecialGroupAllAuthenticatedUsers, iacTypes.NewTestMetadata()),
+								Role:         iacTypes.StringTest("OWNER"),
+								SpecialGroup: iacTypes.StringTest(bigquery.SpecialGroupAllAuthenticatedUsers),
 							},
 							{
-								Metadata:     iacTypes.NewTestMetadata(),
-								Role:         iacTypes.String("READER", iacTypes.NewTestMetadata()),
-								Domain:       iacTypes.String("hashicorp.com", iacTypes.NewTestMetadata()),
-								SpecialGroup: iacTypes.String("", iacTypes.NewTestMetadata()),
+								Role:   iacTypes.StringTest("READER"),
+								Domain: iacTypes.StringTest("hashicorp.com"),
 							},
 						},
 					},
@@ -66,8 +60,7 @@ func Test_Adapt(t *testing.T) {
 			expected: bigquery.BigQuery{
 				Datasets: []bigquery.Dataset{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
-						ID:       iacTypes.String("example_dataset", iacTypes.NewTestMetadata()),
+						ID: iacTypes.StringTest("example_dataset"),
 					},
 				},
 			},
@@ -83,15 +76,8 @@ func Test_Adapt(t *testing.T) {
 			expected: bigquery.BigQuery{
 				Datasets: []bigquery.Dataset{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
-						ID:       iacTypes.String("", iacTypes.NewTestMetadata()),
 						AccessGrants: []bigquery.AccessGrant{
-							{
-								Metadata:     iacTypes.NewTestMetadata(),
-								Role:         iacTypes.String("", iacTypes.NewTestMetadata()),
-								Domain:       iacTypes.String("", iacTypes.NewTestMetadata()),
-								SpecialGroup: iacTypes.String("", iacTypes.NewTestMetadata()),
-							},
+							{},
 						},
 					},
 				},

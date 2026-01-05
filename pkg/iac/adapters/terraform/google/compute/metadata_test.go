@@ -36,9 +36,7 @@ func Test_adaptProjectMetadata(t *testing.T) {
 				}
 			  }
 `,
-			expected: compute.ProjectMetadata{
-				EnableOSLogin: iacTypes.BoolTest(false),
-			},
+			expected: compute.ProjectMetadata{},
 		},
 		{
 			name: "handles metadata values in various formats",

@@ -26,8 +26,7 @@ func Test_adaptWorkspace(t *testing.T) {
 			}
 `,
 			expected: synapse.Workspace{
-				Metadata:                    iacTypes.NewTestMetadata(),
-				EnableManagedVirtualNetwork: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				EnableManagedVirtualNetwork: iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -37,10 +36,7 @@ func Test_adaptWorkspace(t *testing.T) {
 				managed_virtual_network_enabled	   = false
 			}
 `,
-			expected: synapse.Workspace{
-				Metadata:                    iacTypes.NewTestMetadata(),
-				EnableManagedVirtualNetwork: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-			},
+			expected: synapse.Workspace{},
 		},
 		{
 			name: "default",
@@ -48,10 +44,7 @@ func Test_adaptWorkspace(t *testing.T) {
 			resource "azurerm_synapse_workspace" "example" {
 			}
 `,
-			expected: synapse.Workspace{
-				Metadata:                    iacTypes.NewTestMetadata(),
-				EnableManagedVirtualNetwork: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-			},
+			expected: synapse.Workspace{},
 		},
 	}
 

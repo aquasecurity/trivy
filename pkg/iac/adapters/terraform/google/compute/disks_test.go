@@ -36,20 +36,15 @@ func Test_adaptDisks(t *testing.T) {
 `,
 			expected: []compute.Disk{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Name:     iacTypes.String("disk #1", iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("disk #1"),
 					Encryption: compute.DiskEncryption{
-						Metadata:   iacTypes.NewTestMetadata(),
-						KMSKeyLink: iacTypes.String("something", iacTypes.NewTestMetadata()),
+						KMSKeyLink: iacTypes.StringTest("something"),
 					},
 				},
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Name:     iacTypes.String("disk #2", iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("disk #2"),
 					Encryption: compute.DiskEncryption{
-						Metadata:   iacTypes.NewTestMetadata(),
-						KMSKeyLink: iacTypes.String("", iacTypes.NewTestMetadata()),
-						RawKey:     iacTypes.Bytes([]byte("b2ggbm8gdGhpcyBpcyBiYWQ"), iacTypes.NewTestMetadata()),
+						RawKey: iacTypes.BytesTest([]byte("b2ggbm8gdGhpcyBpcyBiYWQ")),
 					},
 				},
 			},
@@ -70,11 +65,9 @@ func Test_adaptDisks(t *testing.T) {
 			  }`,
 			expected: []compute.Disk{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Name:     iacTypes.String("disk #3", iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("disk #3"),
 					Encryption: compute.DiskEncryption{
-						Metadata:   iacTypes.NewTestMetadata(),
-						KMSKeyLink: iacTypes.String("google_kms_crypto_key.my_crypto_key", iacTypes.NewTestMetadata()),
+						KMSKeyLink: iacTypes.StringTest("google_kms_crypto_key.my_crypto_key"),
 					},
 				},
 			},
