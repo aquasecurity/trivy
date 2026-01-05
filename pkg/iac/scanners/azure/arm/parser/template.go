@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json/jsontext"
 	"encoding/json/v2"
+	"errors"
 	"fmt"
 	"io/fs"
 	"iter"
@@ -29,8 +30,37 @@ type Template struct {
 	Parameters     map[string]Parameter   `json:"parameters"`
 	Variables      map[string]azure.Value `json:"variables"`
 	Functions      []Function             `json:"functions"`
-	Resources      []Resource             `json:"resources"`
+	Resources      Resources              `json:"resources"`
 	Outputs        map[string]azure.Value `json:"outputs"`
+}
+
+// Resources is a collection of Resource items that can be represented in ARM
+// templates either as an array or as an object (e.g., language v2). This custom
+// unmarshaler normalizes both forms into a flat slice.
+type Resources []Resource
+
+func (r *Resources) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	switch dec.PeekKind() {
+	case '[':
+		var arr []Resource
+		if err := json.UnmarshalDecode(dec, &arr); err != nil {
+			return err
+		}
+		*r = arr
+	case '{':
+		var m map[string]Resource
+		if err := json.UnmarshalDecode(dec, &m); err != nil {
+			return err
+		}
+		res := make([]Resource, 0, len(m))
+		for _, v := range m {
+			res = append(res, v)
+		}
+		*r = res
+	default:
+		return errors.New("unexpected JSON token for resources")
+	}
+	return nil
 }
 
 type Parameter struct {
