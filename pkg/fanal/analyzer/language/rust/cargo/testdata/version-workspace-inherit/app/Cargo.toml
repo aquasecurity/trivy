@@ -1,0 +1,7 @@
+[package]
+name = "myapp"
+version.workspace = true
+edition = "2021"
+
+[dependencies]
+serde = "1.0"
