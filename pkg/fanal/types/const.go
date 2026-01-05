@@ -28,6 +28,7 @@ const (
 	Bottlerocket       OSType = "bottlerocket"
 	CBLMariner         OSType = "cbl-mariner"
 	CentOS             OSType = "centos"
+	CentOSStream       OSType = "centos-stream"
 	Chainguard         OSType = "chainguard"
 	CoreOS             OSType = "coreos"
 	Debian             OSType = "debian"
@@ -114,6 +115,7 @@ var (
 		Azure,
 		CBLMariner,
 		CentOS,
+		CentOSStream,
 		Chainguard,
 		CoreOS,
 		Debian,
@@ -154,6 +156,7 @@ const (
 	Helm                  ConfigType = "helm"
 	Cloud                 ConfigType = "cloud"
 	AzureARM              ConfigType = "azure-arm"
+	Ansible               ConfigType = "ansible"
 )
 
 // Language-specific file names

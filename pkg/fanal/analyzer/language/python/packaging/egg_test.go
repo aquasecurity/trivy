@@ -32,7 +32,7 @@ func Test_eggAnalyzer_Analyze(t *testing.T) {
 								Name:    "kitchen",
 								Version: "1.2.6",
 								Licenses: []string{
-									"LGPL-2.1-only",
+									"GNU Library or Lesser General Public License (LGPL)",
 								},
 								FilePath: "testdata/egg-zip/kitchen-1.2.6-py2.7.egg",
 							},
@@ -55,7 +55,7 @@ func Test_eggAnalyzer_Analyze(t *testing.T) {
 								Name:    "kitchen",
 								Version: "1.2.6",
 								Licenses: []string{
-									"LGPL-2.1-only",
+									"GNU Library or Lesser General Public License (LGPL)",
 								},
 								FilePath: "testdata/egg-zip/kitchen-1.2.6-py2.7.egg",
 								Digest:   "sha1:4e13b6e379966771e896ee43cf8e240bf6083dca",

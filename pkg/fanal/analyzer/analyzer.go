@@ -18,9 +18,11 @@ import (
 
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 var (
@@ -286,6 +288,7 @@ func (r *AnalysisResult) Merge(newResult *AnalysisResult) {
 	}
 
 	if len(newResult.Applications) > 0 {
+		normalizeApplicationsLicenses(newResult.Applications)
 		r.Applications = append(r.Applications, newResult.Applications...)
 	}
 
@@ -332,6 +335,14 @@ func belongToGroup(groupName Group, analyzerType Type, disabledAnalyzers []Type,
 	}
 
 	return true
+}
+
+func normalizeApplicationsLicenses(applications []types.Application) {
+	for i, app := range applications {
+		for j, pkg := range app.Packages {
+			applications[i].Packages[j].Licenses = licensing.NormalizeLicenses(pkg.Licenses)
+		}
+	}
 }
 
 const separator = ":"
@@ -548,8 +559,8 @@ func (ag AnalyzerGroup) StaticPaths(disabled []Type) ([]string, bool) {
 
 	type analyzerType interface{ Type() Type }
 	allAnalyzers := append(
-		lo.Map(ag.analyzers, func(a analyzer, _ int) analyzerType { return a }),
-		lo.Map(ag.postAnalyzers, func(a PostAnalyzer, _ int) analyzerType { return a })...,
+		xslices.Map(ag.analyzers, func(a analyzer) analyzerType { return a }),
+		xslices.Map(ag.postAnalyzers, func(a PostAnalyzer) analyzerType { return a })...,
 	)
 
 	for _, a := range allAnalyzers {

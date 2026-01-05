@@ -2,12 +2,12 @@ package network
 
 import (
 	"github.com/google/uuid"
-	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func parsePortRange(input string, meta iacTypes.Metadata) common.PortRange {
@@ -159,10 +159,6 @@ func AdaptNetworkInterface(resource *terraform.Block, modules terraform.Modules)
 func adaptSecurityGroupFromBlock(resource *terraform.Block) network.SecurityGroup {
 	return network.SecurityGroup{
 		Metadata: resource.GetMetadata(),
-		Rules: lo.Map(resource.GetBlocks("security_rule"),
-			func(b *terraform.Block, _ int) network.SecurityGroupRule {
-				return AdaptSGRule(b)
-			},
-		),
+		Rules:    xslices.Map(resource.GetBlocks("security_rule"), AdaptSGRule),
 	}
 }

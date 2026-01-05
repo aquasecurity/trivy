@@ -9,6 +9,9 @@ trivy config [flags] DIR
 ### Options
 
 ```
+      --ansible-extra-vars strings        set additional variables as key=value or @file (YAML/JSON)
+      --ansible-inventory strings         specify inventory host path or comma separated host list
+      --ansible-playbook strings          specify playbook file path(s) to scan
       --cache-backend string              [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "memory")
       --cache-ttl duration                cache TTL when using redis as cache backend
       --cf-params strings                 specify paths to override the CloudFormation parameters files
@@ -46,7 +49,7 @@ trivy config [flags] DIR
       --include-deprecated-checks         include deprecated checks
       --include-non-failures              include successes, available with '--scanners misconfig'
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
-      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
+      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot,ansible])
       --module-dir string                 specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
   -o, --output string                     output file name
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
@@ -59,7 +62,7 @@ trivy config [flags] DIR
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string             registry token
       --rego-error-limit int              maximum number of compile errors allowed during Rego policy evaluation (default 10)
-      --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform)
+      --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform,ansible)
       --report string                     specify a compliance report format for the output (allowed values: all,summary) (default "all")
   -s, --severity strings                  severities of security issues to be displayed
                                           Allowed values:

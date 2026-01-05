@@ -53,6 +53,7 @@ func Test_Detection(t *testing.T) {
 			expected: []FileType{
 				FileTypeTerraform,
 				FileTypeJSON,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -70,6 +71,7 @@ func Test_Detection(t *testing.T) {
 			expected: []FileType{
 				FileTypeTerraform,
 				FileTypeJSON,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -108,6 +110,7 @@ func Test_Detection(t *testing.T) {
 			expected: []FileType{
 				FileTypeTerraform,
 				FileTypeJSON,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -125,6 +128,7 @@ func Test_Detection(t *testing.T) {
 			expected: []FileType{
 				FileTypeTerraform,
 				FileTypeJSON,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -133,6 +137,7 @@ func Test_Detection(t *testing.T) {
 			expected: []FileType{
 				FileTypeYAML,
 				FileTypeHelm,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -154,6 +159,7 @@ func Test_Detection(t *testing.T) {
 			expected: []FileType{
 				FileTypeTerraformPlanJSON,
 				FileTypeJSON,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -185,6 +191,7 @@ Resources:
 				FileTypeCloudFormation,
 				FileTypeYAML,
 				FileTypeHelm,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -195,6 +202,7 @@ Resources:
 }`),
 			expected: []FileType{
 				FileTypeJSON,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -203,6 +211,7 @@ Resources:
 			r:    nil,
 			expected: []FileType{
 				FileTypeDockerfile,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -211,6 +220,7 @@ Resources:
 			r:    nil,
 			expected: []FileType{
 				FileTypeDockerfile,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -219,6 +229,7 @@ Resources:
 			r:    strings.NewReader("FROM ubuntu\n"),
 			expected: []FileType{
 				FileTypeDockerfile,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -235,6 +246,8 @@ Resources:
 			r:    nil,
 			expected: []FileType{
 				FileTypeYAML,
+				FileTypeHelm,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -264,6 +277,8 @@ spec:
 			expected: []FileType{
 				FileTypeKubernetes,
 				FileTypeYAML,
+				FileTypeHelm,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -310,6 +325,7 @@ spec:
 			expected: []FileType{
 				FileTypeKubernetes,
 				FileTypeJSON,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -319,6 +335,7 @@ spec:
 			expected: []FileType{
 				FileTypeYAML,
 				FileTypeHelm,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -327,6 +344,8 @@ spec:
 			r:    nil,
 			expected: []FileType{
 				FileTypeYAML,
+				FileTypeHelm,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -335,6 +354,7 @@ spec:
 			r:    nil,
 			expected: []FileType{
 				FileTypeYAML,
+				FileTypeHelm,
 			},
 		},
 		{
@@ -351,6 +371,7 @@ spec:
 			r:    nil,
 			expected: []FileType{
 				FileTypeJSON,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -367,6 +388,8 @@ data:
 			expected: []FileType{
 				FileTypeKubernetes,
 				FileTypeYAML,
+				FileTypeHelm,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -395,6 +418,8 @@ rules:
 			expected: []FileType{
 				FileTypeKubernetes,
 				FileTypeYAML,
+				FileTypeHelm,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -424,6 +449,7 @@ rules:
 			expected: []FileType{
 				FileTypeJSON,
 				FileTypeAzureARM,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -445,6 +471,7 @@ rules:
 			expected: []FileType{
 				FileTypeJSON,
 				FileTypeAzureARM,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -459,6 +486,7 @@ rules:
 `),
 			expected: []FileType{
 				FileTypeJSON,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -481,7 +509,34 @@ rules:
 }`),
 			expected: []FileType{
 				FileTypeJSON,
+				FileTypeAnsible,
 			},
+		},
+		{
+			name: "without extension",
+			path: "something",
+			expected: []FileType{
+				FileTypeAnsible,
+			},
+		},
+		{
+			name: "Ansible inventory INI file",
+			path: "something.ini",
+			expected: []FileType{
+				FileTypeAnsible,
+			},
+		},
+		{
+			name: "Ansible config file",
+			path: "ansible.cfg",
+			expected: []FileType{
+				FileTypeAnsible,
+			},
+		},
+		{
+			name:     " not Ansible config file",
+			path:     "something.cfg",
+			expected: []FileType{},
 		},
 	}
 

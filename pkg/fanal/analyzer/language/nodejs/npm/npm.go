@@ -66,10 +66,12 @@ func (a npmLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.Post
 			return nil
 		}
 
-		// Fill licenses
-		for i, lib := range app.Packages {
-			if ll, ok := licenses[lib.ID]; ok {
-				app.Packages[i].Licenses = ll
+		// Fill licenses from package.json only if not present in lock file
+		for i, pkg := range app.Packages {
+			if len(pkg.Licenses) == 0 {
+				if ll, ok := licenses[pkg.ID]; ok {
+					app.Packages[i].Licenses = ll
+				}
 			}
 		}
 

@@ -17,7 +17,6 @@ import (
 	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
-	"github.com/samber/lo"
 	spdxjson "github.com/spdx/tools-golang/json"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdxlib"
@@ -35,6 +34,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/aquasecurity/trivy/pkg/vex/repo"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 
 	_ "modernc.org/sqlite"
 )
@@ -461,7 +461,7 @@ func validateReport(t *testing.T, schema string, report any) {
 	require.NoError(t, err)
 
 	if valid := result.Valid(); !valid {
-		errs := lo.Map(result.Errors(), func(err gojsonschema.ResultError, _ int) string {
+		errs := xslices.Map(result.Errors(), func(err gojsonschema.ResultError) string {
 			return err.String()
 		})
 		assert.True(t, valid, strings.Join(errs, "\n"))
