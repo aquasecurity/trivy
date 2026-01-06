@@ -216,6 +216,10 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 	listAllPkgs := f.ListAllPkgs.Value()
 	tableModes := f.TableMode.Value()
 
+	if f.ReportFormat.Value() == "summary" {
+		tableModes = []string{types.Summary.String()}
+	}
+
 	if template != "" {
 		if format == "" {
 			log.Warn("'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.")
