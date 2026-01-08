@@ -66,6 +66,8 @@ type Options struct {
 	// For licenses
 	LicenseRiskThreshold int
 	IgnoredLicenses      []string
+
+	NoColor bool
 }
 
 func NewWriter(options Options) *Writer {
@@ -74,12 +76,12 @@ func NewWriter(options Options) *Writer {
 	return &Writer{
 		buf: buf,
 
-		summaryRenderer:       NewSummaryRenderer(buf, isTerminal, options.Scanners),
-		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, isTerminal, options.Tree, options.ShowSuppressed, options.Severities),
-		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, isTerminal, options.RenderCause),
-		secretRenderer:        NewSecretRenderer(buf, isTerminal, options.Severities),
-		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, isTerminal, options.Severities),
-		fileLicenseRenderer:   NewFileLicenseRenderer(buf, isTerminal, options.Severities),
+		summaryRenderer:       NewSummaryRenderer(buf, isTerminal, options.NoColor, options.Scanners),
+		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, isTerminal, options.Tree, options.ShowSuppressed, options.NoColor, options.Severities),
+		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, isTerminal, options.NoColor, options.RenderCause),
+		secretRenderer:        NewSecretRenderer(buf, isTerminal, options.NoColor, options.Severities),
+		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, isTerminal, options.NoColor, options.Severities),
+		fileLicenseRenderer:   NewFileLicenseRenderer(buf, isTerminal, options.NoColor, options.Severities),
 		options:               options,
 	}
 }
@@ -139,15 +141,16 @@ func (tw *Writer) render(result types.Result) {
 	}
 }
 
-func newTableWriter(output io.Writer, isTerminal bool) *table.Table {
+func newTableWriter(output io.Writer, isTerminal, noColor bool) *table.Table {
 	tableWriter := table.New(output)
-	if isTerminal { // use ansi output if we're not piping elsewhere
+	if isTerminal && !noColor { // use ansi output if we're not piping elsewhere
 		tableWriter.SetHeaderStyle(table.StyleBold)
 		tableWriter.SetLineStyle(table.StyleDim)
 	}
 	tableWriter.SetBorders(true)
 	tableWriter.SetAutoMerge(true)
 	tableWriter.SetRowLines(true)
+	color.NoColor = noColor
 
 	return tableWriter
 }
@@ -189,8 +192,8 @@ func IsOutputToTerminal(output io.Writer) bool {
 	return (o.Mode() & os.ModeCharDevice) == os.ModeCharDevice
 }
 
-func RenderTarget(w io.Writer, target string, isTerminal bool) {
-	if isTerminal {
+func RenderTarget(w io.Writer, target string, isTerminal, noColor bool) {
+	if isTerminal && !noColor {
 		// nolint
 		_ = tml.Fprintf(w, "\n<underline><bold>%s</bold></underline>\n\n", target)
 	} else {
