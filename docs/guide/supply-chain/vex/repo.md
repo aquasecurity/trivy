@@ -80,6 +80,17 @@ For private repositories:
   token: "my-token"
 ```
 
+#### TLS Verification
+
+In some cases, you might want to skip the TLS verification, per-repository:
+
+```yaml
+- name: custom
+  url: https://example.com/custom-repo
+  enabled: true
+  insecure: true
+```
+
 #### Repository Priority
 
 The priority of VEX repositories is determined by their order in the configuration file.

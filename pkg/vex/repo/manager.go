@@ -173,7 +173,11 @@ func (m *Manager) List(ctx context.Context) error {
 			if !repo.Enabled {
 				status = "Disabled"
 			}
-			output.WriteString(fmt.Sprintf("- Name: %s\n  URL: %s\n  Status: %s\n\n", repo.Name, repo.URL, status))
+			insecure := "Enabled"
+			if !repo.Insecure {
+				insecure = "Disabled"
+			}
+			output.WriteString(fmt.Sprintf("- Name: %s\n  URL: %s\n  Status: %s\n  Insecure: %s\n\n", repo.Name, repo.URL, status, insecure))
 		}
 	}
 
