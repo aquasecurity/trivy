@@ -48,6 +48,22 @@ const (
 	Wolfi              OSType = "wolfi"
 )
 
+// PurlNamespace returns the normalized namespace for Package URL (PURL) representation.
+// For SUSE-based distributions (SLES, SLE Micro), it returns "suse".
+// For openSUSE variants (Tumbleweed, Leap), it returns "opensuse".
+// For all other OSTypes, it returns the string representation of the OSType.
+func (o OSType) PurlNamespace() string {
+	// SLES string has whitespace, also highlevel family is not the same as distro
+	if o == SLES || o == SLEMicro {
+		return "suse"
+	}
+	if o == OpenSUSETumbleweed || o == OpenSUSELeap {
+		return "opensuse"
+	}
+
+	return string(o)
+}
+
 // OSTypeAliases is a map of aliases for operating systems.
 var OSTypeAliases = map[OSType]OSType{
 	// This is used to map the old family names to the new ones for backward compatibility.
