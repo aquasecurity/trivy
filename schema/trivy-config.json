@@ -163,13 +163,13 @@
         },
         "image-config-scanners": {
           "items": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "misconfig",
+              "secret"
+            ]
           },
           "type": "array",
-          "enum": [
-            "misconfig",
-            "secret"
-          ],
           "description": "comma-separated list of what security issues to detect on container image configurations"
         },
         "removed-pkgs": {
@@ -200,15 +200,15 @@
         },
         "source": {
           "items": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "docker",
+              "containerd",
+              "podman",
+              "remote"
+            ]
           },
           "type": "array",
-          "enum": [
-            "docker",
-            "containerd",
-            "podman",
-            "remote"
-          ],
           "description": "image source(s) to use, in priority order"
         },
         "max-size": {
@@ -471,23 +471,23 @@
         },
         "render-cause": {
           "items": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "terraform",
+              "ansible"
+            ]
           },
           "type": "array",
-          "enum": [
-            "terraform",
-            "ansible"
-          ],
           "description": "specify configuration types for which the rendered causes will be shown in the table report"
         },
         "raw-config-scanners": {
           "items": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "terraform"
+            ]
           },
           "type": "array",
-          "enum": [
-            "terraform"
-          ],
           "description": "specify the types of scanners that will also scan raw configurations. For example, scanners will scan a non-adapted configuration into a shared state"
         }
       },
@@ -543,27 +543,27 @@
         },
         "types": {
           "items": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "os",
+              "library"
+            ]
           },
           "type": "array",
-          "enum": [
-            "os",
-            "library"
-          ],
           "description": "list of package types"
         },
         "relationships": {
           "items": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "unknown",
+              "root",
+              "workspace",
+              "direct",
+              "indirect"
+            ]
           },
           "type": "array",
-          "enum": [
-            "unknown",
-            "root",
-            "workspace",
-            "direct",
-            "indirect"
-          ],
           "description": "list of package relationships"
         }
       },
@@ -709,16 +709,16 @@
     },
     "severity": {
       "items": {
-        "type": "string"
+        "type": "string",
+        "enum": [
+          "UNKNOWN",
+          "LOW",
+          "MEDIUM",
+          "HIGH",
+          "CRITICAL"
+        ]
       },
       "type": "array",
-      "enum": [
-        "UNKNOWN",
-        "LOW",
-        "MEDIUM",
-        "HIGH",
-        "CRITICAL"
-      ],
       "description": "severities of security issues to be displayed"
     },
     "scan": {
@@ -751,15 +751,15 @@
         },
         "scanners": {
           "items": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "vuln",
+              "misconfig",
+              "secret",
+              "license"
+            ]
           },
           "type": "array",
-          "enum": [
-            "vuln",
-            "misconfig",
-            "secret",
-            "license"
-          ],
           "description": "comma-separated list of what security issues to detect"
         },
         "file-patterns": {
@@ -775,13 +775,13 @@
         },
         "sbom-sources": {
           "items": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "oci",
+              "rekor"
+            ]
           },
           "type": "array",
-          "enum": [
-            "oci",
-            "rekor"
-          ],
           "description": "[EXPERIMENTAL] try to retrieve SBOM from the specified sources"
         },
         "rekor-url": {
@@ -813,13 +813,13 @@
     },
     "table-mode": {
       "items": {
-        "type": "string"
+        "type": "string",
+        "enum": [
+          "summary",
+          "detailed"
+        ]
       },
       "type": "array",
-      "enum": [
-        "summary",
-        "detailed"
-      ],
       "description": "[EXPERIMENTAL] tables that will be displayed in 'table' format"
     },
     "repository": {
@@ -856,19 +856,19 @@
         },
         "ignore-status": {
           "items": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "unknown",
+              "not_affected",
+              "affected",
+              "fixed",
+              "under_investigation",
+              "will_not_fix",
+              "fix_deferred",
+              "end_of_life"
+            ]
           },
           "type": "array",
-          "enum": [
-            "unknown",
-            "not_affected",
-            "affected",
-            "fixed",
-            "under_investigation",
-            "will_not_fix",
-            "fix_deferred",
-            "end_of_life"
-          ],
           "description": "comma-separated list of vulnerability status to ignore"
         },
         "vex": {
@@ -884,43 +884,43 @@
         },
         "severity-source": {
           "items": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "nvd",
+              "redhat",
+              "redhat-oval",
+              "debian",
+              "ubuntu",
+              "alpine",
+              "amazon",
+              "oracle-oval",
+              "suse-cvrf",
+              "photon",
+              "arch-linux",
+              "alma",
+              "rocky",
+              "cbl-mariner",
+              "azure",
+              "ruby-advisory-db",
+              "php-security-advisories",
+              "nodejs-security-wg",
+              "ghsa",
+              "glad",
+              "aqua",
+              "osv",
+              "k8s",
+              "wolfi",
+              "chainguard",
+              "bitnami",
+              "govulndb",
+              "julia",
+              "echo",
+              "minimos",
+              "rootio",
+              "auto"
+            ]
           },
           "type": "array",
-          "enum": [
-            "nvd",
-            "redhat",
-            "redhat-oval",
-            "debian",
-            "ubuntu",
-            "alpine",
-            "amazon",
-            "oracle-oval",
-            "suse-cvrf",
-            "photon",
-            "arch-linux",
-            "alma",
-            "rocky",
-            "cbl-mariner",
-            "azure",
-            "ruby-advisory-db",
-            "php-security-advisories",
-            "nodejs-security-wg",
-            "ghsa",
-            "glad",
-            "aqua",
-            "osv",
-            "k8s",
-            "wolfi",
-            "chainguard",
-            "bitnami",
-            "govulndb",
-            "julia",
-            "echo",
-            "minimos",
-            "rootio",
-            "auto"
-          ],
           "description": "order of data sources for selecting vulnerability severity level"
         }
       },
