@@ -357,7 +357,7 @@ func purlMatchesOS(pkg ftypes.Package, osFamily ftypes.OSType) bool {
 	if pkg.Identifier.PURL.Namespace == "" {
 		return true // Keep packages without namespace
 	}
-	return pkg.Identifier.PURL.Namespace == string(osFamily)
+	return pkg.Identifier.PURL.Namespace == osFamily.PurlNamespace()
 }
 
 // filterMismatchedOSPkgs removes OS packages whose PURL namespace doesn't match the detected OS.

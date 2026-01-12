@@ -77,7 +77,7 @@ func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*Pac
 	switch ptype {
 	case packageurl.TypeRPM:
 		ns, qs := parseRPM(metadata.OS, pkg.Modularitylabel)
-		namespace = string(ns)
+		namespace = ns
 		qualifiers = append(qualifiers, qs...)
 	case packageurl.TypeDebian:
 		qualifiers = append(qualifiers, parseDeb(metadata.OS)...)
@@ -369,18 +369,9 @@ func parseDeb(fos *ftypes.OS) packageurl.Qualifiers {
 }
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#rpm
-func parseRPM(fos *ftypes.OS, modularityLabel string) (ftypes.OSType, packageurl.Qualifiers) {
+func parseRPM(fos *ftypes.OS, modularityLabel string) (string, packageurl.Qualifiers) {
 	if fos == nil {
 		return "", packageurl.Qualifiers{}
-	}
-
-	family := fos.Family
-	// SLES string has whitespace, also highlevel family is not the same as distro
-	if fos.Family == ftypes.SLES || fos.Family == ftypes.SLEMicro {
-		family = "suse"
-	}
-	if fos.Family == ftypes.OpenSUSETumbleweed || fos.Family == ftypes.OpenSUSELeap {
-		family = "opensuse"
 	}
 
 	qualifiers := packageurl.Qualifiers{
@@ -396,7 +387,7 @@ func parseRPM(fos *ftypes.OS, modularityLabel string) (ftypes.OSType, packageurl
 			Value: modularityLabel,
 		})
 	}
-	return family, qualifiers
+	return fos.Family.PurlNamespace(), qualifiers
 }
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#maven
