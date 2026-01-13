@@ -254,7 +254,6 @@ func TestScanner_ScanArtifact(t *testing.T) {
 }
 
 func TestService_generateArtifactID(t *testing.T) {
-
 	tests := []struct {
 		name         string
 		artifactInfo artifact.Reference
