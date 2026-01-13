@@ -11,12 +11,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/fatih/color"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/config"
 )
 
 const (

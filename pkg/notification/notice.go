@@ -12,10 +12,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/go-version/pkg/semver"
+	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/version/app"

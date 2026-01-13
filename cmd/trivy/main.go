@@ -5,10 +5,10 @@ import (
 	"errors"
 	"os"
 
-	"github.com/aquasecurity/trivy/pkg/config"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/commands"
+	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/types"

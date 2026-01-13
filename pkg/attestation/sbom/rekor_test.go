@@ -3,11 +3,11 @@ package sbom_test
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/attestation/sbom"
+	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/rekortest"
 )

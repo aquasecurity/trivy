@@ -7,12 +7,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/fatih/color"
 	"golang.org/x/term"
 
 	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/config"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -32,7 +32,7 @@ type misconfigRenderer struct {
 	width              int
 	ansi               bool
 	renderCause        []ftypes.ConfigType
-	colorMode 		   config.ColorMode
+	colorMode          config.ColorMode
 }
 
 func NewMisconfigRenderer(buf *bytes.Buffer, severities []dbTypes.Severity, trace, includeNonFailures, ansi bool,

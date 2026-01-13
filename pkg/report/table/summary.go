@@ -6,12 +6,12 @@ import (
 	"slices"
 	"sort"
 
-	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/fatih/color"
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/table"
 	"github.com/aquasecurity/tml"
+	"github.com/aquasecurity/trivy/pkg/config"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scan/langpkg"

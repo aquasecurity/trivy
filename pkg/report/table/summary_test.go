@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/config"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report/table"
 	"github.com/aquasecurity/trivy/pkg/types"
