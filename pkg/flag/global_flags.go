@@ -9,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -86,10 +87,11 @@ var (
 		TelemetrySafe: true,
 		Internal:      true, // Hidden from help output, intended for maintainer debugging only
 	}
-	NoColorFlag = Flag[bool]{
-		Name:       "no-color",
-		ConfigName: "no-color",
-		Usage:      "Remove color from output",
+	ColorFlag = Flag[string]{
+		Name:       "color",
+		ConfigName: "color",
+		Default:    "auto",
+		Usage:      "Set color mode for terminal output. Accepted values: true, always, false, never, auto. Default is auto",
 		Persistent: true,
 	}
 )
@@ -106,7 +108,7 @@ type GlobalFlagGroup struct {
 	CacheDir              *Flag[string]
 	GenerateDefaultConfig *Flag[bool]
 	TraceHTTP             *Flag[bool]
-	NoColor               *Flag[bool]
+	Color                 *Flag[string]
 }
 
 // GlobalOptions defines flags and other configuration parameters for all the subcommands
@@ -121,7 +123,7 @@ type GlobalOptions struct {
 	CacheDir              string
 	GenerateDefaultConfig bool
 	TraceHTTP             bool
-	NoColor               bool
+	ColorMode             config.ColorMode
 }
 
 func NewGlobalFlagGroup() *GlobalFlagGroup {
@@ -136,7 +138,7 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 		CacheDir:              CacheDirFlag.Clone(),
 		GenerateDefaultConfig: GenerateDefaultConfigFlag.Clone(),
 		TraceHTTP:             TraceHTTPFlag.Clone(),
-		NoColor:               NoColorFlag.Clone(),
+		Color:                 ColorFlag.Clone(),
 	}
 }
 
@@ -156,7 +158,7 @@ func (f *GlobalFlagGroup) Flags() []Flagger {
 		f.CacheDir,
 		f.GenerateDefaultConfig,
 		f.TraceHTTP,
-		f.NoColor,
+		f.Color,
 	}
 }
 
@@ -196,7 +198,7 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 		CacheDir:              f.CacheDir.Value(),
 		GenerateDefaultConfig: f.GenerateDefaultConfig.Value(),
 		TraceHTTP:             f.TraceHTTP.Value(),
-		NoColor:               f.NoColor.Value(),
+		ColorMode:             config.NewColorMode(f.Color.Value()),
 	}
 	return nil
 }

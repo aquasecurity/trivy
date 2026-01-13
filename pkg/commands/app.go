@@ -207,7 +207,7 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				return err
 			}
 			// Initialize logger
-			log.InitLogger(opts.Debug, opts.Quiet, opts.NoColor)
+			log.InitLogger(opts.Debug, opts.Quiet, opts.ColorMode)
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {

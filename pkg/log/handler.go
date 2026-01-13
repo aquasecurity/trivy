@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/fatih/color"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -36,8 +37,8 @@ type Options struct {
 	// Level reports the minimum level to log.
 	// Levels with lower levels are discarded.
 	// If nil, the Handler uses [slog.LevelInfo].
-	Level   slog.Leveler
-	NoColor bool
+	Level     slog.Leveler
+	ColorMode config.ColorMode
 }
 
 func NewHandler(out io.Writer, opts *Options) *ColorHandler {
@@ -51,9 +52,7 @@ func NewHandler(out io.Writer, opts *Options) *ColorHandler {
 	if h.opts.Level == nil {
 		h.opts.Level = slog.LevelInfo
 	}
-	if h.opts.NoColor {
-		color.NoColor = true
-	}
+	color.NoColor = h.opts.ColorMode == config.NeverColor
 	return h
 }
 

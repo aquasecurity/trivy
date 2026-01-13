@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/table"
 	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/config"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -23,17 +24,17 @@ type pkgLicenseRenderer struct {
 	isTerminal  bool
 	severities  []dbTypes.Severity
 	once        *sync.Once
-	noColor     bool
+	colorMode   config.ColorMode
 }
 
-func NewPkgLicenseRenderer(buf *bytes.Buffer, isTerminal, noColor bool, severities []dbTypes.Severity) *pkgLicenseRenderer {
+func NewPkgLicenseRenderer(buf *bytes.Buffer, isTerminal bool, colorMode config.ColorMode, severities []dbTypes.Severity) *pkgLicenseRenderer {
 	return &pkgLicenseRenderer{
 		w:           buf,
-		tableWriter: newTableWriter(buf, isTerminal, noColor),
+		tableWriter: newTableWriter(buf, isTerminal, colorMode),
 		isTerminal:  isTerminal,
 		severities:  severities,
 		once:        new(sync.Once),
-		noColor:     noColor,
+		colorMode:   colorMode,
 	}
 }
 
@@ -50,7 +51,7 @@ func (r *pkgLicenseRenderer) Render(result types.Result) {
 	total, summaries := summarize(r.severities, r.countSeverities(result.Licenses))
 
 	target := result.Target + " (license)"
-	RenderTarget(r.w, target, r.isTerminal, r.noColor)
+	RenderTarget(r.w, target, r.isTerminal, r.colorMode)
 	r.printf("Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 
 	r.tableWriter.Render()
@@ -107,17 +108,17 @@ type fileLicenseRenderer struct {
 	isTerminal  bool
 	severities  []dbTypes.Severity
 	once        *sync.Once
-	noColor     bool
+	colorMode   config.ColorMode
 }
 
-func NewFileLicenseRenderer(buf *bytes.Buffer, isTerminal, noColor bool, severities []dbTypes.Severity) *fileLicenseRenderer {
+func NewFileLicenseRenderer(buf *bytes.Buffer, isTerminal bool, colorMode config.ColorMode, severities []dbTypes.Severity) *fileLicenseRenderer {
 	return &fileLicenseRenderer{
 		w:           buf,
-		tableWriter: newTableWriter(buf, isTerminal, noColor),
+		tableWriter: newTableWriter(buf, isTerminal, colorMode),
 		isTerminal:  isTerminal,
 		severities:  severities,
 		once:        new(sync.Once),
-		noColor:     noColor,
+		colorMode:   colorMode,
 	}
 }
 
@@ -134,7 +135,7 @@ func (r *fileLicenseRenderer) Render(result types.Result) {
 	total, summaries := summarize(r.severities, r.countSeverities(result.Licenses))
 
 	target := result.Target + " (license)"
-	RenderTarget(r.w, target, r.isTerminal, r.noColor)
+	RenderTarget(r.w, target, r.isTerminal, r.colorMode)
 	r.printf("Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 
 	r.tableWriter.Render()

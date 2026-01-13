@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/config"
 	"golang.org/x/term"
 
 	"github.com/aquasecurity/tml"
@@ -18,10 +19,10 @@ type secretRenderer struct {
 	severities []dbTypes.Severity
 	width      int
 	ansi       bool
-	noColor    bool
+	colorMode  config.ColorMode
 }
 
-func NewSecretRenderer(buf *bytes.Buffer, ansi, noColor bool, severities []dbTypes.Severity) *secretRenderer {
+func NewSecretRenderer(buf *bytes.Buffer, ansi bool, colorMode config.ColorMode, severities []dbTypes.Severity) *secretRenderer {
 	width, _, err := term.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
@@ -34,7 +35,7 @@ func NewSecretRenderer(buf *bytes.Buffer, ansi, noColor bool, severities []dbTyp
 		severities: severities,
 		width:      width,
 		ansi:       ansi,
-		noColor:    noColor,
+		colorMode:  colorMode,
 	}
 }
 
@@ -45,7 +46,7 @@ func (r *secretRenderer) Render(result types.Result) {
 		return
 	}
 	target := result.Target + " (secrets)"
-	RenderTarget(r.w, target, r.ansi, r.noColor)
+	RenderTarget(r.w, target, r.ansi, r.colorMode)
 
 	severityCount := r.countSeverities(result.Secrets)
 	total, summaries := summarize(r.severities, severityCount)

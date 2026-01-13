@@ -8,6 +8,8 @@ import (
 	"os"
 
 	"github.com/samber/lo"
+
+	"github.com/aquasecurity/trivy/pkg/config"
 )
 
 const (
@@ -38,10 +40,10 @@ func New(h slog.Handler) *Logger {
 }
 
 // InitLogger initializes the logger variable and flushes the buffered logs if needed.
-func InitLogger(debug, disable, noColor bool) {
+func InitLogger(debug, disable bool, colorMode config.ColorMode) {
 	level := lo.Ternary(debug, slog.LevelDebug, slog.LevelInfo)
 	out := lo.Ternary(disable, io.Discard, io.Writer(os.Stderr))
-	h := NewHandler(out, &Options{Level: level, NoColor: noColor})
+	h := NewHandler(out, &Options{Level: level, ColorMode: colorMode})
 
 	// Flush the buffered logs if needed.
 	if d, ok := slog.Default().Handler().(*DeferredHandler); ok {

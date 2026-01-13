@@ -6,6 +6,7 @@ import (
 	"slices"
 	"sort"
 
+	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/fatih/color"
 	"github.com/samber/lo"
 
@@ -120,10 +121,10 @@ type summaryRenderer struct {
 	isTerminal bool
 	scanners   []Scanner
 	logger     *log.Logger
-	noColor    bool
+	colorMode  config.ColorMode
 }
 
-func NewSummaryRenderer(buf *bytes.Buffer, isTerminal, noColor bool, scanners types.Scanners) *summaryRenderer {
+func NewSummaryRenderer(buf *bytes.Buffer, isTerminal bool, colorMode config.ColorMode, scanners types.Scanners) *summaryRenderer {
 	if !isTerminal {
 		tml.DisableFormatting()
 	}
@@ -142,7 +143,7 @@ func NewSummaryRenderer(buf *bytes.Buffer, isTerminal, noColor bool, scanners ty
 		isTerminal: isTerminal,
 		scanners:   ss,
 		logger:     log.WithPrefix("report"),
-		noColor:    noColor,
+		colorMode:  colorMode,
 	}
 }
 
@@ -152,13 +153,13 @@ func (r *summaryRenderer) Render(report types.Report) {
 		return
 	}
 
-	if r.noColor {
+	if r.colorMode == config.NeverColor {
 		r.printf("\nReport Summary\n\n")
 	} else {
 		r.printf("\n<underline><bold>Report Summary</bold></underline>\n\n")
 	}
 
-	t := newTableWriter(r.w, r.isTerminal, r.noColor)
+	t := newTableWriter(r.w, r.isTerminal, r.colorMode)
 	t.SetAutoMerge(false)
 	t.SetColumnMaxWidth(80)
 

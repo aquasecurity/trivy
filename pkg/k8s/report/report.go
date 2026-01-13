@@ -7,6 +7,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/samber/lo"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -33,8 +34,8 @@ type Option struct {
 	Severities    []dbTypes.Severity
 	ColumnHeading []string
 	Scanners      types.Scanners
-	APIVersion    string
-	NoColor       bool
+	APIVersion 	  string
+	ColorMode  	  config.ColorMode
 }
 
 // Report represents a kubernetes scan report
