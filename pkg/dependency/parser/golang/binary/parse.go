@@ -110,7 +110,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		// See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477.
 		version := p.checkVersion(info.Main.Path, info.Main.Version)
 		ldflagsVersion := p.ParseLDFlags(info.Main.Path, ldflags)
-		version = p.ChooseMainVersion(version, ldflagsVersion)
+		version = p.chooseMainVersion(version, ldflagsVersion)
 
 		root := ftypes.Package{
 			ID:           dependency.ID(ftypes.GoBinary, info.Main.Path, version),
@@ -147,12 +147,12 @@ func (p *Parser) checkVersion(name, version string) string {
 	return version
 }
 
-// ChooseMainVersion determines which version to use for the main module.
+// chooseMainVersion determines which version to use for the main module.
 // It prefers the ldflags version when:
 // - The build info version is empty, OR
 // - The build info version is a pseudo-version AND ldflags version is available
 // This handles cases where actual release versions are injected via -ldflags.
-func (p *Parser) ChooseMainVersion(version, ldflagsVersion string) string {
+func (p *Parser) chooseMainVersion(version, ldflagsVersion string) string {
 	if version == "" || (module.IsPseudoVersion(version) && ldflagsVersion != "") {
 		return ldflagsVersion
 	}
