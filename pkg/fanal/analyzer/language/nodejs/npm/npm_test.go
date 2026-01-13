@@ -5,6 +5,7 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -14,7 +15,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	log.InitLogger(false, true, true)
+	log.InitLogger(false, true, config.NeverColor)
 	os.Exit(m.Run())
 }
 

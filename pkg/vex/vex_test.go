@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/google/go-containerregistry/pkg/v1"
 	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
@@ -177,7 +178,7 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	log.InitLogger(false, true, true)
+	log.InitLogger(false, true, config.NeverColor)
 	os.Exit(m.Run())
 }
 
