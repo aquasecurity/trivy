@@ -16,14 +16,14 @@ cache:
   # Same as '--cache-dir'
   dir: "/path/to/cache"
 
+# Same as '--color'
+color: "auto"
+
 # Same as '--debug'
 debug: false
 
 # Same as '--insecure'
 insecure: false
-
-# Same as '--no-color'
-no-color: false
 
 # Same as '--quiet'
 quiet: false

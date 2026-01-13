@@ -118,7 +118,7 @@ The following example will fail when a critical vulnerability is found or the OS
 $ trivy image --exit-code 1 --exit-on-eol 1 --severity CRITICAL alpine:3.16.3
 ```
 
-## No Color
+## Color Modes
 |     Scanner      | Supported |
 |:----------------:|:---------:|
 |  Vulnerability   |     ✓     |
@@ -126,8 +126,10 @@ $ trivy image --exit-code 1 --exit-on-eol 1 --severity CRITICAL alpine:3.16.3
 |      Secret      |     ✓     |
 |     License      |     ✓     |
 
-By default, `Trivy` uses color output in the terminal.
-Use the `--no-color` option if you don't want to use color output.
+To change the way `Trivy` uses color in terminal output, the following flags can be used:
+* `--color true` or `--color always` enables all colour output
+* `--color false` or `--color never` disables all colour output
+* `--color auto` uses the default colour behaviour
 
 ## Mirror Registries
 

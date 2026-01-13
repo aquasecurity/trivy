@@ -91,7 +91,7 @@ var (
 		Name:       "color",
 		ConfigName: "color",
 		Default:    "auto",
-		Usage:      "Set color mode for terminal output. Accepted values: true, always, false, never, auto. Default is auto",
+		Usage:      "Set color mode for terminal output. Accepted values: true, always, false, never, auto.",
 		Persistent: true,
 	}
 )
