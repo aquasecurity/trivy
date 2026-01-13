@@ -6,6 +6,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -43,6 +44,12 @@ func (a sbomAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput)
 		return nil, xerrors.Errorf("SBOM decode error: %w", err)
 	}
 
+	// ActiveState images
+	// SBOM files are located under the /opt/activestate directory
+	if strings.HasPrefix(input.FilePath, "opt/activestate") {
+		handleActiveStateImages(&bom)
+	}
+
 	// Bitnami images
 	// SPDX files are located under the /opt/bitnami/<component> directory
 	// and named with the pattern .spdx-<component>.spdx
@@ -76,13 +83,6 @@ func (a sbomAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput)
 }
 
 func (a sbomAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	// Exclude PEP 770 SBOMs in .dist-info/sboms/ directories.
-	// These are handled by the Python packaging analyzer instead.
-	// cf. https://peps.python.org/pep-0770/
-	if strings.Contains(filePath, ".dist-info/sboms/") {
-		return false
-	}
-
 	for _, suffix := range requiredSuffixes {
 		if strings.HasSuffix(filePath, suffix) {
 			return true
@@ -117,4 +117,44 @@ func handleBitnamiImages(componentPath string, bom types.SBOM) {
 			bom.Applications[i].Packages[j].FilePath = filePath
 		}
 	}
+}
+
+// handleActiveStateImages processes ActiveState SBOM files.
+// ActiveState SBOMs don't use separate components for applications, leaving Application.FilePath empty.
+// Instead, we extract the file path from package metadata and group packages by their FilePath,
+// creating new applications with the proper FilePath set from the packages.
+// GoBinary applications are skipped as they're handled by the binary analyzer.
+func handleActiveStateImages(bom *types.SBOM) {
+	packagesByPath := make(map[string]ftypes.Application)
+
+	// Iterate through existing applications and collect packages
+	for _, app := range bom.Applications {
+		// ActiveState SBOMs only specify the root component, so we rely on data from GoBinary analyzer.
+		// Skip GoBinary applications to avoid wrong deduplication.
+		if app.Type == ftypes.GoBinary {
+			continue
+		}
+
+		// Group packages by their FilePath
+		for _, pkg := range app.Packages {
+			if savedPkgs, ok := packagesByPath[pkg.FilePath]; ok {
+				savedPkgs.Packages = append(savedPkgs.Packages, pkg)
+				packagesByPath[pkg.FilePath] = savedPkgs
+				continue
+			}
+
+			packagesByPath[pkg.FilePath] = ftypes.Application{
+				Type:     app.Type,
+				FilePath: pkg.FilePath,
+				Packages: ftypes.Packages{pkg},
+			}
+		}
+	}
+
+	if len(packagesByPath) == 0 {
+		bom.Applications = nil
+		return
+	}
+
+	bom.Applications = lo.Values(packagesByPath)
 }
