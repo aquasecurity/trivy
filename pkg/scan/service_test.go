@@ -1,9 +1,10 @@
-package scan
+package scan_test
 
 import (
 	"testing"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/scan"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
@@ -235,7 +236,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			// Create scanner
 			applier := applier.NewApplier(c)
 			scanner := local.NewService(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
-			s := NewService(scanner, artifact)
+			s := scan.NewService(scanner, artifact)
 
 			ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 			got, err := s.ScanArtifact(ctx, tt.args.options)
@@ -455,10 +456,10 @@ func TestService_generateArtifactID(t *testing.T) {
 		},
 	}
 
-	s := Service{}
+	s := scan.Service{}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := s.generateArtifactID(tt.artifactInfo)
+			got := s.GenerateArtifactID(tt.artifactInfo)
 			assert.Equal(t, tt.want, got)
 		})
 	}
