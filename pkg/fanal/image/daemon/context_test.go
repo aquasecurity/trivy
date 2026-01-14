@@ -1,4 +1,4 @@
-package daemon
+package daemon_test
 
 import (
 	"encoding/json"
@@ -12,6 +12,8 @@ import (
 	dockerclient "github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/image/daemon"
 )
 
 const testContextName = "test-context"
@@ -132,7 +134,7 @@ func TestResolveDockerHost(t *testing.T) {
 			require.NoError(t, os.WriteFile(filepath.Join(testDir, "config.json"), configJSON, 0o644))
 
 			// Test resolveDockerHost
-			got, err := resolveDockerHost(tt.hostFlag)
+			got, err := daemon.ResolveDockerHost(tt.hostFlag)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return

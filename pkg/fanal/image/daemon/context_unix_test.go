@@ -1,6 +1,6 @@
 //go:build !windows
 
-package daemon
+package daemon_test
 
 const (
 	testContextHost = "unix:///tmp/test-context.sock"
