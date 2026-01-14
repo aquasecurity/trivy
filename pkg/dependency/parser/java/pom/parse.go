@@ -894,8 +894,9 @@ func parseMavenMetadata(r io.Reader) (*Metadata, error) {
 }
 
 func packageID(name, version, pomFilePath string) string {
+	gav := dependency.ID(ftypes.Pom, name, version)
 	v := map[string]any{
-		"gav":  dependency.ID(ftypes.Pom, name, version),
+		"gav":  gav,
 		"path": filepath.ToSlash(pomFilePath),
 	}
 	h, err := hashstructure.Hash(v, hashstructure.FormatV2, &hashstructure.HashOptions{
@@ -903,9 +904,11 @@ func packageID(name, version, pomFilePath string) string {
 		IgnoreZeroValue: true,
 	})
 	if err != nil {
-		log.Warn("Failed to calculate the pom.xml hash", log.String("name", name), log.String("version", version), log.Err(err))
+		log.Warn("Failed to calculate hash", log.Err(err))
+		return gav // fallback to GAV only
 	}
-	return strconv.FormatUint(h, 16)
+	// Append 8-character hash suffix
+	return fmt.Sprintf("%s::%s", gav, strconv.FormatUint(h, 16)[:8])
 }
 
 // cf. https://github.com/apache/maven/blob/259404701402230299fe05ee889ecdf1c9dae816/maven-artifact/src/main/java/org/apache/maven/artifact/DefaultArtifact.java#L482-L486
