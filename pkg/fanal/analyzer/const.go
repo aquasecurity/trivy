@@ -132,6 +132,7 @@ const (
 	TypeTerraformPlanSnapshot Type = Type(detection.FileTypeTerraformPlanSnapshot)
 	TypeYAML                  Type = Type(detection.FileTypeYAML)
 	TypeJSON                  Type = Type(detection.FileTypeJSON)
+	TypeAnsible               Type = Type(detection.FileTypeAnsible)
 
 	// ========
 	// License
@@ -266,5 +267,6 @@ var (
 		TypeTerraformPlanSnapshot,
 		TypeYAML,
 		TypeJSON,
+		TypeAnsible,
 	}
 )

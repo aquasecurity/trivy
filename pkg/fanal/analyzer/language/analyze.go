@@ -9,7 +9,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -104,10 +103,6 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.
 		pkgs[i].DependsOn = deps[pkg.ID]
 		pkgs[i].Digest = d
 		pkgs[i].Indirect = isIndirect(pkg.Relationship) // For backward compatibility
-
-		for j, license := range pkg.Licenses {
-			pkgs[i].Licenses[j] = licensing.Normalize(license)
-		}
 	}
 
 	return &types.Application{

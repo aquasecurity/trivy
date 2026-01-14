@@ -11,10 +11,10 @@ The following scanners are supported.
 The following table provides an outline of the features Trivy offers.
 
 
-| Package manager | File           | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position |
-|-----------------|----------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
-| Composer        | composer.lock  |            ✓            |     Excluded     |                  ✓                   |    ✓     |
-| Composer        | installed.json |            ✓            |     Excluded     |                  -                   |    ✓     |
+| Package manager | File           | Transitive dependencies |          Dev dependencies          | [Dependency graph][dependency-graph] | Position |
+|-----------------|----------------|:-----------------------:|:----------------------------------:|:------------------------------------:|:--------:|
+| Composer        | composer.lock  |            ✓            | [Excluded](#development-dependencies) |                  ✓                   |    ✓     |
+| Composer        | installed.json |            ✓            |              Excluded              |                  -                   |    ✓     |
 
 ## composer.lock
 In order to detect dependencies, Trivy searches for `composer.lock`.
@@ -22,6 +22,12 @@ In order to detect dependencies, Trivy searches for `composer.lock`.
 Trivy also supports dependency trees; however, to display an accurate tree, it needs to know whether each package is a direct dependency of the project.
 Since this information is not included in `composer.lock`, Trivy parses `composer.json`, which should be located next to `composer.lock`.
 If you want to see the dependency tree, please ensure that `composer.json` is present.
+
+### Development dependencies
+By default, Trivy doesn't report development dependencies (`packages-dev` in `composer.lock`).
+Use the `--include-dev-deps` flag to include them.
+
+To correctly identify direct development dependencies, Trivy parses `require-dev` from `composer.json`, which should be located next to `composer.lock`.
 
 ## installed.json
 Trivy also supports dependency detection for `installed.json` files. By default, you can find this file at `path_to_app/vendor/composer/installed.json`.

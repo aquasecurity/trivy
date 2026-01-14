@@ -33,7 +33,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 								ID:           "775be61e12255d4",
 								Name:         "com.example:example",
 								Version:      "1.0.0",
-								Licenses:     []string{"Apache-2.0"},
+								Licenses:     []string{"Apache 2.0"},
 								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
 									"3f5226c1cdc0f675",
@@ -71,7 +71,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 								Name:         "com.example:example",
 								Version:      "1.0.0",
 								Relationship: types.RelationshipRoot,
-								Licenses:     []string{"Apache-2.0"},
+								Licenses:     []string{"Apache 2.0"},
 								DependsOn: []string{
 									"3f5226c1cdc0f675",
 								},
@@ -106,7 +106,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 								ID:           "c6140fc994cd756f",
 								Name:         "com.example:example",
 								Version:      "1.0.0",
-								Licenses:     []string{"Apache-2.0"},
+								Licenses:     []string{"Apache 2.0"},
 								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
 									"ea8c6bb9bc39e615",
@@ -144,7 +144,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 								ID:           "729d323afdb92656",
 								Name:         "com.example:example",
 								Version:      "2.0.0",
-								Licenses:     []string{"Apache-2.0"},
+								Licenses:     []string{"Apache 2.0"},
 								Relationship: types.RelationshipRoot,
 							},
 							{

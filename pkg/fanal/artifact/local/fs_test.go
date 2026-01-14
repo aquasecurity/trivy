@@ -226,7 +226,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			wantBlobs: []cachetest.WantBlob{
 				{
 					// Cache key is based on commit hash (8a19b492a589955c3e70c6ad8efd1e4ec6ae0d35)
-					ID: "sha256:c7173e152a268c038257b877794285986c52ac569de7e516b2963f557f4e26ee",
+					ID: "sha256:d37c788d6fe832712cce9020943746b8764c04f7e323ed4ad68de36c5bf7d846",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 					},
@@ -235,9 +235,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: artifact.Reference{
 				Name: "../../../../internal/gittest/testdata/test-repo",
 				Type: types.TypeRepository,
-				ID:   "sha256:c7173e152a268c038257b877794285986c52ac569de7e516b2963f557f4e26ee",
+				ID:   "sha256:d37c788d6fe832712cce9020943746b8764c04f7e323ed4ad68de36c5bf7d846",
 				BlobIDs: []string{
-					"sha256:c7173e152a268c038257b877794285986c52ac569de7e516b2963f557f4e26ee",
+					"sha256:d37c788d6fe832712cce9020943746b8764c04f7e323ed4ad68de36c5bf7d846",
 				},
 				RepoMetadata: artifact.RepoMetadata{
 					RepoURL:   "https://github.com/aquasecurity/trivy-test-repo/",
@@ -2383,7 +2383,7 @@ func TestYAMLConfigScan(t *testing.T) {
 											Severity: "LOW",
 										},
 										CauseMetadata: types.CauseMetadata{
-											Provider: "Generic",
+											Provider: "Yaml",
 											Service:  "general",
 										},
 									},
@@ -2405,7 +2405,7 @@ func TestYAMLConfigScan(t *testing.T) {
 											Severity: "LOW",
 										},
 										CauseMetadata: types.CauseMetadata{
-											Provider: "Generic",
+											Provider: "Yaml",
 											Service:  "general",
 										},
 									},
@@ -2454,7 +2454,7 @@ func TestYAMLConfigScan(t *testing.T) {
 											Severity: "LOW",
 										},
 										CauseMetadata: types.CauseMetadata{
-											Provider: "Generic",
+											Provider: "Yaml",
 											Service:  "general",
 										},
 									},

@@ -1,0 +1,933 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "quiet": {
+      "type": "boolean",
+      "description": "suppress progress bar and log output"
+    },
+    "debug": {
+      "type": "boolean",
+      "description": "debug mode"
+    },
+    "insecure": {
+      "type": "boolean",
+      "description": "allow insecure server connections"
+    },
+    "cacert": {
+      "type": "string",
+      "description": "Path to PEM-encoded CA certificate file"
+    },
+    "timeout": {
+      "type": "string",
+      "description": "timeout"
+    },
+    "cache": {
+      "properties": {
+        "dir": {
+          "type": "string",
+          "description": "cache directory"
+        },
+        "backend": {
+          "type": "string",
+          "description": "[EXPERIMENTAL] cache backend (e.g. redis://localhost:6379)"
+        },
+        "ttl": {
+          "type": "string",
+          "description": "cache TTL when using redis as cache backend"
+        },
+        "redis": {
+          "properties": {
+            "tls": {
+              "type": "boolean",
+              "description": "enable redis TLS with public certificates, if using redis as cache backend"
+            },
+            "ca": {
+              "type": "string",
+              "description": "redis ca file location, if using redis as cache backend"
+            },
+            "cert": {
+              "type": "string",
+              "description": "redis certificate file location, if using redis as cache backend"
+            },
+            "key": {
+              "type": "string",
+              "description": "redis key file location, if using redis as cache backend"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "clean": {
+      "properties": {
+        "all": {
+          "type": "boolean",
+          "description": "remove all caches"
+        },
+        "scan-cache": {
+          "type": "boolean",
+          "description": "remove scan cache (container and VM image analysis results)"
+        },
+        "vuln-db": {
+          "type": "boolean",
+          "description": "remove vulnerability database"
+        },
+        "java-db": {
+          "type": "boolean",
+          "description": "remove Java database"
+        },
+        "checks-bundle": {
+          "type": "boolean",
+          "description": "remove checks bundle"
+        },
+        "vex-repo": {
+          "type": "boolean",
+          "description": "remove VEX repositories"
+        }
+      },
+      "type": "object"
+    },
+    "server": {
+      "properties": {
+        "token": {
+          "type": "string",
+          "description": "for authentication in client/server mode"
+        },
+        "token-header": {
+          "type": "string",
+          "description": "specify a header name for token in client/server mode"
+        },
+        "addr": {
+          "type": "string",
+          "description": "server address in client mode"
+        },
+        "custom-headers": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "custom headers in client mode"
+        },
+        "listen": {
+          "type": "string",
+          "description": "listen address in server mode"
+        }
+      },
+      "type": "object"
+    },
+    "db": {
+      "properties": {
+        "download-only": {
+          "type": "boolean",
+          "description": "download/update vulnerability database but don't run a scan"
+        },
+        "skip-update": {
+          "type": "boolean",
+          "description": "skip updating vulnerability database"
+        },
+        "download-java-only": {
+          "type": "boolean",
+          "description": "download/update Java index database but don't run a scan"
+        },
+        "java-skip-update": {
+          "type": "boolean",
+          "description": "skip updating Java index database"
+        },
+        "no-progress": {
+          "type": "boolean",
+          "description": "suppress progress bar"
+        },
+        "repository": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "OCI repository(ies) to retrieve trivy-db in order of priority"
+        },
+        "java-repository": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "OCI repository(ies) to retrieve trivy-java-db in order of priority"
+        }
+      },
+      "type": "object"
+    },
+    "image": {
+      "properties": {
+        "input": {
+          "type": "string",
+          "description": "input file path instead of image name"
+        },
+        "image-config-scanners": {
+          "items": {
+            "type": "string",
+            "enum": [
+              "misconfig",
+              "secret"
+            ]
+          },
+          "type": "array",
+          "description": "comma-separated list of what security issues to detect on container image configurations"
+        },
+        "removed-pkgs": {
+          "type": "boolean",
+          "description": "detect vulnerabilities of removed packages (only for Alpine)"
+        },
+        "platform": {
+          "type": "string",
+          "description": "set platform in the form os/arch if image is multi-platform capable"
+        },
+        "docker": {
+          "properties": {
+            "host": {
+              "type": "string",
+              "description": "unix domain socket path to use for docker scanning"
+            }
+          },
+          "type": "object"
+        },
+        "podman": {
+          "properties": {
+            "host": {
+              "type": "string",
+              "description": "unix podman socket path to use for podman scanning"
+            }
+          },
+          "type": "object"
+        },
+        "source": {
+          "items": {
+            "type": "string",
+            "enum": [
+              "docker",
+              "containerd",
+              "podman",
+              "remote"
+            ]
+          },
+          "type": "array",
+          "description": "image source(s) to use, in priority order"
+        },
+        "max-size": {
+          "type": "string",
+          "description": "[EXPERIMENTAL] maximum image size to process, specified in a human-readable format (e.g., '44kB', '17MB'); an error will be returned if the image exceeds this size"
+        }
+      },
+      "type": "object"
+    },
+    "kubernetes": {
+      "properties": {
+        "kubeconfig": {
+          "type": "string",
+          "description": "specify the kubeconfig file path to use"
+        },
+        "k8s-version": {
+          "type": "string",
+          "description": "specify k8s version to validate outdated api by it (example: 1.21.0)"
+        },
+        "disableNodeCollector": {
+          "type": "boolean",
+          "description": "When the flag is activated, the node-collector job will not be executed, thus skipping misconfiguration findings on the node."
+        },
+        "tolerations": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)"
+        },
+        "node-collector": {
+          "properties": {
+            "namespace": {
+              "type": "string",
+              "description": "specify the namespace in which the node-collector job should be deployed"
+            },
+            "imageref": {
+              "type": "string",
+              "description": "indicate the image reference for the node-collector scan job"
+            }
+          },
+          "type": "object"
+        },
+        "exclude": {
+          "properties": {
+            "owned": {
+              "type": "boolean",
+              "description": "exclude resources that have an owner reference"
+            },
+            "nodes": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "description": "indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)"
+            }
+          },
+          "type": "object"
+        },
+        "excludeKinds": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "indicate the kinds exclude from scanning (example: node)"
+        },
+        "includeKinds": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "indicate the kinds included in scanning (example: node)"
+        },
+        "excludeNamespaces": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "indicate the namespaces excluded from scanning (example: kube-system)"
+        },
+        "includeNamespaces": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "indicate the namespaces included in scanning (example: kube-system)"
+        },
+        "qps": {
+          "type": "number",
+          "description": "specify the maximum QPS to the master from this client"
+        },
+        "skipImages": {
+          "type": "boolean",
+          "description": "skip the downloading and scanning of images (vulnerabilities and secrets) in the cluster resources"
+        },
+        "burst": {
+          "type": "integer",
+          "description": "specify the maximum burst for throttle"
+        }
+      },
+      "type": "object"
+    },
+    "license": {
+      "properties": {
+        "full": {
+          "type": "boolean",
+          "description": "eagerly look for licenses in source code headers and license files"
+        },
+        "ignored": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "specify a list of license to ignore"
+        },
+        "forbidden": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "forbidden licenses"
+        },
+        "restricted": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "restricted licenses"
+        },
+        "reciprocal": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "reciprocal licenses"
+        },
+        "notice": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "notice licenses"
+        },
+        "permissive": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "permissive licenses"
+        },
+        "unencumbered": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "unencumbered licenses"
+        },
+        "confidenceLevel": {
+          "type": "number",
+          "description": "specify license classifier's confidence level"
+        }
+      },
+      "type": "object"
+    },
+    "misconfiguration": {
+      "properties": {
+        "include-non-failures": {
+          "type": "boolean",
+          "description": "include successes, available with '--scanners misconfig'"
+        },
+        "checks-bundle-repository": {
+          "type": "string",
+          "description": "OCI registry URL to retrieve checks bundle from"
+        },
+        "helm": {
+          "properties": {
+            "set": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "description": "specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)"
+            },
+            "values": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "description": "specify paths to override the Helm values.yaml files"
+            },
+            "set-file": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "description": "specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)"
+            },
+            "set-string": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "description": "specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)"
+            },
+            "api-versions": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "description": "Available API versions used for Capabilities.APIVersions. This flag is the same as the api-versions flag of the helm template command. (can specify multiple or separate values with commas: policy/v1/PodDisruptionBudget,apps/v1/Deployment)"
+            },
+            "kube-version": {
+              "type": "string",
+              "description": "Kubernetes version used for Capabilities.KubeVersion. This flag is the same as the kube-version flag of the helm template command."
+            }
+          },
+          "type": "object"
+        },
+        "terraform": {
+          "properties": {
+            "vars": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "description": "specify paths to override the Terraform tfvars files"
+            },
+            "exclude-downloaded-modules": {
+              "type": "boolean",
+              "description": "exclude misconfigurations for downloaded terraform modules"
+            }
+          },
+          "type": "object"
+        },
+        "cloudformation": {
+          "properties": {
+            "params": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "description": "specify paths to override the CloudFormation parameters files"
+            }
+          },
+          "type": "object"
+        },
+        "scanners": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "comma-separated list of misconfig scanners to use for misconfiguration scanning"
+        },
+        "config-file-schemas": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "specify paths to JSON configuration file schemas to determine that a file matches some configuration and pass the schema to Rego checks for type checking"
+        },
+        "render-cause": {
+          "items": {
+            "type": "string",
+            "enum": [
+              "terraform",
+              "ansible"
+            ]
+          },
+          "type": "array",
+          "description": "specify configuration types for which the rendered causes will be shown in the table report"
+        },
+        "raw-config-scanners": {
+          "items": {
+            "type": "string",
+            "enum": [
+              "terraform"
+            ]
+          },
+          "type": "array",
+          "description": "specify the types of scanners that will also scan raw configurations. For example, scanners will scan a non-adapted configuration into a shared state"
+        }
+      },
+      "type": "object"
+    },
+    "ansible": {
+      "properties": {
+        "playbooks": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "specify playbook file path(s) to scan"
+        },
+        "inventories": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "specify inventory host path or comma separated host list"
+        },
+        "extra-vars": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "set additional variables as key=value or @file (YAML/JSON)"
+        }
+      },
+      "type": "object"
+    },
+    "module": {
+      "properties": {
+        "dir": {
+          "type": "string",
+          "description": "specify directory to the wasm modules that will be loaded"
+        },
+        "enable-modules": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "[EXPERIMENTAL] module names to enable"
+        }
+      },
+      "type": "object"
+    },
+    "pkg": {
+      "properties": {
+        "include-dev-deps": {
+          "type": "boolean",
+          "description": "include development dependencies in the report (supported: npm, yarn, gradle)"
+        },
+        "types": {
+          "items": {
+            "type": "string",
+            "enum": [
+              "os",
+              "library"
+            ]
+          },
+          "type": "array",
+          "description": "list of package types"
+        },
+        "relationships": {
+          "items": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "root",
+              "workspace",
+              "direct",
+              "indirect"
+            ]
+          },
+          "type": "array",
+          "description": "list of package relationships"
+        }
+      },
+      "type": "object"
+    },
+    "registry": {
+      "properties": {
+        "username": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "username. Comma-separated usernames allowed."
+        },
+        "password": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons."
+        },
+        "password-stdin": {
+          "type": "boolean",
+          "description": "password from stdin. Comma-separated passwords are not supported."
+        },
+        "token": {
+          "type": "string",
+          "description": "registry token"
+        },
+        "mirrors": {
+          "additionalProperties": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "type": "object",
+          "description": "map of hosts and registries for them."
+        }
+      },
+      "type": "object"
+    },
+    "rego": {
+      "properties": {
+        "include-deprecated-checks": {
+          "type": "boolean",
+          "description": "include deprecated checks"
+        },
+        "skip-check-update": {
+          "type": "boolean",
+          "description": "skip fetching rego check updates"
+        },
+        "trace": {
+          "type": "boolean",
+          "description": "enable more verbose trace output for custom queries"
+        },
+        "check": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "specify the paths to the Rego check files or to the directories containing them, applying config files"
+        },
+        "data": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "specify paths from which data for the Rego checks will be recursively loaded"
+        },
+        "namespaces": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "Rego namespaces"
+        },
+        "error-limit": {
+          "type": "integer",
+          "description": "maximum number of compile errors allowed during Rego policy evaluation"
+        }
+      },
+      "type": "object"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "table",
+        "json",
+        "template",
+        "sarif",
+        "cyclonedx",
+        "spdx",
+        "spdx-json",
+        "github",
+        "cosign-vuln"
+      ],
+      "description": "format"
+    },
+    "report": {
+      "type": "string",
+      "enum": [
+        "all",
+        "summary"
+      ],
+      "description": "specify a report format for the output"
+    },
+    "template": {
+      "type": "string",
+      "description": "output template"
+    },
+    "dependency-tree": {
+      "type": "boolean",
+      "description": "[EXPERIMENTAL] show dependency origin tree of vulnerable packages"
+    },
+    "list-all-pkgs": {
+      "type": "boolean",
+      "description": "output all packages in the JSON report regardless of vulnerability"
+    },
+    "ignorefile": {
+      "type": "string",
+      "description": "specify .trivyignore file"
+    },
+    "ignore-policy": {
+      "type": "string",
+      "description": "specify the Rego file path to evaluate each vulnerability"
+    },
+    "exit-code": {
+      "type": "integer",
+      "description": "specify exit code when any security issues are found"
+    },
+    "exit-on-eol": {
+      "type": "integer",
+      "description": "exit with the specified code when the OS reaches end of service/life"
+    },
+    "output": {
+      "type": "string",
+      "description": "output file name"
+    },
+    "output-plugin-arg": {
+      "type": "string",
+      "description": "[EXPERIMENTAL] output plugin arguments"
+    },
+    "severity": {
+      "items": {
+        "type": "string",
+        "enum": [
+          "UNKNOWN",
+          "LOW",
+          "MEDIUM",
+          "HIGH",
+          "CRITICAL"
+        ]
+      },
+      "type": "array",
+      "description": "severities of security issues to be displayed"
+    },
+    "scan": {
+      "properties": {
+        "compliance": {
+          "type": "string",
+          "description": "compliance report to generate"
+        },
+        "show-suppressed": {
+          "type": "boolean",
+          "description": "[EXPERIMENTAL] show suppressed vulnerabilities"
+        },
+        "skip-dirs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "specify the directories or glob patterns to skip"
+        },
+        "skip-files": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "specify the files or glob patterns to skip"
+        },
+        "offline": {
+          "type": "boolean",
+          "description": "do not issue API requests to identify dependencies"
+        },
+        "scanners": {
+          "items": {
+            "type": "string",
+            "enum": [
+              "vuln",
+              "misconfig",
+              "secret",
+              "license"
+            ]
+          },
+          "type": "array",
+          "description": "comma-separated list of what security issues to detect"
+        },
+        "file-patterns": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "specify config file patterns"
+        },
+        "parallel": {
+          "type": "integer",
+          "description": "number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism"
+        },
+        "sbom-sources": {
+          "items": {
+            "type": "string",
+            "enum": [
+              "oci",
+              "rekor"
+            ]
+          },
+          "type": "array",
+          "description": "[EXPERIMENTAL] try to retrieve SBOM from the specified sources"
+        },
+        "rekor-url": {
+          "type": "string",
+          "description": "[EXPERIMENTAL] address of rekor STL server"
+        },
+        "detection-priority": {
+          "type": "string",
+          "enum": [
+            "precise",
+            "comprehensive"
+          ],
+          "description": "specify the detection priority:\n  - \"precise\": Prioritizes precise by minimizing false positives.\n  - \"comprehensive\": Aims to detect more security findings at the cost of potential false positives.\n"
+        },
+        "distro": {
+          "type": "string",
+          "description": "[EXPERIMENTAL] specify a distribution, \u003cfamily\u003e/\u003cversion\u003e"
+        },
+        "skip-version-check": {
+          "type": "boolean",
+          "description": "suppress notices about version updates and Trivy announcements"
+        },
+        "disable-telemetry": {
+          "type": "boolean",
+          "description": "disable sending anonymous usage data to Aqua"
+        }
+      },
+      "type": "object"
+    },
+    "table-mode": {
+      "items": {
+        "type": "string",
+        "enum": [
+          "summary",
+          "detailed"
+        ]
+      },
+      "type": "array",
+      "description": "[EXPERIMENTAL] tables that will be displayed in 'table' format"
+    },
+    "repository": {
+      "properties": {
+        "branch": {
+          "type": "string",
+          "description": "pass the branch name to be scanned"
+        },
+        "commit": {
+          "type": "string",
+          "description": "pass the commit hash to be scanned"
+        },
+        "tag": {
+          "type": "string",
+          "description": "pass the tag name to be scanned"
+        }
+      },
+      "type": "object"
+    },
+    "secret": {
+      "properties": {
+        "config": {
+          "type": "string",
+          "description": "specify a path to config file for secret scanning"
+        }
+      },
+      "type": "object"
+    },
+    "vulnerability": {
+      "properties": {
+        "ignore-unfixed": {
+          "type": "boolean",
+          "description": "display only fixed vulnerabilities"
+        },
+        "ignore-status": {
+          "items": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "not_affected",
+              "affected",
+              "fixed",
+              "under_investigation",
+              "will_not_fix",
+              "fix_deferred",
+              "end_of_life"
+            ]
+          },
+          "type": "array",
+          "description": "comma-separated list of vulnerability status to ignore"
+        },
+        "vex": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "[EXPERIMENTAL] VEX sources (\"repo\", \"oci\" or file path)"
+        },
+        "skip-vex-repo-update": {
+          "type": "boolean",
+          "description": "[EXPERIMENTAL] Skip VEX Repository update"
+        },
+        "severity-source": {
+          "items": {
+            "type": "string",
+            "enum": [
+              "nvd",
+              "redhat",
+              "redhat-oval",
+              "debian",
+              "ubuntu",
+              "alpine",
+              "amazon",
+              "oracle-oval",
+              "suse-cvrf",
+              "photon",
+              "arch-linux",
+              "alma",
+              "rocky",
+              "cbl-mariner",
+              "azure",
+              "ruby-advisory-db",
+              "php-security-advisories",
+              "nodejs-security-wg",
+              "ghsa",
+              "glad",
+              "aqua",
+              "osv",
+              "k8s",
+              "wolfi",
+              "chainguard",
+              "bitnami",
+              "govulndb",
+              "julia",
+              "echo",
+              "minimos",
+              "rootio",
+              "auto"
+            ]
+          },
+          "type": "array",
+          "description": "order of data sources for selecting vulnerability severity level"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "type": "object",
+  "title": "Trivy Configuration",
+  "description": "Configuration file for Trivy security scanner (trivy.yaml)"
+}

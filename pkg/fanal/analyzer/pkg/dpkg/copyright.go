@@ -7,7 +7,6 @@ import (
 	"os"
 	"path"
 	"regexp"
-	"slices"
 	"strings"
 
 	"github.com/samber/lo"
@@ -17,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func init() {
@@ -88,31 +88,20 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r xio.ReadSeekerAt) ([]types.Licens
 			l := strings.TrimSpace(line[8:])
 
 			l = normalizeLicense(l)
-			if l != "" {
-				for _, lic := range licensing.SplitLicenses(l) {
-					if lic == "" {
-						continue
-					}
-
-					lic = licensing.Normalize(lic)
-					if !slices.Contains(licenses, lic) {
-						licenses = append(licenses, lic)
-					}
-				}
-			}
+			licenses = append(licenses, licensing.SplitLicenses(l)...)
 		case strings.Contains(line, "/usr/share/common-licenses/"):
 			// Common license pattern
 			license := commonLicenseReferenceRegexp.FindStringSubmatch(line)
 			if len(license) == 2 {
-				l := licensing.Normalize(license[1])
-				if l != "" && !slices.Contains(licenses, l) {
-					licenses = append(licenses, l)
-				}
+				licenses = append(licenses, license[1])
 			}
 		}
 	}
 
-	return lo.Map(licenses, func(license string, _ int) types.LicenseFinding {
+	licenses = licensing.NormalizeLicenses(licenses)
+	licenses = lo.Uniq(licenses)
+
+	return xslices.Map(licenses, func(license string) types.LicenseFinding {
 		return types.LicenseFinding{Name: license}
 	}), nil
 

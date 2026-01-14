@@ -24,7 +24,9 @@ type MySQLServer struct {
 type PostgreSQLServer struct {
 	Metadata iacTypes.Metadata
 	Server
-	Config PostgresSQLConfig
+	Config                    PostgresSQLConfig
+	GeoRedundantBackupEnabled iacTypes.BoolValue
+	ThreatDetectionPolicy     ThreatDetectionPolicy
 }
 
 type PostgresSQLConfig struct {
@@ -32,6 +34,7 @@ type PostgresSQLConfig struct {
 	LogCheckpoints       iacTypes.BoolValue
 	ConnectionThrottling iacTypes.BoolValue
 	LogConnections       iacTypes.BoolValue
+	LogDisconnections    iacTypes.BoolValue
 }
 
 type Server struct {
@@ -45,8 +48,10 @@ type Server struct {
 type MSSQLServer struct {
 	Metadata iacTypes.Metadata
 	Server
-	ExtendedAuditingPolicies []ExtendedAuditingPolicy
-	SecurityAlertPolicies    []SecurityAlertPolicy
+	ExtendedAuditingPolicies      []ExtendedAuditingPolicy
+	SecurityAlertPolicies         []SecurityAlertPolicy
+	AdministratorLogin            iacTypes.StringValue
+	ActiveDirectoryAdministrators []ActiveDirectoryAdministrator
 }
 
 type SecurityAlertPolicy struct {
@@ -65,4 +70,14 @@ type FirewallRule struct {
 	Metadata iacTypes.Metadata
 	StartIP  iacTypes.StringValue
 	EndIP    iacTypes.StringValue
+}
+
+type ThreatDetectionPolicy struct {
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
+}
+
+type ActiveDirectoryAdministrator struct {
+	Metadata iacTypes.Metadata
+	Login    iacTypes.StringValue
 }

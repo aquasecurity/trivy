@@ -16,6 +16,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vex"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 const (
@@ -61,9 +62,7 @@ func Filter(ctx context.Context, report types.Report, opts FilterOptions) error 
 // FilterResult filters out the result
 func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreConfig, opt FilterOptions) error {
 	// Convert dbTypes.Severity to string
-	severities := lo.Map(opt.Severities, func(s dbTypes.Severity, _ int) string {
-		return s.String()
-	})
+	severities := xslices.Map(opt.Severities, dbTypes.Severity.String)
 
 	filterVulnerabilities(result, severities, opt.IgnoreStatuses, ignoreConf)
 	filterMisconfigurations(result, severities, opt.IncludeNonFailures, ignoreConf)

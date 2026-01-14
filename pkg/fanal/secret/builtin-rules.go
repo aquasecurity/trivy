@@ -3,10 +3,9 @@ package secret
 import (
 	"fmt"
 
-	"github.com/samber/lo"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	iacRules "github.com/aquasecurity/trivy/pkg/iac/rules"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 var (
@@ -78,7 +77,8 @@ const (
 	quote     = `["']?`
 	connect   = `\s*(:|=>|=)?\s*`
 	endSecret = `[.,]?(\s+|$)`
-	startWord = "([^0-9a-zA-Z]|^)"
+	startWord = "([^0-9a-zA-Z_]|^)"
+	endWord   = "([^0-9a-zA-Z_]|$)"
 
 	aws = `aws_?`
 )
@@ -90,7 +90,7 @@ func GetBuiltinRules() []Rule {
 
 // This function is exported for trivy-plugin-aqua purposes only
 func GetSecretRulesMetadata() []iacRules.Check {
-	return lo.Map(builtinRules, func(rule Rule, _ int) iacRules.Check {
+	return xslices.Map(builtinRules, func(rule Rule) iacRules.Check {
 		return iacRules.Check{
 			Name:        rule.ID,
 			Description: rule.Title,
@@ -176,7 +176,7 @@ var builtinRules = []Rule{
 		Category:        CategoryHuggingFace,
 		Severity:        "CRITICAL",
 		Title:           "Hugging Face Access Token",
-		Regex:           MustCompileWithoutWordPrefix(`?P<secret>hf_[A-Za-z0-9]{34,40}`),
+		Regex:           MustCompileWithBoundaries(`?P<secret>hf_[A-Za-z0-9]{34,40}`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"hf_"},
 	},

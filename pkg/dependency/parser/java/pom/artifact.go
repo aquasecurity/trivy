@@ -5,19 +5,18 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/samber/lo"
-
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 var (
 	emptyVersionWarn = sync.OnceFunc(func() {
 		log.WithPrefix("pom").Warn("Dependency version cannot be determined. Child dependencies will not be found.",
 			// e.g. https://trivy.dev/docs/latest/coverage/language/java/#empty-dependency-version
-			log.String("details", doc.URL("/docs/coverage/language/java/", "empty-dependency-version")))
+			log.String("details", doc.URL("guide/coverage/language/java/", "empty-dependency-version")))
 	})
 )
 
@@ -70,7 +69,7 @@ func (a artifact) Equal(o artifact) bool {
 
 func (a artifact) ToPOMLicenses() pomLicenses {
 	return pomLicenses{
-		License: lo.Map(a.Licenses, func(lic string, _ int) pomLicense {
+		License: xslices.Map(a.Licenses, func(lic string) pomLicense {
 			return pomLicense{Name: lic}
 		}),
 	}

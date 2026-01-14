@@ -78,6 +78,7 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `trivy.existingSecret`                | existingSecret if an existing secret has been created outside the chart. Overrides gitHubToken, registryUsername, registryPassword, serverToken | `` |
 | `trivy.podAnnotations`                | Annotations for pods created by statefulset                             | `{}` |
 | `trivy.extraEnvVars`                  | extraEnvVars to be set on the container                                 | `{}` |
+| `trivy.sslCertDir`                    | Can be used to override the system default locations for SSL certificate files directory, example: `/ssl/certs` | `` |
 | `service.name`                        | If specified, the name used for the Trivy service                       |     |
 | `service.type`                        | Kubernetes service type                                                 | `ClusterIP` |
 | `service.port`                        | Kubernetes service port                                                 | `4954`      |
