@@ -27,6 +27,7 @@ const (
 	PrefixJavaDB           = "javadb"
 	PrefixSPDX             = "spdx"
 	PrefixCycloneDX        = "cyclonedx"
+	PrefixPro              = "pro"
 )
 
 // Logger is an alias of slog.Logger

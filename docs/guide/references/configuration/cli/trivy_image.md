@@ -124,6 +124,13 @@ trivy image [flags] IMAGE_NAME
       --pkg-types strings                 list of package types (allowed values: os,library) (default [os,library])
       --platform string                   set platform in the form os/arch if image is multi-platform capable
       --podman-host string                unix podman socket path to use for podman scanning
+      --pro-api-url string                API URL for Trivy Pro platform, requires the token to be provided to have an effect (default "https://api.trivy.dev")
+      --pro-app-url string                App URL for Trivy Pro platform, requires the token to be provided to have an effect (default "https://app.trivy.dev")
+      --pro-server-scanning               Use server-side image scanning in Trivy Pro platform, requires the token to be provided to have an effect (default true)
+      --pro-token string                  Token used to authenticate with Trivy Pro platform
+      --pro-trivy-server-url string       Trivy Server URL for Trivy Pro platform, requires the token to be provided to have an effect (default "https://scan.trivy.dev")
+      --pro-upload-results                Upload results to Trivy Pro platform, requires the token to be provided to have an effect
+      --pro-use-secret-config             Use secret configurations from Trivy Pro platform, requires the token to be provided to have an effect (default true)
       --raw-config-scanners strings       specify the types of scanners that will also scan raw configurations. For example, scanners will scan a non-adapted configuration into a shared state (allowed values: terraform)
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
