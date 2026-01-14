@@ -145,7 +145,7 @@ func (p *Parser) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]ftypes.Packag
 // nolint: gocyclo
 func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.Set[string]) ([]ftypes.Package, []ftypes.Dependency, error) {
 	if root.RootFilePath == "" {
-		return nil, nil, xerrors.New("root file path should be filled")
+		return nil, nil, xerrors.New(""root file path is required for package ID generation"")
 	}
 
 	// Prepare a queue for dependencies
