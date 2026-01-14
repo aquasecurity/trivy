@@ -702,7 +702,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Pom,
 						Packages: []ftypes.Package{
 							{
-								ID:      "abcdef1234567001",
+								ID:      "com.example:example:1.0.0::abcdef1234567001",
 								Name:    "com.example:example",
 								Version: "1.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -797,7 +797,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 						PackageSourceInfo:     "package found in: pom.xml",
 						Annotations: []spdx.Annotation{
-							annotation(t, "PkgID: abcdef1234567001"),
+							annotation(t, "PkgID: com.example:example:1.0.0::abcdef1234567001"),
 							annotation(t, "PkgType: pom"),
 						},
 					},
@@ -853,7 +853,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Pom,
 						Packages: []ftypes.Package{
 							{
-								ID:      "abcdef1234567001",
+								ID:      "com.example:example:1.0.0::abcdef1234567001",
 								Name:    "com.example:example",
 								Version: "1.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -925,7 +925,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 						PackageSourceInfo:     "package found in: pom.xml",
 						Annotations: []spdx.Annotation{
-							annotation(t, "PkgID: abcdef1234567001"),
+							annotation(t, "PkgID: com.example:example:1.0.0::abcdef1234567001"),
 							annotation(t, "PkgType: pom"),
 						},
 					},
