@@ -1,6 +1,7 @@
 package pom_test
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -15,7 +16,7 @@ import (
 )
 
 var (
-	exampleNestedScopeCompile = func(id string, start, end int) ftypes.Package {
+	exampleNestedScopeCompile = func(hash string, start, end int) ftypes.Package {
 		var location ftypes.Locations
 		if start != 0 && end != 0 {
 			location = append(location, ftypes.Location{
@@ -24,7 +25,7 @@ var (
 			})
 		}
 		return ftypes.Package{
-			ID:           id,
+			ID:           fmt.Sprintf("org.example:example-nested-scope-compile:1.0.0::%s", hash),
 			Name:         "org.example:example-nested-scope-compile",
 			Version:      "1.0.0",
 			Relationship: ftypes.RelationshipDirect,
@@ -32,7 +33,7 @@ var (
 		}
 	}
 
-	exampleNestedScopeEmpty = func(id string, start, end int) ftypes.Package {
+	exampleNestedScopeEmpty = func(hash string, start, end int) ftypes.Package {
 		var location ftypes.Locations
 		if start != 0 && end != 0 {
 			location = append(location, ftypes.Location{
@@ -41,7 +42,7 @@ var (
 			})
 		}
 		return ftypes.Package{
-			ID:           id,
+			ID:           fmt.Sprintf("org.example:example-nested-scope-empty:1.0.0::%s", hash),
 			Name:         "org.example:example-nested-scope-empty",
 			Version:      "1.0.0",
 			Relationship: ftypes.RelationshipDirect,
@@ -49,7 +50,7 @@ var (
 		}
 	}
 
-	exampleNestedScopeRuntime = func(id string, start, end int) ftypes.Package {
+	exampleNestedScopeRuntime = func(hash string, start, end int) ftypes.Package {
 		var location ftypes.Locations
 		if start != 0 && end != 0 {
 			location = append(location, ftypes.Location{
@@ -58,7 +59,7 @@ var (
 			})
 		}
 		return ftypes.Package{
-			ID:           id,
+			ID:           fmt.Sprintf("org.example:example-nested-scope-runtime:1.0.0::%s", hash),
 			Name:         "org.example:example-nested-scope-runtime",
 			Version:      "1.0.0",
 			Relationship: ftypes.RelationshipDirect,
@@ -66,53 +67,53 @@ var (
 		}
 	}
 
-	exampleScopeCompile = func(id string) ftypes.Package {
+	exampleScopeCompile = func(hash string) ftypes.Package {
 		return ftypes.Package{
-			ID:           id,
+			ID:           fmt.Sprintf("org.example:example-scope-compile:2.0.0::%s", hash),
 			Name:         "org.example:example-scope-compile",
 			Version:      "2.0.0",
 			Relationship: ftypes.RelationshipIndirect,
 		}
 	}
 
-	exampleScopeEmpty = func(id string) ftypes.Package {
+	exampleScopeEmpty = func(hash string) ftypes.Package {
 		return ftypes.Package{
-			ID:           id,
+			ID:           fmt.Sprintf("org.example:example-scope-empty:2.0.0::%s", hash),
 			Name:         "org.example:example-scope-empty",
 			Version:      "2.0.0",
 			Relationship: ftypes.RelationshipIndirect,
 		}
 	}
 
-	exampleScopeRuntime = func(id string) ftypes.Package {
+	exampleScopeRuntime = func(hash string) ftypes.Package {
 		return ftypes.Package{
-			ID:           id,
+			ID:           fmt.Sprintf("org.example:example-scope-runtime:2.0.0::%s", hash),
 			Name:         "org.example:example-scope-runtime",
 			Version:      "2.0.0",
 			Relationship: ftypes.RelationshipIndirect,
 		}
 	}
-	exampleApiCompile = func(id string) ftypes.Package {
+	exampleApiCompile = func(hash string) ftypes.Package {
 		return ftypes.Package{
-			ID:           id,
+			ID:           fmt.Sprintf("org.example:example-api-compile:3.0.0::%s", hash),
 			Name:         "org.example:example-api-compile",
 			Version:      "3.0.0",
 			Relationship: ftypes.RelationshipIndirect,
 		}
 	}
 
-	exampleApiEmpty = func(id string) ftypes.Package {
+	exampleApiEmpty = func(hash string) ftypes.Package {
 		return ftypes.Package{
-			ID:           id,
+			ID:           fmt.Sprintf("org.example:example-api-empty:3.0.0::%s", hash),
 			Name:         "org.example:example-api-empty",
 			Version:      "3.0.0",
 			Relationship: ftypes.RelationshipIndirect,
 		}
 	}
 
-	exampleApiRuntime = func(id string) ftypes.Package {
+	exampleApiRuntime = func(hash string) ftypes.Package {
 		return ftypes.Package{
-			ID:           id,
+			ID:           fmt.Sprintf("org.example:example-api-runtime:3.0.0::%s", hash),
 			Name:         "org.example:example-api-runtime",
 			Version:      "3.0.0",
 			Relationship: ftypes.RelationshipIndirect,
@@ -2139,15 +2140,15 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "0.0.1",
 					Relationship: ftypes.RelationshipRoot,
 				},
-				exampleNestedScopeCompile("org.example:example-nested-scope-compile:1.0.0::c5c1ec8f", 16, 21),
-				exampleNestedScopeEmpty("org.example:example-nested-scope-empty:1.0.0::2e0c37ea", 22, 26),
-				exampleNestedScopeRuntime("org.example:example-nested-scope-runtime:1.0.0::98ee0b26", 10, 15),
-				exampleApiCompile("org.example:example-api-compile:3.0.0::d4015fba"),
-				exampleApiEmpty("org.example:example-api-empty:3.0.0::9575d06c"),
-				exampleApiRuntime("org.example:example-api-runtime:3.0.0::91cf1740"),
-				exampleScopeCompile("org.example:example-scope-compile:2.0.0::e168f2d0"),
-				exampleScopeEmpty("org.example:example-scope-empty:2.0.0::af2c22db"),
-				exampleScopeRuntime("org.example:example-scope-runtime:2.0.0::acf8ee16"),
+				exampleNestedScopeCompile("c5c1ec8f", 16, 21),
+				exampleNestedScopeEmpty("2e0c37ea", 22, 26),
+				exampleNestedScopeRuntime("98ee0b26", 10, 15),
+				exampleApiCompile("d4015fba"),
+				exampleApiEmpty("9575d06c"),
+				exampleApiRuntime("91cf1740"),
+				exampleScopeCompile("e168f2d0"),
+				exampleScopeEmpty("af2c22db"),
+				exampleScopeRuntime("acf8ee16"),
 			},
 			wantDeps: []ftypes.Dependency{
 				{
@@ -2220,13 +2221,13 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "0.0.1",
 					Relationship: ftypes.RelationshipRoot,
 				},
-				exampleNestedScopeCompile("org.example:example-nested-scope-compile:1.0.0::e66ec05e", 51, 56),
-				exampleNestedScopeEmpty("org.example:example-nested-scope-empty:1.0.0::4c11808b", 57, 61),
-				exampleNestedScopeRuntime("org.example:example-nested-scope-runtime:1.0.0::61fda3e9", 45, 50),
-				exampleApiRuntime("org.example:example-api-runtime:3.0.0::95f677d8"),
-				exampleScopeCompile("org.example:example-scope-compile:2.0.0::1d3ae149"),
-				exampleScopeEmpty("org.example:example-scope-empty:2.0.0::7e01cb21"),
-				exampleScopeRuntime("org.example:example-scope-runtime:2.0.0::aaaa5004"),
+				exampleNestedScopeCompile("e66ec05e", 51, 56),
+				exampleNestedScopeEmpty("4c11808b", 57, 61),
+				exampleNestedScopeRuntime("61fda3e9", 45, 50),
+				exampleApiRuntime("95f677d8"),
+				exampleScopeCompile("1d3ae149"),
+				exampleScopeEmpty("7e01cb21"),
+				exampleScopeRuntime("aaaa5004"),
 			},
 			wantDeps: []ftypes.Dependency{
 				{
@@ -2287,11 +2288,11 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "0.1.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
-				exampleNestedScopeCompile("org.example:example-nested-scope-compile:1.0.0::4ce69e4d", 0, 0),
-				exampleNestedScopeRuntime("org.example:example-nested-scope-runtime:1.0.0::9660d657", 0, 0),
-				exampleApiRuntime("org.example:example-api-runtime:3.0.0::efcdf95e"),
-				exampleScopeCompile("org.example:example-scope-compile:2.0.0::c30b48fb"),
-				exampleScopeRuntime("org.example:example-scope-runtime:2.0.0::ea3219cb"),
+				exampleNestedScopeCompile("4ce69e4d", 0, 0),
+				exampleNestedScopeRuntime("9660d657", 0, 0),
+				exampleApiRuntime("efcdf95e"),
+				exampleScopeCompile("c30b48fb"),
+				exampleScopeRuntime("ea3219cb"),
 			},
 			wantDeps: []ftypes.Dependency{
 				{
