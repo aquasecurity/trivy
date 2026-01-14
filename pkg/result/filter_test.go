@@ -1127,7 +1127,7 @@ func TestFilter(t *testing.T) {
 							Vulnerabilities: []types.DetectedVulnerability{
 								{
 									VulnerabilityID:  "CVE-2019-0001",
-									PkgID:            "abcdef1234567001",
+									PkgID:            "foo:1.2.3::abcdef1234567001",
 									PkgName:          "foo",
 									InstalledVersion: "1.2.3",
 									FixedVersion:     "1.2.4",
@@ -1137,7 +1137,7 @@ func TestFilter(t *testing.T) {
 								},
 								{
 									VulnerabilityID:  "CVE-2019-0001",
-									PkgID:            "abcdef1234567002",
+									PkgID:            "foo:1.2.3::abcdef1234567002",
 									PkgName:          "foo",
 									InstalledVersion: "1.2.3",
 									FixedVersion:     "1.2.4",
@@ -1191,7 +1191,7 @@ func TestFilter(t *testing.T) {
 							},
 							{
 								VulnerabilityID:  "CVE-2019-0001",
-								PkgID:            "abcdef1234567001",
+								PkgID:            "foo:1.2.3::abcdef1234567001",
 								PkgName:          "foo",
 								InstalledVersion: "1.2.3",
 								FixedVersion:     "1.2.4",
@@ -1201,7 +1201,7 @@ func TestFilter(t *testing.T) {
 							},
 							{
 								VulnerabilityID:  "CVE-2019-0001",
-								PkgID:            "abcdef1234567002",
+								PkgID:            "foo:1.2.3::abcdef1234567002",
 								PkgName:          "foo",
 								InstalledVersion: "1.2.3",
 								FixedVersion:     "1.2.4",
