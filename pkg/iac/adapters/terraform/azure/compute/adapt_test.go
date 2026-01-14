@@ -29,9 +29,7 @@ resource "azurerm_managed_disk" "example" {
 	}
 }`,
 			expected: compute.ManagedDisk{
-				Encryption: compute.Encryption{
-					Enabled: iacTypes.BoolTest(false),
-				},
+				Encryption: compute.Encryption{},
 			},
 		},
 		{
@@ -82,7 +80,6 @@ resource "azurerm_virtual_machine" "example" {
 }
 `,
 			expected: compute.LinuxVirtualMachine{
-				Metadata:       iacTypes.NewTestMetadata(),
 				VirtualMachine: compute.VirtualMachine{},
 				OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
 					DisablePasswordAuthentication: iacTypes.BoolTest(true),

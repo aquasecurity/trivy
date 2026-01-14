@@ -43,17 +43,16 @@ func TestAdapt(t *testing.T) {
 	want := s3.S3{
 		Buckets: []s3.Bucket{
 			{
-				Name: iacTypes.String("mys3bucket", iacTypes.NewTestMetadata()),
+				Name: iacTypes.StringTest("mys3bucket"),
 				Encryption: s3.Encryption{
-					Enabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					Algorithm: iacTypes.String("aws:kms", iacTypes.NewTestMetadata()),
-					KMSKeyId:  iacTypes.String("arn:aws:kms:us-east-1:1234/5678example", iacTypes.NewTestMetadata()),
+					Algorithm: iacTypes.StringTest("aws:kms"),
+					KMSKeyId:  iacTypes.StringTest("arn:aws:kms:us-east-1:1234/5678example"),
 				},
 				PublicAccessBlock: &s3.PublicAccessBlock{
-					BlockPublicACLs:       iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					BlockPublicPolicy:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					IgnorePublicACLs:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					RestrictPublicBuckets: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					BlockPublicACLs:       iacTypes.BoolTest(true),
+					BlockPublicPolicy:     iacTypes.BoolTest(true),
+					IgnorePublicACLs:      iacTypes.BoolTest(true),
+					RestrictPublicBuckets: iacTypes.BoolTest(true),
 				},
 				Website: &s3.Website{},
 			},

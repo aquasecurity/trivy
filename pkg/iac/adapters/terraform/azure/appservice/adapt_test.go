@@ -166,9 +166,7 @@ func Test_adaptFunctionApp(t *testing.T) {
 			resource "azurerm_function_app" "my_example" {		
 			}
 `,
-			expected: appservice.FunctionApp{
-				HTTPSOnly: iacTypes.BoolTest(false),
-			},
+			expected: appservice.FunctionApp{},
 		},
 		{
 			name: "os-specific resource",

@@ -75,21 +75,15 @@ func Test_adaptRepository(t *testing.T) {
 			  }
 `,
 			expected: ecr.Repository{
-				Metadata:           iacTypes.NewTestMetadata(),
-				ImageTagsImmutable: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				ImageScanning: ecr.ImageScanning{
-					Metadata:   iacTypes.NewTestMetadata(),
-					ScanOnPush: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					ScanOnPush: iacTypes.BoolTest(true),
 				},
 				Encryption: ecr.Encryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Type:     iacTypes.String("KMS", iacTypes.NewTestMetadata()),
-					KMSKeyID: iacTypes.String("aws_kms_key.ecr_kms", iacTypes.NewTestMetadata()),
+					Type:     iacTypes.StringTest("KMS"),
+					KMSKeyID: iacTypes.StringTest("aws_kms_key.ecr_kms"),
 				},
 				Policies: []iam.Policy{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
-						Name:     iacTypes.StringDefault("", iacTypes.NewTestMetadata()),
 						Document: func() iam.Document {
 
 							builder := iamgo.NewPolicyBuilder()
@@ -118,11 +112,9 @@ func Test_adaptRepository(t *testing.T) {
 							builder.WithStatement(sb.Build())
 
 							return iam.Document{
-								Parsed:   builder.Build(),
-								Metadata: iacTypes.NewTestMetadata(),
+								Parsed: builder.Build(),
 							}
 						}(),
-						Builtin: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},
 			},
@@ -134,16 +126,9 @@ func Test_adaptRepository(t *testing.T) {
 			}
 `,
 			expected: ecr.Repository{
-				Metadata:           iacTypes.NewTestMetadata(),
-				ImageTagsImmutable: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				ImageScanning: ecr.ImageScanning{
-					Metadata:   iacTypes.NewTestMetadata(),
-					ScanOnPush: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				},
+				ImageScanning: ecr.ImageScanning{},
 				Encryption: ecr.Encryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Type:     iacTypes.String("AES256", iacTypes.NewTestMetadata()),
-					KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
+					Type: iacTypes.StringTest("AES256"),
 				},
 			},
 		},

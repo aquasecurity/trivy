@@ -27,19 +27,14 @@ func Test_adaptWorkspace(t *testing.T) {
 		}
 `,
 			expected: workspaces.WorkSpace{
-				Metadata: iacTypes.NewTestMetadata(),
 				RootVolume: workspaces.Volume{
-					Metadata: iacTypes.NewTestMetadata(),
 					Encryption: workspaces.Encryption{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						Enabled: iacTypes.BoolTest(true),
 					},
 				},
 				UserVolume: workspaces.Volume{
-					Metadata: iacTypes.NewTestMetadata(),
 					Encryption: workspaces.Encryption{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						Enabled: iacTypes.BoolTest(true),
 					},
 				},
 			},
@@ -51,20 +46,11 @@ func Test_adaptWorkspace(t *testing.T) {
 		}
 `,
 			expected: workspaces.WorkSpace{
-				Metadata: iacTypes.NewTestMetadata(),
 				RootVolume: workspaces.Volume{
-					Metadata: iacTypes.NewTestMetadata(),
-					Encryption: workspaces.Encryption{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
+					Encryption: workspaces.Encryption{},
 				},
 				UserVolume: workspaces.Volume{
-					Metadata: iacTypes.NewTestMetadata(),
-					Encryption: workspaces.Encryption{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
+					Encryption: workspaces.Encryption{},
 				},
 			},
 		},
