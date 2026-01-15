@@ -29,9 +29,8 @@ export DATABASE_PASSWORD=\"SomeSortOfPassword\"
 			}
 `,
 			expected: compute.Instance{
-				Metadata: iacTypes.NewTestMetadata(),
-				UserData: iacTypes.String(`export DATABASE_PASSWORD=\"SomeSortOfPassword\"
-`, iacTypes.NewTestMetadata()),
+				UserData: iacTypes.StringTest(`export DATABASE_PASSWORD=\"SomeSortOfPassword\"
+`),
 			},
 		},
 		{
@@ -43,8 +42,7 @@ export DATABASE_PASSWORD=\"SomeSortOfPassword\"
 			}
 `,
 			expected: compute.Instance{
-				Metadata: iacTypes.NewTestMetadata(),
-				UserData: iacTypes.String(`export DATABASE_PASSWORD="SomeSortOfPassword"`, iacTypes.NewTestMetadata()),
+				UserData: iacTypes.StringTest(`export DATABASE_PASSWORD="SomeSortOfPassword"`),
 			},
 		},
 		{
@@ -53,10 +51,7 @@ export DATABASE_PASSWORD=\"SomeSortOfPassword\"
 			resource "cloudstack_instance" "web" {
 			}
 `,
-			expected: compute.Instance{
-				Metadata: iacTypes.NewTestMetadata(),
-				UserData: iacTypes.String("", iacTypes.NewTestMetadata()),
-			},
+			expected: compute.Instance{},
 		},
 	}
 

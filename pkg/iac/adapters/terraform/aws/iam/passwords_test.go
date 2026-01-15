@@ -30,14 +30,13 @@ func Test_adaptPasswordPolicy(t *testing.T) {
 			  }
 `,
 			expected: iam.PasswordPolicy{
-				Metadata:             iacTypes.NewTestMetadata(),
-				ReusePreventionCount: iacTypes.Int(3, iacTypes.NewTestMetadata()),
-				RequireLowercase:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				RequireUppercase:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				RequireNumbers:       iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				RequireSymbols:       iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				MaxAgeDays:           iacTypes.Int(90, iacTypes.NewTestMetadata()),
-				MinimumLength:        iacTypes.Int(8, iacTypes.NewTestMetadata()),
+				ReusePreventionCount: iacTypes.IntTest(3),
+				RequireLowercase:     iacTypes.BoolTest(true),
+				RequireUppercase:     iacTypes.BoolTest(true),
+				RequireNumbers:       iacTypes.BoolTest(true),
+				RequireSymbols:       iacTypes.BoolTest(true),
+				MaxAgeDays:           iacTypes.IntTest(90),
+				MinimumLength:        iacTypes.IntTest(8),
 			},
 		},
 	}
