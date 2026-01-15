@@ -52,7 +52,7 @@ func NewHandler(out io.Writer, opts *Options) *ColorHandler {
 	if h.opts.Level == nil {
 		h.opts.Level = slog.LevelInfo
 	}
-	color.NoColor = h.opts.ColorMode == config.NeverColor
+	color.NoColor = h.opts.ColorMode == config.NeverColor || opts == nil
 	return h
 }
 
