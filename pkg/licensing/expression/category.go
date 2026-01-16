@@ -38,6 +38,7 @@ const (
 	Artistic20                  = "Artistic-2.0"
 	BCL                         = "BCL"
 	Beerware                    = "Beerware"
+	BSD1Clause                  = "BSD-1-Clause"
 	BSD2ClauseFreeBSD           = "BSD-2-Clause-FreeBSD"
 	BSD2ClauseNetBSD            = "BSD-2-Clause-NetBSD"
 	BSD2Clause                  = "BSD-2-Clause"
@@ -306,6 +307,7 @@ var (
 		Artistic10,
 		Artistic20,
 		BSL10,
+		BSD1Clause,
 		BSD2ClauseFreeBSD,
 		BSD2ClauseNetBSD,
 		BSD2Clause,
