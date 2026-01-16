@@ -384,6 +384,16 @@ func TestNormalize(t *testing.T) {
 			want:        "GPL-2.0-with-classpath-exception",
 			wantLicense: expression.SimpleExpr{License: "GPL-2.0-with-classpath-exception"},
 		},
+		// Test canonical SPDX license casing
+		{
+			licenses: []expression.Expression{
+				expression.SimpleExpr{License: "Tcl"},
+				expression.SimpleExpr{License: "tcl"},
+				expression.SimpleExpr{License: "TCL"},
+			},
+			want:        "TCL",
+			wantLicense: expression.SimpleExpr{License: "TCL"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.want, func(t *testing.T) {
