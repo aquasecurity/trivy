@@ -853,6 +853,6 @@ var builtinRules = []Rule{
 		Title:    "Symfony Default Secret",
 		Severity: "HIGH",
 		Regex:    MustCompile(`ThisTokenIsNotSoSecretChangeIt|ThisEzPlatformTokenIsNotSoSecret_PleaseChangeIt`),
-		Keywords: []string{"ThisTokenIsNotSoSecretChangeIt", "ThisEzPlatformTokenIsNotSoSecret_PleaseChangeIt"},
+		Keywords: []string{"TokenIsNotSoSecret"},
 	},
 }
