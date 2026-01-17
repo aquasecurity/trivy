@@ -131,24 +131,17 @@ func (a packagingAnalyzer) mergeSBOMs(ctx context.Context, fsys fs.FS, distInfoD
 		if entry.IsDir() {
 			continue
 		}
-		if !isSBOMFile(entry.Name()) {
+		if !sbom.IsSBOMFile(entry.Name()) {
 			continue
 		}
 
 		sbomPath := path.Join(sbomDir, entry.Name())
 		if err := a.parseAndMergeSBOM(ctx, fsys, sbomPath, app); err != nil {
-			a.logger.Debug("Packaging Analyzer- SBOM merge error", log.FilePath(sbomPath), log.Err(err))
+			a.logger.Debug("Failed to merge python SBOM files", log.FilePath(sbomPath), log.Err(err))
 			continue
 		}
 	}
 	return nil
-}
-
-func isSBOMFile(fileName string) bool {
-	suffixes := []string{".spdx", ".spdx.json", ".cdx", ".cdx.json"}
-	return lo.SomeBy(suffixes, func(s string) bool {
-		return strings.HasSuffix(fileName, s)
-	})
 }
 
 func (a packagingAnalyzer) parseAndMergeSBOM(ctx context.Context, fsys fs.FS, sbomPath string, app *types.Application) error {

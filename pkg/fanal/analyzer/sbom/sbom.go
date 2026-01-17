@@ -21,13 +21,6 @@ func init() {
 
 const version = 1
 
-var requiredSuffixes = []string{
-	".spdx",
-	".spdx.json",
-	".cdx",
-	".cdx.json",
-}
-
 type sbomAnalyzer struct{}
 
 func (a sbomAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
@@ -83,12 +76,7 @@ func (a sbomAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 		return false
 	}
 
-	for _, suffix := range requiredSuffixes {
-		if strings.HasSuffix(filePath, suffix) {
-			return true
-		}
-	}
-	return false
+	return sbom.IsSBOMFile(filePath)
 }
 
 func (a sbomAnalyzer) Type() analyzer.Type {
