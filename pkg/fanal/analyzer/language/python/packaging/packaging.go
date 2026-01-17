@@ -10,6 +10,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/python"
+	"github.com/aquasecurity/trivy/pkg/sbom"
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -82,6 +85,10 @@ func (a packagingAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostA
 			return nil
 		}
 
+		if err = a.mergeSBOMs(ctx, input.FS, path.Dir(filePath), app); err != nil {
+			a.logger.Debug("Packaging Analyzer- SBOM files merge error", log.FilePath(filePath), log.Err(err))
+		}
+
 		opener := func(licPath string) (io.ReadCloser, error) {
 			// Note that fs.FS is always slashed regardless of the platform,
 			// and path.Join should be used rather than filepath.Join.
@@ -108,6 +115,119 @@ func (a packagingAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostA
 	return &analyzer.AnalysisResult{
 		Applications: apps,
 	}, nil
+}
+
+func (a packagingAnalyzer) mergeSBOMs(ctx context.Context, fsys fs.FS, distInfoDir string, app *types.Application) error {
+	sbomDir := path.Join(distInfoDir, "sboms")
+	entries, err := fs.ReadDir(fsys, sbomDir)
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			return nil
+		}
+		return xerrors.Errorf("unable to read sboms directory: %w", err)
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+		if !isSBOMFile(entry.Name()) {
+			continue
+		}
+
+		sbomPath := path.Join(sbomDir, entry.Name())
+		if err := a.parseAndMergeSBOM(ctx, fsys, sbomPath, app); err != nil {
+			a.logger.Debug("Packaging Analyzer- SBOM merge error", log.FilePath(sbomPath), log.Err(err))
+			continue
+		}
+	}
+	return nil
+}
+
+func isSBOMFile(fileName string) bool {
+	suffixes := []string{".spdx", ".spdx.json", ".cdx", ".cdx.json"}
+	return lo.SomeBy(suffixes, func(s string) bool {
+		return strings.HasSuffix(fileName, s)
+	})
+}
+
+func (a packagingAnalyzer) parseAndMergeSBOM(ctx context.Context, fsys fs.FS, sbomPath string, app *types.Application) error {
+	f, err := fsys.Open(sbomPath)
+	if err != nil {
+		return xerrors.Errorf("file open error: %w", err)
+	}
+	defer f.Close()
+
+	rsa, err := xio.NewReadSeekerAt(f)
+	if err != nil {
+		return xerrors.Errorf("reader error: %w", err)
+	}
+
+	format, err := sbom.DetectFormat(rsa)
+	if err != nil {
+		return xerrors.Errorf("failed to detect SBOM format: %w", err)
+	}
+
+	if _, err = rsa.Seek(0, io.SeekStart); err != nil {
+		return xerrors.Errorf("unable to seek: %w", err)
+	}
+
+	bom, err := sbom.Decode(ctx, rsa, format)
+	if err != nil {
+		return xerrors.Errorf("SBOM decode error: %w", err)
+	}
+
+	// Merge packages from both Packages and Applications in the SBOM
+	for _, pkgInfo := range bom.Packages {
+		for _, pkg := range pkgInfo.Packages {
+			a.mergePackage(pkg, app)
+		}
+	}
+	for _, bomApp := range bom.Applications {
+		for _, pkg := range bomApp.Packages {
+			a.mergePackage(pkg, app)
+		}
+	}
+
+	return nil
+}
+
+func (a packagingAnalyzer) mergePackage(sbomPkg types.Package, app *types.Application) {
+	// Remove file_name qualifier from PURL
+	if sbomPkg.Identifier.PURL != nil {
+		var quals []packageurl.Qualifier
+		for _, q := range sbomPkg.Identifier.PURL.Qualifiers {
+			if q.Key != "file_name" {
+				quals = append(quals, q)
+			}
+		}
+		sbomPkg.Identifier.PURL.Qualifiers = quals
+	}
+
+	if len(app.Packages) == 0 {
+		return
+	}
+	pyPkg := &app.Packages[0] // Main package from METADATA
+
+	//  Identify if this is the main Python package
+	if python.NormalizePkgName(sbomPkg.Name, true) == python.NormalizePkgName(pyPkg.Name, true) &&
+		sbomPkg.Version == pyPkg.Version {
+		// Merge dependencies from this SBOM file into the main package
+		pyPkg.DependsOn = lo.Uniq(append(pyPkg.DependsOn, sbomPkg.DependsOn...))
+		// Update to the canonical PURL
+		pyPkg.Identifier.PURL = sbomPkg.Identifier.PURL
+		return
+	}
+
+	// Otherwise, it's a bundled library or a separate dependency
+	// Check if we've already added this package from a previous SBOM file in the same folder
+	exists := lo.SomeBy(app.Packages, func(p types.Package) bool {
+		return p.Name == sbomPkg.Name && p.Version == sbomPkg.Version
+	})
+
+	if !exists {
+		app.Packages = append(app.Packages, sbomPkg)
+	}
 }
 
 type fileOpener func(filePath string) (io.ReadCloser, error)
