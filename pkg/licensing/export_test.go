@@ -11,7 +11,6 @@ var StandardizeKeyAndSuffix = standardizeKeyAndSuffix
 var NormalizeLicense = normalizeLicense
 
 // Mapping exports mapping for testing.
-
 func Mapping() map[string]expression.SimpleExpr {
 	return mapping
 }

@@ -37,7 +37,7 @@ const (
 	Artistic10                  = "Artistic-1.0"
 	Artistic20                  = "Artistic-2.0"
 	BCL                         = "BCL"
-	Beerware                    = "Beerware"
+	BSD1Clause                  = "BSD-1-Clause"
 	BSD2ClauseFreeBSD           = "BSD-2-Clause-FreeBSD"
 	BSD2ClauseNetBSD            = "BSD-2-Clause-NetBSD"
 	BSD2Clause                  = "BSD-2-Clause"
@@ -85,7 +85,6 @@ const (
 	CommonsClause               = "Commons-Clause"
 	CPAL10                      = "CPAL-1.0"
 	CPL10                       = "CPL-1.0"
-	EGenix                      = "eGenix"
 	EPL10                       = "EPL-1.0"
 	EPL20                       = "EPL-2.0"
 	EUPL10                      = "EUPL-1.0"
@@ -121,13 +120,11 @@ const (
 	LGPL20                      = "LGPL-2.0"
 	LGPL21                      = "LGPL-2.1"
 	LGPL30                      = "LGPL-3.0"
-	LGPLLR                      = "LGPLLR"
 	Libpng                      = "Libpng"
 	Lil10                       = "Lil-1.0"
 	LinuxOpenIB                 = "Linux-OpenIB"
 	LPL102                      = "LPL-1.02"
 	LPL10                       = "LPL-1.0"
-	LPPL13c                     = "LPPL-1.3c"
 	MIT                         = "MIT"
 	MPL10                       = "MPL-1.0"
 	MPL11                       = "MPL-1.1"
@@ -155,7 +152,6 @@ const (
 	SGIB10                      = "SGI-B-1.0"
 	SGIB11                      = "SGI-B-1.1"
 	SGIB20                      = "SGI-B-2.0"
-	SISSL12                     = "SISSL-1.2"
 	SISSL                       = "SISSL"
 	Sleepycat                   = "Sleepycat"
 	UnicodeTOU                  = "Unicode-TOU"
@@ -306,6 +302,7 @@ var (
 		Artistic10,
 		Artistic20,
 		BSL10,
+		BSD1Clause,
 		BSD2ClauseFreeBSD,
 		BSD2ClauseNetBSD,
 		BSD2Clause,
@@ -418,6 +415,13 @@ func ValidateSPDXLicense(license string) bool {
 	initSpdxLicenses()
 
 	return spdxLicenses.Contains(license)
+}
+
+// SPDXLicenseID returns the canonical (properly cased) SPDX license ID.
+// Returns empty string and false if the license is not in the SPDX list
+func SPDXLicenseID(license string) (string, bool) {
+	initSpdxLicenses()
+	return spdxLicenses.Find(license)
 }
 
 // ValidateSPDXException returns true if SPDX exception list contain exceptionID

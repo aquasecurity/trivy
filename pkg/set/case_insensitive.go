@@ -47,6 +47,12 @@ func (s caseInsensitiveStringSet) Contains(item string) bool {
 	return exists
 }
 
+// Find returns the stored value with its original casing
+func (s caseInsensitiveStringSet) Find(item string) (string, bool) {
+	value, exists := s[strings.ToLower(item)]
+	return value, exists
+}
+
 // Size returns the number of items in the set
 func (s caseInsensitiveStringSet) Size() int {
 	return len(s)
