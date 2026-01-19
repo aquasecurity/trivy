@@ -16,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
+	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
 // Service is the main service that coordinates security scanning operations.
@@ -85,6 +86,7 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 
 	r := types.Report{
 		SchemaVersion: report.SchemaVersion,
+		Trivy:         types.TrivyInfo{Version: app.Version()},
 		ReportID:      reportID.String(),
 		CreatedAt:     clock.Now(ctx),
 		ArtifactID:    s.generateArtifactID(artifactInfo),

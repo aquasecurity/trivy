@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:b9f31768f6c3908af7de80cff1a9e53c62f46d1bc54aaf3b97b2c922ed9cf1fd",

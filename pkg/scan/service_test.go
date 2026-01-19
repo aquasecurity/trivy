@@ -54,6 +54,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			fixtures:  []string{"local/testdata/fixtures/happy.yaml"},
 			want: tTypes.Report{
 				SchemaVersion: 2,
+				Trivy:         tTypes.TrivyInfo{Version: "dev"},
 				CreatedAt:     time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC),
 				ArtifactID:    "sha256:574abdaf07824449b1277ec1e7e67659cc869bbf97fd95447812b55644350a21", // hash(ImageID:index.docker.io/library/alpine) from RepoTag alpine:3.11
 				ArtifactName:  "../fanal/test/testdata/alpine-311.tar.gz",
