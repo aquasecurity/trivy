@@ -29,6 +29,7 @@ var (
 			Name:         "org.example:example-nested-scope-compile",
 			Version:      "1.0.0",
 			Relationship: ftypes.RelationshipDirect,
+			FilePath:     "testdata/repository/org/example/example-nested-scope-compile/1.0.0/example-nested-scope-compile-1.0.0.pom",
 			Locations:    location,
 		}
 	}
@@ -46,6 +47,7 @@ var (
 			Name:         "org.example:example-nested-scope-empty",
 			Version:      "1.0.0",
 			Relationship: ftypes.RelationshipDirect,
+			FilePath:     "testdata/repository/org/example/example-nested-scope-empty/1.0.0/example-nested-scope-empty-1.0.0.pom",
 			Locations:    location,
 		}
 	}
@@ -63,6 +65,7 @@ var (
 			Name:         "org.example:example-nested-scope-runtime",
 			Version:      "1.0.0",
 			Relationship: ftypes.RelationshipDirect,
+			FilePath:     "testdata/repository/org/example/example-nested-scope-runtime/1.0.0/example-nested-scope-runtime-1.0.0.pom",
 			Locations:    location,
 		}
 	}
@@ -73,6 +76,7 @@ var (
 			Name:         "org.example:example-scope-compile",
 			Version:      "2.0.0",
 			Relationship: ftypes.RelationshipIndirect,
+			FilePath:     "testdata/repository/org/example/example-scope-compile/2.0.0/example-scope-compile-2.0.0.pom",
 		}
 	}
 
@@ -82,6 +86,7 @@ var (
 			Name:         "org.example:example-scope-empty",
 			Version:      "2.0.0",
 			Relationship: ftypes.RelationshipIndirect,
+			FilePath:     "testdata/repository/org/example/example-scope-empty/2.0.0/example-scope-empty-2.0.0.pom",
 		}
 	}
 
@@ -91,6 +96,7 @@ var (
 			Name:         "org.example:example-scope-runtime",
 			Version:      "2.0.0",
 			Relationship: ftypes.RelationshipIndirect,
+			FilePath:     "testdata/repository/org/example/example-scope-runtime/2.0.0/example-scope-runtime-2.0.0.pom",
 		}
 	}
 	exampleApiCompile = func(hash string) ftypes.Package {
@@ -143,6 +149,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"BSD-3-Clause"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/happy/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::e71631e7",
@@ -150,6 +157,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-api/1.7.30/example-api-1.7.30.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 32,
@@ -191,6 +199,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"BSD-3-Clause"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/happy/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::e71631e7",
@@ -238,6 +247,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:happy",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/snapshot/pom.xml",
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.3-SNAPSHOT::1f825e0f",
@@ -284,6 +294,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:happy",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/snapshot/with-maven-metadata/pom.xml",
 				},
 				{
 					ID:           "org.example:example-dependency:2.17.0-SNAPSHOT::c991922a",
@@ -352,6 +363,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"BSD-3-Clause"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/happy/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::e71631e7",
@@ -400,6 +412,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/parent-properties/child/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::c5884361",
@@ -407,6 +420,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-api/1.7.30/example-api-1.7.30.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 33,
@@ -434,6 +448,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:child",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/project-version-from-parent/child/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:2.0.0::9ca5a4d0",
@@ -441,6 +456,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-api/2.0.0/example-api-2.0.0.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 18,
@@ -468,6 +484,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:test",
 					Version:      "0.0.1-SNAPSHOT",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/inherit-props/base/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:2.0.0::ce31c866",
@@ -475,6 +492,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-api/2.0.0/example-api-2.0.0.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 18,
@@ -502,12 +520,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:child",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/parent-child-properties/child/pom.xml",
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.3::60fa7625",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-dependency/1.2.3/example-dependency-1.2.3.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 22,
@@ -548,6 +568,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0-SNAPSHOT",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/parent-dependencies/child/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::2f579104",
@@ -577,6 +598,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "3.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/parent-dependency-management/child/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::d2229a7d",
@@ -584,6 +606,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-api/1.7.30/example-api-1.7.30.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 26,
@@ -612,6 +635,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "4.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/transitive-parents/base/pom.xml",
 				},
 				{
 					ID:           "org.example:example-child:2.0.0::3bffdbee",
@@ -619,6 +643,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-child/2.0.0/example-child-2.0.0.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 28,
@@ -632,6 +657,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     "testdata/repository/org/example/example-api/1.7.30/example-api-1.7.30.pom",
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -660,6 +686,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/parent-relative-path/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::d5f0ae9b",
@@ -667,6 +694,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-api/1.7.30/example-api-1.7.30.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 26,
@@ -694,6 +722,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:child",
 					Version:      "1.0.0-SNAPSHOT",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/parent-version-is-property/child/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:1.1.1::a9f8fc7e",
@@ -728,6 +757,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/parent-remote-repository/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::d7e76bdd",
@@ -735,6 +765,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-api/1.7.30/example-api-1.7.30.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 25,
@@ -768,6 +799,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/soft-requirement/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::2f38d7a0",
@@ -775,6 +807,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-api/1.7.30/example-api-1.7.30.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 32,
@@ -787,6 +820,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-dependency/1.2.3/example-dependency-1.2.3.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 37,
@@ -827,12 +861,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:soft-transitive",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/soft-requirement-with-transitive-dependencies/pom.xml",
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.3::3ce2f1f4",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-dependency/1.2.3/example-dependency-1.2.3.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 13,
@@ -845,6 +881,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-dependency2",
 					Version:      "2.3.4",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-dependency2/2.3.4/example-dependency2-2.3.4.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 18,
@@ -858,6 +895,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     "testdata/repository/org/example/example-api/2.0.0/example-api-2.0.0.pom",
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -899,12 +937,14 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/hard-requirement/pom.xml",
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.3::31ca2fff",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-dependency/1.2.3/example-dependency-1.2.3.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 33,
@@ -917,6 +957,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-nested",
 					Version:      "3.3.4",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-nested/3.3.4/example-nested-3.3.4.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 28,
@@ -930,6 +971,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     "testdata/repository/org/example/example-api/2.0.0/example-api-2.0.0.pom",
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -965,6 +1007,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/version-requirement/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api::ab862f6b",
@@ -990,6 +1033,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/import-dependency-management/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::6537575e",
@@ -997,6 +1041,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-api/1.7.30/example-api-1.7.30.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 34,
@@ -1025,6 +1070,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/import-dependency-management-multiple/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::807a5be4",
@@ -1032,6 +1078,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-api/1.7.30/example-api-1.7.30.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 42,
@@ -1059,12 +1106,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:exclusions",
 					Version:      "3.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/exclusions/pom.xml",
 				},
 				{
 					ID:           "org.example:example-nested:3.3.3::7d2a59bf",
 					Name:         "org.example:example-nested",
 					Version:      "3.3.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-nested/3.3.3/example-nested-3.3.3.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 14,
@@ -1077,6 +1126,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     "testdata/repository/org/example/example-dependency/1.2.3/example-dependency-1.2.3.pom",
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -1104,12 +1154,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:example",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/exclusions-in-child/pom.xml",
 				},
 				{
 					ID:           "org.example:example-exclusions:4.0.0::d9903c57",
 					Name:         "org.example:example-exclusions",
 					Version:      "4.0.0",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-exclusions/4.0.0/example-exclusions-4.0.0.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 10,
@@ -1123,12 +1175,14 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     "testdata/repository/org/example/example-api/1.7.30/example-api-1.7.30.pom",
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.3::5bdfcd45",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     "testdata/repository/org/example/example-dependency/1.2.3/example-dependency-1.2.3.pom",
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -1166,12 +1220,14 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "3.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/exclusions-parent-dependency-management/child/pom.xml",
 				},
 				{
 					ID:           "org.example:example-exclusions:3.0.0::1e4e34b7",
 					Name:         "org.example:example-exclusions",
 					Version:      "3.0.0",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-exclusions/3.0.0/example-exclusions-3.0.0.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 26,
@@ -1184,6 +1240,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-nested",
 					Version:      "3.3.3",
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     "testdata/repository/org/example/example-nested/3.3.3/example-nested-3.3.3.pom",
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -1211,12 +1268,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:wildcard-exclusions",
 					Version:      "4.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/wildcard-exclusions/pom.xml",
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.3::4ee336bf",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-dependency/1.2.3/example-dependency-1.2.3.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 14,
@@ -1229,6 +1288,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-dependency2",
 					Version:      "2.3.4",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-dependency2/2.3.4/example-dependency2-2.3.4.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 25,
@@ -1241,6 +1301,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-nested",
 					Version:      "3.3.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-nested/3.3.3/example-nested-3.3.3.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 36,
@@ -1271,6 +1332,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/multi-module/pom.xml",
 				},
 				{
 					ID:           "com.example:module:1.1.1::822ec30d",
@@ -1278,12 +1340,14 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.1.1",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     "testdata/multi-module/module/pom.xml",
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.3::493c9a85",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-dependency/1.2.3/example-dependency-1.2.3.pom",
 				},
 				{
 					ID:           "org.example:example-api:2.0.0::fb4eb559",
@@ -1291,6 +1355,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     "testdata/repository/org/example/example-api/2.0.0/example-api-2.0.0.pom",
 				},
 			},
 			// `mvn` doesn't include modules in dep tree of root pom and builds separate graphs.
@@ -1326,18 +1391,21 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:root",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/multiple-modules-with-deps-with-same-gav/pom.xml",
 				},
 				{
 					ID:           "com.example:module1:1.0.0::4c39d72a",
 					Name:         "com.example:module1",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     "testdata/multiple-modules-with-deps-with-same-gav/module1/pom.xml",
 				},
 				{
 					ID:           "com.example:module2:2.0.0::57fc775b",
 					Name:         "com.example:module2",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     "testdata/multiple-modules-with-deps-with-same-gav/module2/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::80048fd3",
@@ -1345,6 +1413,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-api/1.7.30/example-api-1.7.30.pom",
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::8810f687",
@@ -1352,6 +1421,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-api/1.7.30/example-api-1.7.30.pom",
 				},
 			},
 			//[INFO] --------------------------------[ pom ]---------------------------------
@@ -1402,30 +1472,35 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:root",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/multiple-modules-with-deps-with-same-gav-with-props/pom.xml",
 				},
 				{
 					ID:           "com.example:module1:1.0.0::919ee306",
 					Name:         "com.example:module1",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     "testdata/multiple-modules-with-deps-with-same-gav-with-props/module1/pom.xml",
 				},
 				{
 					ID:           "com.example:module2:2.0.0::e4f6bb04",
 					Name:         "com.example:module2",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     "testdata/multiple-modules-with-deps-with-same-gav-with-props/module2/pom.xml",
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.5::e2ecf3a4",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.5",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-dependency/1.2.5/example-dependency-1.2.5.pom",
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.5::e3e3d7fe",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.5",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-dependency/1.2.5/example-dependency-1.2.5.pom",
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::a4032585",
@@ -1433,6 +1508,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     "testdata/repository/org/example/example-api/1.7.30/example-api-1.7.30.pom",
 				},
 				{
 					ID:           "org.example:example-api:2.0.0::6c475df9",
@@ -1440,6 +1516,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     "testdata/repository/org/example/example-api/2.0.0/example-api-2.0.0.pom",
 				},
 			},
 			//[INFO] --------------------------------[ jar ]---------------------------------
@@ -1511,18 +1588,21 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:root",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/nested-modules/pom.xml",
 				},
 				{
 					ID:           "com.example:module1:1.0.0::59758428",
 					Name:         "com.example:module1",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     "testdata/nested-modules/module1/pom.xml",
 				},
 				{
 					ID:           "com.example:module2:2.0.0::a36f3d58",
 					Name:         "com.example:module2",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     "testdata/nested-modules/module1/module2/pom.xml",
 				},
 				{
 					ID:      "org.example:example-api:1.7.30::2946ca63",
@@ -1532,6 +1612,7 @@ func TestPom_Parse(t *testing.T) {
 						"The Apache Software License, Version 2.0",
 					},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-api/1.7.30/example-api-1.7.30.pom",
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -1560,6 +1641,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:root",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/modules-infinity-loop/pom.xml",
 				},
 				// as module
 				{
@@ -1567,12 +1649,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:module-1",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     "testdata/modules-infinity-loop/module-1/pom.xml",
 				},
 				{
 					ID:           "org.example:module-2:3.0.0::70a6381c",
 					Name:         "org.example:module-2",
 					Version:      "3.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     "testdata/modules-infinity-loop/module-1/module-2/pom.xml",
 				},
 				// as dependency
 				{
@@ -1608,18 +1692,21 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:aggregation",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/multi-module-soft-requirement/pom.xml",
 				},
 				{
 					ID:           "com.example:module1:1.1.1::ede50f46",
 					Name:         "com.example:module1",
 					Version:      "1.1.1",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     "testdata/multi-module-soft-requirement/module1/pom.xml",
 				},
 				{
 					ID:           "com.example:module2:1.1.1::ce791b4f",
 					Name:         "com.example:module2",
 					Version:      "1.1.1",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     "testdata/multi-module-soft-requirement/module2/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::5832af90",
@@ -1627,6 +1714,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-api/1.7.30/example-api-1.7.30.pom",
 				},
 				{
 					ID:           "org.example:example-api:2.0.0::95bb5ac5",
@@ -1634,6 +1722,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-api/2.0.0/example-api-2.0.0.pom",
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -1668,12 +1757,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:root-pom-dep-management",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/root-pom-dep-management/pom.xml",
 				},
 				{
 					ID:           "org.example:example-nested:3.3.3::99356a85",
 					Name:         "org.example:example-nested",
 					Version:      "3.3.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-nested/3.3.3/example-nested-3.3.3.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 20,
@@ -1687,6 +1778,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     "testdata/repository/org/example/example-api/2.0.0/example-api-2.0.0.pom",
 				},
 				// dependency version is taken from `com.example:root-pom-dep-management` from dependencyManagement
 				// not from `com.example:example-nested` from `com.example:example-nested`
@@ -1695,6 +1787,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.4",
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     "testdata/repository/org/example/example-dependency/1.2.4/example-dependency-1.2.4.pom",
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -1728,12 +1821,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:root-pom-dep-management-for-deps-with-project-props",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/root-pom-dep-management-for-deps-with-project-props/pom.xml",
 				},
 				{
 					ID:           "org.example:example-dependency:1.7.30::6ae4efb4",
 					Name:         "org.example:example-dependency",
 					Version:      "1.7.30",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-dependency/1.7.30/example-dependency-1.7.30.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 21,
@@ -1747,6 +1842,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     "testdata/repository/org/example/example-api/2.0.0/example-api-2.0.0.pom",
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -1774,12 +1870,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:transitive-dependency-management",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/transitive-dependency-management/pom.xml",
 				},
 				{
 					ID:           "org.example:example-dependency-management3:1.1.1::c472e9e4",
 					Name:         "org.example:example-dependency-management3",
 					Version:      "1.1.1",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-dependency-management3/1.1.1/example-dependency-management3-1.1.1.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 14,
@@ -1795,12 +1893,14 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     "testdata/repository/org/example/example-api/2.0.0/example-api-2.0.0.pom",
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.3::a4863849",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     "testdata/repository/org/example/example-dependency/1.2.3/example-dependency-1.2.3.pom",
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -1835,6 +1935,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0-SNAPSHOT",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/not-found-parent/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::d09fe727",
@@ -1842,6 +1943,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-api/1.7.30/example-api-1.7.30.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 27,
@@ -1870,6 +1972,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/not-found-dependency/pom.xml",
 				},
 				{
 					ID:           "org.example:example-not-found:999::af293727",
@@ -1904,6 +2007,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/not-found-module/pom.xml",
 				},
 			},
 		},
@@ -1921,6 +2025,7 @@ func TestPom_Parse(t *testing.T) {
 						"Apache 2.0",
 					},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/multiply-licenses/pom.xml",
 				},
 			},
 		},
@@ -1935,6 +2040,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache-2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/inherit-license/module/submodule/pom.xml",
 				},
 			},
 		},
@@ -1949,6 +2055,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/no-parent-infinity-loop/pom.xml",
 				},
 			},
 		},
@@ -1962,6 +2069,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:dep-without-version",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/dep-without-version/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api::35b5f95d",
@@ -1989,12 +2097,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:root-depManagement-in-parent",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/use-root-dep-management-in-parent/pom.xml",
 				},
 				{
 					ID:           "org.example:example-dependency:2.0.0::310f08f9",
 					Name:         "org.example:example-dependency",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-dependency/2.0.0/example-dependency-2.0.0.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 25,
@@ -2037,12 +2147,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:root-depManagement-in-parent",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/use-dep-management-from-child-in-parent/pom.xml",
 				},
 				{
 					ID:           "org.example:example-dependency:2.0.0::329a1653",
 					Name:         "org.example:example-dependency",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-dependency/2.0.0/example-dependency-2.0.0.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 15,
@@ -2086,6 +2198,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:child-depManagement-in-parent",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/use-child-dep-management-in-parent/pom.xml",
 				},
 				{
 					ID:           "org.example:example-api:1.0.1::5e5fc05f",
@@ -2139,6 +2252,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:inherit-scopes-from-child-deps-and-their-parents",
 					Version:      "0.0.1",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/inherit-scopes-from-child-deps-and-their-parents/pom.xml",
 				},
 				exampleNestedScopeCompile("c5c1ec8f", 16, 21),
 				exampleNestedScopeEmpty("2e0c37ea", 22, 26),
@@ -2220,6 +2334,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:inherit-scopes-in-children-from-root",
 					Version:      "0.0.1",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/inherit-scopes-in-children-from-root/pom.xml",
 				},
 				exampleNestedScopeCompile("e66ec05e", 51, 56),
 				exampleNestedScopeEmpty("4c11808b", 57, 61),
@@ -2287,6 +2402,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:inherit-scopes-in-parents-from-root",
 					Version:      "0.1.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/inherit-scopes-in-parents-from-root/pom.xml",
 				},
 				exampleNestedScopeCompile("4ce69e4d", 0, 0),
 				exampleNestedScopeRuntime("9660d657", 0, 0),
@@ -2336,12 +2452,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:root-pom-with-spaces",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/with-spaces/pom.xml",
 				},
 				{
 					ID:           "org.example:example-nested:3.3.3::11f4a96e",
 					Name:         "org.example:example-nested",
 					Version:      "3.3.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-nested/3.3.3/example-nested-3.3.3.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 24,
@@ -2355,6 +2473,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     "testdata/repository/org/example/example-api/2.0.0/example-api-2.0.0.pom",
 				},
 				// dependency version is taken from `com.example:root-pom-with-spaces` from dependencyManagement
 				// not from `com.example:example-nested` from `com.example:example-nested`
@@ -2363,6 +2482,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.4",
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     "testdata/repository/org/example/example-dependency/1.2.4/example-dependency-1.2.4.pom",
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -2405,12 +2525,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:get-fields-from-multiple-depmanagements",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     "testdata/get-fields-from-multiple-depmanagements/pom.xml",
 				},
 				{
 					ID:           "org.example:example-dependency:4.0.0::1c05143b",
 					Name:         "org.example:example-dependency",
 					Version:      "4.0.0",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     "testdata/repository/org/example/example-dependency/4.0.0/example-dependency-4.0.0.pom",
 					Locations: ftypes.Locations{
 						{
 							StartLine: 30,
