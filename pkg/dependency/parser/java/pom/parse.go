@@ -416,7 +416,7 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 
 	art := pom.artifact()
 	art.RootFilePath = opts.rootFilePath
-	art.Repositories = pomRepos
+	art.Repositories = opts.repositories
 
 	return analysisResult{
 		filePath:             pom.filePath,
