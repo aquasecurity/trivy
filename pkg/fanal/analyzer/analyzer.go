@@ -321,6 +321,43 @@ func (r *AnalysisResult) Merge(newResult *AnalysisResult) {
 	r.CustomResources = append(r.CustomResources, newResult.CustomResources...)
 }
 
+// setAnalyzedBy sets the AnalyzedBy field for all packages in the result.
+func (r *AnalysisResult) setAnalyzedBy(analyzerType Type) {
+	if r == nil {
+		return
+	}
+	for i := range r.PackageInfos {
+		for j := range r.PackageInfos[i].Packages {
+			r.PackageInfos[i].Packages[j].AnalyzedBy = analyzerType
+		}
+	}
+	for i := range r.Applications {
+		for j := range r.Applications[i].Packages {
+			r.Applications[i].Packages[j].AnalyzedBy = analyzerType
+		}
+	}
+}
+
+// analyze runs the analyzer and sets AnalyzedBy on the result.
+func (ag AnalyzerGroup) analyze(ctx context.Context, a analyzer, input AnalysisInput) (*AnalysisResult, error) {
+	result, err := a.Analyze(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+	result.setAnalyzedBy(a.Type())
+	return result, nil
+}
+
+// postAnalyze runs the post-analyzer and sets AnalyzedBy on the result.
+func (ag AnalyzerGroup) postAnalyze(ctx context.Context, a PostAnalyzer, input PostAnalysisInput) (*AnalysisResult, error) {
+	result, err := a.PostAnalyze(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+	result.setAnalyzedBy(a.Type())
+	return result, nil
+}
+
 func belongToGroup(groupName Group, analyzerType Type, disabledAnalyzers []Type, analyzer any) bool {
 	if slices.Contains(disabledAnalyzers, analyzerType) {
 		return false
@@ -459,7 +496,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, eg *errgroup.Group, lim
 			defer limit.Release(1)
 			defer rc.Close()
 
-			ret, analyzeErr := a.Analyze(ctx, AnalysisInput{
+			ret, analyzeErr := ag.analyze(ctx, a, AnalysisInput{
 				Dir:      dir,
 				FilePath: filePath,
 				Info:     info,
@@ -534,7 +571,7 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeF
 			return xerrors.Errorf("unable to filter filesystem: %w", err)
 		}
 
-		res, err := a.PostAnalyze(ctx, PostAnalysisInput{
+		res, err := ag.postAnalyze(ctx, a, PostAnalysisInput{
 			FS:           filteredFS,
 			FilePatterns: ag.filePatterns[a.Type()],
 			Options:      opts,

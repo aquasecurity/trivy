@@ -118,16 +118,16 @@ func TestArtifact_Inspect(t *testing.T) {
 			rootDir: "testdata/alpine",
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID:       "sha256:c2baf06cb25f7b62686b169df5729402f0c50420bfcbdce8347f84c4bf623ab9",
+					ID:       "sha256:e04ee0f05d1384ec4b48c99f9d05491bff1ddbc2331b8419bcde7548070e314b",
 					BlobInfo: expectedBlobInfo,
 				},
 			},
 			want: artifact.Reference{
 				Name: "rawdata.img",
 				Type: types.TypeVM,
-				ID:   "sha256:c2baf06cb25f7b62686b169df5729402f0c50420bfcbdce8347f84c4bf623ab9",
+				ID:   "sha256:e04ee0f05d1384ec4b48c99f9d05491bff1ddbc2331b8419bcde7548070e314b",
 				BlobIDs: []string{
-					"sha256:c2baf06cb25f7b62686b169df5729402f0c50420bfcbdce8347f84c4bf623ab9",
+					"sha256:e04ee0f05d1384ec4b48c99f9d05491bff1ddbc2331b8419bcde7548070e314b",
 				},
 			},
 		},
@@ -209,6 +209,7 @@ var expectedBlobInfo = types.BlobInfo{
 						"lib/ld-musl-aarch64.so.1",
 						"lib/libc.musl-aarch64.so.1",
 					},
+					AnalyzedBy: analyzer.TypeApk,
 				},
 			},
 		},

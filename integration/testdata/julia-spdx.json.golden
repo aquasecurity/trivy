@@ -35,7 +35,7 @@
     },
     {
       "name": "A",
-      "SPDXID": "SPDXRef-Package-3aea0b160c3af98d",
+      "SPDXID": "SPDXRef-Package-87b4e00fb433805d",
       "versionInfo": "1.9.0",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -68,7 +68,7 @@
     },
     {
       "name": "B",
-      "SPDXID": "SPDXRef-Package-2264d5c424c073e7",
+      "SPDXID": "SPDXRef-Package-32e95bcb6c889958",
       "versionInfo": "1.9.0",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -101,7 +101,7 @@
     },
     {
       "name": "B",
-      "SPDXID": "SPDXRef-Package-e29bcba688483642",
+      "SPDXID": "SPDXRef-Package-789679ef84876c8d",
       "versionInfo": "1.9.0",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -151,12 +151,12 @@
   "relationships": [
     {
       "spdxElementId": "SPDXRef-Application-c39d15beb6bdf085",
-      "relatedSpdxElement": "SPDXRef-Package-3aea0b160c3af98d",
+      "relatedSpdxElement": "SPDXRef-Package-789679ef84876c8d",
       "relationshipType": "CONTAINS"
     },
     {
       "spdxElementId": "SPDXRef-Application-c39d15beb6bdf085",
-      "relatedSpdxElement": "SPDXRef-Package-e29bcba688483642",
+      "relatedSpdxElement": "SPDXRef-Package-87b4e00fb433805d",
       "relationshipType": "CONTAINS"
     },
     {
@@ -170,8 +170,8 @@
       "relationshipType": "CONTAINS"
     },
     {
-      "spdxElementId": "SPDXRef-Package-3aea0b160c3af98d",
-      "relatedSpdxElement": "SPDXRef-Package-2264d5c424c073e7",
+      "spdxElementId": "SPDXRef-Package-87b4e00fb433805d",
+      "relatedSpdxElement": "SPDXRef-Package-32e95bcb6c889958",
       "relationshipType": "DEPENDS_ON"
     }
   ]

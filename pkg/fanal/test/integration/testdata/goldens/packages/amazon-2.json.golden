@@ -14,7 +14,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "basesystem@10.0-7.amzn2.0.1.noarch",
@@ -31,7 +32,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "bash@4.2.46-30.amzn2.x86_64",
@@ -48,7 +50,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "bzip2-libs@1.0.6-13.amzn2.0.2.x86_64",
@@ -65,7 +68,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "ca-certificates@2018.2.22-70.0.amzn2.noarch",
@@ -82,7 +86,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "chkconfig@1.7.4-1.amzn2.0.2.x86_64",
@@ -99,7 +104,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "coreutils@8.22-21.amzn2.x86_64",
@@ -116,7 +122,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "cpio@2.11-27.amzn2.x86_64",
@@ -133,7 +140,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "curl@7.61.1-9.amzn2.0.1.x86_64",
@@ -150,7 +158,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "cyrus-sasl-lib@2.1.26-23.amzn2.x86_64",
@@ -167,7 +176,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "diffutils@3.3-4.amzn2.0.2.x86_64",
@@ -184,7 +194,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "elfutils-libelf@0.170-4.amzn2.x86_64",
@@ -201,7 +212,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "expat@2.1.0-10.amzn2.0.2.x86_64",
@@ -218,7 +230,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "file-libs@5.11-33.amzn2.0.2.x86_64",
@@ -235,7 +248,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "filesystem@3.2-25.amzn2.0.4.x86_64",
@@ -252,7 +266,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "findutils@4.5.11-5.amzn2.0.2.x86_64",
@@ -271,7 +286,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "gawk@4.0.2-4.amzn2.1.2.x86_64",
@@ -288,7 +304,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "gdbm@1.13-6.amzn2.0.2.x86_64",
@@ -307,7 +324,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "glib2@2.54.2-2.amzn2.x86_64",
@@ -324,7 +342,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "glibc@2.26-32.amzn2.0.1.x86_64",
@@ -341,7 +360,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "glibc-common@2.26-32.amzn2.0.1.x86_64",
@@ -358,7 +378,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "glibc-langpack-en@2.26-32.amzn2.0.1.x86_64",
@@ -375,7 +396,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "glibc-minimal-langpack@2.26-32.amzn2.0.1.x86_64",
@@ -392,7 +414,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "gmp@6.0.0-15.amzn2.0.2.x86_64",
@@ -411,7 +434,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "gnupg2@2.0.22-5.amzn2.0.3.x86_64",
@@ -428,7 +452,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "gpg-pubkey@c87f5b1a-593863f8.",
@@ -441,7 +466,8 @@
     ],
     "Repository": {
       "Class": "third-party"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "gpgme@1.3.2-5.amzn2.0.2.x86_64",
@@ -458,7 +484,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "grep@2.20-3.amzn2.0.2.x86_64",
@@ -475,7 +502,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "info@5.1-5.amzn2.x86_64",
@@ -492,7 +520,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "keyutils-libs@1.5.8-3.amzn2.0.2.x86_64",
@@ -509,7 +538,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "krb5-libs@1.15.1-20.amzn2.0.1.x86_64",
@@ -526,7 +556,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libacl@2.2.51-14.amzn2.x86_64",
@@ -543,7 +574,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libassuan@2.1.0-3.amzn2.0.2.x86_64",
@@ -560,7 +592,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libattr@2.4.46-12.amzn2.0.2.x86_64",
@@ -577,7 +610,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libblkid@2.30.2-2.amzn2.0.4.x86_64",
@@ -594,7 +628,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libcap@2.22-9.amzn2.0.2.x86_64",
@@ -611,7 +646,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libcom_err@1.42.9-12.amzn2.0.2.x86_64",
@@ -628,7 +664,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libcrypt@2.26-32.amzn2.0.1.x86_64",
@@ -645,7 +682,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libcurl@7.61.1-9.amzn2.0.1.x86_64",
@@ -662,7 +700,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libdb@5.3.21-24.amzn2.0.3.x86_64",
@@ -679,7 +718,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libdb-utils@5.3.21-24.amzn2.0.3.x86_64",
@@ -696,7 +736,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libffi@3.0.13-18.amzn2.0.2.x86_64",
@@ -713,7 +754,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libgcc@7.3.1-5.amzn2.0.2.x86_64",
@@ -730,7 +772,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libgcrypt@1.5.3-14.amzn2.0.2.x86_64",
@@ -747,7 +790,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libgpg-error@1.12-3.amzn2.0.3.x86_64",
@@ -764,7 +808,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libidn2@2.0.4-1.amzn2.0.2.x86_64",
@@ -781,7 +826,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libmetalink@0.1.2-7.amzn2.0.2.x86_64",
@@ -798,7 +844,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libmount@2.30.2-2.amzn2.0.4.x86_64",
@@ -815,7 +862,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libnghttp2@1.31.1-1.amzn2.0.2.x86_64",
@@ -832,7 +880,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libselinux@2.5-12.amzn2.0.2.x86_64",
@@ -849,7 +898,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libsepol@2.5-8.1.amzn2.0.2.x86_64",
@@ -866,7 +916,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libssh2@1.4.3-12.amzn2.2.x86_64",
@@ -883,7 +934,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libstdc++@7.3.1-5.amzn2.0.2.x86_64",
@@ -900,7 +952,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libtasn1@4.10-1.amzn2.0.2.x86_64",
@@ -917,7 +970,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libunistring@0.9.3-9.amzn2.0.2.x86_64",
@@ -934,7 +988,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libuuid@2.30.2-2.amzn2.0.4.x86_64",
@@ -951,7 +1006,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libverto@0.2.5-4.amzn2.0.2.x86_64",
@@ -968,7 +1024,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libxml2@2.9.1-6.amzn2.3.2.x86_64",
@@ -985,7 +1042,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "lua@5.1.4-15.amzn2.0.2.x86_64",
@@ -1002,7 +1060,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "ncurses@6.0-8.20170212.amzn2.1.2.x86_64",
@@ -1019,7 +1078,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "ncurses-base@6.0-8.20170212.amzn2.1.2.noarch",
@@ -1036,7 +1096,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "ncurses-libs@6.0-8.20170212.amzn2.1.2.x86_64",
@@ -1053,7 +1114,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "nspr@4.19.0-1.amzn2.x86_64",
@@ -1070,7 +1132,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "nss@3.36.0-7.amzn2.x86_64",
@@ -1087,7 +1150,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "nss-pem@1.0.3-5.amzn2.x86_64",
@@ -1104,7 +1168,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "nss-softokn@3.36.0-5.amzn2.x86_64",
@@ -1121,7 +1186,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "nss-softokn-freebl@3.36.0-5.amzn2.x86_64",
@@ -1138,7 +1204,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "nss-sysinit@3.36.0-7.amzn2.x86_64",
@@ -1155,7 +1222,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "nss-tools@3.36.0-7.amzn2.x86_64",
@@ -1172,7 +1240,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "nss-util@3.36.0-1.amzn2.x86_64",
@@ -1189,7 +1258,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "openldap@2.4.44-15.amzn2.x86_64",
@@ -1206,7 +1276,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "openssl-libs@1.0.2k-16.amzn2.1.1.x86_64",
@@ -1225,7 +1296,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "p11-kit@0.23.5-3.amzn2.0.2.x86_64",
@@ -1242,7 +1314,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "p11-kit-trust@0.23.5-3.amzn2.0.2.x86_64",
@@ -1259,7 +1332,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "pcre@8.32-17.amzn2.0.2.x86_64",
@@ -1276,7 +1350,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "pinentry@0.8.1-17.amzn2.0.2.x86_64",
@@ -1293,7 +1368,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "popt@1.13-16.amzn2.0.2.x86_64",
@@ -1310,7 +1386,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "pth@2.0.7-23.amzn2.0.2.x86_64",
@@ -1327,7 +1404,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "pygpgme@0.3-9.amzn2.0.2.x86_64",
@@ -1344,7 +1422,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "pyliblzma@0.5.3-11.amzn2.0.2.x86_64",
@@ -1361,7 +1440,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "python@2.7.14-58.amzn2.0.4.x86_64",
@@ -1378,7 +1458,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "python-iniparse@0.4-9.amzn2.noarch",
@@ -1395,7 +1476,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "python-libs@2.7.14-58.amzn2.0.4.x86_64",
@@ -1412,7 +1494,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "python-pycurl@7.19.0-19.amzn2.0.2.x86_64",
@@ -1429,7 +1512,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "python-urlgrabber@3.10-8.amzn2.noarch",
@@ -1446,7 +1530,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "pyxattr@0.5.1-5.amzn2.0.2.x86_64",
@@ -1463,7 +1548,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "readline@6.2-10.amzn2.0.2.x86_64",
@@ -1480,7 +1566,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "rpm@4.11.3-25.amzn2.0.3.x86_64",
@@ -1497,7 +1584,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "rpm-build-libs@4.11.3-25.amzn2.0.3.x86_64",
@@ -1514,7 +1602,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "rpm-libs@4.11.3-25.amzn2.0.3.x86_64",
@@ -1531,7 +1620,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "rpm-python@4.11.3-25.amzn2.0.3.x86_64",
@@ -1548,7 +1638,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "sed@4.2.2-5.amzn2.0.2.x86_64",
@@ -1565,7 +1656,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "setup@2.8.71-10.amzn2.noarch",
@@ -1582,7 +1674,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "shared-mime-info@1.8-4.amzn2.x86_64",
@@ -1599,7 +1692,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "sqlite@3.7.17-8.amzn2.0.2.x86_64",
@@ -1616,7 +1710,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "system-release@2-10.amzn2.x86_64",
@@ -1635,7 +1730,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "tzdata@2018i-1.amzn2.noarch",
@@ -1652,7 +1748,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "vim-minimal@7.4.160-4.amzn2.0.16.x86_64",
@@ -1671,7 +1768,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "xz-libs@5.2.2-1.amzn2.0.2.x86_64",
@@ -1688,7 +1786,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "yum@3.4.3-158.amzn2.0.2.noarch",
@@ -1705,7 +1804,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "yum-metadata-parser@1.1.4-10.amzn2.0.2.x86_64",
@@ -1722,7 +1822,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "yum-plugin-ovl@1.1.31-46.amzn2.0.1.noarch",
@@ -1739,7 +1840,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "yum-plugin-priorities@1.1.31-46.amzn2.0.1.noarch",
@@ -1756,7 +1858,8 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "zlib@1.2.7-17.amzn2.0.2.x86_64",
@@ -1773,6 +1876,7 @@
     "Maintainer": "Amazon Linux",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   }
 ]
