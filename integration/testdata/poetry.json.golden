@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000002",
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/poetry",
   "ArtifactType": "repository",
@@ -64,6 +64,7 @@
             "Name": "GitHub Security Advisory Pip",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
           },
+          "Fingerprint": "sha256:384f3c3504a17ae835c015e5cab33befe675700289119a47182dd7102165eb2c",
           "Title": "python-werkzeug: insufficient debugger PIN randomness vulnerability",
           "Description": "Pallets Werkzeug before 0.15.3, when used with Docker, has insufficient debugger PIN randomness because Docker containers share the same machine id.",
           "Severity": "HIGH",

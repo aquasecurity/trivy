@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:2982b2b5fd16f59d6b9ccdef6292e710791eb7fa12895a593959c5bceb7780e6",
   "ArtifactName": "testdata/fixtures/images/oraclelinux-8.tar.gz",
@@ -82,7 +82,7 @@
           "PkgName": "curl",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/oracle/curl@7.61.1-8.el8?arch=x86_64\u0026distro=oracle-8.0",
-            "UID": "6837a94bd82971ac"
+            "UID": "a8682a2156651fbe"
           },
           "InstalledVersion": "7.61.1-8.el8",
           "FixedVersion": "7.61.1-11.el8",
@@ -98,6 +98,7 @@
             "Name": "Oracle Linux OVAL definitions",
             "URL": "https://linux.oracle.com/security/oval/"
           },
+          "Fingerprint": "sha256:6b218febe29fe60b77e69f6473825cf7d94ac09603d635af21b281a08b0dc1b0",
           "Title": "curl: SMTP end-of-response out-of-bounds read",
           "Description": "libcurl versions from 7.34.0 to before 7.64.0 are vulnerable to a heap out-of-bounds read in the code handling the end-of-response for SMTP. If the buffer passed to `smtp_endofresp()` isn't NUL terminated and contains no character ending the parsed number, and `len` is set to 5, then the `strtol()` call reads beyond the allocated buffer. The read contents will not be returned to the caller.",
           "Severity": "MEDIUM",
@@ -153,7 +154,7 @@
           "PkgName": "curl",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/oracle/curl@7.61.1-8.el8?arch=x86_64\u0026distro=oracle-8.0",
-            "UID": "6837a94bd82971ac"
+            "UID": "a8682a2156651fbe"
           },
           "InstalledVersion": "7.61.1-8.el8",
           "FixedVersion": "7.61.1-12.el8",
@@ -169,6 +170,7 @@
             "Name": "Oracle Linux OVAL definitions",
             "URL": "https://linux.oracle.com/security/oval/"
           },
+          "Fingerprint": "sha256:6a1430f0c4d3c46a331ce7517353e3c41b50c653176ab2a78f1d8a56f3f77c45",
           "Title": "curl: TFTP receive heap buffer overflow in tftp_receive_packet() function",
           "Description": "A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution in libcurl versions 7.19.4 through 7.64.1.",
           "Severity": "MEDIUM",

@@ -286,6 +286,7 @@ func (d pomDependency) ToArtifact(opts analysisOptions) artifact {
 		Exclusions:   exclusions,
 		Locations:    locations,
 		Relationship: ftypes.RelationshipIndirect, // default
+		RootFilePath: opts.rootFilePath,
 	}
 }
 

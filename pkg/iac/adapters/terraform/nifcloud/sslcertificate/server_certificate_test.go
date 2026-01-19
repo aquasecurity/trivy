@@ -39,11 +39,10 @@ func Test_adaptServerCertificates(t *testing.T) {
 			}
 `,
 			expected: []sslcertificate.ServerCertificate{{
-				Metadata: iacTypes.NewTestMetadata(),
-				Expiration: iacTypes.Time(func(timeVal string) time.Time {
+				Expiration: iacTypes.TimeTest(func(timeVal string) time.Time {
 					parsed, _ := time.Parse(time.RFC3339, timeVal)
 					return parsed
-				}("2015-09-12T21:52:02Z"), iacTypes.NewTestMetadata()),
+				}("2015-09-12T21:52:02Z")),
 			}},
 		},
 		{
@@ -54,8 +53,7 @@ func Test_adaptServerCertificates(t *testing.T) {
 `,
 
 			expected: []sslcertificate.ServerCertificate{{
-				Metadata:   iacTypes.NewTestMetadata(),
-				Expiration: iacTypes.Time(time.Time{}, iacTypes.NewTestMetadata()),
+				Expiration: iacTypes.TimeTest(time.Time{}),
 			}},
 		},
 	}

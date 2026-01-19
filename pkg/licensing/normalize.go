@@ -2,7 +2,10 @@ package licensing
 
 import (
 	"regexp"
+	"slices"
 	"strings"
+
+	"github.com/samber/lo/it"
 
 	expr "github.com/aquasecurity/trivy/pkg/licensing/expression"
 )
@@ -671,11 +674,23 @@ func standardizeKeyAndSuffix(name string) expr.SimpleExpr {
 	return expr.SimpleExpr{License: name, HasPlus: hasPlus}
 }
 
-func Normalize(name string) string {
-	return NormalizeLicense(expr.SimpleExpr{License: name}).String()
+func NormalizeLicenses(licenses []string) []string {
+	seq := it.UniqMap(slices.Values(licenses), normalizeLicense)
+	seq = it.Compact(seq)
+	normalized := slices.Collect(seq)
+
+	if len(normalized) == 0 {
+		return nil
+	}
+
+	return normalized
 }
 
-func NormalizeLicense(exp expr.Expression) expr.Expression {
+func normalizeLicense(name string) string {
+	return NormalizeLicenseExpression(expr.SimpleExpr{License: name}).String()
+}
+
+func NormalizeLicenseExpression(exp expr.Expression) expr.Expression {
 	switch e := exp.(type) {
 	case expr.SimpleExpr:
 		return normalizeSimpleExpr(e)
@@ -762,7 +777,7 @@ func LaxSplitLicenses(str string) []string {
 			afterWith = true
 			continue
 		default:
-			normalizedLicense := Normalize(s)
+			normalizedLicense := normalizeLicense(s)
 			if afterWith && len(licenses) > 0 {
 				// If we found "WITH" operator, we should not split the license
 				// e.g. "GPL-2 WITH Autoconf exception" => {"GPL-2 WITH Autoconf exception"}

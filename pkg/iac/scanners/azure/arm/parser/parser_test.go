@@ -25,10 +25,9 @@ func TestParser_Parse(t *testing.T) {
 	filename := "example.json"
 
 	tests := []struct {
-		name           string
-		input          string
-		want           func(fsys fs.FS) azure.Deployment
-		wantDeployment bool
+		name  string
+		input string
+		want  func(fsys fs.FS) azure.Deployment
 	}{
 		{
 			name: "basic param",
@@ -65,7 +64,6 @@ func TestParser_Parse(t *testing.T) {
 					},
 				}
 			},
-			wantDeployment: true,
 		},
 		{
 			name: "storageAccount",
@@ -186,8 +184,57 @@ func TestParser_Parse(t *testing.T) {
 					},
 				}
 			},
-
-			wantDeployment: true,
+		},
+		{
+			name: "resources defined as an object",
+			input: `{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "resources": {
+    "myacc": {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2025-06-01",
+      "name": "my-acc-test",
+      "location": "location",
+			"kind": "Storage"
+    }
+  }
+}`,
+			want: func(fsys fs.FS) azure.Deployment {
+				rootMetadata := createMetadata(fsys, filename, 0, 0, "", nil).WithInternal(resolver.NewResolver())
+				fileMetadata := createMetadata(fsys, filename, 1, 14, "", &rootMetadata)
+				resourceMetadata := createMetadata(fsys, filename, 6, 12, "resources.myacc", &fileMetadata)
+				return azure.Deployment{
+					Metadata:    fileMetadata,
+					TargetScope: azure.ScopeResourceGroup,
+					Resources: []azure.Resource{
+						{
+							Metadata: resourceMetadata,
+							APIVersion: azure.NewValue(
+								"2025-06-01",
+								createMetadata(fsys, filename, 8, 8, "resources.myacc.apiVersion", &resourceMetadata),
+							),
+							Type: azure.NewValue(
+								"Microsoft.Storage/storageAccounts",
+								createMetadata(fsys, filename, 7, 7, "resources.myacc.type", &resourceMetadata),
+							),
+							Kind: azure.NewValue(
+								"Storage",
+								createMetadata(fsys, filename, 11, 11, "resources.myacc.kind", &resourceMetadata),
+							),
+							Name: azure.NewValue(
+								"my-acc-test",
+								createMetadata(fsys, filename, 9, 9, "resources.myacc.name", &resourceMetadata),
+							),
+							Location: azure.NewValue(
+								"location",
+								createMetadata(fsys, filename, 10, 10, "resources.myacc.location", &resourceMetadata),
+							),
+						},
+					},
+				}
+			},
 		},
 	}
 
@@ -200,7 +247,7 @@ func TestParser_Parse(t *testing.T) {
 			got, err := p.ParseFS(t.Context(), ".")
 			require.NoError(t, err)
 
-			if !tt.wantDeployment {
+			if tt.want == nil {
 				assert.Empty(t, got)
 				return
 			}

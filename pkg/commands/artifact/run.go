@@ -1,9 +1,12 @@
 package artifact
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"maps"
 	"os"
 	"slices"
 	"strings"
@@ -12,6 +15,7 @@ import (
 	"github.com/samber/lo"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
+	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
@@ -131,6 +135,7 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, targetKind TargetKi
 	// Set the default HTTP transport
 	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
 		Insecure:  cliOptions.Insecure,
+		CACerts:   cliOptions.CACerts,
 		Timeout:   cliOptions.Timeout,
 		TraceHTTP: cliOptions.TraceHTTP,
 	}))
@@ -467,8 +472,8 @@ func checkOptions(ctx context.Context, opts flag.Options, targetKind TargetKind)
 	if opts.ServerAddr != "" && opts.Scanners.AnyEnabled(types.MisconfigScanner, types.SecretScanner) {
 		log.WarnContext(ctx,
 			fmt.Sprintf(
-				"Trivy runs in client/server mode, but misconfiguration and license scanning will be done on the client side, see %s",
-				doc.URL("/docs/references/modes/client-server", ""),
+				"Trivy runs in client/server mode, but misconfiguration and secret scanning will be done on the client side, see %s",
+				doc.URL("guide/references/modes/client-server", ""),
 			),
 		)
 	}
@@ -601,8 +606,8 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 				"If your scanning is slow, please try '--scanners %s' to disable secret scanning",
 				strings.Join(xstrings.ToStringSlice(nonSecrets), ",")))
 		}
-		// e.g. https://trivy.dev/latest/docs/scanner/secret/#recommendation
-		logger.Info(fmt.Sprintf("Please see %s for faster secret detection", doc.URL("/docs/scanner/secret/", "recommendation")))
+		// e.g. https://trivy.dev/docs/latest/scanner/secret/#recommendation
+		logger.Info(fmt.Sprintf("Please see %s for faster secret detection", doc.URL("guide/scanner/secret/", "recommendation")))
 	} else {
 		opts.SecretConfigPath = ""
 	}
@@ -733,6 +738,12 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 		return misconf.ScannerOption{}, xerrors.Errorf("load schemas error: %w", err)
 	}
 
+	ansibleExtraVars, err := resolveAnsibleExtraVars(opts.AnsibleExtraVars)
+	if err != nil {
+		log.DebugContext(ctx, "Failed to resolve Ansible extra-vars", log.Err(err))
+		ansibleExtraVars = make(map[string]any)
+	}
+
 	misconfOpts := misconf.ScannerOption{
 		Trace:                    opts.RegoOptions.Trace,
 		Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
@@ -757,6 +768,9 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 		ConfigFileSchemas:        configSchemas,
 		SkipFiles:                opts.SkipFiles,
 		SkipDirs:                 opts.SkipDirs,
+		AnsiblePlaybooks:         opts.AnsiblePlaybooks,
+		AnsibleInventories:       opts.AnsibleInventories,
+		AnsibleExtraVars:         ansibleExtraVars,
 	}
 
 	regoScanner, err := misconf.InitRegoScanner(misconfOpts)
@@ -766,4 +780,45 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 
 	misconfOpts.RegoScanner = regoScanner
 	return misconfOpts, nil
+}
+
+func resolveAnsibleExtraVars(inputs []string) (map[string]any, error) {
+	result := make(map[string]any)
+
+	for _, input := range inputs {
+		var vars map[string]any
+
+		switch {
+		case strings.HasPrefix(input, "@"):
+			data, err := os.ReadFile(input[1:])
+			if err != nil {
+				return nil, fmt.Errorf("read extra-vars file %s: %w", input[1:], err)
+			}
+			trimmed := bytes.TrimSpace(data)
+			if len(trimmed) > 0 && trimmed[0] == '{' {
+				// parse as JSON object
+				if err := json.Unmarshal(trimmed, &vars); err != nil {
+					return nil, fmt.Errorf("parse extra-vars JSON file %s: %w", input[1:], err)
+				}
+			} else {
+				// parse as YAML
+				if err := yaml.Unmarshal(trimmed, &vars); err != nil {
+					return nil, fmt.Errorf("parse extra-vars YAML file %s: %w", input[1:], err)
+				}
+			}
+		case strings.Contains(input, "="):
+			kv := strings.SplitN(input, "=", 2)
+			var val string
+			if len(kv) == 2 {
+				val = kv[1]
+			}
+			vars = map[string]any{kv[0]: val}
+		default:
+			return nil, fmt.Errorf("invalid extra-vars input: %s", input)
+		}
+
+		maps.Copy(result, vars)
+	}
+
+	return result, nil
 }

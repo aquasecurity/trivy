@@ -6,8 +6,13 @@ type Resource struct {
 	Mode          string `json:"mode"`
 	Type          string `json:"type"`
 	Name          string `json:"name"`
-	ProviderName  string `json:"provider_name"`
-	SchemaVersion int    `json:"schema_version"`
+}
+
+func (r Resource) BlockType() string {
+	if r.Mode == "managed" {
+		return "resource"
+	}
+	return r.Mode
 }
 
 type ResourceChange struct {
@@ -15,23 +20,21 @@ type ResourceChange struct {
 	Change `json:"change"`
 }
 
+type ResourceExpressions map[string]any
+
 type ConfigurationResource struct {
 	Resource
-	Expressions map[string]any `json:"expressions"`
+	Expressions ResourceExpressions `json:"expressions"`
 }
 
 type Change struct {
-	Before map[string]any `json:"before"`
-	After  map[string]any `json:"after"`
+	After map[string]any `json:"after"`
 }
 
 type Module struct {
-	Resources    []Resource    `json:"resources"`
-	ChildModules []ChildModule `json:"child_modules"`
-}
-
-type ChildModule struct {
-	Module
+	Resources    []Resource `json:"resources"`
+	ChildModules []Module   `json:"child_modules"`
+	// Omitted if the instance is in the root module.
 	Address string `json:"address"`
 }
 
@@ -41,13 +44,7 @@ type ConfigurationModule struct {
 }
 
 type CallModule struct {
-	Source string              `json:"source"`
 	Module ConfigurationModule `json:"module"`
-}
-
-type ConfigurationChildModule struct {
-	ConfigurationModule
-	Address string `json:"address"`
 }
 
 type PlannedValues struct {
@@ -59,9 +56,7 @@ type Configuration struct {
 }
 
 type PlanFile struct {
-	FormatVersion    string           `json:"format_version"`
-	TerraformVersion string           `json:"terraform_version"`
-	PlannedValues    PlannedValues    `json:"planned_values"`
-	ResourceChanges  []ResourceChange `json:"resource_changes"`
-	Configuration    Configuration    `json:"configuration"`
+	PlannedValues   PlannedValues    `json:"planned_values"`
+	ResourceChanges []ResourceChange `json:"resource_changes"`
+	Configuration   Configuration    `json:"configuration"`
 }

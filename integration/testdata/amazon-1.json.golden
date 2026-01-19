@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:5a0fd7bb415c9b52d1bb909e40b9f498a89a5572724bd107d26ead4a25f203e1",
   "ArtifactName": "testdata/fixtures/images/amazon-1.tar.gz",
@@ -73,7 +73,7 @@
           "PkgName": "curl",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/amazon/curl@7.61.1-11.91.amzn1?arch=x86_64\u0026distro=amazon-AMI+release+2018.03",
-            "UID": "9fafb1be522b1e7"
+            "UID": "6120700171ade460"
           },
           "InstalledVersion": "7.61.1-11.91.amzn1",
           "FixedVersion": "7.61.1-12.93.amzn1",
@@ -89,6 +89,7 @@
             "Name": "Amazon Linux Security Center",
             "URL": "https://alas.aws.amazon.com/"
           },
+          "Fingerprint": "sha256:6d5df637f78490e5091381186a322db8c42a7018fb2cfae27aaa084906e65f02",
           "Title": "curl: double free due to subsequent call of realloc()",
           "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
           "Severity": "MEDIUM",

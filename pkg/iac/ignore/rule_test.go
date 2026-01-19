@@ -1,7 +1,9 @@
 package ignore_test
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -157,7 +159,7 @@ func TestRules_Ignore(t *testing.T) {
 		},
 		{
 			name: "ignore rule with expiry date not passed",
-			src:  `#trivy:ignore:rule-1:exp:2026-01-01`,
+			src:  fmt.Sprintf(`#trivy:ignore:rule-1:exp:%d-01-01`, time.Now().Year()+1),
 			args: args{
 				metadata: metadataWithLine(filename, 2),
 				ids:      []string{"rule-1"},

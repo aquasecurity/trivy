@@ -20,9 +20,10 @@ const (
 	title       = "Config file"
 	description = "Trivy can be customized by tweaking a `trivy.yaml` file.\n" +
 		"The config path can be overridden by the `--config` flag.\n\n" +
-		"An example is [here][example].\n\n" +
+		"An example is [here][example] and a [JSON Schema][schema] is also available.\n\n" +
 		"These samples contain default values for flags."
-	footer = "[example]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/trivy-conf/trivy.yaml"
+	footer = "[example]: https://github.com/aquasecurity/trivy/blob/{{ git.tag }}/examples/trivy-conf/trivy.yaml\n" +
+		"[schema]: https://github.com/aquasecurity/trivy/blob/{{ git.tag }}/schema/trivy-config.json"
 )
 
 // Generate CLI references
@@ -38,14 +39,17 @@ func main() {
 	allFlagGroups := getAllFlags()
 
 	cmd.DisableAutoGenTag = true
-	if err := doc.GenMarkdownTree(cmd, "./docs/docs/references/configuration/cli"); err != nil {
+	if err := doc.GenMarkdownTree(cmd, "./docs/guide/references/configuration/cli"); err != nil {
 		log.Fatal("Fatal error", log.Err(err))
 	}
-	if err := generateConfigDocs("./docs/docs/references/configuration/config-file.md", allFlagGroups); err != nil {
+	if err := generateConfigDocs("./docs/guide/references/configuration/config-file.md", allFlagGroups); err != nil {
 		log.Fatal("Fatal error in config file generation", log.Err(err))
 	}
-	if err := generateTelemetryFlagDocs("./docs/docs/advanced/telemetry-flags.md", allFlagGroups); err != nil {
+	if err := generateTelemetryFlagDocs("./docs/guide/advanced/telemetry-flags.md", allFlagGroups); err != nil {
 		log.Fatal("Fatal error in telemetry docs generation", log.Err(err))
+	}
+	if err := generateConfigSchema(configSchemaPath, allFlagGroups); err != nil {
+		log.Fatal("Fatal error in config schema generation", log.Err(err))
 	}
 }
 

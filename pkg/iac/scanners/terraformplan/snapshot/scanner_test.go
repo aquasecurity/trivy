@@ -6,13 +6,13 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	tfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func Test_ScanFS(t *testing.T) {
@@ -63,7 +63,7 @@ func Test_ScanFS(t *testing.T) {
 
 			assert.Len(t, failed, len(tc.expectedIDs))
 
-			ids := lo.Map(failed, func(res scan.Result, _ int) string {
+			ids := xslices.Map(failed, func(res scan.Result) string {
 				return res.Rule().ID
 			})
 			sort.Strings(ids)

@@ -9,6 +9,163 @@ import (
 	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 )
 
+func TestSplitLicenses(t *testing.T) {
+	tests := []struct {
+		name     string
+		license  string
+		licenses []string
+	}{
+		{
+			"simple list comma-separated",
+			"GPL-1+,GPL-2",
+			[]string{
+				"GPL-1+",
+				"GPL-2",
+			},
+		},
+		{
+			"simple list comma-separated",
+			"GPL-1+,GPL-2,GPL-3",
+			[]string{
+				"GPL-1+",
+				"GPL-2",
+				"GPL-3",
+			},
+		},
+		{
+			"3 licenses 'or'-separated",
+			"GPL-1+ or Artistic or Artistic-dist",
+			[]string{
+				"GPL-1+",
+				"Artistic",
+				"Artistic-dist",
+			},
+		},
+		{
+			"two licenses _or_ separated",
+			"LGPLv3+_or_GPLv2+",
+			[]string{
+				"LGPLv3+",
+				"GPLv2+",
+			},
+		},
+		{
+			"licenses `and`-separated",
+			"BSD-3-CLAUSE and GPL-2",
+			[]string{
+				"BSD-3-CLAUSE",
+				"GPL-2",
+			},
+		},
+		{
+			"three licenses and/or separated",
+			"GPL-1+ or Artistic, and BSD-4-clause-POWERDOG",
+			[]string{
+				"GPL-1+",
+				"Artistic",
+				"BSD-4-clause-POWERDOG",
+			},
+		},
+		{
+			"two licenses with version",
+			"Apache License,Version 2.0, OSET Public License version 2.1",
+			[]string{
+				"Apache License, Version 2.0",
+				"OSET Public License version 2.1",
+			},
+		},
+		{
+			"the license starts with `ver`",
+			"verbatim and BSD-4-clause",
+			[]string{
+				"verbatim",
+				"BSD-4-clause",
+			},
+		},
+		{
+			"the license with `or later`",
+			"GNU Affero General Public License v3 or later (AGPLv3+)",
+			[]string{
+				"GNU Affero General Public License v3 or later (AGPLv3+)",
+			},
+		},
+		{
+			"Python license exceptions",
+			"GNU Library or Lesser General Public License (LGPL), Common Development and Distribution License 1.0 (CDDL-1.0), Historical Permission Notice and Disclaimer (HPND)",
+			[]string{
+				"GNU Library or Lesser General Public License (LGPL)",
+				"Common Development and Distribution License 1.0 (CDDL-1.0)",
+				"Historical Permission Notice and Disclaimer (HPND)",
+			},
+		},
+		{
+			name:    "License text",
+			license: "* Permission to use this software in any way is granted without",
+			licenses: []string{
+				"text://* Permission to use this software in any way is granted without",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			res := licensing.SplitLicenses(tt.license)
+			assert.Equal(t, tt.licenses, res)
+		})
+	}
+}
+
+func TestLaxSplitLicense(t *testing.T) {
+	var tests = []struct {
+		license      string
+		wantLicenses []string
+	}{
+		{
+			license:      "ASL 2.0",
+			wantLicenses: []string{"Apache-2.0"},
+		},
+		{
+			license: "MPL 2.0 GPL2+",
+			wantLicenses: []string{
+				"MPL-2.0",
+				"GPL-2.0-or-later",
+			},
+		},
+		{
+			license: "GPL-2.0-only WITH Classpath-exception-2.0",
+			wantLicenses: []string{
+				"GPL-2.0-only WITH Classpath-exception-2.0",
+			},
+		},
+		{
+			license: "BSD-3-CLAUSE OR GPL-2.0-only WITH Classpath-exception-2.0 AND MPL-2.0 ASL 2.0",
+			wantLicenses: []string{
+				"BSD-3-Clause",
+				"GPL-2.0-only WITH Classpath-exception-2.0",
+				"MPL-2.0",
+				"Apache-2.0",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.license, func(t *testing.T) {
+			parsed := licensing.LaxSplitLicenses(tt.license)
+			assert.Equal(t, tt.wantLicenses, parsed)
+		})
+	}
+}
+
+// All map keys must be standardized to be matched
+// (uppercase, no common suffixes, standardized version, etc.)
+func TestMap(t *testing.T) {
+	for key := range licensing.Mapping() {
+		t.Run(key, func(t *testing.T) {
+			standardized := licensing.StandardizeKeyAndSuffix(key)
+			assert.Equal(t, standardized.License, key)
+		})
+	}
+}
+
 func TestNormalize(t *testing.T) {
 	tests := []struct {
 		licenses    []expression.Expression
@@ -231,157 +388,11 @@ func TestNormalize(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.want, func(t *testing.T) {
 			for _, ll := range tt.licenses {
-				got := licensing.Normalize(ll.String())
-				gotLicense := licensing.NormalizeLicense(ll)
+				got := licensing.NormalizeLicense(ll.String())
+				gotLicense := licensing.NormalizeLicenseExpression(ll)
 				assert.Equal(t, tt.want, got)
 				assert.Equal(t, tt.wantLicense, gotLicense)
 			}
-		})
-	}
-}
-
-func TestSplitLicenses(t *testing.T) {
-	tests := []struct {
-		name     string
-		license  string
-		licenses []string
-	}{
-		{
-			"simple list comma-separated",
-			"GPL-1+,GPL-2",
-			[]string{
-				"GPL-1+",
-				"GPL-2",
-			},
-		},
-		{
-			"simple list comma-separated",
-			"GPL-1+,GPL-2,GPL-3",
-			[]string{
-				"GPL-1+",
-				"GPL-2",
-				"GPL-3",
-			},
-		},
-		{
-			"3 licenses 'or'-separated",
-			"GPL-1+ or Artistic or Artistic-dist",
-			[]string{
-				"GPL-1+",
-				"Artistic",
-				"Artistic-dist",
-			},
-		},
-		{
-			"two licenses _or_ separated",
-			"LGPLv3+_or_GPLv2+",
-			[]string{
-				"LGPLv3+",
-				"GPLv2+",
-			},
-		},
-		{
-			"licenses `and`-separated",
-			"BSD-3-CLAUSE and GPL-2",
-			[]string{
-				"BSD-3-CLAUSE",
-				"GPL-2",
-			},
-		},
-		{
-			"three licenses and/or separated",
-			"GPL-1+ or Artistic, and BSD-4-clause-POWERDOG",
-			[]string{
-				"GPL-1+",
-				"Artistic",
-				"BSD-4-clause-POWERDOG",
-			},
-		},
-		{
-			"two licenses with version",
-			"Apache License,Version 2.0, OSET Public License version 2.1",
-			[]string{
-				"Apache License, Version 2.0",
-				"OSET Public License version 2.1",
-			},
-		},
-		{
-			"the license starts with `ver`",
-			"verbatim and BSD-4-clause",
-			[]string{
-				"verbatim",
-				"BSD-4-clause",
-			},
-		},
-		{
-			"the license with `or later`",
-			"GNU Affero General Public License v3 or later (AGPLv3+)",
-			[]string{
-				"GNU Affero General Public License v3 or later (AGPLv3+)",
-			},
-		},
-		{
-			"Python license exceptions",
-			"GNU Library or Lesser General Public License (LGPL), Common Development and Distribution License 1.0 (CDDL-1.0), Historical Permission Notice and Disclaimer (HPND)",
-			[]string{
-				"GNU Library or Lesser General Public License (LGPL)",
-				"Common Development and Distribution License 1.0 (CDDL-1.0)",
-				"Historical Permission Notice and Disclaimer (HPND)",
-			},
-		},
-		{
-			name:    "License text",
-			license: "* Permission to use this software in any way is granted without",
-			licenses: []string{
-				"text://* Permission to use this software in any way is granted without",
-			},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			res := licensing.SplitLicenses(tt.license)
-			assert.Equal(t, tt.licenses, res)
-		})
-	}
-}
-
-func TestLaxSplitLicense(t *testing.T) {
-	var tests = []struct {
-		license      string
-		wantLicenses []string
-	}{
-		{
-			license:      "ASL 2.0",
-			wantLicenses: []string{"Apache-2.0"},
-		},
-		{
-			license: "MPL 2.0 GPL2+",
-			wantLicenses: []string{
-				"MPL-2.0",
-				"GPL-2.0-or-later",
-			},
-		},
-		{
-			license: "GPL-2.0-only WITH Classpath-exception-2.0",
-			wantLicenses: []string{
-				"GPL-2.0-only WITH Classpath-exception-2.0",
-			},
-		},
-		{
-			license: "BSD-3-CLAUSE OR GPL-2.0-only WITH Classpath-exception-2.0 AND MPL-2.0 ASL 2.0",
-			wantLicenses: []string{
-				"BSD-3-Clause",
-				"GPL-2.0-only WITH Classpath-exception-2.0",
-				"MPL-2.0",
-				"Apache-2.0",
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.license, func(t *testing.T) {
-			parsed := licensing.LaxSplitLicenses(tt.license)
-			assert.Equal(t, tt.wantLicenses, parsed)
 		})
 	}
 }

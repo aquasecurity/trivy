@@ -8,9 +8,11 @@ usage() {
   cat <<EOF
 $this: download go binaries for aquasecurity/trivy
 
-Usage: $this [-b] bindir [-d] [tag]
+Usage: $this [-b] bindir [-c] client [-d] [tag]
   -b sets bindir or installation directory, Defaults to ./bin
+  -c sets client identifier for download tracking (letters, digits, and '-' characters are allowed), Defaults to install-script
   -d turns on debug logging
+  -x turns on verbose logging
    [tag] is a tag from
    https://github.com/aquasecurity/trivy/releases
    If tag is missing, then the latest will be used.
@@ -27,9 +29,18 @@ parse_args() {
   # over-ridden by flag below
 
   BINDIR=${BINDIR:-./bin}
-  while getopts "b:dh?x" arg; do
+  CLIENT=${CLIENT:-install-script}
+  while getopts "b:c:dh?x" arg; do
     case "$arg" in
       b) BINDIR="$OPTARG" ;;
+      c)
+        if printf '%s' "$OPTARG" | grep -Eq '^[A-Za-z0-9-]+$'; then
+          CLIENT="$OPTARG"
+        else
+          log_crit "invalid client identifier '${OPTARG}'; allowed characters are: letters, digits, and '-'"
+          exit 1
+        fi
+        ;;
       d) log_set_priority 10 ;;
       h | \?) usage "$0" ;;
       x) set -x ;;
@@ -51,41 +62,13 @@ execute() {
   srcdir="${tmpdir}"
   (cd "${tmpdir}" && untar "${TARBALL}")
   test ! -d "${BINDIR}" && install -d "${BINDIR}"
-  for binexe in $BINARIES; do
-    if [ "$OS" = "windows" ]; then
-      binexe="${binexe}.exe"
-    fi
-    install "${srcdir}/${binexe}" "${BINDIR}/"
-    log_info "installed ${BINDIR}/${binexe}"
-  done
+  binexe="trivy"
+  if [ "$OS" = "windows" ]; then
+    binexe="${binexe}.exe"
+  fi
+  install "${srcdir}/${binexe}" "${BINDIR}/"
+  log_info "installed ${BINDIR}/${binexe}"
   rm -rf "${tmpdir}"
-}
-get_binaries() {
-  case "$PLATFORM" in
-    darwin/386) BINARIES="trivy" ;;
-    darwin/amd64) BINARIES="trivy" ;;
-    darwin/arm64) BINARIES="trivy" ;;
-    darwin/armv7) BINARIES="trivy" ;;
-    freebsd/386) BINARIES="trivy" ;;
-    freebsd/amd64) BINARIES="trivy" ;;
-    freebsd/arm64) BINARIES="trivy" ;;
-    freebsd/armv7) BINARIES="trivy" ;;
-    linux/386) BINARIES="trivy" ;;
-    linux/amd64) BINARIES="trivy" ;;
-    linux/ppc64le) BINARIES="trivy" ;;
-    linux/arm64) BINARIES="trivy" ;;
-    linux/armv7) BINARIES="trivy" ;;
-    linux/s390x) BINARIES="trivy" ;;
-    openbsd/386) BINARIES="trivy" ;;
-    openbsd/amd64) BINARIES="trivy" ;;
-    openbsd/arm64) BINARIES="trivy" ;;
-    openbsd/armv7) BINARIES="trivy" ;;
-    windows/amd64) BINARIES="trivy" ;;
-    *)
-      log_crit "platform $PLATFORM is not supported.  Make sure this script is up-to-date and file request at https://github.com/${PREFIX}/issues/new"
-      exit 1
-      ;;
-  esac
 }
 tag_to_version() {
   if [ -z "${TAG}" ]; then
@@ -137,12 +120,6 @@ adjust_arch() {
     arm64) ARCH=ARM64 ;;
     ppc64le) ARCH=PPC64LE ;;
     s390x) ARCH=s390x ;;
-    darwin) ARCH=macOS ;;
-    dragonfly) ARCH=DragonFlyBSD ;;
-    freebsd) ARCH=FreeBSD ;;
-    linux) ARCH=Linux ;;
-    netbsd) ARCH=NetBSD ;;
-    openbsd) ARCH=OpenBSD ;;
   esac
   true
 }
@@ -382,7 +359,6 @@ EOF
 PROJECT_NAME="trivy"
 OWNER=aquasecurity
 REPO="trivy"
-BINARY=trivy
 FORMAT=tar.gz
 OS=$(uname_os)
 ARCH=$(uname_arch)
@@ -392,15 +368,14 @@ PREFIX="$OWNER/$REPO"
 log_prefix() {
 	echo "$PREFIX"
 }
-PLATFORM="${OS}/${ARCH}"
+
 GITHUB_DOWNLOAD=https://github.com/${OWNER}/${REPO}/releases/download
+GET_DOWNLOAD=https://get.trivy.dev/trivy
 
 uname_os_check "$OS"
 uname_arch_check "$ARCH"
 
 parse_args "$@"
-
-get_binaries
 
 tag_to_version
 
@@ -414,7 +389,7 @@ log_info "found version: ${VERSION} for ${TAG}/${OS}/${ARCH}"
 
 NAME=${PROJECT_NAME}_${VERSION}_${OS}-${ARCH}
 TARBALL=${NAME}.${FORMAT}
-TARBALL_URL=${GITHUB_DOWNLOAD}/${TAG}/${TARBALL}
+TARBALL_URL="${GET_DOWNLOAD}?os=${OS}&arch=${ARCH}&version=${VERSION}&type=${FORMAT}&client=${CLIENT}"
 CHECKSUM=${PROJECT_NAME}_${VERSION}_checksums.txt
 CHECKSUM_URL=${GITHUB_DOWNLOAD}/${TAG}/${CHECKSUM}
 

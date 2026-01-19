@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:1ab435ff0da0a8c95292bfd8a3b270b457cfca575a4a68731dd2fc142e2c13ef",
   "ArtifactName": "testdata/fixtures/images/opensuse-tumbleweed.tar.gz",
@@ -84,7 +84,7 @@
           "PkgName": "libopenssl3",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/opensuse/libopenssl3@3.1.4-9.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607",
-            "UID": "f051425f385d2b99"
+            "UID": "f71b3dc2f2cc0d84"
           },
           "InstalledVersion": "3.1.4-9.1",
           "FixedVersion": "3.1.5-9.1",
@@ -93,6 +93,7 @@
             "Digest": "sha256:427d16a14c45614f51357aeebee0dfe209a1cebfc044b3b724b6ea35663b3111",
             "DiffID": "sha256:7a335bdf2d91d6d158da360054aa7e477d708187d43fe9d0ac20144cdf90f763"
           },
+          "Fingerprint": "sha256:a2b4e178fa87fb6e4f6f965e69b0b1134812d02f62acc2fc5bfc6cfaed68b9f7",
           "Title": "libopenssl-3-devel-3.1.1-3.1 on GA media",
           "Description": "These are all security issues fixed in the libopenssl-3-devel-3.1.1-3.1 package on the GA media of openSUSE Tumbleweed.",
           "Severity": "MEDIUM",

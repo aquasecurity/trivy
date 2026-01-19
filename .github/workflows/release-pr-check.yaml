@@ -16,6 +16,6 @@ jobs:
         run: |
           if [ "$PR_AUTHOR" != "aqua-bot" ]; then
             echo "::error::This branch is intended for automated backporting by bot. Please refer to the documentation:"
-            echo "::error::https://trivy.dev/latest/community/maintainer/backporting/"
+            echo "::error::https://trivy.dev/docs/latest/community/maintainer/backporting/"
             exit 1
           fi

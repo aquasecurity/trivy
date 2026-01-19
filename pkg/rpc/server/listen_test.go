@@ -73,17 +73,11 @@ func Test_dbWorker_update(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			dbDir := db.Dir(t.TempDir())
-
-			// Initialize the cache
-			meta := metadata.NewClient(dbDir)
-			err := meta.Update(cachedMetadata)
-			require.NoError(t, err)
-
-			err = db.Init(dbDir)
-			require.NoError(t, err)
-
-			defer func() { _ = db.Close() }()
+			// Initialize DB with metadata
+			dbDir := dbtest.InitWithMetadata(t, cachedMetadata, true)
+			t.Cleanup(func() {
+				require.NoError(t, db.Close())
+			})
 
 			// Set a fake time
 			ctx := clock.With(t.Context(), tt.now)
@@ -97,7 +91,7 @@ func Test_dbWorker_update(t *testing.T) {
 			w := newDBWorker(client)
 
 			var dbUpdateWg, requestWg sync.WaitGroup
-			err = w.update(ctx, "1.2.3", dbDir,
+			err := w.update(ctx, "1.2.3", dbDir,
 				tt.skipUpdate, &dbUpdateWg, &requestWg, ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)

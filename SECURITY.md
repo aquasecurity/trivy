@@ -2,8 +2,8 @@
 
 ## Supported Versions
 
-This is an open source project that is provided as-is without warrenty or liability.  
-As such no supportability commitment. The maintainers will do the best they can to address any report promptly and responsibly.
+This is an open source project that is provided as-is without warranty or liability.
+As such, there is no supportability commitment. The maintainers will do the best they can to address any report promptly and responsibly.
 
 ## Reporting a Vulnerability
 
@@ -14,3 +14,4 @@ This policy is intended for vulnerabilities in **Trivy itself** (e.g., core func
 
 If you discover a vulnerability in a **dependency module** (e.g., a third-party library used by Trivy), please **do not report it here**.  
 Instead, open a ticket in [GitHub Discussions](https://github.com/aquasecurity/trivy/discussions) so that the maintainers and community can evaluate and address it appropriately.
+

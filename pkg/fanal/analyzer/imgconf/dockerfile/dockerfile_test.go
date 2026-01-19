@@ -6,12 +6,12 @@ import (
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/moby/buildkit/frontend/dockerfile/parser"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/dockerfile/parser"
 )
 
 func Test_historyAnalyzer_Analyze(t *testing.T) {
@@ -384,7 +384,7 @@ func Test_ImageConfigToDockerfile(t *testing.T) {
 					},
 				},
 			},
-			expected: "HEALTHCHECK --interval=5m0s --timeout=3s --startPeriod=1s --retries=3 CMD curl -f http://localhost/ || exit 1\n",
+			expected: "HEALTHCHECK --interval=5m0s --timeout=3s --start-period=1s --retries=3 CMD curl -f http://localhost/ || exit 1\n",
 		},
 		{
 			name: "healthcheck instruction exec arguments directly",
@@ -474,7 +474,8 @@ ENTRYPOINT ["/bin/sh"]
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := imageConfigToDockerfile(tt.input)
-			_, err := parser.Parse(bytes.NewReader(got))
+			p := parser.NewParser(parser.WithStrict())
+			_, err := p.Parse(t.Context(), bytes.NewReader(got), "Dockerfile")
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.expected, string(got))

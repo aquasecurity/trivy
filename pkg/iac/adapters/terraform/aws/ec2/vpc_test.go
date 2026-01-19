@@ -93,43 +93,32 @@ resource "aws_default_security_group" "default" {
 			expected: ec2.EC2{
 				VPCs: []ec2.VPC{
 					{
-						Metadata:        iacTypes.NewTestMetadata(),
-						IsDefault:       iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-						ID:              iacTypes.String("", iacTypes.NewTestMetadata()),
-						FlowLogsEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						IsDefault: iacTypes.BoolTest(true),
 					},
 					{
-						Metadata:        iacTypes.NewTestMetadata(),
-						IsDefault:       iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						ID:              iacTypes.String("", iacTypes.NewTestMetadata()),
-						FlowLogsEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						FlowLogsEnabled: iacTypes.BoolTest(true),
 					},
 				},
 				SecurityGroups: []ec2.SecurityGroup{
 					{
-						Metadata:    iacTypes.NewTestMetadata(),
-						Description: iacTypes.String("Allow inbound HTTP traffic", iacTypes.NewTestMetadata()),
-						IsDefault:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						VPCID:       iacTypes.String("", iacTypes.NewTestMetadata()),
+						Description: iacTypes.StringTest("Allow inbound HTTP traffic"),
 						IngressRules: []ec2.SecurityGroupRule{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
 
-								Description: iacTypes.String("Rule #1", iacTypes.NewTestMetadata()),
+								Description: iacTypes.StringTest("Rule #1"),
 								CIDRs: []iacTypes.StringValue{
-									iacTypes.String("4.5.6.7/32", iacTypes.NewTestMetadata()),
+									iacTypes.StringTest("4.5.6.7/32"),
 								},
 								FromPort: iacTypes.IntTest(80),
 								ToPort:   iacTypes.IntTest(80),
 								Protocol: iacTypes.StringTest("tcp"),
 							},
 							{
-								Metadata: iacTypes.NewTestMetadata(),
 
-								Description: iacTypes.String("Rule #2", iacTypes.NewTestMetadata()),
+								Description: iacTypes.StringTest("Rule #2"),
 								CIDRs: []iacTypes.StringValue{
-									iacTypes.String("1.2.3.4/32", iacTypes.NewTestMetadata()),
-									iacTypes.String("4.5.6.7/32", iacTypes.NewTestMetadata()),
+									iacTypes.StringTest("1.2.3.4/32"),
+									iacTypes.StringTest("4.5.6.7/32"),
 								},
 								FromPort: iacTypes.IntTest(22),
 								ToPort:   iacTypes.IntTest(22),
@@ -139,10 +128,8 @@ resource "aws_default_security_group" "default" {
 
 						EgressRules: []ec2.SecurityGroupRule{
 							{
-								Metadata:    iacTypes.NewTestMetadata(),
-								Description: iacTypes.String("", iacTypes.NewTestMetadata()),
 								CIDRs: []iacTypes.StringValue{
-									iacTypes.String("1.2.3.4/32", iacTypes.NewTestMetadata()),
+									iacTypes.StringTest("1.2.3.4/32"),
 								},
 								FromPort: iacTypes.IntTest(-1),
 								ToPort:   iacTypes.IntTest(-1),
@@ -154,15 +141,11 @@ resource "aws_default_security_group" "default" {
 						IngressRules: []ec2.SecurityGroupRule{
 							{
 								Protocol: iacTypes.StringTest("-1"),
-								FromPort: iacTypes.IntTest(0),
-								ToPort:   iacTypes.IntTest(0),
 							},
 						},
 						EgressRules: []ec2.SecurityGroupRule{
 							{
 								Protocol: iacTypes.StringTest("-1"),
-								FromPort: iacTypes.IntTest(0),
-								ToPort:   iacTypes.IntTest(0),
 								CIDRs:    []iacTypes.StringValue{iacTypes.StringTest("0.0.0.0/0")},
 							},
 						},
@@ -170,21 +153,18 @@ resource "aws_default_security_group" "default" {
 				},
 				NetworkACLs: []ec2.NetworkACL{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Rules: []ec2.NetworkACLRule{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
-								Type:     iacTypes.String("ingress", iacTypes.NewTestMetadata()),
-								Action:   iacTypes.String("allow", iacTypes.NewTestMetadata()),
-								Protocol: iacTypes.String("tcp", iacTypes.NewTestMetadata()),
+								Type:     iacTypes.StringTest("ingress"),
+								Action:   iacTypes.StringTest("allow"),
+								Protocol: iacTypes.StringTest("tcp"),
 								CIDRs: []iacTypes.StringValue{
-									iacTypes.String("10.0.0.0/16", iacTypes.NewTestMetadata()),
+									iacTypes.StringTest("10.0.0.0/16"),
 								},
 								FromPort: iacTypes.IntTest(22),
 								ToPort:   iacTypes.IntTest(22),
 							},
 						},
-						IsDefaultRule: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},
 			},
@@ -205,43 +185,31 @@ resource "aws_network_acl_rule" "example" {
 			expected: ec2.EC2{
 				SecurityGroups: []ec2.SecurityGroup{
 					{
-						Metadata:    iacTypes.NewTestMetadata(),
-						Description: iacTypes.String("Managed by Terraform", iacTypes.NewTestMetadata()),
-						IsDefault:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						VPCID:       iacTypes.String("", iacTypes.NewTestMetadata()),
+						Description: iacTypes.StringTest("Managed by Terraform"),
 						IngressRules: []ec2.SecurityGroupRule{
 							{
-								Metadata:    iacTypes.NewTestMetadata(),
-								Description: iacTypes.String("", iacTypes.NewTestMetadata()),
-								FromPort:    iacTypes.IntTest(-1),
-								ToPort:      iacTypes.IntTest(-1),
+								FromPort: iacTypes.IntTest(-1),
+								ToPort:   iacTypes.IntTest(-1),
 							},
 						},
 
 						EgressRules: []ec2.SecurityGroupRule{
 							{
-								Metadata:    iacTypes.NewTestMetadata(),
-								Description: iacTypes.String("", iacTypes.NewTestMetadata()),
-								FromPort:    iacTypes.IntTest(-1),
-								ToPort:      iacTypes.IntTest(-1),
+								FromPort: iacTypes.IntTest(-1),
+								ToPort:   iacTypes.IntTest(-1),
 							},
 						},
 					},
 				},
 				NetworkACLs: []ec2.NetworkACL{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Rules: []ec2.NetworkACLRule{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
-								Type:     iacTypes.String("ingress", iacTypes.NewTestMetadata()),
-								Action:   iacTypes.String("", iacTypes.NewTestMetadata()),
-								Protocol: iacTypes.String("", iacTypes.NewTestMetadata()),
+								Type:     iacTypes.StringTest("ingress"),
 								FromPort: iacTypes.IntTest(-1),
 								ToPort:   iacTypes.IntTest(-1),
 							},
 						},
-						IsDefaultRule: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},
 			},
@@ -262,10 +230,7 @@ resource "aws_flow_log" "this" {
 			expected: ec2.EC2{
 				VPCs: []ec2.VPC{
 					{
-						Metadata:        iacTypes.NewTestMetadata(),
-						IsDefault:       iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						ID:              iacTypes.String("", iacTypes.NewTestMetadata()),
-						FlowLogsEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						FlowLogsEnabled: iacTypes.BoolTest(true),
 					},
 				},
 			},

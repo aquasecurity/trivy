@@ -88,13 +88,13 @@ Running `make id` in the root of the trivy-checks repository will provide you wi
 
 Rego Checks for Trivy can utilise Schemas to map the input to specific objects. The schemas available are listed [here.](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/rego/schemas). 
 
-More information on using the builtin schemas is provided in the [main documentation.](../../../docs/scanner/misconfiguration/custom/schema.md)
+More information on using the builtin schemas is provided in the [main documentation.](../../../guide/scanner/misconfiguration/custom/schema.md)
 
 ## Check Metadata
 
 The metadata is the top section that starts with `# METADATA`, and has to be placed on top of the check. You can copy and paste from another check as a starting point. This format is effectively _yaml_ within a Rego comment, and is [defined as part of Rego itself](https://www.openpolicyagent.org/docs/latest/policy-language/#metadata).
 
-For detailed information on each component of the Check Metadata, please refer to the [main documentation.](../../../docs/scanner/misconfiguration/custom/index.md)
+For detailed information on each component of the Check Metadata, please refer to the [main documentation.](../../../guide/scanner/misconfiguration/custom/index.md)
 
 Note that while the Metadata is optional in your own custom checks for Trivy, if you are contributing your check to the Trivy builtin checks, the Metadata section will be required.
 
@@ -123,7 +123,7 @@ Finally, you'll want to generate documentation for your newly added rule. Please
 
 ## Adding Tests
 
-All Rego checks need to have tests. There are many examples of these in the `checks` directory for each check ([Link](https://github.com/aquasecurity/trivy-checks/tree/main/checks)). More information on how to write tests for Rego checks is provided in the [custom misconfiguration](../../../docs/scanner/misconfiguration/custom/testing.md) section of the docs.
+All Rego checks need to have tests. There are many examples of these in the `checks` directory for each check ([Link](https://github.com/aquasecurity/trivy-checks/tree/main/checks)). More information on how to write tests for Rego checks is provided in the [custom misconfiguration](../../../guide/scanner/misconfiguration/custom/testing.md) section of the docs.
 
 ## Example PR
 

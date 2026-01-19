@@ -3,6 +3,7 @@ package parser
 import (
 	"encoding/json/jsontext"
 	"encoding/json/v2"
+	"fmt"
 	"io/fs"
 	"strings"
 
@@ -20,6 +21,8 @@ type Resource struct {
 	rng        iacTypes.Range
 	id         string
 	comment    string
+
+	raw *Property
 }
 
 func (r *Resource) configureResource(id string, target fs.FS, filepath string, ctx *FileContext) {
@@ -46,11 +49,37 @@ func (r *Resource) setFile(target fs.FS, filepath string) {
 
 func (r *Resource) setContext(ctx *FileContext) {
 	r.ctx = ctx
-
-	for _, p := range r.properties {
-		p.setLogicalResource(r.id)
-		p.setContext(ctx)
+	if r.raw != nil {
+		r.raw.setContext(ctx)
+	} else {
+		for _, p := range r.properties {
+			p.setLogicalResource(r.id)
+			p.setContext(ctx)
+		}
 	}
+}
+
+func (r *Resource) clone() *Resource {
+	clone := &Resource{
+		typ:     r.typ,
+		ctx:     r.ctx,
+		rng:     r.rng,
+		id:      r.id,
+		comment: r.comment,
+	}
+
+	if r.properties != nil {
+		clone.properties = make(map[string]*Property, len(r.properties))
+		for k, p := range r.properties {
+			clone.properties[k] = p.clone()
+		}
+	}
+
+	if r.raw != nil {
+		clone.raw = r.raw.clone()
+	}
+
+	return clone
 }
 
 type resourceInner struct {
@@ -63,22 +92,43 @@ func (r *Resource) UnmarshalYAML(node *yaml.Node) error {
 	r.EndLine = calculateEndLine(node)
 	r.comment = node.LineComment
 
-	var i resourceInner
-	if err := node.Decode(&i); err != nil {
-		return err
+	switch node.Kind {
+	case yaml.MappingNode:
+		var i resourceInner
+		if err := node.Decode(&i); err != nil {
+			return err
+		}
+		r.typ = i.Type
+		r.properties = i.Properties
+		return nil
+	case yaml.SequenceNode:
+		var raw Property
+		if err := node.Decode(&raw); err != nil {
+			return err
+		}
+		r.raw = &raw
+		return nil
+	default:
+		return fmt.Errorf("unsupported YAML node kind: %v", node.Kind)
 	}
-	r.typ = i.Type
-	r.properties = i.Properties
-	return nil
 }
 
 func (r *Resource) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	var i resourceInner
-	if err := json.UnmarshalDecode(dec, &i); err != nil {
-		return err
+	switch dec.PeekKind() {
+	case '{':
+		var i resourceInner
+		if err := json.UnmarshalDecode(dec, &i); err != nil {
+			return err
+		}
+		r.typ = i.Type
+		r.properties = i.Properties
+	case '[':
+		var raw Property
+		if err := json.UnmarshalDecode(dec, &raw); err != nil {
+			return err
+		}
+		r.raw = &raw
 	}
-	r.typ = i.Type
-	r.properties = i.Properties
 	return nil
 }
 

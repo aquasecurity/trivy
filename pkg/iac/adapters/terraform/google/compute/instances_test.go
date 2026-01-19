@@ -57,41 +57,30 @@ func Test_adaptInstances(t *testing.T) {
 `,
 			expected: []compute.Instance{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Name:     iacTypes.String("test", iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("test"),
 					NetworkInterfaces: []compute.NetworkInterface{
 						{
-							Metadata:    iacTypes.NewTestMetadata(),
-							HasPublicIP: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							NATIP:       iacTypes.String("", iacTypes.NewTestMetadata()),
+							HasPublicIP: iacTypes.BoolTest(true),
 						},
 					},
 					ShieldedVM: compute.ShieldedVMConfig{
-						Metadata:                   iacTypes.NewTestMetadata(),
-						SecureBootEnabled:          iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-						IntegrityMonitoringEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-						VTPMEnabled:                iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						SecureBootEnabled:          iacTypes.BoolTest(true),
+						IntegrityMonitoringEnabled: iacTypes.BoolTest(true),
+						VTPMEnabled:                iacTypes.BoolTest(true),
 					},
 					ServiceAccount: compute.ServiceAccount{
-						Metadata: iacTypes.NewTestMetadata(),
-						Email:    iacTypes.String("", iacTypes.NewTestMetadata()),
 						Scopes: []iacTypes.StringValue{
-							iacTypes.String("cloud-platform", iacTypes.NewTestMetadata()),
+							iacTypes.StringTest("cloud-platform"),
 						},
-						IsDefault: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
-					CanIPForward:                iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					OSLoginEnabled:              iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					EnableProjectSSHKeyBlocking: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					EnableSerialPort:            iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-
+					CanIPForward:                iacTypes.BoolTest(true),
+					EnableProjectSSHKeyBlocking: iacTypes.BoolTest(true),
+					EnableSerialPort:            iacTypes.BoolTest(true),
 					BootDisks: []compute.Disk{
 						{
-							Metadata: iacTypes.NewTestMetadata(),
-							Name:     iacTypes.String("boot-disk", iacTypes.NewTestMetadata()),
+							Name: iacTypes.StringTest("boot-disk"),
 							Encryption: compute.DiskEncryption{
-								Metadata:   iacTypes.NewTestMetadata(),
-								KMSKeyLink: iacTypes.String("something", iacTypes.NewTestMetadata()),
+								KMSKeyLink: iacTypes.StringTest("something"),
 							},
 						},
 					},
@@ -106,23 +95,9 @@ func Test_adaptInstances(t *testing.T) {
 `,
 			expected: []compute.Instance{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Name:     iacTypes.String("", iacTypes.NewTestMetadata()),
-					ShieldedVM: compute.ShieldedVMConfig{
-						Metadata:                   iacTypes.NewTestMetadata(),
-						SecureBootEnabled:          iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						IntegrityMonitoringEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						VTPMEnabled:                iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
-					ServiceAccount: compute.ServiceAccount{
-						Metadata:  iacTypes.NewTestMetadata(),
-						Email:     iacTypes.String("", iacTypes.NewTestMetadata()),
-						IsDefault: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
-					CanIPForward:                iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					OSLoginEnabled:              iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					EnableProjectSSHKeyBlocking: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					EnableSerialPort:            iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					ShieldedVM:     compute.ShieldedVMConfig{},
+					ServiceAccount: compute.ServiceAccount{},
+					OSLoginEnabled: iacTypes.BoolTest(true),
 				},
 			},
 		},
@@ -135,23 +110,31 @@ func Test_adaptInstances(t *testing.T) {
 `,
 			expected: []compute.Instance{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Name:     iacTypes.String("", iacTypes.NewTestMetadata()),
-					ShieldedVM: compute.ShieldedVMConfig{
-						Metadata:                   iacTypes.NewTestMetadata(),
-						SecureBootEnabled:          iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						IntegrityMonitoringEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						VTPMEnabled:                iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
+					ShieldedVM: compute.ShieldedVMConfig{},
 					ServiceAccount: compute.ServiceAccount{
-						Metadata:  iacTypes.NewTestMetadata(),
-						Email:     iacTypes.String("", iacTypes.NewTestMetadata()),
-						IsDefault: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						IsDefault: iacTypes.BoolTest(true),
 					},
-					CanIPForward:                iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					OSLoginEnabled:              iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					EnableProjectSSHKeyBlocking: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					EnableSerialPort:            iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					OSLoginEnabled: iacTypes.BoolTest(true),
+				},
+			},
+		},
+		{
+			name: "handles metadata values in various formats",
+			terraform: `resource "google_compute_instance" "example" {
+	name = "test"
+
+	metadata = {
+		enable-oslogin = "True"
+		block-project-ssh-keys = 1
+		serial-port-enable = "yes"
+	}
+}`,
+			expected: []compute.Instance{
+				{
+					Name:                        iacTypes.StringTest("test"),
+					OSLoginEnabled:              iacTypes.BoolTest(true),
+					EnableSerialPort:            iacTypes.BoolTest(true),
+					EnableProjectSSHKeyBlocking: iacTypes.BoolTest(true),
 				},
 			},
 		},

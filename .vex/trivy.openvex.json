@@ -599,6 +599,36 @@
       "status": "not_affected",
       "justification": "vulnerable_code_not_in_execute_path",
       "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2025-4192",
+        "name": "GO-2025-4192",
+        "description": "Sigstore Timestamp Authority allocates excessive memory during request parsing in github.com/sigstore/timestamp-authority",
+        "aliases": [
+          "CVE-2025-66564",
+          "GHSA-4qg8-fj49-pxjh"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/github.com/sigstore/timestamp-authority@v1.2.2",
+              "identifiers": {
+                "purl": "pkg:golang/github.com/sigstore/timestamp-authority@v1.2.2"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
     }
   ]
 }

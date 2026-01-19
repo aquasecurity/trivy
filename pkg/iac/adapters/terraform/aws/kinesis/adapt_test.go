@@ -27,11 +27,9 @@ func Test_adaptStream(t *testing.T) {
 			}
 `,
 			expected: kinesis.Stream{
-				Metadata: iacTypes.NewTestMetadata(),
 				Encryption: kinesis.Encryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Type:     iacTypes.String("KMS", iacTypes.NewTestMetadata()),
-					KMSKeyID: iacTypes.String("my/special/key", iacTypes.NewTestMetadata()),
+					Type:     iacTypes.StringTest("KMS"),
+					KMSKeyID: iacTypes.StringTest("my/special/key"),
 				},
 			},
 		},
@@ -42,11 +40,8 @@ func Test_adaptStream(t *testing.T) {
 			}
 `,
 			expected: kinesis.Stream{
-				Metadata: iacTypes.NewTestMetadata(),
 				Encryption: kinesis.Encryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Type:     iacTypes.String("NONE", iacTypes.NewTestMetadata()),
-					KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
+					Type: iacTypes.StringTest("NONE"),
 				},
 			},
 		},

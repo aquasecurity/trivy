@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:8af996fb4a61e515887a173fdea3d5111c90c76e9f8247b3f668b17ab8215946",
   "ArtifactName": "testdata/fixtures/images/centos-7.tar.gz",
@@ -85,7 +85,7 @@
           "PkgName": "bash",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64\u0026distro=centos-7.6.1810",
-            "UID": "64aff37eb11b9c25"
+            "UID": "1e73732cad16e536"
           },
           "InstalledVersion": "4.2.46-31.el7",
           "Status": "will_not_fix",
@@ -95,6 +95,7 @@
           },
           "SeveritySource": "redhat",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18276",
+          "Fingerprint": "sha256:df06395185e8c9e2e8c36ae96ab18505e0b22b76734cae6322207b8aebe57b7d",
           "Title": "bash: when effective UID is not equal to its real UID the saved UID is not dropped",
           "Description": "An issue was discovered in disable_priv_mode in shell.c in GNU Bash through 5.0 patch 11. By default, if Bash is run with its effective UID not equal to its real UID, it will drop privileges by setting its effective UID to its real UID. However, it does so incorrectly. On Linux and other systems that support \"saved UID\" functionality, the saved UID is not dropped. An attacker with command execution in the shell can use \"enable -f\" for runtime loading of a new builtin, which can be a shared object that calls setuid() and therefore regains privileges. However, binaries running with an effective UID of 0 are unaffected.",
           "Severity": "LOW",
@@ -146,7 +147,7 @@
           "PkgName": "openssl-libs",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026distro=centos-7.6.1810\u0026epoch=1",
-            "UID": "20f09cdcea6545a2"
+            "UID": "74d0a3456f5c43a3"
           },
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",
@@ -157,6 +158,7 @@
           },
           "SeveritySource": "redhat",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1559",
+          "Fingerprint": "sha256:638871deb7cddea2771313ab3cff2b012e60f6c4346567d35bd9ceee1d9226c3",
           "Title": "openssl: 0-byte record padding oracle",
           "Description": "If an application encounters a fatal protocol error and then calls SSL_shutdown() twice (once to send a close_notify, and once to receive one) then OpenSSL can respond differently to the calling application if a 0 byte record is received with invalid padding compared to if a 0 byte record is received with an invalid MAC. If the application then behaves differently based on that in a way that is detectable to the remote peer, then this amounts to a padding oracle that could be used to decrypt data. In order for this to be exploitable \"non-stitched\" ciphersuites must be in use. Stitched ciphersuites are optimised implementations of certain commonly used ciphersuites. Also the application must call SSL_shutdown() twice even if a protocol error has occurred (applications should not do this but some do anyway). Fixed in OpenSSL 1.0.2r (Affected 1.0.2-1.0.2q).",
           "Severity": "MEDIUM",
@@ -240,7 +242,7 @@
           "PkgName": "openssl-libs",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026distro=centos-7.6.1810\u0026epoch=1",
-            "UID": "20f09cdcea6545a2"
+            "UID": "74d0a3456f5c43a3"
           },
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",
@@ -251,6 +253,7 @@
           },
           "SeveritySource": "redhat",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-0734",
+          "Fingerprint": "sha256:73f7b1753e4dcaa7edff2d6f81e8373c85c2be4c1e1c5b04e8f56d1811c0aa1c",
           "Title": "openssl: timing side channel attack in the DSA signature algorithm",
           "Description": "The OpenSSL DSA signature algorithm has been shown to be vulnerable to a timing side channel attack. An attacker could use variations in the signing algorithm to recover the private key. Fixed in OpenSSL 1.1.1a (Affected 1.1.1). Fixed in OpenSSL 1.1.0j (Affected 1.1.0-1.1.0i). Fixed in OpenSSL 1.0.2q (Affected 1.0.2-1.0.2p).",
           "Severity": "LOW",

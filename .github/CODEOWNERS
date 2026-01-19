@@ -8,15 +8,15 @@ pkg/sbom/        @knqyf263 @DmitriyLewen
 pkg/scanner/     @knqyf263 @DmitriyLewen
 
 # Misconfiguration scanning
-docs/docs/scanner/misconfiguration/  @simar7 @nikpivkin
-docs/docs/target/aws.md              @simar7 @nikpivkin
-pkg/fanal/analyzer/config/           @simar7 @nikpivkin
-pkg/cloud/                           @simar7 @nikpivkin
-pkg/iac/                             @simar7 @nikpivkin
+docs/guide/scanner/misconfiguration/  @simar7 @nikpivkin
+docs/guide/target/aws.md              @simar7 @nikpivkin
+pkg/fanal/analyzer/config/            @simar7 @nikpivkin
+pkg/config/aws/                       @simar7 @nikpivkin
+pkg/iac/                              @simar7 @nikpivkin
 
 # Helm chart
 helm/trivy/ @afdesk @simar7
 
 # Kubernetes scanning
 pkg/k8s/                         @afdesk @simar7
-docs/docs/target/kubernetes.md   @afdesk @simar7
+docs/guide/target/kubernetes.md   @afdesk @simar7

@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fingerprint"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -77,9 +78,14 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		scanResponse.Layers[i].CreatedBy = ""
 	}
 
-	return types.Report{
+	reportID, err := uuid.NewV7()
+	if err != nil {
+		return types.Report{}, xerrors.Errorf("failed to generate ReportID: %w", err)
+	}
+
+	r := types.Report{
 		SchemaVersion: report.SchemaVersion,
-		ReportID:      uuid.New().String(),
+		ReportID:      reportID.String(),
 		CreatedAt:     clock.Now(ctx),
 		ArtifactID:    s.generateArtifactID(artifactInfo),
 		ArtifactName:  artifactInfo.Name,
@@ -108,7 +114,12 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		},
 		Results: scanResponse.Results,
 		BOM:     artifactInfo.BOM,
-	}, nil
+	}
+
+	// Fill fingerprints for all findings
+	fingerprint.Fill(&r)
+
+	return r, nil
 }
 
 // generateArtifactID generates a unique ID for the artifact based on its type

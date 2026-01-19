@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:988a8e3eb049d90c20fafb183d0e792c99b8ba28433be1d1e4447a8b5a1adbdf",
   "ArtifactName": "testdata/fixtures/images/alpine-39.tar.gz",
@@ -90,6 +90,7 @@
             "Name": "Alpine Secdb",
             "URL": "https://secdb.alpinelinux.org/"
           },
+          "Fingerprint": "sha256:294b2f8c416dd7b50971286b95e1f2685d7daf3c18957237fa7dc666178b6183",
           "Description": "musl libc through 1.1.23 has an x87 floating-point stack adjustment imbalance, related to the math/i386/ directory. In some cases, use of this library could introduce out-of-bounds writes that are not present in an application's source code.",
           "Severity": "CRITICAL",
           "CweIDs": [
@@ -136,6 +137,7 @@
             "Name": "Alpine Secdb",
             "URL": "https://secdb.alpinelinux.org/"
           },
+          "Fingerprint": "sha256:fae2ab3e458f1237c8202860ac513a204cdc999c3283eba49665d0f1b3b79856",
           "Description": "musl libc through 1.1.23 has an x87 floating-point stack adjustment imbalance, related to the math/i386/ directory. In some cases, use of this library could introduce out-of-bounds writes that are not present in an application's source code.",
           "Severity": "CRITICAL",
           "CweIDs": [

@@ -51,6 +51,10 @@ func TestCheckOptions(t *testing.T) {
 			domain:         "xxx.dkr.ecr-fips.fips-region.amazonaws.com",
 			expectedRegion: "fips-region",
 		},
+		"dualstack-region-1": {
+			domain:         "xxx.dkr-ecr.region-1.on.aws",
+			expectedRegion: "region-1",
+		},
 		"cn-region-1": {
 			domain:         "xxx.dkr.ecr.region-1.amazonaws.com.cn",
 			expectedRegion: "region-1",

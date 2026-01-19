@@ -31,12 +31,8 @@ func Test_adaptLogGroups(t *testing.T) {
 `,
 			expected: []cloudwatch.LogGroup{
 				{
-					Metadata:        iacTypes.NewTestMetadata(),
-					Arn:             iacTypes.String("", iacTypes.NewTestMetadata()),
-					Name:            iacTypes.String("my-group", iacTypes.NewTestMetadata()),
-					KMSKeyID:        iacTypes.String("aws_kms_key.log_key", iacTypes.NewTestMetadata()),
-					RetentionInDays: iacTypes.Int(0, iacTypes.NewTestMetadata()),
-					MetricFilters:   nil,
+					Name:     iacTypes.StringTest("my-group"),
+					KMSKeyID: iacTypes.StringTest("aws_kms_key.log_key"),
 				},
 			},
 		},
@@ -50,11 +46,8 @@ func Test_adaptLogGroups(t *testing.T) {
 `,
 			expected: []cloudwatch.LogGroup{
 				{
-					Metadata:        iacTypes.NewTestMetadata(),
-					Arn:             iacTypes.String("", iacTypes.NewTestMetadata()),
-					Name:            iacTypes.String("my-group", iacTypes.NewTestMetadata()),
-					KMSKeyID:        iacTypes.String("key-as-string", iacTypes.NewTestMetadata()),
-					RetentionInDays: iacTypes.Int(0, iacTypes.NewTestMetadata()),
+					Name:     iacTypes.StringTest("my-group"),
+					KMSKeyID: iacTypes.StringTest("key-as-string"),
 				},
 			},
 		},
@@ -68,11 +61,8 @@ func Test_adaptLogGroups(t *testing.T) {
 `,
 			expected: []cloudwatch.LogGroup{
 				{
-					Metadata:        iacTypes.NewTestMetadata(),
-					Arn:             iacTypes.String("", iacTypes.NewTestMetadata()),
-					Name:            iacTypes.String("my-group", iacTypes.NewTestMetadata()),
-					KMSKeyID:        iacTypes.String("", iacTypes.NewTestMetadata()),
-					RetentionInDays: iacTypes.Int(3, iacTypes.NewTestMetadata()),
+					Name:            iacTypes.StringTest("my-group"),
+					RetentionInDays: iacTypes.IntTest(3),
 				},
 			},
 		},
