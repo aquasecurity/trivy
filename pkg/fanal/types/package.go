@@ -235,6 +235,9 @@ type Package struct {
 
 	// Files installed by the package
 	InstalledFiles []string `json:",omitempty"`
+
+	// Additional information about the component
+	Properties map[string]string `json:",omitempty"`
 }
 
 func (pkg *Package) Empty() bool {

@@ -102,6 +102,10 @@ var (
 				Name:  core.PropertySrcVersion,
 				Value: "2.0.0",
 			},
+			{
+				Name:  "custom_property",
+				Value: "property value",
+			},
 		},
 		Licenses: []string{"GPL-2.0"},
 	}
@@ -285,6 +289,9 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 										"rhel-9-for-aarch64-appstream-rpms",
 										"rhel-9-for-aarch64-appstream-source-rpms",
 									},
+								},
+								Properties: map[string]string{
+									"custom_property": "property value",
 								},
 							},
 						},
