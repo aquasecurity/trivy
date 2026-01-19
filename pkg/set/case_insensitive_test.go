@@ -432,10 +432,10 @@ func TestCaseInsensitiveSet_Difference(t *testing.T) {
 	}
 }
 
-func TestCaseInsensitiveSet_Get(t *testing.T) {
+func TestCaseInsensitiveSet_Find(t *testing.T) {
 	tests := []struct {
 		name      string
-		set       set.CaseInsensitiveStringSet
+		set       set.Set[string]
 		lookup    string
 		wantValue string
 		wantFound bool
@@ -492,7 +492,7 @@ func TestCaseInsensitiveSet_Get(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotValue, gotFound := tt.set.Get(tt.lookup)
+			gotValue, gotFound := tt.set.Find(tt.lookup)
 			assert.Equal(t, tt.wantValue, gotValue)
 			assert.Equal(t, tt.wantFound, gotFound)
 		})

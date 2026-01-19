@@ -7,14 +7,6 @@ import (
 	"strings"
 )
 
-// CaseInsensitiveStringSet extends Set[string] with case-insensitive operations
-// and provides access to the canonical (original) casing of stored values
-type CaseInsensitiveStringSet interface {
-	Set[string]
-	// Get returns the canonical (original) value for the given item (case-insensitive lookup)
-	Get(item string) (string, bool)
-}
-
 // caseInsensitiveStringSet represents a case-insensitive string set implementation
 // It stores strings with case-insensitive comparison while preserving the original casing
 // of the first occurrence of each unique string (case-insensitive).
@@ -25,7 +17,7 @@ type caseInsensitiveStringSet map[string]string //nolint: gocritic
 // NewCaseInsensitive creates a new empty case-insensitive string set with optional initial values
 // The first occurrence of each unique string (case-insensitive) will be preserved.
 // For example: NewCaseInsensitive("Hello", "HELLO", "world") will contain "Hello" and "world"
-func NewCaseInsensitive(values ...string) CaseInsensitiveStringSet {
+func NewCaseInsensitive(values ...string) Set[string] {
 	s := make(caseInsensitiveStringSet, len(values))
 	s.Append(values...)
 	return s
@@ -55,9 +47,8 @@ func (s caseInsensitiveStringSet) Contains(item string) bool {
 	return exists
 }
 
-// Get returns the canonical (original) value for the given item (case-insensitive lookup)
-// Returns empty string and false if the item doesn't exist in the set
-func (s caseInsensitiveStringSet) Get(item string) (string, bool) {
+// Find returns the stored value with its original casing
+func (s caseInsensitiveStringSet) Find(item string) (string, bool) {
 	value, exists := s[strings.ToLower(item)]
 	return value, exists
 }

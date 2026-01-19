@@ -421,7 +421,7 @@ func ValidateSPDXLicense(license string) bool {
 // Returns empty string and false if the license is not in the SPDX list
 func GetCanonicalSPDXLicense(license string) (string, bool) {
 	initSpdxLicenses()
-	return spdxLicenses.Get(license)
+	return spdxLicenses.Find(license)
 }
 
 // ValidateSPDXException returns true if SPDX exception list contain exceptionID
