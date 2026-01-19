@@ -588,8 +588,8 @@ func normalizeSimpleExpr(e expr.SimpleExpr) expr.Expression {
 		return expr.SimpleExpr{License: found.License, HasPlus: e.HasPlus || found.HasPlus || normalized.HasPlus}
 	}
 
-	// If not found in mapping, try to get the canonical SPDX license name
-	if canonical, ok := expr.GetCanonicalSPDXLicense(normalized.License); ok {
+	// If not found in mapping, try to get the canonical SPDX license ID
+	if canonical, ok := expr.SPDXLicenseID(normalized.License); ok {
 		return expr.SimpleExpr{License: canonical, HasPlus: e.HasPlus || normalized.HasPlus}
 	}
 
