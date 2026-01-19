@@ -52,12 +52,15 @@ func buildLdflags(debug bool) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	var build string
 
 	if debug {
-		return fmt.Sprintf("-X=github.com/aquasecurity/trivy/pkg/version/app.ver=%s", ver), nil
+		build = "-X=github.com/aquasecurity/trivy/pkg/version/app.ver=%s"
 	} else {
-		return fmt.Sprintf("-s -w -X=github.com/aquasecurity/trivy/pkg/version/app.ver=%s", ver), nil
+		build = "-s -w -X=github.com/aquasecurity/trivy/pkg/version/app.ver=%s"
 	}
+
+	return fmt.Sprintf(build, ver), nil
 }
 
 type Tool mg.Namespace
