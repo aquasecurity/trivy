@@ -47,6 +47,7 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 	addRepoURLToPOM(t, filepath.Join(rootRepo, dependency2Dir, "example-dependency2-5.0.0.pom"), ts2.URL)
 
 	// TODO add parents
+	// TODO add modules
 
 	tsRoot := httptest.NewServer(http.FileServer(http.Dir(rootRepo)))
 	defer tsRoot.Close()
@@ -68,8 +69,8 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 
 	// Expected packages and their licenses, each coming from a different repo.
 	wantPkgs := map[string]string{
-		"org.example:example-api:1.7.30": "The Apache Software License, Version 2.0",
-		"org.example:example-api2:1.0.0": "Custom License from custom repo",
+		"org.example:example-api:1.7.30::2cbe1ca4": "The Apache Software License, Version 2.0",
+		"org.example:example-api2:1.0.0::f8958ec7": "Custom License from custom repo",
 	}
 
 	// Package verification by matching licenses.
