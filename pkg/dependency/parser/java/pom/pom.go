@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"reflect"
+	"slices"
 	"strings"
 
 	"github.com/samber/lo"
@@ -13,13 +14,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/set"
-	"github.com/aquasecurity/trivy/pkg/x/slices"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 type pom struct {
-	filePath    string
-	content     *pomXML
-	remoteRepos []repository
+	filePath string
+	content  *pomXML
 }
 
 func (p *pom) nil() bool {
@@ -117,13 +117,13 @@ func (p *pom) artifact() artifact {
 }
 
 func (p *pom) licenses() []string {
-	return slices.ZeroToNil(lo.FilterMap(p.content.Licenses.License, func(lic pomLicense, _ int) (string, bool) {
+	return xslices.ZeroToNil(lo.FilterMap(p.content.Licenses.License, func(lic pomLicense, _ int) (string, bool) {
 		return lic.Name, lic.Name != ""
 	}))
 }
 
-func (p *pom) resolveRepositories(servers []Server) {
-	p.remoteRepos = resolvePomRepos(servers, p.content.Repositories)
+func (p *pom) repositories(servers []Server) []repository {
+	return resolvePomRepos(servers, p.content.Repositories)
 }
 
 type pomXML struct {
@@ -287,6 +287,7 @@ func (d pomDependency) ToArtifact(opts analysisOptions) artifact {
 		Locations:    locations,
 		Relationship: ftypes.RelationshipIndirect, // default
 		RootFilePath: opts.rootFilePath,
+		Repositories: slices.Clone(opts.repositories), // avoid shadowing
 	}
 }
 

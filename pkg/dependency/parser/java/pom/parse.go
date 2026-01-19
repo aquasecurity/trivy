@@ -347,17 +347,19 @@ func (p *Parser) resolve(ctx context.Context, art artifact, rootDepManagement []
 
 	p.logger.Debug("Resolving...", log.String("group_id", art.GroupID),
 		log.String("artifact_id", art.ArtifactID), log.String("version", art.Version.String()))
-	pomContent, err := p.tryRepository(ctx, art.GroupID, art.ArtifactID, art.Version.String())
+	pomContent, err := p.tryRepository(ctx, art.GroupID, art.ArtifactID, art.Version.String(), art.Repositories)
 	if err != nil {
 		if shouldReturnError(err) {
 			return analysisResult{}, err
 		}
 		p.logger.Debug("Repository error", log.Err(err))
 	}
+
 	result, err := p.analyze(ctx, pomContent, analysisOptions{
 		exclusions:    art.Exclusions,
 		depManagement: rootDepManagement,
 		rootFilePath:  art.RootFilePath,
+		repositories:  art.Repositories,
 	})
 	if err != nil {
 		return analysisResult{}, xerrors.Errorf("analyze error: %w", err)
@@ -380,6 +382,7 @@ type analysisOptions struct {
 	exclusions    set.Set[string]
 	depManagement []pomDependency // from the root POM
 	rootFilePath  string          // File path of the root POM or module POM
+	repositories  []repository    // Repositories inherited from parent
 }
 
 func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (analysisResult, error) {
@@ -389,11 +392,16 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 	if opts.exclusions == nil {
 		opts.exclusions = set.New[string]()
 	}
-	// Resolve pom repositories using Servers from settings.xml
-	pom.resolveRepositories(p.servers)
+
+	// Get repositories from current POM and merge with inherited ones
+	pomRepos := pom.repositories(p.servers)
+	opts.repositories = lo.UniqBy(append(pomRepos, opts.repositories...), func(r repository) url.URL {
+		return r.url
+	})
 
 	// Resolve parent POM
-	if err := p.resolveParent(ctx, pom); err != nil {
+	// TODO handle repos from parents
+	if err := p.resolveParent(ctx, pom, opts.repositories); err != nil {
 		return analysisResult{}, xerrors.Errorf("pom resolve error: %w", err)
 	}
 
@@ -408,6 +416,7 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 
 	art := pom.artifact()
 	art.RootFilePath = opts.rootFilePath
+	art.Repositories = pomRepos
 
 	return analysisResult{
 		filePath:             pom.filePath,
@@ -420,23 +429,19 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 }
 
 // resolveParent resolves its parent POMs and inherits properties, dependencies, and dependencyManagement.
-func (p *Parser) resolveParent(ctx context.Context, pom *pom) error {
+func (p *Parser) resolveParent(ctx context.Context, pom *pom, pomRepos []repository) error {
 	if pom.nil() {
 		return nil
 	}
-	// Resolve pom repositories using Servers from settings.xml,
-	pom.resolveRepositories(p.servers)
 
 	// Parse parent POM
-	parent, err := p.parseParent(ctx, pom.filePath, pom.content.Parent)
+	parent, err := p.parseParent(ctx, pom.filePath, pom.content.Parent, pomRepos)
 	if err != nil {
 		return xerrors.Errorf("parent error: %w", err)
 	}
 
 	// Inherit values/properties from parent
 	pom.inherit(parent)
-
-	pom.remoteRepos = append(pom.remoteRepos, parent.remoteRepos...)
 
 	// Merge properties
 	pom.content.Properties = p.mergeProperties(pom.content.Properties, parent.content.Properties)
@@ -577,7 +582,7 @@ func excludeDep(exclusions set.Set[string], art artifact) bool {
 	return false
 }
 
-func (p *Parser) parseParent(ctx context.Context, currentPath string, parent pomParent) (*pom, error) {
+func (p *Parser) parseParent(ctx context.Context, currentPath string, parent pomParent, pomRepos []repository) (*pom, error) {
 	// Pass nil properties so that variables in <parent> are not evaluated.
 	target := newArtifact(parent.GroupId, parent.ArtifactId, parent.Version, nil, nil)
 	// if version is property (e.g. ${revision}) - we still need to parse this pom
@@ -589,7 +594,7 @@ func (p *Parser) parseParent(ctx context.Context, currentPath string, parent pom
 	logger.Debug("Start parent")
 	defer logger.Debug("Exit parent")
 
-	parentPOM, err := p.retrieveParent(ctx, currentPath, parent.RelativePath, target)
+	parentPOM, err := p.retrieveParent(ctx, currentPath, parent.RelativePath, target, pomRepos)
 	if err != nil {
 		if shouldReturnError(err) {
 			return nil, err
@@ -598,19 +603,19 @@ func (p *Parser) parseParent(ctx context.Context, currentPath string, parent pom
 		return &pom{content: &pomXML{}}, nil
 	}
 
-	if err = p.resolveParent(ctx, parentPOM); err != nil {
+	if err = p.resolveParent(ctx, parentPOM, pomRepos); err != nil {
 		return nil, xerrors.Errorf("parent pom resolve error: %w", err)
 	}
 
 	return parentPOM, nil
 }
 
-func (p *Parser) retrieveParent(ctx context.Context, currentPath, relativePath string, target artifact) (*pom, error) {
+func (p *Parser) retrieveParent(ctx context.Context, currentPath, relativePath string, target artifact, pomRepos []repository) (*pom, error) {
 	var errs error
 
 	// Try relativePath
 	if relativePath != "" {
-		pom, err := p.tryRelativePath(ctx, target, currentPath, relativePath)
+		pom, err := p.tryRelativePath(ctx, target, currentPath, relativePath, pomRepos)
 		if err == nil {
 			return pom, nil
 		}
@@ -618,14 +623,14 @@ func (p *Parser) retrieveParent(ctx context.Context, currentPath, relativePath s
 	}
 
 	// If not found, search the parent director
-	pom, err := p.tryRelativePath(ctx, target, currentPath, "../pom.xml")
+	pom, err := p.tryRelativePath(ctx, target, currentPath, "../pom.xml", pomRepos)
 	if err == nil {
 		return pom, nil
 	}
 	errs = multierror.Append(errs, err)
 
 	// If not found, search local/remote remoteRepositories
-	pom, err = p.tryRepository(ctx, target.GroupID, target.ArtifactID, target.Version.String())
+	pom, err = p.tryRepository(ctx, target.GroupID, target.ArtifactID, target.Version.String(), pomRepos)
 	if err == nil {
 		return pom, nil
 	}
@@ -635,7 +640,7 @@ func (p *Parser) retrieveParent(ctx context.Context, currentPath, relativePath s
 	return nil, errs
 }
 
-func (p *Parser) tryRelativePath(ctx context.Context, parentArtifact artifact, currentPath, relativePath string) (*pom, error) {
+func (p *Parser) tryRelativePath(ctx context.Context, parentArtifact artifact, currentPath, relativePath string, pomRepos []repository) (*pom, error) {
 	parsedPOM, err := p.openRelativePom(currentPath, relativePath)
 	if err != nil {
 		return nil, err
@@ -650,7 +655,7 @@ func (p *Parser) tryRelativePath(ctx context.Context, parentArtifact artifact, c
 	if parsedPOM.artifact().ArtifactID != parentArtifact.ArtifactID {
 		return nil, xerrors.New("'parent.relativePath' points at wrong local POM")
 	}
-	if err := p.resolveParent(ctx, parsedPOM); err != nil {
+	if err := p.resolveParent(ctx, parsedPOM, pomRepos); err != nil {
 		return nil, xerrors.Errorf("analyze error: %w", err)
 	}
 
@@ -700,7 +705,7 @@ func (p *Parser) openPom(filePath string) (*pom, error) {
 	}, nil
 }
 
-func (p *Parser) tryRepository(ctx context.Context, groupID, artifactID, version string) (*pom, error) {
+func (p *Parser) tryRepository(ctx context.Context, groupID, artifactID, version string, pomRepos []repository) (*pom, error) {
 	if version == "" {
 		return nil, xerrors.Errorf("Version missing for %s:%s", groupID, artifactID)
 	}
@@ -718,7 +723,7 @@ func (p *Parser) tryRepository(ctx context.Context, groupID, artifactID, version
 	}
 
 	// Search remote remoteRepositories
-	loaded, err = p.fetchPOMFromRemoteRepositories(ctx, paths, isSnapshot(version))
+	loaded, err = p.fetchPOMFromRemoteRepositories(ctx, paths, isSnapshot(version), pomRepos)
 	if err == nil {
 		return loaded, nil
 		// We should return error if it's not "not found" error
@@ -736,7 +741,7 @@ func (p *Parser) loadPOMFromLocalRepository(paths []string) (*pom, error) {
 	return p.openPom(localPath)
 }
 
-func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []string, snapshot bool) (*pom, error) {
+func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []string, snapshot bool, pomRepos []repository) (*pom, error) {
 	// Do not try fetching pom.xml from remote repositories in offline mode
 	if p.offline {
 		p.logger.Debug("Fetching the remote pom.xml is skipped")
@@ -745,9 +750,9 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 
 	// Try all remoteRepositories by following order:
 	// 1. remoteRepositories from settings.xml
-	// 2. remoteRepositories from pom.xml
+	// 2. remoteRepositories from pom.xml (passed as parameter)
 	// 3. default remoteRepository (Maven Central for Release repository)
-	for _, repo := range slices.Concat(p.remoteRepos.settings, []repository{p.remoteRepos.defaultRepo}) {
+	for _, repo := range slices.Concat(p.remoteRepos.settings, pomRepos, []repository{p.remoteRepos.defaultRepo}) {
 		// Skip Release only repositories for snapshot artifacts and vice versa
 		if snapshot && !repo.snapshotEnabled || !snapshot && !repo.releaseEnabled {
 			continue

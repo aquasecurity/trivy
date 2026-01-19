@@ -6,6 +6,15 @@
     <artifactId>different-repos-for-different-poms</artifactId>
     <version>1.0.0</version>
 
+    <repositories>
+        <repository>
+            <id>disabled-repo-from-root-pom</id>
+            <url>http://disabled.com</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
