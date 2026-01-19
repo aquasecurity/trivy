@@ -56,6 +56,7 @@ message Package {
   bool indirect = 18;
   string maintainer = 21;
   int32 relationship = 22;
+  string analyzed_by = 23;
 }
 
 message PkgIdentifier {

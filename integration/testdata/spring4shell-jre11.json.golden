@@ -254,7 +254,7 @@
           "PkgPath": "usr/local/tomcat/webapps/helloworld.war/WEB-INF/lib/spring-beans-5.3.15.jar",
           "PkgIdentifier": {
             "PURL": "pkg:maven/org.springframework/spring-beans@5.3.15",
-            "UID": "9d9e0a303e263760"
+            "UID": "382ba53322e3ac2a"
           },
           "InstalledVersion": "5.3.15",
           "FixedVersion": "5.3.18",

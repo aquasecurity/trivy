@@ -16,7 +16,7 @@
           "PkgName": "jquery",
           "PkgIdentifier": {
             "PURL": "pkg:npm/jquery@3.3.9",
-            "UID": "e19e84d31f72b60c"
+            "UID": "5624abe72853740"
           },
           "InstalledVersion": "3.3.9",
           "FixedVersion": "3.4.0",
