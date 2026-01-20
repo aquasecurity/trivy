@@ -13,6 +13,8 @@ import (
 )
 
 func Test_pomAnalyzer_Analyze(t *testing.T) {
+	happy := filepath.Join("testdata", "happy", "pom.xml")
+	testData := filepath.Join("testdata", "mark-as-dev", "src", "it", "example", "pom.xml")
 	tests := []struct {
 		name      string
 		inputDir  string
@@ -22,12 +24,12 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: "testdata/happy/pom.xml",
+			inputFile: happy,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.Pom,
-						FilePath: "testdata/happy/pom.xml",
+						FilePath: happy,
 						Packages: types.Packages{
 							{
 								ID:           "com.example:example:1.0.0::775be61e",
@@ -35,7 +37,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 								Version:      "1.0.0",
 								Licenses:     []string{"Apache 2.0"},
 								Relationship: types.RelationshipRoot,
-								FilePath:     "testdata/happy/pom.xml",
+								FilePath:     happy,
 								DependsOn: []string{
 									"com.example:example-api:2.0.0::3f5226c1",
 								},
@@ -72,7 +74,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 								Name:         "com.example:example",
 								Version:      "1.0.0",
 								Relationship: types.RelationshipRoot,
-								FilePath:     "testdata/happy/pom.xml",
+								FilePath:     happy,
 								Licenses:     []string{"Apache 2.0"},
 								DependsOn: []string{
 									"com.example:example-api:2.0.0::3f5226c1",
@@ -97,12 +99,12 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "happy path for maven-invoker-plugin integration tests",
-			inputFile: "testdata/mark-as-dev/src/it/example/pom.xml",
+			inputFile: testData,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.Pom,
-						FilePath: "testdata/mark-as-dev/src/it/example/pom.xml",
+						FilePath: testData,
 						Packages: types.Packages{
 							{
 								ID:           "com.example:example:1.0.0::c6140fc9",
@@ -110,7 +112,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 								Version:      "1.0.0",
 								Licenses:     []string{"Apache 2.0"},
 								Relationship: types.RelationshipRoot,
-								FilePath:     "testdata/mark-as-dev/src/it/example/pom.xml",
+								FilePath:     testData,
 								DependsOn: []string{
 									"com.example:example-api:@example.version@::ea8c6bb9",
 								},
@@ -149,7 +151,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 								Version:      "2.0.0",
 								Licenses:     []string{"Apache 2.0"},
 								Relationship: types.RelationshipRoot,
-								FilePath:     "testdata/requirements/pom.xml",
+								FilePath:     filepath.Join("testdata", "requirements", "pom.xml"),
 							},
 							{
 								ID:           "org.example:example-api::fc45c739",
