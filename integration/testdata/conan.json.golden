@@ -38,12 +38,9 @@
           "Name": "bzip2",
           "Identifier": {
             "PURL": "pkg:conan/bzip2@1.0.8",
-            "UID": "2a8ca69d5a9d9c66"
+            "UID": "fcee910413ab7575"
           },
           "Version": "1.0.8",
-          "Licenses": [
-            "bzip2-1.0.6"
-          ],
           "Indirect": true,
           "Relationship": "indirect",
           "Locations": [
@@ -75,12 +72,9 @@
           "Name": "openssl",
           "Identifier": {
             "PURL": "pkg:conan/openssl@1.1.1q",
-            "UID": "a6add32a5ffb15b"
+            "UID": "d009c32d2d560ed1"
           },
           "Version": "1.1.1q",
-          "Licenses": [
-            "Apache-2.0"
-          ],
           "Indirect": true,
           "Relationship": "indirect",
           "Locations": [
@@ -133,12 +127,9 @@
           "Name": "zlib",
           "Identifier": {
             "PURL": "pkg:conan/zlib@1.2.12",
-            "UID": "b5411fc6bd9ade09"
+            "UID": "dfef9b967a82df9f"
           },
           "Version": "1.2.12",
-          "Licenses": [
-            "Zlib"
-          ],
           "Indirect": true,
           "Relationship": "indirect",
           "Locations": [
