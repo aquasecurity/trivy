@@ -287,7 +287,7 @@ func (d pomDependency) ToArtifact(opts analysisOptions) artifact {
 		Locations:    locations,
 		Relationship: ftypes.RelationshipIndirect, // default
 		RootFilePath: opts.rootFilePath,
-		Repositories: slices.Clone(opts.repositories), // avoid shadowing
+		Repositories: slices.Clone(opts.repositories), // avoid sharing
 	}
 }
 
