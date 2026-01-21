@@ -123,8 +123,46 @@ func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			}
 			return r.ConvertFromRPCLayer(layer), true
 		})),
-		ServerInfo: serverInfo,
+		ServerInfo: convertToServerVersionInfo(serverInfo),
 	}, nil
+}
+
+// convertToServerVersionInfo converts version.VersionInfo to types.ServerVersionInfo
+func convertToServerVersionInfo(info version.VersionInfo) *types.ServerVersionInfo {
+	if info.Version == "" && info.VulnerabilityDB == nil && info.JavaDB == nil && info.CheckBundle == nil {
+		return nil
+	}
+
+	result := &types.ServerVersionInfo{
+		Version: info.Version,
+	}
+
+	if info.VulnerabilityDB != nil {
+		result.VulnerabilityDB = &types.DBMetadata{
+			Version:      info.VulnerabilityDB.Version,
+			NextUpdate:   info.VulnerabilityDB.NextUpdate,
+			UpdatedAt:    info.VulnerabilityDB.UpdatedAt,
+			DownloadedAt: info.VulnerabilityDB.DownloadedAt,
+		}
+	}
+
+	if info.JavaDB != nil {
+		result.JavaDB = &types.DBMetadata{
+			Version:      info.JavaDB.Version,
+			NextUpdate:   info.JavaDB.NextUpdate,
+			UpdatedAt:    info.JavaDB.UpdatedAt,
+			DownloadedAt: info.JavaDB.DownloadedAt,
+		}
+	}
+
+	if info.CheckBundle != nil {
+		result.CheckBundle = &types.BundleMetadata{
+			Digest:       info.CheckBundle.Digest,
+			DownloadedAt: info.CheckBundle.DownloadedAt,
+		}
+	}
+
+	return result
 }
 
 // serverVersion fetches version information from the Trivy server.

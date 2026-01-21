@@ -33,7 +33,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
-	"github.com/aquasecurity/trivy/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/vex/repo"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 
@@ -538,6 +537,6 @@ func overrideDockerRemovedFields(_ *testing.T, want, got *types.Report) {
 // in client/server mode, the server version info is fetched dynamically
 // and will not match the expected golden file output.
 func overrideServerInfo(_ *testing.T, want, got *types.Report) {
-	got.Trivy.Server = version.VersionInfo{}
-	want.Trivy.Server = version.VersionInfo{}
+	got.Trivy.Server = nil  // Clear dynamic server info
+	want.Trivy.Server = nil // Clear expected server info
 }

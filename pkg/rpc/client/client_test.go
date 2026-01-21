@@ -45,6 +45,17 @@ func TestScanner_Scan(t *testing.T) {
 		},
 	}
 
+	// Expected server info after conversion from version.VersionInfo
+	wantServerInfo := &types.ServerVersionInfo{
+		Version: "0.50.0",
+		VulnerabilityDB: &types.DBMetadata{
+			Version:      2,
+			UpdatedAt:    time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+			NextUpdate:   time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC),
+			DownloadedAt: time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC),
+		},
+	}
+
 	tests := []struct {
 		name          string
 		customHeaders http.Header
@@ -176,7 +187,7 @@ func TestScanner_Scan(t *testing.T) {
 					Name:   "3.11",
 					Eosl:   true,
 				},
-				ServerInfo: versionInfo,
+				ServerInfo: wantServerInfo,
 			},
 		},
 		{
@@ -287,9 +298,21 @@ func TestScanner_ScanServerInsecure(t *testing.T) {
 }
 
 func TestService_ServerVersion(t *testing.T) {
+	// Server sends version.VersionInfo
 	versionInfo := version.VersionInfo{
 		Version: "0.50.0",
 		VulnerabilityDB: &metadata.Metadata{
+			Version:      2,
+			UpdatedAt:    time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+			NextUpdate:   time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC),
+			DownloadedAt: time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC),
+		},
+	}
+
+	// Expected result after conversion
+	wantServerInfo := &types.ServerVersionInfo{
+		Version: "0.50.0",
+		VulnerabilityDB: &types.DBMetadata{
 			Version:      2,
 			UpdatedAt:    time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
 			NextUpdate:   time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC),
@@ -301,7 +324,7 @@ func TestService_ServerVersion(t *testing.T) {
 		name          string
 		customHeaders http.Header
 		serverHandler func(w http.ResponseWriter, r *http.Request)
-		want          version.VersionInfo
+		want          *types.ServerVersionInfo
 		wantEmpty     bool
 	}{
 		{
@@ -314,7 +337,7 @@ func TestService_ServerVersion(t *testing.T) {
 				w.Header().Set("Content-Type", "application/json")
 				_ = json.NewEncoder(w).Encode(versionInfo)
 			},
-			want: versionInfo,
+			want: wantServerInfo,
 		},
 		{
 			name: "server returns 404",
