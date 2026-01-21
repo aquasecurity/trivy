@@ -2522,8 +2522,8 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 		},
 		{
 			name:          "root POM with module inherits repository",
-			inputFile:     filepath.Join("testdata", "root-pom-with-module", "pom.xml"),
-			rootRepoTxtar: filepath.Join("testdata", "root-pom-with-module", "repo-artifacts.txtar"),
+			inputFile:     filepath.Join("testdata", "repo-from-root-for-dep-from-module", "pom.xml"),
+			rootRepoTxtar: filepath.Join("testdata", "repo-from-root-for-dep-from-module", "repo-artifacts.txtar"),
 			repos:         nil,
 			wantPackages: map[string]string{
 				"org.example:example-api:1.0.0::887fc940": "License from root repo",
