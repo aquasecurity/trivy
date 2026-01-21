@@ -2526,7 +2526,7 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 			rootRepoTxtar: filepath.Join("testdata", "repo-from-root-for-dep-from-module", "repo-artifacts.txtar"),
 			repos:         nil,
 			wantPackages: map[string]string{
-				"org.example:example-api:1.0.0::887fc940": "License from root repo",
+				"org.example:example-api:1.0.0::4a790a84": "License from root repo",
 			},
 		},
 	}

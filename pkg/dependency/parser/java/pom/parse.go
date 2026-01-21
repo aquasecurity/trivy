@@ -136,9 +136,8 @@ func (p *Parser) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]ftypes.Packag
 	// Cache root POM
 	p.cache.put(result.artifact, result)
 
-	rootArt := root.artifact()
+	rootArt := result.artifact
 	rootArt.Relationship = ftypes.RelationshipRoot
-	rootArt.RootFilePath = p.rootPath
 
 	return p.parseRoot(ctx, rootArt, set.New[string]())
 }
@@ -228,7 +227,7 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 
 		// Parse, cache, and enqueue modules.
 		for _, relativePath := range result.modules {
-			moduleArtifact, err := p.parseModule(ctx, result.filePath, relativePath)
+			moduleArtifact, err := p.parseModule(ctx, result.filePath, relativePath, root.Repositories)
 			if err != nil {
 				p.logger.Debug("Unable to parse the module",
 					log.FilePath(result.filePath), log.Err(err))
@@ -307,7 +306,7 @@ func depVersion(depName string, uniqArtifacts map[string]artifact) string {
 	return ""
 }
 
-func (p *Parser) parseModule(ctx context.Context, currentPath, relativePath string) (artifact, error) {
+func (p *Parser) parseModule(ctx context.Context, currentPath, relativePath string, repos []repository) (artifact, error) {
 	// modulePath: "root/" + "module/" => "root/module"
 	module, err := p.openRelativePom(currentPath, relativePath)
 	if err != nil {
@@ -316,6 +315,7 @@ func (p *Parser) parseModule(ctx context.Context, currentPath, relativePath stri
 
 	result, err := p.analyze(ctx, module, analysisOptions{
 		rootFilePath: module.filePath,
+		repositories: repos,
 	})
 	if err != nil {
 		return artifact{}, xerrors.Errorf("analyze error: %w", err)
