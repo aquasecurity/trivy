@@ -5,6 +5,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/version"
 )
 
 // PkgType represents package type
@@ -124,7 +125,8 @@ type ScanOptions struct {
 
 // ScanResponse represents the response from the scan service
 type ScanResponse struct {
-	Results Results
-	OS      types.OS
-	Layers  types.Layers
+	Results    Results
+	OS         types.OS
+	Layers     types.Layers
+	ServerInfo version.VersionInfo // Server info (client/server mode only)
 }

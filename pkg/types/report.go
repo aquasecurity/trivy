@@ -8,11 +8,13 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/image/name"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	"github.com/aquasecurity/trivy/pkg/version"
 )
 
 // TrivyInfo contains Trivy-specific information
 type TrivyInfo struct {
-	Version string `json:",omitempty"` // Trivy version
+	Version string              `json:",omitempty"` // Client version
+	Server  version.VersionInfo `json:",omitzero"`  // Server info (client/server mode only)
 }
 
 // Report represents a scan result
