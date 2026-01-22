@@ -333,7 +333,7 @@ func TestClientServer(t *testing.T) {
 			}
 
 			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
-				override: overrideFuncs(overrideUID, overrideFingerprint, tt.override),
+				override: overrideFuncs(overrideUID, overrideFingerprint, overrideServerInfo, tt.override),
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
@@ -576,7 +576,7 @@ func TestClientServerWithCustomOptions(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := setupClient(t, tt.args, addr, cacheDir)
 			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
-				override: overrideUID,
+				override: overrideFuncs(overrideUID, overrideServerInfo),
 				wantErr:  tt.wantErr,
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
@@ -613,7 +613,7 @@ func TestClientServerWithRedis(t *testing.T) {
 
 		// Run Trivy client
 		runTest(t, osArgs, golden, types.FormatJSON, runOptions{
-			override: overrideUID,
+			override: overrideFuncs(overrideUID, overrideServerInfo),
 			fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 		})
 	})
