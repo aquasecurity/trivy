@@ -1,15 +1,19 @@
 package pom_test
 
 import (
+	"bytes"
 	"fmt"
+	"io/fs"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/tools/txtar"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/pom"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -2487,4 +2491,119 @@ func TestPom_Parse(t *testing.T) {
 			assert.Equal(t, tt.wantDeps, gotDeps)
 		})
 	}
+}
+
+// TestPom_Parse_Remote_Repos verifies that POM files are fetched from the correct repositories.
+// The verification is done through the license field, as it's the only way to deterministically
+// identify which repository an artifact came from.
+func TestPom_Parse_Remote_Repos(t *testing.T) {
+	const rootRepoPlaceholder = "REPO_ROOT_URL"
+
+	tests := []struct {
+		name          string
+		inputFile     string
+		rootRepoTxtar string            // txtar file for root repository
+		repos         map[string]string // key: repository URL placeholder, value: txtar file path
+		wantPackages  map[string]string
+	}{
+		{
+			name:          "different repos for different dependencies",
+			inputFile:     filepath.Join("testdata", "different-repos-for-different-poms", "pom.xml"),
+			rootRepoTxtar: filepath.Join("testdata", "different-repos-for-different-poms", "repo-root-artifacts.txtar"),
+			repos: map[string]string{
+				"REPO1_URL": filepath.Join("testdata", "different-repos-for-different-poms", "repo1-artifacts.txtar"),
+				"REPO2_URL": filepath.Join("testdata", "different-repos-for-different-poms", "repo2-artifacts.txtar"),
+			},
+			wantPackages: map[string]string{
+				"org.example:example-api:1.7.30::2cbe1ca4": "License from repo1",
+				"org.example:example-api2:1.0.0::f8958ec7": "License from repo2",
+				"org.example:example-api3:1.0.0::887fc940": "License from reporoot",
+			},
+		},
+		{
+			name:          "root POM with module inherits repository",
+			inputFile:     filepath.Join("testdata", "repo-from-root-for-dep-from-module", "pom.xml"),
+			rootRepoTxtar: filepath.Join("testdata", "repo-from-root-for-dep-from-module", "repo-artifacts.txtar"),
+			repos:         nil,
+			wantPackages: map[string]string{
+				"org.example:example-api:1.0.0::4a790a84": "License from root repo",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Setup remote repositories from txtar files
+			repoURLs := make(map[string]string)
+			for placeholder, txtarPath := range tt.repos {
+				repoURL := setupTxtarRepository(t, txtarPath, nil)
+				repoURLs[placeholder] = repoURL
+			}
+
+			// Setup root repository with replacements for repo placeholders
+			rootRepoURL := setupTxtarRepository(t, tt.rootRepoTxtar, repoURLs)
+
+			// Prepare input POM file with root repository URL
+			pomContent := applyReplacements(t, tt.inputFile, map[string]string{
+				rootRepoPlaceholder: rootRepoURL,
+			})
+
+			// Parse the POM
+			parser := pom.NewParser(tt.inputFile)
+			pkgs, _, err := parser.Parse(t.Context(), bytes.NewReader(pomContent))
+			require.NoError(t, err)
+
+			// Verify expected packages
+			for pkgID, wantLicense := range tt.wantPackages {
+				p, found := lo.Find(pkgs, func(pkg ftypes.Package) bool {
+					return pkg.ID == pkgID
+				})
+				require.True(t, found, "package %s not found", pkgID)
+				require.NotEmpty(t, p.Licenses, "package %s has no licenses", pkgID)
+				require.Equal(t, wantLicense, p.Licenses[0])
+			}
+		})
+	}
+}
+
+// applyReplacements reads a file, applies replacements, and returns the modified content.
+func applyReplacements(t *testing.T, filePath string, replacements map[string]string) []byte {
+	t.Helper()
+
+	content, err := os.ReadFile(filePath)
+	require.NoError(t, err)
+
+	for oldURL, newURL := range replacements {
+		content = bytes.ReplaceAll(content, []byte(oldURL), []byte(newURL))
+	}
+
+	return content
+}
+
+// txtarWithReposReplace reads a txtar file, applies repository URL replacements,
+// and returns the result as a fs.FS.
+func txtarWithReposReplace(t *testing.T, txtarPath string, reposReplacements map[string]string) fs.FS {
+	t.Helper()
+
+	content := applyReplacements(t, txtarPath, reposReplacements)
+
+	archive := txtar.Parse(content)
+
+	fsys, err := txtar.FS(archive)
+	require.NoError(t, err)
+
+	return fsys
+}
+
+// setupTxtarRepository reads a txtar file, applies repository URL replacements,
+// starts an HTTP test server with the files, and returns the server URL.
+func setupTxtarRepository(t *testing.T, txtarPath string, reposReplacements map[string]string) string {
+	t.Helper()
+
+	fsys := txtarWithReposReplace(t, txtarPath, reposReplacements)
+
+	ts := httptest.NewServer(http.FileServer(http.FS(fsys)))
+	t.Cleanup(ts.Close)
+
+	return ts.URL
 }

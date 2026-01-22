@@ -1,0 +1,51 @@
+Test case artifacts for repo1 (example-api:1.7.30).
+
+-- org/example/example-api/1.7.30/example-api-1.7.30.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-api</artifactId>
+    <version>1.7.30</version>
+
+    <packaging>jar</packaging>
+    <name>Example API Module</name>
+    <description>The example API</description>
+
+    <licenses>
+        <license>
+            <name>License from repo1</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+</project>
+
+-- org/example/example-api3/1.0.0/example-api3-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-api3</artifactId>
+    <version>1.0.0</version>
+
+    <packaging>jar</packaging>
+    <name>Example API3 Module</name>
+    <description>The example API3</description>
+
+    <licenses>
+        <license>
+            <name>License from repo1</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+</project>
