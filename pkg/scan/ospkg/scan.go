@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sort"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"golang.org/x/xerrors"
 
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
@@ -29,6 +30,11 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.
 	}
 	log.Info("Detected OS", log.String("family",
 		string(target.OS.Family)), log.String("version", target.OS.Name))
+
+	// Skip OS package scanning if the target is expected not to have OS packages
+	if ftypes.NoOSPkgsTypes.Contains(target.OS.Family) {
+		return types.Result{}, false, nil
+	}
 
 	if target.OS.Extended {
 		// TODO: move the logic to each detector

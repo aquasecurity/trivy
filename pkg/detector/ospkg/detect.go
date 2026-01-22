@@ -6,7 +6,6 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/detector/ospkg/activestate"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alma"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/amazon"
@@ -37,7 +36,6 @@ var (
 	ErrUnsupportedOS = xerrors.New("unsupported os")
 
 	drivers = map[ftypes.OSType]driver.Driver{
-		ftypes.ActiveState:        activestate.NewScanner(),
 		ftypes.Alpine:             alpine.NewScanner(),
 		ftypes.Alma:               alma.NewScanner(),
 		ftypes.Amazon:             amazon.NewScanner(),
