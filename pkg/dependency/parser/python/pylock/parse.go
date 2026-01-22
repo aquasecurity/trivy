@@ -49,7 +49,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		normalizedPkgName := python.NormalizePkgName(pkg.Name, true)
 		pkgID := packageID(normalizedPkgName, pkg.Version)
 
-		pkgs[normalizedPkgName] = ftypes.Package{
+		pkgs[pkgID] = ftypes.Package{
 			ID:      pkgID,
 			Name:    normalizedPkgName,
 			Version: pkg.Version,
@@ -57,29 +57,31 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 		var dependsOn []string
 		for _, dep := range pkg.Dependencies {
-			dependsOn = append(dependsOn, python.NormalizePkgName(dep.Name, true))
+			depName := python.NormalizePkgName(dep.Name, true)
+			depID := packageID(depName, dep.Version)
+			dependsOn = append(dependsOn, depID)
 		}
 		if len(dependsOn) > 0 {
 			sort.Strings(dependsOn)
-			deps[normalizedPkgName] = dependsOn
+			deps[pkgID] = dependsOn
 		}
 	}
 
-	depSlice := lo.MapToSlice(deps, func(pkgName string, dependsOn []string) ftypes.Dependency {
-		parentPkg, ok := pkgs[pkgName]
-		if !ok {
+	depSlice := lo.MapToSlice(deps, func(pkgID string, dependsOn []string) ftypes.Dependency {
+		if _, ok := pkgs[pkgID]; !ok {
 			return ftypes.Dependency{}
 		}
 
+		// Filter out dependencies that are not in the package list
 		var dependsOnIDs []string
-		for _, dep := range dependsOn {
-			if depPkg, ok := pkgs[dep]; ok {
-				dependsOnIDs = append(dependsOnIDs, depPkg.ID)
+		for _, depID := range dependsOn {
+			if _, ok := pkgs[depID]; ok {
+				dependsOnIDs = append(dependsOnIDs, depID)
 			}
 		}
 
 		return ftypes.Dependency{
-			ID:        parentPkg.ID,
+			ID:        pkgID,
 			DependsOn: dependsOnIDs,
 		}
 	})
