@@ -1,5 +1,9 @@
 package types
 
+import (
+	"github.com/aquasecurity/trivy/pkg/set"
+)
+
 type (
 	// TargetType represents the type of target
 	TargetType string
@@ -159,6 +163,11 @@ var (
 		NodePkg,
 		Jar,
 	}
+
+	// NoOSPkgsTypes contains list of OSes that contain only language-specific packages.
+	NoOSPkgsTypes = set.New(
+		ActiveState,
+	)
 )
 
 // Config files
