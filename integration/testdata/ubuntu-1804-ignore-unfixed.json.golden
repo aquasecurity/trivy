@@ -1,8 +1,11 @@
 {
   "SchemaVersion": 2,
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
+  "Trivy": {
+    "Version": "dev"
+  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
-  "ArtifactID": "sha256:a2a15febcdf362f6115e801d37b5e60d6faaeedcb9896155e5fe9d754025be12",
+  "ArtifactID": "sha256:61d0ff5073e754270b3b59487ac8049c50e12bca1cf792d84ec9a62dad36a8a1",
   "ArtifactName": "testdata/fixtures/images/ubuntu-1804.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -21,6 +24,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:ubuntu-1804"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:ubuntu-1804",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "41b694b9b42f9c5ef7fb40c24272927a727a6d6cb8120bb3eae5849ceb9bee77",
@@ -105,7 +109,7 @@
           "PkgName": "e2fsprogs",
           "PkgIdentifier": {
             "PURL": "pkg:deb/ubuntu/e2fsprogs@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04",
-            "UID": "f43bbfe1f933f718"
+            "UID": "f254d7378713afd9"
           },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
@@ -121,6 +125,7 @@
             "Name": "Ubuntu CVE Tracker",
             "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
           },
+          "Fingerprint": "sha256:3c6011602650271fbca4f60c65fa4d645ac120eda6d795daff77eb375b7906a5",
           "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
           "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
           "Severity": "MEDIUM",
@@ -176,7 +181,7 @@
           "PkgName": "libcom-err2",
           "PkgIdentifier": {
             "PURL": "pkg:deb/ubuntu/libcom-err2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04",
-            "UID": "e7d11d906afeb678"
+            "UID": "cb7f33bdf35a8b61"
           },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
@@ -192,6 +197,7 @@
             "Name": "Ubuntu CVE Tracker",
             "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
           },
+          "Fingerprint": "sha256:80978831d19a7e127e628d949a2c1b4baf2056414c20dd9998ffe351950b75e4",
           "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
           "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
           "Severity": "MEDIUM",
@@ -247,7 +253,7 @@
           "PkgName": "libext2fs2",
           "PkgIdentifier": {
             "PURL": "pkg:deb/ubuntu/libext2fs2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04",
-            "UID": "19d89bf66d83962e"
+            "UID": "8d6ac68a7d76b8e7"
           },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
@@ -263,6 +269,7 @@
             "Name": "Ubuntu CVE Tracker",
             "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
           },
+          "Fingerprint": "sha256:e25514120e2898fc5f15127980590681a6fb0c456804ecaad641fed404a63fe3",
           "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
           "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
           "Severity": "MEDIUM",
@@ -318,7 +325,7 @@
           "PkgName": "libss2",
           "PkgIdentifier": {
             "PURL": "pkg:deb/ubuntu/libss2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04",
-            "UID": "231804324b8f13c6"
+            "UID": "c872d0871f9da8dd"
           },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
@@ -334,6 +341,7 @@
             "Name": "Ubuntu CVE Tracker",
             "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
           },
+          "Fingerprint": "sha256:5a234eae518954cb5f92cd1afbf9021e8e82874442d9188508907a913cd51183",
           "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
           "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
           "Severity": "MEDIUM",

@@ -276,6 +276,73 @@ func TestAnalysisResult_Merge(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "normalize licenses for PackageInfos and Applications",
+			args: args{
+				new: &analyzer.AnalysisResult{
+					Applications: []types.Application{
+						{
+							Type:     "gomod",
+							FilePath: "go.mod",
+							Packages: types.Packages{
+								{
+									Name:    "github.com/example/package",
+									Version: "v1.0.0",
+									Licenses: []string{
+										"",
+										"BSD",
+										"GPL-2",
+										"GPL-2.0",
+									},
+								},
+							},
+						},
+						{
+							Type:     "gomod",
+							FilePath: "empty-license/go.mod",
+							Packages: types.Packages{
+								{
+									Name:    "github.com/empty/license",
+									Version: "v1.0.0",
+									Licenses: []string{
+										"",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     "gomod",
+						FilePath: "go.mod",
+						Packages: types.Packages{
+							{
+								Name:    "github.com/example/package",
+								Version: "v1.0.0",
+								Licenses: []string{
+									"BSD-3-Clause",
+									"GPL-2.0-only",
+								},
+							},
+						},
+					},
+					{
+						Type:     "gomod",
+						FilePath: "empty-license/go.mod",
+						Packages: types.Packages{
+							{
+								Name:     "github.com/empty/license",
+								Version:  "v1.0.0",
+								Licenses: nil,
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -350,6 +417,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 									"lib/libc.musl-x86_64.so.1",
 									"lib/ld-musl-x86_64.so.1",
 								},
+								AnalyzedBy: analyzer.TypeApk,
 							},
 						},
 					},
@@ -396,6 +464,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 										EndLine:   4,
 									},
 								},
+								AnalyzedBy: analyzer.TypeBundler,
 							},
 							{
 								ID:           "actionpack@5.2.3",
@@ -409,6 +478,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 										EndLine:   6,
 									},
 								},
+								AnalyzedBy: analyzer.TypeBundler,
 							},
 						},
 					},
@@ -459,6 +529,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 										EndLine:   4,
 									},
 								},
+								AnalyzedBy: analyzer.TypeBundler,
 							},
 							{
 								ID:           "actionpack@5.2.3",
@@ -472,6 +543,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 										EndLine:   6,
 									},
 								},
+								AnalyzedBy: analyzer.TypeBundler,
 							},
 						},
 					},
@@ -581,9 +653,10 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 						FilePath: "testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar",
 						Packages: types.Packages{
 							{
-								Name:     "com.fasterxml.jackson.core:jackson-annotations",
-								Version:  "2.15.0-rc2",
-								FilePath: "testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar",
+								Name:       "com.fasterxml.jackson.core:jackson-annotations",
+								Version:    "2.15.0-rc2",
+								FilePath:   "testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar",
+								AnalyzedBy: analyzer.TypeJar,
 							},
 						},
 					},
@@ -604,9 +677,10 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 						FilePath: "testdata/post-apps/poetry/happy/poetry-pattern.lock",
 						Packages: types.Packages{
 							{
-								ID:      "certifi@2022.12.7",
-								Name:    "certifi",
-								Version: "2022.12.7",
+								ID:         "certifi@2022.12.7",
+								Name:       "certifi",
+								Version:    "2022.12.7",
+								AnalyzedBy: analyzer.TypePoetry,
 							},
 						},
 					},
@@ -615,9 +689,10 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 						FilePath: "testdata/post-apps/poetry/happy/poetry.lock",
 						Packages: types.Packages{
 							{
-								ID:      "certifi@2022.12.7",
-								Name:    "certifi",
-								Version: "2022.12.7",
+								ID:         "certifi@2022.12.7",
+								Name:       "certifi",
+								Version:    "2022.12.7",
+								AnalyzedBy: analyzer.TypePoetry,
 							},
 						},
 					},
@@ -676,7 +751,7 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 					"ubuntu-esm":   1,
 				},
 				PostAnalyzers: map[string]int{
-					"dpkg":   5,
+					"dpkg":   6,
 					"jar":    1,
 					"poetry": 1,
 				},

@@ -13,6 +13,10 @@ type Set[T comparable] interface {
 	// Contains checks if an item exists in the set
 	Contains(item T) bool
 
+	// Find returns the stored value for the given item if it exists
+	// For case-insensitive sets, this returns the canonical (original) casing
+	Find(item T) (T, bool)
+
 	// Size returns the number of items in the set
 	Size() int
 

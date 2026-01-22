@@ -333,7 +333,7 @@ func TestClientServer(t *testing.T) {
 			}
 
 			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
-				override: overrideFuncs(overrideUID, tt.override),
+				override: overrideFuncs(overrideUID, overrideFingerprint, tt.override),
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})

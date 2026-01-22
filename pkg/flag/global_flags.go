@@ -1,10 +1,12 @@
 package flag
 
 import (
+	"crypto/x509"
 	"os"
 	"time"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -49,6 +51,12 @@ var (
 		Persistent:    true,
 		TelemetrySafe: true,
 	}
+	CACertFlag = Flag[string]{
+		Name:       "cacert",
+		ConfigName: "cacert",
+		Usage:      "Path to PEM-encoded CA certificate file",
+		Persistent: true,
+	}
 	TimeoutFlag = Flag[time.Duration]{
 		Name:          "timeout",
 		ConfigName:    "timeout",
@@ -87,6 +95,7 @@ type GlobalFlagGroup struct {
 	Quiet                 *Flag[bool]
 	Debug                 *Flag[bool]
 	Insecure              *Flag[bool]
+	CACert                *Flag[string]
 	Timeout               *Flag[time.Duration]
 	CacheDir              *Flag[string]
 	GenerateDefaultConfig *Flag[bool]
@@ -100,6 +109,7 @@ type GlobalOptions struct {
 	Quiet                 bool
 	Debug                 bool
 	Insecure              bool
+	CACerts               *x509.CertPool
 	Timeout               time.Duration
 	CacheDir              string
 	GenerateDefaultConfig bool
@@ -113,6 +123,7 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 		Quiet:                 QuietFlag.Clone(),
 		Debug:                 DebugFlag.Clone(),
 		Insecure:              InsecureFlag.Clone(),
+		CACert:                CACertFlag.Clone(),
 		Timeout:               TimeoutFlag.Clone(),
 		CacheDir:              CacheDirFlag.Clone(),
 		GenerateDefaultConfig: GenerateDefaultConfigFlag.Clone(),
@@ -131,6 +142,7 @@ func (f *GlobalFlagGroup) Flags() []Flagger {
 		f.Quiet,
 		f.Debug,
 		f.Insecure,
+		f.CACert,
 		f.Timeout,
 		f.CacheDir,
 		f.GenerateDefaultConfig,
@@ -156,6 +168,10 @@ func (f *GlobalFlagGroup) Bind(cmd *cobra.Command) error {
 func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 	// Keep TRIVY_NON_SSL for backward compatibility
 	insecure := f.Insecure.Value() || os.Getenv("TRIVY_NON_SSL") != ""
+	caCerts, err := loadRootCAs(f.CACert.Value())
+	if err != nil {
+		return xerrors.Errorf("failed to load root CA certificates: %w", err)
+	}
 
 	log.Debug("Cache dir", log.String("dir", f.CacheDir.Value()))
 
@@ -165,10 +181,33 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 		Quiet:                 f.Quiet.Value(),
 		Debug:                 f.Debug.Value(),
 		Insecure:              insecure,
+		CACerts:               caCerts,
 		Timeout:               f.Timeout.Value(),
 		CacheDir:              f.CacheDir.Value(),
 		GenerateDefaultConfig: f.GenerateDefaultConfig.Value(),
 		TraceHTTP:             f.TraceHTTP.Value(),
 	}
 	return nil
+}
+
+// loadRootCAs builds a cert pool from the system pool and the provided PEM bundle.
+// Returns nil if caCertPath is empty or on failure.
+func loadRootCAs(caCertPath string) (*x509.CertPool, error) {
+	if caCertPath == "" {
+		return nil, nil
+	}
+
+	rootCAs, err := x509.SystemCertPool()
+	if err != nil || rootCAs == nil {
+		rootCAs = x509.NewCertPool()
+	}
+
+	pem, err := os.ReadFile(caCertPath)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to read root CA certificate: %w", err)
+	}
+	if ok := rootCAs.AppendCertsFromPEM(pem); !ok {
+		return nil, xerrors.Errorf("failed to append CA bundle")
+	}
+	return rootCAs, nil
 }

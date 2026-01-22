@@ -1,8 +1,11 @@
 {
   "SchemaVersion": 2,
-  "ReportID": "3ff14136-e09f-4df9-80ea-000000000001",
+  "Trivy": {
+    "Version": "dev"
+  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
-  "ArtifactID": "sha256:b94321659aca6a89cb7650a5b864bc8ec4bf62c620b8f1a01530c2e90a88c391",
+  "ArtifactID": "sha256:87e7ebcf8b5c0a26985fd80875e09e11850fa4828e1156da190f85b17dcecb71",
   "ArtifactName": "testdata/fixtures/images/amazon-2.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -18,6 +21,7 @@
     "RepoTags": [
       "ghcr.io/aquasecurity/trivy-test-images:amazon-2"
     ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:amazon-2",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "e020a5508b9f809b29659128692cd634e3d4fba3f2c13d2029d797317b5c3a56",
@@ -72,7 +76,7 @@
           "PkgName": "curl",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/amazon/curl@7.61.1-9.amzn2.0.1?arch=x86_64\u0026distro=amazon-2+%28Karoo%29",
-            "UID": "c5998529d683c5c3"
+            "UID": "dfda69b8a2968a7f"
           },
           "InstalledVersion": "7.61.1-9.amzn2.0.1",
           "FixedVersion": "7.61.1-12.amzn2.0.1",
@@ -88,6 +92,7 @@
             "Name": "Amazon Linux Security Center",
             "URL": "https://alas.aws.amazon.com/"
           },
+          "Fingerprint": "sha256:4b87e2eef59ac046b40959211c0a4c52437e121ee2fedb34552c3bbf5ae51842",
           "Title": "curl: double free due to subsequent call of realloc()",
           "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
           "Severity": "MEDIUM",
@@ -144,7 +149,7 @@
           "PkgName": "curl",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/amazon/curl@7.61.1-9.amzn2.0.1?arch=x86_64\u0026distro=amazon-2+%28Karoo%29",
-            "UID": "c5998529d683c5c3"
+            "UID": "dfda69b8a2968a7f"
           },
           "InstalledVersion": "7.61.1-9.amzn2.0.1",
           "FixedVersion": "7.61.1-11.amzn2.0.2",
@@ -160,6 +165,7 @@
             "Name": "Amazon Linux Security Center",
             "URL": "https://alas.aws.amazon.com/"
           },
+          "Fingerprint": "sha256:b489925a382f52a2f2e1a58e0e68b1c78ada14ccc2927003d2ac6de327d3aa31",
           "Title": "curl: TFTP receive heap buffer overflow in tftp_receive_packet() function",
           "Description": "A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution in libcurl versions 7.19.4 through 7.64.1.",
           "Severity": "LOW",

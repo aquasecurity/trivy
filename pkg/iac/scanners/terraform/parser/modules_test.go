@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func TestFindRootModules(t *testing.T) {
@@ -73,9 +74,7 @@ module "this" {
 			fsys := testutil.CreateFS(tt.files)
 			parser := New(fsys, "", OptionStopOnHCLError(true))
 
-			modules := lo.Map(lo.Keys(tt.files), func(p string, _ int) string {
-				return path.Dir(p)
-			})
+			modules := xslices.Map(lo.Keys(tt.files), path.Dir)
 
 			got, err := parser.FindRootModules(t.Context(), modules)
 			require.NoError(t, err)

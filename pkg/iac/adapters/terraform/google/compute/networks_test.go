@@ -46,18 +46,14 @@ func Test_adaptNetworks(t *testing.T) {
 `,
 			expected: []compute.Network{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
 					Firewall: &compute.Firewall{
-						Metadata: iacTypes.NewTestMetadata(),
-						Name:     iacTypes.String("my-firewall-rule", iacTypes.NewTestMetadata()),
+						Name: iacTypes.StringTest("my-firewall-rule"),
 						IngressRules: []compute.IngressRule{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
 								FirewallRule: compute.FirewallRule{
-									Metadata: iacTypes.NewTestMetadata(),
-									IsAllow:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-									Protocol: iacTypes.String("icmp", iacTypes.NewTestMetadata()),
-									Enforced: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+									IsAllow:  iacTypes.BoolTest(true),
+									Protocol: iacTypes.StringTest("icmp"),
+									Enforced: iacTypes.BoolTest(true),
 									Ports: []common.PortRange{
 										{
 											Start: iacTypes.IntTest(80),
@@ -74,17 +70,16 @@ func Test_adaptNetworks(t *testing.T) {
 									},
 								},
 								SourceRanges: []iacTypes.StringValue{
-									iacTypes.String("1.2.3.4/32", iacTypes.NewTestMetadata()),
+									iacTypes.StringTest("1.2.3.4/32"),
 								},
 							},
 						},
 					},
 					Subnetworks: []compute.SubNetwork{
 						{
-							Metadata:       iacTypes.NewTestMetadata(),
-							Name:           iacTypes.String("test-subnetwork", iacTypes.NewTestMetadata()),
-							EnableFlowLogs: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							Purpose:        iacTypes.StringDefault("PRIVATE_RFC_1918", iacTypes.NewTestMetadata()),
+							Name:           iacTypes.StringTest("test-subnetwork"),
+							EnableFlowLogs: iacTypes.BoolTest(true),
+							Purpose:        iacTypes.StringTest("PRIVATE_RFC_1918"),
 						},
 					},
 				},
@@ -107,17 +102,10 @@ func Test_adaptNetworks(t *testing.T) {
 `,
 			expected: []compute.Network{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Firewall: &compute.Firewall{
-						Metadata: iacTypes.NewTestMetadata(),
-						Name:     iacTypes.String("", iacTypes.NewTestMetadata()),
-					},
+					Firewall: &compute.Firewall{},
 					Subnetworks: []compute.SubNetwork{
 						{
-							Metadata:       iacTypes.NewTestMetadata(),
-							Name:           iacTypes.String("", iacTypes.NewTestMetadata()),
-							EnableFlowLogs: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							Purpose:        iacTypes.String("REGIONAL_MANAGED_PROXY", iacTypes.NewTestMetadata()),
+							Purpose: iacTypes.StringTest("REGIONAL_MANAGED_PROXY"),
 						},
 					},
 				},
@@ -137,15 +125,11 @@ func Test_adaptNetworks(t *testing.T) {
 			`,
 			expected: []compute.Network{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Firewall: nil,
 					Subnetworks: []compute.SubNetwork{
 						{
-							Metadata:              iacTypes.NewTestMetadata(),
-							Name:                  iacTypes.String("test-subnetwork", iacTypes.NewTestMetadata()),
-							Purpose:               iacTypes.StringDefault("PRIVATE_RFC_1918", iacTypes.NewTestMetadata()),
-							EnableFlowLogs:        iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							PrivateIPGoogleAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Name:                  iacTypes.StringTest("test-subnetwork"),
+							Purpose:               iacTypes.StringTest("PRIVATE_RFC_1918"),
+							PrivateIPGoogleAccess: iacTypes.BoolTest(true),
 						},
 					},
 				},
@@ -163,9 +147,7 @@ func Test_adaptNetworks(t *testing.T) {
 `,
 			expected: []compute.Network{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
 					Firewall: &compute.Firewall{
-						Metadata: iacTypes.NewTestMetadata(),
 						IngressRules: []compute.IngressRule{
 							{
 								FirewallRule: compute.FirewallRule{
@@ -174,8 +156,7 @@ func Test_adaptNetworks(t *testing.T) {
 									Protocol: iacTypes.StringTest("tcp"),
 									Ports: []common.PortRange{
 										{
-											Start: iacTypes.IntTest(0),
-											End:   iacTypes.IntTest(65535),
+											End: iacTypes.IntTest(65535),
 										},
 									},
 								},

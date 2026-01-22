@@ -32,17 +32,14 @@ func Test_adaptLoadBalancers(t *testing.T) {
 
 `,
 			expected: []network.LoadBalancer{{
-				Metadata: iacTypes.NewTestMetadata(),
 				Listeners: []network.LoadBalancerListener{
 					{
-						Metadata:  iacTypes.NewTestMetadata(),
-						TLSPolicy: iacTypes.String("example-ssl-policy-id", iacTypes.NewTestMetadata()),
-						Protocol:  iacTypes.String("HTTP", iacTypes.NewTestMetadata()),
+						TLSPolicy: iacTypes.StringTest("example-ssl-policy-id"),
+						Protocol:  iacTypes.StringTest("HTTP"),
 					},
 					{
-						Metadata:  iacTypes.NewTestMetadata(),
-						TLSPolicy: iacTypes.String("example-ssl-policy-name", iacTypes.NewTestMetadata()),
-						Protocol:  iacTypes.String("HTTPS", iacTypes.NewTestMetadata()),
+						TLSPolicy: iacTypes.StringTest("example-ssl-policy-name"),
+						Protocol:  iacTypes.StringTest("HTTPS"),
 					},
 				},
 			}},
@@ -55,10 +52,7 @@ func Test_adaptLoadBalancers(t *testing.T) {
 `,
 
 			expected: []network.LoadBalancer{{
-				Metadata: iacTypes.NewTestMetadata(),
-				Listeners: []network.LoadBalancerListener{{
-					Metadata: iacTypes.NewTestMetadata(),
-				}},
+				Listeners: []network.LoadBalancerListener{{}},
 			}},
 		},
 	}

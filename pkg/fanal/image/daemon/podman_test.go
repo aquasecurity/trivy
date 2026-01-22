@@ -83,7 +83,7 @@ func TestPodmanImage(t *testing.T) {
 			ref, err := name.ParseReference(tt.imageName)
 			require.NoError(t, err)
 
-			img, cleanup, err := PodmanImage(ref.Name(), "")
+			img, cleanup, err := PodmanImage(t.Context(), ref.Name(), "")
 			defer cleanup()
 
 			if tt.wantErr {

@@ -15,8 +15,8 @@ type KubernetesCluster struct {
 	APIServerAuthorizedIPRanges []iacTypes.StringValue
 	AddonProfile                AddonProfile
 	RoleBasedAccessControl      RoleBasedAccessControl
-	AzurePolicyEnabled          iacTypes.BoolValue
 	DiskEncryptionSetID         iacTypes.StringValue
+	AgentPools                  []AgentPool
 }
 
 type RoleBasedAccessControl struct {
@@ -43,4 +43,10 @@ type AzurePolicy struct {
 type NetworkProfile struct {
 	Metadata      iacTypes.Metadata
 	NetworkPolicy iacTypes.StringValue // "", "calico", "azure"
+}
+
+type AgentPool struct {
+	Metadata            iacTypes.Metadata
+	DiskEncryptionSetID iacTypes.StringValue
+	NodeType            iacTypes.StringValue // "VirtualMachineScaleSets" or others
 }

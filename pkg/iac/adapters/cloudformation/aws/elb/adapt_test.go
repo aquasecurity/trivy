@@ -59,7 +59,7 @@ Resources:
 					{
 						Type:                    types.StringTest("application"),
 						DropInvalidHeaderFields: types.BoolTest(true),
-						Internal:                types.Bool(true, types.NewTestMetadata()),
+						Internal:                types.BoolTest(true),
 						Listeners: []elb.Listener{
 							{
 								Protocol:  types.StringTest("HTTPS"),

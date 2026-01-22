@@ -22,14 +22,19 @@ func Test_adaptContact(t *testing.T) {
 			name: "defined",
 			terraform: `
 			resource "azurerm_security_center_contact" "example" {
+				email = "contact@example.com"
 				phone = "+1-555-555-5555"
 				alert_notifications = true
+				alerts_to_admins = true
 			}
 `,
 			expected: securitycenter.Contact{
-				Metadata:                 iacTypes.NewTestMetadata(),
-				EnableAlertNotifications: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				Phone:                    iacTypes.String("+1-555-555-5555", iacTypes.NewTestMetadata()),
+				EnableAlertNotifications: iacTypes.BoolTest(true),
+				EnableAlertsToAdmins:     iacTypes.BoolTest(true),
+				Email:                    iacTypes.StringTest("contact@example.com"),
+				Phone:                    iacTypes.StringTest("+1-555-555-5555"),
+				IsEnabled:                iacTypes.BoolValue{},
+				MinimalSeverity:          iacTypes.StringValue{},
 			},
 		},
 		{
@@ -39,9 +44,8 @@ func Test_adaptContact(t *testing.T) {
 			}
 `,
 			expected: securitycenter.Contact{
-				Metadata:                 iacTypes.NewTestMetadata(),
-				EnableAlertNotifications: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				Phone:                    iacTypes.String("", iacTypes.NewTestMetadata()),
+				IsEnabled:       iacTypes.BoolValue{},
+				MinimalSeverity: iacTypes.StringValue{},
 			},
 		},
 	}
@@ -68,8 +72,7 @@ func Test_adaptSubscription(t *testing.T) {
 				tier          = "Free"
 			}`,
 			expected: securitycenter.SubscriptionPricing{
-				Metadata: iacTypes.NewTestMetadata(),
-				Tier:     iacTypes.String("Free", iacTypes.NewTestMetadata()),
+				Tier: iacTypes.StringTest("Free"),
 			},
 		},
 		{
@@ -78,8 +81,7 @@ func Test_adaptSubscription(t *testing.T) {
 			resource "azurerm_security_center_subscription_pricing" "example" {
 			}`,
 			expected: securitycenter.SubscriptionPricing{
-				Metadata: iacTypes.NewTestMetadata(),
-				Tier:     iacTypes.String("Free", iacTypes.NewTestMetadata()),
+				Tier: iacTypes.StringTest("Free"),
 			},
 		},
 		{
@@ -89,8 +91,7 @@ func Test_adaptSubscription(t *testing.T) {
 				tier          = "Standard"
 			}`,
 			expected: securitycenter.SubscriptionPricing{
-				Metadata: iacTypes.NewTestMetadata(),
-				Tier:     iacTypes.String("Standard", iacTypes.NewTestMetadata()),
+				Tier: iacTypes.StringTest("Standard"),
 			},
 		},
 	}
@@ -107,8 +108,10 @@ func Test_adaptSubscription(t *testing.T) {
 func TestLines(t *testing.T) {
 	src := `
 	resource "azurerm_security_center_contact" "example" {
+		email = "contact@example.com"
 		phone = "+1-555-555-5555"
 		alert_notifications = true
+		alerts_to_admins = true
 	}
 
 	resource "azurerm_security_center_subscription_pricing" "example" {
@@ -124,12 +127,18 @@ func TestLines(t *testing.T) {
 	contact := adapted.Contacts[0]
 	sub := adapted.Subscriptions[0]
 
-	assert.Equal(t, 3, contact.Phone.GetMetadata().Range().GetStartLine())
-	assert.Equal(t, 3, contact.Phone.GetMetadata().Range().GetEndLine())
+	assert.Equal(t, 3, contact.Email.GetMetadata().Range().GetStartLine())
+	assert.Equal(t, 3, contact.Email.GetMetadata().Range().GetEndLine())
 
-	assert.Equal(t, 4, contact.EnableAlertNotifications.GetMetadata().Range().GetStartLine())
-	assert.Equal(t, 4, contact.EnableAlertNotifications.GetMetadata().Range().GetEndLine())
+	assert.Equal(t, 4, contact.Phone.GetMetadata().Range().GetStartLine())
+	assert.Equal(t, 4, contact.Phone.GetMetadata().Range().GetEndLine())
 
-	assert.Equal(t, 8, sub.Tier.GetMetadata().Range().GetStartLine())
-	assert.Equal(t, 8, sub.Tier.GetMetadata().Range().GetEndLine())
+	assert.Equal(t, 5, contact.EnableAlertNotifications.GetMetadata().Range().GetStartLine())
+	assert.Equal(t, 5, contact.EnableAlertNotifications.GetMetadata().Range().GetEndLine())
+
+	assert.Equal(t, 6, contact.EnableAlertsToAdmins.GetMetadata().Range().GetStartLine())
+	assert.Equal(t, 6, contact.EnableAlertsToAdmins.GetMetadata().Range().GetEndLine())
+
+	assert.Equal(t, 10, sub.Tier.GetMetadata().Range().GetStartLine())
+	assert.Equal(t, 10, sub.Tier.GetMetadata().Range().GetEndLine())
 }

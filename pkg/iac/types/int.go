@@ -1,86 +1,27 @@
 package types
 
-import (
-	"encoding/json"
-)
-
 type IntValue struct {
-	BaseAttribute
-	value int
-}
-
-func (b IntValue) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]any{
-		"value":    b.value,
-		"metadata": b.metadata,
-	})
-}
-
-func (b *IntValue) UnmarshalJSON(data []byte) error {
-	var keys map[string]any
-	if err := json.Unmarshal(data, &keys); err != nil {
-		return err
-	}
-	if keys["value"] != nil {
-		b.value = int(keys["value"].(float64))
-	}
-	if keys["metadata"] != nil {
-		raw, err := json.Marshal(keys["metadata"])
-		if err != nil {
-			return err
-		}
-		var m Metadata
-		if err := json.Unmarshal(raw, &m); err != nil {
-			return err
-		}
-		b.metadata = m
-	}
-	return nil
+	BaseValue[int]
 }
 
 func Int(value int, m Metadata) IntValue {
-	return IntValue{
-		value:         value,
-		BaseAttribute: BaseAttribute{metadata: m},
-	}
-}
-
-func IntTest(value int) IntValue {
-	return Int(value, NewTestMetadata())
-}
-
-func IntFromInt32(value int32, m Metadata) IntValue {
-	return Int(int(value), m)
+	return IntValue{newValue(value, m)}
 }
 
 func IntDefault(value int, m Metadata) IntValue {
-	b := Int(value, m)
-	b.BaseAttribute.metadata.isDefault = true
-	return b
+	return IntValue{defaultValue(value, m)}
 }
 
 func IntUnresolvable(m Metadata) IntValue {
-	b := Int(0, m)
-	b.BaseAttribute.metadata.isUnresolvable = true
-	return b
+	return IntValue{unresolvableValue[int](m)}
 }
 
 func IntExplicit(value int, m Metadata) IntValue {
-	b := Int(value, m)
-	b.BaseAttribute.metadata.isExplicit = true
-	return b
+	return IntValue{newValue(value, m)}
 }
 
-func (b IntValue) GetMetadata() Metadata {
-	return b.metadata
-}
-
-func (b IntValue) Value() int {
-	return b.value
-}
-
-func (b IntValue) GetRawValue() any {
-	return b.value
+func IntTest(value int) IntValue {
+	return IntValue{testValue(value)}
 }
 
 func (b IntValue) EqualTo(i int) bool {
@@ -102,10 +43,4 @@ func (b IntValue) GreaterThan(i int) bool {
 		return false
 	}
 	return b.value > i
-}
-
-func (b IntValue) ToRego() any {
-	m := b.metadata.ToRego().(map[string]any)
-	m["value"] = b.Value()
-	return m
 }

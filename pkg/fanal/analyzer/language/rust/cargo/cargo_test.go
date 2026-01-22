@@ -608,6 +608,178 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "workspace members",
+			dir:  "testdata/toml-workspace-glob",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Cargo,
+						FilePath: "Cargo.lock",
+						Packages: types.Packages{
+							{
+								ID:           "18164bd748b1f49e",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"member1@0.1.0",
+									"member2@0.1.0",
+								},
+							},
+							{
+								ID:           "member1@0.1.0",
+								Name:         "member1",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipWorkspace,
+								Locations: []types.Location{
+									{
+										StartLine: 30,
+										EndLine:   35,
+									},
+								},
+								DependsOn: []string{
+									"gdb-command@0.7.6",
+								},
+							},
+							{
+								ID:           "member2@0.1.0",
+								Name:         "member2",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipWorkspace,
+								Locations: []types.Location{
+									{
+										StartLine: 37,
+										EndLine:   42,
+									},
+								},
+								DependsOn: []string{
+									"regex@1.10.2",
+								},
+							},
+							{
+								ID:           "gdb-command@0.7.6",
+								Name:         "gdb-command",
+								Version:      "0.7.6",
+								Indirect:     false,
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 14,
+										EndLine:   22,
+									},
+								},
+								DependsOn: []string{
+									"regex@1.10.2",
+									"wait-timeout@0.2.0",
+								},
+							},
+							{
+								ID:           "regex@1.10.2",
+								Name:         "regex",
+								Version:      "1.10.2",
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 50,
+										EndLine:   60,
+									},
+								},
+								DependsOn: []string{
+									"aho-corasick@1.1.2",
+									"memchr@2.6.4",
+									"regex-automata@0.4.3",
+									"regex-syntax@0.8.2",
+								},
+							},
+							{
+								ID:           "aho-corasick@1.1.2",
+								Name:         "aho-corasick",
+								Version:      "1.1.2",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   12,
+									},
+								},
+								DependsOn: []string{"memchr@2.6.4"},
+							},
+							{
+								ID:           "libc@0.2.150",
+								Name:         "libc",
+								Version:      "0.2.150",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 24,
+										EndLine:   28,
+									},
+								},
+							},
+							{
+								ID:           "memchr@2.6.4",
+								Name:         "memchr",
+								Version:      "2.6.4",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 44,
+										EndLine:   48,
+									},
+								},
+							},
+							{
+								ID:           "regex-automata@0.4.3",
+								Name:         "regex-automata",
+								Version:      "0.4.3",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 62,
+										EndLine:   71,
+									},
+								},
+								DependsOn: []string{
+									"aho-corasick@1.1.2",
+									"memchr@2.6.4",
+									"regex-syntax@0.8.2",
+								},
+							},
+							{
+								ID:           "regex-syntax@0.8.2",
+								Name:         "regex-syntax",
+								Version:      "0.8.2",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 73,
+										EndLine:   77,
+									},
+								},
+							},
+							{
+								ID:           "wait-timeout@0.2.0",
+								Name:         "wait-timeout",
+								Version:      "0.2.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 79,
+										EndLine:   86,
+									},
+								},
+								DependsOn: []string{"libc@0.2.150"},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

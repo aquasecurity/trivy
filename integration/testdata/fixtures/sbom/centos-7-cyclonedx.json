@@ -32,6 +32,10 @@
         {
           "name": "aquasecurity:trivy:RepoTag",
           "value": "ghcr.io/aquasecurity/trivy-test-images:centos-7"
+        },
+        {
+          "name": "aquasecurity:trivy:Reference",
+          "value": "ghcr.io/aquasecurity/trivy-test-images:centos-7"
         }
       ]
     }

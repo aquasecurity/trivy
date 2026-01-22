@@ -1,10 +1,12 @@
 package analyzer
 
 import (
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 )
 
-type Type string
+// Type is an alias for types.AnalyzerType for backward compatibility
+type Type = types.AnalyzerType
 
 const (
 	// ======
@@ -132,6 +134,7 @@ const (
 	TypeTerraformPlanSnapshot Type = Type(detection.FileTypeTerraformPlanSnapshot)
 	TypeYAML                  Type = Type(detection.FileTypeYAML)
 	TypeJSON                  Type = Type(detection.FileTypeJSON)
+	TypeAnsible               Type = Type(detection.FileTypeAnsible)
 
 	// ========
 	// License
@@ -266,5 +269,6 @@ var (
 		TypeTerraformPlanSnapshot,
 		TypeYAML,
 		TypeJSON,
+		TypeAnsible,
 	}
 )

@@ -12,7 +12,8 @@ func NewScanner(opts ...options.ScannerOption) *generic.GenericScanner[*dockerfi
 	defaultOpts := []options.ScannerOption{
 		generic.WithSupportsInlineIgnore[*dockerfile.Dockerfile](true),
 	}
-	p := generic.ParseFunc[*dockerfile.Dockerfile](parser.Parse)
+
+	p := parser.NewParser()
 	return generic.NewScanner("Dockerfile", types.SourceDockerfile, p, append(defaultOpts, opts...)...,
 	)
 }

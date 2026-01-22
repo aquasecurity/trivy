@@ -11,7 +11,11 @@
     "Licenses": [
       "GPLv3"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "bzip2-libs@1.0.6-10.ph3.x86_64",
@@ -25,7 +29,11 @@
     "Licenses": [
       "BSD"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "ca-certificates@20190521-1.ph3.x86_64",
@@ -39,7 +47,11 @@
     "Licenses": [
       "Custom"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "ca-certificates-pki@20190521-1.ph3.x86_64",
@@ -53,7 +65,11 @@
     "Licenses": [
       "Custom"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "curl@7.61.1-4.ph3.x86_64",
@@ -67,7 +83,11 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "curl-libs@7.61.1-4.ph3.x86_64",
@@ -81,7 +101,11 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "e2fsprogs-libs@1.44.3-2.ph3.x86_64",
@@ -95,7 +119,11 @@
     "Licenses": [
       "GPLv2+"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "elfutils-libelf@0.176-1.ph3.x86_64",
@@ -109,7 +137,11 @@
     "Licenses": [
       "GPLv2+ or LGPLv3+"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "expat-libs@2.2.6-2.ph3.x86_64",
@@ -123,7 +155,11 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "filesystem@1.1-4.ph3.x86_64",
@@ -137,7 +173,11 @@
     "Licenses": [
       "GPLv3"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "glibc@2.28-3.ph3.x86_64",
@@ -151,7 +191,11 @@
     "Licenses": [
       "LGPLv2+"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "gpg-pubkey@66fd4949-4803fe57.",
@@ -161,7 +205,11 @@
     "Arch": "None",
     "Licenses": [
       "pubkey"
-    ]
+    ],
+    "Repository": {
+      "Class": "third-party"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "krb5@1.17-1.ph3.x86_64",
@@ -175,7 +223,11 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libcap@2.25-8.ph3.x86_64",
@@ -189,7 +241,11 @@
     "Licenses": [
       "GPLv2+"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libdb@5.3.28-2.ph3.x86_64",
@@ -203,7 +259,11 @@
     "Licenses": [
       "BSD and LGPLv2 and Sleepycat"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libgcc@7.3.0-4.ph3.x86_64",
@@ -217,7 +277,11 @@
     "Licenses": [
       "GPLv2+"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libsolv@0.6.26-5.ph3.x86_64",
@@ -231,7 +295,11 @@
     "Licenses": [
       "BSD"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libssh2@1.9.0-1.ph3.x86_64",
@@ -245,7 +313,11 @@
     "Licenses": [
       "BSD"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "ncurses-libs@6.1-1.ph3.x86_64",
@@ -259,7 +331,11 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "nspr@4.21-1.ph3.x86_64",
@@ -273,7 +349,11 @@
     "Licenses": [
       "MPLv2.0"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "nss-libs@3.44-2.ph3.x86_64",
@@ -287,7 +367,11 @@
     "Licenses": [
       "MPLv2.0"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "openssl@1.0.2s-1.ph3.x86_64",
@@ -301,7 +385,11 @@
     "Licenses": [
       "OpenSSL"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "photon-release@3.0-3.ph3.noarch",
@@ -315,7 +403,11 @@
     "Licenses": [
       "Apache License"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "photon-repos@3.0-3.ph3.noarch",
@@ -329,7 +421,11 @@
     "Licenses": [
       "Apache License"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "popt@1.16-5.ph3.x86_64",
@@ -343,7 +439,11 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "readline@7.0-2.ph3.x86_64",
@@ -357,7 +457,11 @@
     "Licenses": [
       "GPLv3+"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "rpm-libs@4.14.2-4.ph3.x86_64",
@@ -371,7 +475,11 @@
     "Licenses": [
       "GPLv2+"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "sqlite-libs@3.27.2-3.ph3.x86_64",
@@ -385,7 +493,11 @@
     "Licenses": [
       "Public Domain"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "tdnf@2.0.0-10.ph3.x86_64",
@@ -399,7 +511,11 @@
     "Licenses": [
       "LGPLv2.1,GPLv2"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "tdnf-cli-libs@2.0.0-10.ph3.x86_64",
@@ -413,7 +529,11 @@
     "Licenses": [
       "LGPLv2.1,GPLv2"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "toybox@0.7.7-1.ph3.x86_64",
@@ -427,7 +547,11 @@
     "Licenses": [
       "BSD"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "xz-libs@5.2.4-1.ph3.x86_64",
@@ -441,7 +565,11 @@
     "Licenses": [
       "GPLv2+ and GPLv3+ and LGPLv2+"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "zlib@1.2.11-1.ph3.x86_64",
@@ -455,6 +583,10 @@
     "Licenses": [
       "zlib"
     ],
-    "Maintainer": "VMware, Inc."
+    "Maintainer": "VMware, Inc.",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
   }
 ]

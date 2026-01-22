@@ -26,6 +26,7 @@ import (
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 const (
@@ -106,7 +107,13 @@ func (m *Marshaler) Metadata(ctx context.Context) *cdx.Metadata {
 }
 
 func (m *Marshaler) MarshalRoot() (*cdx.Component, error) {
-	return m.MarshalComponent(m.bom.Root())
+	root := m.bom.Root()
+	// Since we reuse the scanned SBOM, the root component (metadata.component) can be empty.
+	if root == nil {
+		m.logger.Debug("Root component not found")
+		return nil, nil
+	}
+	return m.MarshalComponent(root)
 }
 
 func (m *Marshaler) MarshalComponent(component *core.Component) (*cdx.Component, error) {
@@ -299,9 +306,7 @@ func (m *Marshaler) Licenses(licenses []string) *cdx.Licenses {
 }
 
 func (m *Marshaler) normalizeLicenses(licenses []string) *cdx.Licenses {
-	expressions := lo.Map(licenses, func(license string, _ int) expression.Expression {
-		return m.normalizeLicense(license)
-	})
+	expressions := xslices.Map(licenses, m.normalizeLicense)
 	// Check if all licenses are valid SPDX expressions
 	allValidSPDX := lo.EveryBy(expressions, func(expr expression.Expression) bool {
 		return expr.IsSPDXExpression()
@@ -315,14 +320,12 @@ func (m *Marshaler) normalizeLicenses(licenses []string) *cdx.Licenses {
 
 	// If all are valid SPDX AND at least one contains CompoundExpr, combine into single Expression
 	if allValidSPDX && hasCompoundExpr {
-		exprStrs := lo.Map(expressions, func(expr expression.Expression, _ int) string {
-			return expr.String()
-		})
+		exprStrs := xslices.Map(expressions, expression.Expression.String)
 		return &cdx.Licenses{{Expression: strings.Join(exprStrs, " AND ")}}
 	}
 
 	// Otherwise use individual LicenseChoice entries with license.id or license.name
-	choices := lo.Map(expressions, func(expr expression.Expression, _ int) cdx.LicenseChoice {
+	choices := xslices.Map(expressions, func(expr expression.Expression) cdx.LicenseChoice {
 		if s, ok := expr.(expression.SimpleExpr); ok && s.IsSPDXExpression() {
 			// Use license.id for valid SPDX ID (e.g., "MIT", "Apache-2.0")
 			return cdx.LicenseChoice{License: &cdx.License{ID: s.String()}}
@@ -345,7 +348,7 @@ func (m *Marshaler) normalizeLicense(license string) expression.Expression {
 	license = strings.ReplaceAll(license, "-with-", " WITH ")
 	license = strings.ReplaceAll(license, "-WITH-", " WITH ")
 
-	normalizedLicenses, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX)
+	normalizedLicenses, err := expression.Normalize(license, licensing.NormalizeLicenseExpression, expression.NormalizeForSPDX)
 	if err != nil {
 		// Not fail on the invalid license
 		m.logger.Warn("Unable to marshal SPDX licenses", log.String("license", license))

@@ -73,6 +73,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											"lib/libc.musl-x86_64.so.1",
 											"lib/ld-musl-x86_64.so.1",
 										},
+										AnalyzedBy: analyzer.TypeApk,
 									},
 								},
 							},
@@ -162,6 +163,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   1,
 											},
 										},
+										AnalyzedBy: analyzer.TypePip,
 									},
 								},
 							},
@@ -202,6 +204,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   1,
 											},
 										},
+										AnalyzedBy: analyzer.TypePip,
 									},
 								},
 							},
@@ -226,7 +229,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			wantBlobs: []cachetest.WantBlob{
 				{
 					// Cache key is based on commit hash (8a19b492a589955c3e70c6ad8efd1e4ec6ae0d35)
-					ID: "sha256:c7173e152a268c038257b877794285986c52ac569de7e516b2963f557f4e26ee",
+					ID: "sha256:d37c788d6fe832712cce9020943746b8764c04f7e323ed4ad68de36c5bf7d846",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 					},
@@ -235,9 +238,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: artifact.Reference{
 				Name: "../../../../internal/gittest/testdata/test-repo",
 				Type: types.TypeRepository,
-				ID:   "sha256:c7173e152a268c038257b877794285986c52ac569de7e516b2963f557f4e26ee",
+				ID:   "sha256:d37c788d6fe832712cce9020943746b8764c04f7e323ed4ad68de36c5bf7d846",
 				BlobIDs: []string{
-					"sha256:c7173e152a268c038257b877794285986c52ac569de7e516b2963f557f4e26ee",
+					"sha256:d37c788d6fe832712cce9020943746b8764c04f7e323ed4ad68de36c5bf7d846",
 				},
 				RepoMetadata: artifact.RepoMetadata{
 					RepoURL:   "https://github.com/aquasecurity/trivy-test-repo/",
@@ -723,6 +726,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			},
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set fake UUID for consistent test results
@@ -2347,6 +2351,7 @@ func TestYAMLConfigScan(t *testing.T) {
 		artifactOpt artifact.Option
 		wantBlobs   []cachetest.WantBlob
 		want        artifact.Reference
+		wantErr     string
 	}{
 		{
 			name: "happy path without custom schema",
@@ -2381,7 +2386,7 @@ func TestYAMLConfigScan(t *testing.T) {
 											Severity: "LOW",
 										},
 										CauseMetadata: types.CauseMetadata{
-											Provider: "Generic",
+											Provider: "Yaml",
 											Service:  "general",
 										},
 									},
@@ -2403,7 +2408,7 @@ func TestYAMLConfigScan(t *testing.T) {
 											Severity: "LOW",
 										},
 										CauseMetadata: types.CauseMetadata{
-											Provider: "Generic",
+											Provider: "Yaml",
 											Service:  "general",
 										},
 									},
@@ -2452,7 +2457,7 @@ func TestYAMLConfigScan(t *testing.T) {
 											Severity: "LOW",
 										},
 										CauseMetadata: types.CauseMetadata{
-											Provider: "Generic",
+											Provider: "Yaml",
 											Service:  "general",
 										},
 									},
@@ -2466,6 +2471,40 @@ func TestYAMLConfigScan(t *testing.T) {
 				Name: "testdata/misconfig/yaml/with-schema/src",
 				Type: types.TypeFilesystem,
 			},
+		},
+		{
+			name: "with rego error limit",
+			fields: fields{
+				dir: "./testdata/misconfig/yaml/with-rego-error-limit/src",
+			},
+			artifactOpt: artifact.Option{
+				MisconfScannerOption: misconf.ScannerOption{
+					Namespaces: []string{"user"},
+					PolicyPaths: []string{
+						"./testdata/misconfig/yaml/with-rego-error-limit/checks/test_2_errors.rego",
+						"./testdata/misconfig/yaml/with-rego-error-limit/checks/test.json",
+					},
+					RegoErrorLimit: 1,
+				},
+			},
+			wantErr: "ego_type_error: undefined ref: input.wrong_ref",
+		},
+		{
+			name: "with Rego error limit 0",
+			fields: fields{
+				dir: "./testdata/misconfig/yaml/with-rego-error-limit/src",
+			},
+			artifactOpt: artifact.Option{
+				MisconfScannerOption: misconf.ScannerOption{
+					Namespaces: []string{"user"},
+					PolicyPaths: []string{
+						"./testdata/misconfig/yaml/with-rego-error-limit/checks/test_1_error.rego",
+						"./testdata/misconfig/yaml/with-rego-error-limit/checks/test.json",
+					},
+					RegoErrorLimit: 0,
+				},
+			},
+			wantErr: "ego_type_error: undefined ref: input.wrong_ref",
 		},
 	}
 
@@ -2487,6 +2526,10 @@ func TestYAMLConfigScan(t *testing.T) {
 			require.NoError(t, err)
 
 			got, err := a.Inspect(t.Context())
+			if tt.wantErr != "" {
+				assert.ErrorContains(t, err, tt.wantErr)
+				return
+			}
 			require.NoError(t, err)
 			require.NotNil(t, got)
 

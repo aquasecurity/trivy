@@ -35,12 +35,10 @@ func Test_adaptRoleDefinition(t *testing.T) {
 			}
 `,
 			expected: authorization.RoleDefinition{
-				Metadata: iacTypes.NewTestMetadata(),
 				Permissions: []authorization.Permission{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Actions: []iacTypes.StringValue{
-							iacTypes.String("*", iacTypes.NewTestMetadata()),
+							iacTypes.StringTest("*"),
 						},
 					},
 				},
@@ -66,14 +64,11 @@ func Test_adaptRoleDefinition(t *testing.T) {
 			}
 `,
 			expected: authorization.RoleDefinition{
-				Metadata: iacTypes.NewTestMetadata(),
 				Permissions: []authorization.Permission{
-					{
-						Metadata: iacTypes.NewTestMetadata(),
-					},
+					{},
 				},
 				AssignableScopes: []iacTypes.StringValue{
-					iacTypes.String("/", iacTypes.NewTestMetadata()),
+					iacTypes.StringTest("/"),
 				},
 			},
 		},
@@ -114,4 +109,53 @@ func TestLines(t *testing.T) {
 	assert.Equal(t, 10, adapted.RoleDefinitions[0].AssignableScopes[0].GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 10, adapted.RoleDefinitions[0].AssignableScopes[0].GetMetadata().Range().GetEndLine())
 
+}
+
+func Test_adaptRoleAssignment(t *testing.T) {
+	tests := []struct {
+		name      string
+		terraform string
+		expected  authorization.RoleAssignment
+	}{
+		{
+			name: "complete role assignment",
+			terraform: `
+			resource "azurerm_role_assignment" "example" {
+				scope                = "/subscriptions/12345678-1234-1234-1234-123456789012"
+				role_definition_id   = "/subscriptions/12345678-1234-1234-1234-123456789012/providers/Microsoft.Authorization/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635"
+				role_definition_name = "Owner"
+				principal_id         = "11111111-1111-1111-1111-111111111111"
+				principal_type       = "User"
+			}
+`,
+			expected: authorization.RoleAssignment{
+				RoleDefinitionId:   iacTypes.StringTest("/subscriptions/12345678-1234-1234-1234-123456789012/providers/Microsoft.Authorization/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635"),
+				RoleDefinitionName: iacTypes.StringTest("Owner"),
+				PrincipalId:        iacTypes.StringTest("11111111-1111-1111-1111-111111111111"),
+				PrincipalType:      iacTypes.StringTest("User"),
+			},
+		},
+		{
+			name: "data reference scope (unresolvable)",
+			terraform: `
+			resource "azurerm_role_assignment" "example" {
+				scope                = data.azurerm_resource_group.example.id
+				role_definition_id   = "/subscriptions/12345678-1234-1234-1234-123456789012/providers/Microsoft.Authorization/roleDefinitions/reader"
+				principal_id         = "33333333-3333-3333-3333-333333333333"
+			}
+`,
+			expected: authorization.RoleAssignment{
+				RoleDefinitionId: iacTypes.StringTest("/subscriptions/12345678-1234-1234-1234-123456789012/providers/Microsoft.Authorization/roleDefinitions/reader"),
+				PrincipalId:      iacTypes.StringTest("33333333-3333-3333-3333-333333333333"),
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			modules := tftestutil.CreateModulesFromSource(t, test.terraform, ".tf")
+			adapted := adaptRoleAssignment(modules.GetBlocks()[0])
+			testutil.AssertDefsecEqual(t, test.expected, adapted)
+		})
+	}
 }

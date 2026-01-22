@@ -10,6 +10,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 )
@@ -181,35 +182,38 @@ func reachRoot(leaf *core.Component, components map[uuid.UUID]*core.Component, p
 		return false
 	}
 
-	visited := make(map[uuid.UUID]bool)
-
 	// Use Depth First Search (DFS)
-	var dfs func(c *core.Component) bool
-	dfs = func(c *core.Component) bool {
+	var dfs func(c *core.Component, visited set.Set[uuid.UUID]) bool
+	dfs = func(c *core.Component, visited set.Set[uuid.UUID]) bool {
+
 		// Call the function with the current component and the leaf component
 		switch {
 		case notAffected(c, leaf):
 			return false
 		case c.Root:
 			return true
-		case lo.Every(lo.Keys(visited), parents[c.ID()]):
+		case set.New[uuid.UUID](parents[c.ID()]...).Difference(visited).Size() == 0:
 			// Should never go here, since all components except the root must have at least one parent and be related to the root component.
 			// If it does, it means the component tree is not connected due to a bug in the SBOM generation.
 			// In this case, so as not to filter out all the vulnerabilities accidentally, return true for fail-safe.
 			return true
 		}
 
-		visited[c.ID()] = true
+		visited.Append(c.ID())
 		for _, parent := range parents[c.ID()] {
-			if visited[parent] {
+			if visited.Contains(parent) {
 				continue
 			}
-			if dfs(components[parent]) {
+
+			// Each DFS path needs its own visited set,
+			// to avoid false positives in other paths
+			newVisited := visited.Clone()
+			if dfs(components[parent], newVisited) {
 				return true
 			}
 		}
 		return false
 	}
 
-	return dfs(leaf)
+	return dfs(leaf, set.New[uuid.UUID]())
 }

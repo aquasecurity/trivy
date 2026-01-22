@@ -2,6 +2,7 @@ package compute
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/compute"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -14,7 +15,8 @@ func Adapt(deployment azure.Deployment) compute.Compute {
 	}
 }
 
-func adaptManagedDisks(deployment azure.Deployment) (managedDisks []compute.ManagedDisk) {
+func adaptManagedDisks(deployment azure.Deployment) []compute.ManagedDisk {
+	var managedDisks []compute.ManagedDisk
 
 	for _, resource := range deployment.GetResourcesByType("Microsoft.Compute/disks") {
 		managedDisks = append(managedDisks, adaptManagedDisk(resource))
@@ -46,12 +48,16 @@ func adaptWindowsVirtualMachines(deployment azure.Deployment) (windowsVirtualMac
 }
 
 func adaptWindowsVirtualMachine(resource azure.Resource) compute.WindowsVirtualMachine {
+	networkProfile := resource.Properties.GetMapValue("networkProfile")
+	networkInterfaces := extractNetworkInterfaces(networkProfile, resource.Metadata)
+
 	return compute.WindowsVirtualMachine{
 		Metadata: resource.Metadata,
 		VirtualMachine: compute.VirtualMachine{
 			Metadata: resource.Metadata,
 			CustomData: resource.Properties.GetMapValue("osProfile").
 				GetMapValue("customData").AsStringValue("", resource.Metadata),
+			NetworkInterfaces: networkInterfaces,
 		},
 	}
 }
@@ -67,12 +73,16 @@ func adaptLinuxVirtualMachines(deployment azure.Deployment) (linuxVirtualMachine
 }
 
 func adaptLinuxVirtualMachine(resource azure.Resource) compute.LinuxVirtualMachine {
+	networkProfile := resource.Properties.GetMapValue("networkProfile")
+	networkInterfaces := extractNetworkInterfaces(networkProfile, resource.Metadata)
+
 	return compute.LinuxVirtualMachine{
 		Metadata: resource.Metadata,
 		VirtualMachine: compute.VirtualMachine{
 			Metadata: resource.Metadata,
 			CustomData: resource.Properties.GetMapValue("osProfile").
 				GetMapValue("customData").AsStringValue("", resource.Metadata),
+			NetworkInterfaces: networkInterfaces,
 		},
 		OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
 			Metadata: resource.Metadata,
@@ -82,4 +92,8 @@ func adaptLinuxVirtualMachine(resource azure.Resource) compute.LinuxVirtualMachi
 		},
 	}
 
+}
+
+func extractNetworkInterfaces(_ azure.Value, _ iacTypes.Metadata) []network.NetworkInterface {
+	return nil
 }

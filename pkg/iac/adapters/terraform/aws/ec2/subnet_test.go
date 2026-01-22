@@ -27,8 +27,7 @@ func Test_adaptSubnet(t *testing.T) {
 			}
 `,
 			expected: ec2.Subnet{
-				Metadata:            iacTypes.NewTestMetadata(),
-				MapPublicIpOnLaunch: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				MapPublicIpOnLaunch: iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -39,10 +38,7 @@ func Test_adaptSubnet(t *testing.T) {
 				map_public_ip_on_launch = false
 			}
 `,
-			expected: ec2.Subnet{
-				Metadata:            iacTypes.NewTestMetadata(),
-				MapPublicIpOnLaunch: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-			},
+			expected: ec2.Subnet{},
 		},
 		{
 			name: "defaults",
@@ -51,10 +47,7 @@ func Test_adaptSubnet(t *testing.T) {
 			    vpc_id = "vpc-123456"
 			}
 `,
-			expected: ec2.Subnet{
-				Metadata:            iacTypes.NewTestMetadata(),
-				MapPublicIpOnLaunch: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-			},
+			expected: ec2.Subnet{},
 		},
 	}
 

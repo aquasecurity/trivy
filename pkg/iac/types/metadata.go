@@ -198,14 +198,6 @@ func (m Metadata) IsUnmanaged() bool {
 	return !m.isManaged
 }
 
-type BaseAttribute struct {
-	metadata Metadata
-}
-
-func (b BaseAttribute) GetMetadata() Metadata {
-	return b.metadata
-}
-
 func (m Metadata) GetMetadata() Metadata {
 	return m
 }

@@ -23,7 +23,7 @@ import (
 
 var (
 	disabledChecks = set.New("AVD-DS-0007", "AVD-DS-0016")
-	reason         = "See " + doc.URL("docs/target/container_image", "disabled-checks")
+	reason         = "See " + doc.URL("guide/target/container_image", "disabled-checks")
 )
 
 const analyzerVersion = 1
@@ -155,7 +155,7 @@ func buildHealthcheckInstruction(health *v1.HealthConfig) string {
 		timeout = fmt.Sprintf("--timeout=%s ", health.Timeout)
 	}
 	if health.StartPeriod != 0 {
-		startPeriod = fmt.Sprintf("--startPeriod=%s ", health.StartPeriod)
+		startPeriod = fmt.Sprintf("--start-period=%s ", health.StartPeriod)
 	}
 	if health.Retries != 0 {
 		retries = fmt.Sprintf("--retries=%d ", health.Retries)

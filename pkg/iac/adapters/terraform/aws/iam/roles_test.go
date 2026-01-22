@@ -55,12 +55,10 @@ data "aws_iam_policy_document" "policy" {
 `,
 			expected: []iam.Role{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Name:     iacTypes.String("test_role", iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("test_role"),
 					Policies: []iam.Policy{
 						{
-							Metadata: iacTypes.NewTestMetadata(),
-							Name:     iacTypes.String("test_policy", iacTypes.NewTestMetadata()),
+							Name:     iacTypes.StringTest("test_policy"),
 							Document: defaultPolicyDocuemnt(true),
 						},
 					},
@@ -97,12 +95,10 @@ resource "aws_iam_role_policy_attachment" "test-attach" {
 `,
 			expected: []iam.Role{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Name:     iacTypes.String("test-role", iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("test-role"),
 					Policies: []iam.Policy{
 						{
-							Metadata: iacTypes.NewTestMetadata(),
-							Name:     iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
+							Name:     iacTypes.StringTest("test-policy"),
 							Document: defaultPolicyDocuemnt(true),
 						},
 					},
@@ -133,12 +129,10 @@ resource "aws_iam_role" "example" {
 `,
 			expected: []iam.Role{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Name:     iacTypes.String("test-role", iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("test-role"),
 					Policies: []iam.Policy{
 						{
-							Metadata: iacTypes.NewTestMetadata(),
-							Name:     iacTypes.String("my_inline_policy", iacTypes.NewTestMetadata()),
+							Name:     iacTypes.StringTest("my_inline_policy"),
 							Document: defaultPolicyDocuemnt(false),
 						},
 					},
@@ -183,23 +177,19 @@ resource "aws_iam_role_policy_attachment" "this" {
 `,
 			expected: []iam.Role{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Name:     iacTypes.String("test-role1", iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("test-role1"),
 					Policies: []iam.Policy{
 						{
-							Metadata: iacTypes.NewTestMetadata(),
-							Name:     iacTypes.String("test-role1-policy", iacTypes.NewTestMetadata()),
+							Name:     iacTypes.StringTest("test-role1-policy"),
 							Document: defaultPolicyDocuemnt(true),
 						},
 					},
 				},
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Name:     iacTypes.String("test-role2", iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("test-role2"),
 					Policies: []iam.Policy{
 						{
-							Metadata: iacTypes.NewTestMetadata(),
-							Name:     iacTypes.String("test-role2-policy", iacTypes.NewTestMetadata()),
+							Name:     iacTypes.StringTest("test-role2-policy"),
 							Document: defaultPolicyDocuemnt(true),
 						},
 					},
@@ -235,11 +225,10 @@ data "aws_iam_policy_document" "s3_policy" {
 }`,
 			expected: []iam.Role{
 				{
-					Name: iacTypes.String("test_role", iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("test_role"),
 					Policies: []iam.Policy{
 						{
-							Name:    iacTypes.String("test_policy", iacTypes.NewTestMetadata()),
-							Builtin: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							Name: iacTypes.StringTest("test_policy"),
 							Document: func() iam.Document {
 								builder := iamgo.NewPolicyBuilder()
 								sb := iamgo.NewStatementBuilder()
@@ -251,7 +240,6 @@ data "aws_iam_policy_document" "s3_policy" {
 
 								return iam.Document{
 									Parsed:   builder.Build(),
-									Metadata: iacTypes.NewTestMetadata(),
 									IsOffset: true,
 									HasRefs:  false,
 								}
@@ -358,7 +346,6 @@ data "aws_partition" "current" {}
 					Name: iacTypes.StringTest("test"),
 					Policies: []iam.Policy{
 						{
-							Name:     iacTypes.StringTest(""),
 							Document: iam.Document{},
 						},
 					},

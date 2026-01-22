@@ -50,6 +50,16 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "CentOS Stream",
+			inputFile: "testdata/centos-stream",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.CentOSStream,
+					Name:   "8",
+				},
+			},
+		},
+		{
 			name:      "Rocky Linux",
 			inputFile: "testdata/rocky",
 			want: &analyzer.AnalysisResult{

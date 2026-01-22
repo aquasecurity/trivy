@@ -8,3 +8,5 @@
               - v1.13.2
             VulnerableVersions:
               - "<v1.13.2"
+            VendorIDs:
+              - "GHSA-6635-c626-vj4r"

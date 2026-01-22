@@ -17,32 +17,32 @@ func TestBaseURL(t *testing.T) {
 		{
 			name: "dev",
 			ver:  "dev",
-			want: "https://trivy.dev/dev",
+			want: "https://trivy.dev/docs/dev",
 		},
 		{
 			name: "semver",
 			ver:  "0.52.0",
-			want: "https://trivy.dev/v0.52",
+			want: "https://trivy.dev/docs/v0.52",
 		},
 		{
 			name: "with v prefix",
 			ver:  "v0.52.0",
-			want: "https://trivy.dev/v0.52",
+			want: "https://trivy.dev/docs/v0.52",
 		},
 		{
 			name: "pre-release",
 			ver:  "0.52.0-beta1",
-			want: "https://trivy.dev/dev",
+			want: "https://trivy.dev/docs/dev",
 		},
 		{
 			name: "non-semver",
 			ver:  "1",
-			want: "https://trivy.dev/dev",
+			want: "https://trivy.dev/docs/dev",
 		},
 		{
 			name: "empty",
 			ver:  "",
-			want: "https://trivy.dev/dev",
+			want: "https://trivy.dev/docs/dev",
 		},
 	}
 	for _, tt := range tests {
@@ -63,28 +63,28 @@ func TestURL(t *testing.T) {
 		{
 			name:    "path without slash",
 			rawPath: "foo",
-			want:    "https://trivy.dev/dev/foo",
+			want:    "https://trivy.dev/docs/dev/foo",
 		},
 		{
 			name:    "path with leading slash",
 			rawPath: "/foo",
-			want:    "https://trivy.dev/dev/foo",
+			want:    "https://trivy.dev/docs/dev/foo",
 		},
 		{
 			name:    "path with slash",
 			rawPath: "foo/bar",
-			want:    "https://trivy.dev/dev/foo/bar",
+			want:    "https://trivy.dev/docs/dev/foo/bar",
 		},
 		{
 			name:     "path with fragment",
 			rawPath:  "foo",
 			fragment: "bar",
-			want:     "https://trivy.dev/dev/foo#bar",
+			want:     "https://trivy.dev/docs/dev/foo#bar",
 		},
 		{
 			name:    "empty",
 			rawPath: "",
-			want:    "https://trivy.dev/dev",
+			want:    "https://trivy.dev/docs/dev",
 		},
 	}
 	for _, tt := range tests {

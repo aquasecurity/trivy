@@ -17,7 +17,6 @@ import (
 	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
-	"github.com/samber/lo"
 	spdxjson "github.com/spdx/tools-golang/json"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdxlib"
@@ -35,6 +34,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/aquasecurity/trivy/pkg/vex/repo"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 
 	_ "modernc.org/sqlite"
 )
@@ -364,6 +364,8 @@ func runTest(t *testing.T, osArgs []string, wantFile string, format types.Format
 	if opts.fakeUUID != "" {
 		uuid.SetFakeUUID(t, opts.fakeUUID)
 	}
+	// Set fake UUID v7 for ReportID generation. Format is not configurable.
+	uuid.SetFakeUUIDV7(t, "017b7d41-e09f-7000-80ea-%012d")
 
 	// Set up the output file
 	outputFile := filepath.Join(t.TempDir(), "output.json")
@@ -459,7 +461,7 @@ func validateReport(t *testing.T, schema string, report any) {
 	require.NoError(t, err)
 
 	if valid := result.Valid(); !valid {
-		errs := lo.Map(result.Errors(), func(err gojsonschema.ResultError, _ int) string {
+		errs := xslices.Map(result.Errors(), func(err gojsonschema.ResultError) string {
 			return err.String()
 		})
 		assert.True(t, valid, strings.Join(errs, "\n"))
@@ -492,6 +494,25 @@ func overrideUID(t *testing.T, want, got *types.Report) {
 	for i, result := range want.Results {
 		for j := range result.Vulnerabilities {
 			want.Results[i].Vulnerabilities[j].PkgIdentifier.UID = ""
+		}
+	}
+}
+
+// overrideFingerprint only checks for the presence of the fingerprint and clears it;
+// the fingerprint is calculated from artifactID, target, pkgID, and vulnerabilityID,
+// but may not match as the artifactID can vary depending on the scanning context.
+func overrideFingerprint(t *testing.T, want, got *types.Report) {
+	for i, result := range got.Results {
+		for j, vuln := range result.Vulnerabilities {
+			assert.NotEmptyf(t, vuln.Fingerprint, "Fingerprint is empty: %s", vuln.VulnerabilityID)
+			assert.Lenf(t, vuln.Fingerprint, 71, "Fingerprint should be 71 characters (sha256: + 64 hex chars): %s", vuln.VulnerabilityID)
+			// Do not compare Fingerprint as the artifactID varies between tests
+			got.Results[i].Vulnerabilities[j].Fingerprint = ""
+		}
+	}
+	for i, result := range want.Results {
+		for j := range result.Vulnerabilities {
+			want.Results[i].Vulnerabilities[j].Fingerprint = ""
 		}
 	}
 }

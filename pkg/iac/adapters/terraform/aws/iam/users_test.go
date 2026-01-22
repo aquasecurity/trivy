@@ -44,15 +44,11 @@ resource "aws_iam_user_policy" "policy" {
 `,
 			expected: []iam.User{
 				{
-					Metadata:   iacTypes.NewTestMetadata(),
-					Name:       iacTypes.String("loadbalancer", iacTypes.NewTestMetadata()),
-					LastAccess: iacTypes.TimeUnresolvable(iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("loadbalancer"),
 					Policies: []iam.Policy{
 						{
-							Metadata: iacTypes.NewTestMetadata(),
-							Name:     iacTypes.String("test", iacTypes.NewTestMetadata()),
+							Name:     iacTypes.StringTest("test"),
 							Document: defaultPolicyDocuemnt(false),
-							Builtin:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
 					},
 				},
@@ -89,15 +85,11 @@ resource "aws_iam_user_policy_attachment" "test-attach" {
 `,
 			expected: []iam.User{
 				{
-					Metadata:   iacTypes.NewTestMetadata(),
-					Name:       iacTypes.String("test-user", iacTypes.NewTestMetadata()),
-					LastAccess: iacTypes.TimeUnresolvable(iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("test-user"),
 					Policies: []iam.Policy{
 						{
-							Metadata: iacTypes.NewTestMetadata(),
-							Name:     iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
+							Name:     iacTypes.StringTest("test-policy"),
 							Document: defaultPolicyDocuemnt(false),
-							Builtin:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
 					},
 				},
@@ -119,14 +111,10 @@ resource "aws_iam_user" "lb" {
 `,
 			expected: []iam.User{
 				{
-					Metadata:   iacTypes.NewTestMetadata(),
-					Name:       iacTypes.String("loadbalafncer", iacTypes.NewTestMetadata()),
-					LastAccess: iacTypes.TimeUnresolvable(iacTypes.NewTestMetadata()),
-					Policies:   nil,
+					Name: iacTypes.StringTest("loadbalafncer"),
 					AccessKeys: []iam.AccessKey{
 						{
-							Metadata: iacTypes.NewTestMetadata(),
-							Active:   iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Active: iacTypes.BoolTest(true),
 						},
 					},
 				},
@@ -147,14 +135,10 @@ resource "aws_iam_user" "lb" {
 `,
 			expected: []iam.User{
 				{
-					Metadata:   iacTypes.NewTestMetadata(),
-					Name:       iacTypes.String("loadbalafncer", iacTypes.NewTestMetadata()),
-					LastAccess: iacTypes.TimeUnresolvable(iacTypes.NewTestMetadata()),
-					Policies:   nil,
+					Name: iacTypes.StringTest("loadbalafncer"),
 					AccessKeys: []iam.AccessKey{
 						{
-							Metadata: iacTypes.NewTestMetadata(),
-							Active:   iacTypes.BoolDefault(true, iacTypes.NewTestMetadata()),
+							Active: iacTypes.BoolTest(true),
 						},
 					},
 				},
