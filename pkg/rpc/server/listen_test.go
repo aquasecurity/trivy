@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/go-containerregistry/pkg/v1/types"
+	ggcrtypes "github.com/google/go-containerregistry/pkg/v1/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -19,7 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/db"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	ttypes "github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 )
 
@@ -35,7 +35,7 @@ func Test_dbWorker_update(t *testing.T) {
 		name           string
 		now            time.Time
 		skipUpdate     bool
-		layerMediaType types.MediaType
+		layerMediaType ggcrtypes.MediaType
 		want           metadata.Metadata
 		wantErr        string
 	}{
@@ -66,7 +66,7 @@ func Test_dbWorker_update(t *testing.T) {
 			name:           "Download returns an error",
 			now:            time.Date(2021, 10, 1, 0, 0, 0, 0, time.UTC),
 			skipUpdate:     false,
-			layerMediaType: types.MediaType("unknown"),
+			layerMediaType: ggcrtypes.MediaType("unknown"),
 			wantErr:        "failed DB hot update",
 		},
 	}
@@ -214,10 +214,10 @@ func Test_VersionEndpoint(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	var versionInfo ttypes.VersionInfo
+	var versionInfo types.VersionInfo
 	require.NoError(t, json.NewDecoder(resp.Body).Decode(&versionInfo))
 
-	expected := ttypes.VersionInfo{
+	expected := types.VersionInfo{
 		Version: "dev",
 		VulnerabilityDB: &metadata.Metadata{
 			Version:      2,
@@ -225,7 +225,7 @@ func Test_VersionEndpoint(t *testing.T) {
 			UpdatedAt:    time.Date(2023, 7, 20, 12, 11, 37, 696263932, time.UTC),
 			DownloadedAt: time.Date(2023, 7, 25, 7, 1, 41, 239158000, time.UTC),
 		},
-		CheckBundle: &ttypes.BundleMetadata{
+		CheckBundle: &types.BundleMetadata{
 			Digest:       "sha256:829832357626da2677955e3b427191212978ba20012b6eaa03229ca28569ae43",
 			DownloadedAt: time.Date(2023, 7, 23, 16, 40, 33, 122462000, time.UTC),
 		},
