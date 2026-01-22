@@ -70,7 +70,7 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name: "skip modular package",
+			name: "modular package",
 			fixtures: []string{
 				"testdata/fixtures/modular.yaml",
 				"testdata/fixtures/data-source.yaml",
@@ -94,7 +94,20 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 			},
-			want: nil,
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "nginx",
+					VulnerabilityID:  "CVE-2021-23017",
+					InstalledVersion: "1:1.16.1-2.module+el8.4.0+543+efbf198b.0",
+					FixedVersion:     "1:1.16.1-2.module+el8.4.0+543+efbf198b.1",
+					Layer:            ftypes.Layer{},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Rocky,
+						Name: "Rocky Linux updateinfo",
+						URL:  "https://download.rockylinux.org/pub/rocky/",
+					},
+				},
+			},
 		},
 		{
 			name: "Get returns an error",
