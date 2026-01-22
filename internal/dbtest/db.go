@@ -81,12 +81,10 @@ func InitJavaDB(t *testing.T, cacheDir string) {
 	err = javaDB.Init()
 	require.NoError(t, err)
 
-	// Use fixed timestamps for reproducible test results
-	fixedTime := time.Date(2021, 8, 25, 0, 0, 0, 0, time.UTC)
 	meta := jdb.Metadata{
 		Version:    jdb.SchemaVersion,
-		NextUpdate: fixedTime.Add(24 * time.Hour),
-		UpdatedAt:  fixedTime,
+		NextUpdate: time.Now().Add(24 * time.Hour),
+		UpdatedAt:  time.Now(),
 	}
 	metac := jdb.NewMetadata(dbDir)
 	err = metac.Update(meta)

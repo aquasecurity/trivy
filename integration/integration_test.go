@@ -176,13 +176,11 @@ func initDB(t *testing.T) string {
 	cacheDir := dbtest.InitDB(t, fixtures)
 	defer dbtest.Close()
 
-	// Use fixed timestamps for reproducible test results
-	fixedTime := time.Date(2021, 8, 25, 0, 0, 0, 0, time.UTC)
 	err = metadata.NewClient(db.Dir(cacheDir)).Update(metadata.Metadata{
 		Version:      db.SchemaVersion,
-		NextUpdate:   fixedTime.Add(24 * time.Hour),
-		UpdatedAt:    fixedTime,
-		DownloadedAt: fixedTime,
+		NextUpdate:   time.Now().Add(24 * time.Hour),
+		UpdatedAt:    time.Now(),
+		DownloadedAt: time.Now(),
 	})
 	require.NoError(t, err)
 
