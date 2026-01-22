@@ -533,14 +533,15 @@ func overrideDockerRemovedFields(_ *testing.T, want, got *types.Report) {
 	want.Metadata.ImageConfig.Config.Hostname = ""
 }
 
-// overrideServerInfo verifies that Server info exists and then clears it;
-// in client/server mode, the server version info is fetched dynamically
-// and will not match the expected golden file output.
+// overrideServerInfo verifies that Server info exists and then clears it.
+// Server info is only populated in client/server mode (empty in standalone mode).
+// When golden files are shared with standalone tests, this override is needed
+// because standalone tests don't produce server info.
 func overrideServerInfo(t *testing.T, want, got *types.Report) {
 	// Verify that server info was actually fetched
 	assert.NotEmpty(t, got.Trivy.Server.Version, "Server version should be set in client/server mode")
 
-	// Clear dynamic server info for comparison
+	// Clear server info for comparison with shared golden files
 	got.Trivy.Server = types.VersionInfo{}
 	want.Trivy.Server = types.VersionInfo{}
 }
