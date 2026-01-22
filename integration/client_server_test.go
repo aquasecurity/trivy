@@ -467,7 +467,7 @@ func TestClientServerWithFormat(t *testing.T) {
 
 			runTest(t, osArgs, tt.golden, tt.args.Format, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-				override: overrideServerInfo, // Clear server info which is dynamic in client/server mode
+				override: nil, // Do not use overrides - golden files are generated from this test as the canonical source
 			})
 		})
 	}
@@ -500,7 +500,7 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 			osArgs := setupClient(t, tt.args, addr, cacheDir)
 			runTest(t, osArgs, tt.golden, types.FormatCycloneDX, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-				override: overrideServerInfo, // Clear server info which is dynamic in client/server mode
+				override: nil, // Do not use overrides - golden files are generated from this test as the canonical source
 			})
 		})
 	}
