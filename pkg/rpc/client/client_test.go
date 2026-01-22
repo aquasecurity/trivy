@@ -301,7 +301,6 @@ func TestService_ServerVersion(t *testing.T) {
 		customHeaders http.Header
 		serverHandler func(w http.ResponseWriter, r *http.Request)
 		want          types.VersionInfo
-		wantEmpty     bool
 	}{
 		{
 			name: "happy path",
@@ -320,7 +319,6 @@ func TestService_ServerVersion(t *testing.T) {
 			serverHandler: func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(http.StatusNotFound)
 			},
-			wantEmpty: true,
 		},
 		{
 			name: "server returns invalid JSON",
@@ -328,7 +326,6 @@ func TestService_ServerVersion(t *testing.T) {
 				w.Header().Set("Content-Type", "application/json")
 				_, _ = w.Write([]byte("invalid json"))
 			},
-			wantEmpty: true,
 		},
 	}
 
@@ -354,12 +351,7 @@ func TestService_ServerVersion(t *testing.T) {
 
 			// When server version fetch fails, it's logged but not returned as an error
 			require.NoError(t, err)
-
-			if tt.wantEmpty {
-				assert.Empty(t, resp.ServerInfo)
-			} else {
-				assert.Equal(t, tt.want, resp.ServerInfo)
-			}
+			assert.Equal(t, tt.want, resp.ServerInfo)
 		})
 	}
 }
