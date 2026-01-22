@@ -21,7 +21,7 @@ func TestParser_Parse(t *testing.T) {
 		wantErr  assert.ErrorAssertionFunc
 	}{
 		{
-			name: "normal",
+			name: "happy path",
 			file: "testdata/pylock.toml",
 			wantPkgs: []ftypes.Package{
 				{
@@ -40,6 +40,11 @@ func TestParser_Parse(t *testing.T) {
 					Version: "3.4.3",
 				},
 				{
+					ID:      "ham@3.0.0",
+					Name:    "ham",
+					Version: "3.0.0",
+				},
+				{
 					ID:      "idna@3.10",
 					Name:    "idna",
 					Version: "3.10",
@@ -48,24 +53,6 @@ func TestParser_Parse(t *testing.T) {
 					ID:      "requests@2.32.5",
 					Name:    "requests",
 					Version: "2.32.5",
-				},
-				{
-					ID:      "urllib3@2.5.0",
-					Name:    "urllib3",
-					Version: "2.5.0",
-				},
-			},
-			wantDeps: []ftypes.Dependency{},
-			wantErr:  assert.NoError,
-		},
-		{
-			name: "multi-environment with same package name but different versions",
-			file: "testdata/multi-env.toml",
-			wantPkgs: []ftypes.Package{
-				{
-					ID:      "ham@3.0.0",
-					Name:    "ham",
-					Version: "3.0.0",
 				},
 				{
 					ID:      "spam@1.0.0",
@@ -77,6 +64,11 @@ func TestParser_Parse(t *testing.T) {
 					Name:    "spam",
 					Version: "1.1.0",
 				},
+				{
+					ID:      "urllib3@2.5.0",
+					Name:    "urllib3",
+					Version: "2.5.0",
+				},
 			},
 			wantDeps: []ftypes.Dependency{
 				{
@@ -85,6 +77,11 @@ func TestParser_Parse(t *testing.T) {
 				},
 			},
 			wantErr: assert.NoError,
+		},
+		{
+			name:    "sad path",
+			file:    "testdata/sad.toml",
+			wantErr: assert.Error,
 		},
 	}
 	for _, tt := range tests {
