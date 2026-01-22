@@ -15,7 +15,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	r "github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/version"
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 	"github.com/aquasecurity/trivy/pkg/x/slices"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
@@ -61,7 +60,7 @@ func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	ctx = WithCustomHeaders(ctx, s.customHeaders)
 
 	// Fetch server version info in background
-	var serverInfo version.VersionInfo
+	var serverInfo types.VersionInfo
 	var eg errgroup.Group
 	eg.Go(func() error {
 		info, err := s.serverVersion(ctx)
@@ -123,56 +122,18 @@ func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			}
 			return r.ConvertFromRPCLayer(layer), true
 		})),
-		ServerInfo: convertToServerVersionInfo(serverInfo),
+		ServerInfo: serverInfo,
 	}, nil
-}
-
-// convertToServerVersionInfo converts version.VersionInfo to types.ServerVersionInfo
-func convertToServerVersionInfo(info version.VersionInfo) *types.ServerVersionInfo {
-	if info.Version == "" && info.VulnerabilityDB == nil && info.JavaDB == nil && info.CheckBundle == nil {
-		return nil
-	}
-
-	result := &types.ServerVersionInfo{
-		Version: info.Version,
-	}
-
-	if info.VulnerabilityDB != nil {
-		result.VulnerabilityDB = &types.DBMetadata{
-			Version:      info.VulnerabilityDB.Version,
-			NextUpdate:   info.VulnerabilityDB.NextUpdate,
-			UpdatedAt:    info.VulnerabilityDB.UpdatedAt,
-			DownloadedAt: info.VulnerabilityDB.DownloadedAt,
-		}
-	}
-
-	if info.JavaDB != nil {
-		result.JavaDB = &types.DBMetadata{
-			Version:      info.JavaDB.Version,
-			NextUpdate:   info.JavaDB.NextUpdate,
-			UpdatedAt:    info.JavaDB.UpdatedAt,
-			DownloadedAt: info.JavaDB.DownloadedAt,
-		}
-	}
-
-	if info.CheckBundle != nil {
-		result.CheckBundle = &types.BundleMetadata{
-			Digest:       info.CheckBundle.Digest,
-			DownloadedAt: info.CheckBundle.DownloadedAt,
-		}
-	}
-
-	return result
 }
 
 // serverVersion fetches version information from the Trivy server.
 // TODO: Consider migrating to RPC in the future for consistency with other server communication.
-func (s Service) serverVersion(ctx context.Context) (version.VersionInfo, error) {
+func (s Service) serverVersion(ctx context.Context) (types.VersionInfo, error) {
 	url := strings.TrimSuffix(s.remoteURL, "/") + "/version"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
 	if err != nil {
-		return version.VersionInfo{}, xerrors.Errorf("failed to create request: %w", err)
+		return types.VersionInfo{}, xerrors.Errorf("failed to create request: %w", err)
 	}
 
 	// Add custom headers
@@ -184,17 +145,17 @@ func (s Service) serverVersion(ctx context.Context) (version.VersionInfo, error)
 
 	resp, err := s.httpClient.Do(req)
 	if err != nil {
-		return version.VersionInfo{}, xerrors.Errorf("failed to fetch server version: %w", err)
+		return types.VersionInfo{}, xerrors.Errorf("failed to fetch server version: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return version.VersionInfo{}, xerrors.Errorf("server returned status %d", resp.StatusCode)
+		return types.VersionInfo{}, xerrors.Errorf("server returned status %d", resp.StatusCode)
 	}
 
-	var versionInfo version.VersionInfo
+	var versionInfo types.VersionInfo
 	if err := json.NewDecoder(resp.Body).Decode(&versionInfo); err != nil {
-		return version.VersionInfo{}, xerrors.Errorf("failed to decode version info: %w", err)
+		return types.VersionInfo{}, xerrors.Errorf("failed to decode version info: %w", err)
 	}
 
 	return versionInfo, nil

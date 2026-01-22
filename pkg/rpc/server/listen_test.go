@@ -19,7 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/db"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/version"
+	ttypes "github.com/aquasecurity/trivy/pkg/types"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 )
 
@@ -214,11 +214,11 @@ func Test_VersionEndpoint(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	var versionInfo version.VersionInfo
+	var versionInfo ttypes.VersionInfo
 	require.NoError(t, json.NewDecoder(resp.Body).Decode(&versionInfo))
 
 	// Server mode excludes JavaDB and CheckBundle as they are managed on the client side
-	want := version.VersionInfo{
+	expected := ttypes.VersionInfo{
 		Version: "dev",
 		VulnerabilityDB: &metadata.Metadata{
 			Version:      2,
@@ -227,5 +227,5 @@ func Test_VersionEndpoint(t *testing.T) {
 			DownloadedAt: time.Date(2023, 7, 25, 7, 1, 41, 239158000, time.UTC),
 		},
 	}
-	assert.Equal(t, want, versionInfo)
+	assert.Equal(t, expected, versionInfo)
 }
