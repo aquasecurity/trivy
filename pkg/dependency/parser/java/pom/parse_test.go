@@ -2579,9 +2579,9 @@ func applyReplacements(t *testing.T, filePath string, replacements map[string]st
 	return content
 }
 
-// txtarWithRegexpReplace reads a txtar file, applies repository URL replacements,
-// and returns the result as an fs.FS.
-func txtarWithRegexpReplace(t *testing.T, txtarPath string, reposReplacements map[string]string) fs.FS {
+// txtarWithReposReplace reads a txtar file, applies repository URL replacements,
+// and returns the result as a fs.FS.
+func txtarWithReposReplace(t *testing.T, txtarPath string, reposReplacements map[string]string) fs.FS {
 	t.Helper()
 
 	content := applyReplacements(t, txtarPath, reposReplacements)
@@ -2599,7 +2599,7 @@ func txtarWithRegexpReplace(t *testing.T, txtarPath string, reposReplacements ma
 func setupTxtarRepository(t *testing.T, txtarPath string, reposReplacements map[string]string) string {
 	t.Helper()
 
-	fsys := txtarWithRegexpReplace(t, txtarPath, reposReplacements)
+	fsys := txtarWithReposReplace(t, txtarPath, reposReplacements)
 
 	ts := httptest.NewServer(http.FileServer(http.FS(fsys)))
 	t.Cleanup(ts.Close)
