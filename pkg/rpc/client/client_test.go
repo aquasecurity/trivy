@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -50,7 +51,6 @@ func TestScanner_Scan(t *testing.T) {
 		args          args
 		expectation   *rpc.ScanResponse
 		versionInfo   types.VersionInfo
-		serveVersion  bool // whether to serve version endpoint
 		want          types.ScanResponse
 		wantEosl      bool
 		wantErr       string
@@ -121,8 +121,7 @@ func TestScanner_Scan(t *testing.T) {
 					},
 				},
 			},
-			versionInfo:  versionInfo,
-			serveVersion: true,
+			versionInfo: versionInfo,
 			want: types.ScanResponse{
 				Results: types.Results{
 					{
@@ -200,10 +199,10 @@ func TestScanner_Scan(t *testing.T) {
 				// Handle /version endpoint
 				if strings.HasSuffix(r.URL.Path, "/version") {
 					w.Header().Set("Content-Type", "application/json")
-					if tt.serveVersion {
-						_ = json.NewEncoder(w).Encode(tt.versionInfo)
-					} else {
+					if lo.IsEmpty(tt.versionInfo) {
 						w.WriteHeader(http.StatusNotFound)
+					} else {
+						_ = json.NewEncoder(w).Encode(tt.versionInfo)
 					}
 					return
 				}
