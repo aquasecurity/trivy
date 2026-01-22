@@ -7,19 +7,19 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-	"github.com/aquasecurity/trivy/pkg/policy"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestNewVersionInfo(t *testing.T) {
 	tests := []struct {
 		name string
 		opts []VersionOption
-		want VersionInfo
+		want types.VersionInfo
 	}{
 		{
 			name: "default",
 			opts: nil,
-			want: VersionInfo{
+			want: types.VersionInfo{
 				Version: "dev",
 				VulnerabilityDB: &metadata.Metadata{
 					Version:      2,
@@ -33,7 +33,7 @@ func TestNewVersionInfo(t *testing.T) {
 					UpdatedAt:    time.Date(2023, 7, 25, 1, 3, 52, 169192765, time.UTC),
 					DownloadedAt: time.Date(2023, 7, 25, 9, 37, 48, 906152000, time.UTC),
 				},
-				CheckBundle: &policy.Metadata{
+				CheckBundle: &types.BundleMetadata{
 					Digest:       "sha256:829832357626da2677955e3b427191212978ba20012b6eaa03229ca28569ae43",
 					DownloadedAt: time.Date(2023, 7, 23, 16, 40, 33, 122462000, time.UTC),
 				},
@@ -42,7 +42,7 @@ func TestNewVersionInfo(t *testing.T) {
 		{
 			name: "server mode excludes JavaDB and CheckBundle",
 			opts: []VersionOption{Server()},
-			want: VersionInfo{
+			want: types.VersionInfo{
 				Version: "dev",
 				VulnerabilityDB: &metadata.Metadata{
 					Version:      2,

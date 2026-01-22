@@ -537,6 +537,6 @@ func overrideDockerRemovedFields(_ *testing.T, want, got *types.Report) {
 // in client/server mode, the server version info is fetched dynamically
 // and will not match the expected golden file output.
 func overrideServerInfo(_ *testing.T, want, got *types.Report) {
-	got.Trivy.Server = nil  // Clear dynamic server info
-	want.Trivy.Server = nil // Clear expected server info
+	got.Trivy.Server = types.VersionInfo{}  // Clear dynamic server info
+	want.Trivy.Server = types.VersionInfo{} // Clear expected server info
 }
