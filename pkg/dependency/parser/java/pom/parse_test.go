@@ -2559,6 +2559,7 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 					return pkg.ID == pkgID
 				})
 				require.True(t, found, "package %s not found", pkgID)
+				require.NotEmpty(t, p.Licenses, "package %s has no licenses", pkgID)
 				require.Equal(t, wantLicense, p.Licenses[0])
 			}
 		})
