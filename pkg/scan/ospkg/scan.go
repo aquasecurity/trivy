@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"sort"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"golang.org/x/xerrors"
 
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
