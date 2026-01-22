@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"strings"
+	"net/url"
+	"sync"
 
 	"github.com/samber/lo"
 	"github.com/twitchtv/twirp"
-	"golang.org/x/sync/errgroup"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -61,15 +61,14 @@ func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 
 	// Fetch server version info in background
 	var serverInfo types.VersionInfo
-	var eg errgroup.Group
-	eg.Go(func() error {
+	var wg sync.WaitGroup
+	wg.Go(func() {
 		info, err := s.serverVersion(ctx)
 		if err != nil {
 			log.Warn("Failed to fetch server version", log.Err(err))
-			return nil
+			return
 		}
 		serverInfo = info
-		return nil
 	})
 
 	// Convert to the rpc struct
@@ -111,7 +110,7 @@ func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	}
 
 	// Wait for server version fetch to complete
-	_ = eg.Wait()
+	wg.Wait()
 
 	return types.ScanResponse{
 		Results: r.ConvertFromRPCResults(res.Results),
@@ -129,9 +128,13 @@ func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 // serverVersion fetches version information from the Trivy server.
 // TODO: Consider migrating to RPC in the future for consistency with other server communication.
 func (s Service) serverVersion(ctx context.Context) (types.VersionInfo, error) {
-	url := strings.TrimSuffix(s.remoteURL, "/") + "/version"
+	baseURL, err := url.Parse(s.remoteURL)
+	if err != nil {
+		return types.VersionInfo{}, xerrors.Errorf("failed to parse remote URL: %w", err)
+	}
+	versionURL := baseURL.ResolveReference(&url.URL{Path: "version"})
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, versionURL.String(), http.NoBody)
 	if err != nil {
 		return types.VersionInfo{}, xerrors.Errorf("failed to create request: %w", err)
 	}
