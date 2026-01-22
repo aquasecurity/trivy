@@ -504,10 +504,13 @@ func (m *Marshaler) spdxChecksums(digests []digest.Digest) []common.Checksum {
 			alg = spdx.SHA1
 		case digest.SHA256:
 			alg = spdx.SHA256
+		case digest.SHA512:
+			alg = spdx.SHA512
 		case digest.MD5:
 			alg = spdx.MD5
 		default:
-			return nil
+			m.logger.Warn("Unsupported hash algorithm", log.String("algorithm", string(alg)))
+			continue
 		}
 		checksums = append(checksums, spdx.Checksum{
 			Algorithm: alg,
