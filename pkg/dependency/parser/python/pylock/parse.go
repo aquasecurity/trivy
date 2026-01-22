@@ -18,10 +18,9 @@ type Pylock struct {
 }
 
 type Package struct {
-	Name           string       `toml:"name"`
-	Version        string       `toml:"version"`
-	RequiresPython string       `toml:"requires-python"`
-	Dependencies   []Dependency `toml:"dependencies"`
+	Name         string       `toml:"name"`
+	Version      string       `toml:"version"`
+	Dependencies []Dependency `toml:"dependencies"`
 }
 
 type Dependency struct {
