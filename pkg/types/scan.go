@@ -127,5 +127,5 @@ type ScanResponse struct {
 	Results    Results
 	OS         types.OS
 	Layers     types.Layers
-	ServerInfo *ServerVersionInfo // Server info (client/server mode only)
+	ServerInfo VersionInfo // Server info (client/server mode only)
 }

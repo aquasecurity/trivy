@@ -10,35 +10,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
-// DBMetadata holds database metadata for JSON serialization.
-// This is a lightweight copy of metadata.Metadata from trivy-db to avoid heavy dependencies.
-type DBMetadata struct {
-	Version      int       `json:",omitempty"`
-	NextUpdate   time.Time `json:",omitzero"`
-	UpdatedAt    time.Time `json:",omitzero"`
-	DownloadedAt time.Time `json:",omitzero"`
-}
-
-// BundleMetadata holds policy bundle metadata for JSON serialization.
-// This is a lightweight copy of policy.Metadata to avoid heavy dependencies.
-type BundleMetadata struct {
-	Digest       string    `json:",omitempty"`
-	DownloadedAt time.Time `json:",omitzero"`
-}
-
-// ServerVersionInfo holds server version information for JSON serialization.
-// This is a lightweight copy of version.VersionInfo to avoid heavy dependencies in pkg/types.
-type ServerVersionInfo struct {
-	Version         string          `json:",omitempty"`
-	VulnerabilityDB *DBMetadata     `json:",omitzero"`
-	JavaDB          *DBMetadata     `json:",omitzero"`
-	CheckBundle     *BundleMetadata `json:",omitzero"`
-}
-
 // TrivyInfo contains Trivy-specific information
 type TrivyInfo struct {
-	Version string             `json:",omitempty"` // Client version
-	Server  *ServerVersionInfo `json:",omitzero"`  // Server info (client/server mode only)
+	Version string      `json:",omitempty"` // Client version
+	Server  VersionInfo `json:",omitzero"`  // Server info (client/server mode only)
 }
 
 // Report represents a scan result

@@ -2,7 +2,6 @@ package version
 
 import (
 	"context"
-	"fmt"
 	"path/filepath"
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
@@ -10,40 +9,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/policy"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
-type VersionInfo struct {
-	Version         string             `json:",omitempty"`
-	VulnerabilityDB *metadata.Metadata `json:",omitempty"`
-	JavaDB          *metadata.Metadata `json:",omitempty"`
-	CheckBundle     *policy.Metadata   `json:",omitempty"`
-}
-
-func formatDBMetadata(title string, meta metadata.Metadata) string {
-	return fmt.Sprintf(`%s:
-  Version: %d
-  UpdatedAt: %s
-  NextUpdate: %s
-  DownloadedAt: %s
-`, title, meta.Version, meta.UpdatedAt.UTC(), meta.NextUpdate.UTC(), meta.DownloadedAt.UTC())
-}
-
-func (v *VersionInfo) String() string {
-	output := fmt.Sprintf("Version: %s\n", v.Version)
-	if v.VulnerabilityDB != nil {
-		output += formatDBMetadata("Vulnerability DB", *v.VulnerabilityDB)
-	}
-	if v.JavaDB != nil {
-		output += formatDBMetadata("Java DB", *v.JavaDB)
-	}
-	if v.CheckBundle != nil {
-		output += v.CheckBundle.String()
-	}
-	return output
-}
-
-func NewVersionInfo(cacheDir string) VersionInfo {
+func NewVersionInfo(cacheDir string) types.VersionInfo {
 	var dbMeta *metadata.Metadata
 	var javadbMeta *metadata.Metadata
 
@@ -75,7 +45,7 @@ func NewVersionInfo(cacheDir string) VersionInfo {
 		}
 	}
 
-	var pbMeta *policy.Metadata
+	var pbMeta *types.BundleMetadata
 	pc, err := policy.NewClient(cacheDir, false, "")
 	if err != nil {
 		log.Debug("Failed to instantiate policy client", log.Err(err))
@@ -87,14 +57,14 @@ func NewVersionInfo(cacheDir string) VersionInfo {
 		if err != nil {
 			log.Debug("Failed to get policy metadata", log.Err(err))
 		} else {
-			pbMeta = &policy.Metadata{
+			pbMeta = &types.BundleMetadata{
 				Digest:       pbMetaRaw.Digest,
 				DownloadedAt: pbMetaRaw.DownloadedAt.UTC(),
 			}
 		}
 	}
 
-	return VersionInfo{
+	return types.VersionInfo{
 		Version:         app.Version(),
 		VulnerabilityDB: dbMeta,
 		JavaDB:          javadbMeta,
