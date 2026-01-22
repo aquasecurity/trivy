@@ -58,6 +58,34 @@ func TestParser_Parse(t *testing.T) {
 			wantDeps: []ftypes.Dependency{},
 			wantErr:  assert.NoError,
 		},
+		{
+			name: "multi-environment with same package name but different versions",
+			file: "testdata/multi-env.toml",
+			wantPkgs: []ftypes.Package{
+				{
+					ID:      "ham@3.0.0",
+					Name:    "ham",
+					Version: "3.0.0",
+				},
+				{
+					ID:      "spam@1.0.0",
+					Name:    "spam",
+					Version: "1.0.0",
+				},
+				{
+					ID:      "spam@1.1.0",
+					Name:    "spam",
+					Version: "1.1.0",
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID:        "ham@3.0.0",
+					DependsOn: []string{"spam@1.1.0"},
+				},
+			},
+			wantErr: assert.NoError,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
