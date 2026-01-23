@@ -1,0 +1,225 @@
+package eval
+
+import (
+	"io/fs"
+	"strings"
+
+	"github.com/apparentlymart/go-versions/versions"
+	"github.com/google/uuid"
+	"github.com/hashicorp/go-slug/sourceaddrs"
+	"github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/hcl/v2/hcldec"
+	"github.com/zclconf/go-cty/cty"
+)
+
+type AttrConfig struct {
+	name       string
+	underlying *hcl.Attribute
+}
+
+func (a *AttrConfig) References() []*Ref {
+	return exprReferences(a.underlying.Expr)
+}
+
+func (a *AttrConfig) ToValue(evalCtx *hcl.EvalContext) (cty.Value, error) {
+	val, diags := a.underlying.Expr.Value(evalCtx)
+	if diags.HasErrors() {
+		return cty.NilVal, diags
+	}
+	return val, nil
+}
+
+type BlockConfig struct {
+	underlying *hcl.Block
+	module     *ModuleConfig
+	children   []*BlockConfig
+	dynBlocks  []*DynBlockConfig
+	attrs      map[string]*AttrConfig
+}
+
+func (b *BlockConfig) References() []*Ref {
+	var refs []*Ref
+	for _, attr := range b.attrs {
+		refs = append(refs, attr.References()...)
+	}
+
+	for _, childBlock := range b.children {
+		if childBlock.underlying.Type == "dynamic" {
+			panic("unexpected dynamic block")
+		}
+		refs = append(refs, childBlock.References()...)
+	}
+	return refs
+}
+
+func (b *BlockConfig) Spec() hcldec.Spec {
+	spec := hcldec.ObjectSpec{}
+	for _, attr := range b.attrs {
+		// Conversion to DynamicPseudoType always just passes through verbatim.
+		spec[attr.name] = &hcldec.AttrSpec{Name: attr.name, Type: cty.DynamicPseudoType}
+	}
+
+	specsByType := make(map[string][]hcldec.Spec)
+
+	for _, child := range b.children {
+		blockType := child.underlying.Type
+		childSpec := child.Spec()
+		specsByType[blockType] = append(specsByType[blockType], childSpec)
+	}
+
+	for _, dynBlock := range b.dynBlocks {
+		dynSpec := dynBlock.content.Spec()
+		specsByType[dynBlock.blockType] = append(specsByType[dynBlock.blockType], dynSpec)
+	}
+
+	for blockType, childSpecs := range specsByType {
+		if len(childSpecs) == 1 {
+			spec[blockType] = &hcldec.BlockSpec{
+				TypeName: blockType,
+				Nested:   childSpecs[0],
+			}
+		} else {
+			effectiveSpec := childSpecs[0]
+			for _, childSpec := range childSpecs[1:] {
+				effectiveSpec = mergeSpec(effectiveSpec, childSpec)
+			}
+			spec[blockType] = &hcldec.BlockTupleSpec{
+				TypeName: blockType,
+				Nested:   effectiveSpec,
+			}
+		}
+	}
+	return spec
+}
+
+func (b *BlockConfig) ToValue(evalCtx *hcl.EvalContext) map[string]cty.Value {
+	vals := make(map[string]cty.Value)
+
+	for _, attr := range b.attrs {
+		if attr.name == "count" || attr.name == "for_each" {
+			continue
+		}
+		val, err := attr.ToValue(evalCtx)
+		if err != nil {
+			val = cty.DynamicVal
+		}
+		vals[attr.name] = val
+	}
+
+	// TODO: move into hooks ?
+	id := uuid.NewString()
+	vals["id"] = cty.StringVal(id)
+	if len(b.underlying.Labels) > 0 {
+		if strings.HasPrefix(b.underlying.Labels[0], "aws_") {
+			vals["arn"] = cty.StringVal(id)
+		}
+	}
+
+	blocksByType := make(map[string][]*BlockConfig)
+	for _, childBlock := range b.children {
+		typ := childBlock.underlying.Type
+		blocksByType[typ] = append(blocksByType[typ], childBlock)
+	}
+
+	for typ, childBlocks := range blocksByType {
+		elems := make([]cty.Value, 0, len(childBlocks))
+		for _, childBlock := range childBlocks {
+			val := childBlock.ToValue(evalCtx)
+			elems = append(elems, cty.ObjectVal(val))
+		}
+		if len(childBlocks) == 1 {
+			vals[typ] = elems[0]
+		} else {
+			vals[typ] = cty.TupleVal(elems)
+		}
+	}
+
+	return vals
+}
+
+type DynBlockConfig struct {
+	blockType    string
+	forEach      *AttrConfig
+	iteratorName string
+	content      *BlockConfig
+}
+
+// func (d *DynBlockConfig) Expand(evalCtx *hcl.EvalContext) ([]*BlockConfig, error) {
+// 	val, err := d.forEach.ToValue(evalCtx)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	iter, err := expandForEach(val)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	var blocks []*BlockConfig
+
+// 	for eachKey, eachVal := range iter {
+// 		contentCtx := evalCtx.NewChild()
+// 		contentCtx.Variables["each"] = cty.ObjectVal(map[string]cty.Value{
+// 			"key":   cty.StringVal(eachKey),
+// 			"value": eachVal,
+// 		})
+// 		expanded := d.Content.Expand(contentCtx)
+// 		blocks = append(blocks, expanded...)
+// 	}
+// 	return blocks, nil
+// }
+
+type ModuleConfig struct {
+	Name string
+	FS   fs.FS
+	Dir  string
+	// empty for root module
+	Block  *BlockConfig
+	Blocks []*BlockConfig
+	// empty for root module
+	Parent   *ModuleConfig
+	Children []*ModuleConfig
+
+	ModuleCalls map[string]*ModuleCall
+}
+
+func (c *ModuleConfig) Descendant(addr ModuleAddr) *ModuleConfig {
+	curr := c
+	for _, step := range addr {
+		for _, child := range c.Children {
+			if child.Name == step {
+				curr = child
+			}
+			if curr == nil {
+				return nil
+			}
+		}
+	}
+
+	return curr
+}
+
+type ModuleCall struct {
+	Name string
+
+	Source  sourceaddrs.Source
+	Version versions.Version
+
+	Config *BlockConfig
+
+	FS   fs.FS
+	Path string
+}
+
+func (m *ModuleConfig) IsRoot() bool {
+	return m.Parent == nil
+}
+
+func (m *ModuleConfig) AbsAddr() ModuleAddr {
+	if m.IsRoot() {
+		return ModuleAddr{}
+	}
+
+	path := ModuleAddr{m.Name}
+	return append(m.Parent.AbsAddr(), path...)
+}

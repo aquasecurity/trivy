@@ -20,6 +20,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/eval"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -370,6 +371,14 @@ func inputVariableType(b *terraform.Block) cty.Type {
 }
 
 func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, error) {
+	// if os.Getenv("TRIVY_EXPERIMENT_TF_GRAPH_EVAL") != "" {
+	if true {
+		e, err := eval.Eval(ctx, p.moduleFS, p.modulePath)
+		if err != nil {
+			return nil, err
+		}
+		return e.BuildTerraformModels(), nil
+	}
 	e, err := p.Load(ctx)
 	if errors.Is(err, ErrNoFiles) {
 		return nil, nil
