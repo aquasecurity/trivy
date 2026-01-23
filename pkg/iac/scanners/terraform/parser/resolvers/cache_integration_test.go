@@ -73,7 +73,7 @@ func TestResolveModuleFromCache(t *testing.T) {
 			opts: resolvers.Options{
 				Source: registryAddress + "/terraform-aws-modules/s3-bucket/aws",
 				Client: &http.Client{
-					Transport: xhttp.NewTransport(xhttp.Options{Insecure: true}),
+					Transport: xhttp.NewTransport(xhttp.Options{Insecure: true}).Build(),
 				},
 			},
 			firstResolver:  resolvers.Registry,
@@ -85,7 +85,7 @@ func TestResolveModuleFromCache(t *testing.T) {
 			opts: resolvers.Options{
 				Source: registryAddress + "/terraform-aws-modules/s3-bucket/aws//modules/object",
 				Client: &http.Client{
-					Transport: xhttp.NewTransport(xhttp.Options{Insecure: true}),
+					Transport: xhttp.NewTransport(xhttp.Options{Insecure: true}).Build(),
 				},
 			},
 			firstResolver:  resolvers.Registry,

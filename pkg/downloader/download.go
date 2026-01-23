@@ -127,7 +127,7 @@ func (t *CustomTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		req.SetBasicAuth(t.auth.Username, t.auth.Password)
 	}
 
-	transport := xhttp.Transport(req.Context())
+	transport := xhttp.RoundTripper(req.Context())
 	if req.URL.Host == "github.com" {
 		transport = NewGitHubTransport(req.URL, t.auth.Token)
 	}
