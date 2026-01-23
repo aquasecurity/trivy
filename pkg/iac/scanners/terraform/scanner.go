@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 )
@@ -74,7 +75,6 @@ func New(opts ...options.ScannerOption) *Scanner {
 type terraformRootModule struct {
 	rootPath string
 	childs   terraform.Modules
-	fsMap    map[string]fs.FS
 }
 
 func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Results, error) {
@@ -128,11 +128,16 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Re
 		rootModules = append(rootModules, terraformRootModule{
 			rootPath: dir,
 			childs:   modules,
-			fsMap:    p.GetFilesystemMap(),
 		})
 	}
 
 	for _, module := range rootModules {
+		fsMap := make(map[string]fs.FS)
+		for _, childMod := range module.childs {
+			fsKey := types.CreateFSKey(childMod.FS())
+			fsMap[fsKey] = childMod.FS()
+		}
+
 		s.execLock.RLock()
 		e := executor.New(s.executorOpt...)
 		s.execLock.RUnlock()
@@ -149,7 +154,7 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Re
 			if key == "" {
 				continue
 			}
-			if filesystem, ok := module.fsMap[key]; ok {
+			if filesystem, ok := fsMap[key]; ok {
 				override := scan.Results{
 					result,
 				}

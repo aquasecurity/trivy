@@ -17,7 +17,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -124,15 +123,8 @@ func (e *evaluator) exportOutputs() cty.Value {
 	return cty.ObjectVal(data)
 }
 
-func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[string]fs.FS) {
-
+func (e *evaluator) EvaluateAll(ctx context.Context) terraform.Modules {
 	e.logger.Debug("Starting module evaluation...", log.String("path", e.modulePath))
-
-	fsKey := types.CreateFSKey(e.filesystem)
-	fsMap := map[string]fs.FS{
-		fsKey: e.filesystem,
-	}
-
 	e.evaluateSteps()
 
 	// expand out resources and modules via count, for-each and dynamic
@@ -152,17 +144,17 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 
 	// rootModule is initialized here, but not fully evaluated until all submodules are evaluated.
 	// Initializing it up front to keep the module hierarchy of parents correct.
-	rootModule := terraform.NewModule(e.projectRootPath, e.modulePath, e.blocks, e.ignores)
-	submodules := e.evaluateSubmodules(ctx, rootModule, fsMap)
+	rootModule := terraform.NewModule(e.projectRootPath, e.filesystem, e.modulePath, e.blocks, e.ignores)
+	submodules := e.evaluateSubmodules(ctx, rootModule)
 
 	e.logger.Debug("Starting post-submodules evaluation...")
 	e.evaluateSteps()
 
 	e.logger.Debug("Module evaluation complete.")
-	return append(terraform.Modules{rootModule}, submodules...), fsMap
+	return append(terraform.Modules{rootModule}, submodules...)
 }
 
-func (e *evaluator) evaluateSubmodules(ctx context.Context, parent *terraform.Module, fsMap map[string]fs.FS) terraform.Modules {
+func (e *evaluator) evaluateSubmodules(ctx context.Context, parent *terraform.Module) terraform.Modules {
 	submodules := e.loadSubmodules(ctx)
 
 	if len(submodules) == 0 {
@@ -196,7 +188,6 @@ func (e *evaluator) evaluateSubmodules(ctx context.Context, parent *terraform.Mo
 		}
 
 		modules = append(modules, sm.modules...)
-		maps.Copy(fsMap, sm.fsMap)
 	}
 
 	e.logger.Debug("Finished processing submodule(s).", log.Int("count", len(modules)))
@@ -208,7 +199,6 @@ type submodule struct {
 	eval       *evaluator
 	modules    terraform.Modules
 	lastState  map[string]cty.Value
-	fsMap      map[string]fs.FS
 }
 
 func (e *evaluator) loadSubmodules(ctx context.Context) []*submodule {
@@ -226,7 +216,6 @@ func (e *evaluator) loadSubmodules(ctx context.Context) []*submodule {
 		submodules = append(submodules, &submodule{
 			definition: definition,
 			eval:       eval,
-			fsMap:      make(map[string]fs.FS),
 		})
 	}
 
@@ -244,7 +233,7 @@ func (e *evaluator) evaluateSubmodule(ctx context.Context, sm *submodule) bool {
 
 	e.logger.Debug("Evaluating submodule", log.String("name", sm.definition.Name))
 	sm.eval.inputVars = inputVars
-	sm.modules, sm.fsMap = sm.eval.EvaluateAll(ctx)
+	sm.modules = sm.eval.EvaluateAll(ctx)
 	outputs := sm.eval.exportOutputs()
 
 	valueMap := e.ctx.Get("module").AsValueMap()
