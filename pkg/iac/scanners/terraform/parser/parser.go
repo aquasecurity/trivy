@@ -49,7 +49,6 @@ type Parser struct {
 	logger            *log.Logger
 	allowDownloads    bool
 	skipCachedModules bool
-	fsMap             map[string]fs.FS
 	configsFS         fs.FS
 	skipPaths         []string
 	// cwd is optional, if left to empty string, 'os.Getwd'
@@ -102,12 +101,7 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	return mp
 }
 
-func (p *Parser) Files() map[string]*hcl.File {
-	return p.underlying.Files()
-}
-
 func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
-
 	isJSON := strings.HasSuffix(fullPath, ".tf.json") || strings.HasSuffix(fullPath, ".tofu.json")
 	isHCL := strings.HasSuffix(fullPath, ".tf") || strings.HasSuffix(fullPath, ".tofu")
 	if !isJSON && !isHCL {
@@ -383,17 +377,9 @@ func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, error) {
 		return nil, err
 	}
 
-	modules, fsMap := e.EvaluateAll(ctx)
+	modules := e.EvaluateAll(ctx)
 	p.logger.Debug("Finished parsing module")
-	p.fsMap = fsMap
 	return modules, nil
-}
-
-func (p *Parser) GetFilesystemMap() map[string]fs.FS {
-	if p.fsMap == nil {
-		return make(map[string]fs.FS)
-	}
-	return p.fsMap
 }
 
 func (p *Parser) readBlocks(files []sourceFile) (terraform.Blocks, ignore.Rules, error) {
