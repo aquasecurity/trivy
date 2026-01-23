@@ -74,7 +74,8 @@ func SetDefaultTransport(t Transport) {
 }
 
 // RoundTripper returns the http.RoundTripper from the context, or builds one from the default transport.
-// TransportOptions can be used to override the base transport settings.
+// TransportOptions can be used to override the base transport settings for the returned http.RoundTripper only;
+// they do not modify the default transport or the transport stored in the context.
 func RoundTripper(ctx context.Context, opts ...TransportOption) http.RoundTripper {
 	var t Transport
 	if ct, ok := ctx.Value(transportKey{}).(Transport); ok {
