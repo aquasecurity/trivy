@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/mixlock",
@@ -15,7 +18,7 @@
           "Name": "castore",
           "Identifier": {
             "PURL": "pkg:hex/castore@0.1.18",
-            "UID": "92fd0f5d45735c7c"
+            "UID": "d527b7c47937d54a"
           },
           "Version": "0.1.18",
           "Locations": [
@@ -23,14 +26,15 @@
               "StartLine": 2,
               "EndLine": 2
             }
-          ]
+          ],
+          "AnalyzedBy": "mix-lock"
         },
         {
           "ID": "jason@1.4.0",
           "Name": "jason",
           "Identifier": {
             "PURL": "pkg:hex/jason@1.4.0",
-            "UID": "b9cff6ce54a65dae"
+            "UID": "61124fecb637123a"
           },
           "Version": "1.4.0",
           "Locations": [
@@ -38,14 +42,15 @@
               "StartLine": 3,
               "EndLine": 3
             }
-          ]
+          ],
+          "AnalyzedBy": "mix-lock"
         },
         {
           "ID": "phoenix@1.6.13",
           "Name": "phoenix",
           "Identifier": {
             "PURL": "pkg:hex/phoenix@1.6.13",
-            "UID": "5b0d3fb75bef47e3"
+            "UID": "1ad66010cf0dd9cb"
           },
           "Version": "1.6.13",
           "Locations": [
@@ -53,14 +58,15 @@
               "StartLine": 4,
               "EndLine": 4
             }
-          ]
+          ],
+          "AnalyzedBy": "mix-lock"
         },
         {
           "ID": "phoenix_html@3.2.0",
           "Name": "phoenix_html",
           "Identifier": {
             "PURL": "pkg:hex/phoenix_html@3.2.0",
-            "UID": "8c18e24394b53ab"
+            "UID": "31ead881cd7a4cf7"
           },
           "Version": "3.2.0",
           "Locations": [
@@ -68,14 +74,15 @@
               "StartLine": 5,
               "EndLine": 5
             }
-          ]
+          ],
+          "AnalyzedBy": "mix-lock"
         },
         {
           "ID": "phoenix_pubsub@2.1.1",
           "Name": "phoenix_pubsub",
           "Identifier": {
             "PURL": "pkg:hex/phoenix_pubsub@2.1.1",
-            "UID": "89226dc20d54eb50"
+            "UID": "1127bf230c3815ad"
           },
           "Version": "2.1.1",
           "Locations": [
@@ -83,14 +90,15 @@
               "StartLine": 6,
               "EndLine": 6
             }
-          ]
+          ],
+          "AnalyzedBy": "mix-lock"
         },
         {
           "ID": "phoenix_template@1.0.0",
           "Name": "phoenix_template",
           "Identifier": {
             "PURL": "pkg:hex/phoenix_template@1.0.0",
-            "UID": "5cd9afe7111a31b7"
+            "UID": "38842fc89e8ee0eb"
           },
           "Version": "1.0.0",
           "Locations": [
@@ -98,14 +106,15 @@
               "StartLine": 7,
               "EndLine": 7
             }
-          ]
+          ],
+          "AnalyzedBy": "mix-lock"
         },
         {
           "ID": "phoenix_view@2.0.1",
           "Name": "phoenix_view",
           "Identifier": {
             "PURL": "pkg:hex/phoenix_view@2.0.1",
-            "UID": "2f4485f9653589ad"
+            "UID": "3a29d814644268c9"
           },
           "Version": "2.0.1",
           "Locations": [
@@ -113,14 +122,15 @@
               "StartLine": 8,
               "EndLine": 8
             }
-          ]
+          ],
+          "AnalyzedBy": "mix-lock"
         },
         {
           "ID": "plug@1.14.0",
           "Name": "plug",
           "Identifier": {
             "PURL": "pkg:hex/plug@1.14.0",
-            "UID": "2390188ac1142ded"
+            "UID": "3ae26000ce20e664"
           },
           "Version": "1.14.0",
           "Locations": [
@@ -128,14 +138,15 @@
               "StartLine": 9,
               "EndLine": 9
             }
-          ]
+          ],
+          "AnalyzedBy": "mix-lock"
         },
         {
           "ID": "plug_crypto@1.2.3",
           "Name": "plug_crypto",
           "Identifier": {
             "PURL": "pkg:hex/plug_crypto@1.2.3",
-            "UID": "912b06dac071654"
+            "UID": "5db5d253a7d30c61"
           },
           "Version": "1.2.3",
           "Locations": [
@@ -143,14 +154,15 @@
               "StartLine": 10,
               "EndLine": 10
             }
-          ]
+          ],
+          "AnalyzedBy": "mix-lock"
         },
         {
           "ID": "telemetry@1.1.0",
           "Name": "telemetry",
           "Identifier": {
             "PURL": "pkg:hex/telemetry@1.1.0",
-            "UID": "15879b8627da74b9"
+            "UID": "90db2c6e0c05f48f"
           },
           "Version": "1.1.0",
           "Locations": [
@@ -158,7 +170,8 @@
               "StartLine": 11,
               "EndLine": 11
             }
-          ]
+          ],
+          "AnalyzedBy": "mix-lock"
         }
       ],
       "Vulnerabilities": [
@@ -168,7 +181,7 @@
           "PkgName": "phoenix",
           "PkgIdentifier": {
             "PURL": "pkg:hex/phoenix@1.6.13",
-            "UID": "5b0d3fb75bef47e3"
+            "UID": "1ad66010cf0dd9cb"
           },
           "InstalledVersion": "1.6.13",
           "FixedVersion": "1.6.14",

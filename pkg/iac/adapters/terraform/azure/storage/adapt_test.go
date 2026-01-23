@@ -24,20 +24,15 @@ func Test_Adapt(t *testing.T) {
 			expected: storage.Storage{
 				Accounts: []storage.Account{
 					{
-						PublicNetworkAccess:             iacTypes.BoolTest(true),
-						MinimumTLSVersion:               iacTypes.StringTest(minimumTlsVersionOneTwo),
-						EnforceHTTPS:                    iacTypes.BoolTest(true),
-						AccountReplicationType:          iacTypes.StringTest(""),
-						InfrastructureEncryptionEnabled: iacTypes.BoolTest(false),
+						PublicNetworkAccess: iacTypes.BoolTest(true),
+						MinimumTLSVersion:   iacTypes.StringTest(minimumTlsVersionOneTwo),
+						EnforceHTTPS:        iacTypes.BoolTest(true),
 						BlobProperties: storage.BlobProperties{
 							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
 								Days: iacTypes.IntTest(7),
 							},
 						},
-						CustomerManagedKey: storage.CustomerManagedKey{
-							KeyVaultKeyId:          iacTypes.StringTest(""),
-							UserAssignedIdentityId: iacTypes.StringTest(""),
-						},
+						CustomerManagedKey: storage.CustomerManagedKey{},
 					},
 					{
 						BlobProperties: storage.BlobProperties{
@@ -97,53 +92,41 @@ func Test_Adapt(t *testing.T) {
 				Accounts: []storage.Account{
 
 					{
-						Metadata:            iacTypes.NewTestMetadata(),
-						EnforceHTTPS:        iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-						MinimumTLSVersion:   iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
-						PublicNetworkAccess: iacTypes.BoolTest(false),
+						EnforceHTTPS:      iacTypes.BoolTest(true),
+						MinimumTLSVersion: iacTypes.StringTest("TLS1_2"),
 						NetworkRules: []storage.NetworkRule{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
 								Bypass: []iacTypes.StringValue{
-									iacTypes.String("Metrics", iacTypes.NewTestMetadata()),
-									iacTypes.String("AzureServices", iacTypes.NewTestMetadata()),
+									iacTypes.StringTest("Metrics"),
+									iacTypes.StringTest("AzureServices"),
 								},
-								AllowByDefault: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 							},
 							{
-								Metadata: iacTypes.NewTestMetadata(),
 								Bypass: []iacTypes.StringValue{
-									iacTypes.String("Metrics", iacTypes.NewTestMetadata()),
+									iacTypes.StringTest("Metrics"),
 								},
-								AllowByDefault: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+								AllowByDefault: iacTypes.BoolTest(true),
 							},
 						},
 						QueueProperties: storage.QueueProperties{
-							Metadata:      iacTypes.NewTestMetadata(),
-							EnableLogging: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							EnableLogging: iacTypes.BoolTest(true),
 							Logging: storage.QueueLogging{
-								Delete:              iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-								Read:                iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-								Write:               iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-								Version:             iacTypes.String("1.0", iacTypes.NewTestMetadata()),
-								RetentionPolicyDays: iacTypes.Int(10, iacTypes.NewTestMetadata()),
+								Delete:              iacTypes.BoolTest(true),
+								Read:                iacTypes.BoolTest(true),
+								Write:               iacTypes.BoolTest(true),
+								Version:             iacTypes.StringTest("1.0"),
+								RetentionPolicyDays: iacTypes.IntTest(10),
 							},
 						},
-						AccountReplicationType:          iacTypes.StringTest(""),
-						InfrastructureEncryptionEnabled: iacTypes.BoolTest(false),
 						BlobProperties: storage.BlobProperties{
 							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
 								Days: iacTypes.IntTest(7),
 							},
 						},
-						CustomerManagedKey: storage.CustomerManagedKey{
-							KeyVaultKeyId:          iacTypes.StringTest(""),
-							UserAssignedIdentityId: iacTypes.StringTest(""),
-						},
+						CustomerManagedKey: storage.CustomerManagedKey{},
 						Containers: []storage.Container{
 							{
-								Metadata:     iacTypes.NewTestMetadata(),
-								PublicAccess: iacTypes.String("blob", iacTypes.NewTestMetadata()),
+								PublicAccess: iacTypes.StringTest("blob"),
 							},
 						},
 					},
@@ -189,11 +172,10 @@ func Test_Adapt(t *testing.T) {
 						EnforceHTTPS: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 						NetworkRules: []storage.NetworkRule{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
 								Bypass: []iacTypes.StringValue{
-									iacTypes.String("Metrics", iacTypes.NewTestMetadata()),
+									iacTypes.StringTest("Metrics"),
 								},
-								AllowByDefault: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+								AllowByDefault: iacTypes.BoolTest(true),
 							},
 						},
 						QueueProperties: storage.QueueProperties{
@@ -214,8 +196,7 @@ func Test_Adapt(t *testing.T) {
 						},
 						Containers: []storage.Container{
 							{
-								Metadata:     iacTypes.NewTestMetadata(),
-								PublicAccess: iacTypes.String("blob", iacTypes.NewTestMetadata()),
+								PublicAccess: iacTypes.StringTest("blob"),
 							},
 						},
 					},

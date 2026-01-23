@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:fb75459277a4cbcf98182b48c789cfbd4b34414e05898e1231ae8b2ca099f4e7",
@@ -72,7 +75,7 @@
           "PkgName": "openssl-libs",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/alma/openssl-libs@1.1.1k-4.el8?arch=x86_64\u0026distro=alma-8.5\u0026epoch=1",
-            "UID": "3ff1aff39832f37f"
+            "UID": "d88cb05095ee62ab"
           },
           "InstalledVersion": "1:1.1.1k-4.el8",
           "FixedVersion": "1:1.1.1k-5.el8_5",

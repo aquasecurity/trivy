@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/composer-vendor",
@@ -15,7 +18,7 @@
           "Name": "guzzlehttp/psr7",
           "Identifier": {
             "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3",
-            "UID": "25fca97fe23aa7b1"
+            "UID": "a1f3a04d90429be3"
           },
           "Version": "1.8.3",
           "Licenses": [
@@ -30,14 +33,15 @@
               "StartLine": 3,
               "EndLine": 115
             }
-          ]
+          ],
+          "AnalyzedBy": "composer-vendor"
         },
         {
           "ID": "psr/http-message@1.1",
           "Name": "psr/http-message",
           "Identifier": {
             "PURL": "pkg:composer/psr/http-message@1.1",
-            "UID": "299d8ff4461e894"
+            "UID": "59ee860afeff08fa"
           },
           "Version": "1.1",
           "Licenses": [
@@ -48,14 +52,15 @@
               "StartLine": 116,
               "EndLine": 171
             }
-          ]
+          ],
+          "AnalyzedBy": "composer-vendor"
         },
         {
           "ID": "ralouphie/getallheaders@3.0.3",
           "Name": "ralouphie/getallheaders",
           "Identifier": {
             "PURL": "pkg:composer/ralouphie/getallheaders@3.0.3",
-            "UID": "c383e94d979a209c"
+            "UID": "94049bcc6a2f542c"
           },
           "Version": "3.0.3",
           "Licenses": [
@@ -66,7 +71,8 @@
               "StartLine": 172,
               "EndLine": 218
             }
-          ]
+          ],
+          "AnalyzedBy": "composer-vendor"
         }
       ],
       "Vulnerabilities": [
@@ -76,7 +82,7 @@
           "PkgName": "guzzlehttp/psr7",
           "PkgIdentifier": {
             "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3",
-            "UID": "25fca97fe23aa7b1"
+            "UID": "a1f3a04d90429be3"
           },
           "InstalledVersion": "1.8.3",
           "FixedVersion": "1.8.4",

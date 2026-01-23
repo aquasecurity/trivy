@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/pnpm",
@@ -15,26 +18,28 @@
           "Name": "jquery",
           "Identifier": {
             "PURL": "pkg:npm/jquery@3.3.9",
-            "UID": "2a8ffed0b32cf950"
+            "UID": "25b60ed46b0948c6"
           },
           "Version": "3.3.9",
           "Licenses": [
             "MIT"
           ],
-          "Relationship": "direct"
+          "Relationship": "direct",
+          "AnalyzedBy": "pnpm"
         },
         {
           "ID": "lodash@4.17.4",
           "Name": "lodash",
           "Identifier": {
             "PURL": "pkg:npm/lodash@4.17.4",
-            "UID": "29795971f23e7bf6"
+            "UID": "e6922bf2badcc4a1"
           },
           "Version": "4.17.4",
           "Licenses": [
             "MIT"
           ],
-          "Relationship": "direct"
+          "Relationship": "direct",
+          "AnalyzedBy": "pnpm"
         }
       ],
       "Vulnerabilities": [
@@ -44,7 +49,7 @@
           "PkgName": "jquery",
           "PkgIdentifier": {
             "PURL": "pkg:npm/jquery@3.3.9",
-            "UID": "2a8ffed0b32cf950"
+            "UID": "25b60ed46b0948c6"
           },
           "InstalledVersion": "3.3.9",
           "FixedVersion": "3.4.0",
@@ -177,7 +182,7 @@
           "PkgName": "lodash",
           "PkgIdentifier": {
             "PURL": "pkg:npm/lodash@4.17.4",
-            "UID": "29795971f23e7bf6"
+            "UID": "e6922bf2badcc4a1"
           },
           "InstalledVersion": "4.17.4",
           "FixedVersion": "4.17.12",

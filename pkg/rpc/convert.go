@@ -76,6 +76,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			Relationship: int32(pkg.Relationship),
 			Indirect:     pkg.Indirect,
 			Maintainer:   pkg.Maintainer,
+			AnalyzedBy:   string(pkg.AnalyzedBy),
 		})
 	}
 	return rpcPkgs
@@ -231,6 +232,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			Relationship: ftypes.Relationship(pkg.Relationship),
 			Indirect:     pkg.Indirect,
 			Maintainer:   pkg.Maintainer,
+			AnalyzedBy:   ftypes.AnalyzerType(pkg.AnalyzedBy),
 		})
 	}
 	return pkgs

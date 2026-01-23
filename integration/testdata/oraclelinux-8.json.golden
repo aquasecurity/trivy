@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:2982b2b5fd16f59d6b9ccdef6292e710791eb7fa12895a593959c5bceb7780e6",
@@ -82,7 +85,7 @@
           "PkgName": "curl",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/oracle/curl@7.61.1-8.el8?arch=x86_64\u0026distro=oracle-8.0",
-            "UID": "a8682a2156651fbe"
+            "UID": "2d0430c9abbc973"
           },
           "InstalledVersion": "7.61.1-8.el8",
           "FixedVersion": "7.61.1-11.el8",
@@ -154,7 +157,7 @@
           "PkgName": "curl",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/oracle/curl@7.61.1-8.el8?arch=x86_64\u0026distro=oracle-8.0",
-            "UID": "a8682a2156651fbe"
+            "UID": "2d0430c9abbc973"
           },
           "InstalledVersion": "7.61.1-8.el8",
           "FixedVersion": "7.61.1-12.el8",

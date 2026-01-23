@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:1d4bc53b38b27a97aca270bea3abf3e9ea14964d02c71d2c93cd7bc53b74d660",
@@ -83,7 +86,7 @@
           "PkgName": "bash",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/photon/bash@4.4.18-1.ph3?arch=x86_64\u0026distro=photon-3.0",
-            "UID": "8bd74904a15c7d6d"
+            "UID": "33364ec84901a6b0"
           },
           "InstalledVersion": "4.4.18-1.ph3",
           "FixedVersion": "4.4.18-2.ph3",
@@ -148,7 +151,7 @@
           "PkgName": "curl",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/photon/curl@7.61.1-4.ph3?arch=x86_64\u0026distro=photon-3.0",
-            "UID": "6b6a4de732e563ee"
+            "UID": "26b82259da41314d"
           },
           "InstalledVersion": "7.61.1-4.ph3",
           "FixedVersion": "7.61.1-5.ph3",
@@ -221,7 +224,7 @@
           "PkgName": "curl-libs",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/photon/curl-libs@7.61.1-4.ph3?arch=x86_64\u0026distro=photon-3.0",
-            "UID": "b33cf1cac05c76c2"
+            "UID": "8bdb578e9ceef510"
           },
           "InstalledVersion": "7.61.1-4.ph3",
           "FixedVersion": "7.61.1-5.ph3",

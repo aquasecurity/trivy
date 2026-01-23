@@ -264,6 +264,7 @@ license:
    - Artistic-1.0
    - Artistic-2.0
    - BSL-1.0
+   - BSD-1-Clause
    - BSD-2-Clause-FreeBSD
    - BSD-2-Clause-NetBSD
    - BSD-2-Clause

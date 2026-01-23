@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/pip",
@@ -14,7 +17,7 @@
           "Name": "Flask",
           "Identifier": {
             "PURL": "pkg:pypi/flask@2.0.0",
-            "UID": "8b02ba2c070d72c6"
+            "UID": "bb446a3b5f805121"
           },
           "Version": "2.0.0",
           "Locations": [
@@ -22,13 +25,14 @@
               "StartLine": 2,
               "EndLine": 2
             }
-          ]
+          ],
+          "AnalyzedBy": "pip"
         },
         {
           "Name": "Jinja2",
           "Identifier": {
             "PURL": "pkg:pypi/jinja2@3.0.0",
-            "UID": "476df0c1e49c8f99"
+            "UID": "ef6b19211d5888a8"
           },
           "Version": "3.0.0",
           "Locations": [
@@ -36,13 +40,14 @@
               "StartLine": 4,
               "EndLine": 4
             }
-          ]
+          ],
+          "AnalyzedBy": "pip"
         },
         {
           "Name": "Werkzeug",
           "Identifier": {
             "PURL": "pkg:pypi/werkzeug@0.11",
-            "UID": "4163de19df046f49"
+            "UID": "8e52473a212c1e1b"
           },
           "Version": "0.11",
           "Locations": [
@@ -50,13 +55,14 @@
               "StartLine": 6,
               "EndLine": 6
             }
-          ]
+          ],
+          "AnalyzedBy": "pip"
         },
         {
           "Name": "click",
           "Identifier": {
             "PURL": "pkg:pypi/click@8.0.0",
-            "UID": "71e4c8ef31456bf"
+            "UID": "40c670b6dc896e05"
           },
           "Version": "8.0.0",
           "Locations": [
@@ -64,13 +70,14 @@
               "StartLine": 1,
               "EndLine": 1
             }
-          ]
+          ],
+          "AnalyzedBy": "pip"
         },
         {
           "Name": "itsdangerous",
           "Identifier": {
             "PURL": "pkg:pypi/itsdangerous@2.0.0",
-            "UID": "389c7cbc34cb6b32"
+            "UID": "df94b2dbd6de57ad"
           },
           "Version": "2.0.0",
           "Locations": [
@@ -78,13 +85,14 @@
               "StartLine": 3,
               "EndLine": 3
             }
-          ]
+          ],
+          "AnalyzedBy": "pip"
         },
         {
           "Name": "oauth2-client",
           "Identifier": {
             "PURL": "pkg:pypi/oauth2-client@4.0.0",
-            "UID": "c63f60db796a16ed"
+            "UID": "83f56890872d092d"
           },
           "Version": "4.0.0",
           "Locations": [
@@ -92,13 +100,14 @@
               "StartLine": 7,
               "EndLine": 7
             }
-          ]
+          ],
+          "AnalyzedBy": "pip"
         },
         {
           "Name": "python-gitlab",
           "Identifier": {
             "PURL": "pkg:pypi/python-gitlab@2.0.0",
-            "UID": "ccad39abab737d13"
+            "UID": "bb219054748d8bf"
           },
           "Version": "2.0.0",
           "Locations": [
@@ -106,7 +115,8 @@
               "StartLine": 8,
               "EndLine": 8
             }
-          ]
+          ],
+          "AnalyzedBy": "pip"
         }
       ],
       "Vulnerabilities": [
@@ -115,7 +125,7 @@
           "PkgName": "Werkzeug",
           "PkgIdentifier": {
             "PURL": "pkg:pypi/werkzeug@0.11",
-            "UID": "4163de19df046f49"
+            "UID": "8e52473a212c1e1b"
           },
           "InstalledVersion": "0.11",
           "FixedVersion": "0.15.3",
@@ -172,7 +182,7 @@
           "PkgName": "Werkzeug",
           "PkgIdentifier": {
             "PURL": "pkg:pypi/werkzeug@0.11",
-            "UID": "4163de19df046f49"
+            "UID": "8e52473a212c1e1b"
           },
           "InstalledVersion": "0.11",
           "FixedVersion": "0.11.6",

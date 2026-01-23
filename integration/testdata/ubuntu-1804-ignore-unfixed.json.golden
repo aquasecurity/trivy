@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:61d0ff5073e754270b3b59487ac8049c50e12bca1cf792d84ec9a62dad36a8a1",
@@ -106,7 +109,7 @@
           "PkgName": "e2fsprogs",
           "PkgIdentifier": {
             "PURL": "pkg:deb/ubuntu/e2fsprogs@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04",
-            "UID": "eddde4dbdb2df58c"
+            "UID": "f254d7378713afd9"
           },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
@@ -178,7 +181,7 @@
           "PkgName": "libcom-err2",
           "PkgIdentifier": {
             "PURL": "pkg:deb/ubuntu/libcom-err2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04",
-            "UID": "87ee4bdeca236f23"
+            "UID": "cb7f33bdf35a8b61"
           },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
@@ -250,7 +253,7 @@
           "PkgName": "libext2fs2",
           "PkgIdentifier": {
             "PURL": "pkg:deb/ubuntu/libext2fs2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04",
-            "UID": "f5dac6a49dfab96c"
+            "UID": "8d6ac68a7d76b8e7"
           },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
@@ -322,7 +325,7 @@
           "PkgName": "libss2",
           "PkgIdentifier": {
             "PURL": "pkg:deb/ubuntu/libss2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04",
-            "UID": "119f1602425ea3a0"
+            "UID": "c872d0871f9da8dd"
           },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",

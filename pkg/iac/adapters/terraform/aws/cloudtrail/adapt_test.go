@@ -33,14 +33,12 @@ func Test_adaptTrail(t *testing.T) {
 			}
 `,
 			expected: cloudtrail.Trail{
-				Metadata:                  iacTypes.NewTestMetadata(),
-				Name:                      iacTypes.String("example", iacTypes.NewTestMetadata()),
-				EnableLogFileValidation:   iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				IsMultiRegion:             iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				KMSKeyID:                  iacTypes.String("kms-key", iacTypes.NewTestMetadata()),
-				CloudWatchLogsLogGroupArn: iacTypes.String("abc", iacTypes.NewTestMetadata()),
-				IsLogging:                 iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				BucketName:                iacTypes.String("abcdefgh", iacTypes.NewTestMetadata()),
+				Name:                      iacTypes.StringTest("example"),
+				EnableLogFileValidation:   iacTypes.BoolTest(true),
+				IsMultiRegion:             iacTypes.BoolTest(true),
+				KMSKeyID:                  iacTypes.StringTest("kms-key"),
+				CloudWatchLogsLogGroupArn: iacTypes.StringTest("abc"),
+				BucketName:                iacTypes.StringTest("abcdefgh"),
 			},
 		},
 		{
@@ -50,14 +48,7 @@ func Test_adaptTrail(t *testing.T) {
 			}
 `,
 			expected: cloudtrail.Trail{
-				Metadata:                  iacTypes.NewTestMetadata(),
-				Name:                      iacTypes.String("", iacTypes.NewTestMetadata()),
-				EnableLogFileValidation:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				IsMultiRegion:             iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				KMSKeyID:                  iacTypes.String("", iacTypes.NewTestMetadata()),
-				BucketName:                iacTypes.String("", iacTypes.NewTestMetadata()),
-				CloudWatchLogsLogGroupArn: iacTypes.String("", iacTypes.NewTestMetadata()),
-				IsLogging:                 iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				IsLogging: iacTypes.BoolTest(true),
 			},
 		},
 	}

@@ -107,9 +107,15 @@ func schemaFromFlag(f flag.Flagger) (*jsonschema.Schema, error) {
 
 	// Add enum if Values is set
 	if values := f.GetValues(); len(values) > 0 {
-		schema.Enum = make([]any, len(values))
+		enumValues := make([]any, len(values))
 		for i, v := range values {
-			schema.Enum[i] = v
+			enumValues[i] = v
+		}
+		// For array types, enum should be in items, not at the array level
+		if schema.Type == schemaTypeArray && schema.Items != nil {
+			schema.Items.Enum = enumValues
+		} else {
+			schema.Enum = enumValues
 		}
 	}
 

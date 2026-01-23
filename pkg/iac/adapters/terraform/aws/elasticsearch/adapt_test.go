@@ -47,24 +47,19 @@ func Test_adaptDomain(t *testing.T) {
 			expected: elasticsearch.Elasticsearch{
 				Domains: []elasticsearch.Domain{
 					{
-						Metadata:   iacTypes.NewTestMetadata(),
-						DomainName: iacTypes.String("domain-foo", iacTypes.NewTestMetadata()),
+						DomainName: iacTypes.StringTest("domain-foo"),
 						LogPublishing: elasticsearch.LogPublishing{
-							Metadata:     iacTypes.NewTestMetadata(),
-							AuditEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							AuditEnabled: iacTypes.BoolTest(true),
 						},
 						TransitEncryption: elasticsearch.TransitEncryption{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(true),
 						},
 						AtRestEncryption: elasticsearch.AtRestEncryption{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(true),
 						},
 						Endpoint: elasticsearch.Endpoint{
-							Metadata:     iacTypes.NewTestMetadata(),
-							EnforceHTTPS: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							TLSPolicy:    iacTypes.String("Policy-Min-TLS-1-2-2019-07", iacTypes.NewTestMetadata()),
+							EnforceHTTPS: iacTypes.BoolTest(true),
+							TLSPolicy:    iacTypes.StringTest("Policy-Min-TLS-1-2-2019-07"),
 						},
 					},
 				},
@@ -79,25 +74,10 @@ func Test_adaptDomain(t *testing.T) {
 			expected: elasticsearch.Elasticsearch{
 				Domains: []elasticsearch.Domain{
 					{
-						Metadata:   iacTypes.NewTestMetadata(),
-						DomainName: iacTypes.String("", iacTypes.NewTestMetadata()),
-						LogPublishing: elasticsearch.LogPublishing{
-							Metadata:     iacTypes.NewTestMetadata(),
-							AuditEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						},
-						TransitEncryption: elasticsearch.TransitEncryption{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						},
-						AtRestEncryption: elasticsearch.AtRestEncryption{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						},
-						Endpoint: elasticsearch.Endpoint{
-							Metadata:     iacTypes.NewTestMetadata(),
-							EnforceHTTPS: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							TLSPolicy:    iacTypes.String("", iacTypes.NewTestMetadata()),
-						},
+						LogPublishing:     elasticsearch.LogPublishing{},
+						TransitEncryption: elasticsearch.TransitEncryption{},
+						AtRestEncryption:  elasticsearch.AtRestEncryption{},
+						Endpoint:          elasticsearch.Endpoint{},
 					},
 				},
 			},
@@ -129,24 +109,19 @@ func Test_adaptDomain(t *testing.T) {
 			expected: elasticsearch.Elasticsearch{
 				Domains: []elasticsearch.Domain{
 					{
-						Metadata:   iacTypes.NewTestMetadata(),
-						DomainName: iacTypes.String("example", iacTypes.NewTestMetadata()),
+						DomainName: iacTypes.StringTest("example"),
 						LogPublishing: elasticsearch.LogPublishing{
-							Metadata:     iacTypes.NewTestMetadata(),
-							AuditEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							AuditEnabled: iacTypes.BoolTest(true),
 						},
 						TransitEncryption: elasticsearch.TransitEncryption{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(true),
 						},
 						AtRestEncryption: elasticsearch.AtRestEncryption{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(true),
 						},
 						Endpoint: elasticsearch.Endpoint{
-							Metadata:     iacTypes.NewTestMetadata(),
-							EnforceHTTPS: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							TLSPolicy:    iacTypes.String("Policy-Min-TLS-1-2-2019-07", iacTypes.NewTestMetadata()),
+							EnforceHTTPS: iacTypes.BoolTest(true),
+							TLSPolicy:    iacTypes.StringTest("Policy-Min-TLS-1-2-2019-07"),
 						},
 					},
 				},

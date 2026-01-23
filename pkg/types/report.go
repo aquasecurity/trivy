@@ -10,9 +10,15 @@ import (
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
+// TrivyInfo contains Trivy-specific information
+type TrivyInfo struct {
+	Version string `json:",omitempty"` // Trivy version
+}
+
 // Report represents a scan result
 type Report struct {
 	SchemaVersion int       `json:",omitempty"`
+	Trivy         TrivyInfo `json:",omitzero"`
 	ReportID      string    `json:",omitempty"` // Unique identifier for this scan report
 	CreatedAt     time.Time `json:",omitzero"`
 

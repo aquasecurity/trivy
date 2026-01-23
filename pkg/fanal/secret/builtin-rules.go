@@ -70,6 +70,7 @@ var (
 	CategoryTypeform             = types.SecretRuleCategory("Typeform")
 	CategoryDocker               = types.SecretRuleCategory("Docker")
 	CategoryHuggingFace          = types.SecretRuleCategory("HuggingFace")
+	CategorySymfony              = types.SecretRuleCategory("Symfony")
 )
 
 // Reusable regex patterns
@@ -77,7 +78,8 @@ const (
 	quote     = `["']?`
 	connect   = `\s*(:|=>|=)?\s*`
 	endSecret = `[.,]?(\s+|$)`
-	startWord = "([^0-9a-zA-Z]|^)"
+	startWord = "([^0-9a-zA-Z_]|^)"
+	endWord   = "([^0-9a-zA-Z_]|$)"
 
 	aws = `aws_?`
 )
@@ -175,7 +177,7 @@ var builtinRules = []Rule{
 		Category:        CategoryHuggingFace,
 		Severity:        "CRITICAL",
 		Title:           "Hugging Face Access Token",
-		Regex:           MustCompileWithoutWordPrefix(`?P<secret>hf_[A-Za-z0-9]{34,40}`),
+		Regex:           MustCompileWithBoundaries(`?P<secret>hf_[A-Za-z0-9]{34,40}`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"hf_"},
 	},
@@ -844,5 +846,13 @@ var builtinRules = []Rule{
 		Regex:           MustCompile(`(?i)(\.(dockerconfigjson|dockercfg):\s*\|*\s*(?P<secret>(ey|ew)+[A-Za-z0-9\/\+=]+))`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"dockerc"},
+	},
+	{
+		ID:       "symfony-default-secret",
+		Category: CategorySymfony,
+		Title:    "Symfony Default Secret",
+		Severity: "HIGH",
+		Regex:    MustCompile(`ThisTokenIsNotSoSecretChangeIt|ThisEzPlatformTokenIsNotSoSecret_PleaseChangeIt`),
+		Keywords: []string{"TokenIsNotSoSecret"},
 	},
 }

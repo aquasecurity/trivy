@@ -27,12 +27,10 @@ func Test_adaptDBInstances(t *testing.T) {
 			}
 `,
 			expected: []rdb.DBInstance{{
-				Metadata:                  iacTypes.NewTestMetadata(),
-				BackupRetentionPeriodDays: iacTypes.Int(2, iacTypes.NewTestMetadata()),
-				Engine:                    iacTypes.String("MySQL", iacTypes.NewTestMetadata()),
-				EngineVersion:             iacTypes.String("5.7.15", iacTypes.NewTestMetadata()),
-				NetworkID:                 iacTypes.String("example-network", iacTypes.NewTestMetadata()),
-				PublicAccess:              iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				BackupRetentionPeriodDays: iacTypes.IntTest(2),
+				Engine:                    iacTypes.StringTest("MySQL"),
+				EngineVersion:             iacTypes.StringTest("5.7.15"),
+				NetworkID:                 iacTypes.StringTest("example-network"),
 			}},
 		},
 		{
@@ -43,12 +41,8 @@ func Test_adaptDBInstances(t *testing.T) {
 `,
 
 			expected: []rdb.DBInstance{{
-				Metadata:                  iacTypes.NewTestMetadata(),
-				BackupRetentionPeriodDays: iacTypes.Int(0, iacTypes.NewTestMetadata()),
-				Engine:                    iacTypes.String("", iacTypes.NewTestMetadata()),
-				EngineVersion:             iacTypes.String("", iacTypes.NewTestMetadata()),
-				NetworkID:                 iacTypes.String("net-COMMON_PRIVATE", iacTypes.NewTestMetadata()),
-				PublicAccess:              iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				NetworkID:    iacTypes.StringTest("net-COMMON_PRIVATE"),
+				PublicAccess: iacTypes.BoolTest(true),
 			}},
 		},
 	}

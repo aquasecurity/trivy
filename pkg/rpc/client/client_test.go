@@ -236,7 +236,7 @@ func TestScanner_ScanServerInsecure(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := rpc.NewScannerProtobufClient(ts.URL, &http.Client{
-				Transport: xhttp.NewTransport(xhttp.Options{Insecure: tt.insecure}),
+				Transport: xhttp.NewTransport(xhttp.Options{Insecure: tt.insecure}).Build(),
 			})
 			s := NewService(ServiceOption{Insecure: tt.insecure}, WithRPCClient(c))
 			_, err := s.Scan(t.Context(), "dummy", "", nil, types.ScanOptions{})

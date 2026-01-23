@@ -25,7 +25,6 @@ resource "azurerm_cosmosdb_account" "example" {
 }
 `,
 			expected: cosmosdb.Account{
-				Metadata:      iacTypes.NewTestMetadata(),
 				IPRangeFilter: []iacTypes.StringValue{},
 			},
 		},
@@ -37,7 +36,6 @@ resource "azurerm_cosmosdb_account" "example" {
 }
 `,
 			expected: cosmosdb.Account{
-				Metadata: iacTypes.NewTestMetadata(),
 				IPRangeFilter: []iacTypes.StringValue{
 					iacTypes.StringTest("10.0.0.0/16"),
 				},
@@ -51,7 +49,6 @@ resource "azurerm_cosmosdb_account" "example" {
 }
 `,
 			expected: cosmosdb.Account{
-				Metadata: iacTypes.NewTestMetadata(),
 				IPRangeFilter: []iacTypes.StringValue{
 					iacTypes.StringTest("10.0.0.0/16"),
 					iacTypes.StringTest("192.168.1.0/24"),
@@ -67,7 +64,6 @@ resource "azurerm_cosmosdb_account" "example" {
 }
 `,
 			expected: cosmosdb.Account{
-				Metadata: iacTypes.NewTestMetadata(),
 				IPRangeFilter: []iacTypes.StringValue{
 					iacTypes.StringTest("10.0.0.0/8"),
 					iacTypes.StringTest("172.16.0.0/12"),
@@ -82,7 +78,6 @@ resource "azurerm_cosmosdb_account" "example" {
 }
 `,
 			expected: cosmosdb.Account{
-				Metadata:      iacTypes.NewTestMetadata(),
 				IPRangeFilter: nil, // AsStringValues() returns nil for empty lists
 			},
 		},
@@ -111,7 +106,6 @@ resource "azurerm_cosmosdb_account" "example1" {
 `,
 			expected: []cosmosdb.Account{
 				{
-					Metadata:      iacTypes.NewTestMetadata(),
 					IPRangeFilter: []iacTypes.StringValue{},
 				},
 			},
@@ -129,13 +123,11 @@ resource "azurerm_cosmosdb_account" "example2" {
 `,
 			expected: []cosmosdb.Account{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
 					IPRangeFilter: []iacTypes.StringValue{
 						iacTypes.StringTest("10.0.0.0/16"),
 					},
 				},
 				{
-					Metadata: iacTypes.NewTestMetadata(),
 					IPRangeFilter: []iacTypes.StringValue{
 						iacTypes.StringTest("192.168.0.0/16"),
 					},
@@ -169,7 +161,6 @@ resource "azurerm_cosmosdb_account" "example" {
 			expected: cosmosdb.CosmosDB{
 				Accounts: []cosmosdb.Account{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						IPRangeFilter: []iacTypes.StringValue{
 							iacTypes.StringTest("10.0.0.0/16"),
 						},
@@ -190,11 +181,9 @@ resource "azurerm_cosmosdb_account" "example2" {
 			expected: cosmosdb.CosmosDB{
 				Accounts: []cosmosdb.Account{
 					{
-						Metadata:      iacTypes.NewTestMetadata(),
 						IPRangeFilter: []iacTypes.StringValue{},
 					},
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						IPRangeFilter: []iacTypes.StringValue{
 							iacTypes.StringTest("192.168.0.0/16"),
 						},

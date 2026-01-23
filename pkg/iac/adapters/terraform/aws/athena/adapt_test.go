@@ -30,11 +30,9 @@ func Test_adaptDatabase(t *testing.T) {
 			}
 `,
 			expected: athena.Database{
-				Metadata: iacTypes.NewTestMetadata(),
-				Name:     iacTypes.String("database_name", iacTypes.NewTestMetadata()),
+				Name: iacTypes.StringTest("database_name"),
 				Encryption: athena.EncryptionConfiguration{
-					Metadata: iacTypes.NewTestMetadata(),
-					Type:     iacTypes.String(athena.EncryptionTypeSSEKMS, iacTypes.NewTestMetadata()),
+					Type: iacTypes.StringTest(athena.EncryptionTypeSSEKMS),
 				},
 			},
 		},
@@ -73,13 +71,11 @@ func Test_adaptWorkgroup(t *testing.T) {
 			  }
 `,
 			expected: athena.Workgroup{
-				Metadata: iacTypes.NewTestMetadata(),
-				Name:     iacTypes.String("example", iacTypes.NewTestMetadata()),
+				Name: iacTypes.StringTest("example"),
 				Encryption: athena.EncryptionConfiguration{
-					Metadata: iacTypes.NewTestMetadata(),
-					Type:     iacTypes.String(athena.EncryptionTypeSSEKMS, iacTypes.NewTestMetadata()),
+					Type: iacTypes.StringTest(athena.EncryptionTypeSSEKMS),
 				},
-				EnforceConfiguration: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				EnforceConfiguration: iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -100,13 +96,10 @@ func Test_adaptWorkgroup(t *testing.T) {
 			}
 `,
 			expected: athena.Workgroup{
-				Metadata: iacTypes.NewTestMetadata(),
-				Name:     iacTypes.String("example", iacTypes.NewTestMetadata()),
+				Name: iacTypes.StringTest("example"),
 				Encryption: athena.EncryptionConfiguration{
-					Metadata: iacTypes.NewTestMetadata(),
-					Type:     iacTypes.String(athena.EncryptionTypeSSEKMS, iacTypes.NewTestMetadata()),
+					Type: iacTypes.StringTest(athena.EncryptionTypeSSEKMS),
 				},
-				EnforceConfiguration: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -125,13 +118,11 @@ func Test_adaptWorkgroup(t *testing.T) {
 			}
 `,
 			expected: athena.Workgroup{
-				Metadata: iacTypes.NewTestMetadata(),
-				Name:     iacTypes.String("example", iacTypes.NewTestMetadata()),
+				Name: iacTypes.StringTest("example"),
 				Encryption: athena.EncryptionConfiguration{
-					Metadata: iacTypes.NewTestMetadata(),
-					Type:     iacTypes.String(athena.EncryptionTypeNone, iacTypes.NewTestMetadata()),
+					Type: iacTypes.StringTest(athena.EncryptionTypeNone),
 				},
-				EnforceConfiguration: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				EnforceConfiguration: iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -142,13 +133,10 @@ func Test_adaptWorkgroup(t *testing.T) {
 			}
 `,
 			expected: athena.Workgroup{
-				Metadata: iacTypes.NewTestMetadata(),
-				Name:     iacTypes.String("example", iacTypes.NewTestMetadata()),
+				Name: iacTypes.StringTest("example"),
 				Encryption: athena.EncryptionConfiguration{
-					Metadata: iacTypes.NewTestMetadata(),
-					Type:     iacTypes.String(athena.EncryptionTypeNone, iacTypes.NewTestMetadata()),
+					Type: iacTypes.StringTest(athena.EncryptionTypeNone),
 				},
-				EnforceConfiguration: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 	}

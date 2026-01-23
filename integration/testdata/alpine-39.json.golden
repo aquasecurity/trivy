@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:988a8e3eb049d90c20fafb183d0e792c99b8ba28433be1d1e4447a8b5a1adbdf",
@@ -74,7 +77,7 @@
           "PkgName": "libcrypto1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1b-r1?arch=x86_64\u0026distro=3.9.4",
-            "UID": "6ab2c6870b0dc22c"
+            "UID": "3148053bd3cfcabf"
           },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r0",
@@ -148,7 +151,7 @@
           "PkgName": "libcrypto1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1b-r1?arch=x86_64\u0026distro=3.9.4",
-            "UID": "6ab2c6870b0dc22c"
+            "UID": "3148053bd3cfcabf"
           },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r2",
@@ -232,7 +235,7 @@
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libssl1.1@1.1.1b-r1?arch=x86_64\u0026distro=3.9.4",
-            "UID": "68dcd92c977c18d3"
+            "UID": "603cbbc71f2d6dec"
           },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r0",
@@ -306,7 +309,7 @@
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libssl1.1@1.1.1b-r1?arch=x86_64\u0026distro=3.9.4",
-            "UID": "68dcd92c977c18d3"
+            "UID": "603cbbc71f2d6dec"
           },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r2",
@@ -390,7 +393,7 @@
           "PkgName": "musl",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/musl@1.1.20-r4?arch=x86_64\u0026distro=3.9.4",
-            "UID": "aae058383ba5a25e"
+            "UID": "54bca8ef3ee9e338"
           },
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",
@@ -437,7 +440,7 @@
           "PkgName": "musl-utils",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/musl-utils@1.1.20-r4?arch=x86_64\u0026distro=3.9.4",
-            "UID": "4089d29c2d05b72d"
+            "UID": "792dadf1e7110cf2"
           },
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",

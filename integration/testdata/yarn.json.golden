@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/yarn",
@@ -15,7 +18,7 @@
           "Name": "integration",
           "Identifier": {
             "PURL": "pkg:npm/integration@1.0.0",
-            "UID": "830dfbb17accac93"
+            "UID": "ca7e77fc5b068ad9"
           },
           "Version": "1.0.0",
           "Licenses": [
@@ -24,14 +27,15 @@
           "Relationship": "root",
           "DependsOn": [
             "jquery@3.2.1"
-          ]
+          ],
+          "AnalyzedBy": "yarn"
         },
         {
           "ID": "jquery@3.2.1",
           "Name": "jquery",
           "Identifier": {
             "PURL": "pkg:npm/jquery@3.2.1",
-            "UID": "eab2410537cf8504"
+            "UID": "dc546992cc134cdc"
           },
           "Version": "3.2.1",
           "Licenses": [
@@ -43,7 +47,8 @@
               "StartLine": 10,
               "EndLine": 13
             }
-          ]
+          ],
+          "AnalyzedBy": "yarn"
         }
       ],
       "Vulnerabilities": [
@@ -53,7 +58,7 @@
           "PkgName": "jquery",
           "PkgIdentifier": {
             "PURL": "pkg:npm/jquery@3.2.1",
-            "UID": "eab2410537cf8504"
+            "UID": "dc546992cc134cdc"
           },
           "InstalledVersion": "3.2.1",
           "FixedVersion": "3.4.0",

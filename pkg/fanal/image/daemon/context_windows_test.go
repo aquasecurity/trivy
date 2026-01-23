@@ -1,4 +1,4 @@
-package daemon
+package daemon_test
 
 const (
 	testContextHost = "npipe:////./pipe/test_docker_engine"

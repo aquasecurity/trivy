@@ -1462,6 +1462,56 @@ func TestApplyLayers(t *testing.T) {
 				},
 			},
 		},
+		{
+			// Duplicate packages with different PURL namespaces, prefer OS-matching PURL
+			name: "prefer OS-matching PURL during deduplication",
+			inputLayers: []types.BlobInfo{
+				{
+					SchemaVersion: 2,
+					OS:            types.OS{Family: "chainguard", Name: "20230201"},
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "lib/apk/db/installed",
+							Packages: types.Packages{
+								{Name: "libcrypto3", Version: "3.0.0"}, // No PURL - will get chainguard
+								{
+									Name:    "libcrypto3",
+									Version: "3.0.0",
+									Identifier: types.PkgIdentifier{
+										PURL: &packageurl.PackageURL{
+											Type:       packageurl.TypeApk,
+											Namespace:  "wolfi", // Mismatched
+											Name:       "libcrypto3",
+											Version:    "3.0.0",
+											Qualifiers: packageurl.Qualifiers{{Key: "distro", Value: "wolfi"}},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				OS: types.OS{Family: "chainguard", Name: "20230201"},
+				Packages: types.Packages{
+					{
+						Name:    "libcrypto3",
+						Version: "3.0.0",
+						Identifier: types.PkgIdentifier{
+							UID: "bdca9f208c0174a0",
+							PURL: &packageurl.PackageURL{
+								Type:       packageurl.TypeApk,
+								Namespace:  "chainguard", // Matches OS
+								Name:       "libcrypto3",
+								Version:    "3.0.0",
+								Qualifiers: packageurl.Qualifiers{{Key: "distro", Value: "20230201"}},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

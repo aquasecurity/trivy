@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/pom",
@@ -12,11 +15,11 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2020-9548",
-          "PkgID": "com.fasterxml.jackson.core:jackson-databind:2.9.1",
+          "PkgID": "com.fasterxml.jackson.core:jackson-databind:2.9.1::6a9e9547",
           "PkgName": "com.fasterxml.jackson.core:jackson-databind",
           "PkgIdentifier": {
             "PURL": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",
-            "UID": "9c69fdeffb7ee6d4"
+            "UID": "9b28c9c796734030"
           },
           "InstalledVersion": "2.9.1",
           "FixedVersion": "2.9.10.4",
@@ -28,7 +31,7 @@
             "Name": "GitHub Security Advisory Maven",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven"
           },
-          "Fingerprint": "sha256:68e4f9ccb3a897341f76048401e88a22f2d9251a88eef44abdf7b9c2af70f2e4",
+          "Fingerprint": "sha256:e8090470bc38669d0a9a73e684105597938cc3890b6e77f6cfda6e73b98c2f08",
           "Title": "jackson-databind: Serialization gadgets in anteros-core",
           "Description": "FasterXML jackson-databind 2.x before 2.9.10.4 mishandles the interaction between serialization gadgets and typing, related to br.com.anteros.dbcp.AnterosDBCPConfig (aka anteros-core).",
           "Severity": "CRITICAL",
@@ -78,11 +81,11 @@
         },
         {
           "VulnerabilityID": "CVE-2021-20190",
-          "PkgID": "com.fasterxml.jackson.core:jackson-databind:2.9.1",
+          "PkgID": "com.fasterxml.jackson.core:jackson-databind:2.9.1::6a9e9547",
           "PkgName": "com.fasterxml.jackson.core:jackson-databind",
           "PkgIdentifier": {
             "PURL": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",
-            "UID": "9c69fdeffb7ee6d4"
+            "UID": "9b28c9c796734030"
           },
           "InstalledVersion": "2.9.1",
           "FixedVersion": "2.9.10.7",
@@ -94,7 +97,7 @@
             "Name": "GitLab Advisory Database Community",
             "URL": "https://gitlab.com/gitlab-org/advisories-community"
           },
-          "Fingerprint": "sha256:b7e077da6366be5eebc967119b377ac75bf9c1f0b0fb63f07ee1cfdec931506e",
+          "Fingerprint": "sha256:bceb5c9900547204285dff59a40c785acbcffbece6b4bc9fc31055352809ba0a",
           "Title": "jackson-databind: mishandles the interaction between serialization gadgets and typing, related to javax.swing",
           "Description": "A flaw was found in jackson-databind before 2.9.10.7. FasterXML mishandles the interaction between serialization gadgets and typing. The highest threat from this vulnerability is to data confidentiality and integrity as well as system availability.",
           "Severity": "HIGH",

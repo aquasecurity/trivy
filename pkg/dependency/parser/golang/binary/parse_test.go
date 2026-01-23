@@ -235,6 +235,59 @@ func TestParse(t *testing.T) {
 	}
 }
 
+func TestParser_ChooseMainVersion(t *testing.T) {
+	tests := []struct {
+		name           string
+		version        string
+		ldflagsVersion string
+		want           string
+	}{
+		{
+			name:           "v0.0.0 pseudo-version with ldflags",
+			version:        "v0.0.0-20210121094942-22b2f8951d46",
+			ldflagsVersion: "v1.2.3",
+			want:           "v1.2.3",
+		},
+		{
+			name:           "v2.x pseudo-version with ldflags",
+			version:        "v2.0.0-20251210145848-560ea94fc7d6",
+			ldflagsVersion: "v2.83.2",
+			want:           "v2.83.2",
+		},
+		{
+			name:           "v1.x pseudo-version with ldflags",
+			version:        "v1.0.1-0.20220426205730-d0a4cdb22955",
+			ldflagsVersion: "v1.5.0",
+			want:           "v1.5.0",
+		},
+		{
+			name:           "regular semver version with ldflags",
+			version:        "v1.2.3",
+			ldflagsVersion: "v1.2.4",
+			want:           "v1.2.3",
+		},
+		{
+			name:           "empty version with ldflags",
+			version:        "",
+			ldflagsVersion: "v1.2.3",
+			want:           "v1.2.3",
+		},
+		{
+			name:           "pseudo-version without ldflags",
+			version:        "v2.0.0-20251210145848-560ea94fc7d6",
+			ldflagsVersion: "",
+			want:           "v2.0.0-20251210145848-560ea94fc7d6",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := binary.NewParser()
+			got := p.ChooseMainVersion(tt.version, tt.ldflagsVersion)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
 func TestParser_ParseLDFlags(t *testing.T) {
 	type args struct {
 		name  string

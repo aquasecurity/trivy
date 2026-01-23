@@ -33,11 +33,9 @@ func Test_adaptKeyRings(t *testing.T) {
 `,
 			expected: []kms.KeyRing{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
 					Keys: []kms.Key{
 						{
-							Metadata:              iacTypes.NewTestMetadata(),
-							RotationPeriodSeconds: iacTypes.Int(7776000, iacTypes.NewTestMetadata()),
+							RotationPeriodSeconds: iacTypes.IntTest(7776000),
 						},
 					},
 				},
@@ -52,9 +50,7 @@ func Test_adaptKeyRings(t *testing.T) {
 
 `,
 			expected: []kms.KeyRing{
-				{
-					Metadata: iacTypes.NewTestMetadata(),
-				},
+				{},
 			},
 		},
 		{
@@ -71,11 +67,32 @@ func Test_adaptKeyRings(t *testing.T) {
 `,
 			expected: []kms.KeyRing{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
 					Keys: []kms.Key{
 						{
-							Metadata:              iacTypes.NewTestMetadata(),
-							RotationPeriodSeconds: iacTypes.Int(-1, iacTypes.NewTestMetadata()),
+							RotationPeriodSeconds: iacTypes.IntTest(-1),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "invalid rotation period",
+			terraform: `
+			resource "google_kms_key_ring" "keyring" {
+  name = "keyring-example"
+}
+			  
+resource "google_kms_crypto_key" "example-key" {
+  name     = "crypto-key-example"
+  key_ring = google_kms_key_ring.keyring.id
+	rotation_period = ""
+}
+`,
+			expected: []kms.KeyRing{
+				{
+					Keys: []kms.Key{
+						{
+							RotationPeriodSeconds: iacTypes.IntTest(-1),
 						},
 					},
 				},

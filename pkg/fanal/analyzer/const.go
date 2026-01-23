@@ -1,10 +1,12 @@
 package analyzer
 
 import (
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 )
 
-type Type string
+// Type is an alias for types.AnalyzerType for backward compatibility
+type Type = types.AnalyzerType
 
 const (
 	// ======

@@ -1,15 +1,17 @@
-package tfjson
+package tfjson_test
 
 import (
 	"os"
+	"strings"
 	"testing"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson"
 )
 
 const defaultCheck = `package defsec.abcdefg
@@ -36,91 +38,92 @@ deny[cause] {
 	cause := bucket.name
 }`
 
-func Test_TerraformScanner(t *testing.T) {
+func TestScanner_ScanFS(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		name      string
-		inputFile string
-		check     string
-		options   []options.ScannerOption
+		name     string
+		input    string
+		options  []options.ScannerOption
+		expected []string
 	}{
 		{
-			name:      "old rego metadata",
-			inputFile: "test/testdata/plan.json",
-			check:     defaultCheck,
+			name:  "use builtin checks",
+			input: "testdata/plan.json",
 			options: []options.ScannerOption{
-				rego.WithPolicyDirs("rules"),
+				rego.WithEmbeddedPolicies(true),
+				rego.WithEmbeddedLibraries(true),
+			},
+			expected: []string{
+				"AVD-AWS-0093",
+				"AVD-AWS-0086",
+				"AVD-AWS-0132",
+				"AVD-AWS-0094",
+				"AVD-AWS-0087",
+				"AVD-AWS-0091",
+				"AVD-AWS-0099",
+				"AVD-AWS-0124",
 			},
 		},
 		{
-			name:      "with user namespace",
-			inputFile: "test/testdata/plan.json",
-			check:     defaultCheck,
+			name:  "with user namespace",
+			input: "testdata/plan.json",
 			options: []options.ScannerOption{
-				rego.WithPolicyDirs("rules"),
+				rego.WithPolicyReader(strings.NewReader(defaultCheck)),
 				rego.WithPolicyNamespaces("user"),
 			},
+			expected: []string{"TEST-0123"},
 		},
 		{
-			name:      "with templated plan json",
-			inputFile: "test/testdata/plan_with_template.json",
-			check: `
-# METADATA
-# title: Bad buckets are bad
-# description: Bad buckets are bad because they are not good.
-# scope: package
+			name:  "with templated plan json",
+			input: "testdata/plan_with_template.json",
+			options: []options.ScannerOption{
+				rego.WithPolicyReader(strings.NewReader(`# METADATA
 # schemas:
 #   - input: schema["cloud"]
 # custom:
 #   id: TEST-0123
-#   severity: CRITICAL
-#   short_code: very-bad-misconfig
-#   recommended_action: "Fix the s3 bucket"
-
 package user.foobar.ABC001
 
 deny[cause] {
 	bucket := input.aws.s3.buckets[_]
 	bucket.name.value == "${template-name-is-$evil}"
 	cause := bucket.name
-}
-`,
-			options: []options.ScannerOption{
-				rego.WithPolicyDirs("rules"),
+}`)),
 				rego.WithPolicyNamespaces("user"),
 			},
+			expected: []string{"TEST-0123"},
 		},
 		{
-			name:      "plan with arbitrary name",
-			inputFile: "test/testdata/arbitrary_name.json",
-			check:     defaultCheck,
+			name:  "plan with arbitrary name",
+			input: "testdata/arbitrary_name.json",
 			options: []options.ScannerOption{
-				rego.WithPolicyDirs("rules"),
+				rego.WithPolicyReader(strings.NewReader(defaultCheck)),
 				rego.WithPolicyNamespaces("user"),
 			},
+			expected: []string{"TEST-0123"},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			b, _ := os.ReadFile(tc.inputFile)
-			fs := testutil.CreateFS(map[string]string{
-				"/code/main.tfplan.json": string(b),
-				"/rules/test.rego":       tc.check,
-			})
-
-			so := append(tc.options, rego.WithPolicyFilesystem(fs))
-			scanner := New(so...)
-
-			results, err := scanner.ScanFS(t.Context(), fs, "code")
+			b, err := os.ReadFile(tc.input)
 			require.NoError(t, err)
 
-			require.Len(t, results.GetFailed(), 1)
+			fsys := fstest.MapFS{
+				"main.tfplan.json": {Data: b},
+			}
 
-			failure := results.GetFailed()[0]
+			scanner := tfjson.New(tc.options...)
+			results, err := scanner.ScanFS(t.Context(), fsys, ".")
+			require.NoError(t, err)
 
-			assert.Equal(t, "TEST-0123", failure.Rule().ID)
+			var got []string
+			for _, r := range results.GetFailed() {
+				got = append(got, r.Rule().ID)
+			}
+
+			assert.ElementsMatch(t, tc.expected, got)
 		})
 	}
 }

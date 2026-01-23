@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/terraform/remote-module-in-child",
@@ -169,7 +172,7 @@
         },
         {
           "Type": "Terraform Security Check",
-          "ID": "s3-bucket-logging",
+          "ID": "AVD-AWS-0089",
           "AVDID": "AVD-AWS-0089",
           "Title": "S3 Bucket Logging",
           "Description": "Ensures S3 bucket logging is enabled for S3 buckets",
@@ -178,11 +181,11 @@
           "Query": "data.builtin.aws.s3.aws0089.deny",
           "Resolution": "Add a logging block to the resource to enable access logging",
           "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/s3-bucket-logging",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0089",
           "References": [
             "https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerLogs.html",
             "https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html",
-            "https://avd.aquasec.com/misconfig/s3-bucket-logging"
+            "https://avd.aquasec.com/misconfig/avd-aws-0089"
           ],
           "Status": "FAIL",
           "CauseMetadata": {

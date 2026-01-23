@@ -235,6 +235,9 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		}
 	}
 
+	// Filter OS packages with mismatched PURL namespace
+	mergedLayer.Packages = filterMismatchedOSPkgs(mergedLayer.OS.Family, mergedLayer.Packages)
+
 	// De-duplicate same debian packages from different dirs
 	// cf. https://github.com/aquasecurity/trivy/issues/8297
 	mergedLayer.Packages = xslices.ZeroToNil(lo.UniqBy(mergedLayer.Packages, func(pkg ftypes.Package) string {
@@ -342,4 +345,42 @@ func secretFindingsContains(findings []ftypes.SecretFinding, finding ftypes.Secr
 		}
 	}
 	return false
+}
+
+// purlMatchesOS checks if a package's PURL namespace matches the detected OS family.
+// Returns true if the package should be kept (matches OS or has no PURL/namespace).
+// Returns false if the package should be filtered out (has PURL with mismatched namespace).
+func purlMatchesOS(pkg ftypes.Package, osFamily ftypes.OSType) bool {
+	if pkg.Identifier.PURL == nil || osFamily == "" {
+		return true // Keep packages without PURL or when OS is not detected
+	}
+	if pkg.Identifier.PURL.Namespace == "" {
+		return true // Keep packages without namespace
+	}
+	return pkg.Identifier.PURL.Namespace == osFamily.PurlNamespace()
+}
+
+// filterMismatchedOSPkgs removes OS packages whose PURL namespace doesn't match the detected OS.
+// Packages with pre-existing PURLs are typically from SBOM files embedded in the image.
+func filterMismatchedOSPkgs(osFamily ftypes.OSType, pkgs ftypes.Packages) ftypes.Packages {
+	if osFamily == "" {
+		return pkgs // No OS detected, keep all packages
+	}
+
+	var filtered int
+	result := lo.Filter(pkgs, func(pkg ftypes.Package, _ int) bool {
+		if purlMatchesOS(pkg, osFamily) {
+			return true
+		}
+		filtered++
+		return false
+	})
+
+	if filtered > 0 {
+		log.WithPrefix("applier").Warn("Some OS packages were skipped due to mismatched PURL namespace",
+			log.Int("pkg_count", filtered),
+			log.String("detected_os", string(osFamily)))
+	}
+
+	return result
 }

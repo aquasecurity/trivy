@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:b4b4762f4769903a61d4605927079c4e60d007d9b12f65c39714e5311fa3d0ca",
@@ -101,7 +104,7 @@
           "PkgName": "bash",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/redhat/bash@4.2.46-33.el7?arch=x86_64\u0026distro=redhat-7.7",
-            "UID": "12819dd4d4181abf"
+            "UID": "83a539f92a1b8c47"
           },
           "InstalledVersion": "4.2.46-33.el7",
           "Status": "will_not_fix",
@@ -167,7 +170,7 @@
           "PkgPath": "usr/lib/python2.7/site-packages/setuptools-0.9.8-py2.7.egg-info/PKG-INFO",
           "PkgIdentifier": {
             "PURL": "pkg:pypi/setuptools@0.9.8",
-            "UID": "13d32ebdc7bda1b4"
+            "UID": "81fa6be5e18bf8e1"
           },
           "InstalledVersion": "0.9.8",
           "FixedVersion": "65.5.1",

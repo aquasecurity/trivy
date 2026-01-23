@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:b9f31768f6c3908af7de80cff1a9e53c62f46d1bc54aaf3b97b2c922ed9cf1fd",
@@ -81,7 +84,7 @@
           "PkgName": "libopenssl1_1",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/opensuse/libopenssl1_1@1.1.0i-lp151.8.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1",
-            "UID": "a5c414d06155f471"
+            "UID": "10e12f4783a16c7c"
           },
           "InstalledVersion": "1.1.0i-lp151.8.3.1",
           "FixedVersion": "1.1.0i-lp151.8.6.1",
@@ -115,7 +118,7 @@
           "PkgName": "openssl-1_1",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/opensuse/openssl-1_1@1.1.0i-lp151.8.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1",
-            "UID": "937f6db3d7249e11"
+            "UID": "23c07ff656c4d709"
           },
           "InstalledVersion": "1.1.0i-lp151.8.3.1",
           "FixedVersion": "1.1.0i-lp151.8.6.1",
