@@ -292,12 +292,11 @@ func TestManager_List(t *testing.T) {
 - Name: default
   URL: https://github.com/aquasecurity/vexhub
   Status: Enabled
-  Insecure: Disabled
 
 - Name: custom
   URL: https://example.com/custom-vex-repo
   Status: Disabled
-  Insecure: Enabled
+  TLS Verify: No
 
 `,
 		},
