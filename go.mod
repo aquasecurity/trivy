@@ -134,7 +134,10 @@ require (
 )
 
 require (
+	github.com/apparentlymart/go-versions v1.0.3
 	github.com/go-ini/ini v1.67.0
+	github.com/hashicorp/go-slug v1.0.0
+	github.com/hashicorp/terraform-registry-address v0.4.0
 	github.com/invopop/jsonschema v0.13.0
 	github.com/nikolalohinski/gonja/v2 v2.4.2
 )
@@ -317,6 +320,7 @@ require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/terraform-json v0.27.1 // indirect
+	github.com/hashicorp/terraform-svchost v0.1.1 // indirect
 	github.com/huandu/xstrings v1.5.0 // indirect
 	github.com/in-toto/attestation v1.1.2 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect

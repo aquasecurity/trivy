@@ -15,6 +15,7 @@ import (
 	"github.com/zclconf/go-cty/cty/convert"
 
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/funcs"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -59,7 +60,7 @@ func newEvaluator(
 
 	// create a context to store variables and make functions available
 	ctx := tfcontext.NewContext(&hcl.EvalContext{
-		Functions: Functions(target, modulePath),
+		Functions: funcs.Functions(target, modulePath),
 	}, nil)
 
 	// these variables are made available by terraform to each module
