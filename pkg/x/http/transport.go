@@ -19,8 +19,8 @@ var (
 	mu               sync.RWMutex
 )
 
-// Wrapper wraps an http.RoundTripper to add custom behavior (e.g., retry, logging).
-type Wrapper func(http.RoundTripper) http.RoundTripper
+// wrapper wraps an http.RoundTripper to add custom behavior (e.g., retry, logging).
+type wrapper func(http.RoundTripper) http.RoundTripper
 
 // TransportOption modifies an *http.Transport.
 type TransportOption func(*http.Transport)
@@ -33,7 +33,7 @@ type Transport interface {
 // transport is the default implementation of Transport.
 type transport struct {
 	base     *http.Transport
-	wrappers []Wrapper
+	wrappers []wrapper
 }
 
 // Build returns an http.RoundTripper with TransportOptions applied and all wrappers applied.
@@ -131,13 +131,13 @@ func NewTransport(opts Options) Transport {
 	return rt
 }
 
-func traceWrapper() Wrapper {
+func traceWrapper() wrapper {
 	return func(rt http.RoundTripper) http.RoundTripper {
 		return NewTraceTransport(rt)
 	}
 }
 
-func userAgentWrapper(ua string) Wrapper {
+func userAgentWrapper(ua string) wrapper {
 	return func(rt http.RoundTripper) http.RoundTripper {
 		return NewUserAgent(rt, ua)
 	}
