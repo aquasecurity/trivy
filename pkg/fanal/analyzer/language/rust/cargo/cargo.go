@@ -199,12 +199,15 @@ type cargoToml struct {
 
 type Package struct {
 	Name    string `toml:"name"`
-	Version string `toml:"version"`
+	Version any    `toml:"version"`
 }
 
 type cargoTomlWorkspace struct {
 	Dependencies Dependencies `toml:"dependencies"`
 	Members      []string     `toml:"members"`
+	Package      struct {
+		Version string `toml:"version"`
+	} `toml:"package"`
 }
 
 type Dependencies map[string]any
@@ -212,7 +215,7 @@ type Dependencies map[string]any
 // parseRootCargoTOML parses top-level Cargo.toml and returns dependencies.
 // It also parses workspace members and their dependencies.
 func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, []string, map[string]string, error) {
-	rootPkg, dependencies, members, err := a.parseCargoTOML(fsys, filePath)
+	rootPkg, dependencies, members, rootVersion, err := a.parseCargoTOML(fsys, filePath, "")
 	if err != nil {
 		return "", nil, nil, xerrors.Errorf("unable to parse %s: %w", filePath, err)
 	}
@@ -237,7 +240,7 @@ func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, 
 		}
 
 		for _, pkg := range resolvedPaths {
-			memberPkg, memberDeps, _, err := a.parseCargoTOML(fsys, pkg)
+			memberPkg, memberDeps, _, _, err := a.parseCargoTOML(fsys, pkg, rootVersion)
 			if err != nil {
 				a.logger.Warn("Unable to parse Cargo.toml", log.String("member_path", pkg), log.Err(err))
 				continue
@@ -314,11 +317,11 @@ func (a cargoAnalyzer) matchVersion(currentVersion, constraint string) (bool, er
 	return c.Check(ver), nil
 }
 
-func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, filePath string) (string, Dependencies, []string, error) {
+func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, filePath, workspaceVersion string) (string, Dependencies, []string, string, error) {
 	// Parse Cargo.toml
 	f, err := fsys.Open(filePath)
 	if err != nil {
-		return "", nil, nil, xerrors.Errorf("file open error: %w", err)
+		return "", nil, nil, "", xerrors.Errorf("file open error: %w", err)
 	}
 	defer func() { _ = f.Close() }()
 
@@ -328,7 +331,28 @@ func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, filePath string) (string, Depe
 	// declare `dependencies` to avoid panic
 	dependencies := Dependencies{}
 	if _, err = toml.NewDecoder(f).Decode(&tomlFile); err != nil {
-		return "", nil, nil, xerrors.Errorf("toml decode error: %w", err)
+		return "", nil, nil, "", xerrors.Errorf("toml decode error: %w", err)
+	}
+
+	// https://rust-lang.github.io/rfcs/2906-cargo-workspace-deduplicate.html
+	if workspaceVersion == "" {
+		workspaceVersion = tomlFile.Workspace.Package.Version
+	}
+
+	switch version := tomlFile.Package.Version.(type) {
+	// In case of purely virtual cargo workspace version only lives in `workspace.package.version`
+	case nil:
+		tomlFile.Package.Version = tomlFile.Workspace.Package.Version
+	// We assume a proper version string was used, like: `0.1.0`
+	case string:
+		tomlFile.Package.Version = tomlFile.Package.Version.(string)
+	// There are cases when `package.version` uses `version.workspace = true` which must inherit the version from `workspace.version`
+	case map[string]any:
+		for k, v := range version {
+			if wv, ok := v.(bool); k == "workspace" && ok && wv {
+				tomlFile.Package.Version = workspaceVersion
+			}
+		}
 	}
 
 	pkgID := a.packageID(tomlFile)
@@ -343,14 +367,14 @@ func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, filePath string) (string, Depe
 	// https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#inheriting-a-dependency-from-a-workspace
 	maps.Copy(dependencies, tomlFile.Workspace.Dependencies)
 	// https://doc.rust-lang.org/cargo/reference/workspaces.html#the-members-and-exclude-fields
-	return pkgID, dependencies, tomlFile.Workspace.Members, nil
+	return pkgID, dependencies, tomlFile.Workspace.Members, workspaceVersion, nil
 }
 
 // packageID builds PackageID by Package name and version.
 // If name is empty - use hash of cargoToml.
 func (a cargoAnalyzer) packageID(cargoToml cargoToml) string {
 	if cargoToml.Package.Name != "" {
-		return dependency.ID(types.Cargo, cargoToml.Package.Name, cargoToml.Package.Version)
+		return dependency.ID(types.Cargo, cargoToml.Package.Name, cargoToml.Package.Version.(string))
 	}
 
 	hash, err := hashstructure.Hash(cargoToml, hashstructure.FormatV2, &hashstructure.HashOptions{
