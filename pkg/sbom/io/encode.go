@@ -479,6 +479,7 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 			UID:    pkg.Identifier.UID,
 			PURL:   pkg.Identifier.PURL,
 			BOMRef: pkg.Identifier.BOMRef,
+			SPDXID: pkg.Identifier.SPDXID,
 		},
 		Supplier:   pkg.Maintainer,
 		Licenses:   pkg.Licenses,
