@@ -4809,6 +4809,17 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
+  <a href="#tls-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TLS Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#repository-priority" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8330,6 +8341,17 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
+  <a href="#tls-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TLS Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#repository-priority" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8504,6 +8526,13 @@ You can add a custom repository as below:</p>
 <span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://example.com/custom-repo</span>
 <span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">  </span><span class="nt">token</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;my-token&quot;</span>
+</code></pre></div>
+<h4 id="tls-verification">TLS Verification<a class="headerlink" href="#tls-verification" title="Permanent link">&para;</a></h4>
+<p>In some cases, you might want to skip the TLS verification, per-repository:</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom</span>
+<span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://example.com/custom-repo</span>
+<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">insecure</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
 <h4 id="repository-priority">Repository Priority<a class="headerlink" href="#repository-priority" title="Permanent link">&para;</a></h4>
 <p>The priority of VEX repositories is determined by their order in the configuration file.
