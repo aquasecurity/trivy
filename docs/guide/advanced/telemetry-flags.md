@@ -6,6 +6,7 @@
 --distro
 --exit-code
 --exit-on-eol
+--file-tree
 --format
 --ignore-status
 --ignore-unfixed

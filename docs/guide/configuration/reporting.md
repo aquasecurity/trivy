@@ -259,6 +259,69 @@ Also, **glob-parent@3.1.0** with some vulnerabilities is included through chain 
 
 Then, you can try to update **axios@0.21.4** and **cra-append-sw@2.7.0** to resolve vulnerabilities in **follow-redirects@1.14.6** and **glob-parent@3.1.0**.
 
+#### Show file origins of vulnerable dependencies
+
+|     Scanner      | Supported |
+|:----------------:|:---------:|
+|  Vulnerability   |     ✓     |
+| Misconfiguration |           |
+|      Secret      |           |
+|     License      |           |
+
+!!! warning "EXPERIMENTAL"
+This feature might change without preserving backwards compatibility.
+
+Similar to the `--dependency-tree` flag, the `--file-tree` flag builds a dependency tree to show the origin of a vulnerability.
+The key difference being that the `--file-tree` flag will show the file name where the dependency is referenced and attempt to trace all packages back to the root project.
+
+This flag is only available with the `--format table` flag.
+
+The following languages are currently known to work well, other languages can be used but may be missing filename metadata:
+
+| Language | File                                       |
+|----------|--------------------------------------------|
+| Java     | [pom.xml][pom-xml]                         |
+|          | [*gradle.lockfile][gradle-lockfile]        |
+|          | [*.sbt.lock][sbt-lockfile]                 |
+
+An example of this is shown bellow
+
+```shell
+trivy fs --severity HIGH,CRITICAL --file-tree --scanners vuln /path/to/project  
+```
+
+<details>
+<summary>Sample Output</summary>
+```shell
+pom.xml (pom)
+
+Total: 1 (HIGH: 1, CRITICAL: 0)
+
+┌───────────────────────────────────┬───────────────┬──────────┬────────┬───────────────────┬────────────────────────┬───────────────────────────────────────────────────────────┐
+│              Library              │ Vulnerability │ Severity │ Status │ Installed Version │     Fixed Version      │                           Title                           │
+├───────────────────────────────────┼───────────────┼──────────┼────────┼───────────────────┼────────────────────────┼───────────────────────────────────────────────────────────┤
+│ com.google.protobuf:protobuf-java │ CVE-2024-7254 │ HIGH     │ fixed  │ 3.25.1            │ 3.25.5, 4.27.5, 4.28.2 │ protobuf: StackOverflow vulnerability in Protocol Buffers │
+│                                   │               │          │        │                   │                        │ https://avd.aquasec.com/nvd/cve-2024-7254                 │
+└───────────────────────────────────┴───────────────┴──────────┴────────┴───────────────────┴────────────────────────┴───────────────────────────────────────────────────────────┘
+Dependency Origin File Tree
+=================================
+===
+com.google.protobuf:protobuf-java:3.25.1 Tree
+===
+io.quarkus:quarkus-test-grpc:999-SNAPSHOT, (Root)
+├── io.vertx:vertx-grpc-client:4.5.22, (Imported in: ../quarkus/test-framework/grpc/pom.xml)
+│   └── io.vertx:vertx-grpc-common:4.5.22, (Imported in: /home/user/.m2/repository/io/vertx/vertx-grpc-client/4.5.22/vertx-grpc-client-4.5.22.pom)
+│       └── io.grpc:grpc-protobuf:1.65.0, (Imported in: /home/user/.m2/repository/io/vertx/vertx-grpc-common/4.5.22/vertx-grpc-common-4.5.22.pom)
+│           └── com.google.api.grpc:proto-google-common-protos:2.29.0, (Imported in: MISSING FILEPATH METADATA)
+│               └── com.google.protobuf:protobuf-java:3.25.1, (HIGH: 1, CRITICAL: 0)
+└── io.vertx:vertx-grpc-client:4.5.22, (Imported in: ../quarkus/test-framework/grpc/pom.xml)
+    └── io.vertx:vertx-grpc-common:4.5.22, (Imported in: /home/user/.m2/repository/io/vertx/vertx-grpc-client/4.5.22/vertx-grpc-client-4.5.22.pom)
+        └── io.grpc:grpc-protobuf:1.65.0, (Imported in: /home/user/.m2/repository/io/vertx/vertx-grpc-common/4.5.22/vertx-grpc-common-4.5.22.pom)
+            └── com.google.protobuf:protobuf-java:3.25.1, (HIGH: 1, CRITICAL: 0)
+
+```
+</details>
+
 ### JSON
 
 |     Scanner      | Supported |

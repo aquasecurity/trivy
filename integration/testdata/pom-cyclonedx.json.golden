@@ -56,6 +56,10 @@
       "purl": "pkg:maven/com.example/log4shell@1.0-SNAPSHOT",
       "properties": [
         {
+          "name": "aquasecurity:trivy:FilePath",
+          "value": "testdata/fixtures/repo/pom/pom.xml"
+        },
+        {
           "name": "aquasecurity:trivy:PkgID",
           "value": "com.example:log4shell:1.0-SNAPSHOT::b21b31f8"
         },

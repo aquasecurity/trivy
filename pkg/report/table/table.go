@@ -50,7 +50,10 @@ type Options struct {
 	Output     io.Writer
 
 	// Show dependency origin tree
-	Tree bool
+	DependencyTree bool
+
+	// Show dependency file origin tree
+	FileTree bool
 
 	// Show suppressed findings
 	ShowSuppressed bool
@@ -75,7 +78,7 @@ func NewWriter(options Options) *Writer {
 		buf: buf,
 
 		summaryRenderer:       NewSummaryRenderer(buf, isTerminal, options.Scanners),
-		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, isTerminal, options.Tree, options.ShowSuppressed, options.Severities),
+		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, isTerminal, options.DependencyTree, options.FileTree, options.ShowSuppressed, options.Severities),
 		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, isTerminal, options.RenderCause),
 		secretRenderer:        NewSecretRenderer(buf, isTerminal, options.Severities),
 		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, isTerminal, options.Severities),

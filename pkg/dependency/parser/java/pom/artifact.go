@@ -32,6 +32,7 @@ type artifact struct {
 	Relationship ftypes.Relationship
 
 	Locations ftypes.Locations
+	FilePath  string
 
 	// For correctly calculation package ID (hash),
 	// We need to store the file paths for root or module artifacts.

@@ -48,6 +48,7 @@ trivy rootfs [flags] ROOTDIR
       --exit-code int                     specify exit code when any security issues are found
       --exit-on-eol int                   exit with the specified code when the OS reaches end of service/life
       --file-patterns strings             specify config file patterns
+      --file-tree                         [EXPERIMENTAL] show file name dependency origin tree of vulnerable packages
   -f, --format string                     format
                                           Allowed values:
                                             - table

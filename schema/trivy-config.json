@@ -679,6 +679,10 @@
       "type": "boolean",
       "description": "[EXPERIMENTAL] show dependency origin tree of vulnerable packages"
     },
+    "file-tree": {
+      "type": "boolean",
+      "description": "[EXPERIMENTAL] show file name dependency origin tree of vulnerable packages"
+    },
     "list-all-pkgs": {
       "type": "boolean",
       "description": "output all packages in the JSON report regardless of vulnerability"

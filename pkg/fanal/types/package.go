@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/package-url/packageurl-go"
@@ -9,6 +10,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type Relationship int
@@ -278,9 +280,13 @@ func (pkgs Packages) Less(i, j int) bool {
 // that depend on the respective package ID (parent dependencies).
 func (pkgs Packages) ParentDeps() map[string]Packages {
 	parents := make(map[string]Packages)
-	for _, pkg := range pkgs {
+	for i, pkg := range pkgs {
 		for _, dependOn := range pkg.DependsOn {
 			parents[dependOn] = append(parents[dependOn], pkg)
+		}
+
+		if i%1000 == 0 {
+			log.Debug(fmt.Sprintf("Processed %d/%d packages", i, pkgs.Len()))
 		}
 	}
 
