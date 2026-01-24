@@ -105,6 +105,7 @@ func Download(ctx context.Context, src, dst, pwd string, opts Options) (string, 
 }
 
 type CustomTransport struct {
+	insecure   bool
 	auth       Auth
 	cachedETag string
 	newETag    string
@@ -112,6 +113,7 @@ type CustomTransport struct {
 
 func NewCustomTransport(opts Options) *CustomTransport {
 	return &CustomTransport{
+		insecure:   opts.Insecure,
 		auth:       opts.Auth,
 		cachedETag: opts.ETag,
 	}
@@ -127,7 +129,7 @@ func (t *CustomTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		req.SetBasicAuth(t.auth.Username, t.auth.Password)
 	}
 
-	transport := xhttp.RoundTripper(req.Context())
+	transport := xhttp.RoundTripper(req.Context(), xhttp.WithInsecure(t.insecure))
 	if req.URL.Host == "github.com" {
 		transport = NewGitHubTransport(req.URL, t.auth.Token)
 	}
