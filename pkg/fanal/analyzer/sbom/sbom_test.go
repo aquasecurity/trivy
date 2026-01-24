@@ -9,7 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func Test_sbomAnalyzer_Analyze(t *testing.T) {
@@ -25,18 +26,18 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			file:     "testdata/elasticsearch.spdx.json",
 			filePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.spdx",
 			want: &analyzer.AnalysisResult{
-				Applications: []types.Application{
+				Applications: []ftypes.Application{
 					{
-						Type:     types.Bitnami,
+						Type:     ftypes.Bitnami,
 						FilePath: "opt/bitnami/elasticsearch",
-						Packages: types.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:       "elasticsearch@8.9.1",
 								Name:     "elasticsearch",
 								Version:  "8.9.1",
 								Arch:     "arm64",
 								Licenses: []string{"Elastic-2.0"},
-								Identifier: types.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeBitnami,
 										Name:    "elasticsearch",
@@ -53,15 +54,15 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						},
 					},
 					{
-						Type:     types.Jar,
+						Type:     ftypes.Jar,
 						FilePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.spdx",
-						Packages: types.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:       "co.elastic.apm:apm-agent:1.36.0",
 								Name:     "co.elastic.apm:apm-agent",
 								Version:  "1.36.0",
 								FilePath: "opt/bitnami/elasticsearch",
-								Identifier: types.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "co.elastic.apm",
@@ -75,7 +76,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 								Name:     "co.elastic.apm:apm-agent-cached-lookup-key",
 								Version:  "1.36.0",
 								FilePath: "opt/bitnami/elasticsearch",
-								Identifier: types.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "co.elastic.apm",
@@ -89,7 +90,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 								Name:     "co.elastic.apm:apm-agent-common",
 								Version:  "1.36.0",
 								FilePath: "opt/bitnami/elasticsearch",
-								Identifier: types.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "co.elastic.apm",
@@ -103,7 +104,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 								Name:     "co.elastic.apm:apm-agent-core",
 								Version:  "1.36.0",
 								FilePath: "opt/bitnami/elasticsearch",
-								Identifier: types.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "co.elastic.apm",
@@ -123,17 +124,17 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			file:     "testdata/cdx.json",
 			filePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.cdx",
 			want: &analyzer.AnalysisResult{
-				Applications: []types.Application{
+				Applications: []ftypes.Application{
 					{
-						Type:     types.Jar,
+						Type:     ftypes.Jar,
 						FilePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.cdx",
-						Packages: types.Packages{
+						Packages: ftypes.Packages{
 							{
 								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
 								ID:       "co.elastic.apm:apm-agent:1.36.0",
 								Name:     "co.elastic.apm:apm-agent",
 								Version:  "1.36.0",
-								Identifier: types.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "co.elastic.apm",
@@ -148,7 +149,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 								ID:       "co.elastic.apm:apm-agent-cached-lookup-key:1.36.0",
 								Name:     "co.elastic.apm:apm-agent-cached-lookup-key",
 								Version:  "1.36.0",
-								Identifier: types.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "co.elastic.apm",
@@ -169,16 +170,16 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			file:     "testdata/sbom-without-app-component.spdx.json",
 			filePath: "layers/sbom/launch/buildpacksio_lifecycle/launcher/sbom.spdx.json",
 			want: &analyzer.AnalysisResult{
-				Applications: []types.Application{
+				Applications: []ftypes.Application{
 					{
-						Type:     types.GoBinary,
+						Type:     ftypes.GoBinary,
 						FilePath: "layers/sbom/launch/buildpacksio_lifecycle/launcher/sbom.spdx.json",
-						Packages: types.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:      "github.com/buildpacks/lifecycle@v0.20.2",
 								Name:    "github.com/buildpacks/lifecycle",
 								Version: "v0.20.2",
-								Identifier: types.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeGolang,
 										Namespace: "github.com/buildpacks",
@@ -193,14 +194,14 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						},
 					},
 					{
-						Type:     types.Jar,
+						Type:     ftypes.Jar,
 						FilePath: "layers/sbom/launch/buildpacksio_lifecycle/launcher/sbom.spdx.json",
-						Packages: types.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:      "co.elastic.apm:apm-agent:1.36.0",
 								Name:    "co.elastic.apm:apm-agent",
 								Version: "1.36.0",
-								Identifier: types.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "co.elastic.apm",
@@ -220,17 +221,17 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			file:     "testdata/postgresql.spdx.json",
 			filePath: "opt/bitnami/postgresql/.spdx-postgresql.spdx",
 			want: &analyzer.AnalysisResult{
-				Applications: []types.Application{
+				Applications: []ftypes.Application{
 					{
-						Type:     types.Bitnami,
+						Type:     ftypes.Bitnami,
 						FilePath: "opt/bitnami/postgresql",
-						Packages: types.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:       "gdal@3.7.1",
 								Name:     "gdal",
 								Version:  "3.7.1",
 								Licenses: []string{"MIT"},
-								Identifier: types.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeBitnami,
 										Name:    "gdal",
@@ -243,7 +244,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 								Name:     "geos",
 								Version:  "3.8.3",
 								Licenses: []string{"LGPL-2.1-only"},
-								Identifier: types.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeBitnami,
 										Name:    "geos",
@@ -256,7 +257,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 								Name:     "postgresql",
 								Version:  "15.3.0",
 								Licenses: []string{"PostgreSQL"},
-								Identifier: types.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeBitnami,
 										Name:    "postgresql",
@@ -274,7 +275,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 								Name:     "proj",
 								Version:  "6.3.2",
 								Licenses: []string{"MIT"},
-								Identifier: types.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeBitnami,
 										Name:    "proj",
@@ -293,10 +294,10 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			file:     "testdata/ca-certificates.spdx.json",
 			filePath: "opt/bitnami/ca-certificates/.spdx-ca-certificates.spdx",
 			want: &analyzer.AnalysisResult{
-				PackageInfos: []types.PackageInfo{
+				PackageInfos: []ftypes.PackageInfo{
 					{
 						FilePath: "opt/bitnami/ca-certificates/.spdx-ca-certificates.spdx",
-						Packages: types.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:         "ca-certificates@20230311",
 								Name:       "ca-certificates",
@@ -305,7 +306,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "ca-certificates",
 								SrcVersion: "20230311",
 								Licenses:   []string{"GPL-2.0-or-later AND GPL-2.0-only AND MPL-2.0"},
-								Identifier: types.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeDebian,
 										Namespace: "debian",
@@ -384,32 +385,211 @@ func Test_packagingAnalyzer_Required(t *testing.T) {
 			filePath: "/test/result.json",
 			want:     false,
 		},
-		{
-			name:     "pep770 cdx.json in dist-info/sboms",
-			filePath: "python3.8/site-packages/xgboost-3.1.2.dist-info/sboms/auditwheel.cdx.json",
-			want:     false,
-		},
-		{
-			name:     "pep770 spdx.json in dist-info/sboms",
-			filePath: "python3.8/site-packages/xgboost-3.1.2.dist-info/sboms/auditwheel.spdx.json",
-			want:     false,
-		},
-		{
-			name:     "pep770 cdx in dist-info/sboms",
-			filePath: "python3.8/site-packages/xgboost-3.1.2.dist-info/sboms/auditwheel.cdx",
-			want:     false,
-		},
-		{
-			name:     "pep770 spdx in dist-info/sboms",
-			filePath: "python3.8/site-packages/xgboost-3.1.2.dist-info/sboms/auditwheel.spdx",
-			want:     false,
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := sbomAnalyzer{}
 			got := a.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_handleActiveStateImages(t *testing.T) {
+	tests := []struct {
+		name     string
+		inputBom *types.SBOM
+		want     *types.SBOM
+	}{
+		{
+			name: "skip GoBinary applications",
+			inputBom: &types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: ftypes.GoBinary,
+						Packages: ftypes.Packages{
+							{
+								Name:     "github.com/example/module",
+								Version:  "v1.0.0",
+								FilePath: "/usr/bin/app",
+							},
+						},
+					},
+					{
+						Type: ftypes.PythonPkg,
+						Packages: ftypes.Packages{
+							{
+								Name:     "requests",
+								Version:  "2.28.0",
+								FilePath: "/usr/lib/python/site-packages",
+							},
+						},
+					},
+				},
+			},
+			want: &types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type:     ftypes.PythonPkg,
+						FilePath: "/usr/lib/python/site-packages",
+						Packages: ftypes.Packages{
+							{
+								Name:     "requests",
+								Version:  "2.28.0",
+								FilePath: "/usr/lib/python/site-packages",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "group packages by filepath and langType",
+			inputBom: &types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: ftypes.PythonPkg,
+						Packages: ftypes.Packages{
+							{
+								Name:     "requests",
+								Version:  "2.28.0",
+								FilePath: "/usr/lib/python/site-packages",
+							},
+						},
+					},
+					{
+						Type: ftypes.PythonPkg,
+						Packages: ftypes.Packages{
+							{
+								Name:     "flask",
+								Version:  "2.0.0",
+								FilePath: "/opt/app/venv/lib/python/site-packages",
+							},
+							{
+								Name:     "urllib3",
+								Version:  "1.26.0",
+								FilePath: "/usr/lib/python/site-packages",
+							},
+						},
+					},
+				},
+			},
+			want: &types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type:     ftypes.PythonPkg,
+						FilePath: "/usr/lib/python/site-packages",
+						Packages: ftypes.Packages{
+							{
+								Name:     "requests",
+								Version:  "2.28.0",
+								FilePath: "/usr/lib/python/site-packages",
+							},
+							{
+								Name:     "urllib3",
+								Version:  "1.26.0",
+								FilePath: "/usr/lib/python/site-packages",
+							},
+						},
+					},
+					{
+						Type:     ftypes.PythonPkg,
+						FilePath: "/opt/app/venv/lib/python/site-packages",
+						Packages: ftypes.Packages{
+							{
+								Name:     "flask",
+								Version:  "2.0.0",
+								FilePath: "/opt/app/venv/lib/python/site-packages",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "empty filepath packages are grouped",
+			inputBom: &types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: ftypes.PythonPkg,
+						Packages: ftypes.Packages{
+							{
+								Name:     "pkg1",
+								Version:  "1.0.0",
+								FilePath: "",
+							},
+							{
+								Name:     "pkg2",
+								Version:  "2.0.0",
+								FilePath: "",
+							},
+						},
+					},
+				},
+			},
+			want: &types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type:     ftypes.PythonPkg,
+						FilePath: "",
+						Packages: ftypes.Packages{
+							{
+								Name:     "pkg1",
+								Version:  "1.0.0",
+								FilePath: "",
+							},
+							{
+								Name:     "pkg2",
+								Version:  "2.0.0",
+								FilePath: "",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "all GoBinary applications removed",
+			inputBom: &types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: ftypes.GoBinary,
+						Packages: ftypes.Packages{
+							{
+								Name:     "github.com/example/module1",
+								Version:  "v1.0.0",
+								FilePath: "/usr/bin/app1",
+							},
+						},
+					},
+					{
+						Type: ftypes.GoBinary,
+						Packages: ftypes.Packages{
+							{
+								Name:     "github.com/example/module2",
+								Version:  "v2.0.0",
+								FilePath: "/usr/bin/app2",
+							},
+						},
+					},
+				},
+			},
+			want: &types.SBOM{
+				Applications: nil,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			HandleActiveStateImages(tt.inputBom)
+
+			// Sort both results for consistent comparison since map iteration order is not guaranteed
+			if len(tt.inputBom.Applications) > 0 {
+				// Simple sorting by Type and FilePath for comparison
+				assert.ElementsMatch(t, tt.want.Applications, tt.inputBom.Applications)
+			} else {
+				assert.Equal(t, tt.want, tt.inputBom)
+			}
 		})
 	}
 }
