@@ -11,6 +11,96 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
+func TestParseNpmAliasTarget(t *testing.T) {
+	tests := []struct {
+		name    string
+		target  string
+		want    string
+		isAlias bool
+	}{
+		{
+			name:    "scoped package with version",
+			target:  "@rootio/braces@3.0.2-root.io.1",
+			want:    "@rootio/braces",
+			isAlias: true,
+		},
+		{
+			name:    "scoped package with complex version",
+			target:  "@babel/core@^7.0.0",
+			want:    "@babel/core",
+			isAlias: true,
+		},
+		{
+			name:    "unscoped package with version",
+			target:  "lodash@4.17.21",
+			want:    "lodash",
+			isAlias: true,
+		},
+		{
+			name:    "unscoped package with complex version",
+			target:  "jquery@^3.6.0",
+			want:    "jquery",
+			isAlias: true,
+		},
+		{
+			name:    "scoped package without version",
+			target:  "@types/node",
+			want:    "@types/node",
+			isAlias: true,
+		},
+		{
+			name:    "empty string",
+			target:  "",
+			want:    "",
+			isAlias: false,
+		},
+		{
+			name:    "scoped package with multiple @ in version",
+			target:  "@rootio/package@npm:@other/package@1.0.0",
+			want:    "@rootio/package",
+			isAlias: true,
+		},
+		{
+			name:    "version range not an alias",
+			target:  "^1.0.0",
+			want:    "",
+			isAlias: false,
+		},
+		{
+			name:    "version with tilde not an alias",
+			target:  "~2.3.4",
+			want:    "",
+			isAlias: false,
+		},
+		{
+			name:    "exact version not an alias",
+			target:  "1.2.3",
+			want:    "",
+			isAlias: false,
+		},
+		{
+			name:    "version tag latest",
+			target:  "latest",
+			want:    "",
+			isAlias: false,
+		},
+		{
+			name:    "version tag next",
+			target:  "next",
+			want:    "",
+			isAlias: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, isAlias := parseNpmAliasTarget(tt.target)
+			assert.Equal(t, tt.want, got)
+			assert.Equal(t, tt.isAlias, isAlias)
+		})
+	}
+}
+
 func TestParsePattern(t *testing.T) {
 	vectors := []struct {
 		name           string
@@ -158,6 +248,35 @@ func TestParsePackagePatterns(t *testing.T) {
 			},
 		},
 		{
+			name:           "npm alias with scoped package",
+			target:         `"braces@npm:@rootio/braces@3.0.2-root.io.1":`,
+			expectName:     "@rootio/braces",
+			expectProtocol: "npm",
+			expactPatterns: []string{
+				"@rootio/braces@3.0.2-root.io.1",
+			},
+		},
+		{
+			name:           "npm alias with unscoped package",
+			target:         `"lodash@npm:lodash-es@4.17.21":`,
+			expectName:     "lodash-es",
+			expectProtocol: "npm",
+			expactPatterns: []string{
+				"lodash-es@4.17.21",
+			},
+		},
+		{
+			name:           "npm alias mixed with regular patterns",
+			target:         `braces@^2.3.1, "braces@npm:@rootio/braces@3.0.2-root.io.1", braces@~3.0.2:`,
+			expectName:     "@rootio/braces",
+			expectProtocol: "npm",
+			expactPatterns: []string{
+				"@rootio/braces@^2.3.1",
+				"@rootio/braces@3.0.2-root.io.1",
+				"@rootio/braces@~3.0.2",
+			},
+		},
+		{
 			target:   `normal line`,
 			occurErr: true,
 		},
@@ -293,6 +412,12 @@ func TestParse(t *testing.T) {
 			name: "yarn file with bad protocol",
 			file: "testdata/yarn_with_bad_protocol.lock",
 			want: yarnBadProtocol,
+		},
+		{
+			name:     "yarn with npm aliases",
+			file:     "testdata/yarn_with_aliases.lock",
+			want:     yarnWithAliases,
+			wantDeps: yarnWithAliasesDeps,
 		},
 	}
 

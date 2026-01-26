@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -80,14 +81,99 @@ func parsePattern(target string) (packagename, protocol, version string, err err
 	return
 }
 
+// parseNpmAliasTarget extracts the real package name from an npm: protocol alias target.
+// It returns the package name and a boolean indicating if it's actually an alias (not just a version/tag).
+// For example:
+//   - "@rootio/braces@3.0.2-root.io.1" returns ("@rootio/braces", true)
+//   - "lodash@4.17.21" returns ("lodash", true)
+//   - "^1.0.0" returns ("", false) - this is just a version, not an alias
+//   - "latest" returns ("", false) - this is a version tag, not an alias
+func parseNpmAliasTarget(target string) (packageName string, isAlias bool) {
+	if target == "" {
+		return "", false
+	}
+
+	// Handle scoped packages: @scope/package@version
+	// Scoped packages always indicate an alias
+	if strings.HasPrefix(target, "@") {
+		// Find the @ that separates package name from version (skip the first @)
+		idx := strings.Index(target[1:], "@")
+		if idx != -1 {
+			// +1 because we searched from target[1:]
+			return target[:idx+1], true
+		}
+		// No version separator found, entire string is the package name
+		return target, true
+	}
+
+	// For unscoped packages, check if this looks like a package name or just a version/tag
+	// Versions start with digits, ^, ~, >, <, =, or *
+	// Tags like "latest", "next", "beta" are single words without @ separator
+	// Aliases must contain an @ to separate package name from version
+	if len(target) > 0 {
+		firstChar := target[0]
+		if firstChar >= '0' && firstChar <= '9' ||
+			firstChar == '^' || firstChar == '~' ||
+			firstChar == '>' || firstChar == '<' ||
+			firstChar == '=' || firstChar == '*' {
+			// This looks like a version, not an alias
+			return "", false
+		}
+	}
+
+	// For unscoped aliases, there MUST be an @ separator
+	// "lodash@4.17.21" is an alias
+	// "latest" or "next" is just a tag, not an alias
+	idx := strings.Index(target, "@")
+	if idx == -1 {
+		// No @ separator, this is a tag (like "latest"), not an alias
+		return "", false
+	}
+
+	// Extract package name before the @
+	return target[:idx], true
+}
+
 func parsePackagePatterns(target string) (packagename, protocol string, patterns []string, err error) {
 	patternsSplit := strings.Split(target, ", ")
 	packagename, protocol, _, err = parsePattern(patternsSplit[0])
 	if err != nil {
 		return "", "", nil, err
 	}
-	patterns = xslices.Map(patternsSplit, func(pattern string) string {
-		_, _, version, _ := parsePattern(pattern)
+
+	// Handle npm: protocol aliases (e.g., "alias@npm:real-package@version")
+	// Check all patterns to find if any is an npm: alias
+	isAlias := false
+	for _, pattern := range patternsSplit {
+		name, proto, version, parseErr := parsePattern(pattern)
+		if parseErr == nil && proto == "npm" {
+			if realName, ok := parseNpmAliasTarget(version); ok {
+				packagename = realName
+				protocol = proto
+				isAlias = true
+				break
+			}
+		}
+		// If this is the first pattern and no alias found yet, keep the original name
+		if !isAlias && pattern == patternsSplit[0] {
+			packagename = name
+			protocol = proto
+		}
+	}
+
+	patterns = lo.Map(patternsSplit, func(pattern string, _ int) string {
+		_, proto, version, _ := parsePattern(pattern)
+
+		// For npm: protocol aliases, extract just the version part from the target
+		if isAlias && proto == "npm" {
+			if _, ok := parseNpmAliasTarget(version); ok {
+				// Extract version from the target: "@rootio/braces@3.0.2" -> "3.0.2"
+				if idx := strings.LastIndex(version, "@"); idx != -1 {
+					version = version[idx+1:]
+				}
+			}
+		}
+
 		return packageID(packagename, version)
 	})
 	return
