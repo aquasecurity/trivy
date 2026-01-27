@@ -217,9 +217,9 @@ func TestParsePackagePatterns(t *testing.T) {
 			expectName:     "@rootio/braces",
 			expectProtocol: "npm",
 			expactPatterns: []string{
-				"@rootio/braces@^2.3.1",
-				"@rootio/braces@3.0.2-root.io.1",
-				"@rootio/braces@~3.0.2",
+				"braces@^2.3.1",                     // Keep original name
+				"@rootio/braces@3.0.2-root.io.1",   // Real name from npm: alias
+				"braces@~3.0.2",                     // Keep original name
 			},
 		},
 		{

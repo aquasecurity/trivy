@@ -163,30 +163,39 @@ func looksLikeVersionConstraint(s string) bool {
 
 func parsePackagePatterns(target string) (packagename, protocol string, patterns []string, err error) {
 	patternsSplit := strings.Split(target, ", ")
-	packagename, protocol, _, err = parsePattern(patternsSplit[0])
-	if err != nil {
-		return "", "", nil, err
-	}
 
-	// Check all patterns to find if any is an npm: alias
-	// If we find one, use the real package name from the alias
-	// parsePattern() already handles the alias detection and returns the real package name
+	var pkgName string
+	// Step 1: detect correct package name and protocol from multiple patterns
 	for _, pattern := range patternsSplit {
 		name, proto, _, parseErr := parsePattern(pattern)
-		if parseErr == nil && proto == "npm" {
-			// For npm: protocol, parsePattern returns the real package name if it's an alias
-			// We want to use this real name for all patterns
-			packagename = name
+		if parseErr != nil {
+			continue
+		}
+		if pkgName == "" {
+			pkgName = name
+			protocol = proto
+		}
+		if proto == "npm" {
+			// npm alias has priority — use the real package name.
+			// Example: "ip@^2.0.0", "ip@npm:@rootio/ip@2.0.0-root.io.1"
+			// Here "ip" is the alias, "@rootio/ip" is the real package.
+			// parsePattern returns the real name for npm: protocol aliases.
+			pkgName = name
 			protocol = proto
 			break
 		}
 	}
+	if pkgName == "" {
+		return "", "", nil, xerrors.New("not package format")
+	}
 
+	// Step 2: build patterns with correct package ID.
+	// Use original name from each pattern for correct dependency mapping
 	patterns = lo.Map(patternsSplit, func(pattern string, _ int) string {
-		_, _, version, _ := parsePattern(pattern)
-		return packageID(packagename, version)
+		name, _, version, _ := parsePattern(pattern)
+		return packageID(name, version)
 	})
-	return
+	return pkgName, protocol, patterns, nil
 }
 
 func getVersion(target string) (version string, err error) {
