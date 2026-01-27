@@ -157,7 +157,7 @@ func TestRules_Ignore(t *testing.T) {
 		},
 		{
 			name: "ignore rule with expiry date not passed",
-			src:  `#trivy:ignore:rule-1:exp:2026-01-01`,
+			src:  `#trivy:ignore:rule-1:exp:2027-12-31`,
 			args: args{
 				metadata: metadataWithLine(filename, 2),
 				ids:      []string{"rule-1"},

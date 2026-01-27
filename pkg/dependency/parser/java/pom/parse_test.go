@@ -2138,6 +2138,56 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
+		// Regression test: root POM's dependencyManagement with property variable
+		// should override transitive dependencies even when they have explicit versions.
+		// This ensures rootDepManagement uses root's properties to evaluate variables.
+		{
+			name:      "root property in dependencyManagement overrides transitive explicit version",
+			inputFile: filepath.Join("testdata", "root-property-overrides-transitive", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:root-app:1.0.0",
+					Name:         "com.example:root-app",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "org.springframework.boot:spring-boot-starter-web:3.4.1",
+					Name:         "org.springframework.boot:spring-boot-starter-web",
+					Version:      "3.4.1",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 29,
+							EndLine:   33,
+						},
+					},
+				},
+				// spring-boot-starter-web brings tomcat-embed-core:10.1.44 transitively,
+				// but root's dependencyManagement should override it to 10.1.47 using root's property
+				{
+					ID:           "org.apache.tomcat.embed:tomcat-embed-core:10.1.47",
+					Name:         "org.apache.tomcat.embed:tomcat-embed-core",
+					Version:      "10.1.47", // ← Should be 10.1.47, not 10.1.44!
+					Relationship: ftypes.RelationshipIndirect,
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:root-app:1.0.0",
+					DependsOn: []string{
+						"org.springframework.boot:spring-boot-starter-web:3.4.1",
+					},
+				},
+				{
+					ID: "org.springframework.boot:spring-boot-starter-web:3.4.1",
+					DependsOn: []string{
+						"org.apache.tomcat.embed:tomcat-embed-core:10.1.47",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

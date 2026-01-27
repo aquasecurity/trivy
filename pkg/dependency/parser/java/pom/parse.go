@@ -118,8 +118,23 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		content:  content,
 	}
 
-	// Analyze root POM
-	result, err := p.analyze(root, analysisOptions{})
+	// First, do a lightweight analysis to get properties and dependencyManagement
+	// WITHOUT resolving dependencies (to avoid caching with wrong rootDepManagement)
+	if err := p.resolveParent(root); err != nil {
+		return nil, nil, xerrors.Errorf("pom resolve error: %w", err)
+	}
+
+	rootProperties := root.properties()
+	rootDepManagementRaw := root.content.DependencyManagement.Dependencies.Dependency
+
+	// Resolve root dependencyManagement BEFORE any dependencies are cached
+	rootDepManagement := p.resolveDepManagement(rootProperties, rootDepManagementRaw)
+
+	// Now analyze root POM with the correct rootDepManagement
+	result, err := p.analyze(root, analysisOptions{
+		depManagement:  rootDepManagement,
+		rootProperties: rootProperties,
+	})
 	if err != nil {
 		return nil, nil, xerrors.Errorf("analyze error (%s): %w", p.rootPath, err)
 	}
@@ -130,24 +145,23 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	rootArt := root.artifact()
 	rootArt.Relationship = ftypes.RelationshipRoot
 
-	return p.parseRoot(rootArt, set.New[string]())
+	return p.parseRoot(rootArt, set.New[string](), rootDepManagement, rootProperties)
 }
 
 // nolint: gocyclo
-func (p *Parser) parseRoot(root artifact, uniqModules set.Set[string]) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) parseRoot(root artifact, uniqModules set.Set[string], rootDepManagement []pomDependency, rootProperties map[string]string) ([]ftypes.Package, []ftypes.Dependency, error) {
 	// Prepare a queue for dependencies
 	queue := newArtifactQueue()
 
 	// Enqueue root POM
-	root.Module = false
+	// Don't override Module flag - it's already set correctly by the caller
 	queue.enqueue(root)
 
 	var (
-		pkgs              ftypes.Packages
-		deps              ftypes.Dependencies
-		rootDepManagement []pomDependency
-		uniqArtifacts     = make(map[string]artifact)
-		uniqDeps          = make(map[string][]string)
+		pkgs          ftypes.Packages
+		deps          ftypes.Dependencies
+		uniqArtifacts = make(map[string]artifact)
+		uniqDeps      = make(map[string][]string)
 	)
 
 	// Iterate direct and transitive dependencies
@@ -156,13 +170,19 @@ func (p *Parser) parseRoot(root artifact, uniqModules set.Set[string]) ([]ftypes
 
 		// Modules should be handled separately so that they can have independent dependencies.
 		// It means multi-module allows for duplicate dependencies.
+		// Pass the actual root's rootDepManagement to modules so they use the root's dependencyManagement
 		if art.Module {
 			if uniqModules.Contains(art.String()) {
 				continue
 			}
 			uniqModules.Append(art.String())
 
-			modulePkgs, moduleDeps, err := p.parseRoot(art, uniqModules)
+			// Clear Module flag before recursive call to prevent it from being skipped
+			// The recursive parseRoot will treat this as a workspace root
+			moduleArt := art
+			moduleArt.Module = false
+
+			modulePkgs, moduleDeps, err := p.parseRoot(moduleArt, uniqModules, rootDepManagement, rootProperties)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -192,15 +212,12 @@ func (p *Parser) parseRoot(root artifact, uniqModules set.Set[string]) ([]ftypes
 			}
 		}
 
-		result, err := p.resolve(art, rootDepManagement)
+		result, err := p.resolve(art, rootDepManagement, rootProperties)
 		if err != nil {
 			return nil, nil, xerrors.Errorf("resolve error (%s): %w", art, err)
 		}
-
+		// Mark dependencies as "direct" for both root and workspace (module) artifacts
 		if art.Relationship == ftypes.RelationshipRoot || art.Relationship == ftypes.RelationshipWorkspace {
-			// Managed dependencies in the root POM affect transitive dependencies
-			rootDepManagement = p.resolveDepManagement(result.properties, result.dependencyManagement)
-
 			// mark its dependencies as "direct"
 			result.dependencies = lo.Map(result.dependencies, func(dep artifact, _ int) artifact {
 				dep.Relationship = ftypes.RelationshipDirect
@@ -209,8 +226,9 @@ func (p *Parser) parseRoot(root artifact, uniqModules set.Set[string]) ([]ftypes
 		}
 
 		// Parse, cache, and enqueue modules.
+		// Pass the actual root's rootDepManagement to modules so they use it when analyzing
 		for _, relativePath := range result.modules {
-			moduleArtifact, err := p.parseModule(result.filePath, relativePath)
+			moduleArtifact, err := p.parseModule(result.filePath, relativePath, rootDepManagement, rootProperties)
 			if err != nil {
 				p.logger.Debug("Unable to parse the module",
 					log.FilePath(result.filePath), log.Err(err))
@@ -289,14 +307,19 @@ func depVersion(depName string, uniqArtifacts map[string]artifact) string {
 	return ""
 }
 
-func (p *Parser) parseModule(currentPath, relativePath string) (artifact, error) {
+func (p *Parser) parseModule(currentPath, relativePath string, rootDepManagement []pomDependency, rootProperties map[string]string) (artifact, error) {
 	// modulePath: "root/" + "module/" => "root/module"
 	module, err := p.openRelativePom(currentPath, relativePath)
 	if err != nil {
 		return artifact{}, xerrors.Errorf("unable to open the relative path: %w", err)
 	}
 
-	result, err := p.analyze(module, analysisOptions{})
+	// Use the actual root's rootDepManagement when analyzing modules
+	// This ensures transitive dependencies use the root's dependencyManagement
+	result, err := p.analyze(module, analysisOptions{
+		depManagement:  rootDepManagement,
+		rootProperties: rootProperties,
+	})
 	if err != nil {
 		return artifact{}, xerrors.Errorf("analyze error: %w", err)
 	}
@@ -310,7 +333,7 @@ func (p *Parser) parseModule(currentPath, relativePath string) (artifact, error)
 	return moduleArtifact, nil
 }
 
-func (p *Parser) resolve(art artifact, rootDepManagement []pomDependency) (analysisResult, error) {
+func (p *Parser) resolve(art artifact, rootDepManagement []pomDependency, rootProperties map[string]string) (analysisResult, error) {
 	// If the artifact is found in cache, it is returned.
 	if result := p.cache.get(art); result != nil {
 		return *result, nil
@@ -331,8 +354,10 @@ func (p *Parser) resolve(art artifact, rootDepManagement []pomDependency) (analy
 		p.logger.Debug("Repository error", log.Err(err))
 	}
 	result, err := p.analyze(pomContent, analysisOptions{
-		exclusions:    art.Exclusions,
-		depManagement: rootDepManagement,
+		exclusions:           art.Exclusions,
+		depManagement:        rootDepManagement,
+		rootProperties:       rootProperties,
+		transitiveResolution: true, // This is a transitive dependency
 	})
 	if err != nil {
 		return analysisResult{}, xerrors.Errorf("analyze error: %w", err)
@@ -352,8 +377,10 @@ type analysisResult struct {
 }
 
 type analysisOptions struct {
-	exclusions    set.Set[string]
-	depManagement []pomDependency // from the root POM
+	exclusions           set.Set[string]
+	depManagement        []pomDependency   // from the root POM
+	rootProperties       map[string]string // properties from the root POM
+	transitiveResolution bool              // true when resolving transitive dependencies (not the scanned POM)
 }
 
 func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error) {
@@ -454,16 +481,21 @@ func (p *Parser) parseDependencies(deps []pomDependency, props map[string]string
 	depManagement = p.resolveDepManagement(props, depManagement)
 
 	rootDepManagement := opts.depManagement
+	rootProps := opts.rootProperties
+	if rootProps == nil {
+		rootProps = props // Fallback to current props if root props not available
+	}
 	var dependencies []artifact
 	for _, d := range deps {
 		// Resolve dependencies
-		d = d.Resolve(props, depManagement, rootDepManagement)
+		d = d.Resolve(props, depManagement, rootDepManagement, rootProps, opts.transitiveResolution)
 
 		if (d.Scope != "" && d.Scope != "compile" && d.Scope != "runtime") || d.Optional {
 			continue
 		}
 
-		dependencies = append(dependencies, d.ToArtifact(opts))
+		artifact := d.ToArtifact(opts)
+		dependencies = append(dependencies, artifact)
 	}
 	return dependencies
 }
@@ -475,8 +507,9 @@ func (p *Parser) resolveDepManagement(props map[string]string, depManagement []p
 		if dep.Scope == "import" {
 			imports = append(imports, dep)
 		} else {
-			// Evaluate variables
-			newDepManagement = append(newDepManagement, dep.Resolve(props, nil, nil))
+			// Evaluate variables (no rootDepManagement for dependencyManagement itself)
+			resolved := dep.Resolve(props, nil, nil, nil, false)
+			newDepManagement = append(newDepManagement, resolved)
 		}
 	}
 
@@ -484,7 +517,7 @@ func (p *Parser) resolveDepManagement(props map[string]string, depManagement []p
 	// cf. https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#importing-dependencies
 	for _, imp := range imports {
 		art := newArtifact(imp.GroupID, imp.ArtifactID, imp.Version, nil, props)
-		result, err := p.resolve(art, nil)
+		result, err := p.resolve(art, nil, nil)
 		if err != nil {
 			continue
 		}
@@ -494,8 +527,8 @@ func (p *Parser) resolveDepManagement(props map[string]string, depManagement []p
 		newProps := utils.MergeMaps(props, result.properties)
 		result.dependencyManagement = p.resolveDepManagement(newProps, result.dependencyManagement)
 		for k, dd := range result.dependencyManagement {
-			// Evaluate variables and overwrite dependencyManagement
-			result.dependencyManagement[k] = dd.Resolve(newProps, nil, nil)
+			// Evaluate variables and overwrite dependencyManagement (no rootDepManagement for imported POMs)
+			result.dependencyManagement[k] = dd.Resolve(newProps, nil, nil, nil, false)
 		}
 		newDepManagement = p.mergeDependencyManagements(newDepManagement, result.dependencyManagement)
 	}
