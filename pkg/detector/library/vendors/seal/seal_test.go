@@ -14,122 +14,115 @@ func TestSealSecurity_Match(t *testing.T) {
 		pkgVer  string
 		want    bool
 	}{
-		// Python (pip) - change name with "seal-" prefix
+		// Maven and Python use +spX suffix
 		{
-			name:    "python package with seal- prefix",
-			eco:     ecosystem.Pip,
-			pkgName: "seal-requests",
-			pkgVer:  "2.28.1+seal.1",
-			want:    true,
-		},
-		{
-			name:    "python package without seal- prefix",
+			name:    "python package with +sp suffix",
 			eco:     ecosystem.Pip,
 			pkgName: "requests",
-			pkgVer:  "2.28.1",
-			want:    false,
-		},
-		{
-			name:    "python package with seal- in the middle",
-			eco:     ecosystem.Pip,
-			pkgName: "my-seal-package",
-			pkgVer:  "1.0.0",
-			want:    false,
-		},
-		// Node (npm) - change namespace with "@seal-security/" prefix
-		{
-			name:    "node package with @seal-security/",
-			eco:     ecosystem.Npm,
-			pkgName: "@seal-security/ejs",
-			pkgVer:  "3.1.8+seal.1",
+			pkgVer:  "2.28.1+sp1",
 			want:    true,
 		},
 		{
-			name:    "node package without @seal-security/ namespace",
+			name:    "python package with +sp suffix multi-digit",
+			eco:     ecosystem.Pip,
+			pkgName: "django",
+			pkgVer:  "4.2.0+sp10",
+			want:    true,
+		},
+		{
+			name:    "maven package with +sp suffix",
+			eco:     ecosystem.Maven,
+			pkgName: "org.eclipse.jetty:jetty-http",
+			pkgVer:  "9.4.48.v20220622+sp1",
+			want:    true,
+		},
+		// Other ecosystems use -spX suffix
+		{
+			name:    "node package with -sp suffix",
 			eco:     ecosystem.Npm,
 			pkgName: "ejs",
-			pkgVer:  "3.1.8",
-			want:    false,
-		},
-		{
-			name:    "node package with different namespace",
-			eco:     ecosystem.Npm,
-			pkgName: "@other/package",
-			pkgVer:  "1.0.0",
-			want:    false,
-		},
-		// Golang - change name with "sealsecurity.io/" prefix
-		{
-			name:    "golang package with sealsecurity.io/ prefix",
-			eco:     ecosystem.Go,
-			pkgName: "sealsecurity.io/github.com/Masterminds/goutils",
-			pkgVer:  "v1.1.1+seal.1",
+			pkgVer:  "3.1.8-sp1",
 			want:    true,
 		},
 		{
-			name:    "golang package without sealsecurity.io/ prefix",
+			name:    "golang package with -sp suffix",
 			eco:     ecosystem.Go,
 			pkgName: "github.com/Masterminds/goutils",
-			pkgVer:  "v1.1.1",
-			want:    false,
+			pkgVer:  "v1.1.1-sp1",
+			want:    true,
 		},
 		{
-			name:    "golang package with sealsecurity.io in path but not prefix",
+			name:    "golang package with -sp suffix multi-digit",
 			eco:     ecosystem.Go,
-			pkgName: "github.com/sealsecurity.io/package",
-			pkgVer:  "v1.0.0",
-			want:    false,
+			pkgName: "github.com/Masterminds/goutils",
+			pkgVer:  "v1.1.1-sp10",
+			want:    true,
 		},
-		// Java (Maven) - change groupId with "seal.sp1." or "seal.sp2." prefix
 		{
-			name:    "java package with seal.sp1. groupId prefix",
+			name:    "rubygems package with -sp suffix",
+			eco:     ecosystem.RubyGems,
+			pkgName: "activesupport",
+			pkgVer:  "7.0.0-sp1",
+			want:    true,
+		},
+		// Maven - also supports package name prefix (without version suffix)
+		{
+			name:    "maven package with seal.sp prefix (no version suffix)",
 			eco:     ecosystem.Maven,
 			pkgName: "seal.sp1.org.eclipse.jetty:jetty-http",
-			pkgVer:  "9.4.48.v20220622+seal.1",
+			pkgVer:  "9.4.48.v20220622",
 			want:    true,
 		},
 		{
-			name:    "java package with seal.sp2. groupId prefix",
+			name:    "maven package with seal.sp2 prefix (no version suffix)",
 			eco:     ecosystem.Maven,
 			pkgName: "seal.sp2.org.eclipse.jetty:jetty-http",
-			pkgVer:  "9.4.48.v20220622+seal.2",
+			pkgVer:  "9.4.48.v20220622",
 			want:    true,
 		},
 		{
-			name:    "java package without seal.sp prefix",
+			name:    "maven package without seal.sp prefix and no sp suffix",
 			eco:     ecosystem.Maven,
 			pkgName: "org.eclipse.jetty:jetty-http",
 			pkgVer:  "9.4.48.v20220622",
 			want:    false,
 		},
+		// Packages without version suffix (non-Maven should be false)
 		{
-			name:    "java package with seal in artifactId but not groupId",
-			eco:     ecosystem.Maven,
-			pkgName: "org.example:seal-artifact",
-			pkgVer:  "1.0.0",
-			want:    false,
-		},
-		// Edge cases
-		{
-			name:    "empty package name",
+			name:    "python package without sp suffix",
 			eco:     ecosystem.Pip,
-			pkgName: "",
-			pkgVer:  "1.0.0",
+			pkgName: "requests",
+			pkgVer:  "2.28.1",
 			want:    false,
 		},
+		// Invalid version suffix patterns
 		{
-			name:    "unsupported ecosystem",
-			eco:     ecosystem.RubyGems,
-			pkgName: "seal-activesupport",
-			pkgVer:  "1.0.0",
-			want:    false,
-		},
-		{
-			name:    "case sensitivity - uppercase SEAL",
+			name:    "version with sp but no number",
 			eco:     ecosystem.Pip,
-			pkgName: "SEAL-django",
-			pkgVer:  "4.2.0",
-			want:    true, // Should match after normalization
+			pkgName: "requests",
+			pkgVer:  "2.28.1+sp",
+			want:    false,
+		},
+		{
+			name:    "version with seal suffix instead of sp",
+			eco:     ecosystem.Pip,
+			pkgName: "requests",
+			pkgVer:  "2.28.1+seal.1",
+			want:    false,
+		},
+		{
+			name:    "version with sp in the middle",
+			eco:     ecosystem.Pip,
+			pkgName: "requests",
+			pkgVer:  "2.28.1+sp1.beta",
+			want:    false,
+		},
+		{
+			name:    "empty version",
+			eco:     ecosystem.Pip,
+			pkgName: "requests",
+			pkgVer:  "",
+			want:    false,
 		},
 	}
 
