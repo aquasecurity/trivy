@@ -16,7 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
-	"github.com/aquasecurity/trivy/pkg/version/app"
+	"github.com/aquasecurity/trivy/pkg/version"
 )
 
 // Service is the main service that coordinates security scanning operations.
@@ -86,7 +86,7 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 
 	r := types.Report{
 		SchemaVersion: report.SchemaVersion,
-		Trivy:         types.TrivyInfo{Version: app.Version()},
+		Trivy:         buildTrivyInfo(options),
 		ReportID:      reportID.String(),
 		CreatedAt:     clock.Now(ctx),
 		ArtifactID:    s.generateArtifactID(artifactInfo),
@@ -180,4 +180,45 @@ func (s Service) generateArtifactID(artifactInfo artifact.Reference) string {
 		// Empty string for other types
 		return ""
 	}
+}
+
+// buildTrivyInfo constructs TrivyInfo with version and database metadata.
+func buildTrivyInfo(options types.ScanOptions) types.TrivyInfo {
+	if options.IsRemote {
+		return types.TrivyInfo{
+			Version: version.AppVersion(),
+		}
+	}
+
+	versionInfo := version.NewVersionInfo(options.CacheDir)
+	info := types.TrivyInfo{
+		Version: versionInfo.Version,
+	}
+
+	if versionInfo.VulnerabilityDB != nil {
+		info.VulnerabilityDB = &types.DBMetadata{
+			Version:      versionInfo.VulnerabilityDB.Version,
+			UpdatedAt:    versionInfo.VulnerabilityDB.UpdatedAt,
+			NextUpdate:   versionInfo.VulnerabilityDB.NextUpdate,
+			DownloadedAt: versionInfo.VulnerabilityDB.DownloadedAt,
+		}
+	}
+
+	if versionInfo.JavaDB != nil {
+		info.JavaDB = &types.DBMetadata{
+			Version:      versionInfo.JavaDB.Version,
+			UpdatedAt:    versionInfo.JavaDB.UpdatedAt,
+			NextUpdate:   versionInfo.JavaDB.NextUpdate,
+			DownloadedAt: versionInfo.JavaDB.DownloadedAt,
+		}
+	}
+
+	if versionInfo.CheckBundle != nil {
+		info.CheckBundle = &types.BundleMetadata{
+			Digest:       versionInfo.CheckBundle.Digest,
+			DownloadedAt: versionInfo.CheckBundle.DownloadedAt,
+		}
+	}
+
+	return info
 }

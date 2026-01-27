@@ -532,3 +532,15 @@ func overrideDockerRemovedFields(_ *testing.T, want, got *types.Report) {
 	got.Metadata.ImageConfig.Config.Hostname = ""
 	want.Metadata.ImageConfig.Config.Hostname = ""
 }
+
+// overrideDBMetadata clears database metadata fields from TrivyInfo.
+// Database metadata (VulnerabilityDB, JavaDB, CheckBundle) varies based on the
+// local cache state and test environment, so we clear these fields for comparison.
+func overrideDBMetadata(_ *testing.T, want, got *types.Report) {
+	got.Trivy.VulnerabilityDB = nil
+	got.Trivy.JavaDB = nil
+	got.Trivy.CheckBundle = nil
+	want.Trivy.VulnerabilityDB = nil
+	want.Trivy.JavaDB = nil
+	want.Trivy.CheckBundle = nil
+}

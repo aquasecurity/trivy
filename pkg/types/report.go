@@ -10,9 +10,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
-// TrivyInfo contains Trivy-specific information
+// TrivyInfo contains Trivy version and database metadata.
 type TrivyInfo struct {
-	Version string `json:",omitempty"` // Trivy version
+	Version         string          `json:",omitempty"`
+	VulnerabilityDB *DBMetadata     `json:",omitempty"`
+	JavaDB          *DBMetadata     `json:",omitempty"`
+	CheckBundle     *BundleMetadata `json:",omitempty"`
 }
 
 // Report represents a scan result
