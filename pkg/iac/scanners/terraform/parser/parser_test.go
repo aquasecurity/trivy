@@ -1,4 +1,4 @@
-package parser
+package parser_test
 
 import (
 	"bytes"
@@ -16,6 +16,7 @@ import (
 	"github.com/zclconf/go-cty/cty"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
@@ -86,9 +87,9 @@ check "cats_mittens_is_special" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
-	modules, err := parser.EvaluateAll(t.Context())
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	blocks := modules[0].GetBlocks()
@@ -187,10 +188,10 @@ output "mod_result" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "code"))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "code"))
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	require.Len(t, modules, 2)
@@ -249,9 +250,9 @@ output "mod_result" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "code"))
-	modules, err := parser.EvaluateAll(t.Context())
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "code"))
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 2)
 	rootModule := modules[0]
@@ -294,9 +295,9 @@ resource "something" "blah" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "code"))
-	modules, err := parser.EvaluateAll(t.Context())
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "code"))
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
@@ -321,9 +322,9 @@ resource "something" "blah" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "code"))
-	modules, err := parser.EvaluateAll(t.Context())
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "code"))
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
@@ -364,9 +365,9 @@ resource "something" "blah" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "code"))
-	modules, err := parser.EvaluateAll(t.Context())
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "code"))
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
@@ -412,9 +413,9 @@ resource "something" "blah" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "code"))
-	modules, err := parser.EvaluateAll(t.Context())
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "code"))
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
@@ -453,9 +454,9 @@ resource "something" "blah" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "code"))
-	modules, err := parser.EvaluateAll(t.Context())
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "code"))
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
@@ -501,9 +502,9 @@ resource "something" "blah" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "code"))
-	modules, err := parser.EvaluateAll(t.Context())
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "code"))
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
@@ -545,9 +546,9 @@ resource "something" "blah" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "code"))
-	modules, err := parser.EvaluateAll(t.Context())
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "code"))
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	require.Len(t, modules, 1)
@@ -589,9 +590,9 @@ resource "aws_s3_bucket" "default" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
-	modules, err := parser.EvaluateAll(t.Context())
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 
@@ -649,9 +650,9 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this2" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
-	modules, err := parser.EvaluateAll(t.Context())
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
@@ -680,13 +681,13 @@ resource "aws_s3_bucket" "main" {
 `,
 		"main.tfvars": `bucket_name = "test_bucket"`,
 	})
-	parser := New(fs, "",
-		OptionStopOnHCLError(true),
-		OptionWithTFVarsPaths("main.tfvars"),
+	p := parser.New(fs, "",
+		parser.OptionStopOnHCLError(true),
+		parser.OptionWithTFVarsPaths("main.tfvars"),
 	)
 
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
-	modules, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, p.ParseFS(t.Context(), "."))
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
@@ -716,10 +717,10 @@ resource "aws_s3_bucket" "this" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
@@ -750,10 +751,10 @@ resource "aws_s3_bucket" "this" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
@@ -804,10 +805,10 @@ policy_rules = {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true), OptionWithTFVarsPaths("main.tfvars"))
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true), parser.OptionWithTFVarsPaths("main.tfvars"))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
@@ -840,10 +841,10 @@ resource "aws_s3_bucket" "this" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
@@ -872,10 +873,10 @@ data "http" "example" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
@@ -909,10 +910,10 @@ data "http" "example" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
@@ -1155,10 +1156,10 @@ resource "aws_internet_gateway" "example" {
 }
 `,
 	})
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 
@@ -1180,10 +1181,10 @@ func TestArnAttributeOfBucketIsCorrect(t *testing.T) {
 		fs := testutil.CreateFS(map[string]string{
 			"main.tf": `resource "aws_s3_bucket" "this" {}`,
 		})
-		parser := New(fs, "", OptionStopOnHCLError(true))
-		require.NoError(t, parser.ParseFS(t.Context(), "."))
+		p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+		require.NoError(t, p.ParseFS(t.Context(), "."))
 
-		modules, err := parser.EvaluateAll(t.Context())
+		modules, err := p.EvaluateAll(t.Context())
 		require.NoError(t, err)
 		require.Len(t, modules, 1)
 
@@ -1241,10 +1242,10 @@ data "aws_iam_policy_document" "this" {
   }
 }`,
 		})
-		parser := New(fs, "", OptionStopOnHCLError(true))
-		require.NoError(t, parser.ParseFS(t.Context(), "."))
+		p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+		require.NoError(t, p.ParseFS(t.Context(), "."))
 
-		modules, err := parser.EvaluateAll(t.Context())
+		modules, err := p.EvaluateAll(t.Context())
 		require.NoError(t, err)
 		require.Len(t, modules, 1)
 
@@ -1281,10 +1282,10 @@ func TestForEachWithObjectsOfDifferentTypes(t *testing.T) {
 }
 `,
 	})
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 }
@@ -1316,10 +1317,10 @@ func TestCountMetaArgument(t *testing.T) {
 			fsys := testutil.CreateFS(map[string]string{
 				"main.tf": tt.src,
 			})
-			parser := New(fsys, "", OptionStopOnHCLError(true))
-			require.NoError(t, parser.ParseFS(t.Context(), "."))
+			p := parser.New(fsys, "", parser.OptionStopOnHCLError(true))
+			require.NoError(t, p.ParseFS(t.Context(), "."))
 
-			modules, err := parser.EvaluateAll(t.Context())
+			modules, err := p.EvaluateAll(t.Context())
 			require.NoError(t, err)
 			assert.Len(t, modules, 1)
 
@@ -1365,10 +1366,10 @@ func TestCountMetaArgumentInModule(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fsys := testutil.CreateFS(tt.files)
-			parser := New(fsys, "", OptionStopOnHCLError(true))
-			require.NoError(t, parser.ParseFS(t.Context(), "."))
+			p := parser.New(fsys, "", parser.OptionStopOnHCLError(true))
+			require.NoError(t, p.ParseFS(t.Context(), "."))
 
-			modules, err := parser.EvaluateAll(t.Context())
+			modules, err := p.EvaluateAll(t.Context())
 			require.NoError(t, err)
 
 			assert.Len(t, modules, tt.expectedCountModules)
@@ -1669,13 +1670,13 @@ func TestNestedDynamicBlock(t *testing.T) {
 	assert.Len(t, nested, 4)
 }
 
-func parse(t *testing.T, files map[string]string, opts ...Option) terraform.Modules {
+func parse(t *testing.T, files map[string]string, opts ...parser.Option) terraform.Modules {
 	fs := testutil.CreateFS(files)
-	opts = append(opts, OptionStopOnHCLError(true))
-	parser := New(fs, "", opts...)
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	opts = append(opts, parser.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", opts...)
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	return modules
@@ -1933,10 +1934,10 @@ module "invalid" {
 `,
 	}
 
-	// Using the OptionWithDownloads(false) option will prevent the invalid
+	// Using the parser.OptionWithDownloads(false) parser.Option will prevent the invalid
 	// module from being downloaded. If the log exists "failed to download"
 	// then the submodule evaluator attempted to download, which was disallowed.
-	modules := parse(t, files, OptionWithDownloads(false))
+	modules := parse(t, files, parser.OptionWithDownloads(false))
 	require.Len(t, modules, 4)
 
 	resources := modules.GetResourcesByType("city")
@@ -1974,13 +1975,13 @@ module "invalid" {
 func TestModuleParents(t *testing.T) {
 	// The setup is a list of continents, some countries, some cities, etc.
 	dirfs := os.DirFS("./testdata/nested")
-	parser := New(dirfs, "",
-		OptionStopOnHCLError(true),
-		OptionWithDownloads(false),
+	p := parser.New(dirfs, "",
+		parser.OptionStopOnHCLError(true),
+		parser.OptionWithDownloads(false),
 	)
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	// modules only have 'parent'. They do not have children, so create
@@ -2251,14 +2252,14 @@ resource "test" "values" {
 func Test_LoadLocalCachedModule(t *testing.T) {
 	fsys := os.DirFS(filepath.Join("testdata", "cached-modules"))
 
-	parser := New(
+	p := parser.New(
 		fsys, "",
-		OptionStopOnHCLError(true),
-		OptionWithDownloads(false),
+		parser.OptionStopOnHCLError(true),
+		parser.OptionWithDownloads(false),
 	)
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	assert.Len(t, modules, 2)
@@ -2279,15 +2280,15 @@ func TestTFVarsFileDoesNotExist(t *testing.T) {
 		},
 	}
 
-	parser := New(
+	p := parser.New(
 		fsys, "",
-		OptionStopOnHCLError(true),
-		OptionWithDownloads(false),
-		OptionWithTFVarsPaths("main.tfvars"),
+		parser.OptionStopOnHCLError(true),
+		parser.OptionWithDownloads(false),
+		parser.OptionWithTFVarsPaths("main.tfvars"),
 	)
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	_, err := parser.EvaluateAll(t.Context())
+	_, err := p.EvaluateAll(t.Context())
 	assert.ErrorContains(t, err, "file does not exist")
 }
 
@@ -2299,15 +2300,15 @@ func Test_OptionsWithTfVars(t *testing.T) {
 variable "foo" {}
 `})
 
-	parser := New(fs, "", OptionsWithTfVars(
+	p := parser.New(fs, "", parser.OptionsWithTfVars(
 		map[string]cty.Value{
 			"foo": cty.StringVal("bar"),
 		},
 	))
 
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
@@ -2335,9 +2336,9 @@ resource "something" "blah" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "code"))
-	modules, err := parser.EvaluateAll(t.Context())
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "code"))
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
@@ -2378,14 +2379,14 @@ variable "baz" {}
 		},
 	}
 
-	parser := New(
+	p := parser.New(
 		fsys, "",
-		OptionStopOnHCLError(true),
-		OptionWithTFVarsPaths("main.tfvars"),
+		parser.OptionStopOnHCLError(true),
+		parser.OptionWithTFVarsPaths("main.tfvars"),
 	)
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	_, err := parser.Load(t.Context())
+	_, err := p.Load(t.Context())
 	require.NoError(t, err)
 
 	assert.Contains(t, buf.String(), "Variable values were not found in the environment or variable files.")
@@ -2430,14 +2431,14 @@ func TestLoadChildModulesFromLocalCache(t *testing.T) {
 	var buf bytes.Buffer
 	logger := slog.New(log.NewHandler(&buf, &log.Options{Level: log.LevelDebug}))
 
-	parser := New(
+	p := parser.New(
 		fsys, "",
-		OptionStopOnHCLError(true),
-		OptionWithLogger(logger),
+		parser.OptionStopOnHCLError(true),
+		parser.OptionWithLogger(logger),
 	)
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	assert.Len(t, modules, 5)
@@ -2449,10 +2450,10 @@ func TestLoadChildModulesFromLocalCache(t *testing.T) {
 }
 
 func TestNilParser(t *testing.T) {
-	parser := New(
+	p := parser.New(
 		nil, "",
 	)
-	err := parser.ParseFS(t.Context(), ".")
+	err := p.ParseFS(t.Context(), ".")
 	require.Error(t, err)
 }
 
@@ -2470,8 +2471,8 @@ func TestLogParseErrors(t *testing.T) {
 		},
 	}
 
-	parser := New(fsys, "")
-	err := parser.ParseFS(t.Context(), ".")
+	p := parser.New(fsys, "")
+	err := p.ParseFS(t.Context(), ".")
 	require.NoError(t, err)
 
 	assert.Contains(t, buf.String(), `cause="  bucket = <"`)
@@ -2533,16 +2534,16 @@ resource "foo" "this" {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			parser := New(
+			p := parser.New(
 				tt.fsys, "",
-				OptionStopOnHCLError(true),
+				parser.OptionStopOnHCLError(true),
 			)
-			require.NoError(t, parser.ParseFS(t.Context(), "."))
+			require.NoError(t, p.ParseFS(t.Context(), "."))
 
-			_, err := parser.Load(t.Context())
+			_, err := p.Load(t.Context())
 			require.NoError(t, err)
 
-			modules, err := parser.EvaluateAll(t.Context())
+			modules, err := p.EvaluateAll(t.Context())
 			require.NoError(t, err)
 
 			res := modules.GetResourcesByType("foo")[0]
@@ -2565,13 +2566,13 @@ resource "aws_s3_bucket" "example" {
 }`)},
 	}
 
-	parser := New(fsys, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	p := parser.New(fsys, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	_, err := parser.Load(t.Context())
+	_, err := p.Load(t.Context())
 	require.NoError(t, err)
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	val := modules.GetResourcesByType("aws_s3_bucket")[0].GetAttribute("bucket").GetRawValue()
@@ -2595,10 +2596,10 @@ resource "baz" "qux" {
 `,
 	})
 
-	parser := New(fsys, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	p := parser.New(fsys, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	require.Len(t, modules, 1)
@@ -2617,10 +2618,10 @@ func TestConfigWithEphemeralBlock(t *testing.T) {
 }`)},
 	}
 
-	parser := New(fsys, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	p := parser.New(fsys, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	_, err := parser.Load(t.Context())
+	_, err := p.Load(t.Context())
 	require.NoError(t, err)
 }
 
@@ -2650,13 +2651,13 @@ module "bar" {
 }`)},
 	}
 
-	parser := New(fsys, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	p := parser.New(fsys, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	_, err := parser.Load(t.Context())
+	_, err := p.Load(t.Context())
 	require.NoError(t, err)
 
-	_, err = parser.EvaluateAll(t.Context())
+	_, err = p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 }
 
@@ -2672,13 +2673,13 @@ resource "foo" "bar" {
 `)},
 	}
 
-	parser := New(fsys, "", OptionStopOnHCLError(true))
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	p := parser.New(fsys, "", parser.OptionStopOnHCLError(true))
+	require.NoError(t, p.ParseFS(t.Context(), "."))
 
-	_, err := parser.Load(t.Context())
+	_, err := p.Load(t.Context())
 	require.NoError(t, err)
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	foo := modules[0].GetResourcesByType("foo")[0]
@@ -2707,10 +2708,10 @@ func TestInstancedLogger(t *testing.T) {
 		Level: slog.LevelDebug,
 	}))
 
-	opts := []Option{
-		OptionWithLogger(logger),
-		OptionStopOnHCLError(false),
-		OptionWithDownloads(false),
+	opts := []parser.Option{
+		parser.OptionWithLogger(logger),
+		parser.OptionStopOnHCLError(false),
+		parser.OptionWithDownloads(false),
 	}
 	// Run some scenarios that will trigger logs
 	t.Run("ParserLogs", func(t *testing.T) {
@@ -2721,10 +2722,10 @@ func TestInstancedLogger(t *testing.T) {
 				`)},
 		}
 
-		parser := New(fsys, "", opts...)
+		p := parser.New(fsys, "", opts...)
 
 		// No error is returned, but some parser logs are expected
-		err := parser.ParseFS(t.Context(), ".")
+		err := p.ParseFS(t.Context(), ".")
 		require.NoError(t, err)
 		require.NotEmpty(t, instance.String())
 		instance.Reset()
@@ -2744,12 +2745,12 @@ func TestInstancedLogger(t *testing.T) {
 				`)},
 		}
 
-		parser := New(fsys, "", opts...)
+		p := parser.New(fsys, "", opts...)
 
-		err := parser.ParseFS(t.Context(), ".")
+		err := p.ParseFS(t.Context(), ".")
 		require.NoError(t, err)
 
-		_, err = parser.EvaluateAll(t.Context())
+		_, err = p.EvaluateAll(t.Context())
 		require.NoError(t, err)
 
 		require.NotEmpty(t, instance.String())
@@ -2782,12 +2783,12 @@ func TestInstancedLogger(t *testing.T) {
 			`,
 		})
 
-		parser := New(fsys, "", opts...)
+		p := parser.New(fsys, "", opts...)
 
-		err := parser.ParseFS(t.Context(), ".")
+		err := p.ParseFS(t.Context(), ".")
 		require.NoError(t, err)
 
-		modules, err := parser.EvaluateAll(t.Context())
+		modules, err := p.EvaluateAll(t.Context())
 		require.NoError(t, err)
 
 		require.NotEmpty(t, instance.String())
@@ -2811,11 +2812,11 @@ func TestProvidedWorkingDirectory(t *testing.T) {
 		`,
 	})
 
-	parser := New(fsys, "", OptionWithWorkingDirectoryPath(fakeCwd))
-	err := parser.ParseFS(t.Context(), ".")
+	p := parser.New(fsys, "", parser.OptionWithWorkingDirectoryPath(fakeCwd))
+	err := p.ParseFS(t.Context(), ".")
 	require.NoError(t, err)
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	require.Len(t, modules, 1)
@@ -2849,15 +2850,15 @@ locals {
 }`)},
 	}
 
-	parser := New(fsys, "",
-		OptionWithSkipCachedModules(true),
-		OptionWithDownloads(false),
-		OptionStopOnHCLError(true),
+	p := parser.New(fsys, "",
+		parser.OptionWithSkipCachedModules(true),
+		parser.OptionWithDownloads(false),
+		parser.OptionStopOnHCLError(true),
 	)
-	err := parser.ParseFS(t.Context(), ".")
+	err := p.ParseFS(t.Context(), ".")
 	require.NoError(t, err)
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	require.Len(t, modules, 2)
@@ -2876,14 +2877,14 @@ module "test" {
 	}
 
 	fsys := testutil.CreateFS(files)
-	parser := New(fsys, "",
-		OptionWithSkipCachedModules(true),
-		OptionStopOnHCLError(true),
+	p := parser.New(fsys, "",
+		parser.OptionWithSkipCachedModules(true),
+		parser.OptionStopOnHCLError(true),
 	)
-	err := parser.ParseFS(t.Context(), ".")
+	err := p.ParseFS(t.Context(), ".")
 	require.NoError(t, err)
 
-	modules, err := parser.EvaluateAll(t.Context())
+	modules, err := p.EvaluateAll(t.Context())
 	require.NoError(t, err)
 
 	require.Len(t, modules, 1)
@@ -2910,14 +2911,14 @@ func Test_MarkedValues(t *testing.T) {
 			}
 
 			fsys := testutil.CreateFS(files)
-			parser := New(fsys, "",
-				OptionWithSkipCachedModules(true),
-				OptionStopOnHCLError(true),
+			p := parser.New(fsys, "",
+				parser.OptionWithSkipCachedModules(true),
+				parser.OptionStopOnHCLError(true),
 			)
-			err := parser.ParseFS(t.Context(), ".")
+			err := p.ParseFS(t.Context(), ".")
 			require.NoError(t, err)
 
-			modules, err := parser.EvaluateAll(t.Context())
+			modules, err := p.EvaluateAll(t.Context())
 			require.NoError(t, err)
 
 			require.Len(t, modules, 1)
