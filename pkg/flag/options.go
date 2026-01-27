@@ -514,6 +514,8 @@ func (o *Options) ScanOpts() types.ScanOptions {
 		IncludeDevDeps:      o.IncludeDevDeps,
 		Distro:              o.Distro,
 		VulnSeveritySources: o.VulnSeveritySources,
+		CacheDir:            o.CacheDir,
+		IsRemote:            o.ServerAddr != "",
 	}
 }
 

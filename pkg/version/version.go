@@ -20,6 +20,11 @@ type VersionInfo struct {
 	CheckBundle     *policy.Metadata   `json:",omitempty"`
 }
 
+// AppVersion returns the application version string.
+func AppVersion() string {
+	return app.Version()
+}
+
 func formatDBMetadata(title string, meta metadata.Metadata) string {
 	return fmt.Sprintf(`%s:
   Version: %d
