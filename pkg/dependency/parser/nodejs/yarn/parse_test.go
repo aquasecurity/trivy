@@ -11,96 +11,6 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func TestParseNpmAliasTarget(t *testing.T) {
-	tests := []struct {
-		name    string
-		target  string
-		want    string
-		isAlias bool
-	}{
-		{
-			name:    "scoped package with version",
-			target:  "@rootio/braces@3.0.2-root.io.1",
-			want:    "@rootio/braces",
-			isAlias: true,
-		},
-		{
-			name:    "scoped package with complex version",
-			target:  "@babel/core@^7.0.0",
-			want:    "@babel/core",
-			isAlias: true,
-		},
-		{
-			name:    "unscoped package with version",
-			target:  "lodash@4.17.21",
-			want:    "lodash",
-			isAlias: true,
-		},
-		{
-			name:    "unscoped package with complex version",
-			target:  "jquery@^3.6.0",
-			want:    "jquery",
-			isAlias: true,
-		},
-		{
-			name:    "scoped package without version",
-			target:  "@types/node",
-			want:    "@types/node",
-			isAlias: true,
-		},
-		{
-			name:    "empty string",
-			target:  "",
-			want:    "",
-			isAlias: false,
-		},
-		{
-			name:    "scoped package with multiple @ in version",
-			target:  "@rootio/package@npm:@other/package@1.0.0",
-			want:    "@rootio/package",
-			isAlias: true,
-		},
-		{
-			name:    "version range not an alias",
-			target:  "^1.0.0",
-			want:    "",
-			isAlias: false,
-		},
-		{
-			name:    "version with tilde not an alias",
-			target:  "~2.3.4",
-			want:    "",
-			isAlias: false,
-		},
-		{
-			name:    "exact version not an alias",
-			target:  "1.2.3",
-			want:    "",
-			isAlias: false,
-		},
-		{
-			name:    "version tag latest",
-			target:  "latest",
-			want:    "",
-			isAlias: false,
-		},
-		{
-			name:    "version tag next",
-			target:  "next",
-			want:    "",
-			isAlias: false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, isAlias := parseNpmAliasTarget(tt.target)
-			assert.Equal(t, tt.want, got)
-			assert.Equal(t, tt.isAlias, isAlias)
-		})
-	}
-}
-
 func TestParsePattern(t *testing.T) {
 	vectors := []struct {
 		name           string
@@ -167,30 +77,66 @@ func TestParsePattern(t *testing.T) {
 			expactVersion:  "//xxxx:x-oauth-basic@github.com/tomoyamachi/jquery",
 		},
 		{
+			name:           "npm alias with version",
+			target:         `"ms-alias@npm:ms@2.1.0":`,
+			expectName:     "ms",
+			expectProtocol: "npm",
+			expactVersion:  "2.1.0",
+		},
+		{
+			name:           "npm alias scoped package with version",
+			target:         `"types-alias@npm:@types/react@19.0.0":`,
+			expectName:     "@types/react",
+			expectProtocol: "npm",
+			expactVersion:  "19.0.0",
+		},
+		{
+			name:           "npm alias scoped package without version",
+			target:         `"types-alias@npm:@types/react":`,
+			expectName:     "@types/react",
+			expectProtocol: "npm",
+			expactVersion:  "",
+		},
+		{
+			name:           "npm protocol with version tag (not alias)",
+			target:         `"node-gyp@npm:latest":`,
+			expectName:     "node-gyp",
+			expectProtocol: "npm",
+			expactVersion:  "latest",
+		},
+		{
+			name:           "npm protocol with caret version",
+			target:         `"lodash@npm:^4.17.0":`,
+			expectName:     "lodash",
+			expectProtocol: "npm",
+			expactVersion:  "^4.17.0",
+		},
+		{
+			name:           "scoped alias to scoped package",
+			target:         `"@my/alias@npm:@types/react@19.0.0":`,
+			expectName:     "@types/react",
+			expectProtocol: "npm",
+			expactVersion:  "19.0.0",
+		},
+		{
 			target:   `normal line`,
 			occurErr: true,
 		},
 	}
 
 	for _, v := range vectors {
-		gotName, gotProtocol, gotVersion, err := parsePattern(v.target)
+		t.Run(v.name, func(t *testing.T) {
+			gotName, gotProtocol, gotVersion, err := parsePattern(v.target)
 
-		if v.occurErr != (err != nil) {
-			t.Errorf("expect error %t but err is %s", v.occurErr, err)
-			continue
-		}
+			if v.occurErr != (err != nil) {
+				t.Errorf("expect error %t but err is %s", v.occurErr, err)
+				return
+			}
 
-		if gotName != v.expectName {
-			t.Errorf("name mismatch: got %s, want %s, target :%s", gotName, v.expectName, v.target)
-		}
-
-		if gotProtocol != v.expectProtocol {
-			t.Errorf("protocol mismatch: got %s, want %s, target :%s", gotProtocol, v.expectProtocol, v.target)
-		}
-
-		if gotVersion != v.expactVersion {
-			t.Errorf("version mismatch: got %s, want %s, target :%s", gotVersion, v.expactVersion, v.target)
-		}
+			assert.Equal(t, v.expectName, gotName, "name mismatch")
+			assert.Equal(t, v.expectProtocol, gotProtocol, "protocol mismatch")
+			assert.Equal(t, v.expactVersion, gotVersion, "version mismatch")
+		})
 	}
 }
 

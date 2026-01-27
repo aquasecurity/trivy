@@ -20,7 +20,16 @@ import (
 )
 
 var (
-	yarnPatternRegexp    = regexp.MustCompile(`^\s?\\?"?(?P<package>\S+?)@(?:(?P<protocol>\S+?):)?(?P<version>.+?)\\?"?:?$`)
+	// yarnPatternRegexp parses the top-level package pattern in yarn.lock
+	// e.g., "lodash@^4.17.0" or "my-alias@npm:lodash@^4.17.0"
+	yarnPatternRegexp = regexp.MustCompile(`^\s?\\?"?(?P<package>\S+?)@(?:(?P<protocol>\S+?):)?(?P<range>.+?)\\?"?:?$`)
+
+	// yarnDescriptorRegexp parses a package descriptor (ident@range).
+	// Based on yarn's DESCRIPTOR_REGEX_LOOSE from Berry:
+	// https://github.com/yarnpkg/berry/blob/master/packages/yarnpkg-core/sources/structUtils.ts
+	// DESCRIPTOR_REGEX_LOOSE = /^(?:@([^/]+?)\/)?([^@/]+?)(?:@(.+))?$/
+	yarnDescriptorRegexp = regexp.MustCompile(`^(?:@([^/]+?)/)?([^@/]+?)(?:@(.+))?$`)
+
 	yarnVersionRegexp    = regexp.MustCompile(`^"?version:?"?\s+"?(?P<version>[^"]+)"?`)
 	yarnDependencyRegexp = regexp.MustCompile(`\s{4,}"?(?P<package>.+?)"?:?\s"?(?:(?P<protocol>\S+?):)?(?P<version>[^"]+)"?`)
 )
@@ -63,75 +72,93 @@ func (s *LineScanner) LineNum(prevNum int) int {
 	return prevNum + s.lineCount - 1
 }
 
-func parsePattern(target string) (packagename, protocol, version string, err error) {
+func parsePattern(target string) (pkgName, protocol, version string, err error) {
+	// Step 1: Parse the top-level pattern to extract package/alias, protocol, and range
 	capture := yarnPatternRegexp.FindStringSubmatch(target)
 	if len(capture) < 3 {
 		return "", "", "", xerrors.New("not package format")
 	}
+
+	var pkg, rng string
 	for i, group := range yarnPatternRegexp.SubexpNames() {
 		switch group {
 		case "package":
-			packagename = capture[i]
+			pkg = capture[i]
 		case "protocol":
 			protocol = capture[i]
-		case "version":
-			version = capture[i]
+		case "range":
+			rng = capture[i]
 		}
 	}
-	return
+
+	// Step 2: If protocol is "npm", check if the range is an alias (contains a package descriptor)
+	// Based on yarn's alias detection:
+	// https://github.com/yarnpkg/berry/blob/master/packages/yarnpkg-core/sources/LegacyMigrationResolver.ts
+	// "If the range is a valid descriptor we're dealing with an alias"
+	if protocol == "npm" {
+		if realPkg, realVersion, ok := tryParseDescriptor(rng); ok {
+			return realPkg, protocol, realVersion, nil
+		}
+	}
+
+	// Not an alias - use the original package name and range as version
+	return pkg, protocol, rng, nil
 }
 
-// parseNpmAliasTarget extracts the real package name from an npm: protocol alias target.
-// It returns the package name and a boolean indicating if it's actually an alias (not just a version/tag).
-// For example:
-//   - "@rootio/braces@3.0.2-root.io.1" returns ("@rootio/braces", true)
-//   - "lodash@4.17.21" returns ("lodash", true)
-//   - "^1.0.0" returns ("", false) - this is just a version, not an alias
-//   - "latest" returns ("", false) - this is a version tag, not an alias
-func parseNpmAliasTarget(target string) (packageName string, isAlias bool) {
-	if target == "" {
-		return "", false
+// tryParseDescriptor attempts to parse a string as a package descriptor (ident@range).
+// Based on yarn's tryParseDescriptor:
+// https://github.com/yarnpkg/berry/blob/master/packages/yarnpkg-core/sources/structUtils.ts
+// Uses DESCRIPTOR_REGEX_LOOSE = /^(?:@([^/]+?)\/)?([^@/]+?)(?:@(.+))?$/
+// Returns the package name and version if parsing succeeds.
+// Examples:
+//   - "ms@2.1.0" → ("ms", "2.1.0", true)
+//   - "@types/react" → ("@types/react", "", true)
+//   - "@types/react@19.0.0" → ("@types/react", "19.0.0", true)
+//   - "^1.0.0" → ("", "", false) - not a valid descriptor
+//   - "latest" → ("", "", false) - not a valid descriptor
+func tryParseDescriptor(descriptor string) (string, string, bool) {
+	capture := yarnDescriptorRegexp.FindStringSubmatch(descriptor)
+	if capture == nil {
+		return "", "", false
 	}
 
-	// Handle scoped packages: @scope/package@version
-	// Scoped packages always indicate an alias
-	if strings.HasPrefix(target, "@") {
-		// Find the @ that separates package name from version (skip the first @)
-		idx := strings.Index(target[1:], "@")
-		if idx != -1 {
-			// +1 because we searched from target[1:]
-			return target[:idx+1], true
-		}
-		// No version separator found, entire string is the package name
-		return target, true
+	scope, pkgName, rng := capture[1], capture[2], capture[3]
+
+	// If the "pkgName" part looks like a version constraint, it's not a valid package descriptor.
+	// This distinguishes "ms@2.1.0" (alias) from "latest" or "^1.0.0" (version constraint).
+	// Example: "@my/alias@npm:@types/react@19.0.0" → descriptor="@types/react@19.0.0" → pkgName="react" (valid)
+	// Example: "lodash@npm:^4.17.0" → descriptor="^4.17.0" → pkgName="^4.17.0" (invalid, starts with ^)
+	if looksLikeVersionConstraint(pkgName) {
+		return "", "", false
 	}
 
-	// For unscoped packages, check if this looks like a package name or just a version/tag
-	// Versions start with digits, ^, ~, >, <, =, or *
-	// Tags like "latest", "next", "beta" are single words without @ separator
-	// Aliases must contain an @ to separate package name from version
-	if len(target) > 0 {
-		firstChar := target[0]
-		if firstChar >= '0' && firstChar <= '9' ||
-			firstChar == '^' || firstChar == '~' ||
-			firstChar == '>' || firstChar == '<' ||
-			firstChar == '=' || firstChar == '*' {
-			// This looks like a version, not an alias
-			return "", false
-		}
+	// Build full package name with scope if present
+	if scope != "" {
+		pkgName = "@" + scope + "/" + pkgName
 	}
 
-	// For unscoped aliases, there MUST be an @ separator
-	// "lodash@4.17.21" is an alias
-	// "latest" or "next" is just a tag, not an alias
-	idx := strings.Index(target, "@")
-	if idx == -1 {
-		// No @ separator, this is a tag (like "latest"), not an alias
-		return "", false
-	}
+	return pkgName, rng, true
+}
 
-	// Extract package name before the @
-	return target[:idx], true
+// looksLikeVersionConstraint returns true if s looks like a version constraint
+// rather than a valid npm package name.
+// npm package names: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#name
+func looksLikeVersionConstraint(s string) bool {
+	if len(s) == 0 {
+		return true
+	}
+	// Version constraints start with: digits, ^, ~, >, <, =, *
+	switch s[0] {
+	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+		'^', '~', '>', '<', '=', '*':
+		return true
+	}
+	// npm dist-tags (https://docs.npmjs.com/cli/v10/commands/npm-dist-tag)
+	switch s {
+	case "latest", "next", "canary", "beta", "alpha", "rc", "stable", "dev", "experimental":
+		return true
+	}
+	return false
 }
 
 func parsePackagePatterns(target string) (packagename, protocol string, patterns []string, err error) {
@@ -141,39 +168,22 @@ func parsePackagePatterns(target string) (packagename, protocol string, patterns
 		return "", "", nil, err
 	}
 
-	// Handle npm: protocol aliases (e.g., "alias@npm:real-package@version")
 	// Check all patterns to find if any is an npm: alias
-	isAlias := false
+	// If we find one, use the real package name from the alias
+	// parsePattern() already handles the alias detection and returns the real package name
 	for _, pattern := range patternsSplit {
-		name, proto, version, parseErr := parsePattern(pattern)
+		name, proto, _, parseErr := parsePattern(pattern)
 		if parseErr == nil && proto == "npm" {
-			if realName, ok := parseNpmAliasTarget(version); ok {
-				packagename = realName
-				protocol = proto
-				isAlias = true
-				break
-			}
-		}
-		// If this is the first pattern and no alias found yet, keep the original name
-		if !isAlias && pattern == patternsSplit[0] {
+			// For npm: protocol, parsePattern returns the real package name if it's an alias
+			// We want to use this real name for all patterns
 			packagename = name
 			protocol = proto
+			break
 		}
 	}
 
 	patterns = lo.Map(patternsSplit, func(pattern string, _ int) string {
-		_, proto, version, _ := parsePattern(pattern)
-
-		// For npm: protocol aliases, extract just the version part from the target
-		if isAlias && proto == "npm" {
-			if _, ok := parseNpmAliasTarget(version); ok {
-				// Extract version from the target: "@rootio/braces@3.0.2" -> "3.0.2"
-				if idx := strings.LastIndex(version, "@"); idx != -1 {
-					version = version[idx+1:]
-				}
-			}
-		}
-
+		_, _, version, _ := parsePattern(pattern)
 		return packageID(packagename, version)
 	})
 	return
