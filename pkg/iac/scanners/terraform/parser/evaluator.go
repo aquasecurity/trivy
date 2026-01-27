@@ -206,7 +206,7 @@ func (e *evaluator) loadSubmodules(ctx context.Context) []*submodule {
 	var submodules []*submodule
 
 	for _, definition := range e.loadModules(ctx) {
-		eval, err := definition.Parser.Load(ctx)
+		eval, err := definition.Parser.load(ctx)
 		if errors.Is(err, ErrNoFiles) {
 			continue
 		} else if err != nil {

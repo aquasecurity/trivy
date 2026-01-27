@@ -102,7 +102,7 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	return mp
 }
 
-func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
+func (p *Parser) parseFile(_ context.Context, fullPath string) error {
 	isJSON := strings.HasSuffix(fullPath, ".tf.json") || strings.HasSuffix(fullPath, ".tofu.json")
 	isHCL := strings.HasSuffix(fullPath, ".tf") || strings.HasSuffix(fullPath, ".tofu")
 	if !isJSON && !isHCL {
@@ -148,7 +148,7 @@ func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 }
 
 // ParseFS parses a root module, where it exists at the root of the provided filesystem
-func (p *Parser) ParseFS(ctx context.Context, dir string) error {
+func (p *Parser) parseFS(ctx context.Context, dir string) error {
 	if p.moduleFS == nil {
 		return errors.New("module filesystem is nil, nothing to parse")
 	}
@@ -182,7 +182,7 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	sort.Strings(paths)
 	for _, path := range paths {
 		var err error
-		if err = p.ParseFile(ctx, path); err == nil {
+		if err = p.parseFile(ctx, path); err == nil {
 			continue
 		}
 
@@ -246,7 +246,7 @@ func readLinesFromFile(f io.Reader, from, to int) ([]string, error) {
 
 var ErrNoFiles = errors.New("no files found")
 
-func (p *Parser) Load(_ context.Context) (*evaluator, error) {
+func (p *Parser) load(_ context.Context) (*evaluator, error) {
 	p.logger.Debug("Loading module", log.String("module", p.moduleName))
 
 	if len(p.files) == 0 {
@@ -370,16 +370,20 @@ func inputVariableType(b *terraform.Block) cty.Type {
 	return ty
 }
 
-func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, error) {
+func (p *Parser) EvaluateAll(ctx context.Context, dir string) (terraform.Modules, error) {
 	// if os.Getenv("TRIVY_EXPERIMENT_TF_GRAPH_EVAL") != "" {
-	if true {
-		e, err := eval.Eval(ctx, p.moduleFS, p.modulePath)
+	if false {
+		e, err := eval.Eval(ctx, p.moduleFS, dir)
 		if err != nil {
 			return nil, err
 		}
 		return e.BuildTerraformModels(), nil
 	}
-	e, err := p.Load(ctx)
+
+	if err := p.parseFS(ctx, dir); err != nil {
+		return nil, err
+	}
+	e, err := p.load(ctx)
 	if errors.Is(err, ErrNoFiles) {
 		return nil, nil
 	} else if err != nil {
