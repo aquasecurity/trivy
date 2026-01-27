@@ -115,12 +115,7 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Re
 		s.logger.Info("Scanning root module", log.FilePath(dir))
 
 		p := parser.New(target, "", s.parserOpt...)
-
-		if err := p.ParseFS(ctx, dir); err != nil {
-			return nil, err
-		}
-
-		modules, err := p.EvaluateAll(ctx)
+		modules, err := p.EvaluateAll(ctx, dir)
 		if err != nil {
 			return nil, err
 		}

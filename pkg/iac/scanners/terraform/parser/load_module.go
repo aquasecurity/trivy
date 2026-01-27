@@ -115,7 +115,7 @@ func (e *evaluator) loadModuleFromTerraformCache(ctx context.Context, b *terrafo
 		log.String("modulePath", modulePath),
 	)
 	moduleParser := e.parentParser.newModuleParser(e.filesystem, source, modulePath, b.Label(), b)
-	if err := moduleParser.ParseFS(ctx, modulePath); err != nil {
+	if err := moduleParser.parseFS(ctx, modulePath); err != nil {
 		return nil, fmt.Errorf("parse module filesystem: %w", err)
 	}
 
@@ -158,7 +158,7 @@ func (e *evaluator) loadExternalModule(ctx context.Context, b *terraform.Block, 
 		log.FilePath(downloadPath),
 	)
 	moduleParser := e.parentParser.newModuleParser(filesystem, prefix, downloadPath, b.Label(), b)
-	if err := moduleParser.ParseFS(ctx, downloadPath); err != nil {
+	if err := moduleParser.parseFS(ctx, downloadPath); err != nil {
 		return nil, err
 	}
 	return &ModuleDefinition{
