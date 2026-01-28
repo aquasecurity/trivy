@@ -1,73 +1,81 @@
 package eval
 
 import (
-	"cmp"
 	"context"
-	"crypto/md5"
-	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/fs"
-	"log"
-	"log/slog"
 	"net/http"
-	"net/url"
 	"os"
 	"path"
-	"path/filepath"
+	"strings"
+	"time"
 
-	"github.com/apparentlymart/go-versions/versions"
-	"github.com/hashicorp/go-getter"
-	"github.com/hashicorp/go-slug/sourceaddrs"
-	regaddr "github.com/hashicorp/terraform-registry-address"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
+	"github.com/aquasecurity/trivy/pkg/log"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
-var rootSrc = sourceaddrs.MustParseSource("./").(sourceaddrs.LocalSource)
-
-type PackageFether interface {
-	Fetch(ctx context.Context, sourceType string, url *url.URL, targetDir string) error
-}
-
-type RegistryClient interface {
-	ModulePackageVersions(ctx context.Context, pkgAddr regaddr.ModulePackage) (ModulePackageVersionsResponse, error)
-	ModulePackageSourceAddr(ctx context.Context, pkgAddr regaddr.ModulePackage, version versions.Version) (ModulePackageSourceAddrResponse, error)
-}
-
-type ModulePackageVersionsResponse struct {
-	Versions []ModulePackageInfo `json:"versions"`
-}
-
-type ModulePackageInfo struct {
-	Version versions.Version `json:"version"`
-}
-
-type ModulePackageSourceAddrResponse struct {
-	SourceAddr sourceaddrs.RemoteSource
-}
-
 type ModuleResolver struct {
-	targetDir  string
-	pkgFetcher PackageFether
-	regClient  RegistryClient
+	logger *log.Logger
+	client *http.Client
+
+	allowDownloads    bool
+	skipCachedModules bool
+
+	modMetadata *ModulesMetadata
+	rootPath    string
 }
 
-func NewModuleResolver(targetDir string, pkgFetcher PackageFether, regClient RegistryClient) *ModuleResolver {
-	return &ModuleResolver{
-		targetDir:  targetDir,
-		pkgFetcher: pkgFetcher,
-		regClient:  regClient,
+type ModResolverOption func(r *ModuleResolver)
+
+func WithAllowDownloads(allow bool) ModResolverOption {
+	return func(r *ModuleResolver) {
+		r.allowDownloads = allow
 	}
 }
 
+func WithSkipCachedModules(skip bool) ModResolverOption {
+	return func(r *ModuleResolver) {
+		r.skipCachedModules = skip
+	}
+}
+
+func NewModuleResolver(logger *log.Logger, opts ...ModResolverOption) *ModuleResolver {
+	r := &ModuleResolver{
+		logger: logger,
+		client: xhttp.Client(xhttp.WithTimeout(5 * time.Second)),
+	}
+
+	for _, opt := range opts {
+		opt(r)
+	}
+	return r
+}
+
 func (r *ModuleResolver) Resolve(ctx context.Context, fsys fs.FS, root string) (*ModuleConfig, error) {
+	r.rootPath = root
+
 	fakeCall := ModuleCall{
 		Name:   "root",
-		Source: rootSrc,
+		Source: "./",
 		FS:     fsys,
 		Path:   root,
 	}
 
-	rootCfg, err := r.resolveChildren(ctx, &fakeCall)
+	modMetadata, metadataPath, err := loadModuleMetadata(fsys, root)
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
+		r.logger.Error("Error loading module metadata", log.Err(err))
+	} else if err == nil {
+		r.logger.Debug("Loaded module metadata",
+			log.FilePath(metadataPath),
+			log.Int("count", len(modMetadata.Modules)),
+		)
+	}
+	r.modMetadata = modMetadata
+
+	rootCfg, err := r.resolveChildren(ctx, &fakeCall, RootModule, "")
 	if err != nil {
 		return rootCfg, err
 	}
@@ -78,14 +86,14 @@ func (r *ModuleResolver) Resolve(ctx context.Context, fsys fs.FS, root string) (
 	return rootCfg, nil
 }
 
-func (r *ModuleResolver) resolveChildren(ctx context.Context, mc *ModuleCall) (*ModuleConfig, error) {
-	mod, err := r.loadModule(ctx, mc)
+func (r *ModuleResolver) resolveChildren(ctx context.Context, mc *ModuleCall, addr ModuleAddr, parentLogicalSource string) (*ModuleConfig, error) {
+	mod, err := r.loadModule(ctx, addr, mc, parentLogicalSource)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, childMc := range mod.ModuleCalls {
-		child, err := r.resolveChildren(ctx, childMc)
+		child, err := r.resolveChildren(ctx, childMc, addr.Call(childMc.Name), mod.LogicalSource)
 		if err != nil {
 			return nil, err
 		}
@@ -97,217 +105,122 @@ func (r *ModuleResolver) resolveChildren(ctx context.Context, mc *ModuleCall) (*
 		mod.Children = append(mod.Children, child)
 	}
 	return mod, nil
-
 }
 
-func (r *ModuleResolver) loadModule(ctx context.Context, mc *ModuleCall) (*ModuleConfig, error) {
-	log.Printf("Resolve module from %s", mc.Source.String())
-	switch src := mc.Source.(type) {
-	case sourceaddrs.LocalSource:
-		return r.resolveLocal(ctx, mc.FS, path.Join(mc.Path, src.RelativePath()))
-	case sourceaddrs.RegistrySource:
-		var selectedVers versions.Set
-		if mc.Version.Same(versions.Unspecified) {
-			selectedVers = versions.All
-		} else {
-			selectedVers = versions.Only(mc.Version)
-			if fsys, ok := r.checkCache(src.Package().String(), mc.Version.String()); ok {
-				log.Printf("Module %s found in cache", src.String())
-				return r.resolveLocal(ctx, fsys, cmp.Or(src.SubPath(), "."))
-			}
+func (r *ModuleResolver) loadModule(ctx context.Context, addr ModuleAddr, mc *ModuleCall, parentLogicalSource string) (*ModuleConfig, error) {
+	if r.modMetadata != nil {
+		mod, err := r.loadModuleFromTerraformCache(ctx, addr, mc)
+		if err == nil {
+			r.logger.Debug("Using module from Terraform cache .terraform/modules",
+				log.String("source", mc.Source))
+			return mod, nil
 		}
-		return r.resolveRegistry(ctx, src, selectedVers)
-	case sourceaddrs.RemoteSource:
-		return r.resolveRemote(ctx, src)
-	default:
-		return nil, fmt.Errorf("unsupported source: %s", src.String())
 	}
+
+	mod, err := r.loadExternalModule(ctx, addr, mc, parentLogicalSource)
+	if err != nil {
+		return nil, err
+	}
+	return mod, nil
 }
 
-func (r *ModuleResolver) resolveLocal(_ context.Context, fsys fs.FS, dir string) (*ModuleConfig, error) {
+func (r *ModuleResolver) loadExternalModule(ctx context.Context, addr ModuleAddr, mc *ModuleCall, parentLogicalSource string) (*ModuleConfig, error) {
+	r.logger.Debug("Resolve module", log.String("source", mc.Source))
+
+	opt := resolvers.Options{
+		Source:          mc.Source,
+		OriginalSource:  mc.Source,
+		Version:         mc.Version,
+		OriginalVersion: mc.Version,
+		WorkingDir:      r.rootPath,
+		Name:            addr.Key(),
+		ModulePath:      mc.Path,
+		Logger:          r.logger,
+		AllowDownloads:  r.allowDownloads,
+		SkipCache:       r.skipCachedModules,
+	}
+
+	fsys, source, downloadPath, err := resolvers.ResolveModule(ctx, mc.FS, opt)
+	if err != nil {
+		return nil, err
+	}
+
+	logicalSource := path.Join(parentLogicalSource, source)
+	r.logger.Debug("Remote module resolved",
+		log.String("addr", addr.Key()),
+		log.String("source", mc.Source),
+		log.String("logicalSource", logicalSource),
+		log.FilePath(downloadPath),
+	)
+
+	return r.resolveLocal(ctx, fsys, downloadPath, logicalSource)
+}
+
+func (r *ModuleResolver) loadModuleFromTerraformCache(ctx context.Context, addr ModuleAddr, mc *ModuleCall) (*ModuleConfig, error) {
+	moduleKey := strings.Join(addr, ".")
+	var modulePath string
+	for _, module := range r.modMetadata.Modules {
+		if module.Key == moduleKey {
+			modulePath = path.Clean(path.Join(r.rootPath, module.Dir))
+			break
+		}
+	}
+	if modulePath == "" {
+		return nil, fmt.Errorf("resolve module with key %q from .terraform/modules", moduleKey)
+	}
+
+	logicalSource := mc.Source
+	if strings.HasPrefix(mc.Source, ".") {
+		logicalSource = ""
+	}
+
+	r.logger.Debug("Module resolved using modules.json",
+		log.String("addr", addr.Key()),
+		log.String("source", mc.Source),
+		log.String("modulePath", modulePath),
+	)
+
+	return r.resolveLocal(ctx, mc.FS, modulePath, logicalSource)
+}
+
+func (r *ModuleResolver) resolveLocal(_ context.Context, fsys fs.FS, dir string, logicalSource string) (*ModuleConfig, error) {
 	p := NewParser()
 	cfg, err := p.ParseDir(fsys, dir)
 	if err != nil {
 		return nil, err
 	}
 
-	log.Printf("Module %s loaded from %v", dir, fsys)
+	cfg.LogicalSource = logicalSource
+	r.logger.Debug("Module loaded", log.Any("fsys", fsys), log.FilePath(dir))
 	return cfg, nil
 }
 
-func (r *ModuleResolver) resolveRegistry(ctx context.Context, src sourceaddrs.RegistrySource, selectedVersions versions.Set) (*ModuleConfig, error) {
-	versionsResponse, err := r.regClient.ModulePackageVersions(ctx, src.Package())
+const ManifestSnapshotFile = ".terraform/modules/modules.json"
+
+type ModulesMetadata struct {
+	Modules []ModuleMetadata `json:"Modules"`
+}
+
+type ModuleMetadata struct {
+	Key     string `json:"Key"`
+	Source  string `json:"Source"`
+	Version string `json:"Version"`
+	Dir     string `json:"Dir"`
+}
+
+func loadModuleMetadata(fsys fs.FS, dir string) (*ModulesMetadata, string, error) {
+	metadataPath := path.Join(dir, ManifestSnapshotFile)
+
+	f, err := fsys.Open(metadataPath)
 	if err != nil {
-		return nil, err
+		return nil, metadataPath, err
+	}
+	defer f.Close()
+
+	var metadata ModulesMetadata
+	if err := json.NewDecoder(f).Decode(&metadata); err != nil {
+		return nil, metadataPath, err
 	}
 
-	versionsList := make(versions.List, 0, len(versionsResponse.Versions))
-	for _, el := range versionsResponse.Versions {
-		versionsList = append(versionsList, el.Version)
-	}
-	versionsList.Sort()
-
-	selectedVersion := versionsList.NewestInSet(selectedVersions)
-	if selectedVersion == versions.Unspecified {
-		return nil, fmt.Errorf("no available version of %s matches the specified version constraint",
-			src.Package().String())
-	}
-
-	locationResponse, err := r.regClient.ModulePackageSourceAddr(ctx, src.Package(), selectedVersion)
-	if err != nil {
-		return nil, err
-	}
-
-	remoteSrc := src.FinalSourceAddr(locationResponse.SourceAddr)
-	return r.resolveRemote(ctx, remoteSrc)
-}
-
-func (r *ModuleResolver) resolveRemote(ctx context.Context, src sourceaddrs.RemoteSource) (*ModuleConfig, error) {
-	log.Printf("Resolve %s module", src.String())
-	modDir := r.dirName(src.String(), "")
-	finalDir := filepath.Join(r.targetDir, modDir)
-	pkg := src.Package()
-
-	if fsys, ok := r.checkCache(pkg.String(), ""); ok {
-		log.Printf("Module %s found in cache", src.String())
-		return r.resolveLocal(ctx, fsys, cmp.Or(src.SubPath(), "."))
-	}
-
-	workDir, err := os.MkdirTemp(".", ".trivy-tfmod-")
-	if err != nil {
-		return nil, err
-	}
-	log.Printf("Load remote module %s into %s", pkg.String(), workDir)
-
-	if err := r.pkgFetcher.Fetch(ctx, pkg.SourceType(), pkg.URL(), workDir); err != nil {
-		return nil, err
-	}
-	log.Printf("Remote module %s loaded", pkg.String())
-
-	if err := os.Rename(workDir, finalDir); err != nil {
-		return nil, err
-	}
-	log.Printf("Remote module %s moved into %s", pkg.String(), finalDir)
-	return r.resolveLocal(ctx, os.DirFS(r.targetDir), filepath.Join(modDir, src.SubPath()))
-}
-
-func (r *ModuleResolver) dirName(src, ver string) string {
-	hash := md5.Sum([]byte(src + ":" + ver)) // #nosec
-	return hex.EncodeToString(hash[:])
-}
-
-func (r *ModuleResolver) checkCache(pkg string, ver string) (fs.FS, bool) {
-	modDir := r.dirName(pkg, ver)
-	finalDir := filepath.Join(r.targetDir, modDir)
-	if _, err := os.Stat(finalDir); err == nil {
-		return os.DirFS(finalDir), true
-	}
-	return nil, false
-}
-
-type packageFetcher struct {
-	workingDir string
-}
-
-func (f *packageFetcher) Fetch(ctx context.Context, sourceType string, url *url.URL, targetDir string) error {
-	if err := os.RemoveAll(targetDir); err != nil {
-		return nil
-	}
-
-	if err := os.MkdirAll(filepath.Dir(targetDir), 0o750); err != nil {
-		return err
-	}
-	getter.Getters["file"] = &getter.FileGetter{Copy: true}
-	client := &getter.Client{
-		Ctx:     ctx,
-		Src:     sourceType + "::" + url.String(),
-		Dst:     targetDir,
-		Pwd:     f.workingDir,
-		Getters: getter.Getters,
-		Mode:    getter.ClientModeAny,
-	}
-
-	if err := client.Get(); err != nil {
-		return fmt.Errorf("failed to download: %w", err)
-	}
-	return nil
-}
-
-type registryClient struct {
-	client *http.Client
-	logger *slog.Logger
-}
-
-func (c *registryClient) ModulePackageVersions(ctx context.Context, pkgAddr regaddr.ModulePackage) (ModulePackageVersionsResponse, error) {
-	versionUrl := fmt.Sprintf("https://%s/v1/modules/%s/%s/%s/versions",
-		pkgAddr.Host.String(), pkgAddr.Namespace, pkgAddr.Name, pkgAddr.TargetSystem)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, versionUrl, nil)
-	if err != nil {
-		return ModulePackageVersionsResponse{}, err
-	}
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return ModulePackageVersionsResponse{}, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return ModulePackageVersionsResponse{}, fmt.Errorf("unexpected status code for versions endpoint: %d", resp.StatusCode)
-	}
-
-	var availableVersions moduleVersions
-	if err := json.NewDecoder(resp.Body).Decode(&availableVersions); err != nil {
-		return ModulePackageVersionsResponse{}, err
-	}
-
-	// TODO: check the length
-	return availableVersions.Modules[0], nil
-}
-
-type moduleVersions struct {
-	Modules []ModulePackageVersionsResponse `json:"modules"`
-}
-
-func (c *registryClient) ModulePackageSourceAddr(ctx context.Context, pkgAddr regaddr.ModulePackage, version versions.Version) (ModulePackageSourceAddrResponse, error) {
-
-	hostname := pkgAddr.Host.String()
-	url := fmt.Sprintf("https://%s/v1/modules/%s/%s/%s/%s/download", hostname, pkgAddr.Namespace, pkgAddr.Name, pkgAddr.TargetSystem, version.String())
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		return ModulePackageSourceAddrResponse{}, err
-	}
-
-	req.Header.Set("X-Terraform-Version", version.String())
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return ModulePackageSourceAddrResponse{}, err
-	}
-	defer resp.Body.Close()
-
-	var loc string
-
-	// OpenTofu may return 200 with body
-	switch resp.StatusCode {
-	case http.StatusOK:
-		// https://opentofu.org/docs/internals/module-registry-protocol/#sample-response-1
-		var downloadResponse struct {
-			Location string `json:"location"`
-		}
-		if err := json.NewDecoder(resp.Body).Decode(&downloadResponse); err != nil {
-			return ModulePackageSourceAddrResponse{}, fmt.Errorf("failed to decode download response: %w", err)
-		}
-		loc = downloadResponse.Location
-	case http.StatusNoContent:
-		loc = resp.Header.Get("X-Terraform-Get")
-	default:
-		return ModulePackageSourceAddrResponse{}, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
-	}
-
-	remoteSrc, err := sourceaddrs.ParseRemoteSource(loc)
-	if err != nil {
-		return ModulePackageSourceAddrResponse{}, err
-	}
-
-	return ModulePackageSourceAddrResponse{SourceAddr: remoteSrc}, nil
+	return &metadata, metadataPath, nil
 }

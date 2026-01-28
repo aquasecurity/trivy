@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -42,13 +43,16 @@ func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, par
 		ctx = context.NewContext(&hcl.EvalContext{}, nil)
 	}
 
+	// shallow copy
+	blockCopy := *hclBlock
+
 	var r hcl.Range
-	switch body := hclBlock.Body.(type) {
+	switch body := blockCopy.Body.(type) {
 	case *hclsyntax.Body:
 		r = body.SrcRange
 	default:
-		r = hclBlock.DefRange
-		r.End = hclBlock.Body.MissingItemRange().End
+		r = blockCopy.DefRange
+		r.End = blockCopy.Body.MissingItemRange().End
 	}
 	moduleName := "root"
 	if moduleBlock != nil {
@@ -66,10 +70,10 @@ func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, par
 	// if there are no labels then use the block type
 	// this is for the case where "special" keywords like "resource" are used
 	// as normal block names in top level blocks - see issue tfsec#1528 for an example
-	if hclBlock.Type != "resource" || len(hclBlock.Labels) == 0 {
-		parts = append(parts, hclBlock.Type)
+	if blockCopy.Type != "resource" || len(blockCopy.Labels) == 0 {
+		parts = append(parts, blockCopy.Type)
 	}
-	parts = append(parts, hclBlock.Labels...)
+	parts = append(parts, blockCopy.Labels...)
 
 	var parent string
 	if moduleBlock != nil {
@@ -78,7 +82,15 @@ func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, par
 	ref, _ := newReference(parts, parent)
 	if len(index) > 0 {
 		key := index[0]
-		ref.SetKey(key)
+		if !key.IsNull() && key.IsKnown() {
+			if n := len(blockCopy.Labels); n > 0 {
+				name := instanceName(blockCopy.Labels[n-1], key)
+				labels := slices.Clone(blockCopy.Labels)
+				labels[n-1] = name
+				blockCopy.Labels = labels
+			}
+			ref.SetKey(key)
+		}
 	}
 
 	metadata := iacTypes.NewMetadata(rng, ref.String())
@@ -92,7 +104,7 @@ func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, par
 	b := Block{
 		id:           uuid.NewString(),
 		context:      ctx,
-		hclBlock:     hclBlock,
+		hclBlock:     &blockCopy,
 		moduleBlock:  moduleBlock,
 		moduleSource: moduleSource,
 		moduleFS:     moduleFS,
@@ -102,13 +114,13 @@ func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, par
 	}
 
 	var children Blocks
-	switch body := hclBlock.Body.(type) {
+	switch body := blockCopy.Body.(type) {
 	case *hclsyntax.Body:
 		for _, b2 := range body.Blocks {
 			children = append(children, NewBlock(b2.AsHCLBlock(), ctx, moduleBlock, &b, moduleSource, moduleFS))
 		}
 	default:
-		content, _, diag := hclBlock.Body.PartialContent(Schema)
+		content, _, diag := blockCopy.Body.PartialContent(Schema)
 		if diag == nil {
 			for _, hb := range content.Blocks {
 				children = append(children, NewBlock(hb, ctx, moduleBlock, &b, moduleSource, moduleFS))
@@ -182,23 +194,12 @@ func (b *Block) Clone(index cty.Value) *Block {
 	clone := b.inherit(childCtx, index)
 
 	if len(clone.hclBlock.Labels) > 0 {
-		position := len(clone.hclBlock.Labels) - 1
-		labels := make([]string, len(clone.hclBlock.Labels))
-		for i := range labels {
-			labels[i] = clone.hclBlock.Labels[i]
-		}
+		labels := slices.Clone(clone.hclBlock.Labels)
+		last := len(clone.hclBlock.Labels) - 1
 		if index.IsKnown() && !index.IsNull() {
-			switch index.Type() {
-			case cty.Number:
-				f, _ := index.AsBigFloat().Float64()
-				labels[position] = fmt.Sprintf("%s[%d]", clone.hclBlock.Labels[position], int(f))
-			case cty.String:
-				labels[position] = fmt.Sprintf("%s[%q]", clone.hclBlock.Labels[position], index.AsString())
-			default:
-				labels[position] = fmt.Sprintf("%s[%#v]", clone.hclBlock.Labels[position], index)
-			}
+			labels[last] = instanceName(clone.hclBlock.Labels[last], index)
 		} else {
-			labels[position] = fmt.Sprintf("%s[%d]", clone.hclBlock.Labels[position], b.cloneIndex)
+			labels[last] = fmt.Sprintf("%s[%d]", clone.hclBlock.Labels[last], b.cloneIndex)
 		}
 		clone.hclBlock.Labels = labels
 	}
@@ -207,6 +208,18 @@ func (b *Block) Clone(index cty.Value) *Block {
 	clone.markExpanded()
 	b.cloneIndex++
 	return clone
+}
+
+func instanceName(name string, index cty.Value) string {
+	switch index.Type() {
+	case cty.Number:
+		f, _ := index.AsBigFloat().Float64()
+		return fmt.Sprintf("%s[%d]", name, int(f))
+	case cty.String:
+		return fmt.Sprintf("%s[%q]", name, index.AsString())
+	default:
+		return fmt.Sprintf("%s[%#v]", name, index)
+	}
 }
 
 func (b *Block) Context() *context.Context {

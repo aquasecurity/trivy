@@ -64,7 +64,7 @@ func parseReference(trav hcl.Traversal) Address {
 		}
 		return nil
 	case "data":
-		if len(trav) <= 3 {
+		if len(trav) < 3 {
 			return nil
 		}
 		typ := trav[1].(hcl.TraverseAttr).Name

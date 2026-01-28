@@ -4,26 +4,41 @@ import (
 	"context"
 	"io/fs"
 	"os"
-	"path/filepath"
-	"time"
 
 	"github.com/aquasecurity/trivy/pkg/log"
-	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
+	"github.com/zclconf/go-cty/cty"
 )
 
-var defaultCacheDir = filepath.Join(os.TempDir(), ".aqua", "cache")
-
-func Eval(ctx context.Context, fsys fs.FS, root string) (*GraphEvaluator, error) {
-	if err := os.MkdirAll(defaultCacheDir, os.ModePerm); err != nil {
-		return nil, err
+func Eval(ctx context.Context, fsys fs.FS, root string, opts *EvalOpts) (*GraphEvaluator, error) {
+	if opts == nil {
+		opts = &EvalOpts{
+			Workspace: "default",
+		}
 	}
 
-	modResolver := NewModuleResolver(defaultCacheDir, &packageFetcher{}, &registryClient{
-		client: xhttp.ClientWithContext(ctx, xhttp.WithTimeout(5*time.Second)),
-		logger: log.WithPrefix("registry-client"),
-	})
+	if opts.WorkDir == "" {
+		wd, err := os.Getwd()
+		if err != nil {
+			return nil, err
+		}
+		opts.WorkDir = wd
+	}
 
-	rootMod, err := modResolver.Resolve(context.TODO(), fsys, root)
+	if opts.InputVars == nil {
+		opts.InputVars = make(map[string]cty.Value)
+	}
+
+	if opts.Logger == nil {
+		opts.Logger = log.WithPrefix("tf-eval")
+	}
+
+	modResolver := NewModuleResolver(
+		opts.Logger.With(log.Prefix("mod-resolver")),
+		WithAllowDownloads(opts.AllowDownloads),
+		WithSkipCachedModules(opts.SkipCachedModules),
+	)
+
+	rootMod, err := modResolver.Resolve(ctx, fsys, root)
 	if err != nil {
 		return nil, err
 	}
@@ -33,13 +48,7 @@ func Eval(ctx context.Context, fsys fs.FS, root string) (*GraphEvaluator, error)
 		return nil, err
 	}
 
-	wd, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-
-	// TODO: pass a real workspace name
-	e := NewEvaluator(g, rootMod, wd, "default")
+	e := NewEvaluator(g, rootMod, opts)
 	if err := e.EvalGraph(g); err != nil {
 		return nil, err
 	}

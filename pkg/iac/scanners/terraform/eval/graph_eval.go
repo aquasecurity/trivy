@@ -6,6 +6,7 @@ import (
 	"maps"
 	"path/filepath"
 
+	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/ext/dynblock"
 	"github.com/hashicorp/hcl/v2/ext/typeexpr"
@@ -24,12 +25,24 @@ type GraphEvaluator struct {
 	logger *log.Logger
 }
 
-func NewEvaluator(graph *graph, rootModule *ModuleConfig, workDir, workspace string) *GraphEvaluator {
-	return &GraphEvaluator{
+type EvalOpts struct {
+	Logger *log.Logger
+
+	Workspace         string
+	WorkDir           string
+	AllowDownloads    bool
+	SkipCachedModules bool
+
+	InputVars map[string]cty.Value
+}
+
+func NewEvaluator(graph *graph, rootModule *ModuleConfig, opts *EvalOpts) *GraphEvaluator {
+	e := &GraphEvaluator{
 		graph:  graph,
-		state:  newEvalState(graph, rootModule, workDir, workspace),
-		logger: log.WithPrefix("evaluator"),
+		state:  newEvalState(graph, rootModule, opts),
+		logger: opts.Logger.With(log.Prefix("evaluator")),
 	}
+	return e
 }
 
 func (e *GraphEvaluator) EvalGraph(g *graph) error {
@@ -58,82 +71,114 @@ func (e *GraphEvaluator) eval(order []Node) error {
 		id := node.ID()
 		e.logger.Debug("Execute node", slog.String("id", id))
 		if err := evaluatable.Execute(e.state); err != nil {
-			return fmt.Errorf("execute %s node: %w", node.ID(), err)
+			e.logger.Debug("Failed to execute node", log.String("node", node.ID()), log.Err(err))
+			continue
 		}
 	}
 	return nil
 }
 
 func (e *GraphEvaluator) BuildTerraformModels() terraform.Modules {
-	return e.buildModules(e.state.root, NoKeyType, NoInstanceData)
+	return e.buildModules(nil, e.state.root, NoKeyType, NoInstanceData)
 }
 
-func (e *GraphEvaluator) buildModules(mi *ModuleInstance, keyType KeyInstanceType, data InstanceData) terraform.Modules {
+func (e *GraphEvaluator) buildModules(parent *terraform.Module, mi *ModuleInstance, keyType KeyInstanceType, data InstanceData) terraform.Modules {
 	modConfig := e.state.config.Descendant(mi.scope.addr.Module())
 	ret := make(terraform.Modules, 0, len(mi.childInstances)+1)
 
-	scopeCtx := e.buildModuleScopeContext(mi.scope)
-	modInstCtx := e.buildInstanceContext(scopeCtx, keyType, data)
+	scopeCtx := e.buildModuleScopeContext(mi)
+	modInstCtx := e.buildInstanceScopeContext(scopeCtx, keyType, data)
 	var blocks []*terraform.Block
-	var modBlockIndex cty.Value
-	var modSource string
 	var modBlock *terraform.Block
 
 	if !mi.scope.addr.IsRoot() {
-		modBlockIndex = mi.scope.addr.Last().Key.Value()
-		modSource = modConfig.Parent.ModuleCalls[modConfig.Name].Source.String()
+		var modBlockIndex cty.Value
+		if key := mi.scope.addr.Last().Key; key != NoKey {
+			modBlockIndex = key.Value()
+		}
 		modBlock = terraform.NewBlock(
-			modConfig.Block.underlying, context.NewContext(modInstCtx, nil),
-			nil, nil, modSource, modConfig.FS, modBlockIndex,
+			modConfig.Block.underlying,
+			context.NewContext(modInstCtx, nil),
+			nil, nil,
+			modConfig.LogicalSource,
+			modConfig.FS, modBlockIndex,
 		)
 		blocks = append(blocks, modBlock)
 	}
 
 	for _, block := range modConfig.Blocks {
-		switch block.underlying.Type {
-		case "resource", "data", "variable":
-			// TODO: get index from expansion
-			blockCtx := e.buildInstanceContext(scopeCtx, NoKeyType, NoInstanceData)
+		blockType := block.underlying.Type
+		switch blockType {
+		case "resource", "data":
+			resType := block.underlying.Labels[0]
+			resName := block.underlying.Labels[1]
+			addr := ResourceAddr{Mode: modeByBlockType(blockType), Type: resType, Name: resName}
+			mi.forEachResource(addr, func(keyType KeyInstanceType, key InstanceKey, data InstanceData) error {
+				blockCtx := e.buildInstanceScopeContext(scopeCtx, keyType, data)
+				var index cty.Value
+				if key != NoKey {
+					index = key.Value()
+				}
+
+				block := terraform.NewBlock(
+					block.underlying, context.NewContext(blockCtx, nil),
+					modBlock, nil, modConfig.LogicalSource, modConfig.FS, index,
+				)
+				blocks = append(blocks, block)
+				return nil
+			})
+		case "variable", "provider", "module", "output":
+			blockCtx := e.buildInstanceScopeContext(scopeCtx, NoKeyType, NoInstanceData)
 			block := terraform.NewBlock(
 				block.underlying, context.NewContext(blockCtx, nil),
-				modBlock, nil, modSource, modConfig.FS,
+				modBlock, nil, modConfig.LogicalSource, modConfig.FS,
 			)
 			blocks = append(blocks, block)
 		}
 	}
 
-	ret = append(ret, terraform.NewModule(e.state.config.Dir, modConfig.FS, modConfig.Dir, blocks, nil))
+	module := terraform.NewModule(e.state.config.Dir, modConfig.FS, modConfig.Dir, blocks, nil)
+	module.SetParent(parent)
+
+	ret = append(ret, module)
+	// e.state.forEachModule()
 	for step, childInst := range mi.childInstances {
 		exp := mi.moduleCalls[step.Name]
 		keyType, _ := exp.Keys()
-		childModules := e.buildModules(childInst, keyType, exp.Data(step.Key))
+		childModules := e.buildModules(module, childInst, keyType, exp.Data(step.Key))
 		ret = append(ret, childModules...)
 	}
 	return ret
 }
 
-func (e *GraphEvaluator) buildModuleScopeContext(scope *Scope) *hcl.EvalContext {
+func (e *GraphEvaluator) buildModuleScopeContext(mi *ModuleInstance) *hcl.EvalContext {
+	scope := mi.scope
 	vals := map[string]cty.Value{}
 	maps.Copy(vals, buildResourceObjects(scope.resources))
 	vals["local"] = cty.ObjectVal(scope.locals)
 	vals["var"] = cty.ObjectVal(scope.vars)
 	vals["output"] = cty.ObjectVal(scope.outputs)
 	vals["data"] = cty.ObjectVal(buildResourceObjects(scope.datas))
-	// vals["module"] = cty.ObjectVal(modules)
+	modules := make(map[string]cty.Value)
 
 	mod := e.state.config.Descendant(scope.addr.Module())
 	if mod == nil {
 		panic(fmt.Sprintf("module config %s not found", scope.addr.Module().Key()))
 	}
 
+	for name := range mi.moduleCalls {
+		modules[name] = e.state.prepareModules(mi, name)
+	}
+	vals["module"] = cty.ObjectVal(modules)
+
 	vals["path"] = cty.ObjectVal(map[string]cty.Value{
 		"root":   cty.StringVal(filepath.ToSlash(e.state.config.Dir)),
-		"cwd":    cty.StringVal(filepath.ToSlash(e.state.workDir)),
+		"cwd":    cty.StringVal(filepath.ToSlash(e.state.opts.WorkDir)),
 		"module": cty.StringVal(filepath.ToSlash(mod.Dir)),
 	})
 
 	vals["terraform"] = cty.ObjectVal(map[string]cty.Value{
-		"workspace": cty.StringVal(e.state.workspace),
+		"workspace": cty.StringVal(e.state.opts.Workspace),
 	})
 
 	return &hcl.EvalContext{
@@ -142,7 +187,7 @@ func (e *GraphEvaluator) buildModuleScopeContext(scope *Scope) *hcl.EvalContext 
 	}
 }
 
-func (e *GraphEvaluator) buildInstanceContext(parent *hcl.EvalContext, keyType KeyInstanceType, data InstanceData) *hcl.EvalContext {
+func (e *GraphEvaluator) buildInstanceScopeContext(parent *hcl.EvalContext, keyType KeyInstanceType, data InstanceData) *hcl.EvalContext {
 	childCtx := parent.NewChild()
 
 	vars := make(map[string]cty.Value)
@@ -177,57 +222,13 @@ func decodeVarType(expr hcl.Expression) (cty.Type, *typeexpr.Defaults, error) {
 	return t, def, nil
 }
 
-func expandCount(countVal cty.Value) (int, error) {
-	if countVal.IsNull() || !countVal.IsKnown() || countVal.Type() != cty.Number {
-		return -1, fmt.Errorf("count is null, unkown or not a number")
-	}
-	count, _ := countVal.AsBigFloat().Int64()
-	return int(count), nil
-}
-
-func expandForEach(forEachVal cty.Value) (map[string]cty.Value, error) {
-	if forEachVal.IsNull() || !forEachVal.IsKnown() {
-		return nil, fmt.Errorf("for-each is null or unkown")
-	}
-	if !forEachVal.CanIterateElements() {
-		// TODO: log
-		return nil, nil
-	}
-
-	data := make(map[string]cty.Value)
-	it := forEachVal.ElementIterator()
-	for it.Next() {
-		key, val := it.Element()
-		if key.IsNull() || !key.IsKnown() {
-			continue
-		}
-		if val.IsNull() || !val.IsKnown() {
-			continue
-		}
-
-		if key.Type() != cty.String {
-			continue
-		}
-
-		// TODO: tf allows only a map, or set of strings
-		switch {
-		case forEachVal.Type().IsSetType():
-			// TODO: convert val to string
-			data[val.AsString()] = val
-		case forEachVal.Type().IsObjectType(), forEachVal.Type().IsMapType():
-			data[key.AsString()] = val
-		default:
-			return nil, nil
-		}
-	}
-	return data, nil
-}
-
 type Scope struct {
 	addr    ModuleInstanceAddr
 	locals  map[string]cty.Value
 	vars    map[string]cty.Value
 	outputs map[string]cty.Value
+
+	providers map[string]cty.Value
 
 	resources map[string]map[string]cty.Value
 	datas     map[string]map[string]cty.Value
@@ -239,84 +240,17 @@ func newScope(addr ModuleInstanceAddr) *Scope {
 		locals:    make(map[string]cty.Value),
 		vars:      make(map[string]cty.Value),
 		outputs:   make(map[string]cty.Value),
+		providers: make(map[string]cty.Value),
 		resources: make(map[string]map[string]cty.Value),
 		datas:     make(map[string]map[string]cty.Value),
 	}
 }
 
-type InstanceData struct {
-	count     cty.Value
-	eachKey   cty.Value
-	eachValue cty.Value
-}
-
-type KeyInstanceType int
-
-const (
-	NoKeyType KeyInstanceType = iota
-	StringKeyType
-	IntKeyType
-)
-
-type nodeExpansion interface {
-	Keys() (KeyInstanceType, []InstanceKey)
-	Data(key InstanceKey) InstanceData
-}
-
-var ExpansionSingle = expansionSingle{}
-var noKeys = []InstanceKey{NoKey}
-
-type expansionSingle struct{}
-
-func (e expansionSingle) Keys() (KeyInstanceType, []InstanceKey) {
-	return NoKeyType, noKeys
-}
-
-func (e expansionSingle) Data(key InstanceKey) InstanceData {
-	return InstanceData{}
-}
-
-type expansionCount int
-
-func (e expansionCount) Keys() (KeyInstanceType, []InstanceKey) {
-	keys := make([]InstanceKey, 0, e)
-	for i := range e {
-		keys = append(keys, IntKey(i))
-	}
-	return IntKeyType, keys
-}
-
-func (e expansionCount) Data(key InstanceKey) InstanceData {
-	return InstanceData{
-		count: cty.NumberIntVal(int64(key.(IntKey))),
-	}
-}
-
-type expansionForEach map[string]cty.Value
-
-func (e expansionForEach) Keys() (KeyInstanceType, []InstanceKey) {
-	keys := make([]InstanceKey, 0, len(e))
-	for k := range e {
-		keys = append(keys, StringKey(k))
-	}
-	return StringKeyType, keys
-}
-
-func (e expansionForEach) Data(key InstanceKey) InstanceData {
-	k := string(key.(StringKey))
-	v := e[k]
-	return InstanceData{
-		eachKey:   key.Value(),
-		eachValue: v,
-	}
-}
-
-var NoInstanceData = InstanceData{}
-
 type ModuleInstance struct {
 	scope          *Scope
 	parent         *ModuleInstance
 	moduleCalls    map[string]nodeExpansion
+	resources      map[ResourceAddr]nodeExpansion
 	childInstances map[ModuleAddrStep]*ModuleInstance
 }
 
@@ -325,18 +259,42 @@ func newModuleInstance(addr ModuleInstanceAddr, parent *ModuleInstance) *ModuleI
 		scope:          newScope(addr),
 		parent:         parent,
 		moduleCalls:    make(map[string]nodeExpansion),
+		resources:      make(map[ResourceAddr]nodeExpansion),
 		childInstances: make(map[ModuleAddrStep]*ModuleInstance),
 	}
 }
 
-func (m *ModuleInstance) SetModuleExpansion(callName string, expansion nodeExpansion) {
-	m.moduleCalls[callName] = expansion
-	_, keys := expansion.Keys()
+func (m *ModuleInstance) setModuleExpansion(callName string, exp nodeExpansion) {
+	m.moduleCalls[callName] = exp
+	_, keys := exp.Keys()
 	for _, key := range keys {
 		step := ModuleAddrStep{Name: callName, Key: key}
 		childInst := newModuleInstance(m.scope.addr.Child(callName, key), m)
 		m.childInstances[step] = childInst
 	}
+}
+
+func (m *ModuleInstance) setResourceExpanison(addr ResourceAddr, exp nodeExpansion) {
+	m.resources[addr] = exp
+}
+
+func (m *ModuleInstance) forEachResource(addr ResourceAddr, fn func(keyType KeyInstanceType, key InstanceKey, data InstanceData) error) error {
+	exp, ok := m.resources[addr]
+	if !ok {
+		return fmt.Errorf("uknown resource %s in module %s", addr.Key(), m.scope.addr.Key())
+	}
+
+	var errs error
+	keyType, keys := exp.Keys()
+	for _, key := range keys {
+		data := exp.Data(key)
+		if err := fn(keyType, key, data); err != nil {
+			errs = multierror.Append(errs, err)
+		}
+	}
+
+	return errs
+
 }
 
 func (m *ModuleInstance) moduleInstances(addr ModuleAddr, parentAddr ModuleInstanceAddr) []*ModuleInstance {
@@ -356,7 +314,7 @@ func (m *ModuleInstance) moduleInstances(addr ModuleAddr, parentAddr ModuleInsta
 	return []*ModuleInstance{m}
 }
 
-func (m *ModuleInstance) InstanceData() (InstanceData, error) {
+func (m *ModuleInstance) instanceData() (InstanceData, error) {
 	if m.parent == nil {
 		return NoInstanceData, nil
 	}
@@ -369,22 +327,19 @@ func (m *ModuleInstance) InstanceData() (InstanceData, error) {
 }
 
 type EvalState struct {
-	workDir   string
-	workspace string
-	graph     *graph
-	root      *ModuleInstance
-	config    *ModuleConfig
+	opts *EvalOpts
+
+	graph  *graph
+	root   *ModuleInstance
+	config *ModuleConfig
 }
 
-var rootModuleInst = newModuleInstance(RootModuleInstanceAddr, nil)
-
-func newEvalState(g *graph, config *ModuleConfig, workDir, workspace string) *EvalState {
+func newEvalState(g *graph, config *ModuleConfig, opts *EvalOpts) *EvalState {
 	return &EvalState{
-		workDir:   workDir,
-		workspace: workspace,
-		graph:     g,
-		root:      rootModuleInst,
-		config:    config,
+		opts:   opts,
+		graph:  g,
+		root:   newModuleInstance(RootModuleInstanceAddr, nil),
+		config: config,
 	}
 }
 
@@ -405,13 +360,13 @@ func (s *EvalState) forEachModule(addr ModuleAddr, fn func(*ModuleInstance) erro
 		return fn(s.root)
 	}
 
+	var errs error
 	for _, inst := range s.root.moduleInstances(addr, nil) {
-		// TODO: collect errors
 		if err := fn(inst); err != nil {
-			return err
+			errs = multierror.Append(errs, err)
 		}
 	}
-	return nil
+	return errs
 }
 
 func mergeSpec(a, b hcldec.Spec) hcldec.Spec {
@@ -441,17 +396,17 @@ func (s *EvalState) expandBlock(scope *Scope, block *BlockConfig, data InstanceD
 	return expanded, nil
 }
 
-func (s *EvalState) evalBlock(scope *Scope, block *BlockConfig, data InstanceData) (cty.Value, error) {
-	body, err := s.expandBlock(scope, block, data)
+func (s *EvalState) evalBlock(scope *Scope, config *BlockConfig, data InstanceData) (cty.Value, error) {
+	body, err := s.expandBlock(scope, config, data)
 	if err != nil {
 		// TODO: log
 		return cty.NilVal, err
 	}
 
-	traversals := dynblock.VariablesHCLDec(body, block.Spec())
+	traversals := dynblock.VariablesHCLDec(body, config.Spec())
 	refs := travReferences(traversals)
 	evalCtx := s.evalCtx(scope, refs, data)
-	return cty.ObjectVal(block.ToValue(evalCtx)), nil
+	return cty.ObjectVal(config.ToValue(evalCtx)), nil
 }
 
 func (s *EvalState) evalExpr(scope *Scope, expr hcl.Expression, data InstanceData) (cty.Value, error) {
@@ -501,36 +456,10 @@ func (s *EvalState) evalCtx(scope *Scope, refs []*Ref, data InstanceData) *hcl.E
 		case ModuleCallAddr:
 			modInst, err := s.findModuleInstance(scope.addr)
 			if err != nil {
-				panic(err.Error())
+				// It should never happen.
+				panic(fmt.Errorf("module %s not found", scope.addr.Key()))
 			}
-			evalModule := func(key InstanceKey) cty.Value {
-				step := ModuleAddrStep{
-					Name: a.Name,
-					Key:  key,
-				}
-				inst := modInst.childInstances[step]
-				return cty.ObjectVal(inst.scope.outputs)
-			}
-
-			exp := modInst.moduleCalls[a.Name]
-			keyType, instKeys := exp.Keys()
-			switch keyType {
-			case NoKeyType:
-				modules[a.Name] = evalModule(instKeys[0])
-			case IntKeyType:
-				elems := make([]cty.Value, 0, len(instKeys))
-				for _, key := range instKeys {
-					elems = append(elems, evalModule(key))
-				}
-				modules[a.Name] = cty.TupleVal(elems)
-			case StringKeyType:
-				attrs := make(map[string]cty.Value, len(instKeys))
-				for _, instKey := range instKeys {
-					key := string(instKey.(StringKey))
-					attrs[key] = evalModule(instKey)
-				}
-				modules[a.Name] = cty.ObjectVal(attrs)
-			}
+			modules[a.Name] = s.prepareModules(modInst, a.Name)
 			// TODO: get vars from nested scope by instance key from remaining travesal
 		case ResourceAddr:
 			var from map[string]map[string]cty.Value
@@ -570,17 +499,55 @@ func (s *EvalState) evalCtx(scope *Scope, refs []*Ref, data InstanceData) *hcl.E
 
 	vals["path"] = cty.ObjectVal(map[string]cty.Value{
 		"root":   cty.StringVal(filepath.ToSlash(s.config.Dir)),
-		"cwd":    cty.StringVal(filepath.ToSlash(s.workDir)),
+		"cwd":    cty.StringVal(filepath.ToSlash(s.opts.WorkDir)),
 		"module": cty.StringVal(filepath.ToSlash(mod.Dir)),
 	})
 
 	vals["terraform"] = cty.ObjectVal(map[string]cty.Value{
-		"workspace": cty.StringVal(s.workspace),
+		"workspace": cty.StringVal(s.opts.Workspace),
 	})
 
 	return &hcl.EvalContext{
 		Functions: funcs.Functions(mod.FS, mod.Dir),
 		Variables: vals,
+	}
+}
+
+func (s *EvalState) prepareModules(modInst *ModuleInstance, name string) cty.Value {
+	evalModule := func(key InstanceKey) cty.Value {
+		step := ModuleAddrStep{
+			Name: name,
+			Key:  key,
+		}
+		inst := modInst.childInstances[step]
+		return cty.ObjectVal(inst.scope.outputs)
+	}
+
+	// reference to an unknown module
+	exp, ok := modInst.moduleCalls[name]
+	if !ok {
+		return cty.DynamicVal
+	}
+
+	keyType, instKeys := exp.Keys()
+	switch keyType {
+	case NoKeyType:
+		return evalModule(instKeys[0])
+	case IntKeyType:
+		elems := make([]cty.Value, 0, len(instKeys))
+		for _, key := range instKeys {
+			elems = append(elems, evalModule(key))
+		}
+		return cty.TupleVal(elems)
+	case StringKeyType:
+		attrs := make(map[string]cty.Value, len(instKeys))
+		for _, instKey := range instKeys {
+			key := string(instKey.(StringKey))
+			attrs[key] = evalModule(instKey)
+		}
+		return cty.ObjectVal(attrs)
+	default:
+		panic("unreachable")
 	}
 }
 
