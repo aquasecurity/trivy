@@ -161,25 +161,27 @@ func looksLikeVersionConstraint(s string) bool {
 	return false
 }
 
-func parsePackagePatterns(target string) (packagename, protocol string, patterns []string, err error) {
+func parsePackagePatterns(target string) (pkgName, protocol string, patterns []string, err error) {
 	patternsSplit := strings.Split(target, ", ")
 
-	var pkgName string
 	// Step 1: detect correct package name and protocol from multiple patterns
 	for _, pattern := range patternsSplit {
 		name, proto, _, parseErr := parsePattern(pattern)
 		if parseErr != nil {
 			continue
 		}
+
+		// Save the first valid package name and protocol
 		if pkgName == "" {
 			pkgName = name
 			protocol = proto
 		}
+
+		// Alias pattern has priority — use the real package name.
+		// Example: "ip@^2.0.0", "ip@npm:@rootio/ip@2.0.0-root.io.1"
+		// Here "ip" is the alias, "@rootio/ip" is the real package.
+		// parsePattern returns the real name for npm: protocol aliases.
 		if proto == "npm" {
-			// npm alias has priority — use the real package name.
-			// Example: "ip@^2.0.0", "ip@npm:@rootio/ip@2.0.0-root.io.1"
-			// Here "ip" is the alias, "@rootio/ip" is the real package.
-			// parsePattern returns the real name for npm: protocol aliases.
 			pkgName = name
 			protocol = proto
 			break
